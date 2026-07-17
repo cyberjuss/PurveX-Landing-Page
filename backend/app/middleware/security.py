@@ -1,0 +1,227 @@
+"""
+Security middleware for FastAPI application.
+Implements comprehensive security headers and protections.
+"""
+from fastapi import Request, Response
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response as StarletteResponse
+import time
+import logging
+import os
+
+logger = logging.getLogger("purvex.api.security")
+
+# Check if we're in production
+IS_PRODUCTION = os.getenv("PURVEX_ENV", "dev").lower() == "prod"
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """
+    Add comprehensive security headers to all responses.
+    Implements OWASP security best practices.
+    """
+    
+    async def dispatch(self, request: Request, call_next):
+        response: Response = await call_next(request)
+        
+        # Content Security Policy
+        # SECURITY: Stricter CSP - unsafe-eval removed, unsafe-inline minimized
+        # In development, we still need unsafe-inline for Next.js hot reload, but unsafe-eval is removed
+        # In production, both are removed for maximum security
+        if IS_PRODUCTION:
+            csp = (
+                "default-src 'self'; "
+                "script-src 'self'; "  # No unsafe-inline or unsafe-eval in production
+                "style-src 'self' 'unsafe-inline'; "  # CSS may need unsafe-inline for some frameworks
+                "img-src 'self' data: https:; "
+                "font-src 'self' data:; "
+                "connect-src 'self' https:; "  # Only HTTPS in production
+                "frame-ancestors 'none'; "
+                "base-uri 'self'; "
+                "form-action 'self'; "
+                "object-src 'none'; "  # Block plugins
+                "upgrade-insecure-requests;"  # Upgrade HTTP to HTTPS
+            )
+        else:
+            # Development: Allow unsafe-inline for Next.js dev server, but NO unsafe-eval
+            csp = (
+                "default-src 'self'; "
+                "script-src 'self' 'unsafe-inline'; "  # unsafe-inline for dev, but NO unsafe-eval
+                "style-src 'self' 'unsafe-inline'; "
+                "img-src 'self' data: https:; "
+                "font-src 'self' data:; "
+                "connect-src 'self' http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:*; "
+                "frame-ancestors 'none'; "
+                "base-uri 'self'; "
+                "form-action 'self'"
+            )
+        
+        # Security headers
+        security_headers = {
+            # Prevent clickjacking
+            "X-Frame-Options": "DENY",
+            # Prevent MIME type sniffing
+            "X-Content-Type-Options": "nosniff",
+            # XSS Protection (legacy but still useful)
+            "X-XSS-Protection": "1; mode=block",
+            # Referrer Policy
+            "Referrer-Policy": "strict-origin-when-cross-origin",
+            # Permissions Policy (formerly Feature Policy)
+            "Permissions-Policy": (
+                "geolocation=(), "
+                "microphone=(), "
+                "camera=(), "
+                "payment=(), "
+                "usb=()"
+            ),
+            # Content Security Policy
+            "Content-Security-Policy": csp.replace("  ", " ").strip(),
+        }
+        
+            # Strict Transport Security (only in production)
+        if IS_PRODUCTION:
+            security_headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+        
+        # Add security headers
+        for header, value in security_headers.items():
+            response.headers[header] = value
+        
+        # Remove server header (don't leak server info)
+        # MutableHeaders supports __delitem__, just try to delete it
+        try:
+            del response.headers["server"]
+        except (KeyError, AttributeError, TypeError):
+            # Header doesn't exist or response doesn't support deletion
+            pass
+        
+        return response
+
+
+class RateLimitMiddleware(BaseHTTPMiddleware):
+    """
+    Global rate limiting middleware.
+    Uses Redis via check_rate_limit_async when REDIS_URL is configured.
+    """
+
+    def __init__(self, app, max_requests: int = 100, window_seconds: int = 60):
+        super().__init__(app)
+        self.max_requests = max_requests
+        self.window_seconds = window_seconds
+
+    async def dispatch(self, request: Request, call_next):
+        # Disable rate limiting in non-production environments.
+        if not IS_PRODUCTION:
+            return await call_next(request)
+        allow_local = os.getenv("ALLOW_RATE_LIMIT_LOCALHOST", "0").lower() in {"1", "true", "yes"}
+        if allow_local and request.client and request.client.host in {"127.0.0.1", "::1", "localhost"}:
+            return await call_next(request)
+        # Skip rate limiting for health checks
+        if request.url.path in ["/health", "/ready"]:
+            return await call_next(request)
+
+        from ..utils.rate_limit import check_rate_limit_async
+
+        client_ip = request.client.host if request.client else "unknown"
+        user_agent = request.headers.get("user-agent", "unknown")
+        key = f"rl:mw:{client_ip}:{user_agent[:50]}"
+        now = time.time()
+
+        try:
+            allowed, remaining = await check_rate_limit_async(
+                key, max_requests=self.max_requests, window_seconds=self.window_seconds
+            )
+        except Exception as exc:
+            logger.error("Rate limiting backend unavailable: %s", exc)
+            return StarletteResponse(
+                status_code=503,
+                content='{"detail":"Security infrastructure unavailable."}',
+                media_type="application/json",
+            )
+        if not allowed:
+            logger.warning("Rate limit exceeded for %s", client_ip)
+            try:
+                from ..db import async_sessionmaker
+                import asyncio
+
+                async def log_rate_limit():
+                    async with async_sessionmaker() as session:
+                        from .. import models
+
+                        session.add(
+                            models.AuditEvent(
+                                user_id=None,
+                                user_email=None,
+                                action="RATE_LIMIT_EXCEEDED",
+                                resource_type="api",
+                                resource_id=request.url.path,
+                                details=(
+                                    f"Rate limit exceeded: {client_ip} on {request.url.path} "
+                                    f"({self.max_requests} per {self.window_seconds}s)"
+                                ),
+                            )
+                        )
+                        await session.commit()
+
+                try:
+                    loop = asyncio.get_event_loop()
+                    if loop.is_running():
+                        asyncio.create_task(log_rate_limit())
+                    else:
+                        loop.run_until_complete(log_rate_limit())
+                except Exception:
+                    pass
+            except Exception as e:
+                logger.debug("Failed to log rate limit violation: %s", e)
+
+            return StarletteResponse(
+                status_code=429,
+                content='{"detail":"Too many requests. Please slow down."}',
+                media_type="application/json",
+                headers={
+                    "Retry-After": str(self.window_seconds),
+                    "X-RateLimit-Limit": str(self.max_requests),
+                    "X-RateLimit-Remaining": "0",
+                    "X-RateLimit-Reset": str(int(now + self.window_seconds)),
+                },
+            )
+
+        response = await call_next(request)
+        if hasattr(response, "headers"):
+            response.headers["X-RateLimit-Limit"] = str(self.max_requests)
+            response.headers["X-RateLimit-Remaining"] = str(max(0, remaining))
+            response.headers["X-RateLimit-Reset"] = str(int(now + self.window_seconds))
+
+        return response
+
+
+class RequestLoggingMiddleware(BaseHTTPMiddleware):
+    """
+    Log all requests for security auditing.
+    """
+    
+    async def dispatch(self, request: Request, call_next):
+        start_time = time.time()
+        client_ip = request.client.host if request.client else "unknown"
+        
+        # Log request (without sensitive data)
+        logger.info(
+            f"Request: {request.method} {request.url.path} "
+            f"from {client_ip} "
+            f"User-Agent: {request.headers.get('user-agent', 'unknown')[:100]}"
+        )
+        
+        response = await call_next(request)
+        
+        # Log response
+        process_time = time.time() - start_time
+        status_code = getattr(response, 'status_code', 'unknown')
+        logger.info(
+            f"Response: {request.method} {request.url.path} "
+            f"Status: {status_code} "
+            f"Time: {process_time:.3f}s"
+        )
+        
+        # Add timing header (only if response has headers attribute)
+        if hasattr(response, 'headers'):
+            response.headers["X-Process-Time"] = f"{process_time:.3f}"
+        
+        return response

@@ -1,0 +1,7 @@
+;Auto-generated Diamond Directive File. Can be deleted without harm.
+.Set CabinetNameTemplate=C:\Users\justi\OneDrive\Documentos\Purvex\PurveX\frontend\public\downloads\~PurveX-Setup.CAB
+.Set CompressionType=LZX
+.Set CompressionLevel=7
+.Set InfFileName=C:\Users\justi\OneDrive\Documentos\Purvex\PurveX\frontend\public\downloads\~PurveX-Setup_LAYOUT.INF
+.Set RptFileName=C:\Users\justi\OneDrive\Documentos\Purvex\PurveX\frontend\public\downloads\~PurveX-Setup.RPT
+.Set MaxDiskSize=CDROM

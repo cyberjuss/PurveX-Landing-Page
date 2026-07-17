@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -o /dev/null -w \"root: %{http_code}\\\\n\" http://127.0.0.1:3000/)",
+      "Bash(curl -s -o /dev/null -w \"landing: %{http_code}\\\\n\" http://127.0.0.1:3000/landing)",
+      "Bash(curl -s -o /dev/null -w \"home \\(/\\): %{http_code}\\\\n\" http://127.0.0.1:3000/)",
+      "Bash(curl -s -o /dev/null -w \"landing:  %{http_code}\\\\n\" http://127.0.0.1:3000/landing)",
+      "Bash(curl -s -o /dev/null -w \"platform: %{http_code}\\\\n\" http://127.0.0.1:3000/platform)",
+      "Bash(curl -s -o /dev/null -w \"platform retry: %{http_code}\\\\n\" http://127.0.0.1:3000/platform)",
+      "Bash(curl -s -o /dev/null -w \"platform retry2: %{http_code}\\\\n\" http://127.0.0.1:3000/platform)",
+      "Bash(powershell -NoProfile -Command 'Get-CimInstance Win32_Process -Filter \"Name='\\\\''node.exe'\\\\''\" | Where-Object { $_.CommandLine -like '\\\\''*next*dev*'\\\\'' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }')",
+      "Bash(npm run *)",
+      "Bash(curl -s http://127.0.0.1:3000/)",
+      "Bash(curl -s http://127.0.0.1:3000/platform)",
+      "Bash(curl -s -o /dev/null -w \"home: %{http_code}\\\\n\" http://127.0.0.1:3000/)",
+      "Bash(curl -s -o /dev/null -w \"home:     %{http_code}\\\\n\" http://127.0.0.1:3000/)",
+      "Bash(curl -s -o /dev/null -w \"signup: %{http_code}\\\\n\" http://127.0.0.1:3000/signup)",
+      "Bash(curl -s http://127.0.0.1:3000/signup)",
+      "Bash(grep -o \"Most Popular\\\\|\\\\$49\\\\|View pricing\\\\|Start Pilot\")",
+      "Bash(grep -o \"Most Popular\\\\|\\\\$49\\\\|View pricing\\\\|Start Pilot\\\\|Start Validation Pilot\")",
+      "Bash(grep -rn '\\\\$49\\\\|49\"' \"c:/Users/justi/OneDrive/Documentos/Projects/Purvex Landing Page/frontend/src\")",
+      "Bash(grep -o '.\\\\{40\\\\}\\\\$49.\\\\{40\\\\}')",
+      "Bash(curl -s -o /dev/null -w \"signup:   %{http_code}\\\\n\" http://127.0.0.1:3000/signup)",
+      "Bash(npx tsc *)",
+      "Bash(npx eslint *)",
+      "Bash(curl -s -o /dev/null -w 'home:     %{http_code}\\\\n' http://127.0.0.1:3000/?cachebust=__TRACKED_VAR__)",
+      "Bash(curl -s -o /dev/null -w 'platform: %{http_code}\\\\n' http://127.0.0.1:3000/platform?cachebust=__TRACKED_VAR__)",
+      "Bash(git -C frontend rev-parse --is-inside-work-tree)",
+      "Bash(gh auth *)",
+      "Bash(git config *)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(grep -iE \"\\(^|/\\)\\\\.env$|node_modules/|\\\\.db$|\\\\.pem$\")"
+    ]
+  }
+}
