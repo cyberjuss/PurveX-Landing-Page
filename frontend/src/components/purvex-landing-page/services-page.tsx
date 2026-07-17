@@ -38,16 +38,16 @@ const PROJECTS_URL = "https://medium.com/@jduru213";
 /* ─────────────────── data ─────────────────── */
 
 const courseArc = [
-  { n: "01", title: "Fundamentals", body: "The core concepts and groundwork every security professional needs to start strong." },
-  { n: "02", title: "Threat detection", body: "Recognizing suspicious activity and building the confidence to act on it early." },
-  { n: "03", title: "Log analysis projects", body: "Hands-on projects working real log data to find what matters in the noise." },
-  { n: "04", title: "Incident response", body: "Working an incident end to end: triage, investigate, contain, and document." },
+  { n: "01", title: "Fundamentals", body: "The groundwork every analyst needs to start strong." },
+  { n: "02", title: "Threat detection", body: "Spotting suspicious activity and acting on it early." },
+  { n: "03", title: "Log analysis projects", body: "Real log data, and finding what matters in the noise." },
+  { n: "04", title: "Incident response", body: "An incident end to end: triage, investigate, contain, document." },
 ];
 
 const formats = [
   { icon: Users, title: "1:1 & small-group instruction", body: "Live online sessions, paced to the learner." },
-  { icon: FlaskConical, title: "Hands-on lab projects", body: "Real log data and scenarios, worked at your own pace." },
-  { icon: GraduationCap, title: "Embedded in your program", body: "Brought in as a contract instructor to teach your learners." },
+  { icon: FlaskConical, title: "Hands-on lab projects", body: "Real scenarios, worked at your own pace." },
+  { icon: GraduationCap, title: "Embedded in your program", body: "I teach inside your existing program." },
 ];
 
 const tools = ["Microsoft Sentinel", "Splunk", "KQL / SPL", "Security+", "CySA+"];
@@ -56,48 +56,48 @@ const difference = [
   {
     icon: MessageSquare,
     title: "Real feedback on your work",
-    body: "We actually look at what you do: your investigations, your reasoning, your writeups. Then we tell you what's working and where to tighten up. That back-and-forth is how it sticks.",
+    body: "We look at your actual work and show you what's strong and where to tighten up. That back-and-forth is how it sticks.",
   },
   {
     icon: Target,
     title: "Someone keeping you on track",
-    body: "It's easy to stall out learning on your own. With a live instructor and a bit of structure, people keep going and actually finish, ready to do the job.",
+    body: "It's easy to stall out on your own. A live instructor keeps people moving until they finish, ready for the job.",
   },
   {
     icon: Compass,
     title: "Judgment, not just steps",
-    body: "The real skill is knowing what to chase and what to ignore when everything's going off at once. You pick that up working real scenarios with someone who's done it, not from a checklist.",
+    body: "Knowing what to chase and what to ignore when everything's going off at once. You learn that from real scenarios, not a checklist.",
   },
 ];
 
 const faqs: [string, string][] = [
   [
     "Who is PurveX for?",
-    "Two kinds of people. Programs, academies, and institutions that want their learners coming out genuinely job-ready, and small or mid-sized businesses that need a hand with security but can't staff a full team.",
+    "Two groups: programs and institutions that want job-ready learners, and small businesses that need security help without a full team.",
   ],
   [
     "How is the training delivered?",
-    "Remotely, whatever works for you: live online sessions, self-paced labs, or a mix of both. It can be 1:1 or small-group, and we scope the length to your program.",
+    "Remotely: live sessions, self-paced labs, or a mix. 1:1 or small-group, scoped to your program.",
   ],
   [
     "What does the course cover?",
-    "A clear path, scoped to your program: fundamentals, threat detection, log analysis projects, and incident response. We work in the tools people actually use on the job, like Sentinel and Splunk, and line it up with Security+ and CySA+.",
+    "Fundamentals, threat detection, log analysis, and incident response, in real tools like Sentinel and Splunk, aligned to Security+ and CySA+.",
   ],
   [
     "Do you replace our curriculum or work alongside it?",
-    "Whatever fits. We can run our own course, drop in as an instructor for your existing program, or just bring the labs and materials to back up what you already teach.",
+    "Whatever fits. We can run our own course, instruct inside your program, or supply labs and materials to back up what you teach.",
   ],
   [
     "What does it cost?",
-    "It really depends on the format, length, and scope, so we'd rather just talk it through. Tell us what you're after and we'll figure out something that works.",
+    "It depends on format, length, and scope, so we'd rather talk it through and find something that works.",
   ],
   [
     "Who will we actually work with?",
-    "You'll be dealing with the actual person doing the teaching and the security work, not a sales team. Honestly, the quickest way to tell if we're a fit is a short chat.",
+    "You'll deal directly with the person doing the teaching and security work, not a sales team. The quickest way to tell if we're a fit is a short chat.",
   ],
   [
     "What is the PurveX platform?",
-    "That's a separate product we're building, currently in private beta. You don't need it for any of the training or security work. It's just an early look at what's coming.",
+    "A separate product we're building, in private beta. You don't need it for the training or security work; it's just an early look at what's coming.",
   ],
 ];
 
@@ -114,7 +114,7 @@ const paths = [
     icon: GraduationCap,
     eyebrow: "For educators & programs",
     title: "Train cybersecurity talent",
-    body: "For academies, workforce programs, and institutions preparing professionals for the field.",
+    body: "For academies, workforce programs, and institutions.",
     cta: "Explore training",
     href: "#training",
   },
@@ -122,7 +122,7 @@ const paths = [
     icon: Building2,
     eyebrow: "For businesses",
     title: "Strengthen your security",
-    body: "For small and mid-sized businesses that need security expertise on demand.",
+    body: "For small and mid-sized businesses without a full security team.",
     cta: "Get security help",
     href: "#services",
   },
@@ -130,7 +130,7 @@ const paths = [
     icon: Radar,
     eyebrow: "For security teams",
     title: "Prove your detections",
-    body: "For security teams that want proof their detections work, not assumptions.",
+    body: "For security teams that want proof their detections actually work.",
     cta: "Join the beta",
     href: "/platform",
   },
@@ -238,7 +238,6 @@ export default function ServicesPage() {
           <a href="#training" onClick={closeNav}>Training</a>
           <a href="#services" onClick={closeNav}>Business Security</a>
           <Link href="/platform" onClick={closeNav}>Platform</Link>
-          <div className="sp-mobile__div" />
           <a
             href={BOOKING_URL}
             target="_blank"
@@ -263,9 +262,8 @@ export default function ServicesPage() {
             <span className="sp-hero__grad">stronger security teams.</span>
           </h1>
           <p className="sp-hero__sub">
-            We teach security hands-on and get people genuinely job-ready, with real feedback and
-            someone in your corner, not just labs to work through alone. And when your business needs
-            a hand with security, we&apos;re here for that too.
+            Hands-on security training with real feedback and someone in your corner, not just labs
+            to work through alone. Plus practical security help when your business needs it.
           </p>
           <div className="sp-hero__actions">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
@@ -308,12 +306,11 @@ export default function ServicesPage() {
             </div>
             <div className="sp-who__body">
               <p>
-                PurveX is practitioner-led. The person teaching your learners is the same person
-                doing the security work, so you get real experience, not a script.
+                The person teaching your learners is the same one doing real security work. You get
+                experience, not a script.
               </p>
               <p>
-                No sales layer, no runaround. The fastest way to see if we&apos;re a fit is a short
-                conversation.
+                No sales layer. The best way to see if we&apos;re a fit is a quick conversation.
               </p>
             </div>
           </div>
@@ -325,8 +322,7 @@ export default function ServicesPage() {
             <span className="sp-tag">SOC analyst readiness</span>
             <h2>A hands-on path from fundamentals to incident response.</h2>
             <p>
-              Your learners move from fundamentals to incident response through live instruction and
-              hands-on lab projects.
+              From fundamentals to incident response, through live instruction and real lab work.
             </p>
           </div>
 
@@ -372,9 +368,8 @@ export default function ServicesPage() {
             <span className="sp-tag">What sets it apart</span>
             <h2>Readiness comes from feedback, not just access.</h2>
             <p>
-              Labs and courses are everywhere. What actually gets someone job-ready is having a real
-              person in the mix: feedback on their work, someone keeping them on track, and the
-              judgment you only get from doing the job.
+              Labs and courses are everywhere. What gets someone job-ready is a real person in the
+              mix: feedback, accountability, and judgment you only get from doing the job.
             </p>
           </div>
           <div className="sp-diff">
@@ -396,8 +391,8 @@ export default function ServicesPage() {
               <span className="sp-tag">For small &amp; mid-sized businesses</span>
               <h2>Security operations support, without a full in-house team.</h2>
               <p>
-                For growing businesses that can&apos;t staff a security team yet: detection,
-                monitoring, and response guidance from the same practitioners who train the field.
+                For businesses that can&apos;t staff a security team yet: detection, monitoring, and
+                response help from the same people who train the field.
               </p>
               <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-biz__link">
                 Talk through your needs <ArrowRight size={15} />
@@ -422,8 +417,8 @@ export default function ServicesPage() {
               <span className="sp-tag">Looking ahead</span>
               <h2>The future of PurveX</h2>
               <p>
-                We&apos;re building a detection-assurance platform, now in private beta, that proves
-                which detections actually fire and isolates why coverage breaks.
+                A detection-assurance platform, now in private beta: it proves which detections fire
+                and shows why coverage breaks.
               </p>
               <Link href="/platform" className="sp-future__link">
                 See the platform <ArrowRight size={15} />
@@ -612,8 +607,7 @@ export default function ServicesPage() {
 .sp-mobile__nav a:not(.sp-btn)::after { content: ""; position: absolute; left: 50%; bottom: 8px; width: 0; height: 2px; border-radius: 2px; background: var(--accent); transform: translateX(-50%); transition: width .3s var(--ease) }
 .sp-mobile__nav a:not(.sp-btn):hover { color: var(--accent-deep) }
 .sp-mobile__nav a:not(.sp-btn):hover::after { width: 42% }
-.sp-mobile__div { height: 1px; width: 64px; background: var(--border-strong); margin: 24px auto 20px }
-.sp-mobile__nav .sp-btn { margin-top: 4px; min-width: 240px }
+.sp-mobile__nav .sp-btn { margin-top: 28px; min-width: 240px }
 @keyframes sp-menu-in { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: none } }
 @media (prefers-reduced-motion: reduce) { .sp-mobile--open .sp-mobile__nav > * { animation: none; opacity: 1 } }
 

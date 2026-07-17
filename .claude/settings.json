@@ -30,7 +30,17 @@
       "Bash(git config *)",
       "Bash(git init *)",
       "Bash(git add *)",
-      "Bash(grep -iE \"\\(^|/\\)\\\\.env$|node_modules/|\\\\.db$|\\\\.pem$\")"
+      "Bash(grep -iE \"\\(^|/\\)\\\\.env$|node_modules/|\\\\.db$|\\\\.pem$\")",
+      "Bash(command -v gh)",
+      "Bash(git branch *)",
+      "Bash(git commit -q -m ' *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(command -v vercel)",
+      "Bash(npx vercel *)",
+      "Bash(grep -vE \"node_modules|^\\\\.$|^\\\\.\\\\.$\")",
+      "Bash(git rm *)",
+      "Bash(rm -f \"frontend/{\" \"frontend/\\({}\\)\\)\" \"frontend/package-Cyberjuss.json\" \"frontend/package-lock-Cyberjuss.json\")"
     ]
   }
 }

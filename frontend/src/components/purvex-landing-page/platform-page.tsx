@@ -36,22 +36,22 @@ const features = [
   {
     icon: Crosshair,
     title: "Validate what matters",
-    body: "Run controlled tests against the behaviors you care about. See which detections fire before a real adversary finds the gap.",
+    body: "Test the behaviors you care about, and see which detections fire before an adversary finds the gap.",
   },
   {
     icon: Radar,
     title: "Isolate the failure",
-    body: "Separate telemetry gaps, rule failures, tuning issues, and drift so your team knows exactly what to fix.",
+    body: "Telemetry gap, rule failure, tuning, or drift? Know exactly what to fix.",
   },
   {
     icon: BrainCircuit,
     title: "AI-assisted explanation",
-    body: "Selective AI speeds up triage, prioritization, and communication without adding noise to your workflow.",
+    body: "Selective AI speeds up triage and prioritization, without the noise.",
   },
   {
     icon: ShieldCheck,
     title: "Defensible coverage",
-    body: "Turn claimed ATT&CK coverage into measured, repeatable evidence your team can defend.",
+    body: "Turn claimed ATT&CK coverage into measured evidence you can defend.",
   },
 ];
 
@@ -59,17 +59,17 @@ const audience = [
   {
     icon: Database,
     eyebrow: "Detection engineers",
-    body: "Know if the miss came from telemetry, parser drift, rule logic, or tuning, before the post-incident review starts.",
+    body: "Know if the miss was telemetry, parser drift, rule logic, or tuning, before the review starts.",
   },
   {
     icon: Sliders,
     eyebrow: "SOC managers",
-    body: "Turn ad hoc checks into a repeatable workflow that shows coverage improving across the detections that matter.",
+    body: "Turn ad hoc checks into a repeatable workflow that shows coverage improving.",
   },
   {
     icon: GitBranch,
     eyebrow: "Security leadership",
-    body: "Replace claimed ATT&CK coverage and screenshots with measured results you can take to a program review.",
+    body: "Replace claimed coverage and screenshots with measured results for a program review.",
   },
 ];
 
@@ -128,10 +128,10 @@ const tiers = [
 ];
 
 const faqs: [string, string][] = [
-  ["Is this BAS? How is it different from AttackIQ or SafeBreach?", "BAS simulates adversary behavior against endpoints. PurveX validates the full detection chain (telemetry, parser, rule, alert, ticket) and isolates exactly where it broke. We complement BAS rather than replace it."],
-  ["Do you run anything in production? What's the safety model?", "Read-only against your SIEM by default. Validation actions are scoped, auditable, and approved per environment. Production-impacting tests require explicit opt-in inside your guardrails."],
-  ["How long until we see a first coverage report?", "Pilot teams typically see first coverage signal within hours of connecting their SIEM, and a leadership-ready report inside the first week."],
-  ["Does PurveX replace the SIEM?", "No. Your SIEM stays the system of record. PurveX adds the validation layer that proves detections actually fire and tracks coverage over time."],
+  ["Is this BAS? How is it different from AttackIQ or SafeBreach?", "BAS simulates adversary behavior on endpoints. PurveX validates the full chain (telemetry, parser, rule, alert, ticket) and isolates where it broke. We complement BAS, not replace it."],
+  ["Do you run anything in production? What's the safety model?", "Read-only against your SIEM by default. Actions are scoped, auditable, and approved per environment. Production-impacting tests need explicit opt-in."],
+  ["How long until we see a first coverage report?", "First coverage signal within hours of connecting your SIEM, and a leadership-ready report inside the first week."],
+  ["Does PurveX replace the SIEM?", "No. Your SIEM stays the system of record. PurveX adds a validation layer that proves detections fire and tracks coverage over time."],
 ];
 
 /* ─────────────────── hooks ─────────────────── */
@@ -298,7 +298,6 @@ export default function PlatformPage() {
           <a href="#product" onClick={closeNav}>Product</a>
           <a href="#pricing" onClick={closeNav}>Pricing</a>
           <a href="#faq" onClick={closeNav}>FAQ</a>
-          <div className="sp-mobile__div" />
           <a
             href={BOOKING_URL}
             target="_blank"
@@ -323,8 +322,8 @@ export default function PlatformPage() {
             <span className="sp-hero__grad">Know exactly why it happened.</span>
           </h1>
           <p className="sp-hero__sub">
-            Most teams assume their detections work. PurveX proves which ones actually fire, then
-            pinpoints whether a failure came from telemetry, rule logic, tuning, or drift.
+            Most teams assume their detections work. PurveX proves which ones fire, and pinpoints why
+            the rest don&apos;t.
           </p>
           <form className="sp-wl" onSubmit={submitWaitlist}>
             <div className="sp-wl__row">
@@ -406,8 +405,8 @@ export default function PlatformPage() {
             <article className="sp-tile sp-tile--accent">
               <span className="sp-tile__kick">The point</span>
               <p className="sp-tile__accent-text">
-                Not another dashboard. It tests the detection chain, isolates the miss, and turns
-                the result into evidence you can defend.
+                Not another dashboard. It tests the chain, isolates the miss, and turns it into
+                evidence.
               </p>
               <ShieldCheck size={20} className="sp-tile__accent-icon" />
             </article>
@@ -431,8 +430,8 @@ export default function PlatformPage() {
             <span className="sp-tag">The risk of guessing</span>
             <h2>Every unproven detection is a blind spot.</h2>
             <p>
-              A rule that exists is not a rule that works. Until you test the chain, you are trusting
-              coverage you have never actually watched fire.
+              A rule that exists isn&apos;t a rule that works. Until you test the chain, you&apos;re
+              trusting coverage you&apos;ve never watched fire.
             </p>
           </div>
           <div className="sp-compare" data-r>
@@ -453,8 +452,8 @@ export default function PlatformPage() {
             <span className="sp-tag">Planned pricing</span>
             <h2>Start focused. Expand when the evidence is there.</h2>
             <p>
-              This is the pricing we&apos;re planning at launch. Beta teams get first access and
-              preferred terms, so join the waitlist to be part of the early group.
+              Planned launch pricing. Beta teams get first access and preferred terms, so join the
+              waitlist.
             </p>
           </div>
           <div className="sp-pricing">
@@ -654,8 +653,7 @@ export default function PlatformPage() {
 .sp-mobile__nav a:not(.sp-btn)::after { content: ""; position: absolute; left: 50%; bottom: 8px; width: 0; height: 2px; border-radius: 2px; background: var(--accent); transform: translateX(-50%); transition: width .3s var(--ease) }
 .sp-mobile__nav a:not(.sp-btn):hover { color: var(--accent-deep) }
 .sp-mobile__nav a:not(.sp-btn):hover::after { width: 42% }
-.sp-mobile__div { height: 1px; width: 64px; background: var(--border-strong); margin: 24px auto 20px }
-.sp-mobile__nav .sp-btn { margin-top: 4px; min-width: 240px }
+.sp-mobile__nav .sp-btn { margin-top: 28px; min-width: 240px }
 @keyframes sp-menu-in { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: none } }
 @media (prefers-reduced-motion: reduce) { .sp-mobile--open .sp-mobile__nav > * { animation: none; opacity: 1 } }
 
