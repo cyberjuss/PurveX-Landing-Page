@@ -108,16 +108,59 @@ export function SiteChrome({
 }) {
   const pageRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<NavKey | null>(null);
   const [openMobileGroup, setOpenMobileGroup] = useState<NavKey | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 32);
+    const fn = () => {
+      setScrolled(window.scrollY > 32);
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - doc.clientHeight;
+      setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0);
+    };
     fn();
     window.addEventListener("scroll", fn, { passive: true });
-    return () => window.removeEventListener("scroll", fn);
+    window.addEventListener("resize", fn);
+    return () => {
+      window.removeEventListener("scroll", fn);
+      window.removeEventListener("resize", fn);
+    };
+  }, []);
+
+  // Cursor-reactive tilt on cards — skipped entirely under reduced-motion.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const root = pageRef.current;
+    if (!root) return;
+    const targets = Array.from(root.querySelectorAll<HTMLElement>(".sp-card"));
+    const onMove = (e: MouseEvent) => {
+      const el = e.currentTarget as HTMLElement;
+      const r = el.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      el.style.setProperty("--tiltX", `${(-py * 6).toFixed(2)}deg`);
+      el.style.setProperty("--tiltY", `${(px * 8).toFixed(2)}deg`);
+      el.style.setProperty("--tiltLift", "-6px");
+    };
+    const onLeave = (e: MouseEvent) => {
+      const el = e.currentTarget as HTMLElement;
+      el.style.setProperty("--tiltX", "0deg");
+      el.style.setProperty("--tiltY", "0deg");
+      el.style.setProperty("--tiltLift", "0px");
+    };
+    targets.forEach((el) => {
+      el.addEventListener("mousemove", onMove);
+      el.addEventListener("mouseleave", onLeave);
+    });
+    return () => {
+      targets.forEach((el) => {
+        el.removeEventListener("mousemove", onMove);
+        el.removeEventListener("mouseleave", onLeave);
+      });
+    };
   }, []);
 
   useEffect(() => {
@@ -196,8 +239,11 @@ export function SiteChrome({
 
   return (
     <div className="sp" ref={pageRef}>
+      <div className="sp-progress" style={{ transform: `scaleX(${progress})` }} aria-hidden />
       <div className="sp-bg" aria-hidden>
         <div className="sp-bg__grad" />
+        <div className="sp-bg__orb sp-bg__orb--1" />
+        <div className="sp-bg__orb sp-bg__orb--2" />
         <div className="sp-bg__grid" />
       </div>
 
@@ -395,14 +441,26 @@ export const CHROME_CSS = `
   -webkit-font-smoothing: antialiased;
 }
 
+/* ── Scroll progress ── */
+.sp-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 80; background: linear-gradient(90deg, var(--accent), var(--accent-deep)); transform-origin: left; transform: scaleX(0); transition: transform .1s linear; pointer-events: none }
+
 /* ── Ambient bg ── */
-.sp-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0 }
+.sp-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden }
 .sp-bg__grad {
   position: absolute; inset: 0;
   background:
     radial-gradient(ellipse 70% 45% at 50% -8%, rgba(106,92,255,.10), transparent 60%),
     radial-gradient(ellipse 45% 35% at 88% 8%, rgba(106,92,255,.04), transparent 60%);
 }
+.sp-bg__orb { position: absolute; border-radius: 50%; filter: blur(70px); animation: sp-float 24s ease-in-out infinite }
+.sp-bg__orb--1 { width: 440px; height: 440px; top: -140px; left: 4%; background: radial-gradient(circle, rgba(106,92,255,.30), transparent 70%); animation-duration: 22s }
+.sp-bg__orb--2 { width: 380px; height: 380px; top: 6%; right: 4%; background: radial-gradient(circle, rgba(85,70,224,.22), transparent 70%); animation-duration: 28s; animation-delay: -9s }
+@keyframes sp-float {
+  0%, 100% { transform: translate(0, 0) scale(1) }
+  33% { transform: translate(34px, -24px) scale(1.06) }
+  66% { transform: translate(-24px, 22px) scale(.96) }
+}
+@media (prefers-reduced-motion: reduce) { .sp-bg__orb { animation: none } }
 .sp-bg__grid {
   position: absolute; inset: 0; opacity: .5;
   background-image:
@@ -413,10 +471,22 @@ export const CHROME_CSS = `
 }
 
 /* ── Reveal ── */
-[data-r] { opacity: 0; transform: translateY(26px) scale(.985); transition: opacity .8s var(--ease), transform .8s var(--ease); will-change: opacity, transform }
+[data-r] { opacity: 0; transform: translateY(26px) scale(.985); filter: blur(5px); transition: opacity .8s var(--ease), transform .8s var(--ease), filter .8s var(--ease); will-change: opacity, transform, filter }
 [data-d="1"] { transition-delay: .05s } [data-d="2"] { transition-delay: .12s } [data-d="3"] { transition-delay: .19s } [data-d="4"] { transition-delay: .26s } [data-d="5"] { transition-delay: .33s }
-[data-r].in { opacity: 1; transform: none }
-@media (prefers-reduced-motion: reduce) { [data-r] { opacity: 1; transform: none; transition: none } }
+[data-r].in { opacity: 1; transform: none; filter: blur(0) }
+
+/* Cascading child reveal for card/step grids — the grid itself just becomes visible instantly, its children stagger in one at a time */
+.sp-cards[data-r], .sp-process[data-r], .sp-formats[data-r], .sp-arc[data-r] { opacity: 1; transform: none; filter: none; transition: none }
+.sp-cards[data-r] > *, .sp-process[data-r] > *, .sp-formats[data-r] > *, .sp-arc[data-r] > * { opacity: 0; transform: translateY(24px); filter: blur(4px); transition: opacity .6s var(--ease), transform .6s var(--ease), filter .6s var(--ease) }
+.sp-cards[data-r].in > *, .sp-process[data-r].in > *, .sp-formats[data-r].in > *, .sp-arc[data-r].in > * { opacity: 1; transform: none; filter: blur(0) }
+.sp-cards[data-r] > *:nth-child(1), .sp-process[data-r] > *:nth-child(1), .sp-formats[data-r] > *:nth-child(1), .sp-arc[data-r] > *:nth-child(1) { transition-delay: .03s }
+.sp-cards[data-r] > *:nth-child(2), .sp-process[data-r] > *:nth-child(2), .sp-formats[data-r] > *:nth-child(2), .sp-arc[data-r] > *:nth-child(2) { transition-delay: .1s }
+.sp-cards[data-r] > *:nth-child(3), .sp-process[data-r] > *:nth-child(3), .sp-formats[data-r] > *:nth-child(3), .sp-arc[data-r] > *:nth-child(3) { transition-delay: .17s }
+.sp-cards[data-r] > *:nth-child(4), .sp-process[data-r] > *:nth-child(4), .sp-formats[data-r] > *:nth-child(4), .sp-arc[data-r] > *:nth-child(4) { transition-delay: .24s }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-r], .sp-cards[data-r] > *, .sp-process[data-r] > *, .sp-formats[data-r] > *, .sp-arc[data-r] > * { opacity: 1; transform: none; filter: none; transition: none }
+}
 
 /* ── Nav ── */
 .sp-nav { position: sticky; top: 0; z-index: 50; padding: 0 24px; transition: background .35s, backdrop-filter .35s, box-shadow .35s, border-color .35s; border-bottom: 1px solid transparent }
@@ -432,8 +502,10 @@ export const CHROME_CSS = `
 
 /* ── Mega menu ── */
 .sp-navitem { position: relative; display: flex; align-items: center; padding: 22px 4px; }
-.sp-navitem__link { display: inline-flex; align-items: center; font-size: .87rem; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .2s; padding: 6px 4px 6px 10px }
+.sp-navitem__link { position: relative; display: inline-flex; align-items: center; font-size: .87rem; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .2s; padding: 6px 4px 6px 10px }
 .sp-navitem__link:hover { color: var(--ink) }
+.sp-navitem__link::after { content: ""; position: absolute; left: 10px; right: 4px; bottom: -1px; height: 2px; border-radius: 2px; background: var(--accent-deep); transform: scaleX(0); transform-origin: left; transition: transform .3s var(--ease) }
+.sp-navitem__link:hover::after, .sp-navitem__link.sp-nav__link--active::after { transform: scaleX(1) }
 .sp-navitem__chev { display: inline-flex; align-items: center; justify-content: center; background: none; border: 0; color: var(--muted-dim); cursor: pointer; padding: 6px 8px 6px 2px; transition: transform .25s var(--ease), color .2s }
 .sp-navitem__chev:hover { color: var(--accent-deep) }
 .sp-navitem__chev--open { transform: rotate(180deg); color: var(--accent-deep) }
@@ -467,8 +539,11 @@ export const CHROME_CSS = `
 .sp-btn--sm { height: 40px; padding: 0 18px; font-size: .85rem }
 .sp-btn--lg { height: 50px; padding: 0 24px; font-size: .92rem }
 .sp-btn--full { width: 100% }
-.sp-btn--prim { background: var(--accent-deep); color: #fff; box-shadow: none }
+.sp-btn--prim { position: relative; overflow: hidden; background: var(--accent-deep); color: #fff; box-shadow: none }
+.sp-btn--prim::after { content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,255,255,.35), transparent); transform: skewX(-20deg); transition: left .6s var(--ease) }
 .sp-btn--prim:hover { background: var(--accent); transform: translateY(-1px) }
+.sp-btn--prim:hover::after { left: 130% }
+@media (prefers-reduced-motion: reduce) { .sp-btn--prim::after { display: none } }
 .sp-btn--ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--border-strong); box-shadow: 0 1px 2px rgba(16,25,46,.03) }
 .sp-btn--ghost:hover { border-color: var(--accent); color: var(--accent-deep); transform: translateY(-2px) }
 
@@ -518,8 +593,9 @@ export const CHROME_CSS = `
 .sp-cards--2 { grid-template-columns: repeat(2, 1fr) }
 .sp-cards--3 { grid-template-columns: repeat(3, 1fr) }
 .sp-cards--4 { grid-template-columns: repeat(2, 1fr) }
-.sp-card { position: relative; display: flex; flex-direction: column; padding: 36px; border-radius: calc(var(--radius) + 4px); border: 1px solid var(--border); background: var(--surface); box-shadow: 0 20px 50px -40px rgba(16,25,46,.3); transition: transform .3s var(--ease), border-color .3s, box-shadow .3s }
-.sp-card:hover { transform: translateY(-4px); border-color: var(--border-strong); box-shadow: 0 30px 60px -40px rgba(16,25,46,.35) }
+.sp-card { position: relative; display: flex; flex-direction: column; padding: 36px; border-radius: calc(var(--radius) + 4px); border: 1px solid var(--border); background: var(--surface); box-shadow: 0 20px 50px -40px rgba(16,25,46,.3); transform: perspective(900px) rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg)) translateY(var(--tiltLift, 0px)); transition: transform .35s var(--ease), border-color .3s, box-shadow .3s }
+.sp-card:hover { border-color: var(--border-strong); box-shadow: 0 30px 60px -40px rgba(16,25,46,.35) }
+@media (prefers-reduced-motion: reduce) { .sp-card { transform: none !important } }
 .sp-card__icon { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 13px; background: linear-gradient(135deg, var(--accent-soft), #ffffff); border: 1px solid rgba(106,92,255,.2); color: var(--accent-deep); box-shadow: 0 8px 20px -12px rgba(106,92,255,.5); transition: transform .35s var(--ease) }
 .sp-card:hover .sp-card__icon { transform: translateY(-2px) scale(1.06) }
 .sp-card__title { margin: 22px 0 0; font-family: var(--font-display); font-size: 1.15rem; font-weight: 650; letter-spacing: -.015em; color: var(--ink) }

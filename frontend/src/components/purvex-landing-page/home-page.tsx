@@ -184,6 +184,9 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
+            <div className="sp-carousel__progress">
+              <div key={carousel.index} className="sp-carousel__progress-fill" />
+            </div>
           </div>
           <button className="sp-carousel__arrow sp-carousel__arrow--next" onClick={carousel.next} aria-label="Next">
             <ChevronRight size={18} />
@@ -282,8 +285,13 @@ export default function HomePage() {
       <style>{`
 /* ── Carousel ── */
 .sp-carousel { position: relative; display: flex; align-items: center; gap: 14px }
-.sp-carousel__viewport { flex: 1; overflow: hidden; border-radius: calc(var(--radius) + 8px); border: 1px solid var(--border); box-shadow: 0 24px 60px -40px rgba(16,25,46,.3) }
+.sp-carousel__viewport { position: relative; flex: 1; overflow: hidden; border-radius: calc(var(--radius) + 8px); border: 1px solid var(--border); box-shadow: 0 24px 60px -40px rgba(16,25,46,.3) }
 .sp-carousel__track { display: flex; transition: transform .5s var(--ease) }
+.sp-carousel__progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(16,25,46,.08); z-index: 2 }
+.sp-carousel__progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-deep)); animation: sp-carousel-fill 6s linear forwards }
+.sp-carousel:hover .sp-carousel__progress-fill { animation-play-state: paused }
+@keyframes sp-carousel-fill { from { width: 0% } to { width: 100% } }
+@media (prefers-reduced-motion: reduce) { .sp-carousel__progress { display: none } }
 .sp-carousel__slide { flex: 0 0 100%; display: grid; grid-template-columns: 1fr 1.4fr; min-height: 380px; background: var(--surface) }
 .sp-carousel__panel { display: flex; align-items: center; justify-content: center; background: linear-gradient(150deg, var(--accent), var(--accent-deep)); color: #fff; position: relative; overflow: hidden }
 .sp-carousel__panel svg { width: 72px; height: 72px; opacity: .92 }
