@@ -22,7 +22,7 @@ import { Linkedin, Menu, X } from "lucide-react";
    ───────────────────────────────────────────────────────── */
 export const BOOKING_URL = "https://calendly.com/purvex-llc/30min";
 
-export type NavKey = "home" | "security-operations" | "training" | "about";
+export type NavKey = "home" | "security-operations" | "training" | "about" | "platform";
 
 const NAV_ITEMS: { key: NavKey; label: string; href: string }[] = [
   { key: "security-operations", label: "Security Operations", href: "/security-operations" },
