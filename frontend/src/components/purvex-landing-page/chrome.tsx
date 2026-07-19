@@ -13,6 +13,7 @@ import {
   Radar,
   ShieldCheck,
   Sliders,
+  Swords,
   Target,
   Users,
   Waypoints,
@@ -91,6 +92,7 @@ const NAV_MENUS: NavMenu[] = [
     blurb: "Who PurveX is, and what we're building next.",
     cta: "About PurveX",
     items: [
+      { label: "How We Think", desc: "Blue team, red team, one discipline.", anchor: "#how-we-think", icon: Swords },
       { label: "Who We Are", desc: "Work directly with the practitioner.", anchor: "#who-we-are", icon: Users },
       { label: "PurveX Labs", desc: "What we're building next.", anchor: "#purvex-labs", icon: Radar },
     ],
