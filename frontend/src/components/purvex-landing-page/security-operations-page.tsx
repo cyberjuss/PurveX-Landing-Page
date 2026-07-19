@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Radar, Search, ShieldCheck, Sliders, Swords, Target, Waypoints } from "lucide-react";
+import { ArrowRight, Radar, Search, ShieldCheck, Sliders, Swords, Target, Terminal, Waypoints } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
 const services = [
@@ -68,22 +68,37 @@ export default function SecurityOperationsPage() {
         </p>
       </section>
 
-      {/* ═══════════ SERVICES ═══════════ */}
+      {/* ═══════════ SERVICES — CONSOLE ═══════════ */}
       <section className="sp-section">
         <div className="sp-head" data-r>
           <span className="sp-tag">What we do</span>
           <h2>Four ways we strengthen your operations.</h2>
         </div>
-        <div className="sp-cards sp-cards--4" data-r>
-          {services.map((s) => (
-            <article key={s.title} id={s.id} className="sp-card">
-              <div className="sp-card__icon">
-                <s.icon size={22} />
+        <div className="sp-console" data-r>
+          <div className="sp-console__bar">
+            <div className="sp-console__dots">
+              <span />
+              <span />
+              <span />
+            </div>
+            <span className="sp-console__title">
+              <Terminal size={12} /> security-operations.log
+            </span>
+          </div>
+          <div className="sp-console__list">
+            {services.map((s, i) => (
+              <div key={s.title} id={s.id} className="sp-console__row">
+                <span className="sp-console__idx">{String(i + 1).padStart(2, "0")}</span>
+                <div className="sp-console__icon">
+                  <s.icon size={18} />
+                </div>
+                <div>
+                  <h3>{s.title}</h3>
+                  <p>{s.body}</p>
+                </div>
               </div>
-              <h3 className="sp-card__title">{s.title}</h3>
-              <p className="sp-card__body">{s.body}</p>
-            </article>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
@@ -157,6 +172,25 @@ export default function SecurityOperationsPage() {
       </section>
 
       <style>{`
+/* ── Console (dark terminal-style service log) ── */
+.sp-console { border-radius: 18px; border: 1px solid rgba(255,255,255,.08); background: var(--ink); overflow: hidden; box-shadow: 0 30px 70px -36px rgba(16,25,46,.5) }
+.sp-console__bar { display: flex; align-items: center; gap: 10px; padding: 14px 20px; background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.08) }
+.sp-console__dots { display: flex; gap: 6px }
+.sp-console__dots span { width: 9px; height: 9px; border-radius: 50% }
+.sp-console__dots span:nth-child(1) { background: #f2777a }
+.sp-console__dots span:nth-child(2) { background: #f4c059 }
+.sp-console__dots span:nth-child(3) { background: #5ec269 }
+.sp-console__title { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: .72rem; color: rgba(255,255,255,.5); letter-spacing: .04em }
+.sp-console__list { padding: 10px }
+.sp-console__row { display: flex; align-items: flex-start; gap: 18px; padding: 22px 18px; transition: background .2s }
+.sp-console__row:hover { background: rgba(255,255,255,.035) }
+.sp-console__row + .sp-console__row { border-top: 1px solid rgba(255,255,255,.06) }
+.sp-console__idx { font-family: var(--font-mono); font-size: .8rem; font-weight: 600; color: var(--accent); flex-shrink: 0; padding-top: 9px; width: 20px }
+.sp-console__icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: rgba(106,92,255,.16); border: 1px solid rgba(106,92,255,.25); color: #c3bbff; display: flex; align-items: center; justify-content: center }
+.sp-console__row h3 { margin: 0; font-family: var(--font-display); font-size: 1.02rem; font-weight: 650; letter-spacing: -.01em; color: #fff }
+.sp-console__row p { margin: 6px 0 0; font-size: .88rem; color: rgba(255,255,255,.5); line-height: 1.6; max-width: 560px }
+
+/* ── Blue vs red (inline version) ── */
 .sp-versus { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 20px; max-width: 640px; margin: 0 auto }
 .sp-versus__side { padding: 30px 26px; border-radius: 14px; text-align: center; transition: transform .3s var(--ease) }
 .sp-versus__side:hover { transform: translateY(-3px) }
@@ -177,6 +211,10 @@ export default function SecurityOperationsPage() {
 .sp-process__title { margin: 16px 0 0; font-family: var(--font-display); font-size: 1.08rem; font-weight: 650; letter-spacing: -.015em; color: var(--ink) }
 .sp-process__body { margin: 8px 0 0; color: var(--muted); font-size: .9rem; line-height: 1.65 }
 @media (max-width: 940px) { .sp-process { grid-template-columns: 1fr } }
+@media (max-width: 680px) {
+  .sp-console__row { flex-wrap: wrap }
+  .sp-console__idx { display: none }
+}
       `}</style>
     </SiteChrome>
   );
