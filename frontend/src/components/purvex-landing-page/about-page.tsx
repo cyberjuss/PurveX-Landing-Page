@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowRight, Radar } from "lucide-react";
 import { SiteChrome } from "./chrome";
 
 export default function AboutPage() {
@@ -42,16 +41,8 @@ export default function AboutPage() {
             assumed security coverage toward measurable evidence that their detections work when
             they are needed.
           </p>
-          <a href="/platform" target="_blank" rel="noreferrer" className="sp-panel__link">
-            <Radar size={15} /> PurveX Detection Assurance — In Development <ArrowRight size={14} />
-          </a>
         </div>
       </section>
-
-      <style>{`
-.sp-panel__link { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; font-size: .88rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
-.sp-panel__link:hover { gap: 12px }
-      `}</style>
     </SiteChrome>
   );
 }
