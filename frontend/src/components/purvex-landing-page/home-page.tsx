@@ -132,7 +132,7 @@ export default function HomePage() {
             Explore Our Services <ArrowRight size={16} />
           </a>
         </div>
-        <p className="sp-hero__strip">Security Operations • Detection Engineering • Cybersecurity Training</p>
+        <p className="sp-hero__strip">With great visibility comes great responsibility.</p>
       </section>
 
       {/* ═══════════ HOW WE HELP — CAROUSEL ═══════════ */}

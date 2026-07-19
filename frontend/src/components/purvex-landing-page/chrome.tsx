@@ -576,7 +576,7 @@ export const CHROME_CSS = `
 .sp-hero__grad { color: var(--accent-deep) }
 .sp-hero__sub { margin: 24px auto 0; max-width: 600px; color: var(--ink-soft); font-size: 1.125rem; line-height: 1.65 }
 .sp-hero__actions { margin: 38px auto 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap }
-.sp-hero__strip { margin: 44px auto 0; color: var(--muted); font-size: .84rem; font-weight: 500; letter-spacing: .01em }
+.sp-hero__strip { margin: 44px auto 0; color: var(--muted); font-size: .88rem; font-weight: 500; font-style: italic; letter-spacing: .01em }
 
 /* ── Sections ── */
 .sp-section { padding-top: 132px; scroll-margin-top: 84px }
@@ -593,10 +593,19 @@ export const CHROME_CSS = `
 .sp-cards--2 { grid-template-columns: repeat(2, 1fr) }
 .sp-cards--3 { grid-template-columns: repeat(3, 1fr) }
 .sp-cards--4 { grid-template-columns: repeat(2, 1fr) }
-.sp-card { position: relative; display: flex; flex-direction: column; padding: 36px; border-radius: calc(var(--radius) + 4px); border: 1px solid var(--border); background: var(--surface); box-shadow: 0 20px 50px -40px rgba(16,25,46,.3); transform: perspective(900px) rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg)) translateY(var(--tiltLift, 0px)); transition: transform .35s var(--ease), border-color .3s, box-shadow .3s }
-.sp-card:hover { border-color: var(--border-strong); box-shadow: 0 30px 60px -40px rgba(16,25,46,.35) }
+.sp-card {
+  --cut: 24px;
+  position: relative; display: flex; flex-direction: column; padding: 36px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--accent-soft) 0%, transparent 18%), var(--surface);
+  filter: drop-shadow(0 14px 26px rgba(16,25,46,.1));
+  transform: perspective(900px) rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg)) translateY(var(--tiltLift, 0px));
+  transition: transform .35s var(--ease), border-color .3s, filter .3s;
+}
+.sp-card:hover { border-color: var(--border-strong); filter: drop-shadow(0 22px 38px rgba(16,25,46,.16)) }
 @media (prefers-reduced-motion: reduce) { .sp-card { transform: none !important } }
-.sp-card__icon { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 13px; background: linear-gradient(135deg, var(--accent-soft), #ffffff); border: 1px solid rgba(106,92,255,.2); color: var(--accent-deep); box-shadow: 0 8px 20px -12px rgba(106,92,255,.5); transition: transform .35s var(--ease) }
+.sp-card__icon { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px); background: linear-gradient(135deg, var(--accent-soft), #ffffff); border: 1px solid rgba(106,92,255,.2); color: var(--accent-deep); box-shadow: 0 8px 20px -12px rgba(106,92,255,.5); transition: transform .35s var(--ease) }
 .sp-card:hover .sp-card__icon { transform: translateY(-2px) scale(1.06) }
 .sp-card__title { margin: 22px 0 0; font-family: var(--font-display); font-size: 1.15rem; font-weight: 650; letter-spacing: -.015em; color: var(--ink) }
 .sp-card__body { margin: 12px 0 0; color: var(--muted); font-size: .95rem; line-height: 1.7; flex: 1 }
@@ -645,7 +654,7 @@ export const CHROME_CSS = `
   .sp-section { padding-top: 88px }
   .sp-head { margin-bottom: 40px }
   .sp-cards--2, .sp-cards--3, .sp-cards--4 { grid-template-columns: 1fr }
-  .sp-card { padding: 28px }
+  .sp-card { padding: 28px; --cut: 18px }
   .sp-cta { padding: 40px 28px }
   .sp-panel { padding: 32px }
   .sp-footer__cols { flex-wrap: wrap; gap: 32px }
