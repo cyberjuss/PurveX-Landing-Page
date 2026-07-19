@@ -466,8 +466,8 @@ export const CHROME_CSS = `
 .sp-btn--sm { height: 40px; padding: 0 18px; font-size: .85rem }
 .sp-btn--lg { height: 50px; padding: 0 24px; font-size: .92rem }
 .sp-btn--full { width: 100% }
-.sp-btn--prim { background: linear-gradient(135deg, var(--accent), var(--accent-deep)); color: #fff; box-shadow: 0 6px 18px -8px rgba(85,70,224,.5) }
-.sp-btn--prim:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -8px rgba(85,70,224,.55) }
+.sp-btn--prim { background: var(--accent-deep); color: #fff; box-shadow: none }
+.sp-btn--prim:hover { background: var(--accent); transform: translateY(-1px) }
 .sp-btn--ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--border-strong); box-shadow: 0 1px 2px rgba(16,25,46,.03) }
 .sp-btn--ghost:hover { border-color: var(--accent); color: var(--accent-deep); transform: translateY(-2px) }
 
