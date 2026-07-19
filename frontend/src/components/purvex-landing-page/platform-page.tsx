@@ -127,7 +127,7 @@ const tiers = [
 
 const faqs: [string, string][] = [
   ["Is this BAS? How is it different from AttackIQ or SafeBreach?", "BAS simulates adversary behavior on endpoints. PurveX validates the full chain (telemetry, parser, rule, alert, ticket) and isolates where it broke. We complement BAS, not replace it."],
-  ["Do you run anything in production? What's the safety model?", "Read-only against your SIEM by default. Actions are scoped, auditable, and approved per environment. Production-impacting tests need explicit opt-in."],
+  ["Do you run anything in production? What is the safety model?", "Read-only against your SIEM by default. Actions are scoped, auditable, and approved per environment. Production-impacting tests need explicit opt-in."],
   ["How long until we see a first coverage report?", "First coverage signal within hours of connecting your SIEM, and a leadership-ready report inside the first week."],
   ["Does PurveX replace the SIEM?", "No. Your SIEM stays the system of record. PurveX adds a validation layer that proves detections fire and tracks coverage over time."],
 ];
@@ -179,10 +179,10 @@ export default function PlatformPage() {
         const data = await joinWaitlist(trimmed, "platform-hero");
         if (data.already_exists) {
           setWlState("exists");
-          setWlMsg("You're already on the waitlist.");
+          setWlMsg("You are already on the waitlist.");
         } else {
           setWlState("success");
-          setWlMsg("You're on the list. We'll be in touch.");
+          setWlMsg("You are on the list. We will be in touch.");
           setEmail("");
         }
       } catch (err) {
@@ -207,7 +207,7 @@ export default function PlatformPage() {
         </h1>
         <p className="sp-hero__sub">
           Most teams assume their detections work. PurveX proves which ones fire, and pinpoints why
-          the rest don&apos;t.
+          the rest do not.
         </p>
         <form className="sp-wl" onSubmit={submitWaitlist}>
           <div className="sp-wl__row">
@@ -314,8 +314,8 @@ export default function PlatformPage() {
           <span className="sp-tag">The risk of guessing</span>
           <h2>Every unproven detection is a blind spot.</h2>
           <p>
-            A rule that exists isn&apos;t a rule that works. Until you test the chain, you&apos;re
-            trusting coverage you&apos;ve never watched fire.
+            A rule that exists is not a rule that works. Until you test the chain, you are
+            trusting coverage you have never watched fire.
           </p>
         </div>
         <div className="sp-compare" data-r>

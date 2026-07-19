@@ -61,7 +61,7 @@ export default function TrainingPage() {
       <section className="sp-section sp-section--tight">
         <div className="sp-panel" data-r>
           <span className="sp-tag">We support your existing program</span>
-          <h2>You don&apos;t need to compete with your program. We work alongside it.</h2>
+          <h2>You do not need to compete with your program. We work alongside it.</h2>
           <p>
             PurveX works alongside your organization to strengthen your cybersecurity curriculum
             with experienced instruction, practical labs, and real-world security scenarios.
@@ -141,7 +141,7 @@ export default function TrainingPage() {
         <div className="sp-cta" data-r>
           <span className="sp-tag">Looking for an instructor or training partner?</span>
           <h2>Partner With PurveX</h2>
-          <p>Tell us about your program and we&apos;ll find the format that fits it best.</p>
+          <p>Tell us about your program and we will find the format that fits it best.</p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Partner With PurveX <ArrowRight size={16} />
           </a>

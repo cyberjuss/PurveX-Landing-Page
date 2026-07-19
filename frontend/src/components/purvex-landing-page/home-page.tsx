@@ -44,9 +44,9 @@ const slides = [
     icon: Radar,
     tag: "In development",
     title: "PurveX Labs",
-    body: "We're building technology that helps security teams move beyond assumed coverage toward measurable, continuous evidence that their detections work.",
+    body: "We are building technology that helps security teams move beyond assumed coverage toward measurable, continuous evidence that their detections work.",
     bullets: ["Continuous detection validation", "Measurable coverage over time", "Private beta, in development"],
-    cta: "See what we're building",
+    cta: "See what we are building",
     href: "/platform",
     external: true,
   },
@@ -56,7 +56,7 @@ const differentiators = [
   {
     icon: MessageSquare,
     title: "Real feedback, not a form letter",
-    body: "We look at your actual environment or work and show you what's strong and where to tighten up.",
+    body: "We look at your actual environment or work and show you what is strong and where to tighten up.",
   },
   {
     icon: Users,
@@ -74,11 +74,11 @@ const tools = ["Microsoft Sentinel", "Splunk", "KQL / SPL", "Security+", "CySA+"
 
 const faqs: [string, string][] = [
   ["Who is PurveX for?", "Two groups: organizations that need help strengthening their security operations, and academies or workforce programs that need hands-on cybersecurity instruction."],
-  ["Is this a 24/7 outsourced SOC?", "No. We're not a monitoring service. Engagements are project-based: assessments, detection engineering, SIEM optimization, and detection validation."],
+  ["Is this a 24/7 outsourced SOC?", "No. We are not a monitoring service. Engagements are project-based: assessments, detection engineering, SIEM optimization, and detection validation."],
   ["How is training delivered?", "Remotely: live sessions, self-paced labs, or a mix. 1:1 or small-group, scoped to your program."],
   ["Do you replace our curriculum, or work alongside it?", "Whatever fits. We can instruct inside your existing program, or supply labs and materials to back up what you already teach."],
-  ["Who will we actually work with?", "You'll deal directly with the person doing the security work and teaching, not a sales team."],
-  ["What does it cost?", "It depends on scope and format, so we'd rather talk it through and find something that works."],
+  ["Who will we actually work with?", "You will deal directly with the person doing the security work and teaching, not a sales team."],
+  ["What does it cost?", "It depends on scope and format, so we would rather talk it through and find something that works."],
 ];
 
 function useCarousel(count: number) {
@@ -210,7 +210,7 @@ export default function HomePage() {
             The person doing your security operations work is the same one teaching in the
             field. You get real experience, not a script.
           </p>
-          <p>No sales layer. The best way to see if we&apos;re a fit is a quick conversation.</p>
+          <p>No sales layer. The best way to see if we are a fit is a quick conversation.</p>
         </div>
       </section>
 
@@ -271,7 +271,7 @@ export default function HomePage() {
       <section className="sp-section">
         <div className="sp-cta" data-r>
           <span className="sp-tag">Not sure where to start?</span>
-          <h2>Let&apos;s talk about what your organization needs.</h2>
+          <h2>Tell us what your organization needs.</h2>
           <p>A short conversation is the fastest way to find out where PurveX can help.</p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Schedule a Conversation <ArrowRight size={16} />

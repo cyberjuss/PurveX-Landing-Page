@@ -11,7 +11,7 @@ const goals = [
   },
   {
     icon: Brain,
-    title: "Understand what's underneath",
+    title: "Understand what is underneath",
     body: "Automation without understanding is fragile. We make sure the people running it know exactly how and why it works.",
   },
 ];
@@ -33,7 +33,7 @@ export default function AboutPage() {
       <section id="how-we-think" className="sp-section">
         <div className="sp-head" data-r>
           <span className="sp-tag">How we think</span>
-          <h2>You can&apos;t defend what you don&apos;t know how attackers use to attack.</h2>
+          <h2>You cannot defend against tactics you do not understand.</h2>
           <p>
             PurveX is built on the blend of blue team and red team thinking. Understanding both
             sides is what makes a stronger analyst, and it shapes everything we do.
@@ -57,7 +57,7 @@ export default function AboutPage() {
           </div>
         </div>
         <p className="sp-versus__conclusion" data-r>
-          We don&apos;t train one side and hope it holds up against the other. We build analysts,
+          We do not train one side and hope it holds up against the other. We build analysts,
           and run operations, that understand both.
         </p>
         <p className="sp-versus__wink" data-r>With great visibility comes great responsibility.</p>
@@ -71,7 +71,7 @@ export default function AboutPage() {
           <p>
             A lot of what happens in a SOC is repeatable, and repeatable work should be
             automated, not repeated by hand forever. Our number one goal is to solve the problems
-            in security operations that can be automated, and build a better way of doing what&apos;s
+            in security operations that can be automated, and build a better way of doing what is
             left, without losing the people who have to run it.
           </p>
         </div>
@@ -97,14 +97,14 @@ export default function AboutPage() {
             The person doing your security operations work is the same one teaching in the
             field. You get real experience, not a script.
           </p>
-          <p>No sales layer. The best way to see if we&apos;re a fit is a quick conversation.</p>
+          <p>No sales layer. The best way to see if we are a fit is a quick conversation.</p>
         </div>
       </section>
 
-      {/* ═══════════ BUILDING WHAT'S NEXT ═══════════ */}
+      {/* ═══════════ LOOKING AHEAD ═══════════ */}
       <section id="purvex-labs" className="sp-section">
         <div className="sp-panel" data-r>
-          <span className="sp-tag">Building what&apos;s next</span>
+          <span className="sp-tag">Looking ahead</span>
           <h2>PurveX Labs</h2>
           <p>
             PurveX is exploring new ways to help security teams continuously measure and validate

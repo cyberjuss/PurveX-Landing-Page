@@ -47,7 +47,7 @@ const process = [
     n: "03",
     icon: ShieldCheck,
     title: "Validate",
-    body: "We test the changes so you know your detections fire the way they're supposed to, not just that they exist.",
+    body: "We test the changes so you know your detections fire the way they are supposed to, not just that they exist.",
   },
 ];
 
@@ -111,8 +111,8 @@ export default function SecurityOperationsPage() {
       <section className="sp-section">
         <div className="sp-cta" data-r>
           <span className="sp-tag">Not sure where your security gaps are?</span>
-          <h2>Let&apos;s discuss your current security environment.</h2>
-          <p>We&apos;ll talk through where things stand today and identify where PurveX can help.</p>
+          <h2>Talk through your current security environment.</h2>
+          <p>We will walk through where things stand today and identify where PurveX can help.</p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Schedule a Conversation <ArrowRight size={16} />
           </a>

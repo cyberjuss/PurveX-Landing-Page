@@ -89,12 +89,12 @@ const NAV_MENUS: NavMenu[] = [
     label: "About",
     href: "/about",
     icon: Users,
-    blurb: "Who PurveX is, and what we're building next.",
+    blurb: "Who PurveX is, and what we are building next.",
     cta: "About PurveX",
     items: [
       { label: "How We Think", desc: "Blue team, red team, one discipline.", anchor: "#how-we-think", icon: Swords },
       { label: "Who We Are", desc: "Work directly with the practitioner.", anchor: "#who-we-are", icon: Users },
-      { label: "PurveX Labs", desc: "What we're building next.", anchor: "#purvex-labs", icon: Radar },
+      { label: "PurveX Labs", desc: "What we are building next.", anchor: "#purvex-labs", icon: Radar },
     ],
   },
 ];
@@ -267,7 +267,7 @@ export function SiteChrome({
           </nav>
           <div className="sp-nav__right">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--sm">
-              Let&apos;s Work Together
+              Work With PurveX
             </a>
             <button className="sp-nav__burger" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
               {mobileOpen ? <X size={28} /> : <Menu size={28} />}
@@ -309,7 +309,7 @@ export function SiteChrome({
             onClick={closeNav}
             className="sp-btn sp-btn--prim sp-btn--lg sp-btn--full"
           >
-            Let&apos;s Work Together
+            Work With PurveX
           </a>
         </nav>
       </div>
