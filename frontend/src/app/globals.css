@@ -1325,16 +1325,20 @@ html {
 }
 
 /* Zoom-responsive layout utilities */
+/* overflow-x uses "clip" (not "hidden") so the unset overflow-y stays
+   "visible" instead of being coerced to "auto" per the CSS overflow
+   spec's visible/non-visible pairing rule — "hidden" here produced a
+   second, nested scrollbar on body in addition to the page's own. */
 html {
   min-width: 0;
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
   min-width: 0;
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Ensure all containers respect zoom levels */

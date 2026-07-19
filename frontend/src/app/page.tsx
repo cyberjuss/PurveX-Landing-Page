@@ -1,7 +1,7 @@
 "use client";
 
-import ServicesPage from "@/components/purvex-landing-page/services-page";
+import HomePage from "@/components/purvex-landing-page/home-page";
 
 export default function Page() {
-  return <ServicesPage />;
+  return <HomePage />;
 }

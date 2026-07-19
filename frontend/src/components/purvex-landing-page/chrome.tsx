@@ -1,0 +1,381 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { Linkedin, Menu, X } from "lucide-react";
+
+/* ─────────────────────────────────────────────────────────
+   PurveX — shared site chrome
+
+   One cybersecurity company, two ways it helps organizations
+   today: Security Operations consulting and Cybersecurity
+   Training partnerships. The PurveX platform is the future
+   product roadmap, referenced only from About.
+
+   This file owns the nav, mobile menu, footer, and the base
+   design system (bg, buttons, sections, cards, responsive
+   rules) shared by every page so pages only carry their own
+   content and any layout unique to them.
+
+   BOOKING_URL: scheduling link for every "talk to us" CTA.
+   ───────────────────────────────────────────────────────── */
+export const BOOKING_URL = "https://calendly.com/purvex-llc/30min";
+
+export type NavKey = "home" | "security-operations" | "training" | "about" | "contact";
+
+const NAV_ITEMS: { key: NavKey; label: string; href: string }[] = [
+  { key: "security-operations", label: "Security Operations", href: "/security-operations" },
+  { key: "training", label: "Cybersecurity Training", href: "/cybersecurity-training" },
+  { key: "about", label: "About", href: "/about" },
+  { key: "contact", label: "Contact", href: "/contact" },
+];
+
+export function SiteChrome({
+  active,
+  children,
+}: {
+  active: NavKey;
+  children: React.ReactNode;
+}) {
+  const pageRef = useRef<HTMLDivElement>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 32);
+    fn();
+    window.addEventListener("scroll", fn, { passive: true });
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
+
+  useEffect(() => {
+    const els = pageRef.current?.querySelectorAll("[data-r]");
+    if (!els) return;
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            (e.target as HTMLElement).classList.add("in");
+            io.unobserve(e.target);
+          }
+        }),
+      { threshold: 0.08, rootMargin: "0px 0px -4% 0px" },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    document.body.style.overflow = "hidden";
+    const fn = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", fn);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", fn);
+    };
+  }, [mobileOpen]);
+
+  useEffect(() => {
+    const fn = (e: MouseEvent) => {
+      const a = (e.target as HTMLElement).closest<HTMLAnchorElement>("a[href^='#']");
+      if (!a) return;
+      const el = document.getElementById(a.getAttribute("href")!.slice(1));
+      if (el) {
+        e.preventDefault();
+        setMobileOpen(false);
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
+    document.addEventListener("click", fn);
+    return () => document.removeEventListener("click", fn);
+  }, []);
+
+  const closeNav = () => setMobileOpen(false);
+
+  return (
+    <div className="sp" ref={pageRef}>
+      <div className="sp-bg" aria-hidden>
+        <div className="sp-bg__grad" />
+        <div className="sp-bg__grid" />
+      </div>
+
+      <header className={`sp-nav${scrolled ? " sp-nav--s" : ""}`}>
+        <div className="sp-nav__inner">
+          <Link href="/" className="sp-logo">
+            <Image src="/logo.png" alt="PurveX" width={40} height={40} className="sp-logo__img" />
+            <span>PurveX</span>
+          </Link>
+          <nav className="sp-nav__links">
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.key}
+                href={item.href}
+                className={active === item.key ? "sp-nav__link--active" : undefined}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="sp-nav__right">
+            <Link href="/contact" className="sp-btn sp-btn--prim sp-btn--sm">
+              Let&apos;s Work Together
+            </Link>
+            <button className="sp-nav__burger" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
+              {mobileOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div className={`sp-mobile${mobileOpen ? " sp-mobile--open" : ""}`} onClick={closeNav}>
+        <nav className="sp-mobile__nav" onClick={(e) => e.stopPropagation()}>
+          {NAV_ITEMS.map((item) => (
+            <Link key={item.key} href={item.href} onClick={closeNav}>
+              {item.label}
+            </Link>
+          ))}
+          <Link href="/contact" onClick={closeNav} className="sp-btn sp-btn--prim sp-btn--lg sp-btn--full">
+            Let&apos;s Work Together
+          </Link>
+        </nav>
+      </div>
+
+      <main className="sp-main">{children}</main>
+
+      <footer className="sp-footer" data-r>
+        <div className="sp-footer__top">
+          <div className="sp-footer__brand">
+            <Link href="/" className="sp-logo">
+              <Image src="/logo.png" alt="PurveX" width={24} height={24} className="sp-logo__img" />
+              <span>PurveX</span>
+            </Link>
+            <p>Strengthening security operations. Developing cybersecurity talent.</p>
+          </div>
+          <div className="sp-footer__cols">
+            <div className="sp-footer__col">
+              <h4>Company</h4>
+              <Link href="/security-operations">Security Operations</Link>
+              <Link href="/cybersecurity-training">Cybersecurity Training</Link>
+              <Link href="/about">About</Link>
+              <Link href="/contact">Contact</Link>
+            </div>
+            <div className="sp-footer__col">
+              <h4>Platform</h4>
+              <Link href="/platform">PurveX Labs</Link>
+            </div>
+            <div className="sp-footer__col">
+              <h4>Legal</h4>
+              <Link href="/legal/privacy">Privacy</Link>
+              <Link href="/legal/terms">Terms</Link>
+            </div>
+          </div>
+        </div>
+        <div className="sp-footer__bottom">
+          <span>&copy; 2026 PurveX. All rights reserved.</span>
+          <a
+            href="https://www.linkedin.com/company/purvex/?viewAsMember=true"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Linkedin size={14} /> LinkedIn
+          </a>
+        </div>
+      </footer>
+
+      <style>{CHROME_CSS}</style>
+    </div>
+  );
+}
+
+export const CHROME_CSS = `
+/* ═══════════════════════════════════════════════
+   PURVEX — SHARED CHROME (light, single purple accent)
+   ═══════════════════════════════════════════════ */
+
+.sp {
+  --bg: #fbfcfe;
+  --surface: #ffffff;
+  --surface-alt: #f5f7fc;
+  --border: #e6eaf2;
+  --border-strong: #d6dcea;
+  --ink: #10192e;
+  --ink-soft: #3f4a63;
+  --muted: #64708a;
+  --muted-dim: #8a95ac;
+  --accent: #6a5cff;
+  --accent-deep: #5546e0;
+  --accent-soft: #eef0ff;
+  --green: #16a34a;
+  --red: #e5484d;
+  --radius: 16px;
+  --font-display: var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --ease: cubic-bezier(.16,1,.3,1);
+
+  position: relative;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Ambient bg ── */
+.sp-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0 }
+.sp-bg__grad {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% -8%, rgba(106,92,255,.10), transparent 60%),
+    radial-gradient(ellipse 45% 35% at 88% 8%, rgba(106,92,255,.04), transparent 60%);
+}
+.sp-bg__grid {
+  position: absolute; inset: 0; opacity: .5;
+  background-image:
+    linear-gradient(rgba(16,25,46,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16,25,46,.03) 1px, transparent 1px);
+  background-size: 76px 76px;
+  mask-image: radial-gradient(ellipse 65% 45% at 50% 20%, black, transparent 78%);
+}
+
+/* ── Reveal ── */
+[data-r] { opacity: 0; transform: translateY(26px) scale(.985); transition: opacity .8s var(--ease), transform .8s var(--ease); will-change: opacity, transform }
+[data-d="1"] { transition-delay: .05s } [data-d="2"] { transition-delay: .12s } [data-d="3"] { transition-delay: .19s } [data-d="4"] { transition-delay: .26s } [data-d="5"] { transition-delay: .33s }
+[data-r].in { opacity: 1; transform: none }
+@media (prefers-reduced-motion: reduce) { [data-r] { opacity: 1; transform: none; transition: none } }
+
+/* ── Nav ── */
+.sp-nav { position: sticky; top: 0; z-index: 50; padding: 0 24px; transition: background .35s, backdrop-filter .35s, box-shadow .35s, border-color .35s; border-bottom: 1px solid transparent }
+.sp-nav--s { background: rgba(251,252,254,.82); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3); border-bottom: 1px solid var(--border) }
+.sp-nav__inner { max-width: 1140px; margin: 0 auto; display: grid; grid-template-columns: auto 1fr auto; align-items: center; height: 66px }
+.sp-logo { display: inline-flex; align-items: center; gap: 9px; justify-self: start; font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; color: var(--ink); text-decoration: none; letter-spacing: -.02em }
+.sp-logo__img { border-radius: 8px }
+.sp-nav .sp-logo { font-size: 1.5rem; gap: 11px }
+.sp-nav__links { display: flex; gap: 30px; justify-self: center }
+.sp-nav__links a { font-size: .86rem; font-weight: 550; color: var(--muted); text-decoration: none; transition: color .2s }
+.sp-nav__links a:hover { color: var(--ink) }
+.sp-nav__link--active { color: var(--ink) !important }
+.sp-nav__right { display: flex; align-items: center; gap: 10px; justify-self: end }
+.sp-nav__burger { display: none; align-items: center; justify-content: center; background: none; border: 0; color: var(--ink); cursor: pointer; padding: 6px; margin-right: -6px }
+
+/* ── Buttons ── */
+.sp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 0; border-radius: 11px; font-weight: 620; font-size: .88rem; text-decoration: none; cursor: pointer; white-space: nowrap; transition: transform .25s var(--ease), background .25s, box-shadow .25s, border-color .25s, color .25s }
+.sp-btn:active { transform: scale(.98); transition-duration: .05s }
+.sp-btn:disabled { opacity: .7; cursor: default }
+.sp-btn--sm { height: 40px; padding: 0 18px; font-size: .85rem }
+.sp-btn--lg { height: 50px; padding: 0 24px; font-size: .92rem }
+.sp-btn--full { width: 100% }
+.sp-btn--prim { background: linear-gradient(135deg, var(--accent), var(--accent-deep)); color: #fff; box-shadow: 0 6px 18px -8px rgba(85,70,224,.5), inset 0 1px 0 rgba(255,255,255,.18) }
+.sp-btn--prim:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -8px rgba(85,70,224,.55), inset 0 1px 0 rgba(255,255,255,.18) }
+.sp-btn--ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--border-strong); box-shadow: 0 1px 2px rgba(16,25,46,.03) }
+.sp-btn--ghost:hover { border-color: var(--accent); color: var(--accent-deep); transform: translateY(-2px) }
+
+/* ── Mobile overlay ── */
+.sp-mobile { position: fixed; inset: 0; z-index: 45; background: radial-gradient(72% 55% at 50% 32%, rgba(106,92,255,.08), transparent 70%), rgba(251,252,254,.98); backdrop-filter: blur(26px) saturate(1.25); -webkit-backdrop-filter: blur(26px) saturate(1.25); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .35s ease }
+.sp-mobile--open { opacity: 1; pointer-events: auto }
+.sp-mobile__nav { display: flex; flex-direction: column; align-items: center; gap: 2px; width: min(88vw, 440px); text-align: center; counter-reset: navitem }
+.sp-mobile__nav > * { opacity: 0 }
+.sp-mobile--open .sp-mobile__nav > * { animation: sp-menu-in .55s var(--ease) both }
+.sp-mobile--open .sp-mobile__nav > *:nth-child(1) { animation-delay: .06s }
+.sp-mobile--open .sp-mobile__nav > *:nth-child(2) { animation-delay: .12s }
+.sp-mobile--open .sp-mobile__nav > *:nth-child(3) { animation-delay: .18s }
+.sp-mobile--open .sp-mobile__nav > *:nth-child(4) { animation-delay: .24s }
+.sp-mobile--open .sp-mobile__nav > *:nth-child(5) { animation-delay: .30s }
+.sp-mobile__nav a:not(.sp-btn) { position: relative; counter-increment: navitem; font-family: var(--font-display); font-size: clamp(1.7rem, 7vw, 2.2rem); font-weight: 700; letter-spacing: -.02em; color: var(--ink); text-decoration: none; padding: 12px 0; transition: color .25s var(--ease) }
+.sp-mobile__nav a:not(.sp-btn)::before { content: "0" counter(navitem); font-family: var(--font-mono); font-size: .78rem; font-weight: 500; color: var(--accent); margin-right: 14px; vertical-align: 6px }
+.sp-mobile__nav a:not(.sp-btn)::after { content: ""; position: absolute; left: 50%; bottom: 8px; width: 0; height: 2px; border-radius: 2px; background: var(--accent); transform: translateX(-50%); transition: width .3s var(--ease) }
+.sp-mobile__nav a:not(.sp-btn):hover { color: var(--accent-deep) }
+.sp-mobile__nav a:not(.sp-btn):hover::after { width: 42% }
+.sp-mobile__nav .sp-btn { margin-top: 28px; min-width: 240px }
+@keyframes sp-menu-in { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: reduce) { .sp-mobile--open .sp-mobile__nav > * { animation: none; opacity: 1 } }
+
+/* ── Main ── */
+.sp-main { position: relative; z-index: 1; max-width: 1140px; margin: 0 auto; padding: 0 24px 96px }
+
+/* ── Hero ── */
+.sp-hero { text-align: center; padding: 90px 0 0; max-width: 820px; margin: 0 auto }
+.sp-hero__badge { display: inline-flex; align-items: center; gap: 7px; padding: 6px 15px; border-radius: 999px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.2); font-size: .74rem; font-weight: 650; color: var(--accent-deep); letter-spacing: .01em; margin-bottom: 22px }
+.sp-hero__h1 { margin: 0; font-family: var(--font-display); font-size: clamp(1.9rem, 3.8vw, 2.9rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; color: var(--ink); text-wrap: balance }
+.sp-hero__grad { color: var(--accent-deep) }
+.sp-hero__sub { margin: 22px auto 0; max-width: 620px; color: var(--ink-soft); font-size: 1.06rem; line-height: 1.72 }
+.sp-hero__actions { margin: 30px auto 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap }
+.sp-hero__strip { margin: 34px auto 0; color: var(--muted); font-size: .84rem; font-weight: 550; letter-spacing: .01em }
+
+/* ── Sections ── */
+.sp-section { padding-top: 108px; scroll-margin-top: 84px }
+.sp-section--tight { padding-top: 72px }
+.sp-head { text-align: center; max-width: 640px; margin: 0 auto 44px }
+.sp-head--left { text-align: left; max-width: 720px; margin: 0 0 32px }
+.sp-head h2 { margin: 12px 0 0; font-family: var(--font-display); font-size: clamp(1.65rem, 3.4vw, 2.5rem); font-weight: 700; line-height: 1.14; letter-spacing: -.032em; color: var(--ink) }
+.sp-head p { margin: 16px auto 0; color: var(--muted); font-size: 1rem; line-height: 1.7; max-width: 560px }
+.sp-head--left p { margin-left: 0 }
+.sp-tag { display: inline-block; font-size: .72rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; color: var(--accent-deep) }
+
+/* ── Generic card grid (services / features) ── */
+.sp-cards { display: grid; gap: 20px }
+.sp-cards--2 { grid-template-columns: repeat(2, 1fr) }
+.sp-cards--3 { grid-template-columns: repeat(3, 1fr) }
+.sp-cards--4 { grid-template-columns: repeat(2, 1fr) }
+.sp-card { position: relative; display: flex; flex-direction: column; padding: 30px; border-radius: calc(var(--radius) + 4px); border: 1px solid var(--border); background: var(--surface); box-shadow: 0 20px 50px -40px rgba(16,25,46,.3); transition: transform .3s var(--ease), border-color .3s, box-shadow .3s }
+.sp-card:hover { transform: translateY(-4px); border-color: var(--border-strong); box-shadow: 0 30px 60px -40px rgba(16,25,46,.35) }
+.sp-card__icon { display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 14px; background: linear-gradient(135deg, var(--accent-soft), #ffffff); border: 1px solid rgba(106,92,255,.2); color: var(--accent-deep); box-shadow: 0 8px 20px -12px rgba(106,92,255,.5); transition: transform .35s var(--ease) }
+.sp-card:hover .sp-card__icon { transform: translateY(-2px) scale(1.06) }
+.sp-card__title { margin: 20px 0 0; font-family: var(--font-display); font-size: 1.22rem; font-weight: 700; letter-spacing: -.025em; color: var(--ink) }
+.sp-card__body { margin: 10px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.65; flex: 1 }
+.sp-card__link { display: inline-flex; align-items: center; gap: 7px; margin-top: 18px; font-size: .9rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
+.sp-card:hover .sp-card__link { gap: 11px }
+
+/* ── CTA banner ── */
+.sp-cta { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px; padding: 48px; border-radius: calc(var(--radius) + 8px); border: 1px solid rgba(106,92,255,.22); background: linear-gradient(135deg, #f4f3ff 0%, #ffffff 60%); box-shadow: 0 30px 70px -46px rgba(85,70,224,.5) }
+.sp-cta h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.4rem, 2.8vw, 1.9rem); font-weight: 700; letter-spacing: -.03em; color: var(--ink); max-width: 560px }
+.sp-cta p { margin: 0; color: var(--ink-soft); font-size: 1rem; line-height: 1.7; max-width: 520px }
+
+/* ── Simple panel (About / teasers) ── */
+.sp-panel { padding: 44px; border-radius: calc(var(--radius) + 6px); border: 1px solid var(--border); background: radial-gradient(120% 130% at 0% 0%, rgba(106,92,255,.05), transparent 55%), var(--surface); box-shadow: 0 24px 60px -40px rgba(16,25,46,.25) }
+.sp-panel h2 { margin: 12px 0 0; font-family: var(--font-display); font-size: clamp(1.5rem, 2.8vw, 2.1rem); font-weight: 700; line-height: 1.16; letter-spacing: -.03em }
+.sp-panel p { margin: 16px 0 0; color: var(--ink-soft); font-size: 1rem; line-height: 1.78 }
+.sp-panel p:first-of-type { margin-top: 16px }
+
+/* ── Footer ── */
+.sp-footer { border-top: 1px solid var(--border); max-width: 1140px; margin: 0 auto; padding: 40px 24px 28px }
+.sp-footer__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px }
+.sp-footer__brand { max-width: 280px }
+.sp-footer__brand p { margin: 12px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.65 }
+.sp-footer__cols { display: flex; gap: 52px }
+.sp-footer__col { display: flex; flex-direction: column; gap: 10px }
+.sp-footer__col h4 { margin: 0 0 4px; font-size: .68rem; text-transform: uppercase; letter-spacing: .11em; color: var(--muted-dim); font-weight: 700 }
+.sp-footer__col a { color: var(--muted); font-size: .86rem; text-decoration: none; transition: color .2s }
+.sp-footer__col a:hover { color: var(--accent-deep) }
+.sp-footer__bottom { border-top: 1px solid var(--border); margin-top: 32px; padding-top: 20px; display: flex; align-items: center; justify-content: space-between; color: var(--muted-dim); font-size: .8rem }
+.sp-footer__bottom a { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; font-weight: 600; transition: color .2s }
+.sp-footer__bottom a:hover { color: var(--accent-deep) }
+
+/* ── Responsive ── */
+@media (max-width: 940px) {
+  .sp-cards--2, .sp-cards--3, .sp-cards--4 { grid-template-columns: 1fr 1fr }
+  .sp-footer__top { flex-direction: column; gap: 30px }
+}
+@media (max-width: 680px) {
+  .sp-main { padding: 0 16px 64px }
+  .sp-nav { padding: 0 16px }
+  .sp-nav__links { display: none }
+  .sp-nav__burger { display: flex }
+  .sp-nav__right .sp-btn { display: none }
+  .sp-hero { padding-top: 60px }
+  .sp-hero__actions { flex-direction: column }
+  .sp-hero__actions .sp-btn { width: 100% }
+  .sp-section { padding-top: 80px }
+  .sp-cards--2, .sp-cards--3, .sp-cards--4 { grid-template-columns: 1fr }
+  .sp-card { padding: 26px }
+  .sp-cta { padding: 32px }
+  .sp-panel { padding: 30px }
+  .sp-footer__cols { flex-wrap: wrap; gap: 32px }
+  .sp-footer__bottom { flex-direction: column; align-items: flex-start; gap: 10px }
+}
+`;

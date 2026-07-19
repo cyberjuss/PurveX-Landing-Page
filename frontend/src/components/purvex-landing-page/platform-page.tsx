@@ -278,7 +278,7 @@ export default function PlatformPage() {
             <span>PurveX</span>
           </Link>
           <nav className="sp-nav__links">
-            <Link href="/">Services</Link>
+            <Link href="/">Home</Link>
             <a href="#product">Product</a>
             <a href="#pricing">Pricing</a>
             <a href="#faq">FAQ</a>
@@ -294,7 +294,7 @@ export default function PlatformPage() {
       {/* ─── Mobile menu ─── */}
       <div className={`sp-mobile${mobileOpen ? " sp-mobile--open" : ""}`} onClick={closeNav}>
         <nav className="sp-mobile__nav" onClick={(e) => e.stopPropagation()}>
-          <Link href="/" onClick={closeNav}>Services</Link>
+          <Link href="/" onClick={closeNav}>Home</Link>
           <a href="#product" onClick={closeNav}>Product</a>
           <a href="#pricing" onClick={closeNav}>Pricing</a>
           <a href="#faq" onClick={closeNav}>FAQ</a>
@@ -511,14 +511,15 @@ export default function PlatformPage() {
               <Image src="/logo.png" alt="PurveX" width={24} height={24} className="sp-logo__img" />
               <span>PurveX</span>
             </Link>
-            <p>Strengthening security operations and supporting cybersecurity education.</p>
+            <p>Strengthening security operations. Developing cybersecurity talent.</p>
           </div>
           <div className="sp-footer__cols">
             <div className="sp-footer__col">
               <h4>Company</h4>
               <Link href="/">Home</Link>
-              <Link href="/#training">Training</Link>
-              <Link href="/#services">Business Security</Link>
+              <Link href="/security-operations">Security Operations</Link>
+              <Link href="/cybersecurity-training">Cybersecurity Training</Link>
+              <Link href="/about">About</Link>
             </div>
             <div className="sp-footer__col">
               <h4>Platform</h4>
