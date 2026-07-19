@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ArrowRight, FlaskConical, GraduationCap, Layers, Users } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
@@ -67,6 +68,11 @@ export default function TrainingPage() {
             with experienced instruction, practical labs, and real-world security scenarios.
           </p>
         </div>
+        <p className="sp-footnote" data-r>
+          Learners are taught the blend of blue team and red team thinking: you cannot defend
+          against tactics you do not understand.{" "}
+          <Link href="/about#how-we-think">See how we think about security →</Link>
+        </p>
       </section>
 
       {/* ═══════════ COURSE ARC ═══════════ */}

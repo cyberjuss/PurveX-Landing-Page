@@ -1,6 +1,6 @@
 "use client";
 
-import { Brain, ShieldCheck, Swords, Zap } from "lucide-react";
+import { ArrowRight, Brain, ShieldCheck, Swords, Zap } from "lucide-react";
 import { SiteChrome } from "./chrome";
 
 const goals = [
@@ -19,122 +19,158 @@ const goals = [
 export default function AboutPage() {
   return (
     <SiteChrome active="about">
-      {/* ═══════════ HERO ═══════════ */}
-      <section className="sp-hero">
-        <span className="sp-hero__badge">Your friendly neighborhood blue team</span>
-        <h1 className="sp-hero__h1">About PurveX</h1>
-        <p className="sp-hero__sub">
-          PurveX helps organizations strengthen their security operations and develop the
-          cybersecurity talent needed to support them.
-        </p>
-      </section>
-
-      {/* ═══════════ HOW WE THINK ═══════════ */}
-      <section id="how-we-think" className="sp-section">
-        <div className="sp-head" data-r>
-          <span className="sp-tag">How we think</span>
-          <h2>You cannot defend against tactics you do not understand.</h2>
+      <div className="sp-story">
+        {/* ═══════════ INTRO ═══════════ */}
+        <div className="sp-story__intro" data-r>
+          <span className="sp-story__kicker">Your friendly neighborhood blue team</span>
+          <h1>Blue team. Red team. One discipline.</h1>
           <p>
-            PurveX is built on the blend of blue team and red team thinking. Understanding both
-            sides is what makes a stronger analyst, and it shapes everything we do.
+            PurveX helps organizations strengthen their security operations and develop the
+            cybersecurity talent needed to support them.
           </p>
         </div>
-        <div className="sp-versus" data-r>
-          <div className="sp-versus__side sp-versus__side--blue">
-            <div className="sp-versus__icon">
-              <ShieldCheck size={24} />
-            </div>
-            <span className="sp-versus__label">Blue Team</span>
-            <p>Detect, respond, and defend the environment.</p>
-          </div>
-          <div className="sp-versus__mid">+</div>
-          <div className="sp-versus__side sp-versus__side--red">
-            <div className="sp-versus__icon">
-              <Swords size={24} />
-            </div>
-            <span className="sp-versus__label">Red Team</span>
-            <p>Think and move the way an attacker does.</p>
-          </div>
-        </div>
-        <p className="sp-versus__conclusion" data-r>
-          We do not train one side and hope it holds up against the other. We build analysts,
-          and run operations, that understand both.
-        </p>
-        <p className="sp-versus__wink" data-r>With great visibility comes great responsibility.</p>
-      </section>
 
-      {/* ═══════════ OUR GOAL ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-head" data-r>
-          <span className="sp-tag">Our goal</span>
-          <h2>Automate what can be automated. Never stop understanding it.</h2>
-          <p>
-            A lot of what happens in a SOC is repeatable, and repeatable work should be
-            automated, not repeated by hand forever. Our number one goal is to solve the problems
-            in security operations that can be automated, and build a better way of doing what is
-            left, without losing the people who have to run it.
-          </p>
-        </div>
-        <div className="sp-cards sp-cards--2" data-r>
-          {goals.map((g) => (
-            <article key={g.title} className="sp-card">
-              <div className="sp-card__icon">
-                <g.icon size={20} />
+        <div className="sp-story__thread">
+          {/* ═══════════ 01 — HOW WE THINK ═══════════ */}
+          <section id="how-we-think" className="sp-story__chapter" data-r>
+            <span className="sp-story__num">01</span>
+            <span className="sp-story__label">How we think</span>
+            <p className="sp-story__pull">
+              You cannot defend against tactics you do not understand.
+            </p>
+            <p>
+              PurveX is built on the blend of blue team and red team thinking. Understanding both
+              sides is what makes a stronger analyst, and it shapes everything we do.
+            </p>
+
+            <div className="sp-versus">
+              <div className="sp-versus__side sp-versus__side--blue">
+                <div className="sp-versus__icon">
+                  <ShieldCheck size={22} />
+                </div>
+                <span className="sp-versus__label">Blue Team</span>
+                <p>Detect, respond, and defend the environment.</p>
               </div>
-              <h3 className="sp-card__title">{g.title}</h3>
-              <p className="sp-card__body">{g.body}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+              <div className="sp-versus__mid">+</div>
+              <div className="sp-versus__side sp-versus__side--red">
+                <div className="sp-versus__icon">
+                  <Swords size={22} />
+                </div>
+                <span className="sp-versus__label">Red Team</span>
+                <p>Think and move the way an attacker does.</p>
+              </div>
+            </div>
 
-      {/* ═══════════ WHO WE ARE ═══════════ */}
-      <section id="who-we-are" className="sp-section">
-        <div className="sp-panel" data-r>
-          <span className="sp-tag">Who we are</span>
-          <h2>You work directly with the practitioner.</h2>
-          <p>
-            The person doing your security operations work is the same one teaching in the
-            field. You get real experience, not a script.
-          </p>
-          <p>No sales layer. The best way to see if we are a fit is a quick conversation.</p>
-        </div>
-      </section>
+            <p>
+              We do not train one side and hope it holds up against the other. We build analysts,
+              and run operations, that understand both.
+            </p>
+            <p className="sp-story__wink">With great visibility comes great responsibility.</p>
+          </section>
 
-      {/* ═══════════ LOOKING AHEAD ═══════════ */}
-      <section id="purvex-labs" className="sp-section">
-        <div className="sp-panel" data-r>
-          <span className="sp-tag">Looking ahead</span>
-          <h2>PurveX Labs</h2>
-          <p>
-            PurveX is exploring new ways to help security teams continuously measure and validate
-            their detection capabilities.
-          </p>
-          <p>
-            Our long-term vision is to develop technology that helps organizations move beyond
-            assumed security coverage toward measurable evidence that their detections work when
-            they are needed.
-          </p>
+          {/* ═══════════ 02 — OUR GOAL ═══════════ */}
+          <section className="sp-story__chapter" data-r>
+            <span className="sp-story__num">02</span>
+            <span className="sp-story__label">Our goal</span>
+            <p className="sp-story__pull">
+              Automate what can be automated. Never stop understanding it.
+            </p>
+            <p>
+              A lot of what happens in a SOC is repeatable, and repeatable work should be
+              automated, not repeated by hand forever. Our number one goal is to solve the
+              problems in security operations that can be automated, and build a better way of
+              doing what is left, without losing the people who have to run it.
+            </p>
+            <div className="sp-story__points">
+              {goals.map((g) => (
+                <div key={g.title} className="sp-story__point">
+                  <div className="sp-story__point-icon">
+                    <g.icon size={17} />
+                  </div>
+                  <div>
+                    <strong>{g.title}</strong>
+                    <span>{g.body}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* ═══════════ 03 — WHO WE ARE ═══════════ */}
+          <section id="who-we-are" className="sp-story__chapter" data-r>
+            <span className="sp-story__num">03</span>
+            <span className="sp-story__label">Who we are</span>
+            <p className="sp-story__pull">You work directly with the practitioner.</p>
+            <p>
+              The person doing your security operations work is the same one teaching in the
+              field. You get real experience, not a script.
+            </p>
+            <p>No sales layer. The best way to see if we are a fit is a quick conversation.</p>
+          </section>
+
+          {/* ═══════════ 04 — LOOKING AHEAD ═══════════ */}
+          <section id="looking-ahead" className="sp-story__chapter" data-r>
+            <span className="sp-story__num">04</span>
+            <span className="sp-story__label">Looking ahead</span>
+            <p className="sp-story__pull">Proof, not assumed coverage.</p>
+            <p>
+              PurveX is exploring new ways to help security teams continuously measure and
+              validate their detection capabilities: technology that helps organizations move
+              beyond assumed security coverage toward measurable evidence that their detections
+              work when they are needed.
+            </p>
+            <a href="/platform" target="_blank" rel="noreferrer" className="sp-story__link">
+              Explore PurveX Labs <ArrowRight size={14} />
+            </a>
+          </section>
         </div>
-      </section>
+      </div>
 
       <style>{`
-.sp-versus { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 20px }
-.sp-versus__side { padding: 34px 28px; border-radius: calc(var(--radius) + 2px); text-align: center; transition: transform .3s var(--ease) }
+.sp-story { max-width: 700px; margin: 0 auto; padding-top: 132px }
+.sp-story__kicker { display: inline-flex; align-items: center; padding: 6px 15px; border-radius: 999px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.2); font-size: .74rem; font-weight: 600; color: var(--accent-deep); letter-spacing: .01em }
+.sp-story__intro h1 { margin: 20px 0 0; font-family: var(--font-display); font-size: clamp(2.3rem, 4.6vw, 3.4rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; color: var(--ink); text-wrap: balance }
+.sp-story__intro p { margin: 22px 0 0; font-size: 1.1rem; line-height: 1.7; color: var(--ink-soft); max-width: 560px }
+
+.sp-story__thread { position: relative; margin-top: 96px; padding-left: 52px }
+.sp-story__thread::before { content: ""; position: absolute; left: 19px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(var(--border-strong), var(--border) 85%, transparent) }
+.sp-story__chapter { position: relative; margin-bottom: 88px }
+.sp-story__chapter:last-child { margin-bottom: 0 }
+.sp-story__num { position: absolute; left: -52px; top: -4px; width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent-deep); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: .9rem }
+.sp-story__label { display: block; font-size: .74rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
+.sp-story__pull { margin: 14px 0 0; padding-left: 20px; border-left: 3px solid var(--accent); font-family: var(--font-display); font-size: clamp(1.2rem, 2.4vw, 1.5rem); font-weight: 650; letter-spacing: -.015em; line-height: 1.4; color: var(--ink) }
+.sp-story__chapter > p:not(.sp-story__pull):not(.sp-story__wink) { margin: 20px 0 0; font-size: 1.02rem; line-height: 1.78; color: var(--ink-soft); max-width: 600px }
+.sp-story__wink { margin: 16px 0 0; font-size: .86rem; font-style: italic; color: var(--muted) }
+.sp-story__link { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; font-size: .92rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
+.sp-story__link:hover { gap: 12px }
+
+/* Blue vs red — a lighter, inline version of the shared card treatment */
+.sp-versus { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; margin-top: 28px }
+.sp-versus__side { padding: 26px 22px; border-radius: 14px; text-align: center; transition: transform .3s var(--ease) }
 .sp-versus__side:hover { transform: translateY(-3px) }
 .sp-versus__side--blue { background: linear-gradient(160deg, var(--accent-soft), #ffffff); border: 1px solid rgba(106,92,255,.25) }
 .sp-versus__side--red { background: linear-gradient(160deg, rgba(229,72,77,.08), #ffffff); border: 1px solid rgba(229,72,77,.22) }
-.sp-versus__icon { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 14px; margin-bottom: 14px }
+.sp-versus__icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; margin-bottom: 12px }
 .sp-versus__side--blue .sp-versus__icon { background: var(--accent-soft); color: var(--accent-deep) }
 .sp-versus__side--red .sp-versus__icon { background: rgba(229,72,77,.12); color: var(--red) }
-.sp-versus__label { display: block; font-family: var(--font-display); font-size: 1.08rem; font-weight: 700; letter-spacing: -.01em; color: var(--ink) }
-.sp-versus__side p { margin: 8px 0 0; font-size: .88rem; color: var(--muted); line-height: 1.55 }
-.sp-versus__mid { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border-strong); font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--muted-dim); flex-shrink: 0 }
-.sp-versus__conclusion { max-width: 640px; margin: 32px auto 0; text-align: center; font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; letter-spacing: -.01em; line-height: 1.5; color: var(--ink-soft) }
-.sp-versus__wink { margin: 12px auto 0; text-align: center; font-size: .84rem; font-style: italic; color: var(--muted) }
+.sp-versus__label { display: block; font-family: var(--font-display); font-size: .98rem; font-weight: 700; letter-spacing: -.01em; color: var(--ink) }
+.sp-versus__side p { margin: 6px 0 0; font-size: .82rem; color: var(--muted); line-height: 1.5 }
+.sp-versus__mid { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border-strong); font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; color: var(--muted-dim); flex-shrink: 0 }
+
+/* Our-goal points — inline, not boxed cards */
+.sp-story__points { display: flex; flex-direction: column; gap: 18px; margin-top: 24px }
+.sp-story__point { display: flex; gap: 14px; align-items: flex-start }
+.sp-story__point-icon { flex-shrink: 0; width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; margin-top: 2px }
+.sp-story__point strong { display: block; font-size: .98rem; font-weight: 650; color: var(--ink) }
+.sp-story__point span { display: block; margin-top: 4px; font-size: .92rem; color: var(--muted); line-height: 1.6 }
 
 @media (max-width: 680px) {
-  .sp-versus { grid-template-columns: 1fr; gap: 12px }
+  .sp-story { padding-top: 72px }
+  .sp-story__thread { padding-left: 40px; margin-top: 64px }
+  .sp-story__thread::before { left: 15px }
+  .sp-story__num { left: -40px; width: 32px; height: 32px; font-size: .78rem }
+  .sp-story__chapter { margin-bottom: 64px }
+  .sp-versus { grid-template-columns: 1fr; gap: 10px }
   .sp-versus__mid { justify-self: center }
 }
       `}</style>

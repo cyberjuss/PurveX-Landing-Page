@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ArrowRight, Radar, Search, ShieldCheck, Sliders, Target, Waypoints } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
@@ -105,6 +106,11 @@ export default function SecurityOperationsPage() {
             </div>
           ))}
         </div>
+        <p className="sp-footnote" data-r>
+          Every detection we build starts from how attackers actually operate, not just what a
+          vendor&apos;s default ruleset assumes.{" "}
+          <Link href="/about#how-we-think">See how we think about security →</Link>
+        </p>
       </section>
 
       {/* ═══════════ CTA ═══════════ */}

@@ -214,6 +214,9 @@ export default function HomePage() {
             field. You get real experience, not a script.
           </p>
           <p>No sales layer. The best way to see if we are a fit is a quick conversation.</p>
+          <Link href="/about#how-we-think" className="sp-panel__link">
+            See how we think about security <ArrowRight size={14} />
+          </Link>
         </div>
       </section>
 
@@ -310,6 +313,9 @@ export default function HomePage() {
 .sp-carousel__dot--active { background: var(--accent-deep); width: 22px; border-radius: 5px }
 
 /* ── Tools strip ── */
+.sp-panel__link { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; font-size: .88rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
+.sp-panel__link:hover { gap: 12px }
+
 .sp-tools { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin-top: 24px; padding: 18px 24px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface-alt) }
 .sp-tools__label { font-family: var(--font-mono); font-size: .7rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted-dim) }
 .sp-tools__chips { display: flex; flex-wrap: wrap; gap: 8px; flex: 1 }

@@ -54,6 +54,7 @@ type NavMenu = {
   blurb: string;
   cta: string;
   items: NavSubItem[];
+  external?: boolean;
 };
 
 const NAV_MENUS: NavMenu[] = [
@@ -89,12 +90,25 @@ const NAV_MENUS: NavMenu[] = [
     label: "About",
     href: "/about",
     icon: Users,
-    blurb: "Who PurveX is, and what we are building next.",
+    blurb: "Who PurveX is, and how we think about security.",
     cta: "About PurveX",
     items: [
       { label: "How We Think", desc: "Blue team, red team, one discipline.", anchor: "#how-we-think", icon: Swords },
       { label: "Who We Are", desc: "Work directly with the practitioner.", anchor: "#who-we-are", icon: Users },
-      { label: "PurveX Labs", desc: "What we are building next.", anchor: "#purvex-labs", icon: Radar },
+    ],
+  },
+  {
+    key: "platform",
+    label: "PurveX Labs",
+    href: "/platform",
+    icon: Radar,
+    blurb: "Our detection-assurance platform, in private beta.",
+    cta: "Explore PurveX Labs",
+    external: true,
+    items: [
+      { label: "The Platform", desc: "Everything on one screen, proof not assumptions.", anchor: "#product", icon: Radar },
+      { label: "Planned Pricing", desc: "Start focused, expand when the evidence is there.", anchor: "#pricing", icon: Layers },
+      { label: "FAQ", desc: "Questions teams ask before they commit.", anchor: "#faq", icon: ShieldCheck },
     ],
   },
 ];
@@ -268,6 +282,7 @@ export function SiteChrome({
                   href={menu.href}
                   className={`sp-navitem__link${active === menu.key ? " sp-nav__link--active" : ""}`}
                   onClick={() => setOpenMenu(null)}
+                  {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
                 >
                   {menu.label}
                 </Link>
@@ -295,6 +310,7 @@ export function SiteChrome({
                         href={`${menu.href}${item.anchor}`}
                         className="sp-megamenu__item"
                         onClick={() => setOpenMenu(null)}
+                        {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
                       >
                         <item.icon size={15} />
                         <span>
@@ -304,7 +320,12 @@ export function SiteChrome({
                       </Link>
                     ))}
                   </div>
-                  <Link href={menu.href} className="sp-megamenu__cta" onClick={() => setOpenMenu(null)}>
+                  <Link
+                    href={menu.href}
+                    className="sp-megamenu__cta"
+                    onClick={() => setOpenMenu(null)}
+                    {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
+                  >
                     {menu.cta} →
                   </Link>
                 </div>
@@ -327,7 +348,12 @@ export function SiteChrome({
           {NAV_MENUS.map((menu, i) => (
             <div key={menu.key} className="sp-mobile__group" style={{ animationDelay: `${0.06 + i * 0.06}s` }}>
               <div className="sp-mobile__row">
-                <Link href={menu.href} onClick={closeNav} className="sp-mobile__toplink">
+                <Link
+                  href={menu.href}
+                  onClick={closeNav}
+                  className="sp-mobile__toplink"
+                  {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
+                >
                   {menu.label}
                 </Link>
                 <button
@@ -341,7 +367,13 @@ export function SiteChrome({
               </div>
               <div className={`sp-mobile__sub${openMobileGroup === menu.key ? " sp-mobile__sub--open" : ""}`}>
                 {menu.items.map((item) => (
-                  <Link key={item.label} href={`${menu.href}${item.anchor}`} onClick={closeNav} className="sp-mobile__sublink">
+                  <Link
+                    key={item.label}
+                    href={`${menu.href}${item.anchor}`}
+                    onClick={closeNav}
+                    className="sp-mobile__sublink"
+                    {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
+                  >
                     {item.label}
                   </Link>
                 ))}
@@ -611,6 +643,11 @@ export const CHROME_CSS = `
 .sp-card__body { margin: 12px 0 0; color: var(--muted); font-size: .95rem; line-height: 1.7; flex: 1 }
 .sp-card__link { display: inline-flex; align-items: center; gap: 7px; margin-top: 20px; font-size: .9rem; font-weight: 600; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
 .sp-card:hover .sp-card__link { gap: 11px }
+
+/* ── Footnote (cross-page callouts) ── */
+.sp-footnote { max-width: 640px; margin: 28px auto 0; text-align: center; color: var(--muted); font-size: .92rem; line-height: 1.65 }
+.sp-footnote a { color: var(--accent-deep); font-weight: 600; text-decoration: none; white-space: nowrap }
+.sp-footnote a:hover { text-decoration: underline }
 
 /* ── CTA banner ── */
 .sp-cta { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding: 60px 48px; border-radius: calc(var(--radius) + 8px); border: 1px solid rgba(106,92,255,.22); background: linear-gradient(135deg, #f4f3ff 0%, #ffffff 60%); box-shadow: 0 30px 70px -46px rgba(85,70,224,.5) }
