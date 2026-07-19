@@ -169,7 +169,7 @@ export function SiteChrome({
             </div>
             <div className="sp-footer__col">
               <h4>Platform</h4>
-              <Link href="/platform">PurveX Labs</Link>
+              <a href="/platform" target="_blank" rel="noreferrer">PurveX Labs</a>
             </div>
             <div className="sp-footer__col">
               <h4>Legal</h4>
