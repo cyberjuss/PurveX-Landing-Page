@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { ArrowRight, Brain, ShieldCheck, Swords, Zap } from "lucide-react";
 import { SiteChrome } from "./chrome";
 
@@ -17,6 +18,34 @@ const goals = [
 ];
 
 export default function AboutPage() {
+  const threadRef = useRef<HTMLDivElement>(null);
+  const fillRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const thread = threadRef.current;
+        const fill = fillRef.current;
+        if (!thread || !fill) return;
+        const rect = thread.getBoundingClientRect();
+        const startLine = window.innerHeight * 0.85;
+        const endLine = window.innerHeight * 0.4;
+        const progress = (startLine - rect.top) / (rect.height + startLine - endLine);
+        fill.style.height = `${Math.min(1, Math.max(0, progress)) * 100}%`;
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
   return (
     <SiteChrome active="about">
       <div className="sp-story">
@@ -29,7 +58,8 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div className="sp-story__thread">
+        <div className="sp-story__thread" ref={threadRef}>
+          <div className="sp-story__thread-fill" ref={fillRef} aria-hidden />
           {/* ═══════════ 01 — HOW WE THINK ═══════════ */}
           <section id="how-we-think" className="sp-story__chapter" data-r>
             <span className="sp-story__num">01</span>
@@ -132,9 +162,12 @@ export default function AboutPage() {
 
 .sp-story__thread { position: relative; margin-top: 96px; padding-left: 52px }
 .sp-story__thread::before { content: ""; position: absolute; left: 19px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(var(--border-strong), var(--border) 85%, transparent) }
+.sp-story__thread-fill { position: absolute; left: 19px; top: 6px; width: 2px; height: 0%; border-radius: 2px; background: linear-gradient(var(--accent), var(--accent-deep)); box-shadow: 0 0 12px rgba(106,92,255,.5); transition: height .15s linear }
 .sp-story__chapter { position: relative; margin-bottom: 88px }
 .sp-story__chapter:last-child { margin-bottom: 0 }
-.sp-story__num { position: absolute; left: -52px; top: -4px; width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent-deep); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: .9rem }
+.sp-story__num { position: absolute; left: -52px; top: -4px; width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent-deep); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: .9rem; transition: background .4s var(--ease), color .4s var(--ease), transform .4s var(--ease), box-shadow .4s var(--ease) }
+.sp-story__chapter.in .sp-story__num { background: var(--accent-deep); color: #fff; transform: scale(1.08); box-shadow: 0 6px 18px -6px rgba(85,70,224,.6) }
+@media (prefers-reduced-motion: reduce) { .sp-story__thread-fill { transition: none } }
 .sp-story__label { display: block; font-size: .74rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
 .sp-story__pull { margin: 14px 0 0; padding-left: 20px; border-left: 3px solid var(--accent); font-family: var(--font-display); font-size: clamp(1.2rem, 2.4vw, 1.5rem); font-weight: 650; letter-spacing: -.015em; line-height: 1.4; color: var(--ink) }
 .sp-story__chapter > p:not(.sp-story__pull):not(.sp-story__wink) { margin: 20px 0 0; font-size: 1.02rem; line-height: 1.78; color: var(--ink-soft); max-width: 600px }
@@ -165,7 +198,7 @@ export default function AboutPage() {
 @media (max-width: 680px) {
   .sp-story { padding-top: 72px }
   .sp-story__thread { padding-left: 40px; margin-top: 64px }
-  .sp-story__thread::before { left: 15px }
+  .sp-story__thread::before, .sp-story__thread-fill { left: 15px }
   .sp-story__num { left: -40px; width: 32px; height: 32px; font-size: .78rem }
   .sp-story__chapter { margin-bottom: 64px }
   .sp-versus { grid-template-columns: 1fr; gap: 10px }
