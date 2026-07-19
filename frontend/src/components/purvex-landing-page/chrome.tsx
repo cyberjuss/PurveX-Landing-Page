@@ -313,7 +313,7 @@ export function SiteChrome({
           </nav>
           <div className="sp-nav__right">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--sm">
-              Work With PurveX
+              Get in Touch
             </a>
             <button className="sp-nav__burger" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
               {mobileOpen ? <X size={28} /> : <Menu size={28} />}
@@ -355,7 +355,7 @@ export function SiteChrome({
             onClick={closeNav}
             className="sp-btn sp-btn--prim sp-btn--lg sp-btn--full"
           >
-            Work With PurveX
+            Get in Touch
           </a>
         </nav>
       </div>
