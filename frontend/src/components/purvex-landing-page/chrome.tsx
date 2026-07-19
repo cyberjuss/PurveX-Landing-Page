@@ -3,7 +3,21 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Linkedin, Menu, X } from "lucide-react";
+import {
+  ChevronDown,
+  FlaskConical,
+  GraduationCap,
+  Layers,
+  Linkedin,
+  Menu,
+  Radar,
+  ShieldCheck,
+  Sliders,
+  Target,
+  Users,
+  Waypoints,
+  X,
+} from "lucide-react";
 
 /* ─────────────────────────────────────────────────────────
    PurveX — shared site chrome
@@ -11,12 +25,12 @@ import { Linkedin, Menu, X } from "lucide-react";
    One cybersecurity company, two ways it helps organizations
    today: Security Operations consulting and Cybersecurity
    Training partnerships. The PurveX platform is the future
-   product roadmap, referenced only from About.
+   product roadmap, referenced from the nav's About menu.
 
-   This file owns the nav, mobile menu, footer, and the base
-   design system (bg, buttons, sections, cards, responsive
-   rules) shared by every page so pages only carry their own
-   content and any layout unique to them.
+   This file owns the nav (with mega-menu dropdowns), mobile
+   menu, footer, and the base design system (bg, buttons,
+   sections, cards, responsive rules) shared by every page so
+   pages only carry their own content and layout unique to them.
 
    BOOKING_URL: scheduling link for every "talk to us" CTA.
    ───────────────────────────────────────────────────────── */
@@ -24,10 +38,63 @@ export const BOOKING_URL = "https://calendly.com/purvex-llc/30min";
 
 export type NavKey = "home" | "security-operations" | "training" | "about" | "platform";
 
-const NAV_ITEMS: { key: NavKey; label: string; href: string }[] = [
-  { key: "security-operations", label: "Security Operations", href: "/security-operations" },
-  { key: "training", label: "Cybersecurity Training", href: "/cybersecurity-training" },
-  { key: "about", label: "About", href: "/about" },
+type NavSubItem = {
+  label: string;
+  desc: string;
+  anchor: string;
+  icon: typeof ShieldCheck;
+};
+
+type NavMenu = {
+  key: NavKey;
+  label: string;
+  href: string;
+  icon: typeof ShieldCheck;
+  blurb: string;
+  cta: string;
+  items: NavSubItem[];
+};
+
+const NAV_MENUS: NavMenu[] = [
+  {
+    key: "security-operations",
+    label: "Security Operations",
+    href: "/security-operations",
+    icon: ShieldCheck,
+    blurb: "Strengthen how you detect and respond to threats.",
+    cta: "Explore Security Operations",
+    items: [
+      { label: "SIEM & Detection Engineering", desc: "Build detections around your environment.", anchor: "#siem-detection-engineering", icon: Waypoints },
+      { label: "SIEM Optimization", desc: "Reduce noise, improve alert quality.", anchor: "#siem-optimization", icon: Sliders },
+      { label: "Security Operations Assessment", desc: "Evaluate visibility and workflows.", anchor: "#assessment", icon: Target },
+      { label: "Detection Validation", desc: "Test controls with real simulations.", anchor: "#detection-validation", icon: Radar },
+    ],
+  },
+  {
+    key: "training",
+    label: "Cybersecurity Training",
+    href: "/cybersecurity-training",
+    icon: GraduationCap,
+    blurb: "Develop practical, job-ready cybersecurity talent.",
+    cta: "Explore Cybersecurity Training",
+    items: [
+      { label: "Cybersecurity Instruction", desc: "Instructor support for SOC & SIEM programs.", anchor: "#instruction", icon: GraduationCap },
+      { label: "Hands-On Security Labs", desc: "Practical alert and threat investigation.", anchor: "#labs", icon: FlaskConical },
+      { label: "Curriculum Support", desc: "Build or improve your training content.", anchor: "#curriculum", icon: Layers },
+    ],
+  },
+  {
+    key: "about",
+    label: "About",
+    href: "/about",
+    icon: Users,
+    blurb: "Who PurveX is, and what we're building next.",
+    cta: "About PurveX",
+    items: [
+      { label: "Who We Are", desc: "Work directly with the practitioner.", anchor: "#who-we-are", icon: Users },
+      { label: "PurveX Labs", desc: "What we're building next.", anchor: "#purvex-labs", icon: Radar },
+    ],
+  },
 ];
 
 export function SiteChrome({
@@ -40,6 +107,9 @@ export function SiteChrome({
   const pageRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<NavKey | null>(null);
+  const [openMobileGroup, setOpenMobileGroup] = useState<NavKey | null>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 32);
@@ -79,6 +149,22 @@ export function SiteChrome({
   }, [mobileOpen]);
 
   useEffect(() => {
+    if (!openMenu) return;
+    const fn = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpenMenu(null);
+    };
+    const clickFn = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest(".sp-navitem")) setOpenMenu(null);
+    };
+    window.addEventListener("keydown", fn);
+    document.addEventListener("click", clickFn);
+    return () => {
+      window.removeEventListener("keydown", fn);
+      document.removeEventListener("click", clickFn);
+    };
+  }, [openMenu]);
+
+  useEffect(() => {
     const fn = (e: MouseEvent) => {
       const a = (e.target as HTMLElement).closest<HTMLAnchorElement>("a[href^='#']");
       if (!a) return;
@@ -93,7 +179,18 @@ export function SiteChrome({
     return () => document.removeEventListener("click", fn);
   }, []);
 
-  const closeNav = () => setMobileOpen(false);
+  const closeNav = () => {
+    setMobileOpen(false);
+    setOpenMobileGroup(null);
+  };
+
+  const scheduleClose = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => setOpenMenu(null), 160);
+  };
+  const cancelClose = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+  };
 
   return (
     <div className="sp" ref={pageRef}>
@@ -109,14 +206,61 @@ export function SiteChrome({
             <span>PurveX</span>
           </Link>
           <nav className="sp-nav__links">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.key}
-                href={item.href}
-                className={active === item.key ? "sp-nav__link--active" : undefined}
+            {NAV_MENUS.map((menu) => (
+              <div
+                key={menu.key}
+                className="sp-navitem"
+                onMouseEnter={() => {
+                  cancelClose();
+                  setOpenMenu(menu.key);
+                }}
+                onMouseLeave={scheduleClose}
               >
-                {item.label}
-              </Link>
+                <Link
+                  href={menu.href}
+                  className={`sp-navitem__link${active === menu.key ? " sp-nav__link--active" : ""}`}
+                  onClick={() => setOpenMenu(null)}
+                >
+                  {menu.label}
+                </Link>
+                <button
+                  type="button"
+                  className={`sp-navitem__chev${openMenu === menu.key ? " sp-navitem__chev--open" : ""}`}
+                  aria-label={`${menu.label} menu`}
+                  aria-expanded={openMenu === menu.key}
+                  onClick={() => setOpenMenu(openMenu === menu.key ? null : menu.key)}
+                >
+                  <ChevronDown size={13} />
+                </button>
+
+                <div className={`sp-megamenu${openMenu === menu.key ? " sp-megamenu--open" : ""}`}>
+                  <div className="sp-megamenu__head">
+                    <div className="sp-megamenu__icon">
+                      <menu.icon size={17} />
+                    </div>
+                    <p>{menu.blurb}</p>
+                  </div>
+                  <div className="sp-megamenu__list">
+                    {menu.items.map((item) => (
+                      <Link
+                        key={item.label}
+                        href={`${menu.href}${item.anchor}`}
+                        className="sp-megamenu__item"
+                        onClick={() => setOpenMenu(null)}
+                      >
+                        <item.icon size={15} />
+                        <span>
+                          <strong>{item.label}</strong>
+                          <em>{item.desc}</em>
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                  <Link href={menu.href} className="sp-megamenu__cta" onClick={() => setOpenMenu(null)}>
+                    {menu.cta} →
+                  </Link>
+                </div>
+              </div>
             ))}
           </nav>
           <div className="sp-nav__right">
@@ -132,10 +276,29 @@ export function SiteChrome({
 
       <div className={`sp-mobile${mobileOpen ? " sp-mobile--open" : ""}`} onClick={closeNav}>
         <nav className="sp-mobile__nav" onClick={(e) => e.stopPropagation()}>
-          {NAV_ITEMS.map((item) => (
-            <Link key={item.key} href={item.href} onClick={closeNav}>
-              {item.label}
-            </Link>
+          {NAV_MENUS.map((menu, i) => (
+            <div key={menu.key} className="sp-mobile__group" style={{ animationDelay: `${0.06 + i * 0.06}s` }}>
+              <div className="sp-mobile__row">
+                <Link href={menu.href} onClick={closeNav} className="sp-mobile__toplink">
+                  {menu.label}
+                </Link>
+                <button
+                  type="button"
+                  className={`sp-mobile__chev${openMobileGroup === menu.key ? " sp-mobile__chev--open" : ""}`}
+                  aria-label={`Expand ${menu.label}`}
+                  onClick={() => setOpenMobileGroup(openMobileGroup === menu.key ? null : menu.key)}
+                >
+                  <ChevronDown size={20} />
+                </button>
+              </div>
+              <div className={`sp-mobile__sub${openMobileGroup === menu.key ? " sp-mobile__sub--open" : ""}`}>
+                {menu.items.map((item) => (
+                  <Link key={item.label} href={`${menu.href}${item.anchor}`} onClick={closeNav} className="sp-mobile__sublink">
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
           ))}
           <a
             href={BOOKING_URL}
@@ -260,12 +423,39 @@ export const CHROME_CSS = `
 .sp-logo { display: inline-flex; align-items: center; gap: 9px; justify-self: start; font-family: var(--font-display); font-weight: 650; font-size: 1.2rem; color: var(--ink); text-decoration: none; letter-spacing: -.015em }
 .sp-logo__img { border-radius: 8px }
 .sp-nav .sp-logo { font-size: 1.3rem; gap: 10px }
-.sp-nav__links { display: flex; gap: 34px; justify-self: center }
-.sp-nav__links a { font-size: .87rem; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .2s }
-.sp-nav__links a:hover { color: var(--ink) }
+.sp-nav__links { display: flex; gap: 6px; justify-self: center }
 .sp-nav__link--active { color: var(--ink) !important }
 .sp-nav__right { display: flex; align-items: center; gap: 10px; justify-self: end }
 .sp-nav__burger { display: none; align-items: center; justify-content: center; background: none; border: 0; color: var(--ink); cursor: pointer; padding: 6px; margin-right: -6px }
+
+/* ── Mega menu ── */
+.sp-navitem { position: relative; display: flex; align-items: center; padding: 22px 4px; }
+.sp-navitem__link { display: inline-flex; align-items: center; font-size: .87rem; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .2s; padding: 6px 4px 6px 10px }
+.sp-navitem__link:hover { color: var(--ink) }
+.sp-navitem__chev { display: inline-flex; align-items: center; justify-content: center; background: none; border: 0; color: var(--muted-dim); cursor: pointer; padding: 6px 8px 6px 2px; transition: transform .25s var(--ease), color .2s }
+.sp-navitem__chev:hover { color: var(--accent-deep) }
+.sp-navitem__chev--open { transform: rotate(180deg); color: var(--accent-deep) }
+
+.sp-megamenu {
+  position: absolute; top: calc(100% - 6px); left: 50%; transform: translate(-50%, 8px);
+  width: 340px; padding: 10px; border-radius: 16px; border: 1px solid var(--border);
+  background: var(--surface); box-shadow: 0 30px 60px -28px rgba(16,25,46,.35), 0 4px 16px -8px rgba(16,25,46,.12);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .2s var(--ease), transform .2s var(--ease), visibility .2s;
+  z-index: 60;
+}
+.sp-megamenu--open { opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, 0) }
+.sp-megamenu__head { display: flex; align-items: center; gap: 11px; padding: 10px 10px 12px; border-bottom: 1px solid var(--border) }
+.sp-megamenu__icon { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-deep); flex-shrink: 0 }
+.sp-megamenu__head p { margin: 0; font-size: .82rem; color: var(--muted); line-height: 1.4 }
+.sp-megamenu__list { display: flex; flex-direction: column; padding: 6px 0 }
+.sp-megamenu__item { display: flex; align-items: flex-start; gap: 11px; padding: 9px 10px; border-radius: 10px; text-decoration: none; color: inherit; transition: background .18s }
+.sp-megamenu__item:hover { background: var(--surface-alt) }
+.sp-megamenu__item svg { flex-shrink: 0; margin-top: 2px; color: var(--accent-deep) }
+.sp-megamenu__item strong { display: block; font-size: .86rem; font-weight: 600; color: var(--ink) }
+.sp-megamenu__item em { display: block; margin-top: 2px; font-style: normal; font-size: .78rem; color: var(--muted) }
+.sp-megamenu__cta { display: block; margin-top: 4px; padding: 11px 10px; border-top: 1px solid var(--border); text-align: center; font-size: .85rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: color .2s }
+.sp-megamenu__cta:hover { color: var(--accent) }
 
 /* ── Buttons ── */
 .sp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 0; border-radius: 11px; font-weight: 620; font-size: .88rem; text-decoration: none; cursor: pointer; white-space: nowrap; transition: transform .25s var(--ease), background .25s, box-shadow .25s, border-color .25s, color .25s }
@@ -280,24 +470,23 @@ export const CHROME_CSS = `
 .sp-btn--ghost:hover { border-color: var(--accent); color: var(--accent-deep); transform: translateY(-2px) }
 
 /* ── Mobile overlay ── */
-.sp-mobile { position: fixed; inset: 0; z-index: 45; background: radial-gradient(72% 55% at 50% 32%, rgba(106,92,255,.08), transparent 70%), rgba(251,252,254,.98); backdrop-filter: blur(26px) saturate(1.25); -webkit-backdrop-filter: blur(26px) saturate(1.25); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .35s ease }
+.sp-mobile { position: fixed; inset: 0; z-index: 45; background: radial-gradient(72% 55% at 50% 32%, rgba(106,92,255,.08), transparent 70%), rgba(251,252,254,.98); backdrop-filter: blur(26px) saturate(1.25); -webkit-backdrop-filter: blur(26px) saturate(1.25); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .35s ease; overflow-y: auto; padding: 90px 0 40px }
 .sp-mobile--open { opacity: 1; pointer-events: auto }
-.sp-mobile__nav { display: flex; flex-direction: column; align-items: center; gap: 2px; width: min(88vw, 440px); text-align: center; counter-reset: navitem }
-.sp-mobile__nav > * { opacity: 0 }
-.sp-mobile--open .sp-mobile__nav > * { animation: sp-menu-in .55s var(--ease) both }
-.sp-mobile--open .sp-mobile__nav > *:nth-child(1) { animation-delay: .06s }
-.sp-mobile--open .sp-mobile__nav > *:nth-child(2) { animation-delay: .12s }
-.sp-mobile--open .sp-mobile__nav > *:nth-child(3) { animation-delay: .18s }
-.sp-mobile--open .sp-mobile__nav > *:nth-child(4) { animation-delay: .24s }
-.sp-mobile--open .sp-mobile__nav > *:nth-child(5) { animation-delay: .30s }
-.sp-mobile__nav a:not(.sp-btn) { position: relative; counter-increment: navitem; font-family: var(--font-display); font-size: clamp(1.7rem, 7vw, 2.2rem); font-weight: 700; letter-spacing: -.02em; color: var(--ink); text-decoration: none; padding: 12px 0; transition: color .25s var(--ease) }
-.sp-mobile__nav a:not(.sp-btn)::before { content: "0" counter(navitem); font-family: var(--font-mono); font-size: .78rem; font-weight: 500; color: var(--accent); margin-right: 14px; vertical-align: 6px }
-.sp-mobile__nav a:not(.sp-btn)::after { content: ""; position: absolute; left: 50%; bottom: 8px; width: 0; height: 2px; border-radius: 2px; background: var(--accent); transform: translateX(-50%); transition: width .3s var(--ease) }
-.sp-mobile__nav a:not(.sp-btn):hover { color: var(--accent-deep) }
-.sp-mobile__nav a:not(.sp-btn):hover::after { width: 42% }
-.sp-mobile__nav .sp-btn { margin-top: 28px; min-width: 240px }
+.sp-mobile__nav { display: flex; flex-direction: column; align-items: stretch; gap: 2px; width: min(88vw, 440px); margin: auto; text-align: left; counter-reset: navitem }
+.sp-mobile__group { opacity: 0; animation: sp-menu-in .55s var(--ease) both; border-bottom: 1px solid var(--border) }
+.sp-mobile__row { display: flex; align-items: center; justify-content: space-between; gap: 12px }
+.sp-mobile__toplink { position: relative; counter-increment: navitem; font-family: var(--font-display); font-size: clamp(1.5rem, 6.4vw, 1.9rem); font-weight: 700; letter-spacing: -.02em; color: var(--ink); text-decoration: none; padding: 14px 0; transition: color .25s var(--ease) }
+.sp-mobile__toplink::before { content: "0" counter(navitem); font-family: var(--font-mono); font-size: .72rem; font-weight: 500; color: var(--accent); margin-right: 12px; vertical-align: 5px }
+.sp-mobile__toplink:hover { color: var(--accent-deep) }
+.sp-mobile__chev { display: flex; align-items: center; justify-content: center; background: none; border: 0; color: var(--muted-dim); cursor: pointer; padding: 10px; transition: transform .25s var(--ease), color .2s }
+.sp-mobile__chev--open { transform: rotate(180deg); color: var(--accent-deep) }
+.sp-mobile__sub { max-height: 0; overflow: hidden; opacity: 0; transition: max-height .35s var(--ease), opacity .25s }
+.sp-mobile__sub--open { max-height: 240px; opacity: 1; padding-bottom: 14px }
+.sp-mobile__sublink { display: block; padding: 8px 0 8px 34px; font-size: .92rem; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .2s }
+.sp-mobile__sublink:hover { color: var(--accent-deep) }
+.sp-mobile__nav .sp-btn { margin: 28px 0 0; width: 100% }
 @keyframes sp-menu-in { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: none } }
-@media (prefers-reduced-motion: reduce) { .sp-mobile--open .sp-mobile__nav > * { animation: none; opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { .sp-mobile__group { animation: none; opacity: 1 } }
 
 /* ── Main ── */
 .sp-main { position: relative; z-index: 1; max-width: 1140px; margin: 0 auto; padding: 0 24px 48px }

@@ -15,7 +15,7 @@ export default function AboutPage() {
       </section>
 
       {/* ═══════════ WHO WE ARE ═══════════ */}
-      <section className="sp-section">
+      <section id="who-we-are" className="sp-section">
         <div className="sp-panel" data-r>
           <span className="sp-tag">Who we are</span>
           <h2>You work directly with the practitioner.</h2>
@@ -28,7 +28,7 @@ export default function AboutPage() {
       </section>
 
       {/* ═══════════ BUILDING WHAT'S NEXT ═══════════ */}
-      <section className="sp-section">
+      <section id="purvex-labs" className="sp-section">
         <div className="sp-panel" data-r>
           <span className="sp-tag">Building what&apos;s next</span>
           <h2>PurveX Labs</h2>
