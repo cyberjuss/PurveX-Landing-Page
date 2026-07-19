@@ -5,7 +5,7 @@ import { Geist, Space_Grotesk } from "next/font/google";
 import RootClientLayout from "./root-client";
 
 export const metadata: Metadata = {
-  title: "PurveX — Cybersecurity Training & Security Operations",
+  title: "PurveX",
   description:
     "PurveX helps training programs and institutions develop job-ready cybersecurity professionals through hands-on labs and technical instruction, and helps small and mid-sized businesses strengthen their security operations.",
   icons: {
