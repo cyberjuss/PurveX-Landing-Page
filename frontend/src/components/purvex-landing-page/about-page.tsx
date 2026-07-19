@@ -21,6 +21,7 @@ export default function AboutPage() {
     <SiteChrome active="about">
       {/* ═══════════ HERO ═══════════ */}
       <section className="sp-hero">
+        <span className="sp-hero__badge">Your friendly neighborhood blue team</span>
         <h1 className="sp-hero__h1">About PurveX</h1>
         <p className="sp-hero__sub">
           PurveX helps organizations strengthen their security operations and develop the
@@ -59,6 +60,7 @@ export default function AboutPage() {
           We don&apos;t train one side and hope it holds up against the other. We build analysts,
           and run operations, that understand both.
         </p>
+        <p className="sp-versus__wink" data-r>With great visibility comes great responsibility.</p>
       </section>
 
       {/* ═══════════ OUR GOAL ═══════════ */}
@@ -129,6 +131,7 @@ export default function AboutPage() {
 .sp-versus__side p { margin: 8px 0 0; font-size: .88rem; color: var(--muted); line-height: 1.55 }
 .sp-versus__mid { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border-strong); font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--muted-dim); flex-shrink: 0 }
 .sp-versus__conclusion { max-width: 640px; margin: 32px auto 0; text-align: center; font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; letter-spacing: -.01em; line-height: 1.5; color: var(--ink-soft) }
+.sp-versus__wink { margin: 12px auto 0; text-align: center; font-size: .84rem; font-style: italic; color: var(--muted) }
 
 @media (max-width: 680px) {
   .sp-versus { grid-template-columns: 1fr; gap: 12px }
