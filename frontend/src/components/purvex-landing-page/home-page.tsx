@@ -172,11 +172,11 @@ export default function HomePage() {
                       ))}
                     </ul>
                     {s.external ? (
-                      <a href={s.href} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim">
+                      <a href={s.href} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--sm">
                         {s.cta} <ArrowRight size={15} />
                       </a>
                     ) : (
-                      <Link href={s.href} className="sp-btn sp-btn--prim">
+                      <Link href={s.href} className="sp-btn sp-btn--prim sp-btn--sm">
                         {s.cta} <ArrowRight size={15} />
                       </Link>
                     )}

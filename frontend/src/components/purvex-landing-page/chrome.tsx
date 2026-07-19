@@ -460,8 +460,9 @@ export const CHROME_CSS = `
 .sp-megamenu__cta:hover { color: var(--accent) }
 
 /* ── Buttons ── */
-.sp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 0; border-radius: 11px; font-weight: 620; font-size: .88rem; text-decoration: none; cursor: pointer; white-space: nowrap; transition: transform .25s var(--ease), background .25s, box-shadow .25s, border-color .25s, color .25s }
+.sp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 0; border-radius: 11px; font-weight: 620; font-size: .88rem; text-decoration: none; cursor: pointer; white-space: nowrap; transition: transform .25s var(--ease), background .25s, box-shadow .25s, border-color .25s, color .25s; outline: none }
 .sp-btn:active { transform: scale(.98); transition-duration: .05s }
+.sp-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(85,70,224,.35) }
 .sp-btn:disabled { opacity: .7; cursor: default }
 .sp-btn--sm { height: 40px; padding: 0 18px; font-size: .85rem }
 .sp-btn--lg { height: 50px; padding: 0 24px; font-size: .92rem }
