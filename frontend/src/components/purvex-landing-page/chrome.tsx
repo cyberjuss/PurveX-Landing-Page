@@ -50,14 +50,20 @@ type NavMenu = {
   key: NavKey;
   label: string;
   href: string;
-  icon: typeof ShieldCheck;
-  blurb: string;
-  cta: string;
+  icon?: typeof ShieldCheck;
+  blurb?: string;
+  cta?: string;
   items: NavSubItem[];
   external?: boolean;
 };
 
 const NAV_MENUS: NavMenu[] = [
+  {
+    key: "home",
+    label: "Home",
+    href: "/",
+    items: [],
+  },
   {
     key: "security-operations",
     label: "Security Operations",
@@ -273,6 +279,7 @@ export function SiteChrome({
                 key={menu.key}
                 className="sp-navitem"
                 onMouseEnter={() => {
+                  if (menu.items.length === 0) return;
                   cancelClose();
                   setOpenMenu(menu.key);
                 }}
@@ -286,49 +293,53 @@ export function SiteChrome({
                 >
                   {menu.label}
                 </Link>
-                <button
-                  type="button"
-                  className={`sp-navitem__chev${openMenu === menu.key ? " sp-navitem__chev--open" : ""}`}
-                  aria-label={`${menu.label} menu`}
-                  aria-expanded={openMenu === menu.key}
-                  onClick={() => setOpenMenu(openMenu === menu.key ? null : menu.key)}
-                >
-                  <ChevronDown size={13} />
-                </button>
+                {menu.items.length > 0 && (
+                  <>
+                    <button
+                      type="button"
+                      className={`sp-navitem__chev${openMenu === menu.key ? " sp-navitem__chev--open" : ""}`}
+                      aria-label={`${menu.label} menu`}
+                      aria-expanded={openMenu === menu.key}
+                      onClick={() => setOpenMenu(openMenu === menu.key ? null : menu.key)}
+                    >
+                      <ChevronDown size={13} />
+                    </button>
 
-                <div className={`sp-megamenu${openMenu === menu.key ? " sp-megamenu--open" : ""}`}>
-                  <div className="sp-megamenu__head">
-                    <div className="sp-megamenu__icon">
-                      <menu.icon size={17} />
-                    </div>
-                    <p>{menu.blurb}</p>
-                  </div>
-                  <div className="sp-megamenu__list">
-                    {menu.items.map((item) => (
+                    <div className={`sp-megamenu${openMenu === menu.key ? " sp-megamenu--open" : ""}`}>
+                      <div className="sp-megamenu__head">
+                        <div className="sp-megamenu__icon">
+                          {menu.icon && <menu.icon size={17} />}
+                        </div>
+                        <p>{menu.blurb}</p>
+                      </div>
+                      <div className="sp-megamenu__list">
+                        {menu.items.map((item) => (
+                          <Link
+                            key={item.label}
+                            href={`${menu.href}${item.anchor}`}
+                            className="sp-megamenu__item"
+                            onClick={() => setOpenMenu(null)}
+                            {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
+                          >
+                            <item.icon size={15} />
+                            <span>
+                              <strong>{item.label}</strong>
+                              <em>{item.desc}</em>
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
                       <Link
-                        key={item.label}
-                        href={`${menu.href}${item.anchor}`}
-                        className="sp-megamenu__item"
+                        href={menu.href}
+                        className="sp-megamenu__cta"
                         onClick={() => setOpenMenu(null)}
                         {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
                       >
-                        <item.icon size={15} />
-                        <span>
-                          <strong>{item.label}</strong>
-                          <em>{item.desc}</em>
-                        </span>
+                        {menu.cta} →
                       </Link>
-                    ))}
-                  </div>
-                  <Link
-                    href={menu.href}
-                    className="sp-megamenu__cta"
-                    onClick={() => setOpenMenu(null)}
-                    {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
-                  >
-                    {menu.cta} →
-                  </Link>
-                </div>
+                    </div>
+                  </>
+                )}
               </div>
             ))}
           </nav>
@@ -356,28 +367,32 @@ export function SiteChrome({
                 >
                   {menu.label}
                 </Link>
-                <button
-                  type="button"
-                  className={`sp-mobile__chev${openMobileGroup === menu.key ? " sp-mobile__chev--open" : ""}`}
-                  aria-label={`Expand ${menu.label}`}
-                  onClick={() => setOpenMobileGroup(openMobileGroup === menu.key ? null : menu.key)}
-                >
-                  <ChevronDown size={20} />
-                </button>
-              </div>
-              <div className={`sp-mobile__sub${openMobileGroup === menu.key ? " sp-mobile__sub--open" : ""}`}>
-                {menu.items.map((item) => (
-                  <Link
-                    key={item.label}
-                    href={`${menu.href}${item.anchor}`}
-                    onClick={closeNav}
-                    className="sp-mobile__sublink"
-                    {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
+                {menu.items.length > 0 && (
+                  <button
+                    type="button"
+                    className={`sp-mobile__chev${openMobileGroup === menu.key ? " sp-mobile__chev--open" : ""}`}
+                    aria-label={`Expand ${menu.label}`}
+                    onClick={() => setOpenMobileGroup(openMobileGroup === menu.key ? null : menu.key)}
                   >
-                    {item.label}
-                  </Link>
-                ))}
+                    <ChevronDown size={20} />
+                  </button>
+                )}
               </div>
+              {menu.items.length > 0 && (
+                <div className={`sp-mobile__sub${openMobileGroup === menu.key ? " sp-mobile__sub--open" : ""}`}>
+                  {menu.items.map((item) => (
+                    <Link
+                      key={item.label}
+                      href={`${menu.href}${item.anchor}`}
+                      onClick={closeNav}
+                      className="sp-mobile__sublink"
+                      {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
           <a
@@ -655,7 +670,16 @@ export const CHROME_CSS = `
 .sp-cta p { margin: 0; color: var(--ink-soft); font-size: 1.05rem; line-height: 1.7; max-width: 520px }
 
 /* ── Simple panel (About / teasers) ── */
-.sp-panel { padding: 52px; border-radius: calc(var(--radius) + 6px); border: 1px solid var(--border); background: radial-gradient(120% 130% at 0% 0%, rgba(106,92,255,.05), transparent 55%), var(--surface); box-shadow: 0 24px 60px -40px rgba(16,25,46,.25) }
+.sp-panel {
+  --cut: 30px;
+  padding: 52px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid var(--border);
+  background: radial-gradient(120% 130% at 0% 0%, rgba(106,92,255,.08), transparent 55%), var(--surface);
+  filter: drop-shadow(0 16px 32px rgba(16,25,46,.12));
+  transition: filter .3s;
+}
+.sp-panel:hover { filter: drop-shadow(0 22px 42px rgba(16,25,46,.16)) }
 .sp-panel h2 { margin: 14px 0 0; font-family: var(--font-display); font-size: clamp(1.5rem, 2.4vw, 1.95rem); font-weight: 700; line-height: 1.22; letter-spacing: -.02em }
 .sp-panel p { margin: 18px 0 0; color: var(--ink-soft); font-size: 1.05rem; line-height: 1.75 }
 .sp-panel p:first-of-type { margin-top: 18px }
@@ -693,7 +717,7 @@ export const CHROME_CSS = `
   .sp-cards--2, .sp-cards--3, .sp-cards--4 { grid-template-columns: 1fr }
   .sp-card { padding: 28px; --cut: 18px }
   .sp-cta { padding: 40px 28px }
-  .sp-panel { padding: 32px }
+  .sp-panel { padding: 32px; --cut: 22px }
   .sp-footer__cols { flex-wrap: wrap; gap: 32px }
   .sp-footer__bottom { flex-direction: column; align-items: flex-start; gap: 10px }
 }

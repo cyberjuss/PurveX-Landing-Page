@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Radar, Search, ShieldCheck, Sliders, Target, Waypoints } from "lucide-react";
+import { ArrowRight, Radar, Search, ShieldCheck, Sliders, Swords, Target, Waypoints } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
 const services = [
@@ -87,12 +87,48 @@ export default function SecurityOperationsPage() {
         </div>
       </section>
 
+      {/* ═══════════ HOW WE THINK ═══════════ */}
+      <section className="sp-section">
+        <div className="sp-head" data-r>
+          <span className="sp-tag">How we think</span>
+          <h2>You cannot defend against tactics you do not understand.</h2>
+          <p>
+            Every detection we build starts from how attackers actually operate, not just what a
+            vendor&apos;s default ruleset assumes. That is the blend of blue team and red team
+            thinking PurveX is built on.
+          </p>
+        </div>
+        <div className="sp-versus" data-r>
+          <div className="sp-versus__side sp-versus__side--blue">
+            <div className="sp-versus__icon">
+              <ShieldCheck size={22} />
+            </div>
+            <span className="sp-versus__label">Blue Team</span>
+            <p>Detect, respond, and defend the environment.</p>
+          </div>
+          <div className="sp-versus__mid">+</div>
+          <div className="sp-versus__side sp-versus__side--red">
+            <div className="sp-versus__icon">
+              <Swords size={22} />
+            </div>
+            <span className="sp-versus__label">Red Team</span>
+            <p>Think and move the way an attacker does.</p>
+          </div>
+        </div>
+        <p className="sp-footnote" data-r>
+          <Link href="/about#how-we-think">Read the full story on how we think →</Link>
+        </p>
+      </section>
+
       {/* ═══════════ HOW WE WORK ═══════════ */}
       <section className="sp-section">
         <div className="sp-head" data-r>
-          <span className="sp-tag">How we work</span>
-          <h2>A simple, repeatable process.</h2>
-          <p>Every engagement moves through the same three stages, so you always know where things stand.</p>
+          <span className="sp-tag">Our goal</span>
+          <h2>Automate what can be automated. Never stop understanding it.</h2>
+          <p>
+            Every engagement moves through the same three stages, so you always know where things
+            stand, and your team understands exactly what changed and why.
+          </p>
         </div>
         <div className="sp-process" data-r>
           {process.map((p) => (
@@ -106,11 +142,6 @@ export default function SecurityOperationsPage() {
             </div>
           ))}
         </div>
-        <p className="sp-footnote" data-r>
-          Every detection we build starts from how attackers actually operate, not just what a
-          vendor&apos;s default ruleset assumes.{" "}
-          <Link href="/about#how-we-think">See how we think about security →</Link>
-        </p>
       </section>
 
       {/* ═══════════ CTA ═══════════ */}
@@ -126,6 +157,19 @@ export default function SecurityOperationsPage() {
       </section>
 
       <style>{`
+.sp-versus { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 20px; max-width: 640px; margin: 0 auto }
+.sp-versus__side { padding: 30px 26px; border-radius: 14px; text-align: center; transition: transform .3s var(--ease) }
+.sp-versus__side:hover { transform: translateY(-3px) }
+.sp-versus__side--blue { background: linear-gradient(160deg, var(--accent-soft), #ffffff); border: 1px solid rgba(106,92,255,.25) }
+.sp-versus__side--red { background: linear-gradient(160deg, rgba(229,72,77,.08), #ffffff); border: 1px solid rgba(229,72,77,.22) }
+.sp-versus__icon { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 13px; margin-bottom: 12px }
+.sp-versus__side--blue .sp-versus__icon { background: var(--accent-soft); color: var(--accent-deep) }
+.sp-versus__side--red .sp-versus__icon { background: rgba(229,72,77,.12); color: var(--red) }
+.sp-versus__label { display: block; font-family: var(--font-display); font-size: 1.02rem; font-weight: 700; letter-spacing: -.01em; color: var(--ink) }
+.sp-versus__side p { margin: 6px 0 0; font-size: .86rem; color: var(--muted); line-height: 1.5 }
+.sp-versus__mid { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border-strong); font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; color: var(--muted-dim); flex-shrink: 0 }
+@media (max-width: 680px) { .sp-versus { grid-template-columns: 1fr; gap: 10px } .sp-versus__mid { justify-self: center } }
+
 .sp-process { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; counter-reset: step }
 .sp-process__step { position: relative; padding: 30px; border-radius: calc(var(--radius) + 2px); border: 1px solid var(--border); background: var(--surface); box-shadow: 0 18px 44px -40px rgba(16,25,46,.28) }
 .sp-process__num { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; letter-spacing: -.03em; color: var(--accent) }
