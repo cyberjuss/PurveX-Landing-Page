@@ -22,7 +22,6 @@ export default function AboutPage() {
       <div className="sp-story">
         {/* ═══════════ INTRO ═══════════ */}
         <div className="sp-story__intro" data-r>
-          <span className="sp-story__kicker">Your friendly neighborhood blue team</span>
           <h1>Blue team. Red team. One discipline.</h1>
           <p>
             PurveX helps organizations strengthen their security operations and develop the
@@ -128,8 +127,7 @@ export default function AboutPage() {
 
       <style>{`
 .sp-story { max-width: 700px; margin: 0 auto; padding-top: 132px }
-.sp-story__kicker { display: inline-flex; align-items: center; padding: 6px 15px; border-radius: 999px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.2); font-size: .74rem; font-weight: 600; color: var(--accent-deep); letter-spacing: .01em }
-.sp-story__intro h1 { margin: 20px 0 0; font-family: var(--font-display); font-size: clamp(2.3rem, 4.6vw, 3.4rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; color: var(--ink); text-wrap: balance }
+.sp-story__intro h1 { margin: 0; font-family: var(--font-display); font-size: clamp(2.3rem, 4.6vw, 3.4rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; color: var(--ink); text-wrap: balance }
 .sp-story__intro p { margin: 22px 0 0; font-size: 1.1rem; line-height: 1.7; color: var(--ink-soft); max-width: 560px }
 
 .sp-story__thread { position: relative; margin-top: 96px; padding-left: 52px }
