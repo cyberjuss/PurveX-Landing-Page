@@ -22,13 +22,12 @@ import { Linkedin, Menu, X } from "lucide-react";
    ───────────────────────────────────────────────────────── */
 export const BOOKING_URL = "https://calendly.com/purvex-llc/30min";
 
-export type NavKey = "home" | "security-operations" | "training" | "about" | "contact";
+export type NavKey = "home" | "security-operations" | "training" | "about";
 
 const NAV_ITEMS: { key: NavKey; label: string; href: string }[] = [
   { key: "security-operations", label: "Security Operations", href: "/security-operations" },
   { key: "training", label: "Cybersecurity Training", href: "/cybersecurity-training" },
   { key: "about", label: "About", href: "/about" },
-  { key: "contact", label: "Contact", href: "/contact" },
 ];
 
 export function SiteChrome({
@@ -121,9 +120,9 @@ export function SiteChrome({
             ))}
           </nav>
           <div className="sp-nav__right">
-            <Link href="/contact" className="sp-btn sp-btn--prim sp-btn--sm">
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--sm">
               Let&apos;s Work Together
-            </Link>
+            </a>
             <button className="sp-nav__burger" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
               {mobileOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
@@ -138,9 +137,15 @@ export function SiteChrome({
               {item.label}
             </Link>
           ))}
-          <Link href="/contact" onClick={closeNav} className="sp-btn sp-btn--prim sp-btn--lg sp-btn--full">
+          <a
+            href={BOOKING_URL}
+            target="_blank"
+            rel="noreferrer"
+            onClick={closeNav}
+            className="sp-btn sp-btn--prim sp-btn--lg sp-btn--full"
+          >
             Let&apos;s Work Together
-          </Link>
+          </a>
         </nav>
       </div>
 
@@ -161,7 +166,6 @@ export function SiteChrome({
               <Link href="/security-operations">Security Operations</Link>
               <Link href="/cybersecurity-training">Cybersecurity Training</Link>
               <Link href="/about">About</Link>
-              <Link href="/contact">Contact</Link>
             </div>
             <div className="sp-footer__col">
               <h4>Platform</h4>
@@ -212,7 +216,7 @@ export const CHROME_CSS = `
   --green: #16a34a;
   --red: #e5484d;
   --radius: 16px;
-  --font-display: var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-inter), system-ui, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --ease: cubic-bezier(.16,1,.3,1);
@@ -253,11 +257,11 @@ export const CHROME_CSS = `
 .sp-nav { position: sticky; top: 0; z-index: 50; padding: 0 24px; transition: background .35s, backdrop-filter .35s, box-shadow .35s, border-color .35s; border-bottom: 1px solid transparent }
 .sp-nav--s { background: rgba(251,252,254,.82); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3); border-bottom: 1px solid var(--border) }
 .sp-nav__inner { max-width: 1140px; margin: 0 auto; display: grid; grid-template-columns: auto 1fr auto; align-items: center; height: 66px }
-.sp-logo { display: inline-flex; align-items: center; gap: 9px; justify-self: start; font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; color: var(--ink); text-decoration: none; letter-spacing: -.02em }
+.sp-logo { display: inline-flex; align-items: center; gap: 9px; justify-self: start; font-family: var(--font-display); font-weight: 650; font-size: 1.2rem; color: var(--ink); text-decoration: none; letter-spacing: -.015em }
 .sp-logo__img { border-radius: 8px }
-.sp-nav .sp-logo { font-size: 1.5rem; gap: 11px }
-.sp-nav__links { display: flex; gap: 30px; justify-self: center }
-.sp-nav__links a { font-size: .86rem; font-weight: 550; color: var(--muted); text-decoration: none; transition: color .2s }
+.sp-nav .sp-logo { font-size: 1.3rem; gap: 10px }
+.sp-nav__links { display: flex; gap: 34px; justify-self: center }
+.sp-nav__links a { font-size: .87rem; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .2s }
 .sp-nav__links a:hover { color: var(--ink) }
 .sp-nav__link--active { color: var(--ink) !important }
 .sp-nav__right { display: flex; align-items: center; gap: 10px; justify-self: end }
@@ -296,61 +300,61 @@ export const CHROME_CSS = `
 @media (prefers-reduced-motion: reduce) { .sp-mobile--open .sp-mobile__nav > * { animation: none; opacity: 1 } }
 
 /* ── Main ── */
-.sp-main { position: relative; z-index: 1; max-width: 1140px; margin: 0 auto; padding: 0 24px 96px }
+.sp-main { position: relative; z-index: 1; max-width: 1140px; margin: 0 auto; padding: 0 24px 48px }
 
 /* ── Hero ── */
-.sp-hero { text-align: center; padding: 90px 0 0; max-width: 820px; margin: 0 auto }
-.sp-hero__badge { display: inline-flex; align-items: center; gap: 7px; padding: 6px 15px; border-radius: 999px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.2); font-size: .74rem; font-weight: 650; color: var(--accent-deep); letter-spacing: .01em; margin-bottom: 22px }
-.sp-hero__h1 { margin: 0; font-family: var(--font-display); font-size: clamp(1.9rem, 3.8vw, 2.9rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; color: var(--ink); text-wrap: balance }
+.sp-hero { text-align: center; padding: 116px 0 0; max-width: 760px; margin: 0 auto }
+.sp-hero__badge { display: inline-flex; align-items: center; gap: 7px; padding: 6px 15px; border-radius: 999px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.2); font-size: .74rem; font-weight: 600; color: var(--accent-deep); letter-spacing: .01em; margin-bottom: 26px }
+.sp-hero__h1 { margin: 0; font-family: var(--font-display); font-size: clamp(2.1rem, 4vw, 3.1rem); font-weight: 700; line-height: 1.12; letter-spacing: -.025em; color: var(--ink); text-wrap: balance }
 .sp-hero__grad { color: var(--accent-deep) }
-.sp-hero__sub { margin: 22px auto 0; max-width: 620px; color: var(--ink-soft); font-size: 1.06rem; line-height: 1.72 }
-.sp-hero__actions { margin: 30px auto 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap }
-.sp-hero__strip { margin: 34px auto 0; color: var(--muted); font-size: .84rem; font-weight: 550; letter-spacing: .01em }
+.sp-hero__sub { margin: 24px auto 0; max-width: 600px; color: var(--ink-soft); font-size: 1.125rem; line-height: 1.65 }
+.sp-hero__actions { margin: 38px auto 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap }
+.sp-hero__strip { margin: 44px auto 0; color: var(--muted); font-size: .84rem; font-weight: 500; letter-spacing: .01em }
 
 /* ── Sections ── */
-.sp-section { padding-top: 108px; scroll-margin-top: 84px }
-.sp-section--tight { padding-top: 72px }
-.sp-head { text-align: center; max-width: 640px; margin: 0 auto 44px }
+.sp-section { padding-top: 132px; scroll-margin-top: 84px }
+.sp-section--tight { padding-top: 88px }
+.sp-head { text-align: center; max-width: 620px; margin: 0 auto 56px }
 .sp-head--left { text-align: left; max-width: 720px; margin: 0 0 32px }
-.sp-head h2 { margin: 12px 0 0; font-family: var(--font-display); font-size: clamp(1.65rem, 3.4vw, 2.5rem); font-weight: 700; line-height: 1.14; letter-spacing: -.032em; color: var(--ink) }
-.sp-head p { margin: 16px auto 0; color: var(--muted); font-size: 1rem; line-height: 1.7; max-width: 560px }
+.sp-head h2 { margin: 14px 0 0; font-family: var(--font-display); font-size: clamp(1.6rem, 2.9vw, 2.25rem); font-weight: 700; line-height: 1.2; letter-spacing: -.02em; color: var(--ink) }
+.sp-head p { margin: 18px auto 0; color: var(--muted); font-size: 1.05rem; line-height: 1.7; max-width: 560px }
 .sp-head--left p { margin-left: 0 }
-.sp-tag { display: inline-block; font-size: .72rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; color: var(--accent-deep) }
+.sp-tag { display: inline-block; font-size: .74rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
 
 /* ── Generic card grid (services / features) ── */
-.sp-cards { display: grid; gap: 20px }
+.sp-cards { display: grid; gap: 24px }
 .sp-cards--2 { grid-template-columns: repeat(2, 1fr) }
 .sp-cards--3 { grid-template-columns: repeat(3, 1fr) }
 .sp-cards--4 { grid-template-columns: repeat(2, 1fr) }
-.sp-card { position: relative; display: flex; flex-direction: column; padding: 30px; border-radius: calc(var(--radius) + 4px); border: 1px solid var(--border); background: var(--surface); box-shadow: 0 20px 50px -40px rgba(16,25,46,.3); transition: transform .3s var(--ease), border-color .3s, box-shadow .3s }
+.sp-card { position: relative; display: flex; flex-direction: column; padding: 36px; border-radius: calc(var(--radius) + 4px); border: 1px solid var(--border); background: var(--surface); box-shadow: 0 20px 50px -40px rgba(16,25,46,.3); transition: transform .3s var(--ease), border-color .3s, box-shadow .3s }
 .sp-card:hover { transform: translateY(-4px); border-color: var(--border-strong); box-shadow: 0 30px 60px -40px rgba(16,25,46,.35) }
-.sp-card__icon { display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 14px; background: linear-gradient(135deg, var(--accent-soft), #ffffff); border: 1px solid rgba(106,92,255,.2); color: var(--accent-deep); box-shadow: 0 8px 20px -12px rgba(106,92,255,.5); transition: transform .35s var(--ease) }
+.sp-card__icon { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 13px; background: linear-gradient(135deg, var(--accent-soft), #ffffff); border: 1px solid rgba(106,92,255,.2); color: var(--accent-deep); box-shadow: 0 8px 20px -12px rgba(106,92,255,.5); transition: transform .35s var(--ease) }
 .sp-card:hover .sp-card__icon { transform: translateY(-2px) scale(1.06) }
-.sp-card__title { margin: 20px 0 0; font-family: var(--font-display); font-size: 1.22rem; font-weight: 700; letter-spacing: -.025em; color: var(--ink) }
-.sp-card__body { margin: 10px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.65; flex: 1 }
-.sp-card__link { display: inline-flex; align-items: center; gap: 7px; margin-top: 18px; font-size: .9rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
+.sp-card__title { margin: 22px 0 0; font-family: var(--font-display); font-size: 1.15rem; font-weight: 650; letter-spacing: -.015em; color: var(--ink) }
+.sp-card__body { margin: 12px 0 0; color: var(--muted); font-size: .95rem; line-height: 1.7; flex: 1 }
+.sp-card__link { display: inline-flex; align-items: center; gap: 7px; margin-top: 20px; font-size: .9rem; font-weight: 600; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
 .sp-card:hover .sp-card__link { gap: 11px }
 
 /* ── CTA banner ── */
-.sp-cta { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px; padding: 48px; border-radius: calc(var(--radius) + 8px); border: 1px solid rgba(106,92,255,.22); background: linear-gradient(135deg, #f4f3ff 0%, #ffffff 60%); box-shadow: 0 30px 70px -46px rgba(85,70,224,.5) }
-.sp-cta h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.4rem, 2.8vw, 1.9rem); font-weight: 700; letter-spacing: -.03em; color: var(--ink); max-width: 560px }
-.sp-cta p { margin: 0; color: var(--ink-soft); font-size: 1rem; line-height: 1.7; max-width: 520px }
+.sp-cta { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding: 60px 48px; border-radius: calc(var(--radius) + 8px); border: 1px solid rgba(106,92,255,.22); background: linear-gradient(135deg, #f4f3ff 0%, #ffffff 60%); box-shadow: 0 30px 70px -46px rgba(85,70,224,.5) }
+.sp-cta h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.4rem, 2.4vw, 1.85rem); font-weight: 700; letter-spacing: -.02em; color: var(--ink); max-width: 560px }
+.sp-cta p { margin: 0; color: var(--ink-soft); font-size: 1.05rem; line-height: 1.7; max-width: 520px }
 
 /* ── Simple panel (About / teasers) ── */
-.sp-panel { padding: 44px; border-radius: calc(var(--radius) + 6px); border: 1px solid var(--border); background: radial-gradient(120% 130% at 0% 0%, rgba(106,92,255,.05), transparent 55%), var(--surface); box-shadow: 0 24px 60px -40px rgba(16,25,46,.25) }
-.sp-panel h2 { margin: 12px 0 0; font-family: var(--font-display); font-size: clamp(1.5rem, 2.8vw, 2.1rem); font-weight: 700; line-height: 1.16; letter-spacing: -.03em }
-.sp-panel p { margin: 16px 0 0; color: var(--ink-soft); font-size: 1rem; line-height: 1.78 }
-.sp-panel p:first-of-type { margin-top: 16px }
+.sp-panel { padding: 52px; border-radius: calc(var(--radius) + 6px); border: 1px solid var(--border); background: radial-gradient(120% 130% at 0% 0%, rgba(106,92,255,.05), transparent 55%), var(--surface); box-shadow: 0 24px 60px -40px rgba(16,25,46,.25) }
+.sp-panel h2 { margin: 14px 0 0; font-family: var(--font-display); font-size: clamp(1.5rem, 2.4vw, 1.95rem); font-weight: 700; line-height: 1.22; letter-spacing: -.02em }
+.sp-panel p { margin: 18px 0 0; color: var(--ink-soft); font-size: 1.05rem; line-height: 1.75 }
+.sp-panel p:first-of-type { margin-top: 18px }
 
 /* ── Footer ── */
-.sp-footer { border-top: 1px solid var(--border); max-width: 1140px; margin: 0 auto; padding: 40px 24px 28px }
+.sp-footer { border-top: 1px solid var(--border); max-width: 1140px; margin: 96px auto 0; padding: 56px 24px 32px }
 .sp-footer__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px }
 .sp-footer__brand { max-width: 280px }
-.sp-footer__brand p { margin: 12px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.65 }
-.sp-footer__cols { display: flex; gap: 52px }
-.sp-footer__col { display: flex; flex-direction: column; gap: 10px }
-.sp-footer__col h4 { margin: 0 0 4px; font-size: .68rem; text-transform: uppercase; letter-spacing: .11em; color: var(--muted-dim); font-weight: 700 }
-.sp-footer__col a { color: var(--muted); font-size: .86rem; text-decoration: none; transition: color .2s }
+.sp-footer__brand p { margin: 12px 0 0; color: var(--muted); font-size: .89rem; line-height: 1.65 }
+.sp-footer__cols { display: flex; gap: 56px }
+.sp-footer__col { display: flex; flex-direction: column; gap: 12px }
+.sp-footer__col h4 { margin: 0 0 4px; font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted-dim); font-weight: 600 }
+.sp-footer__col a { color: var(--muted); font-size: .87rem; text-decoration: none; transition: color .2s }
 .sp-footer__col a:hover { color: var(--accent-deep) }
 .sp-footer__bottom { border-top: 1px solid var(--border); margin-top: 32px; padding-top: 20px; display: flex; align-items: center; justify-content: space-between; color: var(--muted-dim); font-size: .8rem }
 .sp-footer__bottom a { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; font-weight: 600; transition: color .2s }
@@ -367,14 +371,15 @@ export const CHROME_CSS = `
   .sp-nav__links { display: none }
   .sp-nav__burger { display: flex }
   .sp-nav__right .sp-btn { display: none }
-  .sp-hero { padding-top: 60px }
+  .sp-hero { padding-top: 64px }
   .sp-hero__actions { flex-direction: column }
   .sp-hero__actions .sp-btn { width: 100% }
-  .sp-section { padding-top: 80px }
+  .sp-section { padding-top: 88px }
+  .sp-head { margin-bottom: 40px }
   .sp-cards--2, .sp-cards--3, .sp-cards--4 { grid-template-columns: 1fr }
-  .sp-card { padding: 26px }
-  .sp-cta { padding: 32px }
-  .sp-panel { padding: 30px }
+  .sp-card { padding: 28px }
+  .sp-cta { padding: 40px 28px }
+  .sp-panel { padding: 32px }
   .sp-footer__cols { flex-wrap: wrap; gap: 32px }
   .sp-footer__bottom { flex-direction: column; align-items: flex-start; gap: 10px }
 }

@@ -567,7 +567,7 @@ export default function PlatformPage() {
   --green: #16a34a;
   --red: #e5484d;
   --radius: 16px;
-  --font-display: var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-inter), system-ui, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --ease: cubic-bezier(.16,1,.3,1);

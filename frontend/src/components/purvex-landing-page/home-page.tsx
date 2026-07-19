@@ -37,9 +37,9 @@ export default function HomePage() {
           <a href="#how-we-help" className="sp-btn sp-btn--prim sp-btn--lg">
             Explore Our Services <ArrowRight size={16} />
           </a>
-          <Link href="/contact" className="sp-btn sp-btn--ghost sp-btn--lg">
+          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--ghost sp-btn--lg">
             Work With PurveX
-          </Link>
+          </a>
         </div>
         <p className="sp-hero__strip">Security Operations • Detection Engineering • Cybersecurity Training</p>
       </section>
