@@ -69,13 +69,29 @@ const slides = [
   },
 ];
 
-// TODO: replace placeholder quote once received.
+// TODO: replace placeholder quotes once received. Drop a headshot in
+// /public and set `photo` (e.g. "/kenneth-ellington.jpg"), or set
+// `logo` to a company logo path — either renders in place of the
+// initial. `role` should be "Founder, Company" once confirmed.
+// `services` lists which PurveX offering(s) they used, shown as tags.
 const testimonials = [
   {
     quote: "Add Kenneth's quote here once received.",
     name: "Kenneth Ellington",
     role: "",
     linkedin: "https://www.linkedin.com/in/kenneth-ellington/",
+    photo: "",
+    logo: "",
+    services: [] as string[],
+  },
+  {
+    quote: "Add quote here once received.",
+    name: "Add name here", // TODO: confirm name — LinkedIn slug alone isn't a reliable source
+    role: "", // e.g. "Founder, Company Name"
+    linkedin: "https://www.linkedin.com/in/symonedb/",
+    photo: "",
+    logo: "",
+    services: [] as string[], // e.g. ["Security Operations"]
   },
 ];
 
@@ -221,8 +237,25 @@ export default function HomePage() {
             <div key={t.name} className="sp-testimonial">
               <Quote size={32} className="sp-testimonial__mark" />
               <p className="sp-testimonial__quote">{t.quote}</p>
+              {t.services.length > 0 && (
+                <div className="sp-testimonial__services">
+                  {t.services.map((s) => (
+                    <span key={s} className="sp-tagchip">
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              )}
               <a href={t.linkedin} target="_blank" rel="noreferrer" className="sp-testimonial__author">
-                <span className="sp-testimonial__avatar">{t.name.charAt(0)}</span>
+                {t.photo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={t.photo} alt={t.name} className="sp-testimonial__photo" />
+                ) : t.logo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={t.logo} alt="" className="sp-testimonial__logo" />
+                ) : (
+                  <span className="sp-testimonial__avatar">{t.name.charAt(0)}</span>
+                )}
                 <span>
                   <strong>{t.name}</strong>
                   {t.role && <em>{t.role}</em>}
@@ -285,8 +318,12 @@ export default function HomePage() {
 .sp-testimonial:hover { transform: translateY(-3px) }
 .sp-testimonial__mark { color: var(--accent); opacity: .35 }
 .sp-testimonial__quote { margin: 18px 0 0; font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; line-height: 1.5; letter-spacing: -.015em; color: var(--ink) }
+.sp-testimonial__services { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px }
+.sp-tagchip { font-size: .74rem; font-weight: 550; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); border-radius: 999px; padding: 5px 11px }
 .sp-testimonial__author { display: flex; align-items: center; gap: 14px; margin-top: 30px; padding-top: 26px; border-top: 1px solid var(--border); text-decoration: none; color: inherit }
 .sp-testimonial__avatar { display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; flex-shrink: 0; box-shadow: 0 8px 18px -8px rgba(85,70,224,.5) }
+.sp-testimonial__photo { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; flex-shrink: 0; box-shadow: 0 8px 18px -8px rgba(16,25,46,.3) }
+.sp-testimonial__logo { width: 46px; height: 46px; border-radius: 10px; object-fit: contain; padding: 6px; background: var(--surface-alt); border: 1px solid var(--border); flex-shrink: 0 }
 .sp-testimonial__author strong { display: block; font-size: .96rem; font-weight: 650; color: var(--ink) }
 .sp-testimonial__author em { display: block; margin-top: 2px; font-style: normal; font-size: .84rem; color: var(--muted) }
 .sp-testimonial__linkedin { margin-left: auto; color: var(--muted-dim); transition: color .2s }
