@@ -74,6 +74,11 @@ export default function TrainingPage() {
               curriculum with experienced instruction, practical labs, and real-world security
               scenarios.
             </p>
+            <p className="sp-partner__note">
+              Learners are taught the blend of blue team and red team thinking: you cannot
+              defend against tactics you do not understand.{" "}
+              <Link href="/about#how-we-think">See how we think about security →</Link>
+            </p>
           </div>
           <div className="sp-partner__visual">
             <div className="sp-partner__chip">
@@ -87,11 +92,6 @@ export default function TrainingPage() {
             </div>
           </div>
         </div>
-        <p className="sp-footnote" data-r>
-          Learners are taught the blend of blue team and red team thinking: you cannot defend
-          against tactics you do not understand.{" "}
-          <Link href="/about#how-we-think">See how we think about security →</Link>
-        </p>
       </section>
 
       {/* ═══════════ SYLLABUS ═══════════ */}
@@ -178,6 +178,9 @@ export default function TrainingPage() {
 }
 .sp-partner h2 { margin: 14px 0 0; font-family: var(--font-display); font-size: clamp(1.5rem, 2.4vw, 1.95rem); font-weight: 700; line-height: 1.22; letter-spacing: -.02em; color: var(--ink) }
 .sp-partner p { margin: 18px 0 0; color: var(--ink-soft); font-size: 1.02rem; line-height: 1.75 }
+.sp-partner__note { margin-top: 22px !important; padding-top: 20px; border-top: 1px dashed var(--border-strong); font-size: .88rem !important; line-height: 1.65 !important; color: var(--muted) !important }
+.sp-partner__note a { color: var(--accent-deep); font-weight: 600; text-decoration: none }
+.sp-partner__note a:hover { text-decoration: underline }
 .sp-partner__visual { display: flex; flex-direction: column; align-items: center; gap: 10px }
 .sp-partner__chip { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; padding: 20px 16px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface-alt); text-align: center; transition: transform .3s var(--ease) }
 .sp-partner__chip:hover { transform: translateY(-2px) }
