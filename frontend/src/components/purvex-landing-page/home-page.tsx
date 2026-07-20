@@ -304,11 +304,13 @@ export default function HomePage() {
 .sp-carousel__arrow:hover { border-color: var(--accent); color: var(--accent-deep); transform: scale(1.06) }
 
 /* ── Testimonials ── */
-.sp-testimonials { max-width: 720px; margin: 0 auto; display: grid; gap: 24px }
+.sp-testimonials { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: stretch }
 .sp-testimonial {
   --cut: 26px;
   position: relative;
-  padding: 48px 52px;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 40px;
   clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
   border: 1px solid var(--border);
   background: radial-gradient(130% 140% at 0% 0%, rgba(106,92,255,.06), transparent 55%), var(--surface);
@@ -320,7 +322,7 @@ export default function HomePage() {
 .sp-testimonial__quote { margin: 18px 0 0; font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; line-height: 1.5; letter-spacing: -.015em; color: var(--ink) }
 .sp-testimonial__services { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px }
 .sp-tagchip { font-size: .74rem; font-weight: 550; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); border-radius: 999px; padding: 5px 11px }
-.sp-testimonial__author { display: flex; align-items: center; gap: 14px; margin-top: 30px; padding-top: 26px; border-top: 1px solid var(--border); text-decoration: none; color: inherit }
+.sp-testimonial__author { display: flex; align-items: center; gap: 14px; margin-top: auto; padding-top: 26px; border-top: 1px solid var(--border); text-decoration: none; color: inherit }
 .sp-testimonial__avatar { display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; flex-shrink: 0; box-shadow: 0 8px 18px -8px rgba(85,70,224,.5) }
 .sp-testimonial__photo { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; flex-shrink: 0; box-shadow: 0 8px 18px -8px rgba(16,25,46,.3) }
 .sp-testimonial__logo { width: 46px; height: 46px; border-radius: 10px; object-fit: contain; padding: 6px; background: var(--surface-alt); border: 1px solid var(--border); flex-shrink: 0 }
@@ -329,6 +331,7 @@ export default function HomePage() {
 .sp-testimonial__linkedin { margin-left: auto; color: var(--muted-dim); transition: color .2s }
 .sp-testimonial__author:hover .sp-testimonial__linkedin { color: var(--accent-deep) }
 
+@media (max-width: 860px) { .sp-testimonials { grid-template-columns: 1fr } }
 @media (max-width: 680px) { .sp-testimonial { padding: 36px 30px } }
 
 @media (max-width: 940px) {
