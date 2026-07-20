@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
-  Brain,
   Check,
   ChevronDown,
   ChevronLeft,
@@ -12,7 +11,6 @@ import {
   Radar,
   ShieldCheck,
   Users,
-  Zap,
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
@@ -49,19 +47,6 @@ const slides = [
     cta: "See what we are building",
     href: "/platform",
     external: false,
-  },
-];
-
-const automation = [
-  {
-    icon: Zap,
-    title: "Automate the repeatable",
-    body: "Triage, correlation, and first-pass investigation get automated, so analysts spend their time on judgment calls, not repetitive tickets.",
-  },
-  {
-    icon: Brain,
-    title: "AI accelerates, it does not replace judgment",
-    body: "AI speeds up pattern recognition and triage. Knowing what actually matters still comes from real experience.",
   },
 ];
 
@@ -189,45 +174,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ WHO WE ARE — plain text, no visual ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-statement" data-r>
-          <span className="sp-tag">Who we are</span>
-          <h2>You work directly with the practitioner.</h2>
-          <p>
-            The person doing your security operations work is the same one teaching in the
-            field. You get real experience, not a script.
-          </p>
-          <p>No sales layer. The best way to see if we are a fit is a quick conversation.</p>
-          <Link href="/about#how-we-think" className="sp-statement__link">
-            See how we think about security <ArrowRight size={14} />
-          </Link>
-        </div>
-      </section>
-
-      {/* ═══════════ AUTOMATION & AI ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-head" data-r>
-          <span className="sp-tag">Why it matters</span>
-          <h2>SOCs run on repetition. Automation and AI should carry that weight.</h2>
-          <p>
-            Alert triage, correlation, and first-pass investigation are mostly repeatable, and
-            repeatable work should not eat an analyst&apos;s day. Automating what can be
-            automated, and using AI to speed up triage and pattern recognition, frees people for
-            the judgment calls that actually need one.
-          </p>
-        </div>
-        <div className="sp-cards sp-cards--2" data-r>
-          {automation.map((a) => (
-            <article key={a.title} className="sp-card">
-              <div className="sp-card__icon">
-                <a.icon size={20} />
-              </div>
-              <h3 className="sp-card__title">{a.title}</h3>
-              <p className="sp-card__body">{a.body}</p>
-            </article>
-          ))}
-        </div>
+      {/* ═══════════ TOOLS & CERTS ═══════════ */}
+      <section className="sp-section sp-section--tight">
         <div className="sp-tools" data-r>
           <span className="sp-tools__label">Tools &amp; certs</span>
           <div className="sp-tools__chips">
