@@ -13,6 +13,24 @@ import {
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
+const problems = [
+  {
+    icon: ShieldCheck,
+    title: "Alerts without answers",
+    body: "Your tools are running, but nobody can say with confidence they would catch a real attack.",
+  },
+  {
+    icon: Users,
+    title: "Training that stops at theory",
+    body: "Programs teach the concepts. Employers need analysts who can already do the job.",
+  },
+  {
+    icon: Radar,
+    title: "Coverage nobody has tested",
+    body: "Detections exist on paper. Nobody has actually watched them fire.",
+  },
+];
+
 const slides = [
   {
     key: "security-operations",
@@ -100,6 +118,25 @@ export default function HomePage() {
           </a>
         </div>
         <p className="sp-hero__strip">With great visibility comes great responsibility.</p>
+      </section>
+
+      {/* ═══════════ PROBLEMS WE SOLVE ═══════════ */}
+      <section className="sp-section">
+        <div className="sp-head" data-r>
+          <span className="sp-tag">Sound familiar?</span>
+          <h2>The problems we solve.</h2>
+        </div>
+        <div className="sp-cards sp-cards--3" data-r>
+          {problems.map((p) => (
+            <article key={p.title} className="sp-card">
+              <div className="sp-card__icon">
+                <p.icon size={20} />
+              </div>
+              <h3 className="sp-card__title">{p.title}</h3>
+              <p className="sp-card__body">{p.body}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
       {/* ═══════════ HOW WE HELP — CAROUSEL ═══════════ */}
