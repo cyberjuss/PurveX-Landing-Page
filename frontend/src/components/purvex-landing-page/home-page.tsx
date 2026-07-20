@@ -4,15 +4,15 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
+  Brain,
   Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Compass,
-  MessageSquare,
   Radar,
   ShieldCheck,
   Users,
+  Zap,
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
@@ -52,21 +52,16 @@ const slides = [
   },
 ];
 
-const differentiators = [
+const automation = [
   {
-    icon: MessageSquare,
-    title: "Real feedback, not a form letter",
-    body: "We look at your actual environment or work and show you what is strong and where to tighten up.",
+    icon: Zap,
+    title: "Automate the repeatable",
+    body: "Triage, correlation, and first-pass investigation get automated, so analysts spend their time on judgment calls, not repetitive tickets.",
   },
   {
-    icon: Users,
-    title: "Direct access, no sales layer",
-    body: "You work with the person doing the security work or teaching, not an account manager.",
-  },
-  {
-    icon: Compass,
-    title: "Judgment, not just checklists",
-    body: "Knowing what to prioritize when everything looks urgent comes from real experience, not a script.",
+    icon: Brain,
+    title: "AI accelerates, it does not replace judgment",
+    body: "AI speeds up pattern recognition and triage. Knowing what actually matters still comes from real experience.",
   },
 ];
 
@@ -220,21 +215,29 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ WHAT SETS IT APART ═══════════ */}
+      {/* ═══════════ AUTOMATION & AI — cardless ═══════════ */}
       <section className="sp-section">
-        <div className="sp-head" data-r>
-          <span className="sp-tag">What sets it apart</span>
-          <h2>Results come from people, not just process.</h2>
+        <div className="sp-statement" data-r>
+          <span className="sp-tag">Why it matters</span>
+          <h2>SOCs run on repetition. Automation and AI should carry that weight.</h2>
+          <p>
+            Alert triage, correlation, and first-pass investigation are mostly repeatable, and
+            repeatable work should not eat an analyst&apos;s day. Automating what can be
+            automated, and using AI to speed up triage and pattern recognition, frees people for
+            the judgment calls that actually need one.
+          </p>
         </div>
-        <div className="sp-cards sp-cards--3" data-r>
-          {differentiators.map((d) => (
-            <article key={d.title} className="sp-card">
-              <div className="sp-card__icon">
-                <d.icon size={20} />
+        <div className="sp-points" data-r>
+          {automation.map((a) => (
+            <div key={a.title} className="sp-points__item">
+              <div className="sp-points__icon">
+                <a.icon size={18} />
               </div>
-              <h3 className="sp-card__title">{d.title}</h3>
-              <p className="sp-card__body">{d.body}</p>
-            </article>
+              <div>
+                <strong>{a.title}</strong>
+                <span>{a.body}</span>
+              </div>
+            </div>
           ))}
         </div>
         <div className="sp-tools" data-r>
@@ -311,6 +314,14 @@ export default function HomePage() {
 .sp-carousel__dots { display: flex; justify-content: center; gap: 8px; margin-top: 20px }
 .sp-carousel__dot { width: 8px; height: 8px; border-radius: 50%; border: 0; background: var(--border-strong); cursor: pointer; padding: 0; transition: background .2s, width .2s }
 .sp-carousel__dot--active { background: var(--accent-deep); width: 22px; border-radius: 5px }
+
+/* ── Automation points — cardless ── */
+.sp-points { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; max-width: 780px; margin: 36px auto 0 }
+.sp-points__item { display: flex; gap: 14px; align-items: flex-start }
+.sp-points__icon { flex-shrink: 0; width: 38px; height: 38px; border-radius: 11px; background: var(--accent-soft); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; margin-top: 2px }
+.sp-points__item strong { display: block; font-size: .98rem; font-weight: 650; color: var(--ink) }
+.sp-points__item span { display: block; margin-top: 6px; font-size: .9rem; color: var(--muted); line-height: 1.6 }
+@media (max-width: 680px) { .sp-points { grid-template-columns: 1fr } }
 
 /* ── Tools strip ── */
 .sp-tools { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin-top: 24px; padding: 18px 24px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface-alt) }
