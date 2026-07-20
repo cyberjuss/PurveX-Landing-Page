@@ -45,13 +45,10 @@ export default function TrainingPage() {
         <span className="sp-hero__badge">
           <GraduationCap size={13} /> Cybersecurity Training
         </span>
-        <h1 className="sp-hero__h1">
-          Practical Cybersecurity Training for the Next Generation of Security Professionals
-        </h1>
+        <h1 className="sp-hero__h1">Training Built for the Job, Not the Textbook.</h1>
         <p className="sp-hero__sub">
-          PurveX partners with cybersecurity academies, workforce development programs, and
-          educational organizations to provide hands-on instruction built around real-world
-          security operations.
+          PurveX partners with cybersecurity academies and workforce programs on hands-on
+          instruction built around real security operations.
         </p>
       </section>
 
