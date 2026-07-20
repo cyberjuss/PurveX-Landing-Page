@@ -40,26 +40,46 @@ const tools = ["Microsoft Sentinel", "Splunk", "KQL / SPL", "Security+", "CySA+"
 export default function TrainingPage() {
   return (
     <SiteChrome active="training">
-      {/* ═══════════ HERO ═══════════ */}
-      <section className="sp-hero">
-        <span className="sp-hero__badge">
-          <GraduationCap size={13} /> Cybersecurity Training
-        </span>
-        <h1 className="sp-hero__h1">Training Built for the Job, Not the Textbook.</h1>
-        <p className="sp-hero__sub">
-          PurveX partners with cybersecurity academies and workforce programs on hands-on
-          instruction built around real security operations.
-        </p>
-        <div className="sp-hero__facts">
-          <span>
-            <Layers size={14} /> 7-module curriculum
+      {/* ═══════════ HERO — split copy + live curriculum preview ═══════════ */}
+      <section className="sp-hero sp-hero--split">
+        <div className="sp-hero__copy">
+          <span className="sp-hero__badge">
+            <GraduationCap size={13} /> Cybersecurity Training
           </span>
-          <span>
-            <FlaskConical size={14} /> Hands-on labs
-          </span>
-          <span>
-            <Users size={14} /> Instructor-led
-          </span>
+          <h1 className="sp-hero__h1">Training Built for the Job, Not the Textbook.</h1>
+          <p className="sp-hero__sub">
+            PurveX partners with cybersecurity academies and workforce programs on hands-on
+            instruction built around real security operations.
+          </p>
+          <div className="sp-hero__facts">
+            <span>
+              <Layers size={14} /> 7-module curriculum
+            </span>
+            <span>
+              <FlaskConical size={14} /> Hands-on labs
+            </span>
+            <span>
+              <Users size={14} /> Instructor-led
+            </span>
+          </div>
+          <a href="#syllabus" className="sp-btn sp-btn--prim sp-btn--lg">
+            See the Curriculum <ArrowRight size={16} />
+          </a>
+        </div>
+        <div className="sp-hero__preview" data-r>
+          <div className="sp-syllabus-mini">
+            <div className="sp-syllabus-mini__head">
+              <GraduationCap size={13} /> curriculum.json
+            </div>
+            <div className="sp-syllabus-mini__list">
+              {curriculum.slice(0, 3).map((c) => (
+                <div key={c.title} className="sp-syllabus-mini__row">
+                  <strong>{c.mod}</strong>
+                  <h3>{c.title}</h3>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -95,7 +115,7 @@ export default function TrainingPage() {
       </section>
 
       {/* ═══════════ SYLLABUS ═══════════ */}
-      <section className="sp-section">
+      <section className="sp-section" id="syllabus">
         <div className="sp-head" data-r>
           <span className="sp-tag">The syllabus</span>
           <h2>From fundamentals to a full training partnership.</h2>
@@ -162,10 +182,42 @@ export default function TrainingPage() {
       </section>
 
       <style>{`
-/* ── Hero facts strip ── */
-.sp-hero__facts { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px 28px; margin-top: 32px }
+/* ── Hero, split: copy left, live curriculum preview right ── */
+.sp-hero.sp-hero--split { text-align: left; max-width: 1140px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center }
+.sp-hero--split .sp-hero__badge { margin-bottom: 22px }
+.sp-hero--split .sp-hero__h1 { text-align: left }
+.sp-hero--split .sp-hero__sub { margin: 22px 0 0; max-width: 480px; text-align: left }
+.sp-hero--split .sp-btn { margin-top: 34px }
+.sp-hero__facts { display: flex; justify-content: flex-start; flex-wrap: wrap; gap: 10px 28px; margin-top: 28px }
 .sp-hero__facts span { display: inline-flex; align-items: center; gap: 7px; font-size: .84rem; font-weight: 600; color: var(--muted) }
 .sp-hero__facts svg { color: var(--accent-deep) }
+
+.sp-hero__preview { perspective: 1200px }
+.sp-syllabus-mini {
+  --cut: 16px;
+  max-width: 420px; margin-left: auto;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid var(--border);
+  background: var(--surface);
+  overflow: hidden;
+  filter: drop-shadow(0 20px 40px rgba(16,25,46,.14));
+  transform: rotateY(-6deg) rotateX(2deg);
+  transition: transform .5s var(--ease);
+}
+.sp-syllabus-mini:hover { transform: rotateY(-2deg) rotateX(0deg) }
+@media (prefers-reduced-motion: reduce) { .sp-syllabus-mini { transform: none } }
+.sp-syllabus-mini__head { display: flex; align-items: center; gap: 8px; padding: 14px 20px; background: var(--surface-alt); border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: .72rem; color: var(--muted); letter-spacing: .04em }
+.sp-syllabus-mini__row { display: flex; align-items: baseline; gap: 14px; padding: 16px 20px }
+.sp-syllabus-mini__row + .sp-syllabus-mini__row { border-top: 1px solid var(--border) }
+.sp-syllabus-mini__row strong { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--accent-deep); flex-shrink: 0 }
+.sp-syllabus-mini__row h3 { margin: 0; font-family: var(--font-display); font-size: .92rem; font-weight: 650; color: var(--ink) }
+@media (max-width: 940px) {
+  .sp-hero.sp-hero--split { grid-template-columns: 1fr; text-align: center; gap: 40px }
+  .sp-hero--split .sp-hero__h1, .sp-hero--split .sp-hero__badge { text-align: center }
+  .sp-hero--split .sp-hero__sub { margin-left: auto; margin-right: auto; text-align: center }
+  .sp-hero__facts { justify-content: center }
+  .sp-syllabus-mini { transform: none; margin: 0 auto }
+}
 
 /* ── We support your program (text + partnership visual) ── */
 .sp-partner {
