@@ -684,6 +684,13 @@ export const CHROME_CSS = `
 .sp-panel p { margin: 18px 0 0; color: var(--ink-soft); font-size: 1.05rem; line-height: 1.75 }
 .sp-panel p:first-of-type { margin-top: 18px }
 
+/* ── Cardless statement block — no box at all, just content ── */
+.sp-statement { max-width: 620px; margin: 0 auto; text-align: center }
+.sp-statement h2 { margin: 14px 0 0; font-family: var(--font-display); font-size: clamp(1.6rem, 2.9vw, 2.1rem); font-weight: 700; line-height: 1.25; letter-spacing: -.02em; color: var(--ink) }
+.sp-statement p { margin: 16px 0 0; color: var(--ink-soft); font-size: 1.05rem; line-height: 1.75 }
+.sp-statement__link { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; font-size: .92rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
+.sp-statement__link:hover { gap: 12px }
+
 /* ── Footer ── */
 .sp-footer { border-top: 1px solid var(--border); max-width: 1140px; margin: 96px auto 0; padding: 56px 24px 32px }
 .sp-footer__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px }
