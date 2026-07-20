@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Linkedin,
+  MessageCircle,
   Quote,
   Radar,
   ShieldCheck,
@@ -78,7 +79,7 @@ const testimonials = [
   {
     quote: "Add Kenneth's quote here once received.",
     name: "Kenneth Ellington",
-    role: "",
+    role: "Cyber Security Coach + Instructor, Ellington Cyber Academy",
     linkedin: "https://www.linkedin.com/in/kenneth-ellington/",
     photo: "/kenneth.jpg",
     logo: "",
@@ -270,6 +271,9 @@ export default function HomePage() {
       {/* ═══════════ CTA ═══════════ */}
       <section className="sp-section">
         <div className="sp-cta" data-r>
+          <div className="sp-cta__icon">
+            <MessageCircle size={22} />
+          </div>
           <span className="sp-tag">Not sure where to start?</span>
           <h2>Tell us what your organization needs.</h2>
           <p>A short conversation is the fastest way to find out where PurveX can help.</p>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Radar, Search, ShieldCheck, Sliders, Swords, Target, Terminal, Waypoints } from "lucide-react";
+import { ArrowRight, MessageCircle, Radar, Search, ShieldCheck, Sliders, Swords, Target, Terminal, Waypoints } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
 const services = [
@@ -188,6 +188,9 @@ export default function SecurityOperationsPage() {
       {/* ═══════════ CTA ═══════════ */}
       <section className="sp-section">
         <div className="sp-cta" data-r>
+          <div className="sp-cta__icon">
+            <MessageCircle size={22} />
+          </div>
           <span className="sp-tag">Not sure where your security gaps are?</span>
           <h2>Talk through your current security environment.</h2>
           <p>We will walk through where things stand today and identify where PurveX can help.</p>

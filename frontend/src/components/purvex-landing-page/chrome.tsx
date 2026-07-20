@@ -154,7 +154,7 @@ export function SiteChrome({
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const root = pageRef.current;
     if (!root) return;
-    const targets = Array.from(root.querySelectorAll<HTMLElement>(".sp-card"));
+    const targets = Array.from(root.querySelectorAll<HTMLElement>(".sp-card, .sp-cta"));
     const onMove = (e: MouseEvent) => {
       const el = e.currentTarget as HTMLElement;
       const r = el.getBoundingClientRect();
@@ -163,12 +163,16 @@ export function SiteChrome({
       el.style.setProperty("--tiltX", `${(-py * 6).toFixed(2)}deg`);
       el.style.setProperty("--tiltY", `${(px * 8).toFixed(2)}deg`);
       el.style.setProperty("--tiltLift", "-6px");
+      el.style.setProperty("--mx", `${((px + 0.5) * 100).toFixed(1)}%`);
+      el.style.setProperty("--my", `${((py + 0.5) * 100).toFixed(1)}%`);
     };
     const onLeave = (e: MouseEvent) => {
       const el = e.currentTarget as HTMLElement;
       el.style.setProperty("--tiltX", "0deg");
       el.style.setProperty("--tiltY", "0deg");
       el.style.setProperty("--tiltLift", "0px");
+      el.style.setProperty("--mx", "50%");
+      el.style.setProperty("--my", "50%");
     };
     targets.forEach((el) => {
       el.addEventListener("mousemove", onMove);
@@ -666,12 +670,38 @@ export const CHROME_CSS = `
 /* ── CTA banner ── */
 .sp-cta {
   --cut: 32px;
-  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding: 60px 48px;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; padding: 56px 48px;
   clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
   border: 1px solid rgba(106,92,255,.22);
   background: linear-gradient(135deg, #f4f3ff 0%, #ffffff 60%);
   filter: drop-shadow(0 20px 40px rgba(85,70,224,.22));
+  transform: perspective(1000px) rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg)) translateY(var(--tiltLift, 0px));
+  transition: transform .35s var(--ease), filter .3s, border-color .3s;
 }
+.sp-cta::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 15%), rgba(106,92,255,.18), transparent 62%);
+  opacity: 0;
+  transition: opacity .4s;
+  pointer-events: none;
+}
+.sp-cta:hover { border-color: rgba(106,92,255,.4); filter: drop-shadow(0 28px 52px rgba(85,70,224,.28)) }
+.sp-cta:hover::before { opacity: 1 }
+@media (prefers-reduced-motion: reduce) { .sp-cta { transform: none !important } .sp-cta::before { display: none } }
+.sp-cta__icon {
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 52px; height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  color: #fff;
+  box-shadow: 0 10px 24px -8px rgba(85,70,224,.55);
+  animation: sp-cta-float 3.2s ease-in-out infinite;
+}
+@keyframes sp-cta-float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+@media (prefers-reduced-motion: reduce) { .sp-cta__icon { animation: none } }
 .sp-cta h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.4rem, 2.4vw, 1.85rem); font-weight: 700; letter-spacing: -.02em; color: var(--ink); max-width: 560px }
 .sp-cta p { margin: 0; color: var(--ink-soft); font-size: 1.05rem; line-height: 1.7; max-width: 520px }
 

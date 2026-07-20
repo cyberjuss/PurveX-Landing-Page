@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, FlaskConical, GraduationCap, Layers, TrendingUp, Users } from "lucide-react";
+import { ArrowRight, Check, FlaskConical, GraduationCap, Layers, MessageCircle, TrendingUp, Users } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
 const curriculum = [
@@ -169,6 +169,9 @@ export default function TrainingPage() {
       {/* ═══════════ CTA ═══════════ */}
       <section className="sp-section">
         <div className="sp-cta" data-r>
+          <div className="sp-cta__icon">
+            <MessageCircle size={22} />
+          </div>
           <span className="sp-tag">Looking for an instructor or training partner?</span>
           <h2>Partner With PurveX</h2>
           <p>Tell us about your program and we will find the format that fits it best.</p>
