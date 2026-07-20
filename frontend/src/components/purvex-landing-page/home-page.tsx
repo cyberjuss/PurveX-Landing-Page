@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   Check,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Radar,
@@ -50,17 +49,6 @@ const slides = [
   },
 ];
 
-const tools = ["Microsoft Sentinel", "Splunk", "KQL / SPL", "Security+", "CySA+"];
-
-const faqs: [string, string][] = [
-  ["Who is PurveX for?", "Two groups: organizations that need help strengthening their security operations, and academies or workforce programs that need hands-on cybersecurity instruction."],
-  ["Is this a 24/7 outsourced SOC?", "No. We are not a monitoring service. Engagements are project-based: assessments, detection engineering, SIEM optimization, and detection validation."],
-  ["How is training delivered?", "Remotely: live sessions, self-paced labs, or a mix. 1:1 or small-group, scoped to your program."],
-  ["Do you replace our curriculum, or work alongside it?", "Whatever fits. We can instruct inside your existing program, or supply labs and materials to back up what you already teach."],
-  ["Who will we actually work with?", "You will deal directly with the person doing the security work and teaching, not a sales team."],
-  ["What does it cost?", "It depends on scope and format, so we would rather talk it through and find something that works."],
-];
-
 function useCarousel(count: number) {
   const [index, setIndex] = useState(0);
   const paused = useRef(false);
@@ -84,7 +72,6 @@ function useCarousel(count: number) {
 
 export default function HomePage() {
   const carousel = useCarousel(slides.length);
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
   const touchStartX = useRef<number | null>(null);
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -174,44 +161,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ TOOLS & CERTS ═══════════ */}
-      <section className="sp-section sp-section--tight">
-        <div className="sp-tools" data-r>
-          <span className="sp-tools__label">Tools &amp; certs</span>
-          <div className="sp-tools__chips">
-            {tools.map((t) => (
-              <span key={t} className="sp-tagchip">
-                {t}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════ FAQ ═══════════ */}
-      <section className="sp-section" id="faq">
-        <div className="sp-head" data-r>
-          <span className="sp-tag">FAQ</span>
-          <h2>Common questions.</h2>
-        </div>
-        <div className="sp-faq" data-r>
-          {faqs.map(([q, a], i) => {
-            const open = openFaq === i;
-            return (
-              <div key={q} className={`sp-faq__item${open ? " sp-faq__item--open" : ""}`}>
-                <button className="sp-faq__btn" onClick={() => setOpenFaq(open ? null : i)}>
-                  <span>{q}</span>
-                  <ChevronDown size={16} className={`sp-faq__chev${open ? " sp-faq__chev--open" : ""}`} />
-                </button>
-                <div className={`sp-faq__body${open ? " sp-faq__body--open" : ""}`}>
-                  <p>{a}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
       {/* ═══════════ CTA ═══════════ */}
       <section className="sp-section">
         <div className="sp-cta" data-r>
@@ -247,24 +196,6 @@ export default function HomePage() {
 .sp-carousel__content .sp-btn { margin-top: 22px; align-self: flex-start }
 .sp-carousel__arrow { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor: pointer; transition: transform .2s var(--ease), border-color .2s, color .2s }
 .sp-carousel__arrow:hover { border-color: var(--accent); color: var(--accent-deep); transform: scale(1.06) }
-
-/* ── Tools strip ── */
-.sp-tools { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin-top: 24px; padding: 18px 24px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface-alt) }
-.sp-tools__label { font-family: var(--font-mono); font-size: .7rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted-dim) }
-.sp-tools__chips { display: flex; flex-wrap: wrap; gap: 8px; flex: 1 }
-.sp-tagchip { font-size: .74rem; font-weight: 550; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); border-radius: 999px; padding: 5px 11px }
-
-/* ── FAQ ── */
-.sp-faq { max-width: 720px; margin: 0 auto; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); overflow: hidden; box-shadow: 0 18px 44px -40px rgba(16,25,46,.28) }
-.sp-faq__item + .sp-faq__item { border-top: 1px solid var(--border) }
-.sp-faq__item--open { background: var(--accent-soft) }
-.sp-faq__btn { display: flex; align-items: center; width: 100%; justify-content: space-between; gap: 16px; padding: 20px 24px; background: none; border: 0; color: var(--ink); font-size: .94rem; font-weight: 600; text-align: left; cursor: pointer; transition: color .2s }
-.sp-faq__btn:hover { color: var(--accent-deep) }
-.sp-faq__chev { flex-shrink: 0; color: var(--muted-dim); transition: transform .35s var(--ease) }
-.sp-faq__chev--open { transform: rotate(180deg); color: var(--accent-deep) }
-.sp-faq__body { max-height: 0; overflow: hidden; opacity: 0; transition: max-height .4s var(--ease), opacity .3s }
-.sp-faq__body--open { max-height: 240px; opacity: 1 }
-.sp-faq__body p { padding: 0 24px 20px; margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.7 }
 
 @media (max-width: 940px) {
   .sp-carousel__slide { grid-template-columns: 1fr }
