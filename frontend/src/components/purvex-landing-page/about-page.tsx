@@ -130,12 +130,14 @@ export default function AboutPage() {
           <section id="who-we-are" className="sp-story__chapter" data-r>
             <span className="sp-story__num">03</span>
             <span className="sp-story__label">Who we are</span>
-            <p className="sp-story__pull">You work directly with the practitioner.</p>
+            <p className="sp-story__pull">We do not believe in a sales layer.</p>
             <p>
-              The person doing your security operations work is the same one teaching in the
-              field. You get real experience, not a script.
+              PurveX stays small on purpose. The person doing your security operations work is
+              the same one teaching in the field, not an account manager relaying between you
+              and the work. That is not a feature we added. It is how we think a company like
+              this should be run.
             </p>
-            <p>No sales layer. The best way to see if we are a fit is a quick conversation.</p>
+            <p>The best way to see if we are a fit is a real conversation, not a pitch.</p>
           </section>
 
           {/* ═══════════ 04 — LOOKING AHEAD ═══════════ */}

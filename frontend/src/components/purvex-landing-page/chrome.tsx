@@ -100,7 +100,7 @@ const NAV_MENUS: NavMenu[] = [
     cta: "About PurveX",
     items: [
       { label: "How We Think", desc: "Blue team, red team, one discipline.", anchor: "#how-we-think", icon: Swords },
-      { label: "Who We Are", desc: "Work directly with the practitioner.", anchor: "#who-we-are", icon: Users },
+      { label: "Who We Are", desc: "No sales layer, by principle.", anchor: "#who-we-are", icon: Users },
     ],
   },
   {
