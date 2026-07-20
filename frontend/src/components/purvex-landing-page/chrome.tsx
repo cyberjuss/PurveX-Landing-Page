@@ -154,7 +154,7 @@ export function SiteChrome({
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const root = pageRef.current;
     if (!root) return;
-    const targets = Array.from(root.querySelectorAll<HTMLElement>(".sp-card, .sp-cta"));
+    const targets = Array.from(root.querySelectorAll<HTMLElement>(".sp-card, .sp-cta, .sp-partner"));
     const onMove = (e: MouseEvent) => {
       const el = e.currentTarget as HTMLElement;
       const r = el.getBoundingClientRect();

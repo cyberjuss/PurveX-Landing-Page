@@ -102,10 +102,19 @@ export default function TrainingPage() {
               <GraduationCap size={20} />
               <span>Your Program</span>
             </div>
-            <div className="sp-partner__plus">+</div>
+            <div className="sp-partner__connector">
+              <span className="sp-partner__connector-icon">+</span>
+            </div>
             <div className="sp-partner__chip sp-partner__chip--accent">
               <Users size={20} />
               <span>PurveX Instruction</span>
+            </div>
+            <div className="sp-partner__connector">
+              <span className="sp-partner__connector-icon">=</span>
+            </div>
+            <div className="sp-partner__chip sp-partner__chip--result">
+              <TrendingUp size={20} />
+              <span>A Stronger Curriculum</span>
             </div>
           </div>
         </div>
@@ -231,31 +240,55 @@ export default function TrainingPage() {
 /* ── We support your program (text + partnership visual) ── */
 .sp-partner {
   --cut: 26px;
+  position: relative; overflow: hidden;
   display: grid; grid-template-columns: 1.3fr .7fr; gap: 44px; align-items: center;
   padding: 48px 52px;
   clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
   border: 1px solid var(--border);
   background: radial-gradient(120% 140% at 100% 0%, rgba(106,92,255,.06), transparent 55%), var(--surface);
   filter: drop-shadow(0 20px 40px rgba(16,25,46,.1));
+  transform: perspective(1000px) rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg)) translateY(var(--tiltLift, 0px));
+  transition: transform .35s var(--ease), filter .3s, border-color .3s;
 }
+.sp-partner::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(260px circle at var(--mx, 100%) var(--my, 0%), rgba(106,92,255,.12), transparent 62%);
+  opacity: 0; transition: opacity .4s; pointer-events: none;
+}
+.sp-partner:hover { border-color: var(--border-strong); filter: drop-shadow(0 26px 48px rgba(16,25,46,.14)) }
+.sp-partner:hover::before { opacity: 1 }
+@media (prefers-reduced-motion: reduce) { .sp-partner { transform: none !important } .sp-partner::before { display: none } }
 .sp-partner h2 { margin: 14px 0 0; font-family: var(--font-display); font-size: clamp(1.5rem, 2.4vw, 1.95rem); font-weight: 700; line-height: 1.22; letter-spacing: -.02em; color: var(--ink) }
 .sp-partner p { margin: 18px 0 0; color: var(--ink-soft); font-size: 1.02rem; line-height: 1.75 }
 .sp-partner__note { margin-top: 22px !important; padding-top: 20px; border-top: 1px dashed var(--border-strong); font-size: .88rem !important; line-height: 1.65 !important; color: var(--muted) !important }
 .sp-partner__note a { color: var(--accent-deep); font-weight: 600; text-decoration: none }
 .sp-partner__note a:hover { text-decoration: underline }
-.sp-partner__visual { display: flex; flex-direction: column; align-items: center; gap: 10px }
-.sp-partner__chip { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; padding: 20px 16px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface-alt); text-align: center; transition: transform .3s var(--ease) }
+.sp-partner__visual { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center }
+.sp-partner__chip {
+  --cut: 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; padding: 20px 16px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  text-align: center;
+  box-shadow: 0 8px 20px -14px rgba(16,25,46,.25);
+  transition: transform .3s var(--ease), box-shadow .3s;
+}
 .sp-partner__chip:hover { transform: translateY(-2px) }
 .sp-partner__chip svg { color: var(--muted-dim) }
 .sp-partner__chip span { font-size: .84rem; font-weight: 650; color: var(--ink) }
 .sp-partner__chip--accent { background: var(--accent-soft); border-color: rgba(106,92,255,.25) }
 .sp-partner__chip--accent svg { color: var(--accent-deep) }
 .sp-partner__chip--accent span { color: var(--accent-deep) }
-.sp-partner__plus { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border-strong); font-family: var(--font-display); font-weight: 700; color: var(--muted-dim); flex-shrink: 0 }
+.sp-partner__chip--result { border-color: transparent; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); box-shadow: 0 16px 30px -10px rgba(85,70,224,.55) }
+.sp-partner__chip--result svg, .sp-partner__chip--result span { color: #fff }
+.sp-partner__connector { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 30px }
+.sp-partner__connector::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--border-strong); transform: translateX(-50%) }
+.sp-partner__connector-icon { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border-strong); font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--muted-dim) }
 @media (max-width: 860px) {
-  .sp-partner { grid-template-columns: 1fr; padding: 36px 30px; gap: 32px }
-  .sp-partner__visual { flex-direction: row }
-  .sp-partner__chip { padding: 16px }
+  .sp-partner { grid-template-columns: 1fr; padding: 36px 30px; gap: 28px }
+  .sp-partner__visual { max-width: 320px; margin: 0 auto }
 }
 
 /* ── Syllabus (academic module list, two-up) ── */
