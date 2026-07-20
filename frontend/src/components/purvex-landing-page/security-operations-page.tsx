@@ -55,17 +55,49 @@ const process = [
 export default function SecurityOperationsPage() {
   return (
     <SiteChrome active="security-operations">
-      {/* ═══════════ HERO ═══════════ */}
-      <section className="sp-hero">
-        <span className="sp-hero__badge">
-          <Target size={13} /> Security Operations
-        </span>
-        <h1 className="sp-hero__h1">Strengthen Your Security Operations</h1>
-        <p className="sp-hero__sub">
-          Security tools are only effective when they are properly configured, monitored, and
-          continuously improved. PurveX helps organizations improve their ability to identify
-          threats and strengthen their detection capabilities.
-        </p>
+      {/* ═══════════ HERO — split copy + live console preview ═══════════ */}
+      <section className="sp-hero sp-hero--split">
+        <div className="sp-hero__copy">
+          <span className="sp-hero__badge">
+            <Target size={13} /> Security Operations
+          </span>
+          <h1 className="sp-hero__h1">Strengthen Your Security Operations</h1>
+          <p className="sp-hero__sub">
+            Security tools are only effective when they are properly configured, monitored, and
+            continuously improved. PurveX helps organizations improve their ability to identify
+            threats and strengthen their detection capabilities.
+          </p>
+          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
+            Schedule a Conversation <ArrowRight size={16} />
+          </a>
+        </div>
+        <div className="sp-hero__preview" data-r>
+          <div className="sp-console sp-console--mini">
+            <div className="sp-console__bar">
+              <div className="sp-console__dots">
+                <span />
+                <span />
+                <span />
+              </div>
+              <span className="sp-console__title">
+                <Terminal size={12} /> security-operations.log
+              </span>
+            </div>
+            <div className="sp-console__list">
+              {services.slice(0, 3).map((s, i) => (
+                <div key={s.title} className="sp-console__row">
+                  <span className="sp-console__idx">{String(i + 1).padStart(2, "0")}</span>
+                  <div className="sp-console__icon">
+                    <s.icon size={16} />
+                  </div>
+                  <div>
+                    <h3>{s.title}</h3>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ═══════════ SERVICES — CONSOLE ═══════════ */}
@@ -102,60 +134,66 @@ export default function SecurityOperationsPage() {
         </div>
       </section>
 
-      {/* ═══════════ HOW WE THINK ═══════════ */}
+      {/* ═══════════ HOW WE THINK — zigzag row 1 ═══════════ */}
       <section className="sp-section">
-        <div className="sp-head" data-r>
-          <span className="sp-tag">How we think</span>
-          <h2>You cannot defend against tactics you do not understand.</h2>
-          <p>
-            Every detection we build starts from how attackers actually operate, not just what a
-            vendor&apos;s default ruleset assumes. That is the blend of blue team and red team
-            thinking PurveX is built on.
-          </p>
-        </div>
-        <div className="sp-versus" data-r>
-          <div className="sp-versus__side sp-versus__side--blue">
-            <div className="sp-versus__icon">
-              <ShieldCheck size={22} />
-            </div>
-            <span className="sp-versus__label">Blue Team</span>
-            <p>Detect, respond, and defend the environment.</p>
+        <div className="sp-zigzag" data-r>
+          <div className="sp-zigzag__text">
+            <span className="sp-tag">How we think</span>
+            <h2>You cannot defend against tactics you do not understand.</h2>
+            <p>
+              Every detection we build starts from how attackers actually operate, not just what
+              a vendor&apos;s default ruleset assumes. That is the blend of blue team and red team
+              thinking PurveX is built on.
+            </p>
+            <Link href="/about#how-we-think" className="sp-zigzag__link">
+              More on how we think <ArrowRight size={14} />
+            </Link>
           </div>
-          <div className="sp-versus__mid">+</div>
-          <div className="sp-versus__side sp-versus__side--red">
-            <div className="sp-versus__icon">
-              <Swords size={22} />
+          <div className="sp-versus sp-versus--compact">
+            <div className="sp-versus__side sp-versus__side--blue">
+              <div className="sp-versus__icon">
+                <ShieldCheck size={22} />
+              </div>
+              <span className="sp-versus__label">Blue Team</span>
+              <p>Detect, respond, and defend the environment.</p>
             </div>
-            <span className="sp-versus__label">Red Team</span>
-            <p>Think and move the way an attacker does.</p>
+            <div className="sp-versus__mid">+</div>
+            <div className="sp-versus__side sp-versus__side--red">
+              <div className="sp-versus__icon">
+                <Swords size={22} />
+              </div>
+              <span className="sp-versus__label">Red Team</span>
+              <p>Think and move the way an attacker does.</p>
+            </div>
           </div>
         </div>
-        <p className="sp-footnote" data-r>
-          <Link href="/about#how-we-think">More on how we think →</Link>
-        </p>
       </section>
 
-      {/* ═══════════ HOW WE WORK ═══════════ */}
+      {/* ═══════════ OUR GOAL — zigzag row 2, reversed ═══════════ */}
       <section className="sp-section">
-        <div className="sp-head" data-r>
-          <span className="sp-tag">Our goal</span>
-          <h2>Automate what can be automated. Never stop understanding it.</h2>
-          <p>
-            Every engagement moves through the same three stages, so you always know where things
-            stand, and your team understands exactly what changed and why.
-          </p>
-        </div>
-        <div className="sp-process" data-r>
-          {process.map((p) => (
-            <div key={p.title} className="sp-process__step">
-              <span className="sp-process__num">{p.n}</span>
-              <div className="sp-process__icon">
-                <p.icon size={18} />
+        <div className="sp-zigzag sp-zigzag--reverse" data-r>
+          <div className="sp-timeline">
+            {process.map((p) => (
+              <div key={p.title} className="sp-timeline__step">
+                <div className="sp-timeline__dot">
+                  <p.icon size={16} />
+                </div>
+                <div className="sp-timeline__body">
+                  <span className="sp-timeline__num">{p.n}</span>
+                  <h3>{p.title}</h3>
+                  <p>{p.body}</p>
+                </div>
               </div>
-              <h3 className="sp-process__title">{p.title}</h3>
-              <p className="sp-process__body">{p.body}</p>
-            </div>
-          ))}
+            ))}
+          </div>
+          <div className="sp-zigzag__text">
+            <span className="sp-tag">Our goal</span>
+            <h2>Automate what can be automated. Never stop understanding it.</h2>
+            <p>
+              Every engagement moves through the same three stages, so you always know where
+              things stand, and your team understands exactly what changed and why.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -211,20 +249,49 @@ export default function SecurityOperationsPage() {
 .sp-versus__mid { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border-strong); font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; color: var(--muted-dim); flex-shrink: 0 }
 @media (max-width: 680px) { .sp-versus { grid-template-columns: 1fr; gap: 10px } .sp-versus__mid { justify-self: center } }
 
-.sp-process { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; counter-reset: step }
-.sp-process__step {
-  --cut: 18px;
-  position: relative; padding: 30px;
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-  border: 1px solid var(--border);
-  background: var(--surface);
-  filter: drop-shadow(0 14px 26px rgba(16,25,46,.12));
+/* ── Hero, split: copy left, live console preview right ── */
+.sp-hero--split { text-align: left; max-width: 1140px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center }
+.sp-hero--split .sp-hero__badge { margin-bottom: 22px }
+.sp-hero--split .sp-hero__h1 { text-align: left }
+.sp-hero--split .sp-hero__sub { margin: 22px 0 0; max-width: 480px }
+.sp-hero--split .sp-btn { margin-top: 34px }
+.sp-hero__preview { perspective: 1200px }
+.sp-console--mini { max-width: 420px; margin-left: auto; transform: rotateY(-6deg) rotateX(2deg); transition: transform .5s var(--ease) }
+.sp-console--mini:hover { transform: rotateY(-2deg) rotateX(0deg) }
+.sp-console--mini .sp-console__row { padding: 16px 18px; gap: 14px }
+.sp-console--mini .sp-console__icon { width: 32px; height: 32px }
+.sp-console--mini .sp-console__row h3 { font-size: .88rem }
+@media (prefers-reduced-motion: reduce) { .sp-console--mini { transform: none } }
+@media (max-width: 940px) {
+  .sp-hero--split { grid-template-columns: 1fr; text-align: center; gap: 40px }
+  .sp-hero--split .sp-hero__h1, .sp-hero--split .sp-hero__badge { text-align: center }
+  .sp-hero--split .sp-hero__sub { margin-left: auto; margin-right: auto }
+  .sp-console--mini { transform: none; margin: 0 auto }
 }
-.sp-process__num { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; letter-spacing: -.03em; color: var(--accent) }
-.sp-process__icon { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 11px; background: var(--accent-soft); color: var(--accent-deep); margin-top: 14px }
-.sp-process__title { margin: 16px 0 0; font-family: var(--font-display); font-size: 1.08rem; font-weight: 650; letter-spacing: -.015em; color: var(--ink) }
-.sp-process__body { margin: 8px 0 0; color: var(--muted); font-size: .9rem; line-height: 1.65 }
-@media (max-width: 940px) { .sp-process { grid-template-columns: 1fr } }
+
+/* ── Zigzag rows (How we think / Our goal) ── */
+.sp-zigzag { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center }
+.sp-zigzag--reverse .sp-zigzag__text { order: 2 }
+.sp-zigzag__text h2 { margin: 14px 0 0; font-family: var(--font-display); font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 700; line-height: 1.24; letter-spacing: -.02em; color: var(--ink) }
+.sp-zigzag__text p { margin: 18px 0 0; color: var(--ink-soft); font-size: 1.02rem; line-height: 1.75; max-width: 460px }
+.sp-zigzag__link { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; font-size: .92rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
+.sp-zigzag__link:hover { gap: 12px }
+.sp-versus--compact { max-width: none; margin: 0 }
+@media (max-width: 860px) {
+  .sp-zigzag { grid-template-columns: 1fr; gap: 32px }
+  .sp-zigzag--reverse .sp-zigzag__text { order: 0 }
+}
+
+/* ── Timeline (Assess / Improve / Validate, vertical) ── */
+.sp-timeline { position: relative; display: flex; flex-direction: column; gap: 30px; padding-left: 26px }
+.sp-timeline::before { content: ""; position: absolute; left: 19px; top: 20px; bottom: 20px; width: 2px; background: linear-gradient(var(--border-strong), var(--border) 85%, transparent) }
+.sp-timeline__step { position: relative; display: flex; gap: 18px }
+.sp-timeline__dot { position: absolute; left: -26px; top: 0; width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent-deep); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; flex-shrink: 0 }
+.sp-timeline__body { padding-left: 34px }
+.sp-timeline__num { font-family: var(--font-mono); font-size: .72rem; font-weight: 600; letter-spacing: .08em; color: var(--muted-dim) }
+.sp-timeline__body h3 { margin: 4px 0 0; font-family: var(--font-display); font-size: 1.05rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
+.sp-timeline__body p { margin: 6px 0 0; color: var(--muted); font-size: .9rem; line-height: 1.6; max-width: 420px }
+
 @media (max-width: 680px) {
   .sp-console__row { flex-wrap: wrap }
   .sp-console__idx { display: none }
