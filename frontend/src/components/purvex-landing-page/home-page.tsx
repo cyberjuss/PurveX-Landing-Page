@@ -7,6 +7,8 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  Linkedin,
+  Quote,
   Radar,
   ShieldCheck,
   Users,
@@ -64,6 +66,16 @@ const slides = [
     cta: "Explore",
     href: "/platform",
     external: false,
+  },
+];
+
+// TODO: replace placeholder quote once received.
+const testimonials = [
+  {
+    quote: "Add Kenneth's quote here once received.",
+    name: "Kenneth Ellington",
+    role: "",
+    linkedin: "https://www.linkedin.com/in/kenneth-ellington/",
   },
 ];
 
@@ -196,6 +208,23 @@ export default function HomePage() {
             <ChevronRight size={18} />
           </button>
         </div>
+
+        <div className="sp-testimonials" data-r>
+          {testimonials.map((t) => (
+            <div key={t.name} className="sp-testimonial">
+              <Quote size={22} className="sp-testimonial__mark" />
+              <p className="sp-testimonial__quote">{t.quote}</p>
+              <a href={t.linkedin} target="_blank" rel="noreferrer" className="sp-testimonial__author">
+                <span className="sp-testimonial__avatar">{t.name.charAt(0)}</span>
+                <span>
+                  <strong>{t.name}</strong>
+                  {t.role && <em>{t.role}</em>}
+                </span>
+                <Linkedin size={15} className="sp-testimonial__linkedin" />
+              </a>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* ═══════════ CTA ═══════════ */}
@@ -233,6 +262,18 @@ export default function HomePage() {
 .sp-carousel__content .sp-btn { margin-top: 22px; align-self: flex-start }
 .sp-carousel__arrow { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor: pointer; transition: transform .2s var(--ease), border-color .2s, color .2s }
 .sp-carousel__arrow:hover { border-color: var(--accent); color: var(--accent-deep); transform: scale(1.06) }
+
+/* ── Testimonials ── */
+.sp-testimonials { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 28px }
+.sp-testimonial { --cut: 18px; padding: 32px; clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut)); border: 1px solid var(--border); background: var(--surface); filter: drop-shadow(0 14px 26px rgba(16,25,46,.1)) }
+.sp-testimonial__mark { color: var(--accent-soft); fill: var(--accent-soft) }
+.sp-testimonial__quote { margin: 12px 0 0; font-family: var(--font-display); font-size: 1.05rem; font-weight: 550; line-height: 1.55; letter-spacing: -.01em; color: var(--ink-soft) }
+.sp-testimonial__author { display: flex; align-items: center; gap: 12px; margin-top: 22px; text-decoration: none; color: inherit }
+.sp-testimonial__avatar { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-deep); font-family: var(--font-display); font-weight: 700; font-size: .9rem; flex-shrink: 0 }
+.sp-testimonial__author strong { display: block; font-size: .92rem; font-weight: 650; color: var(--ink) }
+.sp-testimonial__author em { display: block; margin-top: 1px; font-style: normal; font-size: .82rem; color: var(--muted) }
+.sp-testimonial__linkedin { margin-left: auto; color: var(--muted-dim); transition: color .2s }
+.sp-testimonial__author:hover .sp-testimonial__linkedin { color: var(--accent-deep) }
 
 @media (max-width: 940px) {
   .sp-carousel__slide { grid-template-columns: 1fr }
