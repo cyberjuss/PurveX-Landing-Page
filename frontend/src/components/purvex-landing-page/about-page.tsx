@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { ArrowRight, Brain, ShieldCheck, Swords, Zap } from "lucide-react";
 import { SiteChrome } from "./chrome";
@@ -148,9 +149,9 @@ export default function AboutPage() {
               beyond assumed security coverage toward measurable evidence that their detections
               work when they are needed.
             </p>
-            <a href="/platform" target="_blank" rel="noreferrer" className="sp-story__link">
+            <Link href="/platform" className="sp-story__link">
               Explore PurveX Labs <ArrowRight size={14} />
-            </a>
+            </Link>
           </section>
         </div>
       </div>

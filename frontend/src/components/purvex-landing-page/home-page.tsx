@@ -48,7 +48,7 @@ const slides = [
     bullets: ["Continuous detection validation", "Measurable coverage over time", "Private beta, in development"],
     cta: "See what we are building",
     href: "/platform",
-    external: true,
+    external: false,
   },
 ];
 

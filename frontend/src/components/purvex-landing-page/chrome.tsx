@@ -110,7 +110,6 @@ const NAV_MENUS: NavMenu[] = [
     icon: Radar,
     blurb: "Our detection-assurance platform, in private beta.",
     cta: "Explore PurveX Labs",
-    external: true,
     items: [
       { label: "The Platform", desc: "Everything on one screen, proof not assumptions.", anchor: "#product", icon: Radar },
       { label: "Planned Pricing", desc: "Start focused, expand when the evidence is there.", anchor: "#pricing", icon: Layers },
@@ -427,7 +426,7 @@ export function SiteChrome({
             </div>
             <div className="sp-footer__col">
               <h4>Platform</h4>
-              <a href="/platform" target="_blank" rel="noreferrer">PurveX Labs</a>
+              <Link href="/platform">PurveX Labs</Link>
             </div>
             <div className="sp-footer__col">
               <h4>Legal</h4>
