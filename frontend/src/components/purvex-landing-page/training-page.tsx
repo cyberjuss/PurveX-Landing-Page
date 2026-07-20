@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, FlaskConical, GraduationCap, Layers, Users } from "lucide-react";
+import { ArrowRight, Check, FlaskConical, GraduationCap, Layers, TrendingUp, Users } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
 const curriculum = [
@@ -56,17 +56,25 @@ export default function TrainingPage() {
           </a>
         </div>
         <div className="sp-hero__preview" data-r>
-          <div className="sp-syllabus-mini">
-            <div className="sp-syllabus-mini__head">
-              <GraduationCap size={13} /> curriculum.json
+          <div className="sp-growth">
+            <div className="sp-growth__head">
+              <TrendingUp size={14} /> Skill growth, module by module
             </div>
-            <div className="sp-syllabus-mini__list">
-              {curriculum.slice(0, 3).map((c) => (
-                <div key={c.title} className="sp-syllabus-mini__row">
-                  <strong>{c.mod}</strong>
-                  <h3>{c.title}</h3>
-                </div>
-              ))}
+            <div className="sp-growth__chart">
+              <div className="sp-growth__bar" style={{ ["--h" as string]: "24%" }} />
+              <div className="sp-growth__bar" style={{ ["--h" as string]: "36%" }} />
+              <div className="sp-growth__bar" style={{ ["--h" as string]: "48%" }} />
+              <div className="sp-growth__bar" style={{ ["--h" as string]: "62%" }} />
+              <div className="sp-growth__bar" style={{ ["--h" as string]: "76%" }} />
+              <div className="sp-growth__bar sp-growth__bar--peak" style={{ ["--h" as string]: "94%" }}>
+                <span className="sp-growth__badge">
+                  <Check size={12} />
+                </span>
+              </div>
+            </div>
+            <div className="sp-growth__labels">
+              <span>Module 01</span>
+              <span>Job-ready</span>
             </div>
           </div>
         </div>
@@ -178,30 +186,43 @@ export default function TrainingPage() {
 .sp-hero--split .sp-hero__sub { margin: 22px 0 0; max-width: 480px; text-align: left }
 .sp-hero--split .sp-btn { margin-top: 34px }
 
-.sp-hero__preview { perspective: 1200px }
-.sp-syllabus-mini {
-  --cut: 16px;
-  max-width: 420px; margin-left: auto;
+.sp-hero__preview { display: flex; justify-content: center }
+
+/* ── Growth chart (skill growth, module by module) ── */
+.sp-growth {
+  --cut: 18px;
+  width: 100%; max-width: 420px;
+  padding: 28px 30px 22px;
   clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
   border: 1px solid var(--border);
   background: var(--surface);
-  overflow: hidden;
   filter: drop-shadow(0 20px 40px rgba(16,25,46,.14));
-  transform: rotateY(-6deg) rotateX(2deg);
-  transition: transform .5s var(--ease);
 }
-.sp-syllabus-mini:hover { transform: rotateY(-2deg) rotateX(0deg) }
-@media (prefers-reduced-motion: reduce) { .sp-syllabus-mini { transform: none } }
-.sp-syllabus-mini__head { display: flex; align-items: center; gap: 8px; padding: 14px 20px; background: var(--surface-alt); border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: .72rem; color: var(--muted); letter-spacing: .04em }
-.sp-syllabus-mini__row { display: flex; align-items: baseline; gap: 14px; padding: 16px 20px }
-.sp-syllabus-mini__row + .sp-syllabus-mini__row { border-top: 1px solid var(--border) }
-.sp-syllabus-mini__row strong { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--accent-deep); flex-shrink: 0 }
-.sp-syllabus-mini__row h3 { margin: 0; font-family: var(--font-display); font-size: .92rem; font-weight: 650; color: var(--ink) }
+.sp-growth__head { display: flex; align-items: center; gap: 8px; font-size: .78rem; font-weight: 650; color: var(--muted); margin-bottom: 26px }
+.sp-growth__head svg { color: var(--accent-deep) }
+.sp-growth__chart { display: flex; align-items: flex-end; gap: 10px; height: 140px; padding-bottom: 4px; border-bottom: 1px solid var(--border) }
+.sp-growth__bar {
+  flex: 1; height: var(--h); min-width: 0; border-radius: 6px 6px 0 0;
+  background: var(--accent-soft);
+  position: relative;
+  transform-origin: bottom;
+  animation: sp-growth-rise .8s var(--ease) both;
+}
+.sp-growth__bar:nth-child(1) { animation-delay: .05s }
+.sp-growth__bar:nth-child(2) { animation-delay: .12s }
+.sp-growth__bar:nth-child(3) { animation-delay: .19s }
+.sp-growth__bar:nth-child(4) { animation-delay: .26s }
+.sp-growth__bar:nth-child(5) { animation-delay: .33s }
+.sp-growth__bar:nth-child(6) { animation-delay: .4s }
+.sp-growth__bar--peak { background: linear-gradient(180deg, var(--accent), var(--accent-deep)) }
+.sp-growth__badge { position: absolute; top: -26px; left: 50%; transform: translateX(-50%); width: 20px; height: 20px; border-radius: 50%; background: var(--accent-deep); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px -2px rgba(85,70,224,.6) }
+@keyframes sp-growth-rise { from { transform: scaleY(0) } to { transform: scaleY(1) } }
+@media (prefers-reduced-motion: reduce) { .sp-growth__bar { animation: none } }
+.sp-growth__labels { display: flex; justify-content: space-between; margin-top: 10px; font-size: .72rem; font-weight: 600; color: var(--muted-dim) }
 @media (max-width: 940px) {
   .sp-hero.sp-hero--split { grid-template-columns: 1fr; text-align: center; gap: 40px }
   .sp-hero--split .sp-hero__h1, .sp-hero--split .sp-hero__badge { text-align: center }
   .sp-hero--split .sp-hero__sub { margin-left: auto; margin-right: auto; text-align: center }
-  .sp-syllabus-mini { transform: none; margin: 0 auto }
 }
 
 /* ── We support your program (text + partnership visual) ── */
