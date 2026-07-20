@@ -85,9 +85,9 @@ const testimonials = [
     services: ["Cybersecurity Training"],
   },
   {
-    quote: "Add quote here once received.",
-    name: "Add name here", // TODO: confirm name — LinkedIn slug alone isn't a reliable source
-    role: "", // e.g. "Founder, Company Name"
+    quote: "Add Symone's quote here once received.",
+    name: "Symone",
+    role: "Founder, GovTech Academy",
     linkedin: "https://www.linkedin.com/in/symonedb/",
     photo: "",
     logo: "",
