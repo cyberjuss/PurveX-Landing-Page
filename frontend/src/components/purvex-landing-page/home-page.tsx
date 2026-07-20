@@ -199,9 +199,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ WHO WE ARE — cardless ═══════════ */}
+      {/* ═══════════ WHO WE ARE ═══════════ */}
       <section className="sp-section">
-        <div className="sp-statement" data-r>
+        <div className="sp-panel" data-r>
           <span className="sp-tag">Who we are</span>
           <h2>You work directly with the practitioner.</h2>
           <p>
@@ -215,9 +215,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ AUTOMATION & AI — cardless ═══════════ */}
+      {/* ═══════════ AUTOMATION & AI ═══════════ */}
       <section className="sp-section">
-        <div className="sp-statement" data-r>
+        <div className="sp-head" data-r>
           <span className="sp-tag">Why it matters</span>
           <h2>SOCs run on repetition. Automation and AI should carry that weight.</h2>
           <p>
@@ -227,17 +227,15 @@ export default function HomePage() {
             the judgment calls that actually need one.
           </p>
         </div>
-        <div className="sp-points" data-r>
+        <div className="sp-cards sp-cards--2" data-r>
           {automation.map((a) => (
-            <div key={a.title} className="sp-points__item">
-              <div className="sp-points__icon">
-                <a.icon size={18} />
+            <article key={a.title} className="sp-card">
+              <div className="sp-card__icon">
+                <a.icon size={20} />
               </div>
-              <div>
-                <strong>{a.title}</strong>
-                <span>{a.body}</span>
-              </div>
-            </div>
+              <h3 className="sp-card__title">{a.title}</h3>
+              <p className="sp-card__body">{a.body}</p>
+            </article>
           ))}
         </div>
         <div className="sp-tools" data-r>
@@ -314,14 +312,6 @@ export default function HomePage() {
 .sp-carousel__dots { display: flex; justify-content: center; gap: 8px; margin-top: 20px }
 .sp-carousel__dot { width: 8px; height: 8px; border-radius: 50%; border: 0; background: var(--border-strong); cursor: pointer; padding: 0; transition: background .2s, width .2s }
 .sp-carousel__dot--active { background: var(--accent-deep); width: 22px; border-radius: 5px }
-
-/* ── Automation points — cardless ── */
-.sp-points { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; max-width: 780px; margin: 36px auto 0 }
-.sp-points__item { display: flex; gap: 14px; align-items: flex-start }
-.sp-points__icon { flex-shrink: 0; width: 38px; height: 38px; border-radius: 11px; background: var(--accent-soft); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; margin-top: 2px }
-.sp-points__item strong { display: block; font-size: .98rem; font-weight: 650; color: var(--ink) }
-.sp-points__item span { display: block; margin-top: 6px; font-size: .9rem; color: var(--muted); line-height: 1.6 }
-@media (max-width: 680px) { .sp-points { grid-template-columns: 1fr } }
 
 /* ── Tools strip ── */
 .sp-tools { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin-top: 24px; padding: 18px 24px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface-alt) }
