@@ -250,10 +250,10 @@ export default function SecurityOperationsPage() {
 @media (max-width: 680px) { .sp-versus { grid-template-columns: 1fr; gap: 10px } .sp-versus__mid { justify-self: center } }
 
 /* ── Hero, split: copy left, live console preview right ── */
-.sp-hero--split { text-align: left; max-width: 1140px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center }
+.sp-hero.sp-hero--split { text-align: left; max-width: 1140px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center }
 .sp-hero--split .sp-hero__badge { margin-bottom: 22px }
 .sp-hero--split .sp-hero__h1 { text-align: left }
-.sp-hero--split .sp-hero__sub { margin: 22px 0 0; max-width: 480px }
+.sp-hero--split .sp-hero__sub { margin: 22px 0 0; max-width: 480px; text-align: left }
 .sp-hero--split .sp-btn { margin-top: 34px }
 .sp-hero__preview { perspective: 1200px }
 .sp-console--mini { max-width: 420px; margin-left: auto; transform: rotateY(-6deg) rotateX(2deg); transition: transform .5s var(--ease) }
