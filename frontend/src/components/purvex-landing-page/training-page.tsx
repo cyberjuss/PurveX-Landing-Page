@@ -139,20 +139,22 @@ export default function TrainingPage() {
       </section>
 
       <style>{`
-/* ── Syllabus (academic module list) ── */
+/* ── Syllabus (academic module list, two-up) ── */
 .sp-syllabus {
   --cut: 18px;
+  display: grid; grid-template-columns: 1fr 1fr;
   clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
   border: 1px solid var(--border);
   background: var(--surface);
   overflow: hidden;
   filter: drop-shadow(0 16px 32px rgba(16,25,46,.12));
 }
-.sp-syllabus__row { display: grid; grid-template-columns: 96px 1fr; gap: 22px; padding: 28px 28px; align-items: start }
-.sp-syllabus__row + .sp-syllabus__row { border-top: 1px dashed var(--border-strong) }
-.sp-syllabus__mod { font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep) }
-.sp-syllabus__mod strong { display: block; font-family: var(--font-display); font-size: 1.7rem; font-weight: 700; color: var(--ink); letter-spacing: -.02em; margin-top: 2px }
-.sp-syllabus__row h3 { margin: 0; font-family: var(--font-display); font-size: 1.06rem; font-weight: 650; letter-spacing: -.015em; color: var(--ink) }
+.sp-syllabus__row { padding: 28px; border-bottom: 1px dashed var(--border-strong) }
+.sp-syllabus__row:nth-child(even) { border-left: 1px dashed var(--border-strong) }
+.sp-syllabus__row:last-child { grid-column: 1 / -1; border-bottom: none }
+.sp-syllabus__mod { font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep); display: flex; align-items: baseline; gap: 10px }
+.sp-syllabus__mod strong { font-family: var(--font-display); font-size: 1.7rem; font-weight: 700; color: var(--ink); letter-spacing: -.02em }
+.sp-syllabus__row h3 { margin: 10px 0 0; font-family: var(--font-display); font-size: 1.06rem; font-weight: 650; letter-spacing: -.015em; color: var(--ink) }
 .sp-syllabus__row p { margin: 8px 0 0; font-size: .92rem; color: var(--muted); line-height: 1.65; max-width: 560px }
 
 .sp-formats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px }
@@ -168,9 +170,9 @@ export default function TrainingPage() {
 
 @media (max-width: 940px) { .sp-formats { grid-template-columns: 1fr } }
 @media (max-width: 680px) {
-  .sp-syllabus__row { grid-template-columns: 1fr; gap: 10px }
-  .sp-syllabus__mod { display: flex; align-items: baseline; gap: 8px }
-  .sp-syllabus__mod strong { margin-top: 0 }
+  .sp-syllabus { grid-template-columns: 1fr }
+  .sp-syllabus__row:nth-child(even) { border-left: none }
+  .sp-syllabus__row:last-child { grid-column: 1 }
 }
       `}</style>
     </SiteChrome>
