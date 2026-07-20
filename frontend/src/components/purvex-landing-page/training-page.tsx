@@ -51,17 +51,6 @@ export default function TrainingPage() {
             PurveX partners with cybersecurity academies and workforce programs on hands-on
             instruction built around real security operations.
           </p>
-          <div className="sp-hero__facts">
-            <span>
-              <Layers size={14} /> 7-module curriculum
-            </span>
-            <span>
-              <FlaskConical size={14} /> Hands-on labs
-            </span>
-            <span>
-              <Users size={14} /> Instructor-led
-            </span>
-          </div>
           <a href="#syllabus" className="sp-btn sp-btn--prim sp-btn--lg">
             See the Curriculum <ArrowRight size={16} />
           </a>
@@ -188,9 +177,6 @@ export default function TrainingPage() {
 .sp-hero--split .sp-hero__h1 { text-align: left }
 .sp-hero--split .sp-hero__sub { margin: 22px 0 0; max-width: 480px; text-align: left }
 .sp-hero--split .sp-btn { margin-top: 34px }
-.sp-hero__facts { display: flex; justify-content: flex-start; flex-wrap: wrap; gap: 10px 28px; margin-top: 28px }
-.sp-hero__facts span { display: inline-flex; align-items: center; gap: 7px; font-size: .84rem; font-weight: 600; color: var(--muted) }
-.sp-hero__facts svg { color: var(--accent-deep) }
 
 .sp-hero__preview { perspective: 1200px }
 .sp-syllabus-mini {
@@ -215,7 +201,6 @@ export default function TrainingPage() {
   .sp-hero.sp-hero--split { grid-template-columns: 1fr; text-align: center; gap: 40px }
   .sp-hero--split .sp-hero__h1, .sp-hero--split .sp-hero__badge { text-align: center }
   .sp-hero--split .sp-hero__sub { margin-left: auto; margin-right: auto; text-align: center }
-  .sp-hero__facts { justify-content: center }
   .sp-syllabus-mini { transform: none; margin: 0 auto }
 }
 
