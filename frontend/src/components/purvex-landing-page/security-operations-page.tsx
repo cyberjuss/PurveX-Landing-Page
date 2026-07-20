@@ -72,31 +72,19 @@ export default function SecurityOperationsPage() {
           </a>
         </div>
         <div className="sp-hero__preview" data-r>
-          <div className="sp-console sp-console--mini">
-            <div className="sp-console__bar">
-              <div className="sp-console__dots">
-                <span />
-                <span />
-                <span />
-              </div>
-              <span className="sp-console__title">
-                <Terminal size={12} /> security-operations.log
-              </span>
-            </div>
-            <div className="sp-console__list">
-              {services.slice(0, 3).map((s, i) => (
-                <div key={s.title} className="sp-console__row">
-                  <span className="sp-console__idx">{String(i + 1).padStart(2, "0")}</span>
-                  <div className="sp-console__icon">
-                    <s.icon size={16} />
-                  </div>
-                  <div>
-                    <h3>{s.title}</h3>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="sp-radar">
+            <div className="sp-radar__ring sp-radar__ring--1" />
+            <div className="sp-radar__ring sp-radar__ring--2" />
+            <div className="sp-radar__ring sp-radar__ring--3" />
+            <div className="sp-radar__sweep" />
+            <span className="sp-radar__blip sp-radar__blip--1" />
+            <span className="sp-radar__blip sp-radar__blip--2" />
+            <span className="sp-radar__blip sp-radar__blip--3" />
+            <div className="sp-radar__core" />
           </div>
+          <span className="sp-radar__caption">
+            <Radar size={13} /> Continuous threat monitoring
+          </span>
         </div>
       </section>
 
@@ -255,19 +243,39 @@ export default function SecurityOperationsPage() {
 .sp-hero--split .sp-hero__h1 { text-align: left }
 .sp-hero--split .sp-hero__sub { margin: 22px 0 0; max-width: 480px; text-align: left }
 .sp-hero--split .sp-btn { margin-top: 34px }
-.sp-hero__preview { perspective: 1200px }
-.sp-console--mini { max-width: 420px; margin-left: auto; transform: rotateY(-6deg) rotateX(2deg); transition: transform .5s var(--ease) }
-.sp-console--mini:hover { transform: rotateY(-2deg) rotateX(0deg) }
-.sp-console--mini .sp-console__row { padding: 16px 18px; gap: 14px }
-.sp-console--mini .sp-console__icon { width: 32px; height: 32px }
-.sp-console--mini .sp-console__row h3 { font-size: .88rem }
-@media (prefers-reduced-motion: reduce) { .sp-console--mini { transform: none } }
-@media (max-width: 940px) {
-  .sp-hero--split { grid-template-columns: 1fr; text-align: center; gap: 40px }
-  .sp-hero--split .sp-hero__h1, .sp-hero--split .sp-hero__badge { text-align: center }
-  .sp-hero--split .sp-hero__sub { margin-left: auto; margin-right: auto }
-  .sp-console--mini { transform: none; margin: 0 auto }
+.sp-hero__preview { display: flex; flex-direction: column; align-items: center; gap: 22px }
+
+/* ── Radar (continuous-monitoring visual) ── */
+.sp-radar { position: relative; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, var(--surface) 55%, var(--surface-alt) 100%); border: 1px solid var(--border); filter: drop-shadow(0 24px 48px rgba(16,25,46,.14)); overflow: hidden }
+.sp-radar__ring { position: absolute; border: 1px dashed var(--border-strong); border-radius: 50% }
+.sp-radar__ring--1 { inset: 12% }
+.sp-radar__ring--2 { inset: 30% }
+.sp-radar__ring--3 { inset: 48% }
+.sp-radar__sweep { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, rgba(106,92,255,.4), transparent 70deg); animation: sp-radar-spin 4s linear infinite }
+@keyframes sp-radar-spin { to { transform: rotate(360deg) } }
+.sp-radar__core { position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; margin: -5px; border-radius: 50%; background: var(--accent-deep); box-shadow: 0 0 0 6px rgba(106,92,255,.15) }
+.sp-radar__blip { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-deep); animation: sp-radar-blip 2.4s ease-in-out infinite }
+.sp-radar__blip::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 1px solid var(--accent); opacity: 0; animation: sp-radar-ping 2.4s ease-out infinite }
+.sp-radar__blip--1 { top: 28%; left: 62% }
+.sp-radar__blip--2 { top: 60%; left: 30%; animation-delay: .8s }
+.sp-radar__blip--2::after { animation-delay: .8s }
+.sp-radar__blip--3 { top: 70%; left: 66%; animation-delay: 1.6s }
+.sp-radar__blip--3::after { animation-delay: 1.6s }
+@keyframes sp-radar-blip { 0%, 100% { opacity: .5 } 50% { opacity: 1 } }
+@keyframes sp-radar-ping { 0% { opacity: .5; transform: scale(.6) } 100% { opacity: 0; transform: scale(2.2) } }
+.sp-radar__caption { display: inline-flex; align-items: center; gap: 8px; font-size: .82rem; font-weight: 600; color: var(--muted) }
+.sp-radar__caption svg { color: var(--accent-deep) }
+@media (prefers-reduced-motion: reduce) {
+  .sp-radar__sweep { animation: none; background: conic-gradient(from 0deg, rgba(106,92,255,.25), transparent 90deg) }
+  .sp-radar__blip { animation: none; opacity: .8 }
+  .sp-radar__blip::after { display: none }
 }
+@media (max-width: 940px) {
+  .sp-hero.sp-hero--split { grid-template-columns: 1fr; text-align: center; gap: 40px }
+  .sp-hero--split .sp-hero__h1, .sp-hero--split .sp-hero__badge { text-align: center }
+  .sp-hero--split .sp-hero__sub { margin-left: auto; margin-right: auto; text-align: center }
+}
+@media (max-width: 400px) { .sp-radar { width: 240px; height: 240px } }
 
 /* ── Zigzag rows (How we think / Our goal) ── */
 .sp-zigzag { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center }
