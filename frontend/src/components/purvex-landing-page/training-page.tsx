@@ -123,21 +123,22 @@ export default function TrainingPage() {
           <span className="sp-tag">Delivery formats</span>
           <h2>Fits the way your program already runs.</h2>
         </div>
-        <div className="sp-formats" data-r>
+        <div className="sp-cards sp-cards--3" data-r>
           {formats.map((f) => (
-            <div key={f.title} className="sp-formats__item">
-              <div className="sp-formats__icon">
-                <f.icon size={18} />
+            <article key={f.title} className="sp-card">
+              <div className="sp-card__icon">
+                <f.icon size={20} />
               </div>
-              <div>
-                <h3 className="sp-formats__title">{f.title}</h3>
-                <p className="sp-formats__body">{f.body}</p>
-              </div>
-            </div>
+              <h3 className="sp-card__title">{f.title}</h3>
+              <p className="sp-card__body">{f.body}</p>
+            </article>
           ))}
         </div>
         <div className="sp-tools" data-r>
-          <span className="sp-tools__label">Tools &amp; certs</span>
+          <div className="sp-tools__head">
+            <Layers size={16} />
+            <span>Tools &amp; Certifications</span>
+          </div>
           <div className="sp-tools__chips">
             {tools.map((t) => (
               <span key={t} className="sp-tagchip">
@@ -215,23 +216,23 @@ export default function TrainingPage() {
 .sp-syllabus__row h3 { margin: 10px 0 0; font-family: var(--font-display); font-size: 1.06rem; font-weight: 650; letter-spacing: -.015em; color: var(--ink) }
 .sp-syllabus__row p { margin: 8px 0 0; font-size: .92rem; color: var(--muted); line-height: 1.65; max-width: 560px }
 
-.sp-formats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px }
-.sp-formats__item { --cut: 16px; display: flex; align-items: flex-start; gap: 14px; padding: 22px; clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut)); border: 1px solid var(--border); background: var(--surface-alt) }
-.sp-formats__icon { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border-strong); color: var(--accent-deep); flex-shrink: 0 }
-.sp-formats__title { margin: 0; font-family: var(--font-display); font-size: .96rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
-.sp-formats__body { margin: 6px 0 0; color: var(--muted); font-size: .86rem; line-height: 1.55 }
-
-.sp-tools { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin-top: 24px; padding: 18px 24px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface-alt) }
-.sp-tools__label { font-family: var(--font-mono); font-size: .7rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted-dim) }
+.sp-tools {
+  --cut: 18px;
+  display: flex; align-items: center; gap: 16px 24px; flex-wrap: wrap;
+  margin-top: 24px; padding: 22px 28px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+}
+.sp-tools__head { display: inline-flex; align-items: center; gap: 8px; font-size: .76rem; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep); flex-shrink: 0 }
 .sp-tools__chips { display: flex; flex-wrap: wrap; gap: 8px; flex: 1 }
-.sp-tagchip { font-size: .74rem; font-weight: 550; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); border-radius: 999px; padding: 5px 11px }
-
-@media (max-width: 940px) { .sp-formats { grid-template-columns: 1fr } }
+.sp-tagchip { font-size: .74rem; font-weight: 550; color: var(--accent-deep); background: var(--surface); border: 1px solid rgba(106,92,255,.18); border-radius: 999px; padding: 5px 11px }
 @media (max-width: 680px) {
   .sp-syllabus { grid-template-columns: 1fr }
   .sp-syllabus__row { padding: 26px 24px }
   .sp-syllabus__row:nth-child(odd), .sp-syllabus__row:nth-child(even) { padding-left: 24px; padding-right: 24px; border-left: none }
   .sp-syllabus__row:last-child { grid-column: 1 }
+  .sp-tools { flex-direction: column; align-items: flex-start }
 }
       `}</style>
     </SiteChrome>
