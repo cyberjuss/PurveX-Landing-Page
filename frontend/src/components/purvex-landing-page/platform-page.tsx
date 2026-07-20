@@ -407,17 +407,20 @@ export default function PlatformPage() {
   grid-auto-rows: minmax(120px, auto); gap: 16px;
 }
 .sp-tile {
+  --cut: 14px;
   display: flex; flex-direction: column;
-  padding: 26px; border-radius: var(--radius); border: 1px solid var(--border);
-  background: var(--surface); box-shadow: 0 18px 44px -40px rgba(16,25,46,.28);
-  transition: transform .3s var(--ease), border-color .3s, box-shadow .3s;
+  padding: 26px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid var(--border);
+  background: var(--surface); filter: drop-shadow(0 12px 26px rgba(16,25,46,.1));
+  transition: transform .3s var(--ease), border-color .3s, filter .3s;
 }
-.sp-tile:hover { transform: translateY(-3px); border-color: var(--border-strong); box-shadow: 0 26px 56px -40px rgba(16,25,46,.34) }
+.sp-tile:hover { transform: translateY(-3px); border-color: var(--border-strong); filter: drop-shadow(0 18px 36px rgba(16,25,46,.16)) }
 .sp-tile--feat { grid-column: span 2 }
 .sp-tile--accent { grid-column: span 2 }
 .sp-tile--aud { grid-column: span 2 }
 .sp-tile--dash { grid-column: span 4; grid-row: span 2; padding: 0; overflow: hidden }
-.sp-tile--dash:hover { transform: none; box-shadow: 0 18px 44px -40px rgba(16,25,46,.28); border-color: var(--border) }
+.sp-tile--dash:hover { transform: none; filter: drop-shadow(0 12px 26px rgba(16,25,46,.1)); border-color: var(--border) }
 
 .sp-tile__title { margin: 16px 0 0; font-family: var(--font-display); font-size: 1.14rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
 .sp-tile__body { margin: 9px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.66 }
@@ -469,7 +472,7 @@ export default function PlatformPage() {
 
 /* ── Compare ── */
 .sp-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px }
-.sp-compare__col { padding: 32px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); box-shadow: 0 18px 44px -40px rgba(16,25,46,.28) }
+.sp-compare__col { --cut: 20px; padding: 32px; clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut)); border: 1px solid var(--border); background: var(--surface); filter: drop-shadow(0 14px 26px rgba(16,25,46,.12)) }
 .sp-compare__col--without { border-top: 3px solid rgba(229,72,77,.35) }
 .sp-compare__col--with { border-top: 3px solid var(--accent); background: linear-gradient(180deg, rgba(106,92,255,.035), var(--surface)) }
 .sp-compare__h { margin: 0 0 18px; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
@@ -481,9 +484,16 @@ export default function PlatformPage() {
 
 /* ── Pricing ── */
 .sp-pricing { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start }
-.sp-tier { position: relative; display: flex; flex-direction: column; padding: 32px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); box-shadow: 0 18px 44px -40px rgba(16,25,46,.28); transition: transform .3s var(--ease), border-color .3s }
+.sp-tier {
+  --cut: 20px;
+  position: relative; display: flex; flex-direction: column; padding: 32px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid var(--border);
+  background: var(--surface); filter: drop-shadow(0 14px 26px rgba(16,25,46,.12));
+  transition: transform .3s var(--ease), border-color .3s, filter .3s;
+}
 .sp-tier:hover { transform: translateY(-3px); border-color: var(--border-strong) }
-.sp-tier--feat { border-color: rgba(106,92,255,.35); box-shadow: 0 30px 60px -36px rgba(85,70,224,.4) }
+.sp-tier--feat { border-color: rgba(106,92,255,.35); filter: drop-shadow(0 22px 44px rgba(85,70,224,.3)) }
 .sp-tier__badge { position: absolute; top: 0; right: 22px; transform: translateY(-50%); padding: 4px 13px; border-radius: 999px; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); font-size: .62rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #fff }
 .sp-tier__name { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted-dim); font-weight: 700 }
 .sp-tier__price { margin-top: 8px; font-family: var(--font-display); font-size: 2.3rem; font-weight: 700; letter-spacing: -.04em; color: var(--ink) }

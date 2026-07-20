@@ -173,7 +173,14 @@ export default function SecurityOperationsPage() {
 
       <style>{`
 /* ── Console (dark terminal-style service log) ── */
-.sp-console { border-radius: 18px; border: 1px solid rgba(255,255,255,.08); background: var(--ink); overflow: hidden; box-shadow: 0 30px 70px -36px rgba(16,25,46,.5) }
+.sp-console {
+  --cut: 16px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid rgba(255,255,255,.08);
+  background: var(--ink);
+  overflow: hidden;
+  filter: drop-shadow(0 24px 48px rgba(16,25,46,.35));
+}
 .sp-console__bar { display: flex; align-items: center; gap: 10px; padding: 14px 20px; background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.08) }
 .sp-console__dots { display: flex; gap: 6px }
 .sp-console__dots span { width: 9px; height: 9px; border-radius: 50% }
@@ -192,7 +199,7 @@ export default function SecurityOperationsPage() {
 
 /* ── Blue vs red (inline version) ── */
 .sp-versus { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 20px; max-width: 640px; margin: 0 auto }
-.sp-versus__side { padding: 30px 26px; border-radius: 14px; text-align: center; transition: transform .3s var(--ease) }
+.sp-versus__side { --cut: 14px; padding: 30px 26px; clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut)); text-align: center; transition: transform .3s var(--ease) }
 .sp-versus__side:hover { transform: translateY(-3px) }
 .sp-versus__side--blue { background: linear-gradient(160deg, var(--accent-soft), #ffffff); border: 1px solid rgba(106,92,255,.25) }
 .sp-versus__side--red { background: linear-gradient(160deg, rgba(229,72,77,.08), #ffffff); border: 1px solid rgba(229,72,77,.22) }
@@ -205,7 +212,14 @@ export default function SecurityOperationsPage() {
 @media (max-width: 680px) { .sp-versus { grid-template-columns: 1fr; gap: 10px } .sp-versus__mid { justify-self: center } }
 
 .sp-process { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; counter-reset: step }
-.sp-process__step { position: relative; padding: 30px; border-radius: calc(var(--radius) + 2px); border: 1px solid var(--border); background: var(--surface); box-shadow: 0 18px 44px -40px rgba(16,25,46,.28) }
+.sp-process__step {
+  --cut: 18px;
+  position: relative; padding: 30px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid var(--border);
+  background: var(--surface);
+  filter: drop-shadow(0 14px 26px rgba(16,25,46,.12));
+}
 .sp-process__num { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; letter-spacing: -.03em; color: var(--accent) }
 .sp-process__icon { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 11px; background: var(--accent-soft); color: var(--accent-deep); margin-top: 14px }
 .sp-process__title { margin: 16px 0 0; font-family: var(--font-display); font-size: 1.08rem; font-weight: 650; letter-spacing: -.015em; color: var(--ink) }

@@ -665,7 +665,14 @@ export const CHROME_CSS = `
 .sp-footnote a:hover { text-decoration: underline }
 
 /* ── CTA banner ── */
-.sp-cta { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding: 60px 48px; border-radius: calc(var(--radius) + 8px); border: 1px solid rgba(106,92,255,.22); background: linear-gradient(135deg, #f4f3ff 0%, #ffffff 60%); box-shadow: 0 30px 70px -46px rgba(85,70,224,.5) }
+.sp-cta {
+  --cut: 32px;
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding: 60px 48px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid rgba(106,92,255,.22);
+  background: linear-gradient(135deg, #f4f3ff 0%, #ffffff 60%);
+  filter: drop-shadow(0 20px 40px rgba(85,70,224,.22));
+}
 .sp-cta h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.4rem, 2.4vw, 1.85rem); font-weight: 700; letter-spacing: -.02em; color: var(--ink); max-width: 560px }
 .sp-cta p { margin: 0; color: var(--ink-soft); font-size: 1.05rem; line-height: 1.7; max-width: 520px }
 
@@ -723,7 +730,7 @@ export const CHROME_CSS = `
   .sp-head { margin-bottom: 40px }
   .sp-cards--2, .sp-cards--3, .sp-cards--4 { grid-template-columns: 1fr }
   .sp-card { padding: 28px; --cut: 18px }
-  .sp-cta { padding: 40px 28px }
+  .sp-cta { padding: 40px 28px; --cut: 22px }
   .sp-panel { padding: 32px; --cut: 22px }
   .sp-footer__cols { flex-wrap: wrap; gap: 32px }
   .sp-footer__bottom { flex-direction: column; align-items: flex-start; gap: 10px }

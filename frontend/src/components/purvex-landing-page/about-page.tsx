@@ -177,7 +177,7 @@ export default function AboutPage() {
 
 /* Blue vs red — a lighter, inline version of the shared card treatment */
 .sp-versus { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; margin-top: 28px }
-.sp-versus__side { padding: 26px 22px; border-radius: 14px; text-align: center; transition: transform .3s var(--ease) }
+.sp-versus__side { --cut: 14px; padding: 26px 22px; clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut)); text-align: center; transition: transform .3s var(--ease) }
 .sp-versus__side:hover { transform: translateY(-3px) }
 .sp-versus__side--blue { background: linear-gradient(160deg, var(--accent-soft), #ffffff); border: 1px solid rgba(106,92,255,.25) }
 .sp-versus__side--red { background: linear-gradient(160deg, rgba(229,72,77,.08), #ffffff); border: 1px solid rgba(229,72,77,.22) }

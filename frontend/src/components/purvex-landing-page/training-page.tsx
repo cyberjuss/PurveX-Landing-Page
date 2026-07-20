@@ -140,7 +140,14 @@ export default function TrainingPage() {
 
       <style>{`
 /* ── Syllabus (academic module list) ── */
-.sp-syllabus { border-radius: 16px; border: 1px solid var(--border); background: var(--surface); overflow: hidden; box-shadow: 0 20px 50px -40px rgba(16,25,46,.3) }
+.sp-syllabus {
+  --cut: 18px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid var(--border);
+  background: var(--surface);
+  overflow: hidden;
+  filter: drop-shadow(0 16px 32px rgba(16,25,46,.12));
+}
 .sp-syllabus__row { display: grid; grid-template-columns: 96px 1fr; gap: 22px; padding: 28px 28px; align-items: start }
 .sp-syllabus__row + .sp-syllabus__row { border-top: 1px dashed var(--border-strong) }
 .sp-syllabus__mod { font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep) }
@@ -149,7 +156,7 @@ export default function TrainingPage() {
 .sp-syllabus__row p { margin: 8px 0 0; font-size: .92rem; color: var(--muted); line-height: 1.65; max-width: 560px }
 
 .sp-formats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px }
-.sp-formats__item { display: flex; align-items: flex-start; gap: 14px; padding: 22px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface-alt) }
+.sp-formats__item { --cut: 16px; display: flex; align-items: flex-start; gap: 14px; padding: 22px; clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut)); border: 1px solid var(--border); background: var(--surface-alt) }
 .sp-formats__icon { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border-strong); color: var(--accent-deep); flex-shrink: 0 }
 .sp-formats__title { margin: 0; font-family: var(--font-display); font-size: .96rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
 .sp-formats__body { margin: 6px 0 0; color: var(--muted); font-size: .86rem; line-height: 1.55 }
