@@ -50,17 +50,42 @@ export default function TrainingPage() {
           PurveX partners with cybersecurity academies and workforce programs on hands-on
           instruction built around real security operations.
         </p>
+        <div className="sp-hero__facts">
+          <span>
+            <Layers size={14} /> 7-module curriculum
+          </span>
+          <span>
+            <FlaskConical size={14} /> Hands-on labs
+          </span>
+          <span>
+            <Users size={14} /> Instructor-led
+          </span>
+        </div>
       </section>
 
       {/* ═══════════ WE SUPPORT YOUR PROGRAM ═══════════ */}
       <section className="sp-section sp-section--tight">
-        <div className="sp-panel" data-r>
-          <span className="sp-tag">We support your existing program</span>
-          <h2>You do not need to compete with your program. We work alongside it.</h2>
-          <p>
-            PurveX works alongside your organization to strengthen your cybersecurity curriculum
-            with experienced instruction, practical labs, and real-world security scenarios.
-          </p>
+        <div className="sp-partner" data-r>
+          <div className="sp-partner__text">
+            <span className="sp-tag">We support your existing program</span>
+            <h2>You do not need to compete with your program. We work alongside it.</h2>
+            <p>
+              PurveX works alongside your organization to strengthen your cybersecurity
+              curriculum with experienced instruction, practical labs, and real-world security
+              scenarios.
+            </p>
+          </div>
+          <div className="sp-partner__visual">
+            <div className="sp-partner__chip">
+              <GraduationCap size={20} />
+              <span>Your Program</span>
+            </div>
+            <div className="sp-partner__plus">+</div>
+            <div className="sp-partner__chip sp-partner__chip--accent">
+              <Users size={20} />
+              <span>PurveX Instruction</span>
+            </div>
+          </div>
         </div>
         <p className="sp-footnote" data-r>
           Learners are taught the blend of blue team and red team thinking: you cannot defend
@@ -136,6 +161,38 @@ export default function TrainingPage() {
       </section>
 
       <style>{`
+/* ── Hero facts strip ── */
+.sp-hero__facts { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px 28px; margin-top: 32px }
+.sp-hero__facts span { display: inline-flex; align-items: center; gap: 7px; font-size: .84rem; font-weight: 600; color: var(--muted) }
+.sp-hero__facts svg { color: var(--accent-deep) }
+
+/* ── We support your program (text + partnership visual) ── */
+.sp-partner {
+  --cut: 26px;
+  display: grid; grid-template-columns: 1.3fr .7fr; gap: 44px; align-items: center;
+  padding: 48px 52px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid var(--border);
+  background: radial-gradient(120% 140% at 100% 0%, rgba(106,92,255,.06), transparent 55%), var(--surface);
+  filter: drop-shadow(0 20px 40px rgba(16,25,46,.1));
+}
+.sp-partner h2 { margin: 14px 0 0; font-family: var(--font-display); font-size: clamp(1.5rem, 2.4vw, 1.95rem); font-weight: 700; line-height: 1.22; letter-spacing: -.02em; color: var(--ink) }
+.sp-partner p { margin: 18px 0 0; color: var(--ink-soft); font-size: 1.02rem; line-height: 1.75 }
+.sp-partner__visual { display: flex; flex-direction: column; align-items: center; gap: 10px }
+.sp-partner__chip { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; padding: 20px 16px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface-alt); text-align: center; transition: transform .3s var(--ease) }
+.sp-partner__chip:hover { transform: translateY(-2px) }
+.sp-partner__chip svg { color: var(--muted-dim) }
+.sp-partner__chip span { font-size: .84rem; font-weight: 650; color: var(--ink) }
+.sp-partner__chip--accent { background: var(--accent-soft); border-color: rgba(106,92,255,.25) }
+.sp-partner__chip--accent svg { color: var(--accent-deep) }
+.sp-partner__chip--accent span { color: var(--accent-deep) }
+.sp-partner__plus { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border-strong); font-family: var(--font-display); font-weight: 700; color: var(--muted-dim); flex-shrink: 0 }
+@media (max-width: 860px) {
+  .sp-partner { grid-template-columns: 1fr; padding: 36px 30px; gap: 32px }
+  .sp-partner__visual { flex-direction: row }
+  .sp-partner__chip { padding: 16px }
+}
+
 /* ── Syllabus (academic module list, two-up) ── */
 .sp-syllabus {
   --cut: 18px;
