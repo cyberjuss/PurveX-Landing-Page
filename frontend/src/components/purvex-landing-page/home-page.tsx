@@ -82,7 +82,7 @@ const testimonials = [
     linkedin: "https://www.linkedin.com/in/kenneth-ellington/",
     photo: "",
     logo: "",
-    services: [] as string[],
+    services: ["Cybersecurity Training"],
   },
   {
     quote: "Add quote here once received.",
@@ -91,7 +91,7 @@ const testimonials = [
     linkedin: "https://www.linkedin.com/in/symonedb/",
     photo: "",
     logo: "",
-    services: [] as string[], // e.g. ["Security Operations"]
+    services: ["Cybersecurity Training"],
   },
 ];
 
