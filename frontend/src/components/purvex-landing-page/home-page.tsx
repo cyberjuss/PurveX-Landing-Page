@@ -208,11 +208,18 @@ export default function HomePage() {
             <ChevronRight size={18} />
           </button>
         </div>
+      </section>
 
+      {/* ═══════════ TESTIMONIAL ═══════════ */}
+      <section className="sp-section">
+        <div className="sp-head" data-r>
+          <span className="sp-tag">What people say</span>
+          <h2>Feedback from the field.</h2>
+        </div>
         <div className="sp-testimonials" data-r>
           {testimonials.map((t) => (
             <div key={t.name} className="sp-testimonial">
-              <Quote size={22} className="sp-testimonial__mark" />
+              <Quote size={32} className="sp-testimonial__mark" />
               <p className="sp-testimonial__quote">{t.quote}</p>
               <a href={t.linkedin} target="_blank" rel="noreferrer" className="sp-testimonial__author">
                 <span className="sp-testimonial__avatar">{t.name.charAt(0)}</span>
@@ -264,16 +271,28 @@ export default function HomePage() {
 .sp-carousel__arrow:hover { border-color: var(--accent); color: var(--accent-deep); transform: scale(1.06) }
 
 /* ── Testimonials ── */
-.sp-testimonials { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 28px }
-.sp-testimonial { --cut: 18px; padding: 32px; clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut)); border: 1px solid var(--border); background: var(--surface); filter: drop-shadow(0 14px 26px rgba(16,25,46,.1)) }
-.sp-testimonial__mark { color: var(--accent-soft); fill: var(--accent-soft) }
-.sp-testimonial__quote { margin: 12px 0 0; font-family: var(--font-display); font-size: 1.05rem; font-weight: 550; line-height: 1.55; letter-spacing: -.01em; color: var(--ink-soft) }
-.sp-testimonial__author { display: flex; align-items: center; gap: 12px; margin-top: 22px; text-decoration: none; color: inherit }
-.sp-testimonial__avatar { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-deep); font-family: var(--font-display); font-weight: 700; font-size: .9rem; flex-shrink: 0 }
-.sp-testimonial__author strong { display: block; font-size: .92rem; font-weight: 650; color: var(--ink) }
-.sp-testimonial__author em { display: block; margin-top: 1px; font-style: normal; font-size: .82rem; color: var(--muted) }
+.sp-testimonials { max-width: 720px; margin: 0 auto; display: grid; gap: 24px }
+.sp-testimonial {
+  --cut: 26px;
+  position: relative;
+  padding: 48px 52px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid var(--border);
+  background: radial-gradient(130% 140% at 0% 0%, rgba(106,92,255,.06), transparent 55%), var(--surface);
+  filter: drop-shadow(0 24px 48px rgba(16,25,46,.12));
+  transition: transform .3s var(--ease);
+}
+.sp-testimonial:hover { transform: translateY(-3px) }
+.sp-testimonial__mark { color: var(--accent); opacity: .35 }
+.sp-testimonial__quote { margin: 18px 0 0; font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; line-height: 1.5; letter-spacing: -.015em; color: var(--ink) }
+.sp-testimonial__author { display: flex; align-items: center; gap: 14px; margin-top: 30px; padding-top: 26px; border-top: 1px solid var(--border); text-decoration: none; color: inherit }
+.sp-testimonial__avatar { display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; flex-shrink: 0; box-shadow: 0 8px 18px -8px rgba(85,70,224,.5) }
+.sp-testimonial__author strong { display: block; font-size: .96rem; font-weight: 650; color: var(--ink) }
+.sp-testimonial__author em { display: block; margin-top: 2px; font-style: normal; font-size: .84rem; color: var(--muted) }
 .sp-testimonial__linkedin { margin-left: auto; color: var(--muted-dim); transition: color .2s }
 .sp-testimonial__author:hover .sp-testimonial__linkedin { color: var(--accent-deep) }
+
+@media (max-width: 680px) { .sp-testimonial { padding: 36px 30px } }
 
 @media (max-width: 940px) {
   .sp-carousel__slide { grid-template-columns: 1fr }
