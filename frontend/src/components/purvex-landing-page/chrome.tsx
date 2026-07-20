@@ -37,7 +37,7 @@ import {
    ───────────────────────────────────────────────────────── */
 export const BOOKING_URL = "https://calendly.com/purvex-llc/30min";
 
-export type NavKey = "home" | "security-operations" | "training" | "about" | "platform";
+export type NavKey = "home" | "security-operations" | "training" | "about" | "platform" | "legal";
 
 type NavSubItem = {
   label: string;

@@ -1,14 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import {
-  ArrowLeft,
-  BadgeCheck,
-  BookText,
-  Building2,
-  FileWarning,
-  Scale,
-  ShieldCheck,
-} from "lucide-react";
+import { BadgeCheck, BookText, Building2, FileWarning, ShieldCheck } from "lucide-react";
+import LegalPage from "@/components/purvex-landing-page/legal-page";
 
 export const metadata: Metadata = {
   title: "Terms of Service | PurveX",
@@ -35,6 +27,14 @@ const highlights = [
     body:
       "The terms distinguish permitted internal security validation use from prohibited abuse, resale, unauthorized access, and unlawful testing activity.",
   },
+];
+
+const summaryItems = [
+  "Internal business use only unless PurveX authorizes broader rights in writing.",
+  "Customer is responsible for lawful and authorized testing activity in its own environments.",
+  "Recurring billing, cancellation, and renewal details must be disclosed in the purchase flow for self-serve subscriptions.",
+  "Enterprise order forms and negotiated agreements override this public page where they conflict.",
+  "The platform supports security decision-making but does not guarantee detection of every threat or control failure.",
 ];
 
 const sections = [
@@ -189,114 +189,22 @@ const sections = [
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(88,204,255,0.12),transparent_28%),linear-gradient(180deg,#050810_0%,#08111f_100%)] text-slate-100">
-      <div className="mx-auto max-w-6xl px-6 py-8 sm:px-8 lg:px-10">
-        <div className="mb-10 flex items-center justify-between gap-4">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:bg-white/10"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to PurveX
-          </Link>
-          <div className="inline-flex items-center gap-2 rounded-full border border-sky-400/20 bg-sky-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-sky-200">
-            <Scale className="h-4 w-4" />
-            Terms of Service
-          </div>
-        </div>
-
-        <section className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-8 shadow-[0_32px_100px_-32px_rgba(0,0,0,0.65)] backdrop-blur-xl sm:p-10">
-            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.22em] text-sky-200/80">
-              Last updated April 4, 2026
-            </p>
-            <h1 className="max-w-4xl font-[family-name:var(--font-space-grotesk)] text-4xl font-semibold tracking-[-0.04em] text-white sm:text-5xl">
-              Terms designed for a modern enterprise security software relationship.
-            </h1>
-            <p className="mt-6 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">
-              These terms cover website use, trials, self-serve subscriptions, and business access
-              to PurveX. If your organization signs a negotiated contract with PurveX, that signed
-              agreement takes priority for the covered services.
-            </p>
-
-            <div className="mt-10 grid gap-4 md:grid-cols-3">
-              {highlights.map((item) => (
-                <article
-                  key={item.title}
-                  className="rounded-3xl border border-white/10 bg-slate-950/40 p-5"
-                >
-                  <item.icon className="mb-4 h-5 w-5 text-sky-200" />
-                  <h2 className="text-base font-semibold text-white">{item.title}</h2>
-                  <p className="mt-3 text-sm leading-7 text-slate-300">{item.body}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-
-          <aside className="rounded-[28px] border border-white/10 bg-slate-950/50 p-8 backdrop-blur-xl">
-            <h2 className="font-[family-name:var(--font-space-grotesk)] text-2xl font-semibold tracking-[-0.03em] text-white">
-              Commercial summary
-            </h2>
-            <ul className="mt-6 space-y-4 text-sm leading-7 text-slate-300">
-              <li>Internal business use only unless PurveX authorizes broader rights in writing.</li>
-              <li>Customer is responsible for lawful and authorized testing activity in its own environments.</li>
-              <li>Recurring billing, cancellation, and renewal details must be disclosed in the purchase flow for self-serve subscriptions.</li>
-              <li>Enterprise order forms and negotiated agreements override this public page where they conflict.</li>
-              <li>The platform supports security decision-making but does not guarantee detection of every threat or control failure.</li>
-            </ul>
-
-            <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-5">
-              <div className="flex items-center gap-3 text-white">
-                <BookText className="h-5 w-5 text-sky-200" />
-                <span className="text-sm font-semibold">Document priority</span>
-              </div>
-              <p className="mt-3 text-sm leading-7 text-slate-300">
-                If there is a conflict between these website terms and a signed PurveX commercial
-                agreement, the signed agreement controls for the purchased services.
-              </p>
-            </div>
-
-            <div className="mt-6 rounded-3xl border border-amber-300/15 bg-amber-300/10 p-5 text-sm leading-7 text-amber-100">
-              <div className="flex items-center gap-3">
-                <FileWarning className="h-5 w-5" />
-                <span className="font-semibold">Legal caveat</span>
-              </div>
-              <p className="mt-3">
-                This is a strong public B2B terms page, but you should still have counsel confirm
-                your governing-law, venue, entity-name, export-control, and procurement-specific
-                clauses before treating it as a final production contract form.
-              </p>
-            </div>
-          </aside>
-        </section>
-
-        <section className="mt-10 rounded-[28px] border border-white/10 bg-white/[0.04] p-8 shadow-[0_24px_80px_-36px_rgba(0,0,0,0.7)] backdrop-blur-xl sm:p-10">
-          <div className="mb-10 flex items-center gap-3">
-            <Scale className="h-5 w-5 text-sky-200" />
-            <h2 className="font-[family-name:var(--font-space-grotesk)] text-2xl font-semibold tracking-[-0.03em] text-white">
-              Full Terms
-            </h2>
-          </div>
-
-          <div className="space-y-10">
-            {sections.map((section) => (
-              <section
-                key={section.title}
-                className="border-b border-white/8 pb-10 last:border-b-0 last:pb-0"
-              >
-                <h3 className="font-[family-name:var(--font-space-grotesk)] text-2xl font-semibold tracking-[-0.03em] text-white">
-                  {section.title}
-                </h3>
-                <div className="mt-5 space-y-5 text-sm leading-8 text-slate-300 sm:text-[15px]">
-                  {section.paragraphs.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        </section>
-      </div>
-    </main>
+    <LegalPage
+      badge="Terms of Service"
+      updated="Last updated April 4, 2026"
+      title="Terms designed for a modern enterprise security software relationship."
+      intro="These terms cover website use, trials, self-serve subscriptions, and business access to PurveX. If your organization signs a negotiated contract with PurveX, that signed agreement takes priority for the covered services."
+      highlights={highlights}
+      summaryTitle="Commercial summary"
+      summaryItems={summaryItems}
+      contactLabel="Document priority"
+      contactIcon={BookText}
+      contactBody="If there is a conflict between these website terms and a signed PurveX commercial agreement, the signed agreement controls for the purchased services."
+      caveatLabel="Legal caveat"
+      caveatIcon={FileWarning}
+      caveatBody="This is a strong public B2B terms page, but you should still have counsel confirm your governing-law, venue, entity-name, export-control, and procurement-specific clauses before treating it as a final production contract form."
+      sectionsHeading="Full Terms"
+      sections={sections}
+    />
   );
 }

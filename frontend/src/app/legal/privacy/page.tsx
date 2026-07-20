@@ -1,14 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import {
-  ArrowLeft,
-  Building2,
-  Database,
-  LockKeyhole,
-  Mail,
-  Scale,
-  Shield,
-} from "lucide-react";
+import { Building2, Database, Mail, Shield, ShieldCheck } from "lucide-react";
+import LegalPage from "@/components/purvex-landing-page/legal-page";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | PurveX",
@@ -35,6 +27,14 @@ const highlights = [
     body:
       "We use personal information to operate, secure, support, and improve the service, manage commercial relationships, and meet legal obligations.",
   },
+];
+
+const summaryItems = [
+  "PurveX collects account, support, billing, site, and service-operational data needed to run the platform.",
+  "Customer environment data submitted to the service is generally processed under customer instructions.",
+  "PurveX does not use customer service data for unrelated advertising purposes.",
+  "Vendors receive data only as needed to host, secure, support, bill, and operate the service.",
+  "Privacy and data-rights requests may need to be routed through the relevant customer when PurveX is acting as a processor or service provider.",
 ];
 
 const sections = [
@@ -145,119 +145,28 @@ const sections = [
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(103,124,255,0.12),transparent_28%),linear-gradient(180deg,#050810_0%,#09111d_100%)] text-slate-100">
-      <div className="mx-auto max-w-6xl px-6 py-8 sm:px-8 lg:px-10">
-        <div className="mb-10 flex items-center justify-between gap-4">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:bg-white/10"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to PurveX
-          </Link>
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">
-            <Scale className="h-4 w-4" />
-            Privacy Policy
-          </div>
-        </div>
-
-        <section className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-8 shadow-[0_32px_100px_-32px_rgba(0,0,0,0.65)] backdrop-blur-xl sm:p-10">
-            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.22em] text-cyan-200/80">
-              Last updated April 4, 2026
-            </p>
-            <h1 className="max-w-4xl font-[family-name:var(--font-space-grotesk)] text-4xl font-semibold tracking-[-0.04em] text-white sm:text-5xl">
-              Privacy terms written for enterprise buyers, security teams, and procurement review.
-            </h1>
-            <p className="mt-6 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">
-              This policy is structured for a B2B SaaS relationship. It explains what PurveX
-              collects, why we collect it, how we use and share it, and how we handle customer
-              service data when organizations use the platform to validate detections, telemetry,
-              and security coverage.
-            </p>
-
-            <div className="mt-10 grid gap-4 md:grid-cols-3">
-              {highlights.map((item) => (
-                <article
-                  key={item.title}
-                  className="rounded-3xl border border-white/10 bg-slate-950/40 p-5"
-                >
-                  <item.icon className="mb-4 h-5 w-5 text-cyan-200" />
-                  <h2 className="text-base font-semibold text-white">{item.title}</h2>
-                  <p className="mt-3 text-sm leading-7 text-slate-300">{item.body}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-
-          <aside className="rounded-[28px] border border-white/10 bg-slate-950/50 p-8 backdrop-blur-xl">
-            <h2 className="font-[family-name:var(--font-space-grotesk)] text-2xl font-semibold tracking-[-0.03em] text-white">
-              Practical summary
-            </h2>
-            <ul className="mt-6 space-y-4 text-sm leading-7 text-slate-300">
-              <li>
-                PurveX collects account, support, billing, site, and service-operational data
-                needed to run the platform.
-              </li>
-              <li>
-                Customer environment data submitted to the service is generally processed under
-                customer instructions.
-              </li>
-              <li>
-                PurveX does not use customer service data for unrelated advertising purposes.
-              </li>
-              <li>
-                Vendors receive data only as needed to host, secure, support, bill, and operate
-                the service.
-              </li>
-              <li>
-                Privacy and data-rights requests may need to be routed through the relevant
-                customer when PurveX is acting as a processor or service provider.
-              </li>
-            </ul>
-
-            <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-5">
-              <div className="flex items-center gap-3 text-white">
-                <Mail className="h-5 w-5 text-cyan-200" />
-                <span className="text-sm font-semibold">Privacy contact</span>
-              </div>
-              <p className="mt-3 text-sm leading-7 text-slate-300">
-                Email <a className="text-cyan-200 underline decoration-cyan-200/30 underline-offset-4" href="mailto:privacy@purvex.com">privacy@purvex.com</a> or use the business contact path defined in your commercial agreement.
-              </p>
-            </div>
-
-            <div className="mt-6 rounded-3xl border border-amber-300/15 bg-amber-300/10 p-5 text-sm leading-7 text-amber-100">
-              This page is a professional B2B privacy notice, not a substitute for advice from
-              counsel familiar with your specific jurisdictions, subprocessors, retention
-              schedules, and commercial commitments.
-            </div>
-          </aside>
-        </section>
-
-        <section className="mt-10 rounded-[28px] border border-white/10 bg-white/[0.04] p-8 shadow-[0_24px_80px_-36px_rgba(0,0,0,0.7)] backdrop-blur-xl sm:p-10">
-          <div className="mb-10 flex items-center gap-3">
-            <LockKeyhole className="h-5 w-5 text-cyan-200" />
-            <h2 className="font-[family-name:var(--font-space-grotesk)] text-2xl font-semibold tracking-[-0.03em] text-white">
-              Full Policy
-            </h2>
-          </div>
-
-          <div className="space-y-10">
-            {sections.map((section) => (
-              <section key={section.title} className="border-b border-white/8 pb-10 last:border-b-0 last:pb-0">
-                <h3 className="font-[family-name:var(--font-space-grotesk)] text-2xl font-semibold tracking-[-0.03em] text-white">
-                  {section.title}
-                </h3>
-                <div className="mt-5 space-y-5 text-sm leading-8 text-slate-300 sm:text-[15px]">
-                  {section.paragraphs.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        </section>
-      </div>
-    </main>
+    <LegalPage
+      badge="Privacy Policy"
+      updated="Last updated April 4, 2026"
+      title="Privacy terms written for enterprise buyers, security teams, and procurement review."
+      intro="This policy is structured for a B2B SaaS relationship. It explains what PurveX collects, why we collect it, how we use and share it, and how we handle customer service data when organizations use the platform to validate detections, telemetry, and security coverage."
+      highlights={highlights}
+      summaryTitle="Practical summary"
+      summaryItems={summaryItems}
+      contactLabel="Privacy contact"
+      contactIcon={Mail}
+      contactBody={
+        <>
+          Email{" "}
+          <a href="mailto:privacy@purvex.com">privacy@purvex.com</a> or use
+          the business contact path defined in your commercial agreement.
+        </>
+      }
+      caveatLabel="Privacy notice"
+      caveatIcon={ShieldCheck}
+      caveatBody="This page is a professional B2B privacy notice, not a substitute for advice from counsel familiar with your specific jurisdictions, subprocessors, retention schedules, and commercial commitments."
+      sectionsHeading="Full Policy"
+      sections={sections}
+    />
   );
 }
