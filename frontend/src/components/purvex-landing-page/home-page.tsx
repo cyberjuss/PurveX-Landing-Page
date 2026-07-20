@@ -320,7 +320,7 @@ export default function HomePage() {
 .sp-testimonial:hover { transform: translateY(-3px) }
 .sp-testimonial__mark { color: var(--accent); opacity: .35 }
 .sp-testimonial__quote { margin: 18px 0 0; font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; line-height: 1.5; letter-spacing: -.015em; color: var(--ink) }
-.sp-testimonial__services { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px }
+.sp-testimonial__services { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; margin-bottom: 24px }
 .sp-tagchip { font-size: .74rem; font-weight: 550; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); border-radius: 999px; padding: 5px 11px }
 .sp-testimonial__author { display: flex; align-items: center; gap: 14px; margin-top: auto; padding-top: 26px; border-top: 1px solid var(--border); text-decoration: none; color: inherit }
 .sp-testimonial__avatar { display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; flex-shrink: 0; box-shadow: 0 8px 18px -8px rgba(85,70,224,.5) }
