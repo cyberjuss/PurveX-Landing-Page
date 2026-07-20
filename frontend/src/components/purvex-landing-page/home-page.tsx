@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Radar,
   ShieldCheck,
+  UserCheck,
   Users,
   Zap,
 } from "lucide-react";
@@ -187,31 +188,26 @@ export default function HomePage() {
             <ChevronRight size={18} />
           </button>
         </div>
-        <div className="sp-carousel__dots">
-          {slides.map((s, i) => (
-            <button
-              key={s.key}
-              className={i === carousel.index ? "sp-carousel__dot sp-carousel__dot--active" : "sp-carousel__dot"}
-              onClick={() => carousel.goTo(i)}
-              aria-label={`Go to ${s.title}`}
-            />
-          ))}
-        </div>
       </section>
 
       {/* ═══════════ WHO WE ARE ═══════════ */}
       <section className="sp-section">
-        <div className="sp-panel" data-r>
-          <span className="sp-tag">Who we are</span>
-          <h2>You work directly with the practitioner.</h2>
-          <p>
-            The person doing your security operations work is the same one teaching in the
-            field. You get real experience, not a script.
-          </p>
-          <p>No sales layer. The best way to see if we are a fit is a quick conversation.</p>
-          <Link href="/about#how-we-think" className="sp-statement__link">
-            See how we think about security <ArrowRight size={14} />
-          </Link>
+        <div className="sp-split" data-r>
+          <div className="sp-split__panel">
+            <UserCheck size={44} />
+          </div>
+          <div className="sp-split__content">
+            <span className="sp-tag">Who we are</span>
+            <h2>You work directly with the practitioner.</h2>
+            <p>
+              The person doing your security operations work is the same one teaching in the
+              field. You get real experience, not a script.
+            </p>
+            <p>No sales layer. The best way to see if we are a fit is a quick conversation.</p>
+            <Link href="/about#how-we-think" className="sp-statement__link">
+              See how we think about security <ArrowRight size={14} />
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -309,9 +305,21 @@ export default function HomePage() {
 .sp-carousel__content .sp-btn { margin-top: 22px; align-self: flex-start }
 .sp-carousel__arrow { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor: pointer; transition: transform .2s var(--ease), border-color .2s, color .2s }
 .sp-carousel__arrow:hover { border-color: var(--accent); color: var(--accent-deep); transform: scale(1.06) }
-.sp-carousel__dots { display: flex; justify-content: center; gap: 8px; margin-top: 20px }
-.sp-carousel__dot { width: 8px; height: 8px; border-radius: 50%; border: 0; background: var(--border-strong); cursor: pointer; padding: 0; transition: background .2s, width .2s }
-.sp-carousel__dot--active { background: var(--accent-deep); width: 22px; border-radius: 5px }
+
+/* ── Who we are — split panel, not a thin full-width strip ── */
+.sp-split {
+  --cut: 24px;
+  display: grid; grid-template-columns: 1fr 1.6fr; min-height: 320px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid var(--border);
+  overflow: hidden;
+  filter: drop-shadow(0 20px 40px rgba(16,25,46,.14));
+}
+.sp-split__panel { display: flex; align-items: center; justify-content: center; background: linear-gradient(150deg, var(--accent), var(--accent-deep)); color: #fff; position: relative; overflow: hidden }
+.sp-split__panel::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.18), transparent 55%) }
+.sp-split__content { padding: 44px 48px; display: flex; flex-direction: column; justify-content: center; background: var(--surface) }
+.sp-split__content h2 { margin: 12px 0 0; font-family: var(--font-display); font-size: clamp(1.4rem, 2.4vw, 1.85rem); font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
+.sp-split__content p { margin: 16px 0 0; color: var(--ink-soft); font-size: 1.02rem; line-height: 1.75 }
 
 /* ── Tools strip ── */
 .sp-tools { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin-top: 24px; padding: 18px 24px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface-alt) }
@@ -337,10 +345,13 @@ export default function HomePage() {
   .sp-carousel__panel svg { width: 48px; height: 48px }
   .sp-carousel__content { padding: 32px }
   .sp-carousel__list { grid-template-columns: 1fr }
+  .sp-split { grid-template-columns: 1fr; min-height: 0 }
+  .sp-split__panel { padding: 32px; min-height: 100px }
 }
 @media (max-width: 680px) {
   .sp-carousel__arrow { display: none }
   .sp-carousel__content { padding: 26px }
+  .sp-split__content { padding: 30px }
 }
       `}</style>
     </SiteChrome>
