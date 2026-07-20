@@ -189,7 +189,7 @@ export default function SecurityOperationsPage() {
 .sp-console__dots span:nth-child(3) { background: #5ec269 }
 .sp-console__title { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: .72rem; color: var(--muted); letter-spacing: .04em }
 .sp-console__list { padding: 10px }
-.sp-console__row { display: flex; align-items: flex-start; gap: 18px; padding: 22px 18px; transition: background .2s }
+.sp-console__row { display: flex; align-items: flex-start; gap: 20px; padding: 26px 24px; transition: background .2s }
 .sp-console__row:hover { background: var(--surface-alt) }
 .sp-console__row + .sp-console__row { border-top: 1px solid var(--border) }
 .sp-console__idx { font-family: var(--font-mono); font-size: .8rem; font-weight: 600; color: var(--accent-deep); flex-shrink: 0; padding-top: 9px; width: 20px }

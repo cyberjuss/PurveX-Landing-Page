@@ -149,8 +149,9 @@ export default function TrainingPage() {
   overflow: hidden;
   filter: drop-shadow(0 16px 32px rgba(16,25,46,.12));
 }
-.sp-syllabus__row { padding: 28px; border-bottom: 1px dashed var(--border-strong) }
-.sp-syllabus__row:nth-child(even) { border-left: 1px dashed var(--border-strong) }
+.sp-syllabus__row { padding: 30px 34px; border-bottom: 1px dashed var(--border-strong) }
+.sp-syllabus__row:nth-child(odd) { padding-right: 40px }
+.sp-syllabus__row:nth-child(even) { padding-left: 40px; border-left: 1px dashed var(--border-strong) }
 .sp-syllabus__row:last-child { grid-column: 1 / -1; border-bottom: none }
 .sp-syllabus__mod { font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep); display: flex; align-items: baseline; gap: 10px }
 .sp-syllabus__mod strong { font-family: var(--font-display); font-size: 1.7rem; font-weight: 700; color: var(--ink); letter-spacing: -.02em }
@@ -171,7 +172,8 @@ export default function TrainingPage() {
 @media (max-width: 940px) { .sp-formats { grid-template-columns: 1fr } }
 @media (max-width: 680px) {
   .sp-syllabus { grid-template-columns: 1fr }
-  .sp-syllabus__row:nth-child(even) { border-left: none }
+  .sp-syllabus__row { padding: 26px 24px }
+  .sp-syllabus__row:nth-child(odd), .sp-syllabus__row:nth-child(even) { padding-left: 24px; padding-right: 24px; border-left: none }
   .sp-syllabus__row:last-child { grid-column: 1 }
 }
       `}</style>

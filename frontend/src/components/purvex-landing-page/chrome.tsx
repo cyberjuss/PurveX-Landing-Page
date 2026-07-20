@@ -70,7 +70,7 @@ const NAV_MENUS: NavMenu[] = [
     href: "/security-operations",
     icon: ShieldCheck,
     blurb: "Strengthen how you detect and respond to threats.",
-    cta: "Explore Security Operations",
+    cta: "Explore",
     items: [
       { label: "SIEM & Detection Engineering", desc: "Build detections around your environment.", anchor: "#siem-detection-engineering", icon: Waypoints },
       { label: "SIEM Optimization", desc: "Reduce noise, improve alert quality.", anchor: "#siem-optimization", icon: Sliders },
@@ -84,7 +84,7 @@ const NAV_MENUS: NavMenu[] = [
     href: "/cybersecurity-training",
     icon: GraduationCap,
     blurb: "Develop practical, job-ready cybersecurity talent.",
-    cta: "Explore Cybersecurity Training",
+    cta: "Explore",
     items: [
       { label: "Cybersecurity Instruction", desc: "Instructor support for SOC & SIEM programs.", anchor: "#instruction", icon: GraduationCap },
       { label: "Hands-On Security Labs", desc: "Practical alert and threat investigation.", anchor: "#labs", icon: FlaskConical },
@@ -109,7 +109,7 @@ const NAV_MENUS: NavMenu[] = [
     href: "/platform",
     icon: Radar,
     blurb: "Our detection-assurance platform, in private beta.",
-    cta: "Explore PurveX Labs",
+    cta: "Explore",
     items: [
       { label: "The Platform", desc: "Everything on one screen, proof not assumptions.", anchor: "#product", icon: Radar },
       { label: "Planned Pricing", desc: "Start focused, expand when the evidence is there.", anchor: "#pricing", icon: Layers },
@@ -569,7 +569,7 @@ export const CHROME_CSS = `
 .sp-megamenu__icon { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-deep); flex-shrink: 0 }
 .sp-megamenu__head p { margin: 0; font-size: .82rem; color: var(--muted); line-height: 1.4 }
 .sp-megamenu__list { display: flex; flex-direction: column; padding: 6px 0 }
-.sp-megamenu__item { display: flex; align-items: flex-start; gap: 11px; padding: 9px 10px; border-radius: 10px; text-decoration: none; color: inherit; transition: background .18s }
+.sp-megamenu__item { display: flex; align-items: flex-start; gap: 12px; padding: 11px 12px; border-radius: 10px; text-decoration: none; color: inherit; transition: background .18s }
 .sp-megamenu__item:hover { background: var(--surface-alt) }
 .sp-megamenu__item svg { flex-shrink: 0; margin-top: 2px; color: var(--accent-deep) }
 .sp-megamenu__item strong { display: block; font-size: .86rem; font-weight: 600; color: var(--ink) }
