@@ -172,30 +172,30 @@ export default function SecurityOperationsPage() {
       </section>
 
       <style>{`
-/* ── Console (dark terminal-style service log) ── */
+/* ── Console (light terminal-style service log) ── */
 .sp-console {
   --cut: 16px;
   clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-  border: 1px solid rgba(255,255,255,.08);
-  background: var(--ink);
+  border: 1px solid var(--border);
+  background: var(--surface);
   overflow: hidden;
-  filter: drop-shadow(0 24px 48px rgba(16,25,46,.35));
+  filter: drop-shadow(0 20px 40px rgba(16,25,46,.14));
 }
-.sp-console__bar { display: flex; align-items: center; gap: 10px; padding: 14px 20px; background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.08) }
+.sp-console__bar { display: flex; align-items: center; gap: 10px; padding: 14px 20px; background: var(--surface-alt); border-bottom: 1px solid var(--border) }
 .sp-console__dots { display: flex; gap: 6px }
 .sp-console__dots span { width: 9px; height: 9px; border-radius: 50% }
 .sp-console__dots span:nth-child(1) { background: #f2777a }
 .sp-console__dots span:nth-child(2) { background: #f4c059 }
 .sp-console__dots span:nth-child(3) { background: #5ec269 }
-.sp-console__title { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: .72rem; color: rgba(255,255,255,.5); letter-spacing: .04em }
+.sp-console__title { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: .72rem; color: var(--muted); letter-spacing: .04em }
 .sp-console__list { padding: 10px }
 .sp-console__row { display: flex; align-items: flex-start; gap: 18px; padding: 22px 18px; transition: background .2s }
-.sp-console__row:hover { background: rgba(255,255,255,.035) }
-.sp-console__row + .sp-console__row { border-top: 1px solid rgba(255,255,255,.06) }
-.sp-console__idx { font-family: var(--font-mono); font-size: .8rem; font-weight: 600; color: var(--accent); flex-shrink: 0; padding-top: 9px; width: 20px }
-.sp-console__icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: #fff; border: 1px solid #fff; color: var(--ink); display: flex; align-items: center; justify-content: center }
-.sp-console__row h3 { margin: 0; font-family: var(--font-display); font-size: 1.02rem; font-weight: 650; letter-spacing: -.01em; color: #fff }
-.sp-console__row p { margin: 6px 0 0; font-size: .88rem; color: rgba(255,255,255,.5); line-height: 1.6; max-width: 560px }
+.sp-console__row:hover { background: var(--surface-alt) }
+.sp-console__row + .sp-console__row { border-top: 1px solid var(--border) }
+.sp-console__idx { font-family: var(--font-mono); font-size: .8rem; font-weight: 600; color: var(--accent-deep); flex-shrink: 0; padding-top: 9px; width: 20px }
+.sp-console__icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.2); color: var(--accent-deep); display: flex; align-items: center; justify-content: center }
+.sp-console__row h3 { margin: 0; font-family: var(--font-display); font-size: 1.02rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
+.sp-console__row p { margin: 6px 0 0; font-size: .88rem; color: var(--muted); line-height: 1.6; max-width: 560px }
 
 /* ── Blue vs red (inline version) ── */
 .sp-versus { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 20px; max-width: 640px; margin: 0 auto }
