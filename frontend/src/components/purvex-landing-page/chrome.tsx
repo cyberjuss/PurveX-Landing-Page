@@ -154,7 +154,7 @@ export function SiteChrome({
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const root = pageRef.current;
     if (!root) return;
-    const targets = Array.from(root.querySelectorAll<HTMLElement>(".sp-card, .sp-cta, .sp-partner"));
+    const targets = Array.from(root.querySelectorAll<HTMLElement>(".sp-card, .sp-partner"));
     const onMove = (e: MouseEvent) => {
       const el = e.currentTarget as HTMLElement;
       const r = el.getBoundingClientRect();
@@ -667,41 +667,36 @@ export const CHROME_CSS = `
 .sp-footnote a { color: var(--accent-deep); font-weight: 600; text-decoration: none; white-space: nowrap }
 .sp-footnote a:hover { text-decoration: underline }
 
-/* ── CTA banner ── */
-.sp-cta {
-  --cut: 32px;
-  position: relative; overflow: hidden;
-  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; padding: 56px 48px;
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-  border: 1px solid rgba(106,92,255,.22);
-  background: linear-gradient(135deg, #f4f3ff 0%, #ffffff 60%);
-  filter: drop-shadow(0 20px 40px rgba(85,70,224,.22));
-  transform: perspective(1000px) rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg)) translateY(var(--tiltLift, 0px));
-  transition: transform .35s var(--ease), filter .3s, border-color .3s;
-}
-.sp-cta::before {
-  content: "";
-  position: absolute; inset: 0;
-  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 15%), rgba(106,92,255,.18), transparent 62%);
-  opacity: 0;
-  transition: opacity .4s;
-  pointer-events: none;
-}
-.sp-cta:hover { border-color: rgba(106,92,255,.4); filter: drop-shadow(0 28px 52px rgba(85,70,224,.28)) }
-.sp-cta:hover::before { opacity: 1 }
-@media (prefers-reduced-motion: reduce) { .sp-cta { transform: none !important } .sp-cta::before { display: none } }
+/* ── CTA banner — no card, just an interactive icon + headline ── */
+.sp-cta { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding: 24px 0 }
 .sp-cta__icon {
   position: relative;
   display: inline-flex; align-items: center; justify-content: center;
-  width: 52px; height: 52px;
-  border-radius: 16px;
+  width: 60px; height: 60px;
+  border-radius: 20px;
   background: linear-gradient(135deg, var(--accent), var(--accent-deep));
   color: #fff;
-  box-shadow: 0 10px 24px -8px rgba(85,70,224,.55);
+  box-shadow: 0 14px 28px -8px rgba(85,70,224,.55);
+  cursor: pointer;
   animation: sp-cta-float 3.2s ease-in-out infinite;
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-radius .3s var(--ease);
 }
-@keyframes sp-cta-float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
-@media (prefers-reduced-motion: reduce) { .sp-cta__icon { animation: none } }
+.sp-cta__icon::before, .sp-cta__icon::after {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  border: 1.5px solid rgba(106,92,255,.45);
+  opacity: 0;
+  animation: sp-cta-ping 2.6s ease-out infinite;
+}
+.sp-cta__icon::after { animation-delay: 1.3s }
+.sp-cta__icon:hover { transform: scale(1.12) rotate(-8deg); border-radius: 50%; box-shadow: 0 18px 36px -8px rgba(85,70,224,.7) }
+@keyframes sp-cta-float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
+@keyframes sp-cta-ping { 0% { opacity: .6; transform: scale(1) } 100% { opacity: 0; transform: scale(1.7) } }
+@media (prefers-reduced-motion: reduce) {
+  .sp-cta__icon { animation: none }
+  .sp-cta__icon::before, .sp-cta__icon::after { display: none }
+}
 .sp-cta h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.4rem, 2.4vw, 1.85rem); font-weight: 700; letter-spacing: -.02em; color: var(--ink); max-width: 560px }
 .sp-cta p { margin: 0; color: var(--ink-soft); font-size: 1.05rem; line-height: 1.7; max-width: 520px }
 
@@ -759,7 +754,6 @@ export const CHROME_CSS = `
   .sp-head { margin-bottom: 40px }
   .sp-cards--2, .sp-cards--3, .sp-cards--4 { grid-template-columns: 1fr }
   .sp-card { padding: 28px; --cut: 18px }
-  .sp-cta { padding: 40px 28px; --cut: 22px }
   .sp-panel { padding: 32px; --cut: 22px }
   .sp-footer__cols { flex-wrap: wrap; gap: 32px }
   .sp-footer__bottom { flex-direction: column; align-items: flex-start; gap: 10px }
