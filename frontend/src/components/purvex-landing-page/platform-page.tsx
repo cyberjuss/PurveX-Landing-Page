@@ -530,7 +530,9 @@ export default function PlatformPage() {
   .sp-pricing { grid-template-columns: 1fr }
 }
 @media (max-width: 680px) {
+  .sp-wl { margin-top: 22px }
   .sp-wl__row { flex-direction: column }
+  .sp-hero__ghost-link { margin-top: 14px }
   .sp-bento { grid-template-columns: 1fr }
   .sp-tile--feat { grid-column: 1 / -1 }
   .sp-dash__name { display: none }

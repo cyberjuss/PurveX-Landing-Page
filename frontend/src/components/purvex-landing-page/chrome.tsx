@@ -747,10 +747,12 @@ export const CHROME_CSS = `
   .sp-nav__links { display: none }
   .sp-nav__burger { display: flex }
   .sp-nav__right .sp-btn { display: none }
-  .sp-hero { padding-top: 64px }
-  .sp-hero__actions { flex-direction: column }
+  .sp-hero { padding-top: 56px }
+  .sp-hero__badge { margin-bottom: 18px }
+  .sp-hero__sub { margin-top: 18px }
+  .sp-hero__actions { flex-direction: column; margin-top: 28px }
   .sp-hero__actions .sp-btn { width: 100% }
-  .sp-section { padding-top: 88px }
+  .sp-section { padding-top: 64px }
   .sp-head { margin-bottom: 40px }
   .sp-cards--2, .sp-cards--3, .sp-cards--4 { grid-template-columns: 1fr }
   .sp-card { padding: 28px; --cut: 18px }
