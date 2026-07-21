@@ -181,9 +181,7 @@ export default function TrainingPage() {
           <div className="sp-cta__icon">
             <MessageCircle size={22} />
           </div>
-          <span className="sp-tag">Looking for an instructor or training partner?</span>
           <h2>Partner With PurveX</h2>
-          <p>Tell us about your program and we will find the format that fits it best.</p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Partner With PurveX <ArrowRight size={16} />
           </a>

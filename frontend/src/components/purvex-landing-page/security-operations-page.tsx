@@ -191,9 +191,7 @@ export default function SecurityOperationsPage() {
           <div className="sp-cta__icon">
             <MessageCircle size={22} />
           </div>
-          <span className="sp-tag">Not sure where your security gaps are?</span>
           <h2>Talk through your current security environment.</h2>
-          <p>We will walk through where things stand today and identify where PurveX can help.</p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Schedule a Conversation <ArrowRight size={16} />
           </a>

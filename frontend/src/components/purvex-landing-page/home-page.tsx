@@ -280,9 +280,7 @@ export default function HomePage() {
           <div className="sp-cta__icon">
             <MessageCircle size={22} />
           </div>
-          <span className="sp-tag">Not sure where to start?</span>
           <h2>Tell us what your organization needs.</h2>
-          <p>A short conversation is the fastest way to find out where PurveX can help.</p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Schedule a Conversation <ArrowRight size={16} />
           </a>
