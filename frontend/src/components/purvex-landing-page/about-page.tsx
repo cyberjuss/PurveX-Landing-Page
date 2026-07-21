@@ -212,6 +212,19 @@ export default function AboutPage() {
 .sp-story__chapter:last-child { margin-bottom: 0 }
 .sp-story__num { position: absolute; left: -52px; top: -4px; width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent-deep); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: .9rem; transition: background .4s var(--ease), color .4s var(--ease), transform .4s var(--ease), box-shadow .4s var(--ease) }
 .sp-story__chapter.in .sp-story__num { background: var(--accent-deep); color: #fff; transform: scale(1.08); box-shadow: 0 6px 18px -6px rgba(85,70,224,.6) }
+
+/* ── Alternating sides on wide screens: line down the middle, chapters left/right ── */
+@media (min-width: 861px) {
+  .sp-story { max-width: 960px }
+  .sp-story__thread { padding-left: 0; margin-top: 64px }
+  .sp-story__thread::before { left: 50%; transform: translateX(-50%) }
+  .sp-story__thread-fill { left: 50%; transform: translateX(-50%) }
+  .sp-story__chapter { width: calc(50% - 40px) }
+  .sp-story__chapter:nth-of-type(odd) { margin-left: 0 }
+  .sp-story__chapter:nth-of-type(even) { margin-left: calc(50% + 40px) }
+  .sp-story__chapter:nth-of-type(odd) .sp-story__num { left: auto; right: -60px }
+  .sp-story__chapter:nth-of-type(even) .sp-story__num { left: -60px; right: auto }
+}
 @media (prefers-reduced-motion: reduce) { .sp-story__thread-fill { transition: none } }
 .sp-story__label { display: block; font-size: .74rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
 .sp-story__pull { margin: 14px 0 0; padding-left: 20px; border-left: 3px solid var(--accent); font-family: var(--font-display); font-size: clamp(1.2rem, 2.4vw, 1.5rem); font-weight: 650; letter-spacing: -.015em; line-height: 1.4; color: var(--ink) }
