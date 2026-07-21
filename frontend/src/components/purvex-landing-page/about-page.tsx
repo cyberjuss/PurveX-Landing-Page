@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { ArrowRight, Brain, ShieldCheck, Swords, Zap } from "lucide-react";
@@ -140,7 +141,13 @@ export default function AboutPage() {
             <p>The best way to see if we are a fit is a real conversation, not a pitch.</p>
 
             <div className="sp-founder-card">
-              <div className="sp-founder-card__avatar">JD</div>
+              <Image
+                src="/Justin.jpg"
+                alt="Justin Duru"
+                width={64}
+                height={64}
+                className="sp-founder-card__avatar sp-founder-card__avatar--photo"
+              />
               <div className="sp-founder-card__info">
                 <strong>Justin Duru</strong>
                 <span>Founder &amp; Lead Security Consultant</span>
@@ -239,7 +246,8 @@ export default function AboutPage() {
   background: linear-gradient(135deg, var(--accent-soft), transparent 70%);
   border: 1px solid rgba(106,92,255,.2);
 }
-.sp-founder-card__avatar { display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; flex-shrink: 0; box-shadow: 0 12px 26px -8px rgba(85,70,224,.55) }
+.sp-founder-card__avatar { width: 64px; height: 64px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 12px 26px -8px rgba(85,70,224,.55) }
+.sp-founder-card__avatar--photo { object-fit: cover }
 .sp-founder-card__info { display: flex; flex-direction: column }
 .sp-founder-card__info strong { font-size: 1.05rem; font-weight: 700; color: var(--ink) }
 .sp-founder-card__info > span { margin-top: 2px; font-size: .86rem; color: var(--muted) }
