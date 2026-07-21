@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, FlaskConical, GraduationCap, Layers, MessageCircle, TrendingUp, Users } from "lucide-react";
+import { ArrowRight, Check, FlaskConical, GraduationCap, Handshake, Layers, MessageCircle, TrendingUp, Users } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
 const curriculum = [
@@ -98,23 +98,16 @@ export default function TrainingPage() {
             </p>
           </div>
           <div className="sp-partner__visual">
-            <div className="sp-partner__chip">
-              <GraduationCap size={20} />
-              <span>Your Program</span>
+            <div className="sp-partner__badge">
+              <Handshake size={40} />
             </div>
-            <div className="sp-partner__connector">
-              <span className="sp-partner__connector-icon">+</span>
-            </div>
-            <div className="sp-partner__chip sp-partner__chip--accent">
-              <Users size={20} />
-              <span>PurveX Instruction</span>
-            </div>
-            <div className="sp-partner__connector">
-              <span className="sp-partner__connector-icon">=</span>
-            </div>
-            <div className="sp-partner__chip sp-partner__chip--result">
-              <TrendingUp size={20} />
-              <span>A Stronger Curriculum</span>
+            <div className="sp-partner__pills">
+              <span className="sp-partner__pill">
+                <GraduationCap size={14} /> Your Program
+              </span>
+              <span className="sp-partner__pill sp-partner__pill--accent">
+                <Users size={14} /> PurveX Instruction
+              </span>
             </div>
           </div>
         </div>
@@ -262,28 +255,30 @@ export default function TrainingPage() {
 .sp-partner__note { margin-top: 22px !important; padding-top: 20px; border-top: 1px dashed var(--border-strong); font-size: .88rem !important; line-height: 1.65 !important; color: var(--muted) !important }
 .sp-partner__note a { color: var(--accent-deep); font-weight: 600; text-decoration: none }
 .sp-partner__note a:hover { text-decoration: underline }
-.sp-partner__visual { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center }
-.sp-partner__chip {
-  --cut: 12px;
-  display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; padding: 20px 16px;
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-  border: 1px solid var(--border);
-  background: var(--surface-alt);
-  text-align: center;
-  box-shadow: 0 8px 20px -14px rgba(16,25,46,.25);
-  transition: transform .3s var(--ease), box-shadow .3s;
+.sp-partner__visual { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 26px }
+.sp-partner__badge {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  width: 104px; height: 104px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  color: #fff;
+  box-shadow: 0 20px 40px -14px rgba(85,70,224,.55);
 }
-.sp-partner__chip:hover { transform: translateY(-2px) }
-.sp-partner__chip svg { color: var(--muted-dim) }
-.sp-partner__chip span { font-size: .84rem; font-weight: 650; color: var(--ink) }
-.sp-partner__chip--accent { background: var(--accent-soft); border-color: rgba(106,92,255,.25) }
-.sp-partner__chip--accent svg { color: var(--accent-deep) }
-.sp-partner__chip--accent span { color: var(--accent-deep) }
-.sp-partner__chip--result { border-color: transparent; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); box-shadow: 0 16px 30px -10px rgba(85,70,224,.55) }
-.sp-partner__chip--result svg, .sp-partner__chip--result span { color: #fff }
-.sp-partner__connector { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 30px }
-.sp-partner__connector::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--border-strong); transform: translateX(-50%) }
-.sp-partner__connector-icon { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border-strong); font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--muted-dim) }
+.sp-partner__badge::before {
+  content: "";
+  position: absolute; inset: -11px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(106,92,255,.35);
+  animation: sp-partner-spin 16s linear infinite;
+}
+@keyframes sp-partner-spin { to { transform: rotate(360deg) } }
+@media (prefers-reduced-motion: reduce) { .sp-partner__badge::before { animation: none } }
+.sp-partner__pills { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px }
+.sp-partner__pill { display: inline-flex; align-items: center; gap: 7px; font-size: .8rem; font-weight: 650; color: var(--ink); background: var(--surface-alt); border: 1px solid var(--border); border-radius: 999px; padding: 8px 16px 8px 14px }
+.sp-partner__pill svg { color: var(--muted-dim) }
+.sp-partner__pill--accent { color: var(--accent-deep); background: var(--accent-soft); border-color: rgba(106,92,255,.25) }
+.sp-partner__pill--accent svg { color: var(--accent-deep) }
 @media (max-width: 860px) {
   .sp-partner { grid-template-columns: 1fr; padding: 36px 30px; gap: 28px }
   .sp-partner__visual { max-width: 320px; margin: 0 auto }
