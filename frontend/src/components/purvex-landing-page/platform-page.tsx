@@ -11,6 +11,7 @@ import {
   Crosshair,
   Database,
   GitBranch,
+  Mail,
   Radar,
   ShieldCheck,
   Sliders,
@@ -211,14 +212,17 @@ export default function PlatformPage() {
         </p>
         <form className="sp-wl" onSubmit={submitWaitlist}>
           <div className="sp-wl__row">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@company.com"
-              className="sp-wl__input"
-              autoComplete="email"
-            />
+            <div className="sp-wl__field">
+              <Mail size={17} />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@company.com"
+                className="sp-wl__input"
+                autoComplete="email"
+              />
+            </div>
             <button type="submit" className="sp-btn sp-btn--prim sp-btn--lg" disabled={wlState === "loading"}>
               {wlState === "loading" ? "Joining..." : <><span>Join the Waitlist</span><ArrowRight size={15} /></>}
             </button>
@@ -390,11 +394,18 @@ export default function PlatformPage() {
 .sp-tile:hover .sp-tile__icon { transform: translateY(-2px) scale(1.06) }
 
 /* ── Waitlist ── */
-.sp-wl { margin: 30px auto 0; max-width: 460px }
-.sp-wl__row { display: flex; gap: 10px }
-.sp-wl__input { flex: 1; height: 50px; border-radius: 11px; border: 1px solid var(--border-strong); background: var(--surface); padding: 0 16px; font-size: .92rem; color: var(--ink); outline: none; transition: border-color .2s, box-shadow .2s }
+.sp-wl { margin: 30px auto 0; max-width: 480px }
+.sp-wl__row {
+  display: flex; align-items: center; gap: 4px; padding: 4px;
+  border-radius: 15px; border: 1px solid var(--border-strong); background: var(--surface);
+  box-shadow: 0 16px 36px -20px rgba(16,25,46,.28);
+  transition: border-color .2s, box-shadow .2s;
+}
+.sp-wl__row:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(106,92,255,.14), 0 16px 36px -20px rgba(16,25,46,.28) }
+.sp-wl__field { flex: 1; display: flex; align-items: center; gap: 9px; height: 46px; padding: 0 14px; color: var(--muted-dim) }
+.sp-wl__input { flex: 1; height: 100%; border: none; background: transparent; padding: 0; font-size: .92rem; color: var(--ink); outline: none }
 .sp-wl__input::placeholder { color: var(--muted-dim) }
-.sp-wl__input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(106,92,255,.12) }
+.sp-wl__row .sp-btn { border-radius: 11px; flex-shrink: 0 }
 .sp-wl__msg { margin: 10px 0 0; font-size: .82rem }
 .sp-wl__msg--success, .sp-wl__msg--exists { color: var(--green) }
 .sp-wl__msg--error { color: var(--red) }
@@ -531,7 +542,10 @@ export default function PlatformPage() {
 }
 @media (max-width: 680px) {
   .sp-wl { margin-top: 22px }
-  .sp-wl__row { flex-direction: column }
+  .sp-wl__row { flex-direction: column; align-items: stretch; gap: 10px; padding: 0; border: none; background: none; box-shadow: none }
+  .sp-wl__row:focus-within { box-shadow: none }
+  .sp-wl__field { height: 50px; padding: 0 16px; border-radius: 11px; border: 1px solid var(--border-strong); background: var(--surface) }
+  .sp-wl__row:focus-within .sp-wl__field { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(106,92,255,.12) }
   .sp-hero__ghost-link { margin-top: 14px }
   .sp-bento { grid-template-columns: 1fr }
   .sp-tile--feat { grid-column: 1 / -1 }
