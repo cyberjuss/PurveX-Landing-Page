@@ -247,7 +247,7 @@ export default function AboutPage() {
   border: 1px solid rgba(106,92,255,.2);
 }
 .sp-founder-card__avatar { width: 64px; height: 64px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 12px 26px -8px rgba(85,70,224,.55) }
-.sp-founder-card__avatar--photo { object-fit: cover }
+.sp-founder-card__avatar--photo { object-fit: cover; object-position: center 12% }
 .sp-founder-card__info { display: flex; flex-direction: column }
 .sp-founder-card__info strong { font-size: 1.05rem; font-weight: 700; color: var(--ink) }
 .sp-founder-card__info > span { margin-top: 2px; font-size: .86rem; color: var(--muted) }
