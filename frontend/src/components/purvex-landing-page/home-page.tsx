@@ -12,6 +12,7 @@ import {
   Quote,
   Radar,
   ShieldCheck,
+  Star,
   Users,
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
@@ -236,6 +237,11 @@ export default function HomePage() {
         <div className="sp-testimonials" data-r>
           {testimonials.map((t) => (
             <div key={t.name} className="sp-testimonial">
+              <div className="sp-testimonial__stars">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} size={14} />
+                ))}
+              </div>
               <Quote size={32} className="sp-testimonial__mark" />
               <p className="sp-testimonial__quote">{t.quote}</p>
               {t.services.length > 0 && (
@@ -322,6 +328,8 @@ export default function HomePage() {
   transition: transform .3s var(--ease);
 }
 .sp-testimonial:hover { transform: translateY(-3px) }
+.sp-testimonial__stars { display: flex; gap: 3px; color: #f4b740; margin-bottom: 16px }
+.sp-testimonial__stars svg { fill: currentColor }
 .sp-testimonial__mark { color: var(--accent); opacity: .35 }
 .sp-testimonial__quote { margin: 18px 0 0; font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; line-height: 1.5; letter-spacing: -.015em; color: var(--ink) }
 .sp-testimonial__services { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; margin-bottom: 24px }
