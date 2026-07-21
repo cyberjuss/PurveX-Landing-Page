@@ -74,21 +74,31 @@ export default function AboutPage() {
               sides is what makes a stronger analyst, and it shapes everything we do.
             </p>
 
-            <div className="sp-versus">
-              <div className="sp-versus__side sp-versus__side--blue">
-                <div className="sp-versus__icon">
-                  <ShieldCheck size={22} />
+            <div className="sp-yinyang">
+              <svg viewBox="0 0 100 100" className="sp-yinyang__svg" aria-hidden="true">
+                <circle cx="50" cy="50" r="49" className="sp-yinyang__red" />
+                <path
+                  d="M50,1 A24.5,24.5 0 0,1 50,50 A24.5,24.5 0 0,0 50,99 A49,49 0 0,1 50,1 Z"
+                  className="sp-yinyang__blue"
+                />
+                <circle cx="50" cy="25.5" r="6.5" className="sp-yinyang__dot sp-yinyang__dot--red" />
+                <circle cx="50" cy="74.5" r="6.5" className="sp-yinyang__dot sp-yinyang__dot--blue" />
+              </svg>
+              <div className="sp-yinyang__labels">
+                <div className="sp-yinyang__label sp-yinyang__label--blue">
+                  <ShieldCheck size={16} />
+                  <div>
+                    <strong>Blue Team</strong>
+                    <span>Detect, respond, and defend the environment.</span>
+                  </div>
                 </div>
-                <span className="sp-versus__label">Blue Team</span>
-                <p>Detect, respond, and defend the environment.</p>
-              </div>
-              <div className="sp-versus__mid">+</div>
-              <div className="sp-versus__side sp-versus__side--red">
-                <div className="sp-versus__icon">
-                  <Swords size={22} />
+                <div className="sp-yinyang__label sp-yinyang__label--red">
+                  <Swords size={16} />
+                  <div>
+                    <strong>Red Team</strong>
+                    <span>Think and move the way an attacker does.</span>
+                  </div>
                 </div>
-                <span className="sp-versus__label">Red Team</span>
-                <p>Think and move the way an attacker does.</p>
               </div>
             </div>
 
@@ -259,17 +269,21 @@ export default function AboutPage() {
 }
 
 /* Blue vs red — a lighter, inline version of the shared card treatment */
-.sp-versus { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; margin-top: 28px }
-.sp-versus__side { --cut: 14px; padding: 26px 22px; clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut)); text-align: center; transition: transform .3s var(--ease) }
-.sp-versus__side:hover { transform: translateY(-3px) }
-.sp-versus__side--blue { background: linear-gradient(160deg, var(--accent-soft), #ffffff); border: 1px solid rgba(106,92,255,.25) }
-.sp-versus__side--red { background: linear-gradient(160deg, rgba(229,72,77,.08), #ffffff); border: 1px solid rgba(229,72,77,.22) }
-.sp-versus__icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; margin-bottom: 12px }
-.sp-versus__side--blue .sp-versus__icon { background: var(--accent-soft); color: var(--accent-deep) }
-.sp-versus__side--red .sp-versus__icon { background: rgba(229,72,77,.12); color: var(--red) }
-.sp-versus__label { display: block; font-family: var(--font-display); font-size: .98rem; font-weight: 700; letter-spacing: -.01em; color: var(--ink) }
-.sp-versus__side p { margin: 6px 0 0; font-size: .82rem; color: var(--muted); line-height: 1.5 }
-.sp-versus__mid { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border-strong); font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; color: var(--muted-dim); flex-shrink: 0 }
+.sp-yinyang { display: flex; flex-direction: column; align-items: center; gap: 28px; margin-top: 32px }
+.sp-yinyang__svg { width: 140px; height: 140px; flex-shrink: 0; filter: drop-shadow(0 14px 28px rgba(16,25,46,.16)); transition: transform .4s var(--ease); }
+.sp-yinyang:hover .sp-yinyang__svg { transform: rotate(20deg) }
+.sp-yinyang__red { fill: var(--red) }
+.sp-yinyang__blue { fill: var(--accent-deep) }
+.sp-yinyang__dot--red { fill: var(--red) }
+.sp-yinyang__dot--blue { fill: var(--accent-deep) }
+@media (prefers-reduced-motion: reduce) { .sp-yinyang__svg { transition: none } }
+.sp-yinyang__labels { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center }
+.sp-yinyang__label { display: flex; align-items: flex-start; gap: 10px; max-width: 220px }
+.sp-yinyang__label svg { flex-shrink: 0; margin-top: 2px }
+.sp-yinyang__label--blue svg { color: var(--accent-deep) }
+.sp-yinyang__label--red svg { color: var(--red) }
+.sp-yinyang__label strong { display: block; font-family: var(--font-display); font-size: .96rem; font-weight: 700; letter-spacing: -.01em; color: var(--ink) }
+.sp-yinyang__label span { display: block; margin-top: 4px; font-size: .84rem; color: var(--muted); line-height: 1.5 }
 
 /* Our-goal points — inline, not boxed cards */
 .sp-story__points { display: flex; flex-direction: column; gap: 18px; margin-top: 24px }
@@ -284,8 +298,8 @@ export default function AboutPage() {
   .sp-story__thread::before, .sp-story__thread-fill { left: 15px }
   .sp-story__num { left: -40px; width: 32px; height: 32px; font-size: .78rem }
   .sp-story__chapter { margin-bottom: 64px }
-  .sp-versus { grid-template-columns: 1fr; gap: 10px }
-  .sp-versus__mid { justify-self: center }
+  .sp-yinyang__svg { width: 110px; height: 110px }
+  .sp-yinyang__labels { gap: 24px }
 }
       `}</style>
     </SiteChrome>
