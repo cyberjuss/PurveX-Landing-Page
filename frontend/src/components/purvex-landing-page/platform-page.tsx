@@ -493,8 +493,8 @@ export default function PlatformPage() {
   transition: transform .3s var(--ease), border-color .3s, filter .3s;
 }
 .sp-tier:hover { transform: translateY(-3px); border-color: var(--border-strong) }
-.sp-tier--feat { border-color: rgba(106,92,255,.35); filter: drop-shadow(0 22px 44px rgba(85,70,224,.3)) }
-.sp-tier__badge { position: absolute; top: 0; right: 22px; transform: translateY(-50%); padding: 4px 13px; border-radius: 999px; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); font-size: .62rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #fff }
+.sp-tier--feat { border-color: rgba(106,92,255,.35); filter: drop-shadow(0 22px 44px rgba(85,70,224,.3)); padding-top: 56px }
+.sp-tier__badge { position: absolute; top: 20px; right: 22px; padding: 4px 13px; border-radius: 999px; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); font-size: .62rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #fff }
 .sp-tier__name { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted-dim); font-weight: 700 }
 .sp-tier__price { margin-top: 8px; font-family: var(--font-display); font-size: 2.3rem; font-weight: 700; letter-spacing: -.04em; color: var(--ink) }
 .sp-tier__note { margin-top: 2px; color: var(--muted); font-size: .82rem }
