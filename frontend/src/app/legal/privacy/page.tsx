@@ -13,37 +13,37 @@ const highlights = [
     icon: Building2,
     title: "Built for B2B relationships",
     body:
-      "PurveX is designed for business users, security teams, and enterprise buying groups. This policy explains how we handle company, account, billing, and platform data.",
+      "PurveX is designed for business users, security teams, and enterprise buying groups. This policy explains how we handle contact, account, billing, and PurveX Labs early-access data.",
   },
   {
     icon: Database,
-    title: "Clear roles for service data",
+    title: "No customer environment data yet",
     body:
-      "For customer environment data processed in the platform, PurveX generally acts as a processor or service provider acting on the customer's documented instructions.",
+      "PurveX does not currently collect or process customer production security telemetry, logs, or environment data on PurveX systems. This section will be updated to describe PurveX's processor role once PurveX Labs reaches general availability.",
   },
   {
     icon: Shield,
     title: "Limited use and controlled sharing",
     body:
-      "We use personal information to operate, secure, support, and improve the service, manage commercial relationships, and meet legal obligations.",
+      "We use personal information to operate, secure, support, and improve the website and PurveX Labs early access, manage commercial relationships, and meet legal obligations.",
   },
 ];
 
 const summaryItems = [
-  "PurveX collects account, support, billing, site, and service-operational data needed to run the platform.",
-  "Customer environment data submitted to the service is generally processed under customer instructions.",
-  "PurveX does not use customer service data for unrelated advertising purposes.",
-  "Vendors receive data only as needed to host, secure, support, bill, and operate the service.",
-  "Privacy and data-rights requests may need to be routed through the relevant customer when PurveX is acting as a processor or service provider.",
+  "PurveX collects account, support, billing, and site data needed to run the website and PurveX Labs early access.",
+  "PurveX does not currently collect or store customer production security environment data or telemetry.",
+  "Security Operations and Cybersecurity Training engagements are governed by your signed contract, which may include its own data-handling terms.",
+  "PurveX does not use customer data for unrelated advertising purposes and does not sell personal information.",
+  "Vendors receive data only as needed to host, secure, support, bill, and operate the website and early access.",
 ];
 
 const sections = [
   {
     title: "1. Scope",
     paragraphs: [
-      "This Privacy Policy describes how PurveX collects, uses, discloses, and protects personal information in connection with our websites, product demos, trials, commercial activities, and the PurveX platform.",
+      "This Privacy Policy describes how PurveX collects, uses, discloses, and protects personal information in connection with our website, product demos, commercial activities, and early access to PurveX Labs.",
       "This policy is intended for business-to-business use. It applies to information relating to employees, contractors, administrators, buyers, and other representatives of our customers, prospects, partners, and vendors, as well as website visitors.",
-      "Where a customer uploads, transmits, or otherwise makes available data through the PurveX service, that customer remains responsible for determining whether the data may be lawfully processed. In those circumstances, PurveX typically processes that data on the customer's behalf under the applicable commercial agreement or data processing terms.",
+      "PurveX does not currently ingest, store, or process customer production security environment data, telemetry, or logs through the website or PurveX Labs early access. Where PurveX provides Security Operations or Cybersecurity Training services under a signed contract, any customer data handled during that engagement is governed by the terms of that contract, not by this policy.",
     ],
   },
   {
@@ -52,7 +52,7 @@ const sections = [
       "We collect business contact and account information such as name, company name, business email address, job title, authentication identifiers, account preferences, and support communications.",
       "We collect commercial and transaction information such as subscription details, billing contact information, invoicing records, and payment-related metadata. Card numbers and similar payment credentials are typically processed by our payment providers rather than stored by PurveX.",
       "We collect technical and usage information such as IP address, browser type, device and network identifiers, cookie or similar online identifiers, log data, product usage events, security events, diagnostic information, and configuration metadata necessary to deliver and secure the service.",
-      "If a customer uses PurveX to evaluate detections, validate telemetry, or upload environment-related materials, we may process service data, test results, audit trails, uploaded documents, and related platform content in accordance with the customer's instructions.",
+      "If you reserve early access to PurveX Labs, we collect the account, company, and payment information needed to process that reservation and to notify you as the product develops. PurveX Labs does not currently ingest or process customer production security data; this policy will be updated before that capability becomes available.",
     ],
   },
   {
@@ -67,8 +67,8 @@ const sections = [
     title: "4. Legal Bases and Processing Roles",
     paragraphs: [
       "Where applicable data protection laws require a legal basis, PurveX relies on one or more of the following: performance of a contract, legitimate interests in operating and securing our business and service, compliance with legal obligations, and consent where specifically required.",
-      "PurveX acts as an independent controller for website analytics, account administration, billing, vendor management, business communications, compliance, and similar corporate purposes. For customer service data processed in the platform, PurveX generally acts as a processor or service provider.",
-      "If you interact with PurveX through your employer or another customer organization, that organization may be the primary controller of certain information submitted to the service. Requests relating to such service data should generally be directed to the relevant customer first.",
+      "PurveX acts as an independent controller for website analytics, account administration, billing, vendor management, business communications, compliance, and PurveX Labs early access. PurveX does not currently act as a processor for customer production security data, because that processing capability has not yet launched. Once available, this section will be updated to describe PurveX's processor role and related safeguards.",
+      "Where PurveX provides Security Operations or Cybersecurity Training services under a signed contract, the client organization is generally the controller of any data handled during that engagement, and requests relating to that data should be directed to the relevant client first.",
     ],
   },
   {
@@ -148,8 +148,8 @@ export default function PrivacyPolicyPage() {
     <LegalPage
       badge="Privacy Policy"
       updated="Last updated April 4, 2026"
-      title="Privacy terms written for enterprise buyers, security teams, and procurement review."
-      intro="This policy is structured for a B2B SaaS relationship. It explains what PurveX collects, why we collect it, how we use and share it, and how we handle customer service data when organizations use the platform to validate detections, telemetry, and security coverage."
+      title="Privacy terms for the PurveX website and PurveX Labs early access."
+      intro="This policy explains what PurveX collects, why we collect it, and how we use and share it in connection with the website, demos, and PurveX Labs early access. PurveX does not currently process customer production security data; Security Operations and Cybersecurity Training engagements are covered by your signed contract, not this page."
       highlights={highlights}
       summaryTitle="Practical summary"
       summaryItems={summaryItems}
@@ -164,7 +164,7 @@ export default function PrivacyPolicyPage() {
       }
       caveatLabel="Privacy notice"
       caveatIcon={ShieldCheck}
-      caveatBody="This page is a professional B2B privacy notice, not a substitute for advice from counsel familiar with your specific jurisdictions, subprocessors, retention schedules, and commercial commitments."
+      caveatBody="This page is written to match PurveX's current stage — no live processing of customer security data yet. It is not a substitute for advice from counsel familiar with your specific jurisdictions, subprocessors, and retention schedules, and it should be revisited once PurveX Labs reaches general availability."
       sectionsHeading="Full Policy"
       sections={sections}
     />

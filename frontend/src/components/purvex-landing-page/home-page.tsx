@@ -88,15 +88,7 @@ const testimonials = [
     logo: "",
     services: ["Cybersecurity Training"],
   },
-  {
-    quote: "Add Symone's quote here once received.",
-    name: "Symone",
-    role: "Founder, GovTech Academy",
-    linkedin: "https://www.linkedin.com/in/symonedb/",
-    photo: "/symone.jpg",
-    logo: "",
-    services: ["Cybersecurity Training"],
-  },
+  // Symone: pulled for now, ask for a quote once she's ~6 months in.
 ];
 
 function useCarousel(count: number) {
@@ -379,7 +371,7 @@ export default function HomePage() {
 .sp-carousel__arrow:hover { border-color: var(--accent); color: var(--accent-deep); transform: scale(1.06) }
 
 /* ── Testimonials ── */
-.sp-testimonials { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: stretch }
+.sp-testimonials { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 460px)); justify-content: center; gap: 24px; align-items: stretch }
 .sp-testimonial {
   --cut: 26px;
   position: relative;

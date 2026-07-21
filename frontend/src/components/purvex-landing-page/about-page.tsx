@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { ArrowRight, Brain, ShieldCheck, Swords, Zap } from "lucide-react";
-import { SiteChrome } from "./chrome";
+import { SiteChrome, BOOKING_URL } from "./chrome";
 
 const goals = [
   {
@@ -130,14 +130,17 @@ export default function AboutPage() {
           <section id="who-we-are" className="sp-story__chapter" data-r>
             <span className="sp-story__num">03</span>
             <span className="sp-story__label">Who we are</span>
-            <p className="sp-story__pull">We do not believe in a sales layer.</p>
+            <p className="sp-story__pull">No layer between the work and the person doing it.</p>
             <p>
-              PurveX stays small on purpose. The person doing your security operations work is
-              the same one teaching in the field, not an account manager relaying between you
-              and the work. That is not a feature we added. It is how we think a company like
-              this should be run.
+              PurveX stays close to the work. The person running your security operations is the
+              same one teaching in the field, not an account manager relaying between you and
+              the work. That is not a feature we added. It is how we think a company like this
+              should be run.
             </p>
             <p>The best way to see if we are a fit is a real conversation, not a pitch.</p>
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-story__link">
+              Talk to us <ArrowRight size={14} />
+            </a>
           </section>
 
           {/* ═══════════ 04 — LOOKING AHEAD ═══════════ */}

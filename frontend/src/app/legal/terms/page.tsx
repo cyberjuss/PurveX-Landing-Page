@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 const highlights = [
   {
     icon: Building2,
-    title: "Commercial-first structure",
+    title: "What these terms actually cover",
     body:
-      "These terms are written for a B2B SaaS platform used by security teams, technical evaluators, procurement stakeholders, and enterprise customers.",
+      "These terms govern the PurveX website, demos, and early access to PurveX Labs. They do not govern Security Operations or Cybersecurity Training engagements, which are provided exclusively under your separately signed contract.",
   },
   {
     icon: BadgeCheck,
@@ -30,18 +30,18 @@ const highlights = [
 ];
 
 const summaryItems = [
+  "Security Operations and Cybersecurity Training services are governed by your separately signed contract, not by this public page.",
   "Internal business use only unless PurveX authorizes broader rights in writing.",
   "Customer is responsible for lawful and authorized testing activity in its own environments.",
-  "Recurring billing, cancellation, and renewal details must be disclosed in the purchase flow for self-serve subscriptions.",
+  "PurveX Labs is currently offered only as early access; reserving it through the website checkout is not a subscription to a generally available product.",
   "Enterprise order forms and negotiated agreements override this public page where they conflict.",
-  "The platform supports security decision-making but does not guarantee detection of every threat or control failure.",
 ];
 
 const sections = [
   {
     title: "1. Acceptance of Terms",
     paragraphs: [
-      "These Terms of Service govern access to and use of the PurveX website, platform, trials, demos, and related services. By accessing or using the service, you agree to these terms on your own behalf or on behalf of the organization you represent.",
+      "These Terms of Service govern access to and use of the PurveX website, product demos, and early access to PurveX Labs. They do not govern Security Operations or Cybersecurity Training services, which are provided exclusively under a separately signed order form, statement of work, or master services agreement between PurveX and the client organization. By accessing or using the website or PurveX Labs early access, you agree to these terms on your own behalf or on behalf of the organization you represent.",
       "If you are accepting these terms for an organization, you represent that you have authority to bind that organization. If you do not agree to these terms, do not access or use the service.",
       "If your organization has executed a separate order form, subscription agreement, master services agreement, statement of work, or similar written contract with PurveX, that agreement controls over these website terms for the covered services.",
     ],
@@ -54,11 +54,11 @@ const sections = [
     ],
   },
   {
-    title: "3. Services and Commercial Terms",
+    title: "3. PurveX Labs Early Access",
     paragraphs: [
-      "PurveX provides software and related services designed to help customers validate detections, evaluate telemetry, measure coverage, and review security operations evidence. Features may vary by plan, environment, beta status, and availability.",
-      "Any pricing, plan limits, feature descriptions, support commitments, implementation scope, or commercial commitments presented on the website are informational unless and until confirmed in an applicable order form, subscription workflow, or other accepted purchase flow.",
-      "PurveX may modify, improve, replace, or discontinue features from time to time, provided that we do not materially reduce paid core functionality during an active subscription term except as permitted by the governing commercial agreement, security requirements, or law.",
+      "PurveX Labs is in active development and is currently offered only as early access. Features, timelines, and functionality described on the website are illustrative of the intended direction of the product and may change materially before general availability.",
+      "Reserving early access does not include a commitment to specific features, uptime, or delivery dates unless separately confirmed in writing. Any pricing, plan limits, feature descriptions, or commercial commitments presented on the website are informational unless and until confirmed in an applicable order form or accepted purchase flow.",
+      "PurveX may modify, improve, replace, or discontinue early-access features at any time. Security Operations and Cybersecurity Training services are not affected by this section and are governed solely by the applicable signed agreement.",
     ],
   },
   {
@@ -95,6 +95,7 @@ const sections = [
   {
     title: "8. Fees, Billing, Renewal, and Taxes",
     paragraphs: [
+      "Where you reserve early access to PurveX Labs through the website checkout, your payment secures early access under these terms and does not constitute a subscription to a generally available product. Security Operations and Cybersecurity Training fees are governed exclusively by the applicable signed agreement, not by this section.",
       "Fees are due as stated in the applicable order form, invoice, checkout flow, or subscription terms accepted at purchase. Unless otherwise stated, fees are non-cancelable and non-refundable except as required by law or expressly stated in a governing agreement.",
       "If you purchase through a self-serve subscription flow, you authorize PurveX and its payment providers to charge the payment method associated with your account for recurring fees, taxes, and other amounts due under the selected plan.",
       "For self-serve subscriptions that automatically renew, PurveX will present material terms before purchase, including billing frequency, price, trial-to-paid conversion details if applicable, renewal timing, and how to cancel. Enterprise invoiced subscriptions are governed by the applicable commercial agreement rather than consumer-style renewal flows.",
@@ -113,8 +114,9 @@ const sections = [
   {
     title: "10. Data Processing and Privacy",
     paragraphs: [
-      "PurveX's handling of personal information is described in the Privacy Policy. Where PurveX processes customer-submitted service data on behalf of a customer, the parties' commercial agreement and any applicable data processing terms govern that processing.",
-      "To the extent the service includes third-party integrations, hosting, or payment processing, customer data may be processed through those providers as necessary to deliver the service.",
+      "PurveX's handling of personal information is described in the Privacy Policy. PurveX does not currently ingest, host, or process customer production security telemetry, logs, or environment data through the website or PurveX Labs early access.",
+      "When PurveX Labs reaches general availability and begins processing customer environment data, PurveX will publish updated terms and, where applicable, a separate data processing addendum governing that specific processing. Where Security Operations or Cybersecurity Training engagements involve customer data, that data is handled under the terms of the signed agreement for that engagement.",
+      "To the extent the website or early-access flow includes third-party integrations, hosting, or payment processing, your data may be processed through those providers as necessary to deliver those functions.",
     ],
   },
   {
@@ -192,8 +194,8 @@ export default function TermsPage() {
     <LegalPage
       badge="Terms of Service"
       updated="Last updated April 4, 2026"
-      title="Terms designed for a modern enterprise security software relationship."
-      intro="These terms cover website use, trials, self-serve subscriptions, and business access to PurveX. If your organization signs a negotiated contract with PurveX, that signed agreement takes priority for the covered services."
+      title="Terms for the PurveX website, demos, and PurveX Labs early access."
+      intro="These terms cover website use, demos, and reserving early access to PurveX Labs. Security Operations and Cybersecurity Training engagements are governed exclusively by your separately signed contract with PurveX, not by this page."
       highlights={highlights}
       summaryTitle="Commercial summary"
       summaryItems={summaryItems}
@@ -202,7 +204,7 @@ export default function TermsPage() {
       contactBody="If there is a conflict between these website terms and a signed PurveX commercial agreement, the signed agreement controls for the purchased services."
       caveatLabel="Legal caveat"
       caveatIcon={FileWarning}
-      caveatBody="This is a strong public B2B terms page, but you should still have counsel confirm your governing-law, venue, entity-name, export-control, and procurement-specific clauses before treating it as a final production contract form."
+      caveatBody="This page is written to match PurveX's current stage — a website plus PurveX Labs early access, with all paid client work under separate signed contracts. You should still have counsel confirm your governing-law, venue, entity-name, and export-control clauses, and revisit this page again once PurveX Labs reaches general availability."
       sectionsHeading="Full Terms"
       sections={sections}
     />

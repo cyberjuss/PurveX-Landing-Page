@@ -4,10 +4,14 @@ import "./globals.css";
 import { Geist, Space_Grotesk } from "next/font/google";
 import RootClientLayout from "./root-client";
 
+const defaultTitle = "PurveX";
+const defaultDescription =
+  "PurveX helps organizations strengthen their security operations and develop the cybersecurity talent needed to support them.";
+
 export const metadata: Metadata = {
-  title: "PurveX",
-  description:
-    "PurveX helps training programs and institutions develop job-ready cybersecurity professionals through hands-on labs and technical instruction, and helps small and mid-sized businesses strengthen their security operations.",
+  metadataBase: new URL("https://purvex.com"),
+  title: { default: defaultTitle, template: "%s | PurveX" },
+  description: defaultDescription,
   icons: {
     icon: [
       { url: "/purvex-favicon.svg", type: "image/svg+xml", sizes: "any" },
@@ -16,6 +20,19 @@ export const metadata: Metadata = {
     ],
     shortcut: "/purvex-favicon.svg",
     apple: "/icon.png",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "PurveX",
+    title: defaultTitle,
+    description: defaultDescription,
+    images: [{ url: "/logo.png", width: 1024, height: 1024, alt: "PurveX" }],
+  },
+  twitter: {
+    card: "summary",
+    title: defaultTitle,
+    description: defaultDescription,
+    images: ["/logo.png"],
   },
 };
 
