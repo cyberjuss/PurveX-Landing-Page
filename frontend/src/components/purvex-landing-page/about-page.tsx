@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { ArrowRight, Brain, ShieldCheck, Swords, Zap } from "lucide-react";
-import { SiteChrome } from "./chrome";
+import { SiteChrome, BOOKING_URL } from "./chrome";
 
 const goals = [
   {
@@ -138,6 +138,9 @@ export default function AboutPage() {
               should be run.
             </p>
             <p>The best way to see if we are a fit is a real conversation, not a pitch.</p>
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-story__link">
+              Talk to us <ArrowRight size={14} />
+            </a>
           </section>
 
           {/* ═══════════ 04 — LOOKING AHEAD ═══════════ */}
