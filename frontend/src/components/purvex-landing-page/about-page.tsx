@@ -138,6 +138,38 @@ export default function AboutPage() {
               should be run.
             </p>
             <p>The best way to see if we are a fit is a real conversation, not a pitch.</p>
+
+            <div className="sp-story__founder">
+              <div className="sp-story__founder-avatar">JD</div>
+              <div className="sp-story__founder-id">
+                <strong>Justin Duru</strong>
+                <span>Founder &amp; Lead Security Consultant</span>
+              </div>
+            </div>
+            <p className="sp-story__wink">I lead by serving the work, not standing above it.</p>
+
+            <p>
+              Before this was a company, it was time spent tuning Microsoft Sentinel detections
+              for a federal agency, automating response workflows in Splunk SOAR, and teaching
+              SOC fundamentals to analysts at Ellington Cyber Academy. All of that taught me the
+              same lesson from different angles: real growth comes from hands-on repetition, not
+              from watching someone else do the work.
+            </p>
+            <p>
+              Hands-on alone is not enough, though. In an age where AI can write the query and
+              summarize the alert for you, the skill that actually matters is knowing how to
+              think: how to interpret what a system is telling you, when to trust it, and when to
+              push back. That is what I try to teach, not shortcuts to capture a flag, but the
+              judgment to actually solve the problem.
+            </p>
+            <p>
+              That belief is also why PurveX exists. I kept running into the same gap: smaller
+              security teams know they need stronger coverage, but do not have the headcount to
+              build and maintain it by hand. I believe AI agents, paired with someone who still
+              understands what is happening underneath them, can close that gap without requiring
+              every team to be enterprise-sized to be secure.
+            </p>
+
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-story__link">
               Talk to us <ArrowRight size={14} />
             </a>
@@ -180,6 +212,11 @@ export default function AboutPage() {
 .sp-story__wink { margin: 16px 0 0; font-size: .86rem; font-style: italic; color: var(--muted) }
 .sp-story__link { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; font-size: .92rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
 .sp-story__link:hover { gap: 12px }
+.sp-story__founder { display: flex; align-items: center; gap: 14px; margin-top: 28px }
+.sp-story__founder-avatar { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 1rem; flex-shrink: 0; box-shadow: 0 8px 18px -8px rgba(85,70,224,.5) }
+.sp-story__founder-id { display: flex; flex-direction: column }
+.sp-story__founder-id strong { font-size: .96rem; font-weight: 650; color: var(--ink) }
+.sp-story__founder-id span { margin-top: 2px; font-size: .82rem; color: var(--muted) }
 
 /* Blue vs red — a lighter, inline version of the shared card treatment */
 .sp-versus { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; margin-top: 28px }
