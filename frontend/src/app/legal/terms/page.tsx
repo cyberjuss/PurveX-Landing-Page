@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { BadgeCheck, BookText, Building2, FileWarning, ShieldCheck } from "lucide-react";
 import LegalPage from "@/components/purvex-landing-page/legal-page";
 
 export const metadata: Metadata = {
@@ -7,27 +6,6 @@ export const metadata: Metadata = {
   description:
     "PurveX terms of service for website visitors, trial users, and business customers.",
 };
-
-const highlights = [
-  {
-    icon: Building2,
-    title: "What these terms actually cover",
-    body:
-      "These terms govern the PurveX website, demos, and early access to PurveX Labs. They do not govern Security Operations or Cybersecurity Training engagements, which are provided exclusively under your separately signed contract.",
-  },
-  {
-    icon: BadgeCheck,
-    title: "Enterprise agreement controls",
-    body:
-      "If you signed an order form, master services agreement, DPA, or other negotiated contract with PurveX, that agreement controls over this web page to the extent of any conflict.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Clear use boundaries",
-    body:
-      "The terms distinguish permitted internal security validation use from prohibited abuse, resale, unauthorized access, and unlawful testing activity.",
-  },
-];
 
 const summaryItems = [
   "Security Operations and Cybersecurity Training services are governed by your separately signed contract, not by this public page.",
@@ -196,15 +174,9 @@ export default function TermsPage() {
       updated="Last updated April 4, 2026"
       title="Terms for the PurveX website, demos, and PurveX Labs early access."
       intro="These terms cover website use, demos, and reserving early access to PurveX Labs. Security Operations and Cybersecurity Training engagements are governed exclusively by your separately signed contract with PurveX, not by this page."
-      highlights={highlights}
+      note="This page is written to match PurveX's current stage — a website plus PurveX Labs early access, with all paid client work under separate signed contracts. You should still have counsel confirm your governing-law, venue, entity-name, and export-control clauses, and revisit this page again once PurveX Labs reaches general availability."
       summaryTitle="Commercial summary"
       summaryItems={summaryItems}
-      contactLabel="Document priority"
-      contactIcon={BookText}
-      contactBody="If there is a conflict between these website terms and a signed PurveX commercial agreement, the signed agreement controls for the purchased services."
-      caveatLabel="Legal caveat"
-      caveatIcon={FileWarning}
-      caveatBody="This page is written to match PurveX's current stage — a website plus PurveX Labs early access, with all paid client work under separate signed contracts. You should still have counsel confirm your governing-law, venue, entity-name, and export-control clauses, and revisit this page again once PurveX Labs reaches general availability."
       sectionsHeading="Full Terms"
       sections={sections}
     />

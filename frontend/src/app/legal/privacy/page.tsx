@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Building2, Database, Mail, Shield, ShieldCheck } from "lucide-react";
 import LegalPage from "@/components/purvex-landing-page/legal-page";
 
 export const metadata: Metadata = {
@@ -7,27 +6,6 @@ export const metadata: Metadata = {
   description:
     "PurveX privacy policy for enterprise customers, prospects, and website visitors.",
 };
-
-const highlights = [
-  {
-    icon: Building2,
-    title: "Built for B2B relationships",
-    body:
-      "PurveX is designed for business users, security teams, and enterprise buying groups. This policy explains how we handle contact, account, billing, and PurveX Labs early-access data.",
-  },
-  {
-    icon: Database,
-    title: "No customer environment data yet",
-    body:
-      "PurveX does not currently collect or process customer production security telemetry, logs, or environment data on PurveX systems. This section will be updated to describe PurveX's processor role once PurveX Labs reaches general availability.",
-  },
-  {
-    icon: Shield,
-    title: "Limited use and controlled sharing",
-    body:
-      "We use personal information to operate, secure, support, and improve the website and PurveX Labs early access, manage commercial relationships, and meet legal obligations.",
-  },
-];
 
 const summaryItems = [
   "PurveX collects account, support, billing, and site data needed to run the website and PurveX Labs early access.",
@@ -150,21 +128,9 @@ export default function PrivacyPolicyPage() {
       updated="Last updated April 4, 2026"
       title="Privacy terms for the PurveX website and PurveX Labs early access."
       intro="This policy explains what PurveX collects, why we collect it, and how we use and share it in connection with the website, demos, and PurveX Labs early access. PurveX does not currently process customer production security data; Security Operations and Cybersecurity Training engagements are covered by your signed contract, not this page."
-      highlights={highlights}
+      note="This page is written to match PurveX's current stage — no live processing of customer security data yet. It is not a substitute for advice from counsel familiar with your specific jurisdictions, subprocessors, and retention schedules, and it should be revisited once PurveX Labs reaches general availability."
       summaryTitle="Practical summary"
       summaryItems={summaryItems}
-      contactLabel="Privacy contact"
-      contactIcon={Mail}
-      contactBody={
-        <>
-          Email{" "}
-          <a href="mailto:privacy@purvex.com">privacy@purvex.com</a> or use
-          the business contact path defined in your commercial agreement.
-        </>
-      }
-      caveatLabel="Privacy notice"
-      caveatIcon={ShieldCheck}
-      caveatBody="This page is written to match PurveX's current stage — no live processing of customer security data yet. It is not a substitute for advice from counsel familiar with your specific jurisdictions, subprocessors, and retention schedules, and it should be revisited once PurveX Labs reaches general availability."
       sectionsHeading="Full Policy"
       sections={sections}
     />
