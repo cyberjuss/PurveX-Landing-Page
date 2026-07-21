@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -7,6 +8,7 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  GraduationCap,
   Linkedin,
   MessageCircle,
   Quote,
@@ -147,6 +149,26 @@ export default function HomePage() {
             Explore Our Services <ArrowRight size={16} />
           </a>
         </div>
+
+        <div className="sp-orbit" data-r>
+          <div className="sp-orbit__ring" />
+          <div className="sp-orbit__core">
+            <Image src="/logo.png" alt="PurveX" width={44} height={44} />
+          </div>
+          <div className="sp-orbit__sat sp-orbit__sat--1">
+            <ShieldCheck size={15} />
+            <span>Security Operations</span>
+          </div>
+          <div className="sp-orbit__sat sp-orbit__sat--2">
+            <GraduationCap size={15} />
+            <span>Cybersecurity Training</span>
+          </div>
+          <div className="sp-orbit__sat sp-orbit__sat--3 sp-orbit__sat--future">
+            <Radar size={14} />
+            <span>PurveX Labs — soon</span>
+          </div>
+        </div>
+
         <p className="sp-hero__strip">With great visibility comes great responsibility.</p>
       </section>
 
@@ -288,6 +310,51 @@ export default function HomePage() {
       </section>
 
       <style>{`
+/* ── Hero orbit (brand core + the two pillars, PurveX Labs orbiting as "soon") ── */
+.sp-orbit { position: relative; width: 300px; height: 300px; margin: 56px auto 0; max-width: 100% }
+.sp-orbit__ring { position: absolute; inset: 0; border: 1.5px dashed var(--border-strong); border-radius: 50%; animation: sp-orbit-spin 40s linear infinite }
+@keyframes sp-orbit-spin { to { transform: rotate(360deg) } }
+.sp-orbit__core {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 78px; height: 78px; border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 18px 36px -12px rgba(16,25,46,.25);
+  display: flex; align-items: center; justify-content: center;
+}
+.sp-orbit__sat {
+  position: absolute;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 22px -12px rgba(16,25,46,.22);
+  font-size: .78rem; font-weight: 650; color: var(--ink);
+  white-space: nowrap;
+  animation: sp-orbit-float 3.6s ease-in-out infinite;
+}
+.sp-orbit__sat svg { color: var(--accent-deep); flex-shrink: 0 }
+.sp-orbit__sat--1 { top: 4%; left: -36%; animation-delay: 0s }
+.sp-orbit__sat--2 { top: 4%; right: -36%; animation-delay: .4s }
+.sp-orbit__sat--3 { bottom: -4%; left: 50%; transform: translateX(-50%); animation-delay: .8s }
+.sp-orbit__sat--future { opacity: .65; border-style: dashed; color: var(--muted) }
+.sp-orbit__sat--future svg { color: var(--muted-dim) }
+@keyframes sp-orbit-float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+.sp-orbit__sat--3.sp-orbit__sat--future { animation-name: sp-orbit-float-x }
+@keyframes sp-orbit-float-x { 0%, 100% { transform: translateX(-50%) translateY(0) } 50% { transform: translateX(-50%) translateY(-5px) } }
+@media (prefers-reduced-motion: reduce) {
+  .sp-orbit__ring { animation: none }
+  .sp-orbit__sat { animation: none }
+}
+@media (max-width: 640px) {
+  .sp-orbit { width: 260px; height: 260px; margin-top: 44px }
+  .sp-orbit__sat span { display: none }
+  .sp-orbit__sat { padding: 10px; border-radius: 50% }
+  .sp-orbit__sat--1 { top: 6%; left: 0 }
+  .sp-orbit__sat--2 { top: 6%; right: 0 }
+}
+
 /* ── Carousel ── */
 .sp-carousel { position: relative; display: flex; align-items: center; gap: 14px }
 .sp-carousel__viewport { position: relative; flex: 1; overflow: hidden; border-radius: calc(var(--radius) + 8px); border: 1px solid var(--border); box-shadow: 0 24px 60px -40px rgba(16,25,46,.3) }
