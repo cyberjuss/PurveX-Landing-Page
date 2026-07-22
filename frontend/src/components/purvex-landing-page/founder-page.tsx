@@ -22,11 +22,11 @@ export default function FounderPage() {
               href="https://linkedin.com/in/jduru"
               target="_blank"
               rel="noreferrer"
-              className="sp-btn sp-btn--ghost"
+              className="sp-btn sp-btn--ghost sp-btn--sm"
             >
               <Linkedin size={16} /> LinkedIn
             </a>
-            <a href="/Justin_Duru_Resume.pdf" target="_blank" rel="noreferrer" className="sp-btn sp-btn--ghost">
+            <a href="/Justin_Duru_Resume.pdf" target="_blank" rel="noreferrer" className="sp-btn sp-btn--ghost sp-btn--sm">
               <Download size={16} /> Resume
             </a>
           </div>
