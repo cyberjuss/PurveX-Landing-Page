@@ -136,6 +136,7 @@ export default function HomePage() {
           PurveX helps organizations strengthen their security capabilities through security
           operations consulting and hands-on cybersecurity training.
         </p>
+        <p className="sp-hero__strip">With great visibility comes great responsibility.</p>
         <div className="sp-hero__actions">
           <a href="#how-we-help" className="sp-btn sp-btn--prim sp-btn--lg">
             Explore Our Services <ArrowRight size={16} />
@@ -160,8 +161,6 @@ export default function HomePage() {
             <span>PurveX Labs — soon</span>
           </div>
         </div>
-
-        <p className="sp-hero__strip">With great visibility comes great responsibility.</p>
       </section>
 
       {/* ═══════════ PROBLEMS WE SOLVE ═══════════ */}
@@ -302,6 +301,8 @@ export default function HomePage() {
       </section>
 
       <style>{`
+.sp-hero .sp-hero__strip { margin: 18px 0 0 }
+
 /* ── Hero orbit (brand core + the two pillars, PurveX Labs orbiting as "soon") ── */
 .sp-orbit { position: relative; width: 300px; height: 300px; margin: 56px auto 0; max-width: 100% }
 .sp-orbit__ring { position: absolute; inset: 0; border: 1.5px dashed var(--border-strong); border-radius: 50%; animation: sp-orbit-spin 40s linear infinite }
