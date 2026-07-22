@@ -270,14 +270,14 @@ export default function AboutPage() {
 .sp-yinyang__svg { width: 90px; height: 90px; flex-shrink: 0; filter: drop-shadow(0 14px 28px rgba(16,25,46,.16)); transition: transform .4s var(--ease); }
 .sp-yinyang:hover .sp-yinyang__svg { transform: rotate(20deg) }
 .sp-yinyang__red { fill: var(--red) }
-.sp-yinyang__blue { fill: var(--accent-deep) }
+.sp-yinyang__blue { fill: #2563eb }
 .sp-yinyang__dot--red { fill: var(--red) }
-.sp-yinyang__dot--blue { fill: var(--accent-deep) }
+.sp-yinyang__dot--blue { fill: #2563eb }
 @media (prefers-reduced-motion: reduce) { .sp-yinyang__svg { transition: none } }
 .sp-yinyang__label { display: flex; align-items: flex-start; gap: 8px; width: 128px }
 .sp-yinyang__label--red { text-align: right; flex-direction: row-reverse }
 .sp-yinyang__label svg { flex-shrink: 0; margin-top: 2px }
-.sp-yinyang__label--blue svg { color: var(--accent-deep) }
+.sp-yinyang__label--blue svg { color: #2563eb }
 .sp-yinyang__label--red svg { color: var(--red) }
 .sp-yinyang__label strong { display: block; font-family: var(--font-display); font-size: .9rem; font-weight: 700; letter-spacing: -.01em; color: var(--ink) }
 .sp-yinyang__label span { display: block; margin-top: 4px; font-size: .78rem; color: var(--muted); line-height: 1.45 }
