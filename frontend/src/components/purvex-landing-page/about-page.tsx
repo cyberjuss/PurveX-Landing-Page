@@ -175,28 +175,6 @@ export default function AboutPage() {
               />
             </div>
 
-            <p>
-              Before this was a company, it was time spent tuning Microsoft Sentinel detections
-              for a federal agency, automating response workflows in Splunk SOAR, and teaching
-              SOC fundamentals to analysts at Ellington Cyber Academy. All of that taught me the
-              same lesson from different angles: real growth comes from hands-on repetition, not
-              from watching someone else do the work.
-            </p>
-            <p>
-              Hands-on alone is not enough, though. In an age where AI can write the query and
-              summarize the alert for you, the skill that actually matters is knowing how to
-              think: how to interpret what a system is telling you, when to trust it, and when to
-              push back. That is what I try to teach, not shortcuts to capture a flag, but the
-              judgment to actually solve the problem.
-            </p>
-            <p>
-              That belief is also why PurveX exists. I kept running into the same gap: smaller
-              security teams know they need stronger coverage, but do not have the headcount to
-              build and maintain it by hand. I believe AI agents, paired with someone who still
-              understands what is happening underneath them, can close that gap without requiring
-              every team to be enterprise-sized to be secure.
-            </p>
-
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-story__link">
               Talk to us <ArrowRight size={14} />
             </a>
