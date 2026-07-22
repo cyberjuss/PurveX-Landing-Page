@@ -75,6 +75,14 @@ export default function AboutPage() {
             </p>
 
             <div className="sp-yinyang">
+              <div className="sp-yinyang__label sp-yinyang__label--blue">
+                <ShieldCheck size={16} />
+                <div>
+                  <strong>Blue Team</strong>
+                  <span>Detect, respond, and defend the environment.</span>
+                </div>
+              </div>
+
               <svg viewBox="0 0 100 100" className="sp-yinyang__svg" aria-hidden="true">
                 <circle cx="50" cy="50" r="49" className="sp-yinyang__red" />
                 <path
@@ -84,20 +92,12 @@ export default function AboutPage() {
                 <circle cx="50" cy="25.5" r="6.5" className="sp-yinyang__dot sp-yinyang__dot--red" />
                 <circle cx="50" cy="74.5" r="6.5" className="sp-yinyang__dot sp-yinyang__dot--blue" />
               </svg>
-              <div className="sp-yinyang__labels">
-                <div className="sp-yinyang__label sp-yinyang__label--blue">
-                  <ShieldCheck size={16} />
-                  <div>
-                    <strong>Blue Team</strong>
-                    <span>Detect, respond, and defend the environment.</span>
-                  </div>
-                </div>
-                <div className="sp-yinyang__label sp-yinyang__label--red">
-                  <Swords size={16} />
-                  <div>
-                    <strong>Red Team</strong>
-                    <span>Think and move the way an attacker does.</span>
-                  </div>
+
+              <div className="sp-yinyang__label sp-yinyang__label--red">
+                <Swords size={16} />
+                <div>
+                  <strong>Red Team</strong>
+                  <span>Think and move the way an attacker does.</span>
                 </div>
               </div>
             </div>
@@ -263,21 +263,21 @@ export default function AboutPage() {
 }
 
 /* Blue vs red — a lighter, inline version of the shared card treatment */
-.sp-yinyang { display: flex; flex-direction: column; align-items: center; gap: 28px; margin-top: 32px }
-.sp-yinyang__svg { width: 140px; height: 140px; flex-shrink: 0; filter: drop-shadow(0 14px 28px rgba(16,25,46,.16)); transition: transform .4s var(--ease); }
+.sp-yinyang { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 32px }
+.sp-yinyang__svg { width: 90px; height: 90px; flex-shrink: 0; filter: drop-shadow(0 14px 28px rgba(16,25,46,.16)); transition: transform .4s var(--ease); }
 .sp-yinyang:hover .sp-yinyang__svg { transform: rotate(20deg) }
 .sp-yinyang__red { fill: var(--red) }
 .sp-yinyang__blue { fill: var(--accent-deep) }
 .sp-yinyang__dot--red { fill: var(--red) }
 .sp-yinyang__dot--blue { fill: var(--accent-deep) }
 @media (prefers-reduced-motion: reduce) { .sp-yinyang__svg { transition: none } }
-.sp-yinyang__labels { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center }
-.sp-yinyang__label { display: flex; align-items: flex-start; gap: 10px; max-width: 220px }
+.sp-yinyang__label { display: flex; align-items: flex-start; gap: 8px; width: 128px }
+.sp-yinyang__label--red { text-align: right; flex-direction: row-reverse }
 .sp-yinyang__label svg { flex-shrink: 0; margin-top: 2px }
 .sp-yinyang__label--blue svg { color: var(--accent-deep) }
 .sp-yinyang__label--red svg { color: var(--red) }
-.sp-yinyang__label strong { display: block; font-family: var(--font-display); font-size: .96rem; font-weight: 700; letter-spacing: -.01em; color: var(--ink) }
-.sp-yinyang__label span { display: block; margin-top: 4px; font-size: .84rem; color: var(--muted); line-height: 1.5 }
+.sp-yinyang__label strong { display: block; font-family: var(--font-display); font-size: .9rem; font-weight: 700; letter-spacing: -.01em; color: var(--ink) }
+.sp-yinyang__label span { display: block; margin-top: 4px; font-size: .78rem; color: var(--muted); line-height: 1.45 }
 
 /* Our-goal points — inline, not boxed cards */
 .sp-story__points { display: flex; flex-direction: column; gap: 18px; margin-top: 24px }
@@ -292,8 +292,10 @@ export default function AboutPage() {
   .sp-story__thread::before, .sp-story__thread-fill { left: 15px }
   .sp-story__num { left: -40px; width: 32px; height: 32px; font-size: .78rem }
   .sp-story__chapter { margin-bottom: 64px }
-  .sp-yinyang__svg { width: 110px; height: 110px }
-  .sp-yinyang__labels { gap: 24px }
+  .sp-yinyang { flex-direction: column }
+  .sp-yinyang__svg { order: -1 }
+  .sp-yinyang__label { width: 100%; justify-content: center; text-align: left }
+  .sp-yinyang__label--red { flex-direction: row }
 }
       `}</style>
     </SiteChrome>
