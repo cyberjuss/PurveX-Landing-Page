@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { ArrowRight, Brain, ShieldCheck, Swords, Zap } from "lucide-react";
@@ -149,31 +148,6 @@ export default function AboutPage() {
               should be run.
             </p>
             <p>The best way to see if we are a fit is a real conversation, not a pitch.</p>
-
-            <div className="sp-founder-bio">
-              <div className="sp-founder-bio__text">
-                <strong>Justin Duru</strong>
-                <span>Founder &amp; Lead Security Consultant</span>
-                <div className="sp-founder-bio__chips">
-                  <span className="sp-founder-bio__chip">SOC Analyst → Instructor</span>
-                  <span className="sp-founder-bio__chip">Sentinel &amp; SOAR</span>
-                  <span className="sp-founder-bio__chip">CySA+ · Security+</span>
-                </div>
-                <p className="sp-founder-bio__quote">
-                  I lead by serving the work, not standing above it.
-                </p>
-                <Link href="/about/founder" className="sp-story__link">
-                  More about Justin <ArrowRight size={14} />
-                </Link>
-              </div>
-              <Image
-                src="/Justin.jpg"
-                alt="Justin Duru"
-                width={112}
-                height={112}
-                className="sp-founder-bio__photo"
-              />
-            </div>
           </section>
 
           {/* ═══════════ 04 — LOOKING AHEAD ═══════════ */}
@@ -226,18 +200,6 @@ export default function AboutPage() {
 .sp-story__wink { margin: 16px 0 0; font-size: .86rem; font-style: italic; color: var(--muted) }
 .sp-story__link { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; font-size: .92rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
 .sp-story__link:hover { gap: 12px }
-.sp-founder-bio { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-top: 32px }
-.sp-founder-bio__text { display: flex; flex-direction: column; min-width: 0 }
-.sp-founder-bio__text strong { font-size: 1.05rem; font-weight: 700; color: var(--ink) }
-.sp-founder-bio__text > span { margin-top: 2px; font-size: .86rem; color: var(--muted) }
-.sp-founder-bio__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px }
-.sp-founder-bio__chip { font-size: .72rem; font-weight: 600; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.25); border-radius: 999px; padding: 4px 11px }
-.sp-founder-bio__quote { margin: 14px 0 0; font-size: .88rem; font-style: italic; color: var(--ink-soft); line-height: 1.6 }
-.sp-founder-bio__photo { width: 112px; height: 112px; border-radius: 50%; object-fit: cover; object-position: center 12%; flex-shrink: 0; box-shadow: 0 18px 36px -12px rgba(85,70,224,.45) }
-@media (max-width: 560px) {
-  .sp-founder-bio { flex-direction: column-reverse; align-items: flex-start; gap: 16px }
-  .sp-founder-bio__photo { width: 88px; height: 88px }
-}
 
 /* Blue vs red — a lighter, inline version of the shared card treatment */
 .sp-yinyang { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 32px }
