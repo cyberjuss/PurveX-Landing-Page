@@ -148,6 +148,9 @@ export default function AboutPage() {
               should be run.
             </p>
             <p>The best way to see if we are a fit is a real conversation, not a pitch.</p>
+            <Link href="/about/founder" className="sp-story__link">
+              Meet the founder <ArrowRight size={14} />
+            </Link>
           </section>
 
           {/* ═══════════ 04 — LOOKING AHEAD ═══════════ */}
