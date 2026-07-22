@@ -228,10 +228,10 @@ export default function SecurityOperationsPage() {
 .sp-versus { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 20px; max-width: 640px; margin: 0 auto }
 .sp-versus__side { --cut: 14px; padding: 30px 26px; clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut)); text-align: center; transition: transform .3s var(--ease) }
 .sp-versus__side:hover { transform: translateY(-3px) }
-.sp-versus__side--blue { background: linear-gradient(160deg, var(--accent-soft), #ffffff); border: 1px solid rgba(106,92,255,.25) }
+.sp-versus__side--blue { background: linear-gradient(160deg, rgba(37,99,235,.08), #ffffff); border: 1px solid rgba(37,99,235,.25) }
 .sp-versus__side--red { background: linear-gradient(160deg, rgba(229,72,77,.08), #ffffff); border: 1px solid rgba(229,72,77,.22) }
 .sp-versus__icon { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 13px; margin-bottom: 12px }
-.sp-versus__side--blue .sp-versus__icon { background: var(--accent-soft); color: var(--accent-deep) }
+.sp-versus__side--blue .sp-versus__icon { background: rgba(37,99,235,.12); color: #2563eb }
 .sp-versus__side--red .sp-versus__icon { background: rgba(229,72,77,.12); color: var(--red) }
 .sp-versus__label { display: block; font-family: var(--font-display); font-size: 1.02rem; font-weight: 700; letter-spacing: -.01em; color: var(--ink) }
 .sp-versus__side p { margin: 6px 0 0; font-size: .86rem; color: var(--muted); line-height: 1.5 }
