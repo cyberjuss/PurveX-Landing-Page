@@ -162,6 +162,9 @@ export default function AboutPage() {
                 <p className="sp-founder-bio__quote">
                   I lead by serving the work, not standing above it.
                 </p>
+                <Link href="/about/founder" className="sp-story__link">
+                  More about Justin <ArrowRight size={14} />
+                </Link>
               </div>
               <Image
                 src="/Justin.jpg"
