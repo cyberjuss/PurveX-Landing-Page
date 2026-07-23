@@ -134,13 +134,20 @@ export function SiteChrome({
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const fn = () => {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
       setScrolled(window.scrollY > 32);
       const doc = document.documentElement;
       const max = doc.scrollHeight - doc.clientHeight;
       setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0);
     };
-    fn();
+    const fn = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+    update();
     window.addEventListener("scroll", fn, { passive: true });
     window.addEventListener("resize", fn);
     return () => {
@@ -155,19 +162,27 @@ export function SiteChrome({
     const root = pageRef.current;
     if (!root) return;
     const targets = Array.from(root.querySelectorAll<HTMLElement>(".sp-card, .sp-partner"));
-    const onMove = (e: MouseEvent) => {
-      const el = e.currentTarget as HTMLElement;
-      const r = el.getBoundingClientRect();
-      const px = (e.clientX - r.left) / r.width - 0.5;
-      const py = (e.clientY - r.top) / r.height - 0.5;
+    let raf = 0;
+    let pending: { el: HTMLElement; px: number; py: number } | null = null;
+    const flush = () => {
+      raf = 0;
+      if (!pending) return;
+      const { el, px, py } = pending;
       el.style.setProperty("--tiltX", `${(-py * 6).toFixed(2)}deg`);
       el.style.setProperty("--tiltY", `${(px * 8).toFixed(2)}deg`);
       el.style.setProperty("--tiltLift", "-6px");
       el.style.setProperty("--mx", `${((px + 0.5) * 100).toFixed(1)}%`);
       el.style.setProperty("--my", `${((py + 0.5) * 100).toFixed(1)}%`);
     };
+    const onMove = (e: MouseEvent) => {
+      const el = e.currentTarget as HTMLElement;
+      const r = el.getBoundingClientRect();
+      pending = { el, px: (e.clientX - r.left) / r.width - 0.5, py: (e.clientY - r.top) / r.height - 0.5 };
+      if (!raf) raf = requestAnimationFrame(flush);
+    };
     const onLeave = (e: MouseEvent) => {
       const el = e.currentTarget as HTMLElement;
+      if (pending?.el === el) pending = null;
       el.style.setProperty("--tiltX", "0deg");
       el.style.setProperty("--tiltY", "0deg");
       el.style.setProperty("--tiltLift", "0px");
@@ -179,6 +194,7 @@ export function SiteChrome({
       el.addEventListener("mouseleave", onLeave);
     });
     return () => {
+      cancelAnimationFrame(raf);
       targets.forEach((el) => {
         el.removeEventListener("mousemove", onMove);
         el.removeEventListener("mouseleave", onLeave);
@@ -590,9 +606,9 @@ export const CHROME_CSS = `
 .sp-btn--lg { height: 50px; padding: 0 24px; font-size: .92rem }
 .sp-btn--full { width: 100% }
 .sp-btn--prim { position: relative; overflow: hidden; background: var(--accent-deep); color: #fff; box-shadow: none }
-.sp-btn--prim::after { content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,255,255,.35), transparent); transform: skewX(-20deg); transition: left .6s var(--ease) }
+.sp-btn--prim::after { content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,255,255,.35), transparent); transform: translateX(0) skewX(-20deg); transition: transform .6s var(--ease) }
 .sp-btn--prim:hover { background: var(--accent); transform: translateY(-1px) }
-.sp-btn--prim:hover::after { left: 130% }
+.sp-btn--prim:hover::after { transform: translateX(475%) skewX(-20deg) }
 @media (prefers-reduced-motion: reduce) { .sp-btn--prim::after { display: none } }
 .sp-btn--ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--border-strong); box-shadow: 0 1px 2px rgba(16,25,46,.03) }
 .sp-btn--ghost:hover { border-color: var(--accent); color: var(--accent-deep); transform: translateY(-2px) }
