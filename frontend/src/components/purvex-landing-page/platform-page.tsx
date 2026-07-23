@@ -202,7 +202,7 @@ export default function PlatformPage() {
           <Radar size={13} /> The PurveX Platform · Private beta
         </span>
         <h1 className="sp-hero__h1">
-          See the miss before attackers do —{" "}
+          See the miss before attackers do and{" "}
           <span className="sp-hero__grad">know exactly why it happened.</span>
         </h1>
         <p className="sp-hero__sub">
