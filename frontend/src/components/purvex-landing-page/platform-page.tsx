@@ -202,9 +202,8 @@ export default function PlatformPage() {
           <Radar size={13} /> The PurveX Platform · Private beta
         </span>
         <h1 className="sp-hero__h1">
-          See the miss before attackers do.
-          <br />
-          <span className="sp-hero__grad">Know exactly why it happened.</span>
+          See the miss before attackers do —{" "}
+          <span className="sp-hero__grad">know exactly why it happened.</span>
         </h1>
         <p className="sp-hero__sub">
           Most teams assume their detections work. PurveX proves which ones fire, and pinpoints why
