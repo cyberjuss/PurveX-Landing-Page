@@ -92,18 +92,6 @@ const NAV_MENUS: NavMenu[] = [
     ],
   },
   {
-    key: "about",
-    label: "About",
-    href: "/about",
-    icon: Users,
-    blurb: "Who PurveX is, and how we think about security.",
-    cta: "About PurveX",
-    items: [
-      { label: "How We Think", desc: "Blue team, red team, one discipline.", anchor: "#how-we-think", icon: Swords },
-      { label: "Who We Are", desc: "No sales layer, by principle.", anchor: "#who-we-are", icon: Users },
-    ],
-  },
-  {
     key: "platform",
     label: "PurveX Labs",
     href: "/platform",
@@ -114,6 +102,18 @@ const NAV_MENUS: NavMenu[] = [
       { label: "The Platform", desc: "Everything on one screen, proof not assumptions.", anchor: "#product", icon: Radar },
       { label: "Planned Pricing", desc: "Start focused, expand when the evidence is there.", anchor: "#pricing", icon: Layers },
       { label: "FAQ", desc: "Questions teams ask before they commit.", anchor: "#faq", icon: ShieldCheck },
+    ],
+  },
+  {
+    key: "about",
+    label: "About",
+    href: "/about",
+    icon: Users,
+    blurb: "Who PurveX is, and how we think about security.",
+    cta: "About PurveX",
+    items: [
+      { label: "How We Think", desc: "Blue team, red team, one discipline.", anchor: "#how-we-think", icon: Swords },
+      { label: "Who We Are", desc: "No sales layer, by principle.", anchor: "#who-we-are", icon: Users },
     ],
   },
 ];
