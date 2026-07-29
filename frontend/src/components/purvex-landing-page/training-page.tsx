@@ -5,7 +5,7 @@ import { ArrowRight, Check, FlaskConical, GraduationCap, Handshake, Layers, Mess
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
 const curriculum = [
-  { mod: "01", title: "Fundamentals", body: "The groundwork every analyst needs to start strong." },
+  { mod: "01", title: "Think Like a Security Analyst 101", body: "Every alert is a scene. Learn to read what's staged, what's routine, and what an attacker hoped nobody would notice." },
   { mod: "02", title: "Threat detection", body: "Spotting suspicious activity and acting on it early." },
   { mod: "03", title: "Log analysis projects", body: "Real log data, and finding what matters in the noise." },
   { mod: "04", title: "Incident response", body: "An incident end to end: triage, investigate, contain, document." },
