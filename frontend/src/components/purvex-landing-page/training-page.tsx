@@ -211,11 +211,11 @@ export default function TrainingPage() {
   transform-origin: bottom;
   animation: sp-growth-rise .8s var(--ease) both;
 }
-.sp-growth__bar:nth-child(1) { animation-delay: .05s }
-.sp-growth__bar:nth-child(2) { animation-delay: .12s }
-.sp-growth__bar:nth-child(3) { animation-delay: .19s }
-.sp-growth__bar:nth-child(4) { animation-delay: .26s }
-.sp-growth__bar:nth-child(5) { animation-delay: .33s }
+.sp-growth__bar:nth-child(1) { animation-delay: .05s; background: #eef0ff }
+.sp-growth__bar:nth-child(2) { animation-delay: .12s; background: #d9d9ff }
+.sp-growth__bar:nth-child(3) { animation-delay: .19s; background: #c2c0ff }
+.sp-growth__bar:nth-child(4) { animation-delay: .26s; background: #aaa7ff }
+.sp-growth__bar:nth-child(5) { animation-delay: .33s; background: #8f8bff }
 .sp-growth__bar:nth-child(6) { animation-delay: .4s }
 .sp-growth__bar--peak { background: linear-gradient(180deg, var(--accent), var(--accent-deep)) }
 .sp-growth__badge { position: absolute; top: -26px; left: 50%; transform: translateX(-50%); width: 20px; height: 20px; border-radius: 50%; background: var(--accent-deep); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px -2px rgba(85,70,224,.6) }
