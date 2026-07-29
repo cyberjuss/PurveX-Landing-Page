@@ -328,9 +328,9 @@ export default function HomePage() {
   animation: sp-orbit-float 3.6s ease-in-out infinite;
 }
 .sp-orbit__sat svg { color: var(--accent-deep); flex-shrink: 0 }
-.sp-orbit__sat--1 { top: 4%; left: -36%; animation-delay: 0s }
-.sp-orbit__sat--2 { top: 4%; right: -36%; animation-delay: .4s }
-.sp-orbit__sat--3 { bottom: -4%; left: 50%; transform: translateX(-50%); animation-delay: .8s }
+.sp-orbit__sat--1 { top: -4%; left: -36%; animation-delay: 0s }
+.sp-orbit__sat--2 { top: -4%; right: -36%; animation-delay: .4s }
+.sp-orbit__sat--3 { bottom: -16%; left: 50%; transform: translateX(-50%); animation-delay: .8s }
 .sp-orbit__sat--future { opacity: .65; border-style: dashed; color: var(--muted) }
 .sp-orbit__sat--future svg { color: var(--muted-dim) }
 @keyframes sp-orbit-float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
@@ -344,8 +344,9 @@ export default function HomePage() {
   .sp-orbit { width: 260px; height: 260px; margin-top: 44px }
   .sp-orbit__sat span { display: none }
   .sp-orbit__sat { padding: 10px; border-radius: 50% }
-  .sp-orbit__sat--1 { top: 6%; left: 0 }
-  .sp-orbit__sat--2 { top: 6%; right: 0 }
+  .sp-orbit__sat--1 { top: -2%; left: 0 }
+  .sp-orbit__sat--2 { top: -2%; right: 0 }
+  .sp-orbit__sat--3 { bottom: -10% }
 }
 
 /* ── Carousel ── */
