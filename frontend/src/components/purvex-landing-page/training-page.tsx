@@ -5,7 +5,7 @@ import { ArrowRight, Check, FlaskConical, GraduationCap, Handshake, Layers, Mess
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
 const curriculum = [
-  { mod: "01", title: "Think Like a Security Analyst 101", body: "Every alert is a scene. Learn to read what's staged, what's routine, and what an attacker hoped nobody would notice." },
+  { mod: "01", title: "Fundamentals", body: "The groundwork every analyst needs to start strong." },
   { mod: "02", title: "Threat detection", body: "Spotting suspicious activity and acting on it early." },
   { mod: "03", title: "Log analysis projects", body: "Real log data, and finding what matters in the noise." },
   { mod: "04", title: "Incident response", body: "An incident end to end: triage, investigate, contain, document." },
@@ -46,10 +46,10 @@ export default function TrainingPage() {
           <span className="sp-hero__badge">
             <GraduationCap size={13} /> Cybersecurity Training
           </span>
-          <h1 className="sp-hero__h1">Training Built for the Job, Not the Textbook.</h1>
+          <h1 className="sp-hero__h1">Think Like a Security Analyst 101</h1>
           <p className="sp-hero__sub">
-            PurveX partners with cybersecurity academies and workforce programs on hands-on
-            instruction built around real security operations.
+            PurveX&apos;s flagship training program: hands-on instruction built around how real
+            analysts read a scene, not just what they memorize.
           </p>
           <a href="#syllabus" className="sp-btn sp-btn--prim sp-btn--lg">
             See the Curriculum <ArrowRight size={16} />
