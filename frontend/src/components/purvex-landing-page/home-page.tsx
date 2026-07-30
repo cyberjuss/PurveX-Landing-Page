@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -8,7 +7,6 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
-  GraduationCap,
   Linkedin,
   MessageCircle,
   Quote,
@@ -129,47 +127,18 @@ export default function HomePage() {
 
   return (
     <SiteChrome active="home">
-      {/* ═══════════ HERO — split copy + services preview ═══════════ */}
-      <section className="sp-hero sp-hero--split">
-        <div className="sp-hero__copy">
-          <h1 className="sp-hero__h1">Building Stronger Security Operations.</h1>
-          <p className="sp-hero__sub">
-            PurveX helps organizations strengthen their security capabilities through security
-            operations consulting and hands-on cybersecurity training.
-          </p>
-          <p className="sp-hero__strip">With great visibility comes great responsibility.</p>
+      {/* ═══════════ HERO ═══════════ */}
+      <section className="sp-hero">
+        <h1 className="sp-hero__h1">Building Stronger Security Operations.</h1>
+        <p className="sp-hero__sub">
+          PurveX helps organizations strengthen their security capabilities through security
+          operations consulting and hands-on cybersecurity training.
+        </p>
+        <p className="sp-hero__strip">With great visibility comes great responsibility.</p>
+        <div className="sp-hero__actions">
           <a href="#how-we-help" className="sp-btn sp-btn--prim sp-btn--lg">
             Explore Our Services <ArrowRight size={16} />
           </a>
-        </div>
-        <div className="sp-hero__preview" data-r>
-          <div className="sp-services">
-            <div className="sp-services__head">
-              <Image src="/logo.png" alt="PurveX" width={20} height={20} />
-              purvex.services
-            </div>
-            <div className="sp-services__row">
-              <div className="sp-services__icon">
-                <ShieldCheck size={17} />
-              </div>
-              <span>Security Operations</span>
-              <Check size={15} className="sp-services__check" />
-            </div>
-            <div className="sp-services__row">
-              <div className="sp-services__icon">
-                <GraduationCap size={17} />
-              </div>
-              <span>Cybersecurity Training</span>
-              <Check size={15} className="sp-services__check" />
-            </div>
-            <div className="sp-services__row sp-services__row--future">
-              <div className="sp-services__icon">
-                <Radar size={16} />
-              </div>
-              <span>PurveX Labs</span>
-              <span className="sp-services__soon">Soon</span>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -311,42 +280,6 @@ export default function HomePage() {
       </section>
 
       <style>{`
-/* ── Hero, split: copy left, services preview right ── */
-.sp-hero.sp-hero--split { text-align: left; max-width: 1140px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center }
-.sp-hero--split .sp-hero__h1 { text-align: left }
-.sp-hero--split .sp-hero__sub { margin: 22px 0 0; max-width: 480px; text-align: left }
-.sp-hero--split .sp-hero__strip { margin: 16px 0 0; text-align: left }
-.sp-hero--split .sp-btn { margin-top: 34px }
-@media (max-width: 940px) {
-  .sp-hero.sp-hero--split { grid-template-columns: 1fr; text-align: center; gap: 40px }
-  .sp-hero--split .sp-hero__h1 { text-align: center }
-  .sp-hero--split .sp-hero__sub { margin-left: auto; margin-right: auto; text-align: center }
-  .sp-hero--split .sp-hero__strip { text-align: center }
-}
-
-/* ── Services preview panel (mirrors the console/growth-chart preview pattern) ── */
-.sp-services {
-  --cut: 18px;
-  width: 100%; max-width: 380px; margin-left: auto;
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-  border: 1px solid var(--border);
-  background: var(--surface);
-  overflow: hidden;
-  filter: drop-shadow(0 20px 40px rgba(16,25,46,.14));
-}
-.sp-services__head { display: flex; align-items: center; gap: 9px; padding: 14px 20px; background: var(--surface-alt); border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: .74rem; color: var(--muted); letter-spacing: .02em }
-.sp-services__head img { border-radius: 5px }
-.sp-services__row { display: flex; align-items: center; gap: 14px; padding: 18px 20px }
-.sp-services__row + .sp-services__row { border-top: 1px solid var(--border) }
-.sp-services__row span:not(.sp-services__soon) { font-family: var(--font-display); font-size: .96rem; font-weight: 650; color: var(--ink); flex: 1 }
-.sp-services__icon { flex-shrink: 0; width: 38px; height: 38px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.2); color: var(--accent-deep); display: flex; align-items: center; justify-content: center }
-.sp-services__check { color: var(--green); flex-shrink: 0 }
-.sp-services__row--future { opacity: .7 }
-.sp-services__row--future .sp-services__icon { background: var(--surface-alt); border-style: dashed; color: var(--muted-dim) }
-.sp-services__row--future span { color: var(--muted) }
-.sp-services__soon { font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted-dim); background: var(--surface-alt); border: 1px dashed var(--border-strong); border-radius: 999px; padding: 3px 9px; flex-shrink: 0 }
-@media (max-width: 940px) { .sp-services { margin: 0 auto } }
-
 /* ── Carousel ── */
 .sp-carousel { position: relative; display: flex; align-items: center; gap: 14px }
 .sp-carousel__viewport { position: relative; flex: 1; overflow: hidden; border-radius: calc(var(--radius) + 8px); border: 1px solid var(--border); box-shadow: 0 24px 60px -40px rgba(16,25,46,.3) }
