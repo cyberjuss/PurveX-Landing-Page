@@ -1,29 +1,46 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, FlaskConical, GraduationCap, Handshake, Layers, MessageCircle, TrendingUp, Users } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Check,
+  FlaskConical,
+  GraduationCap,
+  Handshake,
+  Layers,
+  MessageCircle,
+  Radar,
+  Search,
+  Siren,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
 const curriculum = [
-  { mod: "01", title: "Fundamentals", body: "The groundwork every analyst needs to start strong." },
-  { mod: "02", title: "Threat detection", body: "Spotting suspicious activity and acting on it early." },
-  { mod: "03", title: "Log analysis projects", body: "Real log data, and finding what matters in the noise." },
-  { mod: "04", title: "Incident response", body: "An incident end to end: triage, investigate, contain, document." },
+  { mod: "01", icon: BookOpen, title: "Fundamentals", body: "The groundwork every analyst needs to start strong." },
+  { mod: "02", icon: Radar, title: "Threat detection", body: "Spotting suspicious activity and acting on it early." },
+  { mod: "03", icon: Search, title: "Log analysis projects", body: "Real log data, and finding what matters in the noise." },
+  { mod: "04", icon: Siren, title: "Incident response", body: "An incident end to end: triage, investigate, contain, document." },
   {
     mod: "05",
     id: "instruction",
+    icon: GraduationCap,
     title: "Cybersecurity Instruction",
     body: "Instructor support for cybersecurity, SOC operations, SIEM, threat detection, and incident response programs.",
   },
   {
     mod: "06",
     id: "labs",
+    icon: FlaskConical,
     title: "Hands-On Security Labs",
     body: "Practical exercises designed to help learners investigate alerts, analyze threats, and understand modern security operations.",
   },
   {
     mod: "07",
     id: "curriculum",
+    icon: Layers,
     title: "Curriculum Support",
     body: "Help developing or improving cybersecurity training content based on practical industry skills.",
   },
@@ -123,11 +140,14 @@ export default function TrainingPage() {
         <div className="sp-syllabus" data-r>
           {curriculum.map((c) => (
             <div key={c.title} id={c.id} className="sp-syllabus__row">
-              <span className="sp-syllabus__mod">
-                Module
-                <strong>{c.mod}</strong>
-              </span>
-              <div>
+              <div className="sp-syllabus__icon">
+                <c.icon size={18} />
+              </div>
+              <div className="sp-syllabus__body">
+                <span className="sp-syllabus__mod">
+                  Module
+                  <strong>{c.mod}</strong>
+                </span>
                 <h3>{c.title}</h3>
                 <p>{c.body}</p>
               </div>
@@ -294,10 +314,12 @@ export default function TrainingPage() {
   overflow: hidden;
   filter: drop-shadow(0 16px 32px rgba(16,25,46,.12));
 }
-.sp-syllabus__row { padding: 30px 34px; border-bottom: 1px dashed var(--border-strong) }
+.sp-syllabus__row { display: flex; gap: 18px; align-items: flex-start; padding: 30px 34px; border-bottom: 1px dashed var(--border-strong) }
 .sp-syllabus__row:nth-child(odd) { padding-right: 40px }
 .sp-syllabus__row:nth-child(even) { padding-left: 40px; border-left: 1px dashed var(--border-strong) }
 .sp-syllabus__row:last-child { grid-column: 1 / -1; border-bottom: none }
+.sp-syllabus__icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 11px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.2); color: var(--accent-deep) }
+.sp-syllabus__body { min-width: 0 }
 .sp-syllabus__mod { font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep); display: flex; align-items: baseline; gap: 10px }
 .sp-syllabus__mod strong { font-family: var(--font-display); font-size: 1.7rem; font-weight: 700; color: var(--ink); letter-spacing: -.02em }
 .sp-syllabus__row h3 { margin: 10px 0 0; font-family: var(--font-display); font-size: 1.06rem; font-weight: 650; letter-spacing: -.015em; color: var(--ink) }
