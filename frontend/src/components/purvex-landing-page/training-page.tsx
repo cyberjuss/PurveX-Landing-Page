@@ -15,6 +15,7 @@ import {
   Siren,
   TrendingUp,
   Users,
+  X,
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
@@ -44,6 +45,30 @@ const curriculum = [
     title: "Curriculum Support",
     body: "Help developing or improving cybersecurity training content based on practical industry skills.",
   },
+];
+
+const withoutItems = [
+  "Theory-heavy courses that stop at a multiple-choice exam",
+  "Certs that prove you memorized terms, not that you can use them",
+  "Graduates who freeze the first time a real alert does not match the textbook",
+  "One-size curriculum that ignores your program's actual tools and students",
+];
+
+const withItems = [
+  "Hands-on labs built from real alerts and real log data",
+  "Instruction focused on judgment: what to trust, what to question",
+  "Graduates who can already investigate, not just define terms",
+  "Curriculum shaped around your program, your tools, your students",
+];
+
+const roadmap = [
+  { skill: "Linux & security fundamentals", tool: "LabEx" },
+  { skill: "Detection validation", tool: "Atomic Red Team" },
+  { skill: "Threat mapping", tool: "MITRE ATT&CK" },
+  { skill: "SIEM investigations", tool: "Splunk & Microsoft Sentinel" },
+  { skill: "Threat hunting", tool: "KC7 Cyber" },
+  { skill: "Enterprise Windows lab", tool: "DetectionLab" },
+  { skill: "DFIR fundamentals", tool: "Velociraptor" },
 ];
 
 const formats = [
@@ -97,6 +122,38 @@ export default function TrainingPage() {
         </div>
       </section>
 
+      {/* ═══════════ WHY THIS PROGRAM IS DIFFERENT ═══════════ */}
+      <section className="sp-section sp-section--tight">
+        <div className="sp-head" data-r>
+          <span className="sp-tag">Why this program is different</span>
+          <h2>Judgment is the skill. Everything else is just facts.</h2>
+        </div>
+        <div className="sp-compare" data-r>
+          <div className="sp-compare__col sp-compare__col--without">
+            <h3 className="sp-compare__h">Generic training</h3>
+            <ul>
+              {withoutItems.map((t) => (
+                <li key={t}>
+                  <X size={15} className="sp-compare__icon sp-compare__icon--x" />
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="sp-compare__col sp-compare__col--with">
+            <h3 className="sp-compare__h">Think Like a Security Analyst 101</h3>
+            <ul>
+              {withItems.map((t) => (
+                <li key={t}>
+                  <Check size={15} className="sp-compare__icon sp-compare__icon--ok" />
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
       {/* ═══════════ WE SUPPORT YOUR PROGRAM ═══════════ */}
       <section className="sp-section sp-section--tight">
         <div className="sp-partner" data-r>
@@ -140,17 +197,35 @@ export default function TrainingPage() {
         <div className="sp-syllabus" data-r>
           {curriculum.map((c) => (
             <div key={c.title} id={c.id} className="sp-syllabus__row">
-              <div className="sp-syllabus__icon">
+              <div className="sp-syllabus__num">
                 <c.icon size={18} />
               </div>
               <div className="sp-syllabus__body">
-                <span className="sp-syllabus__mod">
-                  Module
-                  <strong>{c.mod}</strong>
-                </span>
+                <span className="sp-syllabus__mod">Module {c.mod}</span>
                 <h3>{c.title}</h3>
                 <p>{c.body}</p>
               </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════════ LEARNING ROADMAP ═══════════ */}
+      <section className="sp-section sp-section--tight">
+        <div className="sp-head" data-r>
+          <span className="sp-tag">The learning roadmap</span>
+          <h2>Every skill area, practiced on real tools.</h2>
+          <p>
+            Alongside our own instruction, the curriculum is built around established,
+            real-world platforms — several of them free and open to anyone — so learners
+            practice on the same tools working analysts actually use.
+          </p>
+        </div>
+        <div className="sp-roadmap" data-r>
+          {roadmap.map((r) => (
+            <div key={r.skill} className="sp-roadmap__item">
+              <h3>{r.skill}</h3>
+              <span className="sp-roadmap__tool">{r.tool}</span>
             </div>
           ))}
         </div>
@@ -304,26 +379,56 @@ export default function TrainingPage() {
   .sp-partner__visual { max-width: 320px; margin: 0 auto }
 }
 
-/* ── Syllabus (academic module list, two-up) ── */
-.sp-syllabus {
-  --cut: 18px;
-  display: grid; grid-template-columns: 1fr 1fr;
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+/* ── Comparison (generic training vs Think Like a Security Analyst 101) ── */
+.sp-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px }
+.sp-compare__col { --cut: 20px; padding: 32px; clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut)); border: 1px solid var(--border); background: var(--surface); filter: drop-shadow(0 14px 26px rgba(16,25,46,.12)) }
+.sp-compare__col--without { border-top: 3px solid rgba(229,72,77,.35) }
+.sp-compare__col--with { border-top: 3px solid var(--accent); background: linear-gradient(180deg, rgba(106,92,255,.035), var(--surface)) }
+.sp-compare__h { margin: 0 0 18px; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
+.sp-compare__col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px }
+.sp-compare__col li { display: flex; align-items: flex-start; gap: 11px; color: var(--ink-soft); font-size: .9rem; line-height: 1.55 }
+.sp-compare__icon { flex-shrink: 0; margin-top: 2px }
+.sp-compare__icon--x { color: var(--red) }
+.sp-compare__icon--ok { color: var(--accent-deep) }
+@media (max-width: 680px) { .sp-compare { grid-template-columns: 1fr } }
+
+/* ── Syllabus (connected timeline) ── */
+.sp-syllabus { position: relative; padding-left: 60px }
+.sp-syllabus::before { content: ""; position: absolute; left: 20px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(var(--border-strong), var(--border) 88%, transparent) }
+.sp-syllabus__row { position: relative; padding-bottom: 40px }
+.sp-syllabus__row:last-child { padding-bottom: 0 }
+.sp-syllabus__num {
+  position: absolute; left: -60px; top: -2px;
+  width: 42px; height: 42px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 1.5px solid var(--accent-deep); color: var(--accent-deep);
+  box-shadow: 0 8px 18px -10px rgba(85,70,224,.4);
+}
+.sp-syllabus__body { min-width: 0 }
+.sp-syllabus__mod { font-family: var(--font-mono); font-size: .7rem; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
+.sp-syllabus__row h3 { margin: 8px 0 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 650; letter-spacing: -.015em; color: var(--ink) }
+.sp-syllabus__row p { margin: 8px 0 0; font-size: .94rem; color: var(--muted); line-height: 1.65; max-width: 560px }
+
+/* ── Learning roadmap (skill area, practiced via a real tool) ── */
+.sp-roadmap {
+  --cut: 20px;
+  display: grid; grid-template-columns: repeat(2, 1fr);
   border: 1px solid var(--border);
   background: var(--surface);
-  overflow: hidden;
-  filter: drop-shadow(0 16px 32px rgba(16,25,46,.12));
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  filter: drop-shadow(0 14px 26px rgba(16,25,46,.1));
 }
-.sp-syllabus__row { display: flex; gap: 18px; align-items: flex-start; padding: 30px 34px; border-bottom: 1px dashed var(--border-strong) }
-.sp-syllabus__row:nth-child(odd) { padding-right: 40px }
-.sp-syllabus__row:nth-child(even) { padding-left: 40px; border-left: 1px dashed var(--border-strong) }
-.sp-syllabus__row:last-child { grid-column: 1 / -1; border-bottom: none }
-.sp-syllabus__icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 11px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.2); color: var(--accent-deep) }
-.sp-syllabus__body { min-width: 0 }
-.sp-syllabus__mod { font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep); display: flex; align-items: baseline; gap: 10px }
-.sp-syllabus__mod strong { font-family: var(--font-display); font-size: 1.7rem; font-weight: 700; color: var(--ink); letter-spacing: -.02em }
-.sp-syllabus__row h3 { margin: 10px 0 0; font-family: var(--font-display); font-size: 1.06rem; font-weight: 650; letter-spacing: -.015em; color: var(--ink) }
-.sp-syllabus__row p { margin: 8px 0 0; font-size: .92rem; color: var(--muted); line-height: 1.65; max-width: 560px }
+.sp-roadmap__item { padding: 24px 30px; border-right: 1px dashed var(--border-strong); border-bottom: 1px dashed var(--border-strong) }
+.sp-roadmap__item:nth-child(2n) { border-right: none }
+.sp-roadmap__item:last-child { border-bottom: none }
+.sp-roadmap__item:last-child:nth-child(odd) { grid-column: 1 / -1; border-right: none }
+.sp-roadmap__item h3 { margin: 0; font-family: var(--font-display); font-size: 1rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
+.sp-roadmap__tool { display: block; margin-top: 8px; font-size: .78rem; font-weight: 600; color: var(--accent-deep) }
+.sp-roadmap__tool::before { content: "via "; color: var(--muted-dim); font-weight: 500 }
+@media (max-width: 680px) {
+  .sp-roadmap { grid-template-columns: 1fr }
+  .sp-roadmap__item { border-right: none !important; padding: 20px 24px }
+}
 
 .sp-tools {
   --cut: 18px;
@@ -337,10 +442,9 @@ export default function TrainingPage() {
 .sp-tools__chips { display: flex; flex-wrap: wrap; gap: 8px; flex: 1 }
 .sp-tagchip { font-size: .74rem; font-weight: 550; color: var(--accent-deep); background: var(--surface); border: 1px solid rgba(106,92,255,.18); border-radius: 999px; padding: 5px 11px }
 @media (max-width: 680px) {
-  .sp-syllabus { grid-template-columns: 1fr }
-  .sp-syllabus__row { padding: 26px 24px }
-  .sp-syllabus__row:nth-child(odd), .sp-syllabus__row:nth-child(even) { padding-left: 24px; padding-right: 24px; border-left: none }
-  .sp-syllabus__row:last-child { grid-column: 1 }
+  .sp-syllabus { padding-left: 48px }
+  .sp-syllabus::before { left: 15px }
+  .sp-syllabus__num { left: -48px; width: 34px; height: 34px }
   .sp-tools { flex-direction: column; align-items: flex-start }
 }
       `}</style>
