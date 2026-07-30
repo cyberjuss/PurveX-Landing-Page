@@ -1,12 +1,7 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   Check,
-  ChevronLeft,
-  ChevronRight,
   Linkedin,
   MessageCircle,
   Quote,
@@ -35,7 +30,7 @@ const problems = [
   },
 ];
 
-const slides = [
+const offers = [
   {
     key: "security-operations",
     icon: ShieldCheck,
@@ -71,14 +66,14 @@ const slides = [
   },
 ];
 
-// TODO: replace placeholder quotes once received. Drop a headshot in
-// /public and set `photo` (e.g. "/kenneth-ellington.jpg"), or set
+// Drop a headshot in /public and set `photo` (e.g. "/kenneth-ellington.jpg"), or set
 // `logo` to a company logo path — either renders in place of the
 // initial. `role` should be "Founder, Company" once confirmed.
 // `services` lists which PurveX offering(s) they used, shown as tags.
 const testimonials = [
   {
-    quote: "Add Kenneth's quote here once received.",
+    quote:
+      "Hands down one of the best services. Our students now work in tech, running their own SOC projects thanks to real hands-on experience.",
     name: "Kenneth Ellington",
     role: "Cyber Security Coach + Instructor, Ellington Cyber Academy",
     linkedin: "https://www.linkedin.com/in/kenneth-ellington/",
@@ -89,42 +84,7 @@ const testimonials = [
   // Symone: pulled for now, ask for a quote once she's ~6 months in.
 ];
 
-function useCarousel(count: number) {
-  const [index, setIndex] = useState(0);
-  const paused = useRef(false);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      if (!paused.current) setIndex((i) => (i + 1) % count);
-    }, 6000);
-    return () => clearInterval(id);
-  }, [count]);
-
-  return {
-    index,
-    goTo: (i: number) => setIndex(i),
-    next: () => setIndex((i) => (i + 1) % count),
-    prev: () => setIndex((i) => (i - 1 + count) % count),
-    pause: () => (paused.current = true),
-    resume: () => (paused.current = false),
-  };
-}
-
 export default function HomePage() {
-  const carousel = useCarousel(slides.length);
-  const touchStartX = useRef<number | null>(null);
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    if (dx > 40) carousel.prev();
-    else if (dx < -40) carousel.next();
-    touchStartX.current = null;
-  };
-
   return (
     <SiteChrome active="home">
       {/* ═══════════ HERO ═══════════ */}
@@ -148,75 +108,55 @@ export default function HomePage() {
           <span className="sp-tag">Sound familiar?</span>
           <h2>The problems we solve.</h2>
         </div>
-        <div className="sp-cards sp-cards--3" data-r>
+        <div className="sp-problems" data-r>
           {problems.map((p) => (
-            <article key={p.title} className="sp-card">
-              <div className="sp-card__icon">
-                <p.icon size={20} />
+            <article key={p.title} className="sp-problem">
+              <div className="sp-problem__icon">
+                <p.icon size={19} />
               </div>
-              <h3 className="sp-card__title">{p.title}</h3>
-              <p className="sp-card__body">{p.body}</p>
+              <h3>{p.title}</h3>
+              <p>{p.body}</p>
             </article>
           ))}
         </div>
       </section>
 
-      {/* ═══════════ HOW WE HELP — CAROUSEL ═══════════ */}
+      {/* ═══════════ HOW WE HELP ═══════════ */}
       <section className="sp-section" id="how-we-help">
         <div className="sp-head" data-r>
           <span className="sp-tag">How PurveX helps</span>
           <h2>Three ways we strengthen your security posture.</h2>
         </div>
 
-        <div
-          className="sp-carousel"
-          data-r
-          onMouseEnter={carousel.pause}
-          onMouseLeave={carousel.resume}
-          onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
-        >
-          <button className="sp-carousel__arrow sp-carousel__arrow--prev" onClick={carousel.prev} aria-label="Previous">
-            <ChevronLeft size={18} />
-          </button>
-          <div className="sp-carousel__viewport">
-            <div className="sp-carousel__track" style={{ transform: `translateX(-${carousel.index * 100}%)` }}>
-              {slides.map((s) => (
-                <div className="sp-carousel__slide" key={s.key}>
-                  <div className="sp-carousel__panel">
-                    <s.icon size={26} />
-                  </div>
-                  <div className="sp-carousel__content">
-                    <span className="sp-tag">{s.tag}</span>
-                    <h3>{s.title}</h3>
-                    <p>{s.body}</p>
-                    <ul className="sp-carousel__list">
-                      {s.bullets.map((b) => (
-                        <li key={b}>
-                          <Check size={14} /> {b}
-                        </li>
-                      ))}
-                    </ul>
-                    {s.external ? (
-                      <a href={s.href} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--sm">
-                        {s.cta} <ArrowRight size={15} />
-                      </a>
-                    ) : (
-                      <Link href={s.href} className="sp-btn sp-btn--prim sp-btn--sm">
-                        {s.cta} <ArrowRight size={15} />
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="sp-carousel__progress">
-              <div key={carousel.index} className="sp-carousel__progress-fill" />
-            </div>
-          </div>
-          <button className="sp-carousel__arrow sp-carousel__arrow--next" onClick={carousel.next} aria-label="Next">
-            <ChevronRight size={18} />
-          </button>
+        <div className="sp-offers" data-r>
+          {offers.map((o) => (
+            <article className="sp-offer" key={o.key}>
+              <div className="sp-offer__panel">
+                <o.icon size={30} />
+              </div>
+              <div className="sp-offer__body">
+                <span className="sp-tag">{o.tag}</span>
+                <h3>{o.title}</h3>
+                <p>{o.body}</p>
+                <ul className="sp-offer__list">
+                  {o.bullets.map((b) => (
+                    <li key={b}>
+                      <Check size={14} /> {b}
+                    </li>
+                  ))}
+                </ul>
+                {o.external ? (
+                  <a href={o.href} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--sm">
+                    {o.cta} <ArrowRight size={15} />
+                  </a>
+                ) : (
+                  <Link href={o.href} className="sp-btn sp-btn--prim sp-btn--sm">
+                    {o.cta} <ArrowRight size={15} />
+                  </Link>
+                )}
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -226,41 +166,43 @@ export default function HomePage() {
           <span className="sp-tag">What people say</span>
           <h2>Feedback from the field.</h2>
         </div>
-        <div className="sp-testimonials" data-r>
+        <div className="sp-feature-quotes">
           {testimonials.map((t) => (
-            <div key={t.name} className="sp-testimonial">
-              <Quote size={32} className="sp-testimonial__mark" />
-              <p className="sp-testimonial__quote">{t.quote}</p>
-              {t.services.length > 0 && (
-                <div className="sp-testimonial__services">
-                  {t.services.map((s) => (
-                    <span key={s} className="sp-tagchip">
-                      {s}
-                    </span>
-                  ))}
-                </div>
-              )}
-              <a href={t.linkedin} target="_blank" rel="noreferrer" className="sp-testimonial__author">
+            <div key={t.name} className="sp-feature-quote" data-r>
+              <div className="sp-feature-quote__person">
                 {t.photo ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={t.photo} alt={t.name} className="sp-testimonial__photo" />
+                  <img src={t.photo} alt={t.name} className="sp-feature-quote__photo" />
                 ) : t.logo ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={t.logo} alt="" className="sp-testimonial__logo" />
+                  <img src={t.logo} alt="" className="sp-feature-quote__photo" />
                 ) : (
-                  <span className="sp-testimonial__avatar">{t.name.charAt(0)}</span>
+                  <span className="sp-feature-quote__avatar">{t.name.charAt(0)}</span>
                 )}
-                <span>
-                  <strong>{t.name}</strong>
-                  {t.role && <em>{t.role}</em>}
-                  <span className="sp-testimonial__stars">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} size={12} />
-                    ))}
-                  </span>
+                <strong className="sp-feature-quote__name">{t.name}</strong>
+                {t.role && <span className="sp-feature-quote__role">{t.role}</span>}
+                <span className="sp-feature-quote__stars">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} size={13} />
+                  ))}
                 </span>
-                <Linkedin size={15} className="sp-testimonial__linkedin" />
-              </a>
+                <a href={t.linkedin} target="_blank" rel="noreferrer" className="sp-feature-quote__linkedin">
+                  <Linkedin size={13} /> LinkedIn
+                </a>
+              </div>
+              <div className="sp-feature-quote__body">
+                <Quote size={30} className="sp-feature-quote__mark" />
+                <p className="sp-feature-quote__text">{t.quote}</p>
+                {t.services.length > 0 && (
+                  <div className="sp-feature-quote__tags">
+                    {t.services.map((s) => (
+                      <span key={s} className="sp-tagchip">
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -280,72 +222,74 @@ export default function HomePage() {
       </section>
 
       <style>{`
-/* ── Carousel ── */
-.sp-carousel { position: relative; display: flex; align-items: center; gap: 14px }
-.sp-carousel__viewport { position: relative; flex: 1; overflow: hidden; border-radius: calc(var(--radius) + 8px); border: 1px solid var(--border); box-shadow: 0 24px 60px -40px rgba(16,25,46,.3) }
-.sp-carousel__track { display: flex; transition: transform .5s var(--ease) }
-.sp-carousel__progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(16,25,46,.08); z-index: 2 }
-.sp-carousel__progress-fill { height: 100%; width: 100%; transform: scaleX(0); transform-origin: left; background: linear-gradient(90deg, var(--accent), var(--accent-deep)); animation: sp-carousel-fill 6s linear forwards }
-.sp-carousel:hover .sp-carousel__progress-fill { animation-play-state: paused }
-@keyframes sp-carousel-fill { from { transform: scaleX(0) } to { transform: scaleX(1) } }
-@media (prefers-reduced-motion: reduce) { .sp-carousel__progress { display: none } }
-.sp-carousel__slide { flex: 0 0 100%; display: grid; grid-template-columns: 1fr 1.4fr; min-height: 380px; background: var(--surface) }
-.sp-carousel__panel { display: flex; align-items: center; justify-content: center; background: linear-gradient(150deg, var(--accent), var(--accent-deep)); color: #fff; position: relative; overflow: hidden }
-.sp-carousel__panel svg { width: 72px; height: 72px; opacity: .92 }
-.sp-carousel__panel::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.18), transparent 55%) }
-.sp-carousel__content { padding: 44px 48px; display: flex; flex-direction: column; justify-content: center }
-.sp-carousel__content h3 { margin: 12px 0 0; font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
-.sp-carousel__content p { margin: 12px 0 0; color: var(--muted); font-size: .96rem; line-height: 1.65; max-width: 480px }
-.sp-carousel__list { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px }
-.sp-carousel__list li { display: flex; align-items: center; gap: 7px; font-size: .84rem; color: var(--ink-soft); font-weight: 500 }
-.sp-carousel__list li svg { color: var(--accent-deep); flex-shrink: 0 }
-.sp-carousel__content .sp-btn { margin-top: 22px; align-self: flex-start }
-.sp-carousel__arrow { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor: pointer; transition: transform .2s var(--ease), border-color .2s, color .2s }
-.sp-carousel__arrow:hover { border-color: var(--accent); color: var(--accent-deep); transform: scale(1.06) }
+.sp-hero .sp-hero__strip { margin: 18px 0 0 }
 
-/* ── Testimonials ── */
-.sp-testimonials { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 460px)); justify-content: center; gap: 24px; align-items: stretch }
-.sp-testimonial {
-  --cut: 26px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding: 40px 40px;
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-  border: 1px solid var(--border);
-  background: radial-gradient(130% 140% at 0% 0%, rgba(106,92,255,.06), transparent 55%), var(--surface);
-  filter: drop-shadow(0 24px 48px rgba(16,25,46,.12));
-  transition: transform .3s var(--ease);
-}
-.sp-testimonial:hover { transform: translateY(-3px) }
-.sp-testimonial__stars { display: flex; gap: 2px; color: #f4b740; margin-top: 6px }
-.sp-testimonial__stars svg { fill: currentColor }
-.sp-testimonial__mark { color: var(--accent); opacity: .35 }
-.sp-testimonial__quote { margin: 18px 0 0; font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; line-height: 1.5; letter-spacing: -.015em; color: var(--ink) }
-.sp-testimonial__services { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; margin-bottom: 24px }
-.sp-tagchip { font-size: .74rem; font-weight: 550; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); border-radius: 999px; padding: 5px 11px }
-.sp-testimonial__author { display: flex; align-items: center; gap: 14px; margin-top: auto; padding-top: 26px; border-top: 1px solid var(--border); text-decoration: none; color: inherit }
-.sp-testimonial__avatar { display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; flex-shrink: 0; box-shadow: 0 8px 18px -8px rgba(85,70,224,.5) }
-.sp-testimonial__photo { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; flex-shrink: 0; box-shadow: 0 8px 18px -8px rgba(16,25,46,.3) }
-.sp-testimonial__logo { width: 46px; height: 46px; border-radius: 10px; object-fit: contain; padding: 6px; background: var(--surface-alt); border: 1px solid var(--border); flex-shrink: 0 }
-.sp-testimonial__author strong { display: block; font-size: .96rem; font-weight: 650; color: var(--ink) }
-.sp-testimonial__author em { display: block; margin-top: 2px; font-style: normal; font-size: .84rem; color: var(--muted) }
-.sp-testimonial__linkedin { margin-left: auto; color: var(--muted-dim); transition: color .2s }
-.sp-testimonial__author:hover .sp-testimonial__linkedin { color: var(--accent-deep) }
-
-@media (max-width: 860px) { .sp-testimonials { grid-template-columns: 1fr } }
-@media (max-width: 680px) { .sp-testimonial { padding: 36px 30px } }
-
-@media (max-width: 940px) {
-  .sp-carousel__slide { grid-template-columns: 1fr }
-  .sp-carousel__panel { padding: 32px; min-height: 120px }
-  .sp-carousel__panel svg { width: 48px; height: 48px }
-  .sp-carousel__content { padding: 32px }
-  .sp-carousel__list { grid-template-columns: 1fr }
-}
+/* ── Problems strip ── */
+.sp-problems { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
+.sp-problem { padding: 36px 32px; position: relative }
+.sp-problem:not(:first-child) { border-left: 1px solid var(--border) }
+.sp-problem__icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); color: var(--accent-deep) }
+.sp-problem h3 { margin: 18px 0 0; font-family: var(--font-display); font-size: 1.04rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
+.sp-problem p { margin: 10px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.65 }
+.sp-problems[data-r] { opacity: 1; transform: none; filter: none; transition: none }
+.sp-problems[data-r] > * { opacity: 0; transform: translateY(20px); filter: blur(4px); transition: opacity .6s var(--ease), transform .6s var(--ease), filter .6s var(--ease) }
+.sp-problems[data-r].in > * { opacity: 1; transform: none; filter: blur(0) }
+.sp-problems[data-r] > *:nth-child(1) { transition-delay: .03s }
+.sp-problems[data-r] > *:nth-child(2) { transition-delay: .1s }
+.sp-problems[data-r] > *:nth-child(3) { transition-delay: .17s }
 @media (max-width: 680px) {
-  .sp-carousel__arrow { display: none }
-  .sp-carousel__content { padding: 26px }
+  .sp-problems { grid-template-columns: 1fr }
+  .sp-problem:not(:first-child) { border-left: none; border-top: 1px solid var(--border) }
+}
+
+/* ── Offers (static, replaces the old auto-rotating carousel) ── */
+.sp-offers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: stretch }
+.sp-offer { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: calc(var(--radius) + 4px); overflow: hidden; background: var(--surface); box-shadow: 0 14px 30px -20px rgba(16,25,46,.18); transition: transform .3s var(--ease), box-shadow .3s }
+.sp-offer:hover { transform: translateY(-4px); box-shadow: 0 22px 42px -18px rgba(16,25,46,.24) }
+.sp-offer__panel { display: flex; align-items: center; justify-content: center; height: 92px; background: linear-gradient(150deg, var(--accent), var(--accent-deep)); color: #fff; position: relative; overflow: hidden }
+.sp-offer__panel::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 25% 20%, rgba(255,255,255,.22), transparent 55%) }
+.sp-offer__body { padding: 26px 24px 24px; display: flex; flex-direction: column; flex: 1 }
+.sp-offer__body h3 { margin: 8px 0 0; font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; letter-spacing: -.015em; color: var(--ink) }
+.sp-offer__body p { margin: 10px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.6 }
+.sp-offer__list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 7px }
+.sp-offer__list li { display: flex; align-items: center; gap: 7px; font-size: .82rem; color: var(--ink-soft); font-weight: 500 }
+.sp-offer__list li svg { color: var(--accent-deep); flex-shrink: 0 }
+.sp-offer .sp-btn { margin-top: 20px }
+.sp-offers[data-r] { opacity: 1; transform: none; filter: none; transition: none }
+.sp-offers[data-r] > * { opacity: 0; transform: translateY(22px); filter: blur(4px); transition: opacity .6s var(--ease), transform .6s var(--ease), filter .6s var(--ease) }
+.sp-offers[data-r].in > * { opacity: 1; transform: none; filter: blur(0) }
+.sp-offers[data-r] > *:nth-child(1) { transition-delay: .03s }
+.sp-offers[data-r] > *:nth-child(2) { transition-delay: .1s }
+.sp-offers[data-r] > *:nth-child(3) { transition-delay: .17s }
+@media (max-width: 940px) { .sp-offers { grid-template-columns: 1fr } }
+@media (prefers-reduced-motion: reduce) {
+  .sp-problems[data-r] > *, .sp-offers[data-r] > * { opacity: 1; transform: none; filter: none; transition: none }
+}
+
+/* ── Feature quote (single testimonial reads as intentional, not a sparse grid) ── */
+.sp-feature-quotes { display: flex; flex-direction: column; gap: 24px }
+.sp-feature-quote {
+  max-width: 880px; margin: 0 auto; width: 100%;
+  display: grid; grid-template-columns: 200px 1fr; gap: 44px; align-items: center;
+  padding: 48px; border-radius: calc(var(--radius) + 6px); border: 1px solid var(--border);
+  background: radial-gradient(130% 140% at 0% 0%, rgba(106,92,255,.06), transparent 55%), var(--surface);
+  box-shadow: 0 24px 50px -30px rgba(16,25,46,.2);
+}
+.sp-feature-quote__person { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px }
+.sp-feature-quote__photo { width: 92px; height: 92px; border-radius: 50%; object-fit: cover; box-shadow: 0 10px 24px -10px rgba(16,25,46,.3) }
+.sp-feature-quote__avatar { display: flex; align-items: center; justify-content: center; width: 92px; height: 92px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 2rem }
+.sp-feature-quote__name { font-size: .98rem; font-weight: 650; color: var(--ink); margin-top: 4px }
+.sp-feature-quote__role { color: var(--muted); font-size: .82rem; line-height: 1.4 }
+.sp-feature-quote__stars { display: flex; gap: 3px; color: #f4b740; margin-top: 2px }
+.sp-feature-quote__stars svg { fill: currentColor }
+.sp-feature-quote__linkedin { display: inline-flex; align-items: center; gap: 6px; color: var(--muted-dim); font-size: .8rem; text-decoration: none; transition: color .2s; margin-top: 4px }
+.sp-feature-quote__linkedin:hover { color: var(--accent-deep) }
+.sp-feature-quote__mark { color: var(--accent); opacity: .3 }
+.sp-feature-quote__text { margin: 14px 0 0; font-size: 1.1rem; font-weight: 400; line-height: 1.6; color: var(--ink) }
+.sp-feature-quote__tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px }
+.sp-tagchip { font-size: .74rem; font-weight: 550; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); border-radius: 999px; padding: 5px 11px }
+@media (max-width: 680px) {
+  .sp-feature-quote { grid-template-columns: 1fr; text-align: center; padding: 36px 28px; gap: 24px }
 }
       `}</style>
     </SiteChrome>
