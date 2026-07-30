@@ -129,44 +129,45 @@ export default function HomePage() {
 
   return (
     <SiteChrome active="home">
-      {/* ═══════════ HERO ═══════════ */}
-      <section className="sp-hero">
-        <h1 className="sp-hero__h1">Building Stronger Security Operations.</h1>
-        <p className="sp-hero__sub">
-          PurveX helps organizations strengthen their security capabilities through security
-          operations consulting and hands-on cybersecurity training.
-        </p>
-        <p className="sp-hero__strip">With great visibility comes great responsibility.</p>
-        <div className="sp-hero__actions">
+      {/* ═══════════ HERO — split copy + services preview ═══════════ */}
+      <section className="sp-hero sp-hero--split">
+        <div className="sp-hero__copy">
+          <h1 className="sp-hero__h1">Building Stronger Security Operations.</h1>
+          <p className="sp-hero__sub">
+            PurveX helps organizations strengthen their security capabilities through security
+            operations consulting and hands-on cybersecurity training.
+          </p>
+          <p className="sp-hero__strip">With great visibility comes great responsibility.</p>
           <a href="#how-we-help" className="sp-btn sp-btn--prim sp-btn--lg">
             Explore Our Services <ArrowRight size={16} />
           </a>
         </div>
-
-        <div className="sp-orbit" data-r>
-          <div className="sp-orbit__ring" />
-          <div className="sp-orbit__spoke sp-orbit__spoke--1" />
-          <div className="sp-orbit__spoke sp-orbit__spoke--2" />
-          <div className="sp-orbit__spoke sp-orbit__spoke--3" />
-          <div className="sp-orbit__core">
-            <Image src="/logo.png" alt="PurveX" width={44} height={44} />
-          </div>
-          <div className="sp-orbit__sat-pos sp-orbit__sat-pos--1">
-            <div className="sp-orbit__sat">
-              <ShieldCheck size={15} />
+        <div className="sp-hero__preview" data-r>
+          <div className="sp-services">
+            <div className="sp-services__head">
+              <Image src="/logo.png" alt="PurveX" width={20} height={20} />
+              purvex.services
+            </div>
+            <div className="sp-services__row">
+              <div className="sp-services__icon">
+                <ShieldCheck size={17} />
+              </div>
               <span>Security Operations</span>
+              <Check size={15} className="sp-services__check" />
             </div>
-          </div>
-          <div className="sp-orbit__sat-pos sp-orbit__sat-pos--2">
-            <div className="sp-orbit__sat">
-              <GraduationCap size={15} />
+            <div className="sp-services__row">
+              <div className="sp-services__icon">
+                <GraduationCap size={17} />
+              </div>
               <span>Cybersecurity Training</span>
+              <Check size={15} className="sp-services__check" />
             </div>
-          </div>
-          <div className="sp-orbit__sat-pos sp-orbit__sat-pos--3">
-            <div className="sp-orbit__sat sp-orbit__sat--future">
-              <Radar size={14} />
-              <span>PurveX Labs — soon</span>
+            <div className="sp-services__row sp-services__row--future">
+              <div className="sp-services__icon">
+                <Radar size={16} />
+              </div>
+              <span>PurveX Labs</span>
+              <span className="sp-services__soon">Soon</span>
             </div>
           </div>
         </div>
@@ -310,55 +311,41 @@ export default function HomePage() {
       </section>
 
       <style>{`
-.sp-hero .sp-hero__strip { margin: 18px 0 0 }
+/* ── Hero, split: copy left, services preview right ── */
+.sp-hero.sp-hero--split { text-align: left; max-width: 1140px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center }
+.sp-hero--split .sp-hero__h1 { text-align: left }
+.sp-hero--split .sp-hero__sub { margin: 22px 0 0; max-width: 480px; text-align: left }
+.sp-hero--split .sp-hero__strip { margin: 16px 0 0; text-align: left }
+.sp-hero--split .sp-btn { margin-top: 34px }
+@media (max-width: 940px) {
+  .sp-hero.sp-hero--split { grid-template-columns: 1fr; text-align: center; gap: 40px }
+  .sp-hero--split .sp-hero__h1 { text-align: center }
+  .sp-hero--split .sp-hero__sub { margin-left: auto; margin-right: auto; text-align: center }
+  .sp-hero--split .sp-hero__strip { text-align: center }
+}
 
-/* ── Hero orbit (brand core + the two pillars, PurveX Labs orbiting as "soon") ── */
-.sp-orbit { position: relative; width: 300px; height: 300px; margin: 100px auto 0; max-width: 100% }
-.sp-orbit__ring { position: absolute; inset: 0; border: 1.5px dashed var(--border-strong); border-radius: 50%; animation: sp-orbit-spin 40s linear infinite }
-@keyframes sp-orbit-spin { to { transform: rotate(360deg) } }
-.sp-orbit__spoke { position: absolute; top: 50%; left: 50%; width: 52%; height: 0; border-top: 1.5px dashed var(--border-strong); transform-origin: 0 0; opacity: .7 }
-.sp-orbit__spoke--1 { transform: rotate(-90deg) }
-.sp-orbit__spoke--2 { transform: rotate(30deg) }
-.sp-orbit__spoke--3 { transform: rotate(150deg) }
-.sp-orbit__core {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  width: 78px; height: 78px; border-radius: 50%;
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
-  box-shadow: 0 18px 36px -12px rgba(16,25,46,.25);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1;
-}
-.sp-orbit__sat-pos { position: absolute; transform: translate(-50%, -50%) }
-.sp-orbit__sat-pos--1 { top: -13%; left: 50% }
-.sp-orbit__sat-pos--2 { top: 83%; left: 107% }
-.sp-orbit__sat-pos--3 { top: 83%; left: -7% }
-.sp-orbit__sat {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 9px 16px;
-  border-radius: 999px;
-  background: var(--surface);
+/* ── Services preview panel (mirrors the console/growth-chart preview pattern) ── */
+.sp-services {
+  --cut: 18px;
+  width: 100%; max-width: 380px; margin-left: auto;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
   border: 1px solid var(--border);
-  box-shadow: 0 10px 22px -12px rgba(16,25,46,.22);
-  font-size: .78rem; font-weight: 650; color: var(--ink);
-  white-space: nowrap;
-  animation: sp-orbit-float 3.6s ease-in-out infinite;
+  background: var(--surface);
+  overflow: hidden;
+  filter: drop-shadow(0 20px 40px rgba(16,25,46,.14));
 }
-.sp-orbit__sat-pos--2 .sp-orbit__sat { animation-delay: .4s }
-.sp-orbit__sat-pos--3 .sp-orbit__sat { animation-delay: .8s }
-.sp-orbit__sat svg { color: var(--accent-deep); flex-shrink: 0 }
-.sp-orbit__sat--future { opacity: .65; border-style: dashed; color: var(--muted) }
-.sp-orbit__sat--future svg { color: var(--muted-dim) }
-@keyframes sp-orbit-float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
-@media (prefers-reduced-motion: reduce) {
-  .sp-orbit__ring { animation: none }
-  .sp-orbit__sat { animation: none }
-}
-@media (max-width: 640px) {
-  .sp-orbit { width: 260px; height: 260px; margin-top: 84px }
-  .sp-orbit__sat span { display: none }
-  .sp-orbit__sat { padding: 10px; border-radius: 50% }
-}
+.sp-services__head { display: flex; align-items: center; gap: 9px; padding: 14px 20px; background: var(--surface-alt); border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: .74rem; color: var(--muted); letter-spacing: .02em }
+.sp-services__head img { border-radius: 5px }
+.sp-services__row { display: flex; align-items: center; gap: 14px; padding: 18px 20px }
+.sp-services__row + .sp-services__row { border-top: 1px solid var(--border) }
+.sp-services__row span:not(.sp-services__soon) { font-family: var(--font-display); font-size: .96rem; font-weight: 650; color: var(--ink); flex: 1 }
+.sp-services__icon { flex-shrink: 0; width: 38px; height: 38px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.2); color: var(--accent-deep); display: flex; align-items: center; justify-content: center }
+.sp-services__check { color: var(--green); flex-shrink: 0 }
+.sp-services__row--future { opacity: .7 }
+.sp-services__row--future .sp-services__icon { background: var(--surface-alt); border-style: dashed; color: var(--muted-dim) }
+.sp-services__row--future span { color: var(--muted) }
+.sp-services__soon { font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted-dim); background: var(--surface-alt); border: 1px dashed var(--border-strong); border-radius: 999px; padding: 3px 9px; flex-shrink: 0 }
+@media (max-width: 940px) { .sp-services { margin: 0 auto } }
 
 /* ── Carousel ── */
 .sp-carousel { position: relative; display: flex; align-items: center; gap: 14px }
