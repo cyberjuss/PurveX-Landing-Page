@@ -198,6 +198,9 @@ export default function TrainingPage() {
         </div>
         <div className="sp-compare" data-r>
           <div className="sp-compare__col sp-compare__col--without">
+            <div className="sp-compare__badge sp-compare__badge--x">
+              <X size={18} />
+            </div>
             <h3 className="sp-compare__h">Generic training</h3>
             <ul>
               {withoutItems.map((t) => (
@@ -208,7 +211,14 @@ export default function TrainingPage() {
               ))}
             </ul>
           </div>
+          <div className="sp-compare__arrow">
+            <ArrowRight size={18} />
+          </div>
           <div className="sp-compare__col sp-compare__col--with">
+            <span className="sp-compare__flag">Recommended</span>
+            <div className="sp-compare__badge sp-compare__badge--ok">
+              <Check size={18} />
+            </div>
             <h3 className="sp-compare__h">Think Like a Security Analyst 101</h3>
             <ul>
               {withItems.map((t) => (
@@ -353,17 +363,58 @@ export default function TrainingPage() {
 }
 
 /* ── Comparison (generic training vs Think Like a Security Analyst 101) ── */
-.sp-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px }
-.sp-compare__col { --cut: 20px; padding: 32px; clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut)); border: 1px solid var(--border); background: var(--surface); filter: drop-shadow(0 14px 26px rgba(16,25,46,.12)) }
-.sp-compare__col--without { border-top: 3px solid rgba(229,72,77,.35) }
-.sp-compare__col--with { border-top: 3px solid var(--accent); background: linear-gradient(180deg, rgba(106,92,255,.035), var(--surface)) }
+.sp-compare { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 10px }
+.sp-compare__col {
+  --cut: 20px; position: relative; padding: 36px 32px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid var(--border);
+  background: var(--surface);
+  filter: drop-shadow(0 14px 26px rgba(16,25,46,.12));
+  transition: transform .3s var(--ease), filter .3s;
+}
+.sp-compare__col--without { border-top: 3px solid rgba(229,72,77,.35); opacity: .8 }
+.sp-compare__col--without:hover { opacity: 1; transform: translateY(-2px) }
+.sp-compare__col--with {
+  border-color: rgba(106,92,255,.3);
+  border-top: 3px solid var(--accent);
+  background: linear-gradient(180deg, rgba(106,92,255,.05), var(--surface));
+  filter: drop-shadow(0 22px 40px rgba(85,70,224,.22));
+  transform: translateY(-6px);
+}
+.sp-compare__col--with:hover { transform: translateY(-9px); filter: drop-shadow(0 28px 48px rgba(85,70,224,.28)) }
+@media (prefers-reduced-motion: reduce) { .sp-compare__col { transition: none; transform: none } .sp-compare__col--with { transform: none } }
+.sp-compare__flag {
+  position: absolute; top: -13px; right: 30px;
+  background: var(--accent-deep); color: #fff;
+  font-size: .66rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  padding: 5px 13px; border-radius: 999px;
+  box-shadow: 0 8px 16px -6px rgba(85,70,224,.5);
+}
+.sp-compare__badge { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; margin-bottom: 16px }
+.sp-compare__badge--x { background: rgba(229,72,77,.1); color: var(--red) }
+.sp-compare__badge--ok { background: var(--accent-soft); color: var(--accent-deep) }
 .sp-compare__h { margin: 0 0 18px; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
 .sp-compare__col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px }
 .sp-compare__col li { display: flex; align-items: flex-start; gap: 11px; color: var(--ink-soft); font-size: .9rem; line-height: 1.55 }
 .sp-compare__icon { flex-shrink: 0; margin-top: 2px }
 .sp-compare__icon--x { color: var(--red) }
 .sp-compare__icon--ok { color: var(--accent-deep) }
-@media (max-width: 680px) { .sp-compare { grid-template-columns: 1fr } }
+.sp-compare__arrow {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 1px solid var(--border-strong);
+  color: var(--accent-deep);
+  box-shadow: 0 10px 22px -10px rgba(16,25,46,.3);
+  z-index: 2;
+}
+@media (max-width: 680px) {
+  .sp-compare { grid-template-columns: 1fr; gap: 30px }
+  .sp-compare__arrow { display: none }
+  .sp-compare__col--with { transform: none }
+  .sp-compare__col--with:hover { transform: none }
+  .sp-compare__flag { top: -12px; right: 24px }
+}
 
 /* ── Syllabus (connected timeline) ── */
 .sp-syllabus { position: relative; padding-left: 60px }
