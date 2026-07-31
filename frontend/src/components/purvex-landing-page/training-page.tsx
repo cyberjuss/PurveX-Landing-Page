@@ -392,16 +392,8 @@ export default function TrainingPage() {
   .sp-syllabus-nav__node--active .sp-syllabus-nav__icon, .sp-syllabus-nav__node:hover .sp-syllabus-nav__icon { transform: none }
 }
 
-.sp-syllabus-detail { margin-top: 32px }
-.sp-syllabus-detail__card {
-  --cut: 20px;
-  padding: 32px 36px;
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-  border: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(106,92,255,.04), var(--surface));
-  filter: drop-shadow(0 14px 26px rgba(16,25,46,.1));
-  animation: sp-syllabus-fade .35s var(--ease) both;
-}
+.sp-syllabus-detail { margin-top: 36px; padding-top: 32px; border-top: 1px solid var(--border) }
+.sp-syllabus-detail__card { animation: sp-syllabus-fade .35s var(--ease) both }
 .sp-syllabus-detail__mod { font-family: var(--font-mono); font-size: .72rem; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
 .sp-syllabus-detail__card h3 { margin: 10px 0 0; font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; letter-spacing: -.015em; color: var(--ink) }
 .sp-syllabus-detail__card p { margin: 12px 0 0; font-size: .96rem; color: var(--muted); line-height: 1.7; max-width: 620px }
@@ -426,7 +418,7 @@ export default function TrainingPage() {
   .sp-syllabus-nav::before { display: none }
   .sp-syllabus-nav__node { flex: 0 0 84px; scroll-snap-align: center }
   .sp-syllabus-nav__title { font-size: .76rem }
-  .sp-syllabus-detail__card { padding: 26px 24px }
+  .sp-syllabus-detail { padding-top: 24px }
 }
 
 /* ── Learning roadmap (skill area, practiced via a real tool) ── */
