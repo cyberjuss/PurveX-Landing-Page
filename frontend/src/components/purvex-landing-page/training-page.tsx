@@ -94,9 +94,6 @@ export default function TrainingPage() {
       {/* ═══════════ HERO — split copy + live curriculum preview ═══════════ */}
       <section className="sp-hero sp-hero--split">
         <div className="sp-hero__copy">
-          <span className="sp-hero__badge">
-            <GraduationCap size={13} /> Cybersecurity Training
-          </span>
           <h1 className="sp-hero__h1">Think Like a Security Analyst 101</h1>
           <p className="sp-hero__sub">
             PurveX&apos;s flagship training program: hands-on instruction built around how real
