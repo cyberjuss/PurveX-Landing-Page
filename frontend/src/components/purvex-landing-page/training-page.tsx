@@ -114,10 +114,9 @@ export default function TrainingPage() {
           <span className="sp-tag">Why this program is different</span>
           <h2>Judgment is the skill. Everything else is just facts.</h2>
           <p>
-            Certifications and lecture slides can teach the vocabulary of a SOC. They cannot
-            teach someone to sit with an ambiguous alert and decide, in the moment, whether it
-            is noise or a real compromise. That judgment is what this program is built to
-            produce.
+            Certifications teach vocabulary. They don&apos;t teach you to sit with an ambiguous
+            alert and decide, in the moment, whether it&apos;s noise or a real compromise. That
+            judgment is what this program builds.
           </p>
         </div>
         <div className="sp-compare" data-r>
