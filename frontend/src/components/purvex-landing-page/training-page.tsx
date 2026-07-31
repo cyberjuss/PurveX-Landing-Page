@@ -211,8 +211,8 @@ export default function TrainingPage() {
             <span className="sp-tag">The learning roadmap</span>
             <h2>Every skill area, practiced on real tools.</h2>
             <p>
-              The curriculum is built around real-world platforms — several free and open to
-              anyone — so learners use the same tools working analysts do.
+              The curriculum is built around real-world platforms, several free and open to
+              anyone, so learners use the same tools working analysts do.
             </p>
           </div>
           <div className="sp-roadmap">
