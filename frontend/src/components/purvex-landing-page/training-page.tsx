@@ -160,22 +160,6 @@ export default function TrainingPage() {
           <p>Seven modules, from SOC analyst readiness to how we support your program long-term.</p>
         </div>
         <div className="sp-roadmap-zigzag" data-r>
-          <div className="sp-roadmap-zigzag__row sp-roadmap-zigzag__row--top">
-            {curriculum.map((c, i) => (
-              <div key={c.mod} className="sp-roadmap-zigzag__slot">
-                {i % 2 === 0 && openModule === i && (
-                  <>
-                    <div className="sp-roadmap-zigzag__card">
-                      <span className="sp-roadmap-zigzag__mod">Module {c.mod}</span>
-                      <h3>{c.title}</h3>
-                      <p>{c.body}</p>
-                    </div>
-                    <span className="sp-roadmap-zigzag__stem" />
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
           <div className="sp-roadmap-zigzag__row sp-roadmap-zigzag__row--icons">
             {curriculum.map((c, i) => (
               <div key={c.mod} className="sp-roadmap-zigzag__slot">
@@ -189,7 +173,7 @@ export default function TrainingPage() {
                   aria-pressed={openModule === i}
                   aria-label={c.title}
                 >
-                  <c.icon size={22} />
+                  <c.icon size={26} />
                 </button>
               </div>
             ))}
@@ -197,7 +181,7 @@ export default function TrainingPage() {
           <div className="sp-roadmap-zigzag__row sp-roadmap-zigzag__row--bottom">
             {curriculum.map((c, i) => (
               <div key={c.mod} className="sp-roadmap-zigzag__slot">
-                {i % 2 === 1 && openModule === i && (
+                {openModule === i && (
                   <>
                     <span className="sp-roadmap-zigzag__stem" />
                     <div className="sp-roadmap-zigzag__card">
@@ -373,21 +357,19 @@ export default function TrainingPage() {
 /* ── Syllabus (horizontal zigzag roadmap: click an icon to reveal its card) ── */
 .sp-roadmap-zigzag { display: flex; flex-direction: column; padding: 44px 0 }
 .sp-roadmap-zigzag__row { display: flex; gap: 6px }
-.sp-roadmap-zigzag__row--top { align-items: flex-end; min-height: 20px }
 .sp-roadmap-zigzag__row--bottom { align-items: flex-start; min-height: 20px }
-.sp-roadmap-zigzag__row--icons { position: relative; padding: 18px 0 }
+.sp-roadmap-zigzag__row--icons { position: relative; padding: 20px 0 }
 .sp-roadmap-zigzag__row--icons::before {
   content: ""; position: absolute; top: 50%; left: calc(100% / 14); right: calc(100% / 14); height: 2px;
   background: linear-gradient(90deg, var(--border-strong), var(--border) 92%, var(--border-strong));
 }
 .sp-roadmap-zigzag__slot { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center }
-.sp-roadmap-zigzag__row--top .sp-roadmap-zigzag__slot { justify-content: flex-end }
 .sp-roadmap-zigzag__row--bottom .sp-roadmap-zigzag__slot { justify-content: flex-start }
 .sp-roadmap-zigzag__row--icons .sp-roadmap-zigzag__slot { align-items: center }
 
 .sp-roadmap-zigzag__icon {
   position: relative; z-index: 1; flex-shrink: 0;
-  width: 54px; height: 54px; border-radius: 50%;
+  width: 62px; height: 62px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   background: var(--surface); border: 1.5px solid var(--border-strong); color: var(--muted-dim);
   font-family: inherit; padding: 0; cursor: pointer;
