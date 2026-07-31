@@ -44,7 +44,7 @@ export default function FounderPage() {
 
       <section className="sp-section sp-section--tight">
         <div className="sp-founder-page__bio" data-r>
-          <p className="sp-story__pull">I lead by serving the work, not standing above it.</p>
+          <p className="sp-founder-page__quote">I lead by serving the work, not standing above it.</p>
           <p>
             Before this was a company, it was time spent tuning Microsoft Sentinel detections for
             a federal agency, automating response workflows in Splunk SOAR, and teaching SOC
@@ -97,7 +97,11 @@ export default function FounderPage() {
 .sp-founder-page__photo { width: 280px; height: 280px; border-radius: 50%; object-fit: cover; object-position: center 12%; box-shadow: 0 24px 48px -16px rgba(85,70,224,.4) }
 .sp-founder-page__bio { max-width: 680px; margin: 0 auto }
 .sp-founder-page__bio p { margin: 20px 0 0; font-size: 1.05rem; line-height: 1.78; color: var(--ink-soft) }
-.sp-founder-page__bio .sp-story__pull { margin: 0; max-width: none }
+.sp-founder-page__bio .sp-founder-page__quote {
+  margin: 0; padding-left: 20px; border-left: 3px solid var(--accent);
+  font-family: var(--font-display); font-size: clamp(1.2rem, 2.4vw, 1.5rem); font-weight: 650;
+  letter-spacing: -.015em; line-height: 1.4; color: var(--ink);
+}
 @media (max-width: 640px) {
   .sp-founder-page__photo { width: 200px; height: 200px }
   .sp-founder-page__links { flex-wrap: wrap }
