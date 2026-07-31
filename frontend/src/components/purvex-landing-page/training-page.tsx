@@ -392,11 +392,11 @@ export default function TrainingPage() {
   .sp-syllabus-nav__node--active .sp-syllabus-nav__icon, .sp-syllabus-nav__node:hover .sp-syllabus-nav__icon { transform: none }
 }
 
-.sp-syllabus-detail { margin-top: 36px; padding-top: 32px; border-top: 1px solid var(--border) }
+.sp-syllabus-detail { margin-top: 36px; padding-top: 32px; border-top: 1px solid var(--border); text-align: center }
 .sp-syllabus-detail__card { animation: sp-syllabus-fade .35s var(--ease) both }
 .sp-syllabus-detail__mod { font-family: var(--font-mono); font-size: .72rem; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
 .sp-syllabus-detail__card h3 { margin: 10px 0 0; font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; letter-spacing: -.015em; color: var(--ink) }
-.sp-syllabus-detail__card p { margin: 12px 0 0; font-size: .96rem; color: var(--muted); line-height: 1.7; max-width: 620px }
+.sp-syllabus-detail__card p { margin: 12px auto 0; font-size: .96rem; color: var(--muted); line-height: 1.7; max-width: 620px }
 @keyframes sp-syllabus-fade { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
 @media (prefers-reduced-motion: reduce) { .sp-syllabus-detail__card { animation: none } }
 
