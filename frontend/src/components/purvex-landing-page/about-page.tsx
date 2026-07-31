@@ -52,11 +52,17 @@ export default function AboutPage() {
       <div className="sp-story">
         {/* ═══════════ INTRO ═══════════ */}
         <div className="sp-story__intro" data-r>
+          <span className="sp-story__kicker">Field Notes — On Security</span>
           <h1>Blue team. Red team. One discipline.</h1>
           <p>
             PurveX helps organizations strengthen their security operations and develop the
             cybersecurity talent needed to support them.
           </p>
+          <div className="sp-story__byline">
+            <span>By PurveX</span>
+            <span className="sp-story__byline-dot" aria-hidden />
+            <span>4 min read</span>
+          </div>
         </div>
 
         <div className="sp-story__thread" ref={threadRef}>
@@ -68,7 +74,7 @@ export default function AboutPage() {
             <p className="sp-story__pull">
               You cannot defend against tactics you do not understand.
             </p>
-            <p>
+            <p className="sp-story__lede">
               PurveX is built on the blend of blue team and red team thinking. Understanding both
               sides is what makes a stronger analyst, and it shapes everything we do.
             </p>
@@ -173,8 +179,20 @@ export default function AboutPage() {
 
       <style>{`
 .sp-story { max-width: 700px; margin: 0 auto; padding-top: 132px }
+.sp-story__kicker {
+  display: inline-block; margin-bottom: 20px;
+  font-family: var(--font-mono); font-size: .78rem; font-weight: 650; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--accent-deep);
+}
 .sp-story__intro h1 { margin: 0; font-family: var(--font-display); font-size: clamp(2.3rem, 4.6vw, 3.4rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; color: var(--ink); text-wrap: balance }
 .sp-story__intro p { margin: 22px 0 0; font-size: 1.1rem; line-height: 1.7; color: var(--ink-soft); max-width: 560px }
+.sp-story__byline {
+  display: flex; align-items: center; gap: 10px; margin-top: 28px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: .8rem; letter-spacing: .02em; color: var(--muted-dim);
+  max-width: 560px;
+}
+.sp-story__byline-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--muted-dim) }
 
 .sp-story__thread { position: relative; margin-top: 96px; padding-left: 52px }
 .sp-story__thread::before { content: ""; position: absolute; left: 19px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(var(--border-strong), var(--border) 85%, transparent) }
@@ -197,8 +215,28 @@ export default function AboutPage() {
   .sp-story__chapter:nth-of-type(even) .sp-story__num { left: -60px; right: auto }
 }
 @media (prefers-reduced-motion: reduce) { .sp-story__thread-fill { transition: none } }
-.sp-story__label { display: block; font-size: .74rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
-.sp-story__pull { margin: 14px 0 0; padding-left: 20px; border-left: 3px solid var(--accent); font-family: var(--font-display); font-size: clamp(1.2rem, 2.4vw, 1.5rem); font-weight: 650; letter-spacing: -.015em; line-height: 1.4; color: var(--ink) }
+.sp-story__label {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--font-mono); font-size: .72rem; font-weight: 650; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--accent-deep);
+}
+.sp-story__label::after { content: ""; flex: 1; height: 1px; background: var(--border-strong) }
+.sp-story__pull {
+  position: relative;
+  margin: 18px 0 0; padding-left: 20px; border-left: 3px solid var(--accent);
+  font-family: var(--font-display); font-size: clamp(1.3rem, 2.6vw, 1.65rem); font-weight: 650;
+  letter-spacing: -.015em; line-height: 1.4; color: var(--ink);
+}
+.sp-story__pull::before {
+  content: "“"; position: absolute; left: 18px; top: -.5em;
+  font-family: var(--font-display); font-size: 2.6em; font-weight: 700;
+  color: var(--accent); opacity: .3; line-height: 1;
+}
+.sp-story__lede::first-letter {
+  float: left; margin: .02em .09em 0 0;
+  font-family: var(--font-display); font-size: 3.6em; font-weight: 700; line-height: .8;
+  color: var(--accent-deep);
+}
 .sp-story__chapter > p:not(.sp-story__pull):not(.sp-story__wink) { margin: 20px 0 0; font-size: 1.02rem; line-height: 1.78; color: var(--ink-soft); max-width: 600px }
 .sp-story__wink { margin: 16px 0 0; font-size: .86rem; font-style: italic; color: var(--muted) }
 .sp-story__link { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; font-size: .92rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
