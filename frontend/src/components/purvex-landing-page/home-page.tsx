@@ -243,13 +243,16 @@ export default function HomePage() {
 }
 
 /* ── Offers (static, replaces the old auto-rotating carousel) ── */
-.sp-offers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: stretch }
-.sp-offer { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: calc(var(--radius) + 4px); overflow: hidden; background: var(--surface); box-shadow: 0 14px 30px -20px rgba(16,25,46,.18); transition: transform .3s var(--ease), box-shadow .3s }
-.sp-offer:hover { transform: translateY(-4px); box-shadow: 0 22px 42px -18px rgba(16,25,46,.24) }
-.sp-offer__panel { display: flex; align-items: center; justify-content: center; height: 92px; background: linear-gradient(150deg, var(--accent), var(--accent-deep)); color: #fff; position: relative; overflow: hidden }
-.sp-offer__panel::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 25% 20%, rgba(255,255,255,.22), transparent 55%) }
-.sp-offer__body { padding: 26px 24px 24px; display: flex; flex-direction: column; flex: 1 }
-.sp-offer__body h3 { margin: 8px 0 0; font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; letter-spacing: -.015em; color: var(--ink) }
+.sp-offers { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
+.sp-offer { display: flex; flex-direction: column; padding: 32px }
+.sp-offer:not(:first-child) { border-left: 1px solid var(--border) }
+.sp-offer__panel {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); color: var(--accent-deep);
+}
+.sp-offer__body { padding: 0; margin-top: 20px; display: flex; flex-direction: column; flex: 1 }
+.sp-offer__body h3 { margin: 8px 0 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: -.015em; color: var(--ink) }
 .sp-offer__body p { margin: 10px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.6 }
 .sp-offer__list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 7px }
 .sp-offer__list li { display: flex; align-items: center; gap: 7px; font-size: .82rem; color: var(--ink-soft); font-weight: 500 }
@@ -261,7 +264,10 @@ export default function HomePage() {
 .sp-offers[data-r] > *:nth-child(1) { transition-delay: .03s }
 .sp-offers[data-r] > *:nth-child(2) { transition-delay: .1s }
 .sp-offers[data-r] > *:nth-child(3) { transition-delay: .17s }
-@media (max-width: 940px) { .sp-offers { grid-template-columns: 1fr } }
+@media (max-width: 940px) {
+  .sp-offers { grid-template-columns: 1fr }
+  .sp-offer:not(:first-child) { border-left: none; border-top: 1px solid var(--border) }
+}
 @media (prefers-reduced-motion: reduce) {
   .sp-problems[data-r] > *, .sp-offers[data-r] > * { opacity: 1; transform: none; filter: none; transition: none }
 }

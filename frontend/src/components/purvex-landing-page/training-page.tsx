@@ -301,26 +301,12 @@ export default function TrainingPage() {
   .sp-hero--split .sp-hero__sub { margin-left: auto; margin-right: auto; text-align: center }
 }
 
-.sp-compare { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 10px }
-.sp-compare__col {
-  --cut: 20px; position: relative; padding: 36px 32px;
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-  border: 1px solid var(--border);
-  background: var(--surface);
-  filter: drop-shadow(0 14px 26px rgba(16,25,46,.12));
-  transition: transform .3s var(--ease), filter .3s;
-}
-.sp-compare__col--without { border-top: 3px solid rgba(229,72,77,.35); opacity: .8 }
-.sp-compare__col--without:hover { opacity: 1; transform: translateY(-2px) }
-.sp-compare__col--with {
-  border-color: rgba(106,92,255,.3);
-  border-top: 3px solid var(--accent);
-  background: linear-gradient(180deg, rgba(106,92,255,.05), var(--surface));
-  filter: drop-shadow(0 22px 40px rgba(85,70,224,.22));
-  transform: translateY(-6px);
-}
-.sp-compare__col--with:hover { transform: translateY(-9px); filter: drop-shadow(0 28px 48px rgba(85,70,224,.28)) }
-@media (prefers-reduced-motion: reduce) { .sp-compare__col { transition: none; transform: none } .sp-compare__col--with { transform: none } }
+.sp-compare { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding-top: 10px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
+.sp-compare__col { position: relative; padding: 36px 32px 40px; transition: opacity .2s var(--ease) }
+.sp-compare__col:not(:first-child) { border-left: 1px solid var(--border) }
+.sp-compare__col--without { border-top: 3px solid rgba(229,72,77,.4); opacity: .8 }
+.sp-compare__col--without:hover { opacity: 1 }
+.sp-compare__col--with { border-top: 3px solid var(--accent); background: linear-gradient(180deg, rgba(106,92,255,.04), var(--surface)) }
 .sp-compare__flag {
   position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
   white-space: nowrap;
@@ -357,10 +343,9 @@ export default function TrainingPage() {
   z-index: 2;
 }
 @media (max-width: 680px) {
-  .sp-compare { grid-template-columns: 1fr; gap: 30px }
+  .sp-compare { grid-template-columns: 1fr }
+  .sp-compare__col:not(:first-child) { border-left: none }
   .sp-compare__arrow { display: none }
-  .sp-compare__col--with { transform: none }
-  .sp-compare__col--with:hover { transform: none }
 }
 
 /* ── Syllabus (horizontal zigzag roadmap: click an icon to reveal its card) ── */

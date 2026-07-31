@@ -482,10 +482,11 @@ export default function PlatformPage() {
 .sp-dash__insight strong { color: var(--ink) }
 
 /* ── Compare ── */
-.sp-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px }
-.sp-compare__col { --cut: 20px; padding: 32px; clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut)); border: 1px solid var(--border); background: var(--surface); filter: drop-shadow(0 14px 26px rgba(16,25,46,.12)) }
-.sp-compare__col--without { border-top: 3px solid rgba(229,72,77,.35) }
-.sp-compare__col--with { border-top: 3px solid var(--accent); background: linear-gradient(180deg, rgba(106,92,255,.035), var(--surface)) }
+.sp-compare { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border) }
+.sp-compare__col { padding: 32px 32px 36px }
+.sp-compare__col:not(:first-child) { border-left: 1px solid var(--border) }
+.sp-compare__col--without { border-top: 3px solid rgba(229,72,77,.4) }
+.sp-compare__col--with { border-top: 3px solid var(--accent); background: linear-gradient(180deg, rgba(106,92,255,.04), var(--surface)) }
 .sp-compare__h { margin: 0 0 18px; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
 .sp-compare__col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px }
 .sp-compare__col li { display: flex; align-items: flex-start; gap: 11px; color: var(--ink-soft); font-size: .9rem; line-height: 1.55 }
@@ -494,17 +495,10 @@ export default function PlatformPage() {
 .sp-compare__icon--ok { color: var(--accent-deep) }
 
 /* ── Pricing ── */
-.sp-pricing { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start }
-.sp-tier {
-  --cut: 20px;
-  position: relative; display: flex; flex-direction: column; padding: 32px;
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-  border: 1px solid var(--border);
-  background: var(--surface); filter: drop-shadow(0 14px 26px rgba(16,25,46,.12));
-  transition: transform .3s var(--ease), border-color .3s, filter .3s;
-}
-.sp-tier:hover { transform: translateY(-3px); border-color: var(--border-strong) }
-.sp-tier--feat { border-color: rgba(106,92,255,.35); filter: drop-shadow(0 22px 44px rgba(85,70,224,.3)); padding-top: 56px }
+.sp-pricing { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
+.sp-tier { position: relative; display: flex; flex-direction: column; padding: 36px 32px }
+.sp-tier:not(:first-child) { border-left: 1px solid var(--border) }
+.sp-tier--feat { background: linear-gradient(180deg, rgba(106,92,255,.05), var(--surface)); padding-top: 56px }
 .sp-tier__badge { position: absolute; top: 20px; right: 22px; padding: 4px 13px; border-radius: 999px; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); font-size: .62rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #fff }
 .sp-tier__name { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted-dim); font-weight: 700 }
 .sp-tier__price { margin-top: 8px; font-family: var(--font-display); font-size: 2.3rem; font-weight: 700; letter-spacing: -.04em; color: var(--ink) }
@@ -538,7 +532,9 @@ export default function PlatformPage() {
   .sp-tile--accent { grid-column: 1 / -1 }
   .sp-tile--aud { grid-column: 1 / -1 }
   .sp-compare { grid-template-columns: 1fr }
+  .sp-compare__col:not(:first-child) { border-left: none }
   .sp-pricing { grid-template-columns: 1fr }
+  .sp-tier:not(:first-child) { border-left: none; border-top: 1px solid var(--border) }
 }
 @media (max-width: 680px) {
   .sp-wl { margin-top: 22px }
