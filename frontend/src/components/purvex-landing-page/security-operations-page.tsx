@@ -58,9 +58,6 @@ export default function SecurityOperationsPage() {
       {/* ═══════════ HERO — split copy + live console preview ═══════════ */}
       <section className="sp-hero sp-hero--split">
         <div className="sp-hero__copy">
-          <span className="sp-hero__badge">
-            <Target size={13} /> Security Operations
-          </span>
           <h1 className="sp-hero__h1">Strengthen Your Security Operations</h1>
           <p className="sp-hero__sub">
             Security tools are only effective when they are properly configured, monitored, and
