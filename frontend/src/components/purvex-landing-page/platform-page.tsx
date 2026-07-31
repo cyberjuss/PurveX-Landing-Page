@@ -420,7 +420,7 @@ export default function PlatformPage() {
   display: grid; grid-template-columns: repeat(6, 1fr);
   grid-auto-rows: minmax(120px, auto); gap: 16px;
 }
-.sp-tile { display: flex; flex-direction: column; padding: 26px }
+.sp-tile { display: flex; flex-direction: column; padding: 26px; border: 1px solid var(--border) }
 .sp-tile--feat { grid-column: span 2 }
 .sp-tile--accent { grid-column: span 2 }
 .sp-tile--aud { grid-column: span 2 }
@@ -431,7 +431,7 @@ export default function PlatformPage() {
 .sp-tile__body--sm { font-size: .84rem }
 
 /* accent tile */
-.sp-tile--accent { position: relative; background: linear-gradient(140deg, var(--accent), var(--accent-deep)); justify-content: center }
+.sp-tile--accent { position: relative; background: linear-gradient(140deg, var(--accent), var(--accent-deep)); border-color: transparent; justify-content: center }
 .sp-tile__kick { font-size: .66rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.75) }
 .sp-tile__accent-text { margin: 12px 0 0; font-family: var(--font-display); font-size: 1.04rem; font-weight: 600; line-height: 1.4; letter-spacing: -.015em; color: #fff }
 .sp-tile__accent-icon { position: absolute; right: 18px; bottom: 16px; color: rgba(255,255,255,.35) }
