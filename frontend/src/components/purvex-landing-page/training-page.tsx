@@ -122,10 +122,12 @@ export default function TrainingPage() {
         </div>
         <div className="sp-compare" data-r>
           <div className="sp-compare__col sp-compare__col--without">
-            <div className="sp-compare__badge sp-compare__badge--x">
-              <X size={18} />
+            <div className="sp-compare__header">
+              <div className="sp-compare__badge sp-compare__badge--x">
+                <X size={18} />
+              </div>
+              <h3 className="sp-compare__h">Generic training</h3>
             </div>
-            <h3 className="sp-compare__h">Generic training</h3>
             <ul>
               {withoutItems.map((t) => (
                 <li key={t}>
@@ -140,10 +142,12 @@ export default function TrainingPage() {
           </div>
           <div className="sp-compare__col sp-compare__col--with">
             <span className="sp-compare__flag">Recommended</span>
-            <div className="sp-compare__badge sp-compare__badge--ok">
-              <Check size={18} />
+            <div className="sp-compare__header">
+              <div className="sp-compare__badge sp-compare__badge--ok">
+                <Check size={18} />
+              </div>
+              <h3 className="sp-compare__h">Think Like a Security Analyst 101</h3>
             </div>
-            <h3 className="sp-compare__h">Think Like a Security Analyst 101</h3>
             <ul>
               {withItems.map((t) => (
                 <li key={t}>
@@ -325,12 +329,21 @@ export default function TrainingPage() {
   padding: 6px 16px; border-radius: 999px;
   box-shadow: 0 8px 16px -6px rgba(85,70,224,.5);
 }
-.sp-compare__badge { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; margin-bottom: 16px }
+.sp-compare__header { display: flex; align-items: center; gap: 14px; padding-bottom: 20px; margin-bottom: 6px; border-bottom: 1px solid var(--border) }
+.sp-compare__col--with .sp-compare__header { border-bottom-color: rgba(106,92,255,.18) }
+.sp-compare__badge { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; border-radius: 50% }
 .sp-compare__badge--x { background: rgba(229,72,77,.1); color: var(--red) }
 .sp-compare__badge--ok { background: var(--accent-soft); color: var(--accent-deep) }
-.sp-compare__h { margin: 0 0 18px; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
-.sp-compare__col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px }
-.sp-compare__col li { display: flex; align-items: flex-start; gap: 11px; color: var(--ink-soft); font-size: .9rem; line-height: 1.55 }
+.sp-compare__h { margin: 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
+.sp-compare__col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column }
+.sp-compare__col li {
+  display: flex; align-items: flex-start; gap: 11px;
+  padding: 10px 8px; margin: 0 -8px; border-radius: 8px;
+  color: var(--ink-soft); font-size: .9rem; line-height: 1.55;
+  transition: background .2s var(--ease);
+}
+.sp-compare__col--without li:hover { background: rgba(229,72,77,.04) }
+.sp-compare__col--with li:hover { background: rgba(106,92,255,.06) }
 .sp-compare__icon { flex-shrink: 0; margin-top: 2px }
 .sp-compare__icon--x { color: var(--red) }
 .sp-compare__icon--ok { color: var(--accent-deep) }
