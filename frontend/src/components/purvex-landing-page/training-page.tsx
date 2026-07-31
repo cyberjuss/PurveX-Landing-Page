@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   AlertTriangle,
   ArrowRight,
@@ -87,9 +86,6 @@ const thinking = [
 ];
 
 export default function TrainingPage() {
-  const [activeModule, setActiveModule] = useState(0);
-  const active = curriculum[activeModule];
-
   return (
     <SiteChrome active="training">
       {/* ═══════════ HERO — split copy + live curriculum preview ═══════════ */}
@@ -176,30 +172,47 @@ export default function TrainingPage() {
           <h2>From fundamentals to a full training partnership.</h2>
           <p>Seven modules, from SOC analyst readiness to how we support your program long-term.</p>
         </div>
-        <div className="sp-syllabus-nav" data-r>
-          {curriculum.map((c, i) => (
-            <button
-              key={c.mod}
-              type="button"
-              id={c.id}
-              onClick={() => setActiveModule(i)}
-              className={
-                i === activeModule ? "sp-syllabus-nav__node sp-syllabus-nav__node--active" : "sp-syllabus-nav__node"
-              }
-              aria-pressed={i === activeModule}
-            >
-              <span className="sp-syllabus-nav__icon">
-                <c.icon size={16} />
-              </span>
-              <span className="sp-syllabus-nav__title">{c.title}</span>
-            </button>
-          ))}
-        </div>
-        <div className="sp-syllabus-detail">
-          <div key={activeModule} className="sp-syllabus-detail__card">
-            <span className="sp-syllabus-detail__mod">Module {active.mod}</span>
-            <h3>{active.title}</h3>
-            <p>{active.body}</p>
+        <div className="sp-roadmap-zigzag" data-r>
+          <div className="sp-roadmap-zigzag__row sp-roadmap-zigzag__row--top">
+            {curriculum.map((c, i) => (
+              <div key={c.mod} className="sp-roadmap-zigzag__slot">
+                {i % 2 === 0 && (
+                  <>
+                    <div className="sp-roadmap-zigzag__card">
+                      <span className="sp-roadmap-zigzag__mod">Module {c.mod}</span>
+                      <h3>{c.title}</h3>
+                      <p>{c.body}</p>
+                    </div>
+                    <span className="sp-roadmap-zigzag__stem" />
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="sp-roadmap-zigzag__row sp-roadmap-zigzag__row--icons">
+            {curriculum.map((c) => (
+              <div key={c.mod} className="sp-roadmap-zigzag__slot">
+                <div className="sp-roadmap-zigzag__icon" id={c.id}>
+                  <c.icon size={16} />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="sp-roadmap-zigzag__row sp-roadmap-zigzag__row--bottom">
+            {curriculum.map((c, i) => (
+              <div key={c.mod} className="sp-roadmap-zigzag__slot">
+                {i % 2 === 1 && (
+                  <>
+                    <span className="sp-roadmap-zigzag__stem" />
+                    <div className="sp-roadmap-zigzag__card">
+                      <span className="sp-roadmap-zigzag__mod">Module {c.mod}</span>
+                      <h3>{c.title}</h3>
+                      <p>{c.body}</p>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -362,65 +375,49 @@ export default function TrainingPage() {
   .sp-compare__col--with:hover { transform: none }
 }
 
-/* ── Syllabus (horizontal roadmap: click a module to reveal it) ── */
-.sp-syllabus-nav { position: relative; display: flex; gap: 4px; padding-top: 34px }
-.sp-syllabus-nav::before {
-  content: ""; position: absolute; top: 21px;
-  left: calc(100% / 14); right: calc(100% / 14); height: 2px;
+/* ── Syllabus (horizontal zigzag roadmap: cards alternate above/below their icon) ── */
+.sp-roadmap-zigzag { display: flex; flex-direction: column }
+.sp-roadmap-zigzag__row { display: flex; gap: 6px }
+.sp-roadmap-zigzag__row--top { align-items: flex-end }
+.sp-roadmap-zigzag__row--bottom { align-items: flex-start }
+.sp-roadmap-zigzag__row--icons { position: relative; padding: 8px 0 }
+.sp-roadmap-zigzag__row--icons::before {
+  content: ""; position: absolute; top: 50%; left: calc(100% / 14); right: calc(100% / 14); height: 2px;
   background: linear-gradient(90deg, var(--border-strong), var(--border) 92%, var(--border-strong));
 }
-.sp-syllabus-nav__node {
-  position: relative; z-index: 1; flex: 1 1 0;
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
-  padding: 0 4px 2px; border: none; background: none; cursor: pointer; font-family: inherit;
-}
-.sp-syllabus-nav__icon {
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  width: 42px; height: 42px; border-radius: 50%;
-  background: var(--surface); border: 1.5px solid var(--border-strong); color: var(--muted-dim);
-  transition: background .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease), transform .25s var(--ease), box-shadow .25s var(--ease);
-}
-.sp-syllabus-nav__title { font-size: .82rem; font-weight: 600; color: var(--muted); text-align: center; line-height: 1.35; transition: color .25s var(--ease) }
-.sp-syllabus-nav__node:hover .sp-syllabus-nav__icon { border-color: var(--accent-deep); color: var(--accent-deep); transform: translateY(-2px) }
-.sp-syllabus-nav__node:hover .sp-syllabus-nav__title { color: var(--ink) }
-.sp-syllabus-nav__node--active .sp-syllabus-nav__icon {
-  background: var(--accent-deep); border-color: var(--accent-deep); color: #fff;
-  box-shadow: 0 10px 20px -10px rgba(85,70,224,.55);
-  transform: translateY(-2px);
-}
-.sp-syllabus-nav__node--active .sp-syllabus-nav__title { color: var(--ink); font-weight: 700 }
-@media (prefers-reduced-motion: reduce) {
-  .sp-syllabus-nav__icon, .sp-syllabus-nav__title { transition: none }
-  .sp-syllabus-nav__node--active .sp-syllabus-nav__icon, .sp-syllabus-nav__node:hover .sp-syllabus-nav__icon { transform: none }
-}
+.sp-roadmap-zigzag__slot { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center }
+.sp-roadmap-zigzag__row--top .sp-roadmap-zigzag__slot { justify-content: flex-end }
+.sp-roadmap-zigzag__row--bottom .sp-roadmap-zigzag__slot { justify-content: flex-start }
+.sp-roadmap-zigzag__row--icons .sp-roadmap-zigzag__slot { align-items: center }
 
-.sp-syllabus-detail { margin-top: 36px; padding-top: 32px; border-top: 1px solid var(--border); text-align: center }
-.sp-syllabus-detail__card { animation: sp-syllabus-fade .35s var(--ease) both }
-.sp-syllabus-detail__mod { font-family: var(--font-mono); font-size: .72rem; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
-.sp-syllabus-detail__card h3 { margin: 10px 0 0; font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; letter-spacing: -.015em; color: var(--ink) }
-.sp-syllabus-detail__card p { margin: 12px auto 0; font-size: .96rem; color: var(--muted); line-height: 1.7; max-width: 620px }
-@keyframes sp-syllabus-fade { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
-@media (prefers-reduced-motion: reduce) { .sp-syllabus-detail__card { animation: none } }
+.sp-roadmap-zigzag__icon {
+  position: relative; z-index: 1; flex-shrink: 0;
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 1.5px solid var(--accent-deep); color: var(--accent-deep);
+  box-shadow: 0 8px 16px -10px rgba(85,70,224,.4);
+}
+.sp-roadmap-zigzag__stem { width: 2px; height: 16px; background: var(--border-strong); flex-shrink: 0 }
 
-/* stagger the nodes in on scroll instead of revealing all at once */
-.sp-syllabus-nav[data-r] { opacity: 1; transform: none; filter: none; transition: none }
-.sp-syllabus-nav[data-r] > * { opacity: 0; transform: translateY(18px); filter: blur(3px); transition: opacity .55s var(--ease), transform .55s var(--ease), filter .55s var(--ease) }
-.sp-syllabus-nav[data-r].in > * { opacity: 1; transform: none; filter: blur(0) }
-.sp-syllabus-nav[data-r] > *:nth-child(1) { transition-delay: .02s }
-.sp-syllabus-nav[data-r] > *:nth-child(2) { transition-delay: .08s }
-.sp-syllabus-nav[data-r] > *:nth-child(3) { transition-delay: .14s }
-.sp-syllabus-nav[data-r] > *:nth-child(4) { transition-delay: .2s }
-.sp-syllabus-nav[data-r] > *:nth-child(5) { transition-delay: .26s }
-.sp-syllabus-nav[data-r] > *:nth-child(6) { transition-delay: .32s }
-.sp-syllabus-nav[data-r] > *:nth-child(7) { transition-delay: .38s }
-@media (prefers-reduced-motion: reduce) { .sp-syllabus-nav[data-r] > * { transition: none; opacity: 1; transform: none; filter: none } }
+.sp-roadmap-zigzag__card {
+  width: 100%; max-width: 172px;
+  padding: 16px 16px 18px;
+  border: 1px solid var(--border); border-radius: 12px;
+  background: var(--surface);
+  filter: drop-shadow(0 10px 20px rgba(16,25,46,.08));
+  transition: transform .25s var(--ease), filter .25s var(--ease), border-color .25s var(--ease);
+}
+.sp-roadmap-zigzag__card:hover { transform: translateY(-3px); filter: drop-shadow(0 16px 28px rgba(16,25,46,.16)); border-color: var(--accent-deep) }
+.sp-roadmap-zigzag__mod { font-family: var(--font-mono); font-size: .64rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep) }
+.sp-roadmap-zigzag__card h3 { margin: 6px 0 0; font-family: var(--font-display); font-size: .92rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink); line-height: 1.3 }
+.sp-roadmap-zigzag__card p { margin: 8px 0 0; font-size: .78rem; color: var(--muted); line-height: 1.5 }
+@media (prefers-reduced-motion: reduce) { .sp-roadmap-zigzag__card { transition: none } .sp-roadmap-zigzag__card:hover { transform: none } }
 
-@media (max-width: 680px) {
-  .sp-syllabus-nav { overflow-x: auto; padding: 34px 2px 6px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch }
-  .sp-syllabus-nav::before { display: none }
-  .sp-syllabus-nav__node { flex: 0 0 84px; scroll-snap-align: center }
-  .sp-syllabus-nav__title { font-size: .76rem }
-  .sp-syllabus-detail { padding-top: 24px }
+@media (max-width: 900px) {
+  .sp-roadmap-zigzag { overflow-x: auto; -webkit-overflow-scrolling: touch }
+  .sp-roadmap-zigzag__row { min-width: 760px }
+  .sp-roadmap-zigzag__slot { flex: 0 0 100px }
+  .sp-roadmap-zigzag__card { max-width: 140px; padding: 14px 14px 16px }
 }
 
 /* ── Learning roadmap: split layout, text left / divided skill-tool list right ── */
