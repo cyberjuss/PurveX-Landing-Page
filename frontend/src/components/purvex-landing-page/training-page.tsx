@@ -206,22 +206,24 @@ export default function TrainingPage() {
 
       {/* ═══════════ LEARNING ROADMAP ═══════════ */}
       <section className="sp-section sp-section--tight">
-        <div className="sp-head" data-r>
-          <span className="sp-tag">The learning roadmap</span>
-          <h2>Every skill area, practiced on real tools.</h2>
-          <p>
-            Alongside our own instruction, the curriculum is built around established,
-            real-world platforms — several of them free and open to anyone — so learners
-            practice on the same tools working analysts actually use.
-          </p>
-        </div>
-        <div className="sp-roadmap" data-r>
-          {roadmap.map((r) => (
-            <div key={r.skill} className="sp-roadmap__item">
-              <h3>{r.skill}</h3>
-              <span className="sp-roadmap__tool">{r.tool}</span>
-            </div>
-          ))}
+        <div className="sp-roadmap-split" data-r>
+          <div className="sp-head sp-head--left sp-roadmap-split__text">
+            <span className="sp-tag">The learning roadmap</span>
+            <h2>Every skill area, practiced on real tools.</h2>
+            <p>
+              Alongside our own instruction, the curriculum is built around established,
+              real-world platforms — several of them free and open to anyone — so learners
+              practice on the same tools working analysts actually use.
+            </p>
+          </div>
+          <div className="sp-roadmap">
+            {roadmap.map((r) => (
+              <div key={r.skill} className="sp-roadmap__item">
+                <span className="sp-roadmap__skill">{r.skill}</span>
+                <span className="sp-roadmap__tool">{r.tool}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -421,25 +423,28 @@ export default function TrainingPage() {
   .sp-syllabus-detail { padding-top: 24px }
 }
 
-/* ── Learning roadmap (skill area, practiced via a real tool) ── */
-.sp-roadmap {
-  --cut: 20px;
-  display: grid; grid-template-columns: repeat(2, 1fr);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-  filter: drop-shadow(0 14px 26px rgba(16,25,46,.1));
+/* ── Learning roadmap: split layout, text left / divided skill-tool list right ── */
+.sp-roadmap-split { display: grid; grid-template-columns: .85fr 1.15fr; gap: 56px; align-items: start }
+.sp-roadmap-split__text { margin: 0 }
+.sp-roadmap { display: flex; flex-direction: column }
+.sp-roadmap__item {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  padding: 18px 0; border-bottom: 1px solid var(--border);
 }
-.sp-roadmap__item { padding: 24px 30px; border-right: 1px dashed var(--border-strong); border-bottom: 1px dashed var(--border-strong) }
-.sp-roadmap__item:nth-child(2n) { border-right: none }
+.sp-roadmap__item:first-child { padding-top: 0 }
 .sp-roadmap__item:last-child { border-bottom: none }
-.sp-roadmap__item:last-child:nth-child(odd) { grid-column: 1 / -1; border-right: none }
-.sp-roadmap__item h3 { margin: 0; font-family: var(--font-display); font-size: 1rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
-.sp-roadmap__tool { display: block; margin-top: 8px; font-size: .78rem; font-weight: 600; color: var(--accent-deep) }
-.sp-roadmap__tool::before { content: "via "; color: var(--muted-dim); font-weight: 500 }
-@media (max-width: 680px) {
-  .sp-roadmap { grid-template-columns: 1fr }
-  .sp-roadmap__item { border-right: none !important; padding: 20px 24px }
+.sp-roadmap__skill { font-family: var(--font-display); font-size: .98rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
+.sp-roadmap__tool {
+  flex-shrink: 0; white-space: nowrap;
+  font-size: .78rem; font-weight: 600; color: var(--accent-deep);
+  background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); border-radius: 999px;
+  padding: 6px 14px;
+}
+@media (max-width: 860px) {
+  .sp-roadmap-split { grid-template-columns: 1fr; gap: 28px }
+}
+@media (max-width: 560px) {
+  .sp-roadmap__item { flex-direction: column; align-items: flex-start; gap: 8px }
 }
 
       `}</style>
