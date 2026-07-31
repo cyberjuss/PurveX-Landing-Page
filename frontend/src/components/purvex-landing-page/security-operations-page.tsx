@@ -79,9 +79,6 @@ export default function SecurityOperationsPage() {
             <span className="sp-radar__blip sp-radar__blip--3" />
             <div className="sp-radar__core" />
           </div>
-          <span className="sp-radar__caption">
-            <Radar size={13} /> Continuous threat monitoring
-          </span>
         </div>
       </section>
 
@@ -261,8 +258,6 @@ export default function SecurityOperationsPage() {
 .sp-radar__blip--3::after { animation-delay: 1.6s }
 @keyframes sp-radar-blip { 0%, 100% { opacity: .5 } 50% { opacity: 1 } }
 @keyframes sp-radar-ping { 0% { opacity: .5; transform: scale(.6) } 100% { opacity: 0; transform: scale(2.2) } }
-.sp-radar__caption { display: inline-flex; align-items: center; gap: 8px; font-size: .82rem; font-weight: 600; color: var(--muted) }
-.sp-radar__caption svg { color: var(--accent-deep) }
 @media (prefers-reduced-motion: reduce) {
   .sp-radar__sweep { animation: none; background: conic-gradient(from 0deg, rgba(106,92,255,.25), transparent 90deg) }
   .sp-radar__blip { animation: none; opacity: .8 }
