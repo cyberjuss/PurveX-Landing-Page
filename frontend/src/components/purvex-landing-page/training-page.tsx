@@ -148,6 +148,12 @@ export default function TrainingPage() {
           <div className="sp-head sp-head--left sp-compare-split__subtitle">
             <span className="sp-tag">Why this program is different</span>
             <h2>Judgment is the skill. Everything else is just facts.</h2>
+            <p>
+              Certifications and lecture slides can teach the vocabulary of a SOC. They cannot
+              teach someone to sit with an ambiguous alert and decide, in the moment, whether
+              it is noise or a real compromise. That judgment is what this program is built to
+              produce.
+            </p>
           </div>
         </div>
       </section>
@@ -294,11 +300,12 @@ export default function TrainingPage() {
 }
 
 /* ── Comparison: content left, subtitle right ── */
-.sp-compare-split { display: grid; grid-template-columns: 1.5fr 1fr; gap: 48px; align-items: center }
-.sp-compare-split__subtitle { margin: 0 }
+.sp-compare-split { display: grid; grid-template-columns: 1.2fr 1fr; gap: 64px; align-items: start }
+.sp-compare-split__subtitle { margin: 0; padding-top: 8px }
+.sp-compare-split__subtitle p { margin: 18px 0 0; max-width: 420px }
 @media (max-width: 900px) {
   .sp-compare-split { grid-template-columns: 1fr; gap: 28px }
-  .sp-compare-split__subtitle { order: -1 }
+  .sp-compare-split__subtitle { order: -1; padding-top: 0 }
 }
 
 .sp-compare { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 10px }
