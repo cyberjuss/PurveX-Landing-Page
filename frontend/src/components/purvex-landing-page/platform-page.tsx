@@ -198,9 +198,6 @@ export default function PlatformPage() {
     <SiteChrome active="platform">
       {/* ═══════════ HERO ═══════════ */}
       <section id="top" className="sp-hero">
-        <span className="sp-hero__badge">
-          <Radar size={13} /> The PurveX Platform · Private beta
-        </span>
         <h1 className="sp-hero__h1">
           See the miss.
           <br />
