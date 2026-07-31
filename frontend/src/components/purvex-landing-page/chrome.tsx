@@ -156,52 +156,6 @@ export function SiteChrome({
     };
   }, []);
 
-  // Cursor-reactive tilt on cards — skipped entirely under reduced-motion.
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const root = pageRef.current;
-    if (!root) return;
-    const targets = Array.from(root.querySelectorAll<HTMLElement>(".sp-card, .sp-partner"));
-    let raf = 0;
-    let pending: { el: HTMLElement; px: number; py: number } | null = null;
-    const flush = () => {
-      raf = 0;
-      if (!pending) return;
-      const { el, px, py } = pending;
-      el.style.setProperty("--tiltX", `${(-py * 6).toFixed(2)}deg`);
-      el.style.setProperty("--tiltY", `${(px * 8).toFixed(2)}deg`);
-      el.style.setProperty("--tiltLift", "-6px");
-      el.style.setProperty("--mx", `${((px + 0.5) * 100).toFixed(1)}%`);
-      el.style.setProperty("--my", `${((py + 0.5) * 100).toFixed(1)}%`);
-    };
-    const onMove = (e: MouseEvent) => {
-      const el = e.currentTarget as HTMLElement;
-      const r = el.getBoundingClientRect();
-      pending = { el, px: (e.clientX - r.left) / r.width - 0.5, py: (e.clientY - r.top) / r.height - 0.5 };
-      if (!raf) raf = requestAnimationFrame(flush);
-    };
-    const onLeave = (e: MouseEvent) => {
-      const el = e.currentTarget as HTMLElement;
-      if (pending?.el === el) pending = null;
-      el.style.setProperty("--tiltX", "0deg");
-      el.style.setProperty("--tiltY", "0deg");
-      el.style.setProperty("--tiltLift", "0px");
-      el.style.setProperty("--mx", "50%");
-      el.style.setProperty("--my", "50%");
-    };
-    targets.forEach((el) => {
-      el.addEventListener("mousemove", onMove);
-      el.addEventListener("mouseleave", onLeave);
-    });
-    return () => {
-      cancelAnimationFrame(raf);
-      targets.forEach((el) => {
-        el.removeEventListener("mousemove", onMove);
-        el.removeEventListener("mouseleave", onLeave);
-      });
-    };
-  }, []);
-
   useEffect(() => {
     const els = pageRef.current?.querySelectorAll("[data-r]");
     if (!els) return;
@@ -654,29 +608,26 @@ export const CHROME_CSS = `
 .sp-head--left p { margin-left: 0 }
 .sp-tag { display: inline-block; font-size: .74rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
 
-/* ── Generic card grid (services / features) ── */
-.sp-cards { display: grid; gap: 24px }
+/* ── Generic card grid (services / features): divided strip, not boxed cards ── */
+.sp-cards { display: grid; gap: 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
 .sp-cards--2 { grid-template-columns: repeat(2, 1fr) }
 .sp-cards--3 { grid-template-columns: repeat(3, 1fr) }
 .sp-cards--4 { grid-template-columns: repeat(2, 1fr) }
 .sp-card {
-  --cut: 24px;
-  position: relative; display: flex; flex-direction: column; padding: 36px;
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-  border: 1px solid var(--border);
-  background: linear-gradient(135deg, var(--accent-soft) 0%, transparent 18%), var(--surface);
-  filter: drop-shadow(0 14px 26px rgba(16,25,46,.1));
-  transform: perspective(900px) rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg)) translateY(var(--tiltLift, 0px));
-  transition: transform .35s var(--ease), border-color .3s, filter .3s;
+  position: relative; display: flex; flex-direction: column; padding: 36px 32px;
 }
-.sp-card:hover { border-color: var(--border-strong); filter: drop-shadow(0 22px 38px rgba(16,25,46,.16)) }
-@media (prefers-reduced-motion: reduce) { .sp-card { transform: none !important } }
-.sp-card__icon { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px); background: linear-gradient(135deg, var(--accent-soft), #ffffff); border: 1px solid rgba(106,92,255,.2); color: var(--accent-deep); box-shadow: 0 8px 20px -12px rgba(106,92,255,.5); transition: transform .35s var(--ease) }
-.sp-card:hover .sp-card__icon { transform: translateY(-2px) scale(1.06) }
-.sp-card__title { margin: 22px 0 0; font-family: var(--font-display); font-size: 1.15rem; font-weight: 650; letter-spacing: -.015em; color: var(--ink) }
-.sp-card__body { margin: 12px 0 0; color: var(--muted); font-size: .95rem; line-height: 1.7; flex: 1 }
-.sp-card__link { display: inline-flex; align-items: center; gap: 7px; margin-top: 20px; font-size: .9rem; font-weight: 600; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
-.sp-card:hover .sp-card__link { gap: 11px }
+.sp-cards--2 .sp-card:not(:first-child), .sp-cards--3 .sp-card:not(:first-child) { border-left: 1px solid var(--border) }
+.sp-cards--4 .sp-card:nth-child(2n) { border-left: 1px solid var(--border) }
+.sp-cards--4 .sp-card:nth-child(n+3) { border-top: 1px solid var(--border) }
+.sp-card__icon {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); color: var(--accent-deep);
+}
+.sp-card__title { margin: 18px 0 0; font-family: var(--font-display); font-size: 1.04rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
+.sp-card__body { margin: 10px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.65; flex: 1 }
+.sp-card__link { display: inline-flex; align-items: center; gap: 7px; margin-top: 18px; font-size: .9rem; font-weight: 600; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
+.sp-card__link:hover { gap: 11px }
 
 /* ── Footnote (cross-page callouts) ── */
 .sp-footnote { max-width: 640px; margin: 28px auto 0; text-align: center; color: var(--muted); font-size: .92rem; line-height: 1.65 }
@@ -755,6 +706,9 @@ export const CHROME_CSS = `
 /* ── Responsive ── */
 @media (max-width: 940px) {
   .sp-cards--2, .sp-cards--3, .sp-cards--4 { grid-template-columns: 1fr 1fr }
+  .sp-cards--2 .sp-card, .sp-cards--3 .sp-card, .sp-cards--4 .sp-card { border-left: none }
+  .sp-cards--2 .sp-card:nth-child(2n), .sp-cards--3 .sp-card:nth-child(2n), .sp-cards--4 .sp-card:nth-child(2n) { border-left: 1px solid var(--border) }
+  .sp-cards--2 .sp-card:nth-child(n+3), .sp-cards--3 .sp-card:nth-child(n+3), .sp-cards--4 .sp-card:nth-child(n+3) { border-top: 1px solid var(--border) }
   .sp-footer__top { flex-direction: column; gap: 30px }
 }
 @media (max-width: 680px) {
@@ -771,7 +725,8 @@ export const CHROME_CSS = `
   .sp-section { padding-top: 64px }
   .sp-head { margin-bottom: 40px }
   .sp-cards--2, .sp-cards--3, .sp-cards--4 { grid-template-columns: 1fr }
-  .sp-card { padding: 28px; --cut: 18px }
+  .sp-card { padding: 28px 24px; border-left: none !important; border-top: none }
+  .sp-card:not(:first-child) { border-top: 1px solid var(--border) }
   .sp-panel { padding: 32px; --cut: 22px }
   .sp-footer__cols { flex-wrap: wrap; gap: 32px }
   .sp-footer__bottom { flex-direction: column; align-items: flex-start; gap: 10px }
