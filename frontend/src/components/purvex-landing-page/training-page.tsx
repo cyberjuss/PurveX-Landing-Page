@@ -1,17 +1,20 @@
 "use client";
 
 import {
+  AlertTriangle,
   ArrowRight,
   BookOpen,
+  Brain,
   Check,
   FlaskConical,
   GraduationCap,
+  HelpCircle,
   Layers,
   MessageCircle,
   Radar,
   Search,
+  ShieldAlert,
   Siren,
-  TrendingUp,
   Users,
   X,
 } from "lucide-react";
@@ -75,18 +78,12 @@ const formats = [
   { icon: GraduationCap, title: "Embedded in your program", body: "We teach inside your existing curriculum." },
 ];
 
-const growth = [22, 35, 48, 61, 74, 88, 100];
-const CHART_W = 400;
-const CHART_BASE = 128;
-const CHART_TOP = 14;
-const chartPoints = growth.map((v, i) => {
-  const slot = CHART_W / growth.length;
-  return { cx: slot * (i + 0.5), cy: CHART_BASE - (v / 100) * (CHART_BASE - CHART_TOP) };
-});
-const chartLine = chartPoints.map((p) => `${p.cx.toFixed(1)},${p.cy.toFixed(1)}`).join(" ");
-const chartArea = `M ${chartPoints[0].cx.toFixed(1)},${CHART_BASE} ${chartPoints
-  .map((p) => `L ${p.cx.toFixed(1)},${p.cy.toFixed(1)}`)
-  .join(" ")} L ${chartPoints[chartPoints.length - 1].cx.toFixed(1)},${CHART_BASE} Z`;
+const thinking = [
+  { icon: AlertTriangle, text: "New login, 2 AM, unfamiliar device" },
+  { icon: HelpCircle, text: "Does this match the user's normal pattern?" },
+  { icon: Search, text: "No travel booked. Location is 400 miles off." },
+  { icon: ShieldAlert, text: "Escalate — account likely compromised", verdict: true },
+];
 
 export default function TrainingPage() {
   return (
@@ -106,82 +103,21 @@ export default function TrainingPage() {
         <div className="sp-hero__preview" data-r>
           <div className="sp-growth">
             <div className="sp-growth__head">
-              <TrendingUp size={14} /> Skill growth, module by module
+              <Brain size={14} /> Inside the thinking
             </div>
-            <svg className="sp-growth__svg" viewBox={`0 0 ${CHART_W} 140`} preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="growthBar" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" style={{ stopColor: "#eef0ff" }} />
-                  <stop offset="18%" style={{ stopColor: "#d9d9ff" }} />
-                  <stop offset="36%" style={{ stopColor: "#c2c0ff" }} />
-                  <stop offset="54%" style={{ stopColor: "#aaa7ff" }} />
-                  <stop offset="72%" style={{ stopColor: "#8f8bff" }} />
-                  <stop offset="88%" style={{ stopColor: "#6a5cff" }} />
-                  <stop offset="100%" style={{ stopColor: "#5546e0" }} />
-                </linearGradient>
-                <linearGradient id="growthArea" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" style={{ stopColor: "rgba(85,70,224,0.25)" }} />
-                  <stop offset="100%" style={{ stopColor: "rgba(85,70,224,0)" }} />
-                </linearGradient>
-              </defs>
-
-              {[0.25, 0.5, 0.75].map((f) => (
-                <line
-                  key={f}
-                  className="sp-growth__grid"
-                  x1="0"
-                  x2={CHART_W}
-                  y1={CHART_TOP + f * (CHART_BASE - CHART_TOP)}
-                  y2={CHART_TOP + f * (CHART_BASE - CHART_TOP)}
-                />
-              ))}
-
-              {chartPoints.map((p, i) => {
-                const slot = CHART_W / growth.length;
-                const barW = slot * 0.58;
-                return (
-                  <rect
-                    key={i}
-                    className="sp-growth__bar"
-                    style={{ animationDelay: `${i * 0.07}s` }}
-                    x={p.cx - barW / 2}
-                    y={p.cy}
-                    width={barW}
-                    height={CHART_BASE - p.cy}
-                    rx="5"
-                    fill="url(#growthBar)"
-                  />
-                );
-              })}
-
-              <path className="sp-growth__area" fill="url(#growthArea)" d={chartArea} />
-              <polyline className="sp-growth__line" points={chartLine} />
-              {chartPoints.map((p, i) =>
-                i === chartPoints.length - 1 ? (
-                  <circle key={`ring-${i}`} className="sp-growth__ring" cx={p.cx} cy={p.cy} r={6.5} />
-                ) : null
-              )}
-              {chartPoints.map((p, i) => (
-                <circle
+            <div className="sp-thinking">
+              {thinking.map((t, i) => (
+                <div
                   key={i}
-                  className={i === chartPoints.length - 1 ? "sp-growth__dot sp-growth__dot--peak" : "sp-growth__dot"}
-                  style={{ animationDelay: `${0.45 + i * 0.04}s` }}
-                  cx={p.cx}
-                  cy={p.cy}
-                  r={i === chartPoints.length - 1 ? 6.5 : 3.5}
-                />
+                  className={t.verdict ? "sp-thinking__row sp-thinking__row--verdict" : "sp-thinking__row"}
+                  style={{ animationDelay: `${i * 0.12}s` }}
+                >
+                  <div className="sp-thinking__icon">
+                    <t.icon size={14} />
+                  </div>
+                  <p>{t.text}</p>
+                </div>
               ))}
-            </svg>
-            <div className="sp-growth__labels">
-              {curriculum.map((c) => (
-                <span key={c.mod}>{c.mod}</span>
-              ))}
-            </div>
-            <div className="sp-growth__foot">
-              <span>Fundamentals</span>
-              <span className="sp-growth__ready">
-                <Check size={11} /> Job-ready
-              </span>
             </div>
           </div>
         </div>
@@ -315,11 +251,11 @@ export default function TrainingPage() {
 
 .sp-hero__preview { display: flex; justify-content: center }
 
-/* ── Growth chart (skill growth, module by module) ── */
+/* ── Hero preview card: inside an analyst's thinking ── */
 .sp-growth {
   --cut: 18px;
   width: 100%; max-width: 420px;
-  padding: 28px 30px 22px;
+  padding: 28px 30px 26px;
   clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
   border: 1px solid var(--border);
   background: var(--surface);
@@ -327,32 +263,27 @@ export default function TrainingPage() {
 }
 .sp-growth__head { display: flex; align-items: center; gap: 8px; font-size: .78rem; font-weight: 650; color: var(--muted); margin-bottom: 22px }
 .sp-growth__head svg { color: var(--accent-deep) }
-.sp-growth__svg { width: 100%; height: 140px; overflow: visible; display: block }
-.sp-growth__grid { stroke: var(--border); stroke-width: 1; stroke-dasharray: 2 5 }
-.sp-growth__bar { transform-box: fill-box; transform-origin: bottom; animation: sp-growth-rise .7s var(--ease) both }
-.sp-growth__area { opacity: 0; animation: sp-growth-fade .6s var(--ease) .5s both }
-.sp-growth__line {
-  fill: none; stroke: var(--accent-deep); stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round;
-  opacity: 0; animation: sp-growth-fade .6s var(--ease) .55s both;
+.sp-thinking { position: relative; padding-left: 34px; display: flex; flex-direction: column; gap: 20px }
+.sp-thinking::before { content: ""; position: absolute; left: 12px; top: 4px; bottom: 4px; width: 2px; background: linear-gradient(var(--border-strong), var(--border) 85%, transparent) }
+.sp-thinking__row {
+  position: relative;
+  opacity: 0; transform: translateY(10px);
+  animation: sp-thinking-in .5s var(--ease) both;
 }
-.sp-growth__dot { fill: var(--surface); stroke: var(--accent-deep); stroke-width: 2; opacity: 0; animation: sp-growth-fade .5s var(--ease) both }
-.sp-growth__dot--peak { fill: var(--accent-deep); stroke: #fff; stroke-width: 2 }
-.sp-growth__ring {
-  fill: none; stroke: var(--accent-deep); stroke-width: 2;
-  transform-box: fill-box; transform-origin: center;
-  animation: sp-growth-ping 2.2s var(--ease) infinite;
+.sp-thinking__icon {
+  position: absolute; left: -34px; top: -3px;
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 1.5px solid var(--border-strong); color: var(--muted-dim);
 }
-@keyframes sp-growth-rise { from { transform: scaleY(0) } to { transform: scaleY(1) } }
-@keyframes sp-growth-fade { from { opacity: 0 } to { opacity: 1 } }
-@keyframes sp-growth-ping { 0% { opacity: .55; transform: scale(1) } 100% { opacity: 0; transform: scale(2.1) } }
-@media (prefers-reduced-motion: reduce) {
-  .sp-growth__bar, .sp-growth__area, .sp-growth__line, .sp-growth__dot { animation: none; opacity: 1; transform: none }
-  .sp-growth__ring { animation: none; opacity: 0 }
+.sp-thinking__row p { margin: 0; font-size: .86rem; color: var(--ink-soft); line-height: 1.5 }
+.sp-thinking__row--verdict .sp-thinking__icon {
+  border-color: var(--accent-deep); background: var(--accent-deep); color: #fff;
+  box-shadow: 0 8px 16px -8px rgba(85,70,224,.55);
 }
-.sp-growth__labels { display: flex; justify-content: space-between; margin-top: 8px; padding: 0 2px; font-family: var(--font-mono); font-size: .66rem; font-weight: 600; letter-spacing: .04em; color: var(--muted-dim) }
-.sp-growth__foot { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); font-size: .78rem; font-weight: 600; color: var(--muted) }
-.sp-growth__ready { display: inline-flex; align-items: center; gap: 5px; color: var(--accent-deep) }
-.sp-growth__ready svg { flex-shrink: 0 }
+.sp-thinking__row--verdict p { color: var(--ink); font-weight: 650 }
+@keyframes sp-thinking-in { to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: reduce) { .sp-thinking__row { animation: none; opacity: 1; transform: none } }
 @media (max-width: 940px) {
   .sp-hero.sp-hero--split { grid-template-columns: 1fr; text-align: center; gap: 40px }
   .sp-hero--split .sp-hero__h1, .sp-hero--split .sp-hero__badge { text-align: center }
