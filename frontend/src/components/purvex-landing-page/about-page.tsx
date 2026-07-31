@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
 import { ArrowRight, Brain, ShieldCheck, Swords, Zap } from "lucide-react";
 import { SiteChrome } from "./chrome";
 
@@ -18,63 +17,51 @@ const goals = [
   },
 ];
 
+const toc = [
+  { num: "01", label: "How we think", href: "#how-we-think" },
+  { num: "02", label: "Our goal", href: "#our-goal" },
+  { num: "03", label: "Who we are", href: "#who-we-are" },
+  { num: "04", label: "Looking ahead", href: "#looking-ahead" },
+];
+
 export default function AboutPage() {
-  const threadRef = useRef<HTMLDivElement>(null);
-  const fillRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let raf = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const thread = threadRef.current;
-        const fill = fillRef.current;
-        if (!thread || !fill) return;
-        const rect = thread.getBoundingClientRect();
-        const startLine = window.innerHeight * 0.85;
-        const endLine = window.innerHeight * 0.4;
-        const progress = (startLine - rect.top) / (rect.height + startLine - endLine);
-        fill.style.height = `${Math.min(1, Math.max(0, progress)) * 100}%`;
-      });
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, []);
-
   return (
     <SiteChrome active="about">
-      <div className="sp-story">
-        {/* ═══════════ INTRO ═══════════ */}
-        <div className="sp-story__intro" data-r>
-          <span className="sp-story__kicker">Field Notes — On Security</span>
+      <div className="sp-mag">
+        {/* ═══════════ MASTHEAD ═══════════ */}
+        <div className="sp-mag__masthead" data-r>
+          <span className="sp-mag__kicker">Field Notes — On Security</span>
           <h1>Blue team. Red team. One discipline.</h1>
           <p>
             PurveX helps organizations strengthen their security operations and develop the
             cybersecurity talent needed to support them.
           </p>
-          <div className="sp-story__byline">
+          <div className="sp-mag__byline">
             <span>By PurveX</span>
-            <span className="sp-story__byline-dot" aria-hidden />
+            <span className="sp-mag__byline-dot" aria-hidden />
             <span>4 min read</span>
           </div>
         </div>
 
-        <div className="sp-story__thread" ref={threadRef}>
-          <div className="sp-story__thread-fill" ref={fillRef} aria-hidden />
-          {/* ═══════════ 01 — HOW WE THINK ═══════════ */}
-          <section id="how-we-think" className="sp-story__chapter" data-r>
-            <span className="sp-story__num">01</span>
-            <span className="sp-story__label">How we think</span>
-            <p className="sp-story__pull">
-              You cannot defend against tactics you do not understand.
-            </p>
-            <p className="sp-story__lede">
+        {/* ═══════════ CONTENTS ═══════════ */}
+        <nav className="sp-mag__toc" data-r aria-label="Sections">
+          {toc.map((t) => (
+            <a key={t.num} href={t.href}>
+              <span className="sp-mag__toc-num">{t.num}</span>
+              {t.label}
+            </a>
+          ))}
+        </nav>
+
+        {/* ═══════════ 01 — HOW WE THINK ═══════════ */}
+        <section id="how-we-think" className="sp-mag__section" data-r>
+          <div className="sp-mag__rail">
+            <span className="sp-mag__num">01</span>
+            <span className="sp-mag__label">How we think</span>
+            <p className="sp-mag__pull">You cannot defend against tactics you do not understand.</p>
+          </div>
+          <div className="sp-mag__content">
+            <p className="sp-mag__lede">
               PurveX is built on the blend of blue team and red team thinking. Understanding both
               sides is what makes a stronger analyst, and it shapes everything we do.
             </p>
@@ -111,26 +98,28 @@ export default function AboutPage() {
               We do not train one side and hope it holds up against the other. We build analysts,
               and run operations, that understand both.
             </p>
-            <p className="sp-story__wink">With great visibility comes great responsibility.</p>
-          </section>
+            <p className="sp-mag__wink">With great visibility comes great responsibility.</p>
+          </div>
+        </section>
 
-          {/* ═══════════ 02 — OUR GOAL ═══════════ */}
-          <section className="sp-story__chapter" data-r>
-            <span className="sp-story__num">02</span>
-            <span className="sp-story__label">Our goal</span>
-            <p className="sp-story__pull">
-              Automate what can be automated. Never stop understanding it.
-            </p>
+        {/* ═══════════ 02 — OUR GOAL ═══════════ */}
+        <section id="our-goal" className="sp-mag__section" data-r>
+          <div className="sp-mag__rail">
+            <span className="sp-mag__num">02</span>
+            <span className="sp-mag__label">Our goal</span>
+            <p className="sp-mag__pull">Automate what can be automated. Never stop understanding it.</p>
+          </div>
+          <div className="sp-mag__content">
             <p>
               A lot of what happens in a SOC is repeatable, and repeatable work should be
               automated, not repeated by hand forever. Our number one goal is to solve the
               problems in security operations that can be automated, and build a better way of
               doing what is left, without losing the people who have to run it.
             </p>
-            <div className="sp-story__points">
+            <div className="sp-mag__points">
               {goals.map((g) => (
-                <div key={g.title} className="sp-story__point">
-                  <div className="sp-story__point-icon">
+                <div key={g.title} className="sp-mag__point">
+                  <div className="sp-mag__point-icon">
                     <g.icon size={17} />
                   </div>
                   <div>
@@ -140,13 +129,17 @@ export default function AboutPage() {
                 </div>
               ))}
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* ═══════════ 03 — WHO WE ARE ═══════════ */}
-          <section id="who-we-are" className="sp-story__chapter" data-r>
-            <span className="sp-story__num">03</span>
-            <span className="sp-story__label">Who we are</span>
-            <p className="sp-story__pull">No layer between the work and the person doing it.</p>
+        {/* ═══════════ 03 — WHO WE ARE ═══════════ */}
+        <section id="who-we-are" className="sp-mag__section" data-r>
+          <div className="sp-mag__rail">
+            <span className="sp-mag__num">03</span>
+            <span className="sp-mag__label">Who we are</span>
+            <p className="sp-mag__pull">No layer between the work and the person doing it.</p>
+          </div>
+          <div className="sp-mag__content">
             <p>
               PurveX stays close to the work. The person running your security operations is the
               same one teaching in the field, not an account manager relaying between you and
@@ -154,97 +147,108 @@ export default function AboutPage() {
               should be run.
             </p>
             <p>The best way to see if we are a fit is a real conversation, not a pitch.</p>
-            <Link href="/about/founder" className="sp-story__link">
+            <Link href="/about/founder" className="sp-mag__link">
               Meet the founder <ArrowRight size={14} />
             </Link>
-          </section>
+          </div>
+        </section>
 
-          {/* ═══════════ 04 — LOOKING AHEAD ═══════════ */}
-          <section id="looking-ahead" className="sp-story__chapter" data-r>
-            <span className="sp-story__num">04</span>
-            <span className="sp-story__label">Looking ahead</span>
-            <p className="sp-story__pull">Proof, not assumed coverage.</p>
+        {/* ═══════════ 04 — LOOKING AHEAD ═══════════ */}
+        <section id="looking-ahead" className="sp-mag__section" data-r>
+          <div className="sp-mag__rail">
+            <span className="sp-mag__num">04</span>
+            <span className="sp-mag__label">Looking ahead</span>
+            <p className="sp-mag__pull">Proof, not assumed coverage.</p>
+          </div>
+          <div className="sp-mag__content">
             <p>
               PurveX is exploring new ways to help security teams continuously measure and
               validate their detection capabilities: technology that helps organizations move
               beyond assumed security coverage toward measurable evidence that their detections
               work when they are needed.
             </p>
-            <Link href="/platform" className="sp-story__link">
+            <Link href="/platform" className="sp-mag__link">
               Explore PurveX Labs <ArrowRight size={14} />
             </Link>
-          </section>
-        </div>
+          </div>
+        </section>
       </div>
 
       <style>{`
-.sp-story { max-width: 700px; margin: 0 auto; padding-top: 132px }
-.sp-story__kicker {
+.sp-mag { max-width: 1040px; margin: 0 auto; padding-top: 132px }
+
+/* ── Masthead ── */
+.sp-mag__kicker {
   display: inline-block; margin-bottom: 20px;
   font-family: var(--font-mono); font-size: .78rem; font-weight: 650; letter-spacing: .2em;
   text-transform: uppercase; color: var(--accent-deep);
 }
-.sp-story__intro h1 { margin: 0; font-family: var(--font-display); font-size: clamp(2.3rem, 4.6vw, 3.4rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; color: var(--ink); text-wrap: balance }
-.sp-story__intro p { margin: 22px 0 0; font-size: 1.1rem; line-height: 1.7; color: var(--ink-soft); max-width: 560px }
-.sp-story__byline {
-  display: flex; align-items: center; gap: 10px; margin-top: 28px; padding-top: 20px;
-  border-top: 1px solid var(--border);
+.sp-mag__masthead h1 { margin: 0; font-family: var(--font-display); font-size: clamp(2.3rem, 4.6vw, 3.4rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; color: var(--ink); text-wrap: balance; max-width: 780px }
+.sp-mag__masthead p { margin: 22px 0 0; font-size: 1.1rem; line-height: 1.7; color: var(--ink-soft); max-width: 560px }
+.sp-mag__byline {
+  display: flex; align-items: center; gap: 10px; margin-top: 28px;
   font-family: var(--font-mono); font-size: .8rem; letter-spacing: .02em; color: var(--muted-dim);
-  max-width: 560px;
 }
-.sp-story__byline-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--muted-dim) }
+.sp-mag__byline-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--muted-dim) }
 
-.sp-story__thread { position: relative; margin-top: 96px; padding-left: 52px }
-.sp-story__thread::before { content: ""; position: absolute; left: 19px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(var(--border-strong), var(--border) 85%, transparent) }
-.sp-story__thread-fill { position: absolute; left: 19px; top: 6px; width: 2px; height: 0%; border-radius: 2px; background: linear-gradient(var(--accent), var(--accent-deep)); box-shadow: 0 0 12px rgba(106,92,255,.5); transition: height .15s linear }
-.sp-story__chapter { position: relative; margin-bottom: 88px }
-.sp-story__chapter:last-child { margin-bottom: 0 }
-.sp-story__num { position: absolute; left: -52px; top: -4px; width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent-deep); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: .9rem; transition: background .4s var(--ease), color .4s var(--ease), transform .4s var(--ease), box-shadow .4s var(--ease) }
-.sp-story__chapter.in .sp-story__num { background: var(--accent-deep); color: #fff; transform: scale(1.08); box-shadow: 0 6px 18px -6px rgba(85,70,224,.6) }
-
-/* ── Alternating sides on wide screens: line down the middle, chapters left/right ── */
-@media (min-width: 861px) {
-  .sp-story { max-width: 960px }
-  .sp-story__thread { padding-left: 0; margin-top: 64px }
-  .sp-story__thread::before { left: 50%; transform: translateX(-50%) }
-  .sp-story__thread-fill { left: 50%; transform: translateX(-50%) }
-  .sp-story__chapter { width: calc(50% - 40px) }
-  .sp-story__chapter:nth-of-type(odd) { margin-left: 0 }
-  .sp-story__chapter:nth-of-type(even) { margin-left: calc(50% + 40px) }
-  .sp-story__chapter:nth-of-type(odd) .sp-story__num { left: auto; right: -60px }
-  .sp-story__chapter:nth-of-type(even) .sp-story__num { left: -60px; right: auto }
+/* ── Contents strip ── */
+.sp-mag__toc {
+  display: flex; flex-wrap: wrap; gap: 0;
+  margin-top: 44px; padding: 22px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
 }
-@media (prefers-reduced-motion: reduce) { .sp-story__thread-fill { transition: none } }
-.sp-story__label {
-  display: flex; align-items: center; gap: 12px;
+.sp-mag__toc a {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 6px 24px; border-left: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: .82rem; font-weight: 600; color: var(--muted);
+  text-decoration: none; transition: color .2s var(--ease);
+}
+.sp-mag__toc a:first-child { border-left: none; padding-left: 0 }
+.sp-mag__toc a:hover { color: var(--accent-deep) }
+.sp-mag__toc-num { color: var(--accent-deep); font-weight: 700 }
+
+/* ── Article rows: narrow rail + wide content ── */
+.sp-mag__section { display: grid; grid-template-columns: 200px 1fr; gap: 48px; padding: 64px 0; border-bottom: 1px solid var(--border) }
+.sp-mag__section:last-child { border-bottom: none }
+.sp-mag__rail { position: relative; padding-right: 32px; border-right: 1px solid var(--border) }
+.sp-mag__num {
+  display: block; font-family: var(--font-display); font-size: 3.4rem; font-weight: 800; line-height: 1;
+  color: transparent; -webkit-text-stroke: 1.5px var(--border-strong);
+}
+.sp-mag__label {
+  display: block; margin-top: 14px;
   font-family: var(--font-mono); font-size: .72rem; font-weight: 650; letter-spacing: .16em;
   text-transform: uppercase; color: var(--accent-deep);
 }
-.sp-story__label::after { content: ""; flex: 1; height: 1px; background: var(--border-strong) }
-.sp-story__pull {
-  position: relative;
-  margin: 18px 0 0; padding-left: 20px; border-left: 3px solid var(--accent);
-  font-family: var(--font-display); font-size: clamp(1.3rem, 2.6vw, 1.65rem); font-weight: 650;
-  letter-spacing: -.015em; line-height: 1.4; color: var(--ink);
+.sp-mag__pull {
+  margin: 18px 0 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 650;
+  letter-spacing: -.01em; line-height: 1.45; color: var(--ink);
 }
-.sp-story__pull::before {
-  content: "“"; position: absolute; left: 18px; top: -.5em;
-  font-family: var(--font-display); font-size: 2.6em; font-weight: 700;
-  color: var(--accent); opacity: .3; line-height: 1;
-}
-.sp-story__lede::first-letter {
+.sp-mag__content { min-width: 0 }
+.sp-mag__content p { margin: 0 0 20px; font-size: 1.02rem; line-height: 1.78; color: var(--ink-soft); max-width: 620px }
+.sp-mag__content p:last-of-type { margin-bottom: 0 }
+.sp-mag__lede::first-letter {
   float: left; margin: .02em .09em 0 0;
   font-family: var(--font-display); font-size: 3.6em; font-weight: 700; line-height: .8;
   color: var(--accent-deep);
 }
-.sp-story__chapter > p:not(.sp-story__pull):not(.sp-story__wink) { margin: 20px 0 0; font-size: 1.02rem; line-height: 1.78; color: var(--ink-soft); max-width: 600px }
-.sp-story__wink { margin: 16px 0 0; font-size: .86rem; font-style: italic; color: var(--muted) }
-.sp-story__link { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; font-size: .92rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
-.sp-story__link:hover { gap: 12px }
+.sp-mag__wink { font-size: .86rem; font-style: italic; color: var(--muted) }
+.sp-mag__link { display: inline-flex; align-items: center; gap: 8px; margin-top: 6px; font-size: .92rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
+.sp-mag__link:hover { gap: 12px }
+
+@media (max-width: 860px) {
+  .sp-mag__section { grid-template-columns: 1fr; gap: 24px }
+  .sp-mag__rail { padding-right: 0; padding-bottom: 24px; border-right: none; border-bottom: 1px solid var(--border) }
+}
+@media (max-width: 680px) {
+  .sp-mag { padding-top: 72px }
+  .sp-mag__toc { flex-direction: column; gap: 4px }
+  .sp-mag__toc a { border-left: none; padding: 8px 0 }
+  .sp-mag__section { padding: 44px 0 }
+}
 
 /* Blue vs red — a lighter, inline version of the shared card treatment */
-.sp-yinyang { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 32px }
-.sp-yinyang__svg { width: 90px; height: 90px; flex-shrink: 0; filter: drop-shadow(0 14px 28px rgba(16,25,46,.16)); transition: transform .4s var(--ease); }
+.sp-yinyang { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; margin: 28px 0 }
+.sp-yinyang__svg { width: 110px; height: 110px; flex-shrink: 0; filter: drop-shadow(0 14px 28px rgba(16,25,46,.16)); transition: transform .4s var(--ease); }
 .sp-yinyang:hover .sp-yinyang__svg { transform: rotate(20deg) }
 .sp-yinyang__red { fill: var(--red) }
 .sp-yinyang__blue { fill: #2563eb }
@@ -258,25 +262,19 @@ export default function AboutPage() {
 .sp-yinyang__label--red svg { color: var(--red) }
 .sp-yinyang__label strong { display: block; font-family: var(--font-display); font-size: .9rem; font-weight: 700; letter-spacing: -.01em; color: var(--ink) }
 .sp-yinyang__label span { display: block; margin-top: 4px; font-size: .78rem; color: var(--muted); line-height: 1.45 }
-
-/* Our-goal points — inline, not boxed cards */
-.sp-story__points { display: flex; flex-direction: column; gap: 18px; margin-top: 24px }
-.sp-story__point { display: flex; gap: 14px; align-items: flex-start }
-.sp-story__point-icon { flex-shrink: 0; width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; margin-top: 2px }
-.sp-story__point strong { display: block; font-size: .98rem; font-weight: 650; color: var(--ink) }
-.sp-story__point span { display: block; margin-top: 4px; font-size: .92rem; color: var(--muted); line-height: 1.6 }
-
 @media (max-width: 680px) {
-  .sp-story { padding-top: 72px }
-  .sp-story__thread { padding-left: 40px; margin-top: 64px }
-  .sp-story__thread::before, .sp-story__thread-fill { left: 15px }
-  .sp-story__num { left: -40px; width: 32px; height: 32px; font-size: .78rem }
-  .sp-story__chapter { margin-bottom: 64px }
   .sp-yinyang { flex-direction: column }
   .sp-yinyang__svg { order: -1 }
   .sp-yinyang__label { width: 100%; justify-content: center; text-align: left }
   .sp-yinyang__label--red { flex-direction: row }
 }
+
+/* Our-goal points — inline, not boxed cards */
+.sp-mag__points { display: flex; flex-direction: column; gap: 18px; margin-top: 8px }
+.sp-mag__point { display: flex; gap: 14px; align-items: flex-start }
+.sp-mag__point-icon { flex-shrink: 0; width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; margin-top: 2px }
+.sp-mag__point strong { display: block; font-size: .98rem; font-weight: 650; color: var(--ink) }
+.sp-mag__point span { display: block; margin-top: 4px; font-size: .92rem; color: var(--muted); line-height: 1.6 }
       `}</style>
     </SiteChrome>
   );
