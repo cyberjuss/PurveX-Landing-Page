@@ -421,16 +421,23 @@ export default function TrainingPage() {
 .sp-roadmap-zigzag__stem { width: 2px; height: 20px; background: var(--border-strong); flex-shrink: 0; margin: 6px 0 }
 
 .sp-roadmap-zigzag__card {
-  width: 100%; max-width: 200px;
+  width: 100%; max-width: 200px; height: 220px;
   padding: 18px 18px 20px;
   border: 1px solid var(--border); border-radius: 12px;
   background: var(--surface);
   filter: drop-shadow(0 14px 26px rgba(16,25,46,.1));
   animation: sp-zigzag-card-in .3s var(--ease) both;
+  display: flex; flex-direction: column; overflow: hidden;
 }
-.sp-roadmap-zigzag__mod { font-family: var(--font-mono); font-size: .64rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep) }
-.sp-roadmap-zigzag__card h3 { margin: 6px 0 0; font-family: var(--font-display); font-size: .96rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink); line-height: 1.3 }
-.sp-roadmap-zigzag__card p { margin: 8px 0 0; font-size: .8rem; color: var(--muted); line-height: 1.55 }
+.sp-roadmap-zigzag__mod { flex-shrink: 0; font-family: var(--font-mono); font-size: .64rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep) }
+.sp-roadmap-zigzag__card h3 {
+  flex-shrink: 0; margin: 6px 0 0; font-family: var(--font-display); font-size: .96rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink); line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.sp-roadmap-zigzag__card p {
+  margin: 8px 0 0; font-size: .8rem; color: var(--muted); line-height: 1.55;
+  display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;
+}
 @keyframes sp-zigzag-card-in { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
 @media (prefers-reduced-motion: reduce) { .sp-roadmap-zigzag__card { animation: none } }
 
