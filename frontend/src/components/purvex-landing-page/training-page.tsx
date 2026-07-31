@@ -301,9 +301,9 @@ export default function TrainingPage() {
 .sp-compare { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding-top: 10px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
 .sp-compare__col { position: relative; padding: 36px 32px 40px; transition: opacity .2s var(--ease) }
 .sp-compare__col:not(:first-child) { border-left: 1px solid var(--border) }
-.sp-compare__col--without { border-top: 3px solid rgba(229,72,77,.4); opacity: .8 }
+.sp-compare__col--without { opacity: .8 }
 .sp-compare__col--without:hover { opacity: 1 }
-.sp-compare__col--with { border-top: 3px solid var(--accent); background: linear-gradient(180deg, rgba(106,92,255,.04), var(--surface)) }
+.sp-compare__col--with { background: linear-gradient(180deg, rgba(106,92,255,.04), var(--surface)) }
 .sp-compare__flag {
   position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
   white-space: nowrap;
