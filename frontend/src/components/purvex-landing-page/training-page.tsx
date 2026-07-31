@@ -382,9 +382,8 @@ export default function TrainingPage() {
 .sp-roadmap-zigzag__card {
   width: 100%; max-width: 200px; height: 220px;
   padding: 18px 18px 20px;
-  border: 1px solid var(--border); border-radius: 12px;
+  border: 1px solid var(--border); border-top: 3px solid var(--accent-deep);
   background: var(--surface);
-  filter: drop-shadow(0 14px 26px rgba(16,25,46,.1));
   animation: sp-zigzag-card-in .3s var(--ease) both;
   display: flex; flex-direction: column; overflow: hidden;
 }

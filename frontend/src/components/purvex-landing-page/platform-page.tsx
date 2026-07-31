@@ -390,8 +390,11 @@ export default function PlatformPage() {
       </section>
 
       <style>{`
-.sp-tile__icon { transition: transform .35s var(--ease) }
-.sp-tile:hover .sp-tile__icon { transform: translateY(-2px) scale(1.06) }
+.sp-tile__icon {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); color: var(--accent-deep);
+}
 
 /* ── Waitlist ── */
 .sp-wl { margin: 30px auto 0; max-width: 480px }
@@ -417,29 +420,18 @@ export default function PlatformPage() {
   display: grid; grid-template-columns: repeat(6, 1fr);
   grid-auto-rows: minmax(120px, auto); gap: 16px;
 }
-.sp-tile {
-  --cut: 14px;
-  display: flex; flex-direction: column;
-  padding: 26px;
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-  border: 1px solid var(--border);
-  background: var(--surface); filter: drop-shadow(0 12px 26px rgba(16,25,46,.1));
-  transition: transform .3s var(--ease), border-color .3s, filter .3s;
-}
-.sp-tile:hover { transform: translateY(-3px); border-color: var(--border-strong); filter: drop-shadow(0 18px 36px rgba(16,25,46,.16)) }
+.sp-tile { display: flex; flex-direction: column; padding: 26px }
 .sp-tile--feat { grid-column: span 2 }
 .sp-tile--accent { grid-column: span 2 }
 .sp-tile--aud { grid-column: span 2 }
-.sp-tile--dash { grid-column: span 4; grid-row: span 2; padding: 0; overflow: hidden }
-.sp-tile--dash:hover { transform: none; filter: drop-shadow(0 12px 26px rgba(16,25,46,.1)); border-color: var(--border) }
+.sp-tile--dash { grid-column: span 4; grid-row: span 2; padding: 0; overflow: hidden; border: 1px solid var(--border) }
 
 .sp-tile__title { margin: 16px 0 0; font-family: var(--font-display); font-size: 1.14rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
 .sp-tile__body { margin: 9px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.66 }
 .sp-tile__body--sm { font-size: .84rem }
 
 /* accent tile */
-.sp-tile--accent { position: relative; overflow: hidden; background: linear-gradient(140deg, var(--accent), var(--accent-deep)); border-color: transparent; justify-content: center }
-.sp-tile--accent:hover { border-color: transparent }
+.sp-tile--accent { position: relative; background: linear-gradient(140deg, var(--accent), var(--accent-deep)); justify-content: center }
 .sp-tile__kick { font-size: .66rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.75) }
 .sp-tile__accent-text { margin: 12px 0 0; font-family: var(--font-display); font-size: 1.04rem; font-weight: 600; line-height: 1.4; letter-spacing: -.015em; color: #fff }
 .sp-tile__accent-icon { position: absolute; right: 18px; bottom: 16px; color: rgba(255,255,255,.35) }

@@ -277,9 +277,8 @@ export default function HomePage() {
 .sp-feature-quote {
   max-width: 880px; margin: 0 auto; width: 100%;
   display: grid; grid-template-columns: 200px 1fr; gap: 44px; align-items: center;
-  padding: 48px; border-radius: calc(var(--radius) + 6px); border: 1px solid var(--border);
-  background: radial-gradient(130% 140% at 0% 0%, rgba(106,92,255,.06), transparent 55%), var(--surface);
-  box-shadow: 0 24px 50px -30px rgba(16,25,46,.2);
+  padding: 48px 0;
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
 }
 .sp-feature-quote__person { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px }
 .sp-feature-quote__photo { width: 92px; height: 92px; border-radius: 50%; object-fit: cover; box-shadow: 0 10px 24px -10px rgba(16,25,46,.3) }
@@ -295,7 +294,7 @@ export default function HomePage() {
 .sp-feature-quote__tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px }
 .sp-tagchip { font-size: .74rem; font-weight: 550; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); border-radius: 999px; padding: 5px 11px }
 @media (max-width: 680px) {
-  .sp-feature-quote { grid-template-columns: 1fr; text-align: center; padding: 36px 28px; gap: 24px }
+  .sp-feature-quote { grid-template-columns: 1fr; text-align: center; padding: 36px 0; gap: 24px }
 }
       `}</style>
     </SiteChrome>

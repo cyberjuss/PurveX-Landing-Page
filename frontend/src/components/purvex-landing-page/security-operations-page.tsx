@@ -194,14 +194,7 @@ export default function SecurityOperationsPage() {
 
       <style>{`
 /* ── Console (light terminal-style service log) ── */
-.sp-console {
-  --cut: 16px;
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-  border: 1px solid var(--border);
-  background: var(--surface);
-  overflow: hidden;
-  filter: drop-shadow(0 20px 40px rgba(16,25,46,.14));
-}
+.sp-console { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--surface) }
 .sp-console__bar { display: flex; align-items: center; gap: 10px; padding: 14px 20px; background: var(--surface-alt); border-bottom: 1px solid var(--border) }
 .sp-console__dots { display: flex; gap: 6px }
 .sp-console__dots span { width: 9px; height: 9px; border-radius: 50% }
