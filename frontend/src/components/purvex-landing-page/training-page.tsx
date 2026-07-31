@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   AlertTriangle,
   ArrowRight,
@@ -86,6 +87,8 @@ const thinking = [
 ];
 
 export default function TrainingPage() {
+  const [openModule, setOpenModule] = useState<number | null>(null);
+
   return (
     <SiteChrome active="training">
       {/* ═══════════ HERO — split copy + live curriculum preview ═══════════ */}
@@ -176,7 +179,7 @@ export default function TrainingPage() {
           <div className="sp-roadmap-zigzag__row sp-roadmap-zigzag__row--top">
             {curriculum.map((c, i) => (
               <div key={c.mod} className="sp-roadmap-zigzag__slot">
-                {i % 2 === 0 && (
+                {i % 2 === 0 && openModule === i && (
                   <>
                     <div className="sp-roadmap-zigzag__card">
                       <span className="sp-roadmap-zigzag__mod">Module {c.mod}</span>
@@ -190,18 +193,27 @@ export default function TrainingPage() {
             ))}
           </div>
           <div className="sp-roadmap-zigzag__row sp-roadmap-zigzag__row--icons">
-            {curriculum.map((c) => (
+            {curriculum.map((c, i) => (
               <div key={c.mod} className="sp-roadmap-zigzag__slot">
-                <div className="sp-roadmap-zigzag__icon" id={c.id}>
+                <button
+                  type="button"
+                  id={c.id}
+                  onClick={() => setOpenModule(openModule === i ? null : i)}
+                  className={
+                    openModule === i ? "sp-roadmap-zigzag__icon sp-roadmap-zigzag__icon--active" : "sp-roadmap-zigzag__icon"
+                  }
+                  aria-pressed={openModule === i}
+                  aria-label={c.title}
+                >
                   <c.icon size={16} />
-                </div>
+                </button>
               </div>
             ))}
           </div>
           <div className="sp-roadmap-zigzag__row sp-roadmap-zigzag__row--bottom">
             {curriculum.map((c, i) => (
               <div key={c.mod} className="sp-roadmap-zigzag__slot">
-                {i % 2 === 1 && (
+                {i % 2 === 1 && openModule === i && (
                   <>
                     <span className="sp-roadmap-zigzag__stem" />
                     <div className="sp-roadmap-zigzag__card">
@@ -375,12 +387,12 @@ export default function TrainingPage() {
   .sp-compare__col--with:hover { transform: none }
 }
 
-/* ── Syllabus (horizontal zigzag roadmap: cards alternate above/below their icon) ── */
-.sp-roadmap-zigzag { display: flex; flex-direction: column }
+/* ── Syllabus (horizontal zigzag roadmap: click an icon to reveal its card) ── */
+.sp-roadmap-zigzag { display: flex; flex-direction: column; padding: 44px 0 }
 .sp-roadmap-zigzag__row { display: flex; gap: 6px }
-.sp-roadmap-zigzag__row--top { align-items: flex-end }
-.sp-roadmap-zigzag__row--bottom { align-items: flex-start }
-.sp-roadmap-zigzag__row--icons { position: relative; padding: 8px 0 }
+.sp-roadmap-zigzag__row--top { align-items: flex-end; min-height: 20px }
+.sp-roadmap-zigzag__row--bottom { align-items: flex-start; min-height: 20px }
+.sp-roadmap-zigzag__row--icons { position: relative; padding: 18px 0 }
 .sp-roadmap-zigzag__row--icons::before {
   content: ""; position: absolute; top: 50%; left: calc(100% / 14); right: calc(100% / 14); height: 2px;
   background: linear-gradient(90deg, var(--border-strong), var(--border) 92%, var(--border-strong));
@@ -394,30 +406,39 @@ export default function TrainingPage() {
   position: relative; z-index: 1; flex-shrink: 0;
   width: 40px; height: 40px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  background: var(--surface); border: 1.5px solid var(--accent-deep); color: var(--accent-deep);
-  box-shadow: 0 8px 16px -10px rgba(85,70,224,.4);
+  background: var(--surface); border: 1.5px solid var(--border-strong); color: var(--muted-dim);
+  font-family: inherit; padding: 0; cursor: pointer;
+  transition: background .2s var(--ease), border-color .2s var(--ease), color .2s var(--ease), transform .2s var(--ease), box-shadow .2s var(--ease);
 }
-.sp-roadmap-zigzag__stem { width: 2px; height: 16px; background: var(--border-strong); flex-shrink: 0 }
+.sp-roadmap-zigzag__icon:hover { border-color: var(--accent-deep); color: var(--accent-deep); transform: translateY(-2px) }
+.sp-roadmap-zigzag__icon--active {
+  background: var(--accent-deep); border-color: var(--accent-deep); color: #fff;
+  box-shadow: 0 10px 20px -10px rgba(85,70,224,.55);
+  transform: translateY(-2px);
+}
+@media (prefers-reduced-motion: reduce) { .sp-roadmap-zigzag__icon, .sp-roadmap-zigzag__icon:hover, .sp-roadmap-zigzag__icon--active { transform: none; transition: none } }
+
+.sp-roadmap-zigzag__stem { width: 2px; height: 20px; background: var(--border-strong); flex-shrink: 0; margin: 6px 0 }
 
 .sp-roadmap-zigzag__card {
-  width: 100%; max-width: 172px;
-  padding: 16px 16px 18px;
+  width: 100%; max-width: 200px;
+  padding: 18px 18px 20px;
   border: 1px solid var(--border); border-radius: 12px;
   background: var(--surface);
-  filter: drop-shadow(0 10px 20px rgba(16,25,46,.08));
-  transition: transform .25s var(--ease), filter .25s var(--ease), border-color .25s var(--ease);
+  filter: drop-shadow(0 14px 26px rgba(16,25,46,.1));
+  animation: sp-zigzag-card-in .3s var(--ease) both;
 }
-.sp-roadmap-zigzag__card:hover { transform: translateY(-3px); filter: drop-shadow(0 16px 28px rgba(16,25,46,.16)); border-color: var(--accent-deep) }
 .sp-roadmap-zigzag__mod { font-family: var(--font-mono); font-size: .64rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep) }
-.sp-roadmap-zigzag__card h3 { margin: 6px 0 0; font-family: var(--font-display); font-size: .92rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink); line-height: 1.3 }
-.sp-roadmap-zigzag__card p { margin: 8px 0 0; font-size: .78rem; color: var(--muted); line-height: 1.5 }
-@media (prefers-reduced-motion: reduce) { .sp-roadmap-zigzag__card { transition: none } .sp-roadmap-zigzag__card:hover { transform: none } }
+.sp-roadmap-zigzag__card h3 { margin: 6px 0 0; font-family: var(--font-display); font-size: .96rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink); line-height: 1.3 }
+.sp-roadmap-zigzag__card p { margin: 8px 0 0; font-size: .8rem; color: var(--muted); line-height: 1.55 }
+@keyframes sp-zigzag-card-in { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: reduce) { .sp-roadmap-zigzag__card { animation: none } }
 
 @media (max-width: 900px) {
   .sp-roadmap-zigzag { overflow-x: auto; -webkit-overflow-scrolling: touch }
   .sp-roadmap-zigzag__row { min-width: 760px }
   .sp-roadmap-zigzag__slot { flex: 0 0 100px }
-  .sp-roadmap-zigzag__card { max-width: 140px; padding: 14px 14px 16px }
+  .sp-roadmap-zigzag__card { max-width: 160px; padding: 16px 16px 18px }
 }
 
 /* ── Learning roadmap: split layout, text left / divided skill-tool list right ── */
