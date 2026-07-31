@@ -1,13 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import {
   ArrowRight,
   BookOpen,
   Check,
   FlaskConical,
   GraduationCap,
-  Handshake,
   Layers,
   MessageCircle,
   Radar,
@@ -224,39 +222,6 @@ export default function TrainingPage() {
         </div>
       </section>
 
-      {/* ═══════════ WE SUPPORT YOUR PROGRAM ═══════════ */}
-      <section className="sp-section sp-section--tight">
-        <div className="sp-partner" data-r>
-          <div className="sp-partner__text">
-            <span className="sp-tag">We support your existing program</span>
-            <h2>You do not need to compete with your program. We work alongside it.</h2>
-            <p>
-              PurveX works alongside your organization to strengthen your cybersecurity
-              curriculum with experienced instruction, practical labs, and real-world security
-              scenarios.
-            </p>
-            <p className="sp-partner__note">
-              Learners are taught the blend of blue team and red team thinking: you cannot
-              defend against tactics you do not understand.{" "}
-              <Link href="/about#how-we-think">See how we think about security →</Link>
-            </p>
-          </div>
-          <div className="sp-partner__visual">
-            <div className="sp-partner__badge">
-              <Handshake size={40} />
-            </div>
-            <div className="sp-partner__pills">
-              <span className="sp-partner__pill">
-                <GraduationCap size={14} /> Your Program
-              </span>
-              <span className="sp-partner__pill sp-partner__pill--accent">
-                <Users size={14} /> PurveX Instruction
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* ═══════════ SYLLABUS ═══════════ */}
       <section className="sp-section" id="syllabus">
         <div className="sp-head" data-r>
@@ -385,62 +350,6 @@ export default function TrainingPage() {
   .sp-hero.sp-hero--split { grid-template-columns: 1fr; text-align: center; gap: 40px }
   .sp-hero--split .sp-hero__h1, .sp-hero--split .sp-hero__badge { text-align: center }
   .sp-hero--split .sp-hero__sub { margin-left: auto; margin-right: auto; text-align: center }
-}
-
-/* ── We support your program (text + partnership visual) ── */
-.sp-partner {
-  --cut: 26px;
-  position: relative; overflow: hidden;
-  display: grid; grid-template-columns: 1.3fr .7fr; gap: 44px; align-items: center;
-  padding: 48px 52px;
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-  border: 1px solid var(--border);
-  background: radial-gradient(120% 140% at 100% 0%, rgba(106,92,255,.06), transparent 55%), var(--surface);
-  filter: drop-shadow(0 20px 40px rgba(16,25,46,.1));
-  transform: perspective(1000px) rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg)) translateY(var(--tiltLift, 0px));
-  transition: transform .35s var(--ease), filter .3s, border-color .3s;
-}
-.sp-partner::before {
-  content: "";
-  position: absolute; inset: 0;
-  background: radial-gradient(260px circle at var(--mx, 100%) var(--my, 0%), rgba(106,92,255,.12), transparent 62%);
-  opacity: 0; transition: opacity .4s; pointer-events: none;
-}
-.sp-partner:hover { border-color: var(--border-strong); filter: drop-shadow(0 26px 48px rgba(16,25,46,.14)) }
-.sp-partner:hover::before { opacity: 1 }
-@media (prefers-reduced-motion: reduce) { .sp-partner { transform: none !important } .sp-partner::before { display: none } }
-.sp-partner h2 { margin: 14px 0 0; font-family: var(--font-display); font-size: clamp(1.5rem, 2.4vw, 1.95rem); font-weight: 700; line-height: 1.22; letter-spacing: -.02em; color: var(--ink) }
-.sp-partner p { margin: 18px 0 0; color: var(--ink-soft); font-size: 1.02rem; line-height: 1.75 }
-.sp-partner__note { margin-top: 22px !important; padding-top: 20px; border-top: 1px dashed var(--border-strong); font-size: .88rem !important; line-height: 1.65 !important; color: var(--muted) !important }
-.sp-partner__note a { color: var(--accent-deep); font-weight: 600; text-decoration: none }
-.sp-partner__note a:hover { text-decoration: underline }
-.sp-partner__visual { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 26px }
-.sp-partner__badge {
-  position: relative;
-  display: flex; align-items: center; justify-content: center;
-  width: 104px; height: 104px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-  color: #fff;
-  box-shadow: 0 20px 40px -14px rgba(85,70,224,.55);
-}
-.sp-partner__badge::before {
-  content: "";
-  position: absolute; inset: -11px;
-  border-radius: 50%;
-  border: 1.5px dashed rgba(106,92,255,.35);
-  animation: sp-partner-spin 16s linear infinite;
-}
-@keyframes sp-partner-spin { to { transform: rotate(360deg) } }
-@media (prefers-reduced-motion: reduce) { .sp-partner__badge::before { animation: none } }
-.sp-partner__pills { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px }
-.sp-partner__pill { display: inline-flex; align-items: center; gap: 7px; font-size: .8rem; font-weight: 650; color: var(--ink); background: var(--surface-alt); border: 1px solid var(--border); border-radius: 999px; padding: 8px 16px 8px 14px }
-.sp-partner__pill svg { color: var(--muted-dim) }
-.sp-partner__pill--accent { color: var(--accent-deep); background: var(--accent-soft); border-color: rgba(106,92,255,.25) }
-.sp-partner__pill--accent svg { color: var(--accent-deep) }
-@media (max-width: 860px) {
-  .sp-partner { grid-template-columns: 1fr; padding: 36px 30px; gap: 28px }
-  .sp-partner__visual { max-width: 320px; margin: 0 auto }
 }
 
 /* ── Comparison (generic training vs Think Like a Security Analyst 101) ── */
