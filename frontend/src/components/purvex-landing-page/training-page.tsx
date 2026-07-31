@@ -128,42 +128,44 @@ export default function TrainingPage() {
 
       {/* ═══════════ WHY THIS PROGRAM IS DIFFERENT ═══════════ */}
       <section className="sp-section sp-section--tight">
-        <div className="sp-head" data-r>
-          <span className="sp-tag">Why this program is different</span>
-          <h2>Judgment is the skill. Everything else is just facts.</h2>
-        </div>
-        <div className="sp-compare" data-r>
-          <div className="sp-compare__col sp-compare__col--without">
-            <div className="sp-compare__badge sp-compare__badge--x">
-              <X size={18} />
+        <div className="sp-compare-split" data-r>
+          <div className="sp-compare">
+            <div className="sp-compare__col sp-compare__col--without">
+              <div className="sp-compare__badge sp-compare__badge--x">
+                <X size={18} />
+              </div>
+              <h3 className="sp-compare__h">Generic training</h3>
+              <ul>
+                {withoutItems.map((t) => (
+                  <li key={t}>
+                    <X size={15} className="sp-compare__icon sp-compare__icon--x" />
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <h3 className="sp-compare__h">Generic training</h3>
-            <ul>
-              {withoutItems.map((t) => (
-                <li key={t}>
-                  <X size={15} className="sp-compare__icon sp-compare__icon--x" />
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="sp-compare__arrow">
-            <ArrowRight size={18} />
-          </div>
-          <div className="sp-compare__col sp-compare__col--with">
-            <span className="sp-compare__flag">Recommended</span>
-            <div className="sp-compare__badge sp-compare__badge--ok">
-              <Check size={18} />
+            <div className="sp-compare__arrow">
+              <ArrowRight size={18} />
             </div>
-            <h3 className="sp-compare__h">Think Like a Security Analyst 101</h3>
-            <ul>
-              {withItems.map((t) => (
-                <li key={t}>
-                  <Check size={15} className="sp-compare__icon sp-compare__icon--ok" />
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="sp-compare__col sp-compare__col--with">
+              <span className="sp-compare__flag">Recommended</span>
+              <div className="sp-compare__badge sp-compare__badge--ok">
+                <Check size={18} />
+              </div>
+              <h3 className="sp-compare__h">Think Like a Security Analyst 101</h3>
+              <ul>
+                {withItems.map((t) => (
+                  <li key={t}>
+                    <Check size={15} className="sp-compare__icon sp-compare__icon--ok" />
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div className="sp-head sp-head--left sp-compare-split__subtitle">
+            <span className="sp-tag">Why this program is different</span>
+            <h2>Judgment is the skill. Everything else is just facts.</h2>
           </div>
         </div>
       </section>
@@ -205,7 +207,7 @@ export default function TrainingPage() {
                   aria-pressed={openModule === i}
                   aria-label={c.title}
                 >
-                  <c.icon size={16} />
+                  <c.icon size={22} />
                 </button>
               </div>
             ))}
@@ -333,7 +335,14 @@ export default function TrainingPage() {
   .sp-hero--split .sp-hero__sub { margin-left: auto; margin-right: auto; text-align: center }
 }
 
-/* ── Comparison (generic training vs Think Like a Security Analyst 101) ── */
+/* ── Comparison: content left, subtitle right ── */
+.sp-compare-split { display: grid; grid-template-columns: 1.5fr 1fr; gap: 48px; align-items: center }
+.sp-compare-split__subtitle { margin: 0 }
+@media (max-width: 900px) {
+  .sp-compare-split { grid-template-columns: 1fr; gap: 28px }
+  .sp-compare-split__subtitle { order: -1 }
+}
+
 .sp-compare { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 10px }
 .sp-compare__col {
   --cut: 20px; position: relative; padding: 36px 32px;
@@ -404,7 +413,7 @@ export default function TrainingPage() {
 
 .sp-roadmap-zigzag__icon {
   position: relative; z-index: 1; flex-shrink: 0;
-  width: 40px; height: 40px; border-radius: 50%;
+  width: 54px; height: 54px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   background: var(--surface); border: 1.5px solid var(--border-strong); color: var(--muted-dim);
   font-family: inherit; padding: 0; cursor: pointer;
