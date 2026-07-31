@@ -384,10 +384,11 @@ export default function TrainingPage() {
 .sp-compare__col--with:hover { transform: translateY(-9px); filter: drop-shadow(0 28px 48px rgba(85,70,224,.28)) }
 @media (prefers-reduced-motion: reduce) { .sp-compare__col { transition: none; transform: none } .sp-compare__col--with { transform: none } }
 .sp-compare__flag {
-  position: absolute; top: -13px; right: 30px;
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  white-space: nowrap;
   background: var(--accent-deep); color: #fff;
   font-size: .66rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
-  padding: 5px 13px; border-radius: 999px;
+  padding: 6px 16px; border-radius: 999px;
   box-shadow: 0 8px 16px -6px rgba(85,70,224,.5);
 }
 .sp-compare__badge { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; margin-bottom: 16px }
@@ -413,7 +414,6 @@ export default function TrainingPage() {
   .sp-compare__arrow { display: none }
   .sp-compare__col--with { transform: none }
   .sp-compare__col--with:hover { transform: none }
-  .sp-compare__flag { top: -12px; right: 24px }
 }
 
 /* ── Syllabus (connected timeline) ── */
