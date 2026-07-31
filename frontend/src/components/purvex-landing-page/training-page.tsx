@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   AlertTriangle,
   ArrowRight,
@@ -86,6 +87,9 @@ const thinking = [
 ];
 
 export default function TrainingPage() {
+  const [activeModule, setActiveModule] = useState(0);
+  const active = curriculum[activeModule];
+
   return (
     <SiteChrome active="training">
       {/* ═══════════ HERO — split copy + live curriculum preview ═══════════ */}
@@ -172,19 +176,31 @@ export default function TrainingPage() {
           <h2>From fundamentals to a full training partnership.</h2>
           <p>Seven modules, from SOC analyst readiness to how we support your program long-term.</p>
         </div>
-        <div className="sp-syllabus" data-r>
-          {curriculum.map((c) => (
-            <div key={c.title} id={c.id} className="sp-syllabus__row">
-              <div className="sp-syllabus__num">
-                <c.icon size={18} />
-              </div>
-              <div className="sp-syllabus__body">
-                <span className="sp-syllabus__mod">Module {c.mod}</span>
-                <h3>{c.title}</h3>
-                <p>{c.body}</p>
-              </div>
-            </div>
+        <div className="sp-syllabus-nav" data-r>
+          {curriculum.map((c, i) => (
+            <button
+              key={c.mod}
+              type="button"
+              id={c.id}
+              onClick={() => setActiveModule(i)}
+              className={
+                i === activeModule ? "sp-syllabus-nav__node sp-syllabus-nav__node--active" : "sp-syllabus-nav__node"
+              }
+              aria-pressed={i === activeModule}
+            >
+              <span className="sp-syllabus-nav__icon">
+                <c.icon size={16} />
+              </span>
+              <span className="sp-syllabus-nav__title">{c.title}</span>
+            </button>
           ))}
+        </div>
+        <div className="sp-syllabus-detail">
+          <div key={activeModule} className="sp-syllabus-detail__card">
+            <span className="sp-syllabus-detail__mod">Module {active.mod}</span>
+            <h3>{active.title}</h3>
+            <p>{active.body}</p>
+          </div>
         </div>
       </section>
 
@@ -344,22 +360,74 @@ export default function TrainingPage() {
   .sp-compare__col--with:hover { transform: none }
 }
 
-/* ── Syllabus (connected timeline) ── */
-.sp-syllabus { position: relative; padding-left: 60px }
-.sp-syllabus::before { content: ""; position: absolute; left: 20px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(var(--border-strong), var(--border) 88%, transparent) }
-.sp-syllabus__row { position: relative; padding-bottom: 40px }
-.sp-syllabus__row:last-child { padding-bottom: 0 }
-.sp-syllabus__num {
-  position: absolute; left: -60px; top: -2px;
-  width: 42px; height: 42px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--surface); border: 1.5px solid var(--accent-deep); color: var(--accent-deep);
-  box-shadow: 0 8px 18px -10px rgba(85,70,224,.4);
+/* ── Syllabus (horizontal roadmap: click a module to reveal it) ── */
+.sp-syllabus-nav { position: relative; display: flex; gap: 4px; padding-top: 34px }
+.sp-syllabus-nav::before {
+  content: ""; position: absolute; top: 21px;
+  left: calc(100% / 14); right: calc(100% / 14); height: 2px;
+  background: linear-gradient(90deg, var(--border-strong), var(--border) 92%, var(--border-strong));
 }
-.sp-syllabus__body { min-width: 0 }
-.sp-syllabus__mod { font-family: var(--font-mono); font-size: .7rem; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
-.sp-syllabus__row h3 { margin: 8px 0 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 650; letter-spacing: -.015em; color: var(--ink) }
-.sp-syllabus__row p { margin: 8px 0 0; font-size: .94rem; color: var(--muted); line-height: 1.65; max-width: 560px }
+.sp-syllabus-nav__node {
+  position: relative; z-index: 1; flex: 1 1 0;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  padding: 0 4px 2px; border: none; background: none; cursor: pointer; font-family: inherit;
+}
+.sp-syllabus-nav__icon {
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--surface); border: 1.5px solid var(--border-strong); color: var(--muted-dim);
+  transition: background .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease), transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+.sp-syllabus-nav__title { font-size: .82rem; font-weight: 600; color: var(--muted); text-align: center; line-height: 1.35; transition: color .25s var(--ease) }
+.sp-syllabus-nav__node:hover .sp-syllabus-nav__icon { border-color: var(--accent-deep); color: var(--accent-deep); transform: translateY(-2px) }
+.sp-syllabus-nav__node:hover .sp-syllabus-nav__title { color: var(--ink) }
+.sp-syllabus-nav__node--active .sp-syllabus-nav__icon {
+  background: var(--accent-deep); border-color: var(--accent-deep); color: #fff;
+  box-shadow: 0 10px 20px -10px rgba(85,70,224,.55);
+  transform: translateY(-2px);
+}
+.sp-syllabus-nav__node--active .sp-syllabus-nav__title { color: var(--ink); font-weight: 700 }
+@media (prefers-reduced-motion: reduce) {
+  .sp-syllabus-nav__icon, .sp-syllabus-nav__title { transition: none }
+  .sp-syllabus-nav__node--active .sp-syllabus-nav__icon, .sp-syllabus-nav__node:hover .sp-syllabus-nav__icon { transform: none }
+}
+
+.sp-syllabus-detail { margin-top: 32px }
+.sp-syllabus-detail__card {
+  --cut: 20px;
+  padding: 32px 36px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(106,92,255,.04), var(--surface));
+  filter: drop-shadow(0 14px 26px rgba(16,25,46,.1));
+  animation: sp-syllabus-fade .35s var(--ease) both;
+}
+.sp-syllabus-detail__mod { font-family: var(--font-mono); font-size: .72rem; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
+.sp-syllabus-detail__card h3 { margin: 10px 0 0; font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; letter-spacing: -.015em; color: var(--ink) }
+.sp-syllabus-detail__card p { margin: 12px 0 0; font-size: .96rem; color: var(--muted); line-height: 1.7; max-width: 620px }
+@keyframes sp-syllabus-fade { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: reduce) { .sp-syllabus-detail__card { animation: none } }
+
+/* stagger the nodes in on scroll instead of revealing all at once */
+.sp-syllabus-nav[data-r] { opacity: 1; transform: none; filter: none; transition: none }
+.sp-syllabus-nav[data-r] > * { opacity: 0; transform: translateY(18px); filter: blur(3px); transition: opacity .55s var(--ease), transform .55s var(--ease), filter .55s var(--ease) }
+.sp-syllabus-nav[data-r].in > * { opacity: 1; transform: none; filter: blur(0) }
+.sp-syllabus-nav[data-r] > *:nth-child(1) { transition-delay: .02s }
+.sp-syllabus-nav[data-r] > *:nth-child(2) { transition-delay: .08s }
+.sp-syllabus-nav[data-r] > *:nth-child(3) { transition-delay: .14s }
+.sp-syllabus-nav[data-r] > *:nth-child(4) { transition-delay: .2s }
+.sp-syllabus-nav[data-r] > *:nth-child(5) { transition-delay: .26s }
+.sp-syllabus-nav[data-r] > *:nth-child(6) { transition-delay: .32s }
+.sp-syllabus-nav[data-r] > *:nth-child(7) { transition-delay: .38s }
+@media (prefers-reduced-motion: reduce) { .sp-syllabus-nav[data-r] > * { transition: none; opacity: 1; transform: none; filter: none } }
+
+@media (max-width: 680px) {
+  .sp-syllabus-nav { overflow-x: auto; padding: 34px 2px 6px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch }
+  .sp-syllabus-nav::before { display: none }
+  .sp-syllabus-nav__node { flex: 0 0 84px; scroll-snap-align: center }
+  .sp-syllabus-nav__title { font-size: .76rem }
+  .sp-syllabus-detail__card { padding: 26px 24px }
+}
 
 /* ── Learning roadmap (skill area, practiced via a real tool) ── */
 .sp-roadmap {
@@ -382,11 +450,6 @@ export default function TrainingPage() {
   .sp-roadmap__item { border-right: none !important; padding: 20px 24px }
 }
 
-@media (max-width: 680px) {
-  .sp-syllabus { padding-left: 48px }
-  .sp-syllabus::before { left: 15px }
-  .sp-syllabus__num { left: -48px; width: 34px; height: 34px }
-}
       `}</style>
     </SiteChrome>
   );
