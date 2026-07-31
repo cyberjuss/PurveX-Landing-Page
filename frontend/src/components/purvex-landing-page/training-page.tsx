@@ -110,50 +110,48 @@ export default function TrainingPage() {
 
       {/* ═══════════ WHY THIS PROGRAM IS DIFFERENT ═══════════ */}
       <section className="sp-section sp-section--tight">
-        <div className="sp-compare-split" data-r>
-          <div className="sp-compare">
-            <div className="sp-compare__col sp-compare__col--without">
-              <div className="sp-compare__badge sp-compare__badge--x">
-                <X size={18} />
-              </div>
-              <h3 className="sp-compare__h">Generic training</h3>
-              <ul>
-                {withoutItems.map((t) => (
-                  <li key={t}>
-                    <X size={15} className="sp-compare__icon sp-compare__icon--x" />
-                    <span>{t}</span>
-                  </li>
-                ))}
-              </ul>
+        <div className="sp-head" data-r>
+          <span className="sp-tag">Why this program is different</span>
+          <h2>Judgment is the skill. Everything else is just facts.</h2>
+          <p>
+            Certifications and lecture slides can teach the vocabulary of a SOC. They cannot
+            teach someone to sit with an ambiguous alert and decide, in the moment, whether it
+            is noise or a real compromise. That judgment is what this program is built to
+            produce.
+          </p>
+        </div>
+        <div className="sp-compare" data-r>
+          <div className="sp-compare__col sp-compare__col--without">
+            <div className="sp-compare__badge sp-compare__badge--x">
+              <X size={18} />
             </div>
-            <div className="sp-compare__arrow">
-              <ArrowRight size={18} />
-            </div>
-            <div className="sp-compare__col sp-compare__col--with">
-              <span className="sp-compare__flag">Recommended</span>
-              <div className="sp-compare__badge sp-compare__badge--ok">
-                <Check size={18} />
-              </div>
-              <h3 className="sp-compare__h">Think Like a Security Analyst 101</h3>
-              <ul>
-                {withItems.map((t) => (
-                  <li key={t}>
-                    <Check size={15} className="sp-compare__icon sp-compare__icon--ok" />
-                    <span>{t}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <h3 className="sp-compare__h">Generic training</h3>
+            <ul>
+              {withoutItems.map((t) => (
+                <li key={t}>
+                  <X size={15} className="sp-compare__icon sp-compare__icon--x" />
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <div className="sp-head sp-head--left sp-compare-split__subtitle">
-            <span className="sp-tag">Why this program is different</span>
-            <h2>Judgment is the skill. Everything else is just facts.</h2>
-            <p>
-              Certifications and lecture slides can teach the vocabulary of a SOC. They cannot
-              teach someone to sit with an ambiguous alert and decide, in the moment, whether
-              it is noise or a real compromise. That judgment is what this program is built to
-              produce.
-            </p>
+          <div className="sp-compare__arrow">
+            <ArrowRight size={18} />
+          </div>
+          <div className="sp-compare__col sp-compare__col--with">
+            <span className="sp-compare__flag">Recommended</span>
+            <div className="sp-compare__badge sp-compare__badge--ok">
+              <Check size={18} />
+            </div>
+            <h3 className="sp-compare__h">Think Like a Security Analyst 101</h3>
+            <ul>
+              {withItems.map((t) => (
+                <li key={t}>
+                  <Check size={15} className="sp-compare__icon sp-compare__icon--ok" />
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
@@ -297,15 +295,6 @@ export default function TrainingPage() {
   .sp-hero.sp-hero--split { grid-template-columns: 1fr; text-align: center; gap: 40px }
   .sp-hero--split .sp-hero__h1, .sp-hero--split .sp-hero__badge { text-align: center }
   .sp-hero--split .sp-hero__sub { margin-left: auto; margin-right: auto; text-align: center }
-}
-
-/* ── Comparison: content left, subtitle right ── */
-.sp-compare-split { display: grid; grid-template-columns: 1.2fr 1fr; gap: 64px; align-items: start }
-.sp-compare-split__subtitle { margin: 0; padding-top: 8px }
-.sp-compare-split__subtitle p { margin: 18px 0 0; max-width: 420px }
-@media (max-width: 900px) {
-  .sp-compare-split { grid-template-columns: 1fr; gap: 28px }
-  .sp-compare-split__subtitle { order: -1; padding-top: 0 }
 }
 
 .sp-compare { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 10px }
