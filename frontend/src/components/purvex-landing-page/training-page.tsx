@@ -2,19 +2,16 @@
 
 import { useState } from "react";
 import {
-  AlertTriangle,
   ArrowRight,
   BookOpen,
   Brain,
   Check,
   FlaskConical,
   GraduationCap,
-  HelpCircle,
   Layers,
   MessageCircle,
   Radar,
   Search,
-  ShieldAlert,
   Siren,
   Users,
   X,
@@ -79,13 +76,6 @@ const formats = [
   { icon: GraduationCap, title: "Embedded in your program", body: "We teach inside your existing curriculum." },
 ];
 
-const thinking = [
-  { icon: AlertTriangle, text: "New login, 2 AM, unfamiliar device" },
-  { icon: HelpCircle, text: "Does this match the user's normal pattern?" },
-  { icon: Search, text: "No travel booked. Location is 400 miles off." },
-  { icon: ShieldAlert, text: "Escalate — account likely compromised", verdict: true },
-];
-
 export default function TrainingPage() {
   const [openModule, setOpenModule] = useState<number | null>(null);
 
@@ -104,23 +94,15 @@ export default function TrainingPage() {
           </a>
         </div>
         <div className="sp-hero__preview" data-r>
-          <div className="sp-growth">
-            <div className="sp-growth__head">
-              <Brain size={14} /> Inside the thinking
+          <div className="sp-orbit">
+            <div className="sp-orbit__core">
+              <Brain size={38} />
             </div>
-            <div className="sp-thinking">
-              {thinking.map((t, i) => (
-                <div
-                  key={i}
-                  className={t.verdict ? "sp-thinking__row sp-thinking__row--verdict" : "sp-thinking__row"}
-                  style={{ animationDelay: `${i * 0.12}s` }}
-                >
-                  <div className="sp-thinking__icon">
-                    <t.icon size={14} />
-                  </div>
-                  <p>{t.text}</p>
-                </div>
-              ))}
+            <div className="sp-orbit__ring sp-orbit__ring--1">
+              <span className="sp-orbit__dot" />
+            </div>
+            <div className="sp-orbit__ring sp-orbit__ring--2">
+              <span className="sp-orbit__dot" />
             </div>
           </div>
         </div>
@@ -296,39 +278,31 @@ export default function TrainingPage() {
 
 .sp-hero__preview { display: flex; justify-content: center }
 
-/* ── Hero preview card: inside an analyst's thinking ── */
-.sp-growth {
-  --cut: 18px;
-  width: 100%; max-width: 420px;
-  padding: 28px 30px 26px;
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-  border: 1px solid var(--border);
-  background: var(--surface);
-  filter: drop-shadow(0 20px 40px rgba(16,25,46,.14));
-}
-.sp-growth__head { display: flex; align-items: center; gap: 8px; font-size: .78rem; font-weight: 650; color: var(--muted); margin-bottom: 22px }
-.sp-growth__head svg { color: var(--accent-deep) }
-.sp-thinking { position: relative; padding-left: 34px; display: flex; flex-direction: column; gap: 20px }
-.sp-thinking::before { content: ""; position: absolute; left: 12px; top: 4px; bottom: 4px; width: 2px; background: linear-gradient(var(--border-strong), var(--border) 85%, transparent) }
-.sp-thinking__row {
-  position: relative;
-  opacity: 0; transform: translateY(10px);
-  animation: sp-thinking-in .5s var(--ease) both;
-}
-.sp-thinking__icon {
-  position: absolute; left: -34px; top: -3px;
-  width: 26px; height: 26px; border-radius: 50%;
+/* ── Hero preview: a brain orbiting ── */
+.sp-orbit { position: relative; width: 100%; max-width: 340px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center }
+.sp-orbit__core {
+  position: relative; z-index: 2;
+  width: 96px; height: 96px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  background: var(--surface); border: 1.5px solid var(--border-strong); color: var(--muted-dim);
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  color: #fff;
+  box-shadow: 0 24px 48px -16px rgba(85,70,224,.5);
 }
-.sp-thinking__row p { margin: 0; font-size: .86rem; color: var(--ink-soft); line-height: 1.5 }
-.sp-thinking__row--verdict .sp-thinking__icon {
-  border-color: var(--accent-deep); background: var(--accent-deep); color: #fff;
-  box-shadow: 0 8px 16px -8px rgba(85,70,224,.55);
+.sp-orbit__ring {
+  position: absolute; border: 1.5px dashed var(--border-strong); border-radius: 50%;
+  animation: sp-orbit-spin 16s linear infinite;
 }
-.sp-thinking__row--verdict p { color: var(--ink); font-weight: 650 }
-@keyframes sp-thinking-in { to { opacity: 1; transform: none } }
-@media (prefers-reduced-motion: reduce) { .sp-thinking__row { animation: none; opacity: 1; transform: none } }
+.sp-orbit__ring--1 { width: 62%; height: 62%; animation-duration: 12s }
+.sp-orbit__ring--2 { width: 100%; height: 100%; animation-duration: 22s; animation-direction: reverse }
+.sp-orbit__dot {
+  position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--accent-deep);
+  box-shadow: 0 6px 14px -4px rgba(85,70,224,.6);
+}
+.sp-orbit__ring--2 .sp-orbit__dot { width: 10px; height: 10px; background: var(--accent) }
+@keyframes sp-orbit-spin { to { transform: rotate(360deg) } }
+@media (prefers-reduced-motion: reduce) { .sp-orbit__ring { animation: none } }
 @media (max-width: 940px) {
   .sp-hero.sp-hero--split { grid-template-columns: 1fr; text-align: center; gap: 40px }
   .sp-hero--split .sp-hero__h1, .sp-hero--split .sp-hero__badge { text-align: center }
