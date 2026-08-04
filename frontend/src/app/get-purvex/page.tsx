@@ -1,12 +1,15 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { Copy, Check, Terminal } from "lucide-react";
 
-const INSTALL_COMMAND = "git clone https://github.com/cyberjuss/PurveX.git && cd PurveX && cp .env.example .env && chmod +x scripts/purvex.sh && ./scripts/purvex.sh --setup && ./scripts/purvex.sh --start";
+// Falls back to the production domain for the SSR/pre-mount render; swapped
+// for the real window.location.origin once mounted (see useEffect below) --
+// matters for local dev, harmless everywhere else since it's already correct.
+const DEFAULT_ORIGIN = "https://purvex-llc.com";
 
 function CopyableCommand({ command }: { command: string }) {
   const [copied, setCopied] = useState(false);
@@ -34,6 +37,15 @@ function CopyableCommand({ command }: { command: string }) {
 function GetPurveXContent() {
   const params = useSearchParams();
   const plan = params?.get("plan") === "paid" ? "paid" : "free";
+  const [origin, setOrigin] = useState(DEFAULT_ORIGIN);
+  useEffect(() => {
+    // window.location doesn't exist during SSR -- this has to be an effect,
+    // there's no way to read it during the render that produces the
+    // server-rendered HTML.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setOrigin(window.location.origin);
+  }, []);
+  const installCommand = `curl -fsSL ${origin}/install.sh | bash`;
 
   return (
     <AuthShell
@@ -58,8 +70,8 @@ function GetPurveXContent() {
         )}
 
         <div className="space-y-2">
-          <p className="text-sm font-semibold text-slate-700">1. Clone, configure, and start PurveX</p>
-          <CopyableCommand command={INSTALL_COMMAND} />
+          <p className="text-sm font-semibold text-slate-700">1. Install and start PurveX</p>
+          <CopyableCommand command={installCommand} />
           <p className="text-xs text-slate-500">
             Requires Python 3.11+, Node 20+, and PostgreSQL 14+ already installed. Full prerequisites and a manual
             Windows path are in the repo README.
