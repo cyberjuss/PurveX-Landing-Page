@@ -95,34 +95,24 @@ const dashRows = [
 
 const tiers = [
   {
-    name: "Pilot",
+    name: "Free",
     price: "$0",
-    note: "Early access",
+    note: "Self-hosted, forever",
     summary: "Prove the value of validation before rolling it out broadly.",
-    items: ["Focused detection set", "Core validation workflow", "Single environment", "Foundational reporting"],
-    href: "#top",
-    cta: "Join the waitlist",
+    items: ["Full Atomic Red Team test library", "Up to 3 team members", "1 registered test runner", "Runs on your own infrastructure"],
+    href: "/account/signup",
+    cta: "Get started free",
     featured: false,
   },
   {
-    name: "Team",
-    price: "$49",
-    note: "per user / month",
+    name: "Paid",
+    price: "Contact us",
+    note: "Billed monthly, cancel anytime",
     summary: "Make detection validation part of the operating rhythm.",
-    items: ["Unlimited detections", "Unlimited validation runs", "AI-assisted explanation", "Leadership-ready reporting"],
-    href: "#top",
-    cta: "Join the waitlist",
+    items: ["Everything in Free", "Unlimited team members", "Unlimited test runners", "Priority support"],
+    href: "/account/signup",
+    cta: "Get started",
     featured: true,
-  },
-  {
-    name: "Enterprise",
-    price: "Custom",
-    note: "Annual contract",
-    summary: "Standardize validation across environments and stakeholders.",
-    items: ["Everything in Team", "Advanced integrations", "Expanded support model", "Enterprise rollout planning"],
-    href: "#top",
-    cta: "Join the waitlist",
-    featured: false,
   },
 ];
 
@@ -334,11 +324,11 @@ export default function PlatformPage() {
       {/* ═══════════ PRICING ═══════════ */}
       <section className="sp-section" id="pricing">
         <div className="sp-head" data-r>
-          <span className="sp-tag">Planned pricing</span>
+          <span className="sp-tag">Pricing</span>
           <h2>Start focused. Expand when the evidence is there.</h2>
           <p>
-            Planned launch pricing. Beta teams get first access and preferred terms, so join the
-            waitlist.
+            Same self-hosted software either way, running on your own infrastructure. Paid removes
+            the team and runner limits.
           </p>
         </div>
         <div className="sp-pricing">
@@ -484,7 +474,7 @@ export default function PlatformPage() {
 .sp-compare__icon--ok { color: var(--accent-deep) }
 
 /* ── Pricing ── */
-.sp-pricing { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
+.sp-pricing { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
 .sp-tier { position: relative; display: flex; flex-direction: column; padding: 36px 32px }
 .sp-tier:not(:first-child) { border-left: 1px solid var(--border) }
 .sp-tier--feat { background: linear-gradient(180deg, rgba(106,92,255,.05), var(--surface)); padding-top: 56px }
