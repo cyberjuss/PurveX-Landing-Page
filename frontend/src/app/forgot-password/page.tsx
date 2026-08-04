@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { fetchAcrossApiBases } from "@/lib/api";
+import { requestPasswordReset } from "@/lib/portal-auth";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { Loader2, Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
@@ -26,27 +26,11 @@ export default function ForgotPasswordPage() {
     setPhase("sending");
 
     try {
-      const { response: res } = await fetchAcrossApiBases("/auth/password-reset/request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
-      });
-
-      if (res.status === 429) {
-        setError("Too many requests. Please wait a few minutes and try again.");
-        setPhase("form");
-        return;
-      }
-
-      if (!res.ok && res.status >= 500) {
-        setError("Unable to send reset email right now. Please try again.");
-        setPhase("form");
-        return;
-      }
-
+      const redirectTo = `${window.location.origin}/reset-password`;
+      await requestPasswordReset(email.trim(), redirectTo);
       setPhase("sent");
-    } catch {
-      setError("Unable to connect to the server. Please try again.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to send reset email right now. Please try again.");
       setPhase("form");
     }
   }

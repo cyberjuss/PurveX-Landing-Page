@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { fetchAcrossApiBases } from "@/lib/api";
+import { hasRecoverySession, updatePassword } from "@/lib/portal-auth";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { Loader2, Lock, Eye, EyeOff, ArrowLeft, CheckCircle2, AlertCircle } from "lucide-react";
@@ -17,14 +16,24 @@ function getErrorMessage(err: unknown, fallback: string) {
 }
 
 function ResetPasswordContent() {
-  const searchParams = useSearchParams();
-  const token = searchParams?.get("token") || "";
+  const [hasSession, setHasSession] = useState<boolean | null>(null);
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [phase, setPhase] = useState<"form" | "submitting" | "success" | "error">("form");
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Supabase's reset-password link establishes a "recovery" session via
+    // the URL hash automatically on load (detectSessionInUrl) -- there's no
+    // separate token query param to read here, unlike the old backend flow.
+    let cancelled = false;
+    hasRecoverySession().then((ok) => {
+      if (!cancelled) setHasSession(ok);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   // Password strength indicator
   const getStrength = (pw: string) => {
@@ -44,8 +53,8 @@ function ResetPasswordContent() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!token) {
-      setError("Invalid or missing reset token. Please request a new reset link.");
+    if (!hasSession) {
+      setError("Your reset link has expired. Please request a new one.");
       return;
     }
 
@@ -79,17 +88,7 @@ function ResetPasswordContent() {
     setPhase("submitting");
 
     try {
-      const { response: res } = await fetchAcrossApiBases("/auth/password-reset/confirm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, new_password: password }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.detail || "Failed to reset password. The link may have expired.");
-      }
-
+      await updatePassword(password);
       setPhase("success");
     } catch (err: unknown) {
       setError(getErrorMessage(err, "An error occurred. Please try again."));
@@ -97,7 +96,11 @@ function ResetPasswordContent() {
     }
   }
 
-  if (!token) {
+  if (hasSession === null) {
+    return <PageShell><div className="mt-4 min-h-[120px]" /></PageShell>;
+  }
+
+  if (!hasSession) {
     return (
       <PageShell>
         <div className="flex flex-col items-center gap-4 mt-4 px-8 pb-6">
@@ -105,7 +108,7 @@ function ResetPasswordContent() {
             <AlertCircle className="h-8 w-8 text-red-400" />
           </div>
           <p className="text-center text-sm text-slate-600 dark:text-zinc-300">
-            No reset token found. Please use the link from your email, or request a new one.
+            No valid reset link found. Please use the link from your email, or request a new one.
           </p>
           <Link
             href="/forgot-password"
