@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { signUpWithPassword, signInWithGoogle } from "@/lib/portal-auth";
@@ -26,8 +26,14 @@ function getErrorMessage(err: unknown, fallback: string) {
   return fallback;
 }
 
-export default function PortalSignupPage() {
+function PortalSignupContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // Carries the plan picked on /platform's pricing cards through the whole
+  // signup -> confirm-email -> /pricing round trip, so /pricing can act on
+  // it immediately instead of asking again -- see /pricing's own handling.
+  const plan = searchParams?.get("plan") === "paid" ? "paid" : searchParams?.get("plan") === "free" ? "free" : null;
+  const pricingTarget = plan ? `/pricing?plan=${plan}` : "/pricing";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -44,7 +50,7 @@ export default function PortalSignupPage() {
     setError(null);
     setPhase("google");
     try {
-      const redirectTo = `${window.location.origin}/pricing`;
+      const redirectTo = `${window.location.origin}${pricingTarget}`;
       await signInWithGoogle(redirectTo);
       // Browser is redirected to Google by Supabase; nothing else to do here.
     } catch (err) {
@@ -72,10 +78,10 @@ export default function PortalSignupPage() {
 
     setPhase("submitting");
     try {
-      const emailRedirectTo = `${window.location.origin}/pricing`;
+      const emailRedirectTo = `${window.location.origin}${pricingTarget}`;
       const { session } = await signUpWithPassword(email.trim(), password, emailRedirectTo);
       if (session) {
-        router.push("/pricing");
+        router.push(pricingTarget);
         return;
       }
       // Email confirmation is required before a session exists.
@@ -96,7 +102,9 @@ export default function PortalSignupPage() {
             <CheckCircle2 className="h-8 w-8 text-emerald-500" />
           </div>
           <p className="text-center text-sm leading-relaxed text-slate-600">
-            Confirm your email, then come back and sign in to choose a plan.
+            {plan
+              ? `Confirm your email and you'll be taken straight to your ${plan === "paid" ? "paid" : "free"} plan — no need to choose again.`
+              : "Confirm your email, then come back and sign in to choose a plan."}
           </p>
           <Link href="/account/login" className="mt-2 flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#6a5cff]">
             <ArrowLeft className="h-4 w-4" />
@@ -234,5 +242,13 @@ export default function PortalSignupPage() {
         </p>
       </form>
     </AuthShell>
+  );
+}
+
+export default function PortalSignupPage() {
+  return (
+    <Suspense fallback={<AuthShell theme="light" width="sm" bare><div className="min-h-[200px]" /></AuthShell>}>
+      <PortalSignupContent />
+    </Suspense>
   );
 }

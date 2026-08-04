@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { signInWithPassword, signInWithGoogle } from "@/lib/portal-auth";
@@ -16,8 +16,17 @@ function getErrorMessage(err: unknown, fallback: string) {
   return fallback;
 }
 
-export default function PortalLoginPage() {
+// Only ever a relative in-app path (e.g. "/pricing?plan=paid") -- never
+// follow an absolute/external "next" value, which would be an open redirect.
+function safeNext(raw: string | null | undefined): string {
+  if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
+  return "/pricing";
+}
+
+function PortalLoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = safeNext(searchParams?.get("next"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phase, setPhase] = useState<"form" | "submitting" | "google">("form");
@@ -28,7 +37,7 @@ export default function PortalLoginPage() {
     setError(null);
     setPhase("google");
     try {
-      const redirectTo = `${window.location.origin}/pricing`;
+      const redirectTo = `${window.location.origin}${next}`;
       await signInWithGoogle(redirectTo);
     } catch (err) {
       setPhase("form");
@@ -46,7 +55,7 @@ export default function PortalLoginPage() {
     setPhase("submitting");
     try {
       await signInWithPassword(email.trim(), password);
-      router.push("/pricing");
+      router.push(next);
     } catch (err) {
       setPhase("form");
       setError(getErrorMessage(err, "Unable to sign in. Check your email and password."));
@@ -146,5 +155,13 @@ export default function PortalLoginPage() {
         </p>
       </form>
     </AuthShell>
+  );
+}
+
+export default function PortalLoginPage() {
+  return (
+    <Suspense fallback={<AuthShell theme="light" width="sm" bare><div className="min-h-[200px]" /></AuthShell>}>
+      <PortalLoginContent />
+    </Suspense>
   );
 }
