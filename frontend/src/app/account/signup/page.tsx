@@ -72,7 +72,8 @@ export default function PortalSignupPage() {
 
     setPhase("submitting");
     try {
-      const { session } = await signUpWithPassword(email.trim(), password);
+      const emailRedirectTo = `${window.location.origin}/pricing`;
+      const { session } = await signUpWithPassword(email.trim(), password, emailRedirectTo);
       if (session) {
         router.push("/pricing");
         return;
