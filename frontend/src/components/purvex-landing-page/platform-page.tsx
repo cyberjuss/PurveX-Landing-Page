@@ -106,8 +106,8 @@ const tiers = [
   },
   {
     name: "Paid",
-    price: "Contact us",
-    note: "Billed monthly, cancel anytime",
+    price: "$49",
+    note: "per user / month",
     summary: "Make detection validation part of the operating rhythm.",
     items: ["Everything in Free", "Unlimited team members", "Unlimited test runners", "Priority support"],
     href: "/account/signup",

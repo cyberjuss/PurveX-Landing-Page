@@ -9,7 +9,7 @@ import { signUpWithPassword, signInWithGoogle } from "@/lib/portal-auth";
 import { Loader2, Lock, Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
 
 const AUTH_INPUT_CLASSNAME =
-  "w-full rounded-2xl border border-white/10 bg-[#0c1220] px-10 py-3 text-sm text-white shadow-none transition placeholder:text-slate-500 focus:border-[rgba(72,99,255,0.75)] focus:outline-none focus:ring-4 focus:ring-[rgba(72,99,255,0.12)] disabled:opacity-100";
+  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-3 text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(37,99,235,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(37,99,235,0.12)] disabled:opacity-60";
 
 function getStrength(pw: string) {
   let score = 0;
@@ -87,15 +87,15 @@ export default function PortalSignupPage() {
 
   if (phase === "sent") {
     return (
-      <AuthShell title="Check your inbox" subtitle={`We sent a confirmation link to ${email}.`}>
+      <AuthShell theme="light" title="Check your inbox" subtitle={`We sent a confirmation link to ${email}.`}>
         <div className="mt-4 flex flex-col items-center gap-4 px-8 pb-6">
-          <div className="rounded-full bg-emerald-500/12 p-3 dark:bg-emerald-500/18">
-            <CheckCircle2 className="h-8 w-8 text-emerald-500 dark:text-emerald-300" />
+          <div className="rounded-full bg-emerald-50 p-3">
+            <CheckCircle2 className="h-8 w-8 text-emerald-500" />
           </div>
-          <p className="text-center text-sm leading-relaxed text-slate-300">
+          <p className="text-center text-sm leading-relaxed text-slate-600">
             Confirm your email, then come back and sign in to choose a plan.
           </p>
-          <Link href="/account/login" className="mt-2 flex items-center gap-2 text-sm font-medium text-slate-400 transition hover:text-blue-300">
+          <Link href="/account/login" className="mt-2 flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-blue-600">
             <ArrowLeft className="h-4 w-4" />
             Back to sign in
           </Link>
@@ -105,13 +105,13 @@ export default function PortalSignupPage() {
   }
 
   return (
-    <AuthShell title="Create your account" subtitle="One account to pick a plan and get PurveX running.">
+    <AuthShell theme="light" title="Create your account" subtitle="One account to pick a plan and get PurveX running.">
       <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-5">
         <button
           type="button"
           onClick={handleGoogle}
           disabled={isLoading}
-          className="flex h-12 items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.03] text-sm font-semibold text-white transition hover:border-[rgba(160,177,255,0.22)] hover:bg-white/[0.06] disabled:opacity-60"
+          className="flex h-12 items-center justify-center gap-2.5 rounded-2xl border border-[var(--pvrx-border-light)] bg-white text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
@@ -123,15 +123,15 @@ export default function PortalSignupPage() {
         </button>
 
         <div className="flex items-center gap-3">
-          <span className="h-px flex-1 bg-white/10" />
-          <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">or</span>
-          <span className="h-px flex-1 bg-white/10" />
+          <span className="h-px flex-1 bg-[var(--pvrx-border-light)]" />
+          <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">or</span>
+          <span className="h-px flex-1 bg-[var(--pvrx-border-light)]" />
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="email" className="block text-sm font-semibold text-slate-200">Work email</label>
+          <label htmlFor="email" className="block text-sm font-semibold text-slate-700">Work email</label>
           <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-500" />
+            <Mail className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
             <input
               id="email"
               type="email"
@@ -147,9 +147,9 @@ export default function PortalSignupPage() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="password" className="block text-sm font-semibold text-slate-200">Password</label>
+          <label htmlFor="password" className="block text-sm font-semibold text-slate-700">Password</label>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-500" />
+            <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
             <input
               id="password"
               type="password"
@@ -164,18 +164,18 @@ export default function PortalSignupPage() {
           </div>
           {password.length > 0 && (
             <div className="mt-2 flex items-center gap-2">
-              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100">
                 <div className={`h-full rounded-full transition-all ${strengthColor}`} style={{ width: `${(strength / 5) * 100}%` }} />
               </div>
-              <span className="text-xs text-slate-400">{strengthLabel}</span>
+              <span className="text-xs text-slate-500">{strengthLabel}</span>
             </div>
           )}
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="confirm" className="block text-sm font-semibold text-slate-200">Confirm password</label>
+          <label htmlFor="confirm" className="block text-sm font-semibold text-slate-700">Confirm password</label>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-500" />
+            <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
             <input
               id="confirm"
               type="password"
@@ -191,14 +191,14 @@ export default function PortalSignupPage() {
         </div>
 
         {error && (
-          <p className="rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200" role="alert">{error}</p>
+          <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">{error}</p>
         )}
 
         <Button
           type="submit"
           disabled={isLoading}
           size="lg"
-          className="mt-2 h-12 w-full rounded-2xl border-0 bg-[rgb(72,99,255)] text-white shadow-[0_10px_30px_rgba(72,99,255,0.35)] hover:bg-[rgb(86,111,255)]"
+          className="mt-2 h-12 w-full rounded-2xl border-0 bg-[#2563eb] text-white shadow-[0_10px_30px_rgba(37,99,235,0.3)] hover:bg-[#1d4ed8]"
         >
           {phase === "submitting" ? (
             <><Loader2 className="h-4 w-4 animate-spin" /> Creating account...</>
@@ -207,9 +207,9 @@ export default function PortalSignupPage() {
           )}
         </Button>
 
-        <p className="text-center text-sm text-slate-400">
+        <p className="text-center text-sm text-slate-500">
           Already have an account?{" "}
-          <Link href="/account/login" className="font-medium text-blue-300 hover:text-blue-200">Sign in</Link>
+          <Link href="/account/login" className="font-medium text-blue-600 hover:text-blue-700">Sign in</Link>
         </p>
       </form>
     </AuthShell>
