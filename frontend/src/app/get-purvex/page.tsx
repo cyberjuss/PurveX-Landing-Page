@@ -49,10 +49,10 @@ function GetPurveXContent() {
     >
       <div className="w-full space-y-6">
         {plan === "paid" && (
-          <div className="rounded-2xl border border-[rgba(37,99,235,0.25)] bg-[rgba(37,99,235,0.05)] p-4 text-sm leading-relaxed text-slate-700">
+          <div className="rounded-2xl border border-[rgba(106,92,255,0.25)] bg-[rgba(106,92,255,0.05)] p-4 text-sm leading-relaxed text-slate-700">
             <strong className="text-slate-900">Your license key is on its way.</strong> We issue keys by hand right
             now, so expect an email at the address you signed up with within one business day. Once it arrives,
-            paste it into <span className="font-mono text-blue-700">Settings → License</span> after you finish
+            paste it into <span className="font-mono text-[#5546e0]">Settings → License</span> after you finish
             setup below.
           </div>
         )}
@@ -76,7 +76,7 @@ function GetPurveXContent() {
         </div>
 
         <div className="flex flex-col gap-3 border-t border-[var(--pvrx-border-light)] pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <Link href="https://github.com/cyberjuss/PurveX#readme" className="text-sm font-medium text-blue-600 hover:text-blue-700">
+          <Link href="https://github.com/cyberjuss/PurveX#readme" className="text-sm font-medium text-[#6a5cff] hover:text-[#5546e0]">
             Full install guide &rarr;
           </Link>
           <Link href="https://calendly.com/purvex-llc/30min" className="text-sm font-medium text-slate-500 hover:text-slate-800">

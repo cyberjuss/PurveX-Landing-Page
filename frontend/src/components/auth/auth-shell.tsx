@@ -13,9 +13,10 @@ interface AuthShellProps {
   hideHeader?: boolean;
   /** "dark" (default) matches the original account-flow treatment, used by
    * forgot/reset-password. "light" matches the rest of the marketing site
-   * (white background, --pvrx-accent blue) -- used by the newer portal
-   * account pages (/account/*, /pricing, /get-purvex) so navigating from
-   * /platform's pricing cards doesn't jump to a different color scheme. */
+   * (white background, #6a5cff purple accent, same as chrome.tsx's --accent)
+   * -- used by the newer portal account pages (/account/*, /pricing,
+   * /get-purvex) so navigating from /platform's pricing cards doesn't jump
+   * to a different color scheme. */
   theme?: "dark" | "light";
   /** "lg" (default) is the original wide layout (pricing's 2-card grid).
    * "md" fits a content page (a command block, a short numbered list) --
@@ -54,11 +55,11 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
       {/* Orbs - same as landing */}
       <div className="pointer-events-none fixed inset-0">
         <div
-          className={cn("absolute -left-24 top-0 h-[600px] w-[600px] rounded-full blur-[100px]", isLight ? "bg-[rgba(37,99,235,0.08)]" : "bg-[rgba(72,99,255,0.13)]")}
+          className={cn("absolute -left-24 top-0 h-[600px] w-[600px] rounded-full blur-[100px]", isLight ? "bg-[rgba(106,92,255,0.08)]" : "bg-[rgba(72,99,255,0.13)]")}
           style={{ animation: "ct-orbit 22s ease-in-out infinite" }}
         />
         <div
-          className={cn("absolute right-[-5rem] bottom-[5%] h-[500px] w-[500px] rounded-full blur-[100px]", isLight ? "bg-[rgba(37,99,235,0.06)]" : "bg-[rgba(72,99,255,0.10)]")}
+          className={cn("absolute right-[-5rem] bottom-[5%] h-[500px] w-[500px] rounded-full blur-[100px]", isLight ? "bg-[rgba(106,92,255,0.06)]" : "bg-[rgba(72,99,255,0.10)]")}
           style={{ animation: "ct-orbit 28s ease-in-out infinite reverse" }}
         />
       </div>

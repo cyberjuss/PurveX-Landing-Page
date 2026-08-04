@@ -139,8 +139,8 @@ export default function PricingPage() {
             </Button>
           </div>
 
-          <div className="flex flex-col rounded-3xl border border-[rgba(37,99,235,0.3)] bg-[rgba(37,99,235,0.04)] p-7 shadow-[0_20px_60px_-30px_rgba(37,99,235,0.35)]">
-            <p className="text-xs font-bold uppercase tracking-[0.1em] text-blue-600">Paid</p>
+          <div className="flex flex-col rounded-3xl border border-[rgba(106,92,255,0.3)] bg-[rgba(106,92,255,0.04)] p-7 shadow-[0_20px_60px_-30px_rgba(106,92,255,0.35)]">
+            <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#6a5cff]">Paid</p>
             <p className="mt-2 text-3xl font-display font-semibold text-slate-900">
               $49<span className="text-base font-medium text-slate-500"> / user / mo</span>
             </p>
@@ -148,7 +148,7 @@ export default function PricingPage() {
             <ul className="mt-6 flex flex-1 flex-col gap-3">
               {PAID_FEATURES.map((f) => (
                 <li key={f} className="flex items-start gap-2.5 text-sm text-slate-700">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#6a5cff]" />
                   {f}
                 </li>
               ))}
@@ -157,7 +157,7 @@ export default function PricingPage() {
               onClick={handlePaid}
               disabled={busyPlan !== null}
               size="lg"
-              className="mt-7 h-12 w-full rounded-2xl border-0 bg-[#2563eb] text-white shadow-[0_10px_30px_rgba(37,99,235,0.3)] hover:bg-[#1d4ed8]"
+              className="mt-7 h-12 w-full rounded-2xl border-0 bg-[#6a5cff] text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] hover:bg-[#5546e0]"
             >
               {busyPlan === "paid" ? <><Loader2 className="h-4 w-4 animate-spin" /> Redirecting to checkout...</> : "Continue to checkout"}
             </Button>
@@ -165,7 +165,7 @@ export default function PricingPage() {
         </div>
 
         <p className="mt-8 text-center text-xs text-slate-500">
-          Questions first? <Link href="https://calendly.com/purvex-llc/30min" className="text-blue-600 hover:text-blue-700">Book a 30-minute call</Link> instead.
+          Questions first? <Link href="https://calendly.com/purvex-llc/30min" className="text-[#6a5cff] hover:text-[#5546e0]">Book a 30-minute call</Link> instead.
         </p>
       </div>
     </AuthShell>

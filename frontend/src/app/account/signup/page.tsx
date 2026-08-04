@@ -9,7 +9,7 @@ import { signUpWithPassword, signInWithGoogle } from "@/lib/portal-auth";
 import { Loader2, Lock, Mail, ArrowLeft, CheckCircle2, Eye, EyeOff } from "lucide-react";
 
 const AUTH_INPUT_CLASSNAME =
-  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-3 text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(37,99,235,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(37,99,235,0.12)] disabled:opacity-60";
+  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-3 text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] disabled:opacity-60";
 
 function getStrength(pw: string) {
   let score = 0;
@@ -97,7 +97,7 @@ export default function PortalSignupPage() {
           <p className="text-center text-sm leading-relaxed text-slate-600">
             Confirm your email, then come back and sign in to choose a plan.
           </p>
-          <Link href="/account/login" className="mt-2 flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-blue-600">
+          <Link href="/account/login" className="mt-2 flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#6a5cff]">
             <ArrowLeft className="h-4 w-4" />
             Back to sign in
           </Link>
@@ -218,7 +218,7 @@ export default function PortalSignupPage() {
           type="submit"
           disabled={isLoading}
           size="lg"
-          className="mt-1 h-12 w-full rounded-2xl border-0 bg-[#2563eb] text-white shadow-[0_10px_30px_rgba(37,99,235,0.3)] hover:bg-[#1d4ed8]"
+          className="mt-1 h-12 w-full rounded-2xl border-0 bg-[#6a5cff] text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] hover:bg-[#5546e0]"
         >
           {phase === "submitting" ? (
             <><Loader2 className="h-4 w-4 animate-spin" /> Creating account...</>
@@ -229,7 +229,7 @@ export default function PortalSignupPage() {
 
         <p className="text-center text-sm text-slate-500">
           Already have an account?{" "}
-          <Link href="/account/login" className="font-medium text-blue-600 hover:text-blue-700">Sign in</Link>
+          <Link href="/account/login" className="font-medium text-[#6a5cff] hover:text-[#5546e0]">Sign in</Link>
         </p>
       </form>
     </AuthShell>

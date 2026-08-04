@@ -9,7 +9,7 @@ import { signInWithPassword, signInWithGoogle } from "@/lib/portal-auth";
 import { Loader2, Lock, Mail, Eye, EyeOff } from "lucide-react";
 
 const AUTH_INPUT_CLASSNAME =
-  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-3 text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(37,99,235,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(37,99,235,0.12)] disabled:opacity-60";
+  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-3 text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] disabled:opacity-60";
 
 function getErrorMessage(err: unknown, fallback: string) {
   if (err instanceof Error && err.message) return err.message;
@@ -100,7 +100,7 @@ export default function PortalLoginPage() {
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
             <label htmlFor="password" className="block text-sm font-semibold text-slate-700">Password</label>
-            <Link href="/forgot-password" className="text-xs font-medium text-slate-500 hover:text-blue-600">Forgot password?</Link>
+            <Link href="/forgot-password" className="text-xs font-medium text-slate-500 hover:text-[#6a5cff]">Forgot password?</Link>
           </div>
           <div className="relative">
             <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
@@ -135,14 +135,14 @@ export default function PortalLoginPage() {
           type="submit"
           disabled={isLoading}
           size="lg"
-          className="mt-1 h-12 w-full rounded-2xl border-0 bg-[#2563eb] text-white shadow-[0_10px_30px_rgba(37,99,235,0.3)] hover:bg-[#1d4ed8]"
+          className="mt-1 h-12 w-full rounded-2xl border-0 bg-[#6a5cff] text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] hover:bg-[#5546e0]"
         >
           {phase === "submitting" ? (<><Loader2 className="h-4 w-4 animate-spin" /> Signing in...</>) : "Sign in"}
         </Button>
 
         <p className="text-center text-sm text-slate-500">
           New to PurveX?{" "}
-          <Link href="/account/signup" className="font-medium text-blue-600 hover:text-blue-700">Create an account</Link>
+          <Link href="/account/signup" className="font-medium text-[#6a5cff] hover:text-[#5546e0]">Create an account</Link>
         </p>
       </form>
     </AuthShell>
