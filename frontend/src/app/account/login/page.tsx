@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { signInWithPassword, signInWithGoogle } from "@/lib/portal-auth";
-import { Loader2, Lock, Mail } from "lucide-react";
+import { Loader2, Lock, Mail, Eye, EyeOff } from "lucide-react";
 
 const AUTH_INPUT_CLASSNAME =
   "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-3 text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(37,99,235,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(37,99,235,0.12)] disabled:opacity-60";
@@ -22,6 +22,7 @@ export default function PortalLoginPage() {
   const [password, setPassword] = useState("");
   const [phase, setPhase] = useState<"form" | "submitting" | "google">("form");
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleGoogle() {
     setError(null);
@@ -56,12 +57,12 @@ export default function PortalLoginPage() {
 
   return (
     <AuthShell theme="light" width="sm" bare title="Sign in" subtitle="Manage your plan and get PurveX running.">
-      <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-5">
+      <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-3">
         <button
           type="button"
           onClick={handleGoogle}
           disabled={isLoading}
-          className="flex h-12 items-center justify-center gap-2.5 rounded-2xl border border-[var(--pvrx-border-light)] bg-white text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60"
+          className="flex h-11 items-center justify-center gap-2.5 rounded-2xl border border-[var(--pvrx-border-light)] bg-white text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
@@ -72,13 +73,13 @@ export default function PortalLoginPage() {
           Continue with Google
         </button>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 py-0.5">
           <span className="h-px flex-1 bg-[var(--pvrx-border-light)]" />
           <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">or</span>
           <span className="h-px flex-1 bg-[var(--pvrx-border-light)]" />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <label htmlFor="email" className="block text-sm font-semibold text-slate-700">Email</label>
           <div className="relative">
             <Mail className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
@@ -96,7 +97,7 @@ export default function PortalLoginPage() {
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <div className="flex items-center justify-between">
             <label htmlFor="password" className="block text-sm font-semibold text-slate-700">Password</label>
             <Link href="/forgot-password" className="text-xs font-medium text-slate-500 hover:text-blue-600">Forgot password?</Link>
@@ -105,15 +106,24 @@ export default function PortalLoginPage() {
             <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
             <input
               id="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               placeholder="Your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={AUTH_INPUT_CLASSNAME}
+              className={`${AUTH_INPUT_CLASSNAME} pr-11`}
               disabled={isLoading}
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 transition hover:text-slate-700"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              tabIndex={-1}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
           </div>
         </div>
 
@@ -125,7 +135,7 @@ export default function PortalLoginPage() {
           type="submit"
           disabled={isLoading}
           size="lg"
-          className="mt-2 h-12 w-full rounded-2xl border-0 bg-[#2563eb] text-white shadow-[0_10px_30px_rgba(37,99,235,0.3)] hover:bg-[#1d4ed8]"
+          className="mt-1 h-12 w-full rounded-2xl border-0 bg-[#2563eb] text-white shadow-[0_10px_30px_rgba(37,99,235,0.3)] hover:bg-[#1d4ed8]"
         >
           {phase === "submitting" ? (<><Loader2 className="h-4 w-4 animate-spin" /> Signing in...</>) : "Sign in"}
         </Button>
