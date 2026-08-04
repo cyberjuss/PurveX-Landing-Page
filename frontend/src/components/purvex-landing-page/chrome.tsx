@@ -515,10 +515,13 @@ export const CHROME_CSS = `
 .sp-logo { display: inline-flex; align-items: center; gap: 9px; justify-self: start; font-family: var(--font-display); font-weight: 650; font-size: 1.2rem; color: var(--ink); text-decoration: none; letter-spacing: -.015em }
 .sp-logo__img { border-radius: 8px }
 .sp-nav .sp-logo { font-size: 1.3rem; gap: 10px }
-.sp-nav__links { display: flex; gap: 6px; justify-self: center }
+/* Nav simplified to always be a hamburger -- the full inline links + mega
+   menu are still there in the markup (and still used by the mobile panel),
+   just never shown at any width now. */
+.sp-nav__links { display: none; gap: 6px; justify-self: center }
 .sp-nav__link--active { color: var(--ink) !important }
 .sp-nav__right { display: flex; align-items: center; gap: 10px; justify-self: end }
-.sp-nav__burger { display: none; align-items: center; justify-content: center; background: none; border: 0; color: var(--ink); cursor: pointer; padding: 6px; margin-right: -6px }
+.sp-nav__burger { display: flex; align-items: center; justify-content: center; background: none; border: 0; color: var(--ink); cursor: pointer; padding: 6px; margin-right: -6px }
 
 /* ── Mega menu ── */
 .sp-navitem { position: relative; display: flex; align-items: center; padding: 22px 4px; }
@@ -714,8 +717,6 @@ export const CHROME_CSS = `
 @media (max-width: 680px) {
   .sp-main { padding: 0 16px 64px }
   .sp-nav { padding: 0 16px }
-  .sp-nav__links { display: none }
-  .sp-nav__burger { display: flex }
   .sp-nav__right .sp-btn { display: none }
   .sp-hero { padding-top: 56px }
   .sp-hero__badge { margin-bottom: 18px }
