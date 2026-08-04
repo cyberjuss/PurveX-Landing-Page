@@ -2,8 +2,20 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// Mirrors the top-level items in chrome.tsx's NAV_MENUS -- just the labels
+// and hrefs, none of the mega-menu submenu content, since this is a
+// lightweight stand-in for auth-flow pages, not the full site nav.
+const SITE_NAV = [
+  { label: "Home", href: "/" },
+  { label: "Security Operations", href: "/security-operations" },
+  { label: "Cybersecurity Training", href: "/cybersecurity-training" },
+  { label: "PurveX Labs", href: "/platform" },
+  { label: "About", href: "/about" },
+];
 
 interface AuthShellProps {
   title?: string;
@@ -45,6 +57,25 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
   const maxWidthClass = maxWidthPx ? undefined : "max-w-5xl";
   const maxWidthStyle = maxWidthPx ? { maxWidth: `${maxWidthPx}px` } : undefined;
 
+  const [navOpen, setNavOpen] = useState(false);
+  const navRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!navOpen) return;
+    function handleOutside(e: MouseEvent) {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setNavOpen(false);
+    }
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === "Escape") setNavOpen(false);
+    }
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [navOpen]);
+
   return (
     <div
       className={cn(
@@ -66,13 +97,48 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
 
       {!hideHeader && (
         // Pinned to the page's top-left corner, independent of the form's
-        // own width -- a persistent brand mark, not something that shifts
-        // around depending on which width the content below uses.
-        <div className="relative z-20">
-          <Link href="/" className={cn("inline-flex items-center gap-2.5 no-underline transition hover:opacity-80", isLight ? "text-slate-900" : "text-white")}>
-            <Image src="/logo.png" alt="PurveX" width={32} height={32} className="rounded-[8px]" />
-            <span className="font-display text-[1.05rem] font-bold tracking-[-0.04em]">PurveX</span>
-          </Link>
+        // own width. A hamburger toggle for the site nav, not a standalone
+        // logo -- the big centered logo below the title already carries the
+        // brand mark, so this slot is for getting back to the rest of the
+        // site instead.
+        <div className="relative z-20" ref={navRef}>
+          <button
+            type="button"
+            onClick={() => setNavOpen((v) => !v)}
+            aria-label={navOpen ? "Close menu" : "Open menu"}
+            aria-expanded={navOpen}
+            className={cn(
+              "flex h-11 w-11 items-center justify-center rounded-2xl border transition",
+              isLight
+                ? "border-[var(--pvrx-border-light)] bg-white text-slate-900 hover:bg-slate-50"
+                : "border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.06]"
+            )}
+          >
+            {navOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+
+          {navOpen && (
+            <nav
+              className={cn(
+                "absolute left-0 top-[calc(100%+8px)] w-64 overflow-hidden rounded-2xl border py-2 shadow-[0_24px_60px_-24px_rgba(15,23,42,0.25)]",
+                isLight ? "border-[var(--pvrx-border-light)] bg-white" : "border-white/10 bg-[#0a0e1a]"
+              )}
+            >
+              {SITE_NAV.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setNavOpen(false)}
+                  className={cn(
+                    "block px-4 py-2.5 text-sm font-medium no-underline transition",
+                    isLight ? "text-slate-700 hover:bg-slate-50 hover:text-slate-900" : "text-slate-300 hover:bg-white/5 hover:text-white"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          )}
         </div>
       )}
 
