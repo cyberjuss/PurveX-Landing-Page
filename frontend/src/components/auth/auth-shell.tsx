@@ -17,10 +17,18 @@ interface AuthShellProps {
    * account pages (/account/*, /pricing, /get-purvex) so navigating from
    * /platform's pricing cards doesn't jump to a different color scheme. */
   theme?: "dark" | "light";
+  /** "lg" (default) is the original wide layout (pricing's 2-card grid).
+   * "sm" caps everything -- header and content -- at a normal login-form
+   * width instead of stretching a single form across the whole viewport. */
+  width?: "sm" | "lg";
+  /** When true, drop the bordered/shadowed card entirely -- title and form
+   * sit directly on the page background instead of inside a panel. */
+  bare?: boolean;
 }
 
-export function AuthShell({ title, subtitle, children, className, hideHeader = false, theme = "dark" }: AuthShellProps) {
+export function AuthShell({ title, subtitle, children, className, hideHeader = false, theme = "dark", width = "lg", bare = false }: AuthShellProps) {
   const isLight = theme === "light";
+  const maxWidthClass = width === "sm" ? "max-w-[440px]" : "max-w-5xl";
 
   return (
     <div
@@ -42,7 +50,7 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
       </div>
 
       {!hideHeader && (
-        <div className="relative z-20 mx-auto max-w-5xl">
+        <div className={cn("relative z-20 mx-auto", maxWidthClass)}>
           <Link href="/" className={cn("inline-flex items-center gap-2.5 no-underline transition hover:opacity-80", isLight ? "text-slate-900" : "text-white")}>
             <Image src="/logo.png" alt="PurveX" width={32} height={32} className="rounded-[8px]" />
             <span className="font-display text-[1.05rem] font-bold tracking-[-0.04em]">PurveX</span>
@@ -50,10 +58,10 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
         </div>
       )}
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-5xl items-center justify-center">
+      <div className={cn("relative z-10 mx-auto flex min-h-[calc(100vh-6rem)] w-full items-center justify-center", maxWidthClass)}>
         <div
           className={cn(
-            hideHeader
+            hideHeader || bare
               ? "mx-auto w-full px-0 py-0"
               : isLight
                 ? "w-full rounded-[36px] border border-[var(--pvrx-border-light)] bg-white px-4 py-8 shadow-[0_40px_100px_-40px_rgba(15,23,42,0.18)] sm:px-8 sm:py-10"
@@ -62,17 +70,17 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
           )}
         >
           {!hideHeader && (
-            <div className="mb-10 flex flex-col items-center text-center">
-              <div className={cn("mb-5 flex h-20 w-20 items-center justify-center rounded-[24px] border shadow-[0_18px_48px_-22px_rgba(15,23,42,0.25)]", isLight ? "border-[var(--pvrx-border-light)] bg-white" : "border-white/10 bg-white/95")}>
-                <Image src="/logo.png" alt="" width={54} height={54} />
+            <div className={cn("flex flex-col items-center text-center", bare ? "mb-6" : "mb-10")}>
+              <div className={cn("mb-5 flex h-16 w-16 items-center justify-center rounded-[20px] border shadow-[0_18px_48px_-22px_rgba(15,23,42,0.25)]", isLight ? "border-[var(--pvrx-border-light)] bg-white" : "border-white/10 bg-white/95")}>
+                <Image src="/logo.png" alt="" width={42} height={42} />
               </div>
               {title ? (
-                <h1 className={cn("text-3xl font-display font-semibold tracking-tight sm:text-[2.125rem]", isLight ? "text-slate-900" : "text-white")}>
+                <h1 className={cn("font-display font-semibold tracking-tight", bare ? "text-2xl" : "text-3xl sm:text-[2.125rem]", isLight ? "text-slate-900" : "text-white")}>
                   {title}
                 </h1>
               ) : null}
               {subtitle ? (
-                <p className={cn("mt-3 max-w-sm text-sm leading-6", isLight ? "text-slate-500" : "text-slate-400")}>
+                <p className={cn("mt-2.5 max-w-sm text-sm leading-6", isLight ? "text-slate-500" : "text-slate-400")}>
                   {subtitle}
                 </p>
               ) : null}

@@ -87,7 +87,7 @@ export default function PortalSignupPage() {
 
   if (phase === "sent") {
     return (
-      <AuthShell theme="light" title="Check your inbox" subtitle={`We sent a confirmation link to ${email}.`}>
+      <AuthShell theme="light" width="sm" bare title="Check your inbox" subtitle={`We sent a confirmation link to ${email}.`}>
         <div className="mt-4 flex flex-col items-center gap-4 px-8 pb-6">
           <div className="rounded-full bg-emerald-50 p-3">
             <CheckCircle2 className="h-8 w-8 text-emerald-500" />
@@ -105,7 +105,7 @@ export default function PortalSignupPage() {
   }
 
   return (
-    <AuthShell theme="light" title="Create your account" subtitle="One account to pick a plan and get PurveX running.">
+    <AuthShell theme="light" width="sm" bare title="Create your account" subtitle="One account to pick a plan and get PurveX running.">
       <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-5">
         <button
           type="button"

@@ -55,7 +55,7 @@ export default function PortalLoginPage() {
   const isLoading = phase === "submitting" || phase === "google";
 
   return (
-    <AuthShell theme="light" title="Sign in" subtitle="Manage your plan and get PurveX running.">
+    <AuthShell theme="light" width="sm" bare title="Sign in" subtitle="Manage your plan and get PurveX running.">
       <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-5">
         <button
           type="button"
