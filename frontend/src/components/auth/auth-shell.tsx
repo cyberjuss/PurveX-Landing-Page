@@ -18,17 +18,24 @@ interface AuthShellProps {
    * /platform's pricing cards doesn't jump to a different color scheme. */
   theme?: "dark" | "light";
   /** "lg" (default) is the original wide layout (pricing's 2-card grid).
-   * "sm" caps everything -- header and content -- at a normal login-form
-   * width instead of stretching a single form across the whole viewport. */
-  width?: "sm" | "lg";
+   * "md" fits a content page (a command block, a short numbered list) --
+   * wider than a login form so a terminal command doesn't wrap awkwardly.
+   * "sm" caps everything at a normal login-form width. */
+  width?: "sm" | "md" | "lg";
   /** When true, drop the bordered/shadowed card entirely -- title and form
    * sit directly on the page background instead of inside a panel. */
   bare?: boolean;
 }
 
+const WIDTH_CLASSES: Record<"sm" | "md" | "lg", string> = {
+  sm: "max-w-[440px]",
+  md: "max-w-[640px]",
+  lg: "max-w-5xl",
+};
+
 export function AuthShell({ title, subtitle, children, className, hideHeader = false, theme = "dark", width = "lg", bare = false }: AuthShellProps) {
   const isLight = theme === "light";
-  const maxWidthClass = width === "sm" ? "max-w-[440px]" : "max-w-5xl";
+  const maxWidthClass = WIDTH_CLASSES[width];
 
   return (
     <div

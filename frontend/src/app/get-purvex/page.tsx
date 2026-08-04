@@ -38,6 +38,8 @@ function GetPurveXContent() {
   return (
     <AuthShell
       theme="light"
+      width="md"
+      bare
       title={plan === "paid" ? "You're all set" : "Get PurveX running"}
       subtitle={
         plan === "paid"
@@ -88,7 +90,7 @@ function GetPurveXContent() {
 
 export default function GetPurveXPage() {
   return (
-    <Suspense fallback={<AuthShell theme="light"><div className="min-h-[200px]" /></AuthShell>}>
+    <Suspense fallback={<AuthShell theme="light" width="md" bare><div className="min-h-[200px]" /></AuthShell>}>
       <GetPurveXContent />
     </Suspense>
   );
