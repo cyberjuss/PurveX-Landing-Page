@@ -57,7 +57,10 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
       </div>
 
       {!hideHeader && (
-        <div className={cn("relative z-20 mx-auto", maxWidthClass)}>
+        // Pinned to the page's top-left corner, independent of the form's
+        // own width -- a persistent brand mark, not something that shifts
+        // around depending on which width the content below uses.
+        <div className="relative z-20">
           <Link href="/" className={cn("inline-flex items-center gap-2.5 no-underline transition hover:opacity-80", isLight ? "text-slate-900" : "text-white")}>
             <Image src="/logo.png" alt="PurveX" width={32} height={32} className="rounded-[8px]" />
             <span className="font-display text-[1.05rem] font-bold tracking-[-0.04em]">PurveX</span>
