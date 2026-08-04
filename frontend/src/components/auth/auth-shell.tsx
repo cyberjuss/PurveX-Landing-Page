@@ -27,15 +27,22 @@ interface AuthShellProps {
   bare?: boolean;
 }
 
-const WIDTH_CLASSES: Record<"sm" | "md" | "lg", string> = {
-  sm: "max-w-[440px]",
-  md: "max-w-[640px]",
-  lg: "max-w-5xl",
+// Plain px values via inline style, not Tailwind arbitrary-value classes
+// (`max-w-[440px]`) picked from a lookup object -- Tailwind's build-time
+// class scanner isn't reliable about generating CSS for classes assembled
+// that way instead of appearing directly in a className. Inline style has
+// no such dependency.
+const WIDTH_PX: Record<"sm" | "md" | "lg", number | undefined> = {
+  sm: 440,
+  md: 640,
+  lg: undefined, // falls back to the max-w-5xl Tailwind class below
 };
 
 export function AuthShell({ title, subtitle, children, className, hideHeader = false, theme = "dark", width = "lg", bare = false }: AuthShellProps) {
   const isLight = theme === "light";
-  const maxWidthClass = WIDTH_CLASSES[width];
+  const maxWidthPx = WIDTH_PX[width];
+  const maxWidthClass = maxWidthPx ? undefined : "max-w-5xl";
+  const maxWidthStyle = maxWidthPx ? { maxWidth: `${maxWidthPx}px` } : undefined;
 
   return (
     <div
@@ -68,7 +75,10 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
         </div>
       )}
 
-      <div className={cn("relative z-10 mx-auto flex min-h-[calc(100vh-6rem)] w-full items-center justify-center", maxWidthClass)}>
+      <div
+        className={cn("relative z-10 mx-auto flex min-h-[calc(100vh-6rem)] w-full items-center justify-center", maxWidthClass)}
+        style={maxWidthStyle}
+      >
         <div
           className={cn(
             hideHeader || bare
