@@ -30,6 +30,7 @@ export default function Page() {
       </Callout>
 
       <H2 id="manual">Prefer to run it by hand?</H2>
+      <P>Same result as the one-liner, just spelled out as separate steps.</P>
       <TermBlock
         copyText={"git clone https://github.com/cyberjuss/PurveX.git\ncd PurveX\nchmod +x scripts/purvex.sh\n./scripts/purvex.sh --setup\n./scripts/purvex.sh --start"}
         lines={<>
@@ -42,11 +43,13 @@ export default function Page() {
       />
 
       <H2 id="update">Updating</H2>
+      <P>Pulls the latest code and rebuilds. Safe to run any time &mdash; your data isn&apos;t touched.</P>
       <TermBlock copyText={"git pull\n./scripts/purvex.sh --setup\n./scripts/purvex.sh --rebuild"} lines={<>
         <span className="dc-p1">$</span> <span className="dc-cmd">git pull</span><br/>
         <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --setup</span><br/>
         <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --rebuild</span>
       </>} />
+      <P>To stop PurveX, press <code>Ctrl+C</code> in its terminal window.</P>
     </>
   );
 }
