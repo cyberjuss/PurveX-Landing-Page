@@ -130,7 +130,6 @@ export default function HomePage() {
           PurveX helps organizations strengthen their security capabilities through security
           operations consulting and hands-on cybersecurity training.
         </p>
-        <p className="sp-hero__strip">With great visibility comes great responsibility.</p>
         <div className="sp-hero__actions">
           <a href="#how-we-help" className="sp-btn sp-btn--prim sp-btn--lg">
             Explore Our Services <ArrowRight size={16} />
@@ -258,8 +257,6 @@ export default function HomePage() {
       </section>
 
       <style>{`
-.sp-hero .sp-hero__strip { margin: 18px 0 0 }
-
 /* ── Hero deco cards (desktop only -- there's no room to bleed past the
    hero column below ~1300px without overlapping the headline) ── */
 .sp-hero__deco { position: absolute; top: 0; z-index: 2; pointer-events: none; display: none }

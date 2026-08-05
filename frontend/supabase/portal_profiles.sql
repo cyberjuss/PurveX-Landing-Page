@@ -13,6 +13,24 @@ create table if not exists public.portal_profiles (
   updated_at timestamptz not null default now()
 );
 
+-- Set by the Stripe webhook (api/stripe-webhook/route.ts) once payment
+-- actually clears -- distinct from `plan`, which the pricing page sets to
+-- "paid" the moment the customer is redirected to Stripe, before payment is
+-- confirmed. `stripe_payment_confirmed` is the ground truth for "did this
+-- person actually pay," for the owner's own lead tracking.
+--
+-- IMPORTANT: this table is lead/CRM data only, not an entitlement source.
+-- The "Users can update their own portal profile" policy below lets a
+-- signed-in user write any column on their own row, including this one --
+-- fine, because nothing reads stripe_payment_confirmed to grant real
+-- product access. The actual paid-tier gate is the cryptographically
+-- signed license key applied in the PurveX product itself (Settings ->
+-- License), which this table has no bearing on. Do not wire real
+-- entitlements to this column without adding proper write protection.
+alter table public.portal_profiles add column if not exists stripe_payment_confirmed boolean not null default false;
+alter table public.portal_profiles add column if not exists stripe_session_id text;
+alter table public.portal_profiles add column if not exists paid_at timestamptz;
+
 alter table public.portal_profiles enable row level security;
 
 -- A signed-in user may create and read only their own profile row. No
