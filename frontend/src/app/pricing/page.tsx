@@ -138,7 +138,7 @@ function PricingContent() {
   // fires, which would otherwise flash the full picker for a frame.
   if (user === undefined || preselected === "free") {
     return (
-      <AuthShell theme="light">
+      <AuthShell theme="light" width="md">
         <div className="flex min-h-[240px] flex-col items-center justify-center gap-3 text-sm text-slate-500">
           <Loader2 className="h-5 w-5 animate-spin" />
           {preselected === "free" ? "Setting up your free plan..." : null}
@@ -197,7 +197,7 @@ function PricingContent() {
   }
 
   return (
-    <AuthShell theme="light" hideHeader>
+    <AuthShell theme="light" width="md" hideHeader>
       <div className="w-full">
         <div className="mb-8 text-center">
           <h1 className="font-display text-[1.7rem] font-semibold tracking-tight text-slate-900">
@@ -265,7 +265,7 @@ function PricingContent() {
 
 export default function PricingPage() {
   return (
-    <Suspense fallback={<AuthShell theme="light"><div className="min-h-[240px]" /></AuthShell>}>
+    <Suspense fallback={<AuthShell theme="light" width="md"><div className="min-h-[240px]" /></AuthShell>}>
       <PricingContent />
     </Suspense>
   );
