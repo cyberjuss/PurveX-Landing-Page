@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthShell } from "@/components/auth/auth-shell";
@@ -27,6 +27,13 @@ function PortalLoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = safeNext(searchParams?.get("next"));
+  // Warms the next route's code before the user ever submits, so
+  // router.push(next) below lands instantly instead of stalling on a
+  // route-segment fetch mid-transition -- that stall is most of what reads
+  // as "rough."
+  useEffect(() => {
+    router.prefetch(next);
+  }, [router, next]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phase, setPhase] = useState<"form" | "submitting" | "google">("form");

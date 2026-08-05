@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthShell } from "@/components/auth/auth-shell";
@@ -34,6 +34,10 @@ function PortalSignupContent() {
   // it immediately instead of asking again -- see /pricing's own handling.
   const plan = searchParams?.get("plan") === "paid" ? "paid" : searchParams?.get("plan") === "free" ? "free" : null;
   const pricingTarget = plan ? `/pricing?plan=${plan}` : "/pricing";
+  // Same reasoning as the login page: warm the route before it's needed.
+  useEffect(() => {
+    router.prefetch(pricingTarget);
+  }, [router, pricingTarget]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

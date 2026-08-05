@@ -79,7 +79,7 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
   return (
     <div
       className={cn(
-        "relative min-h-screen overflow-hidden px-4 py-8 sm:px-6 sm:py-10",
+        "relative min-h-screen overflow-hidden px-4 py-8 sm:px-6 sm:py-10 auth-shell-enter",
         isLight ? "bg-white text-slate-900" : "bg-[#060810] text-slate-100"
       )}
     >
@@ -184,6 +184,14 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
           25% { transform: translate(60px, -40px) scale(1.08); }
           50% { transform: translate(-30px, 50px) scale(0.95); }
           75% { transform: translate(40px, 20px) scale(1.05); }
+        }
+        @keyframes auth-shell-enter {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .auth-shell-enter { animation: auth-shell-enter 0.32s cubic-bezier(0.16,1,0.3,1) both; }
+        @media (prefers-reduced-motion: reduce) {
+          .auth-shell-enter { animation: none; }
         }
       `}</style>
     </div>

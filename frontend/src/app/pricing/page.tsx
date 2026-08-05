@@ -53,6 +53,13 @@ function PricingContent() {
   const [busyPlan, setBusyPlan] = useState<"free" | "paid" | null>(null);
   const autoRanFree = useRef(false);
 
+  // Warm the free-plan destination -- handleFree() below either runs
+  // automatically (preselected) or on a single click, both cases benefit
+  // from the route already being fetched.
+  useEffect(() => {
+    router.prefetch("/get-purvex?plan=free");
+  }, [router]);
+
   useEffect(() => {
     let cancelled = false;
     getCurrentUser().then((u) => {
