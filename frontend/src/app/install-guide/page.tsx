@@ -12,24 +12,23 @@ export default function Page() {
       <Lede>
         PurveX connects to your SIEM &mdash; the tool your team already uses to collect and search security logs
         &mdash; safely simulates real attack techniques, and tells you whether your detections actually caught them.
-        No guesswork, just evidence. This guide walks through the whole setup in order: get the code, fill in a
-        couple of settings, start it up, create your account, and run your first test.
+        No guesswork, just evidence. This guide walks through the whole setup in order: get the code, run one
+        command, create your account, and run your first test.
       </Lede>
       <MetaRow>
-        <span><Clock size={14} /> About 10 minutes</span>
+        <span><Clock size={14} /> A few minutes</span>
         <span><Server size={14} /> Runs on one machine you control</span>
         <span><ShieldCheck size={14} /> Nothing leaves that machine</span>
       </MetaRow>
 
       <H2>Before you start</H2>
-      <P>You&apos;ll need these installed first. The setup script checks for them too, but confirming now saves a false start later.</P>
+      <P>You&apos;ll need these installed first &mdash; the setup script checks for them too, but confirming now saves a false start later. No database install needed: PurveX stores its data in a local file by default.</P>
       <Table
         head={["Tool", "Version", "Check"]}
         rows={[
           ["Python", "3.11+", <code key="c">python --version</code>],
           ["Node.js", "20+", <code key="c">node --version</code>],
           ["npm", "9+", <code key="c">npm --version</code>],
-          ["PostgreSQL", "14+", <code key="c">psql --version</code>],
           ["Git", "optional", <code key="c">git --version</code>],
         ]}
       />

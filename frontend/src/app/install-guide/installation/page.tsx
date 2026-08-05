@@ -3,9 +3,9 @@
 import { Eyebrow, H1, Lede, H2, P, Table, TermBlock, Step, Callout } from "@/components/purvex-landing-page/docs-content";
 
 const ENV_VARS: [string, string, string][] = [
-  ["DATABASE_URL", "yes", "The address of your PostgreSQL database"],
-  ["JWT_SECRET_KEY", "yes", "Keeps sign-in sessions secure"],
-  ["PURVEX_ENCRYPTION_KEY", "yes", "Encrypts SIEM credentials and two-factor authentication (2FA) codes at rest"],
+  ["JWT_SECRET_KEY", "auto-generated", "Keeps sign-in sessions secure"],
+  ["PURVEX_ENCRYPTION_KEY", "auto-generated", "Encrypts SIEM credentials and two-factor authentication (2FA) codes at rest"],
+  ["DATABASE_URL", "no", "Unset by default (uses local SQLite). Set this if you want PostgreSQL instead."],
   ["PURVEX_ENV", "no", "dev / staging / prod (default: dev)"],
   ["REDIS_URL", "no, locally", "Powers rate limiting and the background job queue"],
   ["OPENAI_API_KEY", "no", "Turns on the Watchtower AI assistant"],
@@ -16,7 +16,7 @@ export default function Page() {
     <>
       <Eyebrow>Get started</Eyebrow>
       <H1>Installation</H1>
-      <Lede>Get the code, fill in two required values, and start it up. About five minutes end to end.</Lede>
+      <Lede>Get the code, then run one command. Two minutes end to end &mdash; no database to install, no secrets to generate by hand.</Lede>
 
       <H2 id="get-code">Get the code</H2>
       <Step n={1} title="One-line install">
@@ -28,47 +28,20 @@ export default function Page() {
         <TermBlock copyText={"git clone https://github.com/cyberjuss/PurveX.git\ncd PurveX"} lines={<><span className="dc-p1">$</span> <span className="dc-cmd">git clone https://github.com/cyberjuss/PurveX.git</span><br/><span className="dc-p1">$</span> <span className="dc-cmd">cd PurveX</span></>} />
       </Step>
 
-      <H2 id="configure">Fill in two settings</H2>
-      <P>
-        PurveX needs a couple of things set before it can start: a database to store its data in, and two
-        random secret values it uses to keep that data secure. Copy the example settings file, create an empty
-        database, and generate both secrets:
-      </P>
-      <TermBlock
-        copyText={'cp .env.example .env\ncreatedb purvex\npython -c "import secrets; print(secrets.token_urlsafe(32))"\npython -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"'}
-        lines={<>
-          <span className="dc-p1">$</span> <span className="dc-cmd">cp .env.example .env</span><br/>
-          <span className="dc-p1">$</span> <span className="dc-cmd">createdb purvex</span><br/>
-          <span className="dc-p1">$</span> <span className="dc-cmd">python -c &quot;import secrets; print(secrets.token_urlsafe(32))&quot;</span><br/>
-          <span className="dc-out">Rf3n...  <span className="dc-hl"># JWT_SECRET_KEY</span></span><br/>
-          <span className="dc-p1">$</span> <span className="dc-cmd">python -c &quot;from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())&quot;</span><br/>
-          <span className="dc-out">gk8Q...  <span className="dc-hl"># PURVEX_ENCRYPTION_KEY</span></span>
-        </>}
-      />
-      <P>
-        Open the <code>.env</code> file that was just created and paste in both generated values, plus your{" "}
-        <code>DATABASE_URL</code> (the address of the database you just made &mdash; something like{" "}
-        <code>postgresql://localhost/purvex</code>).
-      </P>
-      <Callout tone="warn">
-        <strong>Keep a copy of <code>PURVEX_ENCRYPTION_KEY</code> somewhere safe</strong>, like a password manager.
-        It&apos;s what protects sensitive data at rest &mdash; SIEM credentials, and two-factor authentication (2FA)
-        codes if you ever turn that on. If this key is lost, that data can&apos;t be recovered. You can&apos;t just
-        generate a new one and pick up where you left off.
-      </Callout>
-      <P>For reference, here&apos;s what each setting does:</P>
-      <Table
-        head={["Variable", "Required", "Description"]}
-        rows={ENV_VARS.map(([name, req, desc]) => [<code key="n">{name}</code>, req, desc])}
-      />
-
       <H2 id="start">Install and start it up</H2>
-      <P>One script installs everything and starts both halves of the app for you &mdash; no need to juggle Python and Node commands yourself.</P>
+      <P>
+        One script does the rest: installs everything, creates <code>.env</code> and generates the two secrets
+        PurveX needs to keep your data secure, and starts both halves of the app. There&apos;s no database to
+        install first &mdash; it stores everything in a local file until you tell it otherwise.
+      </P>
       <TermBlock
         copyText={"chmod +x scripts/purvex.sh\n./scripts/purvex.sh --setup\n./scripts/purvex.sh --start"}
         lines={<>
           <span className="dc-p1">$</span> <span className="dc-cmd">chmod +x scripts/purvex.sh</span><br/>
           <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --setup</span><br/>
+          <span className="dc-out">[purvex] Created .env</span><br/>
+          <span className="dc-out">[purvex] Generated JWT_SECRET_KEY</span><br/>
+          <span className="dc-out">[purvex] Generated PURVEX_ENCRYPTION_KEY</span><br/>
           <span className="dc-out">[purvex] Installing backend dependencies...</span><br/>
           <span className="dc-out">[purvex] Installing frontend dependencies...</span><br/>
           <span className="dc-ok">[purvex] Setup complete.</span><br/>
@@ -79,6 +52,34 @@ export default function Page() {
         </>}
       />
       <P>Leave this terminal window open &mdash; it&apos;s running both the server and the web app. Open a new terminal window for anything else you need to do.</P>
+      <Callout tone="warn">
+        <strong>Back up <code>PURVEX_ENCRYPTION_KEY</code></strong> (the value <code>--setup</code> just generated
+        into <code>.env</code>) somewhere safe, like a password manager. It&apos;s what protects SIEM credentials and
+        2FA codes at rest &mdash; lose it, and that data can&apos;t be recovered. You can&apos;t just generate a new
+        one and pick up where you left off.
+      </Callout>
+
+      <H2 id="whats-happening">What those two commands actually do</H2>
+      <P>Nothing here is hidden from you &mdash; this is the short version of everything the script just did:</P>
+      <ul className="dc-list">
+        <li><strong>Checks your machine is ready</strong> &mdash; confirms Python and Node.js are installed before touching anything else.</li>
+        <li><strong>Creates <code>.env</code> and fills in two secret values</strong> &mdash; random strings, generated on your machine, that only your machine ever sees. One keeps sign-ins secure, the other protects stored credentials.</li>
+        <li><strong>Installs the app&apos;s dependencies</strong> &mdash; everything PurveX itself needs to run, downloaded into this folder only.</li>
+        <li><strong>Sets up storage</strong> &mdash; a single local file, not a separate database server, unless you choose to add one later.</li>
+        <li><strong>Starts two processes</strong> &mdash; the server doing the work, and the web app you open in your browser.</li>
+      </ul>
+      <P>That&apos;s the whole thing. No step talks to anything outside this machine.</P>
+
+      <H2 id="configure">Going further (optional)</H2>
+      <P>
+        Nothing below is required to get running &mdash; <code>--setup</code> already handled the two values PurveX
+        actually needs. This is here for when you want more: PostgreSQL instead of the default local file, outbound
+        email, or the AI assistant. Add whichever of these you want to <code>.env</code> and restart.
+      </P>
+      <Table
+        head={["Variable", "Required", "Description"]}
+        rows={ENV_VARS.map(([name, req, desc]) => [<code key="n">{name}</code>, req, desc])}
+      />
 
       <H2 id="update">Updating or stopping it later</H2>
       <P>To pick up the latest version, pull the new code and re-run setup &mdash; any database changes apply automatically the next time it starts:</P>
