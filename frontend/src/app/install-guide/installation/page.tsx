@@ -54,21 +54,9 @@ export default function Page() {
       <P>Leave this terminal window open &mdash; it&apos;s running both the server and the web app. Open a new terminal window for anything else you need to do.</P>
       <Callout tone="warn">
         <strong>Back up <code>PURVEX_ENCRYPTION_KEY</code></strong> (the value <code>--setup</code> just generated
-        into <code>.env</code>) somewhere safe, like a password manager. It&apos;s what protects SIEM credentials and
-        2FA codes at rest &mdash; lose it, and that data can&apos;t be recovered. You can&apos;t just generate a new
-        one and pick up where you left off.
+        into <code>.env</code>) somewhere safe, like a password manager. Lose it, and any stored SIEM credentials
+        or 2FA codes can&apos;t be recovered.
       </Callout>
-
-      <H2 id="whats-happening">What those two commands actually do</H2>
-      <P>Nothing here is hidden from you &mdash; this is the short version of everything the script just did:</P>
-      <ul className="dc-list">
-        <li><strong>Checks your machine is ready</strong> &mdash; confirms Python and Node.js are installed before touching anything else.</li>
-        <li><strong>Creates <code>.env</code> and fills in two secret values</strong> &mdash; random strings, generated on your machine, that only your machine ever sees. One keeps sign-ins secure, the other protects stored credentials.</li>
-        <li><strong>Installs the app&apos;s dependencies</strong> &mdash; everything PurveX itself needs to run, downloaded into this folder only.</li>
-        <li><strong>Sets up storage</strong> &mdash; a single local file, not a separate database server, unless you choose to add one later.</li>
-        <li><strong>Starts two processes</strong> &mdash; the server doing the work, and the web app you open in your browser.</li>
-      </ul>
-      <P>That&apos;s the whole thing. No step talks to anything outside this machine.</P>
 
       <H2 id="configure">Going further (optional)</H2>
       <P>
