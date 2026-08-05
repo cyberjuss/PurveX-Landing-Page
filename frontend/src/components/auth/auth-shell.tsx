@@ -79,7 +79,7 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
   return (
     <div
       className={cn(
-        "relative min-h-screen overflow-hidden px-4 py-8 sm:px-6 sm:py-10 auth-shell-enter",
+        "relative flex h-screen flex-col overflow-hidden px-4 py-8 sm:px-6 sm:py-10 auth-shell-enter",
         isLight ? "bg-white text-slate-900" : "bg-[#060810] text-slate-100"
       )}
     >
@@ -100,7 +100,9 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
         // back to the rest of the site, not part of the "welcome" header a
         // page might suppress because it renders its own heading. Pinned
         // to the top-left corner, independent of the form's own width.
-        <div className="relative z-20" ref={navRef}>
+        // shrink-0 keeps its natural height inside the flex column below,
+        // rather than being squeezed by the centering block's flex-1.
+        <div className="relative z-20 shrink-0" ref={navRef}>
           <button
             type="button"
             onClick={() => setNavOpen((v) => !v)}
@@ -142,7 +144,12 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
       }
 
       <div
-        className={cn("relative z-10 mx-auto flex min-h-[calc(100vh-6rem)] w-full items-center justify-center", maxWidthClass)}
+        // flex-1 fills whatever height the nav row above didn't use, out of
+        // the outer h-screen box -- no magic-number min-height to keep in
+        // sync with the nav's actual height. overflow-y-auto is a safety
+        // net for a card genuinely taller than the remaining space, so
+        // that inner region scrolls instead of the whole page.
+        className={cn("relative z-10 mx-auto flex w-full flex-1 items-center justify-center overflow-y-auto py-4", maxWidthClass)}
         style={maxWidthStyle}
       >
         <div
