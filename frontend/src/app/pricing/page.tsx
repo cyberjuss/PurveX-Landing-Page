@@ -148,7 +148,7 @@ function PricingContent() {
   }
 
   const signOutRow = (
-    <div className="mb-8 flex justify-end">
+    <div className="mt-6 flex justify-center">
       <button
         type="button"
         onClick={() => { void signOut(); router.push("/"); }}
@@ -165,7 +165,6 @@ function PricingContent() {
   if (preselected === "paid") {
     return (
       <AuthShell theme="light" width="sm" bare hideHeader>
-        {signOutRow}
         <div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-[rgba(106,92,255,0.1)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-[#6a5cff]">
             <Check className="h-3 w-3" strokeWidth={3} />
@@ -192,6 +191,7 @@ function PricingContent() {
         <p className="mt-3 text-center text-xs text-slate-500">
           Picked the wrong plan? <Link href="/pricing" className="text-[#6a5cff] hover:text-[#5546e0]">Choose again</Link>
         </p>
+        {signOutRow}
       </AuthShell>
     );
   }
@@ -199,8 +199,6 @@ function PricingContent() {
   return (
     <AuthShell theme="light" hideHeader>
       <div className="w-full">
-        {signOutRow}
-
         <div className="mb-8 text-center">
           <h1 className="font-display text-[1.7rem] font-semibold tracking-tight text-slate-900">
             Choose how you run PurveX
@@ -259,6 +257,7 @@ function PricingContent() {
         <p className="mt-6 text-center text-xs text-slate-500">
           Questions first? <Link href="https://calendly.com/purvex-llc/30min" className="text-[#6a5cff] hover:text-[#5546e0]">Book a 30-minute call</Link> instead.
         </p>
+        {signOutRow}
       </div>
     </AuthShell>
   );
