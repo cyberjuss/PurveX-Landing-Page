@@ -17,6 +17,7 @@ import { DOCS_CONTENT_CSS } from "./docs-content";
 
 export type GuidePageId =
   | "overview" | "features" | "installation" | "first-run" | "windows"
+  | "detection-validation" | "runners-and-policy" | "detections" | "team-and-access" | "platform-tools"
   | "data-handling" | "faq" | "troubleshooting";
 
 interface NavItem {
@@ -39,6 +40,16 @@ const NAV: NavGroup[] = [
       { id: "installation", label: "Installation", href: "/install-guide/installation" },
       { id: "first-run", label: "First run", href: "/install-guide/first-run" },
       { id: "windows", label: "Windows path", href: "/install-guide/windows" },
+    ],
+  },
+  {
+    label: "Feature guides",
+    items: [
+      { id: "detection-validation", label: "Detection validation", href: "/install-guide/features/detection-validation" },
+      { id: "runners-and-policy", label: "Runners & testing policy", href: "/install-guide/features/runners-and-policy" },
+      { id: "detections", label: "Detections & DaC", href: "/install-guide/features/detections" },
+      { id: "team-and-access", label: "Team & access", href: "/install-guide/features/team-and-access" },
+      { id: "platform-tools", label: "Platform tools", href: "/install-guide/features/platform-tools" },
     ],
   },
   {
