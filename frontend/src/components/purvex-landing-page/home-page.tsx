@@ -8,6 +8,7 @@ import {
   Radar,
   ShieldCheck,
   Star,
+  Terminal,
   Users,
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
@@ -89,6 +90,33 @@ export default function HomePage() {
     <SiteChrome active="home">
       {/* ═══════════ HERO ═══════════ */}
       <section className="sp-hero">
+        <div className="sp-hero__deco sp-hero__deco--left" aria-hidden="true">
+          <div className="sp-deco-float">
+            <div className="sp-deco-card sp-deco-card--term">
+              <div className="sp-deco-card__dots"><span /><span /><span /></div>
+              <p className="sp-deco-card__line">
+                <span className="sp-deco-card__prompt">$</span> purvex run T1059.001
+              </p>
+              <p className="sp-deco-card__line sp-deco-card__line--dim">atomic-red-team · PowerShell</p>
+              <p className="sp-deco-card__line sp-deco-card__line--ok">
+                <Terminal size={12} /> detection fired · 212ms
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="sp-hero__deco sp-hero__deco--right" aria-hidden="true">
+          <div className="sp-deco-float sp-deco-float--alt">
+            <div className="sp-deco-card sp-deco-card--stat">
+              <div className="sp-deco-card__top">
+                <span className="sp-deco-card__pulse" />
+                <span className="sp-deco-card__eyebrow">Live validation</span>
+              </div>
+              <p className="sp-deco-card__figure">98.4%</p>
+              <p className="sp-deco-card__caption">detections confirmed this run</p>
+            </div>
+          </div>
+        </div>
+
         <h1 className="sp-hero__h1">Building Stronger Security Operations.</h1>
         <p className="sp-hero__sub">
           PurveX helps organizations strengthen their security capabilities through security
@@ -223,6 +251,49 @@ export default function HomePage() {
 
       <style>{`
 .sp-hero .sp-hero__strip { margin: 18px 0 0 }
+
+/* ── Hero deco cards (desktop only -- there's no room to bleed past the
+   hero column below ~1300px without overlapping the headline) ── */
+.sp-hero__deco { position: absolute; top: 0; z-index: 2; pointer-events: none; display: none }
+@media (min-width: 1300px) {
+  .sp-hero__deco { display: block; opacity: 0; animation: sp-deco-in .8s var(--ease) both }
+  .sp-hero__deco--left { left: -206px; top: 66px; animation-name: sp-deco-in-left; animation-delay: .35s }
+  .sp-hero__deco--right { right: -206px; top: 188px; animation-name: sp-deco-in-right; animation-delay: .55s }
+}
+@keyframes sp-deco-in-left { from { opacity: 0; transform: translateY(16px) rotate(-2deg) scale(.94) } to { opacity: 1; transform: translateY(0) rotate(-7deg) scale(1) } }
+@keyframes sp-deco-in-right { from { opacity: 0; transform: translateY(16px) rotate(2deg) scale(.94) } to { opacity: 1; transform: translateY(0) rotate(6deg) scale(1) } }
+.sp-deco-float { animation: sp-deco-float 6.5s ease-in-out infinite }
+.sp-deco-float--alt { animation-duration: 7.5s; animation-delay: -3s }
+@keyframes sp-deco-float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-10px) } }
+
+.sp-deco-card {
+  width: 218px; border-radius: 14px; padding: 14px 15px;
+  background: var(--surface); border: 1px solid var(--border-strong);
+  box-shadow: 0 24px 48px -22px rgba(16,25,46,.28);
+}
+.sp-deco-card__dots { display: flex; gap: 5px; margin-bottom: 10px }
+.sp-deco-card__dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--border-strong) }
+.sp-deco-card__dots span:nth-child(1) { background: #e5484d; opacity: .55 }
+.sp-deco-card__dots span:nth-child(2) { background: #f4b740; opacity: .55 }
+.sp-deco-card__dots span:nth-child(3) { background: var(--green); opacity: .55 }
+.sp-deco-card__line { margin: 0; font-family: var(--font-mono); font-size: .72rem; line-height: 1.7; color: var(--ink-soft); white-space: nowrap; text-align: left }
+.sp-deco-card__prompt { color: var(--accent-deep); font-weight: 700; margin-right: 2px }
+.sp-deco-card__line--dim { color: var(--muted-dim); padding-left: 14px }
+.sp-deco-card__line--ok { display: flex; align-items: center; gap: 5px; color: var(--green); font-weight: 600; margin-top: 2px }
+.sp-deco-card__top { display: flex; align-items: center; gap: 7px }
+.sp-deco-card__pulse { position: relative; width: 7px; height: 7px; border-radius: 50%; background: var(--green) }
+.sp-deco-card__pulse::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1.5px solid var(--green); opacity: .55; animation: sp-pulse-ring 2s ease-out infinite }
+@keyframes sp-pulse-ring { from { transform: scale(.5); opacity: .6 } to { transform: scale(1.6); opacity: 0 } }
+.sp-deco-card__eyebrow { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted) }
+.sp-deco-card__figure { margin: 12px 0 0; text-align: left; font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
+.sp-deco-card__caption { margin: 2px 0 0; text-align: left; font-size: .76rem; color: var(--muted) }
+@media (prefers-reduced-motion: reduce) {
+  .sp-hero__deco { animation: none; opacity: 1; transform: none }
+  .sp-hero__deco--left { transform: rotate(-7deg) }
+  .sp-hero__deco--right { transform: rotate(6deg) }
+  .sp-deco-float { animation: none }
+  .sp-deco-card__pulse::after { animation: none; display: none }
+}
 
 /* ── Problems strip ── */
 .sp-problems { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }

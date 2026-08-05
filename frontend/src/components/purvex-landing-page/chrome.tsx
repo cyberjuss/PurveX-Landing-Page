@@ -428,7 +428,7 @@ export const CHROME_CSS = `
 .sp-main { position: relative; z-index: 1; max-width: 1140px; margin: 0 auto; padding: 0 24px 48px }
 
 /* ── Hero ── */
-.sp-hero { text-align: center; padding: 116px 0 0; max-width: 760px; margin: 0 auto }
+.sp-hero { position: relative; text-align: center; padding: 116px 0 0; max-width: 760px; margin: 0 auto }
 .sp-hero__badge { display: inline-flex; align-items: center; gap: 7px; padding: 6px 15px; border-radius: 999px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.2); font-size: .74rem; font-weight: 600; color: var(--accent-deep); letter-spacing: .01em; margin-bottom: 26px }
 .sp-hero__h1 { margin: 0; font-family: var(--font-display); font-size: clamp(2.1rem, 4vw, 3.1rem); font-weight: 700; line-height: 1.12; letter-spacing: -.025em; color: var(--ink); text-wrap: balance }
 .sp-hero__grad { color: var(--accent-deep) }
