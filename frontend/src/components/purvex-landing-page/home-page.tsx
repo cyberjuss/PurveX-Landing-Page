@@ -354,29 +354,33 @@ export default function HomePage() {
   .sp-problems[data-r] > *, .sp-offers[data-r] > * { opacity: 1; transform: none; filter: none; transition: none }
 }
 
-/* ── Feature quote (single testimonial reads as intentional, not a sparse grid) ── */
-.sp-feature-quotes { display: flex; flex-direction: column; gap: 24px }
+/* ── Feature quote: a squared-off card, photo stacked above the quote,
+   instead of a full-bleed horizontal strip ── */
+.sp-feature-quotes { display: flex; flex-direction: column; gap: 24px; align-items: center }
 .sp-feature-quote {
-  max-width: 880px; margin: 0 auto; width: 100%;
-  display: grid; grid-template-columns: 200px 1fr; gap: 44px; align-items: center;
-  padding: 48px 0;
-  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  max-width: 460px; width: 100%;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 40px 40px 36px;
+  border: 1px solid var(--border); border-radius: 22px;
+  background: var(--surface);
+  box-shadow: 0 28px 56px -32px rgba(16,25,46,.22);
 }
-.sp-feature-quote__person { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px }
-.sp-feature-quote__photo { width: 92px; height: 92px; border-radius: 50%; object-fit: cover; box-shadow: 0 10px 24px -10px rgba(16,25,46,.3) }
-.sp-feature-quote__avatar { display: flex; align-items: center; justify-content: center; width: 92px; height: 92px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 2rem }
+.sp-feature-quote__person { display: flex; flex-direction: column; align-items: center; gap: 8px }
+.sp-feature-quote__photo { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; box-shadow: 0 10px 24px -10px rgba(16,25,46,.3) }
+.sp-feature-quote__avatar { display: flex; align-items: center; justify-content: center; width: 84px; height: 84px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 1.8rem }
 .sp-feature-quote__name { font-size: .98rem; font-weight: 650; color: var(--ink); margin-top: 4px }
 .sp-feature-quote__role { color: var(--muted); font-size: .82rem; line-height: 1.4 }
 .sp-feature-quote__stars { display: flex; gap: 3px; color: #f4b740; margin-top: 2px }
 .sp-feature-quote__stars svg { fill: currentColor }
 .sp-feature-quote__linkedin { display: inline-flex; align-items: center; gap: 6px; color: var(--muted-dim); font-size: .8rem; text-decoration: none; transition: color .2s; margin-top: 4px }
 .sp-feature-quote__linkedin:hover { color: var(--accent-deep) }
+.sp-feature-quote__body { display: flex; flex-direction: column; align-items: center; margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--border) }
 .sp-feature-quote__mark { color: var(--accent); opacity: .3 }
-.sp-feature-quote__text { margin: 14px 0 0; font-size: 1.1rem; font-weight: 400; line-height: 1.6; color: var(--ink) }
-.sp-feature-quote__tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px }
+.sp-feature-quote__text { margin: 10px 0 0; font-size: 1.05rem; font-weight: 400; line-height: 1.6; color: var(--ink) }
+.sp-feature-quote__tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 18px }
 .sp-tagchip { font-size: .74rem; font-weight: 550; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); border-radius: 999px; padding: 5px 11px }
-@media (max-width: 680px) {
-  .sp-feature-quote { grid-template-columns: 1fr; text-align: center; padding: 36px 0; gap: 24px }
+@media (max-width: 560px) {
+  .sp-feature-quote { padding: 32px 24px }
 }
       `}</style>
     </SiteChrome>
