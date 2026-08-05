@@ -124,7 +124,7 @@ function GetPurveXContent() {
 
         <div className="flex flex-col gap-3 border-t border-[var(--pvrx-border-light)] pt-6 sm:flex-row sm:items-center sm:justify-between">
           <Link
-            href="https://github.com/cyberjuss/PurveX#readme"
+            href="/install-guide"
             className="inline-flex items-center gap-1.5 text-sm font-medium text-[#6a5cff] transition hover:text-[#5546e0]"
           >
             <BookOpen className="h-4 w-4" />
