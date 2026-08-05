@@ -95,12 +95,11 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
         />
       </div>
 
-      {!hideHeader && (
-        // Pinned to the page's top-left corner, independent of the form's
-        // own width. A hamburger toggle for the site nav, not a standalone
-        // logo -- the big centered logo below the title already carries the
-        // brand mark, so this slot is for getting back to the rest of the
-        // site instead.
+      {
+        // Always rendered, independent of hideHeader -- this is the way
+        // back to the rest of the site, not part of the "welcome" header a
+        // page might suppress because it renders its own heading. Pinned
+        // to the top-left corner, independent of the form's own width.
         <div className="relative z-20" ref={navRef}>
           <button
             type="button"
@@ -140,7 +139,7 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
             </nav>
           )}
         </div>
-      )}
+      }
 
       <div
         className={cn("relative z-10 mx-auto flex min-h-[calc(100vh-6rem)] w-full items-center justify-center", maxWidthClass)}

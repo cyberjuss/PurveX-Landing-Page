@@ -26,6 +26,23 @@ const PAID_FEATURES = [
   "Priority support",
 ];
 
+function CheckItem({ children, tone = "neutral" }: { children: React.ReactNode; tone?: "neutral" | "accent" }) {
+  return (
+    <li className="flex items-center gap-2.5 text-sm">
+      <span
+        className={
+          tone === "accent"
+            ? "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-[rgba(106,92,255,0.12)] text-[#6a5cff]"
+            : "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500"
+        }
+      >
+        <Check className="h-3 w-3" strokeWidth={3} />
+      </span>
+      <span className={tone === "accent" ? "text-slate-700" : "text-slate-600"}>{children}</span>
+    </li>
+  );
+}
+
 async function recordPlanSelection(user: User, plan: "free" | "paid", reference?: string) {
   if (!supabase) return;
   await supabase.from("portal_profiles").upsert(
@@ -131,14 +148,14 @@ function PricingContent() {
   }
 
   const signOutRow = (
-    <div className="mb-2 flex items-center justify-between">
-      <div />
+    <div className="mb-8 flex justify-end">
       <button
         type="button"
         onClick={() => { void signOut(); router.push("/"); }}
-        className="text-xs font-medium text-slate-500 transition hover:text-slate-800"
+        className="inline-flex items-center gap-2 rounded-full border border-[var(--pvrx-border-light)] bg-white py-1.5 pl-3 pr-1.5 text-xs font-medium text-slate-500 transition hover:border-slate-300 hover:text-slate-800"
       >
-        Sign out ({user?.email})
+        {user?.email}
+        <span className="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-semibold text-slate-600">Sign out</span>
       </button>
     </div>
   );
@@ -150,24 +167,24 @@ function PricingContent() {
       <AuthShell theme="light" width="sm" bare hideHeader>
         {signOutRow}
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#6a5cff]">Paid plan selected</p>
-          <p className="mt-1.5 text-2xl font-display font-semibold text-slate-900">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[rgba(106,92,255,0.1)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-[#6a5cff]">
+            <Check className="h-3 w-3" strokeWidth={3} />
+            Paid plan selected
+          </span>
+          <p className="mt-3 text-3xl font-display font-semibold tracking-tight text-slate-900">
             $49<span className="text-base font-medium text-slate-500"> / user / mo</span>
           </p>
-          <p className="mt-0.5 text-sm text-slate-500">Billed monthly via Stripe, cancel anytime</p>
-          <ul className="mt-4 flex flex-col gap-2">
+          <p className="mt-1 text-sm text-slate-500">Billed monthly via Stripe, cancel anytime</p>
+          <ul className="mt-5 flex flex-col gap-2.5">
             {PAID_FEATURES.map((f) => (
-              <li key={f} className="flex items-start gap-2 text-sm text-slate-700">
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#6a5cff]" />
-                {f}
-              </li>
+              <CheckItem key={f} tone="accent">{f}</CheckItem>
             ))}
           </ul>
           <Button
             onClick={handlePaid}
             disabled={busyPlan !== null}
             size="lg"
-            className="mt-5 h-11 w-full rounded-2xl border-0 bg-[#6a5cff] text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] hover:bg-[#5546e0]"
+            className="mt-6 h-11 w-full rounded-2xl border-0 bg-[#6a5cff] text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] hover:bg-[#5546e0]"
           >
             {busyPlan === "paid" ? <><Loader2 className="h-4 w-4 animate-spin" /> Redirecting to checkout...</> : "Continue to checkout"}
           </Button>
@@ -184,26 +201,23 @@ function PricingContent() {
       <div className="w-full">
         {signOutRow}
 
-        <div className="mb-6 text-center">
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900">
+        <div className="mb-8 text-center">
+          <h1 className="font-display text-[1.7rem] font-semibold tracking-tight text-slate-900">
             Choose how you run PurveX
           </h1>
-          <p className="mx-auto mt-1.5 max-w-md text-sm leading-6 text-slate-500">
+          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
             Both plans are the same self-hosted software. Paid removes the team and runner limits.
           </p>
         </div>
 
         <div className="grid divide-y divide-[var(--pvrx-border-light)] sm:grid-cols-2 sm:divide-x sm:divide-y-0">
-          <div className="flex flex-col pb-6 sm:pr-8 sm:pb-0">
+          <div className="flex flex-col pb-7 sm:pr-9 sm:pb-0">
             <p className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">Free</p>
-            <p className="mt-1.5 text-2xl font-display font-semibold text-slate-900">$0</p>
+            <p className="mt-2 text-[1.9rem] font-display font-semibold tracking-tight text-slate-900">$0</p>
             <p className="mt-0.5 text-sm text-slate-500">Forever, no card required</p>
-            <ul className="mt-4 flex flex-1 flex-col gap-2">
+            <ul className="mt-5 flex flex-1 flex-col gap-2.5">
               {FREE_FEATURES.map((f) => (
-                <li key={f} className="flex items-start gap-2 text-sm text-slate-600">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
-                  {f}
-                </li>
+                <CheckItem key={f}>{f}</CheckItem>
               ))}
             </ul>
             <Button
@@ -211,24 +225,24 @@ function PricingContent() {
               disabled={busyPlan !== null}
               size="lg"
               variant="outline"
-              className="mt-5 h-11 w-full rounded-2xl border-[var(--pvrx-border-light)] bg-white text-slate-900 hover:bg-slate-50"
+              className="mt-6 h-11 w-full rounded-2xl border-[var(--pvrx-border-light)] bg-white text-slate-900 hover:bg-slate-50"
             >
               {busyPlan === "free" ? <><Loader2 className="h-4 w-4 animate-spin" /> Setting up...</> : "Get PurveX free"}
             </Button>
           </div>
 
-          <div className="flex flex-col pt-6 sm:pt-0 sm:pl-8">
-            <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#6a5cff]">Paid</p>
-            <p className="mt-1.5 text-2xl font-display font-semibold text-slate-900">
+          <div className="flex flex-col pt-7 sm:pt-0 sm:pl-9">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#6a5cff]">Paid</p>
+              <span className="rounded-full bg-[rgba(106,92,255,0.1)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.06em] text-[#6a5cff]">Most popular</span>
+            </div>
+            <p className="mt-2 text-[1.9rem] font-display font-semibold tracking-tight text-slate-900">
               $49<span className="text-base font-medium text-slate-500"> / user / mo</span>
             </p>
             <p className="mt-0.5 text-sm text-slate-500">Billed monthly via Stripe, cancel anytime</p>
-            <ul className="mt-4 flex flex-1 flex-col gap-2">
+            <ul className="mt-5 flex flex-1 flex-col gap-2.5">
               {PAID_FEATURES.map((f) => (
-                <li key={f} className="flex items-start gap-2 text-sm text-slate-700">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#6a5cff]" />
-                  {f}
-                </li>
+                <CheckItem key={f} tone="accent">{f}</CheckItem>
               ))}
             </ul>
             <Button
