@@ -30,15 +30,14 @@ export default function Page() {
       </Callout>
 
       <H2 id="manual">Prefer to run it by hand?</H2>
-      <P>Same result as the one-liner, just spelled out as separate steps.</P>
       <TermBlock
         copyText={"git clone https://github.com/cyberjuss/PurveX.git\ncd PurveX\nchmod +x scripts/purvex.sh\n./scripts/purvex.sh --setup\n./scripts/purvex.sh --start"}
         lines={<>
-          <span className="dc-p1">$</span> <span className="dc-cmd">git clone https://github.com/cyberjuss/PurveX.git</span><br/>
+          <span className="dc-p1">$</span> <span className="dc-cmd">git clone https://github.com/cyberjuss/PurveX.git</span>  <span className="dc-hl"># get the code</span><br/>
           <span className="dc-p1">$</span> <span className="dc-cmd">cd PurveX</span><br/>
-          <span className="dc-p1">$</span> <span className="dc-cmd">chmod +x scripts/purvex.sh</span><br/>
-          <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --setup</span><br/>
-          <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --start</span>
+          <span className="dc-p1">$</span> <span className="dc-cmd">chmod +x scripts/purvex.sh</span>  <span className="dc-hl"># make the launcher runnable</span><br/>
+          <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --setup</span>  <span className="dc-hl"># install dependencies, generate secrets</span><br/>
+          <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --start</span>  <span className="dc-hl"># start the API and the web app</span>
         </>}
       />
 
