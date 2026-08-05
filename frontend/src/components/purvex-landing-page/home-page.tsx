@@ -8,7 +8,6 @@ import {
   Radar,
   ShieldCheck,
   Star,
-  Terminal,
   Users,
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
@@ -92,27 +91,36 @@ export default function HomePage() {
       <section className="sp-hero">
         <div className="sp-hero__deco sp-hero__deco--left" aria-hidden="true">
           <div className="sp-deco-float">
-            <div className="sp-deco-card sp-deco-card--term">
-              <div className="sp-deco-card__dots"><span /><span /><span /></div>
-              <p className="sp-deco-card__line">
-                <span className="sp-deco-card__prompt">$</span> purvex run T1059.001
-              </p>
-              <p className="sp-deco-card__line sp-deco-card__line--dim">atomic-red-team · PowerShell</p>
-              <p className="sp-deco-card__line sp-deco-card__line--ok">
-                <Terminal size={12} /> detection fired · 212ms
-              </p>
+            <div className="sp-deco-card sp-deco-card--ring">
+              <div className="sp-deco-card__ringwrap">
+                <svg viewBox="0 0 72 72" width="72" height="72">
+                  <circle cx="36" cy="36" r="30" fill="none" stroke="var(--border)" strokeWidth="7" />
+                  <circle
+                    cx="36" cy="36" r="30" fill="none" stroke="var(--accent-deep)" strokeWidth="7"
+                    strokeLinecap="round" strokeDasharray="188.5" strokeDashoffset="34"
+                    transform="rotate(-90 36 36)"
+                  />
+                </svg>
+                <span className="sp-deco-card__ringpct">82%</span>
+              </div>
+              <p className="sp-deco-card__ringlabel">ATT&amp;CK techniques mapped to detections</p>
             </div>
           </div>
         </div>
         <div className="sp-hero__deco sp-hero__deco--right" aria-hidden="true">
           <div className="sp-deco-float sp-deco-float--alt">
-            <div className="sp-deco-card sp-deco-card--stat">
-              <div className="sp-deco-card__top">
-                <span className="sp-deco-card__pulse" />
-                <span className="sp-deco-card__eyebrow">Live validation</span>
+            <div className="sp-deco-card sp-deco-card--queue">
+              <p className="sp-deco-card__queuehead">
+                <span className="sp-deco-card__pulse" /> Alert queue
+              </p>
+              <div className="sp-deco-card__queuerow">
+                <span className="sp-deco-card__sev sp-deco-card__sev--crit">Critical</span>
+                <span className="sp-deco-card__queuetext">T1055 · Process Injection</span>
               </div>
-              <p className="sp-deco-card__figure">98.4%</p>
-              <p className="sp-deco-card__caption">detections confirmed this run</p>
+              <div className="sp-deco-card__queuerow">
+                <span className="sp-deco-card__sev sp-deco-card__sev--med">Medium</span>
+                <span className="sp-deco-card__queuetext">T1059 · Command Exec</span>
+              </div>
             </div>
           </div>
         </div>
@@ -271,22 +279,25 @@ export default function HomePage() {
   background: var(--surface); border: 1px solid var(--border-strong);
   box-shadow: 0 24px 48px -22px rgba(16,25,46,.28);
 }
-.sp-deco-card__dots { display: flex; gap: 5px; margin-bottom: 10px }
-.sp-deco-card__dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--border-strong) }
-.sp-deco-card__dots span:nth-child(1) { background: #e5484d; opacity: .55 }
-.sp-deco-card__dots span:nth-child(2) { background: #f4b740; opacity: .55 }
-.sp-deco-card__dots span:nth-child(3) { background: var(--green); opacity: .55 }
-.sp-deco-card__line { margin: 0; font-family: var(--font-mono); font-size: .72rem; line-height: 1.7; color: var(--ink-soft); white-space: nowrap; text-align: left }
-.sp-deco-card__prompt { color: var(--accent-deep); font-weight: 700; margin-right: 2px }
-.sp-deco-card__line--dim { color: var(--muted-dim); padding-left: 14px }
-.sp-deco-card__line--ok { display: flex; align-items: center; gap: 5px; color: var(--green); font-weight: 600; margin-top: 2px }
-.sp-deco-card__top { display: flex; align-items: center; gap: 7px }
 .sp-deco-card__pulse { position: relative; width: 7px; height: 7px; border-radius: 50%; background: var(--green) }
 .sp-deco-card__pulse::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1.5px solid var(--green); opacity: .55; animation: sp-pulse-ring 2s ease-out infinite }
 @keyframes sp-pulse-ring { from { transform: scale(.5); opacity: .6 } to { transform: scale(1.6); opacity: 0 } }
-.sp-deco-card__eyebrow { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted) }
-.sp-deco-card__figure { margin: 12px 0 0; text-align: left; font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
-.sp-deco-card__caption { margin: 2px 0 0; text-align: left; font-size: .76rem; color: var(--muted) }
+
+/* Left card: ATT&CK coverage gauge */
+.sp-deco-card--ring { width: 264px; display: flex; align-items: center; gap: 14px }
+.sp-deco-card__ringwrap { position: relative; flex-shrink: 0; width: 72px; height: 72px }
+.sp-deco-card__ringpct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; letter-spacing: -.01em; color: var(--ink) }
+.sp-deco-card__ringlabel { margin: 0; text-align: left; font-size: .76rem; line-height: 1.42; color: var(--muted) }
+
+/* Right card: live alert queue */
+.sp-deco-card--queue { width: 240px }
+.sp-deco-card__queuehead { display: flex; align-items: center; gap: 7px; margin: 0 0 11px; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted) }
+.sp-deco-card__queuerow { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid var(--border) }
+.sp-deco-card__queuerow:first-of-type { border-top: none; padding-top: 0 }
+.sp-deco-card__sev { flex-shrink: 0; font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; padding: 3px 7px; border-radius: 999px }
+.sp-deco-card__sev--crit { background: rgba(229,72,77,.12); color: var(--red) }
+.sp-deco-card__sev--med { background: rgba(244,183,64,.18); color: #a15b06 }
+.sp-deco-card__queuetext { font-size: .74rem; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 @media (prefers-reduced-motion: reduce) {
   .sp-hero__deco { animation: none; opacity: 1; transform: none }
   .sp-hero__deco--left { transform: rotate(-7deg) }
