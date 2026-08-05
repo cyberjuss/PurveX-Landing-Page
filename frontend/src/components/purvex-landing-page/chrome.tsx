@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
-  ChevronDown,
   FlaskConical,
   GraduationCap,
   Layers,
@@ -129,9 +128,6 @@ export function SiteChrome({
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [openMenu, setOpenMenu] = useState<NavKey | null>(null);
-  const [openMobileGroup, setOpenMobileGroup] = useState<NavKey | null>(null);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     let ticking = false;
@@ -187,22 +183,6 @@ export function SiteChrome({
   }, [mobileOpen]);
 
   useEffect(() => {
-    if (!openMenu) return;
-    const fn = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpenMenu(null);
-    };
-    const clickFn = (e: MouseEvent) => {
-      if (!(e.target as HTMLElement).closest(".sp-navitem")) setOpenMenu(null);
-    };
-    window.addEventListener("keydown", fn);
-    document.addEventListener("click", clickFn);
-    return () => {
-      window.removeEventListener("keydown", fn);
-      document.removeEventListener("click", clickFn);
-    };
-  }, [openMenu]);
-
-  useEffect(() => {
     const fn = (e: MouseEvent) => {
       const a = (e.target as HTMLElement).closest<HTMLAnchorElement>("a[href^='#']");
       if (!a) return;
@@ -219,15 +199,6 @@ export function SiteChrome({
 
   const closeNav = () => {
     setMobileOpen(false);
-    setOpenMobileGroup(null);
-  };
-
-  const scheduleClose = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setOpenMenu(null), 160);
-  };
-  const cancelClose = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
   };
 
   return (
@@ -246,76 +217,6 @@ export function SiteChrome({
             <Image src="/logo.png" alt="PurveX" width={40} height={40} className="sp-logo__img" />
             <span>PurveX</span>
           </Link>
-          <nav className="sp-nav__links">
-            {NAV_MENUS.map((menu) => (
-              <div
-                key={menu.key}
-                className="sp-navitem"
-                onMouseEnter={() => {
-                  if (menu.items.length === 0) return;
-                  cancelClose();
-                  setOpenMenu(menu.key);
-                }}
-                onMouseLeave={scheduleClose}
-              >
-                <Link
-                  href={menu.href}
-                  className={`sp-navitem__link${active === menu.key ? " sp-nav__link--active" : ""}`}
-                  onClick={() => setOpenMenu(null)}
-                  {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
-                >
-                  {menu.label}
-                </Link>
-                {menu.items.length > 0 && (
-                  <>
-                    <button
-                      type="button"
-                      className={`sp-navitem__chev${openMenu === menu.key ? " sp-navitem__chev--open" : ""}`}
-                      aria-label={`${menu.label} menu`}
-                      aria-expanded={openMenu === menu.key}
-                      onClick={() => setOpenMenu(openMenu === menu.key ? null : menu.key)}
-                    >
-                      <ChevronDown size={13} />
-                    </button>
-
-                    <div className={`sp-megamenu${openMenu === menu.key ? " sp-megamenu--open" : ""}`}>
-                      <div className="sp-megamenu__head">
-                        <div className="sp-megamenu__icon">
-                          {menu.icon && <menu.icon size={17} />}
-                        </div>
-                        <p>{menu.blurb}</p>
-                      </div>
-                      <div className="sp-megamenu__list">
-                        {menu.items.map((item) => (
-                          <Link
-                            key={item.label}
-                            href={`${menu.href}${item.anchor}`}
-                            className="sp-megamenu__item"
-                            onClick={() => setOpenMenu(null)}
-                            {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
-                          >
-                            <item.icon size={15} />
-                            <span>
-                              <strong>{item.label}</strong>
-                              <em>{item.desc}</em>
-                            </span>
-                          </Link>
-                        ))}
-                      </div>
-                      <Link
-                        href={menu.href}
-                        className="sp-megamenu__cta"
-                        onClick={() => setOpenMenu(null)}
-                        {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
-                      >
-                        {menu.cta} →
-                      </Link>
-                    </div>
-                  </>
-                )}
-              </div>
-            ))}
-          </nav>
           <div className="sp-nav__right">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--sm">
               Get in Touch
@@ -331,41 +232,14 @@ export function SiteChrome({
         <nav className="sp-mobile__nav" onClick={(e) => e.stopPropagation()}>
           {NAV_MENUS.map((menu, i) => (
             <div key={menu.key} className="sp-mobile__group" style={{ animationDelay: `${0.06 + i * 0.06}s` }}>
-              <div className="sp-mobile__row">
-                <Link
-                  href={menu.href}
-                  onClick={closeNav}
-                  className="sp-mobile__toplink"
-                  {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
-                >
-                  {menu.label}
-                </Link>
-                {menu.items.length > 0 && (
-                  <button
-                    type="button"
-                    className={`sp-mobile__chev${openMobileGroup === menu.key ? " sp-mobile__chev--open" : ""}`}
-                    aria-label={`Expand ${menu.label}`}
-                    onClick={() => setOpenMobileGroup(openMobileGroup === menu.key ? null : menu.key)}
-                  >
-                    <ChevronDown size={20} />
-                  </button>
-                )}
-              </div>
-              {menu.items.length > 0 && (
-                <div className={`sp-mobile__sub${openMobileGroup === menu.key ? " sp-mobile__sub--open" : ""}`}>
-                  {menu.items.map((item) => (
-                    <Link
-                      key={item.label}
-                      href={`${menu.href}${item.anchor}`}
-                      onClick={closeNav}
-                      className="sp-mobile__sublink"
-                      {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
+              <Link
+                href={menu.href}
+                onClick={closeNav}
+                className={`sp-mobile__toplink${active === menu.key ? " sp-mobile__toplink--active" : ""}`}
+                {...(menu.external ? { target: "_blank", rel: "noreferrer" } : {})}
+              >
+                {menu.label}
+              </Link>
             </div>
           ))}
           <a
@@ -511,48 +385,14 @@ export const CHROME_CSS = `
 /* ── Nav ── */
 .sp-nav { position: sticky; top: 0; z-index: 50; padding: 0 24px; transition: background .35s, backdrop-filter .35s, box-shadow .35s, border-color .35s; border-bottom: 1px solid transparent }
 .sp-nav--s { background: rgba(251,252,254,.82); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3); border-bottom: 1px solid var(--border) }
-.sp-nav__inner { max-width: 1140px; margin: 0 auto; display: grid; grid-template-columns: auto 1fr auto; align-items: center; height: 66px }
+.sp-nav__inner { max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 66px }
 .sp-logo { display: inline-flex; align-items: center; gap: 9px; justify-self: start; font-family: var(--font-display); font-weight: 650; font-size: 1.2rem; color: var(--ink); text-decoration: none; letter-spacing: -.015em }
 .sp-logo__img { border-radius: 8px }
 .sp-nav .sp-logo { font-size: 1.3rem; gap: 10px }
-/* Nav simplified to always be a hamburger -- the full inline links + mega
-   menu are still there in the markup (and still used by the mobile panel),
-   just never shown at any width now. */
-.sp-nav__links { display: none; gap: 6px; justify-self: center }
-.sp-nav__link--active { color: var(--ink) !important }
+/* Nav is a hamburger at every width -- opens the flat mobile panel below,
+   no inline links, no mega menu. */
 .sp-nav__right { display: flex; align-items: center; gap: 10px; justify-self: end }
 .sp-nav__burger { display: flex; align-items: center; justify-content: center; background: none; border: 0; color: var(--ink); cursor: pointer; padding: 6px; margin-right: -6px }
-
-/* ── Mega menu ── */
-.sp-navitem { position: relative; display: flex; align-items: center; padding: 22px 4px; }
-.sp-navitem__link { position: relative; display: inline-flex; align-items: center; font-size: .87rem; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .2s; padding: 6px 4px 6px 10px }
-.sp-navitem__link:hover { color: var(--ink) }
-.sp-navitem__link::after { content: ""; position: absolute; left: 10px; right: 4px; bottom: -1px; height: 2px; border-radius: 2px; background: var(--accent-deep); transform: scaleX(0); transform-origin: left; transition: transform .3s var(--ease) }
-.sp-navitem__link:hover::after, .sp-navitem__link.sp-nav__link--active::after { transform: scaleX(1) }
-.sp-navitem__chev { display: inline-flex; align-items: center; justify-content: center; background: none; border: 0; color: var(--muted-dim); cursor: pointer; padding: 6px 8px 6px 2px; transition: transform .25s var(--ease), color .2s }
-.sp-navitem__chev:hover { color: var(--accent-deep) }
-.sp-navitem__chev--open { transform: rotate(180deg); color: var(--accent-deep) }
-
-.sp-megamenu {
-  position: absolute; top: calc(100% - 6px); left: 50%; transform: translate(-50%, 8px);
-  width: 340px; padding: 10px; border-radius: 16px; border: 1px solid var(--border);
-  background: var(--surface); box-shadow: 0 30px 60px -28px rgba(16,25,46,.35), 0 4px 16px -8px rgba(16,25,46,.12);
-  opacity: 0; visibility: hidden; pointer-events: none;
-  transition: opacity .2s var(--ease), transform .2s var(--ease), visibility .2s;
-  z-index: 60;
-}
-.sp-megamenu--open { opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, 0) }
-.sp-megamenu__head { display: flex; align-items: center; gap: 11px; padding: 10px 10px 12px; border-bottom: 1px solid var(--border) }
-.sp-megamenu__icon { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-deep); flex-shrink: 0 }
-.sp-megamenu__head p { margin: 0; font-size: .82rem; color: var(--muted); line-height: 1.4 }
-.sp-megamenu__list { display: flex; flex-direction: column; padding: 6px 0 }
-.sp-megamenu__item { display: flex; align-items: flex-start; gap: 12px; padding: 11px 12px; border-radius: 10px; text-decoration: none; color: inherit; transition: background .18s }
-.sp-megamenu__item:hover { background: var(--surface-alt) }
-.sp-megamenu__item svg { flex-shrink: 0; margin-top: 2px; color: var(--accent-deep) }
-.sp-megamenu__item strong { display: block; font-size: .86rem; font-weight: 600; color: var(--ink) }
-.sp-megamenu__item em { display: block; margin-top: 2px; font-style: normal; font-size: .78rem; color: var(--muted) }
-.sp-megamenu__cta { display: block; margin-top: 4px; padding: 11px 10px; border-top: 1px solid var(--border); text-align: center; font-size: .85rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: color .2s }
-.sp-megamenu__cta:hover { color: var(--accent) }
 
 /* ── Buttons ── */
 .sp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 0; border-radius: 11px; font-weight: 620; font-size: .88rem; text-decoration: none; cursor: pointer; white-space: nowrap; transition: transform .25s var(--ease), background .25s, box-shadow .25s, border-color .25s, color .25s; outline: none }
@@ -575,16 +415,11 @@ export const CHROME_CSS = `
 .sp-mobile--open { opacity: 1; pointer-events: auto }
 .sp-mobile__nav { display: flex; flex-direction: column; align-items: stretch; gap: 2px; width: min(88vw, 440px); margin: auto; text-align: left; counter-reset: navitem }
 .sp-mobile__group { opacity: 0; animation: sp-menu-in .55s var(--ease) both; border-bottom: 1px solid var(--border) }
-.sp-mobile__row { display: flex; align-items: center; justify-content: space-between; gap: 12px }
-.sp-mobile__toplink { position: relative; counter-increment: navitem; font-family: var(--font-display); font-size: clamp(1.5rem, 6.4vw, 1.9rem); font-weight: 700; letter-spacing: -.02em; color: var(--ink); text-decoration: none; padding: 14px 0; transition: color .25s var(--ease) }
+.sp-mobile__toplink { position: relative; display: block; counter-increment: navitem; font-family: var(--font-display); font-size: clamp(1.5rem, 6.4vw, 1.9rem); font-weight: 700; letter-spacing: -.02em; color: var(--ink); text-decoration: none; padding: 14px 0; transition: color .25s var(--ease) }
 .sp-mobile__toplink::before { content: "0" counter(navitem); font-family: var(--font-mono); font-size: .72rem; font-weight: 500; color: var(--accent); margin-right: 12px; vertical-align: 5px }
 .sp-mobile__toplink:hover { color: var(--accent-deep) }
-.sp-mobile__chev { display: flex; align-items: center; justify-content: center; background: none; border: 0; color: var(--muted-dim); cursor: pointer; padding: 10px; transition: transform .25s var(--ease), color .2s }
-.sp-mobile__chev--open { transform: rotate(180deg); color: var(--accent-deep) }
-.sp-mobile__sub { max-height: 0; overflow: hidden; opacity: 0; transition: max-height .35s var(--ease), opacity .25s }
-.sp-mobile__sub--open { max-height: 240px; opacity: 1; padding-bottom: 14px }
-.sp-mobile__sublink { display: block; padding: 8px 0 8px 34px; font-size: .92rem; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .2s }
-.sp-mobile__sublink:hover { color: var(--accent-deep) }
+.sp-mobile__toplink--active { color: var(--accent-deep) }
+.sp-mobile__toplink--active::before { color: var(--accent-deep) }
 .sp-mobile__nav .sp-btn { margin: 28px 0 0; width: 100% }
 @keyframes sp-menu-in { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: none } }
 @media (prefers-reduced-motion: reduce) { .sp-mobile__group { animation: none; opacity: 1 } }
