@@ -348,14 +348,14 @@ export default function TrainingPage() {
 /* ── Syllabus (horizontal zigzag roadmap: click an icon to reveal its card) ── */
 .sp-roadmap-zigzag { display: flex; flex-direction: column; padding: 44px 0 }
 .sp-roadmap-zigzag__row { display: flex; gap: 6px }
-.sp-roadmap-zigzag__row--bottom { align-items: flex-start; min-height: 20px }
+.sp-roadmap-zigzag__row--bottom { align-items: flex-start; min-height: 240px }
 .sp-roadmap-zigzag__row--icons { position: relative; padding: 20px 0 }
 .sp-roadmap-zigzag__row--icons::before {
   content: ""; position: absolute; top: 50%; left: calc(100% / 14); right: calc(100% / 14); height: 2px;
   background: linear-gradient(90deg, var(--border-strong), var(--border) 92%, var(--border-strong));
 }
 .sp-roadmap-zigzag__slot { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center }
-.sp-roadmap-zigzag__row--bottom .sp-roadmap-zigzag__slot { justify-content: flex-start }
+.sp-roadmap-zigzag__row--bottom .sp-roadmap-zigzag__slot { position: relative; justify-content: flex-start }
 .sp-roadmap-zigzag__row--icons .sp-roadmap-zigzag__slot { align-items: center }
 
 .sp-roadmap-zigzag__icon {
@@ -377,13 +377,26 @@ export default function TrainingPage() {
 .sp-roadmap-zigzag__stem { width: 2px; height: 20px; background: var(--border-strong); flex-shrink: 0; margin: 6px 0 }
 
 .sp-roadmap-zigzag__card {
-  width: 100%; max-width: 300px; height: 200px;
+  /* Absolutely positioned and centered under its slot -- an equal-width flex
+     slot (1/7 of the row) caps out around 150px, far too narrow for this
+     card's copy, so it breaks out of the flex sizing entirely rather than
+     being squeezed to its column's share. Only one card is ever open at a
+     time, so it's free to overlap neighboring (empty) slots. --card-x is
+     the horizontal offset, overridden below for the first/last slot so a
+     340px-wide card centered on the outermost icons doesn't run past the
+     viewport edge on common laptop widths. */
+  --card-x: -50%;
+  position: absolute; top: 32px; left: 50%; transform: translateX(var(--card-x));
+  width: min(340px, calc(100vw - 48px)); height: 200px;
   padding: 18px 18px 20px;
   border: 1px solid var(--border); border-top: 3px solid var(--accent-deep);
   background: var(--surface);
+  box-shadow: 0 20px 44px -22px rgba(16,25,46,.22);
   animation: sp-zigzag-card-in .3s var(--ease) both;
   display: flex; flex-direction: column; overflow: hidden;
 }
+.sp-roadmap-zigzag__slot:first-child .sp-roadmap-zigzag__card { left: 0; --card-x: 0% }
+.sp-roadmap-zigzag__slot:last-child .sp-roadmap-zigzag__card { left: auto; right: 0; --card-x: 0% }
 .sp-roadmap-zigzag__mod { flex-shrink: 0; font-family: var(--font-mono); font-size: .64rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep) }
 .sp-roadmap-zigzag__card h3 {
   flex-shrink: 0; margin: 6px 0 0; font-family: var(--font-display); font-size: .96rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink); line-height: 1.3;
@@ -393,7 +406,7 @@ export default function TrainingPage() {
   margin: 8px 0 0; font-size: .8rem; color: var(--muted); line-height: 1.55;
   display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;
 }
-@keyframes sp-zigzag-card-in { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+@keyframes sp-zigzag-card-in { from { opacity: 0; transform: translate(var(--card-x), 6px) } to { opacity: 1; transform: translateX(var(--card-x)) } }
 @media (prefers-reduced-motion: reduce) { .sp-roadmap-zigzag__card { animation: none } }
 
 @media (max-width: 900px) {
