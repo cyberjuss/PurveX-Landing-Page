@@ -16,7 +16,7 @@ import { DOCS_CONTENT_CSS } from "./docs-content";
    ───────────────────────────────────────────────────────── */
 
 export type GuidePageId =
-  | "overview" | "installation" | "first-run" | "windows"
+  | "overview" | "features" | "installation" | "first-run" | "windows"
   | "data-handling" | "faq" | "troubleshooting";
 
 interface NavItem {
@@ -35,6 +35,7 @@ const NAV: NavGroup[] = [
     label: "Get started",
     items: [
       { id: "overview", label: "Overview", href: "/install-guide" },
+      { id: "features", label: "Features", href: "/install-guide/features" },
       { id: "installation", label: "Installation", href: "/install-guide/installation" },
       { id: "first-run", label: "First run", href: "/install-guide/first-run" },
       { id: "windows", label: "Windows path", href: "/install-guide/windows" },
