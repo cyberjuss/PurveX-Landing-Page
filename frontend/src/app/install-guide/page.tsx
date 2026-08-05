@@ -8,20 +8,21 @@ export default function Page() {
   return (
     <>
       <Eyebrow>Install guide</Eyebrow>
-      <H1>Get PurveX running on your own infrastructure</H1>
+      <H1>Get PurveX running on your own machine</H1>
       <Lede>
-        PurveX connects to your SIEM, runs Atomic Red Team tests against your environment, and tells you whether
-        your detections actually fired &mdash; with evidence. This guide walks through a self-hosted install end to
-        end: clone, configure, start, create the admin account, and run your first validation.
+        PurveX connects to your SIEM &mdash; the tool your team already uses to collect and search security logs
+        &mdash; safely simulates real attack techniques, and tells you whether your detections actually caught them.
+        No guesswork, just evidence. This guide walks through the whole setup in order: get the code, fill in a
+        couple of settings, start it up, create your account, and run your first test.
       </Lede>
       <MetaRow>
         <span><Clock size={14} /> About 10 minutes</span>
-        <span><Server size={14} /> Self-hosted, single machine</span>
-        <span><ShieldCheck size={14} /> Nothing leaves your perimeter</span>
+        <span><Server size={14} /> Runs on one machine you control</span>
+        <span><ShieldCheck size={14} /> Nothing leaves that machine</span>
       </MetaRow>
 
-      <H2>Prerequisites</H2>
-      <P>The install script checks these too, but it&apos;s faster to fix gaps up front.</P>
+      <H2>Before you start</H2>
+      <P>You&apos;ll need these installed first. The setup script checks for them too, but confirming now saves a false start later.</P>
       <Table
         head={["Tool", "Version", "Check"]}
         rows={[
@@ -33,11 +34,12 @@ export default function Page() {
         ]}
       />
 
-      <H2>What you&apos;re installing</H2>
+      <H2>What&apos;s actually running on your machine</H2>
       <P>
-        A FastAPI backend, a Next.js frontend, and PostgreSQL for storage &mdash; all running on one machine you
-        control. There&apos;s no PurveX cloud component: nothing calls out except to a SIEM you configure, and
-        optionally an LLM provider if you enable the AI assistant.
+        PurveX is three pieces working together, all running locally: a backend that does the work, a web app
+        you&apos;ll use in your browser, and a database that stores everything. There&apos;s no PurveX cloud
+        service involved anywhere &mdash; the only outside connection it makes is to the SIEM you point it at, and
+        optionally an AI provider if you choose to turn on the assistant.
       </P>
       <P>
         Ready? <Link href="/install-guide/installation" style={{ color: "var(--accent-deep)", fontWeight: 600 }}>Start with installation &rarr;</Link>

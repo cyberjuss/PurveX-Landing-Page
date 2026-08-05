@@ -3,12 +3,12 @@
 import { Eyebrow, H1, Lede, H2, P, Table, TermBlock, Step, Callout } from "@/components/purvex-landing-page/docs-content";
 
 const ENV_VARS: [string, string, string][] = [
-  ["DATABASE_URL", "yes", "PostgreSQL connection string"],
-  ["JWT_SECRET_KEY", "yes", "Signs session tokens"],
-  ["PURVEX_ENCRYPTION_KEY", "yes", "Encrypts SIEM credentials and 2FA secrets at rest"],
+  ["DATABASE_URL", "yes", "The address of your PostgreSQL database"],
+  ["JWT_SECRET_KEY", "yes", "Keeps sign-in sessions secure"],
+  ["PURVEX_ENCRYPTION_KEY", "yes", "Encrypts SIEM credentials and two-factor authentication (2FA) codes at rest"],
   ["PURVEX_ENV", "no", "dev / staging / prod (default: dev)"],
-  ["REDIS_URL", "no, locally", "Rate limiting and the background job queue"],
-  ["OPENAI_API_KEY", "no", "Enables the Watchtower AI assistant"],
+  ["REDIS_URL", "no, locally", "Powers rate limiting and the background job queue"],
+  ["OPENAI_API_KEY", "no", "Turns on the Watchtower AI assistant"],
 ];
 
 export default function Page() {
@@ -16,20 +16,24 @@ export default function Page() {
     <>
       <Eyebrow>Get started</Eyebrow>
       <H1>Installation</H1>
-      <Lede>Get the code, configure the two required secrets, and start the server.</Lede>
+      <Lede>Get the code, fill in two required values, and start it up. About five minutes end to end.</Lede>
 
       <H2 id="get-code">Get the code</H2>
       <Step n={1} title="One-line install">
-        <P>Clones the repo (or downloads a source archive if <code>git</code> isn&apos;t installed) into a new <code>PurveX/</code> folder.</P>
+        <P>Downloads PurveX into a new <code>PurveX/</code> folder on your machine. It uses <code>git</code> if you have it, and falls back to a plain download if you don&apos;t &mdash; either way, this is all you need to run.</P>
         <TermBlock copyText="curl -fsSL https://purvex-llc.com/install.sh | bash" lines={<><span className="dc-p1">$</span> <span className="dc-cmd">curl -fsSL https://purvex-llc.com/install.sh | bash</span></>} />
       </Step>
-      <Step n={2} title="Or do it by hand" last>
-        <P>Same result, if you&apos;d rather see each step.</P>
+      <Step n={2} title="Prefer to see each step yourself?" last>
+        <P>This does exactly the same thing, just spelled out:</P>
         <TermBlock copyText={"git clone https://github.com/cyberjuss/PurveX.git\ncd PurveX"} lines={<><span className="dc-p1">$</span> <span className="dc-cmd">git clone https://github.com/cyberjuss/PurveX.git</span><br/><span className="dc-p1">$</span> <span className="dc-cmd">cd PurveX</span></>} />
       </Step>
 
-      <H2 id="configure">Configure</H2>
-      <P>Copy the example environment file, create a database, and generate the two secrets PurveX needs at boot.</P>
+      <H2 id="configure">Fill in two settings</H2>
+      <P>
+        PurveX needs a couple of things set before it can start: a database to store its data in, and two
+        random secret values it uses to keep that data secure. Copy the example settings file, create an empty
+        database, and generate both secrets:
+      </P>
       <TermBlock
         copyText={'cp .env.example .env\ncreatedb purvex\npython -c "import secrets; print(secrets.token_urlsafe(32))"\npython -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"'}
         lines={<>
@@ -41,19 +45,25 @@ export default function Page() {
           <span className="dc-out">gk8Q...  <span className="dc-hl"># PURVEX_ENCRYPTION_KEY</span></span>
         </>}
       />
-      <P>Paste both values, plus your <code>DATABASE_URL</code>, into <code>.env</code>.</P>
+      <P>
+        Open the <code>.env</code> file that was just created and paste in both generated values, plus your{" "}
+        <code>DATABASE_URL</code> (the address of the database you just made &mdash; something like{" "}
+        <code>postgresql://localhost/purvex</code>).
+      </P>
       <Callout tone="warn">
-        <strong>Save <code>PURVEX_ENCRYPTION_KEY</code> somewhere durable.</strong> It encrypts SIEM credentials and
-        2FA secrets at rest. Lose it, and that data becomes permanently unrecoverable &mdash; not just re-generatable.
+        <strong>Keep a copy of <code>PURVEX_ENCRYPTION_KEY</code> somewhere safe</strong>, like a password manager.
+        It&apos;s what protects sensitive data at rest &mdash; SIEM credentials, and two-factor authentication (2FA)
+        codes if you ever turn that on. If this key is lost, that data can&apos;t be recovered. You can&apos;t just
+        generate a new one and pick up where you left off.
       </Callout>
-      <P>Full reference:</P>
+      <P>For reference, here&apos;s what each setting does:</P>
       <Table
         head={["Variable", "Required", "Description"]}
         rows={ENV_VARS.map(([name, req, desc]) => [<code key="n">{name}</code>, req, desc])}
       />
 
-      <H2 id="start">Install dependencies and start</H2>
-      <P>The bundled launcher handles both the Python and Node sides.</P>
+      <H2 id="start">Install and start it up</H2>
+      <P>One script installs everything and starts both halves of the app for you &mdash; no need to juggle Python and Node commands yourself.</P>
       <TermBlock
         copyText={"chmod +x scripts/purvex.sh\n./scripts/purvex.sh --setup\n./scripts/purvex.sh --start"}
         lines={<>
@@ -68,16 +78,16 @@ export default function Page() {
           <span className="dc-ok">[purvex] Frontend running on :1120</span>
         </>}
       />
-      <P>Leave this running &mdash; it&apos;s your API and web server both. Open a new terminal for anything else.</P>
+      <P>Leave this terminal window open &mdash; it&apos;s running both the server and the web app. Open a new terminal window for anything else you need to do.</P>
 
-      <H2 id="update">Updating and stopping it</H2>
-      <P>Pull the latest code and re-run setup &mdash; migrations apply automatically on next start:</P>
+      <H2 id="update">Updating or stopping it later</H2>
+      <P>To pick up the latest version, pull the new code and re-run setup &mdash; any database changes apply automatically the next time it starts:</P>
       <TermBlock copyText={"git pull\n./scripts/purvex.sh --setup\n./scripts/purvex.sh --rebuild"} lines={<>
         <span className="dc-p1">$</span> <span className="dc-cmd">git pull</span><br/>
         <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --setup</span><br/>
         <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --rebuild</span>
       </>} />
-      <P>To stop, <code>Ctrl+C</code> in the terminal running <code>--start</code>. Nothing runs in the background beyond that process and its child services.</P>
+      <P>To stop PurveX, press <code>Ctrl+C</code> in the terminal window running <code>--start</code>. Nothing keeps running in the background beyond that.</P>
     </>
   );
 }

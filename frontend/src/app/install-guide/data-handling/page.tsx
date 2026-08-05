@@ -7,26 +7,27 @@ export default function Page() {
     <>
       <Eyebrow>Reference</Eyebrow>
       <H1>What PurveX does and doesn&apos;t collect</H1>
-      <Lede>PurveX validates detections &mdash; it does not mirror or store your SIEM data.</Lede>
+      <Lede>PurveX checks whether your detections work &mdash; it doesn&apos;t copy or store your SIEM data to do that.</Lede>
 
       <ul className="dc-list">
-        <li>Pulls only the minimum needed to confirm whether a test triggered an alert</li>
-        <li>Uses scoped queries with minimal permissions</li>
-        <li>Defaults to deep-linking back to your SIEM for full event details</li>
+        <li>Only pulls the small amount of data needed to confirm whether a test set off an alert</li>
+        <li>Asks your SIEM for narrowly-scoped results, using the fewest permissions it can get away with</li>
+        <li>Links back to your SIEM for the full event details, instead of storing a copy itself</li>
       </ul>
 
-      <P>Never collected:</P>
+      <P>It never collects:</P>
       <ul className="dc-list">
-        <li>Raw event logs or payloads</li>
-        <li>PII or customer data</li>
-        <li>Case notes or IR artifacts</li>
+        <li>Raw event logs or their contents</li>
+        <li>Personal or customer data</li>
+        <li>Case notes or incident-response records</li>
       </ul>
 
       <P>
-        Everything PurveX does store lives in your own PostgreSQL database, on your own infrastructure. SIEM
-        connection credentials, 2FA secrets, and detection-source tokens are encrypted at rest with the
-        <code> PURVEX_ENCRYPTION_KEY</code> you set during installation. There is no PurveX cloud component and no
-        telemetry sent back to us.
+        Whatever PurveX does store lives in your own PostgreSQL database, on your own machine &mdash; not in
+        anything we run. SIEM login credentials, two-factor authentication (2FA) codes if you turn that feature on,
+        and detection-source tokens are all encrypted before they&apos;re saved, using the
+        <code> PURVEX_ENCRYPTION_KEY</code> you set during installation. There&apos;s no PurveX cloud service
+        involved, and nothing is ever sent back to us.
       </P>
     </>
   );

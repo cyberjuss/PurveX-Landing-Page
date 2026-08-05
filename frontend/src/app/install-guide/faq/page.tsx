@@ -3,12 +3,13 @@
 import { Eyebrow, H1, Lede } from "@/components/purvex-landing-page/docs-content";
 
 const FAQ: [string, string][] = [
-  ["Is PurveX a replacement for my SIEM?", "No. PurveX reads from your SIEM; it doesn't replace it. You still need Splunk, Elastic, Sentinel, or similar for PurveX to be useful."],
-  ["Is it safe to run against production?", "Atomic Red Team tests are scoped and reversible by design, and PurveX adds its own Testing Policy layer on top — PROD runs are restricted to admins, inside configured maintenance windows, with irreversible atomics blocked outright."],
-  ["Does the AI assistant send data to third parties?", "Only if you configure it with an external provider (OpenAI, DeepSeek). Leave OPENAI_API_KEY blank and it disables cleanly — nothing is sent anywhere."],
-  ["Can one instance serve multiple teams or clients?", "Yes — PurveX is multi-tenant. Organizations are isolated from each other, and a user can hold different roles across different organizations."],
-  ["Do I need Redis for a local install?", "No. Redis backs distributed rate limiting and the job queue for multi-replica production deployments. A single-machine install works without it — set REDIS_URL only if you're testing that path specifically."],
-  ["What happens if I lose PURVEX_ENCRYPTION_KEY?", "Every encrypted column — SIEM credentials, 2FA secrets, source tokens — becomes permanently unreadable. There's no recovery path other than restoring the original key. Back it up before you store any real credentials."],
+  ["Is PurveX a replacement for my SIEM?", "No. PurveX reads from your SIEM, it doesn't replace it. You still need Splunk, Elastic, Sentinel, or something similar already in place for PurveX to be useful."],
+  ["Do I need to set up two-factor authentication (2FA)?", "No — 2FA is entirely optional and off by default. Nothing in setup requires it. If you'd like to turn it on for your account later, you can from your profile settings; if you never touch it, nothing changes about how PurveX works."],
+  ["Is it safe to run against production?", "Yes, by design. The attack simulations PurveX runs (from the Atomic Red Team library) are scoped and reversible, and PurveX adds its own policy layer on top: production runs are restricted to admins, only allowed inside maintenance windows you configure, and anything irreversible is blocked outright."],
+  ["Does the AI assistant send my data to third parties?", "Only if you choose to connect one (OpenAI or DeepSeek). Leave OPENAI_API_KEY blank during install and the assistant just turns itself off — nothing is sent anywhere, and nothing else about the product changes."],
+  ["Can one install serve multiple teams or clients?", "Yes. PurveX supports multiple organizations on a single install, fully isolated from each other, and the same person can hold different roles across different organizations."],
+  ["Do I need Redis for a local install?", "No. Redis is only needed for the rate limiting and job queue behind larger, multi-server production deployments. A single-machine install works fine without it — only set REDIS_URL if you're specifically testing that setup."],
+  ["What happens if I lose PURVEX_ENCRYPTION_KEY?", "Everything it protects — SIEM credentials, 2FA codes, source tokens — becomes permanently unreadable. There's no way to recover it besides restoring the original key, so back it up before you connect any real credentials."],
 ];
 
 export default function Page() {
@@ -16,7 +17,7 @@ export default function Page() {
     <>
       <Eyebrow>Reference</Eyebrow>
       <H1>FAQ</H1>
-      <Lede>Questions that come up during install, before anyone&apos;s touched the product yet.</Lede>
+      <Lede>Questions that tend to come up during install, before anyone&apos;s actually used the product yet.</Lede>
 
       <div>
         {FAQ.map(([q, a]) => (
