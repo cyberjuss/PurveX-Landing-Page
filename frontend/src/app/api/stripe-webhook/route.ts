@@ -38,19 +38,31 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  if (event.type !== "checkout.session.completed") {
-    return NextResponse.json({ received: true });
+  if (event.type === "checkout.session.completed") {
+    await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+  } else if (event.type === "invoice.paid") {
+    await handleInvoicePaid(event.data.object as Stripe.Invoice);
   }
 
-  const session = event.data.object as Stripe.Checkout.Session;
+  return NextResponse.json({ received: true });
+}
+
+// License keys are short-lived (35 days) on purpose -- see handleInvoicePaid
+// below. That's what makes "customer stops paying -> access actually lapses"
+// true for self-hosted software with no phone-home check, without ever
+// putting the ed25519 signing key anywhere but the owner's own machine.
+const LICENSE_DAYS = 35;
+
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // Set by pricing/page.tsx's handlePaid() before the redirect to Stripe --
   // the Supabase auth user id of whoever paid.
   const userId = session.client_reference_id;
   const customerEmail = session.customer_details?.email || session.customer_email || "";
+  const stripeCustomerId = typeof session.customer === "string" ? session.customer : session.customer?.id;
 
   if (!userId) {
     console.error("[stripe-webhook] checkout.session.completed with no client_reference_id:", session.id);
-    return NextResponse.json({ received: true });
+    return;
   }
 
   if (supabaseAdmin) {
@@ -60,6 +72,7 @@ export async function POST(request: NextRequest) {
         plan: "paid",
         stripe_payment_confirmed: true,
         stripe_session_id: session.id,
+        stripe_customer_id: stripeCustomerId || null,
         paid_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
@@ -87,9 +100,12 @@ export async function POST(request: NextRequest) {
           <li><strong>Portal account id:</strong> ${userId}</li>
         </ul>
         <p>Issue their license and email it to them:</p>
-        <pre>python backend/scripts/issue_license.py issue --seats &lt;seats&gt; --runners &lt;runners&gt; --days 365</pre>
+        <pre>python backend/scripts/issue_license.py issue --seats &lt;seats&gt; --runners &lt;runners&gt; --days ${LICENSE_DAYS}</pre>
         <p>Then email the printed token to ${customerEmail || "their address"} -- they'll paste it into
         Settings &rarr; License in their PurveX instance.</p>
+        <p>This key expires in ${LICENSE_DAYS} days. As long as their subscription stays active, Stripe will
+        auto-renew it and you'll get a follow-up "renewed" email like this one telling you to reissue. If they
+        cancel, just don't reissue -- the key lapses on its own, no revocation step needed.</p>
       `
     );
   } else {
@@ -105,10 +121,67 @@ export async function POST(request: NextRequest) {
         <p>We issue license keys by hand right now, so expect a follow-up email with your key within one
         business day. Once it arrives, paste it into <strong>Settings &rarr; License</strong> in your PurveX
         instance -- it takes effect immediately, no restart needed.</p>
+        <p>Your key is valid for ${LICENSE_DAYS} days and renews automatically with your subscription -- you'll
+        get a fresh one by email each cycle, no action needed on your end as long as you stay subscribed.</p>
         <p>Questions in the meantime? Just reply to this email.</p>
       `
     );
   }
+}
 
-  return NextResponse.json({ received: true });
+async function handleInvoicePaid(invoice: Stripe.Invoice) {
+  // Stripe fires invoice.paid for the FIRST invoice on a new subscription
+  // too (billing_reason "subscription_create"), which checkout.session.completed
+  // already handles above -- only act on real recurring renewals here, or
+  // the owner gets two emails for one sale.
+  if (invoice.billing_reason !== "subscription_cycle") {
+    return;
+  }
+
+  const stripeCustomerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id;
+  if (!stripeCustomerId) {
+    console.error("[stripe-webhook] invoice.paid renewal with no customer id:", invoice.id);
+    return;
+  }
+
+  let customerEmail = invoice.customer_email || "";
+  let portalUserId: string | null = null;
+
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin
+      .from("portal_profiles")
+      .select("user_id, email")
+      .eq("stripe_customer_id", stripeCustomerId)
+      .maybeSingle();
+    if (error) {
+      console.error("[stripe-webhook] Failed to look up portal_profiles by stripe_customer_id:", error);
+    } else if (data) {
+      portalUserId = data.user_id;
+      customerEmail = customerEmail || data.email;
+    }
+  }
+
+  const amount = invoice.amount_paid != null ? (invoice.amount_paid / 100).toFixed(2) : "unknown";
+  const currency = (invoice.currency || "usd").toUpperCase();
+
+  if (OWNER_NOTIFICATION_EMAIL) {
+    await sendEmail(
+      OWNER_NOTIFICATION_EMAIL,
+      `PurveX subscription renewed: ${customerEmail || "unknown email"}`,
+      `
+        <p>A customer's subscription just renewed via Stripe.</p>
+        <ul>
+          <li><strong>Email:</strong> ${customerEmail || "unknown"}</li>
+          <li><strong>Amount:</strong> ${amount} ${currency}</li>
+          <li><strong>Stripe customer:</strong> ${stripeCustomerId}</li>
+          <li><strong>Portal account id:</strong> ${portalUserId || "not found -- look up by email in Supabase"}</li>
+        </ul>
+        <p>Issue a fresh license and email it to them, same as a new signup:</p>
+        <pre>python backend/scripts/issue_license.py issue --seats &lt;seats&gt; --runners &lt;runners&gt; --days ${LICENSE_DAYS}</pre>
+        <p>Their old key will expire on its own in a few weeks, so this just needs to go out before then.</p>
+      `
+    );
+  } else {
+    console.warn("[stripe-webhook] OWNER_NOTIFICATION_EMAIL not set -- no notification sent for this renewal.");
+  }
 }

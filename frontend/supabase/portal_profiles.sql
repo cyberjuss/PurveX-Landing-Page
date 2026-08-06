@@ -31,6 +31,12 @@ alter table public.portal_profiles add column if not exists stripe_payment_confi
 alter table public.portal_profiles add column if not exists stripe_session_id text;
 alter table public.portal_profiles add column if not exists paid_at timestamptz;
 
+-- Stripe's Customer id (cus_...), stored on first checkout so the webhook
+-- can map a later `invoice.paid` renewal event -- which carries a customer
+-- id but no client_reference_id -- back to this row.
+alter table public.portal_profiles add column if not exists stripe_customer_id text;
+create index if not exists portal_profiles_stripe_customer_id_idx on public.portal_profiles (stripe_customer_id);
+
 alter table public.portal_profiles enable row level security;
 
 -- A signed-in user may create and read only their own profile row. No
