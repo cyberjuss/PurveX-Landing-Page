@@ -3,18 +3,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Home as HomeIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Mirrors the top-level items in chrome.tsx's NAV_MENUS -- just the labels
 // and hrefs, none of the mega-menu submenu content, since this is a
-// lightweight stand-in for auth-flow pages, not the full site nav.
+// lightweight stand-in for auth-flow pages, not the full site nav. Home
+// renders as an icon instead of a label -- everything else stays text.
 const SITE_NAV = [
-  { label: "Home", href: "/" },
-  { label: "Security Operations", href: "/security-operations" },
-  { label: "Cybersecurity Training", href: "/cybersecurity-training" },
-  { label: "PurveX Labs", href: "/platform" },
-  { label: "About", href: "/about" },
+  { label: "Home", href: "/", icon: HomeIcon },
+  { label: "Security Operations", href: "/security-operations", icon: null },
+  { label: "Cybersecurity Training", href: "/cybersecurity-training", icon: null },
+  { label: "PurveX Labs", href: "/platform", icon: null },
+  { label: "About", href: "/about", icon: null },
 ];
 
 interface AuthShellProps {
@@ -130,12 +131,13 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
                   key={item.href}
                   href={item.href}
                   onClick={() => setNavOpen(false)}
+                  aria-label={item.icon ? item.label : undefined}
                   className={cn(
-                    "block px-4 py-2.5 text-sm font-medium no-underline transition",
+                    "flex items-center px-4 py-2.5 text-sm font-medium no-underline transition",
                     isLight ? "text-slate-700 hover:bg-slate-50 hover:text-slate-900" : "text-slate-300 hover:bg-white/5 hover:text-white"
                   )}
                 >
-                  {item.label}
+                  {item.icon ? <item.icon className="h-4 w-4" /> : item.label}
                 </Link>
               ))}
             </nav>
