@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthShell } from "@/components/auth/auth-shell";
@@ -50,7 +50,16 @@ function PortalSignupContent() {
   const strengthLabel = ["", "Weak", "Fair", "Fair", "Good", "Strong"][strength] || "";
   const strengthColor = ["", "bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-blue-500", "bg-emerald-500"][strength] || "";
 
+  // The disabled prop on the buttons below only takes effect on the next
+  // render -- a fast double-click (or a double-tap on mobile) can fire the
+  // handler twice before that render happens, sending two signup requests.
+  // A ref is checked and set synchronously, so it closes that gap regardless
+  // of render timing.
+  const busyRef = useRef(false);
+
   async function handleGoogle() {
+    if (busyRef.current) return;
+    busyRef.current = true;
     setError(null);
     setPhase("google");
     try {
@@ -58,6 +67,7 @@ function PortalSignupContent() {
       await signInWithGoogle(redirectTo);
       // Browser is redirected to Google by Supabase; nothing else to do here.
     } catch (err) {
+      busyRef.current = false;
       setPhase("form");
       setError(getErrorMessage(err, "Unable to start Google sign-in."));
     }
@@ -65,6 +75,7 @@ function PortalSignupContent() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (busyRef.current) return;
     setError(null);
 
     if (!email.trim() || !password) {
@@ -80,6 +91,7 @@ function PortalSignupContent() {
       return;
     }
 
+    busyRef.current = true;
     setPhase("submitting");
     try {
       const emailRedirectTo = `${window.location.origin}${pricingTarget}`;
@@ -89,8 +101,10 @@ function PortalSignupContent() {
         return;
       }
       // Email confirmation is required before a session exists.
+      busyRef.current = false;
       setPhase("sent");
     } catch (err) {
+      busyRef.current = false;
       setPhase("form");
       setError(getErrorMessage(err, "Unable to create your account."));
     }

@@ -128,23 +128,34 @@ function PricingContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
+  // The disabled prop on the buttons below only takes effect on the next
+  // render -- a fast double-click can fire the handler twice before that
+  // render happens (double-charging risk on the paid path, a duplicate
+  // portal_profiles write on free). Shared across both handlers and the
+  // auto-run effect below, so a manual click racing an auto-run can't slip
+  // through either.
+  const busyRef = useRef(false);
+
   async function handleFree() {
-    if (!user) return;
+    if (!user || busyRef.current) return;
+    busyRef.current = true;
     setBusyPlan("free");
     try {
       await recordPlanSelection(user, "free");
       router.push("/get-purvex?plan=free");
     } finally {
+      busyRef.current = false;
       setBusyPlan(null);
     }
   }
 
   async function handlePaid() {
-    if (!user) return;
+    if (!user || busyRef.current) return;
     if (!STRIPE_PAYMENT_LINK_URL) {
       window.alert("Checkout isn't configured yet -- set NEXT_PUBLIC_STRIPE_PAYMENT_LINK_URL.");
       return;
     }
+    busyRef.current = true;
     setBusyPlan("paid");
     try {
       await recordPlanSelection(user, "paid", user.id);
@@ -153,6 +164,7 @@ function PricingContent() {
       if (user.email) url.searchParams.set("prefilled_email", user.email);
       window.location.href = url.toString();
     } finally {
+      busyRef.current = false;
       setBusyPlan(null);
     }
   }

@@ -165,7 +165,7 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
           {!hideHeader && (
             <div className={cn("flex flex-col items-center text-center", bare ? "mb-6" : "mb-10")}>
               <div className={cn("mb-5 flex h-16 w-16 items-center justify-center rounded-[20px] border shadow-[0_18px_48px_-22px_rgba(15,23,42,0.25)]", isLight ? "border-[var(--pvrx-border-light)] bg-white" : "border-white/10 bg-white/95")}>
-                <Image src="/logo.png" alt="" width={42} height={42} />
+                <Image src="/logo.png" alt="" width={42} height={42} priority />
               </div>
               {title ? (
                 <h1 className={cn("font-display font-semibold tracking-tight", bare ? "text-2xl" : "text-3xl sm:text-[2.125rem]", isLight ? "text-slate-900" : "text-white")}>

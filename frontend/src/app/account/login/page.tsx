@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthShell } from "@/components/auth/auth-shell";
@@ -39,14 +39,23 @@ function PortalLoginContent() {
   const [phase, setPhase] = useState<"form" | "submitting" | "google">("form");
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  // The disabled prop on the buttons below only takes effect on the next
+  // render -- a fast double-click (or a double-tap on mobile) can fire the
+  // handler twice before that render happens, sending two sign-in requests.
+  // A ref is checked and set synchronously, so it closes that gap regardless
+  // of render timing.
+  const busyRef = useRef(false);
 
   async function handleGoogle() {
+    if (busyRef.current) return;
+    busyRef.current = true;
     setError(null);
     setPhase("google");
     try {
       const redirectTo = `${window.location.origin}${next}`;
       await signInWithGoogle(redirectTo);
     } catch (err) {
+      busyRef.current = false;
       setPhase("form");
       setError(getErrorMessage(err, "Unable to start Google sign-in."));
     }
@@ -54,16 +63,19 @@ function PortalLoginContent() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (busyRef.current) return;
     setError(null);
     if (!email.trim() || !password) {
       setError("Email and password are required.");
       return;
     }
+    busyRef.current = true;
     setPhase("submitting");
     try {
       await signInWithPassword(email.trim(), password);
       router.push(next);
     } catch (err) {
+      busyRef.current = false;
       setPhase("form");
       setError(getErrorMessage(err, "Unable to sign in. Check your email and password."));
     }

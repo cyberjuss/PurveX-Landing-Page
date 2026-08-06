@@ -60,6 +60,7 @@ export default async function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${spaceGrotesk.variable} bg-background`}
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <head>
