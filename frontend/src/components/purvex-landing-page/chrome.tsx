@@ -214,7 +214,7 @@ export function SiteChrome({
       <header className={`sp-nav${scrolled ? " sp-nav--s" : ""}`}>
         <div className="sp-nav__inner">
           <Link href="/" className="sp-logo">
-            <Image src="/logo.png" alt="PurveX" width={40} height={40} className="sp-logo__img" />
+            <Image src="/logo.png" alt="PurveX" width={40} height={40} className="sp-logo__img" priority />
             <span>PurveX</span>
           </Link>
           <div className="sp-nav__right">
