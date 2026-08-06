@@ -116,7 +116,7 @@ const tiers = [
   },
   {
     name: "Paid",
-    price: "$49",
+    price: "$99",
     note: "per user / month",
     summary: "Track coverage across your whole team, without limits.",
     items: [
