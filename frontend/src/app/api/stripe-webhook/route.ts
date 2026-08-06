@@ -18,6 +18,20 @@ const OWNER_NOTIFICATION_EMAIL = process.env.OWNER_NOTIFICATION_EMAIL;
 
 const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
 
+// Every string that ends up inside an HTML email body and didn't originate
+// as a literal in this file gets run through this first -- Stripe validates
+// its own checkout email field loosely enough that defense-in-depth here is
+// cheap, and this project has already had one HTML-injection fix elsewhere
+// (inviter_name in the product's invite email) for exactly this bug class.
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function POST(request: NextRequest) {
   if (!stripe || !STRIPE_WEBHOOK_SECRET) {
     console.error("[stripe-webhook] STRIPE_SECRET_KEY / STRIPE_WEBHOOK_SECRET not configured.");
@@ -36,6 +50,25 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error("[stripe-webhook] Signature verification failed:", err);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  }
+
+  // Idempotency: Stripe guarantees at-least-once delivery, so the same
+  // event can arrive twice (a slow response, an occasional duplicate).
+  // Recording the event id first and bailing on a duplicate is what keeps a
+  // redelivery from sending the owner/customer the same email twice.
+  // Fails open (skips the check, still processes) if Supabase isn't
+  // configured -- consistent with the rest of this handler's posture.
+  if (supabaseAdmin) {
+    const { error: dedupeError } = await supabaseAdmin
+      .from("processed_stripe_events")
+      .insert({ id: event.id });
+    if (dedupeError) {
+      // Postgres unique_violation -- this event id was already processed.
+      if (dedupeError.code === "23505") {
+        return NextResponse.json({ received: true, duplicate: true });
+      }
+      console.error("[stripe-webhook] Failed to record event id for idempotency:", dedupeError);
+    }
   }
 
   if (event.type === "checkout.session.completed") {
@@ -86,6 +119,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
   const amount = session.amount_total != null ? (session.amount_total / 100).toFixed(2) : "unknown";
   const currency = (session.currency || "usd").toUpperCase();
+  const safeCustomerEmail = customerEmail ? escapeHtml(customerEmail) : "";
+  const safeUserId = escapeHtml(userId);
 
   if (OWNER_NOTIFICATION_EMAIL) {
     await sendEmail(
@@ -94,14 +129,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       `
         <p>A customer just paid via Stripe.</p>
         <ul>
-          <li><strong>Email:</strong> ${customerEmail || "unknown"}</li>
+          <li><strong>Email:</strong> ${safeCustomerEmail || "unknown"}</li>
           <li><strong>Amount:</strong> ${amount} ${currency}</li>
-          <li><strong>Stripe checkout session:</strong> ${session.id}</li>
-          <li><strong>Portal account id:</strong> ${userId}</li>
+          <li><strong>Stripe checkout session:</strong> ${escapeHtml(session.id)}</li>
+          <li><strong>Portal account id:</strong> ${safeUserId}</li>
         </ul>
         <p>Issue their license and email it to them:</p>
         <pre>python backend/scripts/issue_license.py issue --seats &lt;seats&gt; --runners &lt;runners&gt; --days ${LICENSE_DAYS}</pre>
-        <p>Then email the printed token to ${customerEmail || "their address"} -- they'll paste it into
+        <p>Then email the printed token to ${safeCustomerEmail || "their address"} -- they'll paste it into
         Settings &rarr; License in their PurveX instance.</p>
         <p>This key expires in ${LICENSE_DAYS} days. As long as their subscription stays active, Stripe will
         auto-renew it and you'll get a follow-up "renewed" email like this one telling you to reissue. If they
@@ -171,10 +206,10 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
       `
         <p>A customer's subscription just renewed via Stripe.</p>
         <ul>
-          <li><strong>Email:</strong> ${customerEmail || "unknown"}</li>
+          <li><strong>Email:</strong> ${customerEmail ? escapeHtml(customerEmail) : "unknown"}</li>
           <li><strong>Amount:</strong> ${amount} ${currency}</li>
-          <li><strong>Stripe customer:</strong> ${stripeCustomerId}</li>
-          <li><strong>Portal account id:</strong> ${portalUserId || "not found -- look up by email in Supabase"}</li>
+          <li><strong>Stripe customer:</strong> ${escapeHtml(stripeCustomerId)}</li>
+          <li><strong>Portal account id:</strong> ${portalUserId ? escapeHtml(portalUserId) : "not found -- look up by email in Supabase"}</li>
         </ul>
         <p>Issue a fresh license and email it to them, same as a new signup:</p>
         <pre>python backend/scripts/issue_license.py issue --seats &lt;seats&gt; --runners &lt;runners&gt; --days ${LICENSE_DAYS}</pre>

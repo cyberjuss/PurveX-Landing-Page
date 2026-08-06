@@ -65,3 +65,16 @@ create policy "Users can update their own portal profile"
 -- rows: full visibility across all signups is only available from the
 -- Supabase dashboard (Table Editor) or with the service role key, same
 -- convention as waitlist_signups.sql.
+
+-- Stripe webhook idempotency. Stripe's own docs guarantee at-least-once
+-- delivery, meaning the same event can arrive twice (retry after a slow
+-- response, occasional duplicate delivery). Without this, a redelivered
+-- checkout.session.completed or invoice.paid sends duplicate "customer
+-- paid" / "customer renewed" emails. The webhook inserts the event id here
+-- before doing any work; a unique-violation on that insert means "already
+-- processed," and it skips straight to returning 200. RLS stays off since
+-- only the service-role key (server-side only) ever touches this table.
+create table if not exists public.processed_stripe_events (
+  id text primary key,
+  processed_at timestamptz not null default now()
+);
