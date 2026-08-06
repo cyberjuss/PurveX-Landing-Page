@@ -43,6 +43,9 @@ export default function Page() {
         and when. Searchable, filterable by action or resource type, and exportable as CSV. An admin can
         also set a minimum retention window and purge anything older.
       </P>
+      <P>
+        Free plans see the last 30 days. Paid plans see everything, for as long as you choose to keep it.
+      </P>
 
       <H2 id="one-org-per-account">One organization per account</H2>
       <P>

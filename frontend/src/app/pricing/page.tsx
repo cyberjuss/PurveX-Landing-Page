@@ -16,13 +16,16 @@ const FREE_FEATURES = [
   "Full Atomic Red Team test library",
   "Up to 3 team members",
   "1 registered test runner",
+  "3 test runs per day",
   "Self-hosted on your own infrastructure",
 ];
 
 const PAID_FEATURES = [
   "Everything in Free",
-  "Unlimited team members",
-  "Unlimited test runners",
+  "Unlimited team members, test runners & daily runs",
+  "Scheduled, automated test runs",
+  "Detection-as-Code (git sync)",
+  "Reports & posture scoring",
   "Priority support",
 ];
 

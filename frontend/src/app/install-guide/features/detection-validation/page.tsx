@@ -69,6 +69,7 @@ export default function Page() {
         and why. You can also run now or schedule it (see the{" "}
         <Link href="/install-guide/features/platform-tools" style={{ color: "var(--accent-deep)", fontWeight: 600 }}>schedules guide</Link>).
       </P>
+      <P>Free plans get 3 test runs a day. Paid plans are unlimited.</P>
 
       <H2 id="read-the-result">Read the result</H2>
       <P>
@@ -86,7 +87,6 @@ export default function Page() {
       <P>
         The result page shows the real evidence behind that score: telemetry status, whether the rule fired, the
         exact command that ran, and a sample of the raw SIEM events PurveX pulled back. Not just a pass/fail badge.
-        If Watchtower is configured, you&apos;ll also get a plain-language explanation and a suggested fix.
       </P>
 
       <H2 id="coverage">See your coverage</H2>

@@ -30,6 +30,11 @@ export default function Page() {
         by hand.
       </P>
 
+      <Callout tone="info">
+        <strong>Detection-as-Code is a paid-plan feature.</strong> Manual authoring and SIEM sync above are free on
+        every plan. Git import and export, below, need a paid license.
+      </Callout>
+
       <H2 id="git-import">Import from git</H2>
       <P>
         <strong>Settings &rarr; Detection-as-Code &rarr; Import.</strong> Point PurveX at a git repo (HTTPS only

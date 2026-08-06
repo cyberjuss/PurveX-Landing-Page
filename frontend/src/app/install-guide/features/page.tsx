@@ -11,7 +11,7 @@ const FEATURES: [string, string, string][] = [
   ["Test runners", "Dedicated lab machines PurveX connects to over SSH, with host-key pinning so nothing else can impersonate one.", "/install-guide/features/runners-and-policy"],
   ["Detections, your way", "Sync detection rules from your SIEM, or write them by hand — each one mapped to the technique it's meant to catch.", "/install-guide/features/detections"],
   ["Teams and roles", "Multiple team members, role-based permissions, and an audit log of who changed what.", "/install-guide/features/team-and-access"],
-  ["Optional AI assistant", "Watchtower is off by default. Turn it on for LLM-assisted analysis, or leave it off and nothing about the product changes.", "/install-guide/features/platform-tools"],
+  ["Scale when you're ready", "Free covers real validation on a small team. Paid adds scheduled runs, Detection-as-Code, and reports when you need them.", "/pricing"],
 ];
 
 export default function Page() {

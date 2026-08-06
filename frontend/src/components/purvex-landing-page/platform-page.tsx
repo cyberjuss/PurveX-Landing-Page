@@ -99,7 +99,7 @@ const tiers = [
     price: "$0",
     note: "Self-hosted, forever",
     summary: "Know which detections actually fire, before you scale.",
-    items: ["Full Atomic Red Team test library", "Up to 3 team members", "1 registered test runner", "Runs on your own infrastructure"],
+    items: ["Full Atomic Red Team test library", "Up to 3 team members", "1 registered test runner", "3 test runs per day", "Runs on your own infrastructure"],
     href: "/account/signup?plan=free",
     cta: "Get started free",
     featured: false,
@@ -109,7 +109,7 @@ const tiers = [
     price: "$49",
     note: "per user / month",
     summary: "Track coverage across your whole team, without limits.",
-    items: ["Everything in Free", "Unlimited team members", "Unlimited test runners", "Priority support"],
+    items: ["Everything in Free", "Unlimited team members, test runners & daily runs", "Scheduled, automated test runs", "Detection-as-Code (git sync)", "Reports & posture scoring", "Priority support"],
     href: "/account/signup?plan=paid",
     cta: "Get started",
     featured: true,
@@ -119,7 +119,7 @@ const tiers = [
 const faqs: [string, string][] = [
   ["Is this BAS? How is it different from AttackIQ or SafeBreach?", "BAS simulates adversary behavior on endpoints. PurveX validates the full chain (telemetry, parser, rule, alert, ticket) and isolates where it broke. We complement BAS, not replace it."],
   ["Do you run anything in production? What is the safety model?", "Read-only against your SIEM by default. Actions are scoped, auditable, and approved per environment. Production-impacting tests need explicit opt-in."],
-  ["How long until we see a first coverage report?", "First coverage signal within hours of connecting your SIEM, and a leadership-ready report inside the first week."],
+  ["How long until we see our first coverage signal?", "Within hours of connecting your SIEM and running your first test. Formal, exportable PDF reports for leadership are a paid-plan feature."],
   ["Does PurveX replace the SIEM?", "No. Your SIEM stays the system of record. PurveX adds a validation layer that proves detections fire and tracks coverage over time."],
 ];
 

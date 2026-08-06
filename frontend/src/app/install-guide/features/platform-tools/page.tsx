@@ -8,23 +8,12 @@ export default function Page() {
     <>
       <Eyebrow>Feature guide</Eyebrow>
       <H1>Platform tools</H1>
-      <Lede>The assistant that explains a failure, the schedules that keep testing honest, and the numbers that tell you how you&apos;re doing.</Lede>
+      <Lede>The schedules that keep testing honest and the numbers that tell you how you&apos;re doing.</Lede>
 
-      <H2 id="watchtower">Watchtower, the AI assistant</H2>
-      <P>
-        <strong>AI Assistant</strong> in the sidebar. A chat interface for asking about your detection portfolio,
-        plus automatic plain-language analysis attached to every failed or inconclusive test result.
-      </P>
-      <P>
-        It only ever reasons over data already in PurveX: your detections, test history, and sample events. Nothing
-        is sent anywhere unless you configure a provider.
-      </P>
-      <P>
-        <strong>Settings &rarr; Watchtower.</strong> Pick a provider (OpenAI or DeepSeek), an analysis depth, and
-        what it&apos;s allowed to do: suggest tuning fixes, explain failures. Data-sharing toggles strip IPs and
-        hostnames by default. Leave the provider&apos;s API key unset on the server and Watchtower just explains
-        that it&apos;s unavailable instead of erroring. Nothing else about the product changes.
-      </P>
+      <Callout tone="info">
+        <strong>Watchtower, the AI assistant, is coming in a future release.</strong> It&apos;s not part of the
+        current version.
+      </Callout>
 
       <H2 id="notifications">Notifications</H2>
       <P>
@@ -38,23 +27,26 @@ export default function Page() {
         <strong>Settings &rarr; Test Schedules.</strong> Pick a detection or a technique, an environment, and
         either a one-time run, a repeating interval (down to every minute, up to every 7 days), or a cron
         expression. Production scheduling is Administrator-only. Pause, resume, or delete a schedule any time.
+        Creating a schedule is a paid-plan feature; running tests manually stays free on every plan.
       </P>
 
       <H2 id="scoring-and-reports">Scoring &amp; reports</H2>
       <P>
         Every test gets a score from 0 to 100 based on whether telemetry arrived, how fast, whether the rule
         fired, and how fast. Those roll up on the <strong>Reports</strong> page into an overall{" "}
-        <strong>Posture</strong> score for your whole organization, trended against the prior period.
+        <strong>Posture</strong> score for your whole organization, trended against the prior period, free on
+        every plan.
       </P>
       <P>
-        Alongside it: proven ATT&amp;CK coverage percentage, validations run, and detections that regressed
-        between rule versions.
+        Exporting that view as a formal PDF, for a leadership update or an audit trail, is a paid-plan feature.
       </P>
 
       <H2 id="license">License</H2>
       <P>
-        <strong>Settings &rarr; License.</strong> Free plan covers 3 team members and 1 test runner. Paste a
-        license key here to unlock a paid plan&apos;s limits. It takes effect immediately, no restart. See
+        <strong>Settings &rarr; License.</strong> Free plan covers 3 team members, 1 test runner, 3 test runs a
+        day, and 30 days of audit history. Paid unlocks unlimited team members, runners, and daily runs, plus
+        schedules, Detection-as-Code, PDF report export, and unlimited audit retention. Paste a license key into
+        this page to unlock it. It takes effect immediately, no restart. See
         the <Link href="/pricing" style={{ color: "var(--accent-deep)", fontWeight: 600 }}>pricing page</Link> to get one.
       </P>
 
