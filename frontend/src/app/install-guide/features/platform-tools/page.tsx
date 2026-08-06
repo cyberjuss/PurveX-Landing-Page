@@ -12,8 +12,8 @@ export default function Page() {
 
       <H2 id="watchtower">Watchtower, the AI assistant</H2>
       <P>
-        <strong>AI Assistant</strong> in the sidebar &mdash; a chat interface for asking about your detection
-        portfolio, plus automatic plain-language analysis attached to every failed or inconclusive test result.
+        <strong>AI Assistant</strong> in the sidebar. A chat interface for asking about your detection portfolio,
+        plus automatic plain-language analysis attached to every failed or inconclusive test result.
       </P>
       <P>
         It only ever reasons over data already in PurveX: your detections, test history, and sample events. Nothing
@@ -21,9 +21,9 @@ export default function Page() {
       </P>
       <P>
         <strong>Settings &rarr; Watchtower.</strong> Pick a provider (OpenAI or DeepSeek), an analysis depth, and
-        what it&apos;s allowed to do &mdash; suggest tuning fixes, explain failures. Data-sharing toggles strip IPs
-        and hostnames by default. Leave the provider&apos;s API key unset on the server and Watchtower just
-        explains that it&apos;s unavailable instead of erroring &mdash; nothing else about the product changes.
+        what it&apos;s allowed to do: suggest tuning fixes, explain failures. Data-sharing toggles strip IPs and
+        hostnames by default. Leave the provider&apos;s API key unset on the server and Watchtower just explains
+        that it&apos;s unavailable instead of erroring. Nothing else about the product changes.
       </P>
 
       <H2 id="notifications">Notifications</H2>
@@ -42,8 +42,8 @@ export default function Page() {
 
       <H2 id="scoring-and-reports">Scoring &amp; reports</H2>
       <P>
-        Every test gets a 0&ndash;100 score based on whether telemetry arrived, how fast, whether the rule fired,
-        and how fast. Those roll up on the <strong>Reports</strong> page into an overall{" "}
+        Every test gets a score from 0 to 100 based on whether telemetry arrived, how fast, whether the rule
+        fired, and how fast. Those roll up on the <strong>Reports</strong> page into an overall{" "}
         <strong>Posture</strong> score for your whole organization, trended against the prior period.
       </P>
       <P>
@@ -54,14 +54,14 @@ export default function Page() {
       <H2 id="license">License</H2>
       <P>
         <strong>Settings &rarr; License.</strong> Free plan covers 3 team members and 1 test runner. Paste a
-        license key here to unlock a paid plan&apos;s limits &mdash; it takes effect immediately, no restart. See
+        license key here to unlock a paid plan&apos;s limits. It takes effect immediately, no restart. See
         the <Link href="/pricing" style={{ color: "var(--accent-deep)", fontWeight: 600 }}>pricing page</Link> to get one.
       </P>
 
       <Callout tone="info">
         <strong>Where we are today:</strong> the weights behind each test&apos;s score (how much a fast detection
-        counts vs. a slow one, for example) are configurable, but only through the API right now &mdash; there&apos;s
-        no settings page for it yet. The defaults are sensible; we&apos;ll add the UI for tuning them later.
+        counts vs. a slow one, for example) are configurable, but only through the API right now. There&apos;s
+        no settings page for it yet. The defaults are sensible, and we&apos;ll add the UI for tuning them later.
       </Callout>
     </>
   );

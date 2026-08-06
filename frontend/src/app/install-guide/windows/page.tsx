@@ -9,7 +9,7 @@ export default function Page() {
       <H1>Windows, without Git Bash</H1>
       <Lede>
         The one-line installer and <code>purvex.sh</code> launcher need a Unix-style shell, which plain PowerShell
-        isn&apos;t. If you don&apos;t have Git Bash or WSL installed, no problem &mdash; just start the two halves
+        isn&apos;t. If you don&apos;t have Git Bash or WSL installed, no problem. Just start the two halves
         of the app yourself with the commands below.
       </Lede>
 
@@ -23,7 +23,7 @@ export default function Page() {
       </>} />
 
       <H2>2. Start the frontend, in a second window</H2>
-      <P>Open a new PowerShell window &mdash; leave the backend one running &mdash; and start the web app:</P>
+      <P>Open a new PowerShell window, leave the backend one running, and start the web app:</P>
       <TermBlock copyText={"cd frontend\r\nnpm install\r\nnpm run dev"} lines={<>
         <span className="dc-p1">&gt;</span> <span className="dc-cmd">cd frontend</span><br/>
         <span className="dc-p1">&gt;</span> <span className="dc-cmd">npm install</span><br/>

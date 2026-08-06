@@ -15,8 +15,7 @@ export default function Page() {
       <H2 id="register-a-runner">Register a runner</H2>
       <P>
         <strong>Endpoints &rarr; Add runner.</strong> A runner is a lab, dev, or (carefully) production machine that
-        actually executes a test &mdash; never PurveX&apos;s own server. PurveX reaches it over SSH. Two ways to add
-        one:
+        actually executes a test, never PurveX&apos;s own server. PurveX reaches it over SSH. Two ways to add one:
       </P>
       <Table
         head={["Method", "How it works"]}
@@ -27,18 +26,18 @@ export default function Page() {
           ],
           [
             "Manual SSH",
-            "Enter hostname, port, credentials, and the SSH host-key fingerprint yourself — for machines you'd rather not run a script on.",
+            "Enter hostname, port, credentials, and the SSH host-key fingerprint yourself, for machines you'd rather not run a script on.",
           ],
         ]}
       />
       <Callout tone="warn">
-        The SSH host-key fingerprint isn&apos;t optional paperwork &mdash; PurveX refuses to run anything against an
-        SSH runner without one. It&apos;s what stops a man-in-the-middle from silently swapping in a different
-        machine later.
+        The SSH host-key fingerprint isn&apos;t optional paperwork. PurveX refuses to run anything against an SSH
+        runner without one. It&apos;s what stops a man-in-the-middle from silently swapping in a different machine
+        later.
       </Callout>
       <P>
-        Every runner is tagged with an <strong>environment</strong> (lab, dev, prod, or anything else you name)
-        &mdash; that&apos;s what the Run Test wizard uses to offer it as a target. The Endpoints page shows each
+        Every runner is tagged with an <strong>environment</strong> (lab, dev, prod, or anything else you name).
+        That&apos;s what the Run Test wizard uses to offer it as a target. The Endpoints page shows each
         runner&apos;s state (Ready, Needs review, Paused, Silent), recent validation history, and last check-in.
         Need to take one offline for a while? Use <strong>Pause</strong> and <strong>Resume</strong>.
       </P>
@@ -58,9 +57,9 @@ export default function Page() {
       <Callout tone="info">
         <strong>Where we are today:</strong> the allowed-environments check is fully enforced server-side, and a
         production run always requires a written reason. Business hours, the maintenance-window requirement, and
-        pre-prod notifications are configurable and saved, but nothing in the run path reads them yet &mdash;
-        treat them as recorded intent rather than an active block until that lands. We&apos;ll tighten this guide
-        as enforcement catches up to the settings.
+        pre-prod notifications are configurable and saved, but nothing in the run path reads them yet. Treat them
+        as recorded intent rather than an active block until that lands. We&apos;ll tighten this guide as
+        enforcement catches up to the settings.
       </Callout>
     </>
   );

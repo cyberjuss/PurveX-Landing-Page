@@ -10,10 +10,10 @@ export default function Page() {
       <Eyebrow>Install guide</Eyebrow>
       <H1>Get PurveX running on your own machine</H1>
       <Lede>
-        PurveX connects to your SIEM &mdash; the tool your team already uses to collect and search security logs
-        &mdash; safely simulates real attack techniques, and tells you whether your detections actually caught them.
-        No guesswork, just evidence. This guide walks through the whole setup in order: get the code, run one
-        command, create your account, and run your first test.
+        PurveX connects to your SIEM, the tool your team already uses to collect and search security logs. It
+        safely simulates real attack techniques and tells you whether your detections actually caught them. No
+        guesswork, just evidence. This guide walks through the whole setup in order: get the code, run one command,
+        create your account, and run your first test.
       </Lede>
       <MetaRow>
         <span><Clock size={14} /> A few minutes</span>
@@ -22,7 +22,7 @@ export default function Page() {
       </MetaRow>
 
       <H2>Before you start</H2>
-      <P>You&apos;ll need these installed first &mdash; the setup script checks for them too, but confirming now saves a false start later. No database install needed: PurveX stores its data in a local file by default.</P>
+      <P>You&apos;ll need these installed first. The setup script checks for them too, but confirming now saves a false start later. No database install needed: PurveX stores its data in a local file by default.</P>
       <Table
         head={["Tool", "Version", "Check"]}
         rows={[
@@ -37,7 +37,7 @@ export default function Page() {
       <P>
         PurveX is three pieces working together, all running locally: a backend that does the work, a web app
         you&apos;ll use in your browser, and a database that stores everything. There&apos;s no PurveX cloud
-        service involved anywhere &mdash; the only outside connection it makes is to the SIEM you point it at, and
+        service involved anywhere. The only outside connection it makes is to the SIEM you point it at, and
         optionally an AI provider if you choose to turn on the assistant.
       </P>
       <P>

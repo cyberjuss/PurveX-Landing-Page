@@ -21,7 +21,7 @@ export default function Page() {
       />
       <P>
         Downloads PurveX, installs it, and starts it. Once you see both lines above, open{" "}
-        <code>http://localhost:1120</code>. Keep this terminal window open &mdash; closing it stops PurveX.
+        <code>http://localhost:1120</code>. Keep this terminal window open. Closing it stops PurveX.
       </P>
 
       <Callout tone="warn">
@@ -42,7 +42,7 @@ export default function Page() {
       />
 
       <H2 id="update">Updating</H2>
-      <P>Pulls the latest code and rebuilds. Safe to run any time &mdash; your data isn&apos;t touched.</P>
+      <P>Pulls the latest code and rebuilds. Safe to run any time, your data isn&apos;t touched.</P>
       <TermBlock copyText={"git pull\n./scripts/purvex.sh --setup\n./scripts/purvex.sh --rebuild"} lines={<>
         <span className="dc-p1">$</span> <span className="dc-cmd">git pull</span><br/>
         <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --setup</span><br/>
