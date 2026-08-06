@@ -66,6 +66,23 @@ create policy "Users can update their own portal profile"
 -- Supabase dashboard (Table Editor) or with the service role key, same
 -- convention as waitlist_signups.sql.
 
+-- Self-service license retrieval (see /my-license). Issuance stays entirely
+-- manual -- the owner still runs backend/scripts/issue_license.py by hand,
+-- the ed25519 signing key never leaves their machine -- this only changes
+-- *delivery*: the owner's CLI can push the token straight here (issue_license.py
+-- --deliver-to) instead of the customer having to wait on an email that
+-- might land in spam or get lost by the time a renewal rolls around.
+--
+-- Same reasoning as stripe_payment_confirmed above applies to why the
+-- broad "update own row" policy below is fine for this column too: a
+-- customer who overwrites their own current_license_key with garbage only
+-- breaks their own copy (the real check is the ed25519 signature the
+-- product verifies independently -- garbage just fails verification and
+-- falls back to free, same as any other invalid key). Nothing reads this
+-- column to grant access from Supabase's side.
+alter table public.portal_profiles add column if not exists current_license_key text;
+alter table public.portal_profiles add column if not exists license_issued_at timestamptz;
+
 -- Stripe webhook idempotency. Stripe's own docs guarantee at-least-once
 -- delivery, meaning the same event can arrive twice (retry after a slow
 -- response, occasional duplicate delivery). Without this, a redelivered

@@ -98,10 +98,11 @@ function GetPurveXContent() {
 
         {plan === "paid" && (
           <div className="rounded-2xl border border-[rgba(106,92,255,0.25)] bg-[rgba(106,92,255,0.05)] p-4 text-sm leading-relaxed text-slate-700">
-            <strong className="text-slate-900">Your license key is on its way.</strong> We issue keys by hand right
-            now, so expect an email at the address you signed up with within one business day. Once it arrives,
-            paste it into <span className="font-mono text-[#5546e0]">Settings → License</span> after you finish
-            setup below.
+            <strong className="text-slate-900">Your license key is on its way.</strong> We issue keys by hand
+            right now, so expect it within one business day. Check{" "}
+            <Link href="/my-license" className="font-medium text-[#5546e0] hover:underline">purvex-llc.com/my-license</Link>{" "}
+            any time for the current one -- no need to wait on an email. Once you have it, paste it into{" "}
+            <span className="font-mono text-[#5546e0]">Settings → License</span> after you finish setup below.
           </div>
         )}
 

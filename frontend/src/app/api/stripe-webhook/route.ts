@@ -10,7 +10,11 @@ import { sendEmail } from "@/lib/email";
 // backend/scripts/issue_license.py -- the ed25519 signing key isn't
 // something this server should hold), but it makes sure a payment is
 // recorded and BOTH the owner and the customer are emailed immediately
-// instead of the sale silently going unnoticed.
+// instead of the sale silently going unnoticed. Issuance is still by hand,
+// but delivery doesn't have to be: issue_license.py --deliver-to pushes the
+// token straight into this same Supabase project, so the customer can grab
+// it themselves at /my-license instead of waiting on (and possibly losing
+// track of) an email.
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
@@ -146,10 +150,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
           <li><strong>Stripe checkout session:</strong> ${escapeHtml(session.id)}</li>
           <li><strong>Portal account id:</strong> ${safeUserId}</li>
         </ul>
-        <p>Issue their license and email it to them:</p>
-        <pre>python backend/scripts/issue_license.py issue --seats &lt;seats&gt; --runners &lt;runners&gt; --days ${LICENSE_DAYS}</pre>
-        <p>Then email the printed token to ${safeCustomerEmail || "their address"} -- they'll paste it into
-        Settings &rarr; License in their PurveX instance.</p>
+        <p>Issue their license -- this delivers it straight to their portal account (they'll see it at
+        <strong>/my-license</strong> immediately, nothing to email):</p>
+        <pre>python backend/scripts/issue_license.py issue --seats &lt;seats&gt; --runners &lt;runners&gt; --days ${LICENSE_DAYS} --deliver-to ${safeUserId}</pre>
+        <p>Requires <code>SUPABASE_URL</code> and <code>SUPABASE_SERVICE_ROLE_KEY</code> set in your shell (same
+        service-role key already in this project's Vercel env). If delivery fails for any reason, the token is
+        still printed above -- fall back to emailing it to ${safeCustomerEmail || "their address"} and they can
+        paste it into Settings &rarr; License themselves.</p>
         <p>This key expires in ${LICENSE_DAYS} days. As long as their subscription stays active, Stripe will
         auto-renew it and you'll get a follow-up "renewed" email like this one telling you to reissue. If they
         cancel, just don't reissue -- the key lapses on its own, no revocation step needed.</p>
@@ -165,11 +172,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       "Thanks for upgrading to PurveX Paid",
       `
         <p>Thanks for upgrading to PurveX Paid!</p>
-        <p>We issue license keys by hand right now, so expect a follow-up email with your key within one
-        business day. Once it arrives, paste it into <strong>Settings &rarr; License</strong> in your PurveX
-        instance -- it takes effect immediately, no restart needed.</p>
-        <p>Your key is valid for ${LICENSE_DAYS} days and renews automatically with your subscription -- you'll
-        get a fresh one by email each cycle, no action needed on your end as long as you stay subscribed.</p>
+        <p>We issue license keys by hand right now, so expect it within one business day. You don't need to
+        wait on an email for it though -- once it's ready, you'll find it any time at
+        <strong>purvex-llc.com/my-license</strong>. Paste it into <strong>Settings &rarr; License</strong> in
+        your PurveX instance -- it takes effect immediately, no restart needed.</p>
+        <p>Your key is valid for ${LICENSE_DAYS} days and renews automatically with your subscription -- check
+        back at that same page each cycle for the current one, no action needed on your end as long as you
+        stay subscribed.</p>
         <p>Questions in the meantime? Just reply to this email.</p>
       `
     );
@@ -210,9 +219,10 @@ async function handleSeatAddOn(session: Stripe.Checkout.Session) {
         </ul>
         <p>Reissue their license with <strong>one more seat than whatever they currently have</strong>
         (there's no record of the current count here -- it only ever lived inside the signed token),
-        same expiry window as usual:</p>
-        <pre>python backend/scripts/issue_license.py issue --seats &lt;current+1&gt; --runners &lt;runners&gt; --days ${LICENSE_DAYS}</pre>
-        <p>Then email the printed token to ${safeCustomerEmail || "their address"}.</p>
+        same expiry window as usual -- this delivers it straight to their portal account:</p>
+        <pre>python backend/scripts/issue_license.py issue --seats &lt;current+1&gt; --runners &lt;runners&gt; --days ${LICENSE_DAYS} --deliver-to ${safeUserId}</pre>
+        <p>If delivery fails, the token is still printed above -- fall back to emailing it to
+        ${safeCustomerEmail || "their address"}.</p>
       `
     );
   } else {
@@ -225,8 +235,9 @@ async function handleSeatAddOn(session: Stripe.Checkout.Session) {
       "Thanks -- your new PurveX seat is on its way",
       `
         <p>We've received your payment for an additional seat.</p>
-        <p>We issue updated license keys by hand right now, so expect a follow-up email with your new key
-        within one business day. Once it arrives, paste it into <strong>Settings &rarr; License</strong> in
+        <p>We issue updated license keys by hand right now, so expect it within one business day. You don't
+        need to wait on an email though -- once it's ready, you'll find it at
+        <strong>purvex-llc.com/my-license</strong>. Paste it into <strong>Settings &rarr; License</strong> in
         your PurveX instance -- it takes effect immediately, no restart needed.</p>
         <p>Questions in the meantime? Just reply to this email.</p>
       `
@@ -281,8 +292,11 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
           <li><strong>Stripe customer:</strong> ${escapeHtml(stripeCustomerId)}</li>
           <li><strong>Portal account id:</strong> ${portalUserId ? escapeHtml(portalUserId) : "not found -- look up by email in Supabase"}</li>
         </ul>
-        <p>Issue a fresh license and email it to them, same as a new signup:</p>
-        <pre>python backend/scripts/issue_license.py issue --seats &lt;seats&gt; --runners &lt;runners&gt; --days ${LICENSE_DAYS}</pre>
+        <p>Issue a fresh license, same as a new signup:</p>
+        <pre>python backend/scripts/issue_license.py issue --seats &lt;seats&gt; --runners &lt;runners&gt; --days ${LICENSE_DAYS}${portalUserId ? ` --deliver-to ${escapeHtml(portalUserId)}` : ""}</pre>
+        <p>${portalUserId
+          ? "--deliver-to sends it straight to their portal account (they'll see it at /my-license, nothing to email)."
+          : "No portal account id on file for this customer -- email the printed token to them directly."}</p>
         <p>Their old key will expire on its own in a few weeks, so this just needs to go out before then.</p>
       `
     );
