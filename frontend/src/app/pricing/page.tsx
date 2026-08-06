@@ -83,6 +83,7 @@ function PricingContent() {
   const [storedPlan, setStoredPlan] = useState<"free" | "paid" | null>(null);
   const [profileChecked, setProfileChecked] = useState(false);
   const autoRanFree = useRef(false);
+  const autoRanPaid = useRef(false);
 
   // Whichever says a plan was already decided: an explicit ?plan= on this
   // visit, or one saved from a previous visit. Everything below acts on
@@ -156,14 +157,20 @@ function PricingContent() {
     }
   }
 
-  // Free was already decided -- either this visit or a previous one --
-  // nothing left to ask, and no external redirect involved, so just carry
-  // it out. (Paid still needs an explicit click below: it's about to hand
-  // off to Stripe.)
+  // A plan already decided -- either this visit or a previous one -- means
+  // nothing left to ask, so carry it out immediately instead of making
+  // someone who already chose click through a confirm screen. Paid only
+  // auto-runs when checkout is actually configured; if it isn't, this
+  // silently falls through to the fallback confirm screen below instead of
+  // leaving someone stuck on a spinner that never resolves.
   useEffect(() => {
     if (user && effectivePlan === "free" && !autoRanFree.current) {
       autoRanFree.current = true;
       void handleFree();
+    }
+    if (user && effectivePlan === "paid" && STRIPE_PAYMENT_LINK_URL && !autoRanPaid.current) {
+      autoRanPaid.current = true;
+      void handlePaid();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, effectivePlan]);
@@ -172,15 +179,17 @@ function PricingContent() {
   // URL) the stored-plan lookup -- both need to resolve before it's safe to
   // decide whether the full picker should render at all, or this would
   // flash it for a frame even for someone who already chose a plan. Once
-  // effectivePlan resolves to "free", the effect above fires handleFree()
+  // effectivePlan resolves, the effect above fires handleFree()/handlePaid()
   // immediately, and busyPlan briefly resets to null in its `finally` right
-  // as router.push fires, which is the other case this screen absorbs.
-  if (user === undefined || !profileChecked || effectivePlan === "free") {
+  // as the redirect fires, which is the other case this screen absorbs.
+  const autoRedirecting = effectivePlan === "free" || (effectivePlan === "paid" && Boolean(STRIPE_PAYMENT_LINK_URL));
+  if (user === undefined || !profileChecked || autoRedirecting) {
     return (
       <AuthShell theme="light" width="md" bare>
         <div className="flex min-h-[240px] flex-col items-center justify-center gap-3 text-sm text-slate-500">
           <Loader2 className="h-5 w-5 animate-spin" />
           {effectivePlan === "free" ? "Setting up your free plan..." : null}
+          {effectivePlan === "paid" ? "Redirecting to checkout..." : null}
         </div>
       </AuthShell>
     );
@@ -199,9 +208,11 @@ function PricingContent() {
     </div>
   );
 
-  // Already decided on the paid plan -- this visit or a previous one --
-  // confirm once, don't re-present the free option as if nothing had been
-  // chosen yet.
+  // Only reached when checkout isn't configured -- the effect above already
+  // auto-redirects straight to Stripe when STRIPE_PAYMENT_LINK_URL is set,
+  // so this is the fallback for a broken/missing env var, not a normal
+  // step in the flow. Gives handlePaid's "not configured" alert a screen
+  // to alert on top of, and a retry button, instead of a dead end.
   if (effectivePlan === "paid") {
     return (
       <AuthShell theme="light" width="sm" bare hideHeader>
