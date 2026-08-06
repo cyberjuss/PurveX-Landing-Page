@@ -124,7 +124,10 @@ function PortalSignupContent() {
               ? `Confirm your email and you'll be taken straight to your ${plan === "paid" ? "paid" : "free"} plan — no need to choose again.`
               : "Confirm your email, then come back and sign in to choose a plan."}
           </p>
-          <Link href="/account/login" className="mt-2 flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#6a5cff]">
+          <Link
+            href={plan ? `/account/login?next=${encodeURIComponent(pricingTarget)}` : "/account/login"}
+            className="mt-2 flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#6a5cff]"
+          >
             <ArrowLeft className="h-4 w-4" />
             Back to sign in
           </Link>
@@ -256,7 +259,12 @@ function PortalSignupContent() {
 
         <p className="text-center text-sm text-slate-500">
           Already have an account?{" "}
-          <Link href="/account/login" className="font-medium text-[#6a5cff] hover:text-[#5546e0]">Sign in</Link>
+          <Link
+            href={plan ? `/account/login?next=${encodeURIComponent(pricingTarget)}` : "/account/login"}
+            className="font-medium text-[#6a5cff] hover:text-[#5546e0]"
+          >
+            Sign in
+          </Link>
         </p>
       </form>
     </AuthShell>

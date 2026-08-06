@@ -34,6 +34,15 @@ function PortalLoginContent() {
   useEffect(() => {
     router.prefetch(next);
   }, [router, next]);
+  // If `next` carries a plan (e.g. "/pricing?plan=free" from the signup
+  // page's "Sign in" link), forward that same plan to "Create an account"
+  // so bouncing between login/signup never loses the plan the user picked.
+  const planFromNext = (() => {
+    const qIndex = next.indexOf("?");
+    if (qIndex === -1) return null;
+    const p = new URLSearchParams(next.slice(qIndex + 1)).get("plan");
+    return p === "paid" || p === "free" ? p : null;
+  })();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phase, setPhase] = useState<"form" | "submitting" | "google">("form");
@@ -170,7 +179,12 @@ function PortalLoginContent() {
 
         <p className="text-center text-sm text-slate-500">
           New to PurveX?{" "}
-          <Link href="/account/signup" className="font-medium text-[#6a5cff] hover:text-[#5546e0]">Create an account</Link>
+          <Link
+            href={planFromNext ? `/account/signup?plan=${planFromNext}` : "/account/signup"}
+            className="font-medium text-[#6a5cff] hover:text-[#5546e0]"
+          >
+            Create an account
+          </Link>
         </p>
       </form>
     </AuthShell>
