@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   BookOpen,
@@ -97,7 +97,24 @@ const formats = [
 ];
 
 export default function TrainingPage() {
-  const [openModule, setOpenModule] = useState<number | null>(null);
+  // Starts on module 0 instead of null -- the card row below reserves a
+  // fixed height so picking a module never shifts the layout, which means
+  // "nothing selected" was just a dead, empty gap every visitor saw by
+  // default. Opening the first module fills it immediately.
+  const [openModule, setOpenModule] = useState<number | null>(0);
+  const openCardRef = useRef<HTMLDivElement>(null);
+
+  // The icon row scrolls horizontally on mobile, and a middle module's card
+  // is centered on its icon rather than clamped to the viewport -- tapping
+  // one near the right edge of the scroll range left real content (title,
+  // body text) cut off past the edge of the screen. Scrolling the newly
+  // opened card into view (not just the icon) fixes that for every module,
+  // not just the ones near an edge. block: "nearest" keeps this from also
+  // yanking the page's vertical scroll position.
+  useEffect(() => {
+    if (openModule === null) return;
+    openCardRef.current?.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
+  }, [openModule]);
 
   return (
     <SiteChrome active="training">
@@ -211,7 +228,7 @@ export default function TrainingPage() {
                 {openModule === i && (
                   <>
                     <span className="sp-roadmap-zigzag__stem" />
-                    <div className="sp-roadmap-zigzag__card">
+                    <div className="sp-roadmap-zigzag__card" ref={openCardRef}>
                       <span className="sp-roadmap-zigzag__mod">Module {c.mod}</span>
                       <h3>{c.title}</h3>
                       <p>{c.body}</p>
@@ -433,7 +450,13 @@ export default function TrainingPage() {
   .sp-roadmap-zigzag { overflow-x: auto; -webkit-overflow-scrolling: touch }
   .sp-roadmap-zigzag__row { min-width: 760px }
   .sp-roadmap-zigzag__slot { flex: 0 0 100px }
-  .sp-roadmap-zigzag__card { max-width: 160px; padding: 16px 16px 18px }
+  /* Wider than the old 160px, plus more height and a taller line-clamp --
+     at 160px this card's copy (written and measured against the 340px
+     desktop width) wrapped to more lines than the 5-line clamp allowed and
+     got cut off mid-sentence on every single module. */
+  .sp-roadmap-zigzag__card { max-width: 240px; height: 260px; padding: 16px 16px 18px }
+  .sp-roadmap-zigzag__card p { -webkit-line-clamp: 8 }
+  .sp-roadmap-zigzag__row--bottom { min-height: 300px }
 }
 
 /* ── Learning roadmap: split layout, text left / divided skill-tool list right ── */
