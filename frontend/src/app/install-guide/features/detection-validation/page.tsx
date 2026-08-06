@@ -28,10 +28,12 @@ export default function Page() {
       />
       <P>
         Every connection has a <strong>Log marker pattern</strong> (default <code>purvex_*</code>) &mdash; a tag
-        PurveX stamps on its own validation traffic so your SOC can filter test activity out of real alerts. Hit{" "}
-        <strong>Test</strong> on any connection to confirm PurveX can actually reach it and read alerts; the same
-        check runs automatically every time the page loads, driving the Connected / Configured / Not configured
-        status next to each row. Add as many connections as you need &mdash; there&apos;s no limit.
+        PurveX stamps on its own validation traffic so your SOC can filter test activity out of real alerts.
+      </P>
+      <P>
+        Hit <strong>Test</strong> to confirm PurveX can reach a connection and read alerts. The same check also
+        runs automatically on page load, which is what drives the Connected / Configured / Not configured status
+        next to each row. Add as many connections as you need &mdash; there&apos;s no limit.
       </P>
 
       <H2 id="test-library">Browse the test library</H2>
@@ -62,9 +64,9 @@ export default function Page() {
         ]}
       />
       <P>
-        Choosing <strong>Prod</strong> opens a confirmation dialog that requires a written reason (10+ characters)
-        before it&apos;ll run &mdash; that reason gets logged, so there&apos;s always a record of who ran what in
-        production and why. You can also run now or schedule it (see the{" "}
+        Choosing <strong>Prod</strong> opens a confirmation dialog &mdash; it won&apos;t run without a written
+        reason (10+ characters). That reason gets logged, so there&apos;s always a record of who ran what in
+        production, and why. You can also run now or schedule it (see the{" "}
         <Link href="/install-guide/features/platform-tools" style={{ color: "var(--accent-deep)", fontWeight: 600 }}>schedules guide</Link>).
       </P>
 

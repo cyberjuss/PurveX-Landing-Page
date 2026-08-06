@@ -36,17 +36,17 @@ const NAV: NavGroup[] = [
     label: "Get started",
     items: [
       { id: "overview", label: "Overview", href: "/install-guide" },
-      { id: "features", label: "Features", href: "/install-guide/features" },
+      { id: "features", label: "Capabilities", href: "/install-guide/features" },
       { id: "installation", label: "Installation", href: "/install-guide/installation" },
       { id: "first-run", label: "First run", href: "/install-guide/first-run" },
       { id: "windows", label: "Windows setup", href: "/install-guide/windows" },
     ],
   },
   {
-    label: "Feature details",
+    label: "Features",
     items: [
       { id: "detection-validation", label: "Detection validation", href: "/install-guide/features/detection-validation" },
-      { id: "runners-and-policy", label: "Runners & testing policy", href: "/install-guide/features/runners-and-policy" },
+      { id: "runners-and-policy", label: "Runners & policy", href: "/install-guide/features/runners-and-policy" },
       { id: "detections", label: "Detections & Detection-as-Code", href: "/install-guide/features/detections" },
       { id: "team-and-access", label: "Team & access", href: "/install-guide/features/team-and-access" },
       { id: "platform-tools", label: "Platform tools", href: "/install-guide/features/platform-tools" },

@@ -13,9 +13,11 @@ export default function Page() {
       <H2 id="watchtower">Watchtower, the AI assistant</H2>
       <P>
         <strong>AI Assistant</strong> in the sidebar &mdash; a chat interface for asking about your detection
-        portfolio, plus automatic plain-language analysis attached to every failed or inconclusive test result. It
-        only ever reasons over data already in PurveX &mdash; your detections, test history, and sample events
-        &mdash; nothing is sent anywhere unless you configure a provider.
+        portfolio, plus automatic plain-language analysis attached to every failed or inconclusive test result.
+      </P>
+      <P>
+        It only ever reasons over data already in PurveX: your detections, test history, and sample events. Nothing
+        is sent anywhere unless you configure a provider.
       </P>
       <P>
         <strong>Settings &rarr; Watchtower.</strong> Pick a provider (OpenAI or DeepSeek), an analysis depth, and
@@ -42,9 +44,11 @@ export default function Page() {
       <P>
         Every test gets a 0&ndash;100 score based on whether telemetry arrived, how fast, whether the rule fired,
         and how fast. Those roll up on the <strong>Reports</strong> page into an overall{" "}
-        <strong>Posture</strong> score for your whole organization, trended against the prior period, alongside
-        proven ATT&amp;CK coverage percentage, validations run, and detections that regressed between rule
-        versions.
+        <strong>Posture</strong> score for your whole organization, trended against the prior period.
+      </P>
+      <P>
+        Alongside it: proven ATT&amp;CK coverage percentage, validations run, and detections that regressed
+        between rule versions.
       </P>
 
       <H2 id="license">License</H2>

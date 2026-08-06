@@ -7,7 +7,7 @@ const FEATURES: [string, string, string][] = [
   ["Detection validation", "Run real attack techniques against your environment and see, with evidence, whether your SIEM actually caught them.", "/install-guide/features/detection-validation"],
   ["SIEM integration", "Connects to Splunk, Elastic, or Sentinel. Reads only what's needed to confirm a test fired — never mirrors your event data.", "/install-guide/features/detection-validation"],
   ["MITRE ATT&CK coverage", "Every test and detection maps to a real ATT&CK technique, so you see what's actually covered, not just what's on paper.", "/install-guide/features/detection-validation"],
-  ["Safe by default", "Atomic Red Team simulations are scoped and reversible by design. Production runs require Administrator access and a written reason, every time.", "/install-guide/features/runners-and-policy"],
+  ["Safe by default", "Atomic Red Team tests are scoped and reversible. Every production run needs admin access and a written reason.", "/install-guide/features/runners-and-policy"],
   ["Test runners", "Dedicated lab machines PurveX connects to over SSH, with host-key pinning so nothing else can impersonate one.", "/install-guide/features/runners-and-policy"],
   ["Detections, your way", "Sync detection rules from your SIEM, or write them by hand — each one mapped to the technique it's meant to catch.", "/install-guide/features/detections"],
   ["Teams and roles", "Multiple team members, role-based permissions, and an audit log of who changed what.", "/install-guide/features/team-and-access"],

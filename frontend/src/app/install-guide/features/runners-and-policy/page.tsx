@@ -14,9 +14,9 @@ export default function Page() {
 
       <H2 id="register-a-runner">Register a runner</H2>
       <P>
-        <strong>Endpoints &rarr; Add runner.</strong> A runner is a lab, dev, or (carefully) production machine
-        PurveX connects to over SSH to actually execute an atomic test &mdash; never PurveX&apos;s own server. Two
-        ways to add one:
+        <strong>Endpoints &rarr; Add runner.</strong> A runner is a lab, dev, or (carefully) production machine that
+        actually executes a test &mdash; never PurveX&apos;s own server. PurveX reaches it over SSH. Two ways to add
+        one:
       </P>
       <Table
         head={["Method", "How it works"]}
@@ -37,10 +37,10 @@ export default function Page() {
         machine later.
       </Callout>
       <P>
-        Every runner is tagged with an <strong>environment</strong> (lab, dev, prod, or anything else you name) and
-        that&apos;s what the Run Test wizard uses to offer it as a target. The Endpoints page shows each runner&apos;s
-        state (Ready, Needs review, Paused, Silent), recent validation history, and last check-in &mdash; with{" "}
-        <strong>Pause</strong> and <strong>Resume</strong> actions if you need to take one offline for a while.
+        Every runner is tagged with an <strong>environment</strong> (lab, dev, prod, or anything else you name)
+        &mdash; that&apos;s what the Run Test wizard uses to offer it as a target. The Endpoints page shows each
+        runner&apos;s state (Ready, Needs review, Paused, Silent), recent validation history, and last check-in.
+        Need to take one offline for a while? Use <strong>Pause</strong> and <strong>Resume</strong>.
       </P>
 
       <H2 id="testing-policy">Testing policy</H2>

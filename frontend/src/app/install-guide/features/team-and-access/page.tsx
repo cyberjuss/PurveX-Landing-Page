@@ -29,10 +29,12 @@ export default function Page() {
         ]}
       />
       <P>
-        Assign a role from the dropdown on that person&apos;s row in Settings &rarr; Users; remove one by clicking
-        the &times; on their role chip. Certain actions &mdash; production runs, deploying high-criticality
-        detections, deleting detections, managing settings &mdash; are Administrator-only regardless of what role
-        someone holds.
+        Assign a role from the dropdown on that person&apos;s row in Settings &rarr; Users. Remove one by clicking
+        the &times; on their role chip.
+      </P>
+      <P>
+        A few actions stay Administrator-only no matter what role someone holds: production runs, deploying
+        high-criticality detections, deleting detections, and managing settings.
       </P>
 
       <H2 id="audit-log">Audit log</H2>
