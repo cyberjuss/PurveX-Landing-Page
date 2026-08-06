@@ -45,11 +45,11 @@ const NAV: NavGroup[] = [
   {
     label: "Features",
     items: [
-      { id: "detection-validation", label: "Detection validation", href: "/install-guide/features/detection-validation" },
-      { id: "runners-and-policy", label: "Runners & policy", href: "/install-guide/features/runners-and-policy" },
-      { id: "detections", label: "Detections & Detection-as-Code", href: "/install-guide/features/detections" },
-      { id: "team-and-access", label: "Team & access", href: "/install-guide/features/team-and-access" },
-      { id: "platform-tools", label: "Platform tools", href: "/install-guide/features/platform-tools" },
+      { id: "detection-validation", label: "Validation", href: "/install-guide/features/detection-validation" },
+      { id: "runners-and-policy", label: "Runners", href: "/install-guide/features/runners-and-policy" },
+      { id: "detections", label: "Detections", href: "/install-guide/features/detections" },
+      { id: "team-and-access", label: "Team", href: "/install-guide/features/team-and-access" },
+      { id: "platform-tools", label: "Tools", href: "/install-guide/features/platform-tools" },
     ],
   },
   {
