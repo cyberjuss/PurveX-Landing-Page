@@ -69,10 +69,26 @@ function PricingContent() {
   // the plan was already picked once, so don't ask again. See
   // account/signup/page.tsx for where this gets set.
   const preselected = searchParams?.get("plan") === "paid" ? "paid" : searchParams?.get("plan") === "free" ? "free" : null;
+  // Explicit escape hatch from the "Choose again" link below -- without
+  // this, a returning user with a plan already on file could never get
+  // back to the full picker, since a bare /pricing would just look up
+  // storage and land them right back on the same confirm screen.
+  const forceChoose = searchParams?.get("plan") === "choose";
 
   const [user, setUser] = useState<User | null | undefined>(undefined);
   const [busyPlan, setBusyPlan] = useState<"free" | "paid" | null>(null);
+  // A plan already on file from a previous visit (recordPlanSelection below
+  // writes this) -- someone who chose once and comes back later, with no
+  // ?plan= in the URL this time, shouldn't have to choose again either.
+  const [storedPlan, setStoredPlan] = useState<"free" | "paid" | null>(null);
+  const [profileChecked, setProfileChecked] = useState(false);
   const autoRanFree = useRef(false);
+
+  // Whichever says a plan was already decided: an explicit ?plan= on this
+  // visit, or one saved from a previous visit. Everything below acts on
+  // this instead of the raw `preselected`. forceChoose overrides both, so
+  // "Choose again" always reaches the full picker.
+  const effectivePlan = forceChoose ? null : preselected ?? storedPlan;
 
   // Warm the free-plan destination -- handleFree() below either runs
   // automatically (preselected) or on a single click, both cases benefit
@@ -83,7 +99,7 @@ function PricingContent() {
 
   useEffect(() => {
     let cancelled = false;
-    getCurrentUser().then((u) => {
+    getCurrentUser().then(async (u) => {
       if (cancelled) return;
       if (!u) {
         const next = preselected ? `/pricing?plan=${preselected}` : "/pricing";
@@ -91,6 +107,21 @@ function PricingContent() {
         return;
       }
       setUser(u);
+
+      // Only worth checking storage if this visit didn't already say what
+      // plan to use -- an explicit ?plan= always wins, no network round
+      // trip needed to render the right thing.
+      if (!preselected && !forceChoose && supabase) {
+        const { data } = await supabase
+          .from("portal_profiles")
+          .select("plan")
+          .eq("user_id", u.id)
+          .maybeSingle();
+        if (!cancelled && (data?.plan === "free" || data?.plan === "paid")) {
+          setStoredPlan(data.plan);
+        }
+      }
+      if (!cancelled) setProfileChecked(true);
     });
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -125,27 +156,31 @@ function PricingContent() {
     }
   }
 
-  // Free was already decided before signup -- nothing left to ask, and no
-  // external redirect involved, so just carry it out. (Paid still needs an
-  // explicit click below: it's about to hand off to Stripe.)
+  // Free was already decided -- either this visit or a previous one --
+  // nothing left to ask, and no external redirect involved, so just carry
+  // it out. (Paid still needs an explicit click below: it's about to hand
+  // off to Stripe.)
   useEffect(() => {
-    if (user && preselected === "free" && !autoRanFree.current) {
+    if (user && effectivePlan === "free" && !autoRanFree.current) {
       autoRanFree.current = true;
       void handleFree();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, preselected]);
+  }, [user, effectivePlan]);
 
-  // preselected === "free" always shows this screen, never the picker below
-  // -- the effect above fires handleFree() the moment `user` is set, and
-  // busyPlan briefly resets to null in its `finally` right as router.push
-  // fires, which would otherwise flash the full picker for a frame.
-  if (user === undefined || preselected === "free") {
+  // Waiting on either the session check or (when there's no ?plan= on the
+  // URL) the stored-plan lookup -- both need to resolve before it's safe to
+  // decide whether the full picker should render at all, or this would
+  // flash it for a frame even for someone who already chose a plan. Once
+  // effectivePlan resolves to "free", the effect above fires handleFree()
+  // immediately, and busyPlan briefly resets to null in its `finally` right
+  // as router.push fires, which is the other case this screen absorbs.
+  if (user === undefined || !profileChecked || effectivePlan === "free") {
     return (
       <AuthShell theme="light" width="md">
         <div className="flex min-h-[240px] flex-col items-center justify-center gap-3 text-sm text-slate-500">
           <Loader2 className="h-5 w-5 animate-spin" />
-          {preselected === "free" ? "Setting up your free plan..." : null}
+          {effectivePlan === "free" ? "Setting up your free plan..." : null}
         </div>
       </AuthShell>
     );
@@ -164,9 +199,10 @@ function PricingContent() {
     </div>
   );
 
-  // Already decided on the paid plan before signup -- confirm once, don't
-  // re-present the free option as if nothing had been chosen yet.
-  if (preselected === "paid") {
+  // Already decided on the paid plan -- this visit or a previous one --
+  // confirm once, don't re-present the free option as if nothing had been
+  // chosen yet.
+  if (effectivePlan === "paid") {
     return (
       <AuthShell theme="light" width="sm" bare hideHeader>
         <div>
@@ -193,7 +229,7 @@ function PricingContent() {
           </Button>
         </div>
         <p className="mt-3 text-center text-xs text-slate-500">
-          Picked the wrong plan? <Link href="/pricing" className="text-[#6a5cff] hover:text-[#5546e0]">Choose again</Link>
+          Picked the wrong plan? <Link href="/pricing?plan=choose" className="text-[#6a5cff] hover:text-[#5546e0]">Choose again</Link>
         </p>
         {signOutRow}
       </AuthShell>
