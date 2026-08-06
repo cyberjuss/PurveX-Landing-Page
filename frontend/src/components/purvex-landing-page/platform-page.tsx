@@ -105,7 +105,7 @@ const tiers = [
       "Coverage heatmap across every ATT&CK technique",
       "Up to 3 team members with role-based access",
       "1 test runner, 3 test runs a day",
-      "Self-hosted — nothing leaves your network",
+      "30-day audit log retention",
     ],
     href: "/account/signup?plan=free",
     cta: "Get started free",
