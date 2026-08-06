@@ -19,30 +19,50 @@ import {
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
 const curriculum = [
-  { mod: "01", icon: BookOpen, title: "Fundamentals", body: "The groundwork every analyst needs to start strong." },
-  { mod: "02", icon: Radar, title: "Threat detection", body: "Spotting suspicious activity and acting on it early." },
-  { mod: "03", icon: Search, title: "Log analysis projects", body: "Real log data, and finding what matters in the noise." },
-  { mod: "04", icon: Siren, title: "Incident response", body: "An incident end to end: triage, investigate, contain, document." },
+  {
+    mod: "01",
+    icon: BookOpen,
+    title: "Fundamentals",
+    body: "The groundwork every analyst needs to start strong: networking basics, Windows and Linux internals attackers actually touch, and how to read a log line before you ever open a SIEM.",
+  },
+  {
+    mod: "02",
+    icon: Radar,
+    title: "Threat detection",
+    body: "Spotting suspicious activity and acting on it early: MITRE ATT&CK fundamentals, common attacker techniques, and separating real signal from noise in an alert queue.",
+  },
+  {
+    mod: "03",
+    icon: Search,
+    title: "Log analysis projects",
+    body: "Real log data, and finding what matters in the noise: parsing Windows Event Logs, Sysmon, and network telemetry to reconstruct what actually happened.",
+  },
+  {
+    mod: "04",
+    icon: Siren,
+    title: "Incident response",
+    body: "An incident end to end: triage, investigate, contain, and document, using the same playbooks a SOC runs under pressure.",
+  },
   {
     mod: "05",
     id: "instruction",
     icon: GraduationCap,
     title: "Cybersecurity Instruction",
-    body: "Instructor support for cybersecurity, SOC operations, SIEM, threat detection, and incident response programs.",
+    body: "Instructor support for cybersecurity, SOC operations, SIEM, threat detection, and incident response programs, built around your syllabus instead of a generic template.",
   },
   {
     mod: "06",
     id: "labs",
     icon: FlaskConical,
     title: "Hands-On Security Labs",
-    body: "Practical exercises designed to help learners investigate alerts, analyze threats, and understand modern security operations.",
+    body: "Practical exercises that help learners investigate alerts, analyze threats, and understand modern security operations, using the same tools and real log data working analysts see every day.",
   },
   {
     mod: "07",
     id: "curriculum",
     icon: Layers,
     title: "Curriculum Support",
-    body: "Help developing or improving cybersecurity training content based on practical industry skills.",
+    body: "Help developing or improving cybersecurity training content based on practical industry skills, mapped to what employers actually screen for in a SOC interview.",
   },
 ];
 
