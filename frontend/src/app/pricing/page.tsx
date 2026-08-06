@@ -177,7 +177,7 @@ function PricingContent() {
   // as router.push fires, which is the other case this screen absorbs.
   if (user === undefined || !profileChecked || effectivePlan === "free") {
     return (
-      <AuthShell theme="light" width="md">
+      <AuthShell theme="light" width="md" bare>
         <div className="flex min-h-[240px] flex-col items-center justify-center gap-3 text-sm text-slate-500">
           <Loader2 className="h-5 w-5 animate-spin" />
           {effectivePlan === "free" ? "Setting up your free plan..." : null}
@@ -307,7 +307,7 @@ function PricingContent() {
 
 export default function PricingPage() {
   return (
-    <Suspense fallback={<AuthShell theme="light" width="md"><div className="min-h-[240px]" /></AuthShell>}>
+    <Suspense fallback={<AuthShell theme="light" width="md" bare><div className="min-h-[240px]" /></AuthShell>}>
       <PricingContent />
     </Suspense>
   );
