@@ -81,7 +81,7 @@ export default function Page() {
         rows={[
           ["PASS", "The rule fired, on real telemetry, within an expected window"],
           ["FAIL", "Telemetry arrived, but the rule never fired"],
-          ["INCONCLUSIVE", "No matching logs arrived at all: a telemetry gap, not a rule problem"],
+          ["Blind Spot", "No matching logs arrived at all: a telemetry gap, not a rule problem"],
         ]}
       />
       <P>

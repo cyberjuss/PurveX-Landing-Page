@@ -23,11 +23,11 @@ const FREE_FEATURES = [
 
 const PAID_FEATURES = [
   "Everything in Free, fully unlocked",
-  "Unlimited team members, runners & daily test runs",
+  "Unlimited team members",
+  "Multiple test runners, unlimited daily test runs",
   "Scheduled, automated recurring test runs",
   "Detection-as-Code: sync rules from git",
-  "PDF posture reports, unlimited audit history",
-  "Priority support",
+  "Unlimited audit history",
 ];
 
 function CheckItem({ children, tone = "neutral" }: { children: React.ReactNode; tone?: "neutral" | "accent" }) {

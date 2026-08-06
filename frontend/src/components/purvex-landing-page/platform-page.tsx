@@ -40,7 +40,7 @@ const features = [
   {
     icon: Radar,
     title: "Isolate the failure",
-    body: "Telemetry gap, rule failure, tuning, or drift? Know exactly what to fix.",
+    body: "Blind spot, rule failure, tuning, or drift? Know exactly what to fix.",
   },
   {
     icon: BrainCircuit,
@@ -121,11 +121,11 @@ const tiers = [
     summary: "Track coverage across your whole team, without limits.",
     items: [
       "Everything in Free, fully unlocked",
-      "Unlimited team members, runners & daily test runs",
+      "Unlimited team members",
+      "Multiple test runners, unlimited daily test runs",
       "Scheduled, automated recurring test runs",
       "Detection-as-Code: sync rules from git",
-      "PDF posture reports, unlimited audit history",
-      "Priority support",
+      "Unlimited audit history",
     ],
     href: "/account/signup?plan=paid",
     cta: "Get started",
@@ -136,7 +136,7 @@ const tiers = [
 const faqs: [string, string][] = [
   ["Is this BAS? How is it different from AttackIQ or SafeBreach?", "BAS simulates adversary behavior on endpoints. PurveX validates the full chain (telemetry, parser, rule, alert, ticket) and isolates where it broke. We complement BAS, not replace it."],
   ["Do you run anything in production? What is the safety model?", "Read-only against your SIEM by default. Actions are scoped, auditable, and approved per environment. Production-impacting tests need explicit opt-in."],
-  ["How long until we see our first coverage signal?", "Within hours of connecting your SIEM and running your first test. Formal, exportable PDF reports for leadership are a paid-plan feature."],
+  ["How long until we see our first coverage signal?", "Within hours of connecting your SIEM and running your first test."],
   ["Does PurveX replace the SIEM?", "No. Your SIEM stays the system of record. PurveX adds a validation layer that proves detections fire and tracks coverage over time."],
 ];
 
