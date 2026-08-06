@@ -72,18 +72,21 @@ const audience = [
   },
 ];
 
+// Each line pairs 1:1 with the same index in withItems below -- same
+// problem, same grammatical shape, so the two columns read as a direct
+// before/after rather than two loosely related lists.
 const withoutItems = [
-  "Hours spent proving whether telemetry or rule logic actually failed",
-  "Coverage reviews built from screenshots, notes, and assumptions",
-  "Validation work that happens only before audits or major incidents",
-  "Leadership hearing 'we have a rule' instead of 'we know it works'",
+  "Manual triage to determine whether telemetry or rule logic failed",
+  "Coverage claims backed by screenshots and assumptions, not test evidence",
+  "Validation squeezed in before audits, skipped the rest of the year",
+  "Leadership told a rule exists, not that it fires",
 ];
 
 const withItems = [
   "One run that shows what fired, what missed, and where the chain broke",
-  "Clear failure isolation so engineers can fix the right layer first",
-  "Measured coverage that can be tracked over time across environments",
-  "Evidence strong enough for both operators and budget owners",
+  "Coverage backed by test evidence, tracked across every environment",
+  "Validation that runs continuously, not just before an audit",
+  "Leadership shown proof the rule fires, not just that it exists",
 ];
 
 const dashRows = [
