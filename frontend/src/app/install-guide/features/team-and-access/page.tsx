@@ -1,6 +1,6 @@
 "use client";
 
-import { Eyebrow, H1, Lede, H2, P, Table, Callout } from "@/components/purvex-landing-page/docs-content";
+import { Eyebrow, H1, Lede, H2, P, Table } from "@/components/purvex-landing-page/docs-content";
 
 export default function Page() {
   return (
@@ -49,14 +49,6 @@ export default function Page() {
         organization, everything is fully isolated: detections, tests, users, settings, and the audit log never
         cross organization boundaries, even on a shared self-hosted instance.
       </P>
-
-      <H2 id="two-factor">Two-factor authentication</H2>
-      <Callout tone="info">
-        <strong>Where we are today:</strong> 2FA is fully built on the backend &mdash; TOTP codes, backup codes, the
-        whole verification flow &mdash; and once it&apos;s on for an account, login correctly asks for a code. What
-        doesn&apos;t exist yet is a self-service page to turn it on for your own account; that&apos;s next on the
-        list. We&apos;ll update this page the moment it ships.
-      </Callout>
     </>
   );
 }

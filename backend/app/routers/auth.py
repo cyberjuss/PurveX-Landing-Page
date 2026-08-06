@@ -784,42 +784,6 @@ async def login(
         await clear_rate_limit_async(rate_key)
     except Exception:
         pass
-    
-    # SECURITY: Check if 2FA is required for this account.
-    # If enabled for the user (admin or non-admin), or if the environment
-    # policy requires 2FA for this user class, we do NOT create a full
-    # session yet. Instead we:
-    # - Issue a short-lived "two_factor_token" JWT marked as pending.
-    # - Return it to the client, which will call /auth/2fa/verify.
-    await db.refresh(user)
-
-    two_factor_enabled = getattr(user, "two_factor_enabled", False)
-    require_2fa_for_admins = getattr(app_settings, "REQUIRE_2FA_FOR_ADMINS", False)
-    require_2fa_for_all = getattr(app_settings, "REQUIRE_2FA_FOR_ALL_USERS", False)
-
-    must_use_2fa = two_factor_enabled or require_2fa_for_all or (require_2fa_for_admins and getattr(user, "is_admin", False))
-
-    if must_use_2fa:
-        from fastapi.responses import JSONResponse
-
-        two_factor_token = create_access_token(
-            data={
-                "sub": user.email,
-                "uid": user.id,
-                "two_factor_pending": True,
-            },
-            # Short-lived token to reduce risk if intercepted.
-            expires_minutes=10,
-        )
-
-        return JSONResponse(
-            status_code=status.HTTP_200_OK,
-            content={
-                "requires_2fa": True,
-                "two_factor_token": two_factor_token,
-                "message": "Two-factor authentication required",
-            },
-        )
 
     access_token = _create_session_token(user)
 
@@ -885,7 +849,7 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
         )
-    if payload.get("two_factor_pending") or payload.get("purpose") == "password_reset" or payload.get("agent_registration"):
+    if payload.get("purpose") == "password_reset" or payload.get("agent_registration"):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token is not valid for authenticated API access",

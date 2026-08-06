@@ -62,12 +62,7 @@ class User(Base):
     # Note: nullable=True initially to support migration; migration will set defaults
     failed_login_attempts = Column(Integer, default=0, nullable=True)
     locked_until = Column(DateTime(timezone=True), nullable=True)  # Account locked until this time
-    
-    # SECURITY: 2FA fields
-    two_factor_enabled = Column(Boolean, default=False, nullable=False)
-    two_factor_secret = Column(String, nullable=True)  # TOTP secret key (encrypted in production)
-    two_factor_backup_codes = Column(Text, nullable=True)  # JSON array of backup codes
-    
+
     # GDPR: scheduled account deletion (grace period)
     deletion_requested_at = Column(DateTime(timezone=True), nullable=True)
     deletion_scheduled_for = Column(DateTime(timezone=True), nullable=True)

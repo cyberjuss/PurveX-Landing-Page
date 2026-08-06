@@ -23,10 +23,9 @@ export default function Page() {
       </ul>
 
       <P>
-        Whatever PurveX does store lives in your own PostgreSQL database, on your own machine &mdash; not in
-        anything we run. SIEM login credentials, two-factor authentication (2FA) codes if you turn that feature on,
-        and detection-source tokens are all encrypted before they&apos;re saved, using the
-        <code> PURVEX_ENCRYPTION_KEY</code> you set during installation. There&apos;s no PurveX cloud service
+        Whatever PurveX does store lives in your own database, on your own machine &mdash; not in anything we run.
+        SIEM login credentials and detection-source tokens are all encrypted before they&apos;re saved, using the
+        <code> PURVEX_ENCRYPTION_KEY</code> generated during installation. There&apos;s no PurveX cloud service
         involved, and nothing is ever sent back to us.
       </P>
     </>

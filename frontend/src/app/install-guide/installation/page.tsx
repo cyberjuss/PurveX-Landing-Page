@@ -26,7 +26,7 @@ export default function Page() {
 
       <Callout tone="warn">
         <strong>Back up <code>PURVEX_ENCRYPTION_KEY</code></strong> (in the <code>.env</code> file this just
-        created) somewhere safe. Lose it, and any stored SIEM credentials or 2FA codes can&apos;t be recovered.
+        created) somewhere safe. Lose it, and any stored SIEM credentials can&apos;t be recovered.
       </Callout>
 
       <H2 id="manual">Prefer to run it by hand?</H2>

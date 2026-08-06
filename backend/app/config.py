@@ -34,12 +34,6 @@ class Settings(BaseSettings):
     # Password history / reuse policy
     PASSWORD_HISTORY_LENGTH: int = 5  # How many previous hashes to remember per user
 
-    # MFA policy
-    # When enabled, these flags allow security teams to require 2FA for
-    # specific classes of users in higher environments.
-    REQUIRE_2FA_FOR_ADMINS: bool = False
-    REQUIRE_2FA_FOR_ALL_USERS: bool = False
-
     # Allow localhost defaults; broader IPs handled via CORS_ALLOW_ORIGIN_REGEX.
     CORS_ORIGINS: List[str] = [
         "http://localhost:3000",
@@ -115,7 +109,7 @@ class Settings(BaseSettings):
     SMTP_USE_TLS: bool = True
     SENDGRID_API_KEY: Optional[str] = None
 
-    # Field-level encryption for 2FA secrets, SIEM credentials, etc.
+    # Field-level encryption for SIEM credentials, etc.
     # Generate: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
     ENCRYPTION_KEY: Optional[str] = None
 

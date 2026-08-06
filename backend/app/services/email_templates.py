@@ -70,28 +70,6 @@ def welcome_email(username: str, login_url: str) -> str:
 </body></html>"""
 
 
-def two_factor_backup_email(username: str, backup_codes: list[str]) -> str:
-    """2FA backup codes — sent when a user enables 2FA."""
-    codes_html = "<br>".join(f"<code>{code}</code>" for code in backup_codes)
-    return f"""<!DOCTYPE html>
-<html><head>{_BASE_STYLE}</head>
-<body>
-<div class="container">
-  <div class="header"><h1>PurveX — 2FA Backup Codes</h1></div>
-  <div class="body">
-    <p>Hi {username},</p>
-    <p>You've enabled two-factor authentication on your PurveX account. Save these backup codes somewhere secure — each code can only be used once:</p>
-    <div class="code">{codes_html}</div>
-    <p class="muted"><strong>Important:</strong> If you lose access to your authenticator app and these codes, you will need an administrator to reset your 2FA.</p>
-  </div>
-  <div class="footer">
-    <p>PurveX &mdash; Detection Validation Platform</p>
-    <p class="muted">This is an automated message. Please do not reply.</p>
-  </div>
-</div>
-</body></html>"""
-
-
 def data_export_ready_email(username: str, download_url: str) -> str:
     """GDPR data export ready notification."""
     return f"""<!DOCTYPE html>
