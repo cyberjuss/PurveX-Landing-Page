@@ -32,17 +32,17 @@ const PAID_FEATURES = [
 
 function CheckItem({ children, tone = "neutral" }: { children: React.ReactNode; tone?: "neutral" | "accent" }) {
   return (
-    <li className="flex items-center gap-2.5 text-sm">
+    <li className="flex items-start gap-2.5 text-sm">
       <span
         className={
           tone === "accent"
-            ? "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-[rgba(106,92,255,0.12)] text-[#6a5cff]"
-            : "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500"
+            ? "mt-px flex h-[19px] w-[19px] shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#6a5cff] to-[#5546e0] text-white"
+            : "mt-px flex h-[19px] w-[19px] shrink-0 items-center justify-center rounded-full bg-slate-400 text-white"
         }
       >
         <Check className="h-3 w-3" strokeWidth={3} />
       </span>
-      <span className={tone === "accent" ? "text-slate-700" : "text-slate-600"}>{children}</span>
+      <span className={tone === "accent" ? "text-slate-700 leading-snug" : "text-slate-600 leading-snug"}>{children}</span>
     </li>
   );
 }
@@ -212,12 +212,13 @@ function PricingContent() {
           </p>
         </div>
 
-        <div className="grid divide-y divide-[var(--pvrx-border-light)] sm:grid-cols-2 sm:divide-x sm:divide-y-0">
-          <div className="flex flex-col pb-7 sm:pr-9 sm:pb-0">
+        <div className="grid gap-5 pt-2 sm:grid-cols-2 sm:items-start">
+          <div className="flex flex-col rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-7">
             <p className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">Free</p>
             <p className="mt-2 text-[1.9rem] font-display font-semibold tracking-tight text-slate-900">$0</p>
             <p className="mt-0.5 text-sm text-slate-500">Forever, no card required</p>
-            <ul className="mt-5 flex flex-1 flex-col gap-2.5">
+            <div className="mt-5 h-px bg-[var(--pvrx-border-light)]" />
+            <ul className="mt-5 flex flex-1 flex-col gap-3">
               {FREE_FEATURES.map((f) => (
                 <CheckItem key={f}>{f}</CheckItem>
               ))}
@@ -233,16 +234,17 @@ function PricingContent() {
             </Button>
           </div>
 
-          <div className="flex flex-col pt-7 sm:pt-0 sm:pl-9">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#6a5cff]">Paid</p>
-              <span className="rounded-full bg-[rgba(106,92,255,0.1)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.06em] text-[#6a5cff]">Most popular</span>
-            </div>
+          <div className="relative flex flex-col rounded-2xl border border-[rgba(106,92,255,0.32)] bg-gradient-to-b from-[rgba(106,92,255,0.07)] to-white p-6 shadow-[0_24px_48px_-24px_rgba(106,92,255,0.4)] sm:-translate-y-2.5 sm:p-7">
+            <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gradient-to-br from-[#6a5cff] to-[#5546e0] px-4 py-1 text-[10px] font-bold uppercase tracking-[0.07em] text-white shadow-[0_10px_22px_-8px_rgba(106,92,255,0.65)]">
+              Most popular
+            </span>
+            <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#6a5cff]">Paid</p>
             <p className="mt-2 text-[1.9rem] font-display font-semibold tracking-tight text-slate-900">
               $49<span className="text-base font-medium text-slate-500"> / user / mo</span>
             </p>
             <p className="mt-0.5 text-sm text-slate-500">Billed monthly via Stripe, cancel anytime</p>
-            <ul className="mt-5 flex flex-1 flex-col gap-2.5">
+            <div className="mt-5 h-px bg-[rgba(106,92,255,0.18)]" />
+            <ul className="mt-5 flex flex-1 flex-col gap-3">
               {PAID_FEATURES.map((f) => (
                 <CheckItem key={f} tone="accent">{f}</CheckItem>
               ))}
@@ -251,7 +253,7 @@ function PricingContent() {
               onClick={handlePaid}
               disabled={busyPlan !== null}
               size="lg"
-              className="mt-5 h-11 w-full rounded-2xl border-0 bg-[#6a5cff] text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] hover:bg-[#5546e0]"
+              className="mt-6 h-11 w-full rounded-2xl border-0 bg-[#6a5cff] text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] hover:bg-[#5546e0]"
             >
               {busyPlan === "paid" ? <><Loader2 className="h-4 w-4 animate-spin" /> Redirecting to checkout...</> : "Continue to checkout"}
             </Button>
