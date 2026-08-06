@@ -145,7 +145,7 @@ export default function TrainingPage() {
               <div className="sp-compare__badge sp-compare__badge--x">
                 <X size={18} />
               </div>
-              <h3 className="sp-compare__h">Generic training</h3>
+              <h3 className="sp-compare__h">Generic Training</h3>
             </div>
             <ul>
               {withoutItems.map((t) => (
