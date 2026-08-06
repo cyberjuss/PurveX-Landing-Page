@@ -2,21 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ReactNode, useEffect, useRef, useState } from "react";
-import { Menu, X, Home as HomeIcon } from "lucide-react";
+import { ReactNode } from "react";
+import { Home as HomeIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-// Mirrors the top-level items in chrome.tsx's NAV_MENUS -- just the labels
-// and hrefs, none of the mega-menu submenu content, since this is a
-// lightweight stand-in for auth-flow pages, not the full site nav. Home
-// renders as an icon instead of a label -- everything else stays text.
-const SITE_NAV = [
-  { label: "Home", href: "/", icon: HomeIcon },
-  { label: "Security Operations", href: "/security-operations", icon: null },
-  { label: "Cybersecurity Training", href: "/cybersecurity-training", icon: null },
-  { label: "PurveX Labs", href: "/platform", icon: null },
-  { label: "About", href: "/about", icon: null },
-];
 
 interface AuthShellProps {
   title?: string;
@@ -58,25 +46,6 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
   const maxWidthClass = maxWidthPx ? undefined : "max-w-5xl";
   const maxWidthStyle = maxWidthPx ? { maxWidth: `${maxWidthPx}px` } : undefined;
 
-  const [navOpen, setNavOpen] = useState(false);
-  const navRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!navOpen) return;
-    function handleOutside(e: MouseEvent) {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) setNavOpen(false);
-    }
-    function handleEscape(e: KeyboardEvent) {
-      if (e.key === "Escape") setNavOpen(false);
-    }
-    document.addEventListener("mousedown", handleOutside);
-    document.addEventListener("keydown", handleEscape);
-    return () => {
-      document.removeEventListener("mousedown", handleOutside);
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, [navOpen]);
-
   return (
     <div
       className={cn(
@@ -103,46 +72,18 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
         // to the top-left corner, independent of the form's own width.
         // shrink-0 keeps its natural height inside the flex column below,
         // rather than being squeezed by the centering block's flex-1.
-        <div className="relative z-20 shrink-0" ref={navRef}>
-          <button
-            type="button"
-            onClick={() => setNavOpen((v) => !v)}
-            aria-label={navOpen ? "Close menu" : "Open menu"}
-            aria-expanded={navOpen}
-            className={cn(
-              "flex h-11 w-11 items-center justify-center rounded-2xl border transition",
-              isLight
-                ? "border-[var(--pvrx-border-light)] bg-white text-slate-900 hover:bg-slate-50"
-                : "border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.06]"
-            )}
-          >
-            {navOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-
-          {navOpen && (
-            <nav
-              className={cn(
-                "absolute left-0 top-[calc(100%+8px)] w-64 overflow-hidden rounded-2xl border py-2 shadow-[0_24px_60px_-24px_rgba(15,23,42,0.25)]",
-                isLight ? "border-[var(--pvrx-border-light)] bg-white" : "border-white/10 bg-[#0a0e1a]"
-              )}
-            >
-              {SITE_NAV.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setNavOpen(false)}
-                  aria-label={item.icon ? item.label : undefined}
-                  className={cn(
-                    "flex items-center px-4 py-2.5 text-sm font-medium no-underline transition",
-                    isLight ? "text-slate-700 hover:bg-slate-50 hover:text-slate-900" : "text-slate-300 hover:bg-white/5 hover:text-white"
-                  )}
-                >
-                  {item.icon ? <item.icon className="h-4 w-4" /> : item.label}
-                </Link>
-              ))}
-            </nav>
+        <Link
+          href="/"
+          aria-label="Home"
+          className={cn(
+            "relative z-20 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border transition",
+            isLight
+              ? "border-[var(--pvrx-border-light)] bg-white text-slate-900 hover:bg-slate-50"
+              : "border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.06]"
           )}
-        </div>
+        >
+          <HomeIcon className="h-5 w-5" />
+        </Link>
       }
 
       <div
