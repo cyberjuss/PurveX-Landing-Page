@@ -333,10 +333,10 @@ export default function HomePage() {
 .sp-offer__body { padding: 0; margin-top: 20px; display: flex; flex-direction: column; flex: 1 }
 .sp-offer__body h3 { margin: 8px 0 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: -.015em; color: var(--ink) }
 .sp-offer__body p { margin: 10px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.6 }
-.sp-offer__list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 7px }
+.sp-offer__list { list-style: none; margin: 16px 0 20px; padding: 0; display: flex; flex-direction: column; gap: 7px }
 .sp-offer__list li { display: flex; align-items: center; gap: 7px; font-size: .82rem; color: var(--ink-soft); font-weight: 500 }
 .sp-offer__list li svg { color: var(--accent-deep); flex-shrink: 0 }
-.sp-offer .sp-btn { margin-top: 20px }
+.sp-offer .sp-btn { margin-top: auto }
 .sp-offers[data-r] { opacity: 1; transform: none; filter: none; transition: none }
 .sp-offers[data-r] > * { opacity: 0; transform: translateY(22px); filter: blur(4px); transition: opacity .6s var(--ease), transform .6s var(--ease), filter .6s var(--ease) }
 .sp-offers[data-r].in > * { opacity: 1; transform: none; filter: blur(0) }
