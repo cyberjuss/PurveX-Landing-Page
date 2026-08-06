@@ -563,7 +563,7 @@ export default function PlatformPage() {
   .sp-wl { margin-top: 22px }
   .sp-wl__row { flex-direction: column; align-items: stretch; gap: 10px; padding: 0; border: none; background: none; box-shadow: none }
   .sp-wl__row:focus-within { box-shadow: none }
-  .sp-wl__field { height: 50px; padding: 0 16px; border-radius: 11px; border: 1px solid var(--border-strong); background: var(--surface) }
+  .sp-wl__field { flex: none; height: 50px; padding: 0 16px; border-radius: 11px; border: 1px solid var(--border-strong); background: var(--surface) }
   .sp-wl__row:focus-within .sp-wl__field { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(106,92,255,.12) }
   .sp-hero__ghost-link { margin-top: 14px }
   .sp-bento { grid-template-columns: 1fr }
