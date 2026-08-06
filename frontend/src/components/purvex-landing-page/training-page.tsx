@@ -123,8 +123,8 @@ export default function TrainingPage() {
         <div className="sp-hero__copy">
           <h1 className="sp-hero__h1">Think Like a Security Analyst 101</h1>
           <p className="sp-hero__sub">
-            PurveX&apos;s flagship training program: hands-on instruction built around how real
-            analysts read a scene, not just what they memorize.
+            Judgment over memorization: hands-on instruction built around how real analysts
+            read a scene, not just what they memorize.
           </p>
           <a href="#syllabus" className="sp-btn sp-btn--prim sp-btn--lg">
             See the Curriculum <ArrowRight size={16} />
