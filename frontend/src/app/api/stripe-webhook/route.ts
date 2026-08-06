@@ -19,12 +19,6 @@ import { sendEmail } from "@/lib/email";
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const OWNER_NOTIFICATION_EMAIL = process.env.OWNER_NOTIFICATION_EMAIL;
-// The Payment Link id (looks like "plink_...", found on the link's own page
-// in the Stripe Dashboard) for the separate "+1 seat" purchase -- distinct
-// from the main plan Payment Link, so the webhook can tell "new customer"
-// and "existing customer buying another seat" apart even though both fire
-// the same checkout.session.completed event type.
-const STRIPE_ADD_SEAT_PAYMENT_LINK_ID = process.env.STRIPE_ADD_SEAT_PAYMENT_LINK_ID;
 
 const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
 
@@ -83,12 +77,7 @@ export async function POST(request: NextRequest) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    const paymentLinkId = typeof session.payment_link === "string" ? session.payment_link : session.payment_link?.id;
-    if (STRIPE_ADD_SEAT_PAYMENT_LINK_ID && paymentLinkId === STRIPE_ADD_SEAT_PAYMENT_LINK_ID) {
-      await handleSeatAddOn(session);
-    } else {
-      await handleCheckoutCompleted(session);
-    }
+    await handleCheckoutCompleted(session);
   } else if (event.type === "invoice.paid") {
     await handleInvoicePaid(event.data.object as Stripe.Invoice);
   }
@@ -152,7 +141,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         </ul>
         <p>Issue their license -- this delivers it straight to their portal account (they'll see it at
         <strong>/my-license</strong> immediately, nothing to email):</p>
-        <pre>python backend/scripts/issue_license.py issue --seats &lt;seats&gt; --runners &lt;runners&gt; --days ${LICENSE_DAYS} --deliver-to ${safeUserId}</pre>
+        <pre>python backend/scripts/issue_license.py issue --seats 0 --runners 0 --days ${LICENSE_DAYS} --deliver-to ${safeUserId}</pre>
         <p>Requires <code>SUPABASE_URL</code> and <code>SUPABASE_SERVICE_ROLE_KEY</code> set in your shell (same
         service-role key already in this project's Vercel env). If delivery fails for any reason, the token is
         still printed above -- fall back to emailing it to ${safeCustomerEmail || "their address"} and they can
@@ -179,66 +168,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         <p>Your key is valid for ${LICENSE_DAYS} days and renews automatically with your subscription -- check
         back at that same page each cycle for the current one, no action needed on your end as long as you
         stay subscribed.</p>
-        <p>Questions in the meantime? Just reply to this email.</p>
-      `
-    );
-  }
-}
-
-// A customer who's already paying hits their license's specific seat cap
-// and buys one more seat via the separate add-seat Payment Link (see
-// /add-seat/page.tsx). Notify-only, same as everything else here: there's
-// no record anywhere of what seat count their current license has (that
-// only ever existed inside the signed token itself), so the owner reissues
-// by hand at whatever their current count plus one is, same as always.
-async function handleSeatAddOn(session: Stripe.Checkout.Session) {
-  const userId = session.client_reference_id;
-  const customerEmail = session.customer_details?.email || session.customer_email || "";
-
-  if (!userId) {
-    console.error("[stripe-webhook] add-seat checkout.session.completed with no client_reference_id:", session.id);
-    return;
-  }
-
-  const amount = session.amount_total != null ? (session.amount_total / 100).toFixed(2) : "unknown";
-  const currency = (session.currency || "usd").toUpperCase();
-  const safeCustomerEmail = customerEmail ? escapeHtml(customerEmail) : "";
-  const safeUserId = escapeHtml(userId);
-
-  if (OWNER_NOTIFICATION_EMAIL) {
-    await sendEmail(
-      OWNER_NOTIFICATION_EMAIL,
-      `PurveX seat add-on paid: ${customerEmail || "unknown email"}`,
-      `
-        <p>An existing customer just paid for one additional seat.</p>
-        <ul>
-          <li><strong>Email:</strong> ${safeCustomerEmail || "unknown"}</li>
-          <li><strong>Amount:</strong> ${amount} ${currency}</li>
-          <li><strong>Stripe checkout session:</strong> ${escapeHtml(session.id)}</li>
-          <li><strong>Portal account id:</strong> ${safeUserId}</li>
-        </ul>
-        <p>Reissue their license with <strong>one more seat than whatever they currently have</strong>
-        (there's no record of the current count here -- it only ever lived inside the signed token),
-        same expiry window as usual -- this delivers it straight to their portal account:</p>
-        <pre>python backend/scripts/issue_license.py issue --seats &lt;current+1&gt; --runners &lt;runners&gt; --days ${LICENSE_DAYS} --deliver-to ${safeUserId}</pre>
-        <p>If delivery fails, the token is still printed above -- fall back to emailing it to
-        ${safeCustomerEmail || "their address"}.</p>
-      `
-    );
-  } else {
-    console.warn("[stripe-webhook] OWNER_NOTIFICATION_EMAIL not set -- no notification sent for this seat add-on.");
-  }
-
-  if (customerEmail) {
-    await sendEmail(
-      customerEmail,
-      "Thanks -- your new PurveX seat is on its way",
-      `
-        <p>We've received your payment for an additional seat.</p>
-        <p>We issue updated license keys by hand right now, so expect it within one business day. You don't
-        need to wait on an email though -- once it's ready, you'll find it at
-        <strong>purvex-llc.com/my-license</strong>. Paste it into <strong>Settings &rarr; License</strong> in
-        your PurveX instance -- it takes effect immediately, no restart needed.</p>
         <p>Questions in the meantime? Just reply to this email.</p>
       `
     );
@@ -293,7 +222,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
           <li><strong>Portal account id:</strong> ${portalUserId ? escapeHtml(portalUserId) : "not found -- look up by email in Supabase"}</li>
         </ul>
         <p>Issue a fresh license, same as a new signup:</p>
-        <pre>python backend/scripts/issue_license.py issue --seats &lt;seats&gt; --runners &lt;runners&gt; --days ${LICENSE_DAYS}${portalUserId ? ` --deliver-to ${escapeHtml(portalUserId)}` : ""}</pre>
+        <pre>python backend/scripts/issue_license.py issue --seats 0 --runners 0 --days ${LICENSE_DAYS}${portalUserId ? ` --deliver-to ${escapeHtml(portalUserId)}` : ""}</pre>
         <p>${portalUserId
           ? "--deliver-to sends it straight to their portal account (they'll see it at /my-license, nothing to email)."
           : "No portal account id on file for this customer -- email the printed token to them directly."}</p>

@@ -234,7 +234,7 @@ function PricingContent() {
             Paid plan selected
           </span>
           <p className="mt-3 text-3xl font-display font-semibold tracking-tight text-slate-900">
-            $99<span className="text-base font-medium text-slate-500"> / user / mo</span>
+            $99<span className="text-base font-medium text-slate-500"> / mo</span>
           </p>
           <p className="mt-1 text-sm text-slate-500">Billed monthly via Stripe, cancel anytime</p>
           <ul className="mt-5 flex flex-col gap-2.5">
@@ -299,7 +299,7 @@ function PricingContent() {
             </span>
             <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#6a5cff]">Paid</p>
             <p className="mt-2 text-[1.9rem] font-display font-semibold tracking-tight text-slate-900">
-              $99<span className="text-base font-medium text-slate-500"> / user / mo</span>
+              $99<span className="text-base font-medium text-slate-500"> / mo</span>
             </p>
             <p className="mt-0.5 text-sm text-slate-500">Billed monthly via Stripe, cancel anytime</p>
             <div className="mt-5 h-px bg-[rgba(106,92,255,0.18)]" />
