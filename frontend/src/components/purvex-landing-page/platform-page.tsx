@@ -99,7 +99,14 @@ const tiers = [
     price: "$0",
     note: "Self-hosted, forever",
     summary: "Know which detections actually fire, before you scale.",
-    items: ["Full Atomic Red Team test library", "Up to 3 team members", "1 registered test runner", "3 test runs per day", "Runs on your own infrastructure"],
+    items: [
+      "Full Atomic Red Team test library, mapped to MITRE ATT&CK",
+      "Connect Splunk, Elastic, or Microsoft Sentinel",
+      "Coverage heatmap across every ATT&CK technique",
+      "Up to 3 team members with role-based access",
+      "1 test runner, 3 test runs a day",
+      "Self-hosted — nothing leaves your network",
+    ],
     href: "/account/signup?plan=free",
     cta: "Get started free",
     featured: false,
@@ -109,7 +116,14 @@ const tiers = [
     price: "$49",
     note: "per user / month",
     summary: "Track coverage across your whole team, without limits.",
-    items: ["Everything in Free", "Unlimited team members, test runners & daily runs", "Scheduled, automated test runs", "Detection-as-Code (git sync)", "Reports & posture scoring", "Priority support"],
+    items: [
+      "Everything in Free, fully unlocked",
+      "Unlimited team members, runners & daily test runs",
+      "Scheduled, automated recurring test runs",
+      "Detection-as-Code: sync rules from git",
+      "PDF posture reports, unlimited audit history",
+      "Priority support",
+    ],
     href: "/account/signup?plan=paid",
     cta: "Get started",
     featured: true,
@@ -341,7 +355,14 @@ export default function PlatformPage() {
               <p className="sp-tier__sum">{tier.summary}</p>
               <div className="sp-tier__sep" />
               <ul className="sp-tier__list">
-                {tier.items.map((it) => <li key={it}><Check size={15} /><span>{it}</span></li>)}
+                {tier.items.map((it) => (
+                  <li key={it}>
+                    <span className={`sp-tier__check${tier.featured ? " sp-tier__check--accent" : ""}`}>
+                      <Check size={12} strokeWidth={3} />
+                    </span>
+                    <span>{it}</span>
+                  </li>
+                ))}
               </ul>
               <a href={tier.href} className={`sp-btn sp-btn--full sp-btn--lg ${tier.featured ? "sp-btn--prim" : "sp-btn--ghost"}`}>
                 {tier.cta}
@@ -474,19 +495,39 @@ export default function PlatformPage() {
 .sp-compare__icon--ok { color: var(--accent-deep) }
 
 /* ── Pricing ── */
-.sp-pricing { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
-.sp-tier { position: relative; display: flex; flex-direction: column; padding: 36px 32px }
-.sp-tier:not(:first-child) { border-left: 1px solid var(--border) }
-.sp-tier--feat { background: linear-gradient(180deg, rgba(106,92,255,.05), var(--surface)); padding-top: 56px }
-.sp-tier__badge { position: absolute; top: 20px; right: 22px; padding: 4px 13px; border-radius: 999px; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); font-size: .62rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #fff }
+.sp-pricing { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; align-items: start; padding-top: 14px }
+.sp-tier {
+  position: relative; display: flex; flex-direction: column; padding: 40px 36px;
+  border: 1px solid var(--border); border-radius: 20px; background: var(--surface);
+  box-shadow: 0 1px 2px rgba(16,25,46,.04);
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+.sp-tier--feat {
+  border-color: rgba(106,92,255,.32);
+  background: linear-gradient(180deg, rgba(106,92,255,.07), var(--surface) 60%);
+  box-shadow: 0 28px 56px -24px rgba(106,92,255,.4), 0 1px 2px rgba(16,25,46,.04);
+  transform: translateY(-12px);
+}
+.sp-tier__badge {
+  position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+  padding: 5px 16px; border-radius: 999px; white-space: nowrap;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  font-size: .64rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: #fff;
+  box-shadow: 0 10px 22px -8px rgba(106,92,255,.65);
+}
 .sp-tier__name { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted-dim); font-weight: 700 }
-.sp-tier__price { margin-top: 8px; font-family: var(--font-display); font-size: 2.3rem; font-weight: 700; letter-spacing: -.04em; color: var(--ink) }
+.sp-tier__price { margin-top: 10px; font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; letter-spacing: -.04em; color: var(--ink) }
 .sp-tier__note { margin-top: 2px; color: var(--muted); font-size: .82rem }
-.sp-tier__sum { margin: 12px 0 0; color: var(--muted); font-size: .86rem; line-height: 1.6 }
-.sp-tier__sep { height: 1px; background: var(--border); margin: 20px 0 }
-.sp-tier__list { list-style: none; padding: 0; margin: 0 0 22px; display: flex; flex-direction: column; gap: 10px }
-.sp-tier__list li { display: flex; align-items: center; gap: 9px; color: var(--ink-soft); font-size: .86rem }
-.sp-tier__list li svg { color: var(--accent-deep); flex-shrink: 0 }
+.sp-tier__sum { margin: 14px 0 0; color: var(--muted); font-size: .86rem; line-height: 1.6; min-height: 2.9em }
+.sp-tier__sep { height: 1px; background: var(--border); margin: 22px 0 }
+.sp-tier__list { list-style: none; padding: 0; margin: 0 0 26px; display: flex; flex-direction: column; gap: 13px }
+.sp-tier__list li { display: flex; align-items: flex-start; gap: 11px; color: var(--ink-soft); font-size: .86rem; line-height: 1.5 }
+.sp-tier__check {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+  width: 19px; height: 19px; border-radius: 50%;
+  background: var(--muted-dim, #eef1f6); color: #fff;
+}
+.sp-tier__check--accent { background: linear-gradient(135deg, var(--accent), var(--accent-deep)); }
 .sp-tier .sp-btn { margin-top: auto }
 
 /* ── FAQ ── */
@@ -512,8 +553,8 @@ export default function PlatformPage() {
   .sp-tile--aud { grid-column: 1 / -1 }
   .sp-compare { grid-template-columns: 1fr }
   .sp-compare__col:not(:first-child) { border-left: none }
-  .sp-pricing { grid-template-columns: 1fr }
-  .sp-tier:not(:first-child) { border-left: none; border-top: 1px solid var(--border) }
+  .sp-pricing { grid-template-columns: 1fr; padding-top: 20px }
+  .sp-tier--feat { transform: none }
 }
 @media (max-width: 680px) {
   .sp-wl { margin-top: 22px }

@@ -13,19 +13,20 @@ import type { User } from "@supabase/supabase-js";
 const STRIPE_PAYMENT_LINK_URL = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_URL || "";
 
 const FREE_FEATURES = [
-  "Full Atomic Red Team test library",
-  "Up to 3 team members",
-  "1 registered test runner",
-  "3 test runs per day",
-  "Self-hosted on your own infrastructure",
+  "Full Atomic Red Team test library, mapped to MITRE ATT&CK",
+  "Connect Splunk, Elastic, or Microsoft Sentinel",
+  "Coverage heatmap across every ATT&CK technique",
+  "Up to 3 team members with role-based access",
+  "1 test runner, 3 test runs a day",
+  "Self-hosted — nothing leaves your network",
 ];
 
 const PAID_FEATURES = [
-  "Everything in Free",
-  "Unlimited team members, test runners & daily runs",
-  "Scheduled, automated test runs",
-  "Detection-as-Code (git sync)",
-  "Reports & posture scoring",
+  "Everything in Free, fully unlocked",
+  "Unlimited team members, runners & daily test runs",
+  "Scheduled, automated recurring test runs",
+  "Detection-as-Code: sync rules from git",
+  "PDF posture reports, unlimited audit history",
   "Priority support",
 ];
 
