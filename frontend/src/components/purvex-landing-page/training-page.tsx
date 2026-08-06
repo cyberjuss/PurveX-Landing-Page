@@ -23,46 +23,46 @@ const curriculum = [
     mod: "01",
     icon: BookOpen,
     title: "Fundamentals",
-    body: "The groundwork every analyst needs to start strong: networking basics, Windows and Linux internals attackers actually touch, and how to read a log line before you ever open a SIEM.",
+    body: "Networking, OS internals, and reading a raw log line — the groundwork every analyst needs.",
   },
   {
     mod: "02",
     icon: Radar,
     title: "Threat detection",
-    body: "Spotting suspicious activity and acting on it early: MITRE ATT&CK fundamentals, common attacker techniques, and separating real signal from noise in an alert queue.",
+    body: "MITRE ATT&CK fundamentals and cutting real signal from noise in an alert queue.",
   },
   {
     mod: "03",
     icon: Search,
     title: "Log analysis projects",
-    body: "Real log data, and finding what matters in the noise: parsing Windows Event Logs, Sysmon, and network telemetry to reconstruct what actually happened.",
+    body: "Real log data — Windows Event Logs, Sysmon, network telemetry — and finding what matters.",
   },
   {
     mod: "04",
     icon: Siren,
     title: "Incident response",
-    body: "An incident end to end: triage, investigate, contain, and document, using the same playbooks a SOC runs under pressure.",
+    body: "An incident end to end: triage, investigate, contain, document.",
   },
   {
     mod: "05",
     id: "instruction",
     icon: GraduationCap,
     title: "Cybersecurity Instruction",
-    body: "Instructor support for cybersecurity, SOC operations, SIEM, threat detection, and incident response programs, built around your syllabus instead of a generic template.",
+    body: "Instructor support for SOC operations, SIEM, threat detection, and incident response — built around your syllabus.",
   },
   {
     mod: "06",
     id: "labs",
     icon: FlaskConical,
     title: "Hands-On Security Labs",
-    body: "Practical exercises that help learners investigate alerts, analyze threats, and understand modern security operations, using the same tools and real log data working analysts see every day.",
+    body: "Real tools, real log data — the same ones working analysts use every day.",
   },
   {
     mod: "07",
     id: "curriculum",
     icon: Layers,
     title: "Curriculum Support",
-    body: "Help developing or improving cybersecurity training content based on practical industry skills, mapped to what employers actually screen for in a SOC interview.",
+    body: "Training content mapped to what employers actually screen for in a SOC interview.",
   },
 ];
 
@@ -385,7 +385,7 @@ export default function TrainingPage() {
 /* ── Syllabus (horizontal zigzag roadmap: click an icon to reveal its card) ── */
 .sp-roadmap-zigzag { display: flex; flex-direction: column; padding: 44px 0 }
 .sp-roadmap-zigzag__row { display: flex; gap: 6px }
-.sp-roadmap-zigzag__row--bottom { align-items: flex-start; min-height: 240px }
+.sp-roadmap-zigzag__row--bottom { align-items: flex-start; min-height: 188px }
 .sp-roadmap-zigzag__row--icons { position: relative; padding: 20px 0 }
 .sp-roadmap-zigzag__row--icons::before {
   content: ""; position: absolute; top: 50%; left: calc(100% / 14); right: calc(100% / 14); height: 2px;
@@ -424,7 +424,7 @@ export default function TrainingPage() {
      viewport edge on common laptop widths. */
   --card-x: -50%;
   position: absolute; top: 32px; left: 50%; transform: translateX(var(--card-x));
-  width: min(340px, calc(100vw - 48px)); height: 200px;
+  width: min(340px, calc(100vw - 48px)); min-height: 148px;
   padding: 18px 18px 20px;
   border: 1px solid var(--border); border-top: 3px solid var(--accent-deep);
   background: var(--surface);
@@ -450,13 +450,13 @@ export default function TrainingPage() {
   .sp-roadmap-zigzag { overflow-x: auto; -webkit-overflow-scrolling: touch }
   .sp-roadmap-zigzag__row { min-width: 760px }
   .sp-roadmap-zigzag__slot { flex: 0 0 100px }
-  /* Wider than the old 160px, plus more height and a taller line-clamp --
-     at 160px this card's copy (written and measured against the 340px
-     desktop width) wrapped to more lines than the 5-line clamp allowed and
-     got cut off mid-sentence on every single module. */
-  .sp-roadmap-zigzag__card { max-width: 240px; height: 260px; padding: 16px 16px 18px }
-  .sp-roadmap-zigzag__card p { -webkit-line-clamp: 8 }
-  .sp-roadmap-zigzag__row--bottom { min-height: 300px }
+  /* Wider than the old 160px -- this card's copy is written and measured
+     against the 340px desktop width, and wraps to more lines at any
+     narrower width. min-height (not a fixed height) lets the card hug
+     short copy instead of leaving dead space below it, while still
+     growing for whichever module's text needs the most room. */
+  .sp-roadmap-zigzag__card { max-width: 240px; min-height: 190px; padding: 16px 16px 18px }
+  .sp-roadmap-zigzag__row--bottom { min-height: 230px }
 }
 
 /* ── Learning roadmap: split layout, text left / divided skill-tool list right ── */
