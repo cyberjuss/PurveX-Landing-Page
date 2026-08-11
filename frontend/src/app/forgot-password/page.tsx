@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
 
 const AUTH_INPUT_CLASSNAME =
-  "w-full rounded-2xl border border-white/10 bg-[#0c1220] px-10 py-3.5 text-sm text-white shadow-none transition placeholder:text-slate-500 focus:border-[rgba(72,99,255,0.75)] focus:outline-none focus:ring-4 focus:ring-[rgba(72,99,255,0.12)] disabled:opacity-100";
+  "w-full rounded-2xl border border-white/10 bg-[#0c1220] px-10 py-4 text-sm text-white shadow-none transition placeholder:text-slate-500 focus:border-[rgba(72,99,255,0.75)] focus:outline-none focus:ring-4 focus:ring-[rgba(72,99,255,0.12)] disabled:opacity-100";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -63,8 +63,8 @@ export default function ForgotPasswordPage() {
                     </Link>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-5">
-                    <div className="space-y-2">
+                  <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-7">
+                    <div className="space-y-3">
                       <label htmlFor="email" className="block text-sm font-semibold text-slate-700 dark:text-zinc-200">
                         Email address
                       </label>

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Lock, Eye, EyeOff, ArrowLeft, CheckCircle2, AlertCircle } from "lucide-react";
 
 const AUTH_INPUT_CLASSNAME =
-  "w-full rounded-2xl border border-white/10 bg-[#0c1220] px-10 py-3.5 text-sm text-white shadow-none transition placeholder:text-slate-500 focus:border-[rgba(72,99,255,0.75)] focus:outline-none focus:ring-4 focus:ring-[rgba(72,99,255,0.12)] disabled:opacity-100";
+  "w-full rounded-2xl border border-white/10 bg-[#0c1220] px-10 py-4 text-sm text-white shadow-none transition placeholder:text-slate-500 focus:border-[rgba(72,99,255,0.75)] focus:outline-none focus:ring-4 focus:ring-[rgba(72,99,255,0.12)] disabled:opacity-100";
 
 function getErrorMessage(err: unknown, fallback: string) {
   if (err instanceof Error && err.message) return err.message;
@@ -142,8 +142,8 @@ function ResetPasswordContent() {
   return (
     <PageShell>
       <div className="w-full">
-        <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-5">
-          <div className="space-y-2">
+        <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-7">
+          <div className="space-y-3">
             <label htmlFor="password" className="block text-sm font-semibold text-slate-700 dark:text-zinc-200">
               New password
             </label>
@@ -171,7 +171,7 @@ function ResetPasswordContent() {
               </button>
             </div>
             {password.length > 0 && (
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex items-center gap-2 mt-3">
                 <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all ${strengthColor}`}
@@ -183,7 +183,7 @@ function ResetPasswordContent() {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             <label htmlFor="confirm-password" className="block text-sm font-semibold text-slate-700 dark:text-zinc-200">
               Confirm password
             </label>
