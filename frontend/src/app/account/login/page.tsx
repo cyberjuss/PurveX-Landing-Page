@@ -9,7 +9,7 @@ import { signInWithPassword, signInWithGoogle } from "@/lib/portal-auth";
 import { Loader2, Lock, Mail, Eye, EyeOff } from "lucide-react";
 
 const AUTH_INPUT_CLASSNAME =
-  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-3.5 text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] disabled:opacity-60";
+  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-4 text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] disabled:opacity-60";
 
 function getErrorMessage(err: unknown, fallback: string) {
   if (err instanceof Error && err.message) return err.message;
@@ -94,7 +94,7 @@ function PortalLoginContent() {
 
   return (
     <AuthShell theme="light" width="sm" bare title="Sign in" subtitle="Manage your plan and get PurveX running.">
-      <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-5">
+      <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-7">
         <button
           type="button"
           onClick={handleGoogle}
@@ -116,7 +116,7 @@ function PortalLoginContent() {
           <span className="h-px flex-1 bg-[var(--pvrx-border-light)]" />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           <label htmlFor="email" className="block text-sm font-semibold text-slate-700">Email</label>
           <div className="relative">
             <Mail className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
@@ -134,7 +134,7 @@ function PortalLoginContent() {
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label htmlFor="password" className="block text-sm font-semibold text-slate-700">Password</label>
             <Link href="/forgot-password" className="text-xs font-medium text-slate-500 hover:text-[#6a5cff]">Forgot password?</Link>

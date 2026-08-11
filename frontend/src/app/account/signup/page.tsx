@@ -9,7 +9,7 @@ import { signUpWithPassword, signInWithGoogle } from "@/lib/portal-auth";
 import { Loader2, Lock, Mail, ArrowLeft, CheckCircle2, Eye, EyeOff } from "lucide-react";
 
 const AUTH_INPUT_CLASSNAME =
-  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-3.5 text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] disabled:opacity-60";
+  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-4 text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] disabled:opacity-60";
 
 function getStrength(pw: string) {
   let score = 0;
@@ -138,7 +138,7 @@ function PortalSignupContent() {
 
   return (
     <AuthShell theme="light" width="sm" bare title="Create your account" subtitle="One account to pick a plan and get PurveX running.">
-      <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-5">
+      <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-7">
         <button
           type="button"
           onClick={handleGoogle}
@@ -160,7 +160,7 @@ function PortalSignupContent() {
           <span className="h-px flex-1 bg-[var(--pvrx-border-light)]" />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           <label htmlFor="email" className="block text-sm font-semibold text-slate-700">Work email</label>
           <div className="relative">
             <Mail className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
@@ -178,7 +178,7 @@ function PortalSignupContent() {
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           <label htmlFor="password" className="block text-sm font-semibold text-slate-700">Password</label>
           <div className="relative">
             <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
@@ -204,7 +204,7 @@ function PortalSignupContent() {
             </button>
           </div>
           {password.length > 0 && (
-            <div className="flex items-center gap-2 pt-1">
+            <div className="flex items-center gap-2 pt-2.5">
               <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100">
                 <div className={`h-full rounded-full transition-all ${strengthColor}`} style={{ width: `${(strength / 5) * 100}%` }} />
               </div>
@@ -213,7 +213,7 @@ function PortalSignupContent() {
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           <label htmlFor="confirm" className="block text-sm font-semibold text-slate-700">Confirm password</label>
           <div className="relative">
             <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
