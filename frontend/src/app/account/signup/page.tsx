@@ -9,7 +9,7 @@ import { signUpWithPassword, signInWithGoogle } from "@/lib/portal-auth";
 import { Loader2, Lock, Mail, ArrowLeft, CheckCircle2, Eye, EyeOff } from "lucide-react";
 
 const AUTH_INPUT_CLASSNAME =
-  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-3 text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] disabled:opacity-60";
+  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-3.5 text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] disabled:opacity-60";
 
 function getStrength(pw: string) {
   let score = 0;
@@ -138,12 +138,12 @@ function PortalSignupContent() {
 
   return (
     <AuthShell theme="light" width="sm" bare title="Create your account" subtitle="One account to pick a plan and get PurveX running.">
-      <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-3">
+      <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-5">
         <button
           type="button"
           onClick={handleGoogle}
           disabled={isLoading}
-          className="flex h-11 items-center justify-center gap-2.5 rounded-2xl border border-[var(--pvrx-border-light)] bg-white text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60"
+          className="flex h-12 items-center justify-center gap-2.5 rounded-2xl border border-[var(--pvrx-border-light)] bg-white text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
@@ -154,13 +154,13 @@ function PortalSignupContent() {
           Continue with Google
         </button>
 
-        <div className="flex items-center gap-3 py-0.5">
+        <div className="flex items-center gap-3 py-1">
           <span className="h-px flex-1 bg-[var(--pvrx-border-light)]" />
           <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">or</span>
           <span className="h-px flex-1 bg-[var(--pvrx-border-light)]" />
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <label htmlFor="email" className="block text-sm font-semibold text-slate-700">Work email</label>
           <div className="relative">
             <Mail className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
@@ -178,7 +178,7 @@ function PortalSignupContent() {
           </div>
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <label htmlFor="password" className="block text-sm font-semibold text-slate-700">Password</label>
           <div className="relative">
             <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
@@ -204,7 +204,7 @@ function PortalSignupContent() {
             </button>
           </div>
           {password.length > 0 && (
-            <div className="flex items-center gap-2 pt-0.5">
+            <div className="flex items-center gap-2 pt-1">
               <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100">
                 <div className={`h-full rounded-full transition-all ${strengthColor}`} style={{ width: `${(strength / 5) * 100}%` }} />
               </div>
@@ -213,7 +213,7 @@ function PortalSignupContent() {
           )}
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <label htmlFor="confirm" className="block text-sm font-semibold text-slate-700">Confirm password</label>
           <div className="relative">
             <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
@@ -248,7 +248,7 @@ function PortalSignupContent() {
           type="submit"
           disabled={isLoading}
           size="lg"
-          className="mt-1 h-12 w-full rounded-2xl border-0 bg-[#6a5cff] text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] hover:bg-[#5546e0]"
+          className="mt-2 h-12 w-full rounded-2xl border-0 bg-[#6a5cff] text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] hover:bg-[#5546e0]"
         >
           {phase === "submitting" ? (
             <><Loader2 className="h-4 w-4 animate-spin" /> Creating account...</>
