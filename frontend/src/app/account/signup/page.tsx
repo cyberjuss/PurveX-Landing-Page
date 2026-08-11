@@ -195,6 +195,7 @@ function PortalSignupContent() {
             />
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => setShowPassword((v) => !v)}
               className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 transition hover:text-slate-700"
               aria-label={showPassword ? "Hide password" : "Show password"}
@@ -230,6 +231,7 @@ function PortalSignupContent() {
             />
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => setShowConfirmPassword((v) => !v)}
               className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 transition hover:text-slate-700"
               aria-label={showConfirmPassword ? "Hide password" : "Show password"}
