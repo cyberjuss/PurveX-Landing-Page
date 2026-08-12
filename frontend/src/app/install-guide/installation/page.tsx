@@ -24,6 +24,14 @@ export default function Page() {
         <code>http://localhost:1120</code>. Keep this terminal window open; closing it stops PurveX.
       </P>
 
+      <Callout tone="info">
+        If Python 3.11+ or Node.js 20+ is missing, the installer detects it, prints the exact command for
+        your OS (<code>apt</code>, <code>dnf</code>, <code>pacman</code>, or Homebrew), and asks{" "}
+        <strong>Install Node.js now? [y/N]</strong> before running it. Nothing is installed without that
+        confirmation. Answering no, or running the installer somewhere with no terminal to ask, leaves the
+        command printed so you can run it yourself.
+      </Callout>
+
       <Callout tone="warn">
         <strong>Back up <code>PURVEX_ENCRYPTION_KEY</code></strong>, located in the <code>.env</code> file this
         step creates. Store it somewhere safe. If you lose it, any stored SIEM credentials cannot be recovered.

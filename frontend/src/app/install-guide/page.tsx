@@ -23,9 +23,10 @@ export default function Page() {
 
       <H2>Before you start</H2>
       <P>
-        Install the following tools before you begin. The setup script also checks for them, but verifying
-        now prevents a failed run partway through. No database installation is required: PurveX stores its
-        data in a local file by default.
+        Install the following tools before you begin, or let the installer handle it: it checks for each
+        one, and if Python or Node.js is missing, it detects your OS, prints the exact command to install
+        it, and offers to run that command for you once you confirm. No database installation is required:
+        PurveX stores its data in a local file by default.
       </P>
       <Table
         head={["Tool", "Version", "Check"]}
