@@ -3,13 +3,12 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AuthShell } from "@/components/auth/auth-shell";
+import { AuthShell, AUTH_INPUT_CLASSNAME_LIGHT } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { signUpWithPassword, signInWithGoogle } from "@/lib/portal-auth";
 import { Loader2, Lock, Mail, ArrowLeft, CheckCircle2, Eye, EyeOff } from "lucide-react";
 
-const AUTH_INPUT_CLASSNAME =
-  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-4 text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] disabled:opacity-60";
+const AUTH_INPUT_CLASSNAME = AUTH_INPUT_CLASSNAME_LIGHT;
 
 function getStrength(pw: string) {
   let score = 0;
