@@ -31,9 +31,16 @@ export default function Page() {
         <P><strong>Tests &rarr; Explore Coverage</strong> &rarr; select any technique &rarr; Install catalog. This downloads the Atomic Red Team library, a well-known, open-source set of safe attack simulations. It is a one-time download; the library is cached for every test after.</P>
       </Step>
       <Step n="3" title="Register a test runner">
-        <P><strong>Endpoints &rarr; Add runner.</strong> A test runner is a lab or sandbox machine, never a production one, that PurveX connects to over SSH to execute simulated attacks. Before you can use it, confirm its identity with a host-key fingerprint. Obtain that fingerprint by running the following command from a machine you already trust:</P>
+        <P><strong>Endpoints &rarr; Add runner.</strong> A test runner is a lab or sandbox machine, never a production one, that PurveX connects to over SSH to execute simulated attacks. Use the installer script: generate a short-lived token, download the script for the target machine&apos;s OS, and run it there. It provisions PurveX&apos;s SSH key, detects and reports the machine&apos;s host-key fingerprint automatically, and installs a lightweight heartbeat service. No manual commands are required.</P>
+        <P>If running a script on the target machine is not an option, add the runner manually instead: enter its hostname, port, and credentials, then obtain its host-key fingerprint by running this command from a machine you already trust:</P>
         <TermBlock copyText="ssh-keyscan -p 22 <runner-host> | ssh-keygen -lf - -E sha256" lines={<><span className="dc-p1">$</span> <span className="dc-cmd">ssh-keyscan -p 22 &lt;runner-host&gt; | ssh-keygen -lf - -E sha256</span></>} />
-        <P>Paste the resulting <code>SHA256:...</code> value into the runner&apos;s settings. This confirms the identity of the runner and prevents a different machine from silently being substituted later. PurveX will not run anything against a runner it cannot verify.</P>
+        <P>
+          Paste the resulting <code>SHA256:...</code> value into the runner&apos;s settings. PurveX will not run
+          anything against a runner it cannot verify, which is what stops a different machine from silently
+          being substituted later. See the{" "}
+          <Link href="/install-guide/features/runners-and-policy" style={{ color: "var(--accent-deep)", fontWeight: 600 }}>runners &amp; policy guide</Link>{" "}
+          for more on both methods.
+        </P>
       </Step>
       <Step n="4" title="Import or write a detection">
         <P><strong>Detections.</strong> Sync existing detection rules from the SIEM you connected, or write one by hand and map it to the attack technique it is meant to catch.</P>
