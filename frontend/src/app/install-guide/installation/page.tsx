@@ -30,27 +30,36 @@ export default function Page() {
       </Callout>
 
       <H2 id="manual">Install manually</H2>
-      <P>To install without the script, run these commands in order:</P>
+      <P>
+        To install without the script, run these commands in order. They are chained with{" "}
+        <code>&amp;&amp;</code> so the sequence stops at the first failure instead of running every
+        later command anyway.
+      </P>
       <TermBlock
-        copyText={"git clone https://github.com/cyberjuss/PurveX.git\ncd PurveX\nchmod +x scripts/purvex.sh\n./scripts/purvex.sh --setup\n./scripts/purvex.sh --start"}
+        copyText={"git clone https://github.com/cyberjuss/PurveX.git && \\\n  cd PurveX && \\\n  chmod +x scripts/purvex.sh && \\\n  ./scripts/purvex.sh --setup && \\\n  ./scripts/purvex.sh --start"}
         lines={<>
-          <span className="dc-p1">$</span> <span className="dc-cmd">git clone https://github.com/cyberjuss/PurveX.git</span>  <span className="dc-hl"># get the code</span><br/>
-          <span className="dc-p1">$</span> <span className="dc-cmd">cd PurveX</span><br/>
-          <span className="dc-p1">$</span> <span className="dc-cmd">chmod +x scripts/purvex.sh</span>  <span className="dc-hl"># make the launcher runnable</span><br/>
-          <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --setup</span>  <span className="dc-hl"># install dependencies, generate secrets</span><br/>
-          <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --start</span>  <span className="dc-hl"># start the API and the web app</span>
+          <span className="dc-p1">$</span> <span className="dc-cmd">git clone https://github.com/cyberjuss/PurveX.git &amp;&amp; \</span><br/>
+          <span className="dc-cmd">&nbsp;&nbsp;cd PurveX &amp;&amp; \</span><br/>
+          <span className="dc-cmd">&nbsp;&nbsp;chmod +x scripts/purvex.sh &amp;&amp; \</span><br/>
+          <span className="dc-cmd">&nbsp;&nbsp;./scripts/purvex.sh --setup &amp;&amp; \</span><br/>
+          <span className="dc-cmd">&nbsp;&nbsp;./scripts/purvex.sh --start</span>
         </>}
       />
+      <P>
+        If a step fails (for example, <code>--setup</code> reporting a missing dependency), the
+        command stops there instead of continuing on to <code>--start</code> and printing the same
+        error again. Follow the guidance the failing step prints, then re-run this same block.
+      </P>
 
       <H2 id="update">Update PurveX</H2>
       <P>
         To update, pull the latest code and rebuild. This is safe to run at any time; your existing data is
         not affected.
       </P>
-      <TermBlock copyText={"git pull\n./scripts/purvex.sh --setup\n./scripts/purvex.sh --rebuild"} lines={<>
-        <span className="dc-p1">$</span> <span className="dc-cmd">git pull</span><br/>
-        <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --setup</span><br/>
-        <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --rebuild</span>
+      <TermBlock copyText={"git pull && \\\n  ./scripts/purvex.sh --setup && \\\n  ./scripts/purvex.sh --rebuild"} lines={<>
+        <span className="dc-p1">$</span> <span className="dc-cmd">git pull &amp;&amp; \</span><br/>
+        <span className="dc-cmd">&nbsp;&nbsp;./scripts/purvex.sh --setup &amp;&amp; \</span><br/>
+        <span className="dc-cmd">&nbsp;&nbsp;./scripts/purvex.sh --rebuild</span>
       </>} />
       <P>To stop PurveX, press <code>Ctrl+C</code> in its terminal window.</P>
     </>
