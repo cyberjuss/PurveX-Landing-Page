@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
       fullUrl: false,
     },
   }
+  // Security headers (CSP with nonces, HSTS, COOP, CORP, X-Frame-Options,
+  // etc.) are already applied site-wide in src/proxy.ts -- no need to
+  // duplicate any of that here.
 };
 
 export default nextConfig;

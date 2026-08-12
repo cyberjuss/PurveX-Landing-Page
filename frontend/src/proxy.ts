@@ -14,9 +14,12 @@ export default function proxy(request: NextRequest) {
 
   // Basic rate limiting for API routes.
   if (request.nextUrl.pathname.startsWith("/api")) {
+    // NextRequest has no .ip property in current Next.js (Vercel's edge
+    // network sets these headers instead) -- x-forwarded-for is the
+    // primary signal, x-real-ip a secondary one some proxies set instead.
     const ip =
       request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      (request as any).ip ||
+      request.headers.get("x-real-ip") ||
       "unknown";
 
     const now = Date.now();
