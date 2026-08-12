@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowRight, Download, Linkedin } from "lucide-react";
+import { ArrowRight, Linkedin } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
 export default function FounderPage() {
@@ -25,9 +25,6 @@ export default function FounderPage() {
               className="sp-btn sp-btn--ghost sp-btn--sm"
             >
               <Linkedin size={16} /> LinkedIn
-            </a>
-            <a href="/Justin_Duru_Resume.pdf" target="_blank" rel="noreferrer" className="sp-btn sp-btn--ghost sp-btn--sm">
-              <Download size={16} /> Resume
             </a>
           </div>
         </div>
