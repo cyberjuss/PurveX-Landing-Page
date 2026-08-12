@@ -7,18 +7,18 @@ export default function Page() {
     <>
       <Eyebrow>Feature guide</Eyebrow>
       <H1>Team &amp; access</H1>
-      <Lede>Who&apos;s on your team, what they can do, and the record of what actually happened.</Lede>
+      <Lede>Who is on a team, what each role can do, and the record of what actually happened.</Lede>
 
       <H2 id="inviting-people">Inviting people</H2>
       <P>
-        <strong>Settings &rarr; Users &rarr; Add member.</strong> Enter an email and send. PurveX emails an
-        activation link, and the new person sets their own password. Nobody, including the admin who invited them,
-        ever sees or chooses that password. The row shows <strong>Pending</strong> until they accept, then flips
-        to <strong>Active</strong>.
+        <strong>Settings &rarr; Users &rarr; Add member.</strong> Enter an email address and send the invitation.
+        PurveX emails an activation link, and the new member sets their own password. Nobody, including the
+        administrator who sent the invitation, ever sees or chooses that password. The row shows{" "}
+        <strong>Pending</strong> until the invitation is accepted, then changes to <strong>Active</strong>.
       </P>
 
       <H2 id="roles">Roles</H2>
-      <P>Four fixed roles. There&apos;s no custom role builder today. This is the same breakdown shown in the app itself, under Settings &rarr; Users.</P>
+      <P>Four fixed roles exist. There is no custom role builder today. This is the same breakdown shown in the app itself, under Settings &rarr; Users.</P>
 
       <RoleBlock
         name="Administrator"
@@ -71,28 +71,28 @@ export default function Page() {
       />
 
       <P>
-        Assign a role from the dropdown on that person&apos;s row in Settings &rarr; Users. Remove one by clicking
-        the &times; on their role chip.
+        Assign a role from the dropdown on that person&apos;s row in Settings &rarr; Users. Remove a role by
+        selecting the &times; on their role chip.
       </P>
       <P>
-        A few actions stay Administrator-only no matter what role someone holds: production runs, deploying
+        A few actions remain Administrator-only regardless of role: production runs, deploying
         high-criticality detections, deleting detections, and managing settings.
       </P>
 
       <H2 id="audit-log">Audit log</H2>
       <P>
-        <strong>Settings &rarr; Audit.</strong> Every configuration change, login, and test run, with who did it
-        and when. Searchable, filterable by action or resource type, and exportable as CSV. An admin can
-        also set a minimum retention window and purge anything older.
+        <strong>Settings &rarr; Audit.</strong> Every configuration change, login, and test run, with who
+        performed it and when. Searchable, filterable by action or resource type, and exportable as CSV. An
+        administrator can also set a minimum retention window and purge anything older.
       </P>
       <P>
-        Free plans see the last 30 days. Paid plans see everything, for as long as you choose to keep it.
+        Free plans retain the last 30 days. Paid plans retain everything, for as long as chosen.
       </P>
 
       <H2 id="one-org-per-account">One organization per account</H2>
       <P>
-        Each PurveX login belongs to exactly one organization. There&apos;s no switcher. If someone genuinely
-        needs access to two separate PurveX organizations, that&apos;s two separate accounts. Within an
+        Each PurveX login belongs to exactly one organization. There is no switcher. If a person genuinely
+        needs access to two separate PurveX organizations, that requires two separate accounts. Within an
         organization, everything is fully isolated: detections, tests, users, settings, and the audit log never
         cross organization boundaries, even on a shared self-hosted instance.
       </P>

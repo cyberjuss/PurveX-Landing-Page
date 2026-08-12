@@ -3,13 +3,13 @@
 import { Eyebrow, H1, Lede } from "@/components/purvex-landing-page/docs-content";
 
 const FAQ: [string, string][] = [
-  ["Is PurveX a replacement for my SIEM?", "No. PurveX reads from your SIEM, it doesn't replace it. You still need Splunk, Elastic, Sentinel, or something similar already in place for PurveX to be useful."],
-  ["Is it safe to run against production?", "Yes, by design. The attack simulations PurveX runs (from the Atomic Red Team library) are scoped and reversible, and running against production requires Administrator access plus a written reason for every run — logged, so there's always a record of who ran what and why."],
-  ["Does the AI assistant send my data to third parties?", "Only if you choose to connect one (OpenAI or DeepSeek). Leave OPENAI_API_KEY blank during install and the assistant just turns itself off — nothing is sent anywhere, and nothing else about the product changes."],
-  ["Can one install serve multiple teams or clients?", "Yes. PurveX supports multiple organizations on a single install, fully isolated from each other, and the same person can hold different roles across different organizations."],
-  ["Do I need to install PostgreSQL?", "No. Leave DATABASE_URL unset and PurveX stores everything in a local SQLite file — nothing to install or configure. PostgreSQL is only worth setting up once more than a couple of people are using the same instance, or for a staging/production deployment."],
-  ["Do I need Redis for a local install?", "No. Redis is only needed for the rate limiting and job queue behind larger, multi-server production deployments. A single-machine install works fine without it — only set REDIS_URL if you're specifically testing that setup."],
-  ["What happens if I lose PURVEX_ENCRYPTION_KEY?", "Everything it protects — SIEM credentials, source tokens — becomes permanently unreadable. There's no way to recover it besides restoring the original key, so back it up before you connect any real credentials."],
+  ["Is PurveX a replacement for my SIEM?", "No. PurveX reads from your SIEM; it does not replace it. Splunk, Elastic, Sentinel, or a similar platform must already be in place for PurveX to be useful."],
+  ["Is it safe to run against production?", "Yes, by design. The attack simulations PurveX runs, drawn from the Atomic Red Team library, are scoped and reversible. Running against production requires Administrator access plus a written reason for every run, and every run is logged so there is always a record of who ran what and why."],
+  ["Does the AI assistant send my data to third parties?", "Only if you choose to connect one, OpenAI or DeepSeek. Leave OPENAI_API_KEY blank during installation and the assistant is disabled: nothing is sent anywhere, and no other part of the product changes."],
+  ["Can one install serve multiple teams or clients?", "Yes. PurveX supports multiple organizations on a single install, fully isolated from one another. The same person can hold different roles across different organizations."],
+  ["Do I need to install PostgreSQL?", "No. Leave DATABASE_URL unset and PurveX stores everything in a local SQLite file, with nothing to install or configure. PostgreSQL is worth setting up once more than a couple of people use the same instance, or for a staging or production deployment."],
+  ["Do I need Redis for a local install?", "No. Redis is needed only for the rate limiting and job queue behind larger, multi-server production deployments. A single-machine install works without it. Set REDIS_URL only if you are specifically testing that setup."],
+  ["What happens if I lose PURVEX_ENCRYPTION_KEY?", "Everything it protects, including SIEM credentials and source tokens, becomes permanently unreadable. There is no way to recover it besides restoring the original key, so back it up before connecting any real credentials."],
 ];
 
 export default function Page() {
@@ -17,7 +17,7 @@ export default function Page() {
     <>
       <Eyebrow>Reference</Eyebrow>
       <H1>FAQ</H1>
-      <Lede>Questions that tend to come up during install, before anyone&apos;s actually used the product yet.</Lede>
+      <Lede>Questions that come up most often during installation, before the product has been used yet.</Lede>
 
       <div>
         {FAQ.map(([q, a]) => (

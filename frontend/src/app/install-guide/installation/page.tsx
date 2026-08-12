@@ -1,15 +1,15 @@
 "use client";
 
-import { Eyebrow, H1, Lede, H2, P, TermBlock, Callout } from "@/components/purvex-landing-page/docs-content";
+import { Eyebrow, H1, Lede, TermBlock, P, Callout, H2 } from "@/components/purvex-landing-page/docs-content";
 
 export default function Page() {
   return (
     <>
       <Eyebrow>Get started</Eyebrow>
       <H1>Installation</H1>
-      <Lede>One command. No database to install.</Lede>
+      <Lede>One command. No database installation required.</Lede>
 
-      <H2 id="install">Run this</H2>
+      <H2 id="install">Run the installer</H2>
       <TermBlock
         copyText="curl -fsSL https://purvex-llc.com/install.sh | bash"
         lines={<>
@@ -20,16 +20,17 @@ export default function Page() {
         </>}
       />
       <P>
-        Downloads PurveX, installs it, and starts it. Once you see both lines above, open{" "}
-        <code>http://localhost:1120</code>. Keep this terminal window open. Closing it stops PurveX.
+        This command downloads PurveX, installs it, and starts it. Once both lines above appear, open{" "}
+        <code>http://localhost:1120</code>. Keep this terminal window open; closing it stops PurveX.
       </P>
 
       <Callout tone="warn">
-        <strong>Back up <code>PURVEX_ENCRYPTION_KEY</code></strong> (in the <code>.env</code> file this just
-        created) somewhere safe. Lose it, and any stored SIEM credentials can&apos;t be recovered.
+        <strong>Back up <code>PURVEX_ENCRYPTION_KEY</code></strong>, located in the <code>.env</code> file this
+        step creates. Store it somewhere safe. If you lose it, any stored SIEM credentials cannot be recovered.
       </Callout>
 
-      <H2 id="manual">Prefer to run it by hand?</H2>
+      <H2 id="manual">Install manually</H2>
+      <P>To install without the script, run these commands in order:</P>
       <TermBlock
         copyText={"git clone https://github.com/cyberjuss/PurveX.git\ncd PurveX\nchmod +x scripts/purvex.sh\n./scripts/purvex.sh --setup\n./scripts/purvex.sh --start"}
         lines={<>
@@ -41,8 +42,11 @@ export default function Page() {
         </>}
       />
 
-      <H2 id="update">Updating</H2>
-      <P>Pulls the latest code and rebuilds. Safe to run any time, your data isn&apos;t touched.</P>
+      <H2 id="update">Update PurveX</H2>
+      <P>
+        To update, pull the latest code and rebuild. This is safe to run at any time; your existing data is
+        not affected.
+      </P>
       <TermBlock copyText={"git pull\n./scripts/purvex.sh --setup\n./scripts/purvex.sh --rebuild"} lines={<>
         <span className="dc-p1">$</span> <span className="dc-cmd">git pull</span><br/>
         <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --setup</span><br/>

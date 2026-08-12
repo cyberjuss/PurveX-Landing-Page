@@ -8,14 +8,15 @@ export default function Page() {
       <Eyebrow>Feature guide</Eyebrow>
       <H1>Runners &amp; testing policy</H1>
       <Lede>
-        A runner is the machine a test actually executes on. Testing policy is what keeps that from ever touching
-        something it shouldn&apos;t.
+        A runner is the machine a test executes on. Testing policy governs what a runner is permitted to
+        touch.
       </Lede>
 
       <H2 id="register-a-runner">Register a runner</H2>
       <P>
-        <strong>Endpoints &rarr; Add runner.</strong> A runner is a lab, dev, or (carefully) production machine that
-        actually executes a test, never PurveX&apos;s own server. PurveX reaches it over SSH. Two ways to add one:
+        <strong>Endpoints &rarr; Add runner.</strong> A runner is a lab, dev, or (carefully) production machine
+        that executes a test, never PurveX&apos;s own server. PurveX reaches it over SSH. Two methods are
+        available:
       </P>
       <Table
         head={["Method", "How it works"]}
@@ -26,40 +27,40 @@ export default function Page() {
           ],
           [
             "Manual SSH",
-            "Enter hostname, port, credentials, and the SSH host-key fingerprint yourself, for machines you'd rather not run a script on.",
+            "Enter hostname, port, credentials, and the SSH host-key fingerprint directly, for machines where running a script is not preferred.",
           ],
         ]}
       />
       <Callout tone="warn">
-        The SSH host-key fingerprint isn&apos;t optional paperwork. PurveX refuses to run anything against an SSH
-        runner without one. It&apos;s what stops a man-in-the-middle from silently swapping in a different machine
-        later.
+        The SSH host-key fingerprint is not optional. PurveX refuses to run anything against an SSH
+        runner without one. It is what prevents a machine-in-the-middle from silently substituting a different
+        machine later.
       </Callout>
       <P>
-        Every runner is tagged with an <strong>environment</strong> (lab, dev, prod, or anything else you name).
-        That&apos;s what the Run Test wizard uses to offer it as a target. The Endpoints page shows each
+        Every runner is tagged with an <strong>environment</strong> (lab, dev, prod, or any other name chosen).
+        This is what the Run Test wizard uses to offer it as a target. The Endpoints page shows each
         runner&apos;s state (Ready, Needs review, Paused, Silent), recent validation history, and last check-in.
-        Need to take one offline for a while? Use <strong>Pause</strong> and <strong>Resume</strong>.
+        Use <strong>Pause</strong> and <strong>Resume</strong> to take a runner offline temporarily.
       </P>
 
       <H2 id="testing-policy">Testing policy</H2>
-      <P><strong>Settings &rarr; Testing Policy.</strong> The guardrails around what tests are allowed to touch.</P>
+      <P><strong>Settings &rarr; Testing Policy.</strong> The guardrails governing what tests are allowed to touch.</P>
       <Table
         head={["Setting", "What it does"]}
         rows={[
-          ["Allowed environments", "Lab / Dev / Prod toggles. This one is enforced: PurveX will refuse to run a test in an environment you haven't allowed."],
-          ["Test markers", "A prefix (and optional environment/timestamp suffix) stamped on every test, plus a SOC alert tag, so test activity is easy to filter out of real alerts."],
+          ["Allowed environments", "Lab / Dev / Prod toggles. This setting is enforced: PurveX refuses to run a test in an environment that has not been allowed."],
+          ["Test markers", "A prefix (and optional environment/timestamp suffix) stamped on every test, plus a SOC alert tag, so test activity can be filtered out of real alerts."],
           ["Production safeguards", "Notify before production tests; require a declared maintenance window for prod runs."],
-          ["Business hours", "Block tests from running during a time window you set."],
+          ["Business hours", "Block tests from running during a configured time window."],
           ["Data retention", "How long pass/fail results are kept, globally and per environment (defaults: Lab 7/30 days, Dev 30/90, Prod 90/180)."],
         ]}
       />
       <Callout tone="info">
-        <strong>Where we are today:</strong> the allowed-environments check is fully enforced server-side, and a
+        <strong>Current status:</strong> the allowed-environments check is fully enforced server-side, and a
         production run always requires a written reason. Business hours, the maintenance-window requirement, and
-        pre-prod notifications are configurable and saved, but nothing in the run path reads them yet. Treat them
-        as recorded intent rather than an active block until that lands. We&apos;ll tighten this guide as
-        enforcement catches up to the settings.
+        pre-prod notifications are configurable and saved, but nothing in the run path reads them yet. Treat
+        these settings as recorded intent rather than an active block until enforcement lands. This guide will
+        be updated as enforcement catches up to the settings.
       </Callout>
     </>
   );

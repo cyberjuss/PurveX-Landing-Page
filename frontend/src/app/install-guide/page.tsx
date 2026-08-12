@@ -10,10 +10,10 @@ export default function Page() {
       <Eyebrow>Install guide</Eyebrow>
       <H1>Get PurveX running on your own machine</H1>
       <Lede>
-        PurveX connects to your SIEM, the tool your team already uses to collect and search security logs. It
-        safely simulates real attack techniques and tells you whether your detections actually caught them. No
-        guesswork, just evidence. This guide walks through the whole setup in order: get the code, run one command,
-        create your account, and run your first test.
+        PurveX connects to the SIEM your team already uses to collect and search security logs. It safely
+        simulates real attack techniques and reports whether your detections actually caught them, backed by
+        evidence rather than assumption. This guide covers the full setup in order: get the code, run one
+        command, create an account, and run your first test.
       </Lede>
       <MetaRow>
         <span><Clock size={14} /> A few minutes</span>
@@ -22,7 +22,11 @@ export default function Page() {
       </MetaRow>
 
       <H2>Before you start</H2>
-      <P>You&apos;ll need these installed first. The setup script checks for them too, but confirming now saves a false start later. No database install needed: PurveX stores its data in a local file by default.</P>
+      <P>
+        Install the following tools before you begin. The setup script also checks for them, but verifying
+        now prevents a failed run partway through. No database installation is required: PurveX stores its
+        data in a local file by default.
+      </P>
       <Table
         head={["Tool", "Version", "Check"]}
         rows={[
@@ -33,15 +37,15 @@ export default function Page() {
         ]}
       />
 
-      <H2>What&apos;s actually running on your machine</H2>
+      <H2>What runs on your machine</H2>
       <P>
-        PurveX is three pieces working together, all running locally: a backend that does the work, a web app
-        you&apos;ll use in your browser, and a database that stores everything. There&apos;s no PurveX cloud
-        service involved anywhere. The only outside connection it makes is to the SIEM you point it at, and
-        optionally an AI provider if you choose to turn on the assistant.
+        PurveX consists of three components running locally: a backend that performs the work, a web
+        application you use in your browser, and a database that stores everything. No PurveX cloud service
+        is involved at any point. The only outbound connection PurveX makes is to the SIEM you configure, and
+        optionally to an AI provider if you enable the assistant.
       </P>
       <P>
-        Ready? <Link href="/install-guide/installation" style={{ color: "var(--accent-deep)", fontWeight: 600 }}>Start with installation &rarr;</Link>
+        Continue to <Link href="/install-guide/installation" style={{ color: "var(--accent-deep)", fontWeight: 600 }}>installation &rarr;</Link>
       </P>
     </>
   );

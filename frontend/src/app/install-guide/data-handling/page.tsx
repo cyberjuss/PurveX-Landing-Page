@@ -6,13 +6,13 @@ export default function Page() {
   return (
     <>
       <Eyebrow>Reference</Eyebrow>
-      <H1>What PurveX does and doesn&apos;t collect</H1>
-      <Lede>PurveX checks whether your detections work. It doesn&apos;t copy or store your SIEM data to do that.</Lede>
+      <H1>What PurveX does and does not collect</H1>
+      <Lede>PurveX checks whether your detections work. It does not copy or store your SIEM data to do that.</Lede>
 
       <ul className="dc-list">
-        <li>Only pulls the small amount of data needed to confirm whether a test set off an alert</li>
-        <li>Asks your SIEM for narrowly-scoped results, using the fewest permissions it can get away with</li>
-        <li>Links back to your SIEM for the full event details, instead of storing a copy itself</li>
+        <li>Pulls only the small amount of data needed to confirm whether a test set off an alert</li>
+        <li>Requests narrowly scoped results from your SIEM, using the fewest permissions required</li>
+        <li>Links back to your SIEM for full event details instead of storing a copy itself</li>
       </ul>
 
       <P>It never collects:</P>
@@ -24,8 +24,8 @@ export default function Page() {
 
       <P>
         Whatever PurveX does store lives in your own database, on your own machine, not in anything we run.
-        SIEM login credentials and detection-source tokens are all encrypted before they&apos;re saved, using the
-        <code> PURVEX_ENCRYPTION_KEY</code> generated during installation. There&apos;s no PurveX cloud service
+        SIEM login credentials and detection-source tokens are encrypted before they are saved, using the
+        <code> PURVEX_ENCRYPTION_KEY</code> generated during installation. No PurveX cloud service is
         involved, and nothing is ever sent back to us.
       </P>
     </>

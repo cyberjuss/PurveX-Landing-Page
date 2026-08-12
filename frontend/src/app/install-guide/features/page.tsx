@@ -5,13 +5,13 @@ import { Eyebrow, H1, Lede } from "@/components/purvex-landing-page/docs-content
 
 const FEATURES: [string, string, string][] = [
   ["Detection validation", "Run real attack techniques against your environment and see, with evidence, whether your SIEM actually caught them.", "/install-guide/features/detection-validation"],
-  ["SIEM integration", "Connects to Splunk, Elastic, or Sentinel. Reads only what's needed to confirm a test fired — never mirrors your event data.", "/install-guide/features/detection-validation"],
-  ["MITRE ATT&CK coverage", "Every test and detection maps to a real ATT&CK technique, so you see what's actually covered, not just what's on paper.", "/install-guide/features/detection-validation"],
-  ["Safe by default", "Atomic Red Team tests are scoped and reversible. Every production run needs admin access and a written reason.", "/install-guide/features/runners-and-policy"],
-  ["Test runners", "Dedicated lab machines PurveX connects to over SSH, with host-key pinning so nothing else can impersonate one.", "/install-guide/features/runners-and-policy"],
-  ["Detections, your way", "Sync detection rules from your SIEM, or write them by hand — each one mapped to the technique it's meant to catch.", "/install-guide/features/detections"],
+  ["SIEM integration", "Connects to Splunk, Elastic, or Sentinel. Reads only what is needed to confirm a test fired, and never mirrors your event data.", "/install-guide/features/detection-validation"],
+  ["MITRE ATT&CK coverage", "Every test and detection maps to a real ATT&CK technique, showing what is actually covered rather than what is documented.", "/install-guide/features/detection-validation"],
+  ["Safe by default", "Atomic Red Team tests are scoped and reversible. Every production run requires admin access and a written reason.", "/install-guide/features/runners-and-policy"],
+  ["Test runners", "Dedicated lab machines that PurveX connects to over SSH, with host-key pinning so nothing else can impersonate one.", "/install-guide/features/runners-and-policy"],
+  ["Detections, your way", "Sync detection rules from your SIEM, or write them by hand, each mapped to the technique it is meant to catch.", "/install-guide/features/detections"],
   ["Teams and roles", "Multiple team members, role-based permissions, and an audit log of who changed what.", "/install-guide/features/team-and-access"],
-  ["Scale when you're ready", "Free covers real validation on a small team. Paid adds scheduled runs, Detection-as-Code, and reports when you need them.", "/pricing"],
+  ["Scale when ready", "Free covers real validation on a small team. Paid adds scheduled runs, Detection-as-Code, and reports when needed.", "/pricing"],
 ];
 
 export default function Page() {
@@ -19,7 +19,7 @@ export default function Page() {
     <>
       <Eyebrow>Get started</Eyebrow>
       <H1>What PurveX does</H1>
-      <Lede>The short version, before you install anything. Self-hosted throughout — nothing here needs a PurveX cloud account.</Lede>
+      <Lede>An overview before installation. PurveX is self-hosted throughout; none of this requires a PurveX cloud account.</Lede>
 
       <div className="dc-cards">
         {FEATURES.map(([title, desc, href]) => (
