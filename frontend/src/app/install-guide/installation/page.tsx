@@ -15,8 +15,8 @@ export default function Page() {
         lines={<>
           <span className="dc-p1">$</span> <span className="dc-cmd">curl -fsSL https://purvex-llc.com/install.sh | bash</span><br/>
           <span className="dc-out">...</span><br/>
-          <span className="dc-ok">[purvex] Backend running on :8001</span><br/>
-          <span className="dc-ok">[purvex] Frontend running on :1120</span>
+          <span className="dc-ok">[purvex] Web: http://127.0.0.1:1120</span><br/>
+          <span className="dc-ok">[purvex] API: http://127.0.0.1:8001</span>
         </>}
       />
       <P>
