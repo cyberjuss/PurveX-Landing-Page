@@ -185,6 +185,7 @@ function PortalSignupContent() {
               id="password"
               type={showPassword ? "text" : "password"}
               autoComplete="new-password"
+              passwordrules="minlength: 8; required: lower; required: upper; required: digit;"
               placeholder="At least 8 characters"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -221,6 +222,7 @@ function PortalSignupContent() {
               id="confirm"
               type={showConfirmPassword ? "text" : "password"}
               autoComplete="new-password"
+              passwordrules="minlength: 8; required: lower; required: upper; required: digit;"
               placeholder="Re-enter password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}

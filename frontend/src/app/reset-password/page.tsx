@@ -156,6 +156,7 @@ function ResetPasswordContent() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
+                passwordrules="minlength: 8; required: lower; required: upper; required: digit;"
                 required
                 disabled={phase === "submitting"}
               />
@@ -197,6 +198,7 @@ function ResetPasswordContent() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 autoComplete="new-password"
+                passwordrules="minlength: 8; required: lower; required: upper; required: digit;"
                 required
                 disabled={phase === "submitting"}
               />
