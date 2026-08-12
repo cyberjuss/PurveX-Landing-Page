@@ -1,8 +1,23 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Eyebrow, H1, Lede, TermBlock, P, Callout, H2 } from "@/components/purvex-landing-page/docs-content";
 
+// Falls back to the production domain for the SSR/pre-mount render; swapped
+// for the real window.location.origin once mounted -- matters while the
+// custom domain isn't live yet (site is still on its *.vercel.app default),
+// harmless once it is since window.location.origin is already correct.
+// Same pattern as get-purvex/page.tsx.
+const DEFAULT_ORIGIN = "https://purvex-llc.com";
+
 export default function Page() {
+  const [origin, setOrigin] = useState(DEFAULT_ORIGIN);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setOrigin(window.location.origin);
+  }, []);
+  const installCommand = `curl -fsSL ${origin}/install.sh | bash`;
+
   return (
     <>
       <Eyebrow>Get started</Eyebrow>
@@ -11,9 +26,9 @@ export default function Page() {
 
       <H2 id="install">Run the installer</H2>
       <TermBlock
-        copyText="curl -fsSL https://purvex-llc.com/install.sh | bash"
+        copyText={installCommand}
         lines={<>
-          <span className="dc-p1">$</span> <span className="dc-cmd">curl -fsSL https://purvex-llc.com/install.sh | bash</span><br/>
+          <span className="dc-p1">$</span> <span className="dc-cmd">{installCommand}</span><br/>
           <span className="dc-out">...</span><br/>
           <span className="dc-ok">[purvex] Web: http://127.0.0.1:1120</span><br/>
           <span className="dc-ok">[purvex] API: http://127.0.0.1:8001</span>
