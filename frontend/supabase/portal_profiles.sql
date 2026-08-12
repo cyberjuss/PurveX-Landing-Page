@@ -89,12 +89,22 @@ alter table public.portal_profiles add column if not exists license_issued_at ti
 -- checkout.session.completed or invoice.paid sends duplicate "customer
 -- paid" / "customer renewed" emails. The webhook inserts the event id here
 -- before doing any work; a unique-violation on that insert means "already
--- processed," and it skips straight to returning 200. RLS stays off since
--- only the service-role key (server-side only) ever touches this table.
+-- processed," and it skips straight to returning 200.
 create table if not exists public.processed_stripe_events (
   id text primary key,
   processed_at timestamptz not null default now()
 );
+
+-- RLS must stay ON with zero anon/authenticated policies -- that is what
+-- actually restricts this table to the service-role key. Leaving RLS OFF
+-- does NOT achieve "service-role only": Supabase grants anon/authenticated
+-- default schema-level privileges on public tables regardless of RLS
+-- state, so a table with RLS disabled is exposed to the PostgREST API for
+-- anyone holding a valid (even anon) API key. The service-role key bypasses
+-- RLS either way, so enabling it costs that key nothing while closing the
+-- gap for everyone else. (Found and fixed during a security review --
+-- this table previously shipped with RLS left off entirely.)
+alter table public.processed_stripe_events enable row level security;
 
 -- Automated license issuance handoff. The webhook (server, no signing key)
 -- cannot issue a license itself -- the ed25519 signing key deliberately
@@ -104,9 +114,7 @@ create table if not exists public.processed_stripe_events (
 -- each token locally, and delivers it straight to the customer's
 -- portal_profiles row. This is what turns "issued by hand within a
 -- business day" into "issued within a few minutes" without the signing key
--- ever touching a server. RLS stays off: the webhook writes with the
--- service-role key, the poller reads/updates with the same key, nothing
--- else needs access.
+-- ever touching a server.
 create table if not exists public.license_issuance_queue (
   id bigint generated always as identity primary key,
   portal_user_id uuid not null references auth.users (id) on delete cascade,
@@ -119,6 +127,16 @@ create table if not exists public.license_issuance_queue (
   processed_at timestamptz,
   error text
 );
+
+-- CRITICAL: RLS must stay ON with zero anon/authenticated policies. The
+-- webhook and poller both use the service-role key, which bypasses RLS
+-- regardless of whether it's enabled -- so this costs them nothing. But
+-- if RLS were left off (as it previously was), any authenticated user
+-- could INSERT a row here claiming their own portal_user_id with whatever
+-- days/seats/runners they want, and the poller would sign and deliver it
+-- as a real, valid paid license -- a complete payment bypass. This is the
+-- single most important RLS setting in this file.
+alter table public.license_issuance_queue enable row level security;
 
 -- The poller only ever wants "what's still pending" -- keeps that scan cheap
 -- indefinitely instead of degrading as processed rows pile up.
