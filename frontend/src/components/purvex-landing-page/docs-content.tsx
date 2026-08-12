@@ -93,6 +93,31 @@ export function MetaRow({ children }: { children: React.ReactNode }) {
   return <div className="dc-meta">{children}</div>;
 }
 
+// Mirrors the "Available roles" reference cards in the app itself
+// (Settings -> Users) -- same can/cannot breakdown, same wording, so the
+// docs can't quietly drift from what the product actually enforces.
+export function RoleBlock({ name, can, cannot }: { name: string; can: string[]; cannot: string[] }) {
+  return (
+    <div className="dc-role">
+      <p className="dc-role__name">{name}</p>
+      <div className="dc-grid2">
+        <div>
+          <p className="dc-role__label dc-role__label--can">Can</p>
+          <ul className="dc-list">
+            {can.map((item) => <li key={item}>{item}</li>)}
+          </ul>
+        </div>
+        <div>
+          <p className="dc-role__label dc-role__label--cannot">Cannot</p>
+          <ul className="dc-list">
+            {cannot.map((item) => <li key={item}>{item}</li>)}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export const DOCS_CONTENT_CSS = `
 .dc-eyebrow { margin: 0 0 10px; font-family: var(--font-mono); font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
 .dc-h1 { margin: 0 0 14px; font-family: var(--font-display); font-size: clamp(1.7rem, 3.4vw, 2.15rem); font-weight: 700; line-height: 1.18; letter-spacing: -.02em; color: var(--ink) }
@@ -149,6 +174,13 @@ export const DOCS_CONTENT_CSS = `
 .dc-faq__item:last-child { border-bottom: none }
 .dc-faq__q { margin: 0 0 6px; font-weight: 700; font-size: .92rem; color: var(--ink) }
 .dc-faq__a { margin: 0; font-size: .88rem; line-height: 1.65; color: var(--muted) }
+
+.dc-role { border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin: 0 0 14px }
+.dc-role__name { margin: 0 0 10px; font-weight: 700; font-size: .92rem; color: var(--ink) }
+.dc-role__label { margin: 0 0 4px; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em }
+.dc-role__label--can { color: #16a34a }
+.dc-role__label--cannot { color: #dc2626 }
+.dc-role ul.dc-list { margin: 0; font-size: .85rem }
 
 .dc-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px }
 @media (max-width: 560px) { .dc-cards { grid-template-columns: 1fr } }

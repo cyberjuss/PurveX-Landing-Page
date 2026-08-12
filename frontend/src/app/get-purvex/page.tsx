@@ -101,7 +101,7 @@ function GetPurveXContent() {
             <strong className="text-slate-900">Your license key is on its way.</strong> We issue keys by hand
             right now, so expect it within one business day. Check{" "}
             <Link href="/my-license" className="font-medium text-[#5546e0] hover:underline">purvex-llc.com/my-license</Link>{" "}
-            any time for the current one -- no need to wait on an email. Once you have it, paste it into{" "}
+            any time for the current one -- no need to wait on an email. Once it&apos;s ready, download it and upload it in{" "}
             <span className="font-mono text-[#5546e0]">Settings → License</span> after you finish setup below.
           </div>
         )}

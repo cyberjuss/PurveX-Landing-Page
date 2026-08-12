@@ -95,3 +95,33 @@ create table if not exists public.processed_stripe_events (
   id text primary key,
   processed_at timestamptz not null default now()
 );
+
+-- Automated license issuance handoff. The webhook (server, no signing key)
+-- cannot issue a license itself -- the ed25519 signing key deliberately
+-- never leaves the owner's machine (see backend/scripts/issue_license.py).
+-- Instead it drops a row here, and scripts/poll_license_issuance.py --
+-- running on that same machine, on a schedule -- drains this table, signs
+-- each token locally, and delivers it straight to the customer's
+-- portal_profiles row. This is what turns "issued by hand within a
+-- business day" into "issued within a few minutes" without the signing key
+-- ever touching a server. RLS stays off: the webhook writes with the
+-- service-role key, the poller reads/updates with the same key, nothing
+-- else needs access.
+create table if not exists public.license_issuance_queue (
+  id bigint generated always as identity primary key,
+  portal_user_id uuid not null references auth.users (id) on delete cascade,
+  kind text not null check (kind in ('new', 'renewal')),
+  days integer not null,
+  seats integer not null default 0,
+  runners integer not null default 0,
+  stripe_event_id text,
+  created_at timestamptz not null default now(),
+  processed_at timestamptz,
+  error text
+);
+
+-- The poller only ever wants "what's still pending" -- keeps that scan cheap
+-- indefinitely instead of degrading as processed rows pile up.
+create index if not exists license_issuance_queue_pending_idx
+  on public.license_issuance_queue (created_at)
+  where processed_at is null;

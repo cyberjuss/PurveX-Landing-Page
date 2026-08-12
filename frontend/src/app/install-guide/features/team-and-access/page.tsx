@@ -1,6 +1,6 @@
 "use client";
 
-import { Eyebrow, H1, Lede, H2, P, Table } from "@/components/purvex-landing-page/docs-content";
+import { Eyebrow, H1, Lede, H2, P, RoleBlock } from "@/components/purvex-landing-page/docs-content";
 
 export default function Page() {
   return (
@@ -18,16 +18,58 @@ export default function Page() {
       </P>
 
       <H2 id="roles">Roles</H2>
-      <P>Four fixed roles. There&apos;s no custom role builder today.</P>
-      <Table
-        head={["Role", "Can do"]}
-        rows={[
-          ["Administrator", "Everything, including production runs, SIEM management, and user/settings administration"],
-          ["Detection Engineer", "Build and maintain detections, run validation in lab/dev, export reports"],
-          ["Security Analyst", "Review coverage, run lab validations, use Watchtower"],
-          ["Viewer", "Read-only across detections, evidence, endpoints, and settings summaries"],
+      <P>Four fixed roles. There&apos;s no custom role builder today. This is the same breakdown shown in the app itself, under Settings &rarr; Users.</P>
+
+      <RoleBlock
+        name="Administrator"
+        can={[
+          "Manage users, roles, organization settings, SIEM connections, and endpoints",
+          "Run and schedule production validations",
+          "Approve high-severity and production changes",
+        ]}
+        cannot={[
+          "Bypass audit logging or tenant isolation",
+          "Remove the last protected administrator through normal role removal",
         ]}
       />
+      <RoleBlock
+        name="Detection Engineer"
+        can={[
+          "Create and edit detections",
+          "Run lab/dev validations and schedule lab/dev tests",
+          "View endpoint status and export reports",
+        ]}
+        cannot={[
+          "Manage users, SIEM connections, endpoints, or organization settings",
+          "Run or schedule production validations",
+          "Change severity or approve high-severity/production promotion",
+        ]}
+      />
+      <RoleBlock
+        name="Security Analyst"
+        can={[
+          "Read detections, tests, endpoint status, and reports",
+          "Create test records and run lab validations",
+          "Use Watchtower for analysis",
+        ]}
+        cannot={[
+          "Edit detections or change lifecycle/severity",
+          "Run dev or production validations",
+          "Manage settings, SIEM connections, endpoints, users, or roles",
+        ]}
+      />
+      <RoleBlock
+        name="Viewer"
+        can={[
+          "Read detections, validation evidence, endpoint status, settings summaries, and reports",
+        ]}
+        cannot={[
+          "Create, update, delete, deploy, approve, or run anything",
+          "Use Watchtower",
+          "Manage settings, users, SIEM connections, or endpoints",
+        ]}
+      />
+
       <P>
         Assign a role from the dropdown on that person&apos;s row in Settings &rarr; Users. Remove one by clicking
         the &times; on their role chip.

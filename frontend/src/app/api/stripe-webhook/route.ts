@@ -6,15 +6,20 @@ import { sendEmail } from "@/lib/email";
 // Closes the loop the pricing page's static Stripe Payment Link otherwise
 // leaves open: today, paying customer -> silence. Nobody is notified a sale
 // happened, and there's no automated path to a license key. This doesn't
-// fully automate license issuance (that still needs an operator to run
-// backend/scripts/issue_license.py -- the ed25519 signing key isn't
-// something this server should hold), but it makes sure a payment is
-// recorded and BOTH the owner and the customer are emailed immediately
-// instead of the sale silently going unnoticed. Issuance is still by hand,
-// but delivery doesn't have to be: issue_license.py --deliver-to pushes the
-// token straight into this same Supabase project, so the customer can grab
-// it themselves at /my-license instead of waiting on (and possibly losing
-// track of) an email.
+// sign anything itself -- the ed25519 signing key isn't something this
+// server should hold, and only ever lives on the owner's own machine.
+// Issuance is manual (the owner reads the notification email below and
+// runs issue_license.py by hand) -- delivery isn't: --deliver-to pushes
+// the signed token straight into the customer's portal account, so they
+// grab it at /my-license instead of waiting on (and possibly losing track
+// of) an email.
+//
+// enqueueLicenseIssuance below also drops a row in license_issuance_queue
+// for a not-yet-activated automated path (scripts/poll_license_issuance.py)
+// -- built and tested, but the table doesn't exist in Supabase yet and
+// nothing runs it, so today that insert just fails harmlessly (logged, not
+// thrown). Manual issuance via the notification email is the only live
+// path right now.
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
@@ -58,28 +63,52 @@ export async function POST(request: NextRequest) {
 
   // Idempotency: Stripe guarantees at-least-once delivery, so the same
   // event can arrive twice (a slow response, an occasional duplicate).
-  // Recording the event id first and bailing on a duplicate is what keeps a
-  // redelivery from sending the owner/customer the same email twice.
-  // Fails open (skips the check, still processes) if Supabase isn't
-  // configured -- consistent with the rest of this handler's posture.
+  // This row is only written AFTER the critical step below succeeds (see
+  // the bottom of this function) -- it means "fully processed," not "we
+  // saw this once." That distinction matters: if it meant the latter, a
+  // delivery that failed partway through would look identical to one that
+  // succeeded, and a retry would skip real work that never actually
+  // happened. Fails open (skips the check, still processes) if Supabase
+  // isn't configured -- consistent with the rest of this handler's posture.
   if (supabaseAdmin) {
-    const { error: dedupeError } = await supabaseAdmin
+    const { data: already } = await supabaseAdmin
       .from("processed_stripe_events")
-      .insert({ id: event.id });
-    if (dedupeError) {
-      // Postgres unique_violation -- this event id was already processed.
-      if (dedupeError.code === "23505") {
-        return NextResponse.json({ received: true, duplicate: true });
-      }
-      console.error("[stripe-webhook] Failed to record event id for idempotency:", dedupeError);
+      .select("id")
+      .eq("id", event.id)
+      .maybeSingle();
+    if (already) {
+      return NextResponse.json({ received: true, duplicate: true });
     }
   }
 
+  let processed = true;
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    await handleCheckoutCompleted(session);
+    processed = await handleCheckoutCompleted(session, event.id);
   } else if (event.type === "invoice.paid") {
-    await handleInvoicePaid(event.data.object as Stripe.Invoice);
+    processed = await handleInvoicePaid(event.data.object as Stripe.Invoice, event.id);
+  }
+
+  if (!processed) {
+    // A non-2xx here makes Stripe retry this delivery automatically (with
+    // backoff, for several days) and marks it failed in the Stripe
+    // dashboard's webhook log. Stripe also emails the account owner
+    // directly when an endpoint's deliveries keep failing -- a channel
+    // that doesn't depend on this app's own email sending (Resend) or on
+    // anyone reading Vercel logs, so a Supabase outage doesn't also take
+    // down the only way of finding out about it.
+    return NextResponse.json({ received: false }, { status: 500 });
+  }
+
+  if (supabaseAdmin) {
+    const { error } = await supabaseAdmin.from("processed_stripe_events").insert({ id: event.id });
+    // 23505 (unique_violation) here means a concurrent retry of this same
+    // event already recorded it first -- both did the real work (which is
+    // safe to double-run, see handleCheckoutCompleted/handleInvoicePaid),
+    // so this is a benign race, not a failure worth retrying over.
+    if (error && error.code !== "23505") {
+      console.error("[stripe-webhook] Failed to record event id after successful processing:", error);
+    }
   }
 
   return NextResponse.json({ received: true });
@@ -91,7 +120,35 @@ export async function POST(request: NextRequest) {
 // putting the ed25519 signing key anywhere but the owner's own machine.
 const LICENSE_DAYS = 35;
 
-async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+// Drops a row for scripts/poll_license_issuance.py to pick up. Failure here
+// is logged but never thrown -- the owner notification email below still
+// carries the exact command to run by hand, so a queue-insert failure
+// degrades to the original manual flow instead of losing the sale.
+async function enqueueLicenseIssuance(params: {
+  portalUserId: string;
+  kind: "new" | "renewal";
+  stripeEventId: string;
+}) {
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin.from("license_issuance_queue").insert({
+    portal_user_id: params.portalUserId,
+    kind: params.kind,
+    days: LICENSE_DAYS,
+    seats: 0,
+    runners: 0,
+    stripe_event_id: params.stripeEventId,
+  });
+  if (error) {
+    console.error("[stripe-webhook] Failed to enqueue license issuance:", error);
+  }
+}
+
+// Returns whether the *critical* step (recording that this payment
+// happened) succeeded. Email delivery is best-effort and never affects
+// this -- a Resend outage shouldn't make Stripe think the payment itself
+// wasn't recorded and retry into a duplicate-email loop once Resend
+// recovers, when the actual record was already fine on the first attempt.
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripeEventId: string): Promise<boolean> {
   // Set by pricing/page.tsx's handlePaid() before the redirect to Stripe --
   // the Supabase auth user id of whoever paid.
   const userId = session.client_reference_id;
@@ -100,27 +157,36 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
   if (!userId) {
     console.error("[stripe-webhook] checkout.session.completed with no client_reference_id:", session.id);
-    return;
+    // Not retryable -- there's no missing id waiting to show up on a
+    // retry, the session was created without one and always will be.
+    return true;
   }
 
-  if (supabaseAdmin) {
-    const { error } = await supabaseAdmin
-      .from("portal_profiles")
-      .update({
-        plan: "paid",
-        stripe_payment_confirmed: true,
-        stripe_session_id: session.id,
-        stripe_customer_id: stripeCustomerId || null,
-        paid_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("user_id", userId);
-    if (error) {
-      console.error("[stripe-webhook] Failed to update portal_profiles:", error);
-    }
-  } else {
+  if (!supabaseAdmin) {
     console.error("[stripe-webhook] SUPABASE_SERVICE_ROLE_KEY not configured -- payment not recorded anywhere.");
+    return false;
   }
+
+  const { error } = await supabaseAdmin
+    .from("portal_profiles")
+    .update({
+      plan: "paid",
+      stripe_payment_confirmed: true,
+      stripe_session_id: session.id,
+      stripe_customer_id: stripeCustomerId || null,
+      paid_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("user_id", userId);
+  if (error) {
+    console.error("[stripe-webhook] Failed to update portal_profiles:", error);
+    return false;
+  }
+
+  // Best-effort from here down -- an issuance-queue or email hiccup
+  // shouldn't undo the fact that the payment itself is now durably
+  // recorded above.
+  await enqueueLicenseIssuance({ portalUserId: userId, kind: "new", stripeEventId });
 
   const amount = session.amount_total != null ? (session.amount_total / 100).toFixed(2) : "unknown";
   const currency = (session.currency || "usd").toUpperCase();
@@ -145,7 +211,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         <p>Requires <code>SUPABASE_URL</code> and <code>SUPABASE_SERVICE_ROLE_KEY</code> set in your shell (same
         service-role key already in this project's Vercel env). If delivery fails for any reason, the token is
         still printed above -- fall back to emailing it to ${safeCustomerEmail || "their address"} and they can
-        paste it into Settings &rarr; License themselves.</p>
+        upload it as a file in Settings &rarr; License themselves.</p>
         <p>This key expires in ${LICENSE_DAYS} days. As long as their subscription stays active, Stripe will
         auto-renew it and you'll get a follow-up "renewed" email like this one telling you to reissue. If they
         cancel, just don't reissue -- the key lapses on its own, no revocation step needed.</p>
@@ -163,8 +229,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         <p>Thanks for upgrading to PurveX Paid!</p>
         <p>We issue license keys by hand right now, so expect it within one business day. You don't need to
         wait on an email for it though -- once it's ready, you'll find it any time at
-        <strong>purvex-llc.com/my-license</strong>. Paste it into <strong>Settings &rarr; License</strong> in
-        your PurveX instance -- it takes effect immediately, no restart needed.</p>
+        <strong>purvex-llc.com/my-license</strong>. Download it there and upload it in
+        <strong>Settings &rarr; License</strong> in your PurveX instance -- it takes effect immediately, no
+        restart needed.</p>
         <p>Your key is valid for ${LICENSE_DAYS} days and renews automatically with your subscription -- check
         back at that same page each cycle for the current one, no action needed on your end as long as you
         stay subscribed.</p>
@@ -172,21 +239,26 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       `
     );
   }
+
+  return true;
 }
 
-async function handleInvoicePaid(invoice: Stripe.Invoice) {
+// See handleCheckoutCompleted's comment above -- same contract: return
+// value reflects whether the critical step (looking up who to notify)
+// succeeded, not whether the notification itself went out.
+async function handleInvoicePaid(invoice: Stripe.Invoice, stripeEventId: string): Promise<boolean> {
   // Stripe fires invoice.paid for the FIRST invoice on a new subscription
   // too (billing_reason "subscription_create"), which checkout.session.completed
   // already handles above -- only act on real recurring renewals here, or
   // the owner gets two emails for one sale.
   if (invoice.billing_reason !== "subscription_cycle") {
-    return;
+    return true;
   }
 
   const stripeCustomerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id;
   if (!stripeCustomerId) {
     console.error("[stripe-webhook] invoice.paid renewal with no customer id:", invoice.id);
-    return;
+    return true;
   }
 
   let customerEmail = invoice.customer_email || "";
@@ -199,11 +271,20 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
       .eq("stripe_customer_id", stripeCustomerId)
       .maybeSingle();
     if (error) {
+      // A real query failure (not just "no matching row," which `data`
+      // being null already covers below) -- worth retrying since we
+      // genuinely don't know yet whether we can find this customer.
       console.error("[stripe-webhook] Failed to look up portal_profiles by stripe_customer_id:", error);
-    } else if (data) {
+      return false;
+    }
+    if (data) {
       portalUserId = data.user_id;
       customerEmail = customerEmail || data.email;
     }
+  }
+
+  if (portalUserId) {
+    await enqueueLicenseIssuance({ portalUserId, kind: "renewal", stripeEventId });
   }
 
   const amount = invoice.amount_paid != null ? (invoice.amount_paid / 100).toFixed(2) : "unknown";
@@ -232,4 +313,6 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   } else {
     console.warn("[stripe-webhook] OWNER_NOTIFICATION_EMAIL not set -- no notification sent for this renewal.");
   }
+
+  return true;
 }
