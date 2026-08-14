@@ -36,11 +36,8 @@ cd "$TARGET_DIR"
 cp .env.example .env
 chmod +x scripts/purvex.sh
 
-echo "==> Installing dependencies (this can take a few minutes)"
+echo "==> Installing PurveX (this can take a few minutes)"
 ./scripts/purvex.sh --setup
-
-echo "==> Starting PurveX"
-./scripts/purvex.sh --start
 `;
 
 export async function GET() {

@@ -22,7 +22,7 @@ export default function Page() {
     <>
       <Eyebrow>Get started</Eyebrow>
       <H1>Installation</H1>
-      <Lede>One command. No database installation required.</Lede>
+      <Lede>One command. PostgreSQL is installed and configured for you.</Lede>
 
       <H2 id="install">Run the installer</H2>
       <TermBlock
@@ -30,18 +30,23 @@ export default function Page() {
         lines={<>
           <span className="dc-p1">$</span> <span className="dc-cmd">{installCommand}</span><br/>
           <span className="dc-out">...</span><br/>
+          <span className="dc-out">Enter password: </span><br/>
+          <span className="dc-out">...</span><br/>
+          <span className="dc-out">Start PurveX now? [y/N] </span><span className="dc-cmd">y</span><br/>
+          <span className="dc-out">...</span><br/>
           <span className="dc-ok">[purvex] Web: http://127.0.0.1:1120</span><br/>
           <span className="dc-ok">[purvex] API: http://127.0.0.1:8001</span>
         </>}
       />
       <P>
-        This downloads PurveX, installs it, and starts it. Once you see it running, open{" "}
+        This downloads PurveX, installs it — including PostgreSQL, prompting only for a database password
+        — and asks if you want to start it. Say yes and once you see it running, open{" "}
         <code>http://localhost:1120</code>. Keep this terminal window open; closing it stops PurveX.
       </P>
 
       <Callout tone="info">
-        Missing Python or Node.js? The installer detects it, shows the install command for your OS, and
-        offers to run it for you.
+        Missing Python, Node.js, or PostgreSQL? The installer detects it, shows the install command for your
+        OS, and offers to run it for you.
       </Callout>
 
       <Callout tone="warn">
@@ -51,24 +56,30 @@ export default function Page() {
 
       <H2 id="manual">Install manually</H2>
       <TermBlock
-        copyText={"git clone https://github.com/cyberjuss/PurveX.git && \\\n  cd PurveX && \\\n  chmod +x scripts/purvex.sh && \\\n  ./scripts/purvex.sh --setup && \\\n  ./scripts/purvex.sh --start"}
+        copyText={"git clone https://github.com/cyberjuss/PurveX.git && \\\n  cd PurveX && \\\n  chmod +x scripts/purvex.sh && \\\n  ./scripts/purvex.sh --setup"}
         lines={<>
           <span className="dc-p1">$</span> <span className="dc-cmd">git clone https://github.com/cyberjuss/PurveX.git &amp;&amp; \</span><br/>
           <span className="dc-cmd">&nbsp;&nbsp;cd PurveX &amp;&amp; \</span><br/>
           <span className="dc-cmd">&nbsp;&nbsp;chmod +x scripts/purvex.sh &amp;&amp; \</span><br/>
-          <span className="dc-cmd">&nbsp;&nbsp;./scripts/purvex.sh --setup &amp;&amp; \</span><br/>
-          <span className="dc-cmd">&nbsp;&nbsp;./scripts/purvex.sh --start</span>
+          <span className="dc-cmd">&nbsp;&nbsp;./scripts/purvex.sh --setup</span>
         </>}
       />
+      <P><code>--setup</code> installs dependencies and PostgreSQL, then asks if you want to start PurveX now.</P>
+
       <H2 id="update">Update PurveX</H2>
       <P>
         To update, pull the latest code and rebuild. This is safe to run at any time; your existing data is
         not affected.
       </P>
-      <TermBlock copyText={"git pull && \\\n  ./scripts/purvex.sh --setup && \\\n  ./scripts/purvex.sh --rebuild"} lines={<>
-        <span className="dc-p1">$</span> <span className="dc-cmd">git pull &amp;&amp; \</span><br/>
-        <span className="dc-cmd">&nbsp;&nbsp;./scripts/purvex.sh --setup &amp;&amp; \</span><br/>
-        <span className="dc-cmd">&nbsp;&nbsp;./scripts/purvex.sh --rebuild</span>
+      <TermBlock copyText={"git pull && ./scripts/purvex.sh --setup"} lines={<>
+        <span className="dc-p1">$</span> <span className="dc-cmd">git pull &amp;&amp; ./scripts/purvex.sh --setup</span>
+      </>} />
+      <P>
+        This also re-applies any new database migrations. When asked whether to start PurveX, answer{" "}
+        <code>n</code> — you still need to rebuild the frontend first:
+      </P>
+      <TermBlock copyText={"./scripts/purvex.sh --rebuild && ./scripts/purvex.sh --start"} lines={<>
+        <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --rebuild &amp;&amp; ./scripts/purvex.sh --start</span>
       </>} />
       <P>To stop PurveX, press <code>Ctrl+C</code> in its terminal window.</P>
     </>
