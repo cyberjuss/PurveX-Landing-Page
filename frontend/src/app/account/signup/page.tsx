@@ -44,6 +44,7 @@ function PortalSignupContent() {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const strength = getStrength(password);
   const strengthLabel = ["", "Weak", "Fair", "Fair", "Good", "Strong"][strength] || "";
@@ -58,6 +59,10 @@ function PortalSignupContent() {
 
   async function handleGoogle() {
     if (busyRef.current) return;
+    if (!agreedToTerms) {
+      setError("You must agree to the Terms of Service and Privacy Policy to continue.");
+      return;
+    }
     busyRef.current = true;
     setError(null);
     setPhase("google");
@@ -87,6 +92,10 @@ function PortalSignupContent() {
     }
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
+      return;
+    }
+    if (!agreedToTerms) {
+      setError("You must agree to the Terms of Service and Privacy Policy to continue.");
       return;
     }
 
@@ -138,6 +147,30 @@ function PortalSignupContent() {
   return (
     <AuthShell theme="light" width="sm" bare title="Create your account" subtitle="One account to pick a plan and get PurveX running.">
       <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-7">
+        <label className="flex items-start gap-2.5 text-sm text-slate-600">
+          <input
+            type="checkbox"
+            checked={agreedToTerms}
+            onChange={(e) => {
+              setAgreedToTerms(e.target.checked);
+              if (error) setError(null);
+            }}
+            disabled={isLoading}
+            className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-[#6a5cff] focus:ring-[#6a5cff]"
+          />
+          <span>
+            I agree to the{" "}
+            <Link href="/legal/terms" target="_blank" rel="noreferrer" className="font-medium text-[#6a5cff] hover:text-[#5546e0]">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="/legal/privacy" target="_blank" rel="noreferrer" className="font-medium text-[#6a5cff] hover:text-[#5546e0]">
+              Privacy Policy
+            </Link>
+            .
+          </span>
+        </label>
+
         <button
           type="button"
           onClick={handleGoogle}
