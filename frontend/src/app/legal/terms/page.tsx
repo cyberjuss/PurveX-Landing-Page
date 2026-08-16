@@ -11,7 +11,8 @@ const summaryItems = [
   "Security Operations and Cybersecurity Training services are governed by your separately signed contract, not by this public page.",
   "Internal business use only unless PurveX authorizes broader rights in writing.",
   "Customer is responsible for lawful and authorized testing activity in its own environments.",
-  "PurveX Labs is currently offered only as early access; reserving it through the website checkout is not a subscription to a generally available product.",
+  "PurveX Labs is self-hosted software offered on Free and Paid plans; PurveX does not host or process the SIEM or environment data inside your instance.",
+  "Disputes are resolved through binding individual arbitration in Maryland, not court litigation or class actions -- see Section 17.",
   "Enterprise order forms and negotiated agreements override this public page where they conflict.",
 ];
 
@@ -19,7 +20,7 @@ const sections = [
   {
     title: "1. Acceptance of Terms",
     paragraphs: [
-      "These Terms of Service govern access to and use of the PurveX website, product demos, and early access to PurveX Labs. They do not govern Security Operations or Cybersecurity Training services, which are provided exclusively under a separately signed order form, statement of work, or master services agreement between PurveX and the client organization. By accessing or using the website or PurveX Labs early access, you agree to these terms on your own behalf or on behalf of the organization you represent.",
+      "These Terms of Service (\"Terms\") are entered into between you (and, if applicable, the organization you represent) and PurveX LLC, a Maryland limited liability company (\"PurveX,\" \"we,\" \"us,\" or \"our\"), and govern access to and use of the PurveX website, product demos, and the PurveX Labs software. They do not govern Security Operations or Cybersecurity Training services, which are provided exclusively under a separately signed order form, statement of work, or master services agreement between PurveX and the client organization. By accessing or using the website or PurveX Labs, you agree to these terms on your own behalf or on behalf of the organization you represent.",
       "If you are accepting these terms for an organization, you represent that you have authority to bind that organization. If you do not agree to these terms, do not access or use the service.",
       "If your organization has executed a separate order form, subscription agreement, master services agreement, statement of work, or similar written contract with PurveX, that agreement controls over these website terms for the covered services.",
     ],
@@ -32,11 +33,11 @@ const sections = [
     ],
   },
   {
-    title: "3. PurveX Labs Early Access",
+    title: "3. PurveX Labs Software",
     paragraphs: [
-      "PurveX Labs is in active development and is currently offered only as early access. Features, timelines, and functionality described on the website are illustrative of the intended direction of the product and may change materially before general availability.",
-      "Reserving early access does not include a commitment to specific features, uptime, or delivery dates unless separately confirmed in writing. Any pricing, plan limits, feature descriptions, or commercial commitments presented on the website are informational unless and until confirmed in an applicable order form or accepted purchase flow.",
-      "PurveX may modify, improve, replace, or discontinue early-access features at any time. Security Operations and Cybersecurity Training services are not affected by this section and are governed solely by the applicable signed agreement.",
+      "PurveX Labs is self-hosted software that you download and run on your own infrastructure, offered on a Free plan and a Paid plan, each with the features and usage limits described on the website and reflected in your account's license entitlements at the time of signup or purchase.",
+      "PurveX Labs continues to evolve. Any pricing, plan limits, or feature descriptions presented on the website are informational and subject to the terms actually presented to you at signup or purchase, and to your license key's specific entitlements at any given time.",
+      "PurveX may modify, improve, or discontinue individual features of PurveX Labs over time. Security Operations and Cybersecurity Training services are not affected by this section and are governed solely by the applicable signed agreement.",
     ],
   },
   {
@@ -73,7 +74,7 @@ const sections = [
   {
     title: "8. Fees, Billing, Renewal, and Taxes",
     paragraphs: [
-      "Where you reserve early access to PurveX Labs through the website checkout, your payment secures early access under these terms and does not constitute a subscription to a generally available product. Security Operations and Cybersecurity Training fees are governed exclusively by the applicable signed agreement, not by this section.",
+      "PurveX Labs is offered on a Free plan, subject to the usage limits described on the website, and a Paid plan billed on a recurring subscription basis through the website checkout. Security Operations and Cybersecurity Training fees are governed exclusively by the applicable signed agreement, not by this section.",
       "Fees are due as stated in the applicable order form, invoice, checkout flow, or subscription terms accepted at purchase. Unless otherwise stated, fees are non-cancelable and non-refundable except as required by law or expressly stated in a governing agreement.",
       "If you purchase through a self-serve subscription flow, you authorize PurveX and its payment providers to charge the payment method associated with your account for recurring fees, taxes, and other amounts due under the selected plan.",
       "For self-serve subscriptions that automatically renew, PurveX will present material terms before purchase, including billing frequency, price, trial-to-paid conversion details if applicable, renewal timing, and how to cancel. Enterprise invoiced subscriptions are governed by the applicable commercial agreement rather than consumer-style renewal flows.",
@@ -92,9 +93,9 @@ const sections = [
   {
     title: "10. Data Processing and Privacy",
     paragraphs: [
-      "PurveX's handling of personal information is described in the Privacy Policy. PurveX does not currently ingest, host, or process customer production security telemetry, logs, or environment data through the website or PurveX Labs early access.",
-      "When PurveX Labs reaches general availability and begins processing customer environment data, PurveX will publish updated terms and, where applicable, a separate data processing addendum governing that specific processing. Where Security Operations or Cybersecurity Training engagements involve customer data, that data is handled under the terms of the signed agreement for that engagement.",
-      "To the extent the website or early-access flow includes third-party integrations, hosting, or payment processing, your data may be processed through those providers as necessary to deliver those functions.",
+      "PurveX's handling of personal information is described in the Privacy Policy. PurveX Labs is self-hosted software: PurveX does not host, ingest, or process the SIEM data, detection data, telemetry, logs, or other environment data within your PurveX Labs instance. That data remains on your own infrastructure, under your own control, and you are solely responsible for its collection, security, and lawful use.",
+      "If you enable PurveX Labs' optional AI assistant feature using your own API key for a third-party AI provider (currently OpenAI or DeepSeek), data sent to that provider is governed by your own agreement with that provider, not by this section. Where Security Operations or Cybersecurity Training engagements involve customer data, that data is handled under the terms of the signed agreement for that engagement.",
+      "To the extent the website or purchase flow includes third-party integrations, hosting, or payment processing, your account and billing data may be processed through those providers as necessary to deliver those functions.",
     ],
   },
   {
@@ -144,7 +145,17 @@ const sections = [
     ],
   },
   {
-    title: "17. Changes to the Service or Terms",
+    title: "17. Governing Law, Venue, and Dispute Resolution",
+    paragraphs: [
+      "These Terms and any dispute arising out of or relating to them or the service are governed by the laws of the State of Maryland, without regard to its conflict-of-laws principles.",
+      "Except as provided below, any dispute, claim, or controversy arising out of or relating to these Terms or the service will be resolved by binding arbitration administered by the American Arbitration Association under its Commercial Arbitration Rules, before a single arbitrator in Maryland (or remotely, by agreement of the parties), rather than in court. Judgment on the arbitration award may be entered in any court having jurisdiction.",
+      "YOU AND PURVEX EACH WAIVE THE RIGHT TO A JURY TRIAL AND THE RIGHT TO PARTICIPATE IN A CLASS ACTION, CLASS ARBITRATION, OR REPRESENTATIVE PROCEEDING. Claims must be brought in each party's individual capacity, not as a plaintiff or class member in any purported class, consolidated, or representative proceeding.",
+      "Notwithstanding the foregoing, either party may bring an individual action in small claims court, and either party may seek injunctive or other equitable relief in a court of competent jurisdiction in Maryland to protect its intellectual property or confidential information pending resolution of a dispute.",
+      "If any part of this arbitration provision is found unenforceable, the remainder will still apply, except that if the class action or class arbitration waiver is found unenforceable as to a particular claim or request for relief, that claim or request must proceed in court and be severed from any arbitration.",
+    ],
+  },
+  {
+    title: "18. Changes to the Service or Terms",
     paragraphs: [
       "PurveX may update these terms from time to time. The updated version will apply when posted, unless a later effective date is stated. Material changes will apply prospectively.",
       "PurveX may also present updated terms for affirmative acceptance through the product, account workflow, order flow, or related commercial process when appropriate.",
@@ -152,7 +163,7 @@ const sections = [
     ],
   },
   {
-    title: "18. General",
+    title: "19. General",
     paragraphs: [
       "These terms do not create a partnership, franchise, joint venture, fiduciary, employment, or agency relationship between the parties.",
       "You may not assign these terms without PurveX's prior written consent, except in connection with a permitted merger, acquisition, or sale of substantially all assets involving the assigning party. PurveX may assign these terms in connection with a merger, acquisition, corporate reorganization, or sale of assets.",
@@ -160,9 +171,9 @@ const sections = [
     ],
   },
   {
-    title: "19. Contact",
+    title: "20. Contact",
     paragraphs: [
-      "For commercial, legal, or contract questions, contact PurveX through the business contact information provided in your order documentation or at legal@purvex.com.",
+      "For commercial, legal, or contract questions, contact PurveX through the business contact information provided in your order documentation or at legal@purvex-llc.com.",
     ],
   },
 ];
@@ -171,10 +182,10 @@ export default function TermsPage() {
   return (
     <LegalPage
       badge="Terms of Service"
-      updated="Last updated April 4, 2026"
-      title="Terms for the PurveX website, demos, and PurveX Labs early access."
-      intro="These terms cover website use, demos, and reserving early access to PurveX Labs. Security Operations and Cybersecurity Training engagements are governed exclusively by your separately signed contract with PurveX, not by this page."
-      note="This page is written to match PurveX's current stage — a website plus PurveX Labs early access, with all paid client work under separate signed contracts. You should still have counsel confirm your governing-law, venue, entity-name, and export-control clauses, and revisit this page again once PurveX Labs reaches general availability."
+      updated="Last updated August 16, 2026"
+      title="Terms for the PurveX website, demos, and the PurveX Labs software."
+      intro="These terms cover website use, demos, and use of the PurveX Labs software. Security Operations and Cybersecurity Training engagements are governed exclusively by your separately signed contract with PurveX, not by this page."
+      note="You should have counsel confirm the governing-law, arbitration, and export-control clauses below before relying on them, and confirm they match how PurveX Labs is actually licensed and billed."
       summaryTitle="Commercial summary"
       summaryItems={summaryItems}
       sectionsHeading="Full Terms"

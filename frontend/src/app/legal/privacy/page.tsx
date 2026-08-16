@@ -8,20 +8,20 @@ export const metadata: Metadata = {
 };
 
 const summaryItems = [
-  "PurveX collects account, support, billing, and site data needed to run the website and PurveX Labs early access.",
-  "PurveX does not currently collect or store customer production security environment data or telemetry.",
+  "PurveX collects account, support, billing, and site data needed to run the website and the PurveX Labs software.",
+  "PurveX Labs is self-hosted: PurveX does not host, access, or process the SIEM data, detection data, or environment data inside your PurveX Labs instance.",
   "Security Operations and Cybersecurity Training engagements are governed by your signed contract, which may include its own data-handling terms.",
   "PurveX does not use customer data for unrelated advertising purposes and does not sell personal information.",
-  "Vendors receive data only as needed to host, secure, support, bill, and operate the website and early access.",
+  "Named service providers (Stripe, Supabase, Resend, Vercel) receive data only as needed to host, secure, support, and bill for the website and portal.",
 ];
 
 const sections = [
   {
     title: "1. Scope",
     paragraphs: [
-      "This Privacy Policy describes how PurveX collects, uses, discloses, and protects personal information in connection with our website, product demos, commercial activities, and early access to PurveX Labs.",
+      "This Privacy Policy describes how PurveX LLC, a Maryland limited liability company (\"PurveX,\" \"we,\" \"us,\" or \"our\"), collects, uses, discloses, and protects personal information in connection with our website, product demos, commercial activities, and the PurveX Labs software.",
       "This policy is intended for business-to-business use. It applies to information relating to employees, contractors, administrators, buyers, and other representatives of our customers, prospects, partners, and vendors, as well as website visitors.",
-      "PurveX does not currently ingest, store, or process customer production security environment data, telemetry, or logs through the website or PurveX Labs early access. Where PurveX provides Security Operations or Cybersecurity Training services under a signed contract, any customer data handled during that engagement is governed by the terms of that contract, not by this policy.",
+      "PurveX Labs is self-hosted software: customers download, install, and run it entirely on their own infrastructure. PurveX does not host, access, receive, or otherwise process the SIEM data, detection data, telemetry, logs, or other environment data within a customer's PurveX Labs instance -- that data remains on the customer's own infrastructure, under the customer's control, and PurveX has no visibility into it. Where PurveX provides Security Operations or Cybersecurity Training services under a signed contract, any customer data handled during that engagement is governed by the terms of that contract, not by this policy.",
     ],
   },
   {
@@ -30,7 +30,8 @@ const sections = [
       "We collect business contact and account information such as name, company name, business email address, job title, authentication identifiers, account preferences, and support communications.",
       "We collect commercial and transaction information such as subscription details, billing contact information, invoicing records, and payment-related metadata. Card numbers and similar payment credentials are typically processed by our payment providers rather than stored by PurveX.",
       "We collect technical and usage information such as IP address, browser type, device and network identifiers, cookie or similar online identifiers, log data, product usage events, security events, diagnostic information, and configuration metadata necessary to deliver and secure the service.",
-      "If you reserve early access to PurveX Labs, we collect the account, company, and payment information needed to process that reservation and to notify you as the product develops. PurveX Labs does not currently ingest or process customer production security data; this policy will be updated before that capability becomes available.",
+      "If you sign up for PurveX Labs, we collect the account, company, and payment information needed to create your account, process your subscription, and issue and deliver your license key.",
+      "If you enable PurveX Labs' optional AI assistant feature and configure your own API key for a third-party AI provider (currently OpenAI or DeepSeek), your PurveX Labs instance sends relevant detection or test data directly to that provider, under your own account and agreement with them. That transmission happens directly from your own infrastructure; PurveX does not receive, transmit, or store that data.",
     ],
   },
   {
@@ -45,14 +46,14 @@ const sections = [
     title: "4. Legal Bases and Processing Roles",
     paragraphs: [
       "Where applicable data protection laws require a legal basis, PurveX relies on one or more of the following: performance of a contract, legitimate interests in operating and securing our business and service, compliance with legal obligations, and consent where specifically required.",
-      "PurveX acts as an independent controller for website analytics, account administration, billing, vendor management, business communications, compliance, and PurveX Labs early access. PurveX does not currently act as a processor for customer production security data, because that processing capability has not yet launched. Once available, this section will be updated to describe PurveX's processor role and related safeguards.",
+      "PurveX acts as an independent controller for website analytics, account administration, billing, vendor management, business communications, and compliance. Because PurveX Labs is self-hosted software that does not transmit environment, SIEM, or detection data to PurveX, PurveX does not act as a processor or sub-processor for that data -- the customer operating a PurveX Labs instance is solely responsible for that data, including any controller or processor obligations that apply to it under laws governing that customer.",
       "Where PurveX provides Security Operations or Cybersecurity Training services under a signed contract, the client organization is generally the controller of any data handled during that engagement, and requests relating to that data should be directed to the relevant client first.",
     ],
   },
   {
     title: "5. How We Share Information",
     paragraphs: [
-      "We disclose information only where reasonably necessary for business and service operations, including to hosting providers, infrastructure providers, analytics providers, customer support tools, professional advisers, payment processors, and other vendors operating under appropriate contractual restrictions.",
+      "We disclose information only where reasonably necessary for business and service operations. Current service providers include Vercel (website hosting), Supabase (account authentication and portal database), Stripe (payment processing), and Resend (transactional email), along with professional advisers and other vendors operating under appropriate contractual restrictions. If you separately choose to enable PurveX Labs' AI assistant feature with your own API key, your PurveX Labs instance communicates directly with your chosen AI provider (OpenAI or DeepSeek) under your own account with that provider -- that is your direct relationship with the provider, not a disclosure PurveX makes on your behalf.",
       "We may disclose information to comply with law, lawful process, government requests, or to protect the rights, safety, security, and integrity of PurveX, our customers, users, and the public.",
       "We may also disclose information in connection with an actual or proposed merger, acquisition, financing, reorganization, or sale of assets, subject to customary confidentiality and lawful handling requirements.",
       "We do not sell personal information in the ordinary meaning of that term, and we do not share personal information for cross-context behavioral advertising in a manner inconsistent with this policy.",
@@ -83,7 +84,7 @@ const sections = [
     paragraphs: [
       "Depending on your location and the context of the processing, you may have rights to request access, correction, deletion, restriction, portability, objection, or withdrawal of consent. You may also have the right to appeal certain privacy decisions or lodge a complaint with a supervisory authority.",
       "If your information is processed by PurveX on behalf of one of our customers, we may need to refer your request to that customer because it controls the relevant service data.",
-      "You may submit privacy requests through the methods designated by PurveX, including email at privacy@purvex.com and, where made available, account, web, or support-channel request workflows. PurveX may take reasonable steps to verify identity and request authority before acting on a request.",
+      "You may submit privacy requests through the methods designated by PurveX, including email at privacy@purvex-llc.com and, where made available, account, web, or support-channel request workflows. PurveX may take reasonable steps to verify identity and request authority before acting on a request.",
       "You may opt out of promotional emails by using the unsubscribe link in the message or by contacting us directly. Service, security, billing, and transactional communications are not marketing opt-out communications.",
     ],
   },
@@ -116,7 +117,7 @@ const sections = [
   {
     title: "14. Contact",
     paragraphs: [
-      "For privacy-related questions or requests, contact PurveX at privacy@purvex.com or through the business contact information provided in your order form, master services agreement, or customer support channel.",
+      "For privacy-related questions or requests, contact PurveX at privacy@purvex-llc.com or through the business contact information provided in your order form, master services agreement, or customer support channel.",
     ],
   },
 ];
@@ -125,10 +126,10 @@ export default function PrivacyPolicyPage() {
   return (
     <LegalPage
       badge="Privacy Policy"
-      updated="Last updated April 4, 2026"
-      title="Privacy terms for the PurveX website and PurveX Labs early access."
-      intro="This policy explains what PurveX collects, why we collect it, and how we use and share it in connection with the website, demos, and PurveX Labs early access. PurveX does not currently process customer production security data; Security Operations and Cybersecurity Training engagements are covered by your signed contract, not this page."
-      note="This page is written to match PurveX's current stage — no live processing of customer security data yet. It is not a substitute for advice from counsel familiar with your specific jurisdictions, subprocessors, and retention schedules, and it should be revisited once PurveX Labs reaches general availability."
+      updated="Last updated August 16, 2026"
+      title="Privacy terms for the PurveX website and the PurveX Labs software."
+      intro="This policy explains what PurveX collects, why we collect it, and how we use and share it in connection with the website, demos, and the PurveX Labs software. PurveX Labs is self-hosted, so PurveX does not process the SIEM, detection, or environment data inside your instance; Security Operations and Cybersecurity Training engagements are covered by your signed contract, not this page."
+      note="This page reflects PurveX Labs' self-hosted architecture, under which PurveX structurally never receives your security data. It is not a substitute for advice from counsel familiar with your specific jurisdictions, subprocessors, and retention schedules."
       summaryTitle="Practical summary"
       summaryItems={summaryItems}
       sectionsHeading="Full Policy"
