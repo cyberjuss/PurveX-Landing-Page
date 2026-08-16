@@ -12,6 +12,7 @@ const summaryItems = [
   "Internal business use only unless PurveX authorizes broader rights in writing.",
   "Customer is responsible for lawful and authorized testing activity in its own environments.",
   "PurveX Labs is self-hosted software offered on Free and Paid plans; PurveX does not host or process the SIEM or environment data inside your instance.",
+  "Paid plan subscriptions can be canceled anytime to stop future billing; the current billing period is not refunded.",
   "Disputes are resolved through binding individual arbitration in Maryland, not court litigation or class actions -- see Section 17.",
   "Enterprise order forms and negotiated agreements override this public page where they conflict.",
 ];
@@ -75,7 +76,7 @@ const sections = [
     title: "8. Fees, Billing, Renewal, and Taxes",
     paragraphs: [
       "PurveX Labs is offered on a Free plan, subject to the usage limits described on the website, and a Paid plan billed on a recurring subscription basis through the website checkout. Security Operations and Cybersecurity Training fees are governed exclusively by the applicable signed agreement, not by this section.",
-      "Fees are due as stated in the applicable order form, invoice, checkout flow, or subscription terms accepted at purchase. Unless otherwise stated, fees are non-cancelable and non-refundable except as required by law or expressly stated in a governing agreement.",
+      "Fees are due as stated in the applicable order form, invoice, checkout flow, or subscription terms accepted at purchase. PurveX Labs Paid plan subscriptions are billed in advance on a recurring basis; you may cancel at any time to stop future billing, but canceling does not entitle you to a refund for the current billing period or any amount already paid. Except as required by law or expressly stated in a governing agreement, all fees are otherwise non-refundable.",
       "If you purchase through a self-serve subscription flow, you authorize PurveX and its payment providers to charge the payment method associated with your account for recurring fees, taxes, and other amounts due under the selected plan.",
       "For self-serve subscriptions that automatically renew, PurveX will present material terms before purchase, including billing frequency, price, trial-to-paid conversion details if applicable, renewal timing, and how to cancel. Enterprise invoiced subscriptions are governed by the applicable commercial agreement rather than consumer-style renewal flows.",
       "Where self-serve cancellation is offered online, PurveX will use commercially reasonable efforts to make cancellation available through a method that is at least as straightforward as the applicable signup or purchase path, subject to security, verification, and account-administration controls.",
@@ -173,7 +174,7 @@ const sections = [
   {
     title: "20. Contact",
     paragraphs: [
-      "For commercial, legal, or contract questions, contact PurveX through the business contact information provided in your order documentation or at legal@purvex-llc.com.",
+      "For commercial, legal, or contract questions, contact PurveX through the business contact information provided in your order documentation or at jduru213@gmail.com.",
     ],
   },
 ];

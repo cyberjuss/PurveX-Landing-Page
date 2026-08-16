@@ -84,7 +84,7 @@ const sections = [
     paragraphs: [
       "Depending on your location and the context of the processing, you may have rights to request access, correction, deletion, restriction, portability, objection, or withdrawal of consent. You may also have the right to appeal certain privacy decisions or lodge a complaint with a supervisory authority.",
       "If your information is processed by PurveX on behalf of one of our customers, we may need to refer your request to that customer because it controls the relevant service data.",
-      "You may submit privacy requests through the methods designated by PurveX, including email at privacy@purvex-llc.com and, where made available, account, web, or support-channel request workflows. PurveX may take reasonable steps to verify identity and request authority before acting on a request.",
+      "You may submit privacy requests through the methods designated by PurveX, including email at jduru213@gmail.com and, where made available, account, web, or support-channel request workflows. PurveX may take reasonable steps to verify identity and request authority before acting on a request.",
       "You may opt out of promotional emails by using the unsubscribe link in the message or by contacting us directly. Service, security, billing, and transactional communications are not marketing opt-out communications.",
     ],
   },
@@ -117,7 +117,7 @@ const sections = [
   {
     title: "14. Contact",
     paragraphs: [
-      "For privacy-related questions or requests, contact PurveX at privacy@purvex-llc.com or through the business contact information provided in your order form, master services agreement, or customer support channel.",
+      "For privacy-related questions or requests, contact PurveX at jduru213@gmail.com or through the business contact information provided in your order form, master services agreement, or customer support channel.",
     ],
   },
 ];
