@@ -1,7 +1,5 @@
 ## **Wireshark Basics: Spotting Malware Traffic**
 
-*GovTech Academy — Security Analyst Lab*
-
 ### **Essential Question**
 
 What does normal network traffic look like, and how do you use Wireshark to find the traffic that isn't?
