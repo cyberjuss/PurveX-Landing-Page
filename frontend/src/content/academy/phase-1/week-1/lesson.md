@@ -1,5 +1,3 @@
-# The CIA Triad & Understanding Risk, Threats, and Vulnerabilities
-
 ### **Essential Question**
 
 What are we actually protecting when we talk about "security," and how do defenders decide which risks are worth acting on?

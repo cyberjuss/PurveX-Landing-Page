@@ -1,5 +1,3 @@
-## **Introduction to Basic Networking Concepts**
-
 ### **Essential Question**
 
 How does data actually move between two computers, and how do analysts tell ordinary traffic from something worth a second look?

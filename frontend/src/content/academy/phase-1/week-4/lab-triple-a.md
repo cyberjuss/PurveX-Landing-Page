@@ -1,5 +1,3 @@
-## **Lab Guide: Broken Access Control — Changing Your Role via User Profile (PortySwigger)**
-
 **Lab:** PortSwigger Web Security Academy — "User role can be modified in user profile"  
  **Goal:** Get admin access and delete the user "Carlos" — without ever being given admin credentials.
 
