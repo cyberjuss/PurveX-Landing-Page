@@ -10,9 +10,7 @@ Study this environment closely, because it matters later when we move into inves
 
 Note: In cybersecurity, you must know what normal looks like before you can spot what is not.
 
-***Domain: govtechfinancial. local***
-
-***Script:***
+***Domain: govtechfinancial.local***
 
 ---
 
