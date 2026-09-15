@@ -125,8 +125,8 @@ export default function TrainingPage() {
         <div className="sp-hero__copy">
           <h1 className="sp-hero__h1">Think Like a Security Analyst 101</h1>
           <p className="sp-hero__sub">
-            Judgment over memorization: hands-on instruction built around how real analysts
-            read a scene, not just what they memorize.
+            Hands-on instruction in judgment, not memorization — how real analysts actually
+            read a scene.
           </p>
           <a href="#syllabus" className="sp-btn sp-btn--prim sp-btn--lg">
             See the Curriculum <ArrowRight size={16} />
@@ -153,9 +153,8 @@ export default function TrainingPage() {
           <span className="sp-tag">Why this program is different</span>
           <h2>Judgment is the skill. Everything else is just facts.</h2>
           <p>
-            Certifications teach vocabulary. They don&apos;t teach you to sit with an ambiguous
-            alert and decide, in the moment, whether it&apos;s noise or a real compromise. That
-            judgment is what this program builds.
+            Certifications teach vocabulary. This program teaches judgment — deciding, in the
+            moment, whether an alert is noise or a real compromise.
           </p>
         </div>
         <div className="sp-compare" data-r>
@@ -203,7 +202,7 @@ export default function TrainingPage() {
         <div className="sp-head" data-r>
           <span className="sp-tag">The syllabus</span>
           <h2>From fundamentals to a full training partnership.</h2>
-          <p>Seven modules, from SOC analyst readiness to how we support your program long-term.</p>
+          <p>Seven modules: SOC analyst readiness to long-term program support.</p>
         </div>
         <div className="sp-roadmap-zigzag" data-r>
           <div className="sp-roadmap-zigzag__row sp-roadmap-zigzag__row--icons">
@@ -250,8 +249,8 @@ export default function TrainingPage() {
             <span className="sp-tag">The learning roadmap</span>
             <h2>Every skill area, practiced on real tools.</h2>
             <p>
-              The curriculum is built around real-world platforms, several free and open to
-              anyone, so learners use the same tools working analysts do.
+              Built around real-world platforms, many free, so learners use the same tools
+              working analysts do.
             </p>
           </div>
           <div className="sp-roadmap">
