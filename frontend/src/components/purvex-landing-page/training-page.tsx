@@ -95,7 +95,13 @@ const formats = [
   { icon: Users, title: "1:1 & small-group instruction", body: "Live sessions, paced to the learner or cohort." },
   { icon: FlaskConical, title: "Hands-on lab projects", body: "Real scenarios, worked at your own pace." },
   { icon: GraduationCap, title: "Embedded in your program", body: "We teach inside your existing curriculum." },
-  { icon: Globe, title: "Private student portal", body: "Lessons, labs, and self-check quizzes on the web — not a shared drive folder." },
+  {
+    icon: Globe,
+    title: "Private student portal",
+    body: "Lessons, labs, and self-check quizzes on the web — not a shared drive folder.",
+    href: "/academy",
+    linkLabel: "Enrolled students, sign in",
+  },
 ];
 
 export default function TrainingPage() {
@@ -278,6 +284,11 @@ export default function TrainingPage() {
               </div>
               <h3 className="sp-card__title">{f.title}</h3>
               <p className="sp-card__body">{f.body}</p>
+              {f.href && (
+                <a href={f.href} className="sp-card__link">
+                  {f.linkLabel} <ArrowRight size={14} />
+                </a>
+              )}
             </article>
           ))}
         </div>
