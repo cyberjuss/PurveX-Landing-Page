@@ -11,7 +11,7 @@ export function UnlockForm() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-4 py-10">
-      <div className="w-full max-w-sm">
+      <div className="w-full" style={{ maxWidth: "24rem" }}>
         <div className="flex flex-col items-center text-center">
           <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-[20px] border border-[var(--pvrx-border-light)] bg-white shadow-[0_18px_48px_-22px_rgba(15,23,42,0.25)]">
             <Image src="/logo.png" alt="" width={42} height={42} priority />
@@ -19,7 +19,7 @@ export function UnlockForm() {
           <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900">
             Think Like a SOC Analyst
           </h1>
-          <p className="mt-2.5 max-w-sm text-sm leading-6 text-slate-500">
+          <p className="mt-2.5 text-sm leading-6 text-slate-500" style={{ maxWidth: "24rem" }}>
             Enter the class passcode your instructor gave you to reach the course material.
           </p>
         </div>
