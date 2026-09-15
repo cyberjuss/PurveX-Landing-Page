@@ -89,7 +89,14 @@ const phase1HomeLab: HomeLabDef = {
   title: "Home Lab — Active Directory",
   summary: "GovTech Financial: a fictional enterprise environment used for investigation and detection labs.",
   sections: [
-    { label: "Infrastructure Overview", file: "phase-1/home-lab-ad/infrastructure-overview.md" },
+    { label: "Overview", file: "phase-1/home-lab-ad/overview.md" },
+    { label: "The Org Chart", file: "phase-1/home-lab-ad/org-chart.md" },
+    { label: "Administrative Roles", file: "phase-1/home-lab-ad/admin-roles.md" },
+    { label: "Data Categories", file: "phase-1/home-lab-ad/data-categories.md" },
+    { label: "Who Wealth Management Serves", file: "phase-1/home-lab-ad/wealth-management-clients.md" },
+    { label: "Full User Directory", file: "phase-1/home-lab-ad/user-directory.md" },
+    { label: "The Client Workstation", file: "phase-1/home-lab-ad/client-workstation.md" },
+    { label: "Environment Stats", file: "phase-1/home-lab-ad/environment-stats.md" },
   ],
 };
 
