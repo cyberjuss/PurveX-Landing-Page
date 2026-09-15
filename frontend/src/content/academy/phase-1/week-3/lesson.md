@@ -1,7 +1,5 @@
 ## **Introduction to Basic Networking Concepts**
 
-*GovTech Academy — Security Analyst Lab*
-
 ### **Essential Question**
 
 How does data actually move between two computers, and how do analysts tell ordinary traffic from something worth a second look?
