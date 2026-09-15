@@ -118,7 +118,16 @@
       "folder": "Phase 1 / Home Lab - Active Directory",
       "modifiedTime": "2026-08-30T05:44:44.129Z",
       "status": "migrated",
-      "mappedFiles": ["phase-1/home-lab-ad/infrastructure-overview.md"]
+      "mappedFiles": [
+        "phase-1/home-lab-ad/overview.md",
+        "phase-1/home-lab-ad/org-chart.md",
+        "phase-1/home-lab-ad/admin-roles.md",
+        "phase-1/home-lab-ad/data-categories.md",
+        "phase-1/home-lab-ad/wealth-management-clients.md",
+        "phase-1/home-lab-ad/user-directory.md",
+        "phase-1/home-lab-ad/client-workstation.md",
+        "phase-1/home-lab-ad/environment-stats.md"
+      ]
     },
     {
       "fileId": "1j41lpqklyNwm0mNN-VgmguGxbmvjIyaQeNgXJK6AWJI",
