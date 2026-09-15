@@ -82,7 +82,14 @@ function Ensure-OU {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([string]$Name, [string]$ParentDN)
     $path = "OU=$Name,$ParentDN"
-    if (Get-ADOrganizationalUnit -Filter "DistinguishedName -eq '$path'" -ErrorAction SilentlyContinue) {
+    $exists = $true
+    try {
+        Get-ADOrganizationalUnit -Identity $path -ErrorAction Stop | Out-Null
+    }
+    catch {
+        $exists = $false
+    }
+    if ($exists) {
         Write-Host "  OU exists:   $path" -ForegroundColor DarkGray
     }
     elseif ($PSCmdlet.ShouldProcess($path, "Create OU")) {
