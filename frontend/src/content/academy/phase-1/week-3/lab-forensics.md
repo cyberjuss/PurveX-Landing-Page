@@ -1,5 +1,3 @@
-# **Lab: Network Forensics — Analyzing a Hidden Tear Ransomware Infection**
-
 **File:** `hidden_tear_final_snipped_pcap.pcapng` **Tool:** Wireshark (or tshark) **Level:** Threat Detection / Incident Response phase — CySA+ aligned
 
 ---

@@ -1,5 +1,3 @@
-# **Infrastructure Overview**
-
 ### **Essential Question**
 
 Before you can recognize what's abnormal in an investigation, what does "normal" actually look like in this environment?

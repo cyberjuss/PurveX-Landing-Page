@@ -1,5 +1,3 @@
-## **Wireshark Basics: Spotting Malware Traffic**
-
 ### **Essential Question**
 
 What does normal network traffic look like, and how do you use Wireshark to find the traffic that isn't?

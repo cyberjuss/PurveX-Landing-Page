@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { loadLesson, type ContentSection, type WeekDef, type PhaseDef } from "@/lib/academy-content";
-import { Markdown } from "@/lib/markdown";
 import { findQuiz } from "@/content/academy/quizzes";
-import { QuizBlock } from "./quiz";
+import { SectionTabs } from "./section-tabs";
 
 export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }) {
   const sections = entry.sections
@@ -27,14 +26,11 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
           Content for this week is still being written — check back soon.
         </p>
       ) : (
-        <div className="mt-8 flex flex-col gap-8">
-          {sections.map((section) => (
-            <section key={section.file} className="rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 sm:p-8">
-              <h2 className="font-display text-lg font-semibold text-slate-900">{section.label}</h2>
-              <Markdown content={section.markdown!} className="mt-3" />
-            </section>
-          ))}
-          {quiz && <QuizBlock quiz={quiz} />}
+        <div className="mt-8">
+          <SectionTabs
+            sections={sections.map((s) => ({ label: s.label, markdown: s.markdown! }))}
+            quiz={quiz}
+          />
         </div>
       )}
     </div>
