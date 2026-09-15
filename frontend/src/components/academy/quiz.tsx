@@ -22,15 +22,14 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
   }
 
   return (
-    <section className="rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 sm:p-8">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="font-display text-lg font-semibold text-slate-900">Test yourself</h2>
-        {submitted && (
+    <div>
+      {submitted && (
+        <div className="flex justify-end">
           <span className="rounded-full bg-[rgba(106,92,255,0.1)] px-3 py-1 text-sm font-semibold text-[#5546e0]">
             {score} / {quiz.questions.length}
           </span>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="mt-5 flex flex-col gap-7">
         {quiz.questions.map((q, qi) => {
@@ -104,6 +103,6 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
           </button>
         )}
       </div>
-    </section>
+    </div>
   );
 }
