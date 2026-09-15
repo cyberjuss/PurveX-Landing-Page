@@ -4,6 +4,12 @@
 
 ---
 
+## **Essential Question**
+
+When a live capture contains far more noise than signal, how do you find the handful of packets that actually matter in a ransomware incident?
+
+---
+
 ## **Learning Objectives**
 
 By the end of this lab, students should be able to:

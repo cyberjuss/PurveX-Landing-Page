@@ -2,6 +2,14 @@
 
 *GovTech Academy — Security Analyst Lab*
 
+### **Essential Question**
+
+What does normal network traffic look like, and how do you use Wireshark to find the traffic that isn't?
+
+### **Overview**
+
+This lab is hands-on: opening a capture in Wireshark, learning the three panes, recognizing what makes traffic look suspicious before you even apply a filter, and using three basic filters plus "Follow → HTTP Stream" to reassemble a full conversation.
+
 **\[SCREENSHOT: Wireshark start screen — interface list (optional, for first-time users)\]**
 
 ### **What Wireshark Actually Shows You**

@@ -6,12 +6,14 @@ export interface QuizQuestion {
 }
 
 export interface Quiz {
+  phaseSlug: string;
   weekSlug: string;
   questions: QuizQuestion[];
 }
 
 export const quizzes: Quiz[] = [
   {
+    phaseSlug: "phase-1",
     weekSlug: "week-1",
     questions: [
       {
@@ -52,6 +54,7 @@ export const quizzes: Quiz[] = [
     ],
   },
   {
+    phaseSlug: "phase-1",
     weekSlug: "week-3",
     questions: [
       {
@@ -102,6 +105,7 @@ export const quizzes: Quiz[] = [
     ],
   },
   {
+    phaseSlug: "phase-1",
     weekSlug: "week-4",
     questions: [
       {
@@ -140,6 +144,7 @@ export const quizzes: Quiz[] = [
     ],
   },
   {
+    phaseSlug: "phase-1",
     weekSlug: "home-lab-active-directory",
     questions: [
       {
@@ -179,6 +184,6 @@ export const quizzes: Quiz[] = [
   },
 ];
 
-export function findQuiz(weekSlug: string): Quiz | undefined {
-  return quizzes.find((q) => q.weekSlug === weekSlug);
+export function findQuiz(phaseSlug: string, weekSlug: string): Quiz | undefined {
+  return quizzes.find((q) => q.phaseSlug === phaseSlug && q.weekSlug === weekSlug);
 }
