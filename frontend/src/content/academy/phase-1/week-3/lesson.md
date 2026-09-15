@@ -2,6 +2,14 @@
 
 *GovTech Academy — Security Analyst Lab*
 
+### **Essential Question**
+
+How does data actually move between two computers, and how do analysts tell ordinary traffic from something worth a second look?
+
+### **Overview**
+
+This lesson builds the networking foundation the rest of the course depends on: TCP/IP addressing, the TCP three-way handshake, common ports and protocols, and how TLS layers encryption on top of an established connection.
+
 ### **TCP/IP: The Foundation**
 
 Every device on a network needs two things: an address (so others can find it) and a set of rules for how to talk. That's what TCP/IP provides.

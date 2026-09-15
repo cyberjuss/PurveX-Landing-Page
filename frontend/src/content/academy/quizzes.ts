@@ -182,52 +182,6 @@ export const quizzes: Quiz[] = [
       },
     ],
   },
-  {
-    phaseSlug: "phase-2",
-    weekSlug: "week-1",
-    questions: [
-      {
-        question: "What's the key difference in how a virus spreads compared to a worm?",
-        options: [
-          "They spread identically — the terms are interchangeable",
-          "A virus needs a user to open an infected file; a worm spreads system to system without any human interaction",
-          "A worm needs a host file to infect; a virus spreads on its own",
-          "A virus only affects mobile devices, a worm only affects servers",
-        ],
-        correctIndex: 1,
-        explanation: "A virus needs a host object and spreads through user actions (opening an infected file). A worm exploits a system flaw directly and spreads on its own, which is why it can move faster than a virus.",
-      },
-      {
-        question: "Someone downloads what looks like a free game, but it secretly installs malware once opened. What is this distribution method called?",
-        options: ["A worm", "A logic bomb", "A Trojan Horse", "Spoofing"],
-        correctIndex: 2,
-        explanation: "A Trojan Horse isn't a malware type itself — it's a distribution method, named for hiding something harmful inside something that looks harmless, the same way the original Trojan Horse hid soldiers inside a gift.",
-      },
-      {
-        question: "Which malware type is built specifically to capture everything a user types and send it back to the attacker?",
-        options: ["Adware", "A keystroke logger", "A rootkit", "A logic bomb"],
-        correctIndex: 1,
-        explanation: "A keystroke logger records keyboard activity and sends those logs back to the hacker — useful for stealing passwords and other typed data.",
-      },
-      {
-        question: "An infected machine behaves normally for weeks, then suddenly encrypts files the moment an employee opens a specific application. What technique does this describe?",
-        options: [
-          "A logic bomb, which stays dormant until a specific triggering event",
-          "A worm, which always acts immediately on infection",
-          "Spoofing, which only affects network identity",
-          "A rootkit, which only hides files and never takes action",
-        ],
-        correctIndex: 0,
-        explanation: "A logic bomb remains dormant until a triggering event — a date, a program launch, a typed keyword, or visiting a specific site — then launches. The delay itself is the defining feature.",
-      },
-      {
-        question: "A hacker tricks a client into starting a session with the hacker's machine instead of the real server, then quietly relays traffic between both sides. What is this attack called?",
-        options: ["Session hi-jacking", "A man-in-the-middle (MitM) attack", "Adware", "A rootkit"],
-        correctIndex: 1,
-        explanation: "A MitM attack inserts the hacker between client and server from the start of the session. Session hi-jacking is a related but different attack — it takes over a connection after the client has already authenticated.",
-      },
-    ],
-  },
 ];
 
 export function findQuiz(phaseSlug: string, weekSlug: string): Quiz | undefined {

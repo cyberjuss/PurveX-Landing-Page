@@ -5,6 +5,16 @@
 
 ---
 
+### **Essential Question**
+
+What happens when an application trusts the client to say who it is, instead of verifying that on the server?
+
+### **Overview**
+
+This lab walks through PortSwigger's "user role can be modified in user profile" challenge end to end: finding the request that leaks a role field, tampering with it, and confirming that the real fix is always server-side enforcement, never hiding the field.
+
+---
+
 ### **The Simple Idea**
 
 This app trusts the user's browser to say what role they are, instead of checking on the server. If we can sneak an extra field into a request, the server just believes us.

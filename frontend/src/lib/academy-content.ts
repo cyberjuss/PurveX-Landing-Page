@@ -85,14 +85,14 @@ const phase1HomeLab: HomeLabDef = {
   ],
 };
 
-// Phase 2 -- Threat Detection & Log Analysis. Only Week 1 has real content
-// so far; Weeks 2-4's folders in the source Drive are still empty.
+// Phase 2 -- Threat Detection & Log Analysis. All weeks' folders in the
+// source Drive are still empty placeholders, same as Phase 1's Week 2.
 const phase2Weeks: WeekDef[] = [
   {
     slug: "week-1",
     title: "Week 1 — Malware",
     summary: "What malware is, how it spreads, and the attacks that ride alongside it.",
-    sections: [{ label: "Lesson", file: "phase-2/week-1/lesson.md" }],
+    sections: [],
   },
   {
     slug: "week-2",

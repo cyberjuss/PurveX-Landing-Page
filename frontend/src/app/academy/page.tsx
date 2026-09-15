@@ -15,8 +15,8 @@ const phases = [
     icon: Radar,
     tag: "Phase 2",
     title: "Threat Detection & Log Analysis",
-    body: "Malware, log analysis, SIEM fundamentals, and detection engineering.",
-    status: "available" as const,
+    body: "SIEM fundamentals, log analysis, and detection engineering.",
+    status: "coming-soon" as const,
   },
   {
     href: "/academy/phase-3",
