@@ -2766,3 +2766,31 @@ body:has(.lp) {
   color: var(--ld-text-muted);
   text-align: center;
 }
+
+/* Academy lesson content -- rendered from marked's HTML output
+   (src/lib/markdown.tsx), scoped so it doesn't leak into the rest of the
+   site. Mirrors the auth pages' palette (--pvrx-border-light, --accent). */
+.academy-prose { color: var(--pvrx-text-primary-light); font-size: 0.975rem; line-height: 1.7; }
+.academy-prose > *:first-child { margin-top: 0; }
+.academy-prose h1 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; margin: 2rem 0 0.75rem; }
+.academy-prose h2 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; margin: 1.75rem 0 0.65rem; }
+.academy-prose h3 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 650; margin: 1.5rem 0 0.5rem; }
+.academy-prose p { margin: 0.85rem 0; }
+.academy-prose strong { font-weight: 650; color: var(--pvrx-text-primary-light); }
+.academy-prose em { font-style: italic; }
+.academy-prose ul, .academy-prose ol { margin: 0.85rem 0; padding-left: 1.35rem; }
+.academy-prose ul { list-style: disc; }
+.academy-prose ol { list-style: decimal; }
+.academy-prose li { margin: 0.35rem 0; }
+.academy-prose li > ul, .academy-prose li > ol { margin: 0.35rem 0; }
+.academy-prose blockquote { margin: 1rem 0; padding: 0.65rem 1rem; border-left: 3px solid #6a5cff; background: var(--pvrx-surface-alt-light); border-radius: 0 12px 12px 0; color: var(--pvrx-text-secondary-light); }
+.academy-prose blockquote p { margin: 0.3rem 0; }
+.academy-prose code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85em; background: var(--pvrx-surface-alt-light); border: 1px solid var(--pvrx-border-light); border-radius: 5px; padding: 0.1em 0.4em; }
+.academy-prose pre { margin: 1rem 0; padding: 0.9rem 1rem; background: #0c1220; border-radius: 12px; overflow-x: auto; }
+.academy-prose pre code { background: none; border: none; color: #e2e8f0; padding: 0; }
+.academy-prose hr { margin: 1.75rem 0; border: none; border-top: 1px solid var(--pvrx-border-light); }
+.academy-prose a { color: #5546e0; font-weight: 600; text-decoration: underline; text-decoration-color: rgba(85,70,224,0.35); text-underline-offset: 2px; }
+.academy-prose a:hover { text-decoration-color: rgba(85,70,224,0.8); }
+.academy-prose table { width: 100%; margin: 1.1rem 0; border-collapse: collapse; font-size: 0.9rem; }
+.academy-prose th, .academy-prose td { border: 1px solid var(--pvrx-border-light); padding: 0.5rem 0.7rem; text-align: left; vertical-align: top; }
+.academy-prose th { background: var(--pvrx-surface-alt-light); font-weight: 650; }
