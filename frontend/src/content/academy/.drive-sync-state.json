@@ -1,0 +1,175 @@
+{
+  "_comment": "Baseline for the weekly Academy Drive sync. Tracks every doc found under the source Drive folder at the time this file was created, so future runs can diff Drive's modifiedTime against what's recorded here and only act on what's actually new or changed. status: 'migrated' = already reflected in site content (mappedFiles lists where); 'template' = doc exists but only has placeholder headings, no real content yet; 'empty' = doc has no body at all.",
+  "driveRootFolderId": "1g06KG8_GY9TjAw4Srobh713yzus0Smua",
+  "driveRootFolderName": "Think like an SOC Analyst 101",
+  "lastScannedAt": "2026-09-15T20:00:00Z",
+  "documents": [
+    {
+      "fileId": "134iWBjjDCL1pge38mzyJtwxNcO7-ydgIvB_zoheUBfA",
+      "title": "CIA Triad: Risk, Threats & Vulnerabilities",
+      "folder": "Phase 1 / Week 1 - CIA",
+      "modifiedTime": "2026-08-12T03:38:44.048Z",
+      "status": "migrated",
+      "mappedFiles": [
+        "phase-1/week-1/lesson-overview.md",
+        "phase-1/week-1/lesson-cia-triad.md",
+        "phase-1/week-1/lesson-risk.md",
+        "phase-1/week-1/lesson-connects.md"
+      ]
+    },
+    {
+      "fileId": "16maOUD4NVG-4JBEFfrb9CCuCnqxnNld6iueO_YzYILw",
+      "title": "Resources",
+      "folder": "Phase 1 / Week 1 - CIA",
+      "modifiedTime": "2026-08-12T03:58:27.387Z",
+      "status": "migrated",
+      "mappedFiles": ["phase-1/week-1/resources.md"]
+    },
+    {
+      "fileId": "1btJxII5hjjl91qNcESY5crfnOWwFgcrN0sC8PU5T0GU",
+      "title": "Lab Excercise",
+      "folder": "Phase 1 / Week 1 - CIA",
+      "modifiedTime": "2026-08-12T04:03:54.808Z",
+      "status": "template",
+      "mappedFiles": []
+    },
+    {
+      "fileId": "1yWH8QzQ43ceyvpjdoczFu7Y2tugxM6NgxbZfRmL7N5k",
+      "title": "Encryption Vs Hashing",
+      "folder": "Phase 1 / Week 2 - Encryption/Hashing",
+      "modifiedTime": "2026-08-12T04:06:31.053Z",
+      "status": "empty",
+      "mappedFiles": []
+    },
+    {
+      "fileId": "1CHnLtt97fZVvov6ODLad7vws8IxnOZQx7Zbwqj-AnWk",
+      "title": "Lab Excersice - Encryption & Hashing",
+      "folder": "Phase 1 / Week 2 - Encryption/Hashing",
+      "modifiedTime": "2026-08-12T04:07:48.839Z",
+      "status": "empty",
+      "mappedFiles": []
+    },
+    {
+      "fileId": "14aGCHwdiAFAqhKPATVNKW81T8nGliu9dOarpuDdEbPc",
+      "title": "Resources",
+      "folder": "Phase 1 / Week 2 - Encryption/Hashing",
+      "modifiedTime": "2026-08-12T03:59:26.889Z",
+      "status": "empty",
+      "mappedFiles": []
+    },
+    {
+      "fileId": "1iN_6__I9pbpjvqMyoBwZULgyx-1U3If8_PBurADg3zI",
+      "title": "Introduction to Basic Networking Concpets",
+      "folder": "Phase 1 / Week 3 - Networking",
+      "modifiedTime": "2026-08-13T20:09:24.252Z",
+      "status": "migrated",
+      "mappedFiles": [
+        "phase-1/week-3/lesson-overview.md",
+        "phase-1/week-3/lesson-tcpip.md",
+        "phase-1/week-3/lesson-handshake.md",
+        "phase-1/week-3/lesson-ports.md",
+        "phase-1/week-3/lesson-protocols.md",
+        "phase-1/week-3/lesson-tls.md"
+      ]
+    },
+    {
+      "fileId": "18mdtTSIOpYbG4cBZ571352U37PcSBgpV3pHehuTO4tA",
+      "title": "Lab Excersie - WireShark",
+      "folder": "Phase 1 / Week 3 - Networking",
+      "modifiedTime": "2026-08-13T19:45:36.856Z",
+      "status": "migrated",
+      "mappedFiles": ["phase-1/week-3/lab-wireshark.md"]
+    },
+    {
+      "fileId": "1PN-XgRAck5SCoTW8JeJGEmxcWZ9DhxpZ7j5vPeK2Li8",
+      "title": "Lab: Network Forensics — Analyzing a Hidden Tear Ransomware Infection",
+      "folder": "Phase 1 / Week 3 - Networking",
+      "modifiedTime": "2026-08-21T01:55:50.762Z",
+      "status": "migrated",
+      "mappedFiles": ["phase-1/week-3/lab-forensics.md"]
+    },
+    {
+      "fileId": "1mYteYKwVgDDLDCDMKmhngLY7uOfBRfcHG7XTnPXkeYs",
+      "title": "Resources",
+      "folder": "Phase 1 / Week 3 - Networking",
+      "modifiedTime": "2026-08-13T19:57:29.401Z",
+      "status": "migrated",
+      "mappedFiles": ["phase-1/week-3/resources.md"]
+    },
+    {
+      "fileId": "14wNaIKBVsCxA1uZg5_J-2xOUwklIGpt2kHFB9gGYhXM",
+      "title": "Authentication, Authorization, Access Control",
+      "folder": "Phase 1 / Week 4 - Authentication, Authorization, Access Control",
+      "modifiedTime": "2026-08-12T04:03:24.861Z",
+      "status": "empty",
+      "mappedFiles": []
+    },
+    {
+      "fileId": "1YtyZmlsN-wf8_qn2mY8IOeFqsiYnA1-uTbfFa2DBdp0",
+      "title": "Lab Excersice - Triple A",
+      "folder": "Phase 1 / Week 4 - Authentication, Authorization, Access Control",
+      "modifiedTime": "2026-08-25T22:59:20.521Z",
+      "status": "migrated",
+      "mappedFiles": ["phase-1/week-4/lab-triple-a.md"]
+    },
+    {
+      "fileId": "16oKwSG6KgEH_mHHejWlNZ2whZ-u0jZBSouxs5DSUxvg",
+      "title": "Infrastructure Overview",
+      "folder": "Phase 1 / Home Lab - Active Directory",
+      "modifiedTime": "2026-08-30T05:44:44.129Z",
+      "status": "migrated",
+      "mappedFiles": ["phase-1/home-lab-ad/infrastructure-overview.md"]
+    },
+    {
+      "fileId": "1j41lpqklyNwm0mNN-VgmguGxbmvjIyaQeNgXJK6AWJI",
+      "title": "Active Directory 101",
+      "folder": "Phase 1 / Home Lab - Active Directory",
+      "modifiedTime": "2026-09-15T17:51:58.913Z",
+      "status": "empty",
+      "mappedFiles": []
+    },
+    {
+      "fileId": "1GWHxC9aLIEIDe3CjiiMo-vW6GnP2lUw4Vz6gVuQOC50",
+      "title": "Lab Scenerio",
+      "folder": "Phase 1 / Home Lab - Active Directory",
+      "modifiedTime": "2026-08-30T04:32:47.603Z",
+      "status": "empty",
+      "mappedFiles": []
+    },
+    {
+      "fileId": "1s5HaLZFU-29Jw_QNM4i4uNQaxfYG22gCELna1_ad7ds",
+      "title": "Lab Investigation Using Wirehsark",
+      "folder": "Phase 1 / Home Lab - Active Directory",
+      "modifiedTime": "2026-09-01T23:01:23.959Z",
+      "status": "empty",
+      "mappedFiles": []
+    },
+    {
+      "fileId": "1e6Ul7BqOBLTQPye8BhINydIXcWThpYEfCAdibaEBZXQ",
+      "title": "Portfolio HomeLab Project",
+      "folder": "Phase 2 - Threat Detection and Log Analysis",
+      "modifiedTime": "2026-08-12T04:08:25.277Z",
+      "status": "unchecked",
+      "mappedFiles": []
+    },
+    {
+      "fileId": "1SICKkyKXBGH5QPWAMlVxnSWZKsZM35Ts7nknvETziJc",
+      "title": "Portfolio HomeLab Project",
+      "folder": "Phase 3 - Incident Response",
+      "modifiedTime": "2026-08-12T04:09:23.787Z",
+      "status": "unchecked",
+      "mappedFiles": []
+    }
+  ],
+  "emptyFolders": [
+    "Phase 2 - Threat Detection and Log Analysis / Week 1",
+    "Phase 2 - Threat Detection and Log Analysis / Week 2",
+    "Phase 2 - Threat Detection and Log Analysis / Week 3",
+    "Phase 2 - Threat Detection and Log Analysis / Week 4",
+    "Phase 3 - Incident Response / Week 1",
+    "Phase 3 - Incident Response / Week 2",
+    "Phase 3 - Incident Response / Week 3",
+    "Phase 3 - Incident Response / Week 4",
+    "Program Overview"
+  ]
+}
