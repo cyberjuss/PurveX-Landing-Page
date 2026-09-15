@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { phase1Weeks, phase1HomeLab, loadLesson, type ContentSection } from "@/lib/academy-content";
 import { Markdown } from "@/lib/markdown";
+import { findQuiz } from "@/content/academy/quizzes";
+import { QuizBlock } from "@/components/academy/quiz";
 
 export function generateStaticParams() {
   return [...phase1Weeks.map((w) => ({ slug: w.slug })), { slug: phase1HomeLab.slug }];
@@ -21,6 +23,7 @@ export default async function Phase1EntryPage({ params }: { params: Promise<{ sl
   const sections = entry.sections
     .map((section: ContentSection) => ({ ...section, markdown: loadLesson(section.file) }))
     .filter((s) => s.markdown && s.markdown.trim().length > 0);
+  const quiz = findQuiz(slug);
 
   return (
     <div>
@@ -45,6 +48,7 @@ export default async function Phase1EntryPage({ params }: { params: Promise<{ sl
               <Markdown content={section.markdown!} className="mt-3" />
             </section>
           ))}
+          {quiz && <QuizBlock quiz={quiz} />}
         </div>
       )}
     </div>

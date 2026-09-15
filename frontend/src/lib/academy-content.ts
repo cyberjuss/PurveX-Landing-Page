@@ -67,6 +67,7 @@ export const phase1Weeks: WeekDef[] = [
     summary: "Broken access control, walked through end to end on a live target.",
     sections: [
       { label: "Lab: Broken Access Control (PortSwigger)", file: "phase-1/week-4/lab-triple-a.md" },
+      { label: "Resources", file: "phase-1/week-4/resources.md" },
     ],
   },
 ];
