@@ -24,17 +24,21 @@ export interface WeekDef {
   sections: ContentSection[];
 }
 
-export interface HomeLabDef {
+export type HomeLabDef = WeekDef;
+
+export interface PhaseDef {
   slug: string;
+  label: string;
   title: string;
-  summary: string;
-  sections: ContentSection[];
+  weeks: WeekDef[];
+  homeLab?: HomeLabDef;
 }
 
-// Only Phase 1 has real lesson content right now -- Phase 2 and 3's week
-// folders in the source Drive are empty placeholders, same as this site
-// reflects them (see their own page.tsx, not this manifest).
-export const phase1Weeks: WeekDef[] = [
+// Phase 1 -- Fundamentals. Weeks 1, 3, 4 have real lesson content migrated
+// from the instructor's Google Docs; Week 2's folder in the source Drive is
+// still an empty placeholder, so it stays "coming soon" here too rather
+// than getting invented content.
+const phase1Weeks: WeekDef[] = [
   {
     slug: "week-1",
     title: "Week 1 — CIA Triad",
@@ -72,7 +76,7 @@ export const phase1Weeks: WeekDef[] = [
   },
 ];
 
-export const phase1HomeLab: HomeLabDef = {
+const phase1HomeLab: HomeLabDef = {
   slug: "home-lab-active-directory",
   title: "Home Lab — Active Directory",
   summary: "GovTech Financial: a fictional enterprise environment used for investigation and detection labs.",
@@ -81,6 +85,47 @@ export const phase1HomeLab: HomeLabDef = {
   ],
 };
 
-export function findWeek(slug: string): WeekDef | undefined {
-  return phase1Weeks.find((w) => w.slug === slug);
+// Phase 2 -- Threat Detection & Log Analysis. Only Week 1 has real content
+// so far; Weeks 2-4's folders in the source Drive are still empty.
+const phase2Weeks: WeekDef[] = [
+  {
+    slug: "week-1",
+    title: "Week 1 — Malware",
+    summary: "What malware is, how it spreads, and the attacks that ride alongside it.",
+    sections: [{ label: "Lesson", file: "phase-2/week-1/lesson.md" }],
+  },
+  {
+    slug: "week-2",
+    title: "Week 2 — Log Analysis Fundamentals",
+    summary: "Reading raw logs and telling signal from noise.",
+    sections: [],
+  },
+  {
+    slug: "week-3",
+    title: "Week 3 — SIEM Basics",
+    summary: "Centralized logging and building your first detections.",
+    sections: [],
+  },
+  {
+    slug: "week-4",
+    title: "Week 4 — Detection Engineering",
+    summary: "MITRE ATT&CK and mapping detections to real techniques.",
+    sections: [],
+  },
+];
+
+export const phases: PhaseDef[] = [
+  { slug: "phase-1", label: "Phase 1", title: "Fundamentals", weeks: phase1Weeks, homeLab: phase1HomeLab },
+  { slug: "phase-2", label: "Phase 2", title: "Threat Detection & Log Analysis", weeks: phase2Weeks },
+];
+
+export function findPhase(phaseSlug: string): PhaseDef | undefined {
+  return phases.find((p) => p.slug === phaseSlug);
+}
+
+export function findEntry(phaseSlug: string, entrySlug: string): WeekDef | undefined {
+  const phase = findPhase(phaseSlug);
+  if (!phase) return undefined;
+  if (phase.homeLab?.slug === entrySlug) return phase.homeLab;
+  return phase.weeks.find((w) => w.slug === entrySlug);
 }
