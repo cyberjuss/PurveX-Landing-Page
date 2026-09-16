@@ -45,10 +45,13 @@ const WIDTH_PX: Record<"sm" | "md" | "lg", number | undefined> = {
 // string. Two variants, matching AuthShell's own "theme" prop: LIGHT for
 // login/signup (theme="light"), DARK for forgot/reset-password
 // (theme="dark", the original account-flow treatment).
+// text-base (16px) on mobile, dropping to text-sm (14px) from md up --
+// anything smaller than 16px makes iOS Safari zoom the page in on focus,
+// which is what breaks typing on a phone.
 export const AUTH_INPUT_CLASSNAME_LIGHT =
-  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-4 text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] disabled:opacity-60";
+  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-4 text-base md:text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] disabled:opacity-60";
 export const AUTH_INPUT_CLASSNAME_DARK =
-  "w-full rounded-2xl border border-white/10 bg-[#0c1220] px-10 py-4 text-sm text-white shadow-none transition placeholder:text-slate-500 focus:border-[rgba(72,99,255,0.75)] focus:outline-none focus:ring-4 focus:ring-[rgba(72,99,255,0.12)] disabled:opacity-100";
+  "w-full rounded-2xl border border-white/10 bg-[#0c1220] px-10 py-4 text-base md:text-sm text-white shadow-none transition placeholder:text-slate-500 focus:border-[rgba(72,99,255,0.75)] focus:outline-none focus:ring-4 focus:ring-[rgba(72,99,255,0.12)] disabled:opacity-100";
 
 export function AuthShell({ title, subtitle, children, className, hideHeader = false, theme = "dark", width = "lg", bare = false }: AuthShellProps) {
   const isLight = theme === "light";
