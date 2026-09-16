@@ -128,16 +128,6 @@ const withItems = [
   "Curriculum shaped around your program, your tools, your students",
 ];
 
-const roadmap = [
-  { skill: "Linux & security fundamentals", tool: "LabEx" },
-  { skill: "Detection validation", tool: "Atomic Red Team" },
-  { skill: "Threat mapping", tool: "MITRE ATT&CK" },
-  { skill: "SIEM investigations", tool: "Splunk & Microsoft Sentinel" },
-  { skill: "Threat hunting", tool: "KC7 Cyber" },
-  { skill: "Enterprise Windows lab", tool: "DetectionLab" },
-  { skill: "DFIR fundamentals", tool: "Velociraptor" },
-];
-
 const formats = [
   { icon: Users, title: "1:1 & small-group instruction", body: "Live sessions, paced to the learner or cohort." },
   { icon: FlaskConical, title: "Hands-on lab projects", body: "Real scenarios, worked at your own pace." },
@@ -360,30 +350,8 @@ export default function TrainingPage() {
         </div>
       </section>
 
-      {/* ═══════════ LEARNING ROADMAP ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-roadmap-split" data-r>
-          <div className="sp-head sp-head--left sp-roadmap-split__text">
-            <span className="sp-tag">The learning roadmap</span>
-            <h2>Every skill area, practiced on real tools</h2>
-            <p>
-              Built around real-world platforms, many free, so learners use the same tools
-              working analysts do.
-            </p>
-          </div>
-          <div className="sp-roadmap">
-            {roadmap.map((r) => (
-              <div key={r.skill} className="sp-roadmap__item">
-                <span className="sp-roadmap__skill">{r.skill}</span>
-                <span className="sp-roadmap__tool">{r.tool}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ═══════════ DELIVERY FORMATS ═══════════ */}
-      <section className="sp-section sp-section--tight">
+      <section className="sp-section">
         <div className="sp-head" data-r>
           <span className="sp-tag">Delivery formats</span>
           <h2>Fits the way your program already runs</h2>
@@ -578,30 +546,6 @@ export default function TrainingPage() {
      growing for whichever module's text needs the most room. */
   .sp-roadmap-zigzag__card { max-width: 240px; min-height: 190px; padding: 16px 16px 18px }
   .sp-roadmap-zigzag__row--bottom { min-height: 230px }
-}
-
-/* ── Learning roadmap: split layout, text left / divided skill-tool list right ── */
-.sp-roadmap-split { display: grid; grid-template-columns: .85fr 1.15fr; gap: 56px; align-items: start }
-.sp-roadmap-split__text { margin: 0 }
-.sp-roadmap { display: flex; flex-direction: column }
-.sp-roadmap__item {
-  display: flex; align-items: center; justify-content: space-between; gap: 20px;
-  padding: 18px 0; border-bottom: 1px solid var(--border);
-}
-.sp-roadmap__item:first-child { padding-top: 0 }
-.sp-roadmap__item:last-child { border-bottom: none }
-.sp-roadmap__skill { font-family: var(--font-display); font-size: .98rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
-.sp-roadmap__tool {
-  flex-shrink: 0; white-space: nowrap;
-  font-size: .78rem; font-weight: 600; color: var(--accent-deep);
-  background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); border-radius: 999px;
-  padding: 6px 14px;
-}
-@media (max-width: 860px) {
-  .sp-roadmap-split { grid-template-columns: 1fr; gap: 28px }
-}
-@media (max-width: 560px) {
-  .sp-roadmap__item { flex-direction: column; align-items: flex-start; gap: 8px }
 }
 
 /* ── Corkboard: the detective/analyst analogy, pinned index cards ── */
