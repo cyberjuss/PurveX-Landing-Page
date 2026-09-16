@@ -68,7 +68,7 @@ export default function ForgotPasswordPage() {
                         Email address
                       </label>
                       <div className="relative">
-                        <Mail className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
+                        <Mail className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400 dark:text-zinc-500 pointer-events-none" />
                         <input
                           id="email"
                           type="email"

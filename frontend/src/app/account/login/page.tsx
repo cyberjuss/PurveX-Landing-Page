@@ -118,7 +118,7 @@ function PortalLoginContent() {
         <div className="space-y-3">
           <label htmlFor="email" className="block text-sm font-semibold text-slate-700">Email</label>
           <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
+            <Mail className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
               id="email"
               type="email"
@@ -139,7 +139,7 @@ function PortalLoginContent() {
             <Link href="/forgot-password" className="text-xs font-medium text-slate-500 hover:text-[#6a5cff]">Forgot password?</Link>
           </div>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
+            <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
               id="password"
               type={showPassword ? "text" : "password"}

@@ -147,7 +147,7 @@ function ResetPasswordContent() {
               New password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
+              <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400 dark:text-zinc-500 pointer-events-none" />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
@@ -189,7 +189,7 @@ function ResetPasswordContent() {
               Confirm password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
+              <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400 dark:text-zinc-500 pointer-events-none" />
               <input
                 id="confirm-password"
                 type={showPassword ? "text" : "password"}

@@ -408,7 +408,7 @@ export default function ReferencePage() {
 
       <div className="sticky top-[65px] z-10 -mx-4 border-b border-[var(--pvrx-border-light)] bg-white/95 px-4 pb-5 pt-6 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400 pointer-events-none" />
           <input
             type="text"
             value={query}
