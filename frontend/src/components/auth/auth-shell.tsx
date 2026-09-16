@@ -72,14 +72,24 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
         isLight ? "bg-white text-slate-900" : "bg-[#060810] text-slate-100"
       )}
     >
-      {/* Orbs - same as landing */}
+      {/* Orbs - same as landing. Sized down and dimmed below sm: at 600px/500px
+          wide with a 100px blur, these are bigger than most phone viewports
+          are tall -- on a short page like a bare passcode form, the "ambient
+          glow" ends up sitting directly behind the input instead of softly
+          in the background. */}
       <div className="pointer-events-none fixed inset-0">
         <div
-          className={cn("absolute -left-24 top-0 h-[600px] w-[600px] rounded-full blur-[100px]", isLight ? "bg-[rgba(106,92,255,0.08)]" : "bg-[rgba(72,99,255,0.13)]")}
+          className={cn(
+            "absolute -left-24 top-0 h-[260px] w-[260px] rounded-full blur-[50px] sm:h-[600px] sm:w-[600px] sm:blur-[100px]",
+            isLight ? "bg-[rgba(106,92,255,0.05)] sm:bg-[rgba(106,92,255,0.08)]" : "bg-[rgba(72,99,255,0.08)] sm:bg-[rgba(72,99,255,0.13)]"
+          )}
           style={{ animation: "ct-orbit 22s ease-in-out infinite" }}
         />
         <div
-          className={cn("absolute right-[-5rem] bottom-[5%] h-[500px] w-[500px] rounded-full blur-[100px]", isLight ? "bg-[rgba(106,92,255,0.06)]" : "bg-[rgba(72,99,255,0.10)]")}
+          className={cn(
+            "absolute right-[-5rem] bottom-[5%] h-[220px] w-[220px] rounded-full blur-[50px] sm:h-[500px] sm:w-[500px] sm:blur-[100px]",
+            isLight ? "bg-[rgba(106,92,255,0.04)] sm:bg-[rgba(106,92,255,0.06)]" : "bg-[rgba(72,99,255,0.06)] sm:bg-[rgba(72,99,255,0.10)]"
+          )}
           style={{ animation: "ct-orbit 28s ease-in-out infinite reverse" }}
         />
       </div>
