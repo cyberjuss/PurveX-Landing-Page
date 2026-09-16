@@ -1,4 +1,4 @@
-**File:** `hidden_tear_final_snipped_pcap.pcapng` **Tool:** Wireshark (or tshark) **Level:** Threat Detection / Incident Response phase — CySA+ aligned
+**File:** `hidden_tear_final_snipped_pcap.pcapng` **Tool:** Wireshark (or tshark) **Level:** Threat Detection / Incident Response phase, CySA+ aligned
 
 ---
 
@@ -20,7 +20,7 @@ By the end of this lab, students should be able to:
 
 ---
 
-## **Part 1 — Student Handout (no answers below this line)**
+## **Part 1: Student Handout (no answers below this line)**
 
 ### **Step 1: Orient yourself**
 
@@ -28,16 +28,16 @@ By the end of this lab, students should be able to:
 2. Open **Statistics → Protocol Hierarchy**. What's present?  
 3. Open **Statistics → Conversations** (IPv4 tab). How many distinct external hosts does the internal machine talk to? List them.
 
-> **Guiding question:** This capture has noticeably *more* distinct external hosts than the other labs we've done. Before assuming they're all suspicious — what's the first thing you should check about each one?
+> **Guiding question:** This capture has noticeably *more* distinct external hosts than the other labs we've done. Before assuming they're all suspicious, what's the first thing you should check about each one?
 
-### **Step 2: Triage the conversations — separate signal from noise**
+### **Step 2: Triage the conversations, separate signal from noise**
 
 For **each** external IP/hostname in your list from Step 1:
 
 4. Apply `http.request` filtered to that host and look at the URI and User-Agent. Is this traffic suspicious? Why or why not?  
 5. How many hosts are you left with that still look worth investigating?
 
-> **Note:** Don't rule a host in or out based on a single glance. If something looks unfamiliar, spend the time to actually look it up (search the hostname, the User-Agent string, the URI pattern) before deciding it's safe to set aside — or before deciding it's worth chasing further.
+> **Note:** Don't rule a host in or out based on a single glance. If something looks unfamiliar, spend the time to actually look it up (search the hostname, the User-Agent string, the URI pattern) before deciding it's safe to set aside, or that it's worth chasing further.
 
 > **Guiding question:** Real investigations are mostly noise. What's the risk of NOT doing this triage step before diving into "interesting-looking" packets?
 
@@ -47,7 +47,7 @@ For the host(s) you couldn't rule out as ordinary Windows traffic:
 
 6. What is the full URI being requested? Break down any parameters you see in the query string.  
 7. Does the request method matter here (GET vs POST)? Why might a GET request still be dangerous even without a POST body?  
-8. Look closely at any parameter named something like `info=`. Try to read it — is it URL-encoded? What does it look like it contains?
+8. Look closely at any parameter named something like `info=`. Try to read it. Is it URL-encoded? What does it look like it contains?
 
 ### **Step 4: Decode the exfil parameter**
 

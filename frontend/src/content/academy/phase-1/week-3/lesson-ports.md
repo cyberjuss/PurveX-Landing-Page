@@ -1,6 +1,6 @@
 ### **Common Ports**
 
-A port is like an apartment number — the IP address gets you to the building, the port gets you to the right door.
+A port is like an apartment number. The IP address gets you to the building. The port gets you to the right door.
 
 | Port | Protocol | Use |
 | :---- | :---- | :---- |
@@ -13,4 +13,4 @@ A port is like an apartment number — the IP address gets you to the building, 
 | 443 | HTTPS | Web traffic (encrypted) |
 | 3389 | RDP | Remote desktop |
 
-* **Fundamental:** If you see traffic on port 22 or 3389 from somewhere it shouldn't be, that's worth a second look — those ports mean someone's trying to *control* a machine, not just browse it.
+* **Fundamental:** If you see traffic on port 22 or 3389 from somewhere it shouldn't be, that's worth a second look. Those ports mean someone's trying to *control* a machine, not just browse it.
