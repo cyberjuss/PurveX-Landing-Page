@@ -1,6 +1,6 @@
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
-<p>What are we actually protecting when we call something "secure," and how do defenders decide which risks are worth acting on?</p>
+<p>What are we actually protecting when we call something "secure"?</p>
 </div>
 
 ### Overview

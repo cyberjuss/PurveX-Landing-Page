@@ -1,6 +1,6 @@
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
-<p>Before you can recognize what is abnormal in an investigation, what does "normal" actually look like in this environment, and who is responsible for what?</p>
+<p>Before you can recognize what is abnormal in an investigation, what does "normal" actually look like in this environment?</p>
 </div>
 
 ### Overview

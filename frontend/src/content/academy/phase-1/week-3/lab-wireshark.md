@@ -1,6 +1,6 @@
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
-<p>What does normal network traffic look like, and how do you use Wireshark to find the traffic that is not?</p>
+<p>How do you tell ordinary network traffic from the traffic that does not belong?</p>
 </div>
 
 ### Overview

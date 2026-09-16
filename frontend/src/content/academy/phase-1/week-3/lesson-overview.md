@@ -1,6 +1,6 @@
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
-<p>How does data actually move between two computers, and how do analysts tell ordinary traffic from something worth a second look?</p>
+<p>How do analysts tell ordinary network traffic from something worth a second look?</p>
 </div>
 
 ### Overview
