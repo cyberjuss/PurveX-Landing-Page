@@ -23,14 +23,14 @@ export function UnlockForm() {
             Passcode
           </label>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
+            <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
             <input
               id="passcode"
               name="passcode"
               type="password"
               autoComplete="off"
               placeholder="Enter passcode"
-              className={AUTH_INPUT_CLASSNAME_LIGHT}
+              className={`${AUTH_INPUT_CLASSNAME_LIGHT} h-16 pl-12 text-lg md:text-lg`}
               disabled={isPending}
               required
             />
