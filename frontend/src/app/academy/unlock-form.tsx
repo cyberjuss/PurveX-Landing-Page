@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Loader2, Lock, ShieldCheck } from "lucide-react";
+import { Loader2, Lock } from "lucide-react";
 import { unlockAcademy } from "./actions";
 import { Button } from "@/components/ui/button";
 import { AuthShell, AUTH_INPUT_CLASSNAME_LIGHT } from "@/components/auth/auth-shell";
@@ -17,12 +17,6 @@ export function UnlockForm() {
       title="Think Like a SOC Analyst"
       subtitle="Enter the class passcode your instructor gave you to reach the course material."
     >
-      <div className="mb-2 flex justify-center">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(106,92,255,0.25)] bg-[rgba(106,92,255,0.07)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-[#5546e0]">
-          <ShieldCheck className="h-3.5 w-3.5" /> Instructor-issued access
-        </span>
-      </div>
-
       <form action={formAction} className="mt-6 flex flex-col gap-5">
         <div className="space-y-2">
           <label htmlFor="passcode" className="block text-sm font-semibold text-slate-700">
