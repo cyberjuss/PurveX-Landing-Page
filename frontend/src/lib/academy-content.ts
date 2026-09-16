@@ -129,9 +129,14 @@ const phase2Weeks: WeekDef[] = [
   },
 ];
 
+// Phase 3 -- Incident Response. No weeks defined yet (unlike Phase 1/2,
+// there's no source-Drive week breakdown to placeholder against), so it
+// shows in the sidebar as a phase group with no entries underneath, linking
+// straight to the phase-3 page's "still being written" placeholder.
 export const phases: PhaseDef[] = [
   { slug: "phase-1", label: "Phase 1", title: "Fundamentals", weeks: phase1Weeks, homeLab: phase1HomeLab },
   { slug: "phase-2", label: "Phase 2", title: "Threat Detection & Log Analysis", weeks: phase2Weeks },
+  { slug: "phase-3", label: "Phase 3", title: "Incident Response", weeks: [] },
 ];
 
 export function findPhase(phaseSlug: string): PhaseDef | undefined {
