@@ -56,17 +56,17 @@ function AlertQueueCard() {
 const problems = [
   {
     icon: ShieldCheck,
-    title: "Alerts without answers",
+    title: "Alerts Without Answers",
     body: "Your tools are running, but nobody can say with confidence they would catch a real attack.",
   },
   {
     icon: Users,
-    title: "Training that stops at theory",
+    title: "Training That Stops at Theory",
     body: "Most programs teach the concepts well. What they can't teach is the instinct you only get from working a real queue.",
   },
   {
     icon: Radar,
-    title: "Coverage nobody has tested",
+    title: "Coverage Nobody Has Tested",
     body: "A detection that's never fired is a guess wearing a checkbox.",
   },
 ];
@@ -154,7 +154,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <h1 className="sp-hero__h1">Most detections have never faced a real attack</h1>
+        <h1 className="sp-hero__h1">Most Detections Have Never Faced a Real Attack</h1>
         <p className="sp-hero__sub">
           PurveX tunes your detections, trains your analysts, and proves both hold up
           against real attacker behavior.
@@ -170,7 +170,7 @@ export default function HomePage() {
       <section className="sp-section">
         <div className="sp-head" data-r>
           <span className="sp-tag">Sound familiar?</span>
-          <h2>The problems we solve</h2>
+          <h2>The Problems We Solve</h2>
         </div>
         <div className="sp-problems" data-r>
           {problems.map((p) => (
@@ -189,7 +189,7 @@ export default function HomePage() {
       <section className="sp-section" id="how-we-help">
         <div className="sp-head" data-r>
           <span className="sp-tag">How PurveX helps</span>
-          <h2>Three ways we fit into your team</h2>
+          <h2>Three Ways We Fit Into Your Team</h2>
         </div>
 
         <div className="sp-offers" data-r>
@@ -228,7 +228,7 @@ export default function HomePage() {
       <section className="sp-section sp-section--tight">
         <div className="sp-statement" data-r>
           <span className="sp-tag">Why PurveX</span>
-          <h2>No layer between the work and the person doing it</h2>
+          <h2>No Layer Between the Work and the Person Doing It</h2>
           <p>
             The person running your security operations is the same one teaching in the field —
             there's no account manager relaying between you and the work. That's simply how we
@@ -244,7 +244,7 @@ export default function HomePage() {
       <section className="sp-section">
         <div className="sp-head" data-r>
           <span className="sp-tag">What people say</span>
-          <h2>Feedback from the field</h2>
+          <h2>Feedback From the Field</h2>
         </div>
         <div className="sp-feature-quotes">
           {testimonials.map((t) => (
@@ -294,7 +294,7 @@ export default function HomePage() {
           <div className="sp-cta__icon">
             <MessageCircle size={22} />
           </div>
-          <h2>Tell us what&apos;s not working</h2>
+          <h2>Tell Us What&apos;s Not Working</h2>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Schedule a Conversation <ArrowRight size={16} />
           </a>
