@@ -610,8 +610,8 @@ export default function TrainingPage() {
 .sp-cork[data-r] > * { opacity: 0; transform: translateY(20px); filter: blur(4px); transition: opacity .6s var(--ease), transform .6s var(--ease), filter .6s var(--ease) }
 .sp-cork[data-r].in > * { opacity: 1; filter: blur(0) }
 .sp-cork[data-r].in > *:nth-child(3n+1) { transform: rotate(-1.4deg) }
-.sp-cork[data-r].in > *:nth-child(3n+2) { transform: rotate(1deg) translateY(6px) }
-.sp-cork[data-r].in > *:nth-child(3n) { transform: rotate(-0.6deg) translateY(-4px) }
+.sp-cork[data-r].in > *:nth-child(3n+2) { transform: rotate(1deg) }
+.sp-cork[data-r].in > *:nth-child(3n) { transform: rotate(-0.6deg) }
 .sp-cork__card {
   position: relative;
   padding: 26px 20px 22px;
