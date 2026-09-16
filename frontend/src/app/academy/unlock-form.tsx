@@ -27,8 +27,12 @@ export function UnlockForm() {
             <input
               id="passcode"
               name="passcode"
-              type="password"
+              type="text"
+              inputMode="text"
               autoComplete="off"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck={false}
               placeholder="Enter passcode"
               className={`${AUTH_INPUT_CLASSNAME_LIGHT} h-16 pl-12 text-lg md:text-lg`}
               disabled={isPending}
