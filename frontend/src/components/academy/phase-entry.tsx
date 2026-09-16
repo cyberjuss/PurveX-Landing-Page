@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, FlaskConical } from "lucide-react";
 import { loadLesson, type ContentSection, type WeekDef, type PhaseDef } from "@/lib/academy-content";
 import { findQuiz } from "@/content/academy/quizzes";
+import { Markdown } from "@/lib/markdown";
 import { SectionTabs } from "./section-tabs";
 import { MarkCompleteButton } from "./mark-complete-button";
 
@@ -10,6 +11,14 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
     .map((section: ContentSection) => ({ ...section, markdown: loadLesson(section.file) }))
     .filter((s) => s.markdown && s.markdown.trim().length > 0);
   const quiz = findQuiz(phase.slug, entry.slug);
+
+  // A lab is something you do, not something you read alongside a lesson
+  // topic -- leaving it as just another tab next to "Resources" buried it
+  // at the same visual weight as reference material. Every lab section is
+  // named "Lab: ..." by convention, so that's enough to split it out
+  // without needing a new field on the content model.
+  const labSections = sections.filter((s) => s.label.startsWith("Lab:"));
+  const otherSections = sections.filter((s) => !s.label.startsWith("Lab:"));
 
   return (
     <div>
@@ -32,12 +41,39 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
           Content for this week is still being written — check back soon.
         </p>
       ) : (
-        <div className="mt-8">
-          <SectionTabs
-            sections={sections.map((s) => ({ label: s.label, markdown: s.markdown! }))}
-            quiz={quiz}
-          />
-        </div>
+        <>
+          {otherSections.length > 0 && (
+            <div className="mt-8">
+              <SectionTabs
+                sections={otherSections.map((s) => ({ label: s.label, markdown: s.markdown! }))}
+                quiz={quiz}
+              />
+            </div>
+          )}
+
+          {labSections.length > 0 && (
+            <div className={otherSections.length > 0 ? "mt-10 flex flex-col gap-6" : "mt-8 flex flex-col gap-6"}>
+              {labSections.map((lab) => (
+                <div key={lab.file} className="overflow-hidden rounded-2xl border border-[var(--pvrx-border-light)] bg-white">
+                  <div className="flex items-center gap-3 border-b border-[var(--pvrx-border-light)] bg-[rgba(106,92,255,0.04)] px-6 py-4 sm:px-8">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[rgba(106,92,255,0.1)] text-[#5546e0]">
+                      <FlaskConical className="h-[18px] w-[18px]" />
+                    </span>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#5546e0]">Hands-on lab</p>
+                      <h2 className="font-display text-base font-semibold text-slate-900">
+                        {lab.label.replace(/^Lab:\s*/, "")}
+                      </h2>
+                    </div>
+                  </div>
+                  <div className="p-6 sm:p-8">
+                    <Markdown content={lab.markdown!} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
