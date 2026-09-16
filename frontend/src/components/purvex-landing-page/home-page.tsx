@@ -229,6 +229,11 @@ export default function HomePage() {
         <div className="sp-statement" data-r>
           <span className="sp-tag">Why PurveX</span>
           <h2>No Layer Between the Work and the Person Doing It</h2>
+          <p>
+            Every question about your environment goes straight to the person who did the work.
+            No ticket queue, no account manager paraphrasing someone else's answer. Just the
+            person who built it, explaining it directly.
+          </p>
           <Link href="/about" className="sp-statement__link">
             Read how we think <ArrowRight size={14} />
           </Link>
