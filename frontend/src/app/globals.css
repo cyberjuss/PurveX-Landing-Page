@@ -2822,3 +2822,19 @@ body:has(.lp) {
 .academy-prose .academy-analogy ul { margin: 0.4rem 0 0; padding-left: 1.15rem; }
 .academy-prose .academy-analogy li { margin: 0.35rem 0; }
 .academy-prose .academy-analogy li:last-child { margin-bottom: 0; }
+
+/* Cheat sheet: briefly highlight whichever section a jump-to-section pill
+   or in-page link lands on, so it's obvious you arrived in the right
+   place on a page of otherwise identical-looking cards. Native :target
+   needs no JS -- it just tracks the URL fragment. */
+.academy-ref-section:target {
+  border-color: rgba(106,92,255,0.55);
+  animation: academy-ref-target-flash 1.8s ease-out;
+}
+@keyframes academy-ref-target-flash {
+  0% { box-shadow: 0 0 0 6px rgba(106,92,255,0.16); }
+  100% { box-shadow: 0 0 0 6px rgba(106,92,255,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .academy-ref-section:target { animation: none; box-shadow: 0 0 0 4px rgba(106,92,255,0.16); }
+}

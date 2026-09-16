@@ -6,7 +6,9 @@ import {
   ArrowLeft,
   AlertTriangle,
   Building2,
+  Check,
   ClipboardList,
+  Copy,
   Handshake,
   KeyRound,
   Lock,
@@ -251,7 +253,15 @@ const categories: RefCategory[] = [
               <thead><tr><th>Filter</th><th>Shows</th></tr></thead>
               <tbody>
                 {filters.map((row) => (
-                  <tr key={row[0]}><td><code>{row[0]}</code></td><td>{row[1]}</td></tr>
+                  <tr key={row[0]}>
+                    <td>
+                      <span className="inline-flex flex-wrap items-center gap-1">
+                        <code>{row[0]}</code>
+                        <CopyButton text={row[0]} />
+                      </span>
+                    </td>
+                    <td>{row[1]}</td>
+                  </tr>
                 ))}
               </tbody>
             </table>
@@ -327,9 +337,38 @@ const categories: RefCategory[] = [
 
 const allItems = categories.flatMap((c) => c.items);
 
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Clipboard permission denied or unavailable -- nothing to fall back to.
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className={`ml-2 inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-semibold transition ${
+        copied
+          ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+          : "border-[var(--pvrx-border-light)] text-slate-500 hover:border-slate-300 hover:text-slate-900"
+      }`}
+    >
+      {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+      {copied ? "Copied" : "Copy"}
+    </button>
+  );
+}
+
 function Section({ id, title, icon: Icon, children }: { id: string; title: string; icon: LucideIcon; children: React.ReactNode }) {
   return (
-    <section id={id} className="scroll-mt-24 rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 sm:p-8">
+    <section id={id} className="academy-ref-section scroll-mt-24 rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 sm:p-8">
       <div className="flex items-center gap-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[rgba(106,92,255,0.1)] text-[#5546e0]">
           <Icon className="h-[18px] w-[18px]" />
@@ -367,40 +406,42 @@ export default function ReferencePage() {
         scrolling back through a week you already finished.
       </p>
 
-      <div className="relative mt-6">
-        <Search className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search the cheat sheet…"
-          className="w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white py-3.5 pl-10 pr-10 text-base text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] md:text-sm"
-        />
-        {query && (
-          <button
-            type="button"
-            onClick={() => setQuery("")}
-            aria-label="Clear search"
-            className="absolute right-3.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-slate-400 hover:text-slate-700"
-          >
-            <X className="h-4 w-4" />
-          </button>
+      <div className="sticky top-[65px] z-10 -mx-4 border-b border-[var(--pvrx-border-light)] bg-white/95 px-4 pb-5 pt-6 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
+        <div className="relative">
+          <Search className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search the cheat sheet…"
+            className="w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white py-3.5 pl-10 pr-10 text-base text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] md:text-sm"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              aria-label="Clear search"
+              className="absolute right-3.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-slate-400 hover:text-slate-700"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        {!q && (
+          <nav className="mt-4 flex flex-wrap gap-2">
+            {allItems.map((item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                className="inline-flex items-center gap-1.5 rounded-full border border-[var(--pvrx-border-light)] bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
+              >
+                <item.icon className="h-3.5 w-3.5 text-[#5546e0]" /> {item.title}
+              </a>
+            ))}
+          </nav>
         )}
       </div>
-
-      {!q && (
-        <nav className="mt-5 flex flex-wrap gap-2">
-          {allItems.map((item) => (
-            <a
-              key={item.id}
-              href={`#${item.id}`}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--pvrx-border-light)] bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
-            >
-              <item.icon className="h-3.5 w-3.5 text-[#5546e0]" /> {item.title}
-            </a>
-          ))}
-        </nav>
-      )}
 
       <div className="mt-8 flex flex-col gap-10">
         {filteredCategories.length === 0 ? (
