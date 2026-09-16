@@ -62,12 +62,12 @@ const problems = [
   {
     icon: Users,
     title: "Training That Stops at Theory",
-    body: "Most programs teach the concepts well. What they can't teach is the instinct you only get from working a real queue.",
+    body: "Most programs teach the concepts well. What they cannot teach is the instinct you only get from working a real queue.",
   },
   {
     icon: Radar,
     title: "Coverage Nobody Has Tested",
-    body: "A detection that's never fired is a guess wearing a checkbox.",
+    body: "A detection that is never fired is a guess wearing a checkbox.",
   },
 ];
 
@@ -88,7 +88,7 @@ const offers = [
     icon: Users,
     tag: "For academies & programs",
     title: "Cybersecurity Training",
-    body: "Most programs teach security concepts a classroom can grade. Employers need people who've already worked a queue — we teach that, taught by someone who still works in one.",
+    body: "Most programs teach security concepts a classroom can grade. Employers need people who have already worked a queue — we teach that, taught by someone who still works in one.",
     bullets: ["Cybersecurity instruction", "Hands-on security labs", "Curriculum support", "Instructor partnerships"],
     cta: "See the Curriculum",
     href: "/cybersecurity-training",
@@ -99,7 +99,7 @@ const offers = [
     icon: Radar,
     tag: "In development",
     title: "PurveX Labs",
-    body: "You can tell leadership a detection exists. You can't yet tell them it works — Labs closes that gap with continuous, measurable proof instead of a one-time report.",
+    body: "You can tell leadership a detection exists. You cannot yet tell them it works — Labs closes that gap with continuous, measurable proof instead of a one-time report.",
     bullets: ["Continuous detection validation", "Measurable coverage over time", "Private beta, in development"],
     cta: "Get Early Access",
     href: "/platform",
@@ -231,7 +231,7 @@ export default function HomePage() {
           <h2>No Layer Between the Work and the Person Doing It</h2>
           <p>
             The person running your security operations is the same one teaching in the field —
-            there's no account manager relaying between you and the work. That's simply how we
+            there is no account manager relaying between you and the work. That is simply how we
             think a company like this should be run.
           </p>
           <Link href="/about" className="sp-statement__link">
@@ -294,7 +294,7 @@ export default function HomePage() {
           <div className="sp-cta__icon">
             <MessageCircle size={22} />
           </div>
-          <h2>Tell Us What&apos;s Not Working</h2>
+          <h2>Tell Us What Is Not Working</h2>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Schedule a Conversation <ArrowRight size={16} />
           </a>

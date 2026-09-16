@@ -105,7 +105,7 @@ const careerLadder = [
   {
     level: "Threat Hunter",
     icon: Compass,
-    body: "Not waiting on the alarm. Hunting for the attacker who hasn't tripped one yet.",
+    body: "Not waiting on the alarm. Hunting for the attacker who has not tripped one yet.",
   },
   {
     level: "Senior Analyst / SOC Lead",

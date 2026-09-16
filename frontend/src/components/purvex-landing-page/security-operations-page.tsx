@@ -60,9 +60,9 @@ export default function SecurityOperationsPage() {
         <div className="sp-hero__copy">
           <h1 className="sp-hero__h1">Strengthen Your Security Operations</h1>
           <p className="sp-hero__sub">
-            Most SOCs have tools they can&apos;t fully trust. We tune what&apos;s already there,
+            Most SOCs have tools they cannot fully trust. We tune what is already there,
             close the gaps, and prove your detections fire, before an attacker finds out they
-            don&apos;t.
+            do not.
           </p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Schedule a Conversation <ArrowRight size={16} />
