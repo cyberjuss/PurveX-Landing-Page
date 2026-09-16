@@ -356,11 +356,16 @@ export default function HomePage() {
 
 /* ── Problems strip ── */
 .sp-problems { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
-.sp-problem { padding: 36px 32px; position: relative }
+.sp-problem { padding: 36px 32px; position: relative; transition: background .35s var(--ease) }
+.sp-problem:hover { background: var(--surface-alt) }
 .sp-problem:not(:first-child) { border-left: 1px solid var(--border) }
-.sp-problem__icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); color: var(--accent-deep) }
+.sp-problem__icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); color: var(--accent-deep); transition: transform .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease), color .35s var(--ease) }
+.sp-problem:hover .sp-problem__icon { transform: scale(1.08) rotate(-4deg); background: var(--accent-deep); border-color: var(--accent-deep); color: #fff }
 .sp-problem h3 { margin: 18px 0 0; font-family: var(--font-display); font-size: 1.04rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
-.sp-problem p { margin: 10px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.65 }
+.sp-problem p { margin: 10px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.65; text-wrap: pretty }
+@media (prefers-reduced-motion: reduce) {
+  .sp-problem, .sp-problem__icon { transition: none }
+}
 .sp-problems[data-r] { opacity: 1; transform: none; filter: none; transition: none }
 .sp-problems[data-r] > * { opacity: 0; transform: translateY(20px); filter: blur(4px); transition: opacity .6s var(--ease), transform .6s var(--ease), filter .6s var(--ease) }
 .sp-problems[data-r].in > * { opacity: 1; transform: none; filter: blur(0) }
@@ -374,16 +379,22 @@ export default function HomePage() {
 
 /* ── Offers (static, replaces the old auto-rotating carousel) ── */
 .sp-offers { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
-.sp-offer { display: flex; flex-direction: column; padding: 32px }
+.sp-offer { display: flex; flex-direction: column; padding: 32px; transition: background .35s var(--ease) }
+.sp-offer:hover { background: var(--surface-alt) }
 .sp-offer:not(:first-child) { border-left: 1px solid var(--border) }
 .sp-offer__panel {
   display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
   width: 52px; height: 52px; border-radius: 50%;
   background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); color: var(--accent-deep);
+  transition: transform .35s var(--ease), background .35s var(--ease), color .35s var(--ease);
 }
+.sp-offer:hover .sp-offer__panel { transform: scale(1.06) rotate(-4deg); background: var(--accent-deep); color: #fff }
 .sp-offer__body { padding: 0; margin-top: 20px; display: flex; flex-direction: column; flex: 1 }
 .sp-offer__body h3 { margin: 8px 0 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: -.015em; color: var(--ink) }
-.sp-offer__body p { margin: 10px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.6 }
+.sp-offer__body p { margin: 10px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.6; text-wrap: pretty }
+@media (prefers-reduced-motion: reduce) {
+  .sp-offer, .sp-offer__panel { transition: none }
+}
 .sp-offer__list { list-style: none; margin: 16px 0 20px; padding: 0; display: flex; flex-direction: column; gap: 7px }
 .sp-offer__list li { display: flex; align-items: center; gap: 7px; font-size: .82rem; color: var(--ink-soft); font-weight: 500 }
 .sp-offer__list li svg { color: var(--accent-deep); flex-shrink: 0 }
