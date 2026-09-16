@@ -270,6 +270,7 @@ export function SiteChrome({
               <h4>Company</h4>
               <Link href="/security-operations">Security Operations</Link>
               <Link href="/cybersecurity-training">Cybersecurity Training</Link>
+              <Link href="/academy">Academy Portal</Link>
               <Link href="/about">About</Link>
             </div>
             <div className="sp-footer__col">

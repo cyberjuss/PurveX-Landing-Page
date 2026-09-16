@@ -196,6 +196,22 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ═══════════ WHY PURVEX ═══════════ */}
+      <section className="sp-section sp-section--tight">
+        <div className="sp-statement" data-r>
+          <span className="sp-tag">Why PurveX</span>
+          <h2>No layer between the work and the person doing it</h2>
+          <p>
+            The person running your security operations is the same one teaching in the field,
+            not an account manager relaying between you and the work. That is not a feature we
+            added. It is how we think a company like this should be run.
+          </p>
+          <Link href="/about" className="sp-statement__link">
+            Read how we think <ArrowRight size={14} />
+          </Link>
+        </div>
+      </section>
+
       {/* ═══════════ TESTIMONIAL ═══════════ */}
       <section className="sp-section">
         <div className="sp-head" data-r>

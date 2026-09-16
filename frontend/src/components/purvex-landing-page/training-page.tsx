@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   ArrowRight,
   BookOpen,
@@ -105,6 +106,10 @@ export default function TrainingPage() {
   // default. Opening the first module fills it immediately.
   const [openModule, setOpenModule] = useState<number | null>(0);
   const openCardRef = useRef<HTMLDivElement>(null);
+  // Set only inside the module button's onClick, never true on mount -- the
+  // effect below must not fire just because module 0 defaults open, or the
+  // page auto-scrolls hundreds of pixels past the hero on every page load.
+  const userTriggeredRef = useRef(false);
 
   // The icon row scrolls horizontally on mobile, and a middle module's card
   // is centered on its icon rather than clamped to the viewport -- tapping
@@ -112,9 +117,12 @@ export default function TrainingPage() {
   // body text) cut off past the edge of the screen. Scrolling the newly
   // opened card into view (not just the icon) fixes that for every module,
   // not just the ones near an edge. block: "nearest" keeps this from also
-  // yanking the page's vertical scroll position.
+  // yanking the page's vertical scroll position -- except on mount, where
+  // gating on a click-set ref (not a mount-count ref) keeps that scroll
+  // user-triggered only.
   useEffect(() => {
-    if (openModule === null) return;
+    if (openModule === null || !userTriggeredRef.current) return;
+    userTriggeredRef.current = false;
     openCardRef.current?.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
   }, [openModule]);
 
@@ -128,9 +136,14 @@ export default function TrainingPage() {
             Hands-on instruction in judgment, not memorization — how real analysts actually
             read a scene.
           </p>
-          <a href="#syllabus" className="sp-btn sp-btn--prim sp-btn--lg">
-            See the Curriculum <ArrowRight size={16} />
-          </a>
+          <div className="sp-hero__actions">
+            <a href="#syllabus" className="sp-btn sp-btn--prim sp-btn--lg">
+              See the Curriculum <ArrowRight size={16} />
+            </a>
+            <Link href="/academy" className="sp-btn sp-btn--ghost sp-btn--lg">
+              Already enrolled? Go to the Academy
+            </Link>
+          </div>
         </div>
         <div className="sp-hero__preview" data-r>
           <div className="sp-orbit">
@@ -211,7 +224,10 @@ export default function TrainingPage() {
                 <button
                   type="button"
                   id={c.id}
-                  onClick={() => setOpenModule(openModule === i ? null : i)}
+                  onClick={() => {
+                    userTriggeredRef.current = true;
+                    setOpenModule(openModule === i ? null : i);
+                  }}
                   className={
                     openModule === i ? "sp-roadmap-zigzag__icon sp-roadmap-zigzag__icon--active" : "sp-roadmap-zigzag__icon"
                   }
@@ -301,7 +317,7 @@ export default function TrainingPage() {
 .sp-hero.sp-hero--split { text-align: left; max-width: 1140px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center }
 .sp-hero--split .sp-hero__h1 { text-align: left }
 .sp-hero--split .sp-hero__sub { margin: 22px 0 0; max-width: 480px; text-align: left }
-.sp-hero--split .sp-btn { margin-top: 34px }
+.sp-hero--split .sp-hero__actions { margin: 34px 0 0; justify-content: flex-start }
 
 .sp-hero__preview { display: flex; justify-content: center }
 
@@ -334,6 +350,7 @@ export default function TrainingPage() {
   .sp-hero.sp-hero--split { grid-template-columns: 1fr; text-align: center; gap: 40px }
   .sp-hero--split .sp-hero__h1 { text-align: center }
   .sp-hero--split .sp-hero__sub { margin-left: auto; margin-right: auto; text-align: center }
+  .sp-hero--split .sp-hero__actions { justify-content: center }
 }
 
 .sp-compare { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding-top: 10px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
