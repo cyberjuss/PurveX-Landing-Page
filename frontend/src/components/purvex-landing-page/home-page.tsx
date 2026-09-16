@@ -125,11 +125,10 @@ export default function HomePage() {
           </div>
         </div>
 
-        <h1 className="sp-hero__h1">Security Operations, Run By the Person Doing the Work</h1>
+        <h1 className="sp-hero__h1">Stop Assuming. Start Proving</h1>
         <p className="sp-hero__sub">
-          No account manager between you and the analyst. PurveX tunes detections, trains
-          analysts, and proves both hold up, built on real Sentinel and Splunk SOAR work, not a
-          slide deck.
+          PurveX tunes your detections, trains your analysts, and tests both against real
+          attacker behavior. No slide deck required.
         </p>
         <div className="sp-hero__actions">
           <a href="#how-we-help" className="sp-btn sp-btn--prim sp-btn--lg">
@@ -279,8 +278,8 @@ export default function HomePage() {
 .sp-hero__deco { position: absolute; top: 0; z-index: 2; pointer-events: none; display: none }
 @media (min-width: 1300px) {
   .sp-hero__deco { display: block; opacity: 0; animation: sp-deco-in .8s var(--ease) both }
-  .sp-hero__deco--left { left: -206px; top: 66px; animation-name: sp-deco-in-left; animation-delay: .35s }
-  .sp-hero__deco--right { right: -206px; top: 188px; animation-name: sp-deco-in-right; animation-delay: .55s }
+  .sp-hero__deco--left { left: -264px; top: 40px; animation-name: sp-deco-in-left; animation-delay: .35s }
+  .sp-hero__deco--right { right: -264px; top: 168px; animation-name: sp-deco-in-right; animation-delay: .55s }
 }
 @keyframes sp-deco-in-left { from { opacity: 0; transform: translateY(16px) rotate(-2deg) scale(.94) } to { opacity: 1; transform: translateY(0) rotate(-7deg) scale(1) } }
 @keyframes sp-deco-in-right { from { opacity: 0; transform: translateY(16px) rotate(2deg) scale(.94) } to { opacity: 1; transform: translateY(0) rotate(6deg) scale(1) } }
