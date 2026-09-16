@@ -242,7 +242,7 @@ export default function PlatformPage() {
       <section className="sp-section" id="product">
         <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">The platform</span>
-          <h2>Everything on one screen. Proof, not assumptions.</h2>
+          <h2>Everything on one screen. Proof, not assumptions</h2>
         </div>
 
         <div className="sp-bento" data-r>
@@ -320,7 +320,7 @@ export default function PlatformPage() {
       <section className="sp-section">
         <div className="sp-head" data-r>
           <span className="sp-tag">The risk of guessing</span>
-          <h2>Every unproven detection is a blind spot.</h2>
+          <h2>Every unproven detection is a blind spot</h2>
           <p>
             A rule that exists is not a rule that works. Until you test the chain, you are
             trusting coverage you have never watched fire.
@@ -342,7 +342,7 @@ export default function PlatformPage() {
       <section className="sp-section" id="pricing">
         <div className="sp-head" data-r>
           <span className="sp-tag">Pricing</span>
-          <h2>Start focused. Expand when the evidence is there.</h2>
+          <h2>Start focused. Expand when the evidence is there</h2>
           <p>
             Same self-hosted software either way, running on your own infrastructure. Paid removes
             the team and runner limits.
@@ -380,7 +380,7 @@ export default function PlatformPage() {
       <section className="sp-section" id="faq">
         <div className="sp-head" data-r>
           <span className="sp-tag">FAQ</span>
-          <h2>Questions teams ask before they commit.</h2>
+          <h2>Questions teams ask before they commit</h2>
         </div>
         <div className="sp-faq" data-r>
           {faqs.map(([q, a], i) => {

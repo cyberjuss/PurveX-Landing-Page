@@ -60,9 +60,9 @@ export default function SecurityOperationsPage() {
         <div className="sp-hero__copy">
           <h1 className="sp-hero__h1">Strengthen Your Security Operations</h1>
           <p className="sp-hero__sub">
-            Security tools are only effective when they are properly configured, monitored, and
-            continuously improved. PurveX helps organizations improve their ability to identify
-            threats and strengthen their detection capabilities.
+            Most SOCs have tools they can&apos;t fully trust. We tune what&apos;s already there,
+            close the gaps, and prove your detections fire, before an attacker finds out they
+            don&apos;t.
           </p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Schedule a Conversation <ArrowRight size={16} />
@@ -86,7 +86,7 @@ export default function SecurityOperationsPage() {
       <section className="sp-section">
         <div className="sp-head" data-r>
           <span className="sp-tag">What we do</span>
-          <h2>Four ways we strengthen your operations.</h2>
+          <h2>Four ways we strengthen your operations</h2>
         </div>
         <div className="sp-console" data-r>
           <div className="sp-console__bar">
@@ -121,7 +121,7 @@ export default function SecurityOperationsPage() {
         <div className="sp-zigzag" data-r>
           <div className="sp-zigzag__text">
             <span className="sp-tag">How we think</span>
-            <h2>You cannot defend against tactics you do not understand.</h2>
+            <h2>You cannot defend against tactics you do not understand</h2>
             <p>
               Every detection we build starts from how attackers actually operate, not just what
               a vendor&apos;s default ruleset assumes. That is the blend of blue team and red team
@@ -170,7 +170,7 @@ export default function SecurityOperationsPage() {
           </div>
           <div className="sp-zigzag__text">
             <span className="sp-tag">Our goal</span>
-            <h2>Automate what can be automated. Never stop understanding it.</h2>
+            <h2>Automate what can be automated. Never stop understanding it</h2>
             <p>
               Every engagement moves through the same three stages, so you always know where
               things stand, and your team understands exactly what changed and why.
@@ -185,7 +185,7 @@ export default function SecurityOperationsPage() {
           <div className="sp-cta__icon">
             <MessageCircle size={22} />
           </div>
-          <h2>Talk through your current security environment.</h2>
+          <h2>Talk through your current security environment</h2>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Schedule a Conversation <ArrowRight size={16} />
           </a>

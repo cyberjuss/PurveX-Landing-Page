@@ -34,11 +34,11 @@ const offers = [
   {
     key: "security-operations",
     icon: ShieldCheck,
-    tag: "For organizations",
+    tag: "For lean security teams",
     title: "Security Operations",
-    body: "We help organizations improve their security operations through SIEM optimization, detection engineering, security assessments, and detection validation.",
+    body: "For teams too stretched to have a dedicated detection engineer: SIEM tuning, detection engineering, and validation that proves your alerts actually fire.",
     bullets: ["SIEM & detection engineering", "SIEM optimization", "Security operations assessments", "Detection validation"],
-    cta: "Explore",
+    cta: "See how we help",
     href: "/security-operations",
     external: false,
   },
@@ -47,9 +47,9 @@ const offers = [
     icon: Users,
     tag: "For academies & programs",
     title: "Cybersecurity Training",
-    body: "We partner with academies and workforce development programs to deliver hands-on cybersecurity instruction built around real-world security operations.",
+    body: "For academies and workforce programs: hands-on instruction built around how a real SOC operates, taught by someone who still works in one.",
     bullets: ["Cybersecurity instruction", "Hands-on security labs", "Curriculum support", "Instructor partnerships"],
-    cta: "Explore",
+    cta: "See the curriculum",
     href: "/cybersecurity-training",
     external: false,
   },
@@ -58,9 +58,9 @@ const offers = [
     icon: Radar,
     tag: "In development",
     title: "PurveX Labs",
-    body: "We are building technology that helps security teams move beyond assumed coverage toward measurable, continuous evidence that their detections work.",
+    body: "Continuous, measurable proof your detections work, not just that they exist on paper. Currently in private beta.",
     bullets: ["Continuous detection validation", "Measurable coverage over time", "Private beta, in development"],
-    cta: "Explore",
+    cta: "Get early access",
     href: "/platform",
     external: false,
   },
@@ -125,14 +125,15 @@ export default function HomePage() {
           </div>
         </div>
 
-        <h1 className="sp-hero__h1">Building Stronger Security Operations.</h1>
+        <h1 className="sp-hero__h1">Security Operations, Run By the Person Doing the Work</h1>
         <p className="sp-hero__sub">
-          PurveX helps organizations strengthen their security capabilities through security
-          operations consulting and hands-on cybersecurity training.
+          No account manager between you and the analyst. PurveX tunes detections, trains
+          analysts, and proves both hold up, built on real Sentinel and Splunk SOAR work, not a
+          slide deck.
         </p>
         <div className="sp-hero__actions">
           <a href="#how-we-help" className="sp-btn sp-btn--prim sp-btn--lg">
-            Explore Our Services <ArrowRight size={16} />
+            See How We Help <ArrowRight size={16} />
           </a>
         </div>
       </section>
@@ -141,7 +142,7 @@ export default function HomePage() {
       <section className="sp-section">
         <div className="sp-head" data-r>
           <span className="sp-tag">Sound familiar?</span>
-          <h2>The problems we solve.</h2>
+          <h2>The problems we solve</h2>
         </div>
         <div className="sp-problems" data-r>
           {problems.map((p) => (
@@ -160,7 +161,7 @@ export default function HomePage() {
       <section className="sp-section" id="how-we-help">
         <div className="sp-head" data-r>
           <span className="sp-tag">How PurveX helps</span>
-          <h2>Three ways we strengthen your security posture.</h2>
+          <h2>Three ways we strengthen your security posture</h2>
         </div>
 
         <div className="sp-offers" data-r>
@@ -199,7 +200,7 @@ export default function HomePage() {
       <section className="sp-section">
         <div className="sp-head" data-r>
           <span className="sp-tag">What people say</span>
-          <h2>Feedback from the field.</h2>
+          <h2>Feedback from the field</h2>
         </div>
         <div className="sp-feature-quotes">
           {testimonials.map((t) => (
@@ -249,7 +250,7 @@ export default function HomePage() {
           <div className="sp-cta__icon">
             <MessageCircle size={22} />
           </div>
-          <h2>Tell us what your organization needs.</h2>
+          <h2>Tell us what&apos;s not working</h2>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Schedule a Conversation <ArrowRight size={16} />
           </a>

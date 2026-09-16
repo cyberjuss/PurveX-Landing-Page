@@ -68,7 +68,7 @@ export default function FounderPage() {
 
       <section className="sp-section">
         <div className="sp-cta" data-r>
-          <h2>The best way to see if we are a fit is a real conversation, not a pitch.</h2>
+          <h2>The best way to see if we are a fit is a real conversation, not a pitch</h2>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Talk to us <ArrowRight size={16} />
           </a>

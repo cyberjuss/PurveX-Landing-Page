@@ -31,7 +31,7 @@ export default function AboutPage() {
         {/* ═══════════ MASTHEAD ═══════════ */}
         <div className="sp-mag__masthead" data-r>
           <span className="sp-mag__kicker">Field Notes — On Security</span>
-          <h1>Blue team. Red team. One discipline.</h1>
+          <h1>Blue team. Red team. One discipline</h1>
           <p>
             PurveX helps organizations strengthen their security operations and develop the
             cybersecurity talent needed to support them.

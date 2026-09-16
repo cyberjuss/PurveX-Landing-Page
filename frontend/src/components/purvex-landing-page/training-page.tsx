@@ -151,7 +151,7 @@ export default function TrainingPage() {
       <section className="sp-section sp-section--tight">
         <div className="sp-head" data-r>
           <span className="sp-tag">Why this program is different</span>
-          <h2>Judgment is the skill. Everything else is just facts.</h2>
+          <h2>Judgment is the skill. Everything else is just facts</h2>
           <p>
             Certifications teach vocabulary. This program teaches judgment — deciding, in the
             moment, whether an alert is noise or a real compromise.
@@ -201,7 +201,7 @@ export default function TrainingPage() {
       <section className="sp-section" id="syllabus">
         <div className="sp-head" data-r>
           <span className="sp-tag">The syllabus</span>
-          <h2>From fundamentals to a full training partnership.</h2>
+          <h2>From fundamentals to a full training partnership</h2>
           <p>Seven modules: SOC analyst readiness to long-term program support.</p>
         </div>
         <div className="sp-roadmap-zigzag" data-r>
@@ -247,7 +247,7 @@ export default function TrainingPage() {
         <div className="sp-roadmap-split" data-r>
           <div className="sp-head sp-head--left sp-roadmap-split__text">
             <span className="sp-tag">The learning roadmap</span>
-            <h2>Every skill area, practiced on real tools.</h2>
+            <h2>Every skill area, practiced on real tools</h2>
             <p>
               Built around real-world platforms, many free, so learners use the same tools
               working analysts do.
@@ -268,7 +268,7 @@ export default function TrainingPage() {
       <section className="sp-section">
         <div className="sp-head" data-r>
           <span className="sp-tag">Delivery formats</span>
-          <h2>Fits the way your program already runs.</h2>
+          <h2>Fits the way your program already runs</h2>
         </div>
         <div className="sp-cards sp-cards--4" data-r>
           {formats.map((f) => (
