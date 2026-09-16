@@ -132,7 +132,7 @@ export default function HomePage() {
         </p>
         <div className="sp-hero__actions">
           <a href="#how-we-help" className="sp-btn sp-btn--prim sp-btn--lg">
-            See How We Help <ArrowRight size={16} />
+            Get Started <ArrowRight size={16} />
           </a>
         </div>
       </section>
