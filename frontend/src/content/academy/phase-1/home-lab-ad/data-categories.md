@@ -1,4 +1,6 @@
-### **Data Categories Handled Across the Environment**
+### Data Categories Handled Across the Environment
+
+Knowing what kind of data lives where is what turns "an account was accessed" into "an account was accessed, and here is what was actually at risk."
 
 | Data Category | Examples | Primarily Handled By |
 | :---- | :---- | :---- |

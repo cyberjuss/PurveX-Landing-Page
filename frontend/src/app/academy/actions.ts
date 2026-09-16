@@ -10,7 +10,7 @@ export async function unlockAcademy(
   const passcode = String(formData.get("passcode") ?? "");
 
   if (!checkPasscode(passcode)) {
-    return { error: "That passcode didn't work. Check with your instructor and try again." };
+    return { error: "That passcode did not work. Check with your instructor and try again." };
   }
 
   await setAcademyCookie();

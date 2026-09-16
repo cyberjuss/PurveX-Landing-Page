@@ -1,6 +1,6 @@
-### **The Org Chart**
+### The Org Chart
 
-Every organization has a structure. Here is the breakdown of the departments and what each one is for.
+Every organization has a structure, and understanding it is not a formality, it is the baseline against which every future alert gets judged. Here is the breakdown of the departments and what each one is for.
 
 | Department | Function | Critical |
 | ----- | ----- | ----- |

@@ -1,23 +1,23 @@
-### **The CIA Triad**
+### The CIA Triad
 
-The foundation of information security. Every security control exists to protect one or more of these three properties.
+The foundation of information security, and the lens every other concept in this course gets evaluated through. Any control worth deploying is protecting one or more of these three properties, which means naming the property is usually the fastest way to explain why the control exists at all.
 
 **Confidentiality**: Only authorized people or systems can access the data.
 
-* Threat example: an attacker intercepts unencrypted traffic and reads sensitive data  
+* Threat example: an attacker intercepts unencrypted traffic and reads sensitive data
 * Common controls: encryption, access control lists, authentication, need-to-know policies
 
-**Integrity**: Data is accurate. It hasn't been tampered with, whether in transit or at rest.
+**Integrity**: Data is accurate. It has not been tampered with, whether in transit or at rest.
 
-* Threat example: an attacker modifies a file, or intercepts and alters data mid-transmission  
+* Threat example: an attacker modifies a file, or intercepts and alters data mid-transmission
 * Common controls: hashing, digital signatures, checksums, version control, audit logs
 
 **Availability**: Systems and data are accessible to authorized users when needed.
 
-* Threat example: a DDoS attack takes a web server offline  
+* Threat example: a DDoS attack takes a web server offline
 * Common controls: redundancy, backups, failover systems, DDoS protection, patching
 
-*Quick way to remember it. A security incident is usually a breach, a defacement, or an outage. Each one maps back to one leg of the triad: confidentiality, integrity, or availability.*
+*A useful shortcut: almost every security incident is, at bottom, a breach, a defacement, or an outage. Each maps to exactly one leg of the triad, confidentiality, integrity, or availability, which is why this framework is the first thing an analyst reaches for.*
 
 <div class="academy-analogy">
 <span class="academy-analogy__tag">Think of it like a bank branch</span>

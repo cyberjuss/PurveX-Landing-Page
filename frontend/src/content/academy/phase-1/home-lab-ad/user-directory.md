@@ -1,4 +1,4 @@
-### **Full User Directory**
+### Full User Directory
 
 Every user account in this environment, listed by department, with title, username, and group membership.
 

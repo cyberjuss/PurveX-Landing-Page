@@ -39,7 +39,7 @@ const filters = [
 
 const ciaRows = [
   ["Confidentiality", "Only authorized people/systems can access the data.", "Encryption, unauthorized traffic interception"],
-  ["Integrity", "Data is accurate and hasn't been tampered with.", "Hashing, digital signatures, an altered file"],
+  ["Integrity", "Data is accurate and has not been tampered with.", "Hashing, digital signatures, an altered file"],
   ["Availability", "Systems and data are reachable when needed.", "Redundancy/backups, a DDoS attack"],
 ];
 
@@ -143,11 +143,11 @@ const categories: RefCategory[] = [
           <>
             <ul>
               <li><strong>Authentication</strong> — proving who you are.</li>
-              <li><strong>Authorization</strong> {"— what you're allowed to do once you're in."}</li>
+              <li><strong>Authorization</strong> {"— what you are allowed to do once you are in."}</li>
               <li><strong>Access control</strong> — the mechanism that enforces that boundary.</li>
             </ul>
             <p>
-              {"The recurring failure mode: an app trusts something the client says about itself (a role field, a permission flag) instead of checking it server-side. If the client can edit it, it isn't a security control."}
+              {"The recurring failure mode: an app trusts something the client says about itself (a role field, a permission flag) instead of checking it server-side. If the client can edit it, it is not a security control."}
             </p>
           </>
         ),
@@ -175,7 +175,7 @@ const categories: RefCategory[] = [
               </tbody>
             </table>
             <p>
-              {"Traffic on 22 or 3389 from somewhere it shouldn't be usually means someone is trying to "}
+              {"Traffic on 22 or 3389 from somewhere it should not be usually means someone is trying to "}
               <em>control</em>
               {" a machine, not just browse it."}
             </p>
@@ -210,9 +210,9 @@ const categories: RefCategory[] = [
           <div className="academy-analogy">
             <span className="academy-analogy__tag">Think of it like a phone call</span>
             <ul>
-              <li><strong>SYN</strong> {'— Computer A: "I\'d like to connect."'}</li>
-              <li><strong>SYN-ACK</strong> {'— Computer B: "Okay, I\'m ready too."'}</li>
-              <li><strong>ACK</strong> {'— Computer A: "Great, let\'s go."'}</li>
+              <li><strong>SYN</strong> {'— Computer A: "I would like to connect."'}</li>
+              <li><strong>SYN-ACK</strong> {'— Computer B: "Understood, I am ready too."'}</li>
+              <li><strong>ACK</strong> {'— Computer A: "Good, let us proceed."'}</li>
             </ul>
           </div>
         ),
@@ -285,7 +285,7 @@ const categories: RefCategory[] = [
               <li><strong>Orient yourself</strong> — packet count, time span, protocol hierarchy, list of external hosts.</li>
               <li>
                 <strong>Triage</strong>
-                {" — separate signal from noise. Don't rule a host in or out on a single glance; look up anything unfamiliar (hostname, User-Agent, URI pattern) before deciding."}
+                {" — separate signal from noise. Do not rule a host in or out on a single glance; look up anything unfamiliar (hostname, User-Agent, URI pattern) before deciding."}
               </li>
               <li><strong>Focus on what&apos;s left</strong> — full URI, query parameters, GET vs. POST, anything that looks encoded.</li>
               <li><strong>Decode</strong> — URL-decode suspicious parameters and identify what&apos;s actually inside them.</li>
@@ -325,7 +325,7 @@ const categories: RefCategory[] = [
               </tbody>
             </table>
             <p>
-              {"Any time you see a Level 3 (Helpdesk) account attempting something that belongs to Level 1 (Domain Admin), that's your first real red flag. Full detail, the org chart, the user directory, data categories, the client workstation, lives on the "}
+              {"Any time you see a Level 3 (Helpdesk) account attempting something that belongs to Level 1 (Domain Admin), that is your first real red flag. Full detail, the org chart, the user directory, data categories, the client workstation, lives on the "}
               <Link href="/academy/phase-1/home-lab-active-directory">Home Lab page</Link>.
             </p>
           </>

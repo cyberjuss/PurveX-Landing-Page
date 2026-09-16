@@ -1,4 +1,4 @@
-### **Who Wealth Management Serves**
+### Who Wealth Management Serves
 
 Wealth Management is built around private clients rather than corporate accounts. Its book of business is meant to reflect a realistic advisory client base.
 

@@ -1,4 +1,4 @@
-### **The Client Workstation**
+### The Client Workstation
 
 | Item | Detail |
 | :---- | :---- |

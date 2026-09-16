@@ -1,6 +1,6 @@
-### **What Is Actually In This Environment**
+### What Is Actually in This Environment
 
-For reference, here is what currently exists in the environment.
+For reference, here is a count of what currently exists in the environment.
 
 | Item | Count |
 | :---- | :---- |

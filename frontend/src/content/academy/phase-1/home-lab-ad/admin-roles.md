@@ -1,6 +1,6 @@
-### **Administrative Roles**
+### Administrative Roles
 
-Access is divided into three levels rather than a single all-powerful admin account.
+Access here is deliberately divided into three levels rather than concentrated in a single all-powerful admin account, and that separation is itself a security control worth understanding on its own terms.
 
 | Access Level | Controls | Cannot Touch |
 | ----- | ----- | ----- |
