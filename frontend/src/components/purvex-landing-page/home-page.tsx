@@ -229,12 +229,6 @@ export default function HomePage() {
         <div className="sp-statement" data-r>
           <span className="sp-tag">Why PurveX</span>
           <h2>No Layer Between the Work and the Person Doing It</h2>
-          <p>
-            The same person running your security operations is the same person teaching in the
-            field. When you have a question, you ask them directly. No account manager translates
-            in between. We built PurveX this way on purpose: work explained secondhand is never
-            as good as work explained by the person who did it.
-          </p>
           <Link href="/about" className="sp-statement__link">
             Read how we think <ArrowRight size={14} />
           </Link>
