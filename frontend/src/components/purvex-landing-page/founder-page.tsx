@@ -43,32 +43,31 @@ export default function FounderPage() {
         <div className="sp-founder-page__bio" data-r>
           <p className="sp-founder-page__quote">I lead by serving the work, not standing above it.</p>
           <p>
-            Before this was a company, it was time spent tuning Microsoft Sentinel detections for
-            a federal agency, automating response workflows in Splunk SOAR, and teaching SOC
-            fundamentals to analysts at Ellington Cyber Academy. All of that taught me the same
-            lesson from different angles: real growth comes from hands-on repetition, not from
-            watching someone else do the work.
+            Before this was a company, it was three jobs. Tuning Microsoft Sentinel detections
+            for a federal agency. Automating response workflows in Splunk SOAR. Teaching SOC
+            fundamentals to analysts at Ellington Cyber Academy. All of it taught the same
+            lesson: real growth comes from hands-on repetition, not from watching someone else
+            do the work.
           </p>
           <p>
-            Hands-on alone is not enough, though. In an age where AI can write the query and
-            summarize the alert for you, the skill that actually matters is knowing how to think:
-            how to interpret what a system is telling you, when to trust it, and when to push
-            back. That is what I try to teach, not shortcuts to capture a flag, but the judgment
-            to actually solve the problem.
+            Hands-on alone is not enough, though. AI can write the query now. It can summarize
+            the alert. What still matters is knowing how to think: how to read what a system is
+            telling you, when to trust it, when to push back. That is what I teach. Not
+            shortcuts to capture a flag. The judgment to actually solve the problem.
           </p>
           <p>
-            That belief is also why PurveX exists. I kept running into the same gap: smaller
-            security teams know they need stronger coverage, but do not have the headcount to
-            build and maintain it by hand. I believe AI agents, paired with someone who still
-            understands what is happening underneath them, can close that gap without requiring
-            every team to be enterprise-sized to be secure.
+            That belief is also why PurveX exists. I kept running into the same gap. Smaller
+            security teams know they need stronger coverage. They do not have the headcount to
+            build and maintain it by hand. AI agents can close that gap, paired with someone
+            who still understands what is happening underneath them. No team should need to be
+            enterprise-sized to be secure.
           </p>
         </div>
       </section>
 
       <section className="sp-section">
         <div className="sp-cta" data-r>
-          <h2>The best way to see if we are a fit is a real conversation, not a pitch</h2>
+          <h2>The best way to see if we are a fit? A real conversation, not a pitch</h2>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Talk to us <ArrowRight size={16} />
           </a>

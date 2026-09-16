@@ -60,8 +60,8 @@ export default function SecurityOperationsPage() {
         <div className="sp-hero__copy">
           <h1 className="sp-hero__h1">Strengthen Your Security Operations</h1>
           <p className="sp-hero__sub">
-            Most SOCs have tools they cannot fully trust. We tune what is already there,
-            close the gaps, and prove your detections fire, before an attacker finds out they
+            Most SOCs have tools they cannot fully trust. We tune what is already there. We
+            close the gaps. We prove your detections fire, before an attacker finds out they
             do not.
           </p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
@@ -123,7 +123,7 @@ export default function SecurityOperationsPage() {
             <span className="sp-tag">How we think</span>
             <h2>You cannot defend against tactics you do not understand</h2>
             <p>
-              Every detection we build starts from how attackers actually operate, not just what
+              Every detection we build starts from how attackers actually operate. Not just what
               a vendor&apos;s default ruleset assumes. That is the blend of blue team and red team
               thinking PurveX is built on.
             </p>
@@ -172,8 +172,8 @@ export default function SecurityOperationsPage() {
             <span className="sp-tag">Our goal</span>
             <h2>Automate what can be automated. Never stop understanding it</h2>
             <p>
-              Every engagement moves through the same three stages, so you always know where
-              things stand, and your team understands exactly what changed and why.
+              Every engagement moves through the same three stages. You always know where
+              things stand. Your team understands exactly what changed, and why.
             </p>
           </div>
         </div>

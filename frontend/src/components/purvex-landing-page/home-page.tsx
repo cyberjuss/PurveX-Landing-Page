@@ -77,7 +77,7 @@ const offers = [
     icon: ShieldCheck,
     tag: "For lean security teams",
     title: "Security Operations",
-    body: "Your SIEM generates alerts, but nobody has the bandwidth to tune them, build new detections, or prove the ones you already have actually fire. We do that work as an extension of your team.",
+    body: "Your SIEM generates alerts. Nobody has the bandwidth to tune them, build new detections, or prove the ones you already have actually fire. We do that work as an extension of your team.",
     bullets: ["SIEM & detection engineering", "SIEM optimization", "Security operations assessments", "Detection validation"],
     cta: "See How We Help",
     href: "/security-operations",
@@ -88,7 +88,7 @@ const offers = [
     icon: Users,
     tag: "For academies & programs",
     title: "Cybersecurity Training",
-    body: "Most programs teach security concepts a classroom can grade. Employers need people who have already worked a queue — we teach that, taught by someone who still works in one.",
+    body: "Most programs teach security concepts a classroom can grade. Employers need people who have already worked a queue. We teach that. The instructor still works one today.",
     bullets: ["Cybersecurity instruction", "Hands-on security labs", "Curriculum support", "Instructor partnerships"],
     cta: "See the Curriculum",
     href: "/cybersecurity-training",
@@ -99,7 +99,7 @@ const offers = [
     icon: Radar,
     tag: "In development",
     title: "PurveX Labs",
-    body: "You can tell leadership a detection exists. You cannot yet tell them it works — Labs closes that gap with continuous, measurable proof instead of a one-time report.",
+    body: "You can tell leadership a detection exists. You cannot yet tell them it works. Labs closes that gap with continuous, measurable proof, not a one-time report.",
     bullets: ["Continuous detection validation", "Measurable coverage over time", "Private beta, in development"],
     cta: "Get Early Access",
     href: "/platform",
@@ -156,7 +156,7 @@ export default function HomePage() {
 
         <h1 className="sp-hero__h1">Most Detections Have Never Faced a Real Attack</h1>
         <p className="sp-hero__sub">
-          PurveX tunes your detections, trains your analysts, and proves both hold up
+          PurveX tunes your detections and trains your analysts. Then we prove both hold up
           against real attacker behavior.
         </p>
         <div className="sp-hero__actions">
@@ -230,9 +230,9 @@ export default function HomePage() {
           <span className="sp-tag">Why PurveX</span>
           <h2>No Layer Between the Work and the Person Doing It</h2>
           <p>
-            The person running your security operations is the same one teaching in the field —
-            there is no account manager relaying between you and the work. That is simply how we
-            think a company like this should be run.
+            The same person runs your security operations and teaches in the field. No account
+            manager stands between you and the work. That is simply how we think a company like
+            this should be run.
           </p>
           <Link href="/about" className="sp-statement__link">
             Read how we think <ArrowRight size={14} />

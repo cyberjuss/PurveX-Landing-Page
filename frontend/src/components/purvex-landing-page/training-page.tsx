@@ -217,9 +217,9 @@ export default function TrainingPage() {
           <span className="sp-tag">The mindset</span>
           <h2>You already think like this</h2>
           <p>
-            Strip away the acronyms and a SOC analyst does exactly what a detective does.
-            Walk into a scene, gather evidence, decide what happened. Same instincts,
-            different crime scene.
+            Strip away the acronyms. A SOC analyst does exactly what a detective does: walk
+            into a scene, gather evidence, decide what happened. Same instincts, different
+            crime scene.
           </p>
         </div>
         <div className="sp-cork" data-r>
