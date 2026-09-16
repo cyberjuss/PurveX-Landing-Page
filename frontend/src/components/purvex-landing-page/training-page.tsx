@@ -4,16 +4,25 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
+  Award,
   BookOpen,
   Brain,
   Check,
+  ClipboardList,
+  Compass,
+  Eye,
+  Fingerprint,
+  FileText,
   FlaskConical,
+  Footprints,
   Globe,
   GraduationCap,
   Layers,
+  Lock,
   MessageCircle,
   Radar,
   Search,
+  ShieldAlert,
   Siren,
   Users,
   X,
@@ -65,6 +74,43 @@ const curriculum = [
     icon: Layers,
     title: "Curriculum Support",
     body: "Training content mapped to what employers actually screen for in a SOC interview.",
+  },
+];
+
+const analogyPairs = [
+  { icon: Siren, detective: "A crime scene", analyst: "An alert in the queue" },
+  { icon: FileText, detective: "Witness statements", analyst: "Raw log lines" },
+  { icon: Fingerprint, detective: "Fingerprints at the scene", analyst: "Indicators of compromise" },
+  { icon: Footprints, detective: "A suspect's known M.O.", analyst: "Attacker TTPs (MITRE ATT&CK)" },
+  { icon: ClipboardList, detective: "The case file", analyst: "The incident report" },
+  { icon: Lock, detective: "Closing the case", analyst: "Containing the breach" },
+];
+
+const careerLadder = [
+  {
+    level: "Trainee",
+    icon: BookOpen,
+    body: "Learning the fundamentals: networks, operating systems, how to read a raw log line.",
+  },
+  {
+    level: "Tier 1 SOC Analyst",
+    icon: Eye,
+    body: "Watching the queue, triaging alerts. Learning to tell noise from a real signal.",
+  },
+  {
+    level: "Tier 2 / Incident Responder",
+    icon: ShieldAlert,
+    body: "Investigating confirmed incidents end to end: contain, eradicate, document.",
+  },
+  {
+    level: "Threat Hunter",
+    icon: Compass,
+    body: "Not waiting on the alarm. Hunting for the attacker who hasn't tripped one yet.",
+  },
+  {
+    level: "Senior Analyst / SOC Lead",
+    icon: Award,
+    body: "Mentoring the next Tier 1. Shaping how the whole team investigates.",
   },
 ];
 
@@ -157,6 +203,40 @@ export default function TrainingPage() {
               <span className="sp-orbit__dot" />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ═══════════ THE ANALOGY — corkboard ═══════════ */}
+      <section className="sp-section sp-section--tight">
+        <div className="sp-head" data-r>
+          <span className="sp-tag">The mindset</span>
+          <h2>You already think like this</h2>
+          <p>
+            Strip away the acronyms and a SOC analyst does exactly what a detective does.
+            Walk into a scene, gather evidence, decide what happened. Same instincts,
+            different crime scene.
+          </p>
+        </div>
+        <div className="sp-cork" data-r>
+          {analogyPairs.map((a) => (
+            <div key={a.detective} className="sp-cork__card">
+              <span className="sp-cork__pin" />
+              <div className="sp-cork__icon">
+                <a.icon size={18} />
+              </div>
+              <div className="sp-cork__row">
+                <span className="sp-cork__label">A detective sees</span>
+                <span className="sp-cork__term">{a.detective}</span>
+              </div>
+              <div className="sp-cork__divider">
+                <ArrowRight size={14} />
+              </div>
+              <div className="sp-cork__row">
+                <span className="sp-cork__label">An analyst sees</span>
+                <span className="sp-cork__term sp-cork__term--accent">{a.analyst}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -258,6 +338,28 @@ export default function TrainingPage() {
         </div>
       </section>
 
+      {/* ═══════════ CAREER LADDER ═══════════ */}
+      <section className="sp-section">
+        <div className="sp-head" data-r>
+          <span className="sp-tag">Where this leads</span>
+          <h2>A ladder, not a certificate</h2>
+          <p>Every module stacks toward a title employers recognize. Not just a line on a resume.</p>
+        </div>
+        <div className="sp-ladder" data-r>
+          {careerLadder.map((r, i) => (
+            <div key={r.level} className="sp-ladder__step">
+              <div className="sp-ladder__copy">
+                <h3>{r.level}</h3>
+                <p>{r.body}</p>
+              </div>
+              <div className={`sp-ladder__bar sp-ladder__bar--${i}`}>
+                <r.icon size={18} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ═══════════ LEARNING ROADMAP ═══════════ */}
       <section className="sp-section sp-section--tight">
         <div className="sp-roadmap-split" data-r>
@@ -286,14 +388,15 @@ export default function TrainingPage() {
           <span className="sp-tag">Delivery formats</span>
           <h2>Fits the way your program already runs</h2>
         </div>
-        <div className="sp-cards sp-cards--4" data-r>
-          {formats.map((f) => (
-            <article key={f.title} className="sp-card">
-              <div className="sp-card__icon">
+        <div className="sp-dossier" data-r>
+          {formats.map((f, i) => (
+            <article key={f.title} className="sp-dossier__card">
+              <span className="sp-dossier__tab">File {String(i + 1).padStart(2, "0")}</span>
+              <div className="sp-dossier__icon">
                 <f.icon size={20} />
               </div>
-              <h3 className="sp-card__title">{f.title}</h3>
-              <p className="sp-card__body">{f.body}</p>
+              <h3 className="sp-dossier__title">{f.title}</h3>
+              <p className="sp-dossier__body">{f.body}</p>
             </article>
           ))}
         </div>
@@ -499,6 +602,117 @@ export default function TrainingPage() {
 }
 @media (max-width: 560px) {
   .sp-roadmap__item { flex-direction: column; align-items: flex-start; gap: 8px }
+}
+
+/* ── Corkboard: the detective/analyst analogy, pinned index cards ── */
+.sp-cork { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px 22px; padding: 12px 8px 0 }
+.sp-cork[data-r] { opacity: 1; transform: none; filter: none; transition: none }
+.sp-cork[data-r] > * { opacity: 0; transform: translateY(20px); filter: blur(4px); transition: opacity .6s var(--ease), transform .6s var(--ease), filter .6s var(--ease) }
+.sp-cork[data-r].in > * { opacity: 1; filter: blur(0) }
+.sp-cork[data-r].in > *:nth-child(3n+1) { transform: rotate(-1.4deg) }
+.sp-cork[data-r].in > *:nth-child(3n+2) { transform: rotate(1deg) translateY(6px) }
+.sp-cork[data-r].in > *:nth-child(3n) { transform: rotate(-0.6deg) translateY(-4px) }
+.sp-cork__card {
+  position: relative;
+  padding: 26px 20px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 16px 30px -18px rgba(16,25,46,.25);
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+.sp-cork__card:hover { transform: rotate(0deg) translateY(-4px) scale(1.02) !important; box-shadow: 0 22px 40px -16px rgba(16,25,46,.3); z-index: 2 }
+.sp-cork__pin {
+  position: absolute; top: -7px; left: 50%; transform: translateX(-50%);
+  width: 14px; height: 14px; border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #ff8a8d, var(--red) 65%);
+  box-shadow: 0 3px 6px rgba(16,25,46,.35);
+}
+.sp-cork__icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--accent-soft); color: var(--accent-deep); margin-bottom: 14px;
+}
+.sp-cork__row { display: flex; flex-direction: column; gap: 3px }
+.sp-cork__label { font-size: .66rem; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; color: var(--muted-dim) }
+.sp-cork__term { font-family: var(--font-display); font-size: .96rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink); line-height: 1.35 }
+.sp-cork__term--accent { color: var(--accent-deep) }
+.sp-cork__divider { display: flex; align-items: center; color: var(--border-strong); margin: 12px 0; padding-left: 2px }
+@media (prefers-reduced-motion: reduce) {
+  .sp-cork[data-r] > *, .sp-cork__card, .sp-cork__card:hover { transform: none !important; transition: none }
+}
+@media (max-width: 860px) {
+  .sp-cork { grid-template-columns: 1fr 1fr; gap: 22px 16px }
+}
+@media (max-width: 560px) {
+  .sp-cork { grid-template-columns: 1fr }
+}
+
+/* ── Career ladder: ascending bar chart, each rung a title employers recognize ── */
+.sp-ladder { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; padding: 44px 4px 0 }
+.sp-ladder[data-r] { opacity: 1; transform: none; filter: none; transition: none }
+.sp-ladder[data-r] > * { opacity: 0; transform: translateY(20px); filter: blur(4px); transition: opacity .6s var(--ease), transform .6s var(--ease), filter .6s var(--ease) }
+.sp-ladder[data-r].in > * { opacity: 1; transform: none; filter: blur(0) }
+.sp-ladder[data-r] > *:nth-child(1) { transition-delay: .03s } .sp-ladder[data-r] > *:nth-child(2) { transition-delay: .09s }
+.sp-ladder[data-r] > *:nth-child(3) { transition-delay: .15s } .sp-ladder[data-r] > *:nth-child(4) { transition-delay: .21s }
+.sp-ladder[data-r] > *:nth-child(5) { transition-delay: .27s }
+.sp-ladder__step { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px }
+.sp-ladder__copy h3 { margin: 0; font-family: var(--font-display); font-size: .92rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink); line-height: 1.3 }
+.sp-ladder__copy p { margin: 8px 0 0; font-size: .8rem; color: var(--muted); line-height: 1.55 }
+.sp-ladder__bar {
+  width: 100%; max-width: 68px; border-radius: 12px 12px 0 0;
+  display: flex; align-items: flex-start; justify-content: center; padding-top: 14px;
+  color: #fff; background: linear-gradient(180deg, var(--accent), var(--accent-deep));
+  box-shadow: 0 14px 26px -14px rgba(85,70,224,.55);
+}
+.sp-ladder__bar--0 { height: 60px }
+.sp-ladder__bar--1 { height: 96px }
+.sp-ladder__bar--2 { height: 132px }
+.sp-ladder__bar--3 { height: 168px }
+.sp-ladder__bar--4 { height: 204px; background: linear-gradient(180deg, #ffc257, #e2932a); box-shadow: 0 16px 30px -14px rgba(226,147,42,.55) }
+@media (prefers-reduced-motion: reduce) { .sp-ladder[data-r] > * { opacity: 1; transform: none; filter: none; transition: none } }
+@media (max-width: 780px) {
+  .sp-ladder { flex-direction: column; align-items: stretch; gap: 4px; padding-top: 24px }
+  .sp-ladder__step { flex-direction: row; align-items: center; text-align: left; gap: 18px; padding: 16px 4px; border-bottom: 1px solid var(--border) }
+  .sp-ladder__step:last-child { border-bottom: none }
+  .sp-ladder__copy { order: 2 }
+  .sp-ladder__bar {
+    order: 1; flex-shrink: 0; width: 44px; max-width: 44px; height: 44px !important;
+    border-radius: 12px; padding-top: 0; align-items: center;
+  }
+}
+
+/* ── Delivery formats as case-file dossiers (4 items: 2x2 on desktop) ── */
+.sp-dossier { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px }
+.sp-dossier[data-r] { opacity: 1; transform: none; filter: none; transition: none }
+.sp-dossier[data-r] > * { opacity: 0; transform: translateY(20px); filter: blur(4px); transition: opacity .6s var(--ease), transform .6s var(--ease), filter .6s var(--ease) }
+.sp-dossier[data-r].in > * { opacity: 1; transform: none; filter: blur(0) }
+.sp-dossier[data-r] > *:nth-child(1) { transition-delay: .03s } .sp-dossier[data-r] > *:nth-child(2) { transition-delay: .1s }
+.sp-dossier[data-r] > *:nth-child(3) { transition-delay: .17s } .sp-dossier[data-r] > *:nth-child(4) { transition-delay: .24s }
+.sp-dossier__card {
+  position: relative; padding: 30px 24px 26px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 4px 16px 16px 16px;
+  box-shadow: 0 16px 30px -20px rgba(16,25,46,.22);
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease), border-color .25s var(--ease);
+}
+.sp-dossier__card:hover { transform: translateY(-4px); box-shadow: 0 22px 40px -18px rgba(16,25,46,.28) }
+.sp-dossier__tab {
+  position: absolute; top: -13px; left: 22px;
+  background: var(--accent-deep); color: #fff;
+  font-family: var(--font-mono); font-size: .64rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  padding: 5px 12px; border-radius: 6px 6px 0 0;
+  transition: background .25s var(--ease);
+}
+.sp-dossier__card:hover .sp-dossier__tab { background: var(--accent) }
+.sp-dossier__icon {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); color: var(--accent-deep);
+}
+.sp-dossier__title { margin: 18px 0 0; font-family: var(--font-display); font-size: 1.04rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
+.sp-dossier__body { margin: 10px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.65 }
+@media (max-width: 680px) {
+  .sp-dossier { grid-template-columns: 1fr }
 }
 
       `}</style>
