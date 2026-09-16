@@ -17,8 +17,11 @@ These three terms get mixed up constantly — here's how they relate:
 * No threat \= no risk, even if the vulnerability exists.  
 * Risk is what you actually manage — you usually can't eliminate threats, so you reduce risk by closing vulnerabilities and lowering potential impact.
 
-**Simple analogy:**
-
-* A vulnerability is an unlocked door.  
-* A threat is a burglar in the neighborhood.  
-* Risk is the chance that the burglar finds and uses that unlocked door — and what it costs you if they do.
+<div class="academy-analogy">
+<span class="academy-analogy__tag">Think of it like a house on the block</span>
+<ul>
+<li>A <strong>vulnerability</strong> is an unlocked door.</li>
+<li>A <strong>threat</strong> is a burglar in the neighborhood.</li>
+<li><strong>Risk</strong> is the chance that the burglar finds and uses that unlocked door — and what it costs you if they do.</li>
+</ul>
+</div>

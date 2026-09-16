@@ -18,3 +18,12 @@ The foundation of information security. Every security control exists to protect
 * Common controls: redundancy, backups, failover systems, DDoS protection, patching
 
 *Quick way to remember it: if a security incident is a breach, a defacement, or an outage, you can usually map it straight back to one leg of the triad — confidentiality, integrity, or availability.*
+
+<div class="academy-analogy">
+<span class="academy-analogy__tag">Think of it like a bank branch</span>
+<ul>
+<li><strong>Confidentiality</strong> is the vault door — only badge holders get in.</li>
+<li><strong>Integrity</strong> is the tamper-evident seal on a cash bag — break it, and everyone knows something happened to it.</li>
+<li><strong>Availability</strong> is the branch's posted hours — the doors are open exactly when customers need them, no more, no less.</li>
+</ul>
+</div>

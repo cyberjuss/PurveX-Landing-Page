@@ -16,11 +16,15 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
       <div>
         <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
           <span>Your progress</span>
-          <span>{completedCount} / {totalCount}</span>
+          <span className="font-display font-bold text-[#5546e0]">{progressPct}%</span>
         </div>
-        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
-          <div className="h-full rounded-full bg-[#6a5cff] transition-all" style={{ width: `${progressPct}%` }} />
+        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+          <div
+            className="h-full rounded-full transition-all"
+            style={{ width: `${progressPct}%`, background: "linear-gradient(90deg, #6a5cff, #5546e0)" }}
+          />
         </div>
+        <p className="mt-1.5 text-[11px] text-slate-400">{completedCount} of {totalCount} lessons complete</p>
       </div>
 
       {phases.map((phase) => {

@@ -2,9 +2,14 @@
 
 Before two computers exchange data over TCP, they "shake hands" to agree they're both ready:
 
-1. **SYN** — Computer A: "I'd like to connect."  
-2. **SYN-ACK** — Computer B: "Okay, I'm ready too."  
-3. **ACK** — Computer A: "Great, let's go."
+<div class="academy-analogy">
+<span class="academy-analogy__tag">Think of it like a phone call</span>
+<ul>
+<li><strong>SYN</strong> — Computer A: "I'd like to connect."</li>
+<li><strong>SYN-ACK</strong> — Computer B: "Okay, I'm ready too."</li>
+<li><strong>ACK</strong> — Computer A: "Great, let's go."</li>
+</ul>
+</div>
 
 Only after these three steps does actual data start flowing.
 
