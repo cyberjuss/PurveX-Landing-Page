@@ -207,7 +207,7 @@ export default function TrainingPage() {
       </section>
 
       {/* ═══════════ THE ANALOGY — corkboard ═══════════ */}
-      <section className="sp-section sp-section--tight">
+      <section className="sp-section">
         <div className="sp-head" data-r>
           <span className="sp-tag">The mindset</span>
           <h2>You already think like this</h2>
@@ -339,7 +339,7 @@ export default function TrainingPage() {
       </section>
 
       {/* ═══════════ CAREER LADDER ═══════════ */}
-      <section className="sp-section">
+      <section className="sp-section sp-section--tight">
         <div className="sp-head" data-r>
           <span className="sp-tag">Where this leads</span>
           <h2>A ladder, not a certificate</h2>
@@ -361,7 +361,7 @@ export default function TrainingPage() {
       </section>
 
       {/* ═══════════ LEARNING ROADMAP ═══════════ */}
-      <section className="sp-section sp-section--tight">
+      <section className="sp-section">
         <div className="sp-roadmap-split" data-r>
           <div className="sp-head sp-head--left sp-roadmap-split__text">
             <span className="sp-tag">The learning roadmap</span>
@@ -383,7 +383,7 @@ export default function TrainingPage() {
       </section>
 
       {/* ═══════════ DELIVERY FORMATS ═══════════ */}
-      <section className="sp-section">
+      <section className="sp-section sp-section--tight">
         <div className="sp-head" data-r>
           <span className="sp-tag">Delivery formats</span>
           <h2>Fits the way your program already runs</h2>
