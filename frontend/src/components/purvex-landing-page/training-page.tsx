@@ -7,6 +7,7 @@ import {
   Award,
   BookOpen,
   Brain,
+  Building2,
   Check,
   ClipboardList,
   Compass,
@@ -21,7 +22,6 @@ import {
   Lock,
   MessageCircle,
   Radar,
-  Search,
   ShieldAlert,
   Siren,
   Users,
@@ -33,26 +33,26 @@ const curriculum = [
   {
     mod: "01",
     icon: BookOpen,
-    title: "Fundamentals",
-    body: "Networking, OS internals, and reading a raw log line — the groundwork every analyst needs.",
+    title: "Phase 1 — Fundamentals",
+    body: "CIA triad, networking, encryption & hashing, authentication and access control.",
   },
   {
     mod: "02",
     icon: Radar,
-    title: "Threat detection",
-    body: "MITRE ATT&CK fundamentals and cutting real signal from noise in an alert queue.",
+    title: "Phase 2 — Threat Detection & Log Analysis",
+    body: "SIEM fundamentals, log analysis, and detection engineering.",
   },
   {
     mod: "03",
-    icon: Search,
-    title: "Log analysis projects",
-    body: "Real log data — Windows Event Logs, Sysmon, network telemetry — and finding what matters.",
+    icon: Siren,
+    title: "Phase 3 — Incident Response",
+    body: "Triage, investigation, containment, and writing it up.",
   },
   {
     mod: "04",
-    icon: Siren,
-    title: "Incident response",
-    body: "An incident end to end: triage, investigate, contain, document.",
+    icon: Building2,
+    title: "Home Lab — Active Directory",
+    body: "GovTech Financial: a fictional enterprise environment used for investigation and detection labs.",
   },
   {
     mod: "05",
@@ -295,7 +295,7 @@ export default function TrainingPage() {
         <div className="sp-head" data-r>
           <span className="sp-tag">The syllabus</span>
           <h2>From fundamentals to a full training partnership</h2>
-          <p>Seven modules: SOC analyst readiness to long-term program support.</p>
+          <p>The same phases as the student portal, plus how we support your program long-term.</p>
         </div>
         <div className="sp-roadmap-zigzag" data-r>
           <div className="sp-roadmap-zigzag__row sp-roadmap-zigzag__row--icons">
