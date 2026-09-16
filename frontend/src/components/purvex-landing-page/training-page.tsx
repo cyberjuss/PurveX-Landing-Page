@@ -402,7 +402,7 @@ export default function TrainingPage() {
           </div>
           <h2>Partner With PurveX</h2>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Partner With PurveX <ArrowRight size={16} />
+            Schedule a Conversation <ArrowRight size={16} />
           </a>
         </div>
       </section>
