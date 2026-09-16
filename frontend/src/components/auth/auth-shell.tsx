@@ -48,10 +48,16 @@ const WIDTH_PX: Record<"sm" | "md" | "lg", number | undefined> = {
 // text-base (16px) on mobile, dropping to text-sm (14px) from md up --
 // anything smaller than 16px makes iOS Safari zoom the page in on focus,
 // which is what breaks typing on a phone.
+// pl-10 makes room for the leading icon every one of these fields has;
+// pr-4 is the plain default since only the password fields have a
+// trailing eye-toggle button, and they already append their own larger
+// pr-* to make room for it. A symmetric px-10 was wasting 40px of the
+// input's width on the side with nothing in it -- felt fine on a wide
+// desktop field, but visibly cramped the typing area on a phone.
 export const AUTH_INPUT_CLASSNAME_LIGHT =
-  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-4 text-base md:text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] disabled:opacity-60";
+  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white pl-10 pr-4 py-4 text-base md:text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] disabled:opacity-60";
 export const AUTH_INPUT_CLASSNAME_DARK =
-  "w-full rounded-2xl border border-white/10 bg-[#0c1220] px-10 py-4 text-base md:text-sm text-white shadow-none transition placeholder:text-slate-500 focus:border-[rgba(72,99,255,0.75)] focus:outline-none focus:ring-4 focus:ring-[rgba(72,99,255,0.12)] disabled:opacity-100";
+  "w-full rounded-2xl border border-white/10 bg-[#0c1220] pl-10 pr-4 py-4 text-base md:text-sm text-white shadow-none transition placeholder:text-slate-500 focus:border-[rgba(72,99,255,0.75)] focus:outline-none focus:ring-4 focus:ring-[rgba(72,99,255,0.12)] disabled:opacity-100";
 
 export function AuthShell({ title, subtitle, children, className, hideHeader = false, theme = "dark", width = "lg", bare = false }: AuthShellProps) {
   const isLight = theme === "light";
