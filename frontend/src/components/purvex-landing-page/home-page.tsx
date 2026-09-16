@@ -21,12 +21,12 @@ const problems = [
   {
     icon: Users,
     title: "Training that stops at theory",
-    body: "Programs teach the concepts. Employers need analysts who can already do the job.",
+    body: "Most programs teach the concepts well. What they can't teach is the instinct you only get from working a real queue.",
   },
   {
     icon: Radar,
     title: "Coverage nobody has tested",
-    body: "Detections exist on paper. Nobody has actually watched them fire.",
+    body: "A detection that's never fired is a guess wearing a checkbox.",
   },
 ];
 
@@ -36,7 +36,7 @@ const offers = [
     icon: ShieldCheck,
     tag: "For lean security teams",
     title: "Security Operations",
-    body: "For teams too stretched to have a dedicated detection engineer: SIEM tuning, detection engineering, and validation that proves your alerts actually fire.",
+    body: "Your SIEM generates alerts, but nobody has the bandwidth to tune them, build new detections, or prove the ones you already have actually fire. We do that work as an extension of your team.",
     bullets: ["SIEM & detection engineering", "SIEM optimization", "Security operations assessments", "Detection validation"],
     cta: "See how we help",
     href: "/security-operations",
@@ -47,7 +47,7 @@ const offers = [
     icon: Users,
     tag: "For academies & programs",
     title: "Cybersecurity Training",
-    body: "For academies and workforce programs: hands-on instruction built around how a real SOC operates, taught by someone who still works in one.",
+    body: "Most programs teach security concepts a classroom can grade. Employers need people who've already worked a queue — we teach that, taught by someone who still works in one.",
     bullets: ["Cybersecurity instruction", "Hands-on security labs", "Curriculum support", "Instructor partnerships"],
     cta: "See the curriculum",
     href: "/cybersecurity-training",
@@ -58,7 +58,7 @@ const offers = [
     icon: Radar,
     tag: "In development",
     title: "PurveX Labs",
-    body: "Continuous, measurable proof your detections work, not just that they exist on paper. Currently in private beta.",
+    body: "You can tell leadership a detection exists. You can't yet tell them it works — Labs closes that gap with continuous, measurable proof instead of a one-time report.",
     bullets: ["Continuous detection validation", "Measurable coverage over time", "Private beta, in development"],
     cta: "Get early access",
     href: "/platform",
@@ -125,10 +125,10 @@ export default function HomePage() {
           </div>
         </div>
 
-        <h1 className="sp-hero__h1">Stop Assuming. Start Proving</h1>
+        <h1 className="sp-hero__h1">Most detections have never faced a real attack</h1>
         <p className="sp-hero__sub">
-          PurveX tunes your detections, trains your analysts, and tests both against real
-          attacker behavior. No slide deck required.
+          PurveX tunes your detections, trains your analysts, and proves both hold up
+          against real attacker behavior.
         </p>
         <div className="sp-hero__actions">
           <a href="#how-we-help" className="sp-btn sp-btn--prim sp-btn--lg">
@@ -160,7 +160,7 @@ export default function HomePage() {
       <section className="sp-section" id="how-we-help">
         <div className="sp-head" data-r>
           <span className="sp-tag">How PurveX helps</span>
-          <h2>Three ways we strengthen your security posture</h2>
+          <h2>Three ways we fit into your team</h2>
         </div>
 
         <div className="sp-offers" data-r>
@@ -201,9 +201,9 @@ export default function HomePage() {
           <span className="sp-tag">Why PurveX</span>
           <h2>No layer between the work and the person doing it</h2>
           <p>
-            The person running your security operations is the same one teaching in the field,
-            not an account manager relaying between you and the work. That is not a feature we
-            added. It is how we think a company like this should be run.
+            The person running your security operations is the same one teaching in the field —
+            there's no account manager relaying between you and the work. That's simply how we
+            think a company like this should be run.
           </p>
           <Link href="/about" className="sp-statement__link">
             Read how we think <ArrowRight size={14} />
