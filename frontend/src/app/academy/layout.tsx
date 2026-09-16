@@ -1,4 +1,5 @@
 import { isAcademyUnlocked } from "@/lib/academy-auth";
+import { phases } from "@/lib/academy-content";
 import { UnlockForm } from "./unlock-form";
 import { AcademyShell } from "./academy-shell";
 
@@ -9,5 +10,5 @@ export default async function AcademyLayout({ children }: { children: React.Reac
     return <UnlockForm />;
   }
 
-  return <AcademyShell>{children}</AcademyShell>;
+  return <AcademyShell phases={phases}>{children}</AcademyShell>;
 }

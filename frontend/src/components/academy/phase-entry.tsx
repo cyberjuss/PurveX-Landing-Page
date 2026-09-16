@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { loadLesson, type ContentSection, type WeekDef, type PhaseDef } from "@/lib/academy-content";
 import { findQuiz } from "@/content/academy/quizzes";
 import { SectionTabs } from "./section-tabs";
+import { MarkCompleteButton } from "./mark-complete-button";
 
 export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }) {
   const sections = entry.sections
@@ -16,10 +17,15 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
         <ArrowLeft className="h-4 w-4" /> {phase.label}
       </Link>
 
-      <h1 className="mt-5 font-display text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-        {entry.title}
-      </h1>
-      <p className="mt-3 max-w-xl text-sm leading-6 text-slate-500">{entry.summary}</p>
+      <div className="mt-5 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+            {entry.title}
+          </h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-slate-500">{entry.summary}</p>
+        </div>
+        {sections.length > 0 && <MarkCompleteButton phaseSlug={phase.slug} entrySlug={entry.slug} />}
+      </div>
 
       {sections.length === 0 ? (
         <p className="mt-8 rounded-2xl border border-[var(--pvrx-border-light)] bg-slate-50/60 px-5 py-4 text-sm text-slate-500">
