@@ -565,6 +565,7 @@ export default function PlatformPage() {
   .sp-wl__row:focus-within { box-shadow: none }
   .sp-wl__field { flex: none; height: 50px; padding: 0 16px; border-radius: 11px; border: 1px solid var(--border-strong); background: var(--surface) }
   .sp-wl__row:focus-within .sp-wl__field { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(106,92,255,.12) }
+  .sp-wl__input { font-size: 16px }
   .sp-hero__ghost-link { margin-top: 14px }
   .sp-bento { grid-template-columns: 1fr }
   .sp-tile--feat { grid-column: 1 / -1 }

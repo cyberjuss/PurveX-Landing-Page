@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Loader2, Lock } from "lucide-react";
 import { unlockAcademy } from "./actions";
 import { Button } from "@/components/ui/button";
+import { AUTH_INPUT_CLASSNAME_LIGHT } from "@/components/auth/auth-shell";
 
 export function UnlockForm() {
   const [state, formAction, isPending] = useActionState(unlockAcademy, null);
@@ -37,7 +38,7 @@ export function UnlockForm() {
                 type="password"
                 autoComplete="off"
                 placeholder="Enter passcode"
-                className="w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-10 py-4 text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] disabled:opacity-60"
+                className={AUTH_INPUT_CLASSNAME_LIGHT}
                 disabled={isPending}
                 required
               />
