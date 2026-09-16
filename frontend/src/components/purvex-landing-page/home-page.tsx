@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -12,6 +15,44 @@ import {
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
+// Rotates through the hero's decorative "Alert queue" card so it reads like
+// a live SOC console instead of two frozen rows. Purely decorative
+// (aria-hidden on the wrapper), so it never competes with real content.
+const ALERT_FEED = [
+  { sev: "crit", label: "Critical", text: "T1055 · Process Injection" },
+  { sev: "med", label: "Medium", text: "T1059 · Command Exec" },
+  { sev: "crit", label: "Critical", text: "T1003 · Credential Dumping" },
+  { sev: "low", label: "Low", text: "T1087 · Account Discovery" },
+  { sev: "med", label: "Medium", text: "T1071 · App Layer Protocol" },
+  { sev: "crit", label: "Critical", text: "T1486 · Data Encrypted for Impact" },
+];
+
+function AlertQueueCard() {
+  const [i, setI] = useState(0);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = setInterval(() => setI((n) => n + 1), 2800);
+    return () => clearInterval(id);
+  }, []);
+
+  const rows = [ALERT_FEED[i % ALERT_FEED.length], ALERT_FEED[(i + 1) % ALERT_FEED.length]];
+
+  return (
+    <div className="sp-deco-card sp-deco-card--queue">
+      <p className="sp-deco-card__queuehead">
+        <span className="sp-deco-card__pulse" /> Alert queue
+      </p>
+      {rows.map((a, idx) => (
+        <div className="sp-deco-card__queuerow sp-deco-card__queuerow--in" key={`${i}-${idx}`}>
+          <span className={`sp-deco-card__sev sp-deco-card__sev--${a.sev}`}>{a.label}</span>
+          <span className="sp-deco-card__queuetext">{a.text}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const problems = [
   {
     icon: ShieldCheck,
@@ -21,12 +62,12 @@ const problems = [
   {
     icon: Users,
     title: "Training that stops at theory",
-    body: "Programs teach the concepts. Employers need analysts who can already do the job.",
+    body: "Most programs teach the concepts well. What they can't teach is the instinct you only get from working a real queue.",
   },
   {
     icon: Radar,
     title: "Coverage nobody has tested",
-    body: "Detections exist on paper. Nobody has actually watched them fire.",
+    body: "A detection that's never fired is a guess wearing a checkbox.",
   },
 ];
 
@@ -36,7 +77,7 @@ const offers = [
     icon: ShieldCheck,
     tag: "For lean security teams",
     title: "Security Operations",
-    body: "For teams too stretched to have a dedicated detection engineer: SIEM tuning, detection engineering, and validation that proves your alerts actually fire.",
+    body: "Your SIEM generates alerts, but nobody has the bandwidth to tune them, build new detections, or prove the ones you already have actually fire. We do that work as an extension of your team.",
     bullets: ["SIEM & detection engineering", "SIEM optimization", "Security operations assessments", "Detection validation"],
     cta: "See how we help",
     href: "/security-operations",
@@ -47,7 +88,7 @@ const offers = [
     icon: Users,
     tag: "For academies & programs",
     title: "Cybersecurity Training",
-    body: "For academies and workforce programs: hands-on instruction built around how a real SOC operates, taught by someone who still works in one.",
+    body: "Most programs teach security concepts a classroom can grade. Employers need people who've already worked a queue — we teach that, taught by someone who still works in one.",
     bullets: ["Cybersecurity instruction", "Hands-on security labs", "Curriculum support", "Instructor partnerships"],
     cta: "See the curriculum",
     href: "/cybersecurity-training",
@@ -58,7 +99,7 @@ const offers = [
     icon: Radar,
     tag: "In development",
     title: "PurveX Labs",
-    body: "Continuous, measurable proof your detections work, not just that they exist on paper. Currently in private beta.",
+    body: "You can tell leadership a detection exists. You can't yet tell them it works — Labs closes that gap with continuous, measurable proof instead of a one-time report.",
     bullets: ["Continuous detection validation", "Measurable coverage over time", "Private beta, in development"],
     cta: "Get early access",
     href: "/platform",
@@ -109,26 +150,14 @@ export default function HomePage() {
         </div>
         <div className="sp-hero__deco sp-hero__deco--right" aria-hidden="true">
           <div className="sp-deco-float sp-deco-float--alt">
-            <div className="sp-deco-card sp-deco-card--queue">
-              <p className="sp-deco-card__queuehead">
-                <span className="sp-deco-card__pulse" /> Alert queue
-              </p>
-              <div className="sp-deco-card__queuerow">
-                <span className="sp-deco-card__sev sp-deco-card__sev--crit">Critical</span>
-                <span className="sp-deco-card__queuetext">T1055 · Process Injection</span>
-              </div>
-              <div className="sp-deco-card__queuerow">
-                <span className="sp-deco-card__sev sp-deco-card__sev--med">Medium</span>
-                <span className="sp-deco-card__queuetext">T1059 · Command Exec</span>
-              </div>
-            </div>
+            <AlertQueueCard />
           </div>
         </div>
 
-        <h1 className="sp-hero__h1">Stop Assuming. Start Proving</h1>
+        <h1 className="sp-hero__h1">Most detections have never faced a real attack</h1>
         <p className="sp-hero__sub">
-          PurveX tunes your detections, trains your analysts, and tests both against real
-          attacker behavior. No slide deck required.
+          PurveX tunes your detections, trains your analysts, and proves both hold up
+          against real attacker behavior.
         </p>
         <div className="sp-hero__actions">
           <a href="#how-we-help" className="sp-btn sp-btn--prim sp-btn--lg">
@@ -160,7 +189,7 @@ export default function HomePage() {
       <section className="sp-section" id="how-we-help">
         <div className="sp-head" data-r>
           <span className="sp-tag">How PurveX helps</span>
-          <h2>Three ways we strengthen your security posture</h2>
+          <h2>Three ways we fit into your team</h2>
         </div>
 
         <div className="sp-offers" data-r>
@@ -201,9 +230,9 @@ export default function HomePage() {
           <span className="sp-tag">Why PurveX</span>
           <h2>No layer between the work and the person doing it</h2>
           <p>
-            The person running your security operations is the same one teaching in the field,
-            not an account manager relaying between you and the work. That is not a feature we
-            added. It is how we think a company like this should be run.
+            The person running your security operations is the same one teaching in the field —
+            there's no account manager relaying between you and the work. That's simply how we
+            think a company like this should be run.
           </p>
           <Link href="/about" className="sp-statement__link">
             Read how we think <ArrowRight size={14} />
@@ -307,9 +336,15 @@ export default function HomePage() {
 .sp-deco-card__queuehead { display: flex; align-items: center; gap: 7px; margin: 0 0 11px; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted) }
 .sp-deco-card__queuerow { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid var(--border) }
 .sp-deco-card__queuerow:first-of-type { border-top: none; padding-top: 0 }
+.sp-deco-card__queuerow--in { animation: sp-queue-row-in .45s var(--ease) both }
+@keyframes sp-queue-row-in { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: none } }
 .sp-deco-card__sev { flex-shrink: 0; font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; padding: 3px 7px; border-radius: 999px }
 .sp-deco-card__sev--crit { background: rgba(229,72,77,.12); color: var(--red) }
 .sp-deco-card__sev--med { background: rgba(244,183,64,.18); color: #a15b06 }
+.sp-deco-card__sev--low { background: rgba(106,92,255,.12); color: var(--accent-deep) }
+@media (prefers-reduced-motion: reduce) {
+  .sp-deco-card__queuerow--in { animation: none }
+}
 .sp-deco-card__queuetext { font-size: .74rem; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 @media (prefers-reduced-motion: reduce) {
   .sp-hero__deco { animation: none; opacity: 1; transform: none }
