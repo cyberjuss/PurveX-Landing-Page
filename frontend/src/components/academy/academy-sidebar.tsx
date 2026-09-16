@@ -13,14 +13,14 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
 
   return (
     <nav className="flex h-full flex-col gap-6 overflow-y-auto px-5 py-6">
-      <div>
+      <div className="rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-4 shadow-[0_1px_2px_rgba(16,25,46,0.04)]">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
           <span>Your progress</span>
           <span className="font-display font-bold text-[#5546e0]">{progressPct}%</span>
         </div>
-        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+        <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-slate-100">
           <div
-            className="h-full rounded-full transition-all"
+            className="h-full rounded-full transition-all duration-500"
             style={{ width: `${progressPct}%`, background: "linear-gradient(90deg, #6a5cff, #5546e0)" }}
           />
         </div>
@@ -29,35 +29,42 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
 
       {phases.map((phase) => {
         const entries = [...phase.weeks, ...(phase.homeLab ? [phase.homeLab] : [])];
+        const phaseActive = pathname === `/academy/${phase.slug}`;
         return (
           <div key={phase.slug}>
             <Link
               href={`/academy/${phase.slug}`}
               onClick={onNavigate}
               className={`block text-[11px] font-bold uppercase tracking-[0.1em] transition ${
-                pathname === `/academy/${phase.slug}` ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
+                phaseActive ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
               }`}
             >
               {phase.label} — {phase.title}
             </Link>
-            <ul className="mt-2 flex flex-col gap-0.5">
+            <ul className="mt-2.5 flex flex-col gap-0.5 border-l border-[var(--pvrx-border-light)] pl-3">
               {entries.map((entry) => {
                 const href = `/academy/${phase.slug}/${entry.slug}`;
                 const active = pathname === href;
                 const done = isComplete(phase.slug, entry.slug);
                 const hasContent = entry.sections.length > 0;
                 return (
-                  <li key={entry.slug}>
+                  <li key={entry.slug} className="relative">
+                    {active && (
+                      <span
+                        aria-hidden
+                        className="absolute -left-3 top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-[#5546e0]"
+                      />
+                    )}
                     {hasContent ? (
                       <Link
                         href={href}
                         onClick={onNavigate}
-                        className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition ${
+                        className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors duration-150 ${
                           active ? "bg-[rgba(106,92,255,0.1)] font-semibold text-[#5546e0]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                         }`}
                       >
                         <span
-                          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
+                          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-colors duration-150 ${
                             done ? "border-[#6a5cff] bg-[#6a5cff] text-white" : "border-slate-300"
                           }`}
                         >

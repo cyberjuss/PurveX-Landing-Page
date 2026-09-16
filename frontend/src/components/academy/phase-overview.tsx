@@ -39,7 +39,7 @@ export function PhaseOverview({ phase, tagline }: { phase: PhaseDef; tagline: st
             <Link
               key={entry.slug}
               href={`/academy/${phase.slug}/${entry.slug}`}
-              className="group flex items-start gap-4 rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-5 transition hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
+              className="group flex items-start gap-4 rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-5 shadow-[0_1px_2px_rgba(16,25,46,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
             >
               {card}
             </Link>

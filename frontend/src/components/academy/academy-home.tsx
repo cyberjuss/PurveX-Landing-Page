@@ -106,7 +106,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
         </div>
 
         {totalCount > 0 && (
-          <div className="flex shrink-0 items-center gap-4 rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-5 py-4">
+          <div className="flex shrink-0 items-center gap-4 rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-5 py-4 shadow-[0_1px_2px_rgba(16,25,46,0.04)]">
             <div className="relative flex h-[76px] w-[76px] items-center justify-center">
               <ProgressRing pct={overallPct} />
               <span className="absolute font-display text-base font-bold text-slate-900">{overallPct}%</span>
@@ -129,7 +129,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
             <Link
               key={card.slug}
               href={card.href}
-              className="group relative flex items-start gap-4 overflow-hidden rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-5 transition hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
+              className="group relative flex items-start gap-4 overflow-hidden rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-5 shadow-[0_1px_2px_rgba(16,25,46,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
             >
               <span className="absolute inset-y-0 left-0 w-1" style={{ background: card.accent }} aria-hidden="true" />
               <span

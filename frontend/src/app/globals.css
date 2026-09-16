@@ -2767,6 +2767,26 @@ body:has(.lp) {
   text-align: center;
 }
 
+/* Academy portal background -- fixed so it doesn't scroll with the long
+   lesson content, and deliberately faint (a reading workspace, not a
+   landing page) -- just enough tint that the portal doesn't look like an
+   unstyled white page next to the rest of the site. */
+.academy-bg {
+  position: relative;
+  background: var(--pvrx-bg-light, #fff);
+}
+.academy-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 40% at 15% 0%, rgba(106,92,255,.05), transparent 60%),
+    radial-gradient(ellipse 45% 35% at 100% 15%, rgba(106,92,255,.04), transparent 60%);
+}
+.academy-bg > * { position: relative; z-index: 1 }
+
 /* Academy lesson content -- rendered from marked's HTML output
    (src/lib/markdown.tsx), scoped so it doesn't leak into the rest of the
    site. Mirrors the auth pages' palette (--pvrx-border-light, --accent). */
@@ -2794,6 +2814,37 @@ body:has(.lp) {
 .academy-prose table { width: 100%; margin: 1.1rem 0; border-collapse: collapse; font-size: 0.9rem; }
 .academy-prose th, .academy-prose td { border: 1px solid var(--pvrx-border-light); padding: 0.5rem 0.7rem; text-align: left; vertical-align: top; }
 .academy-prose th { background: var(--pvrx-surface-alt-light); font-weight: 650; }
+
+/* Essential Question callout -- every lesson opens on one, framing what
+   the lesson is actually for before the explanation starts. Previously
+   just a bold paragraph indistinguishable from body text; pulling it into
+   its own panel gives the reader something to hold onto as they read the
+   rest of the lesson. */
+.academy-prose .academy-question {
+  margin: 0 0 1.5rem;
+  padding: 1.1rem 1.3rem;
+  border-radius: 14px;
+  border: 1px solid rgba(16,25,46,0.08);
+  background: var(--pvrx-surface-alt-light);
+}
+.academy-prose .academy-question__tag {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--pvrx-text-secondary-light);
+  margin-bottom: 0.5rem;
+}
+.academy-prose .academy-question p {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--pvrx-text-primary-light);
+}
 
 /* Analogy callouts -- authored directly as raw HTML inside a lesson's
    markdown (see src/lib/markdown.tsx's comment on why that's safe here).

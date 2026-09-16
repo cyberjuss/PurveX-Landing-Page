@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { BookMarked, GraduationCap, Home, Menu, X } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
@@ -9,11 +9,25 @@ import { AcademySidebar } from "@/components/academy/academy-sidebar";
 
 export function AcademyShell({ phases, children }: { phases: PhaseDef[]; children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <AcademyProgressProvider phases={phases}>
-      <div className="min-h-screen bg-white">
-        <header className="sticky top-0 z-40 border-b border-[var(--pvrx-border-light)] bg-white">
+      <div className="academy-bg min-h-screen">
+        <header
+          className={`sticky top-0 z-40 border-b transition-shadow ${
+            scrolled
+              ? "border-[var(--pvrx-border-light)] bg-white/85 shadow-[0_1px_0_rgba(16,25,46,0.03),0_8px_24px_-16px_rgba(16,25,46,0.12)] backdrop-blur-md"
+              : "border-transparent bg-white/60 backdrop-blur-md"
+          }`}
+        >
           <div className="flex items-center justify-between px-4 py-4 sm:px-6">
             <div className="flex items-center gap-3">
               <button
@@ -25,7 +39,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
                 <Menu className="h-[18px] w-[18px]" />
               </button>
               <Link href="/academy" className="flex items-center gap-2.5 font-display text-base font-semibold tracking-tight text-slate-900">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[rgba(106,92,255,0.1)] text-[#5546e0]">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#6a5cff] to-[#5546e0] text-white shadow-[0_6px_16px_-4px_rgba(85,70,224,0.5)]">
                   <GraduationCap className="h-[18px] w-[18px]" />
                 </span>
                 <span className="hidden sm:inline">Think Like a SOC Analyst</span>
@@ -34,14 +48,14 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
             <div className="flex items-center gap-2">
               <Link
                 href="/academy/reference"
-                className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--pvrx-border-light)] px-3 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--pvrx-border-light)] bg-white px-3 text-sm font-medium text-slate-600 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
               >
                 <BookMarked className="h-4 w-4" /> Reference
               </Link>
               <Link
                 href="/"
                 aria-label="PurveX home"
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--pvrx-border-light)] text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--pvrx-border-light)] bg-white text-slate-500 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
               >
                 <Home className="h-[18px] w-[18px]" />
               </Link>
@@ -51,7 +65,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
         <div className="mx-auto flex max-w-7xl">
           {/* Desktop sidebar */}
-          <aside className="hidden w-72 shrink-0 border-r border-[var(--pvrx-border-light)] lg:sticky lg:top-[65px] lg:block lg:h-[calc(100vh-65px)]">
+          <aside className="hidden w-72 shrink-0 border-r border-[var(--pvrx-border-light)] bg-white/70 lg:sticky lg:top-[65px] lg:block lg:h-[calc(100vh-65px)]">
             <AcademySidebar phases={phases} />
           </aside>
 

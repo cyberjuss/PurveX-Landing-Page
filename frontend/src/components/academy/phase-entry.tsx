@@ -54,7 +54,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
           {labSections.length > 0 && (
             <div className={otherSections.length > 0 ? "mt-10 flex flex-col gap-6" : "mt-8 flex flex-col gap-6"}>
               {labSections.map((lab) => (
-                <div key={lab.file} className="overflow-hidden rounded-2xl border border-[var(--pvrx-border-light)] bg-white">
+                <div key={lab.file} className="overflow-hidden rounded-2xl border border-[var(--pvrx-border-light)] bg-white shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)]">
                   <div className="flex items-center gap-3 border-b border-[var(--pvrx-border-light)] bg-[rgba(106,92,255,0.04)] px-6 py-4 sm:px-8">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[rgba(106,92,255,0.1)] text-[#5546e0]">
                       <FlaskConical className="h-[18px] w-[18px]" />
