@@ -1,27 +1,27 @@
 ### **Risk, Threats, and Vulnerabilities**
 
-These three terms get mixed up constantly — here's how they relate:
+These three terms get mixed up constantly. Here's how they relate.
 
-**Vulnerability** — A weakness that could be exploited.
+**Vulnerability**: A weakness that could be exploited.
 
 * Example: unpatched software, a misconfigured firewall, weak passwords, an open port
 
-**Threat** — Something (or someone) that could exploit a vulnerability.
+**Threat**: Something, or someone, that could exploit a vulnerability.
 
 * Example: a hacker, malware, an insider, a natural disaster, a nation-state actor
 
-**Risk** — The likelihood and impact of a threat actually exploiting a vulnerability.
+**Risk**: The likelihood and impact of a threat actually exploiting a vulnerability.
 
 * Formula analysts use: **Risk \= Threat × Vulnerability × Impact**  
-* No vulnerability \= no risk, even if the threat exists.  
-* No threat \= no risk, even if the vulnerability exists.  
-* Risk is what you actually manage — you usually can't eliminate threats, so you reduce risk by closing vulnerabilities and lowering potential impact.
+* No vulnerability means no risk, even if the threat exists.  
+* No threat means no risk, even if the vulnerability exists.  
+* Risk is what you actually manage. You usually can't eliminate threats, so you reduce risk by closing vulnerabilities and lowering potential impact.
 
 <div class="academy-analogy">
 <span class="academy-analogy__tag">Think of it like a house on the block</span>
 <ul>
 <li>A <strong>vulnerability</strong> is an unlocked door.</li>
 <li>A <strong>threat</strong> is a burglar in the neighborhood.</li>
-<li><strong>Risk</strong> is the chance that the burglar finds and uses that unlocked door — and what it costs you if they do.</li>
+<li><strong>Risk</strong> is the chance the burglar finds and uses that unlocked door. It's also what it costs you if they do.</li>
 </ul>
 </div>
