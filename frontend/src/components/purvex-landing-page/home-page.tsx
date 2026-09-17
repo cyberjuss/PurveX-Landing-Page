@@ -228,12 +228,13 @@ export default function HomePage() {
       <section className="sp-section sp-section--tight">
         <div className="sp-statement" data-r>
           <span className="sp-tag">Why PurveX</span>
-          <h2>No Layer Between the Work and the Person Doing It</h2>
+          <h2>The Work Gets Tested, Not Just Delivered</h2>
           <p>
-            When your security decisions pass through someone who was not actually involved in
-            making them, you lose something. Context. Nuance. The details that only make sense
-            to the person who was there. Keep the work and the person in the same hands, and you
-            never get a decision about your environment secondhand.
+            Tuning a detection or training an analyst is not a finished task, it is a claim. A
+            detection has to survive someone actually trying to get past it. An analyst has to
+            prove they can work a real queue, not describe one. We build both against that
+            standard, because a security program nobody has tested is not evidence. It is an
+            assumption.
           </p>
           <Link href="/about" className="sp-statement__link">
             Read how we think <ArrowRight size={14} />
