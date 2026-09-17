@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { Markdown } from "@/lib/markdown";
 import { QuizBlock } from "./quiz";
 import type { Quiz } from "@/content/academy/quizzes";
@@ -20,27 +21,44 @@ const VERTICAL_NAV_THRESHOLD = 6;
 export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?: Quiz }) {
   const tabLabels = quiz ? [...sections.map((s) => s.label), "Test yourself"] : sections.map((s) => s.label);
   const [active, setActive] = useState(0);
+  // Expanded by default -- collapsing is an option for a long list like Home
+  // Lab's 9 sections, not the default state. Collapsed shows just the
+  // current section's name so context isn't lost while the list is hidden.
+  const [collapsed, setCollapsed] = useState(false);
   const isQuizTab = quiz !== undefined && active === sections.length;
   const panel = isQuizTab ? <QuizBlock quiz={quiz!} /> : <Markdown content={sections[active].markdown} />;
 
   if (tabLabels.length > VERTICAL_NAV_THRESHOLD) {
     return (
       <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
-        <div role="tablist" aria-orientation="vertical" className="flex flex-col gap-1 md:w-[196px] md:shrink-0">
-          {tabLabels.map((label, i) => (
-            <button
-              key={label}
-              type="button"
-              role="tab"
-              aria-selected={active === i}
-              onClick={() => setActive(i)}
-              className={`rounded-lg px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 ${
-                active === i ? "bg-[rgba(106,92,255,0.1)] text-[#5546e0]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        <div className="md:w-[196px] md:shrink-0">
+          <button
+            type="button"
+            onClick={() => setCollapsed((c) => !c)}
+            aria-expanded={!collapsed}
+            className="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+          >
+            <span className="truncate">{collapsed ? tabLabels[active] : "Sections"}</span>
+            <ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200 ${collapsed ? "" : "rotate-180"}`} />
+          </button>
+          {!collapsed && (
+            <div role="tablist" aria-orientation="vertical" className="mt-1 flex flex-col gap-1">
+              {tabLabels.map((label, i) => (
+                <button
+                  key={label}
+                  type="button"
+                  role="tab"
+                  aria-selected={active === i}
+                  onClick={() => setActive(i)}
+                  className={`rounded-lg px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 ${
+                    active === i ? "bg-[rgba(106,92,255,0.1)] text-[#5546e0]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="min-w-0 flex-1 rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)] sm:p-8">
