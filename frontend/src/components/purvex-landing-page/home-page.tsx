@@ -230,9 +230,10 @@ export default function HomePage() {
           <span className="sp-tag">Why PurveX</span>
           <h2>No Layer Between the Work and the Person Doing It</h2>
           <p>
-            Security decisions get worse every time they pass through someone who was not
-            actually involved in making them. Context gets lost. Nuance flattens into a status
-            update. Keeping the work and the person in the same hands is what prevents that.
+            When your security decisions pass through someone who was not actually involved in
+            making them, you lose something. Context. Nuance. The details that only make sense
+            to the person who was there. Keep the work and the person in the same hands, and you
+            never get a decision about your environment secondhand.
           </p>
           <Link href="/about" className="sp-statement__link">
             Read how we think <ArrowRight size={14} />
