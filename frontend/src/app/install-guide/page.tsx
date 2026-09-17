@@ -26,7 +26,7 @@ export default function Page() {
         Install the following tools before you begin, or let the installer handle it: it checks for each
         one, and if Python, Node.js, or PostgreSQL is missing, it detects your OS, prints the exact command
         to install it, and offers to run that command for you once you confirm. PostgreSQL is the standard
-        database for every install; the installer sets it up automatically and only asks you for a password.
+        database for every install. The installer sets it up automatically and only asks you for a password.
       </P>
       <Table
         head={["Tool", "Version", "Check"]}

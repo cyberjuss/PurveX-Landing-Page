@@ -129,7 +129,7 @@ function PortalSignupContent() {
           </div>
           <p className="text-center text-sm leading-relaxed text-slate-600">
             {plan
-              ? `Confirm your email and you'll be taken straight to your ${plan === "paid" ? "paid" : "free"} plan — no need to choose again.`
+              ? `Confirm your email and you'll be taken straight to your ${plan === "paid" ? "paid" : "free"} plan. No need to choose again.`
               : "Confirm your email, then come back and sign in to choose a plan."}
           </p>
           <Link

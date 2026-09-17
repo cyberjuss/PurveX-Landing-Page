@@ -13,7 +13,7 @@ export default function Page() {
       <H2>Create an account</H2>
       <P>
         Open <code>http://localhost:1120</code> in your browser. A fresh installation has no account yet, so
-        you are taken directly to setup; there is no separate signup form to locate. Choose a username, an
+        you are taken directly to setup. There is no separate signup form to locate. Choose a username, an
         optional email address, and a password (12 or more characters, with a mix of upper and lower case and
         a number).
       </P>
@@ -28,7 +28,7 @@ export default function Page() {
         <P><strong>Settings &rarr; SIEM.</strong> Point PurveX at Splunk, Elastic, or Sentinel, whichever your team already uses. It pulls only what it needs to confirm that a test triggered an alert. See <Link href="/install-guide/data-handling" style={{ color: "var(--accent-deep)", fontWeight: 600 }}>exactly what it never collects</Link>.</P>
       </Step>
       <Step n="2" title="Install the test library">
-        <P><strong>Tests &rarr; Explore Coverage</strong> &rarr; select any technique &rarr; Install catalog. This downloads the Atomic Red Team library, a well-known, open-source set of safe attack simulations. It is a one-time download; the library is cached for every test after.</P>
+        <P><strong>Tests &rarr; Explore Coverage</strong> &rarr; select any technique &rarr; Install catalog. This downloads the Atomic Red Team library, a well-known, open-source set of safe attack simulations. It is a one-time download. The library is cached for every test after.</P>
       </Step>
       <Step n="3" title="Register a test runner">
         <P><strong>Endpoints &rarr; Add runner.</strong> A test runner is a lab or sandbox machine, never a production one, that PurveX connects to over SSH to execute simulated attacks. Use the installer script: generate a short-lived token, download the script for the target machine&apos;s OS, and run it there. It provisions PurveX&apos;s SSH key, detects and reports the machine&apos;s host-key fingerprint automatically, and installs a lightweight heartbeat service. No manual commands are required.</P>

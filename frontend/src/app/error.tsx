@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
 
 export default function Error({
@@ -25,15 +26,23 @@ export default function Error({
           Something went wrong
         </h1>
         <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-          An unexpected error occurred in this part of the app. You can try again or return to the dashboard.
+          An unexpected error occurred in this part of the app. You can try again or head back home.
         </p>
-        <button
-          type="button"
-          onClick={() => reset()}
-          className="mt-8 inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity"
-        >
-          Try again
-        </button>
+        <div className="mt-8 flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => reset()}
+            className="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity"
+          >
+            Try again
+          </button>
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground hover:bg-card/80 transition-colors"
+          >
+            Back home
+          </Link>
+        </div>
       </div>
     </div>
   );

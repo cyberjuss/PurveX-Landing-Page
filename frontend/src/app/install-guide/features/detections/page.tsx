@@ -64,8 +64,8 @@ export default function Page() {
       </P>
 
       <Callout tone="info">
-        Import and export are independent. A repository detections are imported from is not automatically the
-        same repository changes are exported to. Configure both if two-way visibility is required.
+        Import and export are independent: the repository you import from is not automatically the
+        repository you export to. Configure both if you need two-way visibility.
       </Callout>
     </>
   );

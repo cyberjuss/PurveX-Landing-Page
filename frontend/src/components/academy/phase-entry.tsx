@@ -38,7 +38,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
 
       {sections.length === 0 ? (
         <p className="mt-8 rounded-2xl border border-[var(--pvrx-border-light)] bg-slate-50/60 px-5 py-4 text-sm text-slate-500">
-          Content for this week is still being written — check back soon.
+          Content for this week is still being written. Check back soon.
         </p>
       ) : (
         <>

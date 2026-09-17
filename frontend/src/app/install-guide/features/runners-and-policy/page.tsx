@@ -50,7 +50,7 @@ export default function Page() {
         rows={[
           ["Allowed environments", "Lab / Dev / Prod toggles. This setting is enforced: PurveX refuses to run a test in an environment that has not been allowed."],
           ["Test markers", "A prefix (and optional environment/timestamp suffix) stamped on every test, plus a SOC alert tag, so test activity can be filtered out of real alerts."],
-          ["Production safeguards", "Notify before production tests; require a declared maintenance window for prod runs."],
+          ["Production safeguards", "Notify before production tests. Require a declared maintenance window for prod runs."],
           ["Business hours", "Block tests from running during a configured time window."],
           ["Data retention", "How long pass/fail results are kept, globally and per environment (defaults: Lab 7/30 days, Dev 30/90, Prod 90/180)."],
         ]}

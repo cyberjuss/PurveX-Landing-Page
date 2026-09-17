@@ -118,7 +118,7 @@ function GetPurveXContent() {
             <p className="text-sm leading-relaxed text-slate-500">
               Visit <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[13px] text-slate-700">http://localhost:1120</span> -- the
               first visitor is walked through creating the admin account. There&apos;s no separate login for this
-              step; whoever gets there first sets it up.
+              step. Whoever gets there first sets it up.
             </p>
           </Step>
         </div>

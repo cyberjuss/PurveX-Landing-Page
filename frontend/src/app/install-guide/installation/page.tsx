@@ -39,9 +39,9 @@ export default function Page() {
         </>}
       />
       <P>
-        This downloads PurveX, installs it — including PostgreSQL, prompting only for a database password
-        — and asks if you want to start it. Say yes and once you see it running, open{" "}
-        <code>http://localhost:1120</code>. Keep this terminal window open; closing it stops PurveX.
+        This downloads PurveX, installs it and its PostgreSQL database, and asks if you want to start it. The
+        only thing it prompts you for is a database password. Say yes, and once it&apos;s running, open{" "}
+        <code>http://localhost:1120</code>. Keep this terminal window open. Closing it stops PurveX.
       </P>
 
       <Callout tone="info">
@@ -68,7 +68,7 @@ export default function Page() {
 
       <H2 id="update">Update PurveX</H2>
       <P>
-        To update, pull the latest code and rebuild. This is safe to run at any time; your existing data is
+        To update, pull the latest code and rebuild. This is safe to run at any time. Your existing data is
         not affected.
       </P>
       <TermBlock copyText={"git pull && ./scripts/purvex.sh --setup"} lines={<>
@@ -76,7 +76,7 @@ export default function Page() {
       </>} />
       <P>
         This also re-applies any new database migrations. When asked whether to start PurveX, answer{" "}
-        <code>n</code> — you still need to rebuild the frontend first:
+        <code>n</code>. You still need to rebuild the frontend first:
       </P>
       <TermBlock copyText={"./scripts/purvex.sh --rebuild && ./scripts/purvex.sh --start"} lines={<>
         <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --rebuild &amp;&amp; ./scripts/purvex.sh --start</span>

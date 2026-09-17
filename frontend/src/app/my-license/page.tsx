@@ -197,7 +197,7 @@ function MyLicenseContent() {
             </div>
             <p className="text-sm leading-relaxed text-slate-600">
               We issue license keys by hand right now, so yours isn&apos;t here yet -- expect it within one
-              business day of payment. This page updates automatically once it&apos;s ready; no need to check
+              business day of payment. This page updates automatically once it&apos;s ready. No need to check
               your email for it.
             </p>
           </div>

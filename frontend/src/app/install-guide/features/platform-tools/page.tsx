@@ -27,7 +27,7 @@ export default function Page() {
         <strong>Settings &rarr; Test Schedules.</strong> Select a detection or a technique, an environment, and
         either a one-time run, a repeating interval (from every minute up to every 7 days), or a cron
         expression. Production scheduling is Administrator-only. Pause, resume, or delete a schedule at any
-        time. Creating a schedule is a paid-plan feature; running tests manually remains free on every plan.
+        time. Creating a schedule is a paid-plan feature. Running tests manually remains free on every plan.
       </P>
 
       <H2 id="scoring-and-reports">Scoring &amp; reports</H2>
@@ -46,14 +46,14 @@ export default function Page() {
         <strong>Settings &rarr; License.</strong> The free plan covers 3 team members, 1 test runner, 3 test runs
         per day, and 30 days of audit history. The paid plan unlocks unlimited team members, runners, and daily
         runs, plus schedules, Detection-as-Code, PDF report export, and unlimited audit retention. Upload a
-        license file on this page to unlock it; it takes effect immediately, with no restart required. See
+        license file on this page to unlock it. It takes effect immediately, with no restart required. See
         the <Link href="/pricing" style={{ color: "var(--accent-deep)", fontWeight: 600 }}>pricing page</Link> to obtain one.
       </P>
 
       <Callout tone="info">
         <strong>Current status:</strong> the weights behind each test&apos;s score (for example, how much a fast
         detection counts relative to a slow one) are configurable, but only through the API at this time. There
-        is no settings page for it yet. The defaults are sensible; a tuning UI will follow in a later release.
+        is no settings page for it yet. The defaults are sensible. A tuning UI will follow in a later release.
       </Callout>
     </>
   );

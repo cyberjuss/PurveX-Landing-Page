@@ -98,7 +98,6 @@ export default function AboutPage() {
               We do not train one side and hope it holds up against the other. We build analysts,
               and run operations, that understand both.
             </p>
-            <p className="sp-mag__wink">With great visibility comes great responsibility.</p>
           </div>
         </section>
 
@@ -231,7 +230,6 @@ export default function AboutPage() {
   font-family: var(--font-display); font-size: 3.6em; font-weight: 700; line-height: .8;
   color: var(--accent-deep);
 }
-.sp-mag__wink { font-size: .86rem; font-style: italic; color: var(--muted) }
 .sp-mag__link { display: inline-flex; align-items: center; gap: 8px; margin-top: 6px; font-size: .92rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease) }
 .sp-mag__link:hover { gap: 12px }
 

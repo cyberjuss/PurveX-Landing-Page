@@ -18,8 +18,8 @@ export default function Phase3Page() {
           <Siren className="h-5 w-5" />
         </span>
         <p className="text-sm leading-6 text-slate-500">
-          This phase's material is still being written. It'll land here as soon as it's ready — no need
-          to check anywhere else.
+          This phase's material is still being written. It'll land here as soon as it's ready.
+          No need to check anywhere else.
         </p>
       </div>
     </div>

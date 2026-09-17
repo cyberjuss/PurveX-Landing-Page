@@ -59,14 +59,14 @@ const curriculum = [
     id: "instruction",
     icon: GraduationCap,
     title: "Cybersecurity Instruction",
-    body: "Instructor support for SOC operations, SIEM, threat detection, and incident response — built around your syllabus.",
+    body: "Instructor support for SOC operations, SIEM, threat detection, and incident response, built around your syllabus.",
   },
   {
     mod: "06",
     id: "labs",
     icon: FlaskConical,
     title: "Hands-On Security Labs",
-    body: "Real tools, real log data — the same ones working analysts use every day.",
+    body: "Real tools and real log data, the same ones working analysts use every day.",
   },
   {
     mod: "07",
@@ -132,7 +132,7 @@ const formats = [
   { icon: Users, title: "1:1 & small-group instruction", body: "Live sessions, paced to the learner or cohort." },
   { icon: FlaskConical, title: "Hands-on lab projects", body: "Real scenarios, worked at your own pace." },
   { icon: GraduationCap, title: "Embedded in your program", body: "We teach inside your existing curriculum." },
-  { icon: Globe, title: "Private student portal", body: "Lessons, labs, and self-check quizzes on the web — not a shared drive folder." },
+  { icon: Globe, title: "Private student portal", body: "Lessons, labs, and self-check quizzes on the web, not a shared drive folder." },
 ];
 
 export default function TrainingPage() {
@@ -182,9 +182,9 @@ export default function TrainingPage() {
       {/* ═══════════ HERO — split copy + live curriculum preview ═══════════ */}
       <section className="sp-hero sp-hero--split">
         <div className="sp-hero__copy">
-          <h1 className="sp-hero__h1">Think Like a Security Analyst 101</h1>
+          <h1 className="sp-hero__h1">Think Like a SOC Analyst 101</h1>
           <p className="sp-hero__sub">
-            Hands-on instruction in judgment, not memorization — how real analysts actually
+            Hands-on instruction in judgment, not memorization. How real analysts actually
             read a scene.
           </p>
           <div className="sp-hero__actions">
@@ -251,7 +251,7 @@ export default function TrainingPage() {
           <span className="sp-tag">Why this program is different</span>
           <h2>Judgment is the skill. Everything else is just facts</h2>
           <p>
-            Certifications teach vocabulary. This program teaches judgment — deciding, in the
+            Certifications teach vocabulary. This program teaches judgment: deciding, in the
             moment, whether an alert is noise or a real compromise.
           </p>
         </div>
@@ -282,7 +282,7 @@ export default function TrainingPage() {
               <div className="sp-compare__badge sp-compare__badge--ok">
                 <Check size={18} />
               </div>
-              <h3 className="sp-compare__h">Think Like a Security Analyst 101</h3>
+              <h3 className="sp-compare__h">Think Like a SOC Analyst 101</h3>
             </div>
             <p key={`with-${comparePair}`} className="sp-compare__single">
               <Check size={15} className="sp-compare__icon sp-compare__icon--ok" />

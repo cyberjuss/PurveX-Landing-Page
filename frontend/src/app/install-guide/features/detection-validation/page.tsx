@@ -33,7 +33,7 @@ export default function Page() {
       <P>
         Select <strong>Test</strong> to confirm PurveX can reach a connection and read alerts. The same check
         also runs automatically on page load, and drives the Connected / Configured / Not configured status
-        shown next to each row. Add as many connections as needed; there is no limit.
+        shown next to each row. Add as many connections as needed. There is no limit.
       </P>
 
       <H2 id="test-library">Browse the test library</H2>

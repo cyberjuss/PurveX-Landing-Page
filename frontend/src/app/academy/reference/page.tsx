@@ -128,7 +128,7 @@ const categories: RefCategory[] = [
                 A <strong>vulnerability</strong> is an unlocked door. A <strong>threat</strong> is a
                 burglar in the neighborhood. <strong>Risk</strong> is the chance the burglar finds and
                 uses that door, and what it costs you if they do. No vulnerability means no risk even
-                if the threat exists; no threat means no risk even if the vulnerability exists.
+                if the threat exists. No threat means no risk even if the vulnerability exists.
               </p>
             </div>
           </>
@@ -228,11 +228,11 @@ const categories: RefCategory[] = [
               {'SSL is the older name; TLS is the modern standard, people still say "SSL" out of habit. TLS wraps a connection in encryption so that even if someone captures the traffic, they see scrambled data instead of readable content.'}
             </p>
             <p>
-              {"TLS does its own handshake, after TCP's three-way handshake sets up the "}
+              {"TCP's three-way handshake sets up the "}
               <em>connection</em>
-              {", TLS's handshake sets up the "}
+              {". TLS then does its own handshake to set up the "}
               <em>privacy</em>
-              {", agreeing on encryption keys before any real data moves. Two separate handshakes, back to back."}
+              {": agreeing on encryption keys before any real data moves. Two separate handshakes, back to back."}
             </p>
           </>
         ),
@@ -285,7 +285,7 @@ const categories: RefCategory[] = [
               <li><strong>Orient yourself</strong> — packet count, time span, protocol hierarchy, list of external hosts.</li>
               <li>
                 <strong>Triage</strong>
-                {" — separate signal from noise. Do not rule a host in or out on a single glance; look up anything unfamiliar (hostname, User-Agent, URI pattern) before deciding."}
+                {" — separate signal from noise. Do not rule a host in or out on a single glance. Look up anything unfamiliar (hostname, User-Agent, URI pattern) before deciding."}
               </li>
               <li><strong>Focus on what&apos;s left</strong> — full URI, query parameters, GET vs. POST, anything that looks encoded.</li>
               <li><strong>Decode</strong> — URL-decode suspicious parameters and identify what&apos;s actually inside them.</li>
@@ -307,7 +307,7 @@ const categories: RefCategory[] = [
         keywords: "govtech financial department access level domain admin server helpdesk it compliance wealth management operations finance",
         body: (
           <>
-            <p>The reference table the Home Lab tells you to come back to after every lab, every account and alert belongs to one of these departments.</p>
+            <p>The reference table the Home Lab tells you to come back to after every lab. Every account and alert belongs to one of these departments.</p>
             <table>
               <thead><tr><th>Department</th><th>Function</th><th>Critical</th></tr></thead>
               <tbody>

@@ -19,7 +19,7 @@ export default function Page() {
     <>
       <Eyebrow>Get started</Eyebrow>
       <H1>What PurveX does</H1>
-      <Lede>An overview before installation. PurveX is self-hosted throughout; none of this requires a PurveX cloud account.</Lede>
+      <Lede>An overview before installation. PurveX is self-hosted throughout. None of this requires a PurveX cloud account.</Lede>
 
       <div className="dc-cards">
         {FEATURES.map(([title, desc, href]) => (
