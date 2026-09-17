@@ -7,11 +7,11 @@ import { BOOKING_URL, SiteChrome } from "./chrome";
 const bioSections = [
   {
     label: "Where I started",
-    body: "Before this was a company, it was three jobs. Tuning Microsoft Sentinel detections for a federal agency. Automating response workflows in Splunk SOAR. Teaching SOC fundamentals to analysts at Ellington Cyber Academy. All of it taught the same lesson: real growth comes from hands-on repetition, not from watching someone else do the work.",
+    body: "Before this was a company, it was three jobs. Tuning Microsoft Sentinel detections for a federal agency. Automating response workflows in Splunk SOAR. Teaching SOC fundamentals to analysts at Ellington Cyber Academy. All of it taught the same lesson. Real growth comes from hands-on repetition, not from watching someone else do the work.",
   },
   {
     label: "What actually matters",
-    body: "Hands-on alone is not enough, though. AI can write the query now. It can summarize the alert. What still matters is knowing how to think: how to read what a system is telling you, when to trust it, when to push back. That is what I teach. Not shortcuts to capture a flag. The judgment to actually solve the problem.",
+    body: "Hands-on alone is not enough, though. AI can write the query now. It can summarize the alert. What still matters is knowing how to think, how to read what a system is telling you, when to trust it, when to push back. That is what I teach. Not shortcuts to capture a flag. The judgment to actually solve the problem.",
   },
   {
     label: "Why PurveX exists",

@@ -5,7 +5,7 @@
 
 ### Overview
 
-Everything in the other tabs, the departments, the access levels, the user directory, is not just something to memorize. It is a real Active Directory environment you can build yourself, on your own machine, using the two scripts below. Building it is worth doing: setting up the accounts, groups, and structure yourself is how you actually learn what "normal" looks like in this environment, rather than simply reading a description of it.
+Everything in the other tabs, the departments, the access levels, the user directory, is not just something to memorize. It is a real Active Directory environment you can build yourself, on your own machine, using the two scripts below. Building it is worth doing. Setting up the accounts, groups, and structure yourself is how you actually learn what "normal" looks like in this environment, rather than simply reading a description of it.
 
 **At a glance:**
 
@@ -61,6 +61,6 @@ Get-ADUser -Filter * -SearchBase "OU=Departments,$((Get-ADDomain).DistinguishedN
 Get-ADGroupMember -Identity "IT Admins"
 ```
 
-A quick note on the workstation: the User Directory and Client Workstation tabs list it as "IT WKS01," but AD computer names cannot contain spaces, so the script creates the object as `IT-WKS01`. It is the same machine, just given a technically valid name.
+A quick note on the workstation. The User Directory and Client Workstation tabs list it as "IT WKS01," but AD computer names cannot contain spaces, so the script creates the object as `IT-WKS01`. It is the same machine, just given a technically valid name.
 
 Once this is built and verified, you have your own live copy of the environment every other tab on this page describes. This is what you will be investigating in the labs ahead.

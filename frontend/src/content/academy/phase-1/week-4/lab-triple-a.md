@@ -10,7 +10,7 @@
 
 ### Overview
 
-This lab walks through PortSwigger's "user role can be modified in user profile" challenge end to end: finding the request that leaks a role field, tampering with it, and confirming that the real fix is always server-side enforcement, never hiding the field.
+This lab walks through PortSwigger's "user role can be modified in user profile" challenge end to end. Finding the request that leaks a role field, tampering with it, and confirming that the real fix is always server-side enforcement, never hiding the field.
 
 ---
 
@@ -48,7 +48,7 @@ roleid=2
 Send it.
 
 **8\. Check whether it worked**
- If the response now shows `roleid: 2`, the server has just accepted a value it should never have trusted from the client. That is the vulnerability: the application lets the client assign its own role.
+ If the response now shows `roleid: 2`, the server has just accepted a value it should never have trusted from the client. That is the vulnerability. The application lets the client assign its own role.
 
 **9\. Reload the app**
  The **Admin Panel** should now appear, because the account now carries admin privileges.

@@ -90,7 +90,7 @@ const careerLadder = [
   {
     level: "Trainee",
     icon: BookOpen,
-    body: "Learning the fundamentals: networks, operating systems, how to read a raw log line.",
+    body: "Learning the fundamentals, networks, operating systems, how to read a raw log line.",
   },
   {
     level: "Tier 1 SOC Analyst",
@@ -100,7 +100,7 @@ const careerLadder = [
   {
     level: "Tier 2 / Incident Responder",
     icon: ShieldAlert,
-    body: "Investigating confirmed incidents end to end: contain, eradicate, document.",
+    body: "Investigating confirmed incidents end to end. Contain, eradicate, document.",
   },
   {
     level: "Threat Hunter",

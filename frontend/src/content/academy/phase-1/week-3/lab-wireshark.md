@@ -5,7 +5,7 @@
 
 ### Overview
 
-This lab is hands-on: opening a capture in Wireshark, learning the three panes, learning to recognize what makes traffic look suspicious before applying a single filter, and using three basic filters plus "Follow → HTTP Stream" to reassemble a full conversation into something readable.
+This lab is hands-on. Opening a capture in Wireshark, learning the three panes, learning to recognize what makes traffic look suspicious before applying a single filter, and using three basic filters plus "Follow → HTTP Stream" to reassemble a full conversation into something readable.
 
 **\[SCREENSHOT: Wireshark start screen, interface list (optional, for first-time users)\]**
 
@@ -56,7 +56,7 @@ Type these one at a time, and observe what changes with each:
 
 Right-click any packet → Follow → HTTP Stream.
 
-This reassembles the full back-and-forth into something readable. This is the moment you will actually see the malware talking: the address it is sending to, and precisely what it is sending.
+This reassembles the full back-and-forth into something readable. This is the moment you will actually see the malware talking, the address it is sending to, and precisely what it is sending.
 
 **\[SCREENSHOT: Follow HTTP Stream window, User-Agent header and POST body visible (crop/blur payload bytes as needed)\]**
 
