@@ -90,6 +90,7 @@ const phase1HomeLab: HomeLabDef = {
   summary: "GovTech Financial: a fictional enterprise environment used for investigation and detection labs.",
   sections: [
     { label: "Overview", file: "phase-1/home-lab-ad/overview.md" },
+    { label: "Build This Lab", file: "phase-1/home-lab-ad/build-this-lab.md" },
     { label: "The Org Chart", file: "phase-1/home-lab-ad/org-chart.md" },
     { label: "Administrative Roles", file: "phase-1/home-lab-ad/admin-roles.md" },
     { label: "Data Categories", file: "phase-1/home-lab-ad/data-categories.md" },
