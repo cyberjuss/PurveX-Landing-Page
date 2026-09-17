@@ -31,15 +31,26 @@ export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?:
   if (tabLabels.length > VERTICAL_NAV_THRESHOLD) {
     return (
       <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
-        <div className="md:w-[196px] md:shrink-0">
+        <div
+          className={`shrink-0 transition-[width] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
+            collapsed ? "md:w-12" : "md:w-[196px]"
+          }`}
+        >
           <button
             type="button"
             onClick={() => setCollapsed((c) => !c)}
             aria-expanded={!collapsed}
-            className="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+            title={collapsed ? "Expand sections" : "Collapse sections"}
+            className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 ${
+              collapsed ? "justify-between md:justify-center" : "justify-between"
+            }`}
           >
-            <span className="truncate">{collapsed ? tabLabels[active] : "Sections"}</span>
-            <ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200 ${collapsed ? "" : "rotate-180"}`} />
+            {/* On desktop, collapsing frees the column's width for the content
+                panel to expand into -- there's no room left for the label, so
+                only the chevron stays. Mobile never collapses width (it's a
+                single stacked column there), so the label stays visible. */}
+            <span className={`truncate ${collapsed ? "md:hidden" : ""}`}>{collapsed ? tabLabels[active] : "Sections"}</span>
+            <ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200 ${collapsed ? "md:-rotate-90" : "rotate-180"}`} />
           </button>
           {/* Always mounted (never conditionally rendered) so the collapse
               can animate -- a grid row tweened between 0fr and 1fr shrinks
