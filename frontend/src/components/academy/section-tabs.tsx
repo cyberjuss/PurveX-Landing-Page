@@ -10,10 +10,45 @@ interface TabSection {
   markdown: string;
 }
 
+// A page with a normal lesson's 5-6 sections reads fine as a row of pills.
+// Home Lab has 9 -- past that, pills wrap into a ragged two-row mess with
+// no clear reading order. Past VERTICAL_NAV_THRESHOLD, switch to a vertical
+// list instead: full-width stacked on mobile (there's no room for a side
+// column anyway), a fixed-width left column beside the content on desktop.
+const VERTICAL_NAV_THRESHOLD = 6;
+
 export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?: Quiz }) {
   const tabLabels = quiz ? [...sections.map((s) => s.label), "Test yourself"] : sections.map((s) => s.label);
   const [active, setActive] = useState(0);
   const isQuizTab = quiz !== undefined && active === sections.length;
+  const panel = isQuizTab ? <QuizBlock quiz={quiz!} /> : <Markdown content={sections[active].markdown} />;
+
+  if (tabLabels.length > VERTICAL_NAV_THRESHOLD) {
+    return (
+      <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
+        <div role="tablist" aria-orientation="vertical" className="flex flex-col gap-1 md:w-[196px] md:shrink-0">
+          {tabLabels.map((label, i) => (
+            <button
+              key={label}
+              type="button"
+              role="tab"
+              aria-selected={active === i}
+              onClick={() => setActive(i)}
+              className={`rounded-lg px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 ${
+                active === i ? "bg-[rgba(106,92,255,0.1)] text-[#5546e0]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <div className="min-w-0 flex-1 rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)] sm:p-8">
+          {panel}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -37,7 +72,7 @@ export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?:
       </div>
 
       <div className="mt-6 rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)] sm:p-8">
-        {isQuizTab ? <QuizBlock quiz={quiz!} /> : <Markdown content={sections[active].markdown} />}
+        {panel}
       </div>
     </div>
   );
