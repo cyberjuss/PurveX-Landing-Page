@@ -76,7 +76,7 @@ export default function Page() {
       </>} />
       <P>
         This also re-applies any new database migrations. When asked whether to start PurveX, answer{" "}
-        <code>n</code>. You still need to rebuild the frontend first:
+        <code>n</code>. The frontend still needs a rebuild first:
       </P>
       <TermBlock copyText={"./scripts/purvex.sh --rebuild && ./scripts/purvex.sh --start"} lines={<>
         <span className="dc-p1">$</span> <span className="dc-cmd">./scripts/purvex.sh --rebuild &amp;&amp; ./scripts/purvex.sh --start</span>

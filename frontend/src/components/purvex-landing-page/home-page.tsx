@@ -99,7 +99,7 @@ const offers = [
     icon: Radar,
     tag: "In development",
     title: "PurveX Labs",
-    body: "You can tell leadership a detection exists. You cannot yet tell them it works. Labs closes that gap with continuous, measurable proof, not a one-time report.",
+    body: "A detection existing is easy to claim. Whether it actually works is a harder question. Labs closes that gap with continuous, measurable proof, not a one-time report.",
     bullets: ["Continuous detection validation", "Measurable coverage over time", "Private beta, in development"],
     cta: "Get Early Access",
     href: "/platform",

@@ -13,7 +13,7 @@ This lab is hands-on. Opening a capture in Wireshark, learning the three panes, 
 
 Every time a computer talks to another computer, it sends small chunks of data called packets. Wireshark records and displays those packets so you can see exactly what was sent, to where, and when, which is what makes it the single most important tool an analyst has for answering "what actually happened on the wire."
 
-Think of it as reading someone's mail log rather than their mail. You cannot see inside a sealed envelope, but you can see who wrote to whom and how often. If a letter was never sealed, meaning the traffic was never encrypted, you can sometimes read it too.
+Think of it as reading someone's mail log rather than their mail. A sealed envelope hides its contents, but who wrote to whom, and how often, is still visible. If a letter was never sealed, meaning the traffic was never encrypted, sometimes the contents can be read too.
 
 ### The Three Panes
 

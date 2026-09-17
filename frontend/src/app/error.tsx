@@ -26,7 +26,7 @@ export default function Error({
           Something went wrong
         </h1>
         <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-          An unexpected error occurred in this part of the app. You can try again or head back home.
+          An unexpected error occurred in this part of the app. Try again, or head back home.
         </p>
         <div className="mt-8 flex items-center justify-center gap-3">
           <button

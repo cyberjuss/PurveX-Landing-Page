@@ -215,7 +215,7 @@ export default function TrainingPage() {
       <section className="sp-section">
         <div className="sp-head" data-r>
           <span className="sp-tag">The mindset</span>
-          <h2>You already think like this</h2>
+          <h2>The instinct is already yours</h2>
           <p>
             Strip away the acronyms. A SOC analyst does exactly what a detective does: walk
             into a scene, gather evidence, decide what happened. Same instincts, different

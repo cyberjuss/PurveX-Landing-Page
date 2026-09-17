@@ -121,7 +121,7 @@ export default function SecurityOperationsPage() {
         <div className="sp-zigzag" data-r>
           <div className="sp-zigzag__text">
             <span className="sp-tag">How we think</span>
-            <h2>You cannot defend against tactics you do not understand</h2>
+            <h2>No one defends well against a tactic they do not understand</h2>
             <p>
               Every detection we build starts from how attackers actually operate. Not just what
               a vendor&apos;s default ruleset assumes. That is the blend of blue team and red team
@@ -172,8 +172,8 @@ export default function SecurityOperationsPage() {
             <span className="sp-tag">Our goal</span>
             <h2>Automate what can be automated. Never stop understanding it</h2>
             <p>
-              Every engagement moves through the same three stages. You always know where
-              things stand. Your team understands exactly what changed, and why.
+              Every engagement moves through the same three stages. Where things stand is
+              always clear. Your team understands exactly what changed, and why.
             </p>
           </div>
         </div>

@@ -58,7 +58,7 @@ export default function AboutPage() {
           <div className="sp-mag__rail">
             <span className="sp-mag__num">01</span>
             <span className="sp-mag__label">How we think</span>
-            <p className="sp-mag__pull">You cannot defend against tactics you do not understand.</p>
+            <p className="sp-mag__pull">No one defends well against a tactic they do not understand.</p>
           </div>
           <div className="sp-mag__content">
             <p className="sp-mag__lede">

@@ -187,10 +187,10 @@ export default function PlatformPage() {
         const data = await joinWaitlist(trimmed, "platform-hero");
         if (data.already_exists) {
           setWlState("exists");
-          setWlMsg("You are already on the waitlist.");
+          setWlMsg("Already on the waitlist.");
         } else {
           setWlState("success");
-          setWlMsg("You are on the list. We will be in touch.");
+          setWlMsg("On the list. We will be in touch.");
           setEmail("");
         }
       } catch (err) {

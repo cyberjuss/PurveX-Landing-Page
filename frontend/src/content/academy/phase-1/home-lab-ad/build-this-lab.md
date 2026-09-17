@@ -38,7 +38,7 @@ After the reboot, log back in as `GOVTECHFINANCIAL\Administrator` and run this s
 ./Build-Environment.ps1
 ```
 
-You will be prompted once for an initial password. Every account this creates requires a password change at next logon, so this is never a long-term credential for anyone.
+The script prompts once for an initial password. Every account it creates requires a password change at next logon, so this is never a long-term credential for anyone.
 
 To see exactly what the script is about to do before committing to it, run it with `-WhatIf` first:
 
