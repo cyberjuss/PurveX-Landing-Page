@@ -41,13 +41,22 @@ export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?:
             <span className="truncate">{collapsed ? tabLabels[active] : "Sections"}</span>
             <ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200 ${collapsed ? "" : "rotate-180"}`} />
           </button>
-          {!collapsed && (
-            <div role="tablist" aria-orientation="vertical" className="mt-1 flex flex-col gap-1">
+          {/* Always mounted (never conditionally rendered) so the collapse
+              can animate -- a grid row tweened between 0fr and 1fr shrinks
+              the list inward instead of the list just popping in/out. */}
+          <div
+            className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
+              collapsed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"
+            }`}
+            aria-hidden={collapsed}
+          >
+            <div role="tablist" aria-orientation="vertical" className="flex flex-col gap-1 overflow-hidden pt-1">
               {tabLabels.map((label, i) => (
                 <button
                   key={label}
                   type="button"
                   role="tab"
+                  tabIndex={collapsed ? -1 : 0}
                   aria-selected={active === i}
                   onClick={() => setActive(i)}
                   className={`rounded-lg px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 ${
@@ -58,7 +67,7 @@ export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?:
                 </button>
               ))}
             </div>
-          )}
+          </div>
         </div>
 
         <div className="min-w-0 flex-1 rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)] sm:p-8">
