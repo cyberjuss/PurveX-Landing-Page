@@ -7,6 +7,11 @@
 
 Everything in the other tabs, the departments, the access levels, the user directory, is not just something to memorize. It is a real Active Directory environment you can build yourself, on your own machine, using the two scripts below. Building it is worth doing: setting up the accounts, groups, and structure yourself is how you actually learn what "normal" looks like in this environment, rather than simply reading a description of it.
 
+**At a glance:**
+
+* `Install-Forest.ps1` — one-time setup. Turns a blank Windows Server into the domain controller for `govtechfinancial.local`. Skip it if that domain already exists.
+* `Build-Environment.ps1` — the script that does the real work. Creates every department, group, user, and workstation described in the tabs above, so the environment matches what you have already been studying. Safe to re-run any time.
+
 ### What You Will Need
 
 * A Windows Server (2019 or later) you can use as a domain controller. A VM on your own hardware (Hyper-V, VirtualBox, VMware) works fine for this.
@@ -15,7 +20,7 @@ Everything in the other tabs, the departments, the access levels, the user direc
 
 ### Step 1 — Install the Domain (Skip If You Already Have One)
 
-If your server is not yet a domain controller, download and run this first. It installs Active Directory Domain Services and promotes the server to the root of a new domain, `govtechfinancial.local`. It will ask for a recovery-mode password, then reboot automatically.
+If your server is not yet a domain controller, download and run this first. It installs Active Directory Domain Services and promotes the server to the root of a new domain, `govtechfinancial.local`. It will ask for a recovery-mode password, then reboot automatically. Why it matters: without a domain to belong to, there is nowhere for the departments, users, and groups in the next step to actually live.
 
 [Download Install-Forest.ps1](/lab-scripts/Install-Forest.ps1)
 
@@ -25,7 +30,7 @@ If your server is not yet a domain controller, download and run this first. It i
 
 ### Step 2 — Build the Environment
 
-After the reboot, log back in as `GOVTECHFINANCIAL\Administrator` and run this script. It creates every department, group, user, and the workstation object described in the other tabs on this page.
+After the reboot, log back in as `GOVTECHFINANCIAL\Administrator` and run this script. It creates every department, group, user, and the workstation object described in the other tabs on this page. Why it matters: this is the step that turns the org chart and user directory from a description into a live environment you can actually query and investigate.
 
 [Download Build-Environment.ps1](/lab-scripts/Build-Environment.ps1)
 
