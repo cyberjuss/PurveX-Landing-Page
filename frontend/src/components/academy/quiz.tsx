@@ -25,13 +25,13 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
   return (
     <div>
       {submitted && (
-        <div className="flex items-center gap-3 rounded-2xl border border-[rgba(106,92,255,0.2)] bg-gradient-to-br from-[rgba(106,92,255,0.08)] to-[rgba(106,92,255,0.02)] px-5 py-4">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#5546e0] shadow-[0_1px_2px_rgba(16,25,46,0.06)]">
+        <div className="flex items-center gap-3 rounded-md border border-[var(--pvrx-border-light)] border-l-[3px] border-l-[#5546e0] bg-[var(--pvrx-surface-alt-light)] px-5 py-4">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white text-[#5546e0] shadow-[0_1px_2px_rgba(16,25,46,0.06)]">
             {pct >= 70 ? <PartyPopper className="h-5 w-5" /> : <Target className="h-5 w-5" />}
           </span>
           <div>
             <p className="font-display text-sm font-semibold text-slate-900">
-              {score} / {quiz.questions.length} correct
+              <span className="font-mono">{score}/{quiz.questions.length}</span> correct
             </p>
             <p className="text-xs text-slate-500">
               {pct >= 70 ? "Solid grasp of this week's material." : "Worth another pass, review the explanations below."}
@@ -47,7 +47,7 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
           return (
             <div key={qi}>
               <p className="text-sm font-semibold text-slate-800">
-                {qi + 1}. {q.question}
+                <span className="font-mono text-slate-400">Q{String(qi + 1).padStart(2, "0")}</span> {q.question}
               </p>
               <div className="mt-3 flex flex-col gap-2">
                 {q.options.map((option, oi) => {
@@ -60,7 +60,7 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
                       type="button"
                       onClick={() => selectOption(qi, oi)}
                       disabled={submitted}
-                      className={`flex items-center gap-2.5 rounded-xl border px-4 py-2.5 text-left text-sm transition-all duration-150 disabled:cursor-default ${
+                      className={`flex items-center gap-2.5 rounded-md border px-4 py-2.5 text-left text-sm transition-all duration-150 disabled:cursor-default ${
                         showCorrect
                           ? "border-emerald-300 bg-emerald-50 text-emerald-800"
                           : showWrong
@@ -83,7 +83,7 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
                 })}
               </div>
               {submitted && (
-                <p className={`mt-2.5 rounded-xl px-4 py-2.5 text-sm leading-6 ${isCorrect ? "bg-emerald-50 text-emerald-800" : "bg-slate-50 text-slate-600"}`}>
+                <p className={`mt-2.5 rounded-md px-4 py-2.5 text-sm leading-6 ${isCorrect ? "bg-emerald-50 text-emerald-800" : "bg-slate-50 text-slate-600"}`}>
                   {q.explanation}
                 </p>
               )}
@@ -97,7 +97,7 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
           <button
             type="button"
             onClick={reset}
-            className="inline-flex items-center gap-2 rounded-2xl border border-[var(--pvrx-border-light)] px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+            className="inline-flex items-center gap-2 rounded-md border border-[var(--pvrx-border-light)] px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
           >
             <RotateCcw className="h-4 w-4" /> Try again
           </button>
@@ -106,7 +106,7 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
             type="button"
             onClick={() => setSubmitted(true)}
             disabled={!allAnswered}
-            className="rounded-2xl border-0 bg-[#6a5cff] px-6 py-2.5 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] transition hover:bg-[#5546e0] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
+            className="rounded-md border-0 bg-[#5546e0] px-6 py-2.5 text-sm font-semibold text-white shadow-[0_1px_2px_rgba(16,25,46,0.06)] transition hover:bg-[#4636c9] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
           >
             Check my answers
           </button>

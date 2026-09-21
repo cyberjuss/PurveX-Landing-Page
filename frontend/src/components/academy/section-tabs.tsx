@@ -18,6 +18,10 @@ interface TabSection {
 // column anyway), a fixed-width left column beside the content on desktop.
 const VERTICAL_NAV_THRESHOLD = 6;
 
+function pad(n: number) {
+  return String(n).padStart(2, "0");
+}
+
 export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?: Quiz }) {
   const tabLabels = quiz ? [...sections.map((s) => s.label), "Test yourself"] : sections.map((s) => s.label);
   const [active, setActive] = useState(0);
@@ -41,7 +45,7 @@ export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?:
             onClick={() => setCollapsed((c) => !c)}
             aria-expanded={!collapsed}
             title={collapsed ? "Expand sections" : "Collapse sections"}
-            className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 ${
+            className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-left font-mono text-xs font-semibold uppercase tracking-wide text-slate-500 transition-colors hover:bg-slate-50 ${
               collapsed ? "justify-between md:justify-center" : "justify-between"
             }`}
           >
@@ -61,7 +65,7 @@ export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?:
             }`}
             aria-hidden={collapsed}
           >
-            <div role="tablist" aria-orientation="vertical" className="flex flex-col gap-1 overflow-hidden pt-1">
+            <div role="tablist" aria-orientation="vertical" className="flex flex-col gap-0.5 overflow-hidden pt-1">
               {tabLabels.map((label, i) => (
                 <button
                   key={label}
@@ -70,18 +74,19 @@ export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?:
                   tabIndex={collapsed ? -1 : 0}
                   aria-selected={active === i}
                   onClick={() => setActive(i)}
-                  className={`rounded-lg px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 ${
+                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 ${
                     active === i ? "bg-[rgba(106,92,255,0.1)] text-[#5546e0]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                   }`}
                 >
-                  {label}
+                  <span className="font-mono text-[10px] font-normal text-slate-400">{pad(i + 1)}</span>
+                  <span className="truncate">{label}</span>
                 </button>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="min-w-0 flex-1 rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)] sm:p-8">
+        <div className="min-w-0 flex-1 rounded-md border border-[var(--pvrx-border-light)] bg-white p-6 shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)] sm:p-8">
           {panel}
         </div>
       </div>
@@ -90,7 +95,7 @@ export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?:
 
   return (
     <div>
-      <div role="tablist" className="flex flex-wrap gap-2 border-b border-[var(--pvrx-border-light)] pb-3">
+      <div role="tablist" className="flex flex-wrap gap-1 border-b border-[var(--pvrx-border-light)] pb-3">
         {tabLabels.map((label, i) => (
           <button
             key={label}
@@ -98,10 +103,8 @@ export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?:
             role="tab"
             aria-selected={active === i}
             onClick={() => setActive(i)}
-            className={`rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 ${
-              active === i
-                ? "bg-gradient-to-b from-[#6a5cff] to-[#5546e0] text-white shadow-[0_6px_16px_-6px_rgba(85,70,224,0.55)]"
-                : "text-slate-600 hover:bg-slate-100"
+            className={`rounded-md px-3.5 py-2 text-sm font-semibold transition-colors duration-150 ${
+              active === i ? "bg-[#5546e0] text-white" : "text-slate-600 hover:bg-slate-100"
             }`}
           >
             {label}
@@ -109,7 +112,7 @@ export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?:
         ))}
       </div>
 
-      <div className="mt-6 rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)] sm:p-8">
+      <div className="mt-6 rounded-md border border-[var(--pvrx-border-light)] bg-white p-6 shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)] sm:p-8">
         {panel}
       </div>
     </div>

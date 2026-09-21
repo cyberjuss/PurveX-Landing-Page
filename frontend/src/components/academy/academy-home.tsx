@@ -95,7 +95,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-6">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#5546e0]">Course overview</p>
+          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-[#5546e0]">Course overview</p>
           <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
             Think Like a SOC Analyst 101
           </h1>
@@ -106,13 +106,13 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
         </div>
 
         {totalCount > 0 && (
-          <div className="flex shrink-0 items-center gap-4 rounded-2xl border border-[var(--pvrx-border-light)] bg-white px-5 py-4 shadow-[0_1px_2px_rgba(16,25,46,0.04)]">
+          <div className="flex shrink-0 items-center gap-4 rounded-md border border-[var(--pvrx-border-light)] bg-white px-5 py-4 shadow-[0_1px_2px_rgba(16,25,46,0.04)]">
             <div className="relative flex h-[76px] w-[76px] items-center justify-center">
               <ProgressRing pct={overallPct} />
-              <span className="absolute font-display text-base font-bold text-slate-900">{overallPct}%</span>
+              <span className="absolute font-mono text-base font-bold text-slate-900">{overallPct}%</span>
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-400">Your progress</p>
+              <p className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-400">Your progress</p>
               <p className="mt-1 font-display text-lg font-semibold text-slate-900">
                 {completedCount} <span className="text-sm font-medium text-slate-400">/ {totalCount} complete</span>
               </p>
@@ -129,26 +129,26 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
             <Link
               key={card.slug}
               href={card.href}
-              className="group relative flex items-start gap-4 overflow-hidden rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-5 shadow-[0_1px_2px_rgba(16,25,46,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
+              className="group relative flex items-start gap-4 overflow-hidden rounded-md border border-[var(--pvrx-border-light)] bg-white p-5 shadow-[0_1px_2px_rgba(16,25,46,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
             >
               <span className="absolute inset-y-0 left-0 w-1" style={{ background: card.accent }} aria-hidden="true" />
               <span
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md"
                 style={{ background: card.accentSoft, color: card.accent }}
               >
                 <card.icon className="h-5 w-5" />
               </span>
               <span className="flex-1">
                 <span className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: card.accent }}>
+                  <span className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: card.accent }}>
                     {card.tag}
                   </span>
                   {isComingSoon ? (
-                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                    <span className="rounded-sm bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-500">
                       Coming soon
                     </span>
                   ) : (
-                    <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide" style={{ background: card.accentSoft, color: card.accent }}>
+                    <span className="rounded-sm px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide" style={{ background: card.accentSoft, color: card.accent }}>
                       {progress.done} / {progress.total} done
                     </span>
                   )}

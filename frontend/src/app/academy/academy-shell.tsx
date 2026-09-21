@@ -22,10 +22,8 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     <AcademyProgressProvider phases={phases}>
       <div className="academy-bg min-h-screen">
         <header
-          className={`sticky top-0 z-40 border-b transition-shadow ${
-            scrolled
-              ? "border-[var(--pvrx-border-light)] bg-white/85 shadow-[0_1px_0_rgba(16,25,46,0.03),0_8px_24px_-16px_rgba(16,25,46,0.12)] backdrop-blur-md"
-              : "border-transparent bg-white/60 backdrop-blur-md"
+          className={`sticky top-0 z-40 border-b bg-white transition-shadow ${
+            scrolled ? "border-[var(--pvrx-border-light)] shadow-[0_1px_0_rgba(16,25,46,0.03),0_8px_24px_-16px_rgba(16,25,46,0.12)]" : "border-[var(--pvrx-border-light)]"
           }`}
         >
           <div className="flex items-center justify-between px-4 py-4 sm:px-6">
@@ -33,29 +31,32 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
               <button
                 type="button"
                 onClick={() => setSidebarOpen(true)}
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--pvrx-border-light)] text-slate-600 transition hover:bg-slate-50 lg:hidden"
+                className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] text-slate-600 transition hover:bg-slate-50 lg:hidden"
                 aria-label="Open course menu"
               >
                 <Menu className="h-[18px] w-[18px]" />
               </button>
               <Link href="/academy" className="flex items-center gap-2.5 font-display text-base font-semibold tracking-tight text-slate-900">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#6a5cff] to-[#5546e0] text-white shadow-[0_6px_16px_-4px_rgba(85,70,224,0.5)]">
+                <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[#5546e0] text-white">
                   <GraduationCap className="h-[18px] w-[18px]" />
                 </span>
-                <span className="hidden sm:inline">Think Like a SOC Analyst</span>
+                <span className="hidden sm:inline">
+                  Think Like a SOC Analyst
+                  <span className="ml-2 font-mono text-xs font-normal text-slate-400">101</span>
+                </span>
               </Link>
             </div>
             <div className="flex items-center gap-2">
               <Link
                 href="/academy/reference"
-                className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--pvrx-border-light)] bg-white px-3 text-sm font-medium text-slate-600 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
+                className="flex h-9 items-center gap-1.5 rounded-md border border-[var(--pvrx-border-light)] bg-white px-3 text-sm font-medium text-slate-600 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
               >
                 <BookMarked className="h-4 w-4" /> Reference
               </Link>
               <Link
                 href="/"
                 aria-label="PurveX home"
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--pvrx-border-light)] bg-white text-slate-500 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
+                className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] bg-white text-slate-500 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
               >
                 <Home className="h-[18px] w-[18px]" />
               </Link>
@@ -65,7 +66,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
         <div className="mx-auto flex max-w-7xl">
           {/* Desktop sidebar */}
-          <aside className="hidden w-72 shrink-0 border-r border-[var(--pvrx-border-light)] bg-white/70 lg:sticky lg:top-[65px] lg:block lg:h-[calc(100vh-65px)]">
+          <aside className="hidden w-72 shrink-0 border-r border-[var(--pvrx-border-light)] bg-white lg:sticky lg:top-[65px] lg:block lg:h-[calc(100vh-65px)]">
             <AcademySidebar phases={phases} />
           </aside>
 

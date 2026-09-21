@@ -368,9 +368,9 @@ function CopyButton({ text }: { text: string }) {
 
 function Section({ id, title, icon: Icon, children }: { id: string; title: string; icon: LucideIcon; children: React.ReactNode }) {
   return (
-    <section id={id} className="academy-ref-section scroll-mt-24 rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 sm:p-8">
+    <section id={id} className="academy-ref-section scroll-mt-24 rounded-md border border-[var(--pvrx-border-light)] bg-white p-6 sm:p-8">
       <div className="flex items-center gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[rgba(106,92,255,0.1)] text-[#5546e0]">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[rgba(106,92,255,0.1)] text-[#5546e0]">
           <Icon className="h-[18px] w-[18px]" />
         </span>
         <h2 className="font-display text-lg font-semibold text-slate-900">{title}</h2>
@@ -414,7 +414,7 @@ export default function ReferencePage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search the cheat sheet…"
-            className="w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white py-3.5 pl-10 pr-10 text-base text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] md:text-sm"
+            className="w-full rounded-md border border-[var(--pvrx-border-light)] bg-white py-3.5 pl-10 pr-10 text-base text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] md:text-sm"
           />
           {query && (
             <button
@@ -434,7 +434,7 @@ export default function ReferencePage() {
               <a
                 key={item.id}
                 href={`#${item.id}`}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[var(--pvrx-border-light)] bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
+                className="inline-flex items-center gap-1.5 rounded-md border border-[var(--pvrx-border-light)] bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
               >
                 <item.icon className="h-3.5 w-3.5 text-[#5546e0]" /> {item.title}
               </a>
@@ -445,7 +445,7 @@ export default function ReferencePage() {
 
       <div className="mt-8 flex flex-col gap-10">
         {filteredCategories.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--pvrx-border-light)] bg-slate-50/60 px-5 py-4 text-sm text-slate-500">
+          <p className="rounded-md border border-[var(--pvrx-border-light)] bg-slate-50/60 px-5 py-4 text-sm text-slate-500">
             {`No matches for "${query}".`}
           </p>
         ) : (

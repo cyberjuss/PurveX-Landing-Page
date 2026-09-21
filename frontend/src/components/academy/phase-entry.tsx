@@ -48,7 +48,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
       </div>
 
       {sections.length === 0 ? (
-        <p className="mt-8 rounded-2xl border border-[var(--pvrx-border-light)] bg-slate-50/60 px-5 py-4 text-sm text-slate-500">
+        <p className="mt-8 rounded-md border border-[var(--pvrx-border-light)] bg-slate-50/60 px-5 py-4 text-sm text-slate-500">
           Content for this week is still being written. Check back soon.
         </p>
       ) : (
@@ -65,9 +65,9 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
           {labSections.length > 0 && (
             <div className={otherSections.length > 0 ? "mt-10 flex flex-col gap-6" : "mt-8 flex flex-col gap-6"}>
               {labSections.map((lab) => (
-                <div key={lab.file} className="overflow-hidden rounded-2xl border border-[var(--pvrx-border-light)] bg-white shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)]">
+                <div key={lab.file} className="overflow-hidden rounded-md border border-[var(--pvrx-border-light)] bg-white shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)]">
                   <div className="flex items-center gap-3 border-b border-[var(--pvrx-border-light)] bg-[rgba(106,92,255,0.04)] px-6 py-4 sm:px-8">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[rgba(106,92,255,0.1)] text-[#5546e0]">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[rgba(106,92,255,0.1)] text-[#5546e0]">
                       <FlaskConical className="h-[18px] w-[18px]" />
                     </span>
                     <div>
@@ -90,11 +90,11 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
               {prevEntry ? (
                 <Link
                   href={`/academy/${phase.slug}/${prevEntry.slug}`}
-                  className="group flex flex-1 items-center gap-3 rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-4 shadow-[0_1px_2px_rgba(16,25,46,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
+                  className="group flex flex-1 items-center gap-3 rounded-md border border-[var(--pvrx-border-light)] bg-white p-4 shadow-[0_1px_2px_rgba(16,25,46,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
                 >
                   <ArrowLeft className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:-translate-x-0.5 group-hover:text-[#5546e0]" />
                   <span className="min-w-0">
-                    <span className="block text-[11px] font-semibold uppercase tracking-wide text-slate-400">Previous</span>
+                    <span className="block font-mono text-[11px] font-semibold uppercase tracking-wide text-slate-400">Previous</span>
                     <span className="block truncate text-sm font-semibold text-slate-900">{prevEntry.title}</span>
                   </span>
                 </Link>
@@ -104,10 +104,10 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
               {nextEntry ? (
                 <Link
                   href={`/academy/${phase.slug}/${nextEntry.slug}`}
-                  className="group flex flex-1 items-center justify-end gap-3 rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-4 text-right shadow-[0_1px_2px_rgba(16,25,46,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
+                  className="group flex flex-1 items-center justify-end gap-3 rounded-md border border-[var(--pvrx-border-light)] bg-white p-4 text-right shadow-[0_1px_2px_rgba(16,25,46,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
                 >
                   <span className="min-w-0">
-                    <span className="block text-[11px] font-semibold uppercase tracking-wide text-slate-400">Next</span>
+                    <span className="block font-mono text-[11px] font-semibold uppercase tracking-wide text-slate-400">Next</span>
                     <span className="block truncate text-sm font-semibold text-slate-900">{nextEntry.title}</span>
                   </span>
                   <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-[#5546e0]" />

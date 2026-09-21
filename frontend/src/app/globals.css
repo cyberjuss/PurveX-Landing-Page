@@ -2768,9 +2768,10 @@ body:has(.lp) {
 }
 
 /* Academy portal background -- fixed so it doesn't scroll with the long
-   lesson content, and deliberately faint (a reading workspace, not a
-   landing page) -- just enough tint that the portal doesn't look like an
-   unstyled white page next to the rest of the site. */
+   lesson content. A soft purple gradient blur read as generic-SaaS; a
+   faint dot grid (the console/schematic texture, not a decoration) is
+   the more honest fit for a page students use like a tool, not a
+   landing page -- and it's quiet enough to disappear once reading. */
 .academy-bg {
   position: relative;
   background: var(--pvrx-bg-light, #fff);
@@ -2781,9 +2782,9 @@ body:has(.lp) {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse 60% 40% at 15% 0%, rgba(106,92,255,.05), transparent 60%),
-    radial-gradient(ellipse 45% 35% at 100% 15%, rgba(106,92,255,.04), transparent 60%);
+  background-image: radial-gradient(rgba(16,25,46,.08) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%);
 }
 .academy-bg > * { position: relative; z-index: 1 }
 
@@ -2803,10 +2804,10 @@ body:has(.lp) {
 .academy-prose ol { list-style: decimal; }
 .academy-prose li { margin: 0.35rem 0; }
 .academy-prose li > ul, .academy-prose li > ol { margin: 0.35rem 0; }
-.academy-prose blockquote { margin: 1rem 0; padding: 0.65rem 1rem; border-left: 3px solid #6a5cff; background: var(--pvrx-surface-alt-light); border-radius: 0 12px 12px 0; color: var(--pvrx-text-secondary-light); }
+.academy-prose blockquote { margin: 1rem 0; padding: 0.65rem 1rem; border-left: 3px solid #6a5cff; background: var(--pvrx-surface-alt-light); border-radius: 0 6px 6px 0; color: var(--pvrx-text-secondary-light); }
 .academy-prose blockquote p { margin: 0.3rem 0; }
-.academy-prose code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85em; background: var(--pvrx-surface-alt-light); border: 1px solid var(--pvrx-border-light); border-radius: 5px; padding: 0.1em 0.4em; }
-.academy-prose pre { margin: 1rem 0; padding: 0.9rem 1rem; background: #0c1220; border-radius: 12px; overflow-x: auto; }
+.academy-prose code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85em; background: var(--pvrx-surface-alt-light); border: 1px solid var(--pvrx-border-light); border-radius: 4px; padding: 0.1em 0.4em; }
+.academy-prose pre { margin: 1rem 0; padding: 0.9rem 1rem; background: #0c1220; border-radius: 8px; overflow-x: auto; }
 .academy-prose pre code { background: none; border: none; color: #e2e8f0; padding: 0; }
 .academy-prose hr { margin: 1.75rem 0; border: none; border-top: 1px solid var(--pvrx-border-light); }
 .academy-prose a { color: #5546e0; font-weight: 600; text-decoration: underline; text-decoration-color: rgba(85,70,224,0.35); text-underline-offset: 2px; }
@@ -2816,27 +2817,29 @@ body:has(.lp) {
 .academy-prose th { background: var(--pvrx-surface-alt-light); font-weight: 650; }
 
 /* Essential Question callout -- every lesson opens on one, framing what
-   the lesson is actually for before the explanation starts. Previously
-   just a bold paragraph indistinguishable from body text; pulling it into
-   its own panel gives the reader something to hold onto as they read the
-   rest of the lesson. */
+   the lesson is actually for before the explanation starts. Styled like
+   a code comment tagging the panel below it (// ESSENTIAL QUESTION),
+   flat and left-bordered rather than a soft all-around-rounded tinted
+   box -- the console aesthetic the rest of the portal now uses. */
 .academy-prose .academy-question {
   margin: 0 0 1.5rem;
-  padding: 1.1rem 1.3rem;
-  border-radius: 14px;
-  border: 1px solid rgba(16,25,46,0.08);
+  padding: 1rem 1.3rem;
+  border-radius: 6px;
+  border: 1px solid var(--pvrx-border-light);
+  border-left: 3px solid #5546e0;
   background: var(--pvrx-surface-alt-light);
 }
 .academy-prose .academy-question__tag {
   display: block;
-  font-family: var(--font-display);
+  font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.09em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--pvrx-text-secondary-light);
   margin-bottom: 0.5rem;
 }
+.academy-prose .academy-question__tag::before { content: "// "; color: #5546e0; }
 .academy-prose .academy-question p {
   margin: 0;
   font-family: var(--font-display);
@@ -2848,26 +2851,29 @@ body:has(.lp) {
 
 /* Analogy callouts -- authored directly as raw HTML inside a lesson's
    markdown (see src/lib/markdown.tsx's comment on why that's safe here).
-   Distinct from a blockquote: a tinted panel with its own label, used to
-   translate a just-introduced term into something already familiar,
-   not to quote or aside a passing remark. */
+   Distinct from a blockquote: a tagged panel used to translate a
+   just-introduced term into something already familiar, not to quote or
+   aside a passing remark. Same code-comment tag convention as the
+   Essential Question callout, flat instead of a soft gradient box. */
 .academy-prose .academy-analogy {
   margin: 1.35rem 0;
-  padding: 1.1rem 1.3rem 1.2rem;
-  border-radius: 14px;
-  border: 1px solid rgba(106,92,255,0.2);
-  background: linear-gradient(160deg, rgba(106,92,255,0.07), rgba(106,92,255,0.015));
+  padding: 1rem 1.3rem 1.2rem;
+  border-radius: 6px;
+  border: 1px solid var(--pvrx-border-light);
+  border-left: 3px solid #5546e0;
+  background: var(--pvrx-surface-alt-light);
 }
 .academy-prose .academy-analogy__tag {
   display: block;
-  font-family: var(--font-display);
+  font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.09em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #5546e0;
+  color: var(--pvrx-text-secondary-light);
   margin-bottom: 0.5rem;
 }
+.academy-prose .academy-analogy__tag::before { content: "// "; color: #5546e0; }
 .academy-prose .academy-analogy p { margin: 0.5rem 0; }
 .academy-prose .academy-analogy p:first-of-type { margin-top: 0; }
 .academy-prose .academy-analogy ul { margin: 0.4rem 0 0; padding-left: 1.15rem; }
