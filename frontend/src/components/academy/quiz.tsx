@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, RotateCcw } from "lucide-react";
+import { Check, PartyPopper, RotateCcw, Target, X } from "lucide-react";
 import type { Quiz } from "@/content/academy/quizzes";
 
 export function QuizBlock({ quiz }: { quiz: Quiz }) {
@@ -10,6 +10,7 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
 
   const allAnswered = answers.every((a) => a !== null);
   const score = submitted ? answers.filter((a, i) => a === quiz.questions[i].correctIndex).length : 0;
+  const pct = quiz.questions.length === 0 ? 0 : Math.round((score / quiz.questions.length) * 100);
 
   function selectOption(questionIndex: number, optionIndex: number) {
     if (submitted) return;
@@ -24,10 +25,18 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
   return (
     <div>
       {submitted && (
-        <div className="flex justify-end">
-          <span className="rounded-full bg-[rgba(106,92,255,0.1)] px-3 py-1 text-sm font-semibold text-[#5546e0]">
-            {score} / {quiz.questions.length}
+        <div className="flex items-center gap-3 rounded-2xl border border-[rgba(106,92,255,0.2)] bg-gradient-to-br from-[rgba(106,92,255,0.08)] to-[rgba(106,92,255,0.02)] px-5 py-4">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#5546e0] shadow-[0_1px_2px_rgba(16,25,46,0.06)]">
+            {pct >= 70 ? <PartyPopper className="h-5 w-5" /> : <Target className="h-5 w-5" />}
           </span>
+          <div>
+            <p className="font-display text-sm font-semibold text-slate-900">
+              {score} / {quiz.questions.length} correct
+            </p>
+            <p className="text-xs text-slate-500">
+              {pct >= 70 ? "Solid grasp of this week's material." : "Worth another pass, review the explanations below."}
+            </p>
+          </div>
         </div>
       )}
 
@@ -51,14 +60,14 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
                       type="button"
                       onClick={() => selectOption(qi, oi)}
                       disabled={submitted}
-                      className={`flex items-center gap-2.5 rounded-xl border px-4 py-2.5 text-left text-sm transition disabled:cursor-default ${
+                      className={`flex items-center gap-2.5 rounded-xl border px-4 py-2.5 text-left text-sm transition-all duration-150 disabled:cursor-default ${
                         showCorrect
                           ? "border-emerald-300 bg-emerald-50 text-emerald-800"
                           : showWrong
                             ? "border-red-300 bg-red-50 text-red-700"
                             : isSelected
-                              ? "border-[rgba(106,92,255,0.6)] bg-[rgba(106,92,255,0.06)] text-slate-900"
-                              : "border-[var(--pvrx-border-light)] text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                              ? "border-[rgba(106,92,255,0.6)] bg-[rgba(106,92,255,0.06)] text-slate-900 shadow-[0_1px_2px_rgba(16,25,46,0.04)]"
+                              : "border-[var(--pvrx-border-light)] text-slate-700 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 hover:shadow-[0_4px_12px_-4px_rgba(16,25,46,0.12)]"
                       }`}
                     >
                       {showCorrect ? (
