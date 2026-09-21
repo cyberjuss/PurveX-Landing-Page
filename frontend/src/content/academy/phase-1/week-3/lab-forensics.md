@@ -21,8 +21,6 @@ By the end of this lab, students should be able to:
 
 ---
 
-## **Part 1: Student Handout (no answers below this line)**
-
 ### **Step 1: Orient yourself**
 
 1. How many packets, and how long does the capture span?

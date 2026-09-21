@@ -2880,6 +2880,16 @@ body:has(.lp) {
 .academy-prose .academy-analogy li { margin: 0.35rem 0; }
 .academy-prose .academy-analogy li:last-child { margin-bottom: 0; }
 
+/* Lab carousel slide transition -- direction-aware so it reads as sliding
+   through steps, not just fading. */
+@keyframes academy-slide-in-right { from { opacity: 0; transform: translateX(20px) } to { opacity: 1; transform: none } }
+@keyframes academy-slide-in-left { from { opacity: 0; transform: translateX(-20px) } to { opacity: 1; transform: none } }
+.academy-slide-in-right { animation: academy-slide-in-right .28s cubic-bezier(.16,1,.3,1) both }
+.academy-slide-in-left { animation: academy-slide-in-left .28s cubic-bezier(.16,1,.3,1) both }
+@media (prefers-reduced-motion: reduce) {
+  .academy-slide-in-right, .academy-slide-in-left { animation: none }
+}
+
 /* Cheat sheet: briefly highlight whichever section a jump-to-section pill
    or in-page link lands on, so it's obvious you arrived in the right
    place on a page of otherwise identical-looking cards. Native :target

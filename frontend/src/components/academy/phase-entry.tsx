@@ -2,9 +2,10 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, FlaskConical } from "lucide-react";
 import { loadLesson, type ContentSection, type WeekDef, type PhaseDef } from "@/lib/academy-content";
 import { findQuiz } from "@/content/academy/quizzes";
-import { Markdown } from "@/lib/markdown";
+import { splitMarkdownIntoSlides } from "@/lib/markdown";
 import { SectionTabs } from "./section-tabs";
 import { MarkCompleteButton } from "./mark-complete-button";
+import { LabCarousel } from "./lab-carousel";
 
 export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }) {
   const sections = entry.sections
@@ -77,9 +78,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
                       </h2>
                     </div>
                   </div>
-                  <div className="p-6 sm:p-8">
-                    <Markdown content={lab.markdown!} />
-                  </div>
+                  <LabCarousel slides={splitMarkdownIntoSlides(lab.markdown!)} />
                 </div>
               ))}
             </div>

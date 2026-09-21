@@ -20,39 +20,49 @@ This app trusts the user's browser to state its own role, instead of checking on
 
 ---
 
-### Step-by-Step
+### Step 1 — Log In With the Account You Are Given
 
-**1\. Log in with the account you are given**
- Use the provided username and password. This is a regular, non-admin user, and deliberately so.
+Use the provided username and password. This is a regular, non-admin user, and deliberately so.
 
-**2\. Turn on Burp Suite and watch your traffic**
- Every request your browser makes should show up in Burp's HTTP history. Keep it open for the entire exercise.
+### Step 2 — Turn On Burp Suite and Watch Your Traffic
 
-**3\. Try to find the admin panel**
- Poke around. Check "My Account," try guessing `/admin`. Nothing works yet, and that is expected. The vulnerability has not been found yet, only ruled out as absent from the obvious places.
+Every request your browser makes should show up in Burp's HTTP history. Keep it open for the entire exercise.
 
-**4\. Look at the "My Account" page requests**
- Notice it sends only your session cookie. There is nothing to tamper with there. Not the vulnerable spot.
+### Step 3 — Try to Find the Admin Panel
 
-**5\. Try changing your email address**
- On the "My Account" page, update your email and submit. Send that request to **Repeater** in Burp so it can be inspected and replayed at will.
+Poke around. Check "My Account," try guessing `/admin`. Nothing works yet, and that is expected. The vulnerability has not been found yet, only ruled out as absent from the obvious places.
 
-**6\. Look closely at the response**
- When that request is sent, the server responds with more than you would expect, including a `roleid` field. Notice yours is set to `1` (regular user). Admins carry `roleid = 2`.
+### Step 4 — Look at the "My Account" Page Requests
 
-**7\. Add `roleid=2` to your request yourself**
- The original request did not include `roleid`. Try adding it manually:
+Notice it sends only your session cookie. There is nothing to tamper with there. Not the vulnerable spot.
 
+### Step 5 — Try Changing Your Email Address
+
+On the "My Account" page, update your email and submit. Send that request to **Repeater** in Burp so it can be inspected and replayed at will.
+
+### Step 6 — Look Closely at the Response
+
+When that request is sent, the server responds with more than you would expect, including a `roleid` field. Notice yours is set to `1` (regular user). Admins carry `roleid = 2`.
+
+### Step 7 — Add `roleid=2` to Your Request Yourself
+
+The original request did not include `roleid`. Try adding it manually:
+
+```
 roleid=2
+```
 
 Send it.
 
-**8\. Check whether it worked**
- If the response now shows `roleid: 2`, the server has just accepted a value it should never have trusted from the client. That is the vulnerability. The application lets the client assign its own role.
+### Step 8 — Check Whether It Worked
 
-**9\. Reload the app**
- The **Admin Panel** should now appear, because the account now carries admin privileges.
+If the response now shows `roleid: 2`, the server has just accepted a value it should never have trusted from the client. That is the vulnerability. The application lets the client assign its own role.
 
-**10\. Delete the user "Carlos"**
- Go to the Admin Panel and delete Carlos. Lab solved.
+### Step 9 — Reload the App
+
+The **Admin Panel** should now appear, because the account now carries admin privileges.
+
+### Step 10 — Delete the User "Carlos"
+
+Go to the Admin Panel and delete Carlos. Lab solved.
 
