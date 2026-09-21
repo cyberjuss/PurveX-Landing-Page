@@ -39,7 +39,9 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
   // at the same visual weight as reference material. Every lab section is
   // named "Lab: ..." by convention, so that's enough to split it out
   // without needing a new field on the content model.
-  const labSections = sections.filter((s) => s.label.startsWith("Lab:"));
+  const labSections = sections
+    .filter((s) => s.label.startsWith("Lab:"))
+    .map((s) => ({ ...s, anchorId: s.file.split("/").pop()!.replace(/\.md$/, "") }));
   const otherSections = sections.filter((s) => !s.label.startsWith("Lab:"));
 
   return (
@@ -78,6 +80,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
               <SectionTabs
                 sections={otherSections.map((s) => ({ label: s.label, markdown: s.markdown! }))}
                 quiz={quiz}
+                labs={labSections.map((s) => ({ label: s.label.replace(/^Lab:\s*/, ""), anchorId: s.anchorId }))}
               />
             </div>
           )}
@@ -85,7 +88,11 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
           {labSections.length > 0 && (
             <div className={otherSections.length > 0 ? "mt-10 flex flex-col gap-6" : "mt-8 flex flex-col gap-6"}>
               {labSections.map((lab) => (
-                <div key={lab.file} className="overflow-hidden rounded-md border border-[var(--pvrx-border-light)] bg-white shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)]">
+                <div
+                  key={lab.file}
+                  id={lab.anchorId}
+                  className="scroll-mt-24 overflow-hidden rounded-md border border-[var(--pvrx-border-light)] bg-white shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)]"
+                >
                   <div className="flex items-center gap-3 border-b border-[var(--pvrx-border-light)] bg-[rgba(106,92,255,0.04)] px-6 py-4 sm:px-8">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[rgba(106,92,255,0.1)] text-[#5546e0]">
                       <FlaskConical className="h-[18px] w-[18px]" />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, FlaskConical } from "lucide-react";
 import { Markdown } from "@/lib/markdown";
 import { QuizBlock } from "./quiz";
 import type { Quiz } from "@/content/academy/quizzes";
@@ -9,6 +9,11 @@ import type { Quiz } from "@/content/academy/quizzes";
 interface TabSection {
   label: string;
   markdown: string;
+}
+
+interface LabLink {
+  label: string;
+  anchorId: string;
 }
 
 // A page with a normal lesson's 5-6 sections reads fine as a row of pills.
@@ -22,8 +27,9 @@ function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
-export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?: Quiz }) {
+export function SectionTabs({ sections, quiz, labs }: { sections: TabSection[]; quiz?: Quiz; labs?: LabLink[] }) {
   const tabLabels = quiz ? [...sections.map((s) => s.label), "Test yourself"] : sections.map((s) => s.label);
+  const labLinks = labs ?? [];
   const [active, setActive] = useState(0);
   // Expanded by default -- collapsing is an option for a long list like Home
   // Lab's 9 sections, not the default state. Collapsed shows just the
@@ -83,6 +89,25 @@ export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?:
                 </button>
               ))}
             </div>
+            {/* Hands-on labs aren't a tab -- they're rendered as their own
+                always-visible carousel card further down the page, not
+                swapped into this panel. These links jump there instead of
+                switching the active tab. */}
+            {labLinks.length > 0 && (
+              <div className="mt-1 flex flex-col gap-0.5 overflow-hidden border-t border-[var(--pvrx-border-light)] pt-1">
+                {labLinks.map((lab) => (
+                  <a
+                    key={lab.anchorId}
+                    href={`#${lab.anchorId}`}
+                    tabIndex={collapsed ? -1 : 0}
+                    className="flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold text-slate-600 transition-colors duration-150 hover:bg-slate-50 hover:text-[#5546e0]"
+                  >
+                    <FlaskConical className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                    <span className="truncate">{lab.label}</span>
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -111,6 +136,21 @@ export function SectionTabs({ sections, quiz }: { sections: TabSection[]; quiz?:
           </button>
         ))}
       </div>
+
+      {labLinks.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {labLinks.map((lab) => (
+            <a
+              key={lab.anchorId}
+              href={`#${lab.anchorId}`}
+              className="inline-flex items-center gap-1.5 rounded-md border border-[var(--pvrx-border-light)] px-3.5 py-1.5 text-sm font-semibold text-slate-600 transition-colors duration-150 hover:border-[#5546e0] hover:text-[#5546e0]"
+            >
+              <FlaskConical className="h-3.5 w-3.5 shrink-0" />
+              {lab.label}
+            </a>
+          ))}
+        </div>
+      )}
 
       <div className="mt-6 rounded-md border border-[var(--pvrx-border-light)] bg-white p-6 shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)] sm:p-8">
         {panel}
