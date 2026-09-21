@@ -61,9 +61,9 @@ export default function SecurityOperationsPage() {
           <span className="sp-hero__badge">For lean security teams</span>
           <h1 className="sp-hero__h1">Strengthen Your Security Operations</h1>
           <p className="sp-hero__sub">
-            Your SIEM generates more alerts than your team has time to tune. We sharpen what
-            is already there, build what is missing, and map it to MITRE ATT&amp;CK, so your
-            coverage is proven, not assumed.
+            SIEMs generate more alerts than a lean team can tune. We sharpen what is there,
+            build what is missing, and map it to MITRE ATT&amp;CK, so coverage is proven, not
+            assumed.
           </p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Schedule a Conversation <ArrowRight size={16} />
