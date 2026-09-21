@@ -9,25 +9,25 @@ const services = [
     id: "siem-detection-engineering",
     icon: Waypoints,
     title: "SIEM & Detection Engineering",
-    body: "Build and improve security detections designed around your environment and threat landscape.",
+    body: "New detections built around your actual environment and the MITRE ATT&CK techniques that target it, not a vendor's default ruleset written for someone else's network.",
   },
   {
     id: "siem-optimization",
     icon: Sliders,
     title: "SIEM Optimization",
-    body: "Improve alert quality, reduce unnecessary noise, and help security teams focus on what matters.",
+    body: "The noisy, low-fidelity rules eating your analysts' shift get cut or fixed, so a real alert does not sit buried in a queue of ones nobody trusts anymore.",
   },
   {
     id: "assessment",
     icon: Target,
     title: "Security Operations Assessment",
-    body: "Evaluate your current security operations and identify opportunities to improve visibility, workflows, and detection coverage.",
+    body: "A hands-on audit of what your SIEM actually sees, what it is blind to, and where your ATT&CK coverage is assumed rather than proven.",
   },
   {
     id: "detection-validation",
     icon: Radar,
     title: "Detection Validation",
-    body: "Test whether security controls and detections respond as expected through controlled security simulations.",
+    body: "We run the attacker behavior your detections claim to catch and show you exactly which ones fire and which ones are a rule that exists on paper only.",
   },
 ];
 
@@ -58,11 +58,13 @@ export default function SecurityOperationsPage() {
       {/* ═══════════ HERO — split copy + live console preview ═══════════ */}
       <section className="sp-hero sp-hero--split">
         <div className="sp-hero__copy">
+          <span className="sp-hero__badge">For lean security teams</span>
           <h1 className="sp-hero__h1">Strengthen Your Security Operations</h1>
           <p className="sp-hero__sub">
-            Most SOCs have tools they cannot fully trust. We tune what is already there. We
-            close the gaps. We prove your detections fire, before an attacker finds out they
-            do not.
+            Your SIEM, Sentinel, Splunk, or whatever else it is, is generating more alerts than
+            your team has time to tune. We sharpen the detections you already have, build the
+            ones you are missing, and map the result to MITRE ATT&amp;CK so your coverage is
+            proven, not assumed.
           </p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Schedule a Conversation <ArrowRight size={16} />
