@@ -5,7 +5,7 @@
 
 ### Overview
 
-This lab is hands-on. Opening a capture in Wireshark, learning the three panes, learning to recognize what makes traffic look suspicious before applying a single filter, and using three basic filters plus "Follow → HTTP Stream" to reassemble a full conversation into something readable.
+This lab is hands-on: you open a capture in Wireshark, learn the three panes, learn to recognize what makes traffic look suspicious before applying a single filter, and use three basic filters plus "Follow → HTTP Stream" to reassemble a full conversation into something readable.
 
 **\[SCREENSHOT: Wireshark start screen, interface list (optional, for first-time users)\]**
 

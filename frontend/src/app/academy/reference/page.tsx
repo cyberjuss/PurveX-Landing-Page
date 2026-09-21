@@ -225,7 +225,7 @@ const categories: RefCategory[] = [
         body: (
           <>
             <p>
-              {'SSL is the older name; TLS is the modern standard, people still say "SSL" out of habit. TLS wraps a connection in encryption so that even if someone captures the traffic, they see scrambled data instead of readable content.'}
+              {'SSL is the older name; TLS is the modern standard, though people still say "SSL" out of habit. TLS wraps a connection in encryption so that even if someone captures the traffic, they see scrambled data instead of readable content.'}
             </p>
             <p>
               {"TCP's three-way handshake sets up the "}
@@ -325,7 +325,7 @@ const categories: RefCategory[] = [
               </tbody>
             </table>
             <p>
-              {"Any time you see a Level 3 (Helpdesk) account attempting something that belongs to Level 1 (Domain Admin), that is your first real red flag. Full detail, the org chart, the user directory, data categories, the client workstation, lives on the "}
+              {"Any time you see a Level 3 (Helpdesk) account attempting something that belongs to Level 1 (Domain Admin), that is your first real red flag. Full detail — the org chart, the user directory, data categories, the client workstation — lives on the "}
               <Link href="/academy/phase-1/home-lab-active-directory">Home Lab page</Link>.
             </p>
           </>

@@ -1,6 +1,6 @@
 ### The CIA Triad
 
-The foundation of information security, and the lens every other concept in this course gets evaluated through. Any control worth deploying is protecting one or more of these three properties, which means naming the property is usually the fastest way to explain why the control exists at all.
+The CIA triad is the foundation of information security, the lens every other concept in this course gets evaluated through. Any control worth deploying is protecting one or more of these three properties, which means naming the property is usually the fastest way to explain why the control exists at all.
 
 **Confidentiality**: Only authorized people or systems can access the data.
 
