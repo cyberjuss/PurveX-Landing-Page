@@ -2,14 +2,24 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, FlaskConical } from "lucide-react";
 import { loadLesson, type ContentSection, type WeekDef, type PhaseDef } from "@/lib/academy-content";
 import { findQuiz } from "@/content/academy/quizzes";
-import { splitMarkdownIntoSlides } from "@/lib/markdown";
+import { extractEssentialQuestion, splitMarkdownIntoSlides } from "@/lib/markdown";
 import { SectionTabs } from "./section-tabs";
 import { MarkCompleteButton } from "./mark-complete-button";
 import { LabCarousel } from "./lab-carousel";
 
 export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }) {
+  // Every section that has one authored its own Essential Question, but a
+  // page only needs to ask it once -- so pull the first one out to show
+  // at the top and strip the block from every section's body.
+  let essentialQuestion: string | null = null;
   const sections = entry.sections
-    .map((section: ContentSection) => ({ ...section, markdown: loadLesson(section.file) }))
+    .map((section: ContentSection) => {
+      const raw = loadLesson(section.file);
+      if (!raw) return { ...section, markdown: raw };
+      const { question, rest } = extractEssentialQuestion(raw);
+      if (question && !essentialQuestion) essentialQuestion = question;
+      return { ...section, markdown: rest };
+    })
     .filter((s) => s.markdown && s.markdown.trim().length > 0);
   const quiz = findQuiz(phase.slug, entry.slug);
 
@@ -47,6 +57,15 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
         </div>
         {sections.length > 0 && <MarkCompleteButton phaseSlug={phase.slug} entrySlug={entry.slug} />}
       </div>
+
+      {essentialQuestion && (
+        <div className="academy-prose mt-6">
+          <div className="academy-question">
+            <span className="academy-question__tag">Essential Question</span>
+            <p>{essentialQuestion}</p>
+          </div>
+        </div>
+      )}
 
       {sections.length === 0 ? (
         <p className="mt-8 rounded-md border border-[var(--pvrx-border-light)] bg-slate-50/60 px-5 py-4 text-sm text-slate-500">

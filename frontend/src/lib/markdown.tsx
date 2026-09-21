@@ -16,6 +16,26 @@ export interface MarkdownSlide {
   markdown: string;
 }
 
+const ESSENTIAL_QUESTION_RE =
+  /<div class="academy-question">\s*<span class="academy-question__tag">Essential Question<\/span>\s*<p>([\s\S]*?)<\/p>\s*<\/div>/;
+
+// A week's page can chain several sections (an Overview tab plus one or
+// more labs), and each was authored with its own Essential Question block
+// at the top. Left in place, a student sees that same callout repeated
+// down the page. This pulls the first one out to show once at the page
+// level and strips the block from every section's markdown, collapsing
+// a doubled "---" divider left behind where one wrapped the block on
+// both sides.
+export function extractEssentialQuestion(markdown: string): { question: string | null; rest: string } {
+  const match = ESSENTIAL_QUESTION_RE.exec(markdown);
+  if (!match) return { question: null, rest: markdown };
+  const rest = (markdown.slice(0, match.index) + markdown.slice(match.index + match[0].length))
+    .replace(/---\s*\n+\s*---/g, "---")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  return { question: match[1].trim(), rest };
+}
+
 // Splits a lab's markdown on its own ## / ### headings so it can be shown
 // as a slide-through carousel instead of one long scroll. Everything
 // before the first heading (title/tool line, the Essential Question) is
