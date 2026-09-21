@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, FlaskConical } from "lucide-react";
+import { ArrowLeft, ArrowRight, FlaskConical } from "lucide-react";
 import { loadLesson, type ContentSection, type WeekDef, type PhaseDef } from "@/lib/academy-content";
 import { findQuiz } from "@/content/academy/quizzes";
 import { Markdown } from "@/lib/markdown";
@@ -11,6 +11,17 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
     .map((section: ContentSection) => ({ ...section, markdown: loadLesson(section.file) }))
     .filter((s) => s.markdown && s.markdown.trim().length > 0);
   const quiz = findQuiz(phase.slug, entry.slug);
+
+  // Only chain to entries that actually have content -- an entry still
+  // marked "Coming soon" isn't clickable in the sidebar either, so jumping
+  // to one here would just be a dead end. Cross-phase chaining is left out
+  // deliberately: every later phase is currently all "Coming soon," so
+  // there's nothing real to link to yet.
+  const phaseEntries = [...phase.weeks, ...(phase.homeLab ? [phase.homeLab] : [])];
+  const availableEntries = phaseEntries.filter((e) => e.sections.length > 0);
+  const currentIndex = availableEntries.findIndex((e) => e.slug === entry.slug);
+  const prevEntry = currentIndex > 0 ? availableEntries[currentIndex - 1] : undefined;
+  const nextEntry = currentIndex >= 0 && currentIndex < availableEntries.length - 1 ? availableEntries[currentIndex + 1] : undefined;
 
   // A lab is something you do, not something you read alongside a lesson
   // topic -- leaving it as just another tab next to "Resources" buried it
@@ -71,6 +82,39 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {(prevEntry || nextEntry) && (
+            <div className="mt-10 flex items-stretch gap-3 border-t border-[var(--pvrx-border-light)] pt-6">
+              {prevEntry ? (
+                <Link
+                  href={`/academy/${phase.slug}/${prevEntry.slug}`}
+                  className="group flex flex-1 items-center gap-3 rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-4 shadow-[0_1px_2px_rgba(16,25,46,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
+                >
+                  <ArrowLeft className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:-translate-x-0.5 group-hover:text-[#5546e0]" />
+                  <span className="min-w-0">
+                    <span className="block text-[11px] font-semibold uppercase tracking-wide text-slate-400">Previous</span>
+                    <span className="block truncate text-sm font-semibold text-slate-900">{prevEntry.title}</span>
+                  </span>
+                </Link>
+              ) : (
+                <div className="flex-1" />
+              )}
+              {nextEntry ? (
+                <Link
+                  href={`/academy/${phase.slug}/${nextEntry.slug}`}
+                  className="group flex flex-1 items-center justify-end gap-3 rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-4 text-right shadow-[0_1px_2px_rgba(16,25,46,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
+                >
+                  <span className="min-w-0">
+                    <span className="block text-[11px] font-semibold uppercase tracking-wide text-slate-400">Next</span>
+                    <span className="block truncate text-sm font-semibold text-slate-900">{nextEntry.title}</span>
+                  </span>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-[#5546e0]" />
+                </Link>
+              ) : (
+                <div className="flex-1" />
+              )}
             </div>
           )}
         </>
