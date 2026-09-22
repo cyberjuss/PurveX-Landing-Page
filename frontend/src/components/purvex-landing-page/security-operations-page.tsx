@@ -84,7 +84,7 @@ export default function SecurityOperationsPage() {
 
       {/* ═══════════ SERVICES — CONSOLE ═══════════ */}
       <section className="sp-section">
-        <div className="sp-head" data-r>
+        <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">What we do</span>
           <h2>Four ways we strengthen your operations</h2>
         </div>

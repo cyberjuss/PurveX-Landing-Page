@@ -133,43 +133,40 @@ const formats = [
 export default function TrainingPage() {
   return (
     <SiteChrome active="training">
-      {/* ═══════════ HERO ═══════════ */}
-      <section className="sp-hero">
-        <div className="sp-hero__deco sp-hero__deco--left" aria-hidden="true">
-          <div className="sp-translate-float">
-            <div className="sp-translate-card">
-              <span className="sp-translate-card__eyebrow">A detective sees</span>
-              <strong className="sp-translate-card__term">Fingerprints at the scene</strong>
-            </div>
-          </div>
-        </div>
-        <div className="sp-hero__deco sp-hero__deco--right" aria-hidden="true">
-          <div className="sp-translate-float sp-translate-float--alt">
-            <div className="sp-translate-card sp-translate-card--accent">
-              <span className="sp-translate-card__eyebrow sp-translate-card__eyebrow--accent">An analyst sees</span>
-              <strong className="sp-translate-card__term sp-translate-card__term--accent">Indicators of compromise</strong>
-            </div>
+      {/* ═══════════ HERO — left copy, translation duo stacked right ═══════════ */}
+      <section className="sp-hero sp-hero--translate">
+        <div className="sp-hero__copy">
+          <h1 className="sp-hero__h1">Think Like a SOC Analyst 101</h1>
+          <p className="sp-hero__sub">
+            Hands-on instruction in judgment, not memorization. How real analysts actually read a
+            scene.
+          </p>
+          <div className="sp-hero__actions">
+            <a href="#syllabus" className="sp-btn sp-btn--prim sp-btn--lg">
+              See the Curriculum <ArrowRight size={16} />
+            </a>
+            <Link href="/academy" className="sp-btn sp-btn--ghost sp-btn--lg">
+              Already enrolled? Go to the Academy
+            </Link>
           </div>
         </div>
 
-        <h1 className="sp-hero__h1">Think Like a SOC Analyst 101</h1>
-        <p className="sp-hero__sub">
-          Hands-on instruction in judgment, not memorization. How real analysts actually read a
-          scene.
-        </p>
-        <div className="sp-hero__actions">
-          <a href="#syllabus" className="sp-btn sp-btn--prim sp-btn--lg">
-            See the Curriculum <ArrowRight size={16} />
-          </a>
-          <Link href="/academy" className="sp-btn sp-btn--ghost sp-btn--lg">
-            Already enrolled? Go to the Academy
-          </Link>
+        <div className="sp-hero__duo" data-r aria-hidden="true">
+          <div className="sp-translate-card">
+            <span className="sp-translate-card__eyebrow">A detective sees</span>
+            <strong className="sp-translate-card__term">Fingerprints at the scene</strong>
+          </div>
+          <ArrowRight size={16} className="sp-hero__duo-arrow" />
+          <div className="sp-translate-card sp-translate-card--accent">
+            <span className="sp-translate-card__eyebrow sp-translate-card__eyebrow--accent">An analyst sees</span>
+            <strong className="sp-translate-card__term sp-translate-card__term--accent">Indicators of compromise</strong>
+          </div>
         </div>
       </section>
 
       {/* ═══════════ THE MINDSET ═══════════ */}
       <section className="sp-section">
-        <div className="sp-head" data-r>
+        <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">The mindset</span>
           <h2>The instinct is already yours</h2>
           <p>
@@ -202,7 +199,7 @@ export default function TrainingPage() {
 
       {/* ═══════════ WHY THIS PROGRAM IS DIFFERENT ═══════════ */}
       <section className="sp-section sp-section--tight">
-        <div className="sp-head" data-r>
+        <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">Why this program is different</span>
           <h2>Judgment is the skill. Everything else is just facts</h2>
           <p>
@@ -249,7 +246,7 @@ export default function TrainingPage() {
 
       {/* ═══════════ SYLLABUS ═══════════ */}
       <section className="sp-section" id="syllabus">
-        <div className="sp-head" data-r>
+        <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">The syllabus</span>
           <h2>From fundamentals to a full training partnership</h2>
           <p>The same phases as the student portal, plus how we support your program long-term.</p>
@@ -272,7 +269,7 @@ export default function TrainingPage() {
 
       {/* ═══════════ CAREER LADDER ═══════════ */}
       <section className="sp-section sp-section--tight">
-        <div className="sp-head" data-r>
+        <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">Where this leads</span>
           <h2>A ladder, not a certificate</h2>
           <p>Every module stacks toward a title employers recognize. Not just a line on a resume.</p>
@@ -296,7 +293,7 @@ export default function TrainingPage() {
 
       {/* ═══════════ DELIVERY FORMATS ═══════════ */}
       <section className="sp-section">
-        <div className="sp-head" data-r>
+        <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">Delivery formats</span>
           <h2>Fits the way your program already runs</h2>
         </div>
@@ -313,13 +310,13 @@ export default function TrainingPage() {
         </div>
       </section>
 
-      {/* ═══════════ CTA ═══════════ */}
+      {/* ═══════════ CTA — bordered banner, text left / button right ═══════════ */}
       <section className="sp-section">
-        <div className="sp-cta" data-r>
-          <div className="sp-cta__icon">
-            <MessageCircle size={22} />
+        <div className="sp-cta-banner" data-r>
+          <div className="sp-cta-banner__text">
+            <MessageCircle size={20} className="sp-cta-banner__icon" />
+            <h2>Partner With PurveX</h2>
           </div>
-          <h2>Partner With PurveX</h2>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Schedule a Conversation <ArrowRight size={16} />
           </a>
@@ -327,23 +324,18 @@ export default function TrainingPage() {
       </section>
 
       <style>{`
-/* ── Hero deco: two floating "translation" cards either side of the
-   headline, only past 1300px (same threshold the home page uses) -- below
-   that there's no room to bleed past the centered hero column without
-   overlapping the text. The full translation list repeats below in "The
-   mindset" for everyone else. ── */
-.sp-hero__deco { position: absolute; top: 60px; z-index: 2; pointer-events: none; display: none }
-@media (min-width: 1300px) {
-  .sp-hero__deco { display: block; opacity: 0; animation: sp-translate-deco-in .8s var(--ease) both }
-  .sp-hero__deco--left { left: -248px; animation-delay: .4s }
-  .sp-hero__deco--right { right: -248px; top: 168px; animation-delay: .6s }
-}
-@keyframes sp-translate-deco-in { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: translateY(0) } }
-.sp-translate-float { animation: sp-translate-float 6.5s ease-in-out infinite }
-.sp-translate-float--alt { animation-duration: 7.5s; animation-delay: -3s }
-@keyframes sp-translate-float { 0%, 100% { transform: translateY(0) rotate(-2deg) } 50% { transform: translateY(-10px) rotate(1deg) } }
+/* ── Hero, translate: left-aligned copy with the translation duo docked
+   to the right as a static pair, not a centered headline with floating
+   side decor like the home page. The full translation list repeats below
+   in "The mindset" for everyone else. ── */
+.sp-hero.sp-hero--translate { text-align: left; max-width: 1120px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center }
+.sp-hero--translate .sp-hero__h1 { text-align: left }
+.sp-hero--translate .sp-hero__sub { margin: 22px 0 0; text-align: left }
+.sp-hero--translate .sp-hero__actions { margin: 34px 0 0; justify-content: flex-start }
+.sp-hero__duo { display: flex; flex-direction: column; align-items: center; gap: 10px }
+.sp-hero__duo-arrow { color: var(--border-strong); transform: rotate(90deg) }
 .sp-translate-card {
-  width: 208px; padding: 16px 17px;
+  width: 100%; max-width: 240px; padding: 16px 17px;
   background: var(--surface); border: 1px solid var(--border-strong);
   box-shadow: 0 24px 48px -22px rgba(16,25,46,.28);
   display: flex; flex-direction: column; gap: 4px;
@@ -353,9 +345,13 @@ export default function TrainingPage() {
 .sp-translate-card__eyebrow--accent { color: var(--accent-deep) }
 .sp-translate-card__term { font-family: var(--font-display); font-size: .96rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink); line-height: 1.3 }
 .sp-translate-card__term--accent { color: var(--accent-deep) }
-@media (prefers-reduced-motion: reduce) {
-  .sp-hero__deco { animation: none; opacity: 1 }
-  .sp-translate-float { animation: none }
+@media (max-width: 940px) {
+  .sp-hero.sp-hero--translate { grid-template-columns: 1fr; text-align: center; gap: 36px }
+  .sp-hero--translate .sp-hero__h1, .sp-hero--translate .sp-hero__sub { text-align: center }
+  .sp-hero--translate .sp-hero__sub { margin-left: auto; margin-right: auto }
+  .sp-hero--translate .sp-hero__actions { justify-content: center }
+  .sp-hero__duo { flex-direction: row; justify-content: center }
+  .sp-hero__duo-arrow { transform: none }
 }
 
 /* ── The mindset: translation list, flat bordered rows instead of pinned
@@ -517,6 +513,20 @@ export default function TrainingPage() {
   .sp-formats { grid-template-columns: 1fr }
   .sp-format:nth-child(even) { border-left: none }
   .sp-format:nth-child(n+2) { border-top: 1px solid var(--border) }
+}
+
+/* ── CTA banner: text left, button right, inside a bordered strip --
+   distinct from the centered icon-over-headline CTA the home page uses ── */
+.sp-cta-banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+  padding: 40px 44px; border: 1px solid var(--border); border-radius: 20px; background: var(--surface-alt);
+}
+.sp-cta-banner__text { display: flex; align-items: center; gap: 14px }
+.sp-cta-banner__icon { flex-shrink: 0; color: var(--accent-deep) }
+.sp-cta-banner__text h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.3rem, 2.2vw, 1.7rem); font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
+@media (max-width: 620px) {
+  .sp-cta-banner { flex-direction: column; align-items: flex-start; padding: 32px 28px }
+  .sp-cta-banner .sp-btn { width: 100% }
 }
       `}</style>
     </SiteChrome>

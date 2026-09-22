@@ -203,39 +203,63 @@ export default function PlatformPage() {
 
   return (
     <SiteChrome active="platform">
-      {/* ═══════════ HERO ═══════════ */}
-      <section id="top" className="sp-hero">
-        <h1 className="sp-hero__h1">
-          See the miss.
-          <br />
-          <span className="sp-hero__grad">Know exactly why.</span>
-        </h1>
-        <p className="sp-hero__sub">
-          Most teams assume their detections work. PurveX proves which ones fire, and pinpoints why
-          the rest do not.
-        </p>
-        <form className="sp-wl" onSubmit={submitWaitlist}>
-          <div className="sp-wl__row">
-            <div className="sp-wl__field">
-              <Mail size={17} />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@company.com"
-                className="sp-wl__input"
-                autoComplete="email"
-              />
+      {/* ═══════════ HERO — left copy, right validation-score card ═══════════ */}
+      <section id="top" className="sp-hero sp-hero--product">
+        <div className="sp-hero__copy">
+          <h1 className="sp-hero__h1">
+            See the miss.
+            <br />
+            <span className="sp-hero__grad">Know exactly why.</span>
+          </h1>
+          <p className="sp-hero__sub">
+            Most teams assume their detections work. PurveX proves which ones fire, and pinpoints why
+            the rest do not.
+          </p>
+          <form className="sp-wl" onSubmit={submitWaitlist}>
+            <div className="sp-wl__row">
+              <div className="sp-wl__field">
+                <Mail size={17} />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@company.com"
+                  className="sp-wl__input"
+                  autoComplete="email"
+                />
+              </div>
+              <button type="submit" className="sp-btn sp-btn--prim sp-btn--lg" disabled={wlState === "loading"}>
+                {wlState === "loading" ? "Joining..." : <><span>Join the Waitlist</span><ArrowRight size={15} /></>}
+              </button>
             </div>
-            <button type="submit" className="sp-btn sp-btn--prim sp-btn--lg" disabled={wlState === "loading"}>
-              {wlState === "loading" ? "Joining..." : <><span>Join the Waitlist</span><ArrowRight size={15} /></>}
-            </button>
+            {wlMsg && <p className={`sp-wl__msg sp-wl__msg--${wlState}`}>{wlMsg}</p>}
+          </form>
+          <a href="#pricing" className="sp-hero__ghost-link">
+            View pricing <ChevronRight size={14} />
+          </a>
+        </div>
+
+        <div className="sp-hero__signal" data-r aria-hidden="true">
+          <div className="sp-signal">
+            <div className="sp-signal__chrome">
+              <div className="sp-signal__dots"><span /><span /><span /></div>
+              <span className="sp-signal__live"><span className="sp-signal__pulse" />Live</span>
+            </div>
+            <div className="sp-signal__ringwrap">
+              <svg viewBox="0 0 100 100" width="120" height="120">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="var(--border)" strokeWidth="9" />
+                <circle
+                  cx="50" cy="50" r="42" fill="none" stroke="var(--accent-deep)" strokeWidth="9"
+                  strokeLinecap="round" strokeDasharray="263.9" strokeDashoffset="13"
+                  transform="rotate(-90 50 50)"
+                />
+              </svg>
+              <span className="sp-signal__pct">95</span>
+            </div>
+            <span className="sp-signal__label">Validation Score</span>
+            <p className="sp-signal__desc">Detections that fired the last time we tested them, not the last time someone assumed they would.</p>
           </div>
-          {wlMsg && <p className={`sp-wl__msg sp-wl__msg--${wlState}`}>{wlMsg}</p>}
-        </form>
-        <a href="#pricing" className="sp-hero__ghost-link">
-          View pricing <ChevronRight size={14} />
-        </a>
+        </div>
       </section>
 
       {/* ═══════════ BENTO — THE PRODUCT ═══════════ */}
@@ -318,7 +342,7 @@ export default function PlatformPage() {
 
       {/* ═══════════ COMPARE ═══════════ */}
       <section className="sp-section">
-        <div className="sp-head" data-r>
+        <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">The risk of guessing</span>
           <h2>Every unproven detection is a blind spot</h2>
           <p>
@@ -340,7 +364,7 @@ export default function PlatformPage() {
 
       {/* ═══════════ PRICING ═══════════ */}
       <section className="sp-section" id="pricing">
-        <div className="sp-head" data-r>
+        <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">Pricing</span>
           <h2>Start focused. Expand when the evidence is there</h2>
           <p>
@@ -425,6 +449,39 @@ export default function PlatformPage() {
 .sp-wl__msg--error { color: var(--red) }
 .sp-hero__ghost-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 18px; font-size: .86rem; font-weight: 600; color: var(--muted); text-decoration: none; transition: color .2s, gap .2s }
 .sp-hero__ghost-link:hover { color: var(--accent-deep); gap: 8px }
+
+/* ── Hero, product: left copy + right validation-score card, so the
+   product page reads as a split pitch rather than a centered headline
+   stack like the home page ── */
+.sp-hero.sp-hero--product { text-align: left; max-width: 1180px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 64px; align-items: center }
+.sp-hero--product .sp-hero__h1 { text-align: left }
+.sp-hero--product .sp-hero__sub { margin: 22px 0 0; text-align: left }
+.sp-hero--product .sp-wl { margin: 30px 0 0 }
+.sp-hero__signal { display: flex; justify-content: center }
+.sp-signal {
+  width: 100%; max-width: 300px; padding: 22px 24px 26px;
+  border: 1px solid var(--border-strong); border-radius: 18px; background: var(--surface);
+  box-shadow: 0 28px 56px -30px rgba(16,25,46,.3);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+.sp-signal__chrome { display: flex; align-items: center; width: 100%; gap: 10px; margin-bottom: 20px }
+.sp-signal__dots { display: flex; gap: 6px }
+.sp-signal__dots span { width: 8px; height: 8px; border-radius: 50% }
+.sp-signal__dots span:nth-child(1) { background: #f2777a }
+.sp-signal__dots span:nth-child(2) { background: #f4c059 }
+.sp-signal__dots span:nth-child(3) { background: #5ec269 }
+.sp-signal__live { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: .66rem; font-weight: 700; letter-spacing: .05em; color: var(--accent-deep) }
+.sp-signal__pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: sp-pulse 2s ease-in-out infinite }
+.sp-signal__ringwrap { position: relative; width: 120px; height: 120px }
+.sp-signal__pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
+.sp-signal__label { display: block; margin-top: 16px; font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep) }
+.sp-signal__desc { margin: 10px 0 0; font-size: .84rem; line-height: 1.6; color: var(--muted) }
+@media (max-width: 940px) {
+  .sp-hero.sp-hero--product { grid-template-columns: 1fr; text-align: center; gap: 40px }
+  .sp-hero--product .sp-hero__h1, .sp-hero--product .sp-hero__sub { text-align: center }
+  .sp-hero--product .sp-hero__sub { margin-left: auto; margin-right: auto }
+  .sp-hero--product .sp-wl { margin-left: auto; margin-right: auto }
+}
 
 /* ── Bento ── */
 .sp-bento {
