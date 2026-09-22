@@ -64,7 +64,7 @@ export default function SecurityOperationsPage() {
             We tune what&apos;s there. We build what&apos;s missing. Then we prove it fires.
           </p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Book a call <ArrowRight size={16} />
+            Schedule a Conversation <ArrowRight size={16} />
           </a>
         </div>
         <div className="sp-hero__preview" data-r>
@@ -184,7 +184,7 @@ export default function SecurityOperationsPage() {
             <MessageCircle size={22} />
           </div>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Book a call <ArrowRight size={16} />
+            Schedule a Conversation <ArrowRight size={16} />
           </a>
         </div>
       </section>

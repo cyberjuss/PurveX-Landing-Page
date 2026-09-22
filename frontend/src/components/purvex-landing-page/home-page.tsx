@@ -296,7 +296,7 @@ export default function HomePage() {
           </div>
           <h2>Tell us what&apos;s not working</h2>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Book a call <ArrowRight size={16} />
+            Schedule a Conversation <ArrowRight size={16} />
           </a>
         </div>
       </section>
