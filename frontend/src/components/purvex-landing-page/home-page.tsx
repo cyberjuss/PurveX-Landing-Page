@@ -167,7 +167,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════ PROBLEMS WE SOLVE ═══════════ */}
-      <section className="sp-section">
+      <section className="sp-section sp-section--tight">
         <div className="sp-head" data-r>
           <span className="sp-tag">Sound familiar?</span>
           <h2>The problems we solve</h2>
@@ -307,8 +307,8 @@ export default function HomePage() {
 .sp-hero__deco { position: absolute; top: 0; z-index: 2; pointer-events: none; display: none }
 @media (min-width: 1300px) {
   .sp-hero__deco { display: block; opacity: 0; animation: sp-deco-in .8s var(--ease) both }
-  .sp-hero__deco--left { left: -264px; top: 40px; animation-name: sp-deco-in-left; animation-delay: .35s }
-  .sp-hero__deco--right { right: -264px; top: 168px; animation-name: sp-deco-in-right; animation-delay: .55s }
+  .sp-hero__deco--left { left: -264px; top: 76px; animation-name: sp-deco-in-left; animation-delay: .35s }
+  .sp-hero__deco--right { right: -264px; top: 204px; animation-name: sp-deco-in-right; animation-delay: .55s }
 }
 @keyframes sp-deco-in-left { from { opacity: 0; transform: translateY(16px) rotate(-2deg) scale(.94) } to { opacity: 1; transform: translateY(0) rotate(-7deg) scale(1) } }
 @keyframes sp-deco-in-right { from { opacity: 0; transform: translateY(16px) rotate(2deg) scale(.94) } to { opacity: 1; transform: translateY(0) rotate(6deg) scale(1) } }

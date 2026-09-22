@@ -399,7 +399,7 @@ export const CHROME_CSS = `
 /* ── Hero ── */
 .sp-hero { position: relative; text-align: center; padding: 116px 0 0; max-width: 760px; margin: 0 auto }
 .sp-hero__badge { display: inline-flex; align-items: center; gap: 7px; padding: 6px 15px; border-radius: 999px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.2); font-size: .74rem; font-weight: 600; color: var(--accent-deep); letter-spacing: .01em; margin-bottom: 26px }
-.sp-hero__h1 { margin: 0; font-family: var(--font-display); font-size: clamp(2.1rem, 4vw, 3.1rem); font-weight: 700; line-height: 1.12; letter-spacing: -.025em; color: var(--ink); text-wrap: balance }
+.sp-hero__h1 { margin: 0; font-family: var(--font-display); font-size: clamp(2.3rem, 4.8vw, 3.75rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; color: var(--ink); text-wrap: balance }
 .sp-hero__grad { color: var(--accent-deep) }
 .sp-hero__sub { margin: 24px auto 0; max-width: 600px; color: var(--ink-soft); font-size: 1.125rem; line-height: 1.65; text-wrap: pretty }
 .sp-hero__actions { margin: 38px auto 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap }
