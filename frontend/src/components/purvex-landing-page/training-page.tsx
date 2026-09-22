@@ -91,7 +91,7 @@ const careerLadder = [
   {
     level: "Threat Hunter",
     icon: Compass,
-    body: "Not waiting on the alarm. Hunting for the attacker who has not tripped one yet.",
+    body: "Hunting the attacker who hasn't tripped an alarm yet.",
   },
   {
     level: "Senior Analyst / SOC Lead",
@@ -146,9 +146,8 @@ export default function TrainingPage() {
           <span className="sp-tag">The mindset</span>
           <h2>The instinct is already yours</h2>
           <p>
-            Strip away the acronyms. A SOC analyst does exactly what a detective does: walk into
-            a scene, gather evidence, decide what happened. Same instincts, different crime
-            scene.
+            A SOC analyst does exactly what a detective does. Walk into a scene, gather
+            evidence, decide what happened.
           </p>
         </div>
         <div className="sp-translate-grid" data-r>

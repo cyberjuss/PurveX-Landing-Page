@@ -61,8 +61,8 @@ export default function AboutPage() {
           </div>
           <div className="sp-mag__content">
             <p className="sp-mag__lede">
-              PurveX is built on the blend of blue team and red team thinking. Understanding both
-              sides is what makes a stronger analyst, and it shapes everything we do.
+              We&apos;re built on the blend of blue team and red team thinking. Understanding both
+              sides makes a stronger analyst.
             </p>
 
             <div className="sp-yinyang">
@@ -94,8 +94,7 @@ export default function AboutPage() {
             </div>
 
             <p>
-              We do not train one side and hope it holds up against the other. We build analysts,
-              and run operations, that understand both.
+              We build analysts, and run operations, that understand both sides.
             </p>
           </div>
         </section>
@@ -109,10 +108,8 @@ export default function AboutPage() {
           </div>
           <div className="sp-mag__content">
             <p>
-              A lot of what happens in a SOC is repeatable, and repeatable work should be
-              automated, not repeated by hand forever. Our number one goal is to solve the
-              problems in security operations that can be automated, and build a better way of
-              doing what is left, without losing the people who have to run it.
+              A lot of what happens in a SOC is repeatable. We automate that, and build a
+              better way to do what&apos;s left, without losing the people who run it.
             </p>
             <div className="sp-mag__points">
               {goals.map((g) => (
@@ -139,12 +136,11 @@ export default function AboutPage() {
           </div>
           <div className="sp-mag__content">
             <p>
-              PurveX stays close to the work. The person running your security operations is the
-              same one teaching in the field, not an account manager relaying between you and
-              the work. That is not a feature we added. It is how we think a company like this
-              should be run.
+              We stay close to the work. The person running your security operations is the
+              same one teaching in the field, not an account manager relaying messages. That&apos;s
+              just how we think a company like this should run.
             </p>
-            <p>The best way to see if we are a fit is a real conversation, not a pitch.</p>
+            <p>The best way to see if we&apos;re a fit is a real conversation.</p>
             <Link href="/about/founder" className="sp-mag__link">
               Meet the founder <ArrowRight size={14} />
             </Link>
@@ -160,10 +156,9 @@ export default function AboutPage() {
           </div>
           <div className="sp-mag__content">
             <p>
-              PurveX is exploring new ways to help security teams continuously measure and
-              validate their detection capabilities: technology that helps organizations move
-              beyond assumed security coverage toward measurable evidence that their detections
-              work when they are needed.
+              We&apos;re exploring new ways to help security teams measure and validate their
+              detections continuously, not just once a year. Technology that replaces assumed
+              coverage with real evidence.
             </p>
             <Link href="/platform" className="sp-mag__link">
               Explore PurveX Labs <ArrowRight size={14} />

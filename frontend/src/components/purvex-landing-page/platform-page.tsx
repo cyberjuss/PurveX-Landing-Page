@@ -35,7 +35,7 @@ const features = [
   {
     icon: Crosshair,
     title: "Validate what matters",
-    body: "Test the behaviors you care about, and see which detections fire before an adversary finds the gap.",
+    body: "Test the behaviors you care about. See what fires before an attacker finds the gap.",
   },
   {
     icon: Radar,
@@ -45,7 +45,7 @@ const features = [
   {
     icon: BrainCircuit,
     title: "AI-assisted explanation",
-    body: "Selective AI speeds up triage and prioritization, without the noise.",
+    body: "AI speeds up triage and prioritization, without the noise.",
   },
   {
     icon: ShieldCheck,
@@ -134,10 +134,10 @@ const tiers = [
 ];
 
 const faqs: [string, string][] = [
-  ["Is this BAS? How is it different from AttackIQ or SafeBreach?", "BAS simulates adversary behavior on endpoints. PurveX validates the full chain (telemetry, parser, rule, alert, ticket) and isolates where it broke. We complement BAS, not replace it."],
-  ["Do you run anything in production? What is the safety model?", "Read-only against your SIEM by default. Actions are scoped, auditable, and approved per environment. Production-impacting tests need explicit opt-in."],
+  ["Is this BAS? How is it different from AttackIQ or SafeBreach?", "BAS simulates attacker behavior on endpoints. We validate the full chain (telemetry, parser, rule, alert, ticket) and isolate where it broke. We complement BAS. We don't replace it."],
+  ["Do you run anything in production? What is the safety model?", "Read-only against your SIEM by default. Actions are scoped, auditable, and approved per environment. Production tests need explicit opt-in."],
   ["How long until we see our first coverage signal?", "Within hours of connecting your SIEM and running your first test."],
-  ["Does PurveX replace the SIEM?", "No. Your SIEM stays the system of record. PurveX adds a validation layer that proves detections fire and tracks coverage over time."],
+  ["Does PurveX replace the SIEM?", "No. Your SIEM stays the system of record. We just add a layer that proves detections fire and tracks coverage over time."],
 ];
 
 /* ─────────────────── hooks ─────────────────── */
@@ -294,8 +294,8 @@ export default function PlatformPage() {
               <div className="sp-dash__insight">
                 <span className="sp-dash__insight-kicker">Aha moment</span>
                 <p>
-                  <strong>LSASS Memory missed.</strong> PurveX isolates the issue to parser drift,
-                  so the team fixes the broken ingest path instead of retuning the rule.
+                  <strong>LSASS Memory missed.</strong> We isolate the issue to parser drift, so
+                  the team fixes the broken ingest path instead of the rule.
                 </p>
               </div>
             </div>
