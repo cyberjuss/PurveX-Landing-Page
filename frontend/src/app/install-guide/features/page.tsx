@@ -11,7 +11,7 @@ const FEATURES: [string, string, string][] = [
   ["Test runners", "Dedicated lab machines that PurveX connects to over SSH, with host-key pinning so nothing else can impersonate one.", "/install-guide/features/runners-and-policy"],
   ["Custom detections", "Sync detection rules from your SIEM, or write them by hand, each mapped to the technique it is meant to catch.", "/install-guide/features/detections"],
   ["Teams and roles", "Multiple team members, role-based permissions, and an audit log of who changed what.", "/install-guide/features/team-and-access"],
-  ["Scale when ready", "Free covers real validation on a small team. Paid adds scheduled runs, Detection-as-Code, and reports when needed.", "/pricing"],
+  ["Scale when ready", "Free covers real validation on a small team. Paid adds scheduled runs, Detection-as-Code, and reports when needed.", "/platform#pricing"],
 ];
 
 export default function Page() {

@@ -1,9 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DOCS_CONTENT_CSS } from "./docs-content";
 
@@ -103,6 +104,22 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const active = activeFromPathname(pathname);
   const { prev, next } = getAdjacentPages(active);
+  const activeLabel = FLAT_NAV.find((item) => item.id === active)?.label ?? "Sections";
+
+  // Sidebar starts expanded (matches the pre-JS/SSR markup, so there's no
+  // hydration mismatch) and only collapses once we know we're on a narrow
+  // viewport -- desktop always keeps the full nav open, mobile starts
+  // collapsed so a visitor lands on page content, not a 13-link nav dump.
+  const [navOpen, setNavOpen] = useState(true);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 861px)");
+    const sync = () => setNavOpen(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+    // Re-sync on navigation too, so picking a link on mobile collapses the
+    // nav back down for the page that loads rather than leaving it open.
+  }, [pathname]);
 
   return (
     <div className="ds">
@@ -123,7 +140,13 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
 
       <div className="ds-layout">
         <aside className="ds-aside">
-          <Sidebar active={active} />
+          <details className="ds-aside__toggle" open={navOpen} onToggle={(e) => setNavOpen(e.currentTarget.open)}>
+            <summary className="ds-aside__summary">
+              <span>{activeLabel}</span>
+              <ChevronDown size={16} className="ds-aside__chev" />
+            </summary>
+            <Sidebar active={active} />
+          </details>
         </aside>
 
         <main className="ds-main">
@@ -184,7 +207,22 @@ const DOCS_CSS = `
 @media (max-width: 860px) { .ds-layout { grid-template-columns: 1fr } }
 
 .ds-aside { position: sticky; top: 60px; align-self: start; height: calc(100vh - 60px); overflow-y: auto; padding: 32px 16px 32px 24px; border-right: 1px solid var(--border) }
-@media (max-width: 860px) { .ds-aside { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 20px 24px } }
+.ds-aside__summary { display: none }
+@media (max-width: 860px) {
+  .ds-aside { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 0 }
+  /* Collapsed by default on mobile so a visitor lands on the page content,
+     not a 13-link nav list, before ever seeing what they came for. */
+  .ds-aside__toggle { padding: 14px 24px }
+  .ds-aside__summary {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    list-style: none; cursor: pointer;
+    font-size: .85rem; font-weight: 700; color: var(--ink);
+  }
+  .ds-aside__summary::-webkit-details-marker { display: none }
+  .ds-aside__chev { flex-shrink: 0; color: var(--muted-dim); transition: transform .2s }
+  .ds-aside__toggle[open] .ds-aside__chev { transform: rotate(180deg) }
+  .ds-aside__toggle .ds-sidebar { margin-top: 18px }
+}
 
 .ds-sidebar__group + .ds-sidebar__group { margin-top: 22px }
 .ds-sidebar__label { margin: 0 0 8px; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted-dim) }

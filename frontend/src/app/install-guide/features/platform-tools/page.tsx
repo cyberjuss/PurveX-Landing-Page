@@ -47,7 +47,7 @@ export default function Page() {
         per day, and 30 days of audit history. The paid plan unlocks unlimited team members, runners, and daily
         runs, plus schedules, Detection-as-Code, PDF report export, and unlimited audit retention. Upload a
         license file on this page to unlock it. It takes effect immediately, with no restart required. See
-        the <Link href="/pricing" style={{ color: "var(--accent-deep)", fontWeight: 600 }}>pricing page</Link> to obtain one.
+        the <Link href="/platform#pricing" style={{ color: "var(--accent-deep)", fontWeight: 600 }}>pricing page</Link> to obtain one.
       </P>
 
       <Callout tone="info">
