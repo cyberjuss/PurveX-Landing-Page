@@ -318,46 +318,47 @@ export const CHROME_CSS = `
   [data-r], .sp-cards[data-r] > *, .sp-process[data-r] > *, .sp-formats[data-r] > *, .sp-arc[data-r] > * { opacity: 1; transform: none; filter: none; transition: none }
 }
 
-/* ── Nav ── */
-.sp-nav { position: sticky; top: 0; z-index: 50; padding: 0 24px; transition: background .35s, backdrop-filter .35s, box-shadow .35s, border-color .35s; border-bottom: 1px solid transparent }
-.sp-nav--s { background: rgba(251,252,254,.82); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3); border-bottom: 1px solid var(--border) }
-.sp-nav__inner { max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 66px }
+/* ── Nav — floating pill, inset from the viewport edges instead of a
+   full-bleed bar, so it reads as a piece of UI sitting on the page
+   rather than blending into it until you scroll. ── */
+.sp-nav { position: sticky; top: 14px; z-index: 50; padding: 0 16px }
+.sp-nav__inner {
+  max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;
+  height: 62px; padding: 0 10px 0 20px; border-radius: 18px;
+  background: rgba(255,255,255,.72); border: 1px solid var(--border);
+  backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  box-shadow: 0 1px 2px rgba(16,25,46,.04), 0 16px 40px -24px rgba(16,25,46,.18);
+  transition: box-shadow .35s, border-color .35s, background .35s;
+}
+.sp-nav--s .sp-nav__inner {
+  background: rgba(255,255,255,.88);
+  box-shadow: 0 1px 2px rgba(16,25,46,.05), 0 20px 44px -20px rgba(16,25,46,.26);
+  border-color: var(--border-strong);
+}
 .sp-logo { display: inline-flex; align-items: center; gap: 9px; justify-self: start; font-family: var(--font-display); font-weight: 650; font-size: 1.2rem; color: var(--ink); text-decoration: none; letter-spacing: -.015em }
 .sp-logo__img { border-radius: 8px }
-.sp-nav .sp-logo { font-size: 1.3rem; gap: 10px }
-/* Nav is a hamburger at every width -- opens the flat mobile panel below,
-   no inline links, no mega menu. */
+.sp-nav .sp-logo { font-size: 1.15rem; gap: 9px }
 .sp-nav__right { display: flex; align-items: center; gap: 10px; justify-self: end }
 .sp-nav__burger { display: flex; align-items: center; justify-content: center; background: none; border: 0; color: var(--ink); cursor: pointer; padding: 6px; margin-right: -6px }
 
-/* ── Desktop primary nav + mega-menu dropdowns ──
+/* ── Desktop primary nav ──
    Hidden below 940px; the hamburger + slide-over panel below handles
-   mobile/tablet. Each .sp-nav__item stretches to the nav's full height
-   so the mouse never has to cross an empty gap between the link and its
-   dropdown -- the classic reason hover menus feel broken. */
+   mobile/tablet. Active/hovered links get a pill background fill,
+   matching the tag/badge chip language used everywhere else on the
+   site, instead of an underline. ── */
 .sp-nav__links { display: none }
 @media (min-width: 940px) {
   .sp-nav__inner { display: grid; grid-template-columns: auto 1fr auto; gap: 20px }
-  .sp-nav__links { display: flex; align-items: stretch; justify-content: center; gap: 2px; height: 100% }
+  .sp-nav__links { display: flex; align-items: center; justify-content: center; gap: 2px }
 }
-.sp-nav__item { position: relative; display: flex; align-items: center; height: 100% }
 .sp-nav__link {
-  position: relative; display: inline-flex; align-items: center; height: 38px; padding: 0 15px;
-  border-radius: 10px; font-size: .89rem; font-weight: 560; color: var(--ink-soft);
+  position: relative; display: inline-flex; align-items: center; height: 36px; padding: 0 15px;
+  border-radius: 999px; font-size: .87rem; font-weight: 560; color: var(--ink-soft);
   text-decoration: none; transition: color .2s var(--ease), background .2s var(--ease);
 }
-.sp-nav__link::after {
-  content: ""; position: absolute; left: 15px; right: 15px; bottom: 5px; height: 2px; border-radius: 2px;
-  background: var(--accent-deep); transform: scaleX(0); transform-origin: center;
-  transition: transform .3s var(--ease);
-}
-.sp-nav__item:hover .sp-nav__link, .sp-nav__item:focus-within .sp-nav__link { color: var(--ink) }
-.sp-nav__item:hover .sp-nav__link::after, .sp-nav__item:focus-within .sp-nav__link::after { transform: scaleX(1) }
-.sp-nav__link--active { color: var(--accent-deep) }
-.sp-nav__link--active::after { transform: scaleX(1) }
-@media (prefers-reduced-motion: reduce) {
-  .sp-nav__link::after { transition: none }
-}
+.sp-nav__link:hover, .sp-nav__link:focus-visible { color: var(--ink); background: rgba(16,25,46,.05) }
+.sp-nav__link--active { color: var(--accent-deep); background: var(--accent-soft) }
+.sp-nav__link--active:hover { background: var(--accent-soft) }
 @media (min-width: 940px) {
   .sp-nav__burger { display: none }
 }
@@ -538,7 +539,8 @@ export const CHROME_CSS = `
 }
 @media (max-width: 680px) {
   .sp-main { padding: 0 16px 64px }
-  .sp-nav { padding: 0 16px }
+  .sp-nav { top: 10px; padding: 0 10px }
+  .sp-nav__inner { padding: 0 8px 0 16px }
   .sp-nav__right .sp-btn { display: none }
   .sp-hero { padding-top: 56px }
   .sp-hero__badge { margin-bottom: 18px }
