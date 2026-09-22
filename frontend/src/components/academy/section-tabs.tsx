@@ -152,17 +152,9 @@ export function SectionTabs({ sections, quiz, labs }: { sections: TabSection[]; 
               <ChevronLeft className="h-4 w-4" />
             </button>
 
-            <div className="flex min-w-0 flex-1 items-center gap-3">
-              <div className="h-1 flex-1 overflow-hidden rounded-sm bg-slate-100">
-                <div
-                  className="h-full rounded-sm bg-[#5546e0] transition-all duration-300"
-                  style={{ width: `${((active + 1) / items.length) * 100}%` }}
-                />
-              </div>
-              <span className="shrink-0 font-mono text-xs text-slate-400">
-                {pad(active + 1)}/{pad(items.length)}
-              </span>
-            </div>
+            <span className="flex-1 text-center font-mono text-xs text-slate-400">
+              {pad(active + 1)}/{pad(items.length)}
+            </span>
 
             <button
               type="button"
