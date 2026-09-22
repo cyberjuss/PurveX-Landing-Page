@@ -1,7 +1,12 @@
-import { findPhase } from "@/lib/academy-content";
-import { PhaseOverview } from "@/components/academy/phase-overview";
+import { redirect } from "next/navigation";
+import { findPhase, firstAvailableEntry } from "@/lib/academy-content";
 
+// The sidebar already lists every week in this phase -- a separate overview
+// page here just repeated that same list. Landing straight in the first
+// week gets you into content one click sooner instead of re-showing a menu
+// you were already looking at.
 export default function Phase1Page() {
   const phase = findPhase("phase-1")!;
-  return <PhaseOverview phase={phase} tagline="The groundwork every analyst needs before touching a real alert queue." />;
+  const entry = firstAvailableEntry(phase);
+  redirect(entry ? `/academy/${phase.slug}/${entry.slug}` : "/academy");
 }

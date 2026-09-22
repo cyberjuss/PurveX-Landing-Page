@@ -42,8 +42,11 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
 
   return (
     <div>
-      <Link href={`/academy/${phase.slug}`} className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-900">
-        <ArrowLeft className="h-4 w-4" /> {phase.label}
+      {/* /academy/${phase.slug} now redirects straight into this phase's
+          first week, so it's not a real "back" destination -- pointing this
+          at the course overview instead of back into itself. */}
+      <Link href="/academy" className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-900">
+        <ArrowLeft className="h-4 w-4" /> All phases
       </Link>
 
       <div className="mt-5 flex flex-wrap items-start justify-between gap-4">

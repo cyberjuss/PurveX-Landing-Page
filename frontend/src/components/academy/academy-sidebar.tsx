@@ -26,7 +26,10 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
 
       {phases.map((phase) => {
         const entries = [...phase.weeks, ...(phase.homeLab ? [phase.homeLab] : [])];
-        const phaseActive = pathname === `/academy/${phase.slug}`;
+        // /academy/${phase.slug} redirects straight into a week, so that
+        // exact path is never actually the current pathname -- highlight
+        // the phase header instead whenever any of its own weeks is active.
+        const phaseActive = entries.some((entry) => pathname === `/academy/${phase.slug}/${entry.slug}`);
         return (
           <div key={phase.slug}>
             <Link

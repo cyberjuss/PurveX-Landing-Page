@@ -150,3 +150,11 @@ export function findEntry(phaseSlug: string, entrySlug: string): WeekDef | undef
   if (phase.homeLab?.slug === entrySlug) return phase.homeLab;
   return phase.weeks.find((w) => w.slug === entrySlug);
 }
+
+// The first entry actually worth landing on -- an entry with no sections
+// yet is "Coming soon" and isn't clickable anywhere else either, so there's
+// nothing useful to redirect a phase's index route into for it.
+export function firstAvailableEntry(phase: PhaseDef): WeekDef | undefined {
+  const entries = [...phase.weeks, ...(phase.homeLab ? [phase.homeLab] : [])];
+  return entries.find((e) => e.sections.length > 0);
+}
