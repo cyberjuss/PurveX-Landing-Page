@@ -352,6 +352,18 @@ select {
   color: var(--pvrx-text-primary);
 }
 
+/* The marketing site (SiteChrome's .sp root) is a light-only design and
+   never renders a dark-mode toggle of its own. If a visitor previously
+   switched to dark mode in the authenticated dashboard, that preference
+   persists in localStorage and leaks the .dark class onto every page on
+   this origin, turning <body> near-black underneath it. Normally that's
+   invisible since .sp paints over it, but an overscroll bounce at the
+   top of the page reveals a sliver of the real body background above
+   the sticky nav. Force it back to white whenever .sp is on the page. */
+html:has(.sp) body {
+  background: #fbfcfe;
+}
+
 .dark [data-slot="card"] {
   background-color: #171717;
   color: var(--pvrx-text-primary);
