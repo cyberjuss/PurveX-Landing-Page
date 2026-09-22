@@ -60,7 +60,7 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-3",
     title: "Week 3 — Networking",
-    summary: "Covers TCP/IP, ports, protocols, and TLS with hands-on Wireshark labs.",
+    summary: "Covers the networking fundamentals behind every packet capture with hands-on Wireshark labs.",
     sections: [
       { label: "Overview", file: "phase-1/week-3/lesson-overview.md" },
       { label: "TCP/IP", file: "phase-1/week-3/lesson-tcpip.md" },
