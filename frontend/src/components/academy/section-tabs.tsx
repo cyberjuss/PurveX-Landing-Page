@@ -124,12 +124,16 @@ export function SectionTabs({ sections, quiz, labs }: { sections: TabSection[]; 
                     tabIndex={collapsed ? -1 : 0}
                     aria-selected={active === idx}
                     onClick={() => setActive(idx)}
-                    className={`flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 ${
+                    className={`flex items-start gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 ${
                       active === idx ? "bg-[rgba(106,92,255,0.1)] text-[#5546e0]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                     }`}
                   >
-                    <FlaskConical className="h-3.5 w-3.5 shrink-0" />
-                    <span className="truncate">{item.label}</span>
+                    <FlaskConical className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                    {/* Lab titles run longer than a section's ("Network
+                        Forensics -- Hidden Tear Ransomware") -- truncating
+                        to one line lost the part that actually identifies
+                        the lab, so this wraps instead. */}
+                    <span className="min-w-0">{item.label}</span>
                   </button>
                 );
               })}
