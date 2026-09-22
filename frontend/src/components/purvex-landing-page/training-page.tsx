@@ -7,16 +7,13 @@ import {
   BookOpen,
   Building2,
   Check,
-  ClipboardList,
   Compass,
   Eye,
-  Fingerprint,
   FileText,
   FlaskConical,
   Footprints,
   Globe,
   GraduationCap,
-  Layers,
   Lock,
   MessageCircle,
   Radar,
@@ -30,9 +27,7 @@ import { BOOKING_URL, SiteChrome } from "./chrome";
 const translations = [
   { icon: Siren, detective: "A crime scene", analyst: "An alert in the queue" },
   { icon: FileText, detective: "Witness statements", analyst: "Raw log lines" },
-  { icon: Fingerprint, detective: "Fingerprints at the scene", analyst: "Indicators of compromise" },
   { icon: Footprints, detective: "A suspect's known M.O.", analyst: "Attacker TTPs (MITRE ATT&CK)" },
-  { icon: ClipboardList, detective: "The case file", analyst: "The incident report" },
   { icon: Lock, detective: "Closing the case", analyst: "Containing the breach" },
 ];
 
@@ -74,24 +69,6 @@ const curriculum = [
     icon: Building2,
     title: "Home Lab — Active Directory",
     body: "GovTech Financial: a fictional enterprise environment used for investigation and detection labs.",
-  },
-  {
-    mod: "05",
-    icon: GraduationCap,
-    title: "Cybersecurity Instruction",
-    body: "Instructor support for SOC operations, SIEM, threat detection, and incident response, built around your syllabus.",
-  },
-  {
-    mod: "06",
-    icon: FlaskConical,
-    title: "Hands-On Security Labs",
-    body: "Real tools and real log data, the same ones working analysts use every day.",
-  },
-  {
-    mod: "07",
-    icon: Layers,
-    title: "Curriculum Support",
-    body: "Training content mapped to what employers actually screen for in a SOC interview.",
   },
 ];
 
@@ -248,8 +225,8 @@ export default function TrainingPage() {
       <section className="sp-section" id="syllabus">
         <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">The syllabus</span>
-          <h2>From fundamentals to a full training partnership</h2>
-          <p>The same phases as the student portal, plus how we support your program long-term.</p>
+          <h2>Four phases, the same ones in the student portal</h2>
+          <p>From core fundamentals to a live lab environment built for investigation practice.</p>
         </div>
         <div className="sp-steps" data-r>
           {curriculum.map((c) => (
@@ -362,7 +339,6 @@ export default function TrainingPage() {
 .sp-translate-grid[data-r].in > * { opacity: 1; transform: none; filter: blur(0) }
 .sp-translate-grid[data-r] > *:nth-child(1) { transition-delay: .03s } .sp-translate-grid[data-r] > *:nth-child(2) { transition-delay: .08s }
 .sp-translate-grid[data-r] > *:nth-child(3) { transition-delay: .13s } .sp-translate-grid[data-r] > *:nth-child(4) { transition-delay: .18s }
-.sp-translate-grid[data-r] > *:nth-child(5) { transition-delay: .23s } .sp-translate-grid[data-r] > *:nth-child(6) { transition-delay: .28s }
 .sp-translate-row { display: flex; align-items: center; gap: 16px; padding: 22px 28px; border-bottom: 1px solid var(--border) }
 .sp-translate-row:nth-child(even) { border-left: 1px solid var(--border) }
 .sp-translate-row:nth-last-child(-n+2) { border-bottom: none }
@@ -432,8 +408,6 @@ export default function TrainingPage() {
 .sp-steps[data-r].in > * { opacity: 1; transform: none; filter: blur(0) }
 .sp-steps[data-r] > *:nth-child(1) { transition-delay: .02s } .sp-steps[data-r] > *:nth-child(2) { transition-delay: .06s }
 .sp-steps[data-r] > *:nth-child(3) { transition-delay: .1s } .sp-steps[data-r] > *:nth-child(4) { transition-delay: .14s }
-.sp-steps[data-r] > *:nth-child(5) { transition-delay: .18s } .sp-steps[data-r] > *:nth-child(6) { transition-delay: .22s }
-.sp-steps[data-r] > *:nth-child(7) { transition-delay: .26s }
 .sp-step { display: flex; align-items: flex-start; gap: 22px; padding: 26px 4px; border-bottom: 1px solid var(--border); transition: background .25s var(--ease) }
 .sp-step:hover { background: var(--surface-alt) }
 .sp-step__num { flex-shrink: 0; width: 40px; padding-top: 8px; font-family: var(--font-mono); font-size: .8rem; font-weight: 600; color: var(--muted-dim) }
