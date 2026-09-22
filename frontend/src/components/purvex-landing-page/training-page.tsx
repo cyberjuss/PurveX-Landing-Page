@@ -162,21 +162,6 @@ export default function TrainingPage() {
     openCardRef.current?.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
   }, [openModule]);
 
-  // "Why this program is different" carousel: cycles through one
-  // without/with pair at a time instead of stacking all four, so the
-  // section stays short. Paused on hover/focus and skipped entirely for
-  // prefers-reduced-motion, same as every other auto-animation on this page.
-  const [comparePair, setComparePair] = useState(0);
-  const [carouselPaused, setCarouselPaused] = useState(false);
-  useEffect(() => {
-    if (carouselPaused || typeof window === "undefined") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = setInterval(() => {
-      setComparePair((p) => (p + 1) % withoutItems.length);
-    }, 4200);
-    return () => clearInterval(id);
-  }, [carouselPaused]);
-
   return (
     <SiteChrome active="training">
       {/* ═══════════ HERO — split copy + live curriculum preview ═══════════ */}
@@ -255,12 +240,7 @@ export default function TrainingPage() {
             moment, whether an alert is noise or a real compromise.
           </p>
         </div>
-        <div
-          className="sp-compare sp-compare--carousel"
-          data-r
-          onMouseEnter={() => setCarouselPaused(true)}
-          onMouseLeave={() => setCarouselPaused(false)}
-        >
+        <div className="sp-compare" data-r>
           <div className="sp-compare__col sp-compare__col--without">
             <div className="sp-compare__header">
               <div className="sp-compare__badge sp-compare__badge--x">
@@ -268,13 +248,14 @@ export default function TrainingPage() {
               </div>
               <h3 className="sp-compare__h">Generic Training</h3>
             </div>
-            <p key={`without-${comparePair}`} className="sp-compare__single">
-              <X size={15} className="sp-compare__icon sp-compare__icon--x" />
-              <span>{withoutItems[comparePair]}</span>
-            </p>
-          </div>
-          <div className="sp-compare__arrow">
-            <ArrowRight size={18} />
+            <ul className="sp-compare__list">
+              {withoutItems.map((item) => (
+                <li key={item}>
+                  <X size={15} className="sp-compare__icon sp-compare__icon--x" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="sp-compare__col sp-compare__col--with">
             <span className="sp-compare__flag">Recommended</span>
@@ -284,23 +265,15 @@ export default function TrainingPage() {
               </div>
               <h3 className="sp-compare__h">Think Like a SOC Analyst 101</h3>
             </div>
-            <p key={`with-${comparePair}`} className="sp-compare__single">
-              <Check size={15} className="sp-compare__icon sp-compare__icon--ok" />
-              <span>{withItems[comparePair]}</span>
-            </p>
+            <ul className="sp-compare__list">
+              {withItems.map((item) => (
+                <li key={item}>
+                  <Check size={15} className="sp-compare__icon sp-compare__icon--ok" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-        <div className="sp-compare__dots" data-r>
-          {withoutItems.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              className={i === comparePair ? "sp-compare__dot sp-compare__dot--active" : "sp-compare__dot"}
-              onClick={() => setComparePair(i)}
-              aria-label={`Show comparison ${i + 1} of ${withoutItems.length}`}
-              aria-current={i === comparePair}
-            />
-          ))}
         </div>
       </section>
 
@@ -449,9 +422,7 @@ export default function TrainingPage() {
 }
 
 .sp-compare { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding-top: 10px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
-.sp-compare--carousel { padding-bottom: 4px }
 .sp-compare__col { position: relative; padding: 36px 32px 40px; transition: opacity .2s var(--ease) }
-.sp-compare--carousel .sp-compare__col { padding-bottom: 26px }
 .sp-compare__col:not(:first-child) { border-left: 1px solid var(--border) }
 .sp-compare__col--without { opacity: .8 }
 .sp-compare__col--without:hover { opacity: 1 }
@@ -470,37 +441,24 @@ export default function TrainingPage() {
 .sp-compare__badge--x { background: rgba(229,72,77,.1); color: var(--red) }
 .sp-compare__badge--ok { background: var(--accent-soft); color: var(--accent-deep) }
 .sp-compare__h { margin: 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
-.sp-compare__single {
+/* Every row visible at once -- no rotation, nothing to wait for or click
+   through. Each column is its own self-contained list so row heights can
+   differ between columns without breaking alignment. */
+.sp-compare__list { display: flex; flex-direction: column }
+.sp-compare__list li {
   display: flex; align-items: flex-start; gap: 11px;
-  margin: 0; min-height: 72px;
+  padding: 14px 0;
   color: var(--ink-soft); font-size: .9rem; line-height: 1.55;
-  animation: sp-compare-fade .35s var(--ease) both;
+  border-bottom: 1px solid var(--border);
 }
-@keyframes sp-compare-fade { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: none } }
-@media (prefers-reduced-motion: reduce) { .sp-compare__single { animation: none } }
+.sp-compare__list li:last-child { border-bottom: none; padding-bottom: 0 }
+.sp-compare__col--with .sp-compare__list li { border-bottom-color: rgba(106,92,255,.18) }
 .sp-compare__icon { flex-shrink: 0; margin-top: 2px }
-.sp-compare__dots { display: flex; justify-content: center; gap: 9px; margin-top: 22px }
-.sp-compare__dot {
-  width: 8px; height: 8px; border-radius: 50%; padding: 0; border: none; cursor: pointer;
-  background: var(--border-strong); transition: background .2s var(--ease), transform .2s var(--ease);
-}
-.sp-compare__dot:hover { background: var(--muted-dim) }
-.sp-compare__dot--active { background: var(--accent-deep); transform: scale(1.25) }
 .sp-compare__icon--x { color: var(--red) }
 .sp-compare__icon--ok { color: var(--accent-deep) }
-.sp-compare__arrow {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  width: 44px; height: 44px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--surface); border: 1px solid var(--border-strong);
-  color: var(--accent-deep);
-  box-shadow: 0 10px 22px -10px rgba(16,25,46,.3);
-  z-index: 2;
-}
 @media (max-width: 680px) {
   .sp-compare { grid-template-columns: 1fr }
   .sp-compare__col:not(:first-child) { border-left: none }
-  .sp-compare__arrow { display: none }
 }
 
 /* ── Syllabus (horizontal zigzag roadmap: click an icon to reveal its card) ── */
