@@ -51,7 +51,11 @@ export function SectionTabs({ sections, quiz, labs }: { sections: TabSection[]; 
         <p className="mb-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.1em] text-[#5546e0]">
           <FlaskConical className="h-3.5 w-3.5" /> Hands-on lab
         </p>
-        <LabCarousel slides={splitMarkdownIntoSlides(current.markdown)} />
+        {/* Keyed on the label so switching labs remounts this instead of
+            reusing the instance -- otherwise it kept whatever step index
+            you were on in the previous lab instead of starting over at
+            Overview. */}
+        <LabCarousel key={current.label} slides={splitMarkdownIntoSlides(current.markdown)} />
       </div>
     ) : (
       <Markdown content={current.markdown} />
