@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, FlaskConical } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, FlaskConical } from "lucide-react";
 import { Markdown } from "@/lib/markdown";
 import { QuizBlock } from "./quiz";
 import type { Quiz } from "@/content/academy/quizzes";
@@ -103,8 +103,48 @@ export function SectionTabs({ sections, quiz, labs }: { sections: TabSection[]; 
         </div>
       </div>
 
-      <div className="min-w-0 flex-1 rounded-md border border-[var(--pvrx-border-light)] bg-white p-6 shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)] sm:p-8">
-        {panel}
+      <div className="min-w-0 flex-1 overflow-hidden rounded-md border border-[var(--pvrx-border-light)] bg-white shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)]">
+        <div className="p-6 sm:p-8">{panel}</div>
+
+        {/* Lets you read straight through a lesson's sections without
+            dropping back to the sidebar after every one -- same shape as
+            the lab carousel's footer below, so the two "move to the next
+            thing" controls on this page feel like one pattern. */}
+        {tabLabels.length > 1 && (
+          <div className="flex items-center justify-between gap-3 border-t border-[var(--pvrx-border-light)] px-6 py-3 sm:px-8">
+            <button
+              type="button"
+              onClick={() => setActive((a) => Math.max(0, a - 1))}
+              disabled={active === 0}
+              aria-label="Previous section"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-30"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <div className="h-1 flex-1 overflow-hidden rounded-sm bg-slate-100">
+                <div
+                  className="h-full rounded-sm bg-[#5546e0] transition-all duration-300"
+                  style={{ width: `${((active + 1) / tabLabels.length) * 100}%` }}
+                />
+              </div>
+              <span className="shrink-0 font-mono text-xs text-slate-400">
+                {pad(active + 1)}/{pad(tabLabels.length)}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setActive((a) => Math.min(tabLabels.length - 1, a + 1))}
+              disabled={active === tabLabels.length - 1}
+              aria-label="Next section"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-30"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
