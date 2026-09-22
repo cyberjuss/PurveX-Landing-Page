@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { BookMarked, GraduationCap, Home, Menu, X } from "lucide-react";
+import { BookMarked, ChevronLeft, GraduationCap, Home, Menu, X } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
 
 export function AcademyShell({ phases, children }: { phases: PhaseDef[]; children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -66,8 +67,23 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
         <div className="mx-auto flex max-w-7xl">
           {/* Desktop sidebar */}
-          <aside className="hidden w-72 shrink-0 border-r border-[var(--pvrx-border-light)] bg-white lg:sticky lg:top-[65px] lg:block lg:h-[calc(100vh-65px)]">
-            <AcademySidebar phases={phases} />
+          <aside
+            className={`hidden shrink-0 overflow-hidden border-r border-[var(--pvrx-border-light)] bg-white transition-[width] duration-300 ease-[cubic-bezier(.16,1,.3,1)] lg:sticky lg:top-[65px] lg:block lg:h-[calc(100vh-65px)] ${
+              collapsed ? "lg:w-12" : "lg:w-72"
+            }`}
+          >
+            <button
+              type="button"
+              onClick={() => setCollapsed((c) => !c)}
+              aria-expanded={!collapsed}
+              title={collapsed ? "Expand course menu" : "Collapse course menu"}
+              className="flex h-11 w-full items-center justify-center border-b border-[var(--pvrx-border-light)] text-slate-400 transition hover:bg-slate-50 hover:text-[#5546e0]"
+            >
+              <ChevronLeft className={`h-4 w-4 transition-transform duration-300 ${collapsed ? "rotate-180" : ""}`} />
+            </button>
+            <div className={`h-[calc(100%-45px)] transition-opacity duration-200 ${collapsed ? "pointer-events-none opacity-0" : "opacity-100"}`}>
+              <AcademySidebar phases={phases} />
+            </div>
           </aside>
 
           {/* Mobile drawer */}
