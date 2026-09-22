@@ -3,22 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import {
-  ArrowRight,
-  FlaskConical,
-  GraduationCap,
-  Layers,
-  Linkedin,
-  Menu,
-  Radar,
-  ShieldCheck,
-  Sliders,
-  Swords,
-  Target,
-  Users,
-  Waypoints,
-  X,
-} from "lucide-react";
+import { Linkedin, Menu, X } from "lucide-react";
 
 /* ─────────────────────────────────────────────────────────
    PurveX — shared site chrome
@@ -39,83 +24,19 @@ export const BOOKING_URL = "https://calendly.com/purvex-llc/30min";
 
 export type NavKey = "home" | "security-operations" | "training" | "about" | "platform" | "legal";
 
-type NavSubItem = {
-  label: string;
-  desc: string;
-  anchor: string;
-  icon: typeof ShieldCheck;
-};
-
 type NavMenu = {
   key: NavKey;
   label: string;
   href: string;
-  icon?: typeof ShieldCheck;
-  blurb?: string;
-  cta?: string;
-  items: NavSubItem[];
   external?: boolean;
 };
 
 const NAV_MENUS: NavMenu[] = [
-  {
-    key: "home",
-    label: "Home",
-    href: "/",
-    items: [],
-  },
-  {
-    key: "security-operations",
-    label: "Security Operations",
-    href: "/security-operations",
-    icon: ShieldCheck,
-    blurb: "Strengthen how you detect and respond to threats.",
-    cta: "Explore",
-    items: [
-      { label: "SIEM & Detection Engineering", desc: "Build detections around your environment.", anchor: "#siem-detection-engineering", icon: Waypoints },
-      { label: "SIEM Optimization", desc: "Reduce noise, improve alert quality.", anchor: "#siem-optimization", icon: Sliders },
-      { label: "Security Operations Assessment", desc: "Evaluate visibility and workflows.", anchor: "#assessment", icon: Target },
-      { label: "Detection Validation", desc: "Test controls with real simulations.", anchor: "#detection-validation", icon: Radar },
-    ],
-  },
-  {
-    key: "training",
-    label: "Cybersecurity Training",
-    href: "/cybersecurity-training",
-    icon: GraduationCap,
-    blurb: "Develop practical, job-ready cybersecurity talent.",
-    cta: "Explore",
-    items: [
-      { label: "Cybersecurity Instruction", desc: "Instructor support for SOC & SIEM programs.", anchor: "#instruction", icon: GraduationCap },
-      { label: "Hands-On Security Labs", desc: "Practical alert and threat investigation.", anchor: "#labs", icon: FlaskConical },
-      { label: "Curriculum Support", desc: "Build or improve your training content.", anchor: "#curriculum", icon: Layers },
-    ],
-  },
-  {
-    key: "platform",
-    label: "PurveX Labs",
-    href: "/platform",
-    icon: Radar,
-    blurb: "Our detection-assurance platform, in private beta.",
-    cta: "Explore",
-    items: [
-      { label: "The Platform", desc: "Everything on one screen, proof not assumptions.", anchor: "#product", icon: Radar },
-      { label: "Planned Pricing", desc: "Start focused, expand when the evidence is there.", anchor: "#pricing", icon: Layers },
-      { label: "FAQ", desc: "Questions teams ask before they commit.", anchor: "#faq", icon: ShieldCheck },
-    ],
-  },
-  {
-    key: "about",
-    label: "About",
-    href: "/about",
-    icon: Users,
-    blurb: "Who PurveX is, and how we think about security.",
-    cta: "About PurveX",
-    items: [
-      { label: "How We Think", desc: "Blue team, red team, one discipline.", anchor: "#how-we-think", icon: Swords },
-      { label: "Who We Are", desc: "No sales layer, by principle.", anchor: "#who-we-are", icon: Users },
-    ],
-  },
+  { key: "home", label: "Home", href: "/" },
+  { key: "security-operations", label: "Security Operations", href: "/security-operations" },
+  { key: "training", label: "Cybersecurity Training", href: "/cybersecurity-training" },
+  { key: "platform", label: "PurveX Labs", href: "/platform" },
+  { key: "about", label: "About", href: "/about" },
 ];
 
 export function SiteChrome({
@@ -221,37 +142,13 @@ export function SiteChrome({
 
           <nav className="sp-nav__links" aria-label="Primary">
             {NAV_MENUS.filter((menu) => menu.key !== "home").map((menu) => (
-              <div key={menu.key} className="sp-nav__item">
-                <Link
-                  href={menu.href}
-                  className={`sp-nav__link${active === menu.key ? " sp-nav__link--active" : ""}`}
-                >
-                  {menu.label}
-                </Link>
-                {menu.items.length > 0 && (
-                  <div className="sp-nav__dropdown">
-                    <div className="sp-nav__dropdown-head">
-                      <p>{menu.blurb}</p>
-                      <Link href={menu.href} className="sp-nav__dropdown-cta">
-                        {menu.cta} <ArrowRight size={13} />
-                      </Link>
-                    </div>
-                    <div className="sp-nav__dropdown-list">
-                      {menu.items.map((item) => (
-                        <Link key={item.label} href={`${menu.href}${item.anchor}`} className="sp-nav__dropdown-item">
-                          <span className="sp-nav__dropdown-icon">
-                            <item.icon size={16} />
-                          </span>
-                          <span className="sp-nav__dropdown-copy">
-                            <strong>{item.label}</strong>
-                            <span>{item.desc}</span>
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <Link
+                key={menu.key}
+                href={menu.href}
+                className={`sp-nav__link${active === menu.key ? " sp-nav__link--active" : ""}`}
+              >
+                {menu.label}
+              </Link>
             ))}
           </nav>
 
@@ -458,32 +355,8 @@ export const CHROME_CSS = `
 .sp-nav__item:hover .sp-nav__link::after, .sp-nav__item:focus-within .sp-nav__link::after { transform: scaleX(1) }
 .sp-nav__link--active { color: var(--accent-deep) }
 .sp-nav__link--active::after { transform: scaleX(1) }
-
-.sp-nav__dropdown {
-  position: absolute; top: 100%; left: 50%; width: 360px;
-  transform: translate(-50%, 6px); transform-origin: top center;
-  opacity: 0; visibility: hidden; pointer-events: none;
-  background: var(--surface); border: 1px solid var(--border-strong); border-radius: 18px;
-  box-shadow: 0 28px 56px -24px rgba(16,25,46,.26); padding: 18px; z-index: 60;
-  transition: opacity .22s var(--ease), transform .22s var(--ease), visibility .22s;
-}
-.sp-nav__item:hover .sp-nav__dropdown, .sp-nav__item:focus-within .sp-nav__dropdown {
-  opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, 0);
-}
-.sp-nav__dropdown-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; padding-bottom: 14px; margin-bottom: 6px; border-bottom: 1px solid var(--border) }
-.sp-nav__dropdown-head p { margin: 0; color: var(--muted); font-size: .82rem; line-height: 1.5; max-width: 210px }
-.sp-nav__dropdown-cta { flex-shrink: 0; display: inline-flex; align-items: center; gap: 5px; margin-top: 1px; font-size: .8rem; font-weight: 650; color: var(--accent-deep); text-decoration: none; transition: gap .2s var(--ease) }
-.sp-nav__dropdown-cta:hover { gap: 8px }
-.sp-nav__dropdown-list { display: flex; flex-direction: column; gap: 2px }
-.sp-nav__dropdown-item { display: flex; align-items: flex-start; gap: 11px; padding: 9px 10px; border-radius: 12px; text-decoration: none; transition: background .2s var(--ease), transform .2s var(--ease) }
-.sp-nav__dropdown-item:hover { background: var(--accent-soft); transform: translateX(3px) }
-.sp-nav__dropdown-icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 32px; height: 32px; margin-top: 1px; border-radius: 9px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); color: var(--accent-deep) }
-.sp-nav__dropdown-item:hover .sp-nav__dropdown-icon { background: var(--accent-deep); color: #fff }
-.sp-nav__dropdown-copy { display: flex; flex-direction: column; gap: 1px }
-.sp-nav__dropdown-copy strong { font-size: .87rem; font-weight: 620; color: var(--ink) }
-.sp-nav__dropdown-copy span { font-size: .78rem; color: var(--muted); line-height: 1.4 }
 @media (prefers-reduced-motion: reduce) {
-  .sp-nav__link::after, .sp-nav__dropdown, .sp-nav__dropdown-item { transition: none }
+  .sp-nav__link::after { transition: none }
 }
 @media (min-width: 940px) {
   .sp-nav__burger { display: none }
