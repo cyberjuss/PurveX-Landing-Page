@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, FlaskConical } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { loadLesson, type ContentSection, type WeekDef, type PhaseDef } from "@/lib/academy-content";
 import { findQuiz } from "@/content/academy/quizzes";
-import { extractEssentialQuestion, splitMarkdownIntoSlides } from "@/lib/markdown";
+import { extractEssentialQuestion } from "@/lib/markdown";
 import { SectionTabs } from "./section-tabs";
 import { MarkCompleteButton } from "./mark-complete-button";
-import { LabCarousel } from "./lab-carousel";
 
 export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }) {
   // Every section that has one authored its own Essential Question, but a
@@ -34,14 +33,11 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
   const prevEntry = currentIndex > 0 ? availableEntries[currentIndex - 1] : undefined;
   const nextEntry = currentIndex >= 0 && currentIndex < availableEntries.length - 1 ? availableEntries[currentIndex + 1] : undefined;
 
-  // A lab is something you do, not something you read alongside a lesson
-  // topic -- leaving it as just another tab next to "Resources" buried it
-  // at the same visual weight as reference material. Every lab section is
-  // named "Lab: ..." by convention, so that's enough to split it out
-  // without needing a new field on the content model.
-  const labSections = sections
-    .filter((s) => s.label.startsWith("Lab:"))
-    .map((s) => ({ ...s, anchorId: s.file.split("/").pop()!.replace(/\.md$/, "") }));
+  // A lab reads differently from a lesson topic, so it gets its own group
+  // in the section nav below a divider instead of blending in with the
+  // rest. Every lab section is named "Lab: ..." by convention, so that's
+  // enough to split it out without needing a new field on the content model.
+  const labSections = sections.filter((s) => s.label.startsWith("Lab:"));
   const otherSections = sections.filter((s) => !s.label.startsWith("Lab:"));
 
   return (
@@ -75,38 +71,13 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
         </p>
       ) : (
         <>
-          {otherSections.length > 0 && (
+          {(otherSections.length > 0 || labSections.length > 0) && (
             <div className="mt-8">
               <SectionTabs
                 sections={otherSections.map((s) => ({ label: s.label, markdown: s.markdown! }))}
                 quiz={quiz}
-                labs={labSections.map((s) => ({ label: s.label.replace(/^Lab:\s*/, ""), anchorId: s.anchorId }))}
+                labs={labSections.map((s) => ({ label: s.label.replace(/^Lab:\s*/, ""), markdown: s.markdown! }))}
               />
-            </div>
-          )}
-
-          {labSections.length > 0 && (
-            <div className={otherSections.length > 0 ? "mt-10 flex flex-col gap-6" : "mt-8 flex flex-col gap-6"}>
-              {labSections.map((lab) => (
-                <div
-                  key={lab.file}
-                  id={lab.anchorId}
-                  className="scroll-mt-24 overflow-hidden rounded-md border border-[var(--pvrx-border-light)] bg-white shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)]"
-                >
-                  <div className="flex items-center gap-3 border-b border-[var(--pvrx-border-light)] bg-[rgba(106,92,255,0.04)] px-6 py-4 sm:px-8">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[rgba(106,92,255,0.1)] text-[#5546e0]">
-                      <FlaskConical className="h-[18px] w-[18px]" />
-                    </span>
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#5546e0]">Hands-on lab</p>
-                      <h2 className="font-display text-base font-semibold text-slate-900">
-                        {lab.label.replace(/^Lab:\s*/, "")}
-                      </h2>
-                    </div>
-                  </div>
-                  <LabCarousel slides={splitMarkdownIntoSlides(lab.markdown!)} />
-                </div>
-              ))}
             </div>
           )}
 

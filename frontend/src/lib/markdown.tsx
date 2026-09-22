@@ -45,7 +45,12 @@ export function extractEssentialQuestion(markdown: string): { question: string |
 export function splitMarkdownIntoSlides(markdown: string): MarkdownSlide[] {
   const chunks: { heading: string | null; lines: string[] }[] = [{ heading: null, lines: [] }];
   let inFence = false;
-  for (const line of markdown.split("\n")) {
+  // Some lesson files are saved with Windows line endings -- splitting on
+  // "\n" alone leaves a trailing "\r" on every line, and "." doesn't match
+  // "\r" in JS regex, so the heading pattern's trailing "$" never lands and
+  // no heading ever matches. Normalizing first is what makes those files
+  // split into slides at all instead of collapsing into one.
+  for (const line of markdown.replace(/\r\n/g, "\n").split("\n")) {
     if (/^\s*```/.test(line)) inFence = !inFence;
     const headingMatch = !inFence ? /^(#{2,3})\s+(.*)$/.exec(line) : null;
     if (headingMatch) {
