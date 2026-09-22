@@ -76,27 +76,27 @@ const careerLadder = [
   {
     level: "Trainee",
     icon: BookOpen,
-    body: "Learning the fundamentals: networks, operating systems, how to read a raw log line.",
+    body: "You're learning the fundamentals: networks, operating systems, how to read a raw log line.",
   },
   {
     level: "Tier 1 SOC Analyst",
     icon: Eye,
-    body: "Watching the queue, triaging alerts. Learning to tell noise from a real signal.",
+    body: "You're watching the queue, triaging alerts, learning to tell noise from a real signal.",
   },
   {
     level: "Tier 2 / Incident Responder",
     icon: ShieldAlert,
-    body: "Investigating confirmed incidents end to end: contain, eradicate, document.",
+    body: "You're investigating confirmed incidents end to end: contain, eradicate, document.",
   },
   {
     level: "Threat Hunter",
     icon: Compass,
-    body: "Hunting the attacker who hasn't tripped an alarm yet.",
+    body: "You're not waiting for the alarm. You're hunting the attacker who hasn't tripped one yet.",
   },
   {
     level: "Senior Analyst / SOC Lead",
     icon: Award,
-    body: "Mentoring the next Tier 1. Shaping how the whole team investigates.",
+    body: "You're mentoring the next Tier 1, shaping how the whole team investigates.",
   },
 ];
 
@@ -115,7 +115,7 @@ export default function TrainingPage() {
         <div className="sp-hero__copy">
           <h1 className="sp-hero__h1">Think Like a SOC Analyst 101</h1>
           <p className="sp-hero__sub">
-            Hands-on training in how real analysts actually read a scene.
+            Hands-on training. You&apos;ll learn how real analysts actually read a scene.
           </p>
           <div className="sp-hero__actions">
             <a href="#syllabus" className="sp-btn sp-btn--prim sp-btn--lg">
@@ -146,7 +146,7 @@ export default function TrainingPage() {
           <span className="sp-tag">The mindset</span>
           <h2>The instinct is already yours</h2>
           <p>
-            A SOC analyst does exactly what a detective does. Walk into a scene, gather
+            A SOC analyst does exactly what a detective does. You walk into a scene, gather
             evidence, decide what happened.
           </p>
         </div>
@@ -179,7 +179,7 @@ export default function TrainingPage() {
           <h2>Judgment is the skill</h2>
           <p>
             Certifications teach vocabulary. This program teaches judgment: deciding, in the
-            moment, whether an alert is noise or a real compromise.
+            moment, whether what you&apos;re looking at is noise or a real compromise.
           </p>
         </div>
         <div className="sp-compare" data-r>

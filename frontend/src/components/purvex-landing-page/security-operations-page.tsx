@@ -9,25 +9,25 @@ const services = [
     id: "siem-detection-engineering",
     icon: Waypoints,
     title: "SIEM & Detection Engineering",
-    body: "We build detections around your real environment, not a generic template.",
+    body: "Detections built around your real environment. Not a generic template.",
   },
   {
     id: "siem-optimization",
     icon: Sliders,
     title: "SIEM Optimization",
-    body: "We fix the noisy rules so a real alert doesn't get lost.",
+    body: "Noisy rules fixed or cut. Real alerts stop getting buried.",
   },
   {
     id: "assessment",
     icon: Target,
     title: "Security Operations Assessment",
-    body: "We check what your SIEM sees, and what it misses.",
+    body: "What your SIEM sees, and what it misses. Mapped and documented.",
   },
   {
     id: "detection-validation",
     icon: Radar,
     title: "Detection Validation",
-    body: "We test your detections and show you what actually fires.",
+    body: "Your detections, tested. You get a clear answer: fires, or doesn't.",
   },
 ];
 
@@ -58,7 +58,7 @@ export default function SecurityOperationsPage() {
       {/* ═══════════ HERO — split copy + live console preview ═══════════ */}
       <section className="sp-hero sp-hero--split">
         <div className="sp-hero__copy">
-          <span className="sp-hero__badge">For small security teams</span>
+          <span className="sp-hero__badge">For teams running lean</span>
           <h1 className="sp-hero__h1">Detections that actually work</h1>
           <p className="sp-hero__sub">
             We tune what&apos;s there. We build what&apos;s missing. Then we prove it fires.
