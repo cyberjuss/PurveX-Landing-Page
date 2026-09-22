@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Check, ChevronDown } from "lucide-react";
@@ -10,6 +11,17 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
   const pathname = usePathname();
   const { isComplete, completedCount, totalCount } = useAcademyProgress();
   const progressPct = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
+  // A phase with no destination page (see hasDestination below) has no
+  // route to open it via, so its expanded state has to live here instead
+  // -- otherwise there's no way to even preview what's inside it.
+  const [manualOpen, setManualOpen] = useState<Set<string>>(new Set());
+  const toggleManualOpen = (slug: string) =>
+    setManualOpen((prev) => {
+      const next = new Set(prev);
+      if (next.has(slug)) next.delete(slug);
+      else next.add(slug);
+      return next;
+    });
 
   return (
     <nav className="flex h-full flex-col gap-6 overflow-y-auto px-5 py-6">
@@ -36,10 +48,15 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         // (Phase 3) still has its own "still being written" page, so that
         // one stays a real link.
         const hasDestination = entries.some((e) => e.sections.length > 0) || phase.weeks.length === 0;
+        // A phase you're not currently in still opens if you've toggled it
+        // manually -- without this, a phase with nothing published yet
+        // (no destination to navigate to and auto-open it) could never be
+        // previewed at all.
+        const phaseOpen = phaseActive || manualOpen.has(phase.slug);
         const headerContent = (
           <>
             <span className="truncate">{phase.label} — {phase.title}</span>
-            <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${phaseActive ? "" : "-rotate-90"}`} />
+            <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${phaseOpen ? "" : "-rotate-90"}`} />
           </>
         );
         return (
@@ -55,16 +72,22 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 {headerContent}
               </Link>
             ) : (
-              <span className="flex items-center justify-between gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-slate-400">
+              <button
+                type="button"
+                onClick={() => toggleManualOpen(phase.slug)}
+                aria-expanded={phaseOpen}
+                className="flex w-full items-center justify-between gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-slate-400 transition hover:text-slate-600"
+              >
                 {headerContent}
-              </span>
+              </button>
             )}
             {/* Week lists stay collapsed for every phase you're not
-                currently in -- otherwise the sidebar dumps all four phases'
-                weeks on screen at once before you've picked one. */}
+                currently in (or haven't manually opened) -- otherwise the
+                sidebar dumps all four phases' weeks on screen at once
+                before you've picked one. */}
             <div
               className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
-                phaseActive ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                phaseOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
               }`}
             >
               <ul className="flex flex-col gap-0.5 overflow-hidden border-l border-[var(--pvrx-border-light)] pl-3">
