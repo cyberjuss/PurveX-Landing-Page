@@ -157,7 +157,7 @@ export default function AboutPage() {
           <div className="sp-mag__rail">
             <span className="sp-mag__num">04</span>
             <span className="sp-mag__label">Looking ahead</span>
-            <p className="sp-mag__pull">Proof, not assumed coverage.</p>
+            <p className="sp-mag__pull">Coverage you can watch, not coverage you take on faith.</p>
           </div>
           <div className="sp-mag__content">
             <p>

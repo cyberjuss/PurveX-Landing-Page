@@ -266,7 +266,7 @@ export default function PlatformPage() {
       <section className="sp-section" id="product">
         <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">The platform</span>
-          <h2>Everything on one screen. Proof, not assumptions</h2>
+          <h2>Everything on one screen. Nothing left to guess</h2>
         </div>
 
         <div className="sp-bento" data-r>

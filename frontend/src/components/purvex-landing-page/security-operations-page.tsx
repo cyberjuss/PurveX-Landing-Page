@@ -62,7 +62,7 @@ export default function SecurityOperationsPage() {
           <h1 className="sp-hero__h1">A Rule on Paper Is Not a Detection</h1>
           <p className="sp-hero__sub">
             SIEMs generate more alerts than a lean team can tune. We sharpen what is there. We
-            build what is missing. We map it to MITRE ATT&amp;CK. Proof, not assumed coverage.
+            build what is missing. We map it to MITRE ATT&amp;CK. Then we prove it fires.
           </p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Schedule a Conversation <ArrowRight size={16} />
@@ -121,7 +121,7 @@ export default function SecurityOperationsPage() {
         <div className="sp-zigzag" data-r>
           <div className="sp-zigzag__text">
             <span className="sp-tag">How we think</span>
-            <h2>No one defends well against a tactic they do not understand</h2>
+            <h2>Detections built the way attackers actually move</h2>
             <p>
               Every detection we build starts from how attackers actually operate. Not just what
               a vendor&apos;s default ruleset assumes. That is the blend of blue team and red team
@@ -170,7 +170,7 @@ export default function SecurityOperationsPage() {
           </div>
           <div className="sp-zigzag__text">
             <span className="sp-tag">Our goal</span>
-            <h2>Automate what can be automated. Never stop understanding it</h2>
+            <h2>The same three stages, every engagement</h2>
             <p>
               Every engagement moves through the same three stages. Where things stand is
               always clear. Your team understands exactly what changed, and why.
