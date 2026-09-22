@@ -84,22 +84,19 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
         {cards.map((card) => {
           const progress = phaseProgress(card.phase);
           const isComingSoon = progress === null;
-          return (
-            <Link
-              key={card.slug}
-              href={card.href}
-              className="group relative flex items-start gap-4 overflow-hidden rounded-md border border-[var(--pvrx-border-light)] bg-white p-5 shadow-[0_1px_2px_rgba(16,25,46,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
-            >
+
+          const inner = (
+            <>
               <span className="absolute inset-y-0 left-0 w-1" style={{ background: card.accent }} aria-hidden="true" />
               <span
                 className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md"
-                style={{ background: card.accentSoft, color: card.accent }}
+                style={{ background: card.accentSoft, color: card.accent, opacity: isComingSoon ? 0.6 : 1 }}
               >
                 <card.icon className="h-5 w-5" />
               </span>
               <span className="flex-1">
                 <span className="flex items-center gap-2">
-                  <span className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: card.accent }}>
+                  <span className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: card.accent, opacity: isComingSoon ? 0.7 : 1 }}>
                     {card.tag}
                   </span>
                   {isComingSoon ? (
@@ -112,10 +109,35 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
                     </span>
                   )}
                 </span>
-                <span className="mt-1 block font-display text-base font-semibold text-slate-900">{card.title}</span>
+                <span className={`mt-1 block font-display text-base font-semibold ${isComingSoon ? "text-slate-500" : "text-slate-900"}`}>
+                  {card.title}
+                </span>
                 <span className="mt-1 block text-sm text-slate-500">{card.body}</span>
               </span>
-              <ArrowRight className="mt-2 h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-slate-500" />
+              {!isComingSoon && (
+                <ArrowRight className="mt-2 h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-slate-500" />
+              )}
+            </>
+          );
+
+          // A "Coming soon" phase has no week to send you to -- its own
+          // route just redirects straight back to this page. Rendering it
+          // as a link made clicking it look like navigation that silently
+          // did nothing; a plain (non-interactive) card says that upfront.
+          return isComingSoon ? (
+            <div
+              key={card.slug}
+              className="relative flex items-start gap-4 overflow-hidden rounded-md border border-[var(--pvrx-border-light)] bg-slate-50/60 p-5"
+            >
+              {inner}
+            </div>
+          ) : (
+            <Link
+              key={card.slug}
+              href={card.href}
+              className="group relative flex items-start gap-4 overflow-hidden rounded-md border border-[var(--pvrx-border-light)] bg-white p-5 shadow-[0_1px_2px_rgba(16,25,46,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
+            >
+              {inner}
             </Link>
           );
         })}

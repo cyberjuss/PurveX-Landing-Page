@@ -30,18 +30,35 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         // exact path is never actually the current pathname -- highlight
         // the phase header instead whenever any of its own weeks is active.
         const phaseActive = entries.some((entry) => pathname === `/academy/${phase.slug}/${entry.slug}`);
+        // A phase with weeks planned but none published yet (Phase 2) has
+        // no real destination -- its route just redirects straight back to
+        // wherever you already were. A phase with no week structure at all
+        // (Phase 3) still has its own "still being written" page, so that
+        // one stays a real link.
+        const hasDestination = entries.some((e) => e.sections.length > 0) || phase.weeks.length === 0;
+        const headerContent = (
+          <>
+            <span className="truncate">{phase.label} — {phase.title}</span>
+            <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${phaseActive ? "" : "-rotate-90"}`} />
+          </>
+        );
         return (
           <div key={phase.slug}>
-            <Link
-              href={`/academy/${phase.slug}`}
-              onClick={onNavigate}
-              className={`flex items-center justify-between gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em] transition ${
-                phaseActive ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
-              }`}
-            >
-              <span className="truncate">{phase.label} — {phase.title}</span>
-              <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${phaseActive ? "" : "-rotate-90"}`} />
-            </Link>
+            {hasDestination ? (
+              <Link
+                href={`/academy/${phase.slug}`}
+                onClick={onNavigate}
+                className={`flex items-center justify-between gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em] transition ${
+                  phaseActive ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
+                }`}
+              >
+                {headerContent}
+              </Link>
+            ) : (
+              <span className="flex items-center justify-between gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-slate-400">
+                {headerContent}
+              </span>
+            )}
             {/* Week lists stay collapsed for every phase you're not
                 currently in -- otherwise the sidebar dumps all four phases'
                 weeks on screen at once before you've picked one. */}
