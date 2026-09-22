@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Check } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
 import { useAcademyProgress } from "./academy-progress";
 
@@ -35,56 +35,66 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
             <Link
               href={`/academy/${phase.slug}`}
               onClick={onNavigate}
-              className={`block font-mono text-[11px] font-bold uppercase tracking-[0.1em] transition ${
+              className={`flex items-center justify-between gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em] transition ${
                 phaseActive ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
               }`}
             >
-              {phase.label} — {phase.title}
+              <span className="truncate">{phase.label} — {phase.title}</span>
+              <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${phaseActive ? "" : "-rotate-90"}`} />
             </Link>
-            <ul className="mt-2.5 flex flex-col gap-0.5 border-l border-[var(--pvrx-border-light)] pl-3">
-              {entries.map((entry) => {
-                const href = `/academy/${phase.slug}/${entry.slug}`;
-                const active = pathname === href;
-                const done = isComplete(phase.slug, entry.slug);
-                const hasContent = entry.sections.length > 0;
-                return (
-                  <li key={entry.slug} className="relative">
-                    {active && (
-                      <span
-                        aria-hidden
-                        className="absolute -left-3 top-1/2 h-4 w-[2px] -translate-y-1/2 bg-[#5546e0]"
-                      />
-                    )}
-                    {hasContent ? (
-                      <Link
-                        href={href}
-                        onClick={onNavigate}
-                        className={`flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors duration-150 ${
-                          active ? "bg-[rgba(106,92,255,0.1)] font-semibold text-[#5546e0]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                        }`}
-                      >
+            {/* Week lists stay collapsed for every phase you're not
+                currently in -- otherwise the sidebar dumps all four phases'
+                weeks on screen at once before you've picked one. */}
+            <div
+              className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
+                phaseActive ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+              }`}
+            >
+              <ul className="flex flex-col gap-0.5 overflow-hidden border-l border-[var(--pvrx-border-light)] pl-3">
+                {entries.map((entry) => {
+                  const href = `/academy/${phase.slug}/${entry.slug}`;
+                  const active = pathname === href;
+                  const done = isComplete(phase.slug, entry.slug);
+                  const hasContent = entry.sections.length > 0;
+                  return (
+                    <li key={entry.slug} className="relative">
+                      {active && (
                         <span
-                          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border transition-colors duration-150 ${
-                            done ? "border-[#5546e0] bg-[#5546e0] text-white" : "border-slate-300"
+                          aria-hidden
+                          className="absolute -left-3 top-1/2 h-4 w-[2px] -translate-y-1/2 bg-[#5546e0]"
+                        />
+                      )}
+                      {hasContent ? (
+                        <Link
+                          href={href}
+                          onClick={onNavigate}
+                          className={`flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors duration-150 ${
+                            active ? "bg-[rgba(106,92,255,0.1)] font-semibold text-[#5546e0]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                           }`}
                         >
-                          {done && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
+                          <span
+                            className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border transition-colors duration-150 ${
+                              done ? "border-[#5546e0] bg-[#5546e0] text-white" : "border-slate-300"
+                            }`}
+                          >
+                            {done && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
+                          </span>
+                          <span className="truncate">{entry.title}</span>
+                        </Link>
+                      ) : (
+                        <span className="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-slate-400">
+                          <span className="h-4 w-4 shrink-0 rounded-sm border border-slate-200" />
+                          <span className="truncate">{entry.title}</span>
+                          <span className="ml-auto shrink-0 rounded-sm bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                            Soon
+                          </span>
                         </span>
-                        <span className="truncate">{entry.title}</span>
-                      </Link>
-                    ) : (
-                      <span className="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-slate-400">
-                        <span className="h-4 w-4 shrink-0 rounded-sm border border-slate-200" />
-                        <span className="truncate">{entry.title}</span>
-                        <span className="ml-auto shrink-0 rounded-sm bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                          Soon
-                        </span>
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </div>
         );
       })}
