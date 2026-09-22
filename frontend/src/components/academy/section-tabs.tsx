@@ -31,7 +31,7 @@ function pad(n: number) {
 export function SectionTabs({ sections, quiz, labs }: { sections: TabSection[]; quiz?: Quiz; labs?: TabSection[] }) {
   const numberedItems: Item[] = [
     ...sections.map((s): Item => ({ kind: "section", label: s.label, markdown: s.markdown })),
-    ...(quiz ? [{ kind: "quiz", label: "Test yourself" } as Item] : []),
+    ...(quiz ? [{ kind: "quiz", label: "Quiz" } as Item] : []),
   ];
   const labItems: Item[] = (labs ?? []).map((l) => ({ kind: "lab", label: l.label, markdown: l.markdown }));
   const items = [...numberedItems, ...labItems];
