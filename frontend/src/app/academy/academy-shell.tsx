@@ -11,6 +11,7 @@ import { AcademySidebar } from "@/components/academy/academy-sidebar";
 declare global {
   interface Window {
     pvrxCheckFlag: (btn: HTMLButtonElement, answer: string) => void;
+    pvrxShowHint: (btn: HTMLButtonElement) => void;
   }
 }
 
@@ -40,11 +41,22 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
   // ignores scripts inserted that way. Defining the checker once here, on a
   // component that's part of the real React tree, and having the markdown's
   // buttons call it via a plain onclick="" attribute (which does fire) is
-  // what makes a 3-attempts-before-the-hint quiz possible from static
-  // content. Attempt count lives on the mission's own data-attempts
-  // attribute -- there's no server, so "state" is just the DOM.
+  // what makes a 3-attempts-before-the-answer quiz possible from static
+  // content. Attempt count and solved state live on the mission's own
+  // data-* attributes -- there's no server, so "state" is just the DOM.
   useEffect(() => {
-    window.pvrxCheckFlag = (btn: HTMLButtonElement, answer: string) => {
+    const updateProgress = () => {
+      const bar = document.querySelector<HTMLElement>("#ad-progress-bar");
+      const label = document.querySelector<HTMLElement>("#ad-progress-label");
+      if (!bar || !label) return;
+      const missions = document.querySelectorAll(".ad-mission");
+      const solved = document.querySelectorAll(".ad-mission--solved").length;
+      const total = missions.length;
+      bar.style.width = total ? `${(solved / total) * 100}%` : "0%";
+      label.textContent = `${solved} / ${total} solved`;
+    };
+
+    window.pvrxCheckFlag = (btn, answer) => {
       const wrap = btn.closest(".ad-mission");
       if (!wrap) return;
       const input = wrap.querySelector<HTMLInputElement>(".ad-guess__input");
@@ -63,6 +75,8 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         reveal.classList.add("ad-flag--shown");
         input.disabled = true;
         btn.disabled = true;
+        wrap.classList.add("ad-mission--solved");
+        updateProgress();
         return;
       }
 
@@ -70,13 +84,26 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       wrap.setAttribute("data-attempts", String(attempts));
       feedback.className = "ad-guess__feedback ad-guess__feedback--err";
       if (attempts >= 3) {
-        feedback.textContent = "Not quite, three tries used. Here's the hint and the flag.";
+        feedback.textContent = "Not quite, three tries used. Here's the flag.";
         reveal.classList.add("ad-flag--shown");
       } else {
         const left = 3 - attempts;
-        feedback.textContent = `Not quite. ${left} attempt${left === 1 ? "" : "s"} left before the hint unlocks.`;
+        feedback.textContent = `Not quite. ${left} attempt${left === 1 ? "" : "s"} left before the flag unlocks.`;
       }
     };
+
+    // A mission gets exactly one hint, separate from its three guesses --
+    // asking for a nudge shouldn't cost you an attempt at the real answer.
+    window.pvrxShowHint = (btn) => {
+      const wrap = btn.closest(".ad-mission");
+      const hint = wrap?.querySelector<HTMLElement>(".ad-hint__text");
+      if (!hint) return;
+      hint.classList.add("ad-hint__text--shown");
+      btn.textContent = "Hint used";
+      btn.disabled = true;
+    };
+
+    updateProgress();
   }, []);
 
   return (
