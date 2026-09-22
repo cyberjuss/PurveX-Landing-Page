@@ -59,7 +59,7 @@ export default function SecurityOperationsPage() {
       <section className="sp-hero sp-hero--split">
         <div className="sp-hero__copy">
           <span className="sp-hero__badge">For lean security teams</span>
-          <h1 className="sp-hero__h1">Strengthen Your Security Operations</h1>
+          <h1 className="sp-hero__h1">A Rule on Paper Is Not a Detection</h1>
           <p className="sp-hero__sub">
             SIEMs generate more alerts than a lean team can tune. We sharpen what is there. We
             build what is missing. We map it to MITRE ATT&amp;CK. Proof, not assumed coverage.
