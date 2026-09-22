@@ -24,7 +24,7 @@ const PHASE_CARDS: PhaseCardConfig[] = [
     icon: BookOpen,
     tag: "Phase 1",
     title: "Fundamentals",
-    body: "CIA triad, networking, encryption & hashing, authentication and access control.",
+    body: "Everything from the CIA triad through access control.",
     accent: "#5546e0",
     accentSoft: "rgba(106,92,255,0.1)",
   },
@@ -34,7 +34,7 @@ const PHASE_CARDS: PhaseCardConfig[] = [
     icon: Radar,
     tag: "Phase 2",
     title: "Threat Detection & Log Analysis",
-    body: "SIEM fundamentals, log analysis, and detection engineering.",
+    body: "SIEM fundamentals and log analysis building toward detection engineering.",
     accent: "#2563eb",
     accentSoft: "rgba(37,99,235,0.1)",
   },
@@ -44,7 +44,7 @@ const PHASE_CARDS: PhaseCardConfig[] = [
     icon: Siren,
     tag: "Phase 3",
     title: "Incident Response",
-    body: "Triage, investigation, containment, and writing it up.",
+    body: "Triage and investigation through containment and writing it up.",
     accent: "#e2932a",
     accentSoft: "rgba(226,147,42,0.12)",
   },
@@ -100,8 +100,8 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
             Think Like a SOC Analyst 101
           </h1>
           <p className="mt-3 max-w-xl text-sm leading-6 text-slate-500">
-            A hands-on path from security fundamentals to incident response, built around real logs, real
-            tools, and real labs.
+            A hands-on path from security fundamentals to incident response using real logs and real tools
+            in real labs.
           </p>
         </div>
 

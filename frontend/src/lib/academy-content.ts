@@ -42,7 +42,7 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-1",
     title: "Week 1 — CIA Triad",
-    summary: "Confidentiality, integrity, availability, and how risk/threat/vulnerability fit together.",
+    summary: "The CIA triad and how risk/threat/vulnerability fit together.",
     sections: [
       { label: "Overview", file: "phase-1/week-1/lesson-overview.md" },
       { label: "The CIA Triad", file: "phase-1/week-1/lesson-cia-triad.md" },
@@ -54,7 +54,7 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-2",
     title: "Week 2 — Encryption & Hashing",
-    summary: "Symmetric vs. asymmetric encryption, hashing, and where each one actually gets used.",
+    summary: "How symmetric and asymmetric encryption and hashing actually get used.",
     sections: [],
   },
   {
@@ -76,7 +76,7 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-4",
     title: "Week 4 — Authentication, Authorization, Access Control",
-    summary: "Broken access control, walked through end to end on a live target.",
+    summary: "Walking through broken access control end to end on a live target.",
     sections: [
       { label: "Lab: Broken Access Control (PortSwigger)", file: "phase-1/week-4/lab-triple-a.md" },
       { label: "Resources", file: "phase-1/week-4/resources.md" },
@@ -107,7 +107,7 @@ const phase2Weeks: WeekDef[] = [
   {
     slug: "week-1",
     title: "Week 1 — Malware",
-    summary: "What malware is, how it spreads, and the attacks that ride alongside it.",
+    summary: "How malware works and spreads and what rides along with it.",
     sections: [],
   },
   {
