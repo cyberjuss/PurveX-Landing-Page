@@ -11,21 +11,32 @@ Before any of the labs ahead make sense, four Active Directory objects need to b
 
 An **OU** is a folder in Active Directory that you create to organize accounts, and — critically — a boundary you can attach permissions and Group Policy to.
 
-GovTechFinancial's five departments are each their own OU:
+GovTechFinancial's five departments are each their own OU, and OUs nest, so every department also has its own `Users` sub-OU (IT gets a `Workstations` one too, for its workstation object):
 
 ```
 govtechfinancial.local
- └─ OU=Departments
-     ├─ OU=IT
-     ├─ OU=Compliance
-     ├─ OU=Wealth Management
-     ├─ OU=Operations
-     └─ OU=Finance and Accounting
+ ├─ OU=Departments
+ │   ├─ OU=IT
+ │   │   ├─ OU=Users         (Alex Rivera, Priya Nair)
+ │   │   └─ OU=Workstations  (IT-WKS01)
+ │   ├─ OU=Compliance
+ │   │   └─ OU=Users         (Devon Brooks, Morgan Lee)
+ │   ├─ OU=WealthManagement
+ │   │   └─ OU=Users         (Sam Whitfield, Jamie Torres)
+ │   ├─ OU=Operations
+ │   │   └─ OU=Users         (Taylor Osei, Riley Kwan)
+ │   └─ OU=FinanceAccounting
+ │       └─ OU=Users         (Jordan Ellis)
+ └─ OU=AccessLevels
+     ├─ Group: Server Admins  (Level 2)
+     └─ Group: Helpdesk       (Level 3)
 ```
 
 Every user, and the department's workstation, lives inside its department's OU. That is what makes an OU useful for an investigation: it tells you where an account *belongs* organizationally, before you even look at what it's a member of.
 
-OUs can nest inside each other, and you can delegate control over just one OU (for example, letting the Helpdesk reset passwords only for accounts inside `OU=IT`) without touching anything else in the domain.
+Notice `AccessLevels` sits outside `Departments` entirely. That's deliberate: `Server Admins` and `Helpdesk` (the Level 2 and Level 3 roles from the Administrative Roles tab) are about what an account can *do* across the whole domain, not which department it's in, so they don't belong nested under any one department.
+
+OUs can nest inside each other, and you can delegate control over just one OU (for example, letting the Helpdesk reset passwords only for accounts inside `OU=Users,OU=IT`) without touching anything else in the domain.
 
 ### Containers
 
@@ -50,7 +61,7 @@ GovTechFinancial's group membership makes this concrete. Every department has a 
 
 <div class="ad-diagram">
 <div class="ad-diagram__ou">
-<span class="ad-diagram__ou-label">OU=IT</span>
+<span class="ad-diagram__ou-label">OU=Users,OU=IT</span>
 <div class="ad-diagram__user ad-diagram__user--1">Priya Nair</div>
 <div class="ad-diagram__user ad-diagram__user--2">Alex Rivera</div>
 </div>
@@ -66,7 +77,7 @@ GovTechFinancial's group membership makes this concrete. Every department has a 
 </div>
 </div>
 
-Both Priya Nair and Alex Rivera live in the same place, `OU=IT`. But Alex belongs to two groups and Priya belongs to one. Their location in Active Directory is identical; their access is not. That's the distinction to hold onto: **OU asks "where does this account live?" A group asks "what can this account do?"** Those are two different questions with two different answers, and an investigation that only checks one of them is only half done.
+Both Priya Nair and Alex Rivera live in the same place, `OU=Users,OU=IT`. But Alex belongs to two groups and Priya belongs to one. Their location in Active Directory is identical; their access is not. That's the distinction to hold onto: **OU asks "where does this account live?" A group asks "what can this account do?"** Those are two different questions with two different answers, and an investigation that only checks one of them is only half done.
 
 ### Group Policy Objects (GPOs)
 
