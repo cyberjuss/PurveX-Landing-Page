@@ -1,4 +1,6 @@
-**File:** `hidden_tear_final_snipped_pcap.pcapng` **Tool:** Wireshark (or tshark) **Level:** Threat Detection / Incident Response phase, CySA+ aligned
+**File:** `hidden_tear_final_snipped_pcap.pcapng`  
+**Tool:** Wireshark (or tshark)  
+**Level:** Threat Detection / Incident Response phase, CySA+ aligned
 
 ---
 
