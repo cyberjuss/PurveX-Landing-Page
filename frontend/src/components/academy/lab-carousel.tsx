@@ -67,17 +67,9 @@ export function LabCarousel({ slides }: { slides: MarkdownSlide[] }) {
           <ChevronLeft className="h-4 w-4" />
         </button>
 
-        <div className="flex min-w-0 flex-1 items-center gap-3">
-          <div className="h-1 flex-1 overflow-hidden rounded-sm bg-slate-100">
-            <div
-              className="h-full rounded-sm bg-[#5546e0] transition-all duration-300"
-              style={{ width: `${((index + 1) / total) * 100}%` }}
-            />
-          </div>
-          <span className="shrink-0 font-mono text-xs text-slate-400">
-            {String(index + 1).padStart(2, "0")}/{String(total).padStart(2, "0")}
-          </span>
-        </div>
+        <span className="flex-1 text-center font-mono text-xs text-slate-400">
+          {String(index + 1).padStart(2, "0")}/{String(total).padStart(2, "0")}
+        </span>
 
         <button
           type="button"
