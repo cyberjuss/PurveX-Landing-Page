@@ -108,7 +108,8 @@ export function SectionTabs({ sections, quiz, labs }: { sections: TabSection[]; 
             ))}
           </div>
           {labItems.length > 0 && (
-            <div className="mt-1 flex flex-col gap-0.5 overflow-hidden border-t border-[var(--pvrx-border-light)] pt-1">
+            <div className="mt-1 flex flex-col gap-0.5 overflow-hidden border-t border-[var(--pvrx-border-light)] pt-2">
+              <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">Labs</p>
               {labItems.map((item, i) => {
                 const idx = numberedItems.length + i;
                 return (
