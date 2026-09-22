@@ -50,32 +50,8 @@ const PHASE_CARDS: PhaseCardConfig[] = [
   },
 ];
 
-function ProgressRing({ pct, size = 76, strokeWidth = 7 }: { pct: number; size?: number; strokeWidth?: number }) {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (Math.min(100, Math.max(0, pct)) / 100) * circumference;
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: "rotate(-90deg)" }} aria-hidden="true">
-      <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="var(--pvrx-surface-alt-light)" strokeWidth={strokeWidth} />
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={radius}
-        fill="none"
-        stroke="#6a5cff"
-        strokeWidth={strokeWidth}
-        strokeLinecap="round"
-        strokeDasharray={circumference}
-        strokeDashoffset={offset}
-        style={{ transition: "stroke-dashoffset .6s cubic-bezier(.16,1,.3,1)" }}
-      />
-    </svg>
-  );
-}
-
 export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
-  const { isComplete, completedCount, totalCount } = useAcademyProgress();
-  const overallPct = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
+  const { isComplete } = useAcademyProgress();
 
   function phaseProgress(phase: PhaseDef | undefined) {
     if (!phase) return null;
@@ -93,33 +69,16 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-6">
-        <div>
-          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-[#5546e0]">Course overview</p>
-          <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-            Think Like a SOC Analyst 101
-          </h1>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-slate-500">
-            A hands-on path from security fundamentals to incident response using real logs and real tools
-            in real labs.
-          </p>
-        </div>
-
-        {totalCount > 0 && (
-          <div className="flex shrink-0 items-center gap-4 rounded-md border border-[var(--pvrx-border-light)] bg-white px-5 py-4 shadow-[0_1px_2px_rgba(16,25,46,0.04)]">
-            <div className="relative flex h-[76px] w-[76px] items-center justify-center">
-              <ProgressRing pct={overallPct} />
-              <span className="absolute font-mono text-base font-bold text-slate-900">{overallPct}%</span>
-            </div>
-            <div>
-              <p className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-slate-400">Your progress</p>
-              <p className="mt-1 font-display text-lg font-semibold text-slate-900">
-                {completedCount} <span className="text-sm font-medium text-slate-400">/ {totalCount} complete</span>
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Progress lives once, in the sidebar's card -- it doesn't need a
+          second copy of the same "X / Y complete" stat here. */}
+      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-[#5546e0]">Course overview</p>
+      <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+        Think Like a SOC Analyst 101
+      </h1>
+      <p className="mt-3 max-w-xl text-sm leading-6 text-slate-500">
+        A hands-on path from security fundamentals to incident response using real logs and real tools in
+        real labs.
+      </p>
 
       <div className="mt-8 flex flex-col gap-4">
         {cards.map((card) => {
