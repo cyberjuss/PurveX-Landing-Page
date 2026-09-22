@@ -100,7 +100,7 @@ const phase1HomeLab: HomeLabDef = {
     { label: "Full User Directory", file: "phase-1/home-lab-ad/user-directory.md" },
     { label: "The Client Workstation", file: "phase-1/home-lab-ad/client-workstation.md" },
     { label: "Environment Stats", file: "phase-1/home-lab-ad/environment-stats.md" },
-    { label: "Challenge: GovTechFinancial", file: "phase-1/home-lab-ad/ctf-challenge.md" },
+    { label: "Operation Day One", file: "phase-1/home-lab-ad/ctf-challenge.md" },
   ],
 };
 
