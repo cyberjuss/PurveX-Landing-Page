@@ -77,51 +77,53 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         </header>
 
         <div className="mx-auto flex max-w-7xl">
-          {showSidebar && (
-            <>
-              {/* Desktop sidebar */}
-              <aside
-                className={`hidden shrink-0 overflow-hidden border-r border-[var(--pvrx-border-light)] bg-white transition-[width] duration-300 ease-[cubic-bezier(.16,1,.3,1)] lg:sticky lg:top-[65px] lg:block lg:h-[calc(100vh-65px)] ${
-                  collapsed ? "lg:w-12" : "lg:w-72"
-                }`}
-              >
-                <button
-                  type="button"
-                  onClick={() => setCollapsed((c) => !c)}
-                  aria-expanded={!collapsed}
-                  title={collapsed ? "Expand course menu" : "Collapse course menu"}
-                  className="flex h-11 w-full items-center justify-center border-b border-[var(--pvrx-border-light)] text-slate-400 transition hover:bg-slate-50 hover:text-[#5546e0]"
-                >
-                  <ChevronLeft className={`h-4 w-4 transition-transform duration-300 ${collapsed ? "rotate-180" : ""}`} />
-                </button>
-                <div className={`h-[calc(100%-45px)] transition-opacity duration-200 ${collapsed ? "pointer-events-none opacity-0" : "opacity-100"}`}>
-                  <AcademySidebar phases={phases} />
-                </div>
-              </aside>
+          {/* Desktop sidebar -- always mounted, width-animated to 0 rather
+              than conditionally rendered, so going from the home page (no
+              sidebar) into a phase reads as a slide-open instead of an
+              instant layout jump. Same width transition the manual
+              collapse toggle already uses, just driven by route too. */}
+          <aside
+            aria-hidden={!showSidebar}
+            className={`hidden shrink-0 overflow-hidden bg-white transition-[width] duration-300 ease-[cubic-bezier(.16,1,.3,1)] lg:sticky lg:top-[65px] lg:block lg:h-[calc(100vh-65px)] ${
+              showSidebar ? "border-r border-[var(--pvrx-border-light)]" : "border-r-0"
+            } ${!showSidebar ? "lg:w-0" : collapsed ? "lg:w-12" : "lg:w-72"}`}
+          >
+            <button
+              type="button"
+              onClick={() => setCollapsed((c) => !c)}
+              aria-expanded={!collapsed}
+              tabIndex={showSidebar ? 0 : -1}
+              title={collapsed ? "Expand course menu" : "Collapse course menu"}
+              className="flex h-11 w-full items-center justify-center border-b border-[var(--pvrx-border-light)] text-slate-400 transition hover:bg-slate-50 hover:text-[#5546e0]"
+            >
+              <ChevronLeft className={`h-4 w-4 transition-transform duration-300 ${collapsed ? "rotate-180" : ""}`} />
+            </button>
+            <div className={`h-[calc(100%-45px)] transition-opacity duration-200 ${collapsed ? "pointer-events-none opacity-0" : "opacity-100"}`}>
+              <AcademySidebar phases={phases} />
+            </div>
+          </aside>
 
-              {/* Mobile drawer */}
-              {sidebarOpen && (
-                <div className="fixed inset-0 z-50 lg:hidden">
-                  <div className="absolute inset-0 bg-slate-900/30" onClick={() => setSidebarOpen(false)} />
-                  <div className="absolute left-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl">
-                    <div className="flex items-center justify-between border-b border-[var(--pvrx-border-light)] px-5 py-4">
-                      <span className="font-display text-sm font-semibold text-slate-900">Course menu</span>
-                      <button
-                        type="button"
-                        onClick={() => setSidebarOpen(false)}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100"
-                        aria-label="Close course menu"
-                      >
-                        <X className="h-[18px] w-[18px]" />
-                      </button>
-                    </div>
-                    <div className="h-[calc(100%-57px)]">
-                      <AcademySidebar phases={phases} onNavigate={() => setSidebarOpen(false)} />
-                    </div>
-                  </div>
+          {/* Mobile drawer */}
+          {showSidebar && sidebarOpen && (
+            <div className="fixed inset-0 z-50 lg:hidden">
+              <div className="absolute inset-0 bg-slate-900/30" onClick={() => setSidebarOpen(false)} />
+              <div className="absolute left-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl">
+                <div className="flex items-center justify-between border-b border-[var(--pvrx-border-light)] px-5 py-4">
+                  <span className="font-display text-sm font-semibold text-slate-900">Course menu</span>
+                  <button
+                    type="button"
+                    onClick={() => setSidebarOpen(false)}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100"
+                    aria-label="Close course menu"
+                  >
+                    <X className="h-[18px] w-[18px]" />
+                  </button>
                 </div>
-              )}
-            </>
+                <div className="h-[calc(100%-57px)]">
+                  <AcademySidebar phases={phases} onNavigate={() => setSidebarOpen(false)} />
+                </div>
+              </div>
+            </div>
           )}
 
           <main className="min-w-0 flex-1 px-4 py-10 sm:px-6 lg:px-10">
