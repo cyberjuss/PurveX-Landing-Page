@@ -115,12 +115,11 @@ export default function TrainingPage() {
         <div className="sp-hero__copy">
           <h1 className="sp-hero__h1">Think Like a SOC Analyst 101</h1>
           <p className="sp-hero__sub">
-            Hands-on instruction in judgment, not memorization. How real analysts actually read a
-            scene.
+            Hands-on training in how real analysts actually read a scene.
           </p>
           <div className="sp-hero__actions">
             <a href="#syllabus" className="sp-btn sp-btn--prim sp-btn--lg">
-              See the Curriculum <ArrowRight size={16} />
+              See the curriculum <ArrowRight size={16} />
             </a>
             <Link href="/academy" className="sp-btn sp-btn--ghost sp-btn--lg">
               Already enrolled? Go to the Academy
@@ -178,7 +177,7 @@ export default function TrainingPage() {
       <section className="sp-section sp-section--tight">
         <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">Why this program is different</span>
-          <h2>Judgment is the skill. Everything else is just facts</h2>
+          <h2>Judgment is the skill</h2>
           <p>
             Certifications teach vocabulary. This program teaches judgment: deciding, in the
             moment, whether an alert is noise or a real compromise.
@@ -190,7 +189,7 @@ export default function TrainingPage() {
               <div className="sp-compare__badge sp-compare__badge--x">
                 <X size={18} />
               </div>
-              <h3 className="sp-compare__h">Generic Training</h3>
+              <h3 className="sp-compare__h">Generic training</h3>
             </div>
             <ul className="sp-compare__list">
               {withoutItems.map((item) => (
@@ -248,8 +247,8 @@ export default function TrainingPage() {
       <section className="sp-section sp-section--tight">
         <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">Where this leads</span>
-          <h2>A ladder, not a certificate</h2>
-          <p>Every module stacks toward a title employers recognize. Not just a line on a resume.</p>
+          <h2>A real career ladder</h2>
+          <p>Every module stacks toward a title employers actually recognize.</p>
         </div>
         <div className="sp-rungs" data-r>
           {careerLadder.map((r, i) => (
@@ -292,10 +291,10 @@ export default function TrainingPage() {
         <div className="sp-cta-banner" data-r>
           <div className="sp-cta-banner__text">
             <MessageCircle size={20} className="sp-cta-banner__icon" />
-            <h2>Partner With PurveX</h2>
+            <h2>Partner with PurveX</h2>
           </div>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Schedule a Conversation <ArrowRight size={16} />
+            Book a call <ArrowRight size={16} />
           </a>
         </div>
       </section>

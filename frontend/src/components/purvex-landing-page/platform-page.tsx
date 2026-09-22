@@ -212,8 +212,8 @@ export default function PlatformPage() {
             <span className="sp-hero__grad">Know exactly why.</span>
           </h1>
           <p className="sp-hero__sub">
-            Most teams assume their detections work. PurveX proves which ones fire, and pinpoints why
-            the rest do not.
+            Most teams assume their detections work. We prove which ones fire, and show you
+            why the rest don&apos;t.
           </p>
           <form className="sp-wl" onSubmit={submitWaitlist}>
             <div className="sp-wl__row">
@@ -229,7 +229,7 @@ export default function PlatformPage() {
                 />
               </div>
               <button type="submit" className="sp-btn sp-btn--prim sp-btn--lg" disabled={wlState === "loading"}>
-                {wlState === "loading" ? "Joining..." : <><span>Join the Waitlist</span><ArrowRight size={15} /></>}
+                {wlState === "loading" ? "Joining..." : <><span>Join the waitlist</span><ArrowRight size={15} /></>}
               </button>
             </div>
             {wlMsg && <p className={`sp-wl__msg sp-wl__msg--${wlState}`}>{wlMsg}</p>}
@@ -257,7 +257,7 @@ export default function PlatformPage() {
               <span className="sp-signal__pct">95</span>
             </div>
             <span className="sp-signal__label">Validation Score</span>
-            <p className="sp-signal__desc">Detections that fired the last time we tested them, not the last time someone assumed they would.</p>
+            <p className="sp-signal__desc">Detections that fired the last time we tested them.</p>
           </div>
         </div>
       </section>
@@ -266,7 +266,7 @@ export default function PlatformPage() {
       <section className="sp-section" id="product">
         <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">The platform</span>
-          <h2>Everything on one screen. Nothing left to guess</h2>
+          <h2>Everything on one screen</h2>
         </div>
 
         <div className="sp-bento" data-r>
@@ -321,8 +321,7 @@ export default function PlatformPage() {
           <article className="sp-tile sp-tile--accent">
             <span className="sp-tile__kick">The point</span>
             <p className="sp-tile__accent-text">
-              Not another dashboard. It tests the chain, isolates the miss, and turns it into
-              evidence.
+              Not another dashboard. It tests, isolates, and proves.
             </p>
             <ShieldCheck size={20} className="sp-tile__accent-icon" />
           </article>
@@ -344,10 +343,10 @@ export default function PlatformPage() {
       <section className="sp-section">
         <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">The risk of guessing</span>
-          <h2>Every unproven detection is a blind spot</h2>
+          <h2>Every untested detection is a blind spot</h2>
           <p>
-            A rule that exists is not a rule that works. Until you test the chain, you are
-            trusting coverage you have never watched fire.
+            A rule that exists isn&apos;t a rule that works. Test the chain, or you&apos;re just
+            trusting coverage you&apos;ve never watched fire.
           </p>
         </div>
         <div className="sp-compare" data-r>
@@ -366,10 +365,10 @@ export default function PlatformPage() {
       <section className="sp-section" id="pricing">
         <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">Pricing</span>
-          <h2>Start focused. Expand when the evidence is there</h2>
+          <h2>Start small. Grow when you&apos;re ready</h2>
           <p>
-            Same self-hosted software either way, running on your own infrastructure. Paid removes
-            the team and runner limits.
+            Same self-hosted software either way, running on your own infrastructure. Paid just
+            removes the team and runner limits.
           </p>
         </div>
         <div className="sp-pricing">
@@ -404,7 +403,7 @@ export default function PlatformPage() {
       <section className="sp-section" id="faq">
         <div className="sp-head" data-r>
           <span className="sp-tag">FAQ</span>
-          <h2>Questions teams ask before they commit</h2>
+          <h2>Questions before you commit</h2>
         </div>
         <div className="sp-faq" data-r>
           {faqs.map(([q, a], i) => {

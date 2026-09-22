@@ -33,8 +33,7 @@ export default function AboutPage() {
           <span className="sp-mag__kicker">Field Notes — On Security</span>
           <h1>Blue team. Red team. One discipline</h1>
           <p>
-            PurveX helps organizations strengthen their security operations and develop the
-            cybersecurity talent needed to support them.
+            We strengthen security operations, and grow the cybersecurity talent to run them.
           </p>
           <div className="sp-mag__byline">
             <span>By PurveX</span>

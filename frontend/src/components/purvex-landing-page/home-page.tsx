@@ -56,18 +56,18 @@ function AlertQueueCard() {
 const problems = [
   {
     icon: ShieldCheck,
-    title: "Alerts Without Answers",
-    body: "Your tools are running, but nobody can say with confidence they would catch a real attack.",
+    title: "Alerts without answers",
+    body: "Your tools are running, but nobody can say for sure they'd catch a real attack.",
   },
   {
     icon: Users,
-    title: "Training That Stops at Theory",
-    body: "Most programs teach the concepts well. What they cannot teach is the instinct you only get from working a real queue.",
+    title: "Training that stops at theory",
+    body: "Most programs teach the concepts well. They can't teach the instinct you only get from working a real queue.",
   },
   {
     icon: Radar,
-    title: "Coverage Nobody Has Tested",
-    body: "A detection that is never fired is a guess wearing a checkbox.",
+    title: "Coverage nobody has tested",
+    body: "A detection that's never fired is just a guess.",
   },
 ];
 
@@ -77,9 +77,9 @@ const offers = [
     icon: ShieldCheck,
     tag: "For lean security teams",
     title: "Security Operations",
-    body: "Your SIEM generates alerts. Nobody has the bandwidth to tune them, build new detections, or prove the ones you already have actually fire. We do that work as an extension of your team.",
+    body: "Your SIEM generates alerts. Nobody has time to tune them, build new detections, or prove the ones you have actually fire. We do that work, as part of your team.",
     bullets: ["SIEM & detection engineering", "SIEM optimization", "Security operations assessments", "Detection validation"],
-    cta: "See How We Help",
+    cta: "See how we help",
     href: "/security-operations",
     external: false,
   },
@@ -88,9 +88,9 @@ const offers = [
     icon: Users,
     tag: "For academies & programs",
     title: "Cybersecurity Training",
-    body: "Most programs teach security concepts a classroom can grade. Employers need people who have already worked a queue. We teach that. The instructor still works one today.",
+    body: "Most programs teach concepts a classroom can grade. Employers want people who've already worked a queue. We teach that, and the instructor still works one today.",
     bullets: ["Cybersecurity instruction", "Hands-on security labs", "Curriculum support", "Instructor partnerships"],
-    cta: "See the Curriculum",
+    cta: "See the curriculum",
     href: "/cybersecurity-training",
     external: false,
   },
@@ -99,9 +99,9 @@ const offers = [
     icon: Radar,
     tag: "In development",
     title: "PurveX Labs",
-    body: "A detection existing is easy to claim. Whether it actually works is a harder question. Labs closes that gap with continuous, measurable proof, not a one-time report.",
+    body: "Claiming a detection exists is easy. Proving it works is harder. Labs tests it continuously, and shows you the evidence.",
     bullets: ["Continuous detection validation", "Measurable coverage over time", "Private beta, in development"],
-    cta: "Get Early Access",
+    cta: "Get early access",
     href: "/platform",
     external: false,
   },
@@ -154,10 +154,10 @@ export default function HomePage() {
           </div>
         </div>
 
-        <h1 className="sp-hero__h1">Most Detections Have Never Faced a Real Attack</h1>
+        <h1 className="sp-hero__h1">Prove it works</h1>
         <p className="sp-hero__sub">
-          PurveX tunes your detections and trains your analysts. Then we prove both hold up
-          against real attacker behavior.
+          We tune your detections. We train your analysts. Then we test both against a
+          real attack.
         </p>
         <div className="sp-hero__actions">
           <a href="#how-we-help" className="sp-btn sp-btn--prim sp-btn--lg">
@@ -170,7 +170,7 @@ export default function HomePage() {
       <section className="sp-section">
         <div className="sp-head" data-r>
           <span className="sp-tag">Sound familiar?</span>
-          <h2>The Problems We Solve</h2>
+          <h2>The problems we solve</h2>
         </div>
         <div className="sp-problems" data-r>
           {problems.map((p) => (
@@ -189,7 +189,7 @@ export default function HomePage() {
       <section className="sp-section" id="how-we-help">
         <div className="sp-head" data-r>
           <span className="sp-tag">How PurveX helps</span>
-          <h2>Three Ways We Fit Into Your Team</h2>
+          <h2>Three ways we help</h2>
         </div>
 
         <div className="sp-offers" data-r>
@@ -228,13 +228,11 @@ export default function HomePage() {
       <section className="sp-section sp-section--tight">
         <div className="sp-statement" data-r>
           <span className="sp-tag">Why PurveX</span>
-          <h2>The Work Gets Tested, Not Just Delivered</h2>
+          <h2>The work gets tested</h2>
           <p>
-            Tuning a detection or training an analyst is not a finished task, it is a claim. A
-            detection has to survive someone actually trying to get past it. An analyst has to
-            prove they can work a real queue, not describe one. We build both against that
-            standard, because a security program nobody has tested is not evidence. It is an
-            assumption.
+            Tuning a detection or training an analyst isn&apos;t a finished task. It&apos;s a claim.
+            A detection has to survive someone trying to get past it. An analyst has to prove
+            they can work a real queue. Until then, it&apos;s just an assumption.
           </p>
           <Link href="/about" className="sp-statement__link">
             Read how we think <ArrowRight size={14} />
@@ -246,7 +244,7 @@ export default function HomePage() {
       <section className="sp-section">
         <div className="sp-head" data-r>
           <span className="sp-tag">What people say</span>
-          <h2>Feedback From the Field</h2>
+          <h2>Feedback from the field</h2>
         </div>
         <div className="sp-feature-quotes">
           {testimonials.map((t) => (
@@ -296,9 +294,9 @@ export default function HomePage() {
           <div className="sp-cta__icon">
             <MessageCircle size={22} />
           </div>
-          <h2>Tell Us What Is Not Working</h2>
+          <h2>Tell us what&apos;s not working</h2>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Schedule a Conversation <ArrowRight size={16} />
+            Book a call <ArrowRight size={16} />
           </a>
         </div>
       </section>

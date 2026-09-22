@@ -9,25 +9,25 @@ const services = [
     id: "siem-detection-engineering",
     icon: Waypoints,
     title: "SIEM & Detection Engineering",
-    body: "New detections built around your actual environment and the MITRE ATT&CK techniques that target it, not a vendor's default ruleset written for someone else's network.",
+    body: "We build detections around your real environment, not a generic template.",
   },
   {
     id: "siem-optimization",
     icon: Sliders,
     title: "SIEM Optimization",
-    body: "The noisy, low-fidelity rules eating your analysts' shift get cut or fixed, so a real alert does not sit buried in a queue of ones nobody trusts anymore.",
+    body: "We fix the noisy rules so a real alert doesn't get lost.",
   },
   {
     id: "assessment",
     icon: Target,
     title: "Security Operations Assessment",
-    body: "A hands-on audit of what your SIEM actually sees, what it is blind to, and where your ATT&CK coverage is assumed rather than proven.",
+    body: "We check what your SIEM sees, and what it misses.",
   },
   {
     id: "detection-validation",
     icon: Radar,
     title: "Detection Validation",
-    body: "We run the attacker behavior your detections claim to catch and show you exactly which ones fire and which ones are a rule that exists on paper only.",
+    body: "We test your detections and show you what actually fires.",
   },
 ];
 
@@ -36,19 +36,19 @@ const process = [
     n: "01",
     icon: Search,
     title: "Assess",
-    body: "We start by understanding your current environment, tools, and detection coverage, so we know exactly where the gaps are.",
+    body: "We look at your environment, tools, and coverage, and find the gaps.",
   },
   {
     n: "02",
     icon: Sliders,
     title: "Improve",
-    body: "We tune, build, and strengthen detections and workflows based on what we find, prioritized by what matters most.",
+    body: "We tune and build detections, starting with what matters most.",
   },
   {
     n: "03",
     icon: ShieldCheck,
     title: "Validate",
-    body: "We test the changes so you know your detections fire the way they are supposed to, not just that they exist.",
+    body: "We test everything, so you know it actually fires.",
   },
 ];
 
@@ -58,14 +58,13 @@ export default function SecurityOperationsPage() {
       {/* ═══════════ HERO — split copy + live console preview ═══════════ */}
       <section className="sp-hero sp-hero--split">
         <div className="sp-hero__copy">
-          <span className="sp-hero__badge">For lean security teams</span>
-          <h1 className="sp-hero__h1">A Rule on Paper Is Not a Detection</h1>
+          <span className="sp-hero__badge">For small security teams</span>
+          <h1 className="sp-hero__h1">Detections that actually work</h1>
           <p className="sp-hero__sub">
-            SIEMs generate more alerts than a lean team can tune. We sharpen what is there. We
-            build what is missing. We map it to MITRE ATT&amp;CK. Then we prove it fires.
+            We tune what&apos;s there. We build what&apos;s missing. Then we prove it fires.
           </p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Schedule a Conversation <ArrowRight size={16} />
+            Book a call <ArrowRight size={16} />
           </a>
         </div>
         <div className="sp-hero__preview" data-r>
@@ -86,7 +85,7 @@ export default function SecurityOperationsPage() {
       <section className="sp-section">
         <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">What we do</span>
-          <h2>Four ways we strengthen your operations</h2>
+          <h2>Four ways we help</h2>
         </div>
         <div className="sp-console" data-r>
           <div className="sp-console__bar">
@@ -121,11 +120,10 @@ export default function SecurityOperationsPage() {
         <div className="sp-zigzag" data-r>
           <div className="sp-zigzag__text">
             <span className="sp-tag">How we think</span>
-            <h2>Detections built the way attackers actually move</h2>
+            <h2>How we build detections</h2>
             <p>
-              Every detection we build starts from how attackers actually operate. Not just what
-              a vendor&apos;s default ruleset assumes. That is the blend of blue team and red team
-              thinking PurveX is built on.
+              We study how attackers really operate. Then we build around that, not a
+              vendor&apos;s default rules. That&apos;s blue team and red team thinking, together.
             </p>
             <Link href="/about#how-we-think" className="sp-zigzag__link">
               More on how we think <ArrowRight size={14} />
@@ -170,10 +168,10 @@ export default function SecurityOperationsPage() {
           </div>
           <div className="sp-zigzag__text">
             <span className="sp-tag">Our goal</span>
-            <h2>The same three stages, every engagement</h2>
+            <h2>How we work</h2>
             <p>
-              Every engagement moves through the same three stages. Where things stand is
-              always clear. Your team understands exactly what changed, and why.
+              Every project follows the same three steps. You always know where things
+              stand, and why.
             </p>
           </div>
         </div>
@@ -186,7 +184,7 @@ export default function SecurityOperationsPage() {
             <MessageCircle size={22} />
           </div>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Schedule a Conversation <ArrowRight size={16} />
+            Book a call <ArrowRight size={16} />
           </a>
         </div>
       </section>
