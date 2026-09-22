@@ -5,79 +5,116 @@
 
 ### Operation Day One
 
-You've read the org chart, the access levels, the data categories, and the Active Directory concepts. Reading isn't the same as knowing. This is a short, self-graded challenge built entirely on GovTechFinancial's real environment, the one you built in **Build This Lab**. Work through each mission there, in the actual domain, then reveal the flag to check yourself.
+You've read the org chart, the access levels, the data categories, and the Active Directory concepts. Reading isn't the same as knowing. This is a short, self-graded challenge built entirely on GovTechFinancial's real environment, the one you built in **Build This Lab**. Do each mission there, in the actual domain, then type your answer below.
 
-Each flag follows the format `GTF{...}`, GovTechFinancial's own. No login, no submission, no leaderboard, this is entirely for you to confirm you can actually navigate the environment, not just recite facts about it.
+Every answer is one word or a short phrase, lowercase, spaces or none both work. You get three tries per mission. Get it in three, or not at all, the hint and the flag unlock together either way, so you're never just stuck. No login, no submission, no leaderboard, this is entirely for you.
 
-<div class="ad-mission">
+<div class="ad-mission" data-attempts="0">
 <span class="ad-mission__num">Mission 01</span>
 <h4>Recon</h4>
-<p>Find Jordan Ellis's account. What OU is it in, and what security group is he a member of?</p>
-<details class="ad-flag">
-<summary>Reveal flag</summary>
-<p><code>GTF{ou-users-financeaccounting-finance-accounting-users}</code></p>
+<p>Find Jordan Ellis's account. What security group is he a member of?</p>
+
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
+<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{finance-accounting-users}')">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+
+<div class="ad-flag">
+<p class="ad-flag__hint"><strong>Hint:</strong> Use the Find dialog to locate the account, then check its Member Of tab.</p>
+<p><code>GTF{finance-accounting-users}</code></p>
 <p>Jordan sits in <code>OU=Users,OU=FinanceAccounting,OU=Departments</code> and belongs to <code>Finance Accounting Users</code>, GovTechFinancial's standard-access group for that department.</p>
-</details>
+</div>
 </div>
 
-<div class="ad-mission">
+<div class="ad-mission" data-attempts="0">
 <span class="ad-mission__num">Mission 02</span>
 <h4>The Odd One Out</h4>
-<p>Every one of the nine users belongs to exactly one standard-access group, except one person, who belongs to two. Who, and what's the second group?</p>
-<details class="ad-flag">
-<summary>Reveal flag</summary>
-<p><code>GTF{alex-rivera-it-admins}</code></p>
+<p>Every one of the nine users belongs to exactly one standard-access group, except one person, who belongs to two. What's that second, more privileged group?</p>
+
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
+<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{it-admins}')">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+
+<div class="ad-flag">
+<p class="ad-flag__hint"><strong>Hint:</strong> Every department has one standard group. Only one person here has two, and he's in IT.</p>
+<p><code>GTF{it-admins}</code></p>
 <p>Alex Rivera is a member of both <code>IT Users</code> and <code>IT Admins</code>. Same OU as Priya Nair, different access.</p>
-</details>
+</div>
 </div>
 
-<div class="ad-mission">
+<div class="ad-mission" data-attempts="0">
 <span class="ad-mission__num">Mission 03</span>
 <h4>Access, Not Department</h4>
-<p><code>Server Admins</code> and <code>Helpdesk</code> (Level 2 and Level 3) live in their own OU, not nested inside <code>Departments</code> alongside IT, Compliance, and the rest. Which OU, and why does that placement make sense?</p>
-<details class="ad-flag">
-<summary>Reveal flag</summary>
+<p><code>Server Admins</code> and <code>Helpdesk</code> (Level 2 and Level 3) live in their own OU, not nested inside <code>Departments</code> alongside IT, Compliance, and the rest. Which OU?</p>
+
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
+<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{accesslevels}')">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+
+<div class="ad-flag">
+<p class="ad-flag__hint"><strong>Hint:</strong> Ask what Server Admins and Helpdesk actually control. Is it tied to one department, or the whole domain?</p>
 <p><code>GTF{accesslevels}</code></p>
 <p><code>OU=AccessLevels</code>. Those groups describe what an account can do across the whole domain, not which department it belongs to, so nesting them under any one department wouldn't make sense.</p>
-</details>
+</div>
 </div>
 
-<div class="ad-mission">
+<div class="ad-mission" data-attempts="0">
 <span class="ad-mission__num">Mission 04</span>
 <h4>The Container Trap</h4>
-<p>Suppose a new hire's account got created and accidentally left sitting in the default <code>CN=Users</code> container instead of a real department OU. Name two concrete things that would break because of that, not just "it's messy."</p>
-<details class="ad-flag">
-<summary>Reveal flag</summary>
-<p><code>GTF{no-gpo-no-delegation}</code></p>
-<p>(1) No GPO could ever be linked to reach that account, since GPOs only link to Sites, Domains, and OUs, never Containers. (2) Nobody could delegate scoped permissions over just that account the way Helpdesk is delegated control over <code>OU=IT</code>, since Containers don't support delegation either.</p>
-</details>
+<p>Every fresh domain ships with a default container that new accounts land in if nobody moves them. In AD Building Blocks' comparison table, what's that container called?</p>
+
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
+<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{cn=users}')">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+
+<div class="ad-flag">
+<p class="ad-flag__hint"><strong>Hint:</strong> It's in the "Examples in this domain" row of the OU vs. Container table, written the way Active Directory itself writes it.</p>
+<p><code>GTF{cn=users}</code></p>
+<p><code>CN=Users</code>. An account left sitting there can never have a GPO linked to reach it (GPOs only link to Sites, Domains, and OUs) and nobody can delegate scoped permissions over it either, since Containers support neither.</p>
+</div>
 </div>
 
-<div class="ad-mission">
+<div class="ad-mission" data-attempts="0">
 <span class="ad-mission__num">Mission 05</span>
 <h4>Stand Up a Service Account</h4>
-<p>Using the Admin Tasks tab, create a service account for a nightly backup job. Where does it go, what do you name it, and which two account settings must be set the opposite of a normal user's?</p>
-<details class="ad-flag">
-<summary>Reveal flag</summary>
-<p><code>GTF{dedicated-ou-prefix-never-expires}</code></p>
-<p>It belongs in its own dedicated OU, separate from <code>Departments</code> (for example <code>OU=ServiceAccounts</code>). It should be clearly prefixed, for example <code>svc-backup-job</code>. And unlike a person's account: <code>PasswordNeverExpires</code> should be <code>$true</code>, and <code>ChangePasswordAtLogon</code> should be <code>$false</code>, since nothing is sitting at a keyboard to change it.</p>
-</details>
+<p>Using the Admin Tasks tab, plan a service account for a nightly backup job. Best practice says it gets its own dedicated OU, separate from every department. What would you name that OU?</p>
+
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
+<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{serviceaccounts}')">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+
+<div class="ad-flag">
+<p class="ad-flag__hint"><strong>Hint:</strong> Match the naming style GovTechFinancial already uses for its other top-level OUs, Departments and AccessLevels.</p>
+<p><code>GTF{serviceaccounts}</code></p>
+<p><code>OU=ServiceAccounts</code>, sitting alongside <code>Departments</code> and <code>AccessLevels</code> at the top of the domain. The account itself should also be clearly prefixed (for example <code>svc-backup-job</code>) and, unlike a person's account, have <code>PasswordNeverExpires</code> set to <code>$true</code>, since nothing is sitting at a keyboard to change it before it locks out.</p>
+</div>
 </div>
 
-<div class="ad-mission ad-mission--capstone">
+<div class="ad-mission ad-mission--capstone" data-attempts="0">
 <span class="ad-mission__num">Mission 06 — Capstone</span>
 <h4>The 2 AM Login</h4>
-<p>You see a successful login from <code>alex.rivera</code> at 2:00 AM, originating from a Wealth Management workstation. Using only facts from this Home Lab tab, give two concrete reasons this is worth flagging, before you've looked at a single log entry.</p>
-<details class="ad-flag">
-<summary>Reveal flag</summary>
-<p><code>GTF{wrong-department-wrong-hours-critical-data}</code></p>
-<ul>
-<li>Alex Rivera's account lives in <code>OU=IT</code>, not Wealth Management. There's no organizational reason for his account to be authenticating from a workstation in a different department entirely.</li>
-<li>Wealth Management is one of GovTechFinancial's three critical departments, handling personal, financial, and estate data on high-net-worth clients, exactly the kind of data an attacker would target.</li>
-<li>2 AM falls outside any reasonable business-hours pattern for that account.</li>
-</ul>
-<p>None of that proves compromise on its own. It's exactly the kind of pattern that turns "huh, that's odd" into "let's actually look at this," which is the whole instinct this course is built to teach.</p>
-</details>
+<p>You see a successful login from <code>alex.rivera</code> at 2:00 AM, originating from a Wealth Management workstation. Before you've looked at a single log entry, what's wrong with this, based only on where his account actually lives?</p>
+
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
+<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{wrong-department}')">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+
+<div class="ad-flag">
+<p class="ad-flag__hint"><strong>Hint:</strong> Compare Alex Rivera's real OU (Mission 02) to the department that workstation belongs to.</p>
+<p><code>GTF{wrong-department}</code></p>
+<p>Alex Rivera's account lives in <code>OU=IT</code>, not Wealth Management. There's no organizational reason for his account to be authenticating from a workstation in a completely different department. Add in that Wealth Management is one of GovTechFinancial's three critical departments, handling the kind of client data an attacker would target, and that 2 AM falls outside any reasonable business-hours pattern, and you've got three independent reasons to flag one login, none of which required a single log entry yet. That's the instinct this whole course is built to teach.</p>
+</div>
 </div>
 
 <style>
@@ -91,9 +128,28 @@ Each flag follows the format `GTF{...}`, GovTechFinancial's own. No login, no su
 .ad-mission--capstone .ad-mission__num { color: #e5484d; }
 .ad-mission h4 { margin: 0.35rem 0 0.5rem; font-family: var(--font-display); font-size: 1.02rem; font-weight: 700; }
 .ad-mission > p { margin: 0; }
-.ad-flag { margin-top: 0.85rem; }
-.ad-flag > summary { cursor: pointer; font-size: 0.85rem; font-weight: 650; color: #5546e0; }
-.ad-flag[open] > summary { margin-bottom: 0.5rem; }
+
+.ad-guess { display: flex; gap: 0.5rem; margin-top: 0.9rem; flex-wrap: wrap; }
+.ad-guess__input {
+  flex: 1; min-width: 180px; padding: 0.5rem 0.7rem; border-radius: 8px;
+  border: 1px solid var(--pvrx-border-light); font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85rem;
+  background: #fff; color: var(--pvrx-text-primary-light);
+}
+.ad-guess__input:focus { outline: none; border-color: #5546e0; box-shadow: 0 0 0 3px rgba(85,70,224,0.12); }
+.ad-guess__input:disabled { background: var(--pvrx-surface-alt-light); color: var(--pvrx-text-secondary-light); }
+.ad-guess__submit {
+  font-size: 0.85rem; font-weight: 650; color: #fff; background: #5546e0; border: none; border-radius: 8px;
+  padding: 0.5rem 1.1rem; cursor: pointer;
+}
+.ad-guess__submit:hover { background: #4636c4; }
+.ad-guess__submit:disabled { background: var(--pvrx-border-light); cursor: default; }
+.ad-guess__feedback { margin: 0.55rem 0 0; font-size: 0.85rem; font-weight: 600; min-height: 1.2em; }
+.ad-guess__feedback--ok { color: #16a34a; }
+.ad-guess__feedback--err { color: #e5484d; }
+
+.ad-flag { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--pvrx-border-light); }
+.ad-flag--shown { display: block; }
+.ad-flag__hint { color: var(--pvrx-text-secondary-light); }
 .ad-flag p, .ad-flag ul { font-size: 0.9rem; }
 .ad-flag code { font-weight: 650; }
 </style>

@@ -8,6 +8,12 @@ import type { PhaseDef } from "@/lib/academy-content";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
 
+declare global {
+  interface Window {
+    pvrxCheckFlag: (btn: HTMLButtonElement, answer: string) => void;
+  }
+}
+
 export function AcademyShell({ phases, children }: { phases: PhaseDef[]; children: React.ReactNode }) {
   const pathname = usePathname();
   // The course sidebar is itself a "pick a phase, then a week" nav -- on the
@@ -26,6 +32,51 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // CTF-style flag checker for challenge lessons (e.g. Operation Day One).
+  // Those lessons are markdown rendered through dangerouslySetInnerHTML, so
+  // a <script> tag inside them would never execute -- the browser silently
+  // ignores scripts inserted that way. Defining the checker once here, on a
+  // component that's part of the real React tree, and having the markdown's
+  // buttons call it via a plain onclick="" attribute (which does fire) is
+  // what makes a 3-attempts-before-the-hint quiz possible from static
+  // content. Attempt count lives on the mission's own data-attempts
+  // attribute -- there's no server, so "state" is just the DOM.
+  useEffect(() => {
+    window.pvrxCheckFlag = (btn: HTMLButtonElement, answer: string) => {
+      const wrap = btn.closest(".ad-mission");
+      if (!wrap) return;
+      const input = wrap.querySelector<HTMLInputElement>(".ad-guess__input");
+      const feedback = wrap.querySelector<HTMLElement>(".ad-guess__feedback");
+      const reveal = wrap.querySelector<HTMLElement>(".ad-flag");
+      if (!input || !feedback || !reveal) return;
+      // Accepts the answer with or without its "gtf{...}" wrapper, and
+      // treats spaces the same as dashes -- a correct answer shouldn't fail
+      // over formatting when the question never asked for exact syntax.
+      const normalize = (s: string) => s.trim().toLowerCase().replace(/^gtf\{|\}$/g, "").replace(/\s+/g, "-");
+      const guess = normalize(input.value);
+
+      if (guess === normalize(answer)) {
+        feedback.textContent = "Correct — nice work.";
+        feedback.className = "ad-guess__feedback ad-guess__feedback--ok";
+        reveal.classList.add("ad-flag--shown");
+        input.disabled = true;
+        btn.disabled = true;
+        return;
+      }
+
+      const attempts = parseInt(wrap.getAttribute("data-attempts") || "0", 10) + 1;
+      wrap.setAttribute("data-attempts", String(attempts));
+      feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+      if (attempts >= 3) {
+        feedback.textContent = "Not quite, three tries used. Here's the hint and the flag.";
+        reveal.classList.add("ad-flag--shown");
+      } else {
+        const left = 3 - attempts;
+        feedback.textContent = `Not quite. ${left} attempt${left === 1 ? "" : "s"} left before the hint unlocks.`;
+      }
+    };
   }, []);
 
   return (

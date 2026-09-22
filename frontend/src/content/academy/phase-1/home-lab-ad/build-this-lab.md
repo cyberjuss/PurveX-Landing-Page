@@ -103,7 +103,7 @@ After the reboot, log back in as `GOVTECHFINANCIAL\Administrator` and run this s
 * Creates all 9 user accounts from the Full User Directory tab, in the right OU, with the right title and department, and adds each one to the right group(s)
 * Pre-stages the `IT-WKS01` computer object
 * Prompts once for an initial password — every account is forced to change it at next logon, so nobody actually keeps that password long-term
-* Is idempotent: safe to re-run any time. It only creates what's missing and never resets or deletes anything that already exists
+* Safe to run more than once: it only creates what's missing, and never resets or deletes anything that already exists
 
 [Download Build-Environment.ps1](/lab-scripts/Build-Environment.ps1)
 
