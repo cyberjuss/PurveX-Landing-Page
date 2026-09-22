@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -335,8 +335,6 @@ const categories: RefCategory[] = [
   },
 ];
 
-const allItems = categories.flatMap((c) => c.items);
-
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -382,6 +380,7 @@ function Section({ id, title, icon: Icon, children }: { id: string; title: strin
 
 export default function ReferencePage() {
   const [query, setQuery] = useState("");
+  const [activeId, setActiveId] = useState<string | null>(null);
   const q = query.trim().toLowerCase();
 
   const filteredCategories = categories
@@ -390,6 +389,66 @@ export default function ReferencePage() {
       items: cat.items.filter((item) => !q || item.title.toLowerCase().includes(q) || item.keywords.includes(q)),
     }))
     .filter((cat) => cat.items.length > 0);
+
+  const visibleItems = filteredCategories.flatMap((c) => c.items);
+
+  // Highlights whichever section is currently at the top of the viewport,
+  // so the sidebar tracks scroll position the way the rest of the academy's
+  // nav does. rootMargin shrinks the bottom 70% of the viewport out of the
+  // observed area, so a section only counts as "active" once it's actually
+  // near the top, not just barely visible at the bottom.
+  useEffect(() => {
+    if (visibleItems.length === 0) return;
+    setActiveId((current) => (visibleItems.some((i) => i.id === current) ? current : visibleItems[0].id));
+
+    // A callback's `entries` are only the elements whose state just changed,
+    // not every observed element -- during a fast scroll (e.g. jumping to a
+    // nav link near the bottom), picking the topmost of just that batch can
+    // land on a section that already scrolled past. Tracking the full
+    // intersecting set and re-measuring it each time is what makes this
+    // hold up under a jump, not just a slow scroll.
+    const intersecting = new Set<string>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) intersecting.add(entry.target.id);
+          else intersecting.delete(entry.target.id);
+        }
+        let topMostId: string | null = null;
+        let topMostY = Infinity;
+        for (const id of intersecting) {
+          const top = document.getElementById(id)?.getBoundingClientRect().top;
+          if (top !== undefined && top < topMostY) {
+            topMostY = top;
+            topMostId = id;
+          }
+        }
+        if (topMostId) setActiveId(topMostId);
+      },
+      { rootMargin: "-160px 0px -70% 0px", threshold: 0 }
+    );
+    const elements = visibleItems
+      .map((item) => document.getElementById(item.id))
+      .filter((el): el is HTMLElement => el !== null);
+    elements.forEach((el) => observer.observe(el));
+
+    // The last section can be too short to ever reach the "near top" band
+    // once you've scrolled as far as the page allows -- there's no more
+    // content below it to push it up there. Forcing the last item active
+    // once you hit the bottom of the page covers that case directly.
+    function checkBottom() {
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+      if (atBottom) setActiveId(visibleItems[visibleItems.length - 1].id);
+    }
+    window.addEventListener("scroll", checkBottom, { passive: true });
+    checkBottom();
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", checkBottom);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-observe only when the filtered id set changes
+  }, [visibleItems.map((i) => i.id).join(",")]);
 
   return (
     <div>
@@ -406,7 +465,7 @@ export default function ReferencePage() {
         scrolling back through a week you already finished.
       </p>
 
-      <div className="sticky top-[65px] z-10 -mx-4 border-b border-[var(--pvrx-border-light)] bg-white/95 px-4 pb-5 pt-6 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
+      <div className="sticky top-[65px] z-10 -mx-4 border-b border-[var(--pvrx-border-light)] bg-white/95 px-4 pb-4 pt-6 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400 pointer-events-none" />
           <input
@@ -427,41 +486,63 @@ export default function ReferencePage() {
             </button>
           )}
         </div>
-
-        {!q && (
-          <nav className="mt-4 flex flex-wrap gap-2">
-            {allItems.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                className="inline-flex items-center gap-1.5 rounded-md border border-[var(--pvrx-border-light)] bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
-              >
-                <item.icon className="h-3.5 w-3.5 text-[#5546e0]" /> {item.title}
-              </a>
-            ))}
-          </nav>
-        )}
       </div>
 
-      <div className="mt-8 flex flex-col gap-10">
-        {filteredCategories.length === 0 ? (
-          <p className="rounded-md border border-[var(--pvrx-border-light)] bg-slate-50/60 px-5 py-4 text-sm text-slate-500">
-            {`No matches for "${query}".`}
-          </p>
-        ) : (
-          filteredCategories.map((cat) => (
-            <div key={cat.label}>
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">{cat.label}</h2>
-              <div className="mt-4 flex flex-col gap-6">
+      <div className="mt-8 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10">
+        {/* Desktop only -- on mobile there's no room for a side column, and
+            the category headings inline in the content below do the same
+            job of orienting you as you scroll. */}
+        <nav aria-label="Cheat sheet sections" className="hidden shrink-0 lg:sticky lg:top-[150px] lg:block lg:w-[200px]">
+          {filteredCategories.map((cat) => (
+            <div key={cat.label} className="mb-5 last:mb-0">
+              <p className="px-3 pb-1.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                {cat.label}
+              </p>
+              <ul className="flex flex-col gap-0.5">
                 {cat.items.map((item) => (
-                  <Section key={item.id} id={item.id} title={item.title} icon={item.icon}>
-                    {item.body}
-                  </Section>
+                  <li key={item.id}>
+                    <a
+                      href={`#${item.id}`}
+                      className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold transition-colors duration-150 ${
+                        activeId === item.id
+                          ? "bg-[rgba(106,92,255,0.1)] text-[#5546e0]"
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      }`}
+                    >
+                      <item.icon className="h-3.5 w-3.5 shrink-0" />
+                      <span className="truncate">{item.title}</span>
+                    </a>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
-          ))
-        )}
+          ))}
+        </nav>
+
+        <div className="min-w-0 flex-1">
+          {filteredCategories.length === 0 ? (
+            <p className="rounded-md border border-[var(--pvrx-border-light)] bg-slate-50/60 px-5 py-4 text-sm text-slate-500">
+              {`No matches for "${query}".`}
+            </p>
+          ) : (
+            <div className="flex flex-col gap-10">
+              {filteredCategories.map((cat) => (
+                <div key={cat.label}>
+                  <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400 lg:hidden">
+                    {cat.label}
+                  </h2>
+                  <div className="mt-4 flex flex-col gap-6 lg:mt-0">
+                    {cat.items.map((item) => (
+                      <Section key={item.id} id={item.id} title={item.title} icon={item.icon}>
+                        {item.body}
+                      </Section>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
