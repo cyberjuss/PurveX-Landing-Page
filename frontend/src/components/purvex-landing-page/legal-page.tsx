@@ -1,4 +1,5 @@
-import { SiteChrome } from "./chrome";
+import { ArrowRight, MessageCircle } from "lucide-react";
+import { BOOKING_URL, SiteChrome } from "./chrome";
 
 type Section = { title: string; paragraphs: string[] };
 
@@ -54,10 +55,21 @@ export default function LegalPage({
             </div>
           ))}
         </div>
+
+        <div className="sp-cta-banner" data-r>
+          <div className="sp-cta-banner__text">
+            <MessageCircle size={20} className="sp-cta-banner__icon" />
+            <h2>Partner with PurveX</h2>
+          </div>
+          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
+            Schedule a Conversation <ArrowRight size={16} />
+          </a>
+        </div>
       </div>
 
       <style>{`
 .sp-legal { max-width: 720px; margin: 0 auto; padding: 132px 24px 96px }
+.sp-legal .sp-cta-banner { margin-top: 56px }
 .sp-legal__badge { display: inline-block; font-size: .74rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
 .sp-legal__head h1 { margin: 12px 0 0; font-family: var(--font-display); font-size: clamp(1.9rem, 3.6vw, 2.5rem); font-weight: 700; line-height: 1.15; letter-spacing: -.02em; color: var(--ink) }
 .sp-legal__updated { margin: 12px 0 0; font-size: .8rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted-dim) }

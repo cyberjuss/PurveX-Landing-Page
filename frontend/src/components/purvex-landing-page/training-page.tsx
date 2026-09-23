@@ -486,20 +486,6 @@ export default function TrainingPage() {
   .sp-format:nth-child(even) { border-left: none }
   .sp-format:nth-child(n+2) { border-top: 1px solid var(--border) }
 }
-
-/* ── CTA banner: text left, button right, inside a bordered strip --
-   distinct from the centered icon-over-headline CTA the home page uses ── */
-.sp-cta-banner {
-  display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
-  padding: 40px 44px; border: 1px solid var(--border); border-radius: 20px; background: var(--surface-alt);
-}
-.sp-cta-banner__text { display: flex; align-items: center; gap: 14px }
-.sp-cta-banner__icon { flex-shrink: 0; color: var(--accent-deep) }
-.sp-cta-banner__text h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.3rem, 2.2vw, 1.7rem); font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
-@media (max-width: 620px) {
-  .sp-cta-banner { flex-direction: column; align-items: flex-start; padding: 32px 28px }
-  .sp-cta-banner .sp-btn { width: 100% }
-}
       `}</style>
     </SiteChrome>
   );
