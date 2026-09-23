@@ -91,34 +91,46 @@ $domainDN = $domain.DistinguishedName
 
 function Ensure-OU {
     [CmdletBinding(SupportsShouldProcess = $true)]
-    param([string]$Name, [string]$ParentDN)
+    param([string]$Name, [string]$ParentDN, [string]$Description = "")
     $path = "OU=$Name,$ParentDN"
-    $exists = $true
+    $existing = $null
     try {
-        Get-ADOrganizationalUnit -Identity $path -ErrorAction Stop | Out-Null
+        $existing = Get-ADOrganizationalUnit -Identity $path -Properties Description -ErrorAction Stop
     }
     catch {
-        $exists = $false
+        $existing = $null
     }
-    if ($exists) {
+    if ($existing) {
         Write-Host "  OU exists:   $path" -ForegroundColor DarkGray
     }
     elseif ($PSCmdlet.ShouldProcess($path, "Create OU")) {
-        New-ADOrganizationalUnit -Name $Name -Path $ParentDN -ProtectedFromAccidentalDeletion $true
+        New-ADOrganizationalUnit -Name $Name -Path $ParentDN -Description $Description -ProtectedFromAccidentalDeletion $true
         Write-Host "  OU created:  $path" -ForegroundColor Green
+    }
+    # A description on every OU/group is what a genuinely maintained
+    # environment looks like versus a bare-bones lab -- also fills in an
+    # already-existing OU that predates this description being added.
+    if ($Description -and $existing -and $existing.Description -ne $Description -and $PSCmdlet.ShouldProcess($path, "Update OU description")) {
+        Set-ADOrganizationalUnit -Identity $path -Description $Description
+        Write-Host "    ~ $path description updated" -ForegroundColor Green
     }
     return $path
 }
 
 function Ensure-Group {
     [CmdletBinding(SupportsShouldProcess = $true)]
-    param([string]$Name, [string]$OUPath, [ValidateSet("Global", "DomainLocal", "Universal")][string]$Scope = "Global")
-    if (Get-ADGroup -Filter "Name -eq '$Name'" -ErrorAction SilentlyContinue) {
+    param([string]$Name, [string]$OUPath, [ValidateSet("Global", "DomainLocal", "Universal")][string]$Scope = "Global", [string]$Description = "")
+    $existing = Get-ADGroup -Filter "Name -eq '$Name'" -Properties Description -ErrorAction SilentlyContinue
+    if ($existing) {
         Write-Host "  Group exists: $Name" -ForegroundColor DarkGray
     }
     elseif ($PSCmdlet.ShouldProcess($Name, "Create security group")) {
-        New-ADGroup -Name $Name -GroupScope $Scope -GroupCategory Security -Path $OUPath
+        New-ADGroup -Name $Name -GroupScope $Scope -GroupCategory Security -Path $OUPath -Description $Description
         Write-Host "  Group created: $Name" -ForegroundColor Green
+    }
+    if ($Description -and $existing -and $existing.Description -ne $Description -and $PSCmdlet.ShouldProcess($Name, "Update group description")) {
+        Set-ADGroup -Identity $Name -Description $Description
+        Write-Host "    ~ $Name description updated" -ForegroundColor Green
     }
 }
 
@@ -206,8 +218,8 @@ function Ensure-CTFChallengeData {
 
     Write-Host "`n== Optional CTF ticket queue data ==" -ForegroundColor Cyan
 
-    $serviceAccountsOU = Ensure-OU -Name "ServiceAccounts" -ParentDN $DomainDN
-    Ensure-Group -Name "All Employees" -OUPath $AccessLevelsOU -Scope "Universal"
+    $serviceAccountsOU = Ensure-OU -Name "ServiceAccounts" -ParentDN $DomainDN -Description "Service accounts, kept separate from real user accounts."
+    Ensure-Group -Name "All Employees" -OUPath $AccessLevelsOU -Scope "Universal" -Description "Firm-wide distribution group for company-wide announcements."
 
     foreach ($sam in @("alex.rivera", "priya.nair", "devon.brooks", "morgan.lee", "sam.whitfield", "taylor.osei", "riley.kwan", "jordan.ellis")) {
         $isMember = Get-ADGroupMember -Identity "All Employees" -ErrorAction SilentlyContinue |
@@ -242,48 +254,49 @@ function Ensure-CTFChallengeData {
     Ensure-UserDescription -SamAccountName "taylor.osei" -Description "CTF-TICKET-203: HR transfer notice says Compliance, but this account still needs OU verification before policy follows."
     Ensure-UserDescription -SamAccountName "riley.kwan" -Description "CTF-TICKET-102: User reports lockout after repeated failed attempts. Decide unlock vs reset based on whether the password is remembered."
 
-    $wmWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $DeptOUPaths["Wealth Management"].DeptOU
+    $wmWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $DeptOUPaths["Wealth Management"].DeptOU -Description "Wealth Management department workstation computer objects."
     Ensure-Computer -Name "WM-WKS07" -OUPath $wmWorkstationsOU -Description "CTF-TICKET-301: Wealth Management workstation named in a 02:00 successful-login alert for alex.rivera."
-    Ensure-Computer -Name "OPS-WKS03" -OUPath (Ensure-OU -Name "Workstations" -ParentDN $DeptOUPaths["Operations"].DeptOU) -Description "CTF-TICKET-201: Dormant Operations workstation. Check whether this asset still belongs in scope."
+    $opsWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $DeptOUPaths["Operations"].DeptOU -Description "Operations department workstation computer objects."
+    Ensure-Computer -Name "OPS-WKS03" -OUPath $opsWorkstationsOU -Description "CTF-TICKET-201: Dormant Operations workstation. Check whether this asset still belongs in scope."
 }
 
 # ---------------------------------------------------------------------------
 # 1. Top-level OUs
 # ---------------------------------------------------------------------------
 Write-Host "`n== Top-level OUs ==" -ForegroundColor Cyan
-$departmentsOU  = Ensure-OU -Name "Departments"  -ParentDN $domainDN
-$accessLevelsOU = Ensure-OU -Name "AccessLevels" -ParentDN $domainDN
+$departmentsOU  = Ensure-OU -Name "Departments"  -ParentDN $domainDN -Description "Top-level container for all department OUs."
+$accessLevelsOU = Ensure-OU -Name "AccessLevels" -ParentDN $domainDN -Description "Domain-wide access-level groups (Server Admins, Helpdesk), separate from department membership."
 
 # ---------------------------------------------------------------------------
 # 2. Departments: OU + Users sub-OU + standard group
 # ---------------------------------------------------------------------------
 $departments = @(
-    @{ Display = "IT";                      OU = "IT";                 Group = "IT Users" },
-    @{ Display = "Compliance";               OU = "Compliance";         Group = "Compliance Users" },
-    @{ Display = "Wealth Management";        OU = "WealthManagement";   Group = "Wealth Management Users" },
-    @{ Display = "Operations";               OU = "Operations";         Group = "Operations Users" },
-    @{ Display = "Finance and Accounting";   OU = "FinanceAccounting";  Group = "Finance Accounting Users" }
+    @{ Display = "IT";                      OU = "IT";                 Group = "IT Users";                 Desc = "IT department: accounts, workstations, and infrastructure." },
+    @{ Display = "Compliance";               OU = "Compliance";         Group = "Compliance Users";          Desc = "Compliance department: regulatory (GLBA/SOX) and audit staff." },
+    @{ Display = "Wealth Management";        OU = "WealthManagement";   Group = "Wealth Management Users";   Desc = "Wealth Management department: client-facing financial advisory staff." },
+    @{ Display = "Operations";               OU = "Operations";         Group = "Operations Users";          Desc = "Operations department: settlements and internal process staff." },
+    @{ Display = "Finance and Accounting";   OU = "FinanceAccounting";  Group = "Finance Accounting Users";  Desc = "Finance and Accounting department: internal ledgers, payroll, and budget staff." }
 )
 
 $deptOUPaths = @{}
 foreach ($dept in $departments) {
     Write-Host "`n== Department: $($dept.Display) ==" -ForegroundColor Cyan
-    $deptOU  = Ensure-OU -Name $dept.OU -ParentDN $departmentsOU
-    $usersOU = Ensure-OU -Name "Users" -ParentDN $deptOU
-    Ensure-Group -Name $dept.Group -OUPath $deptOU
+    $deptOU  = Ensure-OU -Name $dept.OU -ParentDN $departmentsOU -Description $dept.Desc
+    $usersOU = Ensure-OU -Name "Users" -ParentDN $deptOU -Description "$($dept.Display) user accounts."
+    Ensure-Group -Name $dept.Group -OUPath $deptOU -Description "Standard access group for $($dept.Display) staff."
     $deptOUPaths[$dept.Display] = @{ DeptOU = $deptOU; UsersOU = $usersOU }
 }
 
 # IT gets an extra Workstations OU and the elevated "IT Admins" group.
-$itWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $deptOUPaths["IT"].DeptOU
-Ensure-Group -Name "IT Admins" -OUPath $deptOUPaths["IT"].DeptOU
+$itWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $deptOUPaths["IT"].DeptOU -Description "IT department workstation computer objects."
+Ensure-Group -Name "IT Admins" -OUPath $deptOUPaths["IT"].DeptOU -Description "Elevated access for IT Systems Administrators, beyond standard IT Users access."
 
 # ---------------------------------------------------------------------------
 # 3. Access-level groups (Level 1 is the built-in Domain Admins group)
 # ---------------------------------------------------------------------------
 Write-Host "`n== Access-level groups ==" -ForegroundColor Cyan
-Ensure-Group -Name "Server Admins" -OUPath $accessLevelsOU   # Level 2
-Ensure-Group -Name "Helpdesk"      -OUPath $accessLevelsOU   # Level 3
+Ensure-Group -Name "Server Admins" -OUPath $accessLevelsOU -Description "Level 2 access: servers, application and file servers. Empty by default."   # Level 2
+Ensure-Group -Name "Helpdesk"      -OUPath $accessLevelsOU -Description "Level 3 access: workstations, password resets, local support only. Empty by default."   # Level 3
 Write-Host "  (Level 1 / Domain Admin uses the built-in 'Domain Admins' group -- nothing to create)" -ForegroundColor DarkGray
 
 # ---------------------------------------------------------------------------
