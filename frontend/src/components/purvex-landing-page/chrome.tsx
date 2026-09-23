@@ -47,11 +47,13 @@ export function SiteChrome({
   children: React.ReactNode;
 }) {
   const pageRef = useRef<HTMLDivElement>(null);
+  const parallaxRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let ticking = false;
     const update = () => {
       ticking = false;
@@ -59,6 +61,13 @@ export function SiteChrome({
       const doc = document.documentElement;
       const max = doc.scrollHeight - doc.clientHeight;
       setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0);
+      // Background orbs drift slower than the page scrolls -- written
+      // straight to the DOM (not React state) since this fires every
+      // scroll frame and a transform doesn't need a re-render to apply.
+      // Skipped under reduced-motion, same as every other animation here.
+      if (parallaxRef.current && !reduceMotion) {
+        parallaxRef.current.style.transform = `translate3d(0, ${window.scrollY * 0.12}px, 0)`;
+      }
     };
     const fn = () => {
       if (ticking) return;
@@ -128,8 +137,10 @@ export function SiteChrome({
       <div className="sp-progress" style={{ transform: `scaleX(${progress})` }} aria-hidden />
       <div className="sp-bg" aria-hidden>
         <div className="sp-bg__grad" />
-        <div className="sp-bg__orb sp-bg__orb--1" />
-        <div className="sp-bg__orb sp-bg__orb--2" />
+        <div className="sp-bg__parallax" ref={parallaxRef}>
+          <div className="sp-bg__orb sp-bg__orb--1" />
+          <div className="sp-bg__orb sp-bg__orb--2" />
+        </div>
         <div className="sp-bg__grid" />
       </div>
 
@@ -277,8 +288,9 @@ export const CHROME_CSS = `
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Scroll progress ── */
-.sp-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 80; background: linear-gradient(90deg, var(--accent), var(--accent-deep)); transform-origin: left; transform: scaleX(0); transition: transform .1s linear; pointer-events: none }
+/* ── Scroll progress -- a soft glow trailing the fill reads more like a
+   lit filament than a flat loading bar. ── */
+.sp-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 80; background: linear-gradient(90deg, var(--accent), var(--accent-deep)); box-shadow: 0 0 12px 1px rgba(106,92,255,.55); transform-origin: left; transform: scaleX(0); transition: transform .1s linear; pointer-events: none }
 
 /* ── Ambient bg ── */
 .sp-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden }
@@ -288,6 +300,10 @@ export const CHROME_CSS = `
     radial-gradient(ellipse 70% 45% at 50% -8%, rgba(106,92,255,.10), transparent 60%),
     radial-gradient(ellipse 45% 35% at 88% 8%, rgba(106,92,255,.04), transparent 60%);
 }
+/* Scroll-linked parallax -- the orbs drift at a fraction of scroll speed
+   (see SiteChrome's scroll handler), giving the ambient background a
+   sense of depth instead of staying glued to the viewport. */
+.sp-bg__parallax { position: absolute; inset: 0; will-change: transform }
 .sp-bg__orb { position: absolute; border-radius: 50%; filter: blur(70px); animation: sp-float 24s ease-in-out infinite }
 .sp-bg__orb--1 { width: 440px; height: 440px; top: -140px; left: 4%; background: radial-gradient(circle, rgba(106,92,255,.30), transparent 70%); animation-duration: 22s }
 .sp-bg__orb--2 { width: 380px; height: 380px; top: 6%; right: 4%; background: radial-gradient(circle, rgba(85,70,224,.22), transparent 70%); animation-duration: 28s; animation-delay: -9s }
