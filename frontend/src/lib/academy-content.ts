@@ -91,7 +91,7 @@ const phase1HomeLab: HomeLabDef = {
   sections: [
     { label: "Overview", file: "phase-1/home-lab-ad/overview.md" },
     { label: "Build This Lab", file: "phase-1/home-lab-ad/build-this-lab.md" },
-    { label: "Troubleshooting", file: "phase-1/home-lab-ad/troubleshooting.md" },
+    { label: "Troubleshooting: If the Script Won't Run", file: "phase-1/home-lab-ad/troubleshooting.md" },
     { label: "AD Building Blocks", file: "phase-1/home-lab-ad/ad-building-blocks.md" },
     { label: "Admin Tasks", file: "phase-1/home-lab-ad/admin-tasks.md" },
     { label: "The Org Chart", file: "phase-1/home-lab-ad/org-chart.md" },

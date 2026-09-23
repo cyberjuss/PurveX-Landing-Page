@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight, Flag, FlaskConical } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Flag, FlaskConical, Wrench } from "lucide-react";
 import { Markdown, splitMarkdownIntoSlides } from "@/lib/markdown";
 import { QuizBlock } from "./quiz";
 import { LabCarousel } from "./lab-carousel";
@@ -16,7 +16,8 @@ type Item =
   | { kind: "section"; label: string; markdown: string }
   | { kind: "quiz"; label: string }
   | { kind: "lab"; label: string; markdown: string }
-  | { kind: "challenge"; label: string; markdown: string };
+  | { kind: "challenge"; label: string; markdown: string }
+  | { kind: "troubleshooting"; label: string; markdown: string };
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
@@ -34,11 +35,13 @@ export function SectionTabs({
   quiz,
   labs,
   challenges,
+  troubleshooting,
 }: {
   sections: TabSection[];
   quiz?: Quiz;
   labs?: TabSection[];
   challenges?: TabSection[];
+  troubleshooting?: TabSection[];
 }) {
   const numberedItems: Item[] = [
     ...sections.map((s): Item => ({ kind: "section", label: s.label, markdown: s.markdown })),
@@ -46,7 +49,8 @@ export function SectionTabs({
   ];
   const labItems: Item[] = (labs ?? []).map((l) => ({ kind: "lab", label: l.label, markdown: l.markdown }));
   const challengeItems: Item[] = (challenges ?? []).map((c) => ({ kind: "challenge", label: c.label, markdown: c.markdown }));
-  const items = [...numberedItems, ...labItems, ...challengeItems];
+  const troubleshootingItems: Item[] = (troubleshooting ?? []).map((t) => ({ kind: "troubleshooting", label: t.label, markdown: t.markdown }));
+  const items = [...numberedItems, ...labItems, ...challengeItems, ...troubleshootingItems];
 
   const [active, setActive] = useState(0);
   // Expanded by default -- collapsing is an option for a long list like Home
@@ -73,6 +77,13 @@ export function SectionTabs({
       <div>
         <p className="mb-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.1em] text-[#e5484d]">
           <Flag className="h-3.5 w-3.5" /> Challenge
+        </p>
+        <Markdown content={current.markdown} />
+      </div>
+    ) : current.kind === "troubleshooting" ? (
+      <div>
+        <p className="mb-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.1em] text-amber-600">
+          <Wrench className="h-3.5 w-3.5" /> Troubleshooting
         </p>
         <Markdown content={current.markdown} />
       </div>
@@ -176,6 +187,30 @@ export function SectionTabs({
                     }`}
                   >
                     <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                    <span className="min-w-0">{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          {troubleshootingItems.length > 0 && (
+            <div className="mt-1 flex flex-col gap-0.5 overflow-hidden border-t border-[var(--pvrx-border-light)] pt-2">
+              <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">Troubleshooting</p>
+              {troubleshootingItems.map((item, i) => {
+                const idx = numberedItems.length + labItems.length + challengeItems.length + i;
+                return (
+                  <button
+                    key={item.label}
+                    type="button"
+                    role="tab"
+                    tabIndex={collapsed ? -1 : 0}
+                    aria-selected={active === idx}
+                    onClick={() => setActive(idx)}
+                    className={`flex items-start gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 ${
+                      active === idx ? "bg-[rgba(106,92,255,0.1)] text-[#5546e0]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
+                  >
+                    <Wrench className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     <span className="min-w-0">{item.label}</span>
                   </button>
                 );

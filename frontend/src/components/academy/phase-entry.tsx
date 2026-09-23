@@ -37,11 +37,15 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
   // in the section nav below a divider instead of blending in with the
   // rest. Every lab section is named "Lab: ..." by convention, so that's
   // enough to split it out without needing a new field on the content model.
-  // A CTF-style challenge (e.g. Operation Day One) gets the same treatment,
-  // named "Challenge: ..." by the same convention.
+  // A CTF-style challenge (e.g. Operation Day One) and a troubleshooting
+  // page get the same treatment, named "Challenge: ..." / "Troubleshooting:
+  // ..." by the same convention.
   const labSections = sections.filter((s) => s.label.startsWith("Lab:"));
   const challengeSections = sections.filter((s) => s.label.startsWith("Challenge:"));
-  const otherSections = sections.filter((s) => !s.label.startsWith("Lab:") && !s.label.startsWith("Challenge:"));
+  const troubleshootingSections = sections.filter((s) => s.label.startsWith("Troubleshooting:"));
+  const otherSections = sections.filter(
+    (s) => !s.label.startsWith("Lab:") && !s.label.startsWith("Challenge:") && !s.label.startsWith("Troubleshooting:")
+  );
 
   return (
     <div>
@@ -77,13 +81,14 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
         </p>
       ) : (
         <>
-          {(otherSections.length > 0 || labSections.length > 0 || challengeSections.length > 0) && (
+          {(otherSections.length > 0 || labSections.length > 0 || challengeSections.length > 0 || troubleshootingSections.length > 0) && (
             <div className="mt-8">
               <SectionTabs
                 sections={otherSections.map((s) => ({ label: s.label, markdown: s.markdown! }))}
                 quiz={quiz}
                 labs={labSections.map((s) => ({ label: s.label.replace(/^Lab:\s*/, ""), markdown: s.markdown! }))}
                 challenges={challengeSections.map((s) => ({ label: s.label.replace(/^Challenge:\s*/, ""), markdown: s.markdown! }))}
+                troubleshooting={troubleshootingSections.map((s) => ({ label: s.label.replace(/^Troubleshooting:\s*/, ""), markdown: s.markdown! }))}
               />
             </div>
           )}
