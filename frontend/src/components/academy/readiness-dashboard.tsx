@@ -1,20 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowRight,
-  CheckCircle2,
-  Circle,
-  CircleDot,
-  Compass,
-  RotateCcw,
-  ShieldAlert,
-  Sparkles,
-  Users,
-  Wrench,
-  XCircle,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { CoachChat, CoachHeader } from "@/components/academy/coach-chat";
 import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch, RESULTS_CHANGED_EVENT, useResults } from "@/lib/academy-client";
@@ -26,101 +13,71 @@ import {
   SKILLS,
   summarize,
   type MissionResult,
-  type Skill,
+  type Results,
   type Summary,
 } from "@/lib/academy-score";
 
 const HOME_LAB_PATH = "/academy/phase-1/home-lab-active-directory";
 
-const LEVEL_COLOR: Record<Summary["level"], string> = {
-  none: "#94a3b8",
-  progress: "#5546e0",
-  ready: "#16a34a",
-  almost: "#d99a1a",
-  practice: "#e5484d",
-};
-
-const SKILL_ICON: Record<Skill, LucideIcon> = {
-  accounts: Users,
-  directory: Compass,
-  troubleshooting: Wrench,
-  security: ShieldAlert,
-};
-
-const CHALLENGES: { key: MissionCatalogEntry["challenge"]; label: string }[] = [
-  { key: "day-one", label: "Operation Day One" },
-  { key: "ticket-queue", label: "Ticket Queue" },
+const CHALLENGES: { key: MissionCatalogEntry["challenge"]; label: string; blurb: string }[] = [
+  { key: "day-one", label: "Operation Day One", blurb: "Find the facts in the directory." },
+  { key: "ticket-queue", label: "Ticket Queue", blurb: "Work real tickets end to end." },
 ];
 
-function scoreColor(score: number | null) {
-  if (score === null) return "#94a3b8";
-  return score >= 85 ? "#16a34a" : score >= 65 ? "#d99a1a" : "#e5484d";
+type Tone = "good" | "warn" | "bad" | "live" | "none";
+
+function toneOfScore(score: number | null): Tone {
+  if (score === null) return "none";
+  return score >= 85 ? "good" : score >= 65 ? "warn" : "bad";
 }
 
-function ScoreRing({ value, color, size = 132 }: { value: number | null; color: string; size?: number }) {
-  const stroke = 10;
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const pct = value ?? 0;
-  return (
-    <div className="relative shrink-0" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--pvrx-border-light)" strokeWidth={stroke} />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          fill="none"
-          stroke={color}
-          strokeWidth={stroke}
-          strokeLinecap="round"
-          strokeDasharray={c}
-          strokeDashoffset={c - (pct / 100) * c}
-          style={{ transition: "stroke-dashoffset 0.8s cubic-bezier(.16,1,.3,1)" }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-display text-4xl font-bold tracking-tight text-slate-900">{value === null ? "—" : value}</span>
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400">
-          {value === null ? "no score" : "of 100"}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function missionStatus(r: MissionResult | undefined) {
+function missionStatus(r: MissionResult | undefined): { tone: Tone; label: string; points: number | null; needsHelp: boolean } {
   const points = missionPoints(r);
-  if (!r) return { icon: Circle, tone: "text-slate-300", label: "Not started", points, needsHelp: false };
+  if (!r) return { tone: "none", label: "Not started", points, needsHelp: false };
   if (r.solved) {
     const tries = r.wrong + 1;
+    const clean = tries === 1 && !r.hint;
     return {
-      icon: CheckCircle2,
-      tone: tries === 1 && !r.hint ? "text-emerald-600" : "text-amber-500",
-      label: tries === 1 ? (r.hint ? "Solved with a hint" : "Solved first try") : `Solved in ${tries} tries`,
+      tone: clean ? "good" : "warn",
+      label: tries === 1 ? (r.hint ? "Solved with hint" : "First try") : `${tries} tries`,
       points,
-      needsHelp: tries > 1 || r.hint,
+      needsHelp: !clean,
     };
   }
-  if (r.wrong >= 3) return { icon: XCircle, tone: "text-red-500", label: "Missed", points, needsHelp: true };
-  return {
-    icon: CircleDot,
-    tone: "text-[#5546e0]",
-    label: `In progress · ${r.wrong} wrong ${r.wrong === 1 ? "try" : "tries"}`,
-    points,
-    needsHelp: r.wrong > 0,
-  };
+  if (r.wrong >= 3) return { tone: "bad", label: "Missed", points, needsHelp: true };
+  return { tone: "live", label: `Open · ${r.wrong} wrong`, points, needsHelp: r.wrong > 0 };
 }
 
-function coachTake(s: Summary) {
+function verdict(s: Summary) {
   if (s.finished === 0) {
-    return "Start with Operation Day One. Every answer you give builds your score and shows me where to help.";
+    return "No evidence yet. Work Operation Day One first: every answer you give goes on this report, and it tells me exactly where to push you.";
   }
   const gap = s.focus[0];
-  if (s.level === "ready") return "You are Help Desk Ready. Keep your edge by redoing the tickets on your own lab without hints.";
-  if (!gap) return "Strong work so far. Finish the remaining missions to get your full readiness rating.";
-  const score = gap.score === null ? "not started yet" : `${gap.score}%`;
-  return `Your biggest gap is ${gap.label} (${score}). ${gap.advice}`;
+  if (s.level === "ready") return "You can find, verify, and escalate like a working Tier 1 analyst. Keep the edge: redo the tickets on your own lab without hints.";
+  if (!gap) return "Solid so far. Finish the remaining missions and this becomes a full readiness rating.";
+  const score = gap.score === null ? "untested" : `at ${gap.score}%`;
+  return `${gap.label} is ${score} and it is what stands between you and the desk. ${gap.advice}`;
+}
+
+function ticketOf(title: string) {
+  const m = title.match(/^(.*?)\s*\((INC-\d+)\)$/);
+  return m ? { name: m[1], ticket: m[2] } : { name: title, ticket: null };
+}
+
+function MissionStrip({ results }: { results: Results }) {
+  return (
+    <div className="rd-strip" aria-label="Mission results">
+      {CHALLENGES.map((ch) => (
+        <div key={ch.key} className="rd-strip__group">
+          {Object.values(MISSION_CATALOG)
+            .filter((m) => m.challenge === ch.key)
+            .map((m) => (
+              <span key={m.id} className={`rd-strip__cell rd-tone-${missionStatus(results[m.id]).tone}`} title={m.title} />
+            ))}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export function ReadinessDashboard() {
@@ -128,9 +85,9 @@ export function ReadinessDashboard() {
   const { ask, registerInline } = useCoach();
   const s = summarize(results);
   const lv = LEVELS[s.level];
-  const scored = s.skills.filter((k) => k.score !== null).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
-  const strongest = scored[0];
-  const missed = Object.values(MISSION_CATALOG).filter((m) => missionStatus(results[m.id]).needsHelp);
+  const scoreTone: Tone = s.finished === 0 ? "none" : s.level === "ready" ? "good" : s.level === "almost" ? "warn" : s.level === "practice" ? "bad" : "live";
+  const focusKey = s.finished > 0 ? s.focus[0]?.key : undefined;
+  const today = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   function reset() {
     if (!window.confirm("Reset your readiness score? This clears every mission result.")) return;
@@ -144,206 +101,192 @@ export function ReadinessDashboard() {
   }
 
   return (
-    <div>
-      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-[#5546e0]">Help Desk Readiness</p>
-      <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-        Are you ready for the job?
-      </h1>
+    <div className="rd">
+      {/* Masthead */}
+      <header className="rd-mast">
+        <div className="rd-meta">
+          <span>GovTech Financial · IT Service Desk</span>
+          <span>Tier 1 readiness evaluation</span>
+          <span suppressHydrationWarning>{today}</span>
+        </div>
 
-      <div className="mt-8">
-        <div className="flex min-w-0 flex-col gap-8">
-          {/* Score */}
-          <section className="rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 sm:p-7">
-            <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center">
-              <ScoreRing value={s.finished === 0 ? null : s.overall} color={LEVEL_COLOR[s.level]} />
-              <div className="min-w-0 flex-1 text-center sm:text-left">
-                <span
-                  className="inline-flex items-center rounded-full px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.08em]"
-                  style={{ color: LEVEL_COLOR[s.level], background: `${LEVEL_COLOR[s.level]}1a` }}
-                >
-                  {lv.label}
-                </span>
-                <p className="mt-3 text-sm leading-6 text-slate-600">{lv.note}</p>
-                <div className="mt-4">
-                  <div className="flex items-center justify-between text-xs text-slate-500">
-                    <span>Missions finished</span>
-                    <span className="font-mono">
-                      {s.finished} / {s.total}
-                    </span>
-                  </div>
-                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-100">
-                    <div
-                      className="h-full rounded-full bg-[#5546e0] transition-[width] duration-700"
-                      style={{ width: `${(s.finished / s.total) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div className="rd-hero">
+          <div className="rd-hero__score">
+            <p className="rd-kicker">Readiness</p>
+            <p className={`rd-bignum rd-text-${scoreTone}`}>
+              {s.finished === 0 ? "––" : s.overall}
+              <span>/100</span>
+            </p>
+            <p className={`rd-stamp rd-text-${scoreTone}`}>{lv.label}</p>
+          </div>
 
-            {/* Coach's read on the score */}
-            <div className="mt-6 flex flex-col gap-3 rounded-xl border border-[rgba(85,70,224,0.2)] bg-[rgba(85,70,224,0.06)] p-4 sm:flex-row sm:items-center">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#5546e0] text-white">
-                <Sparkles className="h-4 w-4" />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#5546e0]">Coach&apos;s take</p>
-                <p className="mt-1 text-sm leading-6 text-slate-700">{coachTake(s)}</p>
-              </div>
+          <div className="rd-hero__verdict">
+            <h1>Are you ready for the job?</h1>
+            <blockquote>{verdict(s)}</blockquote>
+            <div className="rd-sign">
+              <span>PurveX Coach, senior help desk lead</span>
               <button
                 type="button"
+                className="rd-cta"
                 onClick={() =>
                   ask(
                     s.finished === 0
                       ? "I'm just getting started. How should I approach Operation Day One?"
-                      : "Look at my readiness score and skill gaps and give me a short study plan for this week. Don't give me any mission answers."
+                      : "Look at my readiness report and give me a study plan for this week. No mission answers."
                   )
                 }
-                className="shrink-0 rounded-lg bg-[#5546e0] px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-[#4a3cd0]"
               >
-                {s.finished === 0 ? "How do I start?" : "Build my study plan"}
+                {s.finished === 0 ? "Brief me on day one" : "Build my study plan"} <ArrowRight className="h-4 w-4" />
               </button>
             </div>
-          </section>
-
-          {/* Coach */}
-          <section ref={registerInline} className="pc-panel pc-wide flex scroll-mt-24 flex-col overflow-hidden rounded-2xl">
-            <CoachHeader />
-            <CoachChat />
-          </section>
-
-          {/* Skills */}
-          <section>
-            <div className="flex items-end justify-between gap-3">
-              <h2 className="font-display text-lg font-semibold text-slate-900">Skills</h2>
-              {strongest && (
-                <p className="text-xs text-slate-500">
-                  Strongest: <strong className="text-slate-700">{strongest.label}</strong>
-                </p>
-              )}
-            </div>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {s.skills.map((k) => {
-                const Icon = SKILL_ICON[k.key];
-                const color = scoreColor(k.score);
-                const isGap = s.focus.some((f) => f.key === k.key) && s.finished > 0;
-                return (
-                  <div
-                    key={k.key}
-                    className={`flex flex-col rounded-2xl border bg-white p-4 ${
-                      isGap ? "border-[rgba(229,72,77,0.35)]" : "border-[var(--pvrx-border-light)]"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-2.5">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
-                          <Icon className="h-4 w-4" />
-                        </span>
-                        <div>
-                          <p className="text-sm font-semibold text-slate-900">{k.label}</p>
-                          <p className="text-xs text-slate-400">
-                            {k.done} of {k.total} missions
-                          </p>
-                        </div>
-                      </div>
-                      <span className="font-display text-xl font-bold" style={{ color }}>
-                        {k.score === null ? "—" : `${k.score}%`}
-                      </span>
-                    </div>
-                    <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-100">
-                      <div className="h-full rounded-full transition-[width] duration-700" style={{ width: `${k.score ?? 0}%`, background: color }} />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        ask(
-                          `Coach me on ${k.label}. My score there is ${k.score === null ? "not started" : `${k.score}%`}. What should I practice, without giving me mission answers?`
-                        )
-                      }
-                      className="mt-3 inline-flex w-fit items-center gap-1 text-xs font-semibold text-[#5546e0] hover:underline"
-                    >
-                      <Sparkles className="h-3.5 w-3.5" /> Coach me on this
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
-          {/* Missions */}
-          <section>
-            <div className="flex items-end justify-between gap-3">
-              <h2 className="font-display text-lg font-semibold text-slate-900">Mission history</h2>
-              {missed.length > 0 && (
-                <p className="text-xs text-slate-500">
-                  {missed.length} to review with the coach
-                </p>
-              )}
-            </div>
-            <div className="mt-3 flex flex-col gap-4">
-              {CHALLENGES.map((ch) => {
-                const list = Object.values(MISSION_CATALOG).filter((m) => m.challenge === ch.key);
-                const done = list.filter((m) => missionPoints(results[m.id]) !== null).length;
-                return (
-                  <div key={ch.key} className="overflow-hidden rounded-2xl border border-[var(--pvrx-border-light)] bg-white">
-                    <div className="flex items-center justify-between gap-3 border-b border-[var(--pvrx-border-light)] px-4 py-3">
-                      <p className="text-sm font-semibold text-slate-900">{ch.label}</p>
-                      <Link href={HOME_LAB_PATH} className="inline-flex items-center gap-1 text-xs font-semibold text-[#5546e0] hover:underline">
-                        {done === 0 ? "Start" : done === list.length ? "Review" : "Continue"} <ArrowRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-                    <ul>
-                      {list.map((m) => {
-                        const st = missionStatus(results[m.id]);
-                        const Icon = st.icon;
-                        return (
-                          <li
-                            key={m.id}
-                            className="flex items-center gap-3 border-b border-[var(--pvrx-border-light)] px-4 py-2.5 last:border-b-0"
-                          >
-                            <Icon className={`h-[18px] w-[18px] shrink-0 ${st.tone}`} />
-                            <div className="min-w-0 flex-1">
-                              <p className="truncate text-sm text-slate-800">{m.title}</p>
-                              <p className="text-xs text-slate-400">
-                                {st.label} · {SKILLS[m.skill].label}
-                              </p>
-                            </div>
-                            {st.points !== null && (
-                              <span className="font-mono text-xs font-semibold text-slate-500">{st.points} pts</span>
-                            )}
-                            {st.needsHelp && (
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  ask(
-                                    `Help me understand where I went wrong on "${m.title}" (${m.id}). Guide me with questions, don't give me the answer.`
-                                  )
-                                }
-                                className="shrink-0 rounded-md border border-[var(--pvrx-border-light)] px-2 py-1 text-xs font-semibold text-slate-600 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
-                              >
-                                Ask why
-                              </button>
-                            )}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                );
-              })}
-            </div>
-            {s.finished > 0 && (
-              <button
-                type="button"
-                onClick={reset}
-                className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 transition hover:text-red-600"
-              >
-                <RotateCcw className="h-3.5 w-3.5" /> Reset score
-              </button>
-            )}
-          </section>
+          </div>
         </div>
-      </div>
+
+        <div className="rd-evidence">
+          <div className="rd-evidence__head">
+            <span>
+              <strong>{s.finished}</strong> of {s.total} missions on record
+            </span>
+            <span className="rd-legend">
+              <span><i className="rd-tone-good" />Clean</span>
+              <span><i className="rd-tone-warn" />Struggled</span>
+              <span><i className="rd-tone-bad" />Missed</span>
+              <span><i className="rd-tone-live" />Open</span>
+            </span>
+          </div>
+          <MissionStrip results={results} />
+        </div>
+      </header>
+
+      {/* Competencies */}
+      <section className="rd-sec">
+        <div className="rd-sec__head">
+          <span className="rd-sec__n">01</span>
+          <h2>Competencies</h2>
+          <p>Measured against the bar for a Tier 1 hire.</p>
+        </div>
+        <div className="rd-ledger">
+          {s.skills.map((k) => {
+            const tone = toneOfScore(k.score);
+            return (
+              <div key={k.key} className={`rd-row ${focusKey === k.key ? "rd-row--focus" : ""}`}>
+                <div className="rd-row__name">
+                  <strong>
+                    {k.label}
+                    {focusKey === k.key && <em>Focus</em>}
+                  </strong>
+                  <span>
+                    {k.done} of {k.total} missions
+                  </span>
+                </div>
+                <div className="rd-scale">
+                  <div className={`rd-scale__fill rd-bg-${tone}`} style={{ width: `${k.score ?? 0}%` }} />
+                  <i style={{ left: "65%" }} data-mark="Almost · 65" />
+                  <i style={{ left: "85%" }} data-mark="Ready · 85" />
+                </div>
+                <p className={`rd-row__score rd-text-${tone}`}>
+                  {k.score === null ? "—" : k.score}
+                  {k.score !== null && <small>%</small>}
+                </p>
+                <button
+                  type="button"
+                  className="rd-link"
+                  onClick={() =>
+                    ask(
+                      `Coach me on ${k.label}. I'm at ${k.score === null ? "not started" : `${k.score}%`}. What exactly should I practice in my lab, without mission answers?`
+                    )
+                  }
+                >
+                  Discuss <ArrowUpRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Coach */}
+      <section className="rd-sec">
+        <div className="rd-sec__head">
+          <span className="rd-sec__n">02</span>
+          <h2>Debrief</h2>
+          <p>Your lead has this report and your lab. Ask anything.</p>
+        </div>
+        <div ref={registerInline} className="pc-panel pc-wide flex scroll-mt-24 flex-col overflow-hidden rounded-2xl">
+          <CoachHeader />
+          <CoachChat />
+        </div>
+      </section>
+
+      {/* Mission log */}
+      <section className="rd-sec">
+        <div className="rd-sec__head">
+          <span className="rd-sec__n">03</span>
+          <h2>Mission log</h2>
+          <p>Every attempt, as it will look to a hiring manager.</p>
+        </div>
+        {CHALLENGES.map((ch) => {
+          const list = Object.values(MISSION_CATALOG).filter((m) => m.challenge === ch.key);
+          const done = list.filter((m) => missionPoints(results[m.id]) !== null).length;
+          return (
+            <div key={ch.key} className="rd-log">
+              <div className="rd-log__head">
+                <div>
+                  <h3>{ch.label}</h3>
+                  <p>{ch.blurb}</p>
+                </div>
+                <span className="rd-log__count">
+                  {done}/{list.length}
+                </span>
+                <Link href={HOME_LAB_PATH} className="rd-link">
+                  {done === 0 ? "Start" : done === list.length ? "Review" : "Continue"} <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+              <ol>
+                {list.map((m, i) => {
+                  const st = missionStatus(results[m.id]);
+                  const { name, ticket } = ticketOf(m.title);
+                  return (
+                    <li key={m.id} className="rd-log__row">
+                      <span className="rd-log__i">{String(i + 1).padStart(2, "0")}</span>
+                      <span className={`rd-dot rd-tone-${st.tone}`} />
+                      <span className="rd-log__title">
+                        {name}
+                        {ticket && <code>{ticket}</code>}
+                      </span>
+                      <span className="rd-log__skill">{SKILLS[m.skill].label}</span>
+                      <span className={`rd-log__result rd-text-${st.tone}`}>{st.label}</span>
+                      <span className="rd-log__pts">{st.points === null ? "" : st.points}</span>
+                      <span className="rd-log__act">
+                        {st.needsHelp && (
+                          <button
+                            type="button"
+                            className="rd-link"
+                            onClick={() =>
+                              ask(`Help me understand where I went wrong on "${m.title}". Guide me with questions, don't give me the answer.`)
+                            }
+                          >
+                            Ask why
+                          </button>
+                        )}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+          );
+        })}
+      </section>
+
+      <footer className="rd-foot">
+        <span>Scores update the moment you submit a mission.</span>
+        {s.finished > 0 && (
+          <button type="button" onClick={reset}>
+            Reset evaluation
+          </button>
+        )}
+      </footer>
     </div>
   );
 }
