@@ -150,8 +150,8 @@ export function ReadinessDashboard() {
         Are you ready for the job?
       </h1>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
-        <div className="flex min-w-0 flex-col gap-6">
+      <div className="mt-8">
+        <div className="flex min-w-0 flex-col gap-8">
           {/* Score */}
           <section className="rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 sm:p-7">
             <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center">
@@ -206,6 +206,12 @@ export function ReadinessDashboard() {
             </div>
           </section>
 
+          {/* Coach */}
+          <section ref={registerInline} className="pc-panel pc-wide flex scroll-mt-24 flex-col overflow-hidden rounded-2xl">
+            <CoachHeader />
+            <CoachChat />
+          </section>
+
           {/* Skills */}
           <section>
             <div className="flex items-end justify-between gap-3">
@@ -216,7 +222,7 @@ export function ReadinessDashboard() {
                 </p>
               )}
             </div>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {s.skills.map((k) => {
                 const Icon = SKILL_ICON[k.key];
                 const color = scoreColor(k.score);
@@ -337,15 +343,6 @@ export function ReadinessDashboard() {
             )}
           </section>
         </div>
-
-        {/* Coach */}
-        <aside
-          ref={registerInline}
-          className="pc-panel flex h-[620px] scroll-mt-24 flex-col overflow-hidden rounded-2xl lg:sticky lg:top-[89px] lg:h-[calc(100vh-113px)]"
-        >
-          <CoachHeader />
-          <CoachChat />
-        </aside>
       </div>
     </div>
   );
