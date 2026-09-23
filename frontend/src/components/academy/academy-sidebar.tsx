@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Check, ChevronDown } from "lucide-react";
+import { BookMarked, Check, ChevronDown } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
 import { useAcademyProgress } from "./academy-progress";
 
@@ -138,6 +138,17 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           </div>
         );
       })}
+
+      <Link
+        href="/academy/reference"
+        onClick={onNavigate}
+        className={`flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em] transition ${
+          pathname === "/academy/reference" ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
+        }`}
+      >
+        <BookMarked className="h-3 w-3 shrink-0" />
+        <span className="truncate">Reference — Cheat Sheet</span>
+      </Link>
     </nav>
   );
 }

@@ -3107,64 +3107,6 @@ body:has(.lp) {
 .academy-prose .ad-options li { margin: 0.35rem 0; font-size: 0.92rem; color: var(--pvrx-text-secondary-light); }
 .academy-prose .ad-options strong { color: var(--pvrx-text-primary-light); margin-right: 0.35rem; }
 
-.academy-prose .ad-task { margin: 0.75rem 0 0; font-size: 0.92rem; }
-.academy-prose .ad-task strong { color: #5546e0; }
-
-.academy-prose .ad-queue-head {
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
-  margin: 1.4rem 0 0.9rem; padding: 0.85rem 1.15rem; border-radius: 14px;
-  background: #0f1420; color: #e6e9f2;
-  box-shadow: 0 18px 36px -24px rgba(16,25,46,0.55);
-}
-.academy-prose .ad-queue-head__title { font-family: var(--font-display); font-size: 0.98rem; font-weight: 700; color: #fff; }
-.academy-prose .ad-queue-head__meta { display: flex; gap: 1.1rem; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #9aa3b8; }
-.academy-prose .ad-queue-head__meta b { color: #fff; font-weight: 700; }
-
-.academy-prose .ad-mission.ad-ticket {
-  padding: 1.15rem 1.35rem 1.35rem; border: 1px solid var(--pvrx-border-light); border-left: 4px solid var(--ad-pri, #5546e0);
-  border-radius: 16px; background: #fff;
-  box-shadow: 0 1px 2px rgba(16,25,46,0.05), 0 22px 44px -32px rgba(16,25,46,0.35);
-}
-.academy-prose .ad-mission.ad-ticket::before { display: none; }
-.academy-prose .ad-ticket--low { --ad-pri: #16a34a; }
-.academy-prose .ad-ticket--med { --ad-pri: #d99a1a; }
-.academy-prose .ad-ticket--high { --ad-pri: #e5484d; }
-.academy-prose .ad-mission.ad-ticket.ad-mission--solved { background: rgba(22,163,74,0.04); border-left-color: #16a34a; }
-.academy-prose .ad-ticket__top { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
-.academy-prose .ad-ticket__id { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.74rem; font-weight: 700; color: var(--pvrx-text-secondary-light); }
-.academy-prose .ad-ticket__pri, .academy-prose .ad-ticket__status {
-  display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.15rem 0.6rem; border-radius: 999px;
-  font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.64rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-}
-.academy-prose .ad-ticket__pri { color: var(--ad-pri); background: color-mix(in srgb, var(--ad-pri) 12%, transparent); border: 1px solid color-mix(in srgb, var(--ad-pri) 30%, transparent); }
-.academy-prose .ad-ticket__status { color: #5546e0; background: rgba(85,70,224,0.08); border: 1px solid rgba(85,70,224,0.25); }
-.academy-prose .ad-ticket__status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.academy-prose .ad-ticket__status::after { content: "Open"; }
-.academy-prose .ad-mission--solved .ad-ticket__status { color: #16a34a; background: rgba(22,163,74,0.1); border-color: rgba(22,163,74,0.3); }
-.academy-prose .ad-mission--solved .ad-ticket__status::after { content: "Resolved"; }
-.academy-prose .ad-ticket__time { margin-left: auto; font-size: 0.74rem; color: var(--pvrx-text-secondary-light); }
-.academy-prose .ad-ticket h4 { margin: 0.55rem 0 0; font-size: 1.1rem; }
-.academy-prose .ad-ticket__from { display: flex; align-items: baseline; gap: 0.45rem; margin-top: 0.25rem; font-size: 0.82rem; color: var(--pvrx-text-secondary-light); }
-.academy-prose .ad-ticket__from strong { color: var(--pvrx-text-primary-light); font-weight: 650; }
-.academy-prose .ad-ticket__from span::before { content: "\00b7"; margin-right: 0.45rem; }
-.academy-prose .ad-ticket__msg {
-  position: relative; margin: 0.7rem 0 0 !important; padding: 0.75rem 1rem; border-radius: 4px 14px 14px 14px;
-  background: var(--pvrx-surface-alt-light); border: 1px solid var(--pvrx-border-light);
-  font-size: 0.93rem; line-height: 1.65; color: var(--pvrx-text-primary-light);
-}
-.academy-prose .ad-ticket .ad-task { margin-top: 0.8rem; }
-
-.academy-prose .ad-cmd {
-  margin: 0.7rem 0 0; padding: 0.75rem 1rem; border-radius: 12px; overflow-x: auto;
-  background: #0d1117; border: 1px solid rgba(255,255,255,0.08);
-}
-.academy-prose .ad-cmd code { background: none; padding: 0; color: #c9d1d9; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.8rem; white-space: pre; }
-.academy-prose .ad-ticket__q {
-  display: block; margin: 0.8rem 0 0 !important; padding: 0.7rem 1rem; line-height: 1.6; border-radius: 12px;
-  background: rgba(85,70,224,0.07); border: 1px solid rgba(85,70,224,0.2); font-weight: 600; color: var(--pvrx-text-primary-light);
-}
-.academy-prose .ad-ticket__q span { display: inline-block; margin-right: 0.7rem; vertical-align: 0.05em; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #5546e0; }
-
 /* ---------------------------------------------------------------------------
    Academy dark mode. Scoped to the academy root so it never touches the
    marketing site. The academy CSS runs on --pvrx-*-light variables, so
@@ -3235,10 +3177,9 @@ body:has(.lp) {
 /* lesson content: literal whites and purples */
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-ticket-meta,
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__input,
-.academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission.ad-ticket,
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-diagram__user,
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-decision__q { background: #12161f; }
-.academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission.ad-ticket.ad-mission--solved { background: rgba(22,163,74,.1); }
+
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission { box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 22px 44px -32px rgba(0,0,0,.7); }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission::before,
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission--capstone::before,
@@ -3247,14 +3188,24 @@ body:has(.lp) {
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission__num,
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-hint__btn,
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-flag__label,
-.academy-bg[data-academy-theme="dark"] .academy-prose .ad-task strong,
-.academy-bg[data-academy-theme="dark"] .academy-prose .ad-ticket__q span,
-.academy-bg[data-academy-theme="dark"] .academy-prose .ad-ticket__status,
 .academy-bg[data-academy-theme="dark"] .academy-prose .academy-question__tag { color: #a79dff; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-flag__code code { background: rgba(167,157,255,.14); border-color: rgba(167,157,255,.3); color: #c4bdff; }
-.academy-bg[data-academy-theme="dark"] .academy-prose .ad-ticket__q { background: rgba(167,157,255,.1); border-color: rgba(167,157,255,.28); }
+
 .academy-bg[data-academy-theme="dark"] .academy-prose a { color: #a79dff; }
 .academy-bg[data-academy-theme="dark"] .academy-prose :not(pre) > code { background: #1e2432; }
 .academy-bg[data-academy-theme="dark"] .academy-prose table th { background: #171c27; }
-.academy-bg[data-academy-theme="dark"] .academy-prose .ad-queue-head { background: #1a2032; border: 1px solid #2a3142; }
+
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__input::placeholder { color: #566078; }
+
+.academy-prose .ad-mission > p + p { margin-top: 0.7rem; }
+
+/* The hint stays locked until two wrong tries. The button text is swapped
+   with CSS so it works on content that renders after page load. */
+.academy-prose .ad-mission[data-attempts="0"] .ad-hint__btn,
+.academy-prose .ad-mission[data-attempts="1"] .ad-hint__btn {
+  font-size: 0; cursor: not-allowed; color: var(--pvrx-text-secondary-light); border-color: var(--pvrx-border-light); background: none;
+}
+.academy-prose .ad-mission[data-attempts="0"] .ad-hint__btn:hover,
+.academy-prose .ad-mission[data-attempts="1"] .ad-hint__btn:hover { background: none; }
+.academy-prose .ad-mission[data-attempts="0"] .ad-hint__btn::after,
+.academy-prose .ad-mission[data-attempts="1"] .ad-hint__btn::after { content: "Hint unlocks after 2 wrong tries"; font-size: 0.78rem; font-weight: 650; }

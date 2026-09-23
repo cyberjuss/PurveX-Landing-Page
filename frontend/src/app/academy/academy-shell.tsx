@@ -124,16 +124,19 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         reveal.classList.add("ad-flag--shown");
       } else {
         const left = 3 - attempts;
-        feedback.textContent = `Not quite. ${left} attempt${left === 1 ? "" : "s"} left before the flag unlocks.`;
+        const hintNote = attempts === 2 ? " Your hint is now unlocked." : "";
+        feedback.textContent = `Not quite. ${left} attempt${left === 1 ? "" : "s"} left before the flag unlocks.${hintNote}`;
       }
     };
 
     // A mission gets exactly one hint, separate from its three guesses --
     // asking for a nudge shouldn't cost you an attempt at the real answer.
+    // It only unlocks after two wrong tries, so the first two are honest.
     const showHint = (btn: HTMLButtonElement) => {
       const wrap = btn.closest(".ad-mission");
       const hint = wrap?.querySelector<HTMLElement>(".ad-hint__text");
       if (!hint) return;
+      if (parseInt(wrap?.getAttribute("data-attempts") || "0", 10) < 2) return;
       hint.classList.add("ad-hint__text--shown");
       btn.textContent = "Hint used";
       btn.disabled = true;
