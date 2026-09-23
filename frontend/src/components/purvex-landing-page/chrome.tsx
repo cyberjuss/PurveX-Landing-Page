@@ -192,14 +192,6 @@ export function SiteChrome({
       <main className="sp-main">{children}</main>
 
       <footer className="sp-footer" data-r>
-        {/* The one contact CTA for the whole site, lives here so every page
-            gets it automatically instead of each page carrying its own
-            (previously inconsistent) version. */}
-        <div className="sp-footer__cta">
-          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Schedule a Conversation <ArrowRight size={16} />
-          </a>
-        </div>
         <div className="sp-footer__top">
           <div className="sp-footer__brand">
             <Link href="/" className="sp-logo">
@@ -207,6 +199,12 @@ export function SiteChrome({
               <span>PurveX</span>
             </Link>
             <p>Strengthening security operations. Developing cybersecurity talent.</p>
+            {/* The one contact CTA for the whole site, lives here so every
+                page gets it automatically instead of each page carrying its
+                own (previously inconsistent) version. */}
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-footer__cta">
+              Schedule a Conversation <ArrowRight size={16} />
+            </a>
           </div>
           <div className="sp-footer__cols">
             <div className="sp-footer__col">
@@ -491,11 +489,11 @@ export const CHROME_CSS = `
 .sp-statement__link:hover { gap: 12px }
 
 /* ── Footer ── */
-.sp-footer { border-top: 1px solid var(--border); max-width: 1140px; margin: 96px auto 0; padding: 40px 24px 32px }
-.sp-footer__cta { display: flex; justify-content: center; padding-bottom: 40px; border-bottom: 1px solid var(--border); margin-bottom: 40px }
+.sp-footer { border-top: 1px solid var(--border); max-width: 1140px; margin: 96px auto 0; padding: 56px 24px 32px }
 .sp-footer__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px }
 .sp-footer__brand { max-width: 280px }
 .sp-footer__brand p { margin: 12px 0 0; color: var(--muted); font-size: .89rem; line-height: 1.65 }
+.sp-footer__cta { margin-top: 20px }
 .sp-footer__cols { display: flex; gap: 56px }
 .sp-footer__col { display: flex; flex-direction: column; gap: 12px }
 .sp-footer__col h4 { margin: 0 0 4px; font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted-dim); font-weight: 600 }
