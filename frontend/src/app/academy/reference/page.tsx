@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft,
   AlertTriangle,
   Building2,
   Check,
@@ -452,10 +451,6 @@ export default function ReferencePage() {
     <div className="rd">
       <header className="rd-mast">
         <div className="rd-meta">
-          <Link href="/academy" className="ax-back">
-            <ArrowLeft className="h-3 w-3" /> Course overview
-          </Link>
-          <span>Quick reference</span>
           <span>Appendix</span>
         </div>
         <div className="ax-titleblock">

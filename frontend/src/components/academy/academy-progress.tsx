@@ -4,9 +4,18 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { PhaseDef } from "@/lib/academy-content";
 
 const STORAGE_KEY = "academy-progress-v1";
+const LAST_STOP_KEY = "academy-last-stop-v1";
 
 function entryKey(phaseSlug: string, entrySlug: string) {
   return `${phaseSlug}:${entrySlug}`;
+}
+
+export type LastStop = { phaseSlug: string; entrySlug: string };
+
+function parseLastStop(raw: string | null): LastStop | null {
+  if (!raw) return null;
+  const [phaseSlug, entrySlug] = raw.split(":");
+  return phaseSlug && entrySlug ? { phaseSlug, entrySlug } : null;
 }
 
 function countEntries(phases: PhaseDef[]) {
@@ -16,6 +25,8 @@ function countEntries(phases: PhaseDef[]) {
 interface AcademyProgressContextValue {
   isComplete: (phaseSlug: string, entrySlug: string) => boolean;
   toggleComplete: (phaseSlug: string, entrySlug: string) => void;
+  lastStop: LastStop | null;
+  setLastStop: (phaseSlug: string, entrySlug: string) => void;
   completedCount: number;
   totalCount: number;
 }
@@ -24,12 +35,14 @@ const AcademyProgressContext = createContext<AcademyProgressContextValue | null>
 
 export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef[]; children: React.ReactNode }) {
   const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const [lastStop, setLastStopState] = useState<LastStop | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) setCompleted(new Set(JSON.parse(raw)));
+      setLastStopState(parseLastStop(window.localStorage.getItem(LAST_STOP_KEY)));
     } catch {
       // Private browsing / blocked storage -- progress just won't persist.
     } finally {
@@ -46,6 +59,15 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
     }
   }, [completed, loaded]);
 
+  useEffect(() => {
+    if (!loaded) return;
+    try {
+      if (lastStop) window.localStorage.setItem(LAST_STOP_KEY, entryKey(lastStop.phaseSlug, lastStop.entrySlug));
+    } catch {
+      // Ignore -- nothing to persist to.
+    }
+  }, [lastStop, loaded]);
+
   const totalCount = useMemo(() => countEntries(phases), [phases]);
 
   const value = useMemo<AcademyProgressContextValue>(
@@ -60,10 +82,16 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
           return next;
         });
       },
+      lastStop,
+      setLastStop: (phaseSlug, entrySlug) => {
+        setLastStopState((prev) =>
+          prev?.phaseSlug === phaseSlug && prev.entrySlug === entrySlug ? prev : { phaseSlug, entrySlug }
+        );
+      },
       completedCount: completed.size,
       totalCount,
     }),
-    [completed, totalCount]
+    [completed, lastStop, totalCount]
   );
 
   return <AcademyProgressContext.Provider value={value}>{children}</AcademyProgressContext.Provider>;
@@ -73,4 +101,12 @@ export function useAcademyProgress() {
   const ctx = useContext(AcademyProgressContext);
   if (!ctx) throw new Error("useAcademyProgress must be used within AcademyProgressProvider");
   return ctx;
+}
+
+export function RecordLastStop({ phaseSlug, entrySlug }: { phaseSlug: string; entrySlug: string }) {
+  const { setLastStop } = useAcademyProgress();
+  useEffect(() => {
+    setLastStop(phaseSlug, entrySlug);
+  }, [phaseSlug, entrySlug, setLastStop]);
+  return null;
 }

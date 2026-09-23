@@ -41,6 +41,21 @@ export function LabCarousel({ slides }: { slides: MarkdownSlide[] }) {
 
   return (
     <div>
+      {total > 1 && (
+        <div className="flex items-center justify-between gap-12 pb-4">
+          <button type="button" onClick={() => go(index - 1)} disabled={index === 0} aria-label="Previous step" className="ax-step">
+            <ChevronLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Previous</span>
+          </button>
+          <span className="ax-panel__count">
+            {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+          </span>
+          <button type="button" onClick={() => go(index + 1)} disabled={index === total - 1} aria-label="Next step" className="ax-step ax-step--next">
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      )}
       <div
         role="group"
         aria-roledescription="carousel"
@@ -51,21 +66,9 @@ export function LabCarousel({ slides }: { slides: MarkdownSlide[] }) {
         onTouchEnd={onTouchEnd}
         className="overflow-hidden outline-none"
       >
-        <div key={index} className={`p-6 sm:p-8 ${dir === 1 ? "academy-slide-in-right" : "academy-slide-in-left"}`}>
+        <div key={index} className={dir === 1 ? "academy-slide-in-right" : "academy-slide-in-left"}>
           <Markdown content={slides[index].markdown} />
         </div>
-      </div>
-
-      <div className="ax-panel__foot">
-        <button type="button" onClick={() => go(index - 1)} disabled={index === 0} aria-label="Previous step" className="ax-step">
-          <ChevronLeft className="h-4 w-4" /> Previous
-        </button>
-        <span className="ax-panel__count">
-          {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-        </span>
-        <button type="button" onClick={() => go(index + 1)} disabled={index === total - 1} aria-label="Next step" className="ax-step ax-step--next">
-          Next <ChevronRight className="h-4 w-4" />
-        </button>
       </div>
     </div>
   );

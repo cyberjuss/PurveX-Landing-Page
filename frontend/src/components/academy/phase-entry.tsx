@@ -6,6 +6,7 @@ import { extractEssentialQuestion } from "@/lib/markdown";
 import { SectionTabs } from "./section-tabs";
 import { MarkCompleteButton } from "./mark-complete-button";
 import { ComingSoon } from "./coming-soon";
+import { RecordLastStop } from "./academy-progress";
 
 export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }) {
   // Every section that has one authored its own Essential Question, but a
@@ -53,18 +54,11 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
 
   return (
     <div className="rd">
+      <RecordLastStop phaseSlug={phase.slug} entrySlug={entry.slug} />
       <header className="rd-mast">
         <div className="rd-meta">
-          {/* /academy/${phase.slug} redirects straight into this phase's
-              first week, so the course overview is the real "back". */}
-          <Link href="/academy" className="ax-back">
-            <ArrowLeft className="h-3 w-3" /> All phases
-          </Link>
           <span>
-            {phase.label} · {phase.title}
-          </span>
-          <span>
-            {entry === phase.homeLab ? "Home lab" : `Entry ${String(entryNumber).padStart(2, "0")} of ${String(phaseEntries.length).padStart(2, "0")}`}
+            {entry === phase.homeLab ? "Home lab" : `${String(entryNumber).padStart(2, "0")} of ${String(phaseEntries.length).padStart(2, "0")}`}
           </span>
         </div>
         <div className="ax-entryhead">

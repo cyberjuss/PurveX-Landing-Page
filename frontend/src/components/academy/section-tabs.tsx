@@ -19,14 +19,6 @@ type Item =
   | { kind: "challenge"; label: string; markdown: string }
   | { kind: "troubleshooting"; label: string; markdown: string };
 
-const KIND_LABEL: Record<Item["kind"], string> = {
-  section: "Reading",
-  quiz: "Quiz",
-  lab: "Hands-on lab",
-  challenge: "Challenge",
-  troubleshooting: "Troubleshooting",
-};
-
 function pad(n: number) {
   return String(n).padStart(2, "0");
 }
@@ -208,13 +200,7 @@ export function SectionTabs({
       </div>
 
       <div className="ax-panel min-w-0 flex-1">
-        <div className="ax-panel__head">
-          <span>
-            Section {pad(active + 1)} of {pad(items.length)}
-          </span>
-          <span>{KIND_LABEL[current.kind]}</span>
-        </div>
-        <div className="py-6 sm:py-8">{panel}</div>
+        <div className="py-2 sm:py-4">{panel}</div>
 
         {/* Lets you read straight through a lesson without dropping back to
             the sidebar after every section -- and, once it reaches the labs,
