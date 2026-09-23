@@ -147,7 +147,7 @@ function MyLicenseContent() {
       setUser(u);
 
       if (!supabase) {
-        if (!cancelled) setLoadError("Sign-in isn't fully configured yet -- try again shortly.");
+        if (!cancelled) setLoadError("Sign-in is not fully configured yet. Try again shortly.");
         return;
       }
       const { data, error } = await supabase

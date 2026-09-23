@@ -17,7 +17,7 @@ The CIA triad is the foundation of information security, the lens every other co
 * Threat example: a DDoS attack takes a web server offline
 * Common controls: redundancy, backups, failover systems, DDoS protection, patching
 
-*A useful shortcut. Almost every security incident is, at bottom, a breach, a defacement, or an outage. Each maps to exactly one leg of the triad, confidentiality, integrity, or availability, which is why this framework is the first thing an analyst reaches for.*
+*A useful shortcut. Almost every security incident is a breach, a defacement, or an outage. Each maps to one leg of the triad, which is why this framework is the first thing an analyst reaches for.*
 
 <div class="academy-analogy">
 <span class="academy-analogy__tag">Think of it like a bank branch</span>

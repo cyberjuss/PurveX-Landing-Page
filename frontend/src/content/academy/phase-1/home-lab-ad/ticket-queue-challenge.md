@@ -7,7 +7,7 @@
 
 Run `Build-Environment.ps1 -IncludeCTF` if you want these tickets planted directly into your lab. The script adds optional challenge objects and descriptions without changing the clean baseline missions.
 
-Treat each mission like a small help desk or SOC ticket. Your job is to find the account, computer, group, or OU that proves the answer, then enter the short resolution code.
+Treat each mission like a small help desk or SOC ticket. Find the account, computer, group, or OU that proves the answer, then enter the short resolution code.
 
 <div class="ad-answer-guide">
 <span class="ad-answer-guide__label">Answer format</span>
@@ -123,7 +123,7 @@ Treat each mission like a small help desk or SOC ticket. Your job is to find the
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
 <p class="ad-flag__code"><code>GTF{wrong-department}</code></p>
-<p>Alex is in IT; <code>WM-WKS07</code> is a Wealth Management workstation. That mismatch alone is enough to escalate, before the hour even enters the conversation.</p>
+<p>Alex is in IT, and <code>WM-WKS07</code> is a Wealth Management workstation. That mismatch alone is enough to escalate, before the hour even matters.</p>
 </div>
 </div>
 

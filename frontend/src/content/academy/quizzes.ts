@@ -43,7 +43,7 @@ export const quizzes: Quiz[] = [
         question: "The formula is Risk = Threat × Vulnerability × Impact. A server has a known critical vulnerability but is completely air-gapped, with no possible attacker access. There is no threat. What is the risk?",
         options: ["Still critical, because the vulnerability is severe", "Zero, because no threat means no risk, regardless of the vulnerability", "Impossible to calculate", "Moderate, as a precaution"],
         correctIndex: 1,
-        explanation: "The lesson's own rule: no threat = no risk, even if the vulnerability exists. Risk requires a realistic path for a threat to actually reach and exploit the vulnerability.",
+        explanation: "The lesson's own rule is that no threat means no risk, even if the vulnerability exists. Risk requires a realistic path for a threat to reach and exploit the vulnerability.",
       },
       {
         question: "Which of these is a control for integrity rather than confidentiality?",
@@ -83,7 +83,7 @@ export const quizzes: Quiz[] = [
           "TLS replaces the need for a TCP handshake entirely",
         ],
         correctIndex: 2,
-        explanation: "Two separate handshakes, back to back: TCP's three-way handshake establishes the connection, then TLS does its own handshake to agree on encryption keys before real data moves.",
+        explanation: "These are two separate handshakes, back to back. TCP's three-way handshake establishes the connection. Then TLS does its own handshake to agree on encryption keys before real data moves.",
       },
       {
         question: "In Wireshark, which action reassembles a full back-and-forth exchange into a single readable view, showing exactly what a piece of malware sent and to where?",
@@ -128,7 +128,7 @@ export const quizzes: Quiz[] = [
           "The vulnerability only exists in read-only requests",
         ],
         correctIndex: 1,
-        explanation: "The login and session-only requests did not expose anything tamperable. The account-update request's response happened to include the `roleid` field. That is what made it discoverable, and in turn, editable.",
+        explanation: "The login and session-only requests did not expose anything tamperable. The account-update request's response happened to include the `roleid` field. That made it discoverable and therefore editable.",
       },
       {
         question: "What is the real-world fix for this class of vulnerability?",
@@ -167,7 +167,7 @@ export const quizzes: Quiz[] = [
           "Critical status is assigned randomly for the lab",
         ],
         correctIndex: 1,
-        explanation: "Critical here means the data at stake: PII, account/portfolio data, GLBA/SOX-regulated material, or the org's own finances. IT has elevated system access but does not itself hold that regulated or client data.",
+        explanation: "Critical here refers to the data at stake, such as PII, account and portfolio data, GLBA and SOX-regulated material, or the organization's own finances. IT has elevated system access but does not hold that regulated or client data.",
       },
       {
         question: "Alex Rivera is the one user in the directory who holds membership in two groups instead of one. Why does that matter when investigating an alert?",

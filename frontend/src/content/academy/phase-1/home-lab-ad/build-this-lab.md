@@ -5,12 +5,12 @@
 
 ### Overview
 
-The other tabs, the departments, the access levels, the user directory, aren't just something to memorize: they describe a real Active Directory environment you can build yourself, on your own machine, with the two scripts below. Setting it up yourself is how you learn what "normal" looks like here, rather than just reading a description of it. By the end of this tab, you'll have your own live copy of GovTechFinancial running, ready to investigate.
+The other tabs cover the departments, the access levels, and the user directory. They are not just something to memorize. They describe a real Active Directory environment you can build on your own machine with the two scripts below. Building it yourself is how you learn what "normal" looks like here. By the end of this tab, you will have your own live copy of GovTechFinancial running and ready to investigate.
 
 **At a glance:**
 
 * `Install-Forest.ps1`: one-time setup that turns a blank Windows Server into the domain controller for `govtechfinancial.local`. Skip it if that domain already exists.
-* `Build-Environment.ps1`: the script that does the real work, creating every department, group, user, and workstation described above so the environment matches what you've already been studying. Safe to re-run any time.
+* `Build-Environment.ps1` does the real work. It creates every department, group, user, and workstation described above so the environment matches what you have been studying. It is safe to re-run any time.
 
 ### What You Will Need
 
@@ -20,13 +20,13 @@ The other tabs, the departments, the access levels, the user directory, aren't j
 
 ### Step 1 — Install the Domain (Skip If You Already Have One)
 
-If your server isn't yet a domain controller, download and run this first. It installs Active Directory Domain Services and promotes the server to the root of a new domain, `govtechfinancial.local`. It asks for a recovery-mode password, then reboots automatically. Why it matters: without a domain, there's nowhere for the departments, users, and groups in the next step to live.
+If your server is not yet a domain controller, download and run this first. It installs Active Directory Domain Services and promotes the server to the root of a new domain, `govtechfinancial.local`. It asks for a recovery-mode password and then reboots automatically. Without a domain, the departments, users, and groups in the next step have nowhere to live.
 
 **What this script does:**
 
 * Installs the AD DS (Active Directory Domain Services) Windows Server role
-* Prompts you for a DSRM (Directory Services Restore Mode) recovery password, separate from any domain account password and used only for AD recovery
-* Promotes the server to the root of a brand-new forest: `govtechfinancial.local`, with DNS installed alongside it
+* Prompts you for a DSRM (Directory Services Restore Mode) recovery password. It is separate from any domain account password and is used only for AD recovery
+* Promotes the server to the root of a new forest called `govtechfinancial.local`, with DNS installed alongside it
 * Reboots the server automatically once promotion finishes
 
 [Download Install-Forest.ps1](/lab-scripts/Install-Forest.ps1)
@@ -93,17 +93,17 @@ Install-ADDSForest `
 
 ### Step 2 — Build the Environment
 
-After the reboot, log back in as `GOVTECHFINANCIAL\Administrator` and run this script. It creates every department, group, user, and the workstation object described in the other tabs. Why it matters: this step turns the org chart and user directory from a description into a live environment you can query and investigate.
+After the reboot, log back in as `GOVTECHFINANCIAL\Administrator` and run this script. It creates every department, group, user, and the workstation object described in the other tabs. This step turns the org chart and user directory from a description into a live environment you can query and investigate.
 
 **What this script does:**
 
 * Creates two top-level OUs: `Departments` and `AccessLevels`
 * Creates all 5 department OUs (IT, Compliance, Wealth Management, Operations, Finance and Accounting), each with its own `Users` sub-OU (IT also gets a `Workstations` sub-OU)
-* Creates all 9 security groups: one standard-access group per department, `IT Admins` (elevated), plus `Server Admins` and `Helpdesk` (the Level 2 and Level 3 access-level groups)
+* Creates all 9 security groups. Each department gets a standard access group, `IT Admins` is elevated, and `Server Admins` and `Helpdesk` are the Level 2 and Level 3 access groups
 * Creates all 9 user accounts from the Full User Directory tab, in the right OU, with the right title and department, and adds each one to the right group(s)
 * Pre-stages the `IT-WKS01` computer object
-* Prompts once for an initial password; every account is forced to change it at next logon, so nobody keeps that password long-term
-* Safe to run more than once: it only creates what's missing, and never resets or deletes anything that already exists
+* Prompts once for an initial password. Every account must change it at next logon, so nobody keeps that password long-term
+* Is safe to run more than once. It only creates what is missing and never resets or deletes anything that exists
 * Optional: add `-IncludeCTF` to plant ticket-queue challenge objects after the clean baseline is built
 
 [Download Build-Environment.ps1](/lab-scripts/Build-Environment.ps1)
@@ -412,6 +412,6 @@ Get-ADUser -Filter * -SearchBase "OU=Departments,$((Get-ADDomain).DistinguishedN
 Get-ADGroupMember -Identity "IT Admins"
 ```
 
-A quick note on the workstation: the User Directory and Client Workstation tabs list it as "IT WKS01," but AD computer names can't contain spaces, so the script creates the object as `IT-WKS01`. It's the same machine, just given a technically valid name.
+A note on the workstation. The User Directory and Client Workstation tabs list it as "IT WKS01," but AD computer names cannot contain spaces, so the script creates the object as `IT-WKS01`. It is the same machine with a valid name.
 
 Once built and verified, you have your own live copy of the environment every other tab describes. This is what you'll investigate in the labs ahead.

@@ -10,7 +10,7 @@
 
 ### Overview
 
-This lab walks through PortSwigger's "user role can be modified in user profile" challenge end to end: you find the request that leaks a role field, tamper with it, and confirm that the real fix is always server-side enforcement, never hiding the field.
+This lab walks through PortSwigger's "user role can be modified in user profile" challenge from start to finish. You find the request that leaks a role field and tamper with it. Then you confirm that the real fix is server-side enforcement, not hiding the field.
 
 ---
 

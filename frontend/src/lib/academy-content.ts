@@ -87,7 +87,7 @@ const phase1Weeks: WeekDef[] = [
 const phase1HomeLab: HomeLabDef = {
   slug: "home-lab-active-directory",
   title: "Home Lab — Active Directory",
-  summary: "GovTech Financial: a fictional enterprise environment used for investigation and detection labs.",
+  summary: "GovTech Financial is a fictional enterprise environment used for investigation and detection labs.",
   sections: [
     { label: "Overview", file: "phase-1/home-lab-ad/overview.md" },
     { label: "Build This Lab", file: "phase-1/home-lab-ad/build-this-lab.md" },

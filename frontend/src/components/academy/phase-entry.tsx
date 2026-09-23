@@ -78,7 +78,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
       )}
 
       {sections.length === 0 ? (
-        <ComingSoon message="Content for this week is still being written. It'll land here as soon as it's ready." />
+        <ComingSoon message="Content for this week is still being written. It will appear here as soon as it is ready." />
       ) : (
         <>
           {(otherSections.length > 0 || labSections.length > 0 || challengeSections.length > 0 || troubleshootingSections.length > 0) && (

@@ -1,6 +1,6 @@
 ### Full User Directory
 
-This is every user account in the environment, listed by department, title, username, and group membership. By the end of this tab, you'll know this roster well enough to notice who's missing later.
+This is every user account in the environment, with its department, title, username, and group membership. By the end of this tab, you will know this roster well enough to notice who is missing later.
 
 | Department | Name | Title | Username | Group Membership |
 | :---- | :---- | :---- | :---- | :---- |

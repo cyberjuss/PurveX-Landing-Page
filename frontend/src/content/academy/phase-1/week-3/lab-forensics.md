@@ -38,7 +38,7 @@ For **each** external IP/hostname in your list from Step 1:
 4. Apply `http.request` filtered to that host and look at the URI and User-Agent. Is this traffic suspicious? Why or why not?
 5. How many hosts are you left with that still look worth investigating?
 
-> **Note:** Do not rule a host in or out based on a single glance. If something looks unfamiliar, spend the time to actually look it up (search the hostname, the User-Agent string, the URI pattern) before deciding it is safe to set aside, or that it is worth chasing further.
+> **Note:** Do not rule a host in or out based on a single glance. If something looks unfamiliar, look it up before deciding what to do with it. Search the hostname, the User-Agent string, or the URI pattern.
 
 > **Guiding question:** Real investigations are mostly noise. What is the risk of skipping this triage step before diving straight into the "interesting-looking" packets?
 

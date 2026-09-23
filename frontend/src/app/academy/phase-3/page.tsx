@@ -14,7 +14,7 @@ export default function Phase3Page() {
         Incident Response
       </h1>
 
-      <ComingSoon message="This phase's material is still being written. It'll land here as soon as it's ready." />
+      <ComingSoon message="This phase's material is still being written. It will appear here as soon as it is ready." />
     </div>
   );
 }

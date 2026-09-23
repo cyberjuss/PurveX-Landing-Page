@@ -1,6 +1,6 @@
 ### The Org Chart
 
-Every organization has a structure, and knowing it gives you a baseline: every future alert gets judged against it. Here is the breakdown of the departments and what each one does. By the end of this tab, you'll place any GovTechFinancial account into its department without checking.
+Every organization has a structure, and that structure gives you a baseline. Every future alert gets judged against it. Here is the breakdown of the departments and what each one does. By the end of this tab, you will place any GovTechFinancial account into its department without checking.
 
 | Department | Function | Critical |
 | ----- | ----- | ----- |

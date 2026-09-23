@@ -5,15 +5,15 @@
 
 ### Overview
 
-This lab is hands-on: you open a capture in Wireshark, learn the three panes, learn to recognize what makes traffic look suspicious before applying a single filter, and use three basic filters plus "Follow → HTTP Stream" to reassemble a full conversation into something readable.
+This lab is hands-on. You open a capture in Wireshark and learn the three panes. You learn what makes traffic look suspicious before applying a single filter. Then you use three basic filters and "Follow → HTTP Stream" to turn a full conversation into something readable.
 
 **[SCREENSHOT: Wireshark start screen, interface list (optional, for first-time users)]**
 
 ### What Wireshark Actually Shows You
 
-Every time a computer talks to another computer, it sends small chunks of data called packets. Wireshark records and displays those packets so you can see exactly what was sent, to where, and when, which is what makes it the single most important tool an analyst has for answering "what actually happened on the wire."
+Every time a computer talks to another computer, it sends small chunks of data called packets. Wireshark records and displays those packets so you can see what was sent, to where, and when. That makes it the most important tool an analyst has for answering "what actually happened on the wire."
 
-Think of it as reading someone's mail log rather than their mail. A sealed envelope hides its contents, but who wrote to whom, and how often, is still visible. If a letter was never sealed, meaning the traffic was never encrypted, sometimes the contents can be read too.
+Think of it as reading someone's mail log rather than their mail. A sealed envelope hides its contents, but who wrote to whom and how often is still visible. If a letter was never sealed, meaning the traffic was never encrypted, you can sometimes read the contents too.
 
 ### The Three Panes
 

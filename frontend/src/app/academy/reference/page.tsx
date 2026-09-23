@@ -147,7 +147,7 @@ const categories: RefCategory[] = [
               <li><strong>Access control</strong> — the mechanism that enforces that boundary.</li>
             </ul>
             <p>
-              {"The recurring failure mode: an app trusts something the client says about itself (a role field, a permission flag) instead of checking it server-side. If the client can edit it, it is not a security control."}
+              {"The recurring failure is an app that trusts what the client says about itself, such as a role field or a permission flag, instead of checking it server-side. If the client can edit it, it is not a security control."}
             </p>
           </>
         ),
@@ -225,7 +225,7 @@ const categories: RefCategory[] = [
         body: (
           <>
             <p>
-              {'SSL is the older name; TLS is the modern standard, though people still say "SSL" out of habit. TLS wraps a connection in encryption so that even if someone captures the traffic, they see scrambled data instead of readable content.'}
+              {'SSL is the older name and TLS is the modern standard, though people still say "SSL" out of habit. TLS wraps a connection in encryption, so anyone who captures the traffic sees scrambled data instead of readable content.'}
             </p>
             <p>
               {"TCP's three-way handshake sets up the "}
@@ -285,7 +285,7 @@ const categories: RefCategory[] = [
               <li><strong>Orient yourself</strong> — packet count, time span, protocol hierarchy, list of external hosts.</li>
               <li>
                 <strong>Triage</strong>
-                {" — separate signal from noise. Do not rule a host in or out on a single glance. Look up anything unfamiliar (hostname, User-Agent, URI pattern) before deciding."}
+                {" — separate signal from noise. Do not rule a host in or out at a glance. Look up anything unfamiliar before deciding, such as a hostname, User-Agent, or URI pattern."}
               </li>
               <li><strong>Focus on what&apos;s left</strong> — full URI, query parameters, GET vs. POST, anything that looks encoded.</li>
               <li><strong>Decode</strong> — URL-decode suspicious parameters and identify what&apos;s actually inside them.</li>
@@ -325,7 +325,7 @@ const categories: RefCategory[] = [
               </tbody>
             </table>
             <p>
-              {"Any time you see a Level 3 (Helpdesk) account attempting something that belongs to Level 1 (Domain Admin), that is your first real red flag. Full detail — the org chart, the user directory, data categories, the client workstation — lives on the "}
+              {"Any time you see a Level 3 (Helpdesk) account attempting something that belongs to Level 1 (Domain Admin), that is your first real red flag. Full detail lives on the "}
               <Link href="/academy/phase-1/home-lab-active-directory">Home Lab page</Link>.
             </p>
           </>

@@ -3,7 +3,7 @@
 import { Eyebrow, H1, Lede, Table } from "@/components/purvex-landing-page/docs-content";
 
 const TROUBLESHOOTING: [string, string][] = [
-  ["Login succeeds but bounces back to /login", "The browser is not retaining the session cookie. On plain localhost this should not occur. Behind a reverse proxy, it usually means HTTPS is not configured correctly on that proxy: the cookie is marked HTTPS-only but arrives over plain HTTP, so the browser drops it silently."],
+  ["Login succeeds but bounces back to /login", "The browser is not retaining the session cookie. On plain localhost this should not occur. Behind a reverse proxy, it usually means HTTPS is not configured correctly on that proxy. The cookie is marked HTTPS-only but arrives over plain HTTP, so the browser drops it silently."],
   ["A test runs forever and never completes", "The background worker, the process that runs tests behind the scenes, is not running, or Redis is unreachable if one is configured. Check that worker's own log output for the specific error."],
   ["“Agent never comes online” after registering a runner", "Confirm the runner machine can reach the PurveX server over the network, and that its registration token has not expired. Tokens are single-use and valid only for a short window. On Windows, run the installer as administrator."],
   ["Setup keeps redirecting back after creating the admin account", "The browser is not accepting the session cookie PurveX just issued. This requires the same origin, and HTTPS if secure cookies are enabled. Clear cookies for the site and go to /login directly."],

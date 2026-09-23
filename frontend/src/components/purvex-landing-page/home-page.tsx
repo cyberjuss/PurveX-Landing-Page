@@ -61,7 +61,7 @@ const problems = [
   {
     icon: Users,
     title: "Training that stops at theory",
-    body: "Most programs teach the concepts well. They can't teach the instinct you only get from working a real queue.",
+    body: "Most programs teach the concepts well. They cannot teach the instinct that comes from working a real queue.",
   },
   {
     icon: Radar,

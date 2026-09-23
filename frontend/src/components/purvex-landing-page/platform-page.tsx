@@ -134,7 +134,7 @@ const tiers = [
 ];
 
 const faqs: [string, string][] = [
-  ["Is this BAS? How is it different from AttackIQ or SafeBreach?", "BAS simulates attacker behavior on endpoints. We validate the full chain (telemetry, parser, rule, alert, ticket) and isolate where it broke. We complement BAS. We don't replace it."],
+  ["Is this BAS? How is it different from AttackIQ or SafeBreach?", "BAS simulates attacker behavior on endpoints. We validate the full chain (telemetry, parser, rule, alert, ticket) and isolate where it broke. We complement BAS and do not replace it."],
   ["Do you run anything in production? What is the safety model?", "Read-only against your SIEM by default. Actions are scoped, auditable, and approved per environment. Production tests need explicit opt-in."],
   ["How long until we see our first coverage signal?", "Within hours of connecting your SIEM and running your first test."],
   ["Does PurveX replace the SIEM?", "No. Your SIEM stays the system of record. We just add a layer that proves detections fire and tracks coverage over time."],

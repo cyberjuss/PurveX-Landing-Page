@@ -34,12 +34,12 @@ const withoutItems = [
   "Theory-heavy courses that stop at a multiple-choice exam",
   "Certs that prove you memorized terms, not that you can use them",
   "Graduates who freeze the first time a real alert does not match the textbook",
-  "One-size curriculum that ignores your program's actual tools and students",
+  "One-size curriculum that ignores your program's tools and students",
 ];
 
 const withItems = [
   "Hands-on labs built from real alerts and real log data",
-  "Instruction focused on judgment: what to trust, what to question",
+  "Instruction focused on judgment, on what to trust and what to question",
   "Graduates who can already investigate, not just define terms",
   "Curriculum shaped around your program, your tools, your students",
 ];
@@ -67,7 +67,7 @@ const curriculum = [
     mod: "04",
     icon: Building2,
     title: "Home Lab — Active Directory",
-    body: "GovTech Financial: a fictional enterprise environment used for investigation and detection labs.",
+    body: "GovTech Financial is a fictional enterprise environment used for investigation and detection labs.",
   },
 ];
 
@@ -75,27 +75,27 @@ const careerLadder = [
   {
     level: "Trainee",
     icon: BookOpen,
-    body: "You're learning the fundamentals: networks, operating systems, how to read a raw log line.",
+    body: "You learn the fundamentals. That means networks, operating systems, and how to read a raw log line.",
   },
   {
     level: "Tier 1 SOC Analyst",
     icon: Eye,
-    body: "You're watching the queue, triaging alerts, learning to tell noise from a real signal.",
+    body: "You watch the queue, triage alerts, and learn to tell noise from a real signal.",
   },
   {
     level: "Tier 2 / Incident Responder",
     icon: ShieldAlert,
-    body: "You're investigating confirmed incidents end to end: contain, eradicate, document.",
+    body: "You investigate confirmed incidents from start to finish. You contain, eradicate, and document.",
   },
   {
     level: "Threat Hunter",
     icon: Compass,
-    body: "You're not waiting for the alarm. You're hunting the attacker who hasn't tripped one yet.",
+    body: "You do not wait for the alarm. You hunt the attacker who has not tripped one yet.",
   },
   {
     level: "Senior Analyst / SOC Lead",
     icon: Award,
-    body: "You're mentoring the next Tier 1, shaping how the whole team investigates.",
+    body: "You mentor the next Tier 1 and shape how the whole team investigates.",
   },
 ];
 
@@ -177,8 +177,8 @@ export default function TrainingPage() {
           <span className="sp-tag">Why this program is different</span>
           <h2>Judgment is the skill</h2>
           <p>
-            Certifications teach vocabulary. This program teaches judgment: deciding, in the
-            moment, whether what you&apos;re looking at is noise or a real compromise.
+            Certifications teach vocabulary. This program teaches judgment. You decide, in the
+            moment, whether what you are looking at is noise or a real compromise.
           </p>
         </div>
         <div className="sp-compare" data-r>
