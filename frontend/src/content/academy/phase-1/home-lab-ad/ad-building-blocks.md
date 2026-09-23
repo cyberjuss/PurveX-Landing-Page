@@ -5,7 +5,7 @@
 
 ### Active Directory's Building Blocks
 
-Four objects need to be second nature: **Organizational Units**, **Containers**, **Security Groups**, and **Group Policy Objects (GPOs)**. Two of them look identical in the console but behave completely differently.
+Four objects need to be second nature: **Organizational Units**, **Containers**, **Security Groups**, and **Group Policy Objects (GPOs)**. Two of them look identical in the console but behave completely differently. By the end of this tab, you'll be able to look at any object in Active Directory and know exactly what it is and what it can do.
 
 ### Organizational Units (OUs)
 

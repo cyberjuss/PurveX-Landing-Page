@@ -1,6 +1,6 @@
 ### Who Wealth Management Serves
 
-Wealth Management is built around private clients rather than corporate accounts. Its book of business is meant to reflect a realistic advisory client base.
+Wealth Management is built around private clients rather than corporate accounts. Its book of business is meant to reflect a realistic advisory client base. By the end of this tab, you'll understand why this department gets watched more closely than the rest.
 
 | Client Type | Description |
 | ----- | ----- |

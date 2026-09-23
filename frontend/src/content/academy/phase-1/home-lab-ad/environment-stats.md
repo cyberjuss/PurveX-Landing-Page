@@ -1,6 +1,6 @@
 ### What Is Actually in This Environment
 
-For reference, here is a count of what currently exists in the environment.
+For reference, here is a count of what currently exists in the environment. By the end of this tab, these numbers should be second nature, since they're what you'll be checking any future count against.
 
 | Item | Count |
 | :---- | :---- |

@@ -1,5 +1,7 @@
 ### The Client Workstation
 
+The smallest tab in this Home Lab, and one worth remembering anyway. By the end of it, you'll know exactly where this one machine belongs, which is all it takes to notice when it doesn't.
+
 | Item | Detail |
 | :---- | :---- |
 | Computer name | IT WKS01 |

@@ -5,7 +5,7 @@
 
 ### Operation Day One
 
-You've read the org chart, the access levels, the data categories, and the Active Directory concepts. Reading isn't the same as knowing. This is a short, self-graded challenge built entirely on GovTechFinancial's real environment, the one you built in **Build This Lab**. Do each mission there, in the actual domain, then type your answer below.
+You've read the org chart, the access levels, the data categories, and the Active Directory concepts. Reading isn't the same as knowing. This is a short, self-graded challenge built entirely on GovTechFinancial's real environment, the one you built in **Build This Lab**. Do each mission there, in the actual domain, then type your answer below. By the end, you'll know whether everything in this Home Lab actually stuck, not just whether you remember reading it.
 
 Every answer is one word or a short phrase, lowercase, with spaces or dashes both working. Each mission gives you one free hint on request, plus three tries at the flag itself, which unlocks either way once your tries are up, so you're never stuck. No login, no submission, no leaderboard — this is entirely for you.
 

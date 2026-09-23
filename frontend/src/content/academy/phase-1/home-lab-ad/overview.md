@@ -5,7 +5,7 @@
 
 ### Overview
 
-This is our home lab, GovTech Financial, an environment built from scratch to feel like a real enterprise network rather than a textbook example. From this point forward, the assignment is not to read about this company. It is to step into the role of the security analyst responsible for investigating it.
+This is our home lab, GovTech Financial, an environment built from scratch to feel like a real enterprise network rather than a textbook example. From this point forward, the assignment is not to read about this company. It is to step into the role of the security analyst responsible for investigating it. By the end of this Home Lab, you'll know this environment well enough to spot the one account, group, or login that doesn't belong.
 
 That is precisely why knowing who does what matters so much. Every department, every access level, and every account in this environment has a real job to do, and knowing that structure cold is what lets you tell a legitimate action from a suspicious one once the investigation begins.
 

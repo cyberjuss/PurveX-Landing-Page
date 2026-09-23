@@ -5,7 +5,7 @@
 
 ### What IT Actually Does Here, Day to Day
 
-Almost nobody builds a domain from scratch. Walk into a real IT job and Active Directory is already standing, with the OUs and the accounts already in place. What fills the day instead is a short list of tasks that repeat constantly: finding an account, resetting a password, moving someone between departments, standing up a service account correctly. This tab walks through each one using GovTechFinancial's own accounts, so it becomes muscle memory before you ever touch a real environment.
+Almost nobody builds a domain from scratch. Walk into a real IT job and Active Directory is already standing, with the OUs and the accounts already in place. What fills the day instead is a short list of tasks that repeat constantly: finding an account, resetting a password, moving someone between departments, standing up a service account correctly. This tab walks through each one using GovTechFinancial's own accounts, so it becomes muscle memory before you ever touch a real environment. By the end, you'll have actually done every task on this list, not just read about it.
 
 ### Finding Users and Computers
 
