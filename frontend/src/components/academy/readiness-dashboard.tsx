@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { CoachChat, CoachHeader } from "@/components/academy/coach-chat";
 import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch, RESULTS_CHANGED_EVENT, useResults } from "@/lib/academy-client";
 import { MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
@@ -82,7 +81,7 @@ function MissionStrip({ results }: { results: Results }) {
 
 export function ReadinessDashboard() {
   const results = useResults();
-  const { ask, registerInline } = useCoach();
+  const { ask } = useCoach();
   const s = summarize(results);
   const lv = LEVELS[s.level];
   const scoreTone: Tone = s.finished === 0 ? "none" : s.level === "ready" ? "good" : s.level === "almost" ? "warn" : s.level === "practice" ? "bad" : "live";
@@ -205,23 +204,10 @@ export function ReadinessDashboard() {
         </div>
       </section>
 
-      {/* Coach */}
-      <section className="rd-sec">
-        <div className="rd-sec__head">
-          <span className="rd-sec__n">02</span>
-          <h2>Debrief</h2>
-          <p>Your lead has this report and your lab. Ask anything.</p>
-        </div>
-        <div ref={registerInline} className="pc-panel pc-wide flex scroll-mt-24 flex-col overflow-hidden rounded-2xl">
-          <CoachHeader />
-          <CoachChat />
-        </div>
-      </section>
-
       {/* Mission log */}
       <section className="rd-sec">
         <div className="rd-sec__head">
-          <span className="rd-sec__n">03</span>
+          <span className="rd-sec__n">02</span>
           <h2>Mission log</h2>
           <p>Every attempt, as it will look to a hiring manager.</p>
         </div>
