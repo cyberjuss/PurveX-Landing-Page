@@ -34,42 +34,6 @@ export interface PhaseDef {
   homeLab?: HomeLabDef;
 }
 
-// Phase 0 -- Help Desk Fundamentals. Written directly (not migrated from the
-// instructor's Drive) against the academy content style guide. Week 1 is
-// built out; Weeks 2-4 are titled placeholders for the rest of the Help
-// Desk topic list until they're written.
-const phase0Weeks: WeekDef[] = [
-  {
-    slug: "week-1",
-    title: "Week 1 — Troubleshooting Methodology & Documentation",
-    summary: "A repeatable way to diagnose a problem, how to document it, and a real login-lockout ticket worked start to finish.",
-    sections: [
-      { label: "Overview", file: "phase-0/week-1/lesson-overview.md" },
-      { label: "Troubleshooting Methodology", file: "phase-0/week-1/lesson-troubleshooting-methodology.md" },
-      { label: "Ticket Documentation", file: "phase-0/week-1/lesson-ticket-documentation.md" },
-      { label: "Troubleshooting: Login Failure After a Password Change", file: "phase-0/week-1/troubleshooting.md" },
-    ],
-  },
-  {
-    slug: "week-2",
-    title: "Week 2 — Windows, Accounts & Access",
-    summary: "Password resets, MFA problems, account lockouts, and software installation issues.",
-    sections: [],
-  },
-  {
-    slug: "week-3",
-    title: "Week 3 — Networking & Hardware for Help Desk",
-    summary: "DNS/DHCP basics, IP addressing, printer and network troubleshooting, hardware issues, and remote support.",
-    sections: [],
-  },
-  {
-    slug: "week-4",
-    title: "Week 4 — Event Viewer, PowerShell & Escalation",
-    summary: "Reading Windows Event Viewer, basic PowerShell for Help Desk, and when to escalate instead of digging further.",
-    sections: [],
-  },
-];
-
 // Phase 1 -- Fundamentals. Weeks 1, 3, 4 have real lesson content migrated
 // from the instructor's Google Docs; Week 2's folder in the source Drive is
 // still an empty placeholder, so it stays "coming soon" here too rather
@@ -175,7 +139,6 @@ const phase2Weeks: WeekDef[] = [
 // shows in the sidebar as a phase group with no entries underneath, linking
 // straight to the phase-3 page's "still being written" placeholder.
 export const phases: PhaseDef[] = [
-  { slug: "phase-0", label: "Phase 0", title: "Help Desk Fundamentals", weeks: phase0Weeks },
   { slug: "phase-1", label: "Phase 1", title: "Fundamentals", weeks: phase1Weeks, homeLab: phase1HomeLab },
   { slug: "phase-2", label: "Phase 2", title: "Threat Detection & Log Analysis", weeks: phase2Weeks },
   { slug: "phase-3", label: "Phase 3", title: "Incident Response", weeks: [] },
