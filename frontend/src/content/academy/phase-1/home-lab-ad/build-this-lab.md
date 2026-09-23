@@ -5,7 +5,7 @@
 
 ### Overview
 
-Everything in the other tabs, the departments, the access levels, the user directory, is not just something to memorize. It is a real Active Directory environment you can build yourself, on your own machine, using the two scripts below. Building it is worth doing. Setting up the accounts, groups, and structure yourself is how you actually learn what "normal" looks like in this environment, rather than simply reading a description of it.
+Everything in the other tabs — the departments, the access levels, the user directory — is not just something to memorize. It is a real Active Directory environment you can build yourself, on your own machine, using the two scripts below. Building it is worth doing. Setting up the accounts, groups, and structure yourself is how you actually learn what "normal" looks like in this environment, rather than simply reading a description of it.
 
 **At a glance:**
 

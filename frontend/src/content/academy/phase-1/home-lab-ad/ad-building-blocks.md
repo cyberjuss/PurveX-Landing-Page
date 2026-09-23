@@ -36,7 +36,7 @@ Every user lives inside their department's OU. It tells you where an account *be
 
 `AccessLevels` sits outside `Departments` on purpose: `Server Admins` and `Helpdesk` (Level 2/3) are about domain-wide access, not department membership.
 
-You can also delegate control over just one OU, like letting Helpdesk reset passwords only for `OU=Users,OU=IT`, without touching the rest of the domain.
+You can also delegate control over just one OU. For example, Helpdesk could be allowed to reset passwords only for accounts inside `OU=Users,OU=IT`, without touching the rest of the domain.
 
 ### Containers
 
@@ -81,7 +81,7 @@ Same OU, different access. That's the distinction: **OU asks "where does this ac
 
 ### Group Policy Objects (GPOs)
 
-A **GPO** is a bundle of settings, a password policy, a screen-lock timeout, a software restriction, applied automatically to everything inside whatever it's linked to.
+A **GPO** is a bundle of settings, such as a password policy, a screen-lock timeout, or a software restriction, applied automatically to everything inside whatever it's linked to.
 
 The rule to memorize: a GPO only links to a **Site, Domain, or OU**, never a Container, never a group directly. That's why getting accounts out of the default container matters.
 

@@ -5,11 +5,11 @@
 
 ### What IT Actually Does Here, Day to Day
 
-Almost nobody builds a domain from scratch. Walk into a real IT job and Active Directory is already standing, the OUs already exist, the accounts are already there. What fills the day instead is a short list of tasks that repeat constantly: finding an account, resetting a password, moving someone between departments, standing up a service account correctly. This tab walks through each one, using GovTechFinancial's own accounts so it is muscle memory before you ever touch a real environment.
+Almost nobody builds a domain from scratch. Walk into a real IT job and Active Directory is already standing: the OUs already exist, the accounts are already there. What fills the day instead is a short list of tasks that repeat constantly, such as finding an account, resetting a password, moving someone between departments, and standing up a service account correctly. This tab walks through each one using GovTechFinancial's own accounts, so it becomes muscle memory before you ever touch a real environment.
 
 ### Finding Users and Computers
 
-The fastest way to locate an account isn't scrolling through OUs, it's the **Find** dialog. Right-click the domain (or any OU) in Active Directory Users and Computers, choose **Find**, and pick what you're looking for from the dropdown: Users, Contacts, and Groups for a person, or Computers for a machine.
+The fastest way to locate an account isn't scrolling through OUs. It's the **Find** dialog. Right-click the domain (or any OU) in Active Directory Users and Computers, choose **Find**, and pick what you're looking for from the dropdown: Users, Contacts, and Groups for a person, or Computers for a machine.
 
 You can search by first name, last name, or username. Try it with `jordan.ellis`, GovTechFinancial's Staff Accountant in Finance and Accounting, and it should turn up in seconds regardless of which OU you started the search from. This is the tool you'll reach for constantly, so it's worth getting comfortable with before anything else on this page.
 
@@ -44,7 +44,7 @@ Say Riley Kwan, an Operations Analyst, calls in locked out after three failed lo
 
 ### Editing a User's Profile
 
-Most day-to-day edits happen on the account's **Properties** dialog: updating a **Description** after a role change, a new phone number, a new title after a promotion. Small, but this is why an account's profile can be trusted as a source of truth, if it's kept current.
+Most day-to-day edits happen on the account's **Properties** dialog: updating a **Description** after a role change, a new phone number, or a new title after a promotion. These are small changes, but they're why an account's profile can be trusted as a source of truth, as long as it's kept current.
 
 Adding someone to a distribution or security group works the same way: open **Properties → Member Of**, click **Add**, type the group name (or just the first few letters if you're not sure), and confirm. Say a new hire in Wealth Management, Jamie Torres, needs to start receiving firm-wide announcements. Add her to whatever GovTechFinancial's all-employees distribution list would be, the same way you'd add anyone to `Wealth Management Users`.
 
@@ -52,7 +52,7 @@ Adding someone to a distribution or security group works the same way: open **Pr
 
 When someone transfers, their account needs to move with them, since OU membership is what different department policies key off of. Right-click the account, choose **Move**, and select the destination OU.
 
-Picture Taylor Osei transferring from Operations into Compliance. The move is: find the account, **Move**, select `OU=Users,OU=Compliance,OU=Departments`. Afterward, verify it by going straight to that OU and confirming Taylor now shows up there. A transfer that only updates a job title but never actually moves the AD object is a common, easy-to-miss mistake, and it means the old department's policies are still silently in effect.
+Picture Taylor Osei transferring from Operations into Compliance. Find the account, choose **Move**, and select `OU=Users,OU=Compliance,OU=Departments`. Afterward, verify it: go straight to that OU and confirm Taylor now shows up there. A transfer that only updates a job title, but never actually moves the AD object, is a common and easy-to-miss mistake. It means the old department's policies are still silently in effect.
 
 ### Advanced Features and the Attribute Editor
 
@@ -62,11 +62,11 @@ This matters for investigation specifically. Attributes like `whenCreated`, `las
 
 ### Managing Computer Objects
 
-Computers get managed the same way users do, through their own **Properties** dialog. GovTechFinancial's IT-WKS01 is a good one to practice on: check **Member Of** to see what security groups it belongs to (a common real-world example is a group that grants automatic Wi-Fi or VPN access to anything that's a member), and check the Attribute Editor for things like last logon time, which tells you whether a machine is actually in active use or sitting dormant, a detail that matters a lot once you're investigating rather than administering.
+Computers get managed the same way users do, through their own **Properties** dialog. GovTechFinancial's IT-WKS01 is a good one to practice on. Check **Member Of** to see what security groups it belongs to. A common real-world example is a group that grants automatic Wi-Fi or VPN access to anything that's a member. Also check the Attribute Editor for last logon time. That single value tells you whether a machine is actually in active use or sitting dormant, a detail that matters a lot once you're investigating rather than administering.
 
 ### Service Accounts
 
-A **service account** is a special account that gives an identity to a service, a scheduled task, an automated process, rather than a person. It's why an account can be actively "logging on" every night at 2 AM with nobody actually sitting at a keyboard.
+A **service account** is a special account that gives an identity to a service, such as a scheduled task or an automated process, rather than a person. It's why an account can be actively "logging on" every night at 2 AM with nobody actually sitting at a keyboard.
 
 Best practice, every time:
 
@@ -78,7 +78,7 @@ Best practice, every time:
 
 ### Onboarding: Mirroring Group Membership
 
-The fastest, least error-prone way to onboard someone into a role that already exists is to copy a peer's group membership rather than rebuilding it by hand. Say GovTechFinancial hires a second Help Desk Technician alongside Priya Nair. Open Priya's **Member Of** tab, note every group listed there, then open the new hire's **Member Of** tab and add the same ones. Doing this side by side, both accounts' Properties open at once, makes it much harder to miss one.
+The fastest, least error-prone way to onboard someone into a role that already exists is to copy a peer's group membership rather than rebuild it by hand. Say GovTechFinancial hires a second Help Desk Technician alongside Priya Nair. Open Priya's **Member Of** tab and note every group listed there. Then open the new hire's **Member Of** tab and add the same ones. Do this with both accounts' Properties open side by side; it's much harder to miss one that way.
 
 This is also exactly the kind of thing worth double-checking during an investigation: an account with more group memberships than its peers in the same role, with no onboarding record explaining why, is worth asking about.
 
@@ -88,7 +88,7 @@ This is also exactly the kind of thing worth double-checking during an investiga
 <li><strong>Finding an account</strong> is checking the directory board for a name.</li>
 <li><strong>Reset vs. unlock</strong> is the difference between issuing someone a new keycard and just buzzing them back in.</li>
 <li><strong>Moving a user's OU</strong> is updating which floor their badge grants access to after they change teams.</li>
-<li><strong>A service account</strong> is the badge given to the cleaning crew's cart, not a person, scheduled for a specific window, and clearly labeled so security doesn't mistake it for an intruder.</li>
+<li><strong>A service account</strong> is the badge given to the cleaning crew's cart rather than a person. It's scheduled for a specific window and clearly labeled, so security doesn't mistake it for an intruder.</li>
 </ul>
 </div>
 
