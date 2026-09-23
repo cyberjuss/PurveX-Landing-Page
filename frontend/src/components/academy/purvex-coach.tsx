@@ -32,6 +32,19 @@ export function PurvexCoach() {
 
   return createPortal(
     <div data-pc-root="" className="pc-root" style={{ position: "fixed", inset: 0, zIndex: 90 }}>
+      <style>{`
+        [data-pc-root] .pc-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 24px 24px 20px; border-bottom: 1px solid var(--pc-line); }
+        [data-pc-root] .pc-ask { display: block; margin: 8px 0 10px; }
+        [data-pc-root] .pc-lede { display: block; margin: 0 0 28px; }
+        [data-pc-root] .pc-prompts { list-style: none; margin: 0; padding: 0; }
+        [data-pc-root] .pc-prompt { display: grid !important; grid-template-columns: 28px minmax(0, 1fr); gap: 14px; width: 100%; padding: 16px 0; text-align: left; }
+        [data-pc-root] .pc-prompt__n { display: block; }
+        [data-pc-root] .pc-prompt__body { display: flex !important; flex-direction: column; align-items: flex-start; gap: 4px; }
+        [data-pc-root] .pc-prompt__act, [data-pc-root] .pc-prompt__title { display: block !important; }
+        [data-pc-root] .pc-score { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+        [data-pc-root] .pc-score small { display: block; }
+        [data-pc-root] .pc-compose__box textarea { resize: none; appearance: none; }
+      `}</style>
       <div className="pc-backdrop" onClick={() => setModalOpen(false)} />
       <div
         role="dialog"
