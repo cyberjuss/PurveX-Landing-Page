@@ -51,11 +51,6 @@ A **Container** looks like an OU in the console, same folder icon, but it's a di
 
 The default `Users` and `Computers` folders are Containers, not OUs, which is why the build script moves every account into a real OU: an account left in a Container can never be targeted by Group Policy.
 
-<div class="academy-thinklike">
-<span class="academy-thinklike__tag">Think Like an Analyst</span>
-<p>An account still sitting in the default Container usually means one thing: nobody organized it after creation. That's not a crime on its own, but it's a gap worth noting, and exactly the kind of loose end an attacker hopes you never check.</p>
-</div>
-
 ### Security Groups
 
 A **Security Group** is a list of accounts, used to grant permissions or apply Group Policy to exactly who needs it, regardless of OU.

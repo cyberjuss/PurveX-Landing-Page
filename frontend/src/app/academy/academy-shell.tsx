@@ -66,7 +66,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       // Accepts the answer with or without its "gtf{...}" wrapper, and
       // treats spaces the same as dashes -- a correct answer shouldn't fail
       // over formatting when the question never asked for exact syntax.
-      const normalize = (s: string) => s.trim().toLowerCase().replace(/^gtf\{|\}$/g, "").replace(/\s+/g, "-");
+      const normalize = (s: string) => s.trim().toLowerCase().replace(/^gtf\{|\}$/g, "").replace(/[\s.]+/g, "-");
       const guess = normalize(input.value);
 
       if (!guess) {

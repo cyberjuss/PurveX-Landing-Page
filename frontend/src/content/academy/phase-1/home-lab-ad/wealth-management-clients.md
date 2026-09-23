@@ -11,7 +11,3 @@ Wealth Management serves private clients rather than corporate accounts, and its
 
 This client base is part of why Wealth Management sits on the critical list.
 
-<div class="academy-thinklike">
-<span class="academy-thinklike__tag">Think Like an Analyst</span>
-<p>This data is personal and financial, exactly what a real attacker would go after. Unexplained access to a Wealth Management account deserves more scrutiny than the same access elsewhere.</p>
-</div>

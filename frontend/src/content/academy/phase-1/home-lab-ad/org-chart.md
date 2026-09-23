@@ -12,7 +12,3 @@ Every organization has a structure, and knowing it gives you a baseline: every f
 
 Compliance, Wealth Management, and Finance and Accounting are flagged critical because they touch regulated data, client financial records, or the company's own financial systems. Every department has its own folder in Active Directory and its own group of users.
 
-<div class="academy-thinklike">
-<span class="academy-thinklike__tag">Think Like an Analyst</span>
-<p>Come back to this table after every lab. Every account and every alert belongs to one of these five departments, and knowing which one is often the first step in judging whether something matters.</p>
-</div>

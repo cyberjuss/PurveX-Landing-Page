@@ -414,9 +414,4 @@ Get-ADGroupMember -Identity "IT Admins"
 
 A quick note on the workstation: the User Directory and Client Workstation tabs list it as "IT WKS01," but AD computer names can't contain spaces, so the script creates the object as `IT-WKS01`. It's the same machine, just given a technically valid name.
 
-<div class="academy-thinklike">
-<span class="academy-thinklike__tag">Think Like an Analyst</span>
-<p>Building this yourself means you know exactly what should exist and when it was created. Any account, group, or OU in your lab that you didn't just create is a lead, not a mystery. In a real environment, nobody hands you that baseline. Here, you built it.</p>
-</div>
-
 Once built and verified, you have your own live copy of the environment every other tab describes. This is what you'll investigate in the labs ahead.

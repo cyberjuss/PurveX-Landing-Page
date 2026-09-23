@@ -8,7 +8,3 @@ This is the smallest tab in this Home Lab, but still worth remembering. By the e
 | Assigned department | IT |
 | Location | Workstations folder under IT |
 
-<div class="academy-thinklike">
-<span class="academy-thinklike__tag">Think Like an Analyst</span>
-<p>One workstation, one department. A login from any account outside IT is an immediate mismatch, and that's the exact pattern the capstone mission is built around.</p>
-</div>

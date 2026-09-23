@@ -16,7 +16,3 @@ This is every user account in the environment, listed by department, title, user
 
 Nine users total, and each sits in exactly one standard access group except Alex Rivera, who also holds elevated access through IT Admins.
 
-<div class="academy-thinklike">
-<span class="academy-thinklike__tag">Think Like an Analyst</span>
-<p>An account with more group memberships than its peers isn't automatically suspicious, but it's always worth knowing why. Alex Rivera's extra access has a documented reason; not every deviation will.</p>
-</div>

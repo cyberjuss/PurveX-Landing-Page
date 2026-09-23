@@ -14,7 +14,3 @@ Knowing what kind of data lives where turns "an account was accessed" into "an a
 | Regulatory and audit material | Compliance filings, audit trails, GLBA and SOX documentation | Compliance |
 | System and access logs | Authentication logs, admin activity, account changes | IT |
 
-<div class="academy-thinklike">
-<span class="academy-thinklike__tag">Think Like an Analyst</span>
-<p>The same alert on a Wealth Management account and an Operations account is not the same severity. Cross-reference the department against this table before you decide how urgent something is.</p>
-</div>

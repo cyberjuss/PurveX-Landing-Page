@@ -1,17 +1,17 @@
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
-<p>Can you actually use everything on this page, or did you just read it?</p>
+<p>An alert fires on a privileged account. Can you say what normal looks like for it, judge what isn't, and choose your first move?</p>
 </div>
 
-### Operation Day One
+### Case File: The 2 AM Login
 
-You've read the org chart, the access levels, the data categories, and the Active Directory concepts. This is a short, self-graded challenge, built entirely on GovTechFinancial's real environment, the one you built in **Build This Lab**. Do each mission there, in the actual domain, then type your answer below.
+At 2:04 AM, your SIEM raises a high-severity alert on GovTechFinancial: **successful logon after repeated failures, off-hours, privileged account**. You are the analyst on shift. Nobody else is awake.
 
-Every answer is one word or a short phrase, lowercase, with spaces or dashes both working. Each mission gives you one free hint on request, plus three tries at the flag, which unlocks either way once your tries are up, so you're never stuck. No login, no submission, no leaderboard: this is entirely for you.
+This case follows the same path a real triage does. Missions 1 to 6 build the baseline in the lab you built in **Build This Lab**, so you know who and what the alert is about. Missions 7 to 10 work the alert itself, using log evidence and the decisions Security+ and CySA+ expect you to make on the job.
 
 <div class="ad-answer-guide">
-<span class="ad-answer-guide__label">Answer format</span>
-<p>Type the finding, not a sentence. For example, Mission 10 accepts <code>wrong-department</code>, <code>wrong department</code>, or the full flag wrapper <code>GTF{wrong-department}</code>.</p>
+<span class="ad-answer-guide__label">How answers work</span>
+<p>Lab missions take a short finding, such as <code>it-admins</code>. Judgment missions list options; answer with the letter. Case, spaces, dots, and the <code>GTF{ }</code> wrapper don't matter. You get one hint and three tries per mission, then the explanation unlocks. Nothing is submitted or stored.</p>
 </div>
 
 <div class="ad-progress">
@@ -20,10 +20,10 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 </div>
 
 <div class="ad-mission" data-attempts="0">
-<span class="ad-mission__num">Mission 01</span>
-<h4>Recon</h4>
-<p>Find Jordan Ellis's account. What security group is he a member of?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Use the Find dialog to locate the account, then check its Member Of tab.</p></div>
+<span class="ad-mission__num">Mission 01 · Sec+ Identity and Access</span>
+<h4>Who Is This Account?</h4>
+<p>Triage starts with identity. A ticket mentions <code>jordan.ellis</code>. In Active Directory Users and Computers, open his account. Which security group grants his access?</p>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Use Find to locate the account, then open its Member Of tab.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{finance-accounting-users}">Submit</button>
@@ -32,32 +32,32 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
 <p class="ad-flag__code"><code>GTF{finance-accounting-users}</code></p>
-<p>Jordan belongs to <code>Finance Accounting Users</code>, the standard-access group for his department.</p>
+<p>Jordan is in <code>Finance Accounting Users</code>, the standard group for his department. Knowing a user's normal group is the first step in spotting access they shouldn't have.</p>
 </div>
 </div>
 
 <div class="ad-mission" data-attempts="0">
-<span class="ad-mission__num">Mission 02</span>
-<h4>The Odd One Out</h4>
-<p>Every one of the nine users belongs to exactly one standard-access group, except one person, who belongs to two. What's that second, more privileged group?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Every department has one standard group. Only one person here has two, and he's in IT.</p></div>
+<span class="ad-mission__num">Mission 02 · Sec+ Least Privilege</span>
+<h4>Find the Privileged User</h4>
+<p>An auditor asks which single user can administer other accounts. Check group membership across the nine users in your lab. Who holds the <code>IT Admins</code> group?</p>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Open the IT Admins group and read its Members tab. Only one person is in it.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{it-admins}">Submit</button>
+<button type="button" class="ad-guess__submit" data-answer="gtf{alex-rivera}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
-<p class="ad-flag__code"><code>GTF{it-admins}</code></p>
-<p>Alex Rivera is in both <code>IT Users</code> and <code>IT Admins</code>. Same OU as Priya Nair, different access.</p>
+<p class="ad-flag__code"><code>GTF{alex-rivera}</code></p>
+<p><code>alex.rivera</code> is in both <code>IT Users</code> and <code>IT Admins</code>. One privileged account is a small target list, and every alert on it deserves extra attention.</p>
 </div>
 </div>
 
 <div class="ad-mission" data-attempts="0">
-<span class="ad-mission__num">Mission 03</span>
-<h4>Access, Not Department</h4>
-<p>Open Active Directory Users and Computers in your lab. <code>Server Admins</code> and <code>Helpdesk</code> are not nested inside <code>Departments</code>. Which top-level OU actually holds them?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Look at the OU tree one level below the domain root. What sits next to Departments?</p></div>
+<span class="ad-mission__num">Mission 03 · Sec+ Identity and Access</span>
+<h4>Where Do Admin Groups Live?</h4>
+<p>In your lab, <code>Server Admins</code> and <code>Helpdesk</code> are not inside the <code>Departments</code> OU. Which top-level OU holds them?</p>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Expand the domain root and look at what sits next to Departments.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{accesslevels}">Submit</button>
@@ -66,15 +66,15 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
 <p class="ad-flag__code"><code>GTF{accesslevels}</code></p>
-<p><code>OU=AccessLevels</code>. Those groups control domain-wide access, not department membership, so they don't nest under one department.</p>
+<p><code>OU=AccessLevels</code>. Access is separated from department on purpose, so moving someone between departments never silently changes what they can administer.</p>
 </div>
 </div>
 
 <div class="ad-mission" data-attempts="0">
-<span class="ad-mission__num">Mission 04</span>
-<h4>The Container Trap</h4>
-<p>In your lab, expand the domain root in Active Directory Users and Computers. There's a default container sitting there that every fresh domain ships with. It should be empty of GovTechFinancial's own accounts. What's it called, exactly as AD writes it?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">It sits alongside OU=Departments and OU=AccessLevels, but its icon and name give away that it isn't an OU. Its name starts with CN=.</p></div>
+<span class="ad-mission__num">Mission 04 · Sec+ Secure Configuration</span>
+<h4>The Container That Ignores Policy</h4>
+<p>Expand the domain root in your lab. One default object sits beside your OUs, and Group Policy can't be linked to it. What is it called, exactly as AD writes it?</p>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Its name starts with CN=, not OU=. New accounts land here if nobody picks an OU.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{cn=users}">Submit</button>
@@ -83,15 +83,15 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
 <p class="ad-flag__code"><code>GTF{cn=users}</code></p>
-<p><code>CN=Users</code>. GPOs only link to Sites, Domains, and OUs, so an account left here is invisible to Group Policy, and nobody can delegate permissions over it either.</p>
+<p><code>CN=Users</code>. GPOs link only to sites, domains, and OUs. An account left here gets no security policy from GovTechFinancial, which makes it a quiet weak spot.</p>
 </div>
 </div>
 
 <div class="ad-mission" data-attempts="0">
-<span class="ad-mission__num">Mission 05</span>
-<h4>Stand Up a Service Account</h4>
-<p>Using the Admin Tasks tab, plan a service account for a nightly backup job. Best practice says it gets its own dedicated OU, separate from every department. What would you name that OU?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Match the naming style GovTechFinancial already uses for its other top-level OUs, Departments and AccessLevels.</p></div>
+<span class="ad-mission__num">Mission 05 · Sec+ Account Management</span>
+<h4>Plan a Service Account</h4>
+<p>A nightly backup job needs its own account. Best practice keeps service accounts out of every department. Following the naming style of <code>Departments</code> and <code>AccessLevels</code>, what would you name the top-level OU that holds them?</p>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">One word pair with no spaces, capitalized like the existing OUs. Review the Admin Tasks tab.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{serviceaccounts}">Submit</button>
@@ -100,15 +100,15 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
 <p class="ad-flag__code"><code>GTF{serviceaccounts}</code></p>
-<p><code>OU=ServiceAccounts</code>, alongside <code>Departments</code> and <code>AccessLevels</code>. Prefix the account too, e.g. <code>svc-backup-job</code>, and set <code>PasswordNeverExpires = $true</code> since nobody's at a keyboard to renew it.</p>
+<p><code>OU=ServiceAccounts</code>. Prefix the account (<code>svc-backup-job</code>) so it's obvious in logs. Because nobody types its password, its logons should look identical every night, which makes any deviation easy to catch.</p>
 </div>
 </div>
 
 <div class="ad-mission" data-attempts="0">
-<span class="ad-mission__num">Mission 06</span>
-<h4>Trust, But Verify</h4>
-<p>Priya Nair's job title is "Help Desk Technician." Check the Full User Directory tab for her actual group membership. Is she really a member of the <code>Helpdesk</code> access-level group, yes or no?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">A job title and a security group are two different things. Look at what group she's actually listed under, not what her title implies.</p></div>
+<span class="ad-mission__num">Mission 06 · CySA+ Asset and Access Baselines</span>
+<h4>Titles Don't Grant Access</h4>
+<p>Priya Nair's title is "Help Desk Technician." Open her account in your lab. Is she actually a member of the <code>Helpdesk</code> group, yes or no?</p>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Check her Member Of tab, then check the Helpdesk group's Members tab.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{no}">Submit</button>
@@ -117,81 +117,100 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
 <p class="ad-flag__code"><code>GTF{no}</code></p>
-<p>No. Priya is only in <code>IT Users</code>; <code>Helpdesk</code> is created empty, and nobody's been added despite her title. A title describes a job. A group describes access.</p>
+<p>No. Priya is only in <code>IT Users</code>, and <code>Helpdesk</code> is empty. Analysts verify access from the directory, never from a job title or an assumption.</p>
 </div>
 </div>
 
 <div class="ad-mission" data-attempts="0">
-<span class="ad-mission__num">Mission 07</span>
-<h4>The Critical Three</h4>
-<p>How many of GovTechFinancial's five departments are flagged critical on the Org Chart?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Check the "Critical" column of the Org Chart table and count the "Yes" rows.</p></div>
+<span class="ad-mission__num">Mission 07 · CySA+ Log Analysis</span>
+<h4>Read the Evidence</h4>
+<p>The alert links these Windows Security events. Count the failed logons (Event ID 4625) that happen before the first successful logon (4624).</p>
+<pre class="ad-evidence"><code>TIME      EVENT  ACCOUNT       HOST     TYPE  STATUS / DETAIL
+01:58:03  4625   alex.rivera   WM-WS02  3     0xC000006A  bad password
+01:58:05  4625   alex.rivera   WM-WS02  3     0xC000006A  bad password
+01:58:07  4625   alex.rivera   WM-WS02  3     0xC000006A  bad password
+01:58:09  4625   alex.rivera   WM-WS02  3     0xC000006A  bad password
+02:00:41  4624   alex.rivera   WM-WS02  3     success
+02:00:41  4672   alex.rivera   WM-WS02  -     special privileges assigned
+02:03:18  4624   alex.rivera   WM-WS02  3     success</code></pre>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Count only the 4625 rows above the first 4624. Ignore the later success.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{3}">Submit</button>
+<button type="button" class="ad-guess__submit" data-answer="gtf{4}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
-<p class="ad-flag__code"><code>GTF{3}</code></p>
-<p>Compliance, Wealth Management, and Finance and Accounting. IT and Operations aren't, since neither directly holds regulated data or client financial records.</p>
+<p class="ad-flag__code"><code>GTF{4}</code></p>
+<p>Four failures, then a success. Note the details you'll need next: the failures are two seconds apart, <code>0xC000006A</code> means the username was real but the password was wrong, and Type 3 means a network logon, not someone at a keyboard.</p>
 </div>
 </div>
 
 <div class="ad-mission" data-attempts="0">
-<span class="ad-mission__num">Mission 08</span>
-<h4>The Client List</h4>
-<p>Which department serves private investors, high-net-worth individuals, and trust and estate accounts?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Check the Who Wealth Management Serves tab.</p></div>
+<span class="ad-mission__num">Mission 08 · Sec+ Malicious Activity Indicators</span>
+<h4>Mistake or Attack?</h4>
+<p>Using the evidence in Mission 07, what best explains the pattern? Remember what you know about Alex and the workstation from Missions 2 and 7.</p>
+<ul class="ad-options">
+<li><strong>A</strong> Alex mistyped his password four times, then got it right.</li>
+<li><strong>B</strong> Automated password guessing against a valid account, which finally succeeded.</li>
+<li><strong>C</strong> A scheduled maintenance task using a stale credential.</li>
+<li><strong>D</strong> A Kerberos clock-skew error on the domain controller.</li>
+</ul>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Weigh the timing between attempts, the hour, and whether IT staff normally log in from a Wealth Management machine.</p></div>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{wealth-management}">Submit</button>
+<input type="text" class="ad-guess__input" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
-<p class="ad-flag__code"><code>GTF{wealth-management}</code></p>
-<p>Wealth Management. Private investors, high-net-worth individuals, trust and estate accounts, exactly the data an attacker would target.</p>
+<p class="ad-flag__code"><code>GTF{b}</code></p>
+<p>Password guessing. A person can't type four attempts two seconds apart. The username was valid, the logon was remote, it came at 2 AM, and it originated from a workstation outside Alex's department. Any one could be innocent; together they are a true positive.</p>
 </div>
 </div>
 
 <div class="ad-mission" data-attempts="0">
-<span class="ad-mission__num">Mission 09</span>
-<h4>Data at Risk</h4>
-<p>Which department handles GovTechFinancial's own internal financial records, separate from client funds?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Check the Data Categories tab's "Internal financial records" row.</p></div>
+<span class="ad-mission__num">Mission 09 · CySA+ Impact Analysis</span>
+<h4>Why Event 4672 Matters</h4>
+<p>Event 4672 records special privileges being assigned to the new session. From what you found in your lab, which group explains why this session received them?</p>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">It's the second group Alex holds, the one nobody else in the directory has.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{finance-and-accounting}">Submit</button>
+<button type="button" class="ad-guess__submit" data-answer="gtf{it-admins}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
-<p class="ad-flag__code"><code>GTF{finance-and-accounting}</code></p>
-<p>Finance and Accounting. Their own ledgers, payroll, and internal budgets, separate from the client funds Wealth Management and Operations touch.</p>
+<p class="ad-flag__code"><code>GTF{it-admins}</code></p>
+<p><code>IT Admins</code>. The attacker didn't just get a user account. They got a session that can administer accounts and systems, which raises the severity from a single compromised login to potential domain-wide impact.</p>
 </div>
 </div>
 
 <div class="ad-mission ad-mission--capstone" data-attempts="0">
-<span class="ad-mission__num">Mission 10 — Capstone</span>
-<h4>The 2 AM Login</h4>
-<p>You see a successful login from <code>alex.rivera</code> at 2:00 AM, originating from a Wealth Management workstation. Before you've looked at a single log entry, what's wrong with this, based only on where his account actually lives?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Compare Alex Rivera's real OU (Mission 02) to the department that workstation belongs to.</p></div>
+<span class="ad-mission__num">Mission 10 · Sec+ Incident Response — Capstone</span>
+<h4>Your First Move</h4>
+<p>You have confirmed a likely compromise of the only privileged account, working from a Wealth Management workstation, which is a critical department. It is 2:10 AM. What do you do first?</p>
+<ul class="ad-options">
+<li><strong>A</strong> Wipe and reimage WM-WS02 immediately.</li>
+<li><strong>B</strong> Disable <code>alex.rivera</code>, isolate WM-WS02 from the network, and preserve the logs.</li>
+<li><strong>C</strong> Email Alex and wait for a reply before acting.</li>
+<li><strong>D</strong> Clear the failed-logon events to stop the alert repeating.</li>
+</ul>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Think of the response order: contain the spread first, and keep the evidence you'll need to investigate.</p></div>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{wrong-department}">Submit</button>
+<input type="text" class="ad-guess__input" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
-<p class="ad-flag__code"><code>GTF{wrong-department}</code></p>
-<p>Alex's account lives in <code>OU=IT</code>. This login came from Wealth Management, three mismatches deep:</p>
+<p class="ad-flag__code"><code>GTF{b}</code></p>
+<p>Contain, and keep the evidence. Every other option loses something:</p>
 <ul class="ad-baseline-list">
-<li><strong>Identity:</strong> account is in IT.</li>
-<li><strong>Asset:</strong> workstation belongs to Wealth Management.</li>
-<li><strong>Timing:</strong> 2:00 AM, on a critical department.</li>
+<li><strong>Wiping (A):</strong> destroys the memory and disk evidence you need to learn what the attacker did.</li>
+<li><strong>Waiting (C):</strong> gives an active attacker time. Reach Alex through a separate channel after containing.</li>
+<li><strong>Clearing logs (D):</strong> tampering with evidence. It is never an analyst's move.</li>
 </ul>
-<p>Three reasons to flag it, before opening a single log entry.</p>
+<p>Then escalate to the incident lead, document each action with a timestamp, and move on to eradication and recovery.</p>
 </div>
 </div>
-

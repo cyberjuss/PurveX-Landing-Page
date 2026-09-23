@@ -2901,34 +2901,6 @@ body:has(.lp) {
 .academy-prose .academy-analogy li { margin: 0.35rem 0; }
 .academy-prose .academy-analogy li:last-child { margin-bottom: 0; }
 
-/* Think Like an Analyst callout -- one per Home Lab tab, tying whatever
-   fact the tab just taught back to why a working analyst actually cares
-   about it. Same tagged-panel convention as the other two callouts, but
-   in the site's alert-red instead of purple, so it reads as a distinct
-   "investigative" beat rather than more reference material. */
-.academy-prose .academy-thinklike {
-  margin: 1.35rem 0;
-  padding: 1rem 1.3rem 1.2rem;
-  border-radius: 10px;
-  border: 1px solid rgba(229,72,77,0.25);
-  border-left: 3px solid #e5484d;
-  background: rgba(229,72,77,0.045);
-  box-shadow: 0 1px 2px rgba(16,25,46,0.04), 0 14px 32px -26px rgba(229,72,77,0.16);
-}
-.academy-prose .academy-thinklike__tag {
-  display: block;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--pvrx-text-secondary-light);
-  margin-bottom: 0.5rem;
-}
-.academy-prose .academy-thinklike__tag::before { content: "// "; color: #e5484d; }
-.academy-prose .academy-thinklike p { margin: 0.5rem 0; }
-.academy-prose .academy-thinklike p:first-of-type { margin-top: 0; }
-.academy-prose .academy-thinklike p:last-child { margin-bottom: 0; }
 
 /* Collapsible copy/paste code block -- shared by the Build This Lab and
    Troubleshooting tabs, so it lives here once instead of duplicated per file. */
@@ -3124,3 +3096,13 @@ body:has(.lp) {
 @media (prefers-reduced-motion: reduce) {
   .academy-ref-section:target { animation: none; box-shadow: 0 0 0 4px rgba(106,92,255,0.16); }
 }
+
+.academy-prose .ad-evidence {
+  margin: 0.9rem 0; padding: 0.85rem 1rem; border-radius: 12px; overflow-x: auto;
+  background: #0d1117; border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 18px 36px -24px rgba(16,25,46,0.5);
+}
+.academy-prose .ad-evidence code { background: none; padding: 0; color: #c9d1d9; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.78rem; line-height: 1.75; white-space: pre; }
+.academy-prose .ad-options { margin: 0.6rem 0 0; padding-left: 0; list-style: none; }
+.academy-prose .ad-options li { margin: 0.35rem 0; font-size: 0.92rem; color: var(--pvrx-text-secondary-light); }
+.academy-prose .ad-options strong { color: var(--pvrx-text-primary-light); margin-right: 0.35rem; }

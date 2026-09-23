@@ -41,7 +41,3 @@ Three errors account for almost every "it won't run" report. They're easy to fix
 
 Run into all three in the same session, in that order: elevate first, unblock the file, then relax the execution policy. Each is a one-time fix per machine.
 
-<div class="academy-thinklike">
-<span class="academy-thinklike__tag">Think Like an Analyst</span>
-<p>None of these three are security incidents, they're Windows defaults doing exactly what they're supposed to do. Knowing "blocked on purpose" from "actually wrong" is a judgment call you'll make constantly once you're investigating this environment instead of building it.</p>
-</div>
