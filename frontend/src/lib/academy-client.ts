@@ -1,11 +1,46 @@
 "use client";
 
+import { useMemo, useSyncExternalStore } from "react";
+import { RESULTS_STORAGE_KEY, type Results } from "@/lib/academy-score";
 import { supabase } from "@/lib/supabase";
 
 // Which account the results in localStorage belong to, so a second student
 // on the same browser never inherits the first one's score.
 export const RESULTS_OWNER_KEY = "academy-results-owner";
 export const RESULTS_CHANGED_EVENT = "academy-results-changed";
+// Fired after a single answer is recorded, so live score displays update.
+// RESULTS_CHANGED_EVENT is for whole-set replacements, which also re-apply
+// saved state to the missions on the page.
+export const RESULTS_UPDATED_EVENT = "academy-results-updated";
+export const READINESS_PATH = "/academy/readiness";
+
+const RESULT_EVENTS = [RESULTS_CHANGED_EVENT, RESULTS_UPDATED_EVENT, "storage"];
+
+function subscribeResults(onChange: () => void) {
+  RESULT_EVENTS.forEach((e) => window.addEventListener(e, onChange));
+  return () => RESULT_EVENTS.forEach((e) => window.removeEventListener(e, onChange));
+}
+
+function readResultsRaw() {
+  try {
+    return window.localStorage.getItem(RESULTS_STORAGE_KEY) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+// Mission results from localStorage, re-read on every render and whenever
+// they are replaced from the server. Empty during server rendering.
+export function useResults(): Results {
+  const raw = useSyncExternalStore(subscribeResults, readResultsRaw, () => "");
+  return useMemo(() => {
+    try {
+      return raw ? (JSON.parse(raw) as Results) : {};
+    } catch {
+      return {};
+    }
+  }, [raw]);
+}
 
 export async function academyFetch(path: string, init: RequestInit = {}) {
   const token = supabase ? (await supabase.auth.getSession()).data.session?.access_token : undefined;

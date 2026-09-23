@@ -1,6 +1,6 @@
 import "server-only";
 
-import { labStateForTool, type LabSnapshot } from "@/lib/academy-lab";
+import { compareToBaseline, labStateForTool, type LabSnapshot } from "@/lib/academy-lab";
 import { findMissionsByQuery, MISSION_CATALOG } from "@/lib/academy-missions";
 import {
   LEVELS,
@@ -16,17 +16,68 @@ export const COACH_DAILY_LIMIT = Number(process.env.ACADEMY_COACH_DAILY_LIMIT ||
 export const COACH_SONNET_MODEL = process.env.ACADEMY_COACH_MODEL || "claude-sonnet-5";
 export const COACH_HAIKU_MODEL = process.env.ACADEMY_COACH_FAST_MODEL || "claude-haiku-4-5";
 
-export const COACH_SYSTEM_PROMPT = `You are the PurveX Academy cybersecurity coach. Your purpose is to help students develop practical IT help-desk and Active Directory skills.
+export const COACH_SYSTEM_PROMPT = `You are PurveX Coach: the senior help desk lead at GovTech Financial training a new Tier 1 analyst. The student works in their own copy of the company's Active Directory lab (domain govtechfinancial.local, built by Build-Environment.ps1 on a Windows Server domain controller). You talk like a sharp mentor on a real IT team: direct, specific, calm. Zero filler.
 
-Rules:
-- Never immediately provide the answer to a hands-on mission, flag, or multiple-choice letter. Ask guiding questions first.
-- Use the student's readiness score, mission history, and skill gaps when those tools return data.
-- Explain concepts at the student's demonstrated skill level. If they are stuck, give a next check to run in Active Directory or PowerShell — not the flag.
-- Do not invent lab state. If get_lab_state says the lab is not connected, tell the student what to look at in their own lab.
-- When get_lab_state has a snapshot, use it to check what the student actually did (for example an account in the wrong group or OU). Point them to the object to inspect rather than reading out a value that answers an unsolved mission. Mention how old the snapshot is if it may be stale.
-- Never mention API keys, Anthropic, Claude, or that you are a language model. You are PurveX Coach.
-- Keep replies short and concrete. Prefer 1-3 short paragraphs.
-- If they ask for the answer after you have already coached, you may confirm a method, still without giving the flag string.`;
+The lab
+- Departments live under OU=Departments: IT, Compliance, WealthManagement, Operations, FinanceAccounting. Each has a Users OU; IT also has a Workstations OU.
+- Staff: alex.rivera and priya.nair (IT), devon.brooks and morgan.lee (Compliance), sam.whitfield and jamie.torres (Wealth Management), taylor.osei and riley.kwan (Operations), jordan.ellis (Finance and Accounting).
+- Tools the student has: Active Directory Users and Computers (dsa.msc), Active Directory Administrative Center (dsac.exe), Event Viewer (eventvwr.msc), and PowerShell with the ActiveDirectory module (Get-ADUser, Get-ADGroupMember, Get-ADPrincipalGroupMembership, Get-ADComputer, Get-ADOrganizationalUnit, Search-ADAccount, Unlock-ADAccount, Get-WinEvent).
+- Challenges: Operation Day One (d1-xx, finding facts in the directory) and the Ticket Queue (tq-xx, INC-1041 to INC-1046, working real tickets).
+
+How you answer
+- The first sentence answers the exact question. Never open with praise ("Great question") and never close with filler ("Let me know", "Hope this helps", "You've got this").
+- Be concrete every time. Give the exact console and click path, or the exact PowerShell command with real names from this lab, then what the student should see if it worked. Generic advice like "check the group membership" is a failure; say which object, where, and how.
+- How-to knowledge is fair game: opening a console, running a cmdlet, reading a field, how a ticket should be worked, why something matters. Explain it fully and precisely.
+- Mission answers are not. Never state the value an unsolved mission asks for (a group name, a count, a person, a computer name, a yes or no, a multiple-choice letter). Give the exact command or place that reveals it and have the student report back what they found. For solved missions you may discuss the answer freely.
+- Use the student brief below. Name the mission and ticket, what went wrong (wrong tries, hint used), and what to do about it. If their lab snapshot differs from the standard build in a way that matters, name the object.
+- Add one line on why it matters on a real help desk (what the ticket, the risk, or the escalation looks like) when it helps the lesson stick.
+- Never invent lab state. If there is no snapshot, tell them what to check; the snapshot refreshes only when they rerun Build-Environment.ps1, so never offer to fetch or refresh it yourself.
+- Refer to missions by title and ticket number (for example "Locked Out (INC-1042)"), never by internal ids like tq-02.
+- Never mention API keys, Anthropic, Claude, AI, language models, or your tools. You are PurveX Coach.
+
+Format
+- Under 140 words unless the student asks for depth.
+- A procedure goes in a numbered list, one action per step, max 5 steps. Put every command, cmdlet, console name, and object name in backticks.
+- For a multi-line PowerShell example, use a fenced \`\`\`powershell block.
+- When there is something to verify, end with a line that starts "Check:" and says what success looks like.
+- If you ask a question, ask one, and make it specific ("What does the Member Of tab show for jordan.ellis?"), never generic ("What do you see?").
+- No headings. Bold sparingly.`;
+
+function missionLine(results: Results, id: string): string {
+  const r = results[id];
+  const cat = MISSION_CATALOG[id];
+  const head = `${id} ${cat?.title ?? id}${cat?.prompt ? ` [asks: ${cat.prompt}]` : ""}`;
+  const points = missionPoints(r);
+  if (!r) return `${head}: not started`;
+  const extras = [r.wrong ? `${r.wrong} wrong ${r.wrong === 1 ? "try" : "tries"}` : "", r.hint ? "hint used" : ""].filter(Boolean);
+  const status = r.solved ? "solved" : points === 0 ? "failed (out of tries)" : "attempted, not solved";
+  return `${head}: ${status}${extras.length ? `, ${extras.join(", ")}` : ""}${points !== null ? ` (${points} pts)` : ""}`;
+}
+
+// Live context for every turn so replies are about this student, not a generic learner.
+export function buildStudentBrief(results: Results, lab: LabSnapshot | null): string {
+  const s = summarize(results);
+  const skills = s.skills
+    .map((k) => `${k.label} ${k.score === null ? "not started" : `${k.score}%`} (${k.done} of ${k.total} finished)`)
+    .join("; ");
+  const gap = s.finished > 0 ? s.focus[0] : undefined;
+  const missions = Object.keys(MISSION_SKILLS).map((id) => `- ${missionLine(results, id)}`).join("\n");
+  let labLine = "No lab snapshot yet. It is saved when the student runs Build-Environment.ps1 from the Build This Lab page.";
+  if (lab) {
+    const age = Math.round((Date.now() - new Date(lab.capturedAt).getTime()) / 36e5);
+    const diffs = compareToBaseline(lab);
+    labLine = `Snapshot of ${lab.domain.dnsRoot} from ${age < 1 ? "under an hour" : `${age} hours`} ago: ${lab.users.length} users, ${lab.groups.length} groups, ${lab.computers.length} computers. ${
+      diffs.length ? `Differences from the standard build: ${diffs.slice(0, 12).join(" ")}` : "Matches the standard build."
+    } Call get_lab_state with a name for details.`;
+  }
+  return `Student brief (live data; use it, do not recite it)
+Readiness: ${s.finished === 0 ? "no score yet" : `${s.overall}/100`} (${LEVELS[s.level].label}), ${s.finished} of ${s.total} missions finished.
+Skills: ${skills}.
+Biggest gap: ${gap ? `${gap.label}${gap.score === null ? " (not started)" : ` (${gap.score}%)`}` : "none yet"}.
+Missions:
+${missions}
+Lab: ${labLine}`;
+}
 
 // Sent to students' own MCP clients (Claude, Claude Code, Cursor) so they
 // coach the same way PurveX Coach does.
@@ -93,10 +144,9 @@ export const COACH_TOOLS = [
 ];
 
 export function pickCoachModel(latestUserText: string): string {
-  const t = latestUserText.toLowerCase();
-  const coaching =
-    /\b(wrong|ticket|mission|flag|riley|jamie|score|practice|stuck|hint|lab|group|ou|incident|inc-)\b/.test(t);
-  return coaching ? COACH_SONNET_MODEL : COACH_HAIKU_MODEL;
+  const t = latestUserText.trim().toLowerCase();
+  const smallTalk = t.length < 40 && /^(hi|hey|hello|thanks|thank you|thx|ok|okay|cool|got it|nice|bye)\b/.test(t);
+  return smallTalk ? COACH_HAIKU_MODEL : COACH_SONNET_MODEL;
 }
 
 function statusOf(results: Results, id: string) {
@@ -170,6 +220,9 @@ export async function runCoachTurn(params: {
   tools: CoachToolContext;
 }): Promise<{ text: string; model: string }> {
   const model = pickCoachModel(params.userMessage);
+  const lab = await params.tools.loadLabState().catch(() => null);
+  const tools: CoachToolContext = { ...params.tools, loadLabState: async () => lab };
+  const system = `${COACH_SYSTEM_PROMPT}\n\n${buildStudentBrief(params.tools.results, lab)}`;
   const messages: AnthropicMessage[] = [
     ...params.history.slice(-10).map((m) => ({ role: m.role, content: m.content })),
     { role: "user", content: params.userMessage },
@@ -186,7 +239,7 @@ export async function runCoachTurn(params: {
       body: JSON.stringify({
         model,
         max_tokens: 1024,
-        system: COACH_SYSTEM_PROMPT,
+        system,
         tools: COACH_TOOLS,
         messages,
       }),
@@ -219,7 +272,7 @@ export async function runCoachTurn(params: {
         .map(async (b) => ({
           type: "tool_result" as const,
           tool_use_id: b.id,
-          content: await runCoachTool(b.name, b.input || {}, params.tools),
+          content: await runCoachTool(b.name, b.input || {}, tools),
         }))
     );
     messages.push({ role: "user", content: resultsBlocks });

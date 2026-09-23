@@ -49,7 +49,8 @@ export const MISSION_SKILLS: Record<string, Skill> = {
 export type MissionResult = { solved: boolean; wrong: number; hint: boolean };
 export type Results = Record<string, MissionResult>;
 
-const KEY = "academy-results-v1";
+export const RESULTS_STORAGE_KEY = "academy-results-v1";
+const KEY = RESULTS_STORAGE_KEY;
 
 export function loadResults(): Results {
   try {
@@ -162,27 +163,15 @@ export const LEVELS: Record<Summary["level"], { label: string; note: string }> =
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+// Compact card at the top of each challenge. The full breakdown and the
+// coach live on the Readiness page.
 export function scorecardHtml(s: Summary): string {
   const lv = LEVELS[s.level];
-  const bars = s.skills
-    .map(
-      (k) => `<div class="ad-score__skill"><div class="ad-score__skillhead"><span>${esc(k.label)}</span><span>${
-        k.score === null ? "Not started" : k.score + "%"
-      }</span></div><div class="ad-score__track"><div class="ad-score__fill ad-score__fill--${
-        k.score === null ? "none" : k.score >= 85 ? "good" : k.score >= 65 ? "mid" : "low"
-      }" style="width:${k.score ?? 0}%"></div></div></div>`
-    )
-    .join("");
-  const focus =
-    s.finished > 0 && s.focus.length > 0
-      ? `<div class="ad-score__focus"><span class="ad-score__focuslabel">Work on</span>${s.focus
-          .map((f) => `<p><strong>${esc(f.label)}.</strong> ${esc(f.advice)}</p>`)
-          .join("")}</div>`
-      : "";
+  const gap = s.finished > 0 ? s.focus[0] : undefined;
+  const line = gap ? `Biggest gap: ${esc(gap.label)}` : `${s.finished} of ${s.total} missions finished`;
   return `<div class="ad-score__top"><div class="ad-score__ring ad-score__ring--${s.level}"><span>${
     s.finished === 0 ? "--" : s.overall
-  }</span></div><div class="ad-score__head"><span class="ad-score__eyebrow">Help Desk Readiness</span><strong>${lv.label}</strong><p>${lv.note}</p><small>${
-    s.finished} of ${s.total} missions finished</small></div></div><div class="ad-score__skills">${bars}</div>${focus}${
-    s.finished > 0 ? '<button type="button" class="ad-score__reset">Reset score</button>' : ""
-  }`;
+  }</span></div><div class="ad-score__head"><span class="ad-score__eyebrow">Help Desk Readiness</span><strong>${
+    lv.label
+  }</strong><small>${line}</small></div><a class="ad-score__link" href="/academy/readiness">See report and ask Coach</a></div>`;
 }

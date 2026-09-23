@@ -8,13 +8,16 @@ import type { PhaseDef } from "@/lib/academy-content";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
 import { AcademySignIn } from "@/components/academy/academy-sign-in";
-import { PurvexCoach } from "@/components/academy/purvex-coach";
+import { CoachProvider } from "@/components/academy/coach-context";
+import { PurvexCoach, ReadinessNavLink } from "@/components/academy/purvex-coach";
 import {
   academyFetch,
   downloadLinkedBuildScript,
   LINKED_SCRIPT_PATH,
+  READINESS_PATH,
   RESULTS_CHANGED_EVENT,
   RESULTS_OWNER_KEY,
+  RESULTS_UPDATED_EVENT,
 } from "@/lib/academy-client";
 import { clearResults, loadResults, saveResults, scorecardHtml, summarize, type MissionResult, type Results } from "@/lib/academy-score";
 import { signOut } from "@/lib/portal-auth";
@@ -30,7 +33,8 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
   // page does. It reappears everywhere else, once you're actually inside a
   // phase or a lesson, where it's a real jump-around tool rather than a
   // second copy of the page you're looking at.
-  const showSidebar = pathname !== "/academy";
+  const isReadiness = pathname === READINESS_PATH;
+  const showSidebar = pathname !== "/academy" && !isReadiness;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -190,6 +194,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       saveResults(all);
       syncProgress(all);
       renderScore();
+      window.dispatchEvent(new Event(RESULTS_UPDATED_EVENT));
     };
 
     // Lesson content is re-rendered when you switch tabs, so a mission comes
@@ -388,6 +393,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
   return (
     <AcademyProgressProvider phases={phases}>
+      <CoachProvider>
       <div className="academy-bg min-h-screen" data-academy-theme={theme}>
         <header
           className={`sticky top-0 z-40 border-b bg-white transition-shadow ${
@@ -417,12 +423,13 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
               </Link>
             </div>
             <div className="flex items-center gap-2">
+              <ReadinessNavLink />
               <PurvexCoach />
               <Link
                 href="/academy/reference"
                 className="flex h-9 items-center gap-1.5 rounded-md border border-[var(--pvrx-border-light)] bg-white px-3 text-sm font-medium text-slate-600 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
               >
-                <BookMarked className="h-4 w-4" /> Reference
+                <BookMarked className="h-4 w-4" /> <span className="hidden sm:inline">Reference</span>
               </Link>
               <button
                 type="button"
@@ -504,10 +511,11 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           )}
 
           <main className="min-w-0 flex-1 px-4 py-10 sm:px-6 lg:px-10">
-            <div className="mx-auto max-w-3xl">{children}</div>
+            <div className={`mx-auto ${isReadiness ? "max-w-6xl" : "max-w-3xl"}`}>{children}</div>
           </main>
         </div>
       </div>
+      </CoachProvider>
     </AcademyProgressProvider>
   );
 }
