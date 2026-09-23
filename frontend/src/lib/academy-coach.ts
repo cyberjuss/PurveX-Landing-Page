@@ -331,9 +331,13 @@ export async function runCoachTurn(params: {
     { role: "user", content: userTurnContent(params.userMessage, images) },
   ];
 
+  const deadline = Date.now() + 50_000;
   for (let step = 0; step < 4; step++) {
+    const left = deadline - Date.now();
+    if (left < 3_000) throw new Error("Coach model timed out");
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
+      signal: AbortSignal.timeout(Math.min(left, 30_000)),
       headers: {
         "content-type": "application/json",
         "x-api-key": params.apiKey,

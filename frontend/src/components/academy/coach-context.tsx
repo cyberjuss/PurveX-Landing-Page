@@ -107,6 +107,7 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: question, images: shots, history, results: loadResults(), mode }),
+          signal: AbortSignal.timeout(58_000),
         });
         const data = await res.json();
         if (typeof data.remaining === "number") setRemaining(data.remaining);
@@ -115,8 +116,8 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
           return;
         }
         setMessages([...next, { role: "assistant", content: data.reply }]);
-      } catch {
-        setError("Could not reach PurveX Coach.");
+      } catch (err) {
+        setError(err instanceof DOMException && err.name === "TimeoutError" ? "Coach took too long. Try again." : "Could not reach PurveX Coach.");
       } finally {
         busyRef.current = false;
         setBusy(false);
