@@ -1,5 +1,7 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+
 // Next.js re-mounts template.tsx (unlike layout.tsx) on every navigation,
 // which is what makes it the right place for a route-transition animation
 // that applies uniformly across the whole site -- both client-side nav and
@@ -13,7 +15,14 @@
 // elements' viewport positioning, not just during the transition. Opacity
 // has the same effect only while it's below 1, and this always settles at
 // exactly 1, so nothing stays broken once the fade completes.
+//
+// Academy keeps its own sticky header and pop-overs, so it skips the
+// animation wrapper. A fill-mode animation on an ancestor is enough to
+// clip those menus into the header bar.
 export default function Template({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/academy")) return children;
+
   return (
     <>
       <div className="pvrx-page-enter">{children}</div>

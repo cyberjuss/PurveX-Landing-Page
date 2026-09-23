@@ -62,7 +62,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
   const { setModalOpen, remaining, limit, enabled } = useCoach();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [pos, setPos] = useState({ top: 0, right: 16 });
+  const [pos, setPos] = useState({ top: 72, right: 16 });
   const root = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const firstName = accountFirstName(student);
@@ -107,60 +107,87 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
   const menu =
     open && mounted
       ? createPortal(
-          <div
-            ref={panel}
-            role="dialog"
-            aria-label="Account"
-            className="ax-account"
-            style={{
-              position: "fixed",
-              top: pos.top,
-              right: pos.right,
-              zIndex: 80,
-              display: "flex",
-              flexDirection: "column",
-              width: 272,
-              padding: "16px 16px 12px",
-              background: dark ? "#1a2030" : "#fff",
-              color: dark ? "#eef1f8" : "#0f172a",
-              border: dark ? "1px solid rgba(255,255,255,0.14)" : "1px solid rgba(15,23,42,0.12)",
-              boxShadow: dark ? "0 20px 48px -16px rgba(0,0,0,0.55)" : "0 18px 40px -20px rgba(15,23,42,0.28)",
-            }}
-          >
-            <p className="rd-kicker">Account</p>
-            {firstName && <strong>{firstName}</strong>}
-            {student?.email && <span>{student.email}</span>}
-            <Link href={READINESS_PATH} className="ax-account__score" onClick={() => setOpen(false)}>
-              <span className="rd-kicker">Help Desk Readiness</span>
-              <em>{readiness.finished === 0 ? "––" : readiness.overall}</em>
-              <small>{LEVELS[readiness.level].label}</small>
-              <b>
-                Open report <ArrowRight className="h-3.5 w-3.5" />
-              </b>
-            </Link>
-            {enabled && (
-              <div className="ax-account__ask">
-                <button
-                  type="button"
-                  className="ax-account__coach pc-launch"
-                  onClick={() => {
-                    setOpen(false);
-                    setModalOpen(true);
-                  }}
-                >
-                  <Sparkles className="h-4 w-4" /> Coach
-                </button>
-                {remaining != null && (
-                  <small>
-                    {remaining === 0 ? "None left today" : `${remaining} of ${limit} left today`}
-                  </small>
-                )}
-              </div>
-            )}
-            <button type="button" className="ax-account__out" onClick={onSignOut}>
-              <LogOut className="h-3.5 w-3.5" /> Sign out
-            </button>
-          </div>,
+          <>
+            <style>{`
+              [data-ax-account] {
+                position: fixed;
+                z-index: 80;
+                display: flex;
+                flex-direction: column;
+                width: 272px;
+                padding: 16px 16px 12px;
+                box-sizing: border-box;
+              }
+              [data-ax-account] > strong { display: block; margin-top: 4px; font-size: 20px; font-weight: 600; letter-spacing: -0.03em; }
+              [data-ax-account] > span { display: block; margin: 2px 0 12px; font-size: 12px; opacity: 0.65; word-break: break-all; }
+              [data-ax-account] .ax-account__score { display: block; padding: 14px 0 12px; border-top: 1px solid rgba(255,255,255,0.12); border-bottom: 1px solid rgba(255,255,255,0.12); }
+              [data-ax-account] .ax-account__score em { display: block; margin: 6px 0 4px; font-size: 36px; font-style: normal; font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: #8b7dff; }
+              [data-ax-account] .ax-account__score small { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.55; }
+              [data-ax-account] .ax-account__score b { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 13px; font-weight: 600; }
+              [data-ax-account] .ax-account__ask { display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding: 14px 0 12px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+              [data-ax-account] .ax-account__coach {
+                display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+                width: 100%; height: 40px; border: 0; border-radius: 999px;
+                font-size: 14px; font-weight: 600; color: #fff; cursor: pointer;
+                background: linear-gradient(135deg, #7667ff, #4a3cd0);
+              }
+              [data-ax-account] .ax-account__ask small { text-align: center; font-size: 11px; font-weight: 700; opacity: 0.55; }
+              [data-ax-account] .ax-account__out { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; background: none; border: 0; padding: 0; font-size: 13px; font-weight: 600; color: inherit; cursor: pointer; opacity: 0.7; }
+              [data-ax-account] .rd-kicker { font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.5; }
+              [data-ax-account][data-theme="light"] .ax-account__score,
+              [data-ax-account][data-theme="light"] .ax-account__ask { border-color: rgba(15,23,42,0.12); }
+              [data-ax-account][data-theme="light"] .ax-account__score em { color: #5546e0; }
+            `}</style>
+            <div
+              ref={panel}
+              data-ax-account=""
+              data-theme={dark ? "dark" : "light"}
+              role="dialog"
+              aria-label="Account"
+              style={{
+                top: pos.top,
+                right: pos.right,
+                background: dark ? "#1a2030" : "#fff",
+                color: dark ? "#eef1f8" : "#0f172a",
+                border: dark ? "1px solid rgba(255,255,255,0.14)" : "1px solid rgba(15,23,42,0.12)",
+                boxShadow: dark ? "0 20px 48px -16px rgba(0,0,0,0.55)" : "0 18px 40px -20px rgba(15,23,42,0.28)",
+              }}
+            >
+              <p className="rd-kicker">Account</p>
+              {firstName && <strong>{firstName}</strong>}
+              {student?.email && <span>{student.email}</span>}
+              <Link href={READINESS_PATH} className="ax-account__score" onClick={() => setOpen(false)}>
+                <span className="rd-kicker">Help Desk Readiness</span>
+                <em>{readiness.finished === 0 ? "––" : readiness.overall}</em>
+                <small>{LEVELS[readiness.level].label}</small>
+                <b>
+                  Open report <ArrowRight className="h-3.5 w-3.5" />
+                </b>
+              </Link>
+              {enabled && (
+                <div className="ax-account__ask">
+                  <button
+                    type="button"
+                    className="ax-account__coach"
+                    onClick={() => {
+                      setOpen(false);
+                      setModalOpen(true);
+                    }}
+                  >
+                    <Sparkles className="h-4 w-4" /> Coach
+                  </button>
+                  {remaining != null && (
+                    <small>
+                      {remaining === 0 ? "None left today" : `${remaining} of ${limit} left today`}
+                    </small>
+                  )}
+                </div>
+              )}
+              <button type="button" className="ax-account__out" onClick={onSignOut}>
+                <LogOut className="h-3.5 w-3.5" /> Sign out
+              </button>
+            </div>
+          </>,
           document.body
         )
       : null;
