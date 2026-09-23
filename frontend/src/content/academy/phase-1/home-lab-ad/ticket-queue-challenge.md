@@ -40,7 +40,7 @@ Treat each mission like a small help desk or SOC ticket. Your job is to find the
 <div class="ad-mission" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 - Easy</span>
 <h4>Locked Out, Not Forgotten</h4>
-<p>Riley Kwan calls after repeated failed attempts. She says she remembers her password now. What should the help desk do?</p>
+<p>Riley Kwan calls after repeated failed attempts. Find her account in your lab and confirm it's actually locked. She says she remembers her password now. What should the help desk do?</p>
 <div class="ad-ticket-meta"><span>User</span><code>riley.kwan</code><span>Expected action</span><code>Account recovery decision</code></div>
 <div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">If the user remembers the password, do not replace it. Clear the lockout condition.</p></div>
 <div class="ad-guess">

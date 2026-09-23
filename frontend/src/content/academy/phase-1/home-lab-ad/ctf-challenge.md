@@ -56,8 +56,8 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <div class="ad-mission" data-attempts="0">
 <span class="ad-mission__num">Mission 03</span>
 <h4>Access, Not Department</h4>
-<p><code>Server Admins</code> and <code>Helpdesk</code> (Level 2 and Level 3) live in their own OU, not nested inside <code>Departments</code> alongside IT, Compliance, and the rest. Which OU?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Ask what Server Admins and Helpdesk actually control. Is it tied to one department, or the whole domain?</p></div>
+<p>Open Active Directory Users and Computers in your lab. <code>Server Admins</code> and <code>Helpdesk</code> are not nested inside <code>Departments</code>. Which top-level OU actually holds them?</p>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Look at the OU tree one level below the domain root. What sits next to Departments?</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{accesslevels}">Submit</button>
@@ -73,8 +73,8 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <div class="ad-mission" data-attempts="0">
 <span class="ad-mission__num">Mission 04</span>
 <h4>The Container Trap</h4>
-<p>Every fresh domain ships with a default container that new accounts land in if nobody moves them. In AD Building Blocks' comparison table, what's that container called?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">It's in the "Examples in this domain" row of the OU vs. Container table, written the way Active Directory itself writes it.</p></div>
+<p>In your lab, expand the domain root in Active Directory Users and Computers. There's a default container sitting there that every fresh domain ships with. It should be empty of GovTechFinancial's own accounts. What's it called, exactly as AD writes it?</p>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">It sits alongside OU=Departments and OU=AccessLevels, but its icon and name give away that it isn't an OU. Its name starts with CN=.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{cn=users}">Submit</button>
