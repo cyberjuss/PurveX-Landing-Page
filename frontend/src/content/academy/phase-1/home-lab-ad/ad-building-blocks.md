@@ -36,7 +36,7 @@ Every user lives inside their department's OU. It tells you where an account *be
 
 `AccessLevels` sits outside `Departments` on purpose: `Server Admins` and `Helpdesk` (Level 2/3) are about domain-wide access, not department membership.
 
-You can also delegate control over just one OU. For example, Helpdesk could be allowed to reset passwords only for accounts inside `OU=Users,OU=IT`, without touching the rest of the domain.
+You can also delegate control over just one OU, letting Helpdesk, for example, reset passwords only for accounts inside `OU=Users,OU=IT` without touching the rest of the domain.
 
 ### Containers
 

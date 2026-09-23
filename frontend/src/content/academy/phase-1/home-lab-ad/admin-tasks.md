@@ -5,7 +5,7 @@
 
 ### What IT Actually Does Here, Day to Day
 
-Almost nobody builds a domain from scratch. Walk into a real IT job and Active Directory is already standing: the OUs already exist, the accounts are already there. What fills the day instead is a short list of tasks that repeat constantly, such as finding an account, resetting a password, moving someone between departments, and standing up a service account correctly. This tab walks through each one using GovTechFinancial's own accounts, so it becomes muscle memory before you ever touch a real environment.
+Almost nobody builds a domain from scratch. Walk into a real IT job and Active Directory is already standing, with the OUs and the accounts already in place. What fills the day instead is a short list of tasks that repeat constantly: finding an account, resetting a password, moving someone between departments, standing up a service account correctly. This tab walks through each one using GovTechFinancial's own accounts, so it becomes muscle memory before you ever touch a real environment.
 
 ### Finding Users and Computers
 
@@ -52,7 +52,7 @@ Adding someone to a distribution or security group works the same way: open **Pr
 
 When someone transfers, their account needs to move with them, since OU membership is what different department policies key off of. Right-click the account, choose **Move**, and select the destination OU.
 
-Picture Taylor Osei transferring from Operations into Compliance. Find the account, choose **Move**, and select `OU=Users,OU=Compliance,OU=Departments`. Afterward, verify it: go straight to that OU and confirm Taylor now shows up there. A transfer that only updates a job title, but never actually moves the AD object, is a common and easy-to-miss mistake. It means the old department's policies are still silently in effect.
+Picture Taylor Osei transferring from Operations into Compliance. Find the account, choose **Move**, and select `OU=Users,OU=Compliance,OU=Departments`, then verify it by going straight to that OU and confirming Taylor now shows up there. A transfer that only updates a job title but never actually moves the AD object is a common, easy-to-miss mistake, since it leaves the old department's policies silently in effect.
 
 ### Advanced Features and the Attribute Editor
 
@@ -62,7 +62,7 @@ This matters for investigation specifically. Attributes like `whenCreated`, `las
 
 ### Managing Computer Objects
 
-Computers get managed the same way users do, through their own **Properties** dialog. GovTechFinancial's IT-WKS01 is a good one to practice on. Check **Member Of** to see what security groups it belongs to. A common real-world example is a group that grants automatic Wi-Fi or VPN access to anything that's a member. Also check the Attribute Editor for last logon time. That single value tells you whether a machine is actually in active use or sitting dormant, a detail that matters a lot once you're investigating rather than administering.
+Computers get managed the same way users do, through their own **Properties** dialog. GovTechFinancial's IT-WKS01 is a good one to practice on: check **Member Of** to see what security groups it belongs to (a common real-world example is a group that grants automatic Wi-Fi or VPN access to anything that's a member), and check the Attribute Editor for last logon time, which tells you whether a machine is actually in active use or sitting dormant, a detail that matters a lot once you're investigating rather than administering.
 
 ### Service Accounts
 

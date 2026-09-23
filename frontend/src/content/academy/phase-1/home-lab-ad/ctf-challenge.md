@@ -7,7 +7,7 @@
 
 You've read the org chart, the access levels, the data categories, and the Active Directory concepts. Reading isn't the same as knowing. This is a short, self-graded challenge built entirely on GovTechFinancial's real environment, the one you built in **Build This Lab**. Do each mission there, in the actual domain, then type your answer below.
 
-Every answer is one word or a short phrase, lowercase. Spaces or dashes both work. Each mission gives you one free hint on request, plus three tries at the flag itself. Get it in three or not: the flag unlocks either way, so you're never stuck. No login, no submission, no leaderboard. This is entirely for you.
+Every answer is one word or a short phrase, lowercase, with spaces or dashes both working. Each mission gives you one free hint on request, plus three tries at the flag itself, which unlocks either way once your tries are up, so you're never stuck. No login, no submission, no leaderboard — this is entirely for you.
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
@@ -106,7 +106,7 @@ Every answer is one word or a short phrase, lowercase. Spaces or dashes both wor
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <p><code>GTF{no}</code></p>
-<p>No. Priya is only a member of <code>IT Users</code>. The <code>Helpdesk</code> access-level group (Level 3) is created empty by the build script. Nobody has actually been added to it, despite her title suggesting otherwise. A title describes a job. A group describes access. An investigation checks the group every time and never assumes from the title.</p>
+<p>No. Priya is only a member of <code>IT Users</code>. The <code>Helpdesk</code> access-level group (Level 3) is created empty by the build script, and nobody has actually been added to it, despite her title suggesting otherwise. A title describes a job; a group describes access. An investigation checks the group every time and never assumes from the title.</p>
 </div>
 </div>
 
@@ -170,7 +170,7 @@ Every answer is one word or a short phrase, lowercase. Spaces or dashes both wor
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <p><code>GTF{wrong-department}</code></p>
-<p>Alex Rivera's account lives in <code>OU=IT</code>, not Wealth Management. There's no organizational reason for his account to be authenticating from a workstation in a completely different department. Two more facts make it worse: Wealth Management is one of GovTechFinancial's three critical departments, handling the kind of client data an attacker would target, and 2 AM falls outside any reasonable business-hours pattern. That's three independent reasons to flag one login, and none of them required a single log entry. That's the instinct this whole course is built to teach.</p>
+<p>Alex Rivera's account lives in <code>OU=IT</code>, not Wealth Management, so there's no organizational reason for his account to be authenticating from a workstation in a completely different department. Two more facts make it worse: Wealth Management is one of GovTechFinancial's three critical departments, handling the kind of client data an attacker would target, and 2 AM falls outside any reasonable business-hours pattern. That's three independent reasons to flag one login, and none of them required a single log entry. That's the instinct this whole course is built to teach.</p>
 </div>
 </div>
 
