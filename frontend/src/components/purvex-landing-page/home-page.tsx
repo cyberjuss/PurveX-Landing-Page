@@ -341,14 +341,14 @@ export default function HomePage() {
 }
 
 /* ── Problems strip ── */
-.sp-problems { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
-.sp-problem { padding: 36px 32px; position: relative; transition: background .35s var(--ease) }
+.sp-problems { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px }
+.sp-problem { padding: 52px 32px; position: relative; transition: background .35s var(--ease) }
 .sp-problem:hover { background: var(--surface-alt) }
-.sp-problem:not(:first-child) { border-left: 1px solid var(--border) }
+.sp-problem { border: 1px solid var(--border); border-radius: 18px; background: var(--surface) }
 .sp-problem__icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); color: var(--accent-deep); transition: transform .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease), color .35s var(--ease) }
 .sp-problem:hover .sp-problem__icon { transform: scale(1.08) rotate(-4deg); background: var(--accent-deep); border-color: var(--accent-deep); color: #fff }
-.sp-problem h3 { margin: 18px 0 0; font-family: var(--font-display); font-size: 1.04rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
-.sp-problem p { margin: 10px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.65; text-wrap: pretty }
+.sp-problem h3 { margin: 26px 0 0; font-family: var(--font-display); font-size: 1.04rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
+.sp-problem p { margin: 14px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.65; text-wrap: pretty }
 @media (prefers-reduced-motion: reduce) {
   .sp-problem, .sp-problem__icon { transition: none }
 }
@@ -360,14 +360,13 @@ export default function HomePage() {
 .sp-problems[data-r] > *:nth-child(3) { transition-delay: .17s }
 @media (max-width: 680px) {
   .sp-problems { grid-template-columns: 1fr }
-  .sp-problem:not(:first-child) { border-left: none; border-top: 1px solid var(--border) }
 }
 
 /* ── Offers (static, replaces the old auto-rotating carousel) ── */
-.sp-offers { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
-.sp-offer { display: flex; flex-direction: column; padding: 32px; transition: background .35s var(--ease) }
+.sp-offers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px }
+.sp-offer { display: flex; flex-direction: column; padding: 48px 32px; transition: background .35s var(--ease) }
 .sp-offer:hover { background: var(--surface-alt) }
-.sp-offer:not(:first-child) { border-left: 1px solid var(--border) }
+.sp-offer { border: 1px solid var(--border); border-radius: 18px; background: var(--surface) }
 .sp-offer__panel {
   display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
   width: 52px; height: 52px; border-radius: 50%;
@@ -375,13 +374,13 @@ export default function HomePage() {
   transition: transform .35s var(--ease), background .35s var(--ease), color .35s var(--ease);
 }
 .sp-offer:hover .sp-offer__panel { transform: scale(1.06) rotate(-4deg); background: var(--accent-deep); color: #fff }
-.sp-offer__body { padding: 0; margin-top: 20px; display: flex; flex-direction: column; flex: 1 }
-.sp-offer__body h3 { margin: 8px 0 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: -.015em; color: var(--ink) }
-.sp-offer__body p { margin: 10px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.6; text-wrap: pretty }
+.sp-offer__body { padding: 0; margin-top: 28px; display: flex; flex-direction: column; flex: 1 }
+.sp-offer__body h3 { margin: 12px 0 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: -.015em; color: var(--ink) }
+.sp-offer__body p { margin: 14px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.6; text-wrap: pretty }
 @media (prefers-reduced-motion: reduce) {
   .sp-offer, .sp-offer__panel { transition: none }
 }
-.sp-offer__list { list-style: none; margin: 16px 0 20px; padding: 0; display: flex; flex-direction: column; gap: 7px }
+.sp-offer__list { list-style: none; margin: 24px 0 28px; padding: 0; display: flex; flex-direction: column; gap: 11px }
 .sp-offer__list li { display: flex; align-items: center; gap: 7px; font-size: .82rem; color: var(--ink-soft); font-weight: 500 }
 .sp-offer__list li svg { color: var(--accent-deep); flex-shrink: 0 }
 .sp-offer .sp-btn { margin-top: auto }
@@ -393,7 +392,6 @@ export default function HomePage() {
 .sp-offers[data-r] > *:nth-child(3) { transition-delay: .17s }
 @media (max-width: 940px) {
   .sp-offers { grid-template-columns: 1fr }
-  .sp-offer:not(:first-child) { border-left: none; border-top: 1px solid var(--border) }
 }
 @media (prefers-reduced-motion: reduce) {
   .sp-problems[data-r] > *, .sp-offers[data-r] > * { opacity: 1; transform: none; filter: none; transition: none }
@@ -401,11 +399,11 @@ export default function HomePage() {
 
 /* ── Feature quote: a squared-off card, photo stacked above the quote,
    instead of a full-bleed horizontal strip ── */
-.sp-feature-quotes { display: flex; flex-direction: column; gap: 24px; align-items: center }
+.sp-feature-quotes { display: flex; flex-direction: column; gap: 32px; align-items: center }
 .sp-feature-quote {
   max-width: 460px; width: 100%;
   display: flex; flex-direction: column; align-items: center; text-align: center;
-  padding: 40px 40px 36px;
+  padding: 56px 40px 52px;
   border: 1px solid var(--border); border-radius: 22px;
   background: var(--surface);
   box-shadow: 0 28px 56px -32px rgba(16,25,46,.22);
@@ -425,7 +423,7 @@ export default function HomePage() {
 .sp-feature-quote__tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 18px }
 .sp-tagchip { font-size: .74rem; font-weight: 550; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); border-radius: 999px; padding: 5px 11px }
 @media (max-width: 560px) {
-  .sp-feature-quote { padding: 32px 24px }
+  .sp-feature-quote { padding: 44px 24px }
 }
       `}</style>
     </SiteChrome>

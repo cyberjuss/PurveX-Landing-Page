@@ -447,9 +447,9 @@ export const CHROME_CSS = `
 }
 
 /* ── Sections ── */
-.sp-section { padding-top: 132px; scroll-margin-top: 84px }
-.sp-section--tight { padding-top: 88px }
-.sp-head { text-align: center; max-width: 620px; margin: 0 auto 56px }
+.sp-section { padding-top: 184px; scroll-margin-top: 84px }
+.sp-section--tight { padding-top: 184px }
+.sp-head { text-align: center; max-width: 620px; margin: 0 auto 72px }
 .sp-head--left { text-align: left; max-width: 720px; margin: 0 0 32px }
 .sp-head h2 { margin: 14px 0 0; font-family: var(--font-display); font-size: clamp(1.6rem, 2.9vw, 2.25rem); font-weight: 700; line-height: 1.2; letter-spacing: -.02em; color: var(--ink) }
 .sp-head p { margin: 18px auto 0; color: var(--muted); font-size: 1.05rem; line-height: 1.7; max-width: 560px; text-wrap: pretty }
@@ -505,7 +505,7 @@ export const CHROME_CSS = `
 .sp-statement__link:hover { gap: 12px }
 
 /* ── Footer ── */
-.sp-footer { border-top: 1px solid var(--border); max-width: 1140px; margin: 96px auto 0; padding: 56px 24px 32px }
+.sp-footer { border-top: 1px solid var(--border); max-width: 1140px; margin: 184px auto 0; padding: 56px 24px 32px }
 .sp-footer__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px }
 .sp-footer__brand { max-width: 280px }
 .sp-footer__brand p { margin: 12px 0 0; color: var(--muted); font-size: .89rem; line-height: 1.65 }
@@ -537,7 +537,8 @@ export const CHROME_CSS = `
   .sp-hero__sub { margin-top: 18px }
   .sp-hero__actions { flex-direction: column; margin-top: 28px }
   .sp-hero__actions .sp-btn { width: 100% }
-  .sp-section { padding-top: 64px }
+  .sp-section { padding-top: 104px }
+  .sp-section--tight { padding-top: 104px }
   .sp-head { margin-bottom: 40px }
   .sp-cards--2, .sp-cards--3, .sp-cards--4 { grid-template-columns: 1fr }
   .sp-card { padding: 28px 24px; border-left: none !important; border-top: none }

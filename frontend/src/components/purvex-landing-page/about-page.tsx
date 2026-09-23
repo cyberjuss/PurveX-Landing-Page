@@ -200,7 +200,7 @@ export default function AboutPage() {
 .sp-mag__toc-num { color: var(--accent-deep); font-weight: 700 }
 
 /* ── Article rows: narrow rail + wide content ── */
-.sp-mag__section { display: grid; grid-template-columns: 200px 1fr; gap: 48px; padding: 64px 0; border-bottom: 1px solid var(--border) }
+.sp-mag__section { display: grid; grid-template-columns: 200px 1fr; gap: 48px; padding: 104px 0; border-bottom: 1px solid var(--border) }
 .sp-mag__section:last-child { border-bottom: none }
 .sp-mag__rail { position: relative; padding-right: 32px; border-right: 1px solid var(--border) }
 .sp-mag__num {
@@ -235,7 +235,7 @@ export default function AboutPage() {
   .sp-mag { padding-top: 72px }
   .sp-mag__toc { flex-direction: column; gap: 4px }
   .sp-mag__toc a { border-left: none; padding: 8px 0 }
-  .sp-mag__section { padding: 44px 0 }
+  .sp-mag__section { padding: 68px 0 }
 }
 
 /* Blue vs red — a lighter, inline version of the shared card treatment */
