@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookMarked, ChevronLeft, GraduationCap, Home, Loader2, LogOut, Menu, Moon, Sun, X } from "lucide-react";
+import { ChevronLeft, GraduationCap, Home, Loader2, LogOut, Menu, Moon, Sun, X } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
@@ -425,12 +425,6 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
             <div className="flex items-center gap-2">
               <ReadinessNavLink />
               <PurvexCoach />
-              <Link
-                href="/academy/reference"
-                className="flex h-9 items-center gap-1.5 rounded-md border border-[var(--pvrx-border-light)] bg-white px-3 text-sm font-medium text-slate-600 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
-              >
-                <BookMarked className="h-4 w-4" /> <span className="hidden sm:inline">Reference</span>
-              </Link>
               <button
                 type="button"
                 onClick={toggleTheme}
