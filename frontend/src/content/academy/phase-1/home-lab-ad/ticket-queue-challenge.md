@@ -19,8 +19,10 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 <span id="ad-progress-label" class="ad-progress__label">0 / 10 solved</span>
 </div>
 
+<div id="ad-scorecard" class="ad-scorecard"></div>
 
-<div class="ad-mission" data-attempts="0">
+
+<div class="ad-mission" data-id="tq-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 01 · INC-1041 · Low</span>
 <h4>Missing Announcements</h4>
 <p><strong>Jamie Torres · Wealth Management · 9:12 AM</strong><br>I started last week and I still have not gotten a single company-wide email. Everyone else on my team has. Can you check my access?</p>
@@ -39,7 +41,7 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="tq-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · INC-1042 · Low</span>
 <h4>Locked Out</h4>
 <p><strong>Riley Kwan · Operations · 8:47 AM</strong><br>It will not let me sign in. I have typed my password wrong a few times, so I think I locked myself out. Can you unlock me?</p>
@@ -59,7 +61,7 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="tq-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1043 · Medium</span>
 <h4>New Hire Access</h4>
 <p><strong>IT Manager · Information Technology · 10:30 AM</strong><br>Casey Reed starts on the help desk today. Give Casey the same access as the rest of IT Users, and nothing more.</p>
@@ -78,7 +80,7 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="tq-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 04 · INC-1044 · Medium</span>
 <h4>The Backup Account</h4>
 <p><strong>Compliance Audit · Auditor request · 1:05 PM</strong><br>The auditors need proof that our nightly backup job only runs during its approved window. Please send them the window in writing.</p>
@@ -97,7 +99,7 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="tq-05" data-attempts="0">
 <span class="ad-mission__num">Ticket 05 · INC-1045 · High</span>
 <h4>The Transfer That Did Not Happen</h4>
 <p><strong>Human Resources · Transfer notice · 11:20 AM</strong><br>Taylor Osei has transferred from Operations to Compliance, effective today. Please make sure Compliance policies now apply to Taylor.</p>
@@ -117,7 +119,7 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="tq-06" data-attempts="0">
 <span class="ad-mission__num">Ticket 06 · INC-1046 · Critical</span>
 <h4>The 2 AM Login</h4>
 <p><strong>SIEM Alert · Part 1 of 5 · Automated detection · 2:04 AM</strong><br>ALERT: successful login for alex.rivera at 2:00 AM from workstation WM-WKS07, preceded by multiple failed logons. Severity: high.</p>
@@ -137,7 +139,7 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="tq-07" data-attempts="0">
 <span class="ad-mission__num">Ticket 07 · INC-1046 · Critical</span>
 <h4>Read the Log</h4>
 <p><strong>SIEM Alert · Part 2 of 5 · Automated detection · 2:06 AM</strong><br>The SIEM exported the events around the alert. The log is attached below.</p>
@@ -164,7 +166,7 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="tq-08" data-attempts="0">
 <span class="ad-mission__num">Ticket 08 · INC-1046 · Critical</span>
 <h4>Why the Privileges?</h4>
 <p><strong>SIEM Alert · Part 3 of 5 · Automated detection · 2:08 AM</strong><br>Event 4672 in the log records special privileges being assigned to Alex's new session. That is unusual for a normal user.</p>
@@ -183,7 +185,7 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="tq-09" data-attempts="0">
 <span class="ad-mission__num">Ticket 09 · INC-1046 · Critical</span>
 <h4>Mistake or Attack?</h4>
 <p><strong>SIEM Alert · Part 4 of 5 · Automated detection · 2:10 AM</strong><br>Four failed logons two seconds apart, then a success, at 2 AM, on a workstation outside IT, using the only admin account. What best explains it?<br><strong>A</strong> Alex mistyped his password four times.<br><strong>B</strong> Automated password guessing against a real account, which finally worked.<br><strong>C</strong> A scheduled maintenance task using an old credential.<br><strong>D</strong> A clock problem on the domain controller.</p>
@@ -202,7 +204,7 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="tq-10" data-attempts="0">
 <span class="ad-mission__num">Ticket 10 · INC-1046 · Critical</span>
 <h4>Your First Move</h4>
 <p><strong>SIEM Alert · Part 5 of 5 · Automated detection · 2:12 AM</strong><br>You believe the only admin account is compromised and in use on a Wealth Management machine. It is 2:12 AM. What do you do first?<br><strong>A</strong> Wipe and reimage WM-WKS07 right now.<br><strong>B</strong> Disable alex.rivera, isolate WM-WKS07 from the network, and keep the logs.<br><strong>C</strong> Email Alex and wait for an answer.<br><strong>D</strong> Clear the failed logon events so the alert stops repeating.</p>

@@ -3,10 +3,24 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookMarked, ChevronLeft, GraduationCap, Home, Menu, Moon, Sun, X } from "lucide-react";
+import { BookMarked, ChevronLeft, GraduationCap, Home, Loader2, LogOut, Menu, Moon, Sun, X } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
+import { AcademySignIn } from "@/components/academy/academy-sign-in";
+import { PurvexCoach } from "@/components/academy/purvex-coach";
+import {
+  academyFetch,
+  downloadLinkedBuildScript,
+  LINKED_SCRIPT_PATH,
+  RESULTS_CHANGED_EVENT,
+  RESULTS_OWNER_KEY,
+} from "@/lib/academy-client";
+import { clearResults, loadResults, saveResults, scorecardHtml, summarize, type MissionResult, type Results } from "@/lib/academy-score";
+import { signOut } from "@/lib/portal-auth";
+import { supabase } from "@/lib/supabase";
+
+type Student = { id: string; email: string | null };
 
 export function AcademyShell({ phases, children }: { phases: PhaseDef[]; children: React.ReactNode }) {
   const pathname = usePathname();
@@ -21,6 +35,68 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
   const [collapsed, setCollapsed] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  // undefined while the stored Supabase session is still being read.
+  const [student, setStudent] = useState<Student | null | undefined>(supabase ? undefined : null);
+
+  useEffect(() => {
+    if (!supabase) return;
+    const toStudent = (u: { id: string; email?: string | null } | null | undefined): Student | null =>
+      u ? { id: u.id, email: u.email ?? null } : null;
+    supabase.auth.getSession().then(({ data }) => setStudent(toStudent(data.session?.user)));
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      setStudent((prev) => {
+        const next = toStudent(session?.user);
+        return prev?.id === next?.id ? prev : next;
+      });
+    });
+    return () => data.subscription.unsubscribe();
+  }, []);
+
+  // Local results belong to one account. A different student on this
+  // browser starts clean; then the account's saved results are pulled from
+  // the server, or local results are pushed up if the server has none.
+  const studentId = student?.id;
+  useEffect(() => {
+    if (!studentId) return;
+    try {
+      const owner = window.localStorage.getItem(RESULTS_OWNER_KEY);
+      if (owner && owner !== studentId) clearResults();
+      window.localStorage.setItem(RESULTS_OWNER_KEY, studentId);
+    } catch {}
+    let cancelled = false;
+    academyFetch("/academy/api/progress")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled || !data) return;
+        const server: Results = data.results || {};
+        if (Object.keys(server).length > 0) {
+          saveResults(server);
+          window.dispatchEvent(new Event(RESULTS_CHANGED_EVENT));
+        } else {
+          const local = loadResults();
+          if (Object.keys(local).length > 0) {
+            academyFetch("/academy/api/progress", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ results: local }),
+            }).catch(() => {});
+          }
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [studentId]);
+
+  async function handleSignOut() {
+    clearResults();
+    try {
+      window.localStorage.removeItem(RESULTS_OWNER_KEY);
+    } catch {}
+    await signOut().catch(() => {});
+    setStudent(null);
+  }
 
   // Dark mode is scoped to the academy on purpose. The class-based .dark on
   // <html> leaks to the light-only marketing site, so this uses its own
@@ -81,7 +157,77 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       const solved = document.querySelectorAll(".ad-mission--solved").length;
       const total = missions.length;
       bar.style.width = total ? `${(solved / total) * 100}%` : "0%";
-      label.textContent = `${solved} / ${total} solved`;
+      const text = `${solved} / ${total} solved`;
+      if (label.textContent !== text) label.textContent = text;
+    };
+
+    // Readiness score: every answer is stored by mission id, then the
+    // scorecard is redrawn from what is stored.
+    const renderScore = () => {
+      const el = document.querySelector<HTMLElement>("#ad-scorecard");
+      if (!el) return;
+      const html = scorecardHtml(summarize(loadResults()));
+      if (el.dataset.sig !== html) {
+        el.innerHTML = html;
+        el.dataset.sig = html;
+      }
+    };
+
+    const syncProgress = (all: Results) => {
+      academyFetch("/academy/api/progress", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ results: all }),
+      }).catch(() => {});
+    };
+
+    const recordResult = (wrap: Element, patch: Partial<MissionResult>) => {
+      const id = wrap.getAttribute("data-id");
+      if (!id) return;
+      const all = loadResults();
+      const base: MissionResult = all[id] ?? { solved: false, wrong: 0, hint: false };
+      all[id] = { ...base, ...patch };
+      saveResults(all);
+      syncProgress(all);
+      renderScore();
+    };
+
+    // Lesson content is re-rendered when you switch tabs, so a mission comes
+    // back blank. Put back what was stored for it.
+    const restoreMission = (wrap: HTMLElement) => {
+      wrap.setAttribute("data-restored", "1");
+      const id = wrap.getAttribute("data-id");
+      const r = id ? loadResults()[id] : undefined;
+      if (!r) return;
+      wrap.setAttribute("data-attempts", String(Math.min(r.wrong, 3)));
+      const input = wrap.querySelector<HTMLInputElement>(".ad-guess__input");
+      const submit = wrap.querySelector<HTMLButtonElement>(".ad-guess__submit");
+      const feedback = wrap.querySelector<HTMLElement>(".ad-guess__feedback");
+      const reveal = wrap.querySelector<HTMLElement>(".ad-flag");
+      if (r.hint) {
+        wrap.querySelector<HTMLElement>(".ad-hint__text")?.classList.add("ad-hint__text--shown");
+        const hb = wrap.querySelector<HTMLButtonElement>(".ad-hint__btn");
+        if (hb) {
+          hb.textContent = "Hint used";
+          hb.disabled = true;
+        }
+      }
+      if (r.solved) {
+        if (input) input.disabled = true;
+        if (submit) submit.disabled = true;
+        if (feedback) {
+          feedback.textContent = "Completed earlier.";
+          feedback.className = "ad-guess__feedback ad-guess__feedback--ok";
+        }
+        reveal?.classList.add("ad-flag--shown");
+        wrap.classList.add("ad-mission--solved");
+      } else if (r.wrong >= 3) {
+        if (feedback) {
+          feedback.textContent = "Not quite, three tries used. Here's the flag.";
+          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+        }
+        reveal?.classList.add("ad-flag--shown");
+      }
     };
 
     const checkFlag = (btn: HTMLButtonElement) => {
@@ -112,12 +258,14 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         input.disabled = true;
         btn.disabled = true;
         wrap.classList.add("ad-mission--solved");
+        recordResult(wrap, { solved: true, wrong: parseInt(wrap.getAttribute("data-attempts") || "0", 10) });
         updateProgress();
         return;
       }
 
       const attempts = parseInt(wrap.getAttribute("data-attempts") || "0", 10) + 1;
       wrap.setAttribute("data-attempts", String(attempts));
+      recordResult(wrap, { wrong: attempts });
       feedback.className = "ad-guess__feedback ad-guess__feedback--err";
       if (attempts >= 3) {
         feedback.textContent = "Not quite, three tries used. Here's the flag.";
@@ -140,6 +288,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       hint.classList.add("ad-hint__text--shown");
       btn.textContent = "Hint used";
       btn.disabled = true;
+      if (wrap) recordResult(wrap, { hint: true });
     };
 
     const copyCode = (btn: HTMLButtonElement) => {
@@ -155,8 +304,27 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
+      const scriptLink = target.closest<HTMLAnchorElement>("a[href]");
+      if (scriptLink && new URL(scriptLink.href).pathname === LINKED_SCRIPT_PATH) {
+        e.preventDefault();
+        downloadLinkedBuildScript().catch(() => {
+          window.location.href = scriptLink.href;
+        });
+        return;
+      }
       const submitBtn = target.closest<HTMLButtonElement>(".ad-guess__submit");
       if (submitBtn) return checkFlag(submitBtn);
+      if (target.closest(".ad-score__reset")) {
+        clearResults();
+        academyFetch("/academy/api/progress", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ results: {} }),
+        })
+          .catch(() => {})
+          .finally(() => window.location.reload());
+        return;
+      }
       const hintBtn = target.closest<HTMLButtonElement>(".ad-hint__btn");
       if (hintBtn) return showHint(hintBtn);
       const copyBtn = target.closest<HTMLButtonElement>(".ad-code__copy");
@@ -173,15 +341,50 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       target.closest(".ad-guess")?.querySelector<HTMLButtonElement>(".ad-guess__submit")?.click();
     };
 
+    let frame = 0;
+    const sync = () => {
+      frame = 0;
+      document.querySelectorAll<HTMLElement>(".ad-mission[data-id]:not([data-restored])").forEach(restoreMission);
+      renderScore();
+      updateProgress();
+    };
+    const observer = new MutationObserver(() => {
+      if (!frame) frame = window.requestAnimationFrame(sync);
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
     document.addEventListener("click", onClick);
     document.addEventListener("keydown", onKeydown);
-    updateProgress();
+    sync();
+
+    // Results were replaced from the server: re-apply them to missions that
+    // were already restored from the older local copy.
+    const onResultsChanged = () => {
+      document.querySelectorAll(".ad-mission[data-restored]").forEach((el) => el.removeAttribute("data-restored"));
+      sync();
+    };
+    window.addEventListener(RESULTS_CHANGED_EVENT, onResultsChanged);
 
     return () => {
+      observer.disconnect();
+      if (frame) window.cancelAnimationFrame(frame);
       document.removeEventListener("click", onClick);
       document.removeEventListener("keydown", onKeydown);
+      window.removeEventListener(RESULTS_CHANGED_EVENT, onResultsChanged);
     };
   }, []);
+
+  if (student === undefined) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+      </div>
+    );
+  }
+
+  if (student === null) {
+    return <AcademySignIn configured={Boolean(supabase)} />;
+  }
 
   return (
     <AcademyProgressProvider phases={phases}>
@@ -214,6 +417,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
               </Link>
             </div>
             <div className="flex items-center gap-2">
+              <PurvexCoach />
               <Link
                 href="/academy/reference"
                 className="flex h-9 items-center gap-1.5 rounded-md border border-[var(--pvrx-border-light)] bg-white px-3 text-sm font-medium text-slate-600 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
@@ -236,6 +440,15 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
               >
                 <Home className="h-[18px] w-[18px]" />
               </Link>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                aria-label="Sign out"
+                title={student.email ? `Signed in as ${student.email}. Sign out` : "Sign out"}
+                className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] bg-white text-slate-500 transition hover:border-[rgba(229,72,77,0.35)] hover:text-[#e5484d]"
+              >
+                <LogOut className="h-[18px] w-[18px]" />
+              </button>
             </div>
           </div>
         </header>

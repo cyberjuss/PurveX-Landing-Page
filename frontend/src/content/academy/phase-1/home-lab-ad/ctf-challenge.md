@@ -19,7 +19,9 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <span id="ad-progress-label" class="ad-progress__label">0 / 10 solved</span>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div id="ad-scorecard" class="ad-scorecard"></div>
+
+<div class="ad-mission" data-id="d1-01" data-attempts="0">
 <span class="ad-mission__num">Task 01 · Find an Account</span>
 <h4>Which Group Is Jordan In?</h4>
 <p>Which department group is <code>jordan.ellis</code> in?</p>
@@ -37,7 +39,7 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="d1-02" data-attempts="0">
 <span class="ad-mission__num">Task 02 · Find Who Has Admin Rights</span>
 <h4>Who Is an Admin?</h4>
 <p>Who is in the <code>IT Admins</code> group?</p>
@@ -55,7 +57,7 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="d1-03" data-attempts="0">
 <span class="ad-mission__num">Task 03 · Find Where Things Live</span>
 <h4>Where Are the Access Groups?</h4>
 <p><code>Server Admins</code> and <code>Helpdesk</code> are not inside <code>Departments</code>. Which top-level OU holds them?</p>
@@ -73,7 +75,7 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="d1-04" data-attempts="0">
 <span class="ad-mission__num">Task 04 · Spot the Default Folder</span>
 <h4>The Folder That Is Not an OU</h4>
 <p>One default folder sits beside your OUs, and Group Policy cannot be linked to it. What is it called, exactly as AD writes it?</p>
@@ -91,7 +93,7 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="d1-05" data-attempts="0">
 <span class="ad-mission__num">Task 05 · Read a Description</span>
 <h4>What Is the Admin Group For?</h4>
 <p>The <code>IT Admins</code> group has a written description. Which role is it meant for? Use dashes between words.</p>
@@ -109,7 +111,7 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="d1-06" data-attempts="0">
 <span class="ad-mission__num">Task 06 · Titles Are Not Access</span>
 <h4>Is Priya on the Help Desk Group?</h4>
 <p>Priya Nair's title is "Help Desk Technician." Is she a member of the <code>Helpdesk</code> group? Type <code>yes</code> or <code>no</code>.</p>
@@ -127,7 +129,7 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="d1-07" data-attempts="0">
 <span class="ad-mission__num">Task 07 · Find by Title</span>
 <h4>Who Is the Settlements Coordinator?</h4>
 <p>Who has the title <strong>Settlements Coordinator</strong>?</p>
@@ -145,7 +147,7 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="d1-08" data-attempts="0">
 <span class="ad-mission__num">Task 08 · Find a Computer</span>
 <h4>What Is the Workstation Called?</h4>
 <p>What is the exact name of the computer object in the IT department's <code>Workstations</code> OU?</p>
@@ -163,7 +165,7 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 </div>
 </div>
 
-<div class="ad-mission" data-attempts="0">
+<div class="ad-mission" data-id="d1-09" data-attempts="0">
 <span class="ad-mission__num">Task 09 · Count a Group</span>
 <h4>How Many People Are in Compliance?</h4>
 <p>How many members does the <code>Compliance Users</code> group have?</p>
@@ -181,7 +183,7 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="d1-10" data-attempts="0">
 <span class="ad-mission__num">Task 10 · Day One Complete</span>
 <h4>How Many Departments Are There?</h4>
 <p>How many department OUs sit directly under <code>Departments</code>?</p>

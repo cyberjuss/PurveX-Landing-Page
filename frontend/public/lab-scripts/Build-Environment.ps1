@@ -9,6 +9,10 @@
     Run on the domain controller after Install-Forest.ps1. It is safe to
     re-run. Anything that already exists is skipped.
 
+    When downloaded from PurveX Academy, it also syncs a read-only summary
+    of the lab OUs (never passwords) to your Academy account so PurveX Coach
+    can see your lab.
+
 .PARAMETER InitialPassword
     Initial password for new accounts. You are prompted if it is omitted.
     Every account must change it at next logon.
@@ -23,7 +27,9 @@
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
     [System.Security.SecureString]$InitialPassword,
-    [switch]$IncludeCTF
+    [switch]$IncludeCTF,
+    [string]$PurvexKey = "",
+    [string]$PurvexUrl = ""
 )
 
 Import-Module ActiveDirectory -ErrorAction Stop
@@ -203,6 +209,92 @@ function Ensure-CTFChallengeData {
     Ensure-Computer -Name "OPS-WKS03" -OUPath $opsWorkstationsOU -Description "CTF-TICKET-201: Dormant Operations workstation. Check whether this asset still belongs in scope."
 }
 
+function Send-PurvexLabSnapshot {
+    param([string]$Key, [string]$Url, [string]$DomainDN)
+    $ErrorActionPreference = "Stop"
+
+    $domainSuffix = [regex]::Escape(",$DomainDN") + '$'
+    $relative = { param($dn) (($dn -split '(?<!\\),', 2)[1]) -replace $domainSuffix, '' }
+    $short = { param($dn) (($dn -split '(?<!\\),', 2)[0] -replace '^(CN|OU)=', '') -replace '\\,', ',' }
+    $date = { param($v) if ($v) { ([datetime]$v).ToUniversalTime().ToString("o") } else { $null } }
+
+    $roots = @("Departments", "AccessLevels", "ServiceAccounts") |
+        ForEach-Object { "OU=$_,$DomainDN" } |
+        Where-Object { Get-ADOrganizationalUnit -Filter "DistinguishedName -eq '$_'" -ErrorAction SilentlyContinue }
+
+    $ous = @(); $users = @(); $groups = @(); $computers = @()
+    foreach ($root in $roots) {
+        $ous += Get-ADOrganizationalUnit -SearchBase $root -Filter * -Properties Description | ForEach-Object {
+            [ordered]@{ path = ($_.DistinguishedName -replace $domainSuffix, ''); description = $_.Description }
+        }
+        $users += Get-ADUser -SearchBase $root -Filter * -Properties Title, Department, Description, Enabled, LockedOut, BadLogonCount, PasswordNeverExpires, PasswordExpired, LastLogonDate, MemberOf | ForEach-Object {
+            [ordered]@{
+                sam                  = $_.SamAccountName
+                name                 = $_.Name
+                title                = $_.Title
+                department           = $_.Department
+                description          = $_.Description
+                container            = & $relative $_.DistinguishedName
+                enabled              = [bool]$_.Enabled
+                lockedOut            = [bool]$_.LockedOut
+                badLogonCount        = [int]$_.BadLogonCount
+                passwordNeverExpires = [bool]$_.PasswordNeverExpires
+                passwordExpired      = [bool]$_.PasswordExpired
+                lastLogon            = & $date $_.LastLogonDate
+                memberOf             = @($_.MemberOf | ForEach-Object { & $short $_ })
+            }
+        }
+        $groups += Get-ADGroup -SearchBase $root -Filter * -Properties Description, Members | ForEach-Object {
+            [ordered]@{
+                name        = $_.Name
+                scope       = "$($_.GroupScope)"
+                category    = "$($_.GroupCategory)"
+                description = $_.Description
+                container   = & $relative $_.DistinguishedName
+                members     = @($_.Members | ForEach-Object { & $short $_ })
+            }
+        }
+        $computers += Get-ADComputer -SearchBase $root -Filter * -Properties Description, Enabled, LastLogonDate | ForEach-Object {
+            [ordered]@{
+                name        = $_.Name
+                description = $_.Description
+                container   = & $relative $_.DistinguishedName
+                enabled     = [bool]$_.Enabled
+                lastLogon   = & $date $_.LastLogonDate
+            }
+        }
+    }
+
+    $domainAdmins = Get-ADGroup -Identity "Domain Admins" -Properties Members -ErrorAction SilentlyContinue
+    if ($domainAdmins) {
+        $groups += [ordered]@{
+            name        = "Domain Admins"
+            scope       = "$($domainAdmins.GroupScope)"
+            category    = "$($domainAdmins.GroupCategory)"
+            description = "Built-in: full control of the domain."
+            container   = & $relative $domainAdmins.DistinguishedName
+            members     = @($domainAdmins.Members | ForEach-Object { & $short $_ })
+        }
+    }
+
+    $snapshot = [ordered]@{
+        version    = 1
+        capturedAt = (Get-Date).ToUniversalTime().ToString("o")
+        domain     = [ordered]@{ dnsRoot = $domain.DNSRoot; netbios = $domain.NetBIOSName }
+        ous        = @($ous)
+        users      = @($users)
+        groups     = @($groups)
+        computers  = @($computers)
+    }
+    $json = $snapshot | ConvertTo-Json -Depth 6 -Compress
+
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    Invoke-RestMethod -Method Post -Uri ($Url.TrimEnd("/") + "/api/academy/lab-state") -TimeoutSec 20 `
+        -Headers @{ Authorization = "Bearer $Key" } `
+        -ContentType "application/json; charset=utf-8" `
+        -Body ([System.Text.Encoding]::UTF8.GetBytes($json)) | Out-Null
+}
+
 Write-Host "`n== Top-level OUs ==" -ForegroundColor Cyan
 $departmentsOU  = Ensure-OU -Name "Departments"  -ParentDN $domainDN -Description "Top-level container for all department OUs."
 $accessLevelsOU = Ensure-OU -Name "AccessLevels" -ParentDN $domainDN -Description "Domain-wide access-level groups (Server Admins, Helpdesk), separate from department membership."
@@ -268,6 +360,10 @@ Ensure-Computer -Name $computerName -OUPath $itWorkstationsOU -Description "Stan
 
 if ($IncludeCTF) {
     Ensure-CTFChallengeData -DeptOUPaths $deptOUPaths -DomainDN $domainDN -AccessLevelsOU $accessLevelsOU -Password $InitialPassword
+}
+
+if ($PurvexKey -and $PurvexUrl -and -not $WhatIfPreference) {
+    try { Send-PurvexLabSnapshot -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN } catch { }
 }
 
 Write-Host "`nDone. Verify with: Get-ADOrganizationalUnit -Filter * | Where-Object DistinguishedName -like '*Departments*'" -ForegroundColor Cyan
