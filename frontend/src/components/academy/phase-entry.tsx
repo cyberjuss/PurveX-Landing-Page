@@ -11,15 +11,16 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
   // Every section that has one authored its own Essential Question, but a
   // page only needs to ask it once -- so pull the first one out to show
   // at the top and strip the block from every section's body.
-  let essentialQuestion: string | null = null;
-  const sections = entry.sections
+  const parsed = entry.sections
     .map((section: ContentSection) => {
       const raw = loadLesson(section.file);
-      if (!raw) return { ...section, markdown: raw };
+      if (!raw) return { section: { ...section, markdown: raw }, question: null };
       const { question, rest } = extractEssentialQuestion(raw);
-      if (question && !essentialQuestion) essentialQuestion = question;
-      return { ...section, markdown: rest };
-    })
+      return { section: { ...section, markdown: rest }, question };
+    });
+  const essentialQuestion = parsed.find((item) => item.question)?.question ?? null;
+  const sections = parsed
+    .map((item) => item.section)
     .filter((s) => s.markdown && s.markdown.trim().length > 0);
   const quiz = findQuiz(phase.slug, entry.slug);
 

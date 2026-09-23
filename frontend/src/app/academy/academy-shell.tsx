@@ -69,6 +69,13 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       const normalize = (s: string) => s.trim().toLowerCase().replace(/^gtf\{|\}$/g, "").replace(/\s+/g, "-");
       const guess = normalize(input.value);
 
+      if (!guess) {
+        feedback.textContent = "Enter an answer first. Blank submissions do not use an attempt.";
+        feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+        input.focus();
+        return;
+      }
+
       if (guess === normalize(answer)) {
         feedback.textContent = "Correct — nice work.";
         feedback.className = "ad-guess__feedback ad-guess__feedback--ok";

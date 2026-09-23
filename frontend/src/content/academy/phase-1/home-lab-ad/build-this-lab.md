@@ -104,10 +104,11 @@ After the reboot, log back in as `GOVTECHFINANCIAL\Administrator` and run this s
 * Pre-stages the `IT-WKS01` computer object
 * Prompts once for an initial password; every account is forced to change it at next logon, so nobody keeps that password long-term
 * Safe to run more than once: it only creates what's missing, and never resets or deletes anything that already exists
+* Optional: add `-IncludeCTF` to plant ticket-queue challenge objects after the clean baseline is built
 
 [Download Build-Environment.ps1](/lab-scripts/Build-Environment.ps1)
 
-You can also copy it straight from here:
+You can also copy the clean baseline version from here. Use the downloadable script above when you want the optional `-IncludeCTF` ticket data.
 
 <details class="ad-code">
 <summary>Show Build-Environment.ps1 (copy/paste)</summary>
@@ -369,6 +370,14 @@ To see exactly what the script is about to do before committing to it, run it wi
 ```
 
 If the script won't run, see the Troubleshooting tab for the three most common causes and their fixes.
+
+To add the optional ticket-queue challenge data, run the same script with the CTF switch:
+
+```powershell
+./Build-Environment.ps1 -IncludeCTF
+```
+
+This adds a service-account OU, a backup service account, a firm-wide group with one intentional membership gap, and a few workstation/user descriptions that back the Ticket Queue challenge. Use this after you understand the clean baseline.
 
 ### Step 3 — Verify It Built Correctly
 

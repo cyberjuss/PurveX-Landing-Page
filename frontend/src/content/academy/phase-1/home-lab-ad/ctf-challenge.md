@@ -9,6 +9,11 @@ You've read the org chart, the access levels, the data categories, and the Activ
 
 Every answer is one word or a short phrase, lowercase, with spaces or dashes both working. Each mission gives you one free hint on request, plus three tries at the flag, which unlocks either way once your tries are up, so you're never stuck. No login, no submission, no leaderboard: this is entirely for you.
 
+<div class="ad-answer-guide">
+<span class="ad-answer-guide__label">Answer format</span>
+<p>Type the finding, not a sentence. For example, Mission 10 accepts <code>wrong-department</code>, <code>wrong department</code>, or the full flag wrapper <code>GTF{wrong-department}</code>.</p>
+</div>
+
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
 <span id="ad-progress-label" class="ad-progress__label">0 / 10 solved</span>
@@ -170,11 +175,36 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <p><code>GTF{wrong-department}</code></p>
-<p>Alex Rivera's account lives in <code>OU=IT</code>, not Wealth Management, so there's no organizational reason for him to authenticate from a workstation in a different department. Two more facts make it worse: Wealth Management is one of GovTechFinancial's three critical departments, handling data an attacker would target, and 2 AM falls outside any reasonable business-hours pattern. That's three reasons to flag one login, and none of them required a single log entry. That's the instinct this course is built to teach.</p>
+<p>The baseline mismatch is the answer: Alex Rivera belongs to <code>OU=IT</code>, but the login came from a Wealth Management workstation.</p>
+<ul class="ad-baseline-list">
+<li><strong>Identity baseline:</strong> Alex's account lives in IT.</li>
+<li><strong>Asset baseline:</strong> the workstation belongs to Wealth Management.</li>
+<li><strong>Business baseline:</strong> Wealth Management is a critical department, and 2:00 AM is outside a normal work pattern.</li>
+</ul>
+<p>That is enough to flag the login before opening a single log entry. The point is not memorizing a flag; it is noticing when identity, department, asset, and time do not line up.</p>
 </div>
 </div>
 
 <style>
+.ad-answer-guide {
+  display: grid;
+  gap: 0.35rem;
+  margin: 1rem 0 1.35rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(85,70,224,0.22);
+  border-left: 3px solid #5546e0;
+  border-radius: 10px;
+  background: rgba(85,70,224,0.055);
+}
+.ad-answer-guide__label {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #5546e0;
+}
+.ad-answer-guide p { margin: 0; font-size: 0.9rem; color: var(--pvrx-text-secondary-light); }
 .ad-progress { display: flex; align-items: center; gap: 0.85rem; margin: 1.25rem 0 1.75rem; }
 .ad-progress__track { flex: 1; height: 8px; border-radius: 999px; background: var(--pvrx-border-light); overflow: hidden; }
 .ad-progress__bar { height: 100%; width: 0%; border-radius: 999px; background: linear-gradient(90deg, #6a5cff, #5546e0); transition: width 0.4s ease; }
@@ -248,4 +278,10 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 .ad-flag--shown { display: block; }
 .ad-flag p, .ad-flag ul { font-size: 0.9rem; }
 .ad-flag code { font-weight: 650; }
+.ad-baseline-list {
+  margin: 0.75rem 0;
+  padding-left: 1.1rem;
+}
+.ad-baseline-list li { margin: 0.35rem 0; color: var(--pvrx-text-secondary-light); }
+.ad-baseline-list strong { color: var(--pvrx-text-primary-light); }
 </style>

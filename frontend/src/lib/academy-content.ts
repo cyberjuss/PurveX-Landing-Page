@@ -102,6 +102,7 @@ const phase1HomeLab: HomeLabDef = {
     { label: "The Client Workstation", file: "phase-1/home-lab-ad/client-workstation.md" },
     { label: "Environment Stats", file: "phase-1/home-lab-ad/environment-stats.md" },
     { label: "Challenge: Operation Day One", file: "phase-1/home-lab-ad/ctf-challenge.md" },
+    { label: "Challenge: Ticket Queue", file: "phase-1/home-lab-ad/ticket-queue-challenge.md" },
   ],
 };
 
