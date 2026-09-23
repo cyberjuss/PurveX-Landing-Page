@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BookOpen, Radar, Siren, type LucideIcon } from "lucide-react";
+import { ArrowRight, BookOpen, LifeBuoy, Radar, Siren, type LucideIcon } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
 import { useAcademyProgress } from "./academy-progress";
 
@@ -18,6 +18,16 @@ interface PhaseCardConfig {
 }
 
 const PHASE_CARDS: PhaseCardConfig[] = [
+  {
+    slug: "phase-0",
+    href: "/academy/phase-0",
+    icon: LifeBuoy,
+    tag: "Phase 0",
+    title: "Help Desk Fundamentals",
+    body: "Troubleshooting methodology, ticket documentation, and the accounts/access issues you'll actually get tickets for.",
+    accent: "#0f9d58",
+    accentSoft: "rgba(15,157,88,0.1)",
+  },
   {
     slug: "phase-1",
     href: "/academy/phase-1",

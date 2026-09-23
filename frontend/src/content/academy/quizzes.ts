@@ -13,6 +13,67 @@ export interface Quiz {
 
 export const quizzes: Quiz[] = [
   {
+    phaseSlug: "phase-0",
+    weekSlug: "week-1",
+    questions: [
+      {
+        question: "A user says \"the internet is down.\" What is the right next move?",
+        options: [
+          "Reboot their machine immediately",
+          "Ask specific questions to pin down the actual symptom before doing anything",
+          "Reset their password, since that fixes most tickets",
+          "Escalate immediately, since network issues are never Help Desk's job",
+        ],
+        correctIndex: 1,
+        explanation: "Users describe the effect, not the cause, and their guess at the cause is usually wrong. \"The internet is down\" could mean a browser can't resolve a hostname, Outlook won't send, or the whole machine lost its network connection. You can't know which until you ask.",
+      },
+      {
+        question: "Why is \"what changed?\" considered the single highest-value troubleshooting question?",
+        options: [
+          "It is not that useful, most problems have no clear cause",
+          "A working system that breaks almost always broke because something changed, so finding that change usually finds the cause",
+          "It only matters for security investigations, not routine tickets",
+          "It replaces the need to test a theory before making a fix",
+        ],
+        correctIndex: 1,
+        explanation: "A system working yesterday and broken today has a cause, and that cause is almost always something that changed in between: an update, an expired password, a moved cable, a policy push. If the user is not aware of any change, that itself points toward something changing upstream.",
+      },
+      {
+        question: "Why test a theory before making a change, instead of just trying a fix and seeing if it works?",
+        options: [
+          "Testing wastes time compared to just trying fixes",
+          "An unconfirmed guess can take several attempts, while a confirmed cause usually takes one fix, and you actually know what fixed it",
+          "It is only necessary on servers, never on a single user's machine",
+          "Users expect to see you working, so testing first looks unresponsive",
+        ],
+        correctIndex: 1,
+        explanation: "Applying fixes without confirming the cause first means you might fix the wrong thing, or fix several things at once without knowing which one actually worked, so the same symptom returns later with no lead on the real cause.",
+      },
+      {
+        question: "\"Fixed printer issue\" is a complete example of what a Help Desk ticket note should contain. True or false?",
+        options: [
+          "True, brevity is what tickets are supposed to be",
+          "False, a good note needs the specific symptom, what was checked, what was changed, and how it was confirmed fixed",
+          "True, as long as the ticket is marked resolved",
+          "False, but only because it is missing a timestamp",
+        ],
+        correctIndex: 1,
+        explanation: "A vague note like \"fixed printer issue\" tells the next person nothing: which printer, what was wrong, what was actually done, or whether it is really fixed. A useful note records the real symptom, what was checked (including things ruled out), what changed, and how it was verified from the user's side.",
+      },
+      {
+        question: "A user is locked out right after changing their password. Failed logon attempts (Event ID 4625) keep appearing every 15 minutes from the user's own phone, even after you unlock the account. What is most likely happening?",
+        options: [
+          "The user is lying about changing their password",
+          "The user's phone still has the old password saved and is silently retrying it, relocking the account",
+          "This always means the account is compromised and must be disabled immediately",
+          "Event ID 4625 only appears for successful logons, so this is unrelated",
+        ],
+        correctIndex: 1,
+        explanation: "A device with a saved old credential (a phone mail profile, a mapped drive, a scheduled task) will keep retrying automatically without the user realizing it, relocking the account shortly after every unlock. The fix is not just unlocking the account, it is updating the stale credential on that device too.",
+      },
+    ],
+  },
+  {
     phaseSlug: "phase-1",
     weekSlug: "week-1",
     questions: [
