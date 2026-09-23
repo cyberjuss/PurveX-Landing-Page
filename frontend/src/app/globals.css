@@ -2798,7 +2798,14 @@ body:has(.lp) {
   background-size: 22px 22px;
   mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%);
 }
-.academy-bg > * { position: relative; z-index: 1 }
+/* :not(header) -- the site header is sticky (position: sticky, z-40, set
+   inline via Tailwind classes in academy-shell.tsx). This rule and those
+   utility classes have equal selector specificity, so whichever landed
+   later in the compiled stylesheet was silently winning; when it was this
+   rule, the header's position got knocked back to "relative" and it
+   scrolled away instead of staying pinned. Excluding header here removes
+   the conflict instead of relying on cascade order. */
+.academy-bg > *:not(header) { position: relative; z-index: 1 }
 
 /* Academy lesson content -- rendered from marked's HTML output
    (src/lib/markdown.tsx), scoped so it doesn't leak into the rest of the
