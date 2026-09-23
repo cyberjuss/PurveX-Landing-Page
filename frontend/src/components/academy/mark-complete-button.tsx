@@ -26,7 +26,7 @@ export function MarkCompleteButton({ phaseSlug, entrySlug }: { phaseSlug: string
       }
     >
       <span className="ax-complete__box">{done && <Check className="h-3 w-3" strokeWidth={3} />}</span>
-      {done ? "Complete" : locked ? "Pass the quiz to complete" : "Mark as complete"}
+      {done ? "Complete" : locked ? "Quiz first" : "Mark complete"}
     </button>
   );
 }

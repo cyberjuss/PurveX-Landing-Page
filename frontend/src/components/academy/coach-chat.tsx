@@ -151,30 +151,34 @@ function briefing(results: Results) {
   const next = missions.find((m) => !results[m.id]);
   const gap = s.finished > 0 ? s.focus[0] : undefined;
 
-  const starters: string[] = [];
-  if (missed) starters.push(`Walk me through "${missed.title}" without giving it away.`);
-  if (next) starters.push(`How do I start "${next.title}"?`);
-  if (gap) starters.push(`Give me a 15-minute drill for ${gap.label}.`);
-  starters.push("How do I check a user's groups in Active Directory Users and Computers?");
+  const starters: { ask: string; action: string; title: string }[] = [];
+  if (missed) starters.push({ ask: `Walk me through "${missed.title}" without giving it away.`, action: "Help", title: missed.title });
+  if (next) starters.push({ ask: `How do I start "${next.title}"?`, action: "Start", title: next.title });
+  if (gap) starters.push({ ask: `Give me a 15-minute drill for ${gap.label}.`, action: "Drill", title: gap.label });
+  starters.push({
+    ask: "How do I check a user's groups in Active Directory Users and Computers?",
+    action: "How-to",
+    title: "Check groups in ADUC",
+  });
 
   return {
     score: s.finished === 0 ? null : s.overall,
     level: LEVELS[s.level].label,
-    gap: gap?.label,
-    next: next?.title,
     starters: starters.slice(0, 3),
   };
 }
 
 export function CoachHeader({ children }: { children?: ReactNode }) {
   const { messages, clear, busy } = useCoach();
+  const brief = briefing(useResults());
   return (
     <div className="pc-head">
       <div className="min-w-0">
-        <p className="pc-head__kicker">Academy</p>
-        <p className="pc-head__title">PurveX Coach</p>
+        <p className="pc-head__kicker">Hey</p>
+        <p className="pc-head__title">Coach</p>
       </div>
-      <div className="flex shrink-0 items-center gap-1.5">
+      <div className="flex shrink-0 items-center gap-2">
+        <span className="pc-stamp">{brief.score === null ? "––" : brief.score}</span>
         {messages.length > 0 && (
           <button type="button" onClick={clear} disabled={busy} className="pc-icon" aria-label="New conversation" title="New conversation">
             <RotateCcw className="h-4 w-4" />
@@ -216,31 +220,17 @@ export function CoachChat() {
       <div ref={listRef} className="pc-scroll min-h-0 flex-1 overflow-y-auto px-5 py-5">
         {messages.length === 0 && (
           <div className="pc-open">
-            <p className="pc-lede">
-              Click path first, then the command if you want it. Mission answers you find yourself.
-            </p>
-            <div className="pc-stat">
-              <p className="pc-kicker">Readiness</p>
-              <p className="pc-stat__num">{brief.score === null ? "—" : brief.score}</p>
-              <p className="pc-stat__lvl">{brief.level}</p>
-            </div>
-            <dl className="pc-meta">
-              <div>
-                <dt>Biggest gap</dt>
-                <dd>{brief.gap ?? "None yet"}</dd>
-              </div>
-              <div>
-                <dt>Next</dt>
-                <dd>{brief.next ?? "All missions attempted"}</dd>
-              </div>
-            </dl>
-            <p className="pc-eyebrow">Start here</p>
-            <ol className="pc-ledger">
+            <h2 className="pc-ask">Stuck?</h2>
+            <p className="pc-lede">I walk the clicks. You find the flags.</p>
+            <ol className="pc-prompts">
               {brief.starters.map((s, i) => (
-                <li key={s}>
-                  <button type="button" disabled={blocked} onClick={() => send(s)} className="pc-starter">
-                    <span className="pc-ledger__n">{String(i + 1).padStart(2, "0")}</span>
-                    <span>{s}</span>
+                <li key={s.ask}>
+                  <button type="button" disabled={blocked} onClick={() => send(s.ask)} className="pc-prompt">
+                    <span className="pc-prompt__n">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="pc-prompt__body">
+                      <em>{s.action}</em>
+                      <strong>{s.title}</strong>
+                    </span>
                   </button>
                 </li>
               ))}
@@ -294,7 +284,7 @@ export function CoachChat() {
                 submit();
               }
             }}
-            placeholder={remaining === 0 ? "Out of questions for today" : "Ask about a mission, a ticket, or a console…"}
+            placeholder={remaining === 0 ? "That's all for today" : "What's up?"}
             maxLength={2000}
             disabled={!enabled || remaining === 0}
           />
@@ -303,12 +293,8 @@ export function CoachChat() {
           </button>
         </div>
         <p className="pc-compose__hint">
-          <span>Enter to send · Shift + Enter for a new line</span>
-          {remaining !== null && (
-            <span>
-              {remaining}/{limit} today
-            </span>
-          )}
+          <span>Enter sends</span>
+          {remaining !== null && <span>{remaining} left</span>}
         </p>
       </form>
     </div>
