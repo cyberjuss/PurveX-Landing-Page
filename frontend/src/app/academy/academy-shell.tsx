@@ -8,13 +8,6 @@ import type { PhaseDef } from "@/lib/academy-content";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
 
-declare global {
-  interface Window {
-    pvrxCheckFlag: (btn: HTMLButtonElement, answer: string) => void;
-    pvrxShowHint: (btn: HTMLButtonElement) => void;
-  }
-}
-
 export function AcademyShell({ phases, children }: { phases: PhaseDef[]; children: React.ReactNode }) {
   const pathname = usePathname();
   // The course sidebar is itself a "pick a phase, then a week" nav -- on the
@@ -35,14 +28,20 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // CTF-style flag checker for challenge lessons (e.g. Operation Day One).
-  // Those lessons are markdown rendered through dangerouslySetInnerHTML, so
-  // a <script> tag inside them would never execute -- the browser silently
-  // ignores scripts inserted that way. Defining the checker once here, on a
-  // component that's part of the real React tree, and having the markdown's
-  // buttons call it via a plain onclick="" attribute (which does fire) is
-  // what makes a 3-attempts-before-the-answer quiz possible from static
-  // content. Attempt count and solved state live on the mission's own
+  // CTF-style flag checker for challenge lessons (e.g. Operation Day One),
+  // plus the copy-to-clipboard buttons on downloadable scripts. Those
+  // lessons are markdown rendered through dangerouslySetInnerHTML, so a
+  // <script> tag inside them would never execute -- the browser silently
+  // ignores scripts inserted that way. This used to work around that with
+  // a plain onclick="" attribute on each button, calling a function
+  // defined here on window. That's exactly what the production CSP's
+  // "script-src-attr 'none'" exists to block (inline event-handler
+  // attributes are a classic XSS vector), so every onclick in that
+  // markdown was silently a no-op in production while looking fine in
+  // dev, where the CSP is relaxed. Delegated listeners attached here
+  // achieve the same thing without any inline handler in the HTML: one
+  // click/keydown listener on the document, matched by class name.
+  // Attempt count and solved state still live on the mission's own
   // data-* attributes -- there's no server, so "state" is just the DOM.
   useEffect(() => {
     const updateProgress = () => {
@@ -56,9 +55,10 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       label.textContent = `${solved} / ${total} solved`;
     };
 
-    window.pvrxCheckFlag = (btn, answer) => {
+    const checkFlag = (btn: HTMLButtonElement) => {
+      const answer = btn.dataset.answer;
       const wrap = btn.closest(".ad-mission");
-      if (!wrap) return;
+      if (!answer || !wrap) return;
       const input = wrap.querySelector<HTMLInputElement>(".ad-guess__input");
       const feedback = wrap.querySelector<HTMLElement>(".ad-guess__feedback");
       const reveal = wrap.querySelector<HTMLElement>(".ad-flag");
@@ -94,7 +94,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
     // A mission gets exactly one hint, separate from its three guesses --
     // asking for a nudge shouldn't cost you an attempt at the real answer.
-    window.pvrxShowHint = (btn) => {
+    const showHint = (btn: HTMLButtonElement) => {
       const wrap = btn.closest(".ad-mission");
       const hint = wrap?.querySelector<HTMLElement>(".ad-hint__text");
       if (!hint) return;
@@ -103,7 +103,45 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       btn.disabled = true;
     };
 
+    const copyCode = (btn: HTMLButtonElement) => {
+      const code = btn.closest(".ad-code")?.querySelector("code")?.innerText;
+      if (!code) return;
+      navigator.clipboard.writeText(code);
+      const original = btn.textContent;
+      btn.textContent = "Copied";
+      setTimeout(() => {
+        btn.textContent = original || "Copy";
+      }, 1500);
+    };
+
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const submitBtn = target.closest<HTMLButtonElement>(".ad-guess__submit");
+      if (submitBtn) return checkFlag(submitBtn);
+      const hintBtn = target.closest<HTMLButtonElement>(".ad-hint__btn");
+      if (hintBtn) return showHint(hintBtn);
+      const copyBtn = target.closest<HTMLButtonElement>(".ad-code__copy");
+      if (copyBtn) return copyCode(copyBtn);
+    };
+
+    // Enter in the answer field submits, same as clicking the button next
+    // to it -- .click() still dispatches a real, bubbling click event, so
+    // it's caught by the same delegated onClick above.
+    const onKeydown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (e.key !== "Enter" || !target.matches(".ad-guess__input")) return;
+      e.preventDefault();
+      target.closest(".ad-guess")?.querySelector<HTMLButtonElement>(".ad-guess__submit")?.click();
+    };
+
+    document.addEventListener("click", onClick);
+    document.addEventListener("keydown", onKeydown);
     updateProgress();
+
+    return () => {
+      document.removeEventListener("click", onClick);
+      document.removeEventListener("keydown", onKeydown);
+    };
   }, []);
 
   return (

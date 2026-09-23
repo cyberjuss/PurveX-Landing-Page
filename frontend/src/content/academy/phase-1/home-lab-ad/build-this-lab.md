@@ -37,7 +37,7 @@ You can also copy it straight from here:
 <summary>Show Install-Forest.ps1 (copy/paste)</summary>
 <div class="ad-code__bar">
 <span class="ad-code__label">Install-Forest.ps1</span>
-<button type="button" class="ad-code__copy" onclick="const code=this.closest('.ad-code').querySelector('code').innerText; navigator.clipboard.writeText(code); const b=this; b.textContent='Copied'; setTimeout(()=>{b.textContent='Copy';},1500);">Copy</button>
+<button type="button" class="ad-code__copy">Copy</button>
 </div>
 <pre><code>#Requires -RunAsAdministrator
 &lt;#
@@ -113,7 +113,7 @@ You can also copy it straight from here:
 <summary>Show Build-Environment.ps1 (copy/paste)</summary>
 <div class="ad-code__bar">
 <span class="ad-code__label">Build-Environment.ps1</span>
-<button type="button" class="ad-code__copy" onclick="const code=this.closest('.ad-code').querySelector('code').innerText; navigator.clipboard.writeText(code); const b=this; b.textContent='Copied'; setTimeout(()=>{b.textContent='Copy';},1500);">Copy</button>
+<button type="button" class="ad-code__copy">Copy</button>
 </div>
 <pre class="ad-code__pre--tall"><code>#Requires -RunAsAdministrator
 #Requires -Modules ActiveDirectory

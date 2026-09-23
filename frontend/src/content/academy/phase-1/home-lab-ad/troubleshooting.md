@@ -20,7 +20,7 @@ Three errors account for almost every "it won't run" report. They're easy to fix
 <div class="ad-code">
 <div class="ad-code__bar">
 <span class="ad-code__label">PowerShell</span>
-<button type="button" class="ad-code__copy" onclick="const code=this.closest('.ad-code').querySelector('code').innerText; navigator.clipboard.writeText(code); const b=this; b.textContent='Copied'; setTimeout(()=>{b.textContent='Copy';},1500);">Copy</button>
+<button type="button" class="ad-code__copy">Copy</button>
 </div>
 <pre><code>Unblock-File -Path .\Build-Environment.ps1</code></pre>
 </div>
@@ -32,7 +32,7 @@ Three errors account for almost every "it won't run" report. They're easy to fix
 <div class="ad-code">
 <div class="ad-code__bar">
 <span class="ad-code__label">PowerShell</span>
-<button type="button" class="ad-code__copy" onclick="const code=this.closest('.ad-code').querySelector('code').innerText; navigator.clipboard.writeText(code); const b=this; b.textContent='Copied'; setTimeout(()=>{b.textContent='Copy';},1500);">Copy</button>
+<button type="button" class="ad-code__copy">Copy</button>
 </div>
 <pre><code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code></pre>
 </div>

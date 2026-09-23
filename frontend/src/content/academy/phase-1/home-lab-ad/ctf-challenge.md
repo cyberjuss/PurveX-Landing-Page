@@ -18,10 +18,10 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <span class="ad-mission__num">Mission 01</span>
 <h4>Recon</h4>
 <p>Find Jordan Ellis's account. What security group is he a member of?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn" onclick="window.pvrxShowHint(this)">Get a hint</button><p class="ad-hint__text">Use the Find dialog to locate the account, then check its Member Of tab.</p></div>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Use the Find dialog to locate the account, then check its Member Of tab.</p></div>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
-<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{finance-accounting-users}')">Submit</button>
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{finance-accounting-users}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -34,10 +34,10 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <span class="ad-mission__num">Mission 02</span>
 <h4>The Odd One Out</h4>
 <p>Every one of the nine users belongs to exactly one standard-access group, except one person, who belongs to two. What's that second, more privileged group?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn" onclick="window.pvrxShowHint(this)">Get a hint</button><p class="ad-hint__text">Every department has one standard group. Only one person here has two, and he's in IT.</p></div>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Every department has one standard group. Only one person here has two, and he's in IT.</p></div>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
-<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{it-admins}')">Submit</button>
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{it-admins}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -50,10 +50,10 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <span class="ad-mission__num">Mission 03</span>
 <h4>Access, Not Department</h4>
 <p><code>Server Admins</code> and <code>Helpdesk</code> (Level 2 and Level 3) live in their own OU, not nested inside <code>Departments</code> alongside IT, Compliance, and the rest. Which OU?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn" onclick="window.pvrxShowHint(this)">Get a hint</button><p class="ad-hint__text">Ask what Server Admins and Helpdesk actually control. Is it tied to one department, or the whole domain?</p></div>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Ask what Server Admins and Helpdesk actually control. Is it tied to one department, or the whole domain?</p></div>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
-<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{accesslevels}')">Submit</button>
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{accesslevels}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -66,10 +66,10 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <span class="ad-mission__num">Mission 04</span>
 <h4>The Container Trap</h4>
 <p>Every fresh domain ships with a default container that new accounts land in if nobody moves them. In AD Building Blocks' comparison table, what's that container called?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn" onclick="window.pvrxShowHint(this)">Get a hint</button><p class="ad-hint__text">It's in the "Examples in this domain" row of the OU vs. Container table, written the way Active Directory itself writes it.</p></div>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">It's in the "Examples in this domain" row of the OU vs. Container table, written the way Active Directory itself writes it.</p></div>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
-<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{cn=users}')">Submit</button>
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{cn=users}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -82,10 +82,10 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <span class="ad-mission__num">Mission 05</span>
 <h4>Stand Up a Service Account</h4>
 <p>Using the Admin Tasks tab, plan a service account for a nightly backup job. Best practice says it gets its own dedicated OU, separate from every department. What would you name that OU?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn" onclick="window.pvrxShowHint(this)">Get a hint</button><p class="ad-hint__text">Match the naming style GovTechFinancial already uses for its other top-level OUs, Departments and AccessLevels.</p></div>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Match the naming style GovTechFinancial already uses for its other top-level OUs, Departments and AccessLevels.</p></div>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
-<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{serviceaccounts}')">Submit</button>
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{serviceaccounts}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -98,10 +98,10 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <span class="ad-mission__num">Mission 06</span>
 <h4>Trust, But Verify</h4>
 <p>Priya Nair's job title is "Help Desk Technician." Check the Full User Directory tab for her actual group membership. Is she really a member of the <code>Helpdesk</code> access-level group, yes or no?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn" onclick="window.pvrxShowHint(this)">Get a hint</button><p class="ad-hint__text">A job title and a security group are two different things. Look at what group she's actually listed under, not what her title implies.</p></div>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">A job title and a security group are two different things. Look at what group she's actually listed under, not what her title implies.</p></div>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
-<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{no}')">Submit</button>
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{no}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -114,10 +114,10 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <span class="ad-mission__num">Mission 07</span>
 <h4>The Critical Three</h4>
 <p>How many of GovTechFinancial's five departments are flagged critical on the Org Chart?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn" onclick="window.pvrxShowHint(this)">Get a hint</button><p class="ad-hint__text">Check the "Critical" column of the Org Chart table and count the "Yes" rows.</p></div>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Check the "Critical" column of the Org Chart table and count the "Yes" rows.</p></div>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
-<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{3}')">Submit</button>
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{3}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -130,10 +130,10 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <span class="ad-mission__num">Mission 08</span>
 <h4>The Client List</h4>
 <p>Which department serves private investors, high-net-worth individuals, and trust and estate accounts?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn" onclick="window.pvrxShowHint(this)">Get a hint</button><p class="ad-hint__text">Check the Who Wealth Management Serves tab.</p></div>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Check the Who Wealth Management Serves tab.</p></div>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
-<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{wealth-management}')">Submit</button>
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{wealth-management}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -146,10 +146,10 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <span class="ad-mission__num">Mission 09</span>
 <h4>Data at Risk</h4>
 <p>Which department handles GovTechFinancial's own internal financial records, separate from client funds?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn" onclick="window.pvrxShowHint(this)">Get a hint</button><p class="ad-hint__text">Check the Data Categories tab's "Internal financial records" row.</p></div>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Check the Data Categories tab's "Internal financial records" row.</p></div>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
-<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{finance-and-accounting}')">Submit</button>
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{finance-and-accounting}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -162,10 +162,10 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <span class="ad-mission__num">Mission 10 — Capstone</span>
 <h4>The 2 AM Login</h4>
 <p>You see a successful login from <code>alex.rivera</code> at 2:00 AM, originating from a Wealth Management workstation. Before you've looked at a single log entry, what's wrong with this, based only on where his account actually lives?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn" onclick="window.pvrxShowHint(this)">Get a hint</button><p class="ad-hint__text">Compare Alex Rivera's real OU (Mission 02) to the department that workstation belongs to.</p></div>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Compare Alex Rivera's real OU (Mission 02) to the department that workstation belongs to.</p></div>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click();}">
-<button type="button" class="ad-guess__submit" onclick="window.pvrxCheckFlag(this, 'gtf{wrong-department}')">Submit</button>
+<input type="text" class="ad-guess__input" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{wrong-department}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
