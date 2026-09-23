@@ -5,7 +5,7 @@ import { ArrowUp, Check, Copy, RotateCcw, ShieldCheck } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { useResults } from "@/lib/academy-client";
 import { MISSION_CATALOG } from "@/lib/academy-missions";
-import { LEVELS, summarize, type Results } from "@/lib/academy-score";
+import { summarize, type Results } from "@/lib/academy-score";
 
 function inline(text: string, key: string): ReactNode[] {
   return text.split(/(\*\*[^*]+\*\*|`[^`]+`|\*[^*\s][^*]*\*)/g).map((part, i) => {
@@ -141,7 +141,7 @@ function CoachText({ text }: { text: string }) {
   );
 }
 
-function briefing(results: Results) {
+function starters(results: Results) {
   const s = summarize(results);
   const missions = Object.values(MISSION_CATALOG);
   const missed = missions.find((m) => {
@@ -150,38 +150,23 @@ function briefing(results: Results) {
   });
   const next = missions.find((m) => !results[m.id]);
   const gap = s.finished > 0 ? s.focus[0] : undefined;
-
-  const starters: { ask: string; action: string; title: string }[] = [];
-  if (missed) starters.push({ ask: `Walk me through "${missed.title}" without giving it away.`, action: "Walk-through", title: missed.title });
-  if (next) starters.push({ ask: `How do I start "${next.title}"?`, action: "Begin", title: next.title });
-  if (gap) starters.push({ ask: `Give me a 15-minute drill for ${gap.label}.`, action: "Practice", title: gap.label });
-  starters.push({
+  const lines: { ask: string; label: string }[] = [];
+  if (missed) lines.push({ ask: `Walk me through "${missed.title}" without giving it away.`, label: missed.title });
+  if (next) lines.push({ ask: `How do I start "${next.title}"?`, label: next.title });
+  if (gap) lines.push({ ask: `Give me a 15-minute drill for ${gap.label}.`, label: `Practice ${gap.label}` });
+  lines.push({
     ask: "How do I check a user's groups in Active Directory Users and Computers?",
-    action: "Console",
-    title: "Check groups in ADUC",
+    label: "Check groups in ADUC",
   });
-
-  return {
-    score: s.finished === 0 ? null : s.overall,
-    level: LEVELS[s.level].label,
-    starters: starters.slice(0, 3),
-  };
+  return lines.slice(0, 3);
 }
 
 export function CoachHeader({ children }: { children?: ReactNode }) {
   const { messages, clear, busy } = useCoach();
-  const brief = briefing(useResults());
   return (
     <div className="pc-head">
-      <div className="min-w-0">
-        <p className="pc-head__kicker">Academy</p>
-        <p className="pc-head__title">PurveX Coach</p>
-      </div>
-      <div className="flex shrink-0 items-center gap-2">
-        <span className="pc-score">
-          <small>Readiness</small>
-          {brief.score === null ? "––" : brief.score}
-        </span>
+      <p className="pc-head__title">Coach</p>
+      <div className="flex shrink-0 items-center gap-1">
         {messages.length > 0 && (
           <button type="button" onClick={clear} disabled={busy} className="pc-icon" aria-label="New conversation" title="New conversation">
             <RotateCcw className="h-4 w-4" />
@@ -194,8 +179,8 @@ export function CoachHeader({ children }: { children?: ReactNode }) {
 }
 
 export function CoachChat() {
-  const { messages, busy, enabled, remaining, limit, error, send } = useCoach();
-  const brief = briefing(useResults());
+  const { messages, busy, enabled, remaining, error, send } = useCoach();
+  const prompts = starters(useResults());
   const [input, setInput] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -222,23 +207,15 @@ export function CoachChat() {
     <div className="pc flex min-h-0 flex-1 flex-col">
       <div ref={listRef} className="pc-scroll min-h-0 flex-1 overflow-y-auto px-6 py-6">
         {messages.length === 0 && (
-          <div className="pc-open">
-            <h2 className="pc-ask">Where should we start?</h2>
-            <p className="pc-lede">The click path first. Mission answers you find yourself.</p>
-            <ol className="pc-prompts">
-              {brief.starters.map((s, i) => (
-                <li key={s.ask}>
-                  <button type="button" disabled={blocked} onClick={() => send(s.ask)} className="pc-prompt">
-                    <span className="pc-prompt__n">{String(i + 1).padStart(2, "0")}</span>
-                    <span className="pc-prompt__body">
-                      <span className="pc-prompt__act">{s.action}</span>
-                      <span className="pc-prompt__title">{s.title}</span>
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </div>
+          <ul className="pc-prompts">
+            {prompts.map((s) => (
+              <li key={s.ask}>
+                <button type="button" disabled={blocked} onClick={() => send(s.ask)} className="pc-prompt">
+                  {s.label}
+                </button>
+              </li>
+            ))}
+          </ul>
         )}
 
         <div className="pc-thread">
@@ -258,9 +235,7 @@ export function CoachChat() {
           {busy && (
             <div className="pc-turn">
               <p className="pc-reply__who">Coach</p>
-              <p className="pc-thinking">
-                Reviewing your lab<span className="pc-dots"><i /><i /><i /></span>
-              </p>
+              <p className="pc-thinking">Looking that up…</p>
             </div>
           )}
         </div>
@@ -287,7 +262,7 @@ export function CoachChat() {
                 submit();
               }
             }}
-            placeholder={remaining === 0 ? "No questions left today" : "Ask about a ticket or a console"}
+            placeholder={remaining === 0 ? "No questions left today" : "Ask a question"}
             maxLength={2000}
             disabled={!enabled || remaining === 0}
           />
@@ -295,10 +270,7 @@ export function CoachChat() {
             <ArrowUp className="h-4 w-4" />
           </button>
         </div>
-        <p className="pc-compose__hint">
-          <span>Enter to send</span>
-          {remaining !== null && <span>{remaining} remaining</span>}
-        </p>
+        {remaining !== null && <p className="pc-compose__hint">{remaining} left today</p>}
       </form>
     </div>
   );
