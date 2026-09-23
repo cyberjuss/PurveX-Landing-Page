@@ -368,6 +368,52 @@ To see exactly what the script is about to do before committing to it, run it wi
 ./Build-Environment.ps1 -WhatIf
 ```
 
+### If the Script Won't Run
+
+Three errors account for almost every "it won't run" report. They're easy to fix once you know which one you're looking at.
+
+<div class="ad-trouble">
+<div class="ad-trouble__item">
+<span class="ad-trouble__label">1. Not running as Administrator</span>
+<div class="ad-terminal">
+<div class="ad-terminal__bar"><span></span><span></span><span></span></div>
+<pre class="ad-terminal__body">PS C:\Users\...\Downloads&gt; .\Build-Environment.ps1
+.\Build-Environment.ps1 : The script 'Build-Environment.ps1' cannot be run
+because it contains a "#requires" statement for running as Administrator.
+The current Windows PowerShell session is not running as Administrator.
+Start Windows PowerShell by using the Run as Administrator option, and
+then try running the script again.</pre>
+</div>
+<p>Close this window. Open the Start menu, search PowerShell, right-click it, and choose <strong>Run as Administrator</strong>. Then <code>cd</code> back to your Downloads folder and run the script again.</p>
+</div>
+
+<div class="ad-trouble__item">
+<span class="ad-trouble__label">2. File is blocked (downloaded from the internet)</span>
+<p>Windows flags files downloaded through a browser. Unblock it before running:</p>
+<div class="ad-code">
+<div class="ad-code__bar">
+<span class="ad-code__label">PowerShell</span>
+<button type="button" class="ad-code__copy" onclick="const code=this.closest('.ad-code').querySelector('code').innerText; navigator.clipboard.writeText(code); const b=this; b.textContent='Copied'; setTimeout(()=>{b.textContent='Copy';},1500);">Copy</button>
+</div>
+<pre><code>Unblock-File -Path .\Build-Environment.ps1</code></pre>
+</div>
+</div>
+
+<div class="ad-trouble__item">
+<span class="ad-trouble__label">3. Running scripts is disabled on this system</span>
+<p>PowerShell blocks unsigned scripts by default. This allows them for your own user account only:</p>
+<div class="ad-code">
+<div class="ad-code__bar">
+<span class="ad-code__label">PowerShell</span>
+<button type="button" class="ad-code__copy" onclick="const code=this.closest('.ad-code').querySelector('code').innerText; navigator.clipboard.writeText(code); const b=this; b.textContent='Copied'; setTimeout(()=>{b.textContent='Copy';},1500);">Copy</button>
+</div>
+<pre><code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code></pre>
+</div>
+</div>
+</div>
+
+Run into all three in the same session, in that order: elevate first, unblock the file, then relax the execution policy. Each is a one-time fix per machine.
+
 ### Step 3 — Verify It Built Correctly
 
 Open Active Directory Users and Computers (or run these) and confirm you see all 5 departments, all 9 users in the right department with the right title, and `alex.rivera` in both `IT Users` and `IT Admins`:
@@ -383,6 +429,11 @@ Get-ADGroupMember -Identity "IT Admins"
 
 A quick note on the workstation. The User Directory and Client Workstation tabs list it as "IT WKS01," but AD computer names cannot contain spaces, so the script creates the object as `IT-WKS01`. It is the same machine, just given a technically valid name.
 
+<div class="academy-thinklike">
+<span class="academy-thinklike__tag">Think Like an Analyst</span>
+<p>Building this yourself means you know exactly what should exist and when it was created. Any account, group, or OU in your lab that you didn't just create is a lead, not a mystery. In a real environment nobody hands you that baseline. Here, you just built it.</p>
+</div>
+
 Once this is built and verified, you have your own live copy of the environment every other tab on this page describes. This is what you will be investigating in the labs ahead.
 
 <style>
@@ -397,4 +448,19 @@ Once this is built and verified, you have your own live copy of the environment 
 .ad-code__copy:hover { background: rgba(255,255,255,0.16); }
 .ad-code pre { margin: 0; border-radius: 0; }
 .ad-code__pre--tall { max-height: 420px; overflow-y: auto; }
+
+.ad-trouble { display: flex; flex-direction: column; gap: 1.5rem; margin: 1.25rem 0; }
+.ad-trouble__item { padding: 1.1rem 1.25rem 1.3rem; border: 1px solid var(--pvrx-border-light); border-left: 3px solid #e5484d; border-radius: 0 10px 10px 0; background: var(--pvrx-surface-alt-light); }
+.ad-trouble__label { display: block; margin-bottom: 0.7rem; font-family: var(--font-display); font-size: 0.92rem; font-weight: 700; color: var(--pvrx-text-primary-light); }
+.ad-trouble__item p { margin: 0.7rem 0 0; font-size: 0.9rem; color: var(--pvrx-text-secondary-light); }
+.ad-trouble__item p:first-of-type { margin-top: 0.7rem; }
+.ad-trouble__item .ad-code { margin: 0.6rem 0 0; }
+
+.ad-terminal { border-radius: 8px; overflow: hidden; background: #0c1220; box-shadow: 0 8px 24px -12px rgba(16,25,46,0.3); }
+.ad-terminal__bar { display: flex; gap: 6px; padding: 0.6rem 0.75rem; background: rgba(255,255,255,0.04); }
+.ad-terminal__bar span { width: 9px; height: 9px; border-radius: 50%; }
+.ad-terminal__bar span:nth-child(1) { background: #f2777a; }
+.ad-terminal__bar span:nth-child(2) { background: #f4c059; }
+.ad-terminal__bar span:nth-child(3) { background: #5ec269; }
+.ad-terminal__body { margin: 0; padding: 0.9rem 1.1rem 1.1rem; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.78rem; line-height: 1.6; color: #ff6b6e; white-space: pre-wrap; word-break: break-word; }
 </style>

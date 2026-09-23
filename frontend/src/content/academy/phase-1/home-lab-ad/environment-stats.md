@@ -10,3 +10,8 @@ For reference, here is a count of what currently exists in the environment.
 | Security groups | 9 (5 standard, 1 elevated, 3 access level groups) |
 | User accounts | 9 |
 | Client workstations | 1 |
+
+<div class="academy-thinklike">
+<span class="academy-thinklike__tag">Think Like an Analyst</span>
+<p>This table is your baseline, not trivia. A 10th user, a 4th access level, a security group that isn't on this list: none of that is a rounding error. It's an account or object nobody accounted for.</p>
+</div>

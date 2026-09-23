@@ -11,6 +11,9 @@ That is precisely why knowing who does what matters so much. Every department, e
 
 Study it closely. It will come up constantly once we move into threat detection and investigation.
 
-A guiding principle worth internalizing now: in cybersecurity, you must know what normal looks like before you can recognize what is not.
+<div class="academy-thinklike">
+<span class="academy-thinklike__tag">Think Like an Analyst</span>
+<p>In cybersecurity, you must know what normal looks like before you can recognize what is not. Every tab in this Home Lab is building that baseline, not busywork.</p>
+</div>
 
 ***Domain: govtechfinancial.local***

@@ -14,4 +14,7 @@ Compliance, Wealth Management, and Finance and Accounting are flagged as critica
 
 Every department has its own folder in Active Directory, its own workstation, and its own group of users.
 
-Come back to this table after every lab going forward. Every account and every alert you touch belongs to one of these five departments, and knowing which one is often the first step in figuring out whether something matters.
+<div class="academy-thinklike">
+<span class="academy-thinklike__tag">Think Like an Analyst</span>
+<p>Come back to this table after every lab going forward. Every account and every alert you touch belongs to one of these five departments, and knowing which one is often the first step in figuring out whether something matters.</p>
+</div>

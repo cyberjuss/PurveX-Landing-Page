@@ -8,4 +8,9 @@ Access here is deliberately divided into three levels rather than concentrated i
 | Level 2 (Server Admin) | Controls the servers, application and file servers. | The Domain Controller |
 | Level 3 (Helpdesk) | Handles workstations only, password resets, and local support. | Servers or the Domain Controller |
 
-This separation limits how far a compromise can spread. Any time you see an account from Level 3 attempting something that belongs to Level 1, that is your first real red flag.
+This separation limits how far a compromise can spread.
+
+<div class="academy-thinklike">
+<span class="academy-thinklike__tag">Think Like an Analyst</span>
+<p>Any time you see an account from Level 3 attempting something that belongs to Level 1, that's your first real red flag, no log analysis required yet.</p>
+</div>

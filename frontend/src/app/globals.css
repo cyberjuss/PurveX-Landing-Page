@@ -2892,6 +2892,34 @@ body:has(.lp) {
 .academy-prose .academy-analogy li { margin: 0.35rem 0; }
 .academy-prose .academy-analogy li:last-child { margin-bottom: 0; }
 
+/* Think Like an Analyst callout -- one per Home Lab tab, tying whatever
+   fact the tab just taught back to why a working analyst actually cares
+   about it. Same tagged-panel convention as the other two callouts, but
+   in the site's alert-red instead of purple, so it reads as a distinct
+   "investigative" beat rather than more reference material. */
+.academy-prose .academy-thinklike {
+  margin: 1.35rem 0;
+  padding: 1rem 1.3rem 1.2rem;
+  border-radius: 6px;
+  border: 1px solid rgba(229,72,77,0.25);
+  border-left: 3px solid #e5484d;
+  background: rgba(229,72,77,0.045);
+}
+.academy-prose .academy-thinklike__tag {
+  display: block;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pvrx-text-secondary-light);
+  margin-bottom: 0.5rem;
+}
+.academy-prose .academy-thinklike__tag::before { content: "// "; color: #e5484d; }
+.academy-prose .academy-thinklike p { margin: 0.5rem 0; }
+.academy-prose .academy-thinklike p:first-of-type { margin-top: 0; }
+.academy-prose .academy-thinklike p:last-child { margin-bottom: 0; }
+
 /* Lab carousel slide transition -- direction-aware so it reads as sliding
    through steps, not just fading. */
 @keyframes academy-slide-in-right { from { opacity: 0; transform: translateX(20px) } to { opacity: 1; transform: none } }

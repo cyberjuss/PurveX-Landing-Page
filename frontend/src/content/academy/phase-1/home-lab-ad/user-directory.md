@@ -15,3 +15,8 @@ Every user account in this environment, listed by department, with title, userna
 | Finance and Accounting | Jordan Ellis | Staff Accountant | jordan.ellis | Finance Accounting Users |
 
 Nine users total. Each of them sits in exactly one standard access group, except Alex Rivera, who also holds elevated access through IT Admins.
+
+<div class="academy-thinklike">
+<span class="academy-thinklike__tag">Think Like an Analyst</span>
+<p>An account with more group memberships than its peers in the same role isn't automatically suspicious, but it's always worth knowing why. Alex Rivera's extra access has a documented reason. Not every deviation will.</p>
+</div>

@@ -76,6 +76,11 @@ Best practice, every time:
 * **Restrict logon hours if the job is scheduled.** If a backup job only ever needs to run overnight, the account's **Logon Hours** should reflect that. Anything outside that window becomes an instant red flag.
 * **Always fill in the Description.** "Runs the nightly backup job on IT-WKS01" saves the next person (possibly you, in six months) from having to guess what breaks if this account gets disabled.
 
+<div class="academy-thinklike">
+<span class="academy-thinklike__tag">Think Like an Analyst</span>
+<p>A service account logging in outside its configured hours, or from a machine it's never used, is one of the cleanest signals in the whole environment. Unlike a person, it has no excuse: no forgotten password, no working from home, no benefit of the doubt.</p>
+</div>
+
 ### Onboarding: Mirroring Group Membership
 
 The fastest, least error-prone way to onboard someone into a role that already exists is to copy a peer's group membership rather than rebuild it by hand. Say GovTechFinancial hires a second Help Desk Technician alongside Priya Nair. Open Priya's **Member Of** tab and note every group listed there. Then open the new hire's **Member Of** tab and add the same ones. Do this with both accounts' Properties open side by side; it's much harder to miss one that way.

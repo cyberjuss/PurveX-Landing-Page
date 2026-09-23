@@ -49,7 +49,12 @@ A **Container** looks like an OU in the console, same folder icon, but it's a di
 | Can you create your own? | Yes, anywhere | No, fixed set built by Windows |
 | Examples in this domain | `OU=IT`, `OU=Compliance` | `CN=Users`, `CN=Computers` |
 
-The default `Users` and `Computers` folders are Containers, not OUs, which is why the build script moves every account into a real OU instead. An account left in a Container can never be targeted by Group Policy. Finding one there in a real environment is worth a second look.
+The default `Users` and `Computers` folders are Containers, not OUs, which is why the build script moves every account into a real OU instead. An account left in a Container can never be targeted by Group Policy.
+
+<div class="academy-thinklike">
+<span class="academy-thinklike__tag">Think Like an Analyst</span>
+<p>An account still sitting in the default Container in a real environment usually means one thing: nobody has organized it since it was created. That's not a crime on its own, but it's a gap worth noting, and exactly the kind of loose end an attacker would rather you never check.</p>
+</div>
 
 ### Security Groups
 
