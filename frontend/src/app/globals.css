@@ -3208,4 +3208,10 @@ body:has(.lp) {
 .academy-prose .ad-mission[data-attempts="0"] .ad-hint__btn:hover,
 .academy-prose .ad-mission[data-attempts="1"] .ad-hint__btn:hover { background: none; }
 .academy-prose .ad-mission[data-attempts="0"] .ad-hint__btn::after,
-.academy-prose .ad-mission[data-attempts="1"] .ad-hint__btn::after { content: "Hint unlocks after 2 wrong tries"; font-size: 0.78rem; font-weight: 650; }
+.academy-prose .ad-mission[data-attempts="1"] .ad-hint__btn::after { content: "Hint locked"; font-size: 0.8rem; font-weight: 650; }
+
+/* Hint button sits in the answer row, next to Submit. */
+.academy-prose .ad-guess .ad-hint__btn { flex-shrink: 0; align-self: stretch; padding: 0 1rem; border-radius: 8px; white-space: nowrap; font-size: 0.85rem; }
+.academy-prose .ad-mission[data-attempts="0"] .ad-guess .ad-hint__btn,
+.academy-prose .ad-mission[data-attempts="1"] .ad-guess .ad-hint__btn { font-size: 0; }
+.academy-prose .ad-mission > .ad-hint__text { margin-top: 0.7rem; }

@@ -23,11 +23,12 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <span class="ad-mission__num">Task 01 · Find an Account</span>
 <h4>Which Group Is Jordan In?</h4>
 <p>Which department group is <code>jordan.ellis</code> in?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Use the Find dialog to locate <code>jordan.ellis</code>, then open the Member Of tab. Ignore Domain Users, which everyone has.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{finance-accounting-users}">Submit</button>
+<button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
+<p class="ad-hint__text">Use the Find dialog to locate <code>jordan.ellis</code>, then open the Member Of tab. Ignore Domain Users, which everyone has.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
@@ -40,11 +41,12 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <span class="ad-mission__num">Task 02 · Find Who Has Admin Rights</span>
 <h4>Who Is an Admin?</h4>
 <p>Who is in the <code>IT Admins</code> group?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Open the group and read its Members tab. The group lives in the IT department OU and has only one member.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{alex-rivera}">Submit</button>
+<button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
+<p class="ad-hint__text">Open the group and read its Members tab. The group lives in the IT department OU and has only one member.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
@@ -57,11 +59,12 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <span class="ad-mission__num">Task 03 · Find Where Things Live</span>
 <h4>Where Are the Access Groups?</h4>
 <p><code>Server Admins</code> and <code>Helpdesk</code> are not inside <code>Departments</code>. Which top-level OU holds them?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Expand the domain root and look at what sits next to Departments.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{accesslevels}">Submit</button>
+<button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
+<p class="ad-hint__text">Expand the domain root and look at what sits next to Departments.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
@@ -74,11 +77,12 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <span class="ad-mission__num">Task 04 · Spot the Default Folder</span>
 <h4>The Folder That Is Not an OU</h4>
 <p>One default folder sits beside your OUs, and Group Policy cannot be linked to it. What is it called, exactly as AD writes it?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Expand the domain root. Its name starts with CN=, not OU=. New accounts land here if nobody chooses an OU.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="exact name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{cn=users}">Submit</button>
+<button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
+<p class="ad-hint__text">Expand the domain root. Its name starts with CN=, not OU=. New accounts land here if nobody chooses an OU.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
@@ -91,11 +95,12 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <span class="ad-mission__num">Task 05 · Read a Description</span>
 <h4>What Is the Admin Group For?</h4>
 <p>The <code>IT Admins</code> group has a written description. Which role is it meant for? Use dashes between words.</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Open the group's Properties and read the Description on the General tab. It names a job title in the plural.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="role" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-systems-administrators}">Submit</button>
+<button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
+<p class="ad-hint__text">Open the group's Properties and read the Description on the General tab. It names a job title in the plural.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
@@ -108,11 +113,12 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <span class="ad-mission__num">Task 06 · Titles Are Not Access</span>
 <h4>Is Priya on the Help Desk Group?</h4>
 <p>Priya Nair's title is "Help Desk Technician." Is she a member of the <code>Helpdesk</code> group? Type <code>yes</code> or <code>no</code>.</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Open the <code>Helpdesk</code> group and read its Members tab. Do not go by her title.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{no}">Submit</button>
+<button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
+<p class="ad-hint__text">Open the <code>Helpdesk</code> group and read its Members tab. Do not go by her title.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
@@ -125,11 +131,12 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <span class="ad-mission__num">Task 07 · Find by Title</span>
 <h4>Who Is the Settlements Coordinator?</h4>
 <p>Who has the title <strong>Settlements Coordinator</strong>?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Search your lab with Find, using the Advanced tab and the Title field. You can also open the Operations users one by one.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{riley-kwan}">Submit</button>
+<button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
+<p class="ad-hint__text">Search your lab with Find, using the Advanced tab and the Title field. You can also open the Operations users one by one.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
@@ -142,11 +149,12 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <span class="ad-mission__num">Task 08 · Find a Computer</span>
 <h4>What Is the Workstation Called?</h4>
 <p>What is the exact name of the computer object in the IT department's <code>Workstations</code> OU?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Look under Departments, then IT, then Workstations. AD computer names never contain spaces.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="computer name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-wks01}">Submit</button>
+<button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
+<p class="ad-hint__text">Look under Departments, then IT, then Workstations. AD computer names never contain spaces.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
@@ -159,11 +167,12 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <span class="ad-mission__num">Task 09 · Count a Group</span>
 <h4>How Many People Are in Compliance?</h4>
 <p>How many members does the <code>Compliance Users</code> group have?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Open the group and read its Members tab, or run <code>(Get-ADGroupMember "Compliance Users").Count</code>.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
+<button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
+<p class="ad-hint__text">Open the group and read its Members tab, or run <code>(Get-ADGroupMember "Compliance Users").Count</code>.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
@@ -176,11 +185,12 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <span class="ad-mission__num">Task 10 · Day One Complete</span>
 <h4>How Many Departments Are There?</h4>
 <p>How many department OUs sit directly under <code>Departments</code>?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Expand Departments and count only the OUs one level down. Do not count the Users or Workstations OUs inside them.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{5}">Submit</button>
+<button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
+<p class="ad-hint__text">Expand Departments and count only the OUs one level down. Do not count the Users or Workstations OUs inside them.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <span class="ad-flag__label">Finding</span>
