@@ -11,6 +11,13 @@ export interface Quiz {
   questions: QuizQuestion[];
 }
 
+export const QUIZ_PASS_PERCENT = 70;
+
+export function quizPassed(score: number, total: number) {
+  if (total === 0) return false;
+  return Math.round((score / total) * 100) >= QUIZ_PASS_PERCENT;
+}
+
 export const quizzes: Quiz[] = [
   {
     phaseSlug: "phase-1",
@@ -141,6 +148,28 @@ export const quizzes: Quiz[] = [
         correctIndex: 1,
         explanation: "Hiding the field is security through obscurity. It does not fix anything, since the request can still be crafted manually. The actual fix is server-side authorization on every privileged action, independent of anything the client claims about itself.",
       },
+      {
+        question: "In this lab, what do roleid=1 and roleid=2 mean, and why does sending roleid=2 from a regular account work?",
+        options: [
+          "1 is admin and 2 is a guest; the server ignores both",
+          "1 is a regular user and 2 is an admin; the server accepts whichever value the client sends",
+          "Both values mean the same role; the number is only for display",
+          "2 is a CSRF token the server requires on every request",
+        ],
+        correctIndex: 1,
+        explanation: "Your account starts as roleid=1. Admins are roleid=2. The server does not check that you are allowed to be an admin. It just stores the number you sent, so a regular user can promote themselves.",
+      },
+      {
+        question: "What is the actual win condition of the PortSwigger lab, once the role has been changed?",
+        options: [
+          "Change your email address a second time",
+          "Turn off Burp and log out",
+          "Open the Admin Panel and delete the user Carlos",
+          "Reset the roleid field back to 1 so nobody notices",
+        ],
+        correctIndex: 2,
+        explanation: "Privilege itself is not the goal. The lab is solved when you use that stolen admin role to delete Carlos from the Admin Panel.",
+      },
     ],
   },
   {
@@ -179,6 +208,28 @@ export const quizzes: Quiz[] = [
         ],
         correctIndex: 1,
         explanation: "Alex sits in both IT Users and IT Admins. That is the only account with elevated access alongside standard access. Knowing who holds broader privilege ahead of time is exactly the kind of baseline knowledge that makes an alert on that account easier to weigh correctly.",
+      },
+      {
+        question: "What is the real difference between an Organizational Unit and a Container in Active Directory?",
+        options: [
+          "There is no difference; both are just folders",
+          "A Container can have Group Policy linked to it; an OU cannot",
+          "An OU can have Group Policy and delegated permissions; a Container cannot",
+          "OUs only hold computers; Containers only hold users",
+        ],
+        correctIndex: 2,
+        explanation: "They look the same in the console. The difference is what you can attach. GPOs and delegated control go on OUs. The built-in Users and Computers folders are Containers, which is why accounts get moved into real OUs.",
+      },
+      {
+        question: "Where do you look first to see a user's groups in the GUI, before touching PowerShell?",
+        options: [
+          "Event Viewer → Security log",
+          "Active Directory Users and Computers → the user → Properties → Member Of",
+          "Group Policy Management → Default Domain Policy",
+          "File Explorer → C:\\Users",
+        ],
+        correctIndex: 1,
+        explanation: "Open ADUC, find the user, right-click Properties, then Member Of. That is the click path on the desk. PowerShell is optional after you can find it in the console.",
       },
     ],
   },

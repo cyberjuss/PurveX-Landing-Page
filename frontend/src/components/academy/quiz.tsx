@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import type { Quiz } from "@/content/academy/quizzes";
+import { QUIZ_PASS_PERCENT, quizPassed, type Quiz } from "@/content/academy/quizzes";
+import { useAcademyProgress } from "./academy-progress";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
 
 export function QuizBlock({ quiz }: { quiz: Quiz }) {
+  const { recordQuizPass } = useAcademyProgress();
   const [answers, setAnswers] = useState<(number | null)[]>(() => quiz.questions.map(() => null));
   const [submitted, setSubmitted] = useState(false);
 
@@ -14,7 +16,13 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
   const allAnswered = answeredCount === total;
   const score = submitted ? answers.filter((a, i) => a === quiz.questions[i].correctIndex).length : 0;
   const pct = total === 0 ? 0 : Math.round((score / total) * 100);
-  const passed = pct >= 70;
+  const passed = quizPassed(score, total);
+
+  function submit() {
+    setSubmitted(true);
+    const correct = answers.filter((a, i) => a === quiz.questions[i].correctIndex).length;
+    if (quizPassed(correct, total)) recordQuizPass(quiz.phaseSlug, quiz.weekSlug);
+  }
 
   function selectOption(questionIndex: number, optionIndex: number) {
     if (submitted) return;
@@ -45,8 +53,8 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
           </strong>
           <p>
             {passed
-              ? "Solid grasp of this week's material."
-              : "Worth another pass. The notes below show the baseline to use."}
+              ? `${pct}% — 70% or better. This lesson is marked complete.`
+              : `${pct}% — need ${QUIZ_PASS_PERCENT}% (${Math.ceil((QUIZ_PASS_PERCENT / 100) * total)} of ${total}) to mark this complete.`}
           </p>
         </div>
       )}
@@ -94,15 +102,17 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
       <div className="ax-quiz__foot">
         <p>
           {submitted
-            ? "Review the notes, then reset when you want another pass."
-            : "Answer every question to check your work."}
+            ? passed
+              ? "Review the notes if you want. You already passed."
+              : "Review the notes, then try again. You need 70% or better."
+            : `Answer all ${total} questions. Pass is ${QUIZ_PASS_PERCENT}% or better.`}
         </p>
         {submitted ? (
           <button type="button" onClick={reset} className="rd-link">
             Try again
           </button>
         ) : (
-          <button type="button" onClick={() => setSubmitted(true)} disabled={!allAnswered} className="rd-cta">
+          <button type="button" onClick={submit} disabled={!allAnswered} className="rd-cta">
             Check answers
           </button>
         )}

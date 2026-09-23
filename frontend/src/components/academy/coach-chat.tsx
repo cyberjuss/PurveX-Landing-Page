@@ -215,18 +215,16 @@ export function CoachChat() {
     <div className="pc flex min-h-0 flex-1 flex-col">
       <div ref={listRef} className="pc-scroll min-h-0 flex-1 overflow-y-auto px-5 py-5">
         {messages.length === 0 && (
-          <div>
-            <p className="pc-brief__note">
+          <div className="pc-open">
+            <p className="pc-lede">
               Click path first, then the command if you want it. Mission answers you find yourself.
             </p>
+            <div className="pc-stat">
+              <p className="pc-kicker">Readiness</p>
+              <p className="pc-stat__num">{brief.score === null ? "—" : brief.score}</p>
+              <p className="pc-stat__lvl">{brief.level}</p>
+            </div>
             <dl className="pc-meta">
-              <div>
-                <dt>Readiness</dt>
-                <dd>
-                  {brief.score === null ? "—" : brief.score}
-                  <small>{brief.level}</small>
-                </dd>
-              </div>
               <div>
                 <dt>Biggest gap</dt>
                 <dd>{brief.gap ?? "None yet"}</dd>

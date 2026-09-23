@@ -86,7 +86,6 @@ export function ReadinessDashboard() {
   const lv = LEVELS[s.level];
   const scoreTone: Tone = s.finished === 0 ? "none" : s.level === "ready" ? "good" : s.level === "almost" ? "warn" : s.level === "practice" ? "bad" : "live";
   const focusKey = s.finished > 0 ? s.focus[0]?.key : undefined;
-  const today = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   function reset() {
     if (!window.confirm("Reset your readiness score? This clears every mission result.")) return;
@@ -103,12 +102,6 @@ export function ReadinessDashboard() {
     <div className="rd">
       {/* Masthead */}
       <header className="rd-mast">
-        <div className="rd-meta">
-          <span>GovTech Financial · IT Service Desk</span>
-          <span>Tier 1 readiness evaluation</span>
-          <span suppressHydrationWarning>{today}</span>
-        </div>
-
         <div className="rd-hero">
           <div className="rd-hero__score">
             <p className="rd-kicker">Readiness</p>
