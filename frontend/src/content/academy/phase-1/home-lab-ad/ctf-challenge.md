@@ -180,15 +180,35 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 .ad-progress__bar { height: 100%; width: 0%; border-radius: 999px; background: linear-gradient(90deg, #6a5cff, #5546e0); transition: width 0.4s ease; }
 .ad-progress__label { flex-shrink: 0; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.78rem; font-weight: 700; color: #5546e0; }
 
+/* .academy-prose is this panel's own wrapper (rendered fresh per active
+   tab), so scoping the counter there numbers just these missions 1-10
+   without needing a dedicated wrapping element around the mission list. */
+.academy-prose { counter-reset: mission; }
 .ad-mission {
   position: relative;
-  margin: 1.5rem 0; padding: 1.25rem 1.5rem 1.4rem;
-  border: 1px solid var(--pvrx-border-light); border-left: 3px solid #5546e0; border-radius: 0 10px 10px 0;
+  margin: 1.75rem 0; padding: 1.25rem 1.5rem 1.4rem;
+  border: 1px solid var(--pvrx-border-light); border-left: 3px solid #5546e0; border-radius: 14px;
   background: var(--pvrx-surface-alt-light);
-  transition: border-color 0.3s ease, background 0.3s ease;
+  box-shadow: 0 1px 2px rgba(16,25,46,0.05), 0 18px 40px -28px rgba(16,25,46,0.22);
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+.ad-mission:hover { box-shadow: 0 1px 2px rgba(16,25,46,0.06), 0 24px 48px -26px rgba(16,25,46,0.3); transform: translateY(-2px); }
+.ad-mission::before {
+  counter-increment: mission;
+  content: counter(mission);
+  position: absolute;
+  top: -15px; left: -15px;
+  display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6a5cff, #5546e0);
+  color: #fff; font-family: var(--font-display); font-size: 0.95rem; font-weight: 700;
+  box-shadow: 0 4px 12px -2px rgba(85,70,224,0.45), 0 0 0 3px #fff;
 }
 .ad-mission--capstone { border-left-color: #e5484d; }
+.ad-mission--capstone::before { background: linear-gradient(135deg, #f0656a, #e5484d); box-shadow: 0 4px 12px -2px rgba(229,72,77,0.45), 0 0 0 3px #fff; }
 .ad-mission--solved { border-left-color: #16a34a; background: rgba(22,163,74,0.05); }
+.ad-mission--solved::before { content: "\2713"; background: linear-gradient(135deg, #22c55e, #16a34a); box-shadow: 0 4px 12px -2px rgba(22,163,74,0.45), 0 0 0 3px #fff; }
 .ad-mission__num { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #5546e0; }
 .ad-mission--capstone .ad-mission__num { color: #e5484d; }
 .ad-mission--solved .ad-mission__num { color: #16a34a; }

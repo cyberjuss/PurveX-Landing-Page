@@ -9,13 +9,13 @@ Three errors account for almost every "it won't run" report. They're easy to fix
 
 <div class="ad-trouble">
 <div class="ad-trouble__item">
-<span class="ad-trouble__label">1. Not running as Administrator</span>
+<span class="ad-trouble__label">Not running as Administrator</span>
 <img src="/academy/lab-scripts/run-as-admin-error.png" alt="PowerShell error: the script cannot be run because it contains a &quot;#requires&quot; statement for running as Administrator" class="ad-trouble__img" />
 <p>Close this window. Open the Start menu, search PowerShell, right-click it, and choose <strong>Run as Administrator</strong>. Then <code>cd</code> back to your Downloads folder and run the script again.</p>
 </div>
 
 <div class="ad-trouble__item">
-<span class="ad-trouble__label">2. File is blocked (downloaded from the internet)</span>
+<span class="ad-trouble__label">File is blocked (downloaded from the internet)</span>
 <p>Windows flags files downloaded through a browser. Unblock it before running:</p>
 <div class="ad-code">
 <div class="ad-code__bar">
@@ -27,7 +27,7 @@ Three errors account for almost every "it won't run" report. They're easy to fix
 </div>
 
 <div class="ad-trouble__item">
-<span class="ad-trouble__label">3. Running scripts is disabled on this system</span>
+<span class="ad-trouble__label">Running scripts is disabled on this system</span>
 <p>PowerShell blocks unsigned scripts by default. This allows them for your own user account only:</p>
 <div class="ad-code">
 <div class="ad-code__bar">

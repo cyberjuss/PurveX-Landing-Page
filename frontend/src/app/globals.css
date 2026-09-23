@@ -2836,10 +2836,11 @@ body:has(.lp) {
 .academy-prose .academy-question {
   margin: 0 0 1.5rem;
   padding: 1rem 1.3rem;
-  border-radius: 6px;
+  border-radius: 10px;
   border: 1px solid var(--pvrx-border-light);
   border-left: 3px solid #5546e0;
   background: var(--pvrx-surface-alt-light);
+  box-shadow: 0 1px 2px rgba(16,25,46,0.04), 0 14px 32px -26px rgba(16,25,46,0.18);
 }
 .academy-prose .academy-question__tag {
   display: block;
@@ -2870,10 +2871,11 @@ body:has(.lp) {
 .academy-prose .academy-analogy {
   margin: 1.35rem 0;
   padding: 1rem 1.3rem 1.2rem;
-  border-radius: 6px;
+  border-radius: 10px;
   border: 1px solid var(--pvrx-border-light);
   border-left: 3px solid #5546e0;
   background: var(--pvrx-surface-alt-light);
+  box-shadow: 0 1px 2px rgba(16,25,46,0.04), 0 14px 32px -26px rgba(16,25,46,0.18);
 }
 .academy-prose .academy-analogy__tag {
   display: block;
@@ -2900,10 +2902,11 @@ body:has(.lp) {
 .academy-prose .academy-thinklike {
   margin: 1.35rem 0;
   padding: 1rem 1.3rem 1.2rem;
-  border-radius: 6px;
+  border-radius: 10px;
   border: 1px solid rgba(229,72,77,0.25);
   border-left: 3px solid #e5484d;
   background: rgba(229,72,77,0.045);
+  box-shadow: 0 1px 2px rgba(16,25,46,0.04), 0 14px 32px -26px rgba(229,72,77,0.16);
 }
 .academy-prose .academy-thinklike__tag {
   display: block;
@@ -2934,9 +2937,39 @@ body:has(.lp) {
 .academy-prose .ad-code pre { margin: 0; border-radius: 0; }
 .academy-prose .ad-code__pre--tall { max-height: 420px; overflow-y: auto; }
 
-/* Troubleshooting callout list -- red left-border cards, one per error. */
-.academy-prose .ad-trouble { display: flex; flex-direction: column; gap: 1.5rem; margin: 1.25rem 0; }
-.academy-prose .ad-trouble__item { padding: 1.1rem 1.25rem 1.3rem; border: 1px solid var(--pvrx-border-light); border-left: 3px solid #e5484d; border-radius: 0 10px 10px 0; background: var(--pvrx-surface-alt-light); }
+/* Troubleshooting callout list -- red left-border cards, one per error.
+   Each gets a numbered circular badge via CSS counters (scoped to this
+   list) instead of relying on the label's own leading "1. " text, so the
+   badge and label never have to be kept in sync by hand. */
+.academy-prose .ad-trouble { display: flex; flex-direction: column; gap: 1.75rem; margin: 1.5rem 0; counter-reset: trouble; }
+.academy-prose .ad-trouble__item {
+  position: relative;
+  padding: 1.1rem 1.25rem 1.3rem;
+  border: 1px solid var(--pvrx-border-light);
+  border-left: 3px solid #e5484d;
+  border-radius: 10px;
+  background: var(--pvrx-surface-alt-light);
+  box-shadow: 0 1px 2px rgba(16,25,46,0.04), 0 14px 32px -26px rgba(16,25,46,0.16);
+}
+.academy-prose .ad-trouble__item::before {
+  counter-increment: trouble;
+  content: counter(trouble);
+  position: absolute;
+  top: -13px;
+  left: -13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f0656a, #e5484d);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  box-shadow: 0 4px 10px -2px rgba(229,72,77,0.45), 0 0 0 3px #fff;
+}
 .academy-prose .ad-trouble__label { display: block; margin-bottom: 0.7rem; font-family: var(--font-display); font-size: 0.92rem; font-weight: 700; color: var(--pvrx-text-primary-light); }
 .academy-prose .ad-trouble__item p { margin: 0.7rem 0 0; font-size: 0.9rem; color: var(--pvrx-text-secondary-light); }
 .academy-prose .ad-trouble__item p:first-of-type { margin-top: 0.7rem; }
