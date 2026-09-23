@@ -99,7 +99,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
       width="sm"
       bare
       title={mode === "signin" ? "Student sign-in" : "Create your student account"}
-      subtitle="Your readiness score, mission history, and PurveX Coach are saved to your account."
+      subtitle="Prepare yourself for the job."
     >
       <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-5">
         <button
