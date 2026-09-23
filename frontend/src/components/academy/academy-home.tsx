@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import type { PhaseDef, WeekDef } from "@/lib/academy-content";
 import { READINESS_PATH, useResults } from "@/lib/academy-client";
 import { LEVELS, summarize } from "@/lib/academy-score";
+import { accountFirstName, useAcademyAccount } from "./academy-account";
 import { useAcademyProgress } from "./academy-progress";
 
 const PHASE_COPY: { slug: string; href: string; title: string; body: string }[] = [
@@ -38,8 +39,11 @@ function pad(n: number) {
 }
 
 export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
-  const { isComplete, completedCount, totalCount, lastStop } = useAcademyProgress();
+  const { isComplete, completedCount, lastStop } = useAcademyProgress();
   const readiness = summarize(useResults());
+  const firstName = accountFirstName(useAcademyAccount());
+  const returning = Boolean(lastStop || completedCount > 0 || readiness.finished > 0);
+  const greeting = returning ? "Welcome back" : "Welcome";
 
   let firstOpen: { href: string; title: string; phaseSlug: string; entrySlug: string } | null = null;
   for (const copy of PHASE_COPY) {
@@ -64,14 +68,8 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
   return (
     <div className="rd">
       <header className="rd-mast">
-        <div className="rd-meta">
-          <span>SOC Analyst track</span>
-          <span>
-            {completedCount}/{totalCount} lessons
-          </span>
-        </div>
         <div className="ax-titleblock">
-          <h1>Think Like a SOC Analyst</h1>
+          <h1>{firstName ? `${greeting}, ${firstName}` : greeting}</h1>
           <p>A hands-on path from security fundamentals to incident response, using real logs and real tools in real labs.</p>
         </div>
         <div className="ax-status">

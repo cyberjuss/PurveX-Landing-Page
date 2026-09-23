@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronLeft, GraduationCap, Home, Loader2, LogOut, Menu, Moon, Sun, X } from "lucide-react";
+import { ChevronLeft, GraduationCap, Home, Loader2, Menu, Moon, Sun, X } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
+import { AcademyAccountProvider, AcademyProfileMenu, type AcademyStudent } from "@/components/academy/academy-account";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
 import { AcademySignIn } from "@/components/academy/academy-sign-in";
 import { CoachProvider } from "@/components/academy/coach-context";
-import { PurvexCoach, ReadinessNavLink } from "@/components/academy/purvex-coach";
+import { PurvexCoach } from "@/components/academy/purvex-coach";
 import {
   academyFetch,
   downloadLinkedBuildScript,
@@ -23,7 +24,7 @@ import { clearResults, loadResults, saveResults, scorecardHtml, summarize, type 
 import { signOut } from "@/lib/portal-auth";
 import { supabase } from "@/lib/supabase";
 
-type Student = { id: string; email: string | null };
+type Student = AcademyStudent;
 
 export function AcademyShell({ phases, children }: { phases: PhaseDef[]; children: React.ReactNode }) {
   const pathname = usePathname();
@@ -44,13 +45,21 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
   useEffect(() => {
     if (!supabase) return;
-    const toStudent = (u: { id: string; email?: string | null } | null | undefined): Student | null =>
-      u ? { id: u.id, email: u.email ?? null } : null;
+    const toStudent = (
+      u: { id: string; email?: string | null; user_metadata?: Record<string, unknown> } | null | undefined
+    ): Student | null => {
+      if (!u) return null;
+      const meta = u.user_metadata ?? {};
+      const name = [meta.full_name, meta.name, meta.given_name].find((v) => typeof v === "string" && v.trim()) as
+        | string
+        | undefined;
+      return { id: u.id, email: u.email ?? null, name: name?.trim() ?? null };
+    };
     supabase.auth.getSession().then(({ data }) => setStudent(toStudent(data.session?.user)));
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       setStudent((prev) => {
         const next = toStudent(session?.user);
-        return prev?.id === next?.id ? prev : next;
+        return prev?.id === next?.id && prev?.email === next?.email && prev?.name === next?.name ? prev : next;
       });
     });
     return () => data.subscription.unsubscribe();
@@ -393,6 +402,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
   return (
     <AcademyProgressProvider phases={phases}>
+      <AcademyAccountProvider student={student}>
       <CoachProvider>
       <div className="academy-bg min-h-screen" data-academy-theme={theme}>
         <header
@@ -423,8 +433,6 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
               </Link>
             </div>
             <div className="flex items-center gap-2">
-              <ReadinessNavLink />
-              <PurvexCoach />
               <button
                 type="button"
                 onClick={toggleTheme}
@@ -441,15 +449,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
               >
                 <Home className="h-[18px] w-[18px]" />
               </Link>
-              <button
-                type="button"
-                onClick={handleSignOut}
-                aria-label="Sign out"
-                title={student.email ? `Signed in as ${student.email}. Sign out` : "Sign out"}
-                className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] bg-white text-slate-500 transition hover:border-[rgba(229,72,77,0.35)] hover:text-[#e5484d]"
-              >
-                <LogOut className="h-[18px] w-[18px]" />
-              </button>
+              <AcademyProfileMenu onSignOut={handleSignOut} />
             </div>
           </div>
         </header>
@@ -508,8 +508,10 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
             <div className={`mx-auto ${isReadiness ? "max-w-6xl" : "max-w-4xl"}`}>{children}</div>
           </main>
         </div>
+        <PurvexCoach />
       </div>
       </CoachProvider>
+      </AcademyAccountProvider>
     </AcademyProgressProvider>
   );
 }
