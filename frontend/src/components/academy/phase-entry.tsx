@@ -5,6 +5,7 @@ import { findQuiz } from "@/content/academy/quizzes";
 import { extractEssentialQuestion } from "@/lib/markdown";
 import { SectionTabs } from "./section-tabs";
 import { MarkCompleteButton } from "./mark-complete-button";
+import { ComingSoon } from "./coming-soon";
 
 export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }) {
   // Every section that has one authored its own Essential Question, but a
@@ -76,9 +77,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
       )}
 
       {sections.length === 0 ? (
-        <p className="mt-8 rounded-md border border-[var(--pvrx-border-light)] bg-slate-50/60 px-5 py-4 text-sm text-slate-500">
-          Content for this week is still being written. Check back soon.
-        </p>
+        <ComingSoon message="Content for this week is still being written. It'll land here as soon as it's ready." />
       ) : (
         <>
           {(otherSections.length > 0 || labSections.length > 0 || challengeSections.length > 0 || troubleshootingSections.length > 0) && (

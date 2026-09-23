@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowLeft, Siren } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { ComingSoon } from "@/components/academy/coming-soon";
 
 export default function Phase3Page() {
   return (
@@ -13,15 +14,7 @@ export default function Phase3Page() {
         Incident Response
       </h1>
 
-      <div className="mt-8 flex items-start gap-4 rounded-2xl border border-[var(--pvrx-border-light)] bg-slate-50/60 p-6">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[rgba(106,92,255,0.1)] text-[#5546e0]">
-          <Siren className="h-5 w-5" />
-        </span>
-        <p className="text-sm leading-6 text-slate-500">
-          This phase's material is still being written. It'll land here as soon as it's ready.
-          No need to check anywhere else.
-        </p>
-      </div>
+      <ComingSoon message="This phase's material is still being written. It'll land here as soon as it's ready." />
     </div>
   );
 }
