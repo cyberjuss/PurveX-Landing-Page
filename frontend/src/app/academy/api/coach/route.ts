@@ -89,8 +89,7 @@ export async function POST(request: Request) {
     });
     const remaining = COACH_DAILY_LIMIT - (await bumpUsage(student.id, used));
     return NextResponse.json({ reply: text, remaining, model });
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "Coach is unavailable.";
-    return NextResponse.json({ error: msg }, { status: 502 });
+  } catch {
+    return NextResponse.json({ error: "PurveX Coach is unavailable right now." }, { status: 502 });
   }
 }

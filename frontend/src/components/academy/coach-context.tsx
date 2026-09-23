@@ -81,8 +81,8 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
         });
         const data = await res.json();
         if (typeof data.remaining === "number") setRemaining(data.remaining);
-        if (!res.ok) {
-          setError(data.error || "PurveX Coach is unavailable right now.");
+        if (!res.ok || typeof data.reply !== "string" || !data.reply.trim()) {
+          setError(typeof data.error === "string" && data.error ? data.error : "PurveX Coach is unavailable right now.");
           return;
         }
         setMessages([...next, { role: "assistant", content: data.reply }]);

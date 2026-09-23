@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
-import { ArrowUp, Check, Copy, RotateCcw, ShieldCheck } from "lucide-react";
+import { Check, Copy, RotateCcw, ShieldCheck } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { useResults } from "@/lib/academy-client";
 import { MISSION_CATALOG } from "@/lib/academy-missions";
@@ -30,7 +30,7 @@ function Terminal({ lang, code }: { lang: string; code: string }) {
             navigator.clipboard?.writeText(code).then(() => {
               setCopied(true);
               window.setTimeout(() => setCopied(false), 1500);
-            });
+            }).catch(() => {});
           }}
         >
           {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
@@ -183,19 +183,11 @@ export function CoachChat() {
   const prompts = starters(useResults());
   const [input, setInput] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
   const blocked = busy || !enabled || remaining === 0;
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, busy]);
-
-  useEffect(() => {
-    const el = inputRef.current;
-    if (!el) return;
-    el.style.height = "0px";
-    el.style.height = `${Math.min(el.scrollHeight, 132)}px`;
-  }, [input]);
 
   function submit() {
     if (blocked || !input.trim()) return;
@@ -251,26 +243,22 @@ export function CoachChat() {
         }}
       >
         <div className="pc-compose__box">
-          <textarea
-            ref={inputRef}
-            rows={1}
+          <input
+            type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                submit();
-              }
-            }}
             placeholder={remaining === 0 ? "No questions left today" : "Ask a question"}
             maxLength={2000}
             disabled={!enabled || remaining === 0}
+            autoComplete="off"
+            enterKeyHint="send"
+            autoFocus
           />
-          <button type="submit" disabled={blocked || !input.trim()} className="pc-send" aria-label="Send">
-            <ArrowUp className="h-4 w-4" />
+          {remaining !== null && <span className="pc-compose__left">{remaining} left</span>}
+          <button type="submit" disabled={blocked || !input.trim()} className="pc-send">
+            Send
           </button>
         </div>
-        {remaining !== null && <p className="pc-compose__hint">{remaining} left today</p>}
       </form>
     </div>
   );
