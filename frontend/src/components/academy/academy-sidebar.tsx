@@ -35,7 +35,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         </div>
         <span className="ax-segs ax-segs--tight" aria-hidden>
           {Array.from({ length: totalCount }, (_, i) => (
-            <i key={i} className={i < completedCount ? "rd-tone-good" : "rd-tone-none"} />
+            <i key={i} className={i < completedCount ? "ax-sideprog__on" : "rd-tone-none"} />
           ))}
         </span>
         <p>

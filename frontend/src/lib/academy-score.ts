@@ -156,7 +156,7 @@ export function sanitizeResults(raw: unknown): Results {
 export const LEVELS: Record<Summary["level"], { label: string; note: string }> = {
   none: { label: "Not started", note: "Answer missions in Operation Day One and the Ticket Queue to build your score." },
   progress: { label: "In progress", note: "Finish every mission to get your readiness rating." },
-  ready: { label: "Help Desk Ready", note: "You can find, verify, and escalate on a real help desk. Keep practicing on your own lab." },
+  ready: { label: "Ready", note: "You met the bar on the missions you have finished. Keep going as new labs open." },
   almost: { label: "Almost Ready", note: "Solid base. Tighten the focus areas below and retake the missions you missed." },
   practice: { label: "Keep Practicing", note: "You have the start. Work through the focus areas below, then retake the challenges." },
 };
@@ -171,7 +171,7 @@ export function scorecardHtml(s: Summary): string {
   const line = gap ? `Biggest gap: ${esc(gap.label)}` : `${s.finished} of ${s.total} missions finished`;
   return `<div class="ad-score__top"><div class="ad-score__ring ad-score__ring--${s.level}"><span>${
     s.finished === 0 ? "––" : s.overall
-  }</span></div><div class="ad-score__head"><span class="ad-score__eyebrow">Help Desk Readiness</span><strong>${
+  }</span></div><div class="ad-score__head"><span class="ad-score__eyebrow">Readiness</span><strong>${
     lv.label
   }</strong><small>${line}</small></div><a class="ad-score__link" href="/academy/readiness">Open report →</a></div>`;
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Gauge, X } from "lucide-react";
@@ -11,24 +12,28 @@ import { READINESS_PATH } from "@/lib/academy-client";
 export function PurvexCoach() {
   const { modalOpen, setModalOpen } = useCoach();
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!modalOpen) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setModalOpen(false);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
   }, [modalOpen, setModalOpen]);
 
-  if (!modalOpen) return null;
+  if (!mounted || !modalOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-end sm:items-center sm:p-6">
-      <div className="pc-backdrop absolute inset-0" onClick={() => setModalOpen(false)} />
-      <div
-        role="dialog"
-        aria-label="PurveX Coach"
-        className="pc-panel pc-pop pc-modal relative flex flex-col overflow-hidden"
-      >
+  return createPortal(
+    <div data-pc-root="" className="pc-root">
+      <div className="pc-backdrop" onClick={() => setModalOpen(false)} />
+      <div role="dialog" aria-label="PurveX Coach" className="pc-panel pc-modal">
         <CoachHeader>
           {pathname !== READINESS_PATH && (
             <Link href={READINESS_PATH} onClick={() => setModalOpen(false)} className="pc-icon" title="Full readiness report">
@@ -41,6 +46,7 @@ export function PurvexCoach() {
         </CoachHeader>
         <CoachChat />
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

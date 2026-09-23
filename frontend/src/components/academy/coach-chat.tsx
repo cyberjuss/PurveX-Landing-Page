@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
-import { ArrowRight, ArrowUp, Check, Copy, RotateCcw, ShieldCheck } from "lucide-react";
+import { ArrowRight, ArrowUp, Check, Copy, Headset, RotateCcw, ShieldCheck } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { useResults } from "@/lib/academy-client";
 import { MISSION_CATALOG } from "@/lib/academy-missions";
@@ -155,7 +155,7 @@ function briefing(results: Results) {
   if (missed) starters.push(`Walk me through "${missed.title}" without giving it away.`);
   if (next) starters.push(`How do I start "${next.title}"?`);
   if (gap) starters.push(`Give me a 15-minute drill for ${gap.label}.`);
-  starters.push("Show me how to check a user's groups in PowerShell.");
+  starters.push("How do I check a user's groups in Active Directory Users and Computers?");
 
   return {
     score: s.finished === 0 ? null : s.overall,
@@ -167,7 +167,12 @@ function briefing(results: Results) {
 }
 
 export function CoachAvatar({ size = "md" }: { size?: "sm" | "md" }) {
-  return <span className={`pc-orb ${size === "sm" ? "pc-orb--sm" : ""}`} aria-hidden />;
+  const n = size === "sm" ? 12 : 16;
+  return (
+    <span className={`pc-mark ${size === "sm" ? "pc-mark--sm" : ""}`} aria-hidden>
+      <Headset size={n} strokeWidth={2} />
+    </span>
+  );
 }
 
 export function CoachHeader({ children }: { children?: ReactNode }) {
@@ -177,10 +182,8 @@ export function CoachHeader({ children }: { children?: ReactNode }) {
       <div className="flex min-w-0 items-center gap-3">
         <CoachAvatar />
         <div className="min-w-0">
-          <p className="pc-head__title">
-            PurveX Coach <span className="pc-head__live" />
-          </p>
-          <p className="pc-head__sub">Reads your lab. Never hands you the flag.</p>
+          <p className="pc-head__kicker">Coach</p>
+          <p className="pc-head__title">PurveX Coach</p>
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-1.5">
@@ -243,8 +246,8 @@ export function CoachChat() {
                 </div>
               </div>
               <p className="pc-brief__note">
-                Ask how to do anything in the lab and you get the exact console, command, and what to look for. Mission
-                answers you find yourself.
+                Ask how to do anything in the lab and you get the click path first, then the command if you want it.
+                Mission answers you find yourself.
               </p>
             </div>
             <div>
@@ -310,7 +313,7 @@ export function CoachChat() {
                 submit();
               }
             }}
-            placeholder={remaining === 0 ? "Out of questions for today" : "Ask about a mission, a ticket, or a command…"}
+            placeholder={remaining === 0 ? "Out of questions for today" : "Ask about a mission, a ticket, or a console…"}
             maxLength={2000}
             disabled={!enabled || remaining === 0}
           />

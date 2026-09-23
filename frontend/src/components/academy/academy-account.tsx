@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight, LogOut, Sparkles } from "lucide-react";
+import { ArrowRight, Headset, LogOut } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { READINESS_PATH, useResults } from "@/lib/academy-client";
 import { LEVELS, summarize } from "@/lib/academy-score";
@@ -127,10 +127,11 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               [data-ax-account] .ax-account__ask { display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding: 14px 0 12px; border-bottom: 1px solid rgba(255,255,255,0.12); }
               [data-ax-account] .ax-account__coach {
                 display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-                width: 100%; height: 40px; border: 0; border-radius: 999px;
+                width: 100%; height: 40px; border: 0; border-radius: 8px;
                 font-size: 14px; font-weight: 600; color: #fff; cursor: pointer;
-                background: linear-gradient(135deg, #7667ff, #4a3cd0);
+                background: #0f172a;
               }
+              [data-ax-account][data-theme="dark"] .ax-account__coach { background: #eef1f8; color: #0c0f16; }
               [data-ax-account] .ax-account__ask small { text-align: center; font-size: 11px; font-weight: 700; opacity: 0.55; }
               [data-ax-account] .ax-account__out { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; background: none; border: 0; padding: 0; font-size: 13px; font-weight: 600; color: inherit; cursor: pointer; opacity: 0.7; }
               [data-ax-account] .rd-kicker { font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.5; }
@@ -157,7 +158,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               {firstName && <strong>{firstName}</strong>}
               {student?.email && <span>{student.email}</span>}
               <Link href={READINESS_PATH} className="ax-account__score" onClick={() => setOpen(false)}>
-                <span className="rd-kicker">Help Desk Readiness</span>
+                <span className="rd-kicker">Readiness</span>
                 <em>{readiness.finished === 0 ? "––" : readiness.overall}</em>
                 <small>{LEVELS[readiness.level].label}</small>
                 <b>
@@ -174,7 +175,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                       setModalOpen(true);
                     }}
                   >
-                    <Sparkles className="h-4 w-4" /> Coach
+                    <Headset className="h-4 w-4" /> Ask the coach
                   </button>
                   {remaining != null && (
                     <small>

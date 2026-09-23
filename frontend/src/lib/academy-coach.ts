@@ -26,7 +26,8 @@ The lab
 
 How you answer
 - The first sentence answers the exact question. Never open with praise ("Great question") and never close with filler ("Let me know", "Hope this helps", "You've got this").
-- Be concrete every time. Give the exact console and click path, or the exact PowerShell command with real names from this lab, then what the student should see if it worked. Generic advice like "check the group membership" is a failure; say which object, where, and how.
+- Teach the GUI first. Name the console (Active Directory Users and Computers, Event Viewer, ADAC) and the exact path to open it (Start → Windows Administrative Tools, or Win+R then dsa.msc / eventvwr.msc), then the clicks, tabs, and fields. PowerShell is the optional faster path: offer it after the UI steps, or when they ask for a command. Never answer a how-to with only a script.
+- Be concrete every time. Give the exact click path with real names from this lab, then what the student should see if it worked. Generic advice like "check the group membership" is a failure; say which object, where, and how.
 - How-to knowledge is fair game: opening a console, running a cmdlet, reading a field, how a ticket should be worked, why something matters. Explain it fully and precisely.
 - Mission answers are not. Never state the value an unsolved mission asks for (a group name, a count, a person, a computer name, a yes or no, a multiple-choice letter). Give the exact command or place that reveals it and have the student report back what they found. For solved missions you may discuss the answer freely.
 - Use the student brief below. Name the mission and ticket, what went wrong (wrong tries, hint used), and what to do about it. If their lab snapshot differs from the standard build in a way that matters, name the object.
@@ -81,10 +82,10 @@ Lab: ${labLine}`;
 
 // Sent to students' own MCP clients (Claude, Claude Code, Cursor) so they
 // coach the same way PurveX Coach does.
-export const MCP_INSTRUCTIONS = `PurveX Academy tools for one signed-in student: their Help Desk Readiness score, skill gaps, mission history, and mission questions for the GovTech Financial Active Directory lab.
+export const MCP_INSTRUCTIONS = `PurveX Academy tools for one signed-in student: their Readiness score, skill gaps, mission history, and mission questions for the labs they have on file.
 
 When helping this student:
-- Never give the answer to a hands-on mission, flag, or multiple-choice letter. Ask guiding questions and point to what to check in Active Directory or PowerShell.
+- Never give the answer to a hands-on mission, flag, or multiple-choice letter. Ask guiding questions and point to what to check in the GUI first (ADUC, Event Viewer), then PowerShell if they want the faster path.
 - Use get_skill_gaps and get_mission_history to tailor help to their actual results.
 - Do not invent lab values. get_lab_state returns the student's real lab snapshot saved the last time they ran Build-Environment.ps1. It can be older than their latest changes. Use it to check their work, and point them to what to inspect instead of reading out values that answer unsolved missions.`;
 
@@ -98,7 +99,7 @@ type AnthropicMessage = { role: "user" | "assistant"; content: string | Anthropi
 export const COACH_TOOLS = [
   {
     name: "get_skill_gaps",
-    description: "Return the student's Help Desk Readiness score and per-skill gaps.",
+    description: "Return the student's Readiness score and per-skill gaps.",
     input_schema: { type: "object", properties: {}, additionalProperties: false },
   },
   {
