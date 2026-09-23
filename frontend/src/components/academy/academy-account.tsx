@@ -103,38 +103,53 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
     };
   }, [open]);
 
-  const host = mounted ? document.querySelector(".academy-bg") ?? document.body : null;
+  const dark = mounted && document.querySelector(".academy-bg")?.getAttribute("data-academy-theme") === "dark";
   const menu =
-    open && host
+    open && mounted
       ? createPortal(
           <div
             ref={panel}
             role="dialog"
             aria-label="Account"
-            className="ax-account flex w-[272px] flex-col border border-[var(--rd-line)] bg-white p-4"
-            style={{ position: "fixed", top: pos.top, right: pos.right, zIndex: 60 }}
+            className="ax-account"
+            style={{
+              position: "fixed",
+              top: pos.top,
+              right: pos.right,
+              zIndex: 80,
+              display: "flex",
+              flexDirection: "column",
+              width: 272,
+              padding: "16px 16px 12px",
+              background: dark ? "#1a2030" : "#fff",
+              color: dark ? "#eef1f8" : "#0f172a",
+              border: dark ? "1px solid rgba(255,255,255,0.14)" : "1px solid rgba(15,23,42,0.12)",
+              boxShadow: dark ? "0 20px 48px -16px rgba(0,0,0,0.55)" : "0 18px 40px -20px rgba(15,23,42,0.28)",
+            }}
           >
             <p className="rd-kicker">Account</p>
             {firstName && <strong>{firstName}</strong>}
             {student?.email && <span>{student.email}</span>}
-            <Link href={READINESS_PATH} className="ax-account__score block border-y border-[var(--rd-line)] py-3.5" onClick={() => setOpen(false)}>
+            <Link href={READINESS_PATH} className="ax-account__score" onClick={() => setOpen(false)}>
               <span className="rd-kicker">Help Desk Readiness</span>
-              <em className="mt-1.5 block text-4xl not-italic leading-none">{readiness.finished === 0 ? "––" : readiness.overall}</em>
-              <small className="mt-1 block uppercase">{LEVELS[readiness.level].label}</small>
-              <b className="mt-2.5 inline-flex items-center gap-1 text-[13px] font-semibold">
+              <em>{readiness.finished === 0 ? "––" : readiness.overall}</em>
+              <small>{LEVELS[readiness.level].label}</small>
+              <b>
                 Open report <ArrowRight className="h-3.5 w-3.5" />
               </b>
             </Link>
             {enabled && (
-              <div className="ax-account__ask flex flex-col gap-2 border-b border-[var(--rd-line)] py-3.5">
+              <div className="ax-account__ask">
                 <button
                   type="button"
-                  className="ax-account__coach pc-launch inline-flex h-10 w-full items-center justify-center gap-2 rounded-full text-sm font-semibold text-white"
+                  className="ax-account__coach pc-launch"
                   onClick={() => {
                     setOpen(false);
                     setModalOpen(true);
                   }}
                 >
+                  <Sparkles className="h-4 w-4" /> Coach
+                </button>
                 {remaining != null && (
                   <small>
                     {remaining === 0 ? "None left today" : `${remaining} of ${limit} left today`}
@@ -146,7 +161,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               <LogOut className="h-3.5 w-3.5" /> Sign out
             </button>
           </div>,
-          host
+          document.body
         )
       : null;
 
