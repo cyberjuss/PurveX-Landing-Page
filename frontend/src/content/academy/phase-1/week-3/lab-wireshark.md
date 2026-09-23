@@ -7,7 +7,7 @@
 
 This lab is hands-on: you open a capture in Wireshark, learn the three panes, learn to recognize what makes traffic look suspicious before applying a single filter, and use three basic filters plus "Follow → HTTP Stream" to reassemble a full conversation into something readable.
 
-**\[SCREENSHOT: Wireshark start screen, interface list (optional, for first-time users)\]**
+**[SCREENSHOT: Wireshark start screen, interface list (optional, for first-time users)]**
 
 ### What Wireshark Actually Shows You
 
@@ -21,7 +21,7 @@ Think of it as reading someone's mail log rather than their mail. A sealed envel
 * **Middle (Packet Details):** click a packet, see what is inside it, layer by layer.
 * **Bottom (Bytes):** the raw data, for when you need to go deeper than the parsed view.
 
-**\[SCREENSHOT: Full Wireshark window, label the 3 panes (top / middle / bottom)\]**
+**[SCREENSHOT: Full Wireshark window, label the 3 panes (top / middle / bottom)]**
 
 > **Fundamental #1:** Click through a few packets in the top pane and watch the middle pane change with each one. That is the entire interaction loop this tool is built around.
 
@@ -34,7 +34,7 @@ Normal web browsing produces quick GET requests to a wide variety of sites. Malw
 * An odd or fabricated-looking browser identity (the User-Agent field)
 * Data that does not resemble normal text. Malware often scrambles or encodes what it steals
 
-**\[SCREENSHOT: Statistics → Conversations, sorted by bytes, highlight the heaviest conversation\]**
+**[SCREENSHOT: Statistics → Conversations, sorted by bytes, highlight the heaviest conversation]**
 
 > **Fundamental #2:** Malware traffic is not invisible. It is traffic with a pattern that does not match normal use, and learning that pattern is most of the skill.
 
@@ -48,7 +48,7 @@ Type these one at a time, and observe what changes with each:
 | `http.request.method == "POST"` | Just data being sent out |
 | `ip.addr == <IP>` | Just one computer's traffic |
 
-**\[SCREENSHOT: Filter bar with http.request.method \== "POST" typed in, filtered list below\]**
+**[SCREENSHOT: Filter bar with http.request.method == "POST" typed in, filtered list below]**
 
 > **Fundamental #3:** A filter does not find anything for you. It narrows what you are looking at so that you can.
 
@@ -58,13 +58,13 @@ Right-click any packet → Follow → HTTP Stream.
 
 This reassembles the full back-and-forth into something readable. This is the moment you will actually see the malware talking, the address it is sending to, and precisely what it is sending.
 
-**\[SCREENSHOT: Follow HTTP Stream window, User-Agent header and POST body visible (crop/blur payload bytes as needed)\]**
+**[SCREENSHOT: Follow HTTP Stream window, User-Agent header and POST body visible (crop/blur payload bytes as needed)]**
 
 ### Write Down What You See
 
-* Infected computer's address: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
-* Address it is talking to: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
-* What looked unusual: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+* Infected computer's address: _________________________
+* Address it is talking to: _________________________
+* What looked unusual: _________________________
 
 > **Discussion:** If this traffic pattern is visible to us only after the fact, what would it take to catch it while it is happening?
 

@@ -12,7 +12,7 @@ These three terms are often used interchangeably in casual conversation, but to 
 
 **Risk**: The likelihood and impact of a threat actually exploiting a vulnerability.
 
-* Formula analysts use: **Risk \= Threat × Vulnerability × Impact**
+* Formula analysts use: **Risk = Threat × Vulnerability × Impact**
 * No vulnerability means no risk, even if the threat exists.
 * No threat means no risk, even if the vulnerability exists.
 * Risk is what a security program actually manages. Threats are rarely something you can eliminate outright, so the discipline is reducing risk instead, by closing vulnerabilities and lowering potential impact.
