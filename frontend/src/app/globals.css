@@ -2935,13 +2935,8 @@ body:has(.lp) {
 .academy-prose .ad-code { margin: 1.25rem 0; border: 1px solid var(--pvrx-border-light); border-radius: 10px; overflow: hidden; }
 .academy-prose .ad-code > summary { cursor: pointer; list-style: none; padding: 0.7rem 1rem; font-size: 0.85rem; font-weight: 650; color: #5546e0; background: var(--pvrx-surface-alt-light); }
 .academy-prose .ad-code > summary::-webkit-details-marker { display: none; }
-/* No open/closed chevron swap here -- a ".ad-code[open] > summary::before"
-   rule used to sit below this line, and Lightning CSS's build was silently
-   dropping this entire block (this rule through .ad-trouble below) from
-   the compiled CSS with no error, wherever an [open] attribute selector
-   appeared. A static marker sidesteps it; the native <details> disclosure
-   behavior still works fine without it. */
 .academy-prose .ad-code > summary::before { content: "▸ "; }
+.academy-prose .ad-code[open] > summary::before { content: "▾ "; }
 .academy-prose .ad-code__bar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.5rem 0.75rem; border-top: 1px solid var(--pvrx-border-light); background: #0c1220; }
 .academy-prose .ad-code__label { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.78rem; color: #94a3b8; }
 .academy-prose .ad-code__copy { font-size: 0.76rem; font-weight: 650; color: #e2e8f0; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); border-radius: 6px; padding: 0.3rem 0.65rem; cursor: pointer; }
