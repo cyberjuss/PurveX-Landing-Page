@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
-import { ArrowRight, ArrowUp, Check, Copy, Headset, RotateCcw, ShieldCheck } from "lucide-react";
+import { ArrowUp, Check, Copy, RotateCcw, ShieldCheck } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { useResults } from "@/lib/academy-client";
 import { MISSION_CATALOG } from "@/lib/academy-missions";
@@ -166,25 +166,13 @@ function briefing(results: Results) {
   };
 }
 
-export function CoachAvatar({ size = "md" }: { size?: "sm" | "md" }) {
-  const n = size === "sm" ? 12 : 16;
-  return (
-    <span className={`pc-mark ${size === "sm" ? "pc-mark--sm" : ""}`} aria-hidden>
-      <Headset size={n} strokeWidth={2} />
-    </span>
-  );
-}
-
 export function CoachHeader({ children }: { children?: ReactNode }) {
   const { messages, clear, busy } = useCoach();
   return (
     <div className="pc-head">
-      <div className="flex min-w-0 items-center gap-3">
-        <CoachAvatar />
-        <div className="min-w-0">
-          <p className="pc-head__kicker">Coach</p>
-          <p className="pc-head__title">PurveX Coach</p>
-        </div>
+      <div className="min-w-0">
+        <p className="pc-head__kicker">Academy</p>
+        <p className="pc-head__title">PurveX Coach</p>
       </div>
       <div className="flex shrink-0 items-center gap-1.5">
         {messages.length > 0 && (
@@ -227,63 +215,58 @@ export function CoachChat() {
     <div className="pc flex min-h-0 flex-1 flex-col">
       <div ref={listRef} className="pc-scroll min-h-0 flex-1 overflow-y-auto px-5 py-5">
         {messages.length === 0 && (
-          <div className="space-y-5">
-            <div className="pc-brief">
-              <p className="pc-eyebrow">Shift briefing</p>
-              <div className="pc-brief__grid">
-                <div>
-                  <span>Readiness</span>
-                  <strong>{brief.score === null ? "—" : brief.score}</strong>
-                  <em>{brief.level}</em>
-                </div>
-                <div>
-                  <span>Biggest gap</span>
-                  <strong className="pc-brief__small">{brief.gap ?? "None yet"}</strong>
-                </div>
-                <div>
-                  <span>Next up</span>
-                  <strong className="pc-brief__small">{brief.next ?? "All missions attempted"}</strong>
-                </div>
+          <div>
+            <p className="pc-brief__note">
+              Click path first, then the command if you want it. Mission answers you find yourself.
+            </p>
+            <dl className="pc-meta">
+              <div>
+                <dt>Readiness</dt>
+                <dd>
+                  {brief.score === null ? "—" : brief.score}
+                  <small>{brief.level}</small>
+                </dd>
               </div>
-              <p className="pc-brief__note">
-                Ask how to do anything in the lab and you get the click path first, then the command if you want it.
-                Mission answers you find yourself.
-              </p>
-            </div>
-            <div>
-              <p className="pc-eyebrow mb-2">Start here</p>
-              <div className="flex flex-col gap-1.5">
-                {brief.starters.map((s) => (
-                  <button key={s} type="button" disabled={blocked} onClick={() => send(s)} className="pc-starter">
+              <div>
+                <dt>Biggest gap</dt>
+                <dd>{brief.gap ?? "None yet"}</dd>
+              </div>
+              <div>
+                <dt>Next</dt>
+                <dd>{brief.next ?? "All missions attempted"}</dd>
+              </div>
+            </dl>
+            <p className="pc-eyebrow">Start here</p>
+            <ol className="pc-ledger">
+              {brief.starters.map((s, i) => (
+                <li key={s}>
+                  <button type="button" disabled={blocked} onClick={() => send(s)} className="pc-starter">
+                    <span className="pc-ledger__n">{String(i + 1).padStart(2, "0")}</span>
                     <span>{s}</span>
-                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
                   </button>
-                ))}
-              </div>
-            </div>
+                </li>
+              ))}
+            </ol>
           </div>
         )}
 
-        <div className="space-y-6">
+        <div className="pc-thread">
           {messages.map((m, i) =>
             m.role === "user" ? (
-              <div key={i} className="flex justify-end">
+              <div key={i} className="pc-turn">
+                <p className="pc-reply__who">You</p>
                 <p className="pc-user">{m.content}</p>
               </div>
             ) : (
-              <div key={i} className="pc-reply">
-                <div className="pc-reply__who">
-                  <CoachAvatar size="sm" /> Coach
-                </div>
+              <div key={i} className="pc-turn">
+                <p className="pc-reply__who">Coach</p>
                 <CoachText text={m.content} />
               </div>
             )
           )}
           {busy && (
-            <div className="pc-reply">
-              <div className="pc-reply__who">
-                <CoachAvatar size="sm" /> Coach
-              </div>
+            <div className="pc-turn">
+              <p className="pc-reply__who">Coach</p>
               <p className="pc-thinking">
                 Reading your lab and results<span className="pc-dots"><i /><i /><i /></span>
               </p>

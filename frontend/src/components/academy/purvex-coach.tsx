@@ -31,9 +31,14 @@ export function PurvexCoach() {
   if (!mounted || !modalOpen) return null;
 
   return createPortal(
-    <div data-pc-root="" className="pc-root">
+    <div data-pc-root="" className="pc-root" style={{ position: "fixed", inset: 0, zIndex: 90 }}>
       <div className="pc-backdrop" onClick={() => setModalOpen(false)} />
-      <div role="dialog" aria-label="PurveX Coach" className="pc-panel pc-modal">
+      <div
+        role="dialog"
+        aria-label="PurveX Coach"
+        className="pc-panel"
+        style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: "min(440px, 100vw)", height: "100dvh" }}
+      >
         <CoachHeader>
           {pathname !== READINESS_PATH && (
             <Link href={READINESS_PATH} onClick={() => setModalOpen(false)} className="pc-icon" title="Full readiness report">

@@ -127,7 +127,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               [data-ax-account] .ax-account__ask { display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding: 14px 0 12px; border-bottom: 1px solid rgba(255,255,255,0.12); }
               [data-ax-account] .ax-account__coach {
                 display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-                width: 100%; height: 40px; border: 0; border-radius: 8px;
+                width: 100%; height: 40px; border: 0;
                 font-size: 14px; font-weight: 600; color: #fff; cursor: pointer;
                 background: #0f172a;
               }
