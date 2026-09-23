@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookMarked, ChevronLeft, GraduationCap, Home, Menu, X } from "lucide-react";
+import { BookMarked, ChevronLeft, GraduationCap, Home, Menu, Moon, Sun, X } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
@@ -20,6 +20,35 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  // Dark mode is scoped to the academy on purpose. The class-based .dark on
+  // <html> leaks to the light-only marketing site, so this uses its own
+  // attribute on the academy root and its own storage key.
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem("academy-theme");
+      if (stored === "dark" || stored === "light") setTheme(stored);
+      else if (window.matchMedia("(prefers-color-scheme: dark)").matches) setTheme("dark");
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    document.body.style.backgroundColor = theme === "dark" ? "#0b0e15" : "";
+    return () => {
+      document.body.style.backgroundColor = "";
+    };
+  }, [theme]);
+
+  function toggleTheme() {
+    setTheme((t) => {
+      const next = t === "dark" ? "light" : "dark";
+      try {
+        window.localStorage.setItem("academy-theme", next);
+      } catch {}
+      return next;
+    });
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -153,7 +182,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
   return (
     <AcademyProgressProvider phases={phases}>
-      <div className="academy-bg min-h-screen">
+      <div className="academy-bg min-h-screen" data-academy-theme={theme}>
         <header
           className={`sticky top-0 z-40 border-b bg-white transition-shadow ${
             scrolled ? "border-[var(--pvrx-border-light)] shadow-[0_1px_0_rgba(16,25,46,0.03),0_8px_24px_-16px_rgba(16,25,46,0.12)]" : "border-[var(--pvrx-border-light)]"
@@ -188,6 +217,15 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
               >
                 <BookMarked className="h-4 w-4" /> Reference
               </Link>
+              <button
+                type="button"
+                onClick={toggleTheme}
+                aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                title={theme === "dark" ? "Light mode" : "Dark mode"}
+                className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] bg-white text-slate-500 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
+              >
+                {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
+              </button>
               <Link
                 href="/"
                 aria-label="PurveX home"
