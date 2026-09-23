@@ -11,7 +11,7 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 
 <div class="ad-answer-guide">
 <span class="ad-answer-guide__label">Hands-on required</span>
-<p>Most answers come from your own lab and cannot be found on this page. First run <code>Build-Environment.ps1 -IncludeCTF</code> to plant the ticket data. Then use Active Directory Users and Computers or the PowerShell command in each ticket. You get one hint and three tries, and the explanation unlocks afterward.</p>
+<p>Most answers come from your own lab and cannot be found on this page. First run <code>Build-Environment.ps1 -IncludeCTF</code> to plant the ticket data. Then use Active Directory Users and Computers to find each answer. Each hint also gives a PowerShell option. You get one hint and three tries, and the explanation unlocks afterward.</p>
 </div>
 
 <div class="ad-progress">
@@ -29,8 +29,9 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 <h4>Missing Announcements</h4>
 <div class="ad-ticket__from"><span class="ad-ticket__avatar">JT</span><span class="ad-ticket__who"><strong>Jamie Torres</strong><span>Wealth Management</span></span></div>
 <p class="ad-ticket__msg">I started last week and I still have not gotten a single company-wide email. Everyone else on my team has. Can you check my access?</p>
-<p class="ad-task">Open the <code>All Employees</code> group in your lab and count its members. Or run <code>(Get-ADGroupMember "All Employees").Count</code>. <strong>Question:</strong> How many members does it have?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">There are 9 people in the directory. Work out who is missing by comparing the group's member list with the User Directory.</p></div>
+<p class="ad-task">Open the <code>All Employees</code> group in your lab and count its members.</p>
+<p class="ad-ticket__q"><span>Question</span>How many members does it have?</p>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">There are 9 people in the directory. Work out who is missing by comparing the group's member list with the User Directory.<br><br>PowerShell option: <code>(Get-ADGroupMember "All Employees").Count</code></p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{8}">Submit</button>
@@ -48,8 +49,9 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 <h4>Locked Out</h4>
 <div class="ad-ticket__from"><span class="ad-ticket__avatar">RK</span><span class="ad-ticket__who"><strong>Riley Kwan</strong><span>Operations</span></span></div>
 <p class="ad-ticket__msg">It will not let me sign in. I have typed my password wrong a few times, so I think I locked myself out. Can you unlock me?</p>
-<p class="ad-task">Do not take the caller's word for it. Run <code>Get-ADUser riley.kwan -Properties LockedOut, PasswordExpired | Select Name, LockedOut, PasswordExpired</code>. <strong>Question:</strong> What does <code>LockedOut</code> say? Type <code>true</code> or <code>false</code>.</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">This is the value in the LockedOut column of the output, not the caller's opinion. Then look at PasswordExpired next to it.</p></div>
+<p class="ad-task">Do not take the caller's word for it. Open <code>riley.kwan</code> in your lab and check her <strong>Account</strong> tab.</p>
+<p class="ad-ticket__q"><span>Question</span>Is the account locked out? Type <code>true</code> or <code>false</code>.</p>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Trust the directory, not the caller's opinion. On the Account tab, an unlock option only appears when an account is actually locked. Also look at the option about changing the password at next logon.<br><br>PowerShell option: <code>Get-ADUser riley.kwan -Properties LockedOut, PasswordExpired | Select Name, LockedOut, PasswordExpired</code></p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="true or false" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{false}">Submit</button>
@@ -67,8 +69,9 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 <h4>New Hire Access</h4>
 <div class="ad-ticket__from"><span class="ad-ticket__avatar">IM</span><span class="ad-ticket__who"><strong>IT Manager</strong><span>Information Technology</span></span></div>
 <p class="ad-ticket__msg">Casey Reed starts on the help desk today. Give Casey the same access as the rest of IT Users, and nothing more.</p>
-<p class="ad-task">Open the <code>IT Users</code> group in your lab and count its members. Or run <code>(Get-ADGroupMember "IT Users").Count</code>. <strong>Question:</strong> How many members does it have?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Alex, Priya, and Casey are IT staff. If the number is higher than you expect, read the member list and find who does not belong.</p></div>
+<p class="ad-task">Open the <code>IT Users</code> group in your lab and count its members.</p>
+<p class="ad-ticket__q"><span>Question</span>How many members does it have?</p>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Alex, Priya, and Casey are IT staff. If the number is higher than you expect, read the member list and find who does not belong.<br><br>PowerShell option: <code>(Get-ADGroupMember "IT Users").Count</code></p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{4}">Submit</button>
@@ -86,8 +89,9 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 <h4>The Backup Account</h4>
 <div class="ad-ticket__from"><span class="ad-ticket__avatar">CA</span><span class="ad-ticket__who"><strong>Compliance Audit</strong><span>Auditor request</span></span></div>
 <p class="ad-ticket__msg">The auditors need proof that our nightly backup job only runs during its approved window. Please send them the window in writing.</p>
-<p class="ad-task">Run <code>(Get-ADUser svc-backup-job -Properties Description).Description</code> or open the account's Properties in your lab. <strong>Question:</strong> What run window does the description give? Use the format <code>00:00-00:00</code>.</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">The description ends with the expected hours in 24-hour time.</p></div>
+<p class="ad-task">Open the properties of <code>svc-backup-job</code> in your lab and read its Description.</p>
+<p class="ad-ticket__q"><span>Question</span>What run window does the description give? Use the format <code>00:00-00:00</code>.</p>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">The description ends with the expected hours in 24-hour time.<br><br>PowerShell option: <code>(Get-ADUser svc-backup-job -Properties Description).Description</code></p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="hh:mm-hh:mm" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{01:00-03:00}">Submit</button>
@@ -105,8 +109,9 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 <h4>The Transfer That Did Not Happen</h4>
 <div class="ad-ticket__from"><span class="ad-ticket__avatar">HR</span><span class="ad-ticket__who"><strong>Human Resources</strong><span>Transfer notice</span></span></div>
 <p class="ad-ticket__msg">Taylor Osei has transferred from Operations to Compliance, effective today. Please make sure Compliance policies now apply to Taylor.</p>
-<p class="ad-task">Policy follows the OU an account lives in, not the notice from HR. Run <code>(Get-ADUser taylor.osei).DistinguishedName</code> and read the path from left to right. <strong>Question:</strong> How many <code>OU=</code> entries does the path contain?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Count only the parts that start with OU=. Ignore CN= and the DC= parts at the end.</p></div>
+<p class="ad-task">Policy follows the OU an account lives in, not the notice from HR. Find <code>taylor.osei</code> in your lab and read the OU path above the account.</p>
+<p class="ad-ticket__q"><span>Question</span>How many <code>OU=</code> entries does the path contain?</p>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Count only the parts that start with OU=. Ignore CN= and the DC= parts at the end.<br><br>PowerShell option: <code>(Get-ADUser taylor.osei).DistinguishedName</code></p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{3}">Submit</button>
@@ -124,8 +129,9 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 <h4>The 2 AM Login</h4>
 <div class="ad-ticket__from"><span class="ad-ticket__avatar">SI</span><span class="ad-ticket__who"><strong>SIEM Alert · Part 1 of 5</strong><span>Automated detection</span></span></div>
 <p class="ad-ticket__msg">ALERT: successful login for alex.rivera at 2:00 AM from workstation WM-WKS07, preceded by multiple failed logons. Severity: high.</p>
-<p class="ad-task">Before you read any logs, look at the machine. Run <code>(Get-ADComputer WM-WKS07 -Properties Description).Description</code>. <strong>Question:</strong> What ticket ID does its description reference? Use the format <code>CTF-TICKET-000</code>.</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">The ID is at the start of the description, before the colon.</p></div>
+<p class="ad-task">Before you read any logs, look at the machine. Find <code>WM-WKS07</code> in your lab and read its Description.</p>
+<p class="ad-ticket__q"><span>Question</span>What ticket ID does its description reference? Use the format <code>CTF-TICKET-000</code>.</p>
+<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">The ID is at the start of the description, before the colon.<br><br>PowerShell option: <code>(Get-ADComputer WM-WKS07 -Properties Description).Description</code></p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="CTF-TICKET-000" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{ctf-ticket-301}">Submit</button>
@@ -151,7 +157,8 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 02:00:41  4624   alex.rivera   WM-WKS07  3     success
 02:00:41  4672   alex.rivera   WM-WKS07  -     special privileges assigned
 02:03:18  4624   alex.rivera   WM-WKS07  3     success</code></pre>
-<p class="ad-task"><strong>Question:</strong> How many failed logons (Event ID 4625) happen before the first successful logon (4624)?</p>
+<p class="ad-task"></p>
+<p class="ad-ticket__q"><span>Question</span>How many failed logons (Event ID 4625) happen before the first successful logon (4624)?</p>
 <div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Count only the 4625 rows above the first 4624. Ignore the later success.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -170,7 +177,8 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 <h4>Why the Privileges?</h4>
 <div class="ad-ticket__from"><span class="ad-ticket__avatar">SI</span><span class="ad-ticket__who"><strong>SIEM Alert · Part 3 of 5</strong><span>Automated detection</span></span></div>
 <p class="ad-ticket__msg">Event 4672 in the log records special privileges being assigned to Alex's new session. That is unusual for a normal user.</p>
-<p class="ad-task">Open Alex's account in your lab and read his <strong>Member Of</strong> tab. <strong>Question:</strong> Which group explains why his session received special privileges?</p>
+<p class="ad-task">Open Alex's account in your lab and read his <strong>Member Of</strong> tab.</p>
+<p class="ad-ticket__q"><span>Question</span>Which group explains why his session received special privileges?</p>
 <div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">It is the second group Alex holds, the one nobody else in the directory has.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="group name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -189,7 +197,8 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 <h4>Mistake or Attack?</h4>
 <div class="ad-ticket__from"><span class="ad-ticket__avatar">SI</span><span class="ad-ticket__who"><strong>SIEM Alert · Part 4 of 5</strong><span>Automated detection</span></span></div>
 <p class="ad-ticket__msg">Four failed logons two seconds apart, then a success, at 2 AM, on a workstation outside IT, using the only admin account. What best explains it?<br><strong>A</strong> Alex mistyped his password four times.<br><strong>B</strong> Automated password guessing against a real account, which finally worked.<br><strong>C</strong> A scheduled maintenance task using an old credential.<br><strong>D</strong> A clock problem on the domain controller.</p>
-<p class="ad-task"><strong>Question:</strong> Type the letter of the best explanation.</p>
+<p class="ad-task"></p>
+<p class="ad-ticket__q"><span>Question</span>Type the letter of the best explanation.</p>
 <div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Look at the gap between attempts, the hour, and whether an IT admin normally works from a Wealth Management machine.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -208,7 +217,8 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 <h4>Your First Move</h4>
 <div class="ad-ticket__from"><span class="ad-ticket__avatar">SI</span><span class="ad-ticket__who"><strong>SIEM Alert · Part 5 of 5</strong><span>Automated detection</span></span></div>
 <p class="ad-ticket__msg">You believe the only admin account is compromised and in use on a Wealth Management machine. It is 2:12 AM. What do you do first?<br><strong>A</strong> Wipe and reimage WM-WKS07 right now.<br><strong>B</strong> Disable alex.rivera, isolate WM-WKS07 from the network, and keep the logs.<br><strong>C</strong> Email Alex and wait for an answer.<br><strong>D</strong> Clear the failed logon events so the alert stops repeating.</p>
-<p class="ad-task"><strong>Question:</strong> Type the letter of the best first move.</p>
+<p class="ad-task"></p>
+<p class="ad-ticket__q"><span>Question</span>Type the letter of the best first move.</p>
 <div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">Stop the spread first, and keep the evidence you will need afterward.</p></div>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">

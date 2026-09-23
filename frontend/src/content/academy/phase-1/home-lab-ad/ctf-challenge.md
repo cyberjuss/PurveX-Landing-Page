@@ -11,7 +11,7 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 
 <div class="ad-answer-guide">
 <span class="ad-answer-guide__label">How answers work</span>
-<p>Open Active Directory Users and Computers in your lab, or use the PowerShell command if you prefer. Each task asks for a short answer, such as a group name, a person, or a number. Case, spaces, dots, and dashes do not matter. You get one hint and three tries per task, then the explanation unlocks. Nothing is submitted or stored.</p>
+<p>Open Active Directory Users and Computers in your lab. Each task asks for a short answer, such as a group name, a person, or a number. Case, spaces, dots, and dashes do not matter. You get one hint and three tries per task, then the explanation unlocks. Nothing is submitted or stored.</p>
 </div>
 
 <div class="ad-progress">

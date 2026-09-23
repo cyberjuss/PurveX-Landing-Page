@@ -3159,3 +3159,14 @@ body:has(.lp) {
   font-size: 0.93rem; line-height: 1.65; color: var(--pvrx-text-primary-light);
 }
 .academy-prose .ad-ticket .ad-task { margin-top: 1rem; padding-top: 0.9rem; border-top: 1px dashed var(--pvrx-border-light); }
+
+.academy-prose .ad-cmd {
+  margin: 0.7rem 0 0; padding: 0.75rem 1rem; border-radius: 12px; overflow-x: auto;
+  background: #0d1117; border: 1px solid rgba(255,255,255,0.08);
+}
+.academy-prose .ad-cmd code { background: none; padding: 0; color: #c9d1d9; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.8rem; white-space: pre; }
+.academy-prose .ad-ticket__q {
+  display: flex; align-items: baseline; gap: 0.7rem; margin: 0.8rem 0 0 !important; padding: 0.7rem 1rem; border-radius: 12px;
+  background: rgba(85,70,224,0.07); border: 1px solid rgba(85,70,224,0.2); font-weight: 600; color: var(--pvrx-text-primary-light);
+}
+.academy-prose .ad-ticket__q span { flex-shrink: 0; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #5546e0; }
