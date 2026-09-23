@@ -375,15 +375,7 @@ Three errors account for almost every "it won't run" report. They're easy to fix
 <div class="ad-trouble">
 <div class="ad-trouble__item">
 <span class="ad-trouble__label">1. Not running as Administrator</span>
-<div class="ad-terminal">
-<div class="ad-terminal__bar"><span></span><span></span><span></span></div>
-<pre class="ad-terminal__body">PS C:\Users\...\Downloads&gt; .\Build-Environment.ps1
-.\Build-Environment.ps1 : The script 'Build-Environment.ps1' cannot be run
-because it contains a "#requires" statement for running as Administrator.
-The current Windows PowerShell session is not running as Administrator.
-Start Windows PowerShell by using the Run as Administrator option, and
-then try running the script again.</pre>
-</div>
+<img src="/academy/lab-scripts/run-as-admin-error.png" alt="PowerShell error: the script cannot be run because it contains a &quot;#requires&quot; statement for running as Administrator" class="ad-trouble__img" />
 <p>Close this window. Open the Start menu, search PowerShell, right-click it, and choose <strong>Run as Administrator</strong>. Then <code>cd</code> back to your Downloads folder and run the script again.</p>
 </div>
 
@@ -456,11 +448,5 @@ Once this is built and verified, you have your own live copy of the environment 
 .ad-trouble__item p:first-of-type { margin-top: 0.7rem; }
 .ad-trouble__item .ad-code { margin: 0.6rem 0 0; }
 
-.ad-terminal { border-radius: 8px; overflow: hidden; background: #0c1220; box-shadow: 0 8px 24px -12px rgba(16,25,46,0.3); }
-.ad-terminal__bar { display: flex; gap: 6px; padding: 0.6rem 0.75rem; background: rgba(255,255,255,0.04); }
-.ad-terminal__bar span { width: 9px; height: 9px; border-radius: 50%; }
-.ad-terminal__bar span:nth-child(1) { background: #f2777a; }
-.ad-terminal__bar span:nth-child(2) { background: #f4c059; }
-.ad-terminal__bar span:nth-child(3) { background: #5ec269; }
-.ad-terminal__body { margin: 0; padding: 0.9rem 1.1rem 1.1rem; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.78rem; line-height: 1.6; color: #ff6b6e; white-space: pre-wrap; word-break: break-word; }
+.ad-trouble__img { display: block; width: 100%; margin: 0.6rem 0 0; border-radius: 8px; border: 1px solid var(--pvrx-border-light); box-shadow: 0 8px 24px -12px rgba(16,25,46,0.3); }
 </style>
