@@ -5,13 +5,13 @@
 
 ### Active Directory's Building Blocks
 
-Four objects need to be second nature: **Organizational Units**, **Containers**, **Security Groups**, and **Group Policy Objects (GPOs)**. Two of them look identical in the console but behave completely differently. By the end of this tab, you'll be able to look at any object in Active Directory and know exactly what it is and what it can do.
+Four objects to know cold: **Organizational Units**, **Containers**, **Security Groups**, and **Group Policy Objects (GPOs)**. Two of them look identical in the console but behave nothing alike. By the end of this tab, you'll look at any object in Active Directory and know exactly what it is.
 
 ### Organizational Units (OUs)
 
-An **OU** is a folder you create to organize accounts, and a boundary you can attach permissions and Group Policy to.
+An **OU** is a folder for organizing accounts, and also a boundary: permissions and Group Policy attach to it directly.
 
-GovTechFinancial's five departments are each their own OU, nested one level deeper with their own `Users` sub-OU (IT also gets `Workstations`):
+GovTechFinancial's five departments are each their own OU, each nesting a `Users` sub-OU one level deeper (IT also gets a `Workstations` sub-OU):
 
 ```
 govtechfinancial.local
@@ -32,15 +32,15 @@ govtechfinancial.local
      └─ Group: Helpdesk       (Level 3)
 ```
 
-Every user lives inside their department's OU. It tells you where an account *belongs*, before you even check what it's a member of.
+Every account lives in exactly one OU: its department. That's the account's location, separate from its access.
 
-`AccessLevels` sits outside `Departments` on purpose: `Server Admins` and `Helpdesk` (Level 2/3) are about domain-wide access, not department membership.
+`AccessLevels` sits outside `Departments` on purpose, since `Server Admins` and `Helpdesk` (Level 2/3) grant domain-wide access rather than department membership.
 
-You can also delegate control over just one OU, letting Helpdesk, for example, reset passwords only for accounts inside `OU=Users,OU=IT` without touching the rest of the domain.
+You can also delegate control over a single OU. Helpdesk, for example, can reset passwords only for accounts inside `OU=Users,OU=IT`, leaving the rest of the domain untouched.
 
 ### Containers
 
-A **Container** looks like an OU in the console, same folder icon, but it's a different object entirely.
+A **Container** looks like an OU in the console, same folder icon, but it's a different kind of object.
 
 | | Organizational Unit | Container |
 | ----- | ----- | ----- |
@@ -49,18 +49,18 @@ A **Container** looks like an OU in the console, same folder icon, but it's a di
 | Can you create your own? | Yes, anywhere | No, fixed set built by Windows |
 | Examples in this domain | `OU=IT`, `OU=Compliance` | `CN=Users`, `CN=Computers` |
 
-The default `Users` and `Computers` folders are Containers, not OUs, which is why the build script moves every account into a real OU instead. An account left in a Container can never be targeted by Group Policy.
+The default `Users` and `Computers` folders are Containers, not OUs, which is why the build script moves every account into a real OU: an account left in a Container can never be targeted by Group Policy.
 
 <div class="academy-thinklike">
 <span class="academy-thinklike__tag">Think Like an Analyst</span>
-<p>An account still sitting in the default Container in a real environment usually means one thing: nobody has organized it since it was created. That's not a crime on its own, but it's a gap worth noting, and exactly the kind of loose end an attacker would rather you never check.</p>
+<p>An account still sitting in the default Container usually means one thing: nobody organized it after creation. That's not a crime on its own, but it's a gap worth noting, and exactly the kind of loose end an attacker hopes you never check.</p>
 </div>
 
 ### Security Groups
 
 A **Security Group** is a list of accounts, used to grant permissions or apply Group Policy to exactly who needs it, regardless of OU.
 
-This is the piece that trips people up: **a group is not a place an account lives. It's a list an account is added to.** An account has exactly one OU, but any number of groups.
+**A group isn't a place an account lives, it's a list an account is added to.** An account has exactly one OU, but any number of groups.
 
 Every department has a standard-access group (`IT Users`, `Compliance Users`, and so on). IT also has a second, more privileged one: `IT Admins`.
 
@@ -82,15 +82,15 @@ Every department has a standard-access group (`IT Users`, `Compliance Users`, an
 </div>
 </div>
 
-Same OU, different access. That's the distinction: **OU asks "where does this account live?" A group asks "what can this account do?"** Checking only one leaves an investigation half done.
+Same OU, different access: OU answers "where does this account live," a group answers "what can it do," and checking only one leaves an investigation half done.
 
 ### Group Policy Objects (GPOs)
 
-A **GPO** is a bundle of settings, such as a password policy, a screen-lock timeout, or a software restriction, applied automatically to everything inside whatever it's linked to.
+A **GPO** is a bundle of settings, such as password policy, screen-lock timeout, or software restrictions, applied to everything inside whatever it's linked to.
 
-The rule to memorize: a GPO only links to a **Site, Domain, or OU**, never a Container, never a group directly. That's why getting accounts out of the default container matters.
+The rule to memorize: a GPO links only to a **Site, Domain, or OU**, never a Container and never a group directly. That's why getting accounts out of the default Container matters.
 
-A GPO linked to `OU=IT` could enforce a shorter password expiration for IT staff only, without touching other departments. Groups can still narrow *who inside that OU* it applies to (security filtering), but the link always starts at the OU.
+A GPO linked to `OU=IT` could enforce a shorter password expiration for IT staff only, leaving other departments untouched. Groups can still narrow who inside that OU it applies to, through security filtering, but the link always starts at the OU.
 
 ### Putting It Together
 
@@ -100,18 +100,6 @@ A GPO linked to `OU=IT` could enforce a shorter password expiration for IT staff
 | Container | Where did Windows put this by default? | No | No |
 | Security Group | What can this account access? | No (can filter one) | Yes, groups can contain groups |
 | Group Policy Object | What settings apply here? | — | Links to Sites, Domains, or OUs |
-
-<div class="academy-analogy">
-<span class="academy-analogy__tag">Think of it like an office building</span>
-<ul>
-<li><strong>OUs</strong> are the floors. Every desk sits on exactly one floor, and building rules can be set per floor.</li>
-<li><strong>Containers</strong> are the loading dock. Things land there by default until someone assigns them a real floor.</li>
-<li><strong>Security Groups</strong> are badge access lists. "Everyone on the security team" might span three different floors.</li>
-<li><strong>GPOs</strong> are the building rules themselves, posted per floor.</li>
-</ul>
-</div>
-
-You're ready for the labs once you can answer both "which OU?" and "which groups?" for any account without hesitating.
 
 <style>
 .ad-diagram {

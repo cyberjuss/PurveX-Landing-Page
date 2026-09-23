@@ -91,6 +91,7 @@ const phase1HomeLab: HomeLabDef = {
   sections: [
     { label: "Overview", file: "phase-1/home-lab-ad/overview.md" },
     { label: "Build This Lab", file: "phase-1/home-lab-ad/build-this-lab.md" },
+    { label: "Troubleshooting", file: "phase-1/home-lab-ad/troubleshooting.md" },
     { label: "AD Building Blocks", file: "phase-1/home-lab-ad/ad-building-blocks.md" },
     { label: "Admin Tasks", file: "phase-1/home-lab-ad/admin-tasks.md" },
     { label: "The Org Chart", file: "phase-1/home-lab-ad/org-chart.md" },
@@ -100,7 +101,7 @@ const phase1HomeLab: HomeLabDef = {
     { label: "Full User Directory", file: "phase-1/home-lab-ad/user-directory.md" },
     { label: "The Client Workstation", file: "phase-1/home-lab-ad/client-workstation.md" },
     { label: "Environment Stats", file: "phase-1/home-lab-ad/environment-stats.md" },
-    { label: "Operation Day One", file: "phase-1/home-lab-ad/ctf-challenge.md" },
+    { label: "Challenge: Operation Day One", file: "phase-1/home-lab-ad/ctf-challenge.md" },
   ],
 };
 

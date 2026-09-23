@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight, FlaskConical } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Flag, FlaskConical } from "lucide-react";
 import { Markdown, splitMarkdownIntoSlides } from "@/lib/markdown";
 import { QuizBlock } from "./quiz";
 import { LabCarousel } from "./lab-carousel";
@@ -15,7 +15,8 @@ interface TabSection {
 type Item =
   | { kind: "section"; label: string; markdown: string }
   | { kind: "quiz"; label: string }
-  | { kind: "lab"; label: string; markdown: string };
+  | { kind: "lab"; label: string; markdown: string }
+  | { kind: "challenge"; label: string; markdown: string };
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
@@ -28,13 +29,24 @@ function pad(n: number) {
 // quiz) count toward the "05/08" progress line; labs sit below a divider,
 // icon-marked instead of numbered, since picking up a lab isn't the same
 // kind of step as reading the next section.
-export function SectionTabs({ sections, quiz, labs }: { sections: TabSection[]; quiz?: Quiz; labs?: TabSection[] }) {
+export function SectionTabs({
+  sections,
+  quiz,
+  labs,
+  challenges,
+}: {
+  sections: TabSection[];
+  quiz?: Quiz;
+  labs?: TabSection[];
+  challenges?: TabSection[];
+}) {
   const numberedItems: Item[] = [
     ...sections.map((s): Item => ({ kind: "section", label: s.label, markdown: s.markdown })),
     ...(quiz ? [{ kind: "quiz", label: "Quiz" } as Item] : []),
   ];
   const labItems: Item[] = (labs ?? []).map((l) => ({ kind: "lab", label: l.label, markdown: l.markdown }));
-  const items = [...numberedItems, ...labItems];
+  const challengeItems: Item[] = (challenges ?? []).map((c) => ({ kind: "challenge", label: c.label, markdown: c.markdown }));
+  const items = [...numberedItems, ...labItems, ...challengeItems];
 
   const [active, setActive] = useState(0);
   // Expanded by default -- collapsing is an option for a long list like Home
@@ -56,6 +68,13 @@ export function SectionTabs({ sections, quiz, labs }: { sections: TabSection[]; 
             you were on in the previous lab instead of starting over at
             Overview. */}
         <LabCarousel key={current.label} slides={splitMarkdownIntoSlides(current.markdown)} />
+      </div>
+    ) : current.kind === "challenge" ? (
+      <div>
+        <p className="mb-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.1em] text-[#e5484d]">
+          <Flag className="h-3.5 w-3.5" /> Challenge
+        </p>
+        <Markdown content={current.markdown} />
       </div>
     ) : (
       <Markdown content={current.markdown} />
@@ -133,6 +152,30 @@ export function SectionTabs({ sections, quiz, labs }: { sections: TabSection[]; 
                         Forensics -- Hidden Tear Ransomware") -- truncating
                         to one line lost the part that actually identifies
                         the lab, so this wraps instead. */}
+                    <span className="min-w-0">{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          {challengeItems.length > 0 && (
+            <div className="mt-1 flex flex-col gap-0.5 overflow-hidden border-t border-[var(--pvrx-border-light)] pt-2">
+              <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">Challenges</p>
+              {challengeItems.map((item, i) => {
+                const idx = numberedItems.length + labItems.length + i;
+                return (
+                  <button
+                    key={item.label}
+                    type="button"
+                    role="tab"
+                    tabIndex={collapsed ? -1 : 0}
+                    aria-selected={active === idx}
+                    onClick={() => setActive(idx)}
+                    className={`flex items-start gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 ${
+                      active === idx ? "bg-[rgba(106,92,255,0.1)] text-[#5546e0]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
+                  >
+                    <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     <span className="min-w-0">{item.label}</span>
                   </button>
                 );

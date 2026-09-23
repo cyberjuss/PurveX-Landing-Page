@@ -2920,6 +2920,29 @@ body:has(.lp) {
 .academy-prose .academy-thinklike p:first-of-type { margin-top: 0; }
 .academy-prose .academy-thinklike p:last-child { margin-bottom: 0; }
 
+/* Collapsible copy/paste code block -- shared by the Build This Lab and
+   Troubleshooting tabs, so it lives here once instead of duplicated per file. */
+.academy-prose .ad-code { margin: 1.25rem 0; border: 1px solid var(--pvrx-border-light); border-radius: 10px; overflow: hidden; }
+.academy-prose .ad-code > summary { cursor: pointer; list-style: none; padding: 0.7rem 1rem; font-size: 0.85rem; font-weight: 650; color: #5546e0; background: var(--pvrx-surface-alt-light); }
+.academy-prose .ad-code > summary::-webkit-details-marker { display: none; }
+.academy-prose .ad-code > summary::before { content: "▸ "; }
+.academy-prose .ad-code[open] > summary::before { content: "▾ "; }
+.academy-prose .ad-code__bar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.5rem 0.75rem; border-top: 1px solid var(--pvrx-border-light); background: #0c1220; }
+.academy-prose .ad-code__label { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.78rem; color: #94a3b8; }
+.academy-prose .ad-code__copy { font-size: 0.76rem; font-weight: 650; color: #e2e8f0; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); border-radius: 6px; padding: 0.3rem 0.65rem; cursor: pointer; }
+.academy-prose .ad-code__copy:hover { background: rgba(255,255,255,0.16); }
+.academy-prose .ad-code pre { margin: 0; border-radius: 0; }
+.academy-prose .ad-code__pre--tall { max-height: 420px; overflow-y: auto; }
+
+/* Troubleshooting callout list -- red left-border cards, one per error. */
+.academy-prose .ad-trouble { display: flex; flex-direction: column; gap: 1.5rem; margin: 1.25rem 0; }
+.academy-prose .ad-trouble__item { padding: 1.1rem 1.25rem 1.3rem; border: 1px solid var(--pvrx-border-light); border-left: 3px solid #e5484d; border-radius: 0 10px 10px 0; background: var(--pvrx-surface-alt-light); }
+.academy-prose .ad-trouble__label { display: block; margin-bottom: 0.7rem; font-family: var(--font-display); font-size: 0.92rem; font-weight: 700; color: var(--pvrx-text-primary-light); }
+.academy-prose .ad-trouble__item p { margin: 0.7rem 0 0; font-size: 0.9rem; color: var(--pvrx-text-secondary-light); }
+.academy-prose .ad-trouble__item p:first-of-type { margin-top: 0.7rem; }
+.academy-prose .ad-trouble__item .ad-code { margin: 0.6rem 0 0; }
+.academy-prose .ad-trouble__img { display: block; width: 100%; margin: 0.6rem 0 0; border-radius: 8px; border: 1px solid var(--pvrx-border-light); box-shadow: 0 8px 24px -12px rgba(16,25,46,0.3); }
+
 /* Lab carousel slide transition -- direction-aware so it reads as sliding
    through steps, not just fading. */
 @keyframes academy-slide-in-right { from { opacity: 0; transform: translateX(20px) } to { opacity: 1; transform: none } }

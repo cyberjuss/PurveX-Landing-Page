@@ -5,12 +5,12 @@
 
 ### Overview
 
-Everything in the other tabs — the departments, the access levels, the user directory — is not just something to memorize. It is a real Active Directory environment you can build yourself, on your own machine, using the two scripts below. Building it is worth doing. Setting up the accounts, groups, and structure yourself is how you actually learn what "normal" looks like in this environment, rather than simply reading a description of it. By the end of this tab, you'll have your own live copy of GovTechFinancial running, ready to investigate.
+The other tabs, the departments, the access levels, the user directory, aren't just something to memorize: they describe a real Active Directory environment you can build yourself, on your own machine, with the two scripts below. Setting it up yourself is how you learn what "normal" looks like here, rather than just reading a description of it. By the end of this tab, you'll have your own live copy of GovTechFinancial running, ready to investigate.
 
 **At a glance:**
 
-* `Install-Forest.ps1` — one-time setup. Turns a blank Windows Server into the domain controller for `govtechfinancial.local`. Skip it if that domain already exists.
-* `Build-Environment.ps1` — the script that does the real work. Creates every department, group, user, and workstation described in the tabs above, so the environment matches what you have already been studying. Safe to re-run any time.
+* `Install-Forest.ps1`: one-time setup that turns a blank Windows Server into the domain controller for `govtechfinancial.local`. Skip it if that domain already exists.
+* `Build-Environment.ps1`: the script that does the real work, creating every department, group, user, and workstation described above so the environment matches what you've already been studying. Safe to re-run any time.
 
 ### What You Will Need
 
@@ -20,12 +20,12 @@ Everything in the other tabs — the departments, the access levels, the user di
 
 ### Step 1 — Install the Domain (Skip If You Already Have One)
 
-If your server is not yet a domain controller, download and run this first. It installs Active Directory Domain Services and promotes the server to the root of a new domain, `govtechfinancial.local`. It will ask for a recovery-mode password, then reboot automatically. Why it matters: without a domain to belong to, there is nowhere for the departments, users, and groups in the next step to actually live.
+If your server isn't yet a domain controller, download and run this first. It installs Active Directory Domain Services and promotes the server to the root of a new domain, `govtechfinancial.local`. It asks for a recovery-mode password, then reboots automatically. Why it matters: without a domain, there's nowhere for the departments, users, and groups in the next step to live.
 
 **What this script does:**
 
 * Installs the AD DS (Active Directory Domain Services) Windows Server role
-* Prompts you for a DSRM (Directory Services Restore Mode) recovery password — a separate password from any domain account, only used for AD recovery scenarios
+* Prompts you for a DSRM (Directory Services Restore Mode) recovery password, separate from any domain account password and used only for AD recovery
 * Promotes the server to the root of a brand-new forest: `govtechfinancial.local`, with DNS installed alongside it
 * Reboots the server automatically once promotion finishes
 
@@ -93,16 +93,16 @@ Install-ADDSForest `
 
 ### Step 2 — Build the Environment
 
-After the reboot, log back in as `GOVTECHFINANCIAL\Administrator` and run this script. It creates every department, group, user, and the workstation object described in the other tabs on this page. Why it matters: this is the step that turns the org chart and user directory from a description into a live environment you can actually query and investigate.
+After the reboot, log back in as `GOVTECHFINANCIAL\Administrator` and run this script. It creates every department, group, user, and the workstation object described in the other tabs. Why it matters: this step turns the org chart and user directory from a description into a live environment you can query and investigate.
 
 **What this script does:**
 
 * Creates two top-level OUs: `Departments` and `AccessLevels`
-* Creates all 5 department OUs (IT, Compliance, Wealth Management, Operations, Finance and Accounting), each with its own `Users` sub-OU — IT also gets a `Workstations` sub-OU
+* Creates all 5 department OUs (IT, Compliance, Wealth Management, Operations, Finance and Accounting), each with its own `Users` sub-OU (IT also gets a `Workstations` sub-OU)
 * Creates all 9 security groups: one standard-access group per department, `IT Admins` (elevated), plus `Server Admins` and `Helpdesk` (the Level 2 and Level 3 access-level groups)
 * Creates all 9 user accounts from the Full User Directory tab, in the right OU, with the right title and department, and adds each one to the right group(s)
 * Pre-stages the `IT-WKS01` computer object
-* Prompts once for an initial password — every account is forced to change it at next logon, so nobody actually keeps that password long-term
+* Prompts once for an initial password; every account is forced to change it at next logon, so nobody keeps that password long-term
 * Safe to run more than once: it only creates what's missing, and never resets or deletes anything that already exists
 
 [Download Build-Environment.ps1](/lab-scripts/Build-Environment.ps1)
@@ -368,43 +368,7 @@ To see exactly what the script is about to do before committing to it, run it wi
 ./Build-Environment.ps1 -WhatIf
 ```
 
-### If the Script Won't Run
-
-Three errors account for almost every "it won't run" report. They're easy to fix once you know which one you're looking at.
-
-<div class="ad-trouble">
-<div class="ad-trouble__item">
-<span class="ad-trouble__label">1. Not running as Administrator</span>
-<img src="/academy/lab-scripts/run-as-admin-error.png" alt="PowerShell error: the script cannot be run because it contains a &quot;#requires&quot; statement for running as Administrator" class="ad-trouble__img" />
-<p>Close this window. Open the Start menu, search PowerShell, right-click it, and choose <strong>Run as Administrator</strong>. Then <code>cd</code> back to your Downloads folder and run the script again.</p>
-</div>
-
-<div class="ad-trouble__item">
-<span class="ad-trouble__label">2. File is blocked (downloaded from the internet)</span>
-<p>Windows flags files downloaded through a browser. Unblock it before running:</p>
-<div class="ad-code">
-<div class="ad-code__bar">
-<span class="ad-code__label">PowerShell</span>
-<button type="button" class="ad-code__copy" onclick="const code=this.closest('.ad-code').querySelector('code').innerText; navigator.clipboard.writeText(code); const b=this; b.textContent='Copied'; setTimeout(()=>{b.textContent='Copy';},1500);">Copy</button>
-</div>
-<pre><code>Unblock-File -Path .\Build-Environment.ps1</code></pre>
-</div>
-</div>
-
-<div class="ad-trouble__item">
-<span class="ad-trouble__label">3. Running scripts is disabled on this system</span>
-<p>PowerShell blocks unsigned scripts by default. This allows them for your own user account only:</p>
-<div class="ad-code">
-<div class="ad-code__bar">
-<span class="ad-code__label">PowerShell</span>
-<button type="button" class="ad-code__copy" onclick="const code=this.closest('.ad-code').querySelector('code').innerText; navigator.clipboard.writeText(code); const b=this; b.textContent='Copied'; setTimeout(()=>{b.textContent='Copy';},1500);">Copy</button>
-</div>
-<pre><code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code></pre>
-</div>
-</div>
-</div>
-
-Run into all three in the same session, in that order: elevate first, unblock the file, then relax the execution policy. Each is a one-time fix per machine.
+If the script won't run, see the Troubleshooting tab for the three most common causes and their fixes.
 
 ### Step 3 — Verify It Built Correctly
 
@@ -419,34 +383,11 @@ Get-ADUser -Filter * -SearchBase "OU=Departments,$((Get-ADDomain).DistinguishedN
 Get-ADGroupMember -Identity "IT Admins"
 ```
 
-A quick note on the workstation. The User Directory and Client Workstation tabs list it as "IT WKS01," but AD computer names cannot contain spaces, so the script creates the object as `IT-WKS01`. It is the same machine, just given a technically valid name.
+A quick note on the workstation: the User Directory and Client Workstation tabs list it as "IT WKS01," but AD computer names can't contain spaces, so the script creates the object as `IT-WKS01`. It's the same machine, just given a technically valid name.
 
 <div class="academy-thinklike">
 <span class="academy-thinklike__tag">Think Like an Analyst</span>
-<p>Building this yourself means you know exactly what should exist and when it was created. Any account, group, or OU in your lab that you didn't just create is a lead, not a mystery. In a real environment nobody hands you that baseline. Here, you just built it.</p>
+<p>Building this yourself means you know exactly what should exist and when it was created. Any account, group, or OU in your lab that you didn't just create is a lead, not a mystery. In a real environment, nobody hands you that baseline. Here, you built it.</p>
 </div>
 
-Once this is built and verified, you have your own live copy of the environment every other tab on this page describes. This is what you will be investigating in the labs ahead.
-
-<style>
-.ad-code { margin: 1.25rem 0; border: 1px solid var(--pvrx-border-light); border-radius: 10px; overflow: hidden; }
-.ad-code > summary { cursor: pointer; list-style: none; padding: 0.7rem 1rem; font-size: 0.85rem; font-weight: 650; color: #5546e0; background: var(--pvrx-surface-alt-light); }
-.ad-code > summary::-webkit-details-marker { display: none; }
-.ad-code > summary::before { content: "▸ "; }
-.ad-code[open] > summary::before { content: "▾ "; }
-.ad-code__bar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.5rem 0.75rem; border-top: 1px solid var(--pvrx-border-light); background: #0c1220; }
-.ad-code__label { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.78rem; color: #94a3b8; }
-.ad-code__copy { font-size: 0.76rem; font-weight: 650; color: #e2e8f0; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); border-radius: 6px; padding: 0.3rem 0.65rem; cursor: pointer; }
-.ad-code__copy:hover { background: rgba(255,255,255,0.16); }
-.ad-code pre { margin: 0; border-radius: 0; }
-.ad-code__pre--tall { max-height: 420px; overflow-y: auto; }
-
-.ad-trouble { display: flex; flex-direction: column; gap: 1.5rem; margin: 1.25rem 0; }
-.ad-trouble__item { padding: 1.1rem 1.25rem 1.3rem; border: 1px solid var(--pvrx-border-light); border-left: 3px solid #e5484d; border-radius: 0 10px 10px 0; background: var(--pvrx-surface-alt-light); }
-.ad-trouble__label { display: block; margin-bottom: 0.7rem; font-family: var(--font-display); font-size: 0.92rem; font-weight: 700; color: var(--pvrx-text-primary-light); }
-.ad-trouble__item p { margin: 0.7rem 0 0; font-size: 0.9rem; color: var(--pvrx-text-secondary-light); }
-.ad-trouble__item p:first-of-type { margin-top: 0.7rem; }
-.ad-trouble__item .ad-code { margin: 0.6rem 0 0; }
-
-.ad-trouble__img { display: block; width: 100%; margin: 0.6rem 0 0; border-radius: 8px; border: 1px solid var(--pvrx-border-light); box-shadow: 0 8px 24px -12px rgba(16,25,46,0.3); }
-</style>
+Once built and verified, you have your own live copy of the environment every other tab describes. This is what you'll investigate in the labs ahead.

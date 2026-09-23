@@ -5,15 +5,11 @@
 
 ### Overview
 
-This is our home lab, GovTech Financial, an environment built from scratch to feel like a real enterprise network rather than a textbook example. From this point forward, the assignment is not to read about this company. It is to step into the role of the security analyst responsible for investigating it. By the end of this Home Lab, you'll know this environment well enough to spot the one account, group, or login that doesn't belong.
-
-That is precisely why knowing who does what matters so much. Every department, every access level, and every account in this environment has a real job to do, and knowing that structure cold is what lets you tell a legitimate action from a suspicious one once the investigation begins.
-
-Study it closely. It will come up constantly once we move into threat detection and investigation.
+This is our home lab, GovTech Financial, built from scratch to feel like a real enterprise network rather than a textbook example. From here on, your job isn't to read about this company; it's to investigate it as the security analyst responsible for it. By the end of this Home Lab, you'll know it well enough to spot the one account, group, or login that doesn't belong.
 
 <div class="academy-thinklike">
 <span class="academy-thinklike__tag">Think Like an Analyst</span>
-<p>In cybersecurity, you must know what normal looks like before you can recognize what is not. Every tab in this Home Lab is building that baseline, not busywork.</p>
+<p>You have to know what normal looks like before you can recognize what isn't. Every tab in this Home Lab is building that baseline, not padding out the page.</p>
 </div>
 
 ***Domain: govtechfinancial.local***

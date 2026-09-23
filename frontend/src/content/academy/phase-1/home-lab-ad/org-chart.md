@@ -1,20 +1,18 @@
 ### The Org Chart
 
-Every organization has a structure, and understanding it is not a formality — it is the baseline against which every future alert gets judged. Here is the breakdown of the departments and what each one is for. By the end of this tab, you'll be able to place any GovTechFinancial account into its department without checking.
+Every organization has a structure, and knowing it gives you a baseline: every future alert gets judged against it. Here is the breakdown of the departments and what each one does. By the end of this tab, you'll place any GovTechFinancial account into its department without checking.
 
 | Department | Function | Critical |
 | ----- | ----- | ----- |
-| IT | Runs and supports the technology for the rest of the company. Manages accounts, workstations, and infrastructure. Only department with elevated access, since it is the group responsible for administering systems. | No |
-| Compliance | Makes sure the organization follows regulatory requirements, primarily GLBA and SOX in this environment. Handles sensitive records and audit material. | Yes |
-| Wealth Management | Client-facing. Manages financial planning and advisory services for the firm's clients, primarily private investors and high net worth individuals. Handles a large volume of sensitive client financial data. | Yes |
-| Operations | Keeps day-to-day business running. Handles settlements and internal processes supporting the other departments. | No |
-| Finance and Accounting | Manages the organization's own internal finances, separate from the client funds handled by Wealth Management. | Yes |
+| IT | Runs and supports the company's technology, managing accounts, workstations, and infrastructure. The only department with elevated access, because it administers the systems. | No |
+| Compliance | Ensures the organization follows regulatory requirements, mainly GLBA and SOX, and handles sensitive records and audit material. | Yes |
+| Wealth Management | Client-facing. Manages financial planning and advisory services, mainly for private investors and high-net-worth individuals, and handles a large volume of sensitive client financial data. | Yes |
+| Operations | Keeps day-to-day business running, handling settlements and internal processes that support the other departments. | No |
+| Finance and Accounting | Manages the organization's own internal finances, separate from the client funds Wealth Management handles. | Yes |
 
-Compliance, Wealth Management, and Finance and Accounting are flagged as critical because they touch regulated data, client financial records, or the company's own financial systems.
-
-Every department has its own folder in Active Directory, its own workstation, and its own group of users.
+Compliance, Wealth Management, and Finance and Accounting are flagged critical because they touch regulated data, client financial records, or the company's own financial systems. Every department has its own folder in Active Directory and its own group of users.
 
 <div class="academy-thinklike">
 <span class="academy-thinklike__tag">Think Like an Analyst</span>
-<p>Come back to this table after every lab going forward. Every account and every alert you touch belongs to one of these five departments, and knowing which one is often the first step in figuring out whether something matters.</p>
+<p>Come back to this table after every lab. Every account and every alert belongs to one of these five departments, and knowing which one is often the first step in judging whether something matters.</p>
 </div>

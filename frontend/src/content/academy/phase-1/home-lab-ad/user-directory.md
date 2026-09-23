@@ -1,6 +1,6 @@
 ### Full User Directory
 
-Every user account in this environment, listed by department, with title, username, and group membership. By the end of this tab, you'll have this roster committed to memory well enough to notice who's missing from it later.
+This is every user account in the environment, listed by department, title, username, and group membership. By the end of this tab, you'll know this roster well enough to notice who's missing later.
 
 | Department | Name | Title | Username | Group Membership |
 | :---- | :---- | :---- | :---- | :---- |
@@ -14,9 +14,9 @@ Every user account in this environment, listed by department, with title, userna
 | Operations | Riley Kwan | Settlements Coordinator | riley.kwan | Operations Users |
 | Finance and Accounting | Jordan Ellis | Staff Accountant | jordan.ellis | Finance Accounting Users |
 
-Nine users total. Each of them sits in exactly one standard access group, except Alex Rivera, who also holds elevated access through IT Admins.
+Nine users total, and each sits in exactly one standard access group except Alex Rivera, who also holds elevated access through IT Admins.
 
 <div class="academy-thinklike">
 <span class="academy-thinklike__tag">Think Like an Analyst</span>
-<p>An account with more group memberships than its peers in the same role isn't automatically suspicious, but it's always worth knowing why. Alex Rivera's extra access has a documented reason. Not every deviation will.</p>
+<p>An account with more group memberships than its peers isn't automatically suspicious, but it's always worth knowing why. Alex Rivera's extra access has a documented reason; not every deviation will.</p>
 </div>

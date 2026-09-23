@@ -5,9 +5,9 @@
 
 ### Operation Day One
 
-You've read the org chart, the access levels, the data categories, and the Active Directory concepts. Reading isn't the same as knowing. This is a short, self-graded challenge built entirely on GovTechFinancial's real environment, the one you built in **Build This Lab**. Do each mission there, in the actual domain, then type your answer below. By the end, you'll know whether everything in this Home Lab actually stuck, not just whether you remember reading it.
+You've read the org chart, the access levels, the data categories, and the Active Directory concepts. This is a short, self-graded challenge, built entirely on GovTechFinancial's real environment, the one you built in **Build This Lab**. Do each mission there, in the actual domain, then type your answer below.
 
-Every answer is one word or a short phrase, lowercase, with spaces or dashes both working. Each mission gives you one free hint on request, plus three tries at the flag itself, which unlocks either way once your tries are up, so you're never stuck. No login, no submission, no leaderboard — this is entirely for you.
+Every answer is one word or a short phrase, lowercase, with spaces or dashes both working. Each mission gives you one free hint on request, plus three tries at the flag, which unlocks either way once your tries are up, so you're never stuck. No login, no submission, no leaderboard: this is entirely for you.
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
@@ -58,7 +58,7 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <p><code>GTF{accesslevels}</code></p>
-<p><code>OU=AccessLevels</code>. Those groups describe what an account can do across the whole domain, not which department it belongs to, so nesting them under any one department wouldn't make sense.</p>
+<p><code>OU=AccessLevels</code>. Those groups describe what an account can do across the whole domain, not which department it belongs to, so nesting them under one department wouldn't make sense.</p>
 </div>
 </div>
 
@@ -74,7 +74,7 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <p><code>GTF{cn=users}</code></p>
-<p><code>CN=Users</code>. An account left sitting there can never have a GPO linked to reach it (GPOs only link to Sites, Domains, and OUs) and nobody can delegate scoped permissions over it either, since Containers support neither.</p>
+<p><code>CN=Users</code>. An account left sitting there can never have a GPO linked to reach it, since GPOs only link to Sites, Domains, and OUs, and nobody can delegate scoped permissions over it either, since Containers support neither.</p>
 </div>
 </div>
 
@@ -90,7 +90,7 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <p><code>GTF{serviceaccounts}</code></p>
-<p>It's <code>OU=ServiceAccounts</code>, sitting alongside <code>Departments</code> and <code>AccessLevels</code> at the top of the domain. The account itself should also be clearly prefixed, for example <code>svc-backup-job</code>. And unlike a person's account, it needs <code>PasswordNeverExpires</code> set to <code>$true</code>, since nothing is sitting at a keyboard to change it before it locks out.</p>
+<p>It's <code>OU=ServiceAccounts</code>, sitting alongside <code>Departments</code> and <code>AccessLevels</code> at the top of the domain. The account itself should be clearly prefixed, for example <code>svc-backup-job</code>, and unlike a person's account, it needs <code>PasswordNeverExpires</code> set to <code>$true</code>, since nothing is sitting at a keyboard to change it before it locks out.</p>
 </div>
 </div>
 
@@ -106,7 +106,7 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <p><code>GTF{no}</code></p>
-<p>No. Priya is only a member of <code>IT Users</code>. The <code>Helpdesk</code> access-level group (Level 3) is created empty by the build script, and nobody has actually been added to it, despite her title suggesting otherwise. A title describes a job; a group describes access. An investigation checks the group every time and never assumes from the title.</p>
+<p>No. Priya is only a member of <code>IT Users</code>. The <code>Helpdesk</code> access-level group (Level 3) is created empty by the build script, and nobody has been added to it, despite her title. A title describes a job; a group describes access. An investigation checks the group every time and never assumes from the title.</p>
 </div>
 </div>
 
@@ -170,7 +170,7 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <p><code>GTF{wrong-department}</code></p>
-<p>Alex Rivera's account lives in <code>OU=IT</code>, not Wealth Management, so there's no organizational reason for his account to be authenticating from a workstation in a completely different department. Two more facts make it worse: Wealth Management is one of GovTechFinancial's three critical departments, handling the kind of client data an attacker would target, and 2 AM falls outside any reasonable business-hours pattern. That's three independent reasons to flag one login, and none of them required a single log entry. That's the instinct this whole course is built to teach.</p>
+<p>Alex Rivera's account lives in <code>OU=IT</code>, not Wealth Management, so there's no organizational reason for him to authenticate from a workstation in a different department. Two more facts make it worse: Wealth Management is one of GovTechFinancial's three critical departments, handling data an attacker would target, and 2 AM falls outside any reasonable business-hours pattern. That's three reasons to flag one login, and none of them required a single log entry. That's the instinct this course is built to teach.</p>
 </div>
 </div>
 

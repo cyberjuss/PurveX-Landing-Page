@@ -1,6 +1,6 @@
 ### Data Categories Handled Across the Environment
 
-Knowing what kind of data lives where is what turns "an account was accessed" into "an account was accessed, and here is what was actually at risk." By the end of this tab, you'll be able to size up any alert's real stakes in seconds.
+Knowing what kind of data lives where turns "an account was accessed" into "an account was accessed, and here's what was actually at risk." By the end of this tab, you'll size up any alert's real stakes in seconds.
 
 | Data Category | Examples | Primarily Handled By |
 | :---- | :---- | :---- |
