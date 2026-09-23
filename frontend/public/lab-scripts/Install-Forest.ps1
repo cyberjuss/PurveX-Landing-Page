@@ -1,24 +1,14 @@
 #Requires -RunAsAdministrator
 <#
 .SYNOPSIS
-    Promotes a clean Windows Server into the root domain controller for the
-    govtechfinancial.local forest used by the "Think Like a SOC Analyst 101"
-    home lab.
+    Promotes a clean Windows Server to the root domain controller of
+    govtechfinancial.local.
 
 .DESCRIPTION
-    One-time bootstrap step. Only run this on a fresh server that is not yet
-    a domain controller and does not already belong to a domain. It installs
-    the AD DS role and promotes the box to a new forest root domain.
-
-    The server reboots automatically at the end of promotion. After reboot,
-    log back in as govtechfinancial\Administrator and run
-    Build-Environment.ps1 to create the OUs, groups, users, and workstation
-    object described on the course's Home Lab page.
-
-.NOTES
-    You will be prompted for a Directory Services Restore Mode (DSRM)
-    password. This is separate from any domain account password and is only
-    used for AD recovery scenarios -- keep it, don't lose it.
+    Run once on a fresh server that is not yet a domain controller. It installs
+    AD DS and creates the forest. You are prompted for a DSRM recovery password.
+    The server reboots when promotion finishes. After the reboot, run
+    Build-Environment.ps1.
 #>
 
 [CmdletBinding()]
@@ -41,5 +31,3 @@ Install-ADDSForest `
     -InstallDns:$true `
     -SafeModeAdministratorPassword (Read-Host -AsSecureString -Prompt "DSRM password") `
     -Force:$true
-
-# The server reboots automatically after this cmdlet completes.

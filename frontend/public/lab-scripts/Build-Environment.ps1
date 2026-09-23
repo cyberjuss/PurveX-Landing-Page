@@ -2,76 +2,22 @@
 #Requires -Modules ActiveDirectory
 <#
 .SYNOPSIS
-    Builds the GovTech Financial Active Directory environment described on
-    the "Think Like a SOC Analyst 101" Home Lab page (Phase 1 -> Home Lab --
-    Active Directory) -- 5 departments, 9 users, 6 department/elevated
-    groups, 2 custom access-level groups, and 1 workstation object.
+    Builds the GovTech Financial Active Directory lab: 5 departments, 9 users,
+    8 groups, and 1 workstation object.
 
 .DESCRIPTION
-    Run this on the domain controller (or any management host with the
-    ActiveDirectory module and RSAT installed) after the govtechfinancial.local
-    forest already exists -- see Install-Forest.ps1 for that one-time step.
-
-    The script is idempotent: run it as many times as you want. Anything
-    that already exists is left alone and just reported, not recreated or
-    reset. That makes it safe to re-run after adding a new department or
-    user to this script later.
-
-    Structure created:
-
-      govtechfinancial.local
-      |-- OU=Departments
-      |   |-- OU=IT
-      |   |   |-- OU=Users        (Alex Rivera, Priya Nair)
-      |   |   `-- OU=Workstations (IT-WKS01)
-      |   |-- OU=Compliance
-      |   |   `-- OU=Users        (Devon Brooks, Morgan Lee)
-      |   |-- OU=WealthManagement
-      |   |   `-- OU=Users        (Sam Whitfield, Jamie Torres)
-      |   |-- OU=Operations
-      |   |   `-- OU=Users        (Taylor Osei, Riley Kwan)
-      |   `-- OU=FinanceAccounting
-      |       `-- OU=Users        (Jordan Ellis)
-      `-- OU=AccessLevels
-          |-- Group: Server Admins   (Level 2 -- empty by default)
-          `-- Group: Helpdesk        (Level 3 -- empty by default)
-
-    Level 1 (Domain Admin) is the built-in "Domain Admins" group -- nothing
-    to create there.
-
-    Groups created: IT Users, IT Admins, Compliance Users,
-    Wealth Management Users, Operations Users, Finance Accounting Users,
-    Server Admins, Helpdesk (8 custom groups; Domain Admins is built-in,
-    matching the site's "9 security groups" count).
-
-    Note on the workstation name: the site lists it as "IT WKS01", but AD
-    computer names can't contain spaces, so this script creates it as
-    IT-WKS01. This only creates the computer object in AD (pre-staged, so
-    it's ready for a real Windows machine to join the domain as IT-WKS01) --
-    it does not build or join an actual physical/virtual machine.
+    Run on the domain controller after Install-Forest.ps1. It is safe to
+    re-run. Anything that already exists is skipped.
 
 .PARAMETER InitialPassword
-    SecureString used as the initial password for every created user
-    account. If omitted, you'll be prompted once. All accounts are created
-    with "must change password at next logon" set, so nobody actually logs
-    in with this password long-term.
+    Initial password for new accounts. You are prompted if it is omitted.
+    Every account must change it at next logon.
 
 .PARAMETER IncludeCTF
-    Adds optional ticket-queue challenge artifacts: a service-account OU,
-    a backup service account, extra workstation objects, an all-employees
-    group with one intentional gap, and ticket descriptions for students
-    to investigate. Leave this off when you want only the clean baseline.
-
-.EXAMPLE
-    ./Build-Environment.ps1
-
-.EXAMPLE
-    ./Build-Environment.ps1 -IncludeCTF
-    Builds the baseline environment and plants the optional challenge data.
+    Adds the optional ticket-queue challenge objects.
 
 .EXAMPLE
     ./Build-Environment.ps1 -WhatIf
-    Shows exactly what would be created without changing anything.
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
@@ -107,9 +53,6 @@ function Ensure-OU {
         New-ADOrganizationalUnit -Name $Name -Path $ParentDN -Description $Description -ProtectedFromAccidentalDeletion $true
         Write-Host "  OU created:  $path" -ForegroundColor Green
     }
-    # A description on every OU/group is what a genuinely maintained
-    # environment looks like versus a bare-bones lab -- also fills in an
-    # already-existing OU that predates this description being added.
     if ($Description -and $existing -and $existing.Description -ne $Description -and $PSCmdlet.ShouldProcess($path, "Update OU description")) {
         Set-ADOrganizationalUnit -Identity $path -Description $Description
         Write-Host "    ~ $path description updated" -ForegroundColor Green
@@ -260,16 +203,10 @@ function Ensure-CTFChallengeData {
     Ensure-Computer -Name "OPS-WKS03" -OUPath $opsWorkstationsOU -Description "CTF-TICKET-201: Dormant Operations workstation. Check whether this asset still belongs in scope."
 }
 
-# ---------------------------------------------------------------------------
-# 1. Top-level OUs
-# ---------------------------------------------------------------------------
 Write-Host "`n== Top-level OUs ==" -ForegroundColor Cyan
 $departmentsOU  = Ensure-OU -Name "Departments"  -ParentDN $domainDN -Description "Top-level container for all department OUs."
 $accessLevelsOU = Ensure-OU -Name "AccessLevels" -ParentDN $domainDN -Description "Domain-wide access-level groups (Server Admins, Helpdesk), separate from department membership."
 
-# ---------------------------------------------------------------------------
-# 2. Departments: OU + Users sub-OU + standard group
-# ---------------------------------------------------------------------------
 $departments = @(
     @{ Display = "IT";                      OU = "IT";                 Group = "IT Users";                 Desc = "IT department: accounts, workstations, and infrastructure." },
     @{ Display = "Compliance";               OU = "Compliance";         Group = "Compliance Users";          Desc = "Compliance department: regulatory (GLBA/SOX) and audit staff." },
@@ -287,21 +224,14 @@ foreach ($dept in $departments) {
     $deptOUPaths[$dept.Display] = @{ DeptOU = $deptOU; UsersOU = $usersOU }
 }
 
-# IT gets an extra Workstations OU and the elevated "IT Admins" group.
 $itWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $deptOUPaths["IT"].DeptOU -Description "IT department workstation computer objects."
 Ensure-Group -Name "IT Admins" -OUPath $deptOUPaths["IT"].DeptOU -Description "Elevated access for IT Systems Administrators, beyond standard IT Users access."
 
-# ---------------------------------------------------------------------------
-# 3. Access-level groups (Level 1 is the built-in Domain Admins group)
-# ---------------------------------------------------------------------------
 Write-Host "`n== Access-level groups ==" -ForegroundColor Cyan
-Ensure-Group -Name "Server Admins" -OUPath $accessLevelsOU -Description "Level 2 access: servers, application and file servers. Empty by default."   # Level 2
-Ensure-Group -Name "Helpdesk"      -OUPath $accessLevelsOU -Description "Level 3 access: workstations, password resets, local support only. Empty by default."   # Level 3
+Ensure-Group -Name "Server Admins" -OUPath $accessLevelsOU -Description "Level 2 access: servers, application and file servers. Empty by default."
+Ensure-Group -Name "Helpdesk"      -OUPath $accessLevelsOU -Description "Level 3 access: workstations, password resets, local support only. Empty by default."
 Write-Host "  (Level 1 / Domain Admin uses the built-in 'Domain Admins' group -- nothing to create)" -ForegroundColor DarkGray
 
-# ---------------------------------------------------------------------------
-# 4. Users
-# ---------------------------------------------------------------------------
 $users = @(
     @{ First = "Alex";   Last = "Rivera";    Sam = "alex.rivera";   Title = "IT Systems Administrator";       Dept = "IT";                    Extra = @("IT Admins") },
     @{ First = "Priya";  Last = "Nair";      Sam = "priya.nair";    Title = "Help Desk Technician";           Dept = "IT";                    Extra = @() },
@@ -332,9 +262,6 @@ foreach ($u in $users) {
         -Groups $groups
 }
 
-# ---------------------------------------------------------------------------
-# 5. Workstation (pre-staged computer object only -- see note in header)
-# ---------------------------------------------------------------------------
 Write-Host "`n== Workstation ==" -ForegroundColor Cyan
 $computerName = "IT-WKS01"
 Ensure-Computer -Name $computerName -OUPath $itWorkstationsOU -Description "Standard IT workstation for GovTechFinancial administrators."

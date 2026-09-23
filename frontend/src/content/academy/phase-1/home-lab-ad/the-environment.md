@@ -1,6 +1,10 @@
+### The Environment
+
+This tab is the inventory of what exists in the lab: every user account, the one workstation, and the totals. By the end, you will know this roster well enough to notice who is missing later, and these numbers should be second nature, since every future count gets checked against them.
+
 ### Full User Directory
 
-This is every user account in the environment, with its department, title, username, and group membership. By the end of this tab, you will know this roster well enough to notice who is missing later.
+Every user account in the environment, with its department, title, username, and group membership.
 
 | Department | Name | Title | Username | Group Membership |
 | :---- | :---- | :---- | :---- | :---- |
@@ -16,3 +20,25 @@ This is every user account in the environment, with its department, title, usern
 
 Nine users total, and each sits in exactly one standard access group except Alex Rivera, who also holds elevated access through IT Admins.
 
+### The Client Workstation
+
+There is only one machine, but it is worth remembering. Know where it belongs, and you will notice when it does not.
+
+| Item | Detail |
+| :---- | :---- |
+| Computer name | IT WKS01 |
+| Assigned department | IT |
+| Location | Workstations folder under IT |
+
+### What Is Actually in This Environment
+
+A count of what currently exists.
+
+| Item | Count |
+| :---- | :---- |
+| Departments | 5 |
+| Critical departments | 3 |
+| Access levels | 3 |
+| Security groups | 9 (5 standard, 1 elevated, 3 access level groups) |
+| User accounts | 9 |
+| Client workstations | 1 |

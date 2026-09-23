@@ -12,7 +12,7 @@ The other tabs cover the departments, the access levels, and the user directory.
 * `Install-Forest.ps1`: one-time setup that turns a blank Windows Server into the domain controller for `govtechfinancial.local`. Skip it if that domain already exists.
 * `Build-Environment.ps1` does the real work. It creates every department, group, user, and workstation described above so the environment matches what you have been studying. It is safe to re-run any time.
 
-### What You Will Need
+**What you will need:**
 
 * A Windows Server (2019 or later) you can use as a domain controller. A VM on your own hardware (Hyper-V, VirtualBox, VMware) works fine for this.
 * An elevated (Administrator) PowerShell session on that server.
@@ -39,27 +39,18 @@ You can also copy it straight from here:
 <span class="ad-code__label">Install-Forest.ps1</span>
 <button type="button" class="ad-code__copy">Copy</button>
 </div>
+
 <pre><code>#Requires -RunAsAdministrator
 &lt;#
 .SYNOPSIS
-    Promotes a clean Windows Server into the root domain controller for the
-    govtechfinancial.local forest used by the "Think Like a SOC Analyst 101"
-    home lab.
+    Promotes a clean Windows Server to the root domain controller of
+    govtechfinancial.local.
 
 .DESCRIPTION
-    One-time bootstrap step. Only run this on a fresh server that is not yet
-    a domain controller and does not already belong to a domain. It installs
-    the AD DS role and promotes the box to a new forest root domain.
-
-    The server reboots automatically at the end of promotion. After reboot,
-    log back in as govtechfinancial\Administrator and run
-    Build-Environment.ps1 to create the OUs, groups, users, and workstation
-    object described on the course's Home Lab page.
-
-.NOTES
-    You will be prompted for a Directory Services Restore Mode (DSRM)
-    password. This is separate from any domain account password and is only
-    used for AD recovery scenarios -- keep it, don't lose it.
+    Run once on a fresh server that is not yet a domain controller. It installs
+    AD DS and creates the forest. You are prompted for a DSRM recovery password.
+    The server reboots when promotion finishes. After the reboot, run
+    Build-Environment.ps1.
 #&gt;
 
 [CmdletBinding()]
@@ -81,10 +72,7 @@ Install-ADDSForest `
     -DomainNetbiosName $DomainNetbiosName `
     -InstallDns:$true `
     -SafeModeAdministratorPassword (Read-Host -AsSecureString -Prompt "DSRM password") `
-    -Force:$true
-
-# The server reboots automatically after this cmdlet completes.
-</code></pre>
+    -Force:$true</code></pre>
 </details>
 
 ```powershell
@@ -100,7 +88,7 @@ After the reboot, log back in as `GOVTECHFINANCIAL\Administrator` and run this s
 * Creates two top-level OUs: `Departments` and `AccessLevels`
 * Creates all 5 department OUs (IT, Compliance, Wealth Management, Operations, Finance and Accounting), each with its own `Users` sub-OU (IT also gets a `Workstations` sub-OU)
 * Creates all 9 security groups. Each department gets a standard access group, `IT Admins` is elevated, and `Server Admins` and `Helpdesk` are the Level 2 and Level 3 access groups
-* Creates all 9 user accounts from the Full User Directory tab, in the right OU, with the right title and department, and adds each one to the right group(s)
+* Creates all 9 user accounts from the Full User Directory in The Environment tab, in the right OU, with the right title and department, and adds each one to the right group(s)
 * Pre-stages the `IT-WKS01` computer object
 * Prompts once for an initial password. Every account must change it at next logon, so nobody keeps that password long-term
 * Is safe to run more than once. It only creates what is missing and never resets or deletes anything that exists
@@ -116,70 +104,24 @@ You can also copy the clean baseline version from here. Use the downloadable scr
 <span class="ad-code__label">Build-Environment.ps1</span>
 <button type="button" class="ad-code__copy">Copy</button>
 </div>
+
 <pre class="ad-code__pre--tall"><code>#Requires -RunAsAdministrator
 #Requires -Modules ActiveDirectory
 &lt;#
 .SYNOPSIS
-    Builds the GovTech Financial Active Directory environment described on
-    the "Think Like a SOC Analyst 101" Home Lab page (Phase 1 -&gt; Home Lab --
-    Active Directory) -- 5 departments, 9 users, 6 department/elevated
-    groups, 2 custom access-level groups, and 1 workstation object.
+    Builds the GovTech Financial Active Directory lab: 5 departments, 9 users,
+    8 groups, and 1 workstation object.
 
 .DESCRIPTION
-    Run this on the domain controller (or any management host with the
-    ActiveDirectory module and RSAT installed) after the govtechfinancial.local
-    forest already exists -- see Install-Forest.ps1 for that one-time step.
-
-    The script is idempotent: run it as many times as you want. Anything
-    that already exists is left alone and just reported, not recreated or
-    reset. That makes it safe to re-run after adding a new department or
-    user to this script later.
-
-    Structure created:
-
-      govtechfinancial.local
-      |-- OU=Departments
-      |   |-- OU=IT
-      |   |   |-- OU=Users        (Alex Rivera, Priya Nair)
-      |   |   `-- OU=Workstations (IT-WKS01)
-      |   |-- OU=Compliance
-      |   |   `-- OU=Users        (Devon Brooks, Morgan Lee)
-      |   |-- OU=WealthManagement
-      |   |   `-- OU=Users        (Sam Whitfield, Jamie Torres)
-      |   |-- OU=Operations
-      |   |   `-- OU=Users        (Taylor Osei, Riley Kwan)
-      |   `-- OU=FinanceAccounting
-      |       `-- OU=Users        (Jordan Ellis)
-      `-- OU=AccessLevels
-          |-- Group: Server Admins   (Level 2 -- empty by default)
-          `-- Group: Helpdesk        (Level 3 -- empty by default)
-
-    Level 1 (Domain Admin) is the built-in "Domain Admins" group -- nothing
-    to create there.
-
-    Groups created: IT Users, IT Admins, Compliance Users,
-    Wealth Management Users, Operations Users, Finance Accounting Users,
-    Server Admins, Helpdesk (8 custom groups; Domain Admins is built-in,
-    matching the site's "9 security groups" count).
-
-    Note on the workstation name: the site lists it as "IT WKS01", but AD
-    computer names can't contain spaces, so this script creates it as
-    IT-WKS01. This only creates the computer object in AD (pre-staged, so
-    it's ready for a real Windows machine to join the domain as IT-WKS01) --
-    it does not build or join an actual physical/virtual machine.
+    Run on the domain controller after Install-Forest.ps1. It is safe to
+    re-run. Anything that already exists is skipped.
 
 .PARAMETER InitialPassword
-    SecureString used as the initial password for every created user
-    account. If omitted, you'll be prompted once. All accounts are created
-    with "must change password at next logon" set, so nobody actually logs
-    in with this password long-term.
-
-.EXAMPLE
-    ./Build-Environment.ps1
+    Initial password for new accounts. You are prompted if it is omitted.
+    Every account must change it at next logon.
 
 .EXAMPLE
     ./Build-Environment.ps1 -WhatIf
-    Shows exactly what would be created without changing anything.
 #&gt;
 
 [CmdletBinding(SupportsShouldProcess = $true)]
@@ -281,7 +223,11 @@ function Ensure-User {
 
 function Ensure-Computer {
     [CmdletBinding(SupportsShouldProcess = $true)]
-    param([string]$Name, [string]$OUPath, [string]$Description = "")
+    param(
+        [string]$Name,
+        [string]$OUPath,
+        [string]$Description = ""
+    )
     $existing = Get-ADComputer -Filter "Name -eq '$Name'" -Properties Description -ErrorAction SilentlyContinue
     if ($existing) {
         Write-Host "  Computer exists: $Name" -ForegroundColor DarkGray
@@ -290,22 +236,17 @@ function Ensure-Computer {
         New-ADComputer -Name $Name -SAMAccountName "$Name$" -Path $OUPath -Description $Description
         Write-Host "  Computer pre-staged: $Name ($OUPath)" -ForegroundColor Green
     }
+
     if ($Description -and $existing -and $existing.Description -ne $Description -and $PSCmdlet.ShouldProcess($Name, "Update computer description")) {
         Set-ADComputer -Identity $Name -Description $Description
         Write-Host "    ~ $Name description updated" -ForegroundColor Green
     }
 }
 
-# ---------------------------------------------------------------------------
-# 1. Top-level OUs
-# ---------------------------------------------------------------------------
 Write-Host "`n== Top-level OUs ==" -ForegroundColor Cyan
 $departmentsOU  = Ensure-OU -Name "Departments"  -ParentDN $domainDN -Description "Top-level container for all department OUs."
 $accessLevelsOU = Ensure-OU -Name "AccessLevels" -ParentDN $domainDN -Description "Domain-wide access-level groups (Server Admins, Helpdesk), separate from department membership."
 
-# ---------------------------------------------------------------------------
-# 2. Departments: OU + Users sub-OU + standard group
-# ---------------------------------------------------------------------------
 $departments = @(
     @{ Display = "IT";                      OU = "IT";                 Group = "IT Users";                 Desc = "IT department: accounts, workstations, and infrastructure." },
     @{ Display = "Compliance";               OU = "Compliance";         Group = "Compliance Users";          Desc = "Compliance department: regulatory (GLBA/SOX) and audit staff." },
@@ -323,21 +264,14 @@ foreach ($dept in $departments) {
     $deptOUPaths[$dept.Display] = @{ DeptOU = $deptOU; UsersOU = $usersOU }
 }
 
-# IT gets an extra Workstations OU and the elevated "IT Admins" group.
 $itWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $deptOUPaths["IT"].DeptOU -Description "IT department workstation computer objects."
 Ensure-Group -Name "IT Admins" -OUPath $deptOUPaths["IT"].DeptOU -Description "Elevated access for IT Systems Administrators, beyond standard IT Users access."
 
-# ---------------------------------------------------------------------------
-# 3. Access-level groups (Level 1 is the built-in Domain Admins group)
-# ---------------------------------------------------------------------------
 Write-Host "`n== Access-level groups ==" -ForegroundColor Cyan
-Ensure-Group -Name "Server Admins" -OUPath $accessLevelsOU -Description "Level 2 access: servers, application and file servers. Empty by default."   # Level 2
-Ensure-Group -Name "Helpdesk"      -OUPath $accessLevelsOU -Description "Level 3 access: workstations, password resets, local support only. Empty by default."   # Level 3
+Ensure-Group -Name "Server Admins" -OUPath $accessLevelsOU -Description "Level 2 access: servers, application and file servers. Empty by default."
+Ensure-Group -Name "Helpdesk"      -OUPath $accessLevelsOU -Description "Level 3 access: workstations, password resets, local support only. Empty by default."
 Write-Host "  (Level 1 / Domain Admin uses the built-in 'Domain Admins' group -- nothing to create)" -ForegroundColor DarkGray
 
-# ---------------------------------------------------------------------------
-# 4. Users
-# ---------------------------------------------------------------------------
 $users = @(
     @{ First = "Alex";   Last = "Rivera";    Sam = "alex.rivera";   Title = "IT Systems Administrator";       Dept = "IT";                    Extra = @("IT Admins") },
     @{ First = "Priya";  Last = "Nair";      Sam = "priya.nair";    Title = "Help Desk Technician";           Dept = "IT";                    Extra = @() },
@@ -368,15 +302,11 @@ foreach ($u in $users) {
         -Groups $groups
 }
 
-# ---------------------------------------------------------------------------
-# 5. Workstation (pre-staged computer object only -- see note in header)
-# ---------------------------------------------------------------------------
 Write-Host "`n== Workstation ==" -ForegroundColor Cyan
 $computerName = "IT-WKS01"
 Ensure-Computer -Name $computerName -OUPath $itWorkstationsOU -Description "Standard IT workstation for GovTechFinancial administrators."
 
-Write-Host "`nDone. Verify with: Get-ADOrganizationalUnit -Filter * | Where-Object DistinguishedName -like '*Departments*'" -ForegroundColor Cyan
-</code></pre>
+Write-Host "`nDone. Verify with: Get-ADOrganizationalUnit -Filter * | Where-Object DistinguishedName -like '*Departments*'" -ForegroundColor Cyan</code></pre>
 </details>
 
 ```powershell
@@ -389,7 +319,7 @@ To see exactly what the script is about to do before committing to it, run it wi
 ./Build-Environment.ps1 -WhatIf
 ```
 
-If the script won't run, see the Troubleshooting tab for the three most common causes and their fixes.
+If the script will not run, see **If the Script Will Not Run** at the end of this tab for the three most common causes and their fixes.
 
 To add the optional ticket-queue challenge data, run the same script with the CTF switch:
 
@@ -399,9 +329,9 @@ To add the optional ticket-queue challenge data, run the same script with the CT
 
 This adds a service-account OU, a backup service account, a firm-wide group with one intentional membership gap, and a few workstation/user descriptions that back the Ticket Queue challenge. Use this after you understand the clean baseline.
 
-### Step 3 — Verify It Built Correctly
+### Step 3 — Verify It Built, or Reset It
 
-Open Active Directory Users and Computers (or run these) and confirm you see all 5 departments, all 9 users in the right department with the right title, and `alex.rivera` in both `IT Users` and `IT Admins`:
+**Verify.** Open Active Directory Users and Computers (or run these) and confirm you see all 5 departments, all 9 users in the right department with the right title, and `alex.rivera` in both `IT Users` and `IT Admins`:
 
 ```powershell
 Get-ADOrganizationalUnit -Filter * | Sort-Object DistinguishedName
@@ -412,6 +342,55 @@ Get-ADUser -Filter * -SearchBase "OU=Departments,$((Get-ADDomain).DistinguishedN
 Get-ADGroupMember -Identity "IT Admins"
 ```
 
-A note on the workstation. The User Directory and Client Workstation tabs list it as "IT WKS01," but AD computer names cannot contain spaces, so the script creates the object as `IT-WKS01`. It is the same machine with a valid name.
+A note on the workstation. The Environment tab lists it as "IT WKS01," but AD computer names cannot contain spaces, so the script creates the object as `IT-WKS01`. It is the same machine with a valid name.
 
-Once built and verified, you have your own live copy of the environment every other tab describes. This is what you'll investigate in the labs ahead.
+
+**Reset.** If you want a completely fresh start, run the cleanup script on the domain controller. It deletes the `Departments`, `AccessLevels`, and `ServiceAccounts` OUs and every user, group, and computer object inside them, including the optional challenge data. The domain itself, the forest, and the built-in accounts are not touched. It asks you to confirm before deleting anything.
+
+```powershell
+./Remove-Environment.ps1
+```
+
+Add `-WhatIf` to preview what would be deleted, or `-Force` to skip the confirmation prompt. Afterward, run `Build-Environment.ps1` again to rebuild the lab.
+
+[Download Remove-Environment.ps1](/lab-scripts/Remove-Environment.ps1)
+
+Once built and verified, you have your own live copy of the environment every other tab describes. This is what you will investigate in the labs ahead.
+
+### If the Script Will Not Run
+
+Three errors account for almost every "it will not run" report. Each is easy to fix once you know which one you are looking at.
+
+<div class="ad-trouble">
+<div class="ad-trouble__item">
+<span class="ad-trouble__label">Not running as Administrator</span>
+<img src="/academy/lab-scripts/run-as-admin-error.png" alt="PowerShell error: the script cannot be run because it contains a &quot;#requires&quot; statement for running as Administrator" class="ad-trouble__img" />
+<p>Close this window. Open the Start menu, search PowerShell, right-click it, and choose <strong>Run as Administrator</strong>. Then <code>cd</code> back to your Downloads folder and run the script again.</p>
+</div>
+
+<div class="ad-trouble__item">
+<span class="ad-trouble__label">File is blocked (downloaded from the internet)</span>
+<p>Windows flags files downloaded through a browser. Unblock it before running:</p>
+<div class="ad-code">
+<div class="ad-code__bar">
+<span class="ad-code__label">PowerShell</span>
+<button type="button" class="ad-code__copy">Copy</button>
+</div>
+<pre><code>Unblock-File -Path .\Build-Environment.ps1</code></pre>
+</div>
+</div>
+
+<div class="ad-trouble__item">
+<span class="ad-trouble__label">Running scripts is disabled on this system</span>
+<p>PowerShell blocks unsigned scripts by default. This allows them for your own user account only:</p>
+<div class="ad-code">
+<div class="ad-code__bar">
+<span class="ad-code__label">PowerShell</span>
+<button type="button" class="ad-code__copy">Copy</button>
+</div>
+<pre><code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code></pre>
+</div>
+</div>
+</div>
+
+Run into all three in the same session, in that order: elevate first, unblock the file, then relax the execution policy. Each is a one-time fix per machine.
