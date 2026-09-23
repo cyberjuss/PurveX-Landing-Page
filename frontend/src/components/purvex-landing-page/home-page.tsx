@@ -6,14 +6,13 @@ import {
   ArrowRight,
   Check,
   Linkedin,
-  MessageCircle,
   Quote,
   Radar,
   ShieldCheck,
   Star,
   Users,
 } from "lucide-react";
-import { BOOKING_URL, SiteChrome } from "./chrome";
+import { SiteChrome } from "./chrome";
 
 // Rotates through the hero's decorative "Alert queue" card so it reads like
 // a live SOC console instead of two frozen rows. Purely decorative
@@ -285,19 +284,6 @@ export default function HomePage() {
               </div>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* ═══════════ CTA ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-cta" data-r>
-          <div className="sp-cta__icon">
-            <MessageCircle size={22} />
-          </div>
-          <h2>Tell us what&apos;s not working</h2>
-          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Schedule a Conversation <ArrowRight size={16} />
-          </a>
         </div>
       </section>
 

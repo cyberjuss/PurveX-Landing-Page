@@ -12,14 +12,13 @@ import {
   Database,
   GitBranch,
   Mail,
-  MessageCircle,
   Radar,
   ShieldCheck,
   Sliders,
   Terminal,
   X,
 } from "lucide-react";
-import { BOOKING_URL, SiteChrome } from "./chrome";
+import { SiteChrome } from "./chrome";
 
 /* ─────────────────────────────────────────────────────────
    PurveX — Platform (product) page · bento-grid structure
@@ -424,18 +423,6 @@ export default function PlatformPage() {
         </div>
       </section>
 
-      {/* ═══════════ CTA ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-cta" data-r>
-          <div className="sp-cta__icon">
-            <MessageCircle size={22} />
-          </div>
-          <h2>Want to talk it through first?</h2>
-          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Schedule a Conversation <ArrowRight size={16} />
-          </a>
-        </div>
-      </section>
 
       <style>{`
 .sp-tile__icon {

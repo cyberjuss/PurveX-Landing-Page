@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, MessageCircle, Radar, Search, ShieldCheck, Sliders, Swords, Target, Terminal, Waypoints } from "lucide-react";
+import { ArrowRight, Radar, Search, ShieldCheck, Sliders, Swords, Target, Terminal, Waypoints } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 
 const services = [
@@ -174,18 +174,6 @@ export default function SecurityOperationsPage() {
               stand, and why.
             </p>
           </div>
-        </div>
-      </section>
-
-      {/* ═══════════ CTA ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-cta" data-r>
-          <div className="sp-cta__icon">
-            <MessageCircle size={22} />
-          </div>
-          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Schedule a Conversation <ArrowRight size={16} />
-          </a>
         </div>
       </section>
 

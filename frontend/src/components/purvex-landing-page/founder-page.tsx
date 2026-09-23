@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowRight, Linkedin, MessageCircle } from "lucide-react";
-import { BOOKING_URL, SiteChrome } from "./chrome";
+import { Linkedin } from "lucide-react";
+import { SiteChrome } from "./chrome";
 
 const bioSections = [
   {
@@ -76,18 +76,6 @@ export default function FounderPage() {
               </div>
             ))}
           </aside>
-        </div>
-      </section>
-
-      <section className="sp-section">
-        <div className="sp-cta-banner" data-r>
-          <div className="sp-cta-banner__text">
-            <MessageCircle size={20} className="sp-cta-banner__icon" />
-            <h2>Partner with PurveX</h2>
-          </div>
-          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Schedule a Conversation <ArrowRight size={16} />
-          </a>
         </div>
       </section>
 

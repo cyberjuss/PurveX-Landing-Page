@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Brain, MessageCircle, ShieldCheck, Swords, Zap } from "lucide-react";
-import { BOOKING_URL, SiteChrome } from "./chrome";
+import { ArrowRight, Brain, ShieldCheck, Swords, Zap } from "lucide-react";
+import { SiteChrome } from "./chrome";
 
 const goals = [
   {
@@ -166,18 +166,6 @@ export default function AboutPage() {
           </div>
         </section>
       </div>
-
-      <section className="sp-section">
-        <div className="sp-cta-banner" data-r>
-          <div className="sp-cta-banner__text">
-            <MessageCircle size={20} className="sp-cta-banner__icon" />
-            <h2>Partner with PurveX</h2>
-          </div>
-          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Schedule a Conversation <ArrowRight size={16} />
-          </a>
-        </div>
-      </section>
 
       <style>{`
 .sp-mag { max-width: 1040px; margin: 0 auto; padding-top: 132px }

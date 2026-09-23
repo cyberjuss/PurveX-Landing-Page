@@ -15,14 +15,13 @@ import {
   Globe,
   GraduationCap,
   Lock,
-  MessageCircle,
   Radar,
   ShieldAlert,
   Siren,
   Users,
   X,
 } from "lucide-react";
-import { BOOKING_URL, SiteChrome } from "./chrome";
+import { SiteChrome } from "./chrome";
 
 const translations = [
   { icon: Siren, detective: "A crime scene", analyst: "An alert in the queue" },
@@ -285,18 +284,6 @@ export default function TrainingPage() {
         </div>
       </section>
 
-      {/* ═══════════ CTA — bordered banner, text left / button right ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-cta-banner" data-r>
-          <div className="sp-cta-banner__text">
-            <MessageCircle size={20} className="sp-cta-banner__icon" />
-            <h2>Partner with PurveX</h2>
-          </div>
-          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Schedule a Conversation <ArrowRight size={16} />
-          </a>
-        </div>
-      </section>
 
       <style>{`
 /* ── Hero, translate: left-aligned copy with the translation duo docked

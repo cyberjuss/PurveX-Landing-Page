@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Linkedin, Menu, X } from "lucide-react";
+import { ArrowRight, Linkedin, Menu, X } from "lucide-react";
 
 /* ─────────────────────────────────────────────────────────
    PurveX — shared site chrome
@@ -192,6 +192,14 @@ export function SiteChrome({
       <main className="sp-main">{children}</main>
 
       <footer className="sp-footer" data-r>
+        {/* The one contact CTA for the whole site, lives here so every page
+            gets it automatically instead of each page carrying its own
+            (previously inconsistent) version. */}
+        <div className="sp-footer__cta">
+          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
+            Schedule a Conversation <ArrowRight size={16} />
+          </a>
+        </div>
         <div className="sp-footer__top">
           <div className="sp-footer__brand">
             <Link href="/" className="sp-logo">
@@ -460,54 +468,6 @@ export const CHROME_CSS = `
 .sp-footnote a { color: var(--accent-deep); font-weight: 600; text-decoration: none; white-space: nowrap }
 .sp-footnote a:hover { text-decoration: underline }
 
-/* ── CTA banner — no card, just an interactive icon + headline ── */
-.sp-cta { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding: 24px 0 }
-.sp-cta__icon {
-  position: relative;
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 60px; height: 60px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-  color: #fff;
-  box-shadow: 0 14px 28px -8px rgba(85,70,224,.55);
-  cursor: pointer;
-  animation: sp-cta-float 3.2s ease-in-out infinite;
-  transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-radius .3s var(--ease);
-}
-.sp-cta__icon::before, .sp-cta__icon::after {
-  content: "";
-  position: absolute; inset: 0;
-  border-radius: inherit;
-  border: 1.5px solid rgba(106,92,255,.45);
-  opacity: 0;
-  animation: sp-cta-ping 2.6s ease-out infinite;
-}
-.sp-cta__icon::after { animation-delay: 1.3s }
-.sp-cta__icon:hover { transform: scale(1.12) rotate(-8deg); border-radius: 50%; box-shadow: 0 18px 36px -8px rgba(85,70,224,.7) }
-@keyframes sp-cta-float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
-@keyframes sp-cta-ping { 0% { opacity: .6; transform: scale(1) } 100% { opacity: 0; transform: scale(1.7) } }
-@media (prefers-reduced-motion: reduce) {
-  .sp-cta__icon { animation: none }
-  .sp-cta__icon::before, .sp-cta__icon::after { display: none }
-}
-.sp-cta h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.4rem, 2.4vw, 1.85rem); font-weight: 700; letter-spacing: -.02em; color: var(--ink); max-width: 560px }
-.sp-cta p { margin: 0; color: var(--ink-soft); font-size: 1.05rem; line-height: 1.7; max-width: 520px }
-
-/* ── CTA banner: text left, button right, inside a bordered strip --
-   distinct from the centered icon-over-headline CTA above. Shared here
-   (not page-local) since it's now used across several pages. ── */
-.sp-cta-banner {
-  display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
-  padding: 40px 44px; border: 1px solid var(--border); border-radius: 20px; background: var(--surface-alt);
-}
-.sp-cta-banner__text { display: flex; align-items: center; gap: 14px }
-.sp-cta-banner__icon { flex-shrink: 0; color: var(--accent-deep) }
-.sp-cta-banner__text h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.3rem, 2.2vw, 1.7rem); font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
-@media (max-width: 620px) {
-  .sp-cta-banner { flex-direction: column; align-items: flex-start; padding: 32px 28px }
-  .sp-cta-banner .sp-btn { width: 100% }
-}
-
 /* ── Simple panel (About / teasers) ── */
 .sp-panel {
   --cut: 30px;
@@ -531,7 +491,8 @@ export const CHROME_CSS = `
 .sp-statement__link:hover { gap: 12px }
 
 /* ── Footer ── */
-.sp-footer { border-top: 1px solid var(--border); max-width: 1140px; margin: 96px auto 0; padding: 56px 24px 32px }
+.sp-footer { border-top: 1px solid var(--border); max-width: 1140px; margin: 96px auto 0; padding: 40px 24px 32px }
+.sp-footer__cta { display: flex; justify-content: center; padding-bottom: 40px; border-bottom: 1px solid var(--border); margin-bottom: 40px }
 .sp-footer__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px }
 .sp-footer__brand { max-width: 280px }
 .sp-footer__brand p { margin: 12px 0 0; color: var(--muted); font-size: .89rem; line-height: 1.65 }
