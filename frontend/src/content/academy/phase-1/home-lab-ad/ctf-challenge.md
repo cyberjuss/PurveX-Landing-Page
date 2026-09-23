@@ -30,8 +30,9 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<p><code>GTF{finance-accounting-users}</code></p>
-<p>Jordan sits in <code>OU=Users,OU=FinanceAccounting,OU=Departments</code> and belongs to <code>Finance Accounting Users</code>, GovTechFinancial's standard-access group for that department.</p>
+<span class="ad-flag__label">Finding</span>
+<p class="ad-flag__code"><code>GTF{finance-accounting-users}</code></p>
+<p>Jordan belongs to <code>Finance Accounting Users</code>, the standard-access group for his department.</p>
 </div>
 </div>
 
@@ -46,8 +47,9 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<p><code>GTF{it-admins}</code></p>
-<p>Alex Rivera is a member of both <code>IT Users</code> and <code>IT Admins</code>. Same OU as Priya Nair, different access.</p>
+<span class="ad-flag__label">Finding</span>
+<p class="ad-flag__code"><code>GTF{it-admins}</code></p>
+<p>Alex Rivera is in both <code>IT Users</code> and <code>IT Admins</code>. Same OU as Priya Nair, different access.</p>
 </div>
 </div>
 
@@ -62,8 +64,9 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<p><code>GTF{accesslevels}</code></p>
-<p><code>OU=AccessLevels</code>. Those groups describe what an account can do across the whole domain, not which department it belongs to, so nesting them under one department wouldn't make sense.</p>
+<span class="ad-flag__label">Finding</span>
+<p class="ad-flag__code"><code>GTF{accesslevels}</code></p>
+<p><code>OU=AccessLevels</code>. Those groups control domain-wide access, not department membership, so they don't nest under one department.</p>
 </div>
 </div>
 
@@ -78,8 +81,9 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<p><code>GTF{cn=users}</code></p>
-<p><code>CN=Users</code>. An account left sitting there can never have a GPO linked to reach it, since GPOs only link to Sites, Domains, and OUs, and nobody can delegate scoped permissions over it either, since Containers support neither.</p>
+<span class="ad-flag__label">Finding</span>
+<p class="ad-flag__code"><code>GTF{cn=users}</code></p>
+<p><code>CN=Users</code>. GPOs only link to Sites, Domains, and OUs, so an account left here is invisible to Group Policy, and nobody can delegate permissions over it either.</p>
 </div>
 </div>
 
@@ -94,8 +98,9 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<p><code>GTF{serviceaccounts}</code></p>
-<p>It's <code>OU=ServiceAccounts</code>, sitting alongside <code>Departments</code> and <code>AccessLevels</code> at the top of the domain. The account itself should be clearly prefixed, for example <code>svc-backup-job</code>, and unlike a person's account, it needs <code>PasswordNeverExpires</code> set to <code>$true</code>, since nothing is sitting at a keyboard to change it before it locks out.</p>
+<span class="ad-flag__label">Finding</span>
+<p class="ad-flag__code"><code>GTF{serviceaccounts}</code></p>
+<p><code>OU=ServiceAccounts</code>, alongside <code>Departments</code> and <code>AccessLevels</code>. Prefix the account too, e.g. <code>svc-backup-job</code>, and set <code>PasswordNeverExpires = $true</code> since nobody's at a keyboard to renew it.</p>
 </div>
 </div>
 
@@ -110,8 +115,9 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<p><code>GTF{no}</code></p>
-<p>No. Priya is only a member of <code>IT Users</code>. The <code>Helpdesk</code> access-level group (Level 3) is created empty by the build script, and nobody has been added to it, despite her title. A title describes a job; a group describes access. An investigation checks the group every time and never assumes from the title.</p>
+<span class="ad-flag__label">Finding</span>
+<p class="ad-flag__code"><code>GTF{no}</code></p>
+<p>No. Priya is only in <code>IT Users</code>; <code>Helpdesk</code> is created empty, and nobody's been added despite her title. A title describes a job. A group describes access.</p>
 </div>
 </div>
 
@@ -126,8 +132,9 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<p><code>GTF{3}</code></p>
-<p>Three departments are flagged critical: Compliance, Wealth Management, and Finance and Accounting. IT and Operations aren't, not because they don't matter, but because they don't directly hold regulated data or client financial records.</p>
+<span class="ad-flag__label">Finding</span>
+<p class="ad-flag__code"><code>GTF{3}</code></p>
+<p>Compliance, Wealth Management, and Finance and Accounting. IT and Operations aren't, since neither directly holds regulated data or client financial records.</p>
 </div>
 </div>
 
@@ -142,8 +149,9 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<p><code>GTF{wealth-management}</code></p>
-<p>Wealth Management. It serves private investors, high-net-worth individuals, trust and estate accounts, and retirement-focused clients, exactly the kind of personal, financial data an attacker would target.</p>
+<span class="ad-flag__label">Finding</span>
+<p class="ad-flag__code"><code>GTF{wealth-management}</code></p>
+<p>Wealth Management. Private investors, high-net-worth individuals, trust and estate accounts, exactly the data an attacker would target.</p>
 </div>
 </div>
 
@@ -158,8 +166,9 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<p><code>GTF{finance-and-accounting}</code></p>
-<p>Finance and Accounting handles GovTechFinancial's own ledgers, payroll, and internal budgets, separate from the client funds Wealth Management and Operations touch.</p>
+<span class="ad-flag__label">Finding</span>
+<p class="ad-flag__code"><code>GTF{finance-and-accounting}</code></p>
+<p>Finance and Accounting. Their own ledgers, payroll, and internal budgets, separate from the client funds Wealth Management and Operations touch.</p>
 </div>
 </div>
 
@@ -174,114 +183,15 @@ Every answer is one word or a short phrase, lowercase, with spaces or dashes bot
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<p><code>GTF{wrong-department}</code></p>
-<p>The baseline mismatch is the answer: Alex Rivera belongs to <code>OU=IT</code>, but the login came from a Wealth Management workstation.</p>
+<span class="ad-flag__label">Finding</span>
+<p class="ad-flag__code"><code>GTF{wrong-department}</code></p>
+<p>Alex's account lives in <code>OU=IT</code>. This login came from Wealth Management, three mismatches deep:</p>
 <ul class="ad-baseline-list">
-<li><strong>Identity baseline:</strong> Alex's account lives in IT.</li>
-<li><strong>Asset baseline:</strong> the workstation belongs to Wealth Management.</li>
-<li><strong>Business baseline:</strong> Wealth Management is a critical department, and 2:00 AM is outside a normal work pattern.</li>
+<li><strong>Identity:</strong> account is in IT.</li>
+<li><strong>Asset:</strong> workstation belongs to Wealth Management.</li>
+<li><strong>Timing:</strong> 2:00 AM, on a critical department.</li>
 </ul>
-<p>That is enough to flag the login before opening a single log entry. The point is not memorizing a flag; it is noticing when identity, department, asset, and time do not line up.</p>
+<p>Three reasons to flag it, before opening a single log entry.</p>
 </div>
 </div>
 
-<style>
-.ad-answer-guide {
-  display: grid;
-  gap: 0.35rem;
-  margin: 1rem 0 1.35rem;
-  padding: 0.85rem 1rem;
-  border: 1px solid rgba(85,70,224,0.22);
-  border-left: 3px solid #5546e0;
-  border-radius: 10px;
-  background: rgba(85,70,224,0.055);
-}
-.ad-answer-guide__label {
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #5546e0;
-}
-.ad-answer-guide p { margin: 0; font-size: 0.9rem; color: var(--pvrx-text-secondary-light); }
-.ad-progress { display: flex; align-items: center; gap: 0.85rem; margin: 1.25rem 0 1.75rem; }
-.ad-progress__track { flex: 1; height: 8px; border-radius: 999px; background: var(--pvrx-border-light); overflow: hidden; }
-.ad-progress__bar { height: 100%; width: 0%; border-radius: 999px; background: linear-gradient(90deg, #6a5cff, #5546e0); transition: width 0.4s ease; }
-.ad-progress__label { flex-shrink: 0; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.78rem; font-weight: 700; color: #5546e0; }
-
-/* .academy-prose is this panel's own wrapper (rendered fresh per active
-   tab), so scoping the counter there numbers just these missions 1-10
-   without needing a dedicated wrapping element around the mission list. */
-.academy-prose { counter-reset: mission; }
-.ad-mission {
-  position: relative;
-  margin: 1.75rem 0; padding: 1.25rem 1.5rem 1.4rem;
-  border: 1px solid var(--pvrx-border-light); border-left: 3px solid #5546e0; border-radius: 14px;
-  background: var(--pvrx-surface-alt-light);
-  box-shadow: 0 1px 2px rgba(16,25,46,0.05), 0 18px 40px -28px rgba(16,25,46,0.22);
-  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.25s ease, transform 0.25s ease;
-}
-.ad-mission:hover { box-shadow: 0 1px 2px rgba(16,25,46,0.06), 0 24px 48px -26px rgba(16,25,46,0.3); transform: translateY(-2px); }
-.ad-mission::before {
-  counter-increment: mission;
-  content: counter(mission);
-  position: absolute;
-  top: -15px; left: -15px;
-  display: flex; align-items: center; justify-content: center;
-  width: 34px; height: 34px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #6a5cff, #5546e0);
-  color: #fff; font-family: var(--font-display); font-size: 0.95rem; font-weight: 700;
-  box-shadow: 0 4px 12px -2px rgba(85,70,224,0.45), 0 0 0 3px #fff;
-}
-.ad-mission--capstone { border-left-color: #e5484d; }
-.ad-mission--capstone::before { background: linear-gradient(135deg, #f0656a, #e5484d); box-shadow: 0 4px 12px -2px rgba(229,72,77,0.45), 0 0 0 3px #fff; }
-.ad-mission--solved { border-left-color: #16a34a; background: rgba(22,163,74,0.05); }
-.ad-mission--solved::before { content: "\2713"; background: linear-gradient(135deg, #22c55e, #16a34a); box-shadow: 0 4px 12px -2px rgba(22,163,74,0.45), 0 0 0 3px #fff; }
-.ad-mission__num { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #5546e0; }
-.ad-mission--capstone .ad-mission__num { color: #e5484d; }
-.ad-mission--solved .ad-mission__num { color: #16a34a; }
-.ad-mission--solved .ad-mission__num::after { content: " \2713 Solved"; }
-.ad-mission h4 { margin: 0.35rem 0 0.5rem; font-family: var(--font-display); font-size: 1.02rem; font-weight: 700; }
-.ad-mission > p { margin: 0; }
-
-.ad-hint { margin-top: 0.75rem; }
-.ad-hint__btn {
-  font-size: 0.78rem; font-weight: 650; color: #5546e0; background: none;
-  border: 1px dashed rgba(85,70,224,0.4); border-radius: 999px; padding: 0.3rem 0.75rem; cursor: pointer;
-}
-.ad-hint__btn:hover { background: rgba(85,70,224,0.08); }
-.ad-hint__btn:disabled { color: var(--pvrx-text-secondary-light); border-color: var(--pvrx-border-light); cursor: default; }
-.ad-hint__text { display: none; margin: 0.5rem 0 0; font-size: 0.85rem; color: var(--pvrx-text-secondary-light); font-style: italic; }
-.ad-hint__text--shown { display: block; }
-
-.ad-guess { display: flex; gap: 0.5rem; margin-top: 0.9rem; flex-wrap: wrap; }
-.ad-guess__input {
-  flex: 1; min-width: 180px; padding: 0.5rem 0.7rem; border-radius: 8px;
-  border: 1px solid var(--pvrx-border-light); font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85rem;
-  background: #fff; color: var(--pvrx-text-primary-light);
-}
-.ad-guess__input:focus { outline: none; border-color: #5546e0; box-shadow: 0 0 0 3px rgba(85,70,224,0.12); }
-.ad-guess__input:disabled { background: var(--pvrx-surface-alt-light); color: var(--pvrx-text-secondary-light); }
-.ad-guess__submit {
-  font-size: 0.85rem; font-weight: 650; color: #fff; background: #5546e0; border: none; border-radius: 8px;
-  padding: 0.5rem 1.1rem; cursor: pointer;
-}
-.ad-guess__submit:hover { background: #4636c4; }
-.ad-guess__submit:disabled { background: var(--pvrx-border-light); cursor: default; }
-.ad-guess__feedback { margin: 0.55rem 0 0; font-size: 0.85rem; font-weight: 600; min-height: 1.2em; }
-.ad-guess__feedback--ok { color: #16a34a; }
-.ad-guess__feedback--err { color: #e5484d; }
-
-.ad-flag { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--pvrx-border-light); }
-.ad-flag--shown { display: block; }
-.ad-flag p, .ad-flag ul { font-size: 0.9rem; }
-.ad-flag code { font-weight: 650; }
-.ad-baseline-list {
-  margin: 0.75rem 0;
-  padding-left: 1.1rem;
-}
-.ad-baseline-list li { margin: 0.35rem 0; color: var(--pvrx-text-secondary-light); }
-.ad-baseline-list strong { color: var(--pvrx-text-primary-light); }
-</style>
