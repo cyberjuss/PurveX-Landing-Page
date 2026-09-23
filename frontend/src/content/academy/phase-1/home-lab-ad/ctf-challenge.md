@@ -5,21 +5,40 @@
 
 ### Operation Day One
 
-It is your first day on the GovTech Financial IT help desk. Nobody expects you to investigate anything yet. The job today is simple: find people, find groups, find where things live, and read what the directory says. Every task below is done in your own lab, and every answer comes from there.
+First day on the GovTech Financial IT help desk. Nobody expects you to close an incident yet but they do expect you to:
 
-The **Ticket Queue** is the real thing, with live tickets and a security incident. Finish Day One first so you can move around the directory without thinking about it.
+- find people
+- find groups
+- find where things live
+- read what the directory says
+
+Every answer comes from your lab. Open Active Directory Users and Computers and do not answer from memory or from a tab you read earlier.
+
+If a title and a group disagree trust the group. If a ticket and the folder disagree trust the folder. Day One is the job of looking it up.
+
+The **Ticket Queue** is next. Staff and HR tickets you work in this same directory. You will do the work not only look them up:
+
+- Add a member
+- Create an account
+- Delete what does not belong
+- Write a setting
+- Move a transfer
 
 <div class="ad-answer-guide">
 <span class="ad-answer-guide__label">How answers work</span>
-<p>Use Active Directory Users and Computers in your lab. Each task asks for a short answer, such as a group name, a person, or a number. Case, spaces, dots, and dashes do not matter. You get three tries per task. The hint unlocks after two wrong tries, and the explanation unlocks after the third. Nothing is submitted or stored.</p>
+<p>Use Active Directory Users and Computers in your lab. Each task asks for a short answer:</p>
+<ul>
+<li>A group name</li>
+<li>A person</li>
+<li>A number</li>
+</ul>
+<p>Case, spaces, dots, and dashes do not matter. The hint tells you what to open. The finding shows the answer, the problem, and the solution. You get three tries per task. The hint unlocks after two wrong tries. The explanation unlocks after the third.</p>
 </div>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
 <span id="ad-progress-label" class="ad-progress__label">0 / 10 solved</span>
 </div>
-
-<div id="ad-scorecard" class="ad-scorecard"></div>
 
 <div class="ad-mission" data-id="d1-01" data-attempts="0">
 <span class="ad-mission__num">Task 01 · Find an Account</span>
@@ -30,12 +49,23 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <button type="button" class="ad-guess__submit" data-answer="gtf{finance-accounting-users}">Submit</button>
 <button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
-<p class="ad-hint__text">Use the Find dialog to locate <code>jordan.ellis</code>, then open the Member Of tab. Ignore Domain Users, which everyone has.</p>
+<p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>jordan.ellis</code>, open the account → Member Of. Ignore Domain Users. Everyone has that. The department group is the one that actually gives mail and file access.<br><br>PowerShell is optional: <code>Get-ADPrincipalGroupMembership jordan.ellis | Select Name</code></p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<span class="ad-flag__label">Finding</span>
+<div class="ad-break">
+<div>
+<span>Answer</span>
 <p class="ad-flag__code"><code>GTF{finance-accounting-users}</code></p>
-<p>Jordan is in <code>Finance Accounting Users</code>, the standard group for his department. Finding an account and reading its groups is the most common help desk task.</p>
+</div>
+<div>
+<span>Problem</span>
+<p>A ticket gives a name, not a group. Guessing from the job title adds the wrong access.</p>
+</div>
+<div>
+<span>Solution</span>
+<p>Find the account, then read Member Of. That group is what Jordan already has.</p>
+</div>
+</div>
 </div>
 </div>
 
@@ -48,12 +78,23 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <button type="button" class="ad-guess__submit" data-answer="gtf{alex-rivera}">Submit</button>
 <button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
-<p class="ad-hint__text">Open the group and read its Members tab. The group lives in the IT department OU and has only one member.</p>
+<p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>IT Admins</code>, open it → Members. That list is who can change the directory. It should be short.<br><br>PowerShell is optional: <code>Get-ADGroupMember "IT Admins"</code></p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<span class="ad-flag__label">Finding</span>
+<div class="ad-break">
+<div>
+<span>Answer</span>
 <p class="ad-flag__code"><code>GTF{alex-rivera}</code></p>
-<p><code>alex.rivera</code>. Knowing who holds admin rights is the first thing to check whenever something unusual happens.</p>
+</div>
+<div>
+<span>Problem</span>
+<p>If you do not know who is in <code>IT Admins</code>, you do not know who can reset passwords and add people to groups.</p>
+</div>
+<div>
+<span>Solution</span>
+<p>Open the group and read Members. Keep that list short and current.</p>
+</div>
+</div>
 </div>
 </div>
 
@@ -66,12 +107,23 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <button type="button" class="ad-guess__submit" data-answer="gtf{accesslevels}">Submit</button>
 <button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
-<p class="ad-hint__text">Expand the domain root and look at what sits next to Departments.</p>
+<p class="ad-hint__text">An OU is a folder. Department folders hold people.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand <code>govtechfinancial.local</code>. Look at the folders sitting next to <code>Departments</code>. One of those is where <code>Server Admins</code> and <code>Helpdesk</code> live.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<span class="ad-flag__label">Finding</span>
+<div class="ad-break">
+<div>
+<span>Answer</span>
 <p class="ad-flag__code"><code>GTF{accesslevels}</code></p>
-<p><code>OU=AccessLevels</code>. Access is kept separate from department on purpose, so moving someone between departments does not change what they can administer.</p>
+</div>
+<div>
+<span>Problem</span>
+<p>If admin groups live under a department, moving a person can drag those rights with them.</p>
+</div>
+<div>
+<span>Solution</span>
+<p>Keep people in Departments. Keep groups like Server Admins and Helpdesk in AccessLevels.</p>
+</div>
+</div>
 </div>
 </div>
 
@@ -84,12 +136,23 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <button type="button" class="ad-guess__submit" data-answer="gtf{cn=users}">Submit</button>
 <button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
-<p class="ad-hint__text">Expand the domain root. Its name starts with CN=, not OU=. New accounts land here if nobody chooses an OU.</p>
+<p class="ad-hint__text">New accounts land in a default folder if nobody picks a department folder.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand <code>govtechfinancial.local</code>. View → Advanced Features if you need the full name. The built-in folder that is not an OU (it does not say Organizational Unit) is that default folder. Group Policy cannot attach to it.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<span class="ad-flag__label">Finding</span>
+<div class="ad-break">
+<div>
+<span>Answer</span>
 <p class="ad-flag__code"><code>GTF{cn=users}</code></p>
-<p><code>CN=Users</code>. Group Policy links only to sites, domains, and OUs. An account left here gets none of the company's policies.</p>
+</div>
+<div>
+<span>Problem</span>
+<p>That is a default folder, not an OU. Settings like drive maps and screen lock cannot attach to it.</p>
+</div>
+<div>
+<span>Solution</span>
+<p>Create the user in the right department folder, or move them out of this folder the same day.</p>
+</div>
+</div>
 </div>
 </div>
 
@@ -102,12 +165,23 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-systems-administrators}">Submit</button>
 <button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
-<p class="ad-hint__text">Open the group's Properties and read the Description on the General tab. It names a job title in the plural.</p>
+<p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>IT Admins</code>, open it → General and read Description. It should say who the group is for, not just repeat the group name.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<span class="ad-flag__label">Finding</span>
+<div class="ad-break">
+<div>
+<span>Answer</span>
 <p class="ad-flag__code"><code>GTF{it-systems-administrators}</code></p>
-<p>The description reads "Elevated access for IT Systems Administrators, beyond standard IT Users access." A group with a written purpose is much easier to keep clean.</p>
+</div>
+<div>
+<span>Problem</span>
+<p>A group with no description becomes a junk drawer. People get added just in case.</p>
+</div>
+<div>
+<span>Solution</span>
+<p>Read the Description on <code>IT Admins</code> before you add anyone. It says who belongs there.</p>
+</div>
+</div>
 </div>
 </div>
 
@@ -120,12 +194,23 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <button type="button" class="ad-guess__submit" data-answer="gtf{no}">Submit</button>
 <button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
-<p class="ad-hint__text">Open the <code>Helpdesk</code> group and read its Members tab. Do not go by her title.</p>
+<p class="ad-hint__text">A title is a label on the account. Access is a group.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>Helpdesk</code>, open it → Members. Do not decide from the word Technician on her account.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<span class="ad-flag__label">Finding</span>
+<div class="ad-break">
+<div>
+<span>Answer</span>
 <p class="ad-flag__code"><code>GTF{no}</code></p>
-<p>No. <code>Helpdesk</code> is empty, and Priya is only in <code>IT Users</code>. A job title describes a role. A group grants access, and you always check the group.</p>
+</div>
+<div>
+<span>Problem</span>
+<p>Priya's title says Help Desk Technician, but a title does not grant access. She is not in the <code>Helpdesk</code> group.</p>
+</div>
+<div>
+<span>Solution</span>
+<p>Read Member Of. She is only in <code>IT Users</code>.</p>
+</div>
+</div>
 </div>
 </div>
 
@@ -138,12 +223,23 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <button type="button" class="ad-guess__submit" data-answer="gtf{riley-kwan}">Submit</button>
 <button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
-<p class="ad-hint__text">Search your lab with Find, using the Advanced tab and the Title field. You can also open the Operations users one by one.</p>
+<p class="ad-hint__text">Tickets often say a job, not a username.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find → Advanced → Field: Title, value <code>Settlements Coordinator</code>. Or expand <code>Departments</code> → <code>Operations</code> → <code>Users</code> and read Title on each account. Confirm the name before you change anything.<br><br>PowerShell is optional: <code>Get-ADUser -Filter "Title -eq 'Settlements Coordinator'"</code></p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<span class="ad-flag__label">Finding</span>
+<div class="ad-break">
+<div>
+<span>Answer</span>
 <p class="ad-flag__code"><code>GTF{riley-kwan}</code></p>
-<p><code>riley.kwan</code>, in Operations. The title, department, and description fields are what let you find the right person when a ticket only gives a job.</p>
+</div>
+<div>
+<span>Problem</span>
+<p>A manager will often say "the settlements person" and never give a username. The wrong account is the wrong person.</p>
+</div>
+<div>
+<span>Solution</span>
+<p>Search by the title Settlements Coordinator, then confirm the name before you change anything.</p>
+</div>
+</div>
 </div>
 </div>
 
@@ -156,12 +252,23 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-wks01}">Submit</button>
 <button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
-<p class="ad-hint__text">Look under Departments, then IT, then Workstations. AD computer names never contain spaces.</p>
+<p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand <code>govtechfinancial.local</code> → <code>Departments</code> → <code>IT</code> → <code>Workstations</code>. Find the computer object the same way you find a user. Computer names have no spaces.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<span class="ad-flag__label">Finding</span>
+<div class="ad-break">
+<div>
+<span>Answer</span>
 <p class="ad-flag__code"><code>GTF{it-wks01}</code></p>
-<p><code>IT-WKS01</code>. Computers are directory objects just like users, and you find them the same way.</p>
+</div>
+<div>
+<span>Problem</span>
+<p>An alert names a host. If you cannot find that computer, you cannot tell whose machine it is.</p>
+</div>
+<div>
+<span>Solution</span>
+<p>Look under IT → Workstations. Find the object, read the name. Same as looking up a person.</p>
+</div>
+</div>
 </div>
 </div>
 
@@ -174,12 +281,23 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
 <button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
-<p class="ad-hint__text">Open the group and read its Members tab, or run <code>(Get-ADGroupMember "Compliance Users").Count</code>.</p>
+<p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>Compliance Users</code>, open it → Members and count the people. If that number changes later, you know someone was added.<br><br>PowerShell is optional: <code>(Get-ADGroupMember "Compliance Users").Count</code></p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<span class="ad-flag__label">Finding</span>
+<div class="ad-break">
+<div>
+<span>Answer</span>
 <p class="ad-flag__code"><code>GTF{2}</code></p>
-<p>Two members, Devon Brooks and Morgan Lee. Knowing a group's normal size is how you notice when it changes.</p>
+</div>
+<div>
+<span>Problem</span>
+<p>Without a starting count, you cannot tell if someone was added later.</p>
+</div>
+<div>
+<span>Solution</span>
+<p>Open <code>Compliance Users</code> and count. If that number goes up later, someone new was added.</p>
+</div>
+</div>
 </div>
 </div>
 
@@ -192,11 +310,22 @@ The **Ticket Queue** is the real thing, with live tickets and a security inciden
 <button type="button" class="ad-guess__submit" data-answer="gtf{5}">Submit</button>
 <button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
-<p class="ad-hint__text">Expand Departments and count only the OUs one level down. Do not count the Users or Workstations OUs inside them.</p>
+<p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand <code>govtechfinancial.local</code> → <code>Departments</code>. Count only the first-level folders. Skip Users and Workstations. Those sit inside a department. They are not departments.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
-<span class="ad-flag__label">Finding</span>
+<div class="ad-break">
+<div>
+<span>Answer</span>
 <p class="ad-flag__code"><code>GTF{5}</code></p>
-<p>Five: IT, Compliance, Wealth Management, Operations, and Finance and Accounting. You can now find any user, group, computer, and OU in the environment. Next up is the Ticket Queue.</p>
+</div>
+<div>
+<span>Problem</span>
+<p>Users and Workstations sit inside a department. Counting those folders makes the number too high.</p>
+</div>
+<div>
+<span>Solution</span>
+<p>Count only the folders directly under Departments: IT, Compliance, Wealth Management, Operations, and Finance and Accounting.</p>
+</div>
+</div>
 </div>
 </div>

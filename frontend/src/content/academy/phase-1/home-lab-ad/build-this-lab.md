@@ -5,11 +5,15 @@
 
 ### Overview
 
-The other tabs cover the departments, the access levels, and the user directory. They are not just something to memorize. They describe a real Active Directory environment you can build on your own machine with the two scripts below. Building it yourself is how you learn what "normal" looks like here. By the end of this tab, you will have your own live copy of GovTechFinancial running and ready to investigate.
+The other tabs describe the departments, the access levels, and the user directory. Those objects only exist in your lab after you run the two scripts below.
+
+Building it yourself is how you see what normal looks like here. Until the scripts finish you are reading a chart. After they finish you have a live copy of GovTech Financial you can open, query, and check a ticket against.
+
+By the end of this tab you should be able to open Active Directory Users and Computers and find the same departments and accounts the other tabs named. If you cannot the lab is not built yet. Do not start a challenge on a half-built directory.
 
 **At a glance:**
 
-* `Install-Forest.ps1`: one-time setup that turns a blank Windows Server into the domain controller for `govtechfinancial.local`. Skip it if that domain already exists.
+* `Install-Forest.ps1` is one-time setup. It turns a blank Windows Server into the domain controller for `govtechfinancial.local`. Skip it if that domain already exists.
 * `Build-Environment.ps1` does the real work. It creates every department, group, user, and workstation described above so the environment matches what you have been studying. It is safe to re-run any time.
 
 **What you will need:**
@@ -18,7 +22,7 @@ The other tabs cover the departments, the access levels, and the user directory.
 * An elevated (Administrator) PowerShell session on that server.
 * About 15–20 minutes, plus a reboot partway through.
 
-### Step 1 — Install the Domain (Skip If You Already Have One)
+### Step 1. Install the Domain (Skip If You Already Have One)
 
 If your server is not yet a domain controller, download and run this first. It installs Active Directory Domain Services and promotes the server to the root of a new domain, `govtechfinancial.local`. It asks for a recovery-mode password and then reboots automatically. Without a domain, the departments, users, and groups in the next step have nowhere to live.
 
@@ -79,7 +83,7 @@ Install-ADDSForest `
 ./Install-Forest.ps1
 ```
 
-### Step 2 — Build the Environment
+### Step 2. Build the Environment
 
 After the reboot, log back in as `GOVTECHFINANCIAL\Administrator` and run this script. It creates every department, group, user, and the workstation object described in the other tabs. This step turns the org chart and user directory from a description into a live environment you can query and investigate.
 
@@ -93,6 +97,7 @@ After the reboot, log back in as `GOVTECHFINANCIAL\Administrator` and run this s
 * Prompts once for an initial password. Every account must change it at next logon, so nobody keeps that password long-term
 * Is safe to run more than once. It only creates what is missing and never resets or deletes anything that exists
 * Optional: add `-IncludeCTF` to plant ticket-queue challenge objects after the clean baseline is built
+* The Academy download starts a 15-minute Coach sync on the domain controller after the first successful build. The VM only has to stay on. To stop it: `./Build-Environment.ps1 -UninstallSync`. A one-off refresh is still `./Build-Environment.ps1 -SyncOnly`.
 
 [Download Build-Environment.ps1](/lab-scripts/Build-Environment.ps1)
 
@@ -327,11 +332,11 @@ To add the optional ticket-queue challenge data, run the same script with the CT
 ./Build-Environment.ps1 -IncludeCTF
 ```
 
-This adds a service-account OU, a backup service account, a firm-wide group with one intentional membership gap, and a few workstation/user descriptions that back the Ticket Queue challenge. Use this after you understand the clean baseline.
+This adds a service-account OU, a backup service account, a leftover intern account, a firm-wide group with one intentional membership gap, a disabled Operations account, and a few workstation objects that back the Ticket Queue. Use this after you understand the clean baseline. The tickets ask you to add, create, remove, write, and move objects, not only read them.
 
-### Step 3 — Verify It Built, or Reset It
+### Step 3. Verify It Built, or Reset It
 
-**Verify.** Open Active Directory Users and Computers (or run these) and confirm you see all 5 departments, all 9 users in the right department with the right title, and `alex.rivera` in both `IT Users` and `IT Admins`:
+**Verify.** Do not trust the script output alone. Open Active Directory Users and Computers (or run these) and confirm you see all 5 departments, all 9 users in the right department with the right title, and `alex.rivera` in both `IT Users` and `IT Admins`. If any of that is missing, the lab is not ready.
 
 ```powershell
 Get-ADOrganizationalUnit -Filter * | Sort-Object DistinguishedName
@@ -355,7 +360,7 @@ Add `-WhatIf` to preview what would be deleted, or `-Force` to skip the confirma
 
 [Download Remove-Environment.ps1](/lab-scripts/Remove-Environment.ps1)
 
-Once built and verified, you have your own live copy of the environment every other tab describes. This is what you will investigate in the labs ahead.
+Once built and verified, you have your own live copy of the environment every other tab describes. That is the baseline. Challenges start from here.
 
 ### If the Script Will Not Run
 

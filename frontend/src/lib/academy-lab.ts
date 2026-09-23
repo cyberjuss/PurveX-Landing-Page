@@ -133,6 +133,48 @@ const BASELINE_GROUPS = [
   "Helpdesk",
 ];
 
+export function formatLabAge(iso: string): { exact: string; ago: string; hours: number } {
+  const t = new Date(iso).getTime();
+  const hours = Number.isNaN(t) ? NaN : (Date.now() - t) / 36e5;
+  if (Number.isNaN(hours)) return { exact: iso, ago: "unknown time", hours: NaN };
+  const mins = Math.round(hours * 60);
+  let ago = "just now";
+  if (mins >= 2 && mins < 60) ago = `${mins} minutes ago`;
+  else if (hours >= 1 && hours < 24) ago = `${Math.round(hours)} hour${Math.round(hours) === 1 ? "" : "s"} ago`;
+  else if (hours >= 24 && hours < 48) ago = "yesterday";
+  else if (hours >= 48) ago = `${Math.round(hours / 24)} days ago`;
+  return { exact: new Date(t).toISOString(), ago, hours };
+}
+
+const CTF_USERS = ["old.intern", "svc-backup-job"];
+const CTF_COMPUTERS = ["wm-wks07", "ops-wks03"];
+const CTF_GROUPS = ["all employees"];
+
+export function labEvidence(s: LabSnapshot) {
+  const users = new Set(s.users.map((u) => u.sam.toLowerCase()));
+  const groups = new Set(s.groups.map((g) => g.name.toLowerCase()));
+  const computers = new Set(s.computers.map((c) => c.name.toLowerCase()));
+  const missingCtf = [
+    ...CTF_USERS.filter((n) => !users.has(n)),
+    ...CTF_COMPUTERS.filter((n) => !computers.has(n)),
+    ...CTF_GROUPS.filter((n) => !groups.has(n)),
+  ];
+  const age = formatLabAge(s.capturedAt);
+  return {
+    domain: s.domain.dnsRoot || "unknown domain",
+    lastCaptured: age.exact,
+    lastCapturedAgo: age.ago,
+    hoursOld: age.hours,
+    counts: { users: s.users.length, groups: s.groups.length, computers: s.computers.length, ous: s.ous.length },
+    stockUsers: BASELINE_USERS.filter((b) => users.has(b.sam)).length,
+    ctfPlanted: missingCtf.length <= 1,
+    missingCtf,
+    lockedUsers: s.users.filter((u) => u.lockedOut).map((u) => u.sam),
+    disabledUsers: s.users.filter((u) => !u.enabled).map((u) => u.sam),
+    diffs: compareToBaseline(s),
+  };
+}
+
 export function compareToBaseline(s: LabSnapshot): string[] {
   const diffs: string[] = [];
   const users = new Map(s.users.map((u) => [u.sam.toLowerCase(), u]));
@@ -175,8 +217,15 @@ export function labStateForTool(s: LabSnapshot | null, query: string): string {
       note: "No lab snapshot yet. One is saved automatically when the student runs Build-Environment.ps1 downloaded from the Build This Lab page. Until then, ask them to check Active Directory Users and Computers or PowerShell. Do not invent lab values.",
     });
   }
-  const ageHours = Math.round((Date.now() - new Date(s.capturedAt).getTime()) / 36e5);
-  const base = { connected: true, capturedAt: s.capturedAt, ageHours, coachingNote: COACHING_NOTE };
+  const evidence = labEvidence(s);
+  const base = {
+    connected: true,
+    capturedAt: evidence.lastCaptured,
+    lastSynced: evidence.lastCapturedAgo,
+    hoursOld: Math.round(evidence.hoursOld),
+    ctfPlanted: evidence.ctfPlanted,
+    coachingNote: COACHING_NOTE,
+  };
   const q = query.trim().toLowerCase();
 
   if (q) {

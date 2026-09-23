@@ -5,13 +5,13 @@
 
 ### Overview
 
-This lab is hands-on. You open a capture in Wireshark and learn the three panes. You learn what makes traffic look suspicious before applying a single filter. Then you use three basic filters and "Follow → HTTP Stream" to turn a full conversation into something readable.
+Open a capture in Wireshark and learn the three panes. Learn what makes traffic look suspicious before you apply a single filter. Then use three basic filters and Follow → HTTP Stream to turn a full conversation into something readable.
 
 **[SCREENSHOT: Wireshark start screen, interface list (optional, for first-time users)]**
 
 ### What Wireshark Actually Shows You
 
-Every time a computer talks to another computer, it sends small chunks of data called packets. Wireshark records and displays those packets so you can see what was sent, to where, and when. That makes it the most important tool an analyst has for answering "what actually happened on the wire."
+Every time a computer talks to another computer, it sends small chunks of data called packets. Wireshark records and displays those packets so you can see what was sent, to where, and when. That is how you answer "what actually happened on the wire."
 
 Think of it as reading someone's mail log rather than their mail. A sealed envelope hides its contents, but who wrote to whom and how often is still visible. If a letter was never sealed, meaning the traffic was never encrypted, you can sometimes read the contents too.
 
@@ -27,7 +27,7 @@ Think of it as reading someone's mail log rather than their mail. A sealed envel
 
 ### What "Suspicious" Looks Like, Before You Even Filter
 
-Normal web browsing produces quick GET requests to a wide variety of sites. Malware traffic tends to look different, and a trained eye can often spot the pattern before running a single filter:
+Normal web browsing produces quick GET requests to a wide variety of sites. Malware traffic tends to look different. A trained eye can often spot the pattern before running a single filter:
 
 * Talking to one address repeatedly (Statistics → Conversations makes this visible immediately)
 * Sending data out, not just requesting pages in. Watch for POST requests
@@ -36,7 +36,7 @@ Normal web browsing produces quick GET requests to a wide variety of sites. Malw
 
 **[SCREENSHOT: Statistics → Conversations, sorted by bytes, highlight the heaviest conversation]**
 
-> **Fundamental #2:** Malware traffic is not invisible. It is traffic with a pattern that does not match normal use, and learning that pattern is most of the skill.
+> **Fundamental #2:** Malware traffic is not invisible. It is traffic with a pattern that does not match normal use. Learning that pattern is most of the skill.
 
 ### Getting There: Three Filters
 
@@ -67,4 +67,3 @@ This reassembles the full back-and-forth into something readable. This is the mo
 * What looked unusual: _________________________
 
 > **Discussion:** If this traffic pattern is visible to us only after the fact, what would it take to catch it while it is happening?
-

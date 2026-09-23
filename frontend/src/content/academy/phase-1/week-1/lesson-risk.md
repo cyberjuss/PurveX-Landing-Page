@@ -1,21 +1,25 @@
 ### Risk, Threats, and Vulnerabilities
 
-These three terms are often used interchangeably in casual conversation, but to an analyst they describe distinct, separable ideas, and the distinction is what makes a risk assessment possible in the first place.
+People mix these three words. An analyst does not. The split is what lets you rank a queue instead of treating every scary word as the same problem.
 
-**Vulnerability**: A weakness that could be exploited.
+**Vulnerability** is a weakness that could be exploited. The door is unlocked and that is not the same thing as someone walking through it:
 
-* Example: unpatched software, a misconfigured firewall, weak passwords, an open port
+- unpatched software
+- a misconfigured firewall
+- weak passwords
+- an open port
 
-**Threat**: Something, or someone, that could exploit a vulnerability.
+**Threat** is something or someone that could use that weakness. The burglar is on the block and that is not the same thing as your door being open:
 
-* Example: a hacker, malware, an insider, a natural disaster, a nation-state actor
+- a hacker
+- malware
+- an insider
+- a natural disaster
+- a nation-state actor
 
-**Risk**: The likelihood and impact of a threat actually exploiting a vulnerability.
+**Risk** is the likelihood and impact of a threat actually using a vulnerability. Analysts write it as **Risk = Threat × Vulnerability × Impact**. No vulnerability means no risk even if the threat exists. No threat means no risk even if the vulnerability exists.
 
-* Formula analysts use: **Risk = Threat × Vulnerability × Impact**
-* No vulnerability means no risk, even if the threat exists.
-* No threat means no risk, even if the vulnerability exists.
-* Risk is what a security program actually manages. Threats are rarely something you can eliminate outright, so the discipline is reducing risk instead, by closing vulnerabilities and lowering potential impact.
+A security program manages risk. You rarely eliminate threats outright. You close weaknesses and you lower what a hit would cost.
 
 <div class="academy-analogy">
 <span class="academy-analogy__tag">Think of it like a house on the block</span>
@@ -25,3 +29,11 @@ These three terms are often used interchangeably in casual conversation, but to 
 <li><strong>Risk</strong> is the chance the burglar finds and uses that unlocked door, and what it costs you if he does.</li>
 </ul>
 </div>
+
+When a ticket or an alert sounds urgent name the three parts before you escalate:
+
+- What is weak
+- Who or what could use it
+- What it would cost if they did
+
+If one of those is missing you are not looking at risk yet. You are looking at a word.

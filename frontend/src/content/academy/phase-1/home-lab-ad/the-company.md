@@ -1,6 +1,8 @@
 ### The Company
 
-Every organization has a structure, and that structure gives you a baseline. Every future alert gets judged against it. This tab covers the departments, the access levels, the data each one handles, and the clients Wealth Management serves. By the end, you will place any GovTechFinancial account into its department, know what its access level should and should not touch, and size up an alert's real stakes in seconds.
+This tab is the org chart you check a ticket against. Departments, access levels, the data each one handles, and the clients Wealth Management serves.
+
+Your job is to place any account in its department, know what its access level should and should not touch, and size the stakes when something looks off. Do not memorize the tables. Use them when a ticket names a person.
 
 ### The Org Chart
 
@@ -12,11 +14,19 @@ Every organization has a structure, and that structure gives you a baseline. Eve
 | Operations | Keeps day-to-day business running, handling settlements and internal processes that support the other departments. | No |
 | Finance and Accounting | Manages the organization's own internal finances, separate from the client funds Wealth Management handles. | Yes |
 
-Compliance, Wealth Management, and Finance and Accounting are flagged critical because they touch regulated data, client financial records, or the company's own financial systems. Every department has its own folder in Active Directory and its own group of users.
+Compliance, Wealth Management, and Finance and Accounting are flagged critical because they touch regulated data, client financial records, or the company's own financial systems.
+
+Every department has its own folder in Active Directory and its own group of users. When a ticket names a person check three things:
+
+- Department on this chart
+- Folder in the directory
+- Group in the directory
+
+If those three disagree stop. The chart is the baseline and the directory is what is true right now.
 
 ### Administrative Roles
 
-Access is split into three levels rather than concentrated in one all-powerful account, which limits how far a compromised login can reach.
+Access is split into three levels rather than concentrated in one all-powerful account. That limits how far a compromised login can reach.
 
 | Access Level | Controls | Cannot Touch |
 | ----- | ----- | ----- |
@@ -24,9 +34,11 @@ Access is split into three levels rather than concentrated in one all-powerful a
 | Level 2 (Server Admin) | Controls the servers, application and file servers. | The Domain Controller |
 | Level 3 (Helpdesk) | Handles workstations only, password resets, and local support. | Servers or the Domain Controller |
 
+A Helpdesk login should not touch servers or the Domain Controller. If it does that does not match this table and that is the first question you ask.
+
 ### Data Categories
 
-Knowing what kind of data lives where turns "an account was accessed" into "an account was accessed, and here is what was at risk."
+Knowing what data lives where changes the ticket. "An account was accessed" becomes "an account was accessed and here is what was at risk."
 
 | Data Category | Examples | Primarily Handled By |
 | :---- | :---- | :---- |
@@ -40,9 +52,11 @@ Knowing what kind of data lives where turns "an account was accessed" into "an a
 | Regulatory and audit material | Compliance filings, audit trails, GLBA and SOX documentation | Compliance |
 | System and access logs | Authentication logs, admin activity, account changes | IT |
 
+Ask which row is in play before you decide how urgent the ticket is. A group change in Wealth Management is not the same problem as the same change in Operations.
+
 ### Who Wealth Management Serves
 
-Wealth Management serves private clients rather than corporate accounts, and its book of business is meant to reflect a realistic advisory client base.
+Wealth Management serves private clients rather than corporate accounts. Its book of business is meant to look like a real advisory client base.
 
 | Client Type | Description |
 | ----- | ----- |
@@ -51,4 +65,4 @@ Wealth Management serves private clients rather than corporate accounts, and its
 | Trust and estate accounts | Accounts tied to trusts, wills, and estate planning |
 | Retirement-focused clients | Clients nearing or already in retirement |
 
-This client base is part of why Wealth Management sits on the critical list.
+That client base is why Wealth Management sits on the critical list. A login or group change there is not the same problem as the same event in Operations so size it against this table rather than how loud the ticket sounds.

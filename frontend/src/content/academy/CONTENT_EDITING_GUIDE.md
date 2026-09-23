@@ -55,9 +55,9 @@ Same banned-phrase list as `CONTENT_STYLE_GUIDE.md`. Additionally:
 - Direct language over throat-clearing: "Configure the domain controller and
   verify the required settings," not "In today's cybersecurity landscape,
   it's essential to understand domain controller configuration."
-- No semicolons.
-- No personal pronouns in resume-style or procedural instruction text.
-- Avoid excessive headings — only what the content actually needs.
+- No em dashes. No semicolons.
+- Instructor voice uses "you." The learner is a new hire on the desk.
+- Avoid excessive headings. Only what the content actually needs.
 
 ## Verifying a claim before keeping it
 

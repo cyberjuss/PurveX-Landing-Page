@@ -20,23 +20,37 @@
 .PARAMETER IncludeCTF
     Adds the optional ticket-queue challenge objects.
 
+.PARAMETER SyncOnly
+    Read the current lab and send a snapshot to PurveX Coach. Does not create
+    or change any objects. Use this after you work tickets so Coach can see
+    what you actually did.
+
+.PARAMETER InstallSync
+    Install a scheduled task that sends a snapshot every 15 minutes. The
+    Academy download does this automatically after a successful build.
+
+.PARAMETER UninstallSync
+    Remove the PurveX Coach sync task.
+
 .EXAMPLE
     ./Build-Environment.ps1 -WhatIf
+
+.EXAMPLE
+    ./Build-Environment.ps1 -SyncOnly
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
     [System.Security.SecureString]$InitialPassword,
     [switch]$IncludeCTF,
+    [switch]$SyncOnly,
+    [switch]$InstallSync,
+    [switch]$UninstallSync,
     [string]$PurvexKey = "",
     [string]$PurvexUrl = ""
 )
 
 Import-Module ActiveDirectory -ErrorAction Stop
-
-if (-not $InitialPassword) {
-    $InitialPassword = Read-Host -AsSecureString -Prompt "Initial password for all new lab accounts"
-}
 
 $domain   = Get-ADDomain
 $domainDN = $domain.DistinguishedName
@@ -180,11 +194,11 @@ function Ensure-CTFChallengeData {
     }
 
     Ensure-User `
-        -First "Casey" -Last "Reed" -SamAccountName "casey.reed" `
-        -Title "Help Desk Technician" -Department "IT" `
+        -First "Old" -Last "Intern" -SamAccountName "old.intern" `
+        -Title "Intern" -Department "IT" `
         -OUPath $DeptOUPaths["IT"].UsersOU `
         -Groups @("IT Users")
-    Ensure-UserDescription -SamAccountName "casey.reed" -Description "CTF-TICKET-105: New Help Desk hire. Mirror Priya Nair's actual group membership; do not trust job title alone."
+    Ensure-UserDescription -SamAccountName "old.intern" -Description "CTF-TICKET-1043: Leftover intern account. Remove this account when you onboard the new hire."
 
     Ensure-User `
         -First "Service" -Last "Backup" -SamAccountName "svc-backup-job" `
@@ -193,15 +207,20 @@ function Ensure-CTFChallengeData {
         -Groups @("IT Users")
     if ($PSCmdlet.ShouldProcess("svc-backup-job", "Apply service-account flags")) {
         Set-ADUser -Identity "svc-backup-job" `
-            -Description "CTF-TICKET-202: Runs the nightly backup job on IT-WKS01. Expected use: 01:00-03:00 only." `
+            -Description "Window not set" `
             -PasswordNeverExpires $true `
             -ChangePasswordAtLogon $false
         Write-Host "    ~ svc-backup-job service-account flags applied" -ForegroundColor Green
     }
 
-    Ensure-UserDescription -SamAccountName "jamie.torres" -Description "CTF-TICKET-101: New Wealth Management hire. Should receive firm-wide announcements but is missing one non-department group."
-    Ensure-UserDescription -SamAccountName "taylor.osei" -Description "CTF-TICKET-203: HR transfer notice says Compliance, but this account still needs OU verification before policy follows."
-    Ensure-UserDescription -SamAccountName "riley.kwan" -Description "CTF-TICKET-102: User reports lockout after repeated failed attempts. Decide unlock vs reset based on whether the password is remembered."
+    if ($PSCmdlet.ShouldProcess("riley.kwan", "Disable account for lockout ticket")) {
+        Disable-ADAccount -Identity "riley.kwan"
+        Write-Host "    ~ riley.kwan disabled" -ForegroundColor Green
+    }
+
+    Ensure-UserDescription -SamAccountName "jamie.torres" -Description "CTF-TICKET-1041: New Wealth Management hire. Should receive firm-wide announcements but is missing All Employees."
+    Ensure-UserDescription -SamAccountName "taylor.osei" -Description "CTF-TICKET-1045: HR transfer notice says Compliance. Account still lives in Operations until someone moves it."
+    Ensure-UserDescription -SamAccountName "riley.kwan" -Description "CTF-TICKET-1042: User reports lockout. Check the Account tab before you take the action they named."
 
     $wmWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $DeptOUPaths["Wealth Management"].DeptOU -Description "Wealth Management department workstation computer objects."
     Ensure-Computer -Name "WM-WKS07" -OUPath $wmWorkstationsOU -Description "CTF-TICKET-301: Wealth Management workstation named in a 02:00 successful-login alert for alex.rivera."
@@ -295,6 +314,81 @@ function Send-PurvexLabSnapshot {
         -Body ([System.Text.Encoding]::UTF8.GetBytes($json)) | Out-Null
 }
 
+$PurvexSyncTask = "PurveX Coach Lab Sync"
+
+function Get-PurvexSyncScriptPath {
+    $dir = Join-Path $env:ProgramData "PurveX"
+    if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+    return (Join-Path $dir "Build-Environment.ps1")
+}
+
+function Install-PurvexLabSync {
+    if (-not $PurvexKey -or -not $PurvexUrl) {
+        Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build This Lab first." -ForegroundColor Yellow
+        return $false
+    }
+    $source = $PSCommandPath
+    if (-not $source) { $source = $MyInvocation.MyCommand.Path }
+    if (-not $source -or -not (Test-Path $source)) {
+        Write-Host "Could not find this script on disk, so the sync task was not installed." -ForegroundColor Yellow
+        return $false
+    }
+    $dest = Get-PurvexSyncScriptPath
+    Copy-Item -LiteralPath $source -Destination $dest -Force
+    $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$dest`" -SyncOnly"
+    $trigger = New-ScheduledTaskTrigger -Once -At ((Get-Date).AddMinutes(1))
+    $trigger.Repetition.Interval = "PT15M"
+    $trigger.Repetition.Duration = "P3650D"
+    $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
+    Unregister-ScheduledTask -TaskName $PurvexSyncTask -Confirm:$false -ErrorAction SilentlyContinue
+    Register-ScheduledTask -TaskName $PurvexSyncTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "Sends a read-only Active Directory snapshot to PurveX Coach every 15 minutes. No passwords." | Out-Null
+    Write-Host "Coach will refresh from this DC every 15 minutes while the server is on." -ForegroundColor Green
+    return $true
+}
+
+function Uninstall-PurvexLabSync {
+    Unregister-ScheduledTask -TaskName $PurvexSyncTask -Confirm:$false -ErrorAction SilentlyContinue
+    Write-Host "PurveX Coach lab sync is off." -ForegroundColor DarkGray
+}
+
+if ($UninstallSync) {
+    Uninstall-PurvexLabSync
+    return
+}
+
+if ($InstallSync) {
+    if (Install-PurvexLabSync -and $PurvexKey -and $PurvexUrl) {
+        try {
+            Send-PurvexLabSnapshot -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN
+            Write-Host "Lab snapshot sent to PurveX Coach." -ForegroundColor Green
+        }
+        catch {
+            Write-Host "Could not send the lab snapshot: $($_.Exception.Message)" -ForegroundColor Red
+        }
+    }
+    return
+}
+
+if ($SyncOnly) {
+    if (-not $PurvexKey -or -not $PurvexUrl) {
+        Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build This Lab, then run: ./Build-Environment.ps1 -SyncOnly" -ForegroundColor Yellow
+        return
+    }
+    try {
+        Send-PurvexLabSnapshot -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN
+        Write-Host "Lab snapshot sent to PurveX Coach." -ForegroundColor Green
+    }
+    catch {
+        Write-Host "Could not send the lab snapshot: $($_.Exception.Message)" -ForegroundColor Red
+    }
+    return
+}
+
+if (-not $InitialPassword) {
+    $InitialPassword = Read-Host -AsSecureString -Prompt "Initial password for all new lab accounts"
+}
+
 Write-Host "`n== Top-level OUs ==" -ForegroundColor Cyan
 $departmentsOU  = Ensure-OU -Name "Departments"  -ParentDN $domainDN -Description "Top-level container for all department OUs."
 $accessLevelsOU = Ensure-OU -Name "AccessLevels" -ParentDN $domainDN -Description "Domain-wide access-level groups (Server Admins, Helpdesk), separate from department membership."
@@ -364,6 +458,10 @@ if ($IncludeCTF) {
 
 if ($PurvexKey -and $PurvexUrl -and -not $WhatIfPreference) {
     try { Send-PurvexLabSnapshot -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN } catch { }
+    try { Install-PurvexLabSync | Out-Null } catch {
+        Write-Host "Could not start automatic Coach sync: $($_.Exception.Message)" -ForegroundColor Yellow
+        Write-Host "You can still refresh by hand: ./Build-Environment.ps1 -SyncOnly" -ForegroundColor DarkGray
+    }
 }
 
 Write-Host "`nDone. Verify with: Get-ADOrganizationalUnit -Filter * | Where-Object DistinguishedName -like '*Departments*'" -ForegroundColor Cyan

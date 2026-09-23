@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { PhaseDef, WeekDef } from "@/lib/academy-content";
 import { READINESS_PATH, useResults } from "@/lib/academy-client";
+import { challengeHref, lastTouchedMission } from "@/lib/academy-missions";
 import { LEVELS, summarize } from "@/lib/academy-score";
 import { accountFirstName, useAcademyAccount } from "./academy-account";
 import { useAcademyProgress } from "./academy-progress";
@@ -13,19 +14,19 @@ const PHASE_COPY: { slug: string; href: string; title: string; body: string }[] 
     slug: "phase-1",
     href: "/academy/phase-1",
     title: "Fundamentals",
-    body: "The CIA triad through access control, then a home lab where you run an Active Directory domain yourself.",
+    body: "Name what failed then stand up GovTech Financial and work the directory yourself.",
   },
   {
     slug: "phase-2",
     href: "/academy/phase-2",
     title: "Threat Detection & Log Analysis",
-    body: "SIEM fundamentals and log analysis, building toward detection engineering.",
+    body: "An alert fires. Read the host, the account, and the log before you decide what happened.",
   },
   {
     slug: "phase-3",
     href: "/academy/phase-3",
     title: "Incident Response",
-    body: "Triage and investigation through containment and writing it up.",
+    body: "Triage, investigate, contain, and write it up.",
   },
 ];
 
@@ -40,10 +41,12 @@ function pad(n: number) {
 
 export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
   const { isComplete, completedCount, lastStop } = useAcademyProgress();
-  const readiness = summarize(useResults());
+  const results = useResults();
+  const readiness = summarize(results);
   const firstName = accountFirstName(useAcademyAccount());
   const returning = Boolean(lastStop || completedCount > 0 || readiness.finished > 0);
   const greeting = returning ? "Welcome back" : "Welcome";
+  const lastMission = lastTouchedMission(results);
 
   let firstOpen: { href: string; title: string; phaseSlug: string; entrySlug: string } | null = null;
   for (const copy of PHASE_COPY) {
@@ -64,17 +67,28 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
     : firstOpen
       ? { ...firstOpen, kind: "start" as const }
       : null;
+  const go = lastMission ? challengeHref(lastMission.challenge, results) : pin?.href;
 
   return (
     <div className="rd">
       <header className="rd-mast">
-        <div className="ax-titleblock">
-          <h1>{firstName ? `${greeting}, ${firstName}` : greeting}</h1>
-          <p>A hands-on path from security fundamentals to incident response, using real logs and real tools in real labs.</p>
+        <div className="ax-welcome">
+          <div className="ax-titleblock">
+            <h1>{firstName ? `${greeting}, ${firstName}` : greeting}</h1>
+            <p>Work the same problems a new hire sees. Fundamentals first then a live directory then alerts and logs.</p>
+          </div>
+          <Link href={READINESS_PATH} className="ax-status__score">
+            <span className="rd-kicker">Readiness</span>
+            <strong>
+              {readiness.finished === 0 ? "––" : readiness.overall}
+              <small>/100</small>
+            </strong>
+            <em>{LEVELS[readiness.level].label}</em>
+          </Link>
         </div>
         <div className="ax-status">
           {pin ? (
-            <Link href={pin.href} className="ax-status__next">
+            <Link href={go ?? pin.href} className="ax-status__next">
               <span className="rd-kicker">{pin.kind === "last" ? "Last stop" : "Start here"}</span>
               <strong>
                 {pin.title} <ArrowRight className="h-4 w-4" />
@@ -86,11 +100,6 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
               <strong>Published lessons complete</strong>
             </div>
           )}
-          <Link href={READINESS_PATH} className="ax-status__score">
-            <span className="rd-kicker">Readiness</span>
-            <strong>{readiness.finished === 0 ? "––" : readiness.overall}</strong>
-            <em>{LEVELS[readiness.level].label}</em>
-          </Link>
         </div>
       </header>
 
@@ -102,7 +111,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
           const done = phase ? live.filter((e) => isComplete(phase.slug, e.slug)).length : 0;
           const soon = live.length === 0;
           const here = Boolean(pin && phase && pin.phaseSlug === phase.slug);
-          const href = here ? pin!.href : copy.href;
+          const href = here && go ? go : here ? pin!.href : copy.href;
           const row = (
             <>
               <span className="ax-path__n">{pad(i + 1)}</span>

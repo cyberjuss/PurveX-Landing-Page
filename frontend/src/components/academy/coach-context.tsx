@@ -1,10 +1,12 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { academyFetch } from "@/lib/academy-client";
+import { academyFetch, RESULTS_CHANGED_EVENT, RESULTS_UPDATED_EVENT } from "@/lib/academy-client";
+import { DEFAULT_COACH_MODE, modeFromReport, type CoachMode } from "@/lib/academy-coach-mode";
+import { COACH_SHOT_ASK, type CoachImage } from "@/lib/academy-coach-media";
 import { loadResults } from "@/lib/academy-score";
 
-export type CoachMessage = { role: "user" | "assistant"; content: string };
+export type CoachMessage = { role: "user" | "assistant"; content: string; images?: CoachImage[] };
 
 type CoachState = {
   messages: CoachMessage[];
@@ -15,8 +17,11 @@ type CoachState = {
   error: string | null;
   modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
-  send: (text: string) => void;
+  mode: CoachMode;
+  setMode: (mode: CoachMode) => void;
+  send: (text: string, images?: CoachImage[]) => void;
   clear: () => void;
+  resetToday: () => Promise<void>;
   // Sends a question from anywhere in the Academy. It goes to the inline
   // coach panel when one is on the page, otherwise it opens the pop-up.
   ask: (text: string) => void;
@@ -39,13 +44,36 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
   const [limit, setLimit] = useState(20);
   const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [mode, setModeState] = useState<CoachMode>(DEFAULT_COACH_MODE);
   const inlineRef = useRef<HTMLElement | null>(null);
   const busyRef = useRef(false);
   const messagesRef = useRef<CoachMessage[]>([]);
+  const pickedRef = useRef(false);
 
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
+
+  useEffect(() => {
+    const apply = () => {
+      if (pickedRef.current) return;
+      setModeState(modeFromReport(loadResults()));
+    };
+    apply();
+    window.addEventListener(RESULTS_CHANGED_EVENT, apply);
+    window.addEventListener(RESULTS_UPDATED_EVENT, apply);
+    window.addEventListener("storage", apply);
+    return () => {
+      window.removeEventListener(RESULTS_CHANGED_EVENT, apply);
+      window.removeEventListener(RESULTS_UPDATED_EVENT, apply);
+      window.removeEventListener("storage", apply);
+    };
+  }, []);
+
+  const setMode = useCallback((next: CoachMode) => {
+    pickedRef.current = true;
+    setModeState(next);
+  }, []);
 
   useEffect(() => {
     academyFetch("/academy/api/coach")
@@ -60,8 +88,9 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const send = useCallback(
-    async (text: string) => {
-      const question = text.trim();
+    async (text: string, images?: CoachImage[]) => {
+      const shots = images?.slice(0, 2) ?? [];
+      const question = text.trim() || (shots.length ? COACH_SHOT_ASK : "");
       if (!question || busyRef.current) return;
       if (remaining === 0) {
         setError(`You have used all ${limit} coach questions for today. They reset tomorrow.`);
@@ -70,14 +99,14 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
       busyRef.current = true;
       setBusy(true);
       setError(null);
-      const history = messagesRef.current;
-      const next = [...history, { role: "user" as const, content: question }];
+      const history = messagesRef.current.map(({ role, content }) => ({ role, content }));
+      const next = [...messagesRef.current, { role: "user" as const, content: question, images: shots.length ? shots : undefined }];
       setMessages(next);
       try {
         const res = await academyFetch("/academy/api/coach", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: question, history, results: loadResults() }),
+          body: JSON.stringify({ message: question, images: shots, history, results: loadResults(), mode }),
         });
         const data = await res.json();
         if (typeof data.remaining === "number") setRemaining(data.remaining);
@@ -93,7 +122,7 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
         setBusy(false);
       }
     },
-    [remaining, limit]
+    [remaining, limit, mode]
   );
 
   const ask = useCallback(
@@ -118,9 +147,17 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
     setError(null);
   }, []);
 
+  const resetToday = useCallback(async () => {
+    const r = await academyFetch("/academy/api/coach?reset=1");
+    const data = r.ok ? await r.json() : null;
+    if (typeof data?.remaining === "number") setRemaining(data.remaining);
+    setMessages([]);
+    setError(null);
+  }, []);
+
   return (
     <CoachContext.Provider
-      value={{ messages, busy, enabled, remaining, limit, error, modalOpen, setModalOpen, send, clear, ask, registerInline }}
+      value={{ messages, busy, enabled, remaining, limit, error, modalOpen, setModalOpen, mode, setMode, send, clear, resetToday, ask, registerInline }}
     >
       {children}
     </CoachContext.Provider>

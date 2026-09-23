@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, ChevronLeft, ChevronRight, Flag, FlaskConical, Wrench } from "lucide-react";
 import { Markdown, splitMarkdownIntoSlides } from "@/lib/markdown";
+import { CHALLENGE_PATHS, MISSION_CATALOG } from "@/lib/academy-missions";
 import { QuizBlock } from "./quiz";
 import { LabCarousel } from "./lab-carousel";
 import type { Quiz } from "@/content/academy/quizzes";
@@ -21,6 +22,19 @@ type Item =
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
+}
+
+function slugify(label: string) {
+  return label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function indexForHash(hash: string, items: Item[]): number {
+  const raw = decodeURIComponent(hash.replace(/^#/, "")).toLowerCase();
+  if (!raw) return 0;
+  const mission = MISSION_CATALOG[raw];
+  const want = mission ? CHALLENGE_PATHS[mission.challenge].tab : raw;
+  const i = items.findIndex((it) => slugify(it.label) === want);
+  return i >= 0 ? i : 0;
 }
 
 // A lab used to render as its own always-visible card below this panel --
@@ -58,6 +72,27 @@ export function SectionTabs({
   // current section's name so context isn't lost while the list is hidden.
   const [collapsed, setCollapsed] = useState(false);
   const current = items[active];
+
+  useEffect(() => {
+    const apply = () => setActive(indexForHash(window.location.hash, items));
+    apply();
+    window.addEventListener("hashchange", apply);
+    return () => window.removeEventListener("hashchange", apply);
+    // items is rebuilt each render from the same labels; hash is the trigger.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const id = window.location.hash.replace(/^#/, "");
+    if (!MISSION_CATALOG[id]) return;
+    const jump = () => {
+      document
+        .querySelector<HTMLElement>(`.ad-mission[data-id="${CSS.escape(id)}"]`)
+        ?.scrollIntoView({ block: "start", behavior: "smooth" });
+    };
+    const t = window.setTimeout(jump, 60);
+    return () => window.clearTimeout(t);
+  }, [active]);
 
   const panel =
     current.kind === "quiz" ? (

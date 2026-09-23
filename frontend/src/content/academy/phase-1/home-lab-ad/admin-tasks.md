@@ -5,20 +5,43 @@
 
 ### What IT Actually Does Here, Day to Day
 
-Almost nobody builds a domain from scratch. In a real IT job, Active Directory is already standing, with the OUs and accounts in place. The day is filled with a short list of tasks that repeat constantly. You find an account, reset a password, move someone between departments, or set up a service account. This tab walks through each one using GovTechFinancial's own accounts, so by the end you will have done every task, not just read about it.
+Almost nobody builds a domain from scratch. In a real IT job Active Directory is already standing with the OUs and accounts in place. The day is a short list of tasks that repeat:
+
+- Find an account
+- Reset a password
+- Move someone between departments
+- Set up a service account
+
+This tab walks through each one using GovTech Financial's own accounts. Do the task then confirm the directory shows what you think it shows because the click is not the finish. The check is.
 
 ### Finding Users and Computers
 
-The fastest way to locate an account is the **Find** dialog, not scrolling through OUs. Right-click the domain or any OU in Active Directory Users and Computers and choose **Find**. Then pick what you are looking for from the dropdown. Use Users, Contacts, and Groups for a person, or Computers for a machine.
+The fastest way to locate an account is the **Find** dialog rather than scrolling through OUs. Right-click the domain or any OU in Active Directory Users and Computers and choose **Find**. Then pick what you are looking for from the dropdown:
 
-You can search by first name, last name, or username. Try it with `jordan.ellis`, the Staff Accountant in Finance and Accounting. The account turns up in seconds no matter which OU you started from. You will use this tool constantly, so get comfortable with it first.
+- Users, Contacts, and Groups for a person
+- Computers for a machine
+
+Search by:
+
+- first name
+- last name
+- username
+
+Try it with `jordan.ellis`, the Staff Accountant in Finance and Accounting. The account turns up in seconds no matter which OU you started from so get comfortable with it first because you will use this tool constantly.
+
+Open the account after you find it:
+
+- Read the folder
+- Read Member Of
+
+Finding the object is only the start.
 
 ### Resetting and Unlocking a Password
 
 These are two different problems that get confused constantly.
 
-* **Account locked.** The user remembers their password but mistyped it too many times, and AD locked the account as a precaution. Open **Properties → Account**, check **Unlock account**, and click Apply. The password doesn't change.
-* **Password forgotten.** The user genuinely doesn't know it anymore. Right-click the account and choose **Reset Password**. Set a new temporary password and check **User must change password at next logon**. If the account is also locked, check **Unlock the user's account** in the same dialog.
+* **Account locked.** The user remembers their password but mistyped it too many times so AD locked the account as a precaution. Open **Properties → Account**, check **Unlock account**, and click Apply. The password does not change.
+* **Password forgotten.** The user does not know it anymore. Right-click the account and choose **Reset Password**, set a new temporary password, and check **User must change password at next logon**. If the account is also locked check **Unlock the user's account** in the same dialog.
 
 <div class="ad-decision">
 <div class="ad-decision__q">User calls in locked out.<br>Does she remember her password?</div>
@@ -40,47 +63,88 @@ These are two different problems that get confused constantly.
 </div>
 </div>
 
-Say Riley Kwan, an Operations Analyst, calls in locked out after three failed logon attempts. If she remembers her password, unlock the account. If she has forgotten it, reset it and force a change at next logon. A temporary password is never meant to be a long-term credential.
+Say Riley Kwan in Operations calls in locked out after three failed logon attempts. If she remembers her password unlock the account. If she has forgotten it reset it and force a change at next logon. A temporary password is never a long-term credential.
+
+Do not treat "locked out" as the same job as "forgot my password." Check the Account tab before you change anything. Then open it again and confirm the box you meant to clear is actually cleared.
 
 ### Editing a User's Profile
 
-Most day-to-day edits happen on the account's **Properties** dialog. Examples include a new **Description** after a role change, a new phone number, or a new title after a promotion. These changes are small, but they keep an account's profile trustworthy as a source of truth.
+Most day-to-day edits happen on the account's **Properties** dialog:
 
-Adding someone to a distribution or security group works the same way. Open **Properties → Member Of**, click **Add**, type the group name, and confirm. Say a new hire in Wealth Management, Jamie Torres, needs firm-wide announcements. Add her to the all-employees distribution list the same way you would add anyone to `Wealth Management Users`.
+- A new **Description** after a role change
+- A new phone number
+- A new title after a promotion
+
+These are small changes that keep the profile trustworthy.
+
+Adding someone to a group works the same way:
+
+- Open **Properties → Member Of**
+- Click **Add**
+- Type the group name
+- Confirm
+
+Say Jamie Torres in Wealth Management needs firm-wide announcements. Add her to the all-employees list the same way you would add anyone to `Wealth Management Users`.
+
+Read Member Of after you click OK. If Jamie is not on the list, the ticket is not done.
 
 ### Moving a User to a Different OU
 
-When someone transfers, their account has to move with them, because department policies depend on OU membership. Right-click the account, choose **Move**, and select the destination OU.
+When someone transfers their account has to move with them because department policies depend on OU membership:
 
-Picture Taylor Osei transferring from Operations into Compliance. Find the account, choose **Move**, and select `OU=Users,OU=Compliance,OU=Departments`. Then open that OU and confirm Taylor shows up there. A transfer that updates the job title but never moves the AD object is a common mistake. It leaves the old department's policies in effect without anyone noticing.
+- Right-click the account
+- Choose **Move**
+- Select the destination OU
+
+Picture Taylor Osei transferring from Operations into Compliance. Find the account, choose **Move**, and select `OU=Users,OU=Compliance,OU=Departments`. Then open that OU and confirm Taylor shows up there.
+
+A transfer that updates the job title but never moves the AD object is a common mistake because the old department's policies stay in effect. An HR notice is not a move. The folder is the move so confirm the folders above the account before you close it.
 
 ### Advanced Features and the Attribute Editor
 
-By default, Active Directory Users and Computers hides a lot. Go to **View → Advanced Features** to turn on the extra tabs, most usefully the **Attribute Editor**, which exposes every raw attribute on an object instead of just the friendly summary fields.
+By default Active Directory Users and Computers hides a lot. Go to **View → Advanced Features** to turn on the extra tabs. The useful one is **Attribute Editor** because it shows every raw attribute on an object not just the friendly summary fields.
 
-This matters for investigation. Attributes like `whenCreated`, `lastLogon`, `pwdLastSet`, and `memberOf` turn "this account looks suspicious" into "this account authenticated at 2 AM from a workstation it has never used before." Filter the Attribute Editor to **Show only attributes that have values** so you do not scroll past dozens of blank fields to find the two that matter.
+This matters for investigation:
+
+- `whenCreated`
+- `lastLogon`
+- `pwdLastSet`
+- `memberOf`
+
+A hunch becomes a time, a group list, or a last logon. Filter the Attribute Editor to **Show only attributes that have values** so you are not scrolling past blank fields.
+
+Do not guess from the display name when the Attribute Editor can show you the time.
 
 ### Managing Computer Objects
 
-Computers are managed the same way users are, through their own **Properties** dialog. IT-WKS01 is a good one to practice on. Check **Member Of** to see which security groups it belongs to. A common real-world example is a group that grants automatic Wi-Fi or VPN access. Then check the Attribute Editor for last logon time. It shows whether a machine is active or dormant, which matters once you are investigating instead of administering.
+Computers are managed the same way users are through their own **Properties** dialog. IT-WKS01 is a good one to practice on. Check **Member Of** to see which security groups it belongs to. A common example is a group that grants automatic Wi-Fi or VPN access. Then check the Attribute Editor for last logon time because it shows whether a machine is active or dormant and that matters once you are investigating.
+
+Know where IT-WKS01 lives first then read the groups then read last logon. Same order as a person.
 
 ### Service Accounts
 
-A **service account** gives an identity to a service, like a scheduled task or an automated process, rather than a person. That's why an account can "log on" every night at 2 AM with nobody at a keyboard.
+A **service account** gives an identity to a service rather than a person:
 
-Best practice, every time:
+- A scheduled task
+- An automated process
 
-* **Dedicated OU.** Keep service accounts out of the same OU as real people, so you can apply different policy and spot them at a glance. GovTechFinancial doesn't have one yet, which means creating `OU=ServiceAccounts` under the domain root is itself good practice.
-* **Naming convention.** Prefix it so it's unmistakable at a glance, for example `svc-` or a leading `$`: `svc-backup-job` is instantly recognizable as a service account, while `j.smith` is not.
-* **Password never expires, and don't force a change.** A service account can't type in a new password when the old one expires, so `PasswordNeverExpires = $true` and `ChangePasswordAtLogon = $false` are both intentional here, the opposite of what you'd set for a person.
-* **Restrict logon hours if the job is scheduled.** If a backup job only ever needs to run overnight, the account's **Logon Hours** should reflect that. Anything outside that window becomes an instant red flag.
-* **Always fill in the Description.** "Runs the nightly backup job on IT-WKS01" saves the next person, possibly you in six months, from guessing what breaks if this account gets disabled.
+That is why an account can log on every night at 2 AM with nobody at a keyboard.
+
+Best practice every time:
+
+* **Dedicated OU.** Keep service accounts out of the same OU as real people. You can apply different policy and spot them at a glance. GovTechFinancial does not have one yet. Creating `OU=ServiceAccounts` under the domain root is itself good practice.
+* **Naming convention.** Prefix it so it is unmistakable. `svc-` or a leading `$`. `svc-backup-job` is a service account. `j.smith` is not.
+* **Password never expires. Do not force a change.** A service account cannot type in a new password when the old one expires. `PasswordNeverExpires = $true` and `ChangePasswordAtLogon = $false` are intentional here. The opposite of what you set for a person.
+* **Restrict logon hours if the job is scheduled.** If a backup job only needs to run overnight the account's **Logon Hours** should reflect that. Anything outside that window is a red flag.
+* **Always fill in the Description.** "Runs the nightly backup job on IT-WKS01" saves the next person from guessing what breaks if this account gets disabled.
+
+If you open an account and the name, the OU, and the Description do not all say service treat it like a person until you prove otherwise.
 
 ### Onboarding by Mirroring Group Membership
 
-The fastest and least error-prone way to onboard someone into an existing role is to copy a peer's group membership. Say GovTechFinancial hires a second Help Desk Technician alongside Priya Nair. Open Priya's **Member Of** tab and note every group listed. Then open the new hire's **Member Of** tab and add the same ones. Keep both Properties windows open side by side so you do not miss one.
+The fastest way to onboard someone into an existing role is to copy a peer's group membership. Say GovTechFinancial hires a second Help Desk Technician alongside Priya Nair. Open Priya's **Member Of** tab. Note every group listed. Then open the new hire's **Member Of** tab and add the same ones. Keep both Properties windows open side by side so you do not miss one.
 
-Check this during an investigation too. An account with more group memberships than its peers, and no onboarding record to explain why, is worth asking about.
+Check this during an investigation too. An account with more group memberships than its peers and no onboarding record to explain why is worth asking about. Compare against The Environment tab. Not against the ticket.
 
 <style>
 .ad-decision { margin: 1.25rem 0; }

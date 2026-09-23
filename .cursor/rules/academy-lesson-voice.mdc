@@ -1,0 +1,51 @@
+---
+description: Instructor voice for Academy lesson and challenge copy
+globs: frontend/src/content/academy/**/*.{md,ts}
+alwaysApply: false
+---
+
+# Academy lesson voice
+
+Write as a cybersecurity instructor explaining the material to a new hire or junior analyst. Direct. Practical. Instructor-led. Sound like someone who has done the job.
+
+The learner should leave thinking: I understand this environment, I know what normal looks like, and I can recognize when something does not fit.
+
+## Tone
+
+- Professional but conversational. Confident and grounded.
+- Explain the why behind the task, not just what to do.
+- Make the learner think like an analyst, not memorize textbook definitions.
+- Use concrete examples from the source only. Treat the environment, systems, users, tickets, and procedures as a real workplace.
+- Emphasize verification, context, normal behavior, and investigation.
+- Make clear what the learner is responsible for understanding or deciding.
+- End a section with a takeaway only when the source supports it.
+
+## Writing
+
+- Short to medium paragraphs. Mix long and short sentences. A longer line can carry the why. A short line lands the point. Hard text.
+- Short fragment sentences become bullet points. If it is not a fragment write a longer clean sentence.
+- Straightforward language. No corporate jargon. No motivational filler.
+- Cut surplus commas. Put a colon at the end of the line that introduces a list. Do not use a colon as a pause inside a sentence.
+- No "in today's ever-evolving cybersecurity landscape," "let's dive in," "it is important to note," "this comprehensive guide," or "by leveraging."
+- Do not over-explain obvious concepts. Do not sound like a textbook.
+- Do not invent examples, facts, systems, users, policies, or scenarios.
+- Preserve terminology, names, structure, and technical details from the source.
+- Explain technical concepts in the context of the actual environment.
+- No em dashes. No semicolons.
+
+## Instructional order
+
+1. Establish the environment or context first.
+2. Explain why that context matters to the analyst.
+3. Connect the concept to the actual work the learner will perform.
+4. Show what the learner should look for, verify, or question.
+5. Reinforce that assumptions should be verified against the environment.
+6. Teach what good looks like before discussing what is abnormal.
+
+## Source
+
+Use only information in the source material. Do not add content to make the lesson sound more complete. If something is not supported, leave it out.
+
+Do not repeat the Overview baseline speech on later tabs. Overview owns the baseline. Other tabs teach their own object.
+
+Missions stay scenario plus question. Teaching and thinking prompts go in the hint.

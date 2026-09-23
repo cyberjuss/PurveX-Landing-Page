@@ -18,7 +18,7 @@ export const SKILLS: Record<Skill, { label: string; advice: string }> = {
   },
   security: {
     label: "Security Response",
-    advice: "Redo the INC-1046 incident tickets. Practice reading log evidence and choosing to contain first and keep the evidence.",
+    advice: "Work The 2 AM Login in Phase 2 — Log Analysis. Practice reading log evidence and choosing to contain first and keep the evidence.",
   },
 };
 
@@ -46,7 +46,7 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "tq-10": "security",
 };
 
-export type MissionResult = { solved: boolean; wrong: number; hint: boolean };
+export type MissionResult = { solved: boolean; wrong: number; hint: boolean; at?: string };
 export type Results = Record<string, MissionResult>;
 
 export const RESULTS_STORAGE_KEY = "academy-results-v1";
@@ -144,10 +144,12 @@ export function sanitizeResults(raw: unknown): Results {
   for (const [id, value] of Object.entries(raw as Record<string, unknown>)) {
     if (!(id in MISSION_SKILLS) || !value || typeof value !== "object") continue;
     const v = value as Record<string, unknown>;
+    const at = typeof v.at === "string" && !Number.isNaN(new Date(v.at).getTime()) ? new Date(v.at).toISOString() : undefined;
     out[id] = {
       solved: v.solved === true,
       wrong: Math.min(3, Math.max(0, Math.floor(Number(v.wrong) || 0))),
       hint: v.hint === true,
+      ...(at ? { at } : {}),
     };
   }
   return out;

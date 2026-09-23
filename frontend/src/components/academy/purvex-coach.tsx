@@ -57,10 +57,30 @@ export function PurvexCoach() {
     >
       <style>{`
         [data-pc-root] .pc-head { display: flex; align-items: center; justify-content: space-between; }
-        [data-pc-root] .pc-prompts { list-style: none; margin: 0; padding: 0; }
-        [data-pc-root] .pc-prompt { display: block !important; width: 100%; text-align: left; }
-        [data-pc-root] .pc-compose__box { display: flex; align-items: center; }
-        [data-pc-root] .pc-compose__box input { appearance: none; -webkit-appearance: none; }
+        [data-pc-root] .pc-tickets { list-style: none; margin: 0; padding: 0; }
+        [data-pc-root] .pc-ticket { display: flex !important; align-items: center; width: 100%; text-align: left; }
+        [data-pc-root] .pc-ticket i { display: block; width: 3px; height: 22px; }
+        [data-pc-root] textarea.pc-dock__field {
+          display: block !important; width: 100% !important; resize: none !important;
+          appearance: none !important; border-radius: 0 !important;
+          background: var(--pc-bg) !important; color: var(--pc-text) !important;
+          border: 1px solid var(--pc-line) !important; box-shadow: none !important;
+        }
+        [data-pc-root] .pc-dock__send {
+          display: flex !important; width: 100%; border-radius: 0 !important;
+          background: var(--pc-text) !important; color: var(--pc-bg) !important;
+        }
+        [data-pc-root] .pc-dock__tools { display: flex; gap: 8px; margin: 0 0 10px; }
+        [data-pc-root] .pc-dock__tool {
+          flex: 1; height: 36px; border: 1px solid var(--pc-line); background: transparent;
+          color: var(--pc-text-2);
+        }
+        [data-pc-root] .pc-shots { display: flex; gap: 8px; margin: 0 0 10px; }
+        [data-pc-root] .pc-shot { position: relative; width: 72px; height: 52px; border: 1px solid var(--pc-line); }
+        [data-pc-root] .pc-shot__img { display: block; width: 72px; height: 52px; object-fit: cover; }
+        [data-pc-root] .pc-code { padding: 2px 6px; border: 1px solid var(--pc-line); background: var(--pc-bg-2); }
+        [data-pc-root] .pc-term { display: block; border: 1px solid var(--pc-line); background: var(--pc-bg-2); }
+        [data-pc-root] .pc-term pre { display: block; padding: 12px; margin: 0; }
         [data-pc-root] button:active { transform: none; }
       `}</style>
       <div className="pc-backdrop" onClick={() => setModalOpen(false)} />

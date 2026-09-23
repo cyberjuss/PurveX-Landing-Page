@@ -5,13 +5,25 @@
 
 ### Active Directory's Building Blocks
 
-You need to know four objects well: **Organizational Units**, **Containers**, **Security Groups**, and **Group Policy Objects (GPOs)**. Two of them look identical in the console but behave nothing alike. By the end of this tab, you will look at any object in Active Directory and know what it is.
+You need four objects cold because every ticket in this domain is built from them:
+
+- **Organizational Units**
+- **Containers**
+- **Security Groups**
+- **Group Policy Objects (GPOs)**
+
+Two of them look the same in the console but they do not behave the same. Look at any object in this domain and know what it is, what it can hold, and what question it answers.
+
+Confirm both:
+
+- Location is not access
+- A folder is not a group
 
 ### Organizational Units (OUs)
 
-An **OU** is a folder for organizing accounts. It is also a boundary, because permissions and Group Policy attach to it directly.
+An **OU** is the folder an account lives in and the boundary you attach work to. Permissions and Group Policy link to it directly so the folder is not decoration. It is how this domain records a department and how that department is governed.
 
-GovTechFinancial's five departments are each their own OU, each nesting a `Users` sub-OU one level deeper (IT also gets a `Workstations` sub-OU):
+GovTechFinancial's five departments are each their own OU. Each one nests a `Users` sub-OU one level deeper and IT also gets a `Workstations` sub-OU because the one client machine in this lab belongs under IT rather than next to people.
 
 ```
 govtechfinancial.local
@@ -32,15 +44,17 @@ govtechfinancial.local
      └─ Group: Helpdesk       (Level 3)
 ```
 
-Every account lives in exactly one OU, which is its department. That is the account's location, and it is separate from its access.
+Every account lives in exactly one OU and that OU is its department. That is location not access.
 
-`AccessLevels` sits outside `Departments` on purpose, since `Server Admins` and `Helpdesk` (Level 2/3) grant domain-wide access rather than department membership.
+`AccessLevels` sits outside `Departments` on purpose because `Server Admins` and `Helpdesk` (Level 2/3) grant domain-wide access rather than department membership. Those groups live in their own folder so you do not confuse a privilege list with a department.
 
-You can also delegate control over a single OU. Helpdesk, for example, can reset passwords only for accounts inside `OU=Users,OU=IT`, leaving the rest of the domain untouched.
+You can also delegate control over a single OU so Helpdesk can reset passwords only for accounts inside `OU=Users,OU=IT` and leave the rest of the domain untouched.
+
+When a ticket names a person find the folder first. If Alex is not under IT the chart and the directory already disagree.
 
 ### Containers
 
-A **Container** looks like an OU in the console, same folder icon, but it's a different kind of object.
+A **Container** looks like an OU in the console with the same folder icon but it is a different kind of object. The icon will fool you if you stop at appearance.
 
 | | Organizational Unit | Container |
 | ----- | ----- | ----- |
@@ -49,15 +63,31 @@ A **Container** looks like an OU in the console, same folder icon, but it's a di
 | Can you create your own? | Yes, anywhere | No, fixed set built by Windows |
 | Examples in this domain | `OU=IT`, `OU=Compliance` | `CN=Users`, `CN=Computers` |
 
-The default `Users` and `Computers` folders are Containers, not OUs. That is why the build script moves every account into a real OU. An account left in a Container can never be targeted by Group Policy.
+The default `Users` and `Computers` folders are Containers not OUs. Windows built those two folders and they stay where they are.
+
+You cannot do these on a Container:
+
+- Create your own
+- Delegate control
+- Link a GPO
+
+That is why the build script moves every account into a real OU. An account left in a Container can never be targeted by Group Policy so if you find someone there that is not where they belong. Do not treat the default folders as a department.
 
 ### Security Groups
 
-A **Security Group** is a list of accounts, used to grant permissions or apply Group Policy to exactly who needs it, regardless of OU.
+A **Security Group** is a list of accounts you use to grant permissions or apply Group Policy to exactly who needs them no matter which OU those accounts live in. The list can cross departments. The folder cannot.
 
-**A group isn't a place an account lives, it's a list an account is added to.** An account has exactly one OU, but any number of groups.
+**A group is not a place an account lives. It is a list an account is added to.** An account has exactly one OU and can sit in any number of groups.
 
-Every department has a standard access group, such as `IT Users` or `Compliance Users`. IT also has a second group with more privilege, called `IT Admins`.
+Every department has a standard access group:
+
+- `IT Users`
+- `Compliance Users`
+- `Wealth Management Users`
+- `Operations Users`
+- `Finance Accounting Users`
+
+IT also has a second group with more privilege called `IT Admins`. That extra group is how two people in the same folder end up with different access.
 
 <div class="ad-diagram">
 <div class="ad-diagram__ou">
@@ -77,24 +107,42 @@ Every department has a standard access group, such as `IT Users` or `Compliance 
 </div>
 </div>
 
-Two accounts can share an OU and still have different access. The OU tells you where an account lives. The group tells you what it can do. Checking only one leaves an investigation half done.
+Two accounts can share an OU and still have different access. Alex and Priya both live under IT but only Alex is in IT Admins so the folder alone never tells you what they can do.
+
+The OU tells you where an account lives and the group tells you what it can do. Checking only one leaves the job half done so open Member Of then look at the folder. Both have to match what this environment says they should be.
 
 ### Group Policy Objects (GPOs)
 
-A **GPO** is a bundle of settings, such as password policy, screen-lock timeout, or software restrictions. It applies to everything inside whatever it is linked to.
+A **GPO** is a bundle of settings the domain applies to everything inside whatever that GPO is linked to:
 
-Remember this rule. A GPO links only to a **Site, Domain, or OU**, never to a Container and never to a group directly. That is why getting accounts out of the default Container matters.
+- Password policy
+- Screen-lock timeout
+- Software restrictions
 
-A GPO linked to `OU=IT` could enforce a shorter password expiration for IT staff only, leaving other departments untouched. Groups can still narrow who inside that OU it applies to, through security filtering, but the link always starts at the OU.
+Remember this rule. A GPO links only to a **Site**, a **Domain**, or an **OU**. Never to a Container and never to a group directly which is why getting accounts out of the default Container matters.
+
+A GPO linked to `OU=IT` could enforce a shorter password expiration for IT staff only and leave other departments untouched. Groups can still narrow who inside that OU it applies to through security filtering but the link always starts at the OU.
+
+If a setting is not applying ask where the object lives before you blame the GPO. An account in a Container will never get an OU-linked policy.
 
 ### Putting It Together
+
+Those four objects answer four different questions and you need all of them before you decide an account is in the right place.
 
 | Object | Answers | Can hold a GPO link? | Can nest? |
 | ----- | ----- | ----- | ----- |
 | Organizational Unit | Where does this account live? | Yes | Yes |
 | Container | Where did Windows put this by default? | No | No |
 | Security Group | What can this account access? | No (can filter one) | Yes, groups can contain groups |
-| Group Policy Object | What settings apply here? | — | Links to Sites, Domains, or OUs |
+| Group Policy Object | What settings apply here? | n/a | Links to Sites, Domains, or OUs |
+
+Use that table on every object you open:
+
+- Folder first
+- Group second
+- Settings last
+
+If any one of those does not match GovTech Financial you have something to explain.
 
 <style>
 .ad-diagram {

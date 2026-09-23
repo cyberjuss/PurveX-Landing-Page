@@ -1,8 +1,8 @@
-import type { Skill } from "@/lib/academy-score";
+import type { Results, Skill } from "@/lib/academy-score";
 
 export type MissionCatalogEntry = {
   id: string;
-  challenge: "day-one" | "ticket-queue";
+  challenge: "day-one" | "ticket-queue" | "alert-queue";
   title: string;
   prompt: string;
   skill: Skill;
@@ -85,73 +85,132 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     id: "tq-01",
     challenge: "ticket-queue",
     title: "Missing Announcements (INC-1041)",
-    prompt: "Jamie Torres is not getting company-wide email. How many members does the All Employees group have?",
+    prompt: "Jamie Torres is not getting company-wide email. Add her to All Employees, then report how many members the group has.",
     skill: "accounts",
   },
   "tq-02": {
     id: "tq-02",
     challenge: "ticket-queue",
     title: "Locked Out (INC-1042)",
-    prompt: "Riley Kwan says the account is locked. Is riley.kwan actually locked out? true or false.",
+    prompt: "Riley Kwan cannot sign in and thinks she is locked out. Check the account, restore sign-in if needed, then report whether the account is enabled.",
     skill: "troubleshooting",
   },
   "tq-03": {
     id: "tq-03",
     challenge: "ticket-queue",
     title: "New Hire Access (INC-1043)",
-    prompt: "A new hire needs access. How many members does the IT Users group have?",
+    prompt: "Create Casey Reed with IT Users only, remove what does not belong in that staff group, then report how many members IT Users has.",
     skill: "accounts",
   },
   "tq-04": {
     id: "tq-04",
     challenge: "ticket-queue",
     title: "The Backup Account (INC-1044)",
-    prompt: "Read the description of svc-backup-job and report its run window as 00:00-00:00.",
+    prompt: "Auditors require 01:00-03:00 written on svc-backup-job. Put that window on the account, then report it.",
     skill: "troubleshooting",
   },
   "tq-05": {
     id: "tq-05",
     challenge: "ticket-queue",
     title: "The Transfer That Did Not Happen (INC-1045)",
-    prompt: "How many OU= entries are in the path of taylor.osei?",
+    prompt: "HR transferred Taylor Osei to Compliance. Move the account so Compliance policy applies, then report the department OU.",
     skill: "troubleshooting",
   },
   "tq-06": {
     id: "tq-06",
-    challenge: "ticket-queue",
+    challenge: "alert-queue",
     title: "The 2 AM Login (INC-1046)",
-    prompt: "What ticket ID does the description of WM-WKS07 reference?",
+    prompt: "Alex logged in at 2 AM from WM-WKS07. Which department OU holds that computer?",
     skill: "security",
   },
   "tq-07": {
     id: "tq-07",
-    challenge: "ticket-queue",
+    challenge: "alert-queue",
     title: "Read the Log (INC-1046)",
     prompt: "How many failed logons (4625) happen before the first successful logon (4624)?",
     skill: "security",
   },
   "tq-08": {
     id: "tq-08",
-    challenge: "ticket-queue",
+    challenge: "alert-queue",
     title: "Why the Privileges? (INC-1046)",
     prompt: "Which of Alex's groups explains why the session received special privileges?",
     skill: "security",
   },
   "tq-09": {
     id: "tq-09",
-    challenge: "ticket-queue",
+    challenge: "alert-queue",
     title: "Mistake or Attack? (INC-1046)",
     prompt: "Choose the best explanation for the incident.",
     skill: "security",
   },
   "tq-10": {
     id: "tq-10",
-    challenge: "ticket-queue",
+    challenge: "alert-queue",
     title: "Your First Move (INC-1046)",
     prompt: "Choose the best first response move.",
     skill: "security",
   },
 };
+
+export const CHALLENGE_PATHS: Record<
+  MissionCatalogEntry["challenge"],
+  { href: string; tab: string }
+> = {
+  "day-one": { href: "/academy/phase-1/home-lab-active-directory", tab: "operation-day-one" },
+  "ticket-queue": { href: "/academy/phase-1/home-lab-active-directory", tab: "ticket-queue" },
+  "alert-queue": { href: "/academy/phase-2/week-2", tab: "the-2-am-login" },
+};
+
+export function missionHref(id: string): string {
+  const mission = MISSION_CATALOG[id];
+  if (!mission) return "/academy";
+  return `${CHALLENGE_PATHS[mission.challenge].href}#${id}`;
+}
+
+/** Next open ticket in a challenge — last one they touched if still open. */
+export function continueMissionId(challenge: MissionCatalogEntry["challenge"], results: Results): string {
+  const list = Object.values(MISSION_CATALOG).filter((m) => m.challenge === challenge);
+  let last: { id: string; t: number } | null = null;
+  for (const m of list) {
+    const r = results[m.id];
+    if (!r?.at) continue;
+    const t = new Date(r.at).getTime();
+    if (Number.isNaN(t)) continue;
+    if (!last || t > last.t) last = { id: m.id, t };
+  }
+  if (last && !results[last.id]?.solved) return last.id;
+  return list.find((m) => !results[m.id]?.solved)?.id ?? list[0].id;
+}
+
+export function challengeHref(challenge: MissionCatalogEntry["challenge"], results: Results): string {
+  return missionHref(continueMissionId(challenge, results));
+}
+
+export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> = {
+  "day-one": "Operation Day One",
+  "ticket-queue": "Ticket Queue",
+  "alert-queue": "The 2 AM Login",
+};
+
+export function lastTouchedMission(results: Results): MissionCatalogEntry | null {
+  let best: { id: string; t: number } | null = null;
+  for (const [id, r] of Object.entries(results)) {
+    if (!MISSION_CATALOG[id] || !r.at) continue;
+    const t = new Date(r.at).getTime();
+    if (Number.isNaN(t)) continue;
+    if (!best || t > best.t) best = { id, t };
+  }
+  return best ? MISSION_CATALOG[best.id] : null;
+}
+
+export function nextMissions(results: Results, n = 2): MissionCatalogEntry[] {
+  const last = lastTouchedMission(results);
+  const challenge = last?.challenge ?? "day-one";
+  const list = Object.values(MISSION_CATALOG).filter((m) => m.challenge === challenge);
+  const open = list.filter((m) => !results[m.id]?.solved);
+  return (open.length ? open : list).slice(0, n);
+}
 
 export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
   const q = query.trim().toLowerCase();

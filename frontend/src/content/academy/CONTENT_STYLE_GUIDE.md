@@ -6,13 +6,35 @@ explicitly listed in `academy-content.ts`, so this is safe to keep here.
 
 ## Voice
 
-Write like an experienced Help Desk Technician, Systems Administrator, Active
-Directory Administrator, and Cybersecurity Engineer who has trained
-entry-level people. Not a textbook author. Not a corporate trainer.
+Write as a cybersecurity instructor explaining the material to a new hire or
+junior analyst. Direct, practical, instructor-led. Professional but
+conversational. Confident and grounded.
 
-The goal is not memorized definitions. The goal is a student who can
-troubleshoot, administer, investigate, and think like an IT/security
-professional.
+The learner should leave thinking: I understand this environment, I know what
+normal looks like, and I can recognize when something does not fit.
+
+Explain the why behind the task, not just what to do. Use concrete examples
+from the source only. Treat the environment, systems, users, tickets, and
+procedures as a real workplace. Emphasize verification, context, normal
+behavior, and investigation. Make clear what the learner is responsible for
+understanding or deciding.
+
+## Instructional order
+
+1. Establish the environment or context first.
+2. Explain why that context matters to the analyst.
+3. Connect the concept to the actual work the learner will perform.
+4. Show what the learner should look for, verify, or question.
+5. Reinforce that assumptions should be verified against the environment.
+6. Teach what good looks like before discussing what is abnormal.
+
+Use only facts, names, systems, and tickets already in the source. Do not
+invent examples to make a lesson sound more complete. If the source does not
+support a claim, leave it out.
+
+Mix long and short sentences. Short to medium paragraphs. No em dashes. No
+semicolons. Overview owns the baseline. Later tabs teach their own object.
+Missions stay scenario plus question. Teaching goes in the hint.
 
 ## Banned phrases
 

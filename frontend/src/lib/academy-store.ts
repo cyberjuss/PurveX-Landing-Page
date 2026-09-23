@@ -50,6 +50,19 @@ export async function readUsage(userId: string): Promise<number> {
   return row && row.day === day ? row.count : 0;
 }
 
+export async function resetUsage(userId: string) {
+  const day = todayStamp();
+  memoryUsage.set(userId, { day, count: 0 });
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin.from("academy_coach_usage").upsert({
+    user_id: userId,
+    day,
+    count: 0,
+    updated_at: new Date().toISOString(),
+  });
+  if (error) console.error("academy_coach_usage reset failed", error.message);
+}
+
 export async function bumpUsage(userId: string, current: number): Promise<number> {
   const day = todayStamp();
   const next = current + 1;

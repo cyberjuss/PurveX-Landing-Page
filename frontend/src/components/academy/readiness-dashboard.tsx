@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch, RESULTS_CHANGED_EVENT, useResults } from "@/lib/academy-client";
-import { MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
+import { challengeHref, missionHref, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
 import {
   clearResults,
   LEVELS,
@@ -16,11 +16,10 @@ import {
   type Summary,
 } from "@/lib/academy-score";
 
-const HOME_LAB_PATH = "/academy/phase-1/home-lab-active-directory";
-
 const CHALLENGES: { key: MissionCatalogEntry["challenge"]; label: string; blurb: string }[] = [
   { key: "day-one", label: "Operation Day One", blurb: "Find the facts in the directory." },
-  { key: "ticket-queue", label: "Ticket Queue", blurb: "Work real tickets end to end." },
+  { key: "ticket-queue", label: "Ticket Queue", blurb: "Help desk tickets you change in the directory." },
+  { key: "alert-queue", label: "The 2 AM Login", blurb: "SIEM alert and log analysis." },
 ];
 
 type Tone = "good" | "warn" | "bad" | "live" | "none";
@@ -47,15 +46,34 @@ function missionStatus(r: MissionResult | undefined): { tone: Tone; label: strin
   return { tone: "live", label: `Open · ${r.wrong} wrong`, points, needsHelp: r.wrong > 0 };
 }
 
-function verdict(s: Summary) {
+const READY_FOR: Record<Summary["skills"][number]["key"], string> = {
+  accounts: "look up accounts and groups in Active Directory",
+  directory: "find objects in the directory and tell OUs from containers",
+  troubleshooting: "check what a ticket claims before you change anything",
+  security: "read a login alert and choose the first response",
+};
+
+function readyLine(s: Summary, results: Results) {
+  const won = s.skills.filter((k) =>
+    Object.values(MISSION_CATALOG).some((m) => m.skill === k.key && results[m.id]?.solved)
+  );
+  if (won.length === 0) return "You're not ready for the desk yet.";
+  if (won.length === 1) return `You're ready to ${READY_FOR[won[0].key]}.`;
+  return `You're ready to ${READY_FOR[won[0].key]} and ${READY_FOR[won[1].key]}.`;
+}
+
+function verdict(s: Summary, results: Results) {
   if (s.finished === 0) {
     return "No evidence yet. Work Operation Day One first: every answer you give goes on this report, and it tells me exactly where to push you.";
   }
+  if (s.level === "ready") return "You're ready for a Tier 1 help desk seat: find, verify, and escalate. Keep the edge. Redo the tickets on your own lab without hints.";
+  const can = readyLine(s, results);
   const gap = s.focus[0];
-  if (s.level === "ready") return "You can find, verify, and escalate like a working Tier 1 analyst. Keep the edge: redo the tickets on your own lab without hints.";
-  if (!gap) return "Solid so far. Finish the remaining missions and this becomes a full readiness rating.";
-  const score = gap.score === null ? "untested" : `at ${gap.score}%`;
-  return `${gap.label} is ${score} and it is what stands between you and the desk. ${gap.advice}`;
+  if (gap) {
+    const score = gap.score === null ? "untested" : `at ${gap.score}%`;
+    return `${can} ${gap.label} is ${score}. That's the gap. ${gap.advice}`;
+  }
+  return `${can} Finish the remaining missions and this becomes a full readiness rating.`;
 }
 
 function ticketOf(title: string) {
@@ -114,7 +132,7 @@ export function ReadinessDashboard() {
 
           <div className="rd-hero__verdict">
             <h1>Are you ready for the job?</h1>
-            <blockquote>{verdict(s)}</blockquote>
+            <blockquote>{verdict(s, results)}</blockquote>
             <div className="rd-sign">
               <span>PurveX Coach, senior help desk lead</span>
               <button
@@ -217,7 +235,7 @@ export function ReadinessDashboard() {
                 <span className="rd-log__count">
                   {done}/{list.length}
                 </span>
-                <Link href={HOME_LAB_PATH} className="rd-link">
+                <Link href={challengeHref(ch.key, results)} className="rd-link">
                   {done === 0 ? "Start" : done === list.length ? "Review" : "Continue"} <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
@@ -229,10 +247,10 @@ export function ReadinessDashboard() {
                     <li key={m.id} className="rd-log__row">
                       <span className="rd-log__i">{String(i + 1).padStart(2, "0")}</span>
                       <span className={`rd-dot rd-tone-${st.tone}`} />
-                      <span className="rd-log__title">
+                      <Link href={missionHref(m.id)} className="rd-log__title">
                         {name}
                         {ticket && <code>{ticket}</code>}
-                      </span>
+                      </Link>
                       <span className="rd-log__skill">{SKILLS[m.skill].label}</span>
                       <span className={`rd-log__result rd-text-${st.tone}`}>{st.label}</span>
                       <span className="rd-log__pts">{st.points === null ? "" : st.points}</span>

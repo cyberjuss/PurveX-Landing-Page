@@ -42,7 +42,7 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-1",
     title: "Week 1 — CIA Triad",
-    summary: "The CIA triad and how risk/threat/vulnerability fit together.",
+    summary: "Name what failed then split threat from vulnerability before you rank risk.",
     sections: [
       { label: "Overview", file: "phase-1/week-1/lesson-overview.md" },
       { label: "The CIA Triad", file: "phase-1/week-1/lesson-cia-triad.md" },
@@ -60,7 +60,7 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-3",
     title: "Week 3 — Networking",
-    summary: "Covers the networking fundamentals behind every packet capture with hands-on Wireshark labs.",
+    summary: "Read a capture the way a desk does. Address, handshake, port, protocol, then ordinary vs not.",
     sections: [
       { label: "Overview", file: "phase-1/week-3/lesson-overview.md" },
       { label: "TCP/IP", file: "phase-1/week-3/lesson-tcpip.md" },
@@ -76,7 +76,7 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-4",
     title: "Week 4 — Authentication, Authorization, Access Control",
-    summary: "Walking through broken access control end to end on a live target.",
+    summary: "Prove what happens when an app trusts the client to say who it is, then delete Carlos.",
     sections: [
       { label: "Lab: Broken Access Control (PortSwigger)", file: "phase-1/week-4/lab-triple-a.md" },
       { label: "Resources", file: "phase-1/week-4/resources.md" },
@@ -87,7 +87,7 @@ const phase1Weeks: WeekDef[] = [
 const phase1HomeLab: HomeLabDef = {
   slug: "home-lab-active-directory",
   title: "Home Lab — Active Directory",
-  summary: "GovTech Financial is a fictional enterprise environment used for investigation and detection labs.",
+  summary: "Learn GovTech Financial before you touch a ticket then work the directory.",
   sections: [
     { label: "Overview", file: "phase-1/home-lab-ad/overview.md" },
     { label: "Build This Lab", file: "phase-1/home-lab-ad/build-this-lab.md" },
@@ -112,8 +112,11 @@ const phase2Weeks: WeekDef[] = [
   {
     slug: "week-2",
     title: "Week 2 — Log Analysis Fundamentals",
-    summary: "Reading raw logs and telling signal from noise.",
-    sections: [],
+    summary: "Read the host, the account, and the log before you decide what happened.",
+    sections: [
+      { label: "Overview", file: "phase-2/week-2/overview.md" },
+      { label: "Challenge: The 2 AM Login", file: "phase-2/week-2/alert-inc-1046.md" },
+    ],
   },
   {
     slug: "week-3",

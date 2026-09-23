@@ -15,8 +15,9 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
   const answeredCount = answers.filter((a) => a !== null).length;
   const allAnswered = answeredCount === total;
   const score = submitted ? answers.filter((a, i) => a === quiz.questions[i].correctIndex).length : 0;
-  const pct = total === 0 ? 0 : Math.round((score / total) * 100);
   const passed = quizPassed(score, total);
+  const passMark = Math.ceil((QUIZ_PASS_PERCENT / 100) * total);
+  const foot = submitted ? (passed ? "Passed." : `Need ${passMark} of ${total} to pass.`) : "";
 
   function submit() {
     setSubmitted(true);
@@ -37,27 +38,11 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
   return (
     <div className="ax-quiz">
       <div className="ax-quiz__head">
-        <div>
-          <p className="rd-kicker">Knowledge check</p>
-          <h3>Test what you just learned</h3>
-        </div>
+        <p className="rd-kicker">Knowledge check</p>
         <p className="font-mono text-xs font-semibold text-[var(--rd-ink-3)]">
-          {submitted ? `${score}/${total} correct` : `${answeredCount}/${total} answered`}
+          {submitted ? `${score}/${total}` : `${answeredCount}/${total}`}
         </p>
       </div>
-
-      {submitted && (
-        <div className="ax-quiz__result">
-          <strong className={passed ? "rd-text-good" : "rd-text-warn"}>
-            {score}/{total}
-          </strong>
-          <p>
-            {passed
-              ? `${pct}% — 70% or better. This lesson is marked complete.`
-              : `${pct}% — need ${QUIZ_PASS_PERCENT}% (${Math.ceil((QUIZ_PASS_PERCENT / 100) * total)} of ${total}) to mark this complete.`}
-          </p>
-        </div>
-      )}
 
       {quiz.questions.map((q, qi) => {
         const selected = answers[qi];
@@ -100,13 +85,7 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
       })}
 
       <div className="ax-quiz__foot">
-        <p>
-          {submitted
-            ? passed
-              ? "Review the notes if you want. You already passed."
-              : "Review the notes, then try again. You need 70% or better."
-            : `Answer all ${total} questions. Pass is ${QUIZ_PASS_PERCENT}% or better.`}
-        </p>
+        <p>{foot}</p>
         {submitted ? (
           <button type="button" onClick={reset} className="rd-link">
             Try again

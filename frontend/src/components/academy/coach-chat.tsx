@@ -1,11 +1,12 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
-import { Check, Copy, RotateCcw, ShieldCheck } from "lucide-react";
+import { Fragment, useEffect, useRef, useState, type DragEvent, type ReactNode } from "react";
+import { Check, Copy, RotateCcw, ShieldCheck, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
+import { COACH_MODE_LABELS, COACH_MODES, coachStarters } from "@/lib/academy-coach-mode";
 import { useResults } from "@/lib/academy-client";
-import { MISSION_CATALOG } from "@/lib/academy-missions";
-import { summarize, type Results } from "@/lib/academy-score";
+import { filesToCoachImages, imagesFromClipboard } from "@/lib/academy-coach-capture";
+import { COACH_IMAGE_MAX, coachImageSrc, type CoachImage } from "@/lib/academy-coach-media";
 
 function inline(text: string, key: string): ReactNode[] {
   return text.split(/(\*\*[^*]+\*\*|`[^`]+`|\*[^*\s][^*]*\*)/g).map((part, i) => {
@@ -141,26 +142,6 @@ function CoachText({ text }: { text: string }) {
   );
 }
 
-function starters(results: Results) {
-  const s = summarize(results);
-  const missions = Object.values(MISSION_CATALOG);
-  const missed = missions.find((m) => {
-    const r = results[m.id];
-    return r && (!r.solved || r.wrong > 0);
-  });
-  const next = missions.find((m) => !results[m.id]);
-  const gap = s.finished > 0 ? s.focus[0] : undefined;
-  const lines: { ask: string; label: string }[] = [];
-  if (missed) lines.push({ ask: `Walk me through "${missed.title}" without giving it away.`, label: missed.title });
-  if (next) lines.push({ ask: `How do I start "${next.title}"?`, label: next.title });
-  if (gap) lines.push({ ask: `Give me a 15-minute drill for ${gap.label}.`, label: `Practice ${gap.label}` });
-  lines.push({
-    ask: "How do I check a user's groups in Active Directory Users and Computers?",
-    label: "Check groups in ADUC",
-  });
-  return lines.slice(0, 3);
-}
-
 export function CoachHeader({ children }: { children?: ReactNode }) {
   const { messages, clear, busy } = useCoach();
   return (
@@ -179,35 +160,74 @@ export function CoachHeader({ children }: { children?: ReactNode }) {
 }
 
 export function CoachChat() {
-  const { messages, busy, enabled, remaining, error, send } = useCoach();
-  const prompts = starters(useResults());
+  const { messages, busy, enabled, remaining, error, send, resetToday, mode, setMode } = useCoach();
+  const prompts = coachStarters(useResults());
   const [input, setInput] = useState("");
+  const [images, setImages] = useState<CoachImage[]>([]);
+  const [attachError, setAttachError] = useState<string | null>(null);
+  const [attaching, setAttaching] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const blocked = busy || !enabled || remaining === 0;
+  const canSend = Boolean(input.trim() || images.length);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, busy]);
 
+  async function addFiles(files: Iterable<File>) {
+    if (blocked) return;
+    setAttachError(null);
+    setAttaching(true);
+    try {
+      const next = await filesToCoachImages(files, images.length);
+      if (!next.length) {
+        setAttachError("Could not read that screenshot. Paste or upload a PNG or JPG.");
+        return;
+      }
+      setImages((prev) => [...prev, ...next].slice(0, COACH_IMAGE_MAX));
+    } catch (err) {
+      setAttachError(err instanceof Error ? err.message : "Could not add that image.");
+    } finally {
+      setAttaching(false);
+    }
+  }
+
   function submit() {
-    if (blocked || !input.trim()) return;
-    send(input);
+    if (blocked || !canSend) return;
+    send(input, images);
     setInput("");
+    setImages([]);
+    setAttachError(null);
   }
 
   return (
     <div className="pc flex min-h-0 flex-1 flex-col">
-      <div ref={listRef} className="pc-scroll min-h-0 flex-1 overflow-y-auto px-6 py-6">
-        {messages.length === 0 && (
-          <ul className="pc-prompts">
-            {prompts.map((s) => (
-              <li key={s.ask}>
-                <button type="button" disabled={blocked} onClick={() => send(s.ask)} className="pc-prompt">
-                  {s.label}
-                </button>
-              </li>
-            ))}
-          </ul>
+      <div ref={listRef} className="pc-scroll min-h-0 flex-1 overflow-y-auto">
+        {messages.length === 0 && remaining !== 0 && (
+          <div className="pc-open">
+            <p className="pc-open__lead">Picked from where you left off or where you struggled.</p>
+            <ul className="pc-tickets">
+              {prompts.map((s) => (
+                <li key={s.ask}>
+                  <button type="button" disabled={blocked} onClick={() => send(s.ask)} className="pc-ticket">
+                    <i />
+                    <span>{s.label}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {messages.length === 0 && remaining === 0 && (
+          <div className="pc-empty">
+            <p>That’s all for today.<br />Come back tomorrow.</p>
+            {process.env.NODE_ENV !== "production" && (
+              <button type="button" className="pc-dock__send" onClick={() => void resetToday()}>
+                Reset for testing
+              </button>
+            )}
+          </div>
         )}
 
         <div className="pc-thread">
@@ -215,6 +235,13 @@ export function CoachChat() {
             m.role === "user" ? (
               <div key={i} className="pc-turn">
                 <p className="pc-reply__who">You</p>
+                {m.images?.length ? (
+                  <div className="pc-shots pc-shots--msg">
+                    {m.images.map((image, j) => (
+                      <img key={j} src={coachImageSrc(image)} alt="Attached screenshot" className="pc-shot__img" />
+                    ))}
+                  </div>
+                ) : null}
                 <p className="pc-user">{m.content}</p>
               </div>
             ) : (
@@ -227,7 +254,7 @@ export function CoachChat() {
           {busy && (
             <div className="pc-turn">
               <p className="pc-reply__who">Coach</p>
-              <p className="pc-thinking">Looking that up…</p>
+              <p className="pc-thinking">{messages[messages.length - 1]?.images?.length ? "Looking at the shot…" : "Looking that up…"}</p>
             </div>
           )}
         </div>
@@ -235,31 +262,110 @@ export function CoachChat() {
         {!enabled && <p className="pc-error">PurveX Coach is not set up yet. Ask your instructor.</p>}
       </div>
 
-      <form
-        className="pc-compose"
-        onSubmit={(e) => {
-          e.preventDefault();
-          submit();
-        }}
-      >
-        <div className="pc-compose__box">
-          <input
-            type="text"
+      {remaining === 0 && messages.length > 0 ? (
+        <p className="pc-dock pc-dock__done">That’s all for today.</p>
+      ) : remaining !== 0 ? (
+        <form
+          className="pc-dock"
+          onSubmit={(e) => {
+            e.preventDefault();
+            submit();
+          }}
+          onDragOver={(e: DragEvent) => {
+            if ([...e.dataTransfer.types].includes("Files")) e.preventDefault();
+          }}
+          onDrop={(e: DragEvent) => {
+            e.preventDefault();
+            void addFiles(e.dataTransfer.files);
+          }}
+        >
+          <div className="pc-modes" role="radiogroup" aria-label="Coach mode">
+            {COACH_MODES.map((id) => (
+              <button
+                key={id}
+                type="button"
+                role="radio"
+                aria-checked={mode === id}
+                className={`pc-mode${mode === id ? " pc-mode--on" : ""}`}
+                onClick={() => setMode(id)}
+              >
+                {COACH_MODE_LABELS[id]}
+              </button>
+            ))}
+          </div>
+          {images.length > 0 && (
+            <div className="pc-shots">
+              {images.map((image, i) => (
+                <div key={`${image.data.slice(0, 24)}-${i}`} className="pc-shot">
+                  <img src={coachImageSrc(image)} alt="" className="pc-shot__img" />
+                  <button
+                    type="button"
+                    className="pc-shot__x"
+                    aria-label="Remove screenshot"
+                    onClick={() => setImages((prev) => prev.filter((_, j) => j !== i))}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          <textarea
+            className="pc-dock__field"
+            rows={2}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={remaining === 0 ? "No questions left today" : "Ask a question"}
+            onPaste={(e) => {
+              const files = imagesFromClipboard(e.clipboardData);
+              if (!files.length) return;
+              e.preventDefault();
+              void addFiles(files);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                submit();
+              }
+            }}
+            placeholder={
+              mode === "check"
+                ? "What do you want guidance on?"
+                : mode === "mentor"
+                  ? "What real-world situation are you mapping?"
+                  : "Where are you stuck?"
+            }
             maxLength={2000}
-            disabled={!enabled || remaining === 0}
-            autoComplete="off"
-            enterKeyHint="send"
+            disabled={!enabled}
             autoFocus
           />
-          {remaining !== null && <span className="pc-compose__left">{remaining} left</span>}
-          <button type="submit" disabled={blocked || !input.trim()} className="pc-send">
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            multiple
+            hidden
+            onChange={(e) => {
+              void addFiles(e.target.files || []);
+              e.target.value = "";
+            }}
+          />
+          <div className="pc-dock__tools">
+            <button
+              type="button"
+              className="pc-dock__tool"
+              disabled={blocked || attaching || images.length >= COACH_IMAGE_MAX}
+              onClick={() => fileRef.current?.click()}
+            >
+              Upload
+            </button>
+          </div>
+          <button type="submit" disabled={blocked || attaching || !canSend} className="pc-dock__send">
             Send
           </button>
-        </div>
-      </form>
+          {attachError && <p className="pc-dock__err">{attachError}</p>}
+          {remaining !== null && <p className="pc-dock__left">{remaining} left</p>}
+        </form>
+      ) : null}
     </div>
   );
 }

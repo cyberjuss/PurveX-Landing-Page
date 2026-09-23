@@ -9,6 +9,7 @@ import {
   ClipboardList,
   Copy,
   Handshake,
+  Headset,
   KeyRound,
   Lock,
   Network,
@@ -37,9 +38,9 @@ const filters = [
 ];
 
 const ciaRows = [
-  ["Confidentiality", "The vault door — only badge holders get in.", "A phone lock, encryption, intercepted traffic"],
-  ["Integrity", "The cash-bag seal — break it and everyone knows.", "A torn package seal, hashing, an altered file"],
-  ["Availability", "Posted hours — open when customers need the branch.", "A site that loads, backups, a DDoS"],
+  ["Confidentiality", "The vault door. Only badge holders get in.", "A phone lock, encryption, intercepted traffic"],
+  ["Integrity", "The cash-bag seal. Break it and everyone knows.", "A torn package seal, hashing, an altered file"],
+  ["Availability", "Posted hours. Open when customers need the branch.", "A site that loads, backups, a DDoS"],
 ];
 
 const riskRows = [
@@ -49,7 +50,7 @@ const riskRows = [
 ];
 
 const protocolRows = [
-  ["HTTP/HTTPS", "How web pages load; HTTPS is the encrypted version."],
+  ["HTTP/HTTPS", "How web pages load. HTTPS is the encrypted version."],
   ["DNS", "Translates names (google.com) into IP addresses."],
   ["DHCP", "Automatically hands out IP addresses to devices joining a network."],
   ["SMTP/POP3/IMAP", "Sending mail (SMTP) and pulling it down to a client (POP3/IMAP)."],
@@ -64,9 +65,9 @@ const govtechDepartments = [
 ];
 
 const govtechAccessLevels = [
-  ["Level 1 — Domain Admin", "The Domain Controller and Active Directory itself.", "Nothing above it"],
-  ["Level 2 — Server Admin", "Servers, application and file servers.", "The Domain Controller"],
-  ["Level 3 — Helpdesk", "Workstations only, password resets, local support.", "Servers or the Domain Controller"],
+  ["Level 1. Domain Admin", "The Domain Controller and Active Directory itself.", "Nothing above it"],
+  ["Level 2. Server Admin", "Servers, application and file servers.", "The Domain Controller"],
+  ["Level 3. Helpdesk", "Workstations only, password resets, local support.", "Servers or the Domain Controller"],
 ];
 
 interface RefItem {
@@ -141,9 +142,9 @@ const categories: RefCategory[] = [
         body: (
           <>
             <ul>
-              <li><strong>Authentication</strong> — proving who you are.</li>
-              <li><strong>Authorization</strong> {"— what you are allowed to do once you are in."}</li>
-              <li><strong>Access control</strong> — the mechanism that enforces that boundary.</li>
+              <li><strong>Authentication</strong>: proving who you are.</li>
+              <li><strong>Authorization</strong>: what you are allowed to do once you are in.</li>
+              <li><strong>Access control</strong>: the mechanism that enforces that boundary.</li>
             </ul>
             <p>
               {"The recurring failure is an app that trusts what the client says about itself, such as a role field or a permission flag, instead of checking it server-side. If the client can edit it, it is not a security control."}
@@ -209,9 +210,9 @@ const categories: RefCategory[] = [
           <div className="academy-analogy">
             <span className="academy-analogy__tag">Think of it like a phone call</span>
             <ul>
-              <li><strong>SYN</strong> {'— Computer A: "I would like to connect."'}</li>
-              <li><strong>SYN-ACK</strong> {'— Computer B: "Understood, I am ready too."'}</li>
-              <li><strong>ACK</strong> {'— Computer A: "Good, let us proceed."'}</li>
+              <li><strong>SYN</strong>: Computer A says, "I would like to connect."</li>
+              <li><strong>SYN-ACK</strong>: Computer B says, "Understood, I am ready too."</li>
+              <li><strong>ACK</strong>: Computer A says, "Good, let us proceed."</li>
             </ul>
           </div>
         ),
@@ -281,15 +282,15 @@ const categories: RefCategory[] = [
           <>
             <p>The general shape of working through any capture, from the Network Forensics lab:</p>
             <ol>
-              <li><strong>Orient yourself</strong> — packet count, time span, protocol hierarchy, list of external hosts.</li>
+              <li><strong>Orient yourself.</strong> Packet count, time span, protocol hierarchy, list of external hosts.</li>
               <li>
-                <strong>Triage</strong>
-                {" — separate signal from noise. Do not rule a host in or out at a glance. Look up anything unfamiliar before deciding, such as a hostname, User-Agent, or URI pattern."}
+                <strong>Triage.</strong>
+                {" Separate signal from noise. Do not rule a host in or out at a glance. Look up anything unfamiliar before deciding, such as a hostname, User-Agent, or URI pattern."}
               </li>
-              <li><strong>Focus on what&apos;s left</strong> — full URI, query parameters, GET vs. POST, anything that looks encoded.</li>
-              <li><strong>Decode</strong> — URL-decode suspicious parameters and identify what&apos;s actually inside them.</li>
-              <li><strong>Build a timeline</strong> — timestamps of the suspicious requests and what likely happened between them.</li>
-              <li><strong>Write it up</strong> — an IOC table: victim host identifiers, C2 domain/gate path, exfil parameter name, and what data is being exfiltrated.</li>
+              <li><strong>Focus on what is left.</strong> Full URI, query parameters, GET vs POST, anything that looks encoded.</li>
+              <li><strong>Decode.</strong> URL-decode suspicious parameters and identify what is actually inside them.</li>
+              <li><strong>Build a timeline.</strong> Timestamps of the suspicious requests and what likely happened between them.</li>
+              <li><strong>Write it up.</strong> An IOC table: victim host identifiers, C2 domain/gate path, exfil parameter name, and what data is being exfiltrated.</li>
             </ol>
           </>
         ),
@@ -327,6 +328,41 @@ const categories: RefCategory[] = [
               {"Any time you see a Level 3 (Helpdesk) account attempting something that belongs to Level 1 (Domain Admin), that is your first real red flag. Full detail lives on the "}
               <Link href="/academy/phase-1/home-lab-active-directory">Home Lab page</Link>.
             </p>
+          </>
+        ),
+      },
+    ],
+  },
+  {
+    label: "Coach",
+    items: [
+      {
+        id: "coach-modes",
+        title: "PurveX Coach modes",
+        icon: Headset,
+        keywords: "coach need help double-check mentor mode walk through lost beginner guidance brainstorm",
+        body: (
+          <>
+            <p>The starting mode follows your readiness report. You can still switch.</p>
+            <table>
+              <thead>
+                <tr><th>Mode</th><th>Use it when</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Need help</strong></td>
+                  <td>The report default when you are new or struggling. Treats you as lost. Starts from your report, then the next click.</td>
+                </tr>
+                <tr>
+                  <td><strong>Double-check</strong></td>
+                  <td>You already get it and want guidance.</td>
+                </tr>
+                <tr>
+                  <td><strong>Mentor</strong></td>
+                  <td>You know the work and want real-world connections and brainstorming.</td>
+                </tr>
+              </tbody>
+            </table>
           </>
         ),
       },
@@ -456,8 +492,7 @@ export default function ReferencePage() {
         <div className="ax-titleblock">
           <h1>Cheat sheet</h1>
           <p>
-            The facts you&apos;ll want to look up mid-lab, pulled from the lessons into one page instead of scrolling back
-            through a week you already finished.
+            Facts from the lessons, on one page. Look them up mid-lab instead of scrolling a week you already finished.
           </p>
         </div>
       </header>

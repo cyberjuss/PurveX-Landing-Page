@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { COACH_DAILY_LIMIT, runCoachTurn } from "@/lib/academy-coach";
+import { modeFromReport, parseCoachMode } from "@/lib/academy-coach-mode";
+import { COACH_SHOT_ASK, sanitizeCoachImages } from "@/lib/academy-coach-media";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
-import { bumpUsage, loadLabState, loadProgress, readUsage } from "@/lib/academy-store";
+import { bumpUsage, loadLabState, loadProgress, readUsage, resetUsage } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 export async function GET(request: Request) {
   if (!(await isAcademyUnlocked())) {
@@ -15,6 +18,8 @@ export async function GET(request: Request) {
   if (!student) {
     return NextResponse.json({ error: "Sign in first." }, { status: 401 });
   }
+  const wantReset = process.env.NODE_ENV !== "production" && new URL(request.url).searchParams.get("reset") === "1";
+  if (wantReset) await resetUsage(student.id);
   const used = await readUsage(student.id);
   return NextResponse.json({
     enabled: Boolean(process.env.ANTHROPIC_API_KEY),
@@ -51,8 +56,15 @@ export async function POST(request: Request) {
     message?: unknown;
     history?: unknown;
     results?: unknown;
+    images?: unknown;
+    mode?: unknown;
   };
-  const message = String(body.message || "").trim().slice(0, 2000);
+  const rawImages = Array.isArray(body.images) ? body.images : [];
+  const images = sanitizeCoachImages(rawImages);
+  if (rawImages.length > 0 && images.length === 0) {
+    return NextResponse.json({ error: "That screenshot could not be read. Paste or upload a PNG or JPG." }, { status: 400 });
+  }
+  const message = String(body.message || "").trim().slice(0, 2000) || (images.length ? COACH_SHOT_ASK : "");
   if (!message) {
     return NextResponse.json({ error: "Ask a question first." }, { status: 400 });
   }
@@ -85,6 +97,8 @@ export async function POST(request: Request) {
       apiKey,
       history,
       userMessage: message,
+      images,
+      mode: body.mode != null ? parseCoachMode(body.mode) : modeFromReport(results),
       tools: { results, loadLabState: async () => (await loadLabState(student.id))?.snapshot ?? null },
     });
     const remaining = COACH_DAILY_LIMIT - (await bumpUsage(student.id, used));

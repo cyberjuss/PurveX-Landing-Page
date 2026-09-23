@@ -123,9 +123,12 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
   }, []);
 
   useEffect(() => {
-    document.body.style.backgroundColor = theme === "dark" ? "#0b0e15" : "";
+    document.body.style.backgroundColor = theme === "dark" ? "#05070b" : "";
+    document.documentElement.dataset.academyTheme = theme;
+    document.querySelector(".ad-hint-card")?.setAttribute("data-academy-theme", theme);
     return () => {
       document.body.style.backgroundColor = "";
+      delete document.documentElement.dataset.academyTheme;
     };
   }, [theme]);
 
@@ -199,7 +202,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       if (!id) return;
       const all = loadResults();
       const base: MissionResult = all[id] ?? { solved: false, wrong: 0, hint: false };
-      all[id] = { ...base, ...patch };
+      all[id] = { ...base, ...patch, at: new Date().toISOString() };
       saveResults(all);
       syncProgress(all);
       renderScore();
@@ -212,20 +215,16 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       wrap.setAttribute("data-restored", "1");
       const id = wrap.getAttribute("data-id");
       const r = id ? loadResults()[id] : undefined;
-      if (!r) return;
+      if (!r) {
+        labelHintButton(wrap, false);
+        return;
+      }
       wrap.setAttribute("data-attempts", String(Math.min(r.wrong, 3)));
       const input = wrap.querySelector<HTMLInputElement>(".ad-guess__input");
       const submit = wrap.querySelector<HTMLButtonElement>(".ad-guess__submit");
       const feedback = wrap.querySelector<HTMLElement>(".ad-guess__feedback");
       const reveal = wrap.querySelector<HTMLElement>(".ad-flag");
-      if (r.hint) {
-        wrap.querySelector<HTMLElement>(".ad-hint__text")?.classList.add("ad-hint__text--shown");
-        const hb = wrap.querySelector<HTMLButtonElement>(".ad-hint__btn");
-        if (hb) {
-          hb.textContent = "Hint used";
-          hb.disabled = true;
-        }
-      }
+      labelHintButton(wrap, false);
       if (r.solved) {
         if (input) input.disabled = true;
         if (submit) submit.disabled = true;
@@ -280,6 +279,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       const attempts = parseInt(wrap.getAttribute("data-attempts") || "0", 10) + 1;
       wrap.setAttribute("data-attempts", String(attempts));
       recordResult(wrap, { wrong: attempts });
+      labelHintButton(wrap, wrap.querySelector(".ad-hint__text")?.classList.contains("ad-hint__text--shown") ?? false);
       feedback.className = "ad-guess__feedback ad-guess__feedback--err";
       if (attempts >= 3) {
         feedback.textContent = "Not quite, three tries used. Here's the flag.";
@@ -291,18 +291,90 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       }
     };
 
-    // A mission gets exactly one hint, separate from its three guesses --
-    // asking for a nudge shouldn't cost you an attempt at the real answer.
-    // It only unlocks after two wrong tries, so the first two are honest.
-    const showHint = (btn: HTMLButtonElement) => {
+    const hintUnlocked = (wrap: Element) => parseInt(wrap.getAttribute("data-attempts") || "0", 10) >= 2;
+
+    let openHintId: string | null = null;
+
+    const hintTop = () => {
+      const header = document.querySelector(".academy-bg > header");
+      return header instanceof HTMLElement ? Math.round(header.getBoundingClientRect().bottom) : 64;
+    };
+
+    const missionById = (id: string | null) =>
+      id ? document.querySelector<HTMLElement>(`.ad-mission[data-id="${CSS.escape(id)}"]`) : null;
+
+    const academyTheme = () =>
+      document.querySelector(".academy-bg")?.getAttribute("data-academy-theme") ||
+      document.documentElement.dataset.academyTheme ||
+      "light";
+
+    const ensureHintCard = () => {
+      let root = document.querySelector<HTMLElement>(".ad-hint-card");
+      if (root) {
+        root.dataset.academyTheme = academyTheme();
+        return root;
+      }
+      root = document.createElement("div");
+      root.className = "ad-hint-card";
+      root.dataset.open = "false";
+      root.dataset.academyTheme = academyTheme();
+      root.innerHTML =
+        '<button type="button" class="ad-hint-card__scrim" aria-label="Close hint"></button>' +
+        '<aside class="ad-hint-card__panel" role="dialog" aria-label="Hint">' +
+        '<div class="ad-hint-card__head"><span>Hint</span><button type="button" class="ad-hint-card__close">Close</button></div>' +
+        '<p class="ad-hint-card__kicker"></p>' +
+        '<div class="ad-hint-card__body"></div>' +
+        "</aside>";
+      document.body.appendChild(root);
+      return root;
+    };
+
+    const labelHintButton = (wrap: Element, open: boolean) => {
+      const btn = wrap.querySelector<HTMLButtonElement>(".ad-hint__btn");
+      if (!btn) return;
+      const unlocked = hintUnlocked(wrap);
+      btn.disabled = !unlocked;
+      btn.setAttribute("aria-expanded", unlocked && open ? "true" : "false");
+      btn.textContent = !unlocked ? "Hint locked" : open ? "Hide hint" : "Get a hint";
+    };
+
+    const closeHintCard = () => {
+      document.querySelector(".ad-hint-card")?.setAttribute("data-open", "false");
+      const wrap = missionById(openHintId);
+      openHintId = null;
+      if (wrap) labelHintButton(wrap, false);
+    };
+
+    const openHintCard = (wrap: Element) => {
+      const id = wrap.getAttribute("data-id");
+      if (openHintId && openHintId !== id) {
+        const prev = missionById(openHintId);
+        if (prev) labelHintButton(prev, false);
+      }
+      const src = wrap.querySelector<HTMLElement>(".ad-hint__text");
+      const root = ensureHintCard();
+      root.style.setProperty("--ad-hint-top", `${hintTop()}px`);
+      const kicker = root.querySelector(".ad-hint-card__kicker");
+      const body = root.querySelector(".ad-hint-card__body");
+      if (kicker) kicker.textContent = wrap.querySelector("h4")?.textContent?.trim() || "Hint";
+      if (body) body.innerHTML = src?.innerHTML ?? "";
+      root.dataset.open = "true";
+      openHintId = id;
+      labelHintButton(wrap, true);
+    };
+
+    // Hint unlocks after two wrong tries, then slides in as a card from the
+    // right. Toggle closes it. Opening once still records hint-used.
+    const toggleHint = (btn: HTMLButtonElement) => {
       const wrap = btn.closest(".ad-mission");
-      const hint = wrap?.querySelector<HTMLElement>(".ad-hint__text");
-      if (!hint) return;
-      if (parseInt(wrap?.getAttribute("data-attempts") || "0", 10) < 2) return;
-      hint.classList.add("ad-hint__text--shown");
-      btn.textContent = "Hint used";
-      btn.disabled = true;
-      if (wrap) recordResult(wrap, { hint: true });
+      const id = wrap?.getAttribute("data-id");
+      if (!wrap || !id || !hintUnlocked(wrap)) return;
+      if (openHintId === id) {
+        closeHintCard();
+        return;
+      }
+      recordResult(wrap, { hint: true });
+      openHintCard(wrap);
     };
 
     const copyCode = (btn: HTMLButtonElement) => {
@@ -339,8 +411,11 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           .finally(() => window.location.reload());
         return;
       }
+      if (target.closest(".ad-hint-card__close") || target.closest(".ad-hint-card__scrim")) {
+        return closeHintCard();
+      }
       const hintBtn = target.closest<HTMLButtonElement>(".ad-hint__btn");
-      if (hintBtn) return showHint(hintBtn);
+      if (hintBtn) return toggleHint(hintBtn);
       const copyBtn = target.closest<HTMLButtonElement>(".ad-code__copy");
       if (copyBtn) return copyCode(copyBtn);
     };
@@ -350,6 +425,11 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     // it's caught by the same delegated onClick above.
     const onKeydown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
+      if (e.key === "Escape" && openHintId) {
+        e.preventDefault();
+        closeHintCard();
+        return;
+      }
       if (e.key !== "Enter" || !target.matches(".ad-guess__input")) return;
       e.preventDefault();
       target.closest(".ad-guess")?.querySelector<HTMLButtonElement>(".ad-guess__submit")?.click();
@@ -359,6 +439,11 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     const sync = () => {
       frame = 0;
       document.querySelectorAll<HTMLElement>(".ad-mission[data-id]:not([data-restored])").forEach(restoreMission);
+      if (openHintId) {
+        const live = missionById(openHintId);
+        if (live) labelHintButton(live, true);
+        else closeHintCard();
+      }
       renderScore();
       updateProgress();
     };
@@ -385,6 +470,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       document.removeEventListener("click", onClick);
       document.removeEventListener("keydown", onKeydown);
       window.removeEventListener(RESULTS_CHANGED_EVENT, onResultsChanged);
+      document.querySelector(".ad-hint-card")?.remove();
     };
   }, []);
 
