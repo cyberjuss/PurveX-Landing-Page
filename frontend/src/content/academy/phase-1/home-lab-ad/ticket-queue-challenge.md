@@ -16,12 +16,12 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
-<span id="ad-progress-label" class="ad-progress__label">0 / 11 solved</span>
+<span id="ad-progress-label" class="ad-progress__label">0 / 10 solved</span>
 </div>
 
 <div class="ad-queue-head">
 <span class="ad-queue-head__title">Support Queue: Your Tickets</span>
-<span class="ad-queue-head__meta"><span>Assigned <b>You</b></span><span>Open <b>11</b></span><span>Team <b>IT + SOC</b></span></span>
+<span class="ad-queue-head__meta"><span>Assigned <b>You</b></span><span>Open <b>10</b></span><span>Team <b>IT + SOC</b></span></span>
 </div>
 
 <div class="ad-mission ad-ticket ad-ticket--low" data-attempts="0">
@@ -219,24 +219,5 @@ Each ticket contains a claim, such as "I locked myself out," "the transfer is do
 <span class="ad-flag__label">Resolution</span>
 <p class="ad-flag__code"><code>GTF{b}</code></p>
 <p>B. Contain and keep evidence. Wiping destroys what you need to learn what the attacker did. Waiting gives them time. Clearing logs is tampering with evidence, which is never an analyst's move. Then reach Alex by another channel, escalate, and write down every action with a time.</p>
-</div>
-</div>
-
-<div class="ad-mission ad-ticket ad-ticket--med ad-mission--bonus" data-attempts="0">
-<div class="ad-ticket__top"><span class="ad-ticket__id">INC-1047</span><span class="ad-ticket__pri">Medium</span><span class="ad-ticket__status"></span><span class="ad-ticket__time">Received 3:40 PM</span></div>
-<h4>The Forgotten Machine</h4>
-<div class="ad-ticket__from"><span class="ad-ticket__avatar">AR</span><span class="ad-ticket__who"><strong>Asset Review</strong><span>Quarterly cleanup</span></span></div>
-<p class="ad-ticket__msg">We are trimming the asset list. One Operations computer has not been used in a long time. Which one is it?</p>
-<p class="ad-task">Run <code>Get-ADComputer -Filter * -Properties Description | Where-Object Description -like "*dormant*" | Select Name, Description</code>. <strong>Question:</strong> Which computer is marked as dormant?</p>
-<div class="ad-hint"><button type="button" class="ad-hint__btn">Get a hint</button><p class="ad-hint__text">The result is a single computer. Its name starts with the department code.</p></div>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="computer name" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{ops-wks03}">Submit</button>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-flag">
-<span class="ad-flag__label">Resolution</span>
-<p class="ad-flag__code"><code>GTF{OPS-WKS03}</code></p>
-<p><code>OPS-WKS03</code>. Machines nobody uses are still on the network and still hold credentials. Because nobody watches them, an attacker who lands on one can go unnoticed for a long time.</p>
 </div>
 </div>
