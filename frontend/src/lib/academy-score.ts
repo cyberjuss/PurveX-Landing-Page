@@ -170,8 +170,8 @@ export function scorecardHtml(s: Summary): string {
   const gap = s.finished > 0 ? s.focus[0] : undefined;
   const line = gap ? `Biggest gap: ${esc(gap.label)}` : `${s.finished} of ${s.total} missions finished`;
   return `<div class="ad-score__top"><div class="ad-score__ring ad-score__ring--${s.level}"><span>${
-    s.finished === 0 ? "--" : s.overall
+    s.finished === 0 ? "––" : s.overall
   }</span></div><div class="ad-score__head"><span class="ad-score__eyebrow">Help Desk Readiness</span><strong>${
     lv.label
-  }</strong><small>${line}</small></div><a class="ad-score__link" href="/academy/readiness">See report and ask Coach</a></div>`;
+  }</strong><small>${line}</small></div><a class="ad-score__link" href="/academy/readiness">Open report →</a></div>`;
 }

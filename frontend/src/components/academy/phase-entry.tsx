@@ -49,32 +49,38 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
     (s) => !s.label.startsWith("Lab:") && !s.label.startsWith("Challenge:") && !s.label.startsWith("Troubleshooting:")
   );
 
-  return (
-    <div>
-      {/* /academy/${phase.slug} now redirects straight into this phase's
-          first week, so it's not a real "back" destination -- pointing this
-          at the course overview instead of back into itself. */}
-      <Link href="/academy" className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-900">
-        <ArrowLeft className="h-4 w-4" /> All phases
-      </Link>
+  const entryNumber = phaseEntries.findIndex((e) => e.slug === entry.slug) + 1;
 
-      <div className="mt-5 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-            {entry.title}
-          </h1>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-slate-500">{entry.summary}</p>
+  return (
+    <div className="rd">
+      <header className="rd-mast">
+        <div className="rd-meta">
+          {/* /academy/${phase.slug} redirects straight into this phase's
+              first week, so the course overview is the real "back". */}
+          <Link href="/academy" className="ax-back">
+            <ArrowLeft className="h-3 w-3" /> All phases
+          </Link>
+          <span>
+            {phase.label} · {phase.title}
+          </span>
+          <span>
+            {entry === phase.homeLab ? "Home lab" : `Entry ${String(entryNumber).padStart(2, "0")} of ${String(phaseEntries.length).padStart(2, "0")}`}
+          </span>
         </div>
-        {sections.length > 0 && <MarkCompleteButton phaseSlug={phase.slug} entrySlug={entry.slug} />}
-      </div>
+        <div className="ax-entryhead">
+          <div className="ax-titleblock">
+            <h1>{entry.title}</h1>
+            <p>{entry.summary}</p>
+          </div>
+          {sections.length > 0 && <MarkCompleteButton phaseSlug={phase.slug} entrySlug={entry.slug} />}
+        </div>
+      </header>
 
       {essentialQuestion && (
-        <div className="academy-prose mt-6">
-          <div className="academy-question">
-            <span className="academy-question__tag">Essential Question</span>
-            <p>{essentialQuestion}</p>
-          </div>
-        </div>
+        <blockquote className="ax-question">
+          <span className="rd-kicker">Essential question</span>
+          <p>{essentialQuestion}</p>
+        </blockquote>
       )}
 
       {sections.length === 0 ? (
@@ -94,36 +100,28 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
           )}
 
           {(prevEntry || nextEntry) && (
-            <div className="mt-10 flex items-stretch gap-3 border-t border-[var(--pvrx-border-light)] pt-6">
+            <nav className="ax-pager">
               {prevEntry ? (
-                <Link
-                  href={`/academy/${phase.slug}/${prevEntry.slug}`}
-                  className="group flex flex-1 items-center gap-3 rounded-md border border-[var(--pvrx-border-light)] bg-white p-4 shadow-[0_1px_2px_rgba(16,25,46,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
-                >
-                  <ArrowLeft className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:-translate-x-0.5 group-hover:text-[#5546e0]" />
-                  <span className="min-w-0">
-                    <span className="block font-mono text-[11px] font-semibold uppercase tracking-wide text-slate-400">Previous</span>
-                    <span className="block truncate text-sm font-semibold text-slate-900">{prevEntry.title}</span>
+                <Link href={`/academy/${phase.slug}/${prevEntry.slug}`} className="ax-pager__link">
+                  <span className="rd-kicker">
+                    <ArrowLeft className="h-3 w-3" /> Previous
                   </span>
+                  <strong>{prevEntry.title}</strong>
                 </Link>
               ) : (
-                <div className="flex-1" />
+                <span />
               )}
               {nextEntry ? (
-                <Link
-                  href={`/academy/${phase.slug}/${nextEntry.slug}`}
-                  className="group flex flex-1 items-center justify-end gap-3 rounded-md border border-[var(--pvrx-border-light)] bg-white p-4 text-right shadow-[0_1px_2px_rgba(16,25,46,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
-                >
-                  <span className="min-w-0">
-                    <span className="block font-mono text-[11px] font-semibold uppercase tracking-wide text-slate-400">Next</span>
-                    <span className="block truncate text-sm font-semibold text-slate-900">{nextEntry.title}</span>
+                <Link href={`/academy/${phase.slug}/${nextEntry.slug}`} className="ax-pager__link ax-pager__link--next">
+                  <span className="rd-kicker">
+                    Next <ArrowRight className="h-3 w-3" />
                   </span>
-                  <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-[#5546e0]" />
+                  <strong>{nextEntry.title}</strong>
                 </Link>
               ) : (
-                <div className="flex-1" />
+                <span />
               )}
-            </div>
+            </nav>
           )}
         </>
       )}

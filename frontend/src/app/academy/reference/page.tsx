@@ -366,11 +366,9 @@ function CopyButton({ text }: { text: string }) {
 
 function Section({ id, title, icon: Icon, children }: { id: string; title: string; icon: LucideIcon; children: React.ReactNode }) {
   return (
-    <section id={id} className="academy-ref-section scroll-mt-24 rounded-md border border-[var(--pvrx-border-light)] bg-white p-6 sm:p-8">
-      <div className="flex items-center gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[rgba(106,92,255,0.1)] text-[#5546e0]">
-          <Icon className="h-[18px] w-[18px]" />
-        </span>
+    <section id={id} className="academy-ref-section ax-refsec scroll-mt-24">
+      <div className="flex items-center gap-2.5">
+        <Icon className="h-4 w-4 shrink-0 text-[var(--rd-accent)]" />
         <h2 className="font-display text-lg font-semibold text-slate-900">{title}</h2>
       </div>
       <div className="academy-prose mt-3">{children}</div>
@@ -451,37 +449,35 @@ export default function ReferencePage() {
   }, [visibleItems.map((i) => i.id).join(",")]);
 
   return (
-    <div>
-      <Link href="/academy" className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-900">
-        <ArrowLeft className="h-4 w-4" /> Course overview
-      </Link>
+    <div className="rd">
+      <header className="rd-mast">
+        <div className="rd-meta">
+          <Link href="/academy" className="ax-back">
+            <ArrowLeft className="h-3 w-3" /> Course overview
+          </Link>
+          <span>Quick reference</span>
+          <span>Appendix</span>
+        </div>
+        <div className="ax-titleblock">
+          <h1>Cheat sheet</h1>
+          <p>
+            The facts you&apos;ll want to look up mid-lab, pulled from the lessons into one page instead of scrolling back
+            through a week you already finished.
+          </p>
+        </div>
+      </header>
 
-      <p className="mt-5 text-[11px] font-bold uppercase tracking-[0.12em] text-[#5546e0]">Quick reference</p>
-      <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-        Cheat sheet
-      </h1>
-      <p className="mt-3 max-w-xl text-sm leading-6 text-slate-500">
-        The facts you&apos;ll want to look up mid-lab, pulled from the lessons into one page instead of
-        scrolling back through a week you already finished.
-      </p>
-
-      <div className="sticky top-[65px] z-10 -mx-4 border-b border-[var(--pvrx-border-light)] bg-white/95 px-4 pb-4 pt-6 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
-        <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400 pointer-events-none" />
+      <div className="sticky top-[65px] z-10 -mx-4 bg-[var(--pvrx-bg-light)] px-4 pb-2 pt-6 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
+        <div className="ax-search">
+          <Search className="h-4 w-4 shrink-0 text-[var(--rd-ink-3)]" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search the cheat sheet…"
-            className="w-full rounded-md border border-[var(--pvrx-border-light)] bg-white py-3.5 pl-10 pr-10 text-base text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] md:text-sm"
           />
           {query && (
-            <button
-              type="button"
-              onClick={() => setQuery("")}
-              aria-label="Clear search"
-              className="absolute right-3.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-slate-400 hover:text-slate-700"
-            >
+            <button type="button" onClick={() => setQuery("")} aria-label="Clear search" className="text-[var(--rd-ink-3)]">
               <X className="h-4 w-4" />
             </button>
           )}
@@ -492,25 +488,15 @@ export default function ReferencePage() {
         {/* Desktop only -- on mobile there's no room for a side column, and
             the category headings inline in the content below do the same
             job of orienting you as you scroll. */}
-        <nav aria-label="Cheat sheet sections" className="hidden shrink-0 lg:sticky lg:top-[150px] lg:block lg:w-[200px]">
+        <nav aria-label="Cheat sheet sections" className="ax-refnav hidden shrink-0 lg:sticky lg:top-[150px] lg:block lg:w-[200px]">
           {filteredCategories.map((cat) => (
-            <div key={cat.label} className="mb-5 last:mb-0">
-              <p className="px-3 pb-1.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                {cat.label}
-              </p>
-              <ul className="flex flex-col gap-0.5">
+            <div key={cat.label} className="mb-6 last:mb-0">
+              <p className="rd-kicker mb-2">{cat.label}</p>
+              <ul>
                 {cat.items.map((item) => (
                   <li key={item.id}>
-                    <a
-                      href={`#${item.id}`}
-                      className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold transition-colors duration-150 ${
-                        activeId === item.id
-                          ? "bg-[rgba(106,92,255,0.1)] text-[#5546e0]"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                      }`}
-                    >
-                      <item.icon className="h-3.5 w-3.5 shrink-0" />
-                      <span className="truncate">{item.title}</span>
+                    <a href={`#${item.id}`} className={activeId === item.id ? "ax-refnav--on" : ""}>
+                      {item.title}
                     </a>
                   </li>
                 ))}
@@ -521,7 +507,7 @@ export default function ReferencePage() {
 
         <div className="min-w-0 flex-1">
           {filteredCategories.length === 0 ? (
-            <p className="rounded-md border border-[var(--pvrx-border-light)] bg-slate-50/60 px-5 py-4 text-sm text-slate-500">
+            <p className="border-t border-[var(--rd-line)] pt-4 text-sm text-[var(--rd-ink-3)]">
               {`No matches for "${query}".`}
             </p>
           ) : (

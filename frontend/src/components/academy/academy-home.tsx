@@ -1,147 +1,112 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BookOpen, Radar, Siren, type LucideIcon } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
+import { READINESS_PATH, useResults } from "@/lib/academy-client";
+import { LEVELS, summarize } from "@/lib/academy-score";
 import { useAcademyProgress } from "./academy-progress";
 
-interface PhaseCardConfig {
-  slug: string;
-  href: string;
-  icon: LucideIcon;
-  tag: string;
-  title: string;
-  body: string;
-  accent: string;
-  accentSoft: string;
-  phase?: PhaseDef;
-}
-
-const PHASE_CARDS: PhaseCardConfig[] = [
+const PHASE_COPY: { slug: string; href: string; title: string; body: string }[] = [
   {
     slug: "phase-1",
     href: "/academy/phase-1",
-    icon: BookOpen,
-    tag: "Phase 1",
     title: "Fundamentals",
-    body: "Everything from the CIA triad through access control.",
-    accent: "#5546e0",
-    accentSoft: "rgba(106,92,255,0.1)",
+    body: "The CIA triad through access control, then a home lab where you run an Active Directory domain yourself.",
   },
   {
     slug: "phase-2",
     href: "/academy/phase-2",
-    icon: Radar,
-    tag: "Phase 2",
     title: "Threat Detection & Log Analysis",
-    body: "SIEM fundamentals and log analysis building toward detection engineering.",
-    accent: "#2563eb",
-    accentSoft: "rgba(37,99,235,0.1)",
+    body: "SIEM fundamentals and log analysis, building toward detection engineering.",
   },
   {
     slug: "phase-3",
     href: "/academy/phase-3",
-    icon: Siren,
-    tag: "Phase 3",
     title: "Incident Response",
     body: "Triage and investigation through containment and writing it up.",
-    accent: "#e2932a",
-    accentSoft: "rgba(226,147,42,0.12)",
   },
 ];
 
 export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
-  const { isComplete } = useAcademyProgress();
-
-  function phaseProgress(phase: PhaseDef | undefined) {
-    if (!phase) return null;
-    const entries = [...phase.weeks, ...(phase.homeLab ? [phase.homeLab] : [])];
-    const withContent = entries.filter((e) => e.sections.length > 0);
-    if (withContent.length === 0) return null;
-    const done = withContent.filter((e) => isComplete(phase.slug, e.slug)).length;
-    return { done, total: withContent.length };
-  }
-
-  const cards = PHASE_CARDS.map((card) => ({
-    ...card,
-    phase: phases.find((p) => p.slug === card.slug),
-  }));
+  const { isComplete, completedCount, totalCount } = useAcademyProgress();
+  const readiness = summarize(useResults());
 
   return (
-    <div>
-      {/* Progress lives once, in the sidebar's card -- it doesn't need a
-          second copy of the same "X / Y complete" stat here. */}
-      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-[#5546e0]">Course overview</p>
-      <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-        Think Like a SOC Analyst 101
-      </h1>
-      <p className="mt-3 max-w-xl text-sm leading-6 text-slate-500">
-        A hands-on path from security fundamentals to incident response using real logs and real tools in
-        real labs.
-      </p>
+    <div className="rd">
+      <header className="rd-mast">
+        <div className="rd-meta">
+          <span>PurveX Academy · Course file</span>
+          <span>SOC Analyst track</span>
+          <span>
+            {completedCount}/{totalCount} lessons complete
+          </span>
+        </div>
+        <div className="ax-titleblock">
+          <p className="rd-kicker">Course 101</p>
+          <h1>Think Like a SOC Analyst</h1>
+          <p>A hands-on path from security fundamentals to incident response, using real logs and real tools in real labs.</p>
+        </div>
+        <Link href={READINESS_PATH} className="ax-readiness">
+          <span className="rd-kicker">Help Desk Readiness</span>
+          <span className="ax-readiness__num">{readiness.finished === 0 ? "––" : readiness.overall}</span>
+          <span className="ax-readiness__label">{LEVELS[readiness.level].label}</span>
+          <span className="ax-readiness__go">
+            Open report <ArrowRight className="h-3.5 w-3.5" />
+          </span>
+        </Link>
+      </header>
 
-      <div className="mt-8 flex flex-col gap-4">
-        {cards.map((card) => {
-          const progress = phaseProgress(card.phase);
-          const isComingSoon = progress === null;
-
-          const inner = (
-            <>
-              <span className="absolute inset-y-0 left-0 w-1" style={{ background: card.accent }} aria-hidden="true" />
-              <span
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md"
-                style={{ background: card.accentSoft, color: card.accent, opacity: isComingSoon ? 0.6 : 1 }}
-              >
-                <card.icon className="h-5 w-5" />
-              </span>
-              <span className="flex-1">
-                <span className="flex items-center gap-2">
-                  <span className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: card.accent, opacity: isComingSoon ? 0.7 : 1 }}>
-                    {card.tag}
+      <section className="rd-sec">
+        <div className="rd-sec__head">
+          <span className="rd-sec__n">01</span>
+          <h2>Curriculum</h2>
+          <p>Three phases. Each one ends with work you can show a hiring manager.</p>
+        </div>
+        <ol className="ax-curriculum">
+          {PHASE_COPY.map((copy, i) => {
+            const phase = phases.find((p) => p.slug === copy.slug);
+            const entries = phase ? [...phase.weeks, ...(phase.homeLab ? [phase.homeLab] : [])] : [];
+            const live = entries.filter((e) => e.sections.length > 0);
+            const done = phase ? live.filter((e) => isComplete(phase.slug, e.slug)).length : 0;
+            const soon = live.length === 0;
+            const body = (
+              <>
+                <span className="ax-curriculum__n">{String(i + 1).padStart(2, "0")}</span>
+                <span className="ax-curriculum__main">
+                  <span className="ax-curriculum__title">
+                    {copy.title}
+                    {soon ? <em className="ax-tag">In preparation</em> : done === live.length ? <em className="ax-tag ax-tag--good">Complete</em> : null}
                   </span>
-                  {isComingSoon ? (
-                    <span className="rounded-sm bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-                      Coming soon
-                    </span>
-                  ) : (
-                    <span className="rounded-sm px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide" style={{ background: card.accentSoft, color: card.accent }}>
-                      {progress.done} / {progress.total} done
+                  <span className="ax-curriculum__body">{copy.body}</span>
+                  {!soon && phase && (
+                    <span className="ax-segs" aria-label={`${done} of ${live.length} lessons complete`}>
+                      {live.map((e) => (
+                        <i key={e.slug} className={isComplete(phase.slug, e.slug) ? "rd-tone-good" : "rd-tone-none"} title={e.title} />
+                      ))}
                     </span>
                   )}
                 </span>
-                <span className={`mt-1 block font-display text-base font-semibold ${isComingSoon ? "text-slate-500" : "text-slate-900"}`}>
-                  {card.title}
+                <span className="ax-curriculum__meta">
+                  {soon ? "—" : `${done}/${live.length}`}
+                  {!soon && <ArrowRight className="h-4 w-4" />}
                 </span>
-                <span className="mt-1 block text-sm text-slate-500">{card.body}</span>
-              </span>
-              {!isComingSoon && (
-                <ArrowRight className="mt-2 h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-slate-500" />
-              )}
-            </>
-          );
-
-          // A "Coming soon" phase has no week to send you to -- its own
-          // route just redirects straight back to this page. Rendering it
-          // as a link made clicking it look like navigation that silently
-          // did nothing; a plain (non-interactive) card says that upfront.
-          return isComingSoon ? (
-            <div
-              key={card.slug}
-              className="relative flex items-start gap-4 overflow-hidden rounded-md border border-[var(--pvrx-border-light)] bg-slate-50/60 p-5"
-            >
-              {inner}
-            </div>
-          ) : (
-            <Link
-              key={card.slug}
-              href={card.href}
-              className="group relative flex items-start gap-4 overflow-hidden rounded-md border border-[var(--pvrx-border-light)] bg-white p-5 shadow-[0_1px_2px_rgba(16,25,46,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_48px_-30px_rgba(15,23,42,0.25)]"
-            >
-              {inner}
-            </Link>
-          );
-        })}
-      </div>
+              </>
+            );
+            return (
+              <li key={copy.slug}>
+                {soon ? (
+                  <div className="ax-curriculum__row ax-curriculum__row--soon">{body}</div>
+                ) : (
+                  <Link href={copy.href} className="ax-curriculum__row">
+                    {body}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      </section>
     </div>
   );
 }

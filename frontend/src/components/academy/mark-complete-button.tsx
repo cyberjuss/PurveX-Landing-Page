@@ -11,16 +11,11 @@ export function MarkCompleteButton({ phaseSlug, entrySlug }: { phaseSlug: string
     <button
       type="button"
       onClick={() => toggleComplete(phaseSlug, entrySlug)}
-      className={`inline-flex items-center gap-2 rounded-md border px-4 py-2 text-sm font-semibold transition ${
-        done
-          ? "border-[#5546e0] bg-[rgba(106,92,255,0.1)] text-[#5546e0]"
-          : "border-[var(--pvrx-border-light)] text-slate-600 hover:border-slate-300 hover:bg-slate-50"
-      }`}
+      className={`ax-complete ${done ? "ax-complete--done" : ""}`}
+      title={done ? "Click to mark as not complete" : undefined}
     >
-      <span className={`flex h-4 w-4 items-center justify-center rounded-sm border ${done ? "border-[#5546e0] bg-[#5546e0] text-white" : "border-slate-300"}`}>
-        {done && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
-      </span>
-      {done ? "Marked complete" : "Mark as complete"}
+      <span className="ax-complete__box">{done && <Check className="h-3 w-3" strokeWidth={3} />}</span>
+      {done ? "Complete" : "Mark as complete"}
     </button>
   );
 }

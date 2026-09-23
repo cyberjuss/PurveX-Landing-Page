@@ -56,29 +56,15 @@ export function LabCarousel({ slides }: { slides: MarkdownSlide[] }) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-3 border-t border-[var(--pvrx-border-light)] px-6 py-3 sm:px-8">
-        <button
-          type="button"
-          onClick={() => go(index - 1)}
-          disabled={index === 0}
-          aria-label="Previous step"
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-30"
-        >
-          <ChevronLeft className="h-4 w-4" />
+      <div className="ax-panel__foot">
+        <button type="button" onClick={() => go(index - 1)} disabled={index === 0} aria-label="Previous step" className="ax-step">
+          <ChevronLeft className="h-4 w-4" /> Previous
         </button>
-
-        <span className="flex-1 text-center font-mono text-xs text-slate-400">
-          {String(index + 1).padStart(2, "0")}/{String(total).padStart(2, "0")}
+        <span className="ax-panel__count">
+          {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
         </span>
-
-        <button
-          type="button"
-          onClick={() => go(index + 1)}
-          disabled={index === total - 1}
-          aria-label="Next step"
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-30"
-        >
-          <ChevronRight className="h-4 w-4" />
+        <button type="button" onClick={() => go(index + 1)} disabled={index === total - 1} aria-label="Next step" className="ax-step ax-step--next">
+          Next <ChevronRight className="h-4 w-4" />
         </button>
       </div>
     </div>

@@ -19,6 +19,14 @@ type Item =
   | { kind: "challenge"; label: string; markdown: string }
   | { kind: "troubleshooting"; label: string; markdown: string };
 
+const KIND_LABEL: Record<Item["kind"], string> = {
+  section: "Reading",
+  quiz: "Quiz",
+  lab: "Hands-on lab",
+  challenge: "Challenge",
+  troubleshooting: "Troubleshooting",
+};
+
 function pad(n: number) {
   return String(n).padStart(2, "0");
 }
@@ -64,9 +72,6 @@ export function SectionTabs({
       <QuizBlock quiz={quiz!} />
     ) : current.kind === "lab" ? (
       <div>
-        <p className="mb-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.1em] text-[#5546e0]">
-          <FlaskConical className="h-3.5 w-3.5" /> Hands-on lab
-        </p>
         {/* Keyed on the label so switching labs remounts this instead of
             reusing the instance -- otherwise it kept whatever step index
             you were on in the previous lab instead of starting over at
@@ -74,19 +79,9 @@ export function SectionTabs({
         <LabCarousel key={current.label} slides={splitMarkdownIntoSlides(current.markdown)} />
       </div>
     ) : current.kind === "challenge" ? (
-      <div>
-        <p className="mb-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.1em] text-[#e5484d]">
-          <Flag className="h-3.5 w-3.5" /> Challenge
-        </p>
-        <Markdown content={current.markdown} />
-      </div>
+      <Markdown content={current.markdown} />
     ) : current.kind === "troubleshooting" ? (
-      <div>
-        <p className="mb-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.1em] text-amber-600">
-          <Wrench className="h-3.5 w-3.5" /> Troubleshooting
-        </p>
-        <Markdown content={current.markdown} />
-      </div>
+      <Markdown content={current.markdown} />
     ) : (
       <Markdown content={current.markdown} />
     );
@@ -103,7 +98,7 @@ export function SectionTabs({
           onClick={() => setCollapsed((c) => !c)}
           aria-expanded={!collapsed}
           title={collapsed ? "Expand sections" : "Collapse sections"}
-          className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-left font-mono text-xs font-semibold uppercase tracking-wide text-slate-500 transition-colors hover:bg-slate-50 ${
+          className={`ax-index__toggle flex w-full items-center gap-2 py-2 text-left ${
             collapsed ? "justify-between md:justify-center" : "justify-between"
           }`}
         >
@@ -132,9 +127,7 @@ export function SectionTabs({
                 tabIndex={collapsed ? -1 : 0}
                 aria-selected={active === i}
                 onClick={() => setActive(i)}
-                className={`flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 ${
-                  active === i ? "bg-[rgba(106,92,255,0.1)] text-[#5546e0]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                }`}
+                className={`ax-tab ${active === i ? "ax-tab--on" : ""}`}
               >
                 <span className="font-mono text-[10px] font-normal text-slate-400">{pad(i + 1)}</span>
                 <span className="truncate">{item.label}</span>
@@ -154,9 +147,7 @@ export function SectionTabs({
                     tabIndex={collapsed ? -1 : 0}
                     aria-selected={active === idx}
                     onClick={() => setActive(idx)}
-                    className={`flex items-start gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 ${
-                      active === idx ? "bg-[rgba(106,92,255,0.1)] text-[#5546e0]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                    }`}
+                    className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
                   >
                     <FlaskConical className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     {/* Lab titles run longer than a section's ("Network
@@ -182,9 +173,7 @@ export function SectionTabs({
                     tabIndex={collapsed ? -1 : 0}
                     aria-selected={active === idx}
                     onClick={() => setActive(idx)}
-                    className={`flex items-start gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 ${
-                      active === idx ? "bg-[rgba(106,92,255,0.1)] text-[#5546e0]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                    }`}
+                    className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
                   >
                     <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     <span className="min-w-0">{item.label}</span>
@@ -206,9 +195,7 @@ export function SectionTabs({
                     tabIndex={collapsed ? -1 : 0}
                     aria-selected={active === idx}
                     onClick={() => setActive(idx)}
-                    className={`flex items-start gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 ${
-                      active === idx ? "bg-[rgba(106,92,255,0.1)] text-[#5546e0]" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                    }`}
+                    className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
                   >
                     <Wrench className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     <span className="min-w-0">{item.label}</span>
@@ -220,27 +207,34 @@ export function SectionTabs({
         </div>
       </div>
 
-      <div className="min-w-0 flex-1 overflow-hidden rounded-md border border-[var(--pvrx-border-light)] bg-white shadow-[0_1px_2px_rgba(16,25,46,0.04),0_20px_40px_-32px_rgba(16,25,46,0.18)]">
-        <div className="p-6 sm:p-8">{panel}</div>
+      <div className="ax-panel min-w-0 flex-1">
+        <div className="ax-panel__head">
+          <span>
+            Section {pad(active + 1)} of {pad(items.length)}
+          </span>
+          <span>{KIND_LABEL[current.kind]}</span>
+        </div>
+        <div className="py-6 sm:py-8">{panel}</div>
 
         {/* Lets you read straight through a lesson without dropping back to
             the sidebar after every section -- and, once it reaches the labs,
             the same control that was previously only reachable by clicking
             a sidebar link. */}
         {items.length > 1 && (
-          <div className="flex items-center justify-between gap-3 border-t border-[var(--pvrx-border-light)] px-6 py-3 sm:px-8">
+          <div className="ax-panel__foot">
             <button
               type="button"
               onClick={() => setActive((a) => Math.max(0, a - 1))}
               disabled={active === 0}
               aria-label="Previous section"
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-30"
+              className="ax-step"
             >
               <ChevronLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">{active > 0 ? items[active - 1].label : "Previous"}</span>
             </button>
 
-            <span className="flex-1 text-center font-mono text-xs text-slate-400">
-              {pad(active + 1)}/{pad(items.length)}
+            <span className="ax-panel__count">
+              {pad(active + 1)} / {pad(items.length)}
             </span>
 
             <button
@@ -248,8 +242,9 @@ export function SectionTabs({
               onClick={() => setActive((a) => Math.min(items.length - 1, a + 1))}
               disabled={active === items.length - 1}
               aria-label="Next section"
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-30"
+              className="ax-step ax-step--next"
             >
+              <span className="hidden sm:inline">{active < items.length - 1 ? items[active + 1].label : "Next"}</span>
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
