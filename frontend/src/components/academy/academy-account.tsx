@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { ArrowRight, LogOut, Sparkles } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
@@ -60,14 +61,38 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
   const readiness = summarize(useResults());
   const { setModalOpen, remaining, limit, enabled } = useCoach();
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [pos, setPos] = useState({ top: 0, right: 16 });
   const root = useRef<HTMLDivElement>(null);
+  const panel = useRef<HTMLDivElement>(null);
   const firstName = accountFirstName(student);
   const initials = accountInitials(student);
+
+  useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (!open) return;
+    const place = () => {
+      const el = root.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setPos({ top: r.bottom + 8, right: Math.max(12, window.innerWidth - r.right) });
+    };
+    place();
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
     const onPointer = (e: MouseEvent) => {
-      if (!root.current?.contains(e.target as Node)) setOpen(false);
+      const t = e.target as Node;
+      if (root.current?.contains(t) || panel.current?.contains(t)) return;
+      setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     window.addEventListener("mousedown", onPointer);
@@ -77,6 +102,53 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
       window.removeEventListener("keydown", onKey);
     };
   }, [open]);
+
+  const host = mounted ? document.querySelector(".academy-bg") ?? document.body : null;
+  const menu =
+    open && host
+      ? createPortal(
+          <div
+            ref={panel}
+            role="dialog"
+            aria-label="Account"
+            className="ax-account flex w-[272px] flex-col border border-[var(--rd-line)] bg-white p-4"
+            style={{ position: "fixed", top: pos.top, right: pos.right, zIndex: 60 }}
+          >
+            <p className="rd-kicker">Account</p>
+            {firstName && <strong>{firstName}</strong>}
+            {student?.email && <span>{student.email}</span>}
+            <Link href={READINESS_PATH} className="ax-account__score block border-y border-[var(--rd-line)] py-3.5" onClick={() => setOpen(false)}>
+              <span className="rd-kicker">Help Desk Readiness</span>
+              <em className="mt-1.5 block text-4xl not-italic leading-none">{readiness.finished === 0 ? "––" : readiness.overall}</em>
+              <small className="mt-1 block uppercase">{LEVELS[readiness.level].label}</small>
+              <b className="mt-2.5 inline-flex items-center gap-1 text-[13px] font-semibold">
+                Open report <ArrowRight className="h-3.5 w-3.5" />
+              </b>
+            </Link>
+            {enabled && (
+              <div className="ax-account__ask flex flex-col gap-2 border-b border-[var(--rd-line)] py-3.5">
+                <button
+                  type="button"
+                  className="ax-account__coach pc-launch inline-flex h-10 w-full items-center justify-center gap-2 rounded-full text-sm font-semibold text-white"
+                  onClick={() => {
+                    setOpen(false);
+                    setModalOpen(true);
+                  }}
+                >
+                {remaining != null && (
+                  <small>
+                    {remaining === 0 ? "None left today" : `${remaining} of ${limit} left today`}
+                  </small>
+                )}
+              </div>
+            )}
+            <button type="button" className="ax-account__out" onClick={onSignOut}>
+              <LogOut className="h-3.5 w-3.5" /> Sign out
+            </button>
+          </div>,
+          host
+        )
+      : null;
 
   return (
     <div ref={root} className="relative">
@@ -90,43 +162,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
       >
         {initials}
       </button>
-      {open && (
-        <div role="dialog" aria-label="Account" className="ax-account">
-          <p className="rd-kicker">Account</p>
-          {firstName && <strong>{firstName}</strong>}
-          {student?.email && <span>{student.email}</span>}
-          <Link href={READINESS_PATH} className="ax-account__score" onClick={() => setOpen(false)}>
-            <span className="rd-kicker">Help Desk Readiness</span>
-            <em>{readiness.finished === 0 ? "––" : readiness.overall}</em>
-            <small>{LEVELS[readiness.level].label}</small>
-            <b>
-              Open report <ArrowRight className="h-3.5 w-3.5" />
-            </b>
-          </Link>
-          {enabled && (
-            <div className="ax-account__ask">
-              <button
-                type="button"
-                className="ax-account__coach pc-launch"
-                onClick={() => {
-                  setOpen(false);
-                  setModalOpen(true);
-                }}
-              >
-                <Sparkles className="h-4 w-4" /> Coach
-              </button>
-              {remaining != null && (
-                <small>
-                  {remaining === 0 ? "None left today" : `${remaining} of ${limit} left today`}
-                </small>
-              )}
-            </div>
-          )}
-          <button type="button" className="ax-account__out" onClick={onSignOut}>
-            <LogOut className="h-3.5 w-3.5" /> Sign out
-          </button>
-        </div>
-      )}
+      {menu}
     </div>
   );
 }

@@ -3427,7 +3427,7 @@ body:has(.lp) {
 .ax-sidelink:hover, .ax-sidelink--on { color: var(--rd-ink); }
 .ax-sidelink--on { font-weight: 600; }
 .ax-check { display: inline-flex; align-items: center; justify-content: center; width: 12px; height: 12px; border: 1.5px solid var(--rd-line); border-radius: 2px; color: transparent; flex-shrink: 0; }
-.ax-check--done { background: var(--rd-good); border-color: var(--rd-good); color: #fff; }
+.ax-check--done { background: #fff; border-color: #fff; color: #0f172a; }
 .ax-soon-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 13.5px; color: var(--rd-ink-3); }
 .ax-soon-row em { margin-left: auto; font-family: var(--font-mono, ui-monospace, monospace); font-size: 10px; font-style: normal; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
 
@@ -3508,9 +3508,6 @@ body:has(.lp) {
 }
 .ax-avatar:hover { filter: brightness(1.08); }
 .ax-account {
-  position: absolute; top: calc(100% + 10px); right: 0; z-index: 50;
-  width: 272px; padding: 16px 16px 12px;
-  background: #fff; border: 1px solid var(--rd-line);
   box-shadow: 0 18px 40px -20px rgba(15, 23, 42, 0.28);
   color: var(--rd-ink);
 }

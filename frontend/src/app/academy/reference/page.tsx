@@ -37,9 +37,9 @@ const filters = [
 ];
 
 const ciaRows = [
-  ["Confidentiality", "Only authorized people/systems can access the data.", "Encryption, unauthorized traffic interception"],
-  ["Integrity", "Data is accurate and has not been tampered with.", "Hashing, digital signatures, an altered file"],
-  ["Availability", "Systems and data are reachable when needed.", "Redundancy/backups, a DDoS attack"],
+  ["Confidentiality", "The vault door — only badge holders get in.", "A phone lock, encryption, intercepted traffic"],
+  ["Integrity", "The cash-bag seal — break it and everyone knows.", "A torn package seal, hashing, an altered file"],
+  ["Availability", "Posted hours — open when customers need the branch.", "A site that loads, backups, a DDoS"],
 ];
 
 const riskRows = [
