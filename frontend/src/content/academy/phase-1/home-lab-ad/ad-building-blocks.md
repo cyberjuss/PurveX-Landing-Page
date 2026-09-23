@@ -25,24 +25,142 @@ An **OU** is the folder an account lives in and the boundary you attach work to.
 
 GovTechFinancial's five departments are each their own OU. Each one nests a `Users` sub-OU one level deeper and IT also gets a `Workstations` sub-OU because the one client machine in this lab belongs under IT rather than next to people.
 
-```
-govtechfinancial.local
- ├─ OU=Departments
- │   ├─ OU=IT
- │   │   ├─ OU=Users         (Alex Rivera, Priya Nair)
- │   │   └─ OU=Workstations  (IT-WKS01)
- │   ├─ OU=Compliance
- │   │   └─ OU=Users         (Devon Brooks, Morgan Lee)
- │   ├─ OU=WealthManagement
- │   │   └─ OU=Users         (Sam Whitfield, Jamie Torres)
- │   ├─ OU=Operations
- │   │   └─ OU=Users         (Taylor Osei, Riley Kwan)
- │   └─ OU=FinanceAccounting
- │       └─ OU=Users         (Jordan Ellis)
- └─ OU=AccessLevels
-     ├─ Group: Server Admins  (Level 2)
-     └─ Group: Helpdesk       (Level 3)
-```
+<div class="ad-tree" aria-label="govtechfinancial.local directory">
+  <div class="ad-tree__domain">
+    <span class="ad-tree__kind ad-tree__kind--domain">Domain</span>
+    <strong>govtechfinancial.local</strong>
+  </div>
+  <div class="ad-tree__split">
+    <div class="ad-tree__col">
+      <div class="ad-tree__row">
+        <span class="ad-tree__kind">OU</span>
+        <span class="ad-tree__name">Departments</span>
+      </div>
+      <ul class="ad-tree__kids">
+        <li>
+          <div class="ad-tree__row">
+            <span class="ad-tree__kind">OU</span>
+            <span class="ad-tree__name">IT</span>
+          </div>
+          <ul class="ad-tree__kids">
+            <li>
+              <div class="ad-tree__row">
+                <span class="ad-tree__kind">OU</span>
+                <span class="ad-tree__name">Users</span>
+                <span class="ad-tree__chips">
+                  <span>Alex Rivera</span>
+                  <span>Priya Nair</span>
+                </span>
+              </div>
+            </li>
+            <li>
+              <div class="ad-tree__row">
+                <span class="ad-tree__kind">OU</span>
+                <span class="ad-tree__name">Workstations</span>
+                <span class="ad-tree__chips">
+                  <span>IT-WKS01</span>
+                </span>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <div class="ad-tree__row">
+            <span class="ad-tree__kind">OU</span>
+            <span class="ad-tree__name">Compliance</span>
+          </div>
+          <ul class="ad-tree__kids">
+            <li>
+              <div class="ad-tree__row">
+                <span class="ad-tree__kind">OU</span>
+                <span class="ad-tree__name">Users</span>
+                <span class="ad-tree__chips">
+                  <span>Devon Brooks</span>
+                  <span>Morgan Lee</span>
+                </span>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <div class="ad-tree__row">
+            <span class="ad-tree__kind">OU</span>
+            <span class="ad-tree__name">WealthManagement</span>
+          </div>
+          <ul class="ad-tree__kids">
+            <li>
+              <div class="ad-tree__row">
+                <span class="ad-tree__kind">OU</span>
+                <span class="ad-tree__name">Users</span>
+                <span class="ad-tree__chips">
+                  <span>Sam Whitfield</span>
+                  <span>Jamie Torres</span>
+                </span>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <div class="ad-tree__row">
+            <span class="ad-tree__kind">OU</span>
+            <span class="ad-tree__name">Operations</span>
+          </div>
+          <ul class="ad-tree__kids">
+            <li>
+              <div class="ad-tree__row">
+                <span class="ad-tree__kind">OU</span>
+                <span class="ad-tree__name">Users</span>
+                <span class="ad-tree__chips">
+                  <span>Taylor Osei</span>
+                  <span>Riley Kwan</span>
+                </span>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <div class="ad-tree__row">
+            <span class="ad-tree__kind">OU</span>
+            <span class="ad-tree__name">FinanceAccounting</span>
+          </div>
+          <ul class="ad-tree__kids">
+            <li>
+              <div class="ad-tree__row">
+                <span class="ad-tree__kind">OU</span>
+                <span class="ad-tree__name">Users</span>
+                <span class="ad-tree__chips">
+                  <span>Jordan Ellis</span>
+                </span>
+              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="ad-tree__col ad-tree__col--access">
+      <div class="ad-tree__row">
+        <span class="ad-tree__kind">OU</span>
+        <span class="ad-tree__name">AccessLevels</span>
+      </div>
+      <ul class="ad-tree__kids">
+        <li>
+          <div class="ad-tree__row">
+            <span class="ad-tree__kind ad-tree__kind--group">Group</span>
+            <span class="ad-tree__name">Server Admins</span>
+            <span class="ad-tree__meta">Level 2</span>
+          </div>
+        </li>
+        <li>
+          <div class="ad-tree__row">
+            <span class="ad-tree__kind ad-tree__kind--group">Group</span>
+            <span class="ad-tree__name">Helpdesk</span>
+            <span class="ad-tree__meta">Level 3</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
 
 Every account lives in exactly one OU and that OU is its department. That is location not access.
 
