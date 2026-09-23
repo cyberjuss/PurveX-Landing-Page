@@ -202,7 +202,7 @@ export function SiteChrome({
             {/* The one contact CTA for the whole site, lives here so every
                 page gets it automatically instead of each page carrying its
                 own (previously inconsistent) version. */}
-            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-footer__cta">
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg sp-footer__cta">
               Schedule a Conversation <ArrowRight size={16} />
             </a>
           </div>
