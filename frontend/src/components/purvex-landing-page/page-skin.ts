@@ -585,4 +585,28 @@ html { scroll-behavior: smooth }
   .ab-links p { grid-column: 1 }
   .ab-links i { grid-column: 2; grid-row: 2 / span 2; width: 44px; height: 44px }
 }
+
+/* ── Vertical rhythm ── */
+.pg-section { padding-top: 150px }
+.pg-head { margin-bottom: 60px }
+.pg-head h2 + p, .pg-head .sp-tag + h2 { margin-top: 16px }
+.pg-close { margin-top: 150px; padding: 60px 52px }
+.pg-dark { padding: 68px 56px }
+.pg-rows > li, .ab-rows li { padding-top: 26px; padding-bottom: 26px }
+.ab-links a { padding: 46px 0 }
+.ox-flow { margin-top: 16px }
+.ox-steps > li { padding: 34px 0 }
+@media (max-width: 980px) { .pg-dark { padding: 44px 24px } }
+@media (max-width: 680px) {
+  .pg-section { padding-top: 96px }
+  .pg-head { margin-bottom: 40px }
+  .pg-close { margin-top: 96px; padding: 32px 20px }
+  .pg-dark { padding: 32px 18px }
+}
+
+.ab-statement[data-r] { opacity: 1; transform: none; filter: none }
+.ab-statement { max-width: 62rem }
+.ab-statement h2 { margin: 20px 0 0; font-family: var(--font-display); font-size: clamp(2.2rem, 5.4vw, 4.2rem); font-weight: 700; letter-spacing: -.05em; line-height: 1.04; color: var(--ink); text-wrap: balance }
+.ab-statement mark { background: linear-gradient(transparent 64%, rgba(106,92,255,.28) 64%); color: inherit; padding: 0 3px }
+.ab-statement p { margin: 28px 0 0; max-width: 50ch; color: var(--ink-soft); font-size: 1.08rem; line-height: 1.7; text-wrap: pretty }
 `;

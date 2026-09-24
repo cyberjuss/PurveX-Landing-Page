@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { IconCoverage, IconLog, IconShield, IconSignal, IconTune, IconValidate } from "./brand-icons";
+import { IconCoverage, IconEvidence, IconLog, IconRule, IconShield, IconSignal, IconTune, IconValidate } from "./brand-icons";
+import { CoverageMatrix, COVERAGE_PERCENT, LAB_CSS } from "./lab-visuals";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { CaseFloor, DETECTION_ALERTS, DETECTION_CASES } from "./case-floor";
 import { HoldCard } from "./hold-card";
@@ -13,6 +14,13 @@ const services = [
   { n: "02", title: "Optimization", body: "Noisy rules get cut. Real alerts stop getting buried.", Icon: IconTune },
   { n: "03", title: "Assessment", body: "What the SIEM sees, and what it misses.", Icon: IconCoverage },
   { n: "04", title: "Validation", body: "A clear answer on whether it fires or does not.", Icon: IconValidate },
+];
+
+const deliverables = [
+  { title: "Rules written for your environment", body: "Detections built around your logs and your real risks.", Icon: IconRule },
+  { title: "A coverage map", body: "What the SIEM sees and what it misses, mapped to ATT&CK.", Icon: IconCoverage },
+  { title: "A validation report", body: "Each rule tested against real attack behavior, with the evidence kept.", Icon: IconEvidence },
+  { title: "A tuning log", body: "The noisy rules that were cut, and the reason for each one.", Icon: IconTune },
 ];
 
 const steps = [
@@ -60,6 +68,48 @@ export default function SecurityOperationsPage() {
       </section>
 
       <section className="pg-section">
+        <div className="pg-dark" data-r>
+          <div className="lb-band">
+            <div>
+              <span className="pg-dark__kicker">Assessment</span>
+              <h2>See what your SIEM covers, mapped to ATT&amp;CK</h2>
+              <ul className="lb-legend">
+                <li><i data-s="fired" /> Fired</li>
+                <li><i data-s="missed" /> Missed</li>
+                <li><i data-s="untested" /> Not yet tested</li>
+              </ul>
+            </div>
+            <div className="lb-big">
+              <strong>{COVERAGE_PERCENT}%</strong>
+              <span>of tested techniques fired<br />Example matrix</span>
+            </div>
+          </div>
+          <CoverageMatrix />
+        </div>
+      </section>
+
+      <section className="pg-section">
+        <div className="ab-split">
+          <div className="pg-head" data-r>
+            <span className="sp-tag">What you receive</span>
+            <h2>Four things you keep after the engagement</h2>
+            <p>Each one is written down and handed over, so the work stays useful after we leave.</p>
+          </div>
+          <ol className="ab-rows" data-r>
+            {deliverables.map((d) => (
+              <li key={d.title}>
+                <i className="pg-ico"><d.Icon size={22} /></i>
+                <div>
+                  <h3>{d.title}</h3>
+                  <p>{d.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section className="pg-section">
         <div className="ox-split">
           <div className="pg-head" data-r>
             <span className="sp-tag">How we work</span>
@@ -99,6 +149,7 @@ export default function SecurityOperationsPage() {
       </section>
 
       <style>{PG_CSS}</style>
+      <style>{LAB_CSS}</style>
     </SiteChrome>
   );
 }

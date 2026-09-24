@@ -569,8 +569,8 @@ const HP_CSS = `
 .hp-dock__row em[data-sev="Crit"] { letter-spacing: .1em }
 .hp-dock__row span:nth-child(4) { color: #fff; font-weight: 700 }
 
-.hp-section { padding-top: 120px; scroll-margin-top: 84px }
-.hp-head { max-width: 34rem; margin: 0 0 36px }
+.hp-section { padding-top: 144px; scroll-margin-top: 84px }
+.hp-head { max-width: 34rem; margin: 0 0 56px }
 .hp-head h2, .hp-see__intro h2, .hp-close h2 {
   margin: 12px 0 0; font-family: var(--font-display); font-weight: 700;
   letter-spacing: -.022em; line-height: 1.15; color: var(--ink);
@@ -578,7 +578,7 @@ const HP_CSS = `
 .hp-head h2 { font-size: clamp(1.6rem, 2.6vw, 2.1rem) }
 .hp-head p { margin: 12px 0 0; color: var(--muted); font-size: 1rem; line-height: 1.6 }
 
-.hp-see__intro { max-width: 28rem; margin: 0 0 36px }
+.hp-see__intro { max-width: 28rem; margin: 0 0 56px }
 .hp-see__intro h2 { font-size: clamp(1.7rem, 3vw, 2.2rem) }
 .hp-see__intro p { margin: 14px 0 0; color: var(--ink-soft); font-size: 1.02rem; line-height: 1.65 }
 .hp-see__grid {
@@ -767,7 +767,7 @@ const HP_CSS = `
 .hp-deck[data-r] > *:nth-child(2) { transition-delay: .14s }
 .hp-deck[data-r] > *:nth-child(3) { transition-delay: .23s }
 
-.hp-voice-wrap { padding-top: 120px }
+.hp-voice-wrap { padding-top: 144px }
 .hp-voice {
   position: relative; overflow: hidden; display: grid; grid-template-columns: 320px 1fr; gap: 0; margin: 0;
   border-radius: 28px; background: linear-gradient(135deg, #fff 0%, #f4f2ff 100%);
@@ -816,7 +816,7 @@ const HP_CSS = `
 .hp-close {
   position: relative; overflow: hidden;
   display: grid; grid-template-columns: 1.15fr .85fr; gap: 36px; align-items: center;
-  margin-top: 120px; padding: 48px;
+  margin-top: 144px; padding: 56px 48px;
   background:
     radial-gradient(70% 90% at 100% 0%, rgba(238,240,255,.16), transparent 52%),
     linear-gradient(145deg, var(--accent) 0%, var(--hp-dark) 52%, var(--hp-deep) 100%);

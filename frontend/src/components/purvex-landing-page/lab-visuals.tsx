@@ -115,7 +115,7 @@ export function HealthTrend() {
 
 export const LAB_CSS = `
 .lb-chain[data-r], .lb-matrix[data-r], .lb-trend[data-r], .lb-facts[data-r], .lb-runs[data-r] { opacity: 1; transform: none; filter: none }
-.lb-chain { margin-top: 44px }
+.lb-chain { margin-top: 64px }
 .lb-chain__track { position: relative }
 .lb-chain ol { list-style: none; margin: 0; padding: 0; position: relative; display: grid; grid-template-columns: repeat(6, 1fr) }
 .lb-chain ol::before, .lb-chain ol::after { content: ""; position: absolute; top: 32px; height: 2px }
@@ -135,13 +135,13 @@ export const LAB_CSS = `
 .lb-chain li[data-s="break"] i { background: #fdeaea; border-color: #e5484d; color: #c23030; animation: lb-break 4.5s ease-in-out infinite }
 .lb-chain li[data-s="break"] span { color: #c23030; font-weight: 600 }
 .lb-pulse { position: absolute; top: 27px; left: 8.33%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 6px rgba(106,92,255,.18); animation: lb-run 4.5s ease-in-out infinite; z-index: 2 }
-.lb-chain__verdict { margin: 34px 0 0; padding: 18px 22px; border-radius: 16px; background: linear-gradient(135deg, #f7f5ff, #fff 70%); border: 1px solid rgba(106,92,255,.18); font-size: .98rem; line-height: 1.6; color: var(--ink-soft) }
+.lb-chain__verdict { margin: 48px 0 0; padding: 18px 22px; border-radius: 16px; background: linear-gradient(135deg, #f7f5ff, #fff 70%); border: 1px solid rgba(106,92,255,.18); font-size: .98rem; line-height: 1.6; color: var(--ink-soft) }
 .lb-chain__verdict b { color: var(--ink) }
 @keyframes lb-run { 0% { left: 8.33%; opacity: 0 } 8% { opacity: 1 } 55% { left: 41.67%; opacity: 1 } 70% { left: 41.67%; opacity: 0 } 100% { left: 41.67%; opacity: 0 } }
 @keyframes lb-break { 0%, 50% { box-shadow: 0 0 0 0 rgba(229,72,77,0) } 58% { box-shadow: 0 0 0 10px rgba(229,72,77,.22) } 80%, 100% { box-shadow: 0 0 0 0 rgba(229,72,77,0) } }
 
-.lb-facts { list-style: none; margin: 48px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px }
-.lb-facts li { padding: 22px 0 0; border-top: 1px solid var(--border-strong); display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; align-items: start }
+.lb-facts { list-style: none; margin: 76px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px }
+.lb-facts li { padding: 28px 0 0; border-top: 1px solid var(--border-strong); display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; align-items: start }
 .lb-facts .pg-ico { grid-row: span 2 }
 .lb-facts strong { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; letter-spacing: -.015em; color: var(--ink) }
 .lb-facts p { margin: 0; color: var(--ink-soft); font-size: .92rem; line-height: 1.6 }
@@ -157,7 +157,7 @@ export const LAB_CSS = `
 .lb-legend i[data-s="fired"], .lb-matrix i[data-s="fired"] { background: #c8c2ff }
 .lb-legend i[data-s="missed"], .lb-matrix i[data-s="missed"] { background: #ff8f93 }
 .lb-legend i[data-s="untested"], .lb-matrix i[data-s="untested"] { background: rgba(255,255,255,.12) }
-.lb-matrix { margin-top: 36px }
+.lb-matrix { margin-top: 52px }
 .lb-matrix__cols { display: grid; grid-template-columns: repeat(14, 1fr); gap: 6px; align-items: start }
 .lb-matrix__col { display: flex; flex-direction: column; gap: 6px }
 .lb-matrix__col span { margin-bottom: 4px; font-family: var(--font-mono); font-size: .54rem; font-weight: 700; letter-spacing: .06em; color: rgba(238,240,255,.7); overflow: hidden; text-overflow: clip; white-space: nowrap }
@@ -181,7 +181,7 @@ export const LAB_CSS = `
 .lb-trend.in .lb-trend__ping { animation: lb-ping 2.2s ease-out 1.6s infinite }
 @keyframes lb-draw { to { stroke-dashoffset: 0 } }
 @keyframes lb-ping { 0% { opacity: .6; r: 5 } 100% { opacity: 0; r: 16 } }
-.lb-runs { list-style: none; margin: 26px 0 0; padding: 0; border-top: 1px solid var(--border-strong) }
+.lb-runs { list-style: none; margin: 36px 0 0; padding: 0; border-top: 1px solid var(--border-strong) }
 .lb-runs li { display: grid; grid-template-columns: 6.5rem 1fr auto; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); font-size: .9rem }
 .lb-runs code { font-family: var(--font-mono); font-size: .74rem; font-weight: 700; color: var(--accent-deep) }
 .lb-runs em { font-style: normal; padding: 3px 10px; border-radius: 999px; font-family: var(--font-mono); font-size: .58rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; background: var(--accent-soft); color: var(--accent-deep) }

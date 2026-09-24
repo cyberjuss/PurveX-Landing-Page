@@ -243,9 +243,9 @@ export const PRODUCT_CSS = `
 @keyframes as-fail { 0%, 40% { box-shadow: 0 0 0 0 rgba(229,72,77,0) } 50% { box-shadow: 0 0 0 8px rgba(229,72,77,.24) } 80%, 100% { box-shadow: 0 0 0 0 rgba(229,72,77,0) } }
 
 /* ---- a rule that exists vs a rule that works ---- */
-.pv { margin-top: 44px; display: grid; gap: 22px }
+.pv { margin-top: 64px; display: grid; gap: 10px }
 .pv[data-r] { opacity: 1; transform: none; filter: none }
-.pv__row { display: grid; grid-template-columns: 11rem 1fr; gap: 24px; align-items: center; padding: 22px 0; border-top: 1px solid var(--border-strong) }
+.pv__row { display: grid; grid-template-columns: 11rem 1fr; gap: 24px; align-items: center; padding: 32px 0; border-top: 1px solid var(--border-strong) }
 .pv__label { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
 .pv__row[data-k="assumed"] .pv__label { color: var(--muted) }
 .pv ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); position: relative }
@@ -269,12 +269,12 @@ export const PRODUCT_CSS = `
 .pv[data-r].in .pv__row[data-k="proven"] li { opacity: 1; transform: none }
 
 /* ---- without / with ---- */
-.wv { margin-top: 40px }
+.wv { margin-top: 64px }
 .wv[data-r] { opacity: 1; transform: none; filter: none }
 .wv__head { display: grid; grid-template-columns: 1fr 64px 1fr; padding-bottom: 14px; font-family: var(--font-mono); font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted) }
 .wv__head span:last-child { color: var(--accent-deep) }
 .wv ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border-strong) }
-.wv li { display: grid; grid-template-columns: 1fr 64px 1fr; align-items: center; padding: 22px 0; border-bottom: 1px solid var(--border) }
+.wv li { display: grid; grid-template-columns: 1fr 64px 1fr; align-items: center; padding: 30px 0; border-bottom: 1px solid var(--border) }
 .wv__without, .wv__with { display: flex; gap: 16px; align-items: center }
 .wv__without i, .wv__with i { flex: none; display: grid; place-items: center; width: 50px; height: 50px; border-radius: 16px }
 .wv__without i { background: #fff; border: 1px dashed rgba(16,25,46,.3); color: var(--muted-dim) }
@@ -290,9 +290,9 @@ export const PRODUCT_CSS = `
 .wv[data-r].in li:nth-child(2) { transition-delay: .1s } .wv[data-r].in li:nth-child(3) { transition-delay: .2s } .wv[data-r].in li:nth-child(4) { transition-delay: .3s }
 
 /* ---- pathways ---- */
-.pw { list-style: none; margin: 40px 0 0; padding: 0; border-top: 1px solid var(--border-strong) }
+.pw { list-style: none; margin: 64px 0 0; padding: 0; border-top: 1px solid var(--border-strong) }
 .pw[data-r] { opacity: 1; transform: none; filter: none }
-.pw > li { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; align-items: center; padding: 28px 0; border-bottom: 1px solid var(--border) }
+.pw > li { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; align-items: center; padding: 36px 0; border-bottom: 1px solid var(--border) }
 .pw h3 { margin: 0; font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; letter-spacing: -.028em }
 .pw p { margin: 8px 0 0; max-width: 40ch; color: var(--ink-soft); font-size: .95rem; line-height: 1.6 }
 .pw__track { display: grid; grid-template-columns: repeat(5, 1fr); position: relative }
@@ -304,7 +304,7 @@ export const PRODUCT_CSS = `
 .pw__track span[data-on="true"] b { color: var(--accent-deep) }
 
 /* ---- trust strip and faq ---- */
-.ts { list-style: none; margin: 0 0 40px; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--border-strong) }
+.ts { list-style: none; margin: 0 0 64px; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--border-strong) }
 .ts[data-r] { opacity: 1; transform: none; filter: none }
 .ts li { display: flex; flex-direction: column; gap: 4px; padding: 22px 20px 6px 0 }
 .ts li + li { padding-left: 20px; border-left: 1px solid var(--border) }
@@ -313,7 +313,7 @@ export const PRODUCT_CSS = `
 .ts span { font-size: .86rem; color: var(--ink-soft); line-height: 1.5 }
 .fq { border-top: 1px solid var(--border-strong) }
 .fq details { border-bottom: 1px solid var(--border) }
-.fq summary { display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center; padding: 22px 0; cursor: pointer; list-style: none; transition: padding .3s var(--ease) }
+.fq summary { display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center; padding: 28px 0; cursor: pointer; list-style: none; transition: padding .3s var(--ease) }
 .fq summary::-webkit-details-marker { display: none }
 .fq summary:hover { padding-left: 10px }
 .fq summary > i { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: var(--accent-soft); color: var(--accent-deep) }
@@ -335,7 +335,7 @@ export const PRODUCT_CSS = `
 .pr__price { margin: 14px 0 0; font-family: var(--font-display); font-size: clamp(3.4rem, 6vw, 4.8rem); font-weight: 700; line-height: .9; letter-spacing: -.055em }
 .pr__price small { margin-left: 8px; font-size: .95rem; font-weight: 500; letter-spacing: 0; color: var(--muted) }
 .pr__side--paid .pr__price small { color: #cfd4ff }
-.pr__list { list-style: none; margin: 28px 0 32px; padding: 0; display: grid; gap: 12px }
+.pr__list { list-style: none; margin: 32px 0 40px; padding: 0; display: grid; gap: 12px }
 .pr__list li { display: flex; align-items: center; gap: 12px; font-size: .96rem }
 .pr__list li::before { content: "✓"; flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-deep); font-size: .7rem; font-weight: 800 }
 .pr__side--paid .pr__list li::before { background: rgba(255,255,255,.18); color: #fff }

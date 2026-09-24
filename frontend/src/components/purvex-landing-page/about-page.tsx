@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { IconIdentity, IconSchedule, IconShield } from "./brand-icons";
+import { IconEvidence, IconIdentity, IconLog, IconSchedule, IconShield } from "./brand-icons";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { CaseFloor, type FloorAlert, type FloorCase } from "./case-floor";
 import { HoldCard } from "./hold-card";
@@ -49,6 +49,12 @@ const ABOUT_ALERTS: FloorAlert[] = [
   { title: "Security operations", sev: "High", time: "Live", id: "SIEM", acct: "Validate", host: "PurveX" },
   { title: "Cybersecurity training", sev: "High", time: "Live", id: "Labs", acct: "Portal", host: "PurveX" },
   { title: "PurveX Labs", sev: "Med", time: "Soon", id: "Early", acct: "Access", host: "PurveX" },
+];
+
+const workflow = [
+  { n: "01", title: "Book", body: "Thirty minutes to describe your SIEM or your program.", Icon: IconSchedule },
+  { n: "02", title: "Walk through", body: "We review what fires and what does not, or where a cohort should start.", Icon: IconLog },
+  { n: "03", title: "Agree the scope", body: "A short engagement, with one named person on every step.", Icon: IconEvidence },
 ];
 
 export default function AboutPage() {
@@ -117,6 +123,41 @@ export default function AboutPage() {
               ))}
             </ol>
           </div>
+        </div>
+      </section>
+
+      <section className="pg-section">
+        <div className="ab-statement" data-r>
+          <span className="sp-tag">What we believe</span>
+          <h2>
+            You defend better when you know <mark>how the other side moves</mark>.
+          </h2>
+          <p>
+            That belief shapes both offers: operations that test detections the way an attacker would, and training that
+            teaches analysts to think the same way.
+          </p>
+        </div>
+      </section>
+
+      <section className="pg-section">
+        <div className="ox-split">
+          <div className="pg-head" data-r>
+            <span className="sp-tag">Working together</span>
+            <h2>Three steps from hello to scope</h2>
+            <p>No long sales process, and no hand-off to someone new.</p>
+          </div>
+          <ol className="ox-steps" data-r>
+            {workflow.map((s) => (
+              <li key={s.n}>
+                <span className="ox-steps__n">{s.n}</span>
+                <div>
+                  <h3>{s.title}</h3>
+                  <p>{s.body}</p>
+                </div>
+                <i className="pg-ico"><s.Icon size={24} /></i>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
