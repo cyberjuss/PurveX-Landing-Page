@@ -5,9 +5,9 @@ import type { LabSnapshot } from "@/lib/academy-lab";
 // snapshot has to contain it. It shows the snapshot came from a lab they control
 // right now. It does not prove who built the lab.
 
-export const CHALLENGE_MINUTES = 60;
+export const CHALLENGE_MINUTES = 240;
 /** How long the lab syncs every few minutes after a challenge or a lab check. */
-export const LIVE_MINUTES = 30;
+export const LIVE_MINUTES = 240;
 export const VERIFIED_DAYS = 30;
 
 const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
