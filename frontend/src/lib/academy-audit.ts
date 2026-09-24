@@ -66,8 +66,6 @@ function ageDays(iso: string | null): number | null {
 export function auditLab(s: LabSnapshot): Finding[] {
   const out: Finding[] = [];
   const admins = ADMIN_GROUPS.filter((g) => s.groups.some((x) => x.name.toLowerCase() === g.toLowerCase()));
-  const notAdmin = (sam: string, name: string): { c: Check; label: string }[] =>
-    admins.map((g) => ({ c: { t: "member", sam, group: g, want: false }, label: `${name} is not in ${g}` }));
 
   // ---- accounts -----------------------------------------------------------
   for (const u of s.users.filter((x) => x.enabled && usable(x))) {

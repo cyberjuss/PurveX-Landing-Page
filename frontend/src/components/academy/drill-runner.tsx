@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight, Check, ClipboardList, Copy, Flame, Timer, X } from "lucide-react";
+import { ArrowRight, Check, ClipboardList, Flame, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch, READINESS_PATH } from "@/lib/academy-client";
 import { SKILLS, type Skill } from "@/lib/academy-score";
@@ -18,7 +18,7 @@ export type DrillStatus = {
     bestTimed: DrillEntry | null;
     lastDay: string | null;
   };
-  lab: { synced: boolean; syncedAt: string | null; ago: string | null; days: number | null; security: boolean; scenarios: boolean; logonAudit: boolean };
+  lab: { synced: boolean; syncedAt: string | null; ago: string | null; days: number | null; security: boolean; events: boolean };
   focus: string | null;
   level: { n: number; name: string };
   ctf: { week: string; entry: DrillEntry | null };
@@ -27,7 +27,10 @@ export type DrillStatus = {
   chats: { base: number; bonus: number; parts: { label: string; n: number }[] };
   jobs: JobRow[];
   nextJob: string | null;
+  findings: Finding[];
 };
+
+type Finding = { id: string; severity: "high" | "medium" | "low"; title: string; facts: string; fixable: boolean; job: string };
 
 type JobRow = { id: string; label: string; skill: Skill; lab: boolean; security: boolean; status: "new" | "practiced" | "proven"; correct: number; asked: number };
 
@@ -52,7 +55,7 @@ type Mode = "daily" | "timed" | "ctf";
 const MODE_LABEL: Record<string, string> = { daily: "Daily scenario", timed: "Incident drill", ctf: "Weekly CTF", coach: "Practice" };
 
 type DrillEntry = { id: string; day: string; mode: string; correct: number; total: number; seconds: number; detail?: { t: string }[] };
-type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[]; free?: boolean; format?: string; kind?: "decide" | "respond" | "change"; long?: boolean; checklist?: string[]; checkCount?: number; setup?: { note: string; script: string }; job?: string; gated?: boolean; live?: boolean };
+type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[]; free?: boolean; format?: string; kind?: "decide" | "respond" | "change"; long?: boolean; checklist?: string[]; checkCount?: number; setup?: { note: string; script: string }; job?: string; gated?: boolean };
 type TaskInfo = { setup?: { note: string; script: string }; checklist?: string[]; checkCount?: number };
 type CheckRes = { needsSetup?: boolean; fresh: boolean; results: { label: string; ok: boolean }[]; syncedAgo: string | null; passed: boolean };
 type Review = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string; runbook?: string[] };
@@ -95,42 +98,10 @@ function lastSeven() {
   return out;
 }
 
-function SetupBlock({ setup }: { setup: { note: string; script: string } }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <div className="dr-setup">
-      <span className="rd-kicker">Step 1 · Set up the ticket</span>
-      <p>{setup.note}</p>
-      <div className="dr-term">
-        <div className="dr-term__bar">
-          <i />
-          <i />
-          <i />
-          <span>PowerShell on the domain controller</span>
-          <button
-            type="button"
-            className="dr-term__copy"
-            onClick={() => {
-              navigator.clipboard?.writeText(setup.script).then(() => {
-                setCopied(true);
-                window.setTimeout(() => setCopied(false), 1500);
-              }).catch(() => {});
-            }}
-          >
-            <Copy className="h-3.5 w-3.5" /> {copied ? "Copied" : "Copy"}
-          </button>
-        </div>
-        <pre>{setup.script}</pre>
-      </div>
-    </div>
-  );
-}
-
 function TaskPanel({ task, checkRes }: { task: TaskInfo; checkRes: CheckRes | null }) {
   return (
     <div className="dr-task">
-      {task.setup && <SetupBlock setup={task.setup} />}
-      <span className="rd-kicker">{task.setup ? "Step 2 · Fix it in your lab" : "Make this change in your lab"}</span>
+      <span className="rd-kicker">Fix it in your lab</span>
       {task.checklist ? (
         <ul className="dr-task__list">
           {task.checklist.map((c) => (
@@ -173,55 +144,6 @@ function TaskPanel({ task, checkRes }: { task: TaskInfo; checkRes: CheckRes | nu
   );
 }
 
-const LIVE_TEXT: Record<string, string> = {
-  queued: "Queued. Your domain controller picks it up within 15 minutes. To start it now, run .\\Build-Environment.ps1 -SyncOnly -AllowScenarios on the domain controller.",
-  sent: "Your domain controller is building it now.",
-  done: "Ready. Three practice accounts and their sign-in events are in your Security log. Open Event Viewer on the domain controller and start hunting.",
-  failed: "Your lab could not build it.",
-};
-
-function LiveStatus({ token }: { token: string }) {
-  const [job, setJob] = useState<{ status: string; result: string | null }>({ status: "queued", result: null });
-  useEffect(() => {
-    let stop = false;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const tick = async () => {
-      try {
-        const res = await academyFetch("/academy/api/drill", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "job", token }),
-        });
-        const d = await res.json();
-        if (stop) return;
-        if (res.ok) setJob({ status: d.status, result: d.result });
-        if (!res.ok || (d.status !== "done" && d.status !== "failed")) timer = setTimeout(tick, 15000);
-      } catch {
-        if (!stop) timer = setTimeout(tick, 20000);
-      }
-    };
-    void tick();
-    return () => {
-      stop = true;
-      if (timer) clearTimeout(timer);
-    };
-  }, [token]);
-  return (
-    <div className={`dr-live dr-live--${job.status}`}>
-      <span className="rd-kicker">Live investigation · your own Security log</span>
-      <p>
-        {LIVE_TEXT[job.status] ?? LIVE_TEXT.queued}
-        {job.status === "failed" && job.result ? ` ${job.result}` : ""}
-      </p>
-      <ol>
-        <li>Event Viewer, Windows Logs, Security, then Filter Current Log.</li>
-        <li>Failures are event 4771 or 4625. Successes are 4768 or 4624.</li>
-        <li>One account has the most failures before a success. Type its sign-in name below.</li>
-      </ol>
-    </div>
-  );
-}
-
 function Scenario({
   caseNo,
   item,
@@ -231,7 +153,6 @@ function Scenario({
   onHint,
   checkRes,
   unlock,
-  token,
 }: {
   caseNo: string;
   item: Item;
@@ -241,7 +162,6 @@ function Scenario({
   onHint: () => void;
   checkRes: CheckRes | null;
   unlock: TaskInfo | null;
-  token: string;
 }) {
   return (
     <div className="dr-card">
@@ -262,7 +182,6 @@ function Scenario({
           <pre>{item.evidence.join("\n")}</pre>
         </div>
       )}
-      {item.live && <LiveStatus token={token} />}
       <h3 className="dr-question">{item.prompt}</h3>
       {item.kind === "change" ? (
         <TaskPanel task={item} checkRes={checkRes} />
@@ -323,6 +242,35 @@ function Scenario({
   );
 }
 
+function LabFindings({ items }: { items: Finding[] }) {
+  const tone = { high: "Serious", medium: "Worth fixing", low: "Minor" } as const;
+  return (
+    <section className="rd-sec dr-findings">
+      <div className="rd-sec__head">
+        <span className="rd-sec__n">04</span>
+        <h2>What your lab needs</h2>
+        <p>
+          {items.length === 0
+            ? "Nothing is wrong in your lab right now. Your daily case will be a judgement case."
+            : "A real audit of your own lab. Your daily lab task is one of these, and it is checked in your lab."}
+        </p>
+      </div>
+      {items.length > 0 && (
+        <ul className="dr-findings__list">
+          {items.map((f) => (
+            <li key={f.id} className={`is-${f.severity}`}>
+              <span className="dr-findings__tag">{tone[f.severity]}</span>
+              <strong>{f.title}</strong>
+              <p>{f.facts}</p>
+              {!f.fixable && <em>Needs a decision, not a setting.</em>}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
   const { ask } = useCoach();
   const [open, setOpen] = useState(false);
@@ -360,7 +308,7 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
                 <div>
                   <span>Job tasks</span>
                   <p>
-                    {done.length} of {jobs.length} proven. Proven means you did it in your own lab and it checked out, or got it right three times.
+                    {done.length} of {jobs.length} proven. A hands-on task is proven when your lab shows the configuration. A judgement task is proven after three right answers.
                   </p>
                 </div>
                 <button type="button" className="dr-jobsheet__close" onClick={() => setOpen(false)}>
@@ -646,7 +594,7 @@ export function DrillRunner() {
           </div>
         )}
 
-        <Scenario caseNo={String((status?.stats.total ?? 0) + 1).padStart(2, "0")} item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} checkRes={checkRes} unlock={unlock} token={run.token} />
+        <Scenario caseNo={String((status?.stats.total ?? 0) + 1).padStart(2, "0")} item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} checkRes={checkRes} unlock={unlock} />
 
         <div className="dr-actions">
           {item.gated && !unlock ? (
@@ -887,12 +835,10 @@ export function DrillRunner() {
                   <span className="ax-path__body">
                     {status.ctf.entry
                       ? "A new investigation opens Monday."
-                      : `One hard investigation a week. Find the account, then contain it. Earns +8 Coach chats, +16 with the flag. ${
-                          status.lab.scenarios && status.lab.logonAudit
-                            ? "Live: the evidence is planted in your own Security log."
-                            : status.lab.scenarios
-                              ? "To make it live, turn on Logon auditing for success and failure first."
-                              : "To make it live in your own Security log, run .\\Build-Environment.ps1 -InstallSync -AllowScenarios on your domain controller."
+                      : `One hard investigation a week, asked about your own Security log. Earns +8 Coach chats, +16 with the flag. ${
+                          status.lab.events
+                            ? "Your lab sent its log, so this one is about what really happened in it."
+                            : "Update the lab script from Build This Lab so it can ask about your own Security log."
                         }`}
                   </span>
                 </span>
@@ -907,6 +853,8 @@ export function DrillRunner() {
             </li>
           </ol>
           {error && <p className="dr-error">{error}</p>}
+
+          <LabFindings items={status.findings} />
 
           <Link href={READINESS_PATH} className="dr-reportlink">
             This week and missed questions

@@ -4520,3 +4520,14 @@ textarea.pc-dock__field {
 .dr-live .rd-kicker { color: var(--rd-accent); }
 .dr-live p { margin: 0; font-size: var(--ty-body, 14px); line-height: 1.55; color: var(--rd-ink); }
 .dr-live ol { margin: 0; padding-left: 18px; font-size: var(--ty-small, 13px); line-height: 1.6; color: var(--rd-ink-2); }
+
+/* Real findings from the student's own lab */
+.dr-findings { margin-top: 48px; }
+.dr-findings__list { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--rd-line); }
+.dr-findings__list li { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px 0; border-bottom: 1px solid var(--rd-line); }
+.dr-findings__list strong { font-family: var(--font-display); font-size: var(--ty-h3, 20px); font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }
+.dr-findings__list p { margin: 0; max-width: 72ch; font-size: var(--ty-body, 14px); line-height: 1.55; color: var(--rd-ink-2); }
+.dr-findings__list em { font-style: normal; font-size: var(--ty-small, 13px); color: var(--rd-ink-3); }
+.dr-findings__tag { padding: 2px 8px; border-radius: 999px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: var(--rd-line-2); color: var(--rd-ink-2); }
+.is-high .dr-findings__tag { background: rgba(217, 58, 63, 0.14); color: var(--rd-bad); }
+.is-medium .dr-findings__tag { background: rgba(196, 130, 14, 0.14); color: var(--rd-warn); }

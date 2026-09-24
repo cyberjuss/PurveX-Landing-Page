@@ -46,6 +46,8 @@ export type Item = {
   job?: string;
   /** A typed-answer question that also needs a lab change to finish. The change unlocks after the answer. */
   gate?: boolean;
+  /** The job the second half proves, when it is a real fix in the student's lab. */
+  gateJob?: string;
 };
 
 export type Check =
@@ -698,10 +700,10 @@ export async function gradeDrill(
           }),
     })),
   };
-  // A contained CTF also proves the containment job.
+  // A CTF with a real fix also proves the job that fix belongs to.
   p.items.forEach((item, i) => {
     if (item.gate && review[i].correct) {
-      entry.detail.push({ t: `Contain: ${item.title}`.slice(0, 80), s: "security", c: 1, th: "contain-account", j: "contain-account", k: "change" });
+      if (isJob(item.gateJob)) entry.detail.push({ t: `Fix: ${item.title}`.slice(0, 80), s: "security", c: 1, th: item.gateJob, j: item.gateJob, k: "change" });
     }
   });
   return { entry, review, late };
@@ -769,11 +771,73 @@ export const isJob = (id: unknown): id is string => typeof id === "string" && JO
 export type JobStatus = "new" | "practiced" | "proven";
 export type JobRow = { id: string; label: string; skill: Skill; lab: boolean; security: boolean; status: JobStatus; correct: number; asked: number; last: string | null };
 
-export function jobProgress(entries: DrillEntry[], results?: Results): JobRow[] {
+/** Jobs the lab snapshot already shows as done. Only a setting the script actually reported can count. */
+function jobsSeenInLab(s: LabSnapshot | null | undefined): Set<string> {
+  const proven = new Set<string>();
+  if (!s) return proven;
+  const member = (sam: string, group: string) => {
+    const user = s.users.find((u) => u.sam.toLowerCase() === sam);
+    if (!user) return false;
+    const g = group.toLowerCase();
+    return user.memberOf.some((m) => m.toLowerCase() === g) || s.groups.some((x) => x.name.toLowerCase() === g && x.members.includes(user.name));
+  };
+  const user = (sam: string) => s.users.find((u) => u.sam.toLowerCase() === sam);
+  const jamie = user("jamie.torres");
+  if (jamie && member("jamie.torres", "All Employees")) proven.add("group-access");
+  const riley = user("riley.kwan");
+  if (riley?.enabled && !riley.lockedOut) proven.add("enable-account");
+  const casey = user("casey.reed");
+  if (casey && member("casey.reed", "IT Users") && !member("old.intern", "IT Users")) proven.add("create-user");
+  const svc = user("svc-backup-job");
+  if (svc && `${svc.description} ${svc.title}`.toLowerCase().includes("01:00-03:00")) proven.add("service-account");
+  const taylor = user("taylor.osei");
+  if (
+    taylor &&
+    taylor.container.toLowerCase() === "ou=users,ou=compliance,ou=departments" &&
+    member("taylor.osei", "Compliance Users") &&
+    !member("taylor.osei", "Operations Users")
+  ) {
+    proven.add("fix-ou");
+  }
+
+  const pp = s.security?.passwordPolicy;
+  if (pp && pp.lockoutThreshold >= 1 && pp.lockoutThreshold <= 10 && pp.lockoutDurationMin >= 15 && pp.lockoutWindowMin >= 15) proven.add("lockout-policy");
+  if (pp && pp.minLength >= 12 && pp.complexity) proven.add("password-policy");
+  const audit = s.security?.audit ?? {};
+  const audited = (sub: string, need: "Success" | "Both") => {
+    const v = (audit[sub] ?? "").toLowerCase();
+    if (!v) return false;
+    const okS = v.includes("success");
+    const okF = v.includes("failure");
+    return need === "Both" ? okS && okF : okS;
+  };
+  if (
+    audited("Process Creation", "Success") &&
+    audited("Logon", "Both") &&
+    audited("Special Logon", "Success") &&
+    audited("Security Group Management", "Success")
+  ) {
+    proven.add("enable-auditing");
+  }
+  if ((s.security?.securityLogMaxMB ?? 0) >= 512) proven.add("log-retention");
+  const admins = ["IT Admins", "Server Admins", "Domain Admins"].filter((g) => s.groups.some((x) => x.name.toLowerCase() === g.toLowerCase()));
+  const target = admins.includes("IT Admins") ? "IT Admins" : admins[0];
+  if (
+    s.security?.psos &&
+    target &&
+    s.security.psos.some((x) => x.minLength >= 16 && x.lockoutThreshold >= 1 && x.lockoutThreshold <= 5 && x.appliesTo.some((a) => a.toLowerCase() === target.toLowerCase()))
+  ) {
+    proven.add("admin-password-policy");
+  }
+  return proven;
+}
+
+export function jobProgress(entries: DrillEntry[], results?: Results, snapshot?: LabSnapshot | null): JobRow[] {
+  const seen = jobsSeenInLab(snapshot);
   return JOBS.map((job) => {
     let asked = 0;
     let correct = 0;
-    let labProven = false;
+    let labProven = seen.has(job.id);
     let last: string | null = null;
     // Lesson tickets and CTF missions count too. One seen in the lab is proof.
     for (const [id, r] of Object.entries(results ?? {})) {
@@ -803,20 +867,20 @@ export function jobProgress(entries: DrillEntry[], results?: Results): JobRow[] 
 }
 
 /** The job to work on next: never-tried first, then half-done, then the one not seen for longest. */
-export function pickTargetJob(entries: DrillEntry[], seed: string, labJobs: Set<string> | null, results?: Results): JobRow | null {
+export function pickTargetJob(entries: DrillEntry[], seed: string, labJobs: Set<string> | null, results?: Results, snapshot?: LabSnapshot | null): JobRow | null {
   // A hands-on job is only offered when the student's real lab has something to do for it.
-  const rows = jobProgress(entries, results).filter((j) => (j.lab ? Boolean(labJobs?.has(j.id)) : true));
+  const rows = jobProgress(entries, results, snapshot).filter((j) => (j.lab ? Boolean(labJobs?.has(j.id)) : true));
   if (!rows.length) return null;
   const rank = { new: 0, practiced: 1, proven: 2 } as const;
   const best = Math.min(...rows.map((j) => rank[j.status]));
-  const pool = rows.filter((j) => rank[j.status] === best).sort((a, b) => (a.last ?? "").localeCompare(b.last ?? ""));
+  const pool = rows.filter((j) => rank[j.status] === best).sort((a, b) => Number(b.lab) - Number(a.lab) || (a.last ?? "").localeCompare(b.last ?? ""));
   // Among the least recent few, vary by day so it is not always the same one.
   return pool[Math.floor(seeded(`job:${seed}`)() * Math.min(3, pool.length))];
 }
 
 /** One line for Coach: how much of the job this student has shown they can do. */
-export function jobLine(entries: DrillEntry[], results?: Results): string {
-  const rows = jobProgress(entries, results);
+export function jobLine(entries: DrillEntry[], results?: Results, snapshot?: LabSnapshot | null): string {
+  const rows = jobProgress(entries, results, snapshot);
   const proven = rows.filter((r) => r.status === "proven");
   const open = rows.filter((r) => r.status !== "proven").map((r) => r.label);
   return `Job tasks proven ${proven.length} of ${rows.length}.${proven.length ? ` Proven: ${proven.map((r) => r.label).join("; ")}.` : ""}${open.length ? ` Not yet: ${open.slice(0, 5).join("; ")}.` : ""}`;
@@ -1142,7 +1206,7 @@ export function weeklyReport(entries: DrillEntry[], today: string): WeeklyReport
 }
 
 /** One paragraph for the coach's brief: where drills say this student needs help. */
-export function weaknessLine(entries: DrillEntry[], results?: Results): string {
+export function weaknessLine(entries: DrillEntry[], results?: Results, snapshot?: LabSnapshot | null): string {
   if (!entries.some((e) => e.detail?.length)) return "No drills on record yet.";
   const level = levelFor(entries);
   const skills = skillAccuracy(entries).filter((r) => r.asked > 0);
@@ -1150,7 +1214,7 @@ export function weaknessLine(entries: DrillEntry[], results?: Results): string {
   const themes = missedThemes(entries, 3).map((t) => `${t.theme} (missed ${t.missed} of ${t.asked})`);
   const last = [...entries].sort((a, b) => b.at.localeCompare(a.at))[0];
   const recent = missedQuestions(entries, 4).map((m) => m.title);
-  const jobs = jobLine(entries, results);
+  const jobs = jobLine(entries, results, snapshot);
   return `Drill level ${level} (${LEVEL_NAMES[level - 1]}). Accuracy: ${parts.join("; ")}.${
     themes.length ? ` Keeps missing: ${themes.join("; ")}.` : ""
   }${recent.length ? ` Latest missed questions: ${recent.join("; ")}. Use get_drill_history for what they picked.` : ""} ${jobs} Last drill ${last.day}.`;

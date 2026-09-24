@@ -391,7 +391,7 @@ async function weaknessProfile(ctx: CoachToolContext) {
     },
     jobTasks: {
       note: "On-the-job tasks. proven = done in their own lab and checked, or right three times. Teach and quiz on the ones not proven first.",
-      rows: jobProgress(entries, ctx.results).map((j) => ({ task: j.label, status: j.status, needsLab: j.lab, timesRight: j.correct })),
+      rows: jobProgress(entries, ctx.results, lab).map((j) => ({ task: j.label, status: j.status, needsLab: j.lab, timesRight: j.correct })),
     },
     lab: lab ? { syncedAgo: formatLabAge(lab.capturedAt).ago, differencesFromStandard: labEvidence(lab).diffs.slice(0, 6) } : null,
     suggestion:
@@ -578,7 +578,7 @@ export async function runCoachTurn(params: {
   const lab = await params.tools.loadLabState().catch(() => null);
   const tools: CoachToolContext = { ...params.tools, loadLabState: async () => lab };
   const mode = parseCoachMode(params.mode);
-  const system = `${COACH_SYSTEM_PROMPT}\n\n${coachModeInstructions(mode)}\n\n${buildStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results) : "")}`;
+  const system = `${COACH_SYSTEM_PROMPT}\n\n${coachModeInstructions(mode)}\n\n${buildStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results, lab) : "")}`;
   const messages: AnthropicMessage[] = [
     ...params.history.slice(-10).map((m) => ({ role: m.role, content: m.content })),
     { role: "user", content: userTurnContent(params.userMessage, images) },

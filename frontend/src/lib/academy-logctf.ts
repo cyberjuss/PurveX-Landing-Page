@@ -169,7 +169,7 @@ export function buildLogCtf(params: { snapshot: LabSnapshot; seed: string; level
     hint: q.hint,
     format: q.format,
     free: true,
-    ...(finding?.task ? { gate: true, task: finding.task } : {}),
+    ...(finding?.task ? { gate: true, task: finding.task, gateJob: finding.job } : {}),
     job: "trace-logon",
     theme: `CTF: ${q.key}`,
   };

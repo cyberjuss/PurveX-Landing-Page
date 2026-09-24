@@ -80,8 +80,8 @@ async function status(userId: string, day: string) {
     report: weeklyReport(entries, day),
     missed: missedQuestions(entries, 8),
     chats: { base: COACH_DAILY_LIMIT, ...chats },
-    jobs: jobProgress(entries, results),
-    nextJob: pickTargetJob(entries, `${userId}:${day}`, labJobs, results)?.id ?? null,
+    jobs: jobProgress(entries, results, labState?.snapshot),
+    nextJob: pickTargetJob(entries, `${userId}:${day}`, labJobs, results, labState?.snapshot)?.id ?? null,
     findings: findings.slice(0, 12).map((f) => ({ id: f.id, severity: f.severity, title: f.title, facts: f.facts, fixable: Boolean(f.task), job: f.job })),
   };
 }
@@ -176,7 +176,7 @@ export async function POST(request: Request) {
       // Aim at the on-the-job task they have shown the least, so the daily drill covers what the job needs.
       const fixable = snapshot ? auditLab(snapshot).filter((f) => f.task) : [];
       const labJobs = snapshot ? new Set(fixable.map((f) => f.job)) : null;
-      const target = pickTargetJob(entries, `${userId}:${day}`, labJobs, results);
+      const target = pickTargetJob(entries, `${userId}:${day}`, labJobs, results, snapshot);
       const format = swap ? "respond" : pickFormat(`${userId}:${day}`, level, fixable.length > 0, Boolean(target?.lab));
       const targetJob = target ? { id: target.id, label: target.label } : null;
       item = await generateDaily({ apiKey, userId, day, snapshot, results, level, recent, format, targetJob }).catch(() => null);

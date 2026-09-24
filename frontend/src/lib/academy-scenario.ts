@@ -440,7 +440,8 @@ Return only JSON: {"title": "3 to 6 words", "story": "...", "question": "one sen
   if (j) {
     title = text(j.title, 60) || title;
     story = text(j.story, 700) || story;
-    question = text(j.question, 240) || question;
+    // From level 2 the question never names the fix.
+    if (level < 2) question = text(j.question, 240) || question;
   }
 
   return {
