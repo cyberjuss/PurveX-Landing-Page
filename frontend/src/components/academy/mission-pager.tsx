@@ -1,11 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, Check } from "lucide-react";
 import { academyFetch, READINESS_PATH, RESULTS_UPDATED_EVENT } from "@/lib/academy-client";
 import { loadResults, saveResults, type MissionResult } from "@/lib/academy-score";
+import { TrailDock } from "./trail-dock";
 
 type Neighbor = { label: string; go: () => void };
 
@@ -18,11 +19,14 @@ export function MissionPager({
   children,
   prevSection,
   nextSection,
+  actionHost,
 }: {
   children: ReactNode;
   prevSection?: Neighbor | null;
   nextSection?: Neighbor | null;
+  actionHost?: HTMLElement | null;
 }) {
+  const router = useRouter();
   const root = useRef<HTMLDivElement>(null);
   const first = useRef(true);
   const prevAt = useRef(0);
@@ -155,6 +159,32 @@ export function MissionPager({
     if (total >= 2) strip?.scrollIntoView({ block: "start", behavior: "smooth" });
   }, [at, total, onBrief, brief, missions, strip]);
 
+  const nav =
+    paging && !onBrief ? (
+      <TrailDock
+        prev={{
+          go: () => (at > 0 ? setStep(at - 1) : brief() ? setOnBrief(true) : prevSection?.go()),
+          disabled: at === 0 && !brief() && !prevSection,
+        }}
+        next={{
+          go: () => {
+            if (!isLast) {
+              goForward(at + 1);
+              return;
+            }
+            flagCurrent();
+            if (nextSection) nextSection.go();
+            else router.push(READINESS_PATH);
+          },
+        }}
+        center={
+          <span className="ax-panel__count">
+            {String(at + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+          </span>
+        }
+      />
+    ) : null;
+
   return (
     <div ref={root}>
       {children}
@@ -189,42 +219,8 @@ export function MissionPager({
             Get Started <ArrowRight className="h-4 w-4" />
           </button>
         </div>
-      ) : paging ? (
-        <nav className="ad-pager" aria-label="Continue">
-          {at > 0 ? (
-            <button type="button" className="ad-pager__btn" onClick={() => setStep(at - 1)}>
-              <ArrowLeft className="h-4 w-4" /> Previous
-            </button>
-          ) : brief() ? (
-            <button type="button" className="ad-pager__btn" onClick={() => setOnBrief(true)}>
-              <ArrowLeft className="h-4 w-4" /> Briefing
-            </button>
-          ) : prevSection ? (
-            <button type="button" className="ad-pager__btn" onClick={prevSection.go}>
-              <ArrowLeft className="h-4 w-4" /> {prevSection.label}
-            </button>
-          ) : (
-            <span />
-          )}
-          {isLast && nextSection ? (
-            <button type="button" className={`ad-pager__btn ad-pager__btn--next${solved[at] ? " is-ready" : ""}`} onClick={() => { flagCurrent(); nextSection.go(); }}>
-              {nextSection.label} <ArrowRight className="h-4 w-4" />
-            </button>
-          ) : isLast ? (
-            <Link href={READINESS_PATH} className={`ad-pager__btn ad-pager__btn--next${solved[at] ? " is-ready" : ""}`} onClick={flagCurrent}>
-              See my readiness <ArrowRight className="h-4 w-4" />
-            </Link>
-          ) : (
-            <button
-              type="button"
-              className={`ad-pager__btn ad-pager__btn--next${solved[at] ? " is-ready" : ""}`}
-              onClick={() => goForward(at + 1)}
-            >
-              Next <ArrowRight className="h-4 w-4" />
-            </button>
-          )}
-        </nav>
       ) : null}
+      {nav && actionHost ? createPortal(nav, actionHost) : nav}
     </div>
   );
 }

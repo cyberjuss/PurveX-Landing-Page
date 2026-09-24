@@ -80,6 +80,7 @@ export function SectionTabs({
   const [dir, setDir] = useState<1 | -1>(1);
   const [quizFoot, setQuizFoot] = useState<HTMLElement | null>(null);
   const [labFoot, setLabFoot] = useState<HTMLElement | null>(null);
+  const [challengeFoot, setChallengeFoot] = useState<HTMLElement | null>(null);
   // Expanded by default -- collapsing is an option for a long list like Home
   // Lab's 9 sections, not the default state. Collapsed shows just the
   // current section's name so context isn't lost while the list is hidden.
@@ -160,6 +161,7 @@ export function SectionTabs({
         key={current.label}
         prevSection={prevTrail}
         nextSection={nextTrail}
+        actionHost={current.kind === "challenge" ? challengeFoot : undefined}
       >
         <Markdown content={current.markdown} />
       </MissionPager>
@@ -299,10 +301,12 @@ export function SectionTabs({
             the sidebar after every section -- and, once it reaches the labs,
             the same control that was previously only reachable by clicking
             a sidebar link. */}
-        {current.kind === "challenge" ? null : current.kind === "quiz" ? (
+        {current.kind === "quiz" ? (
           <div ref={setQuizFoot} />
         ) : current.kind === "lab" ? (
           <div ref={setLabFoot} />
+        ) : current.kind === "challenge" ? (
+          <div ref={setChallengeFoot} />
         ) : (
           <TrailDock
             prev={prevTrail ? { go: prevTrail.go } : null}

@@ -251,18 +251,22 @@ function Scenario({
 function LabFindings({ items }: { items: Finding[] }) {
   const tone = { high: "Serious", medium: "Worth fixing", low: "Minor" } as const;
   return (
-    <section className="rd-sec dr-findings">
-      <div className="rd-sec__head">
-        <span className="rd-sec__n">04</span>
-        <h2>What your lab needs</h2>
-        <p>
-          {items.length === 0
-            ? "Nothing is wrong in your lab right now. Your daily case will be a judgement case."
-            : "A real audit of your own lab. Your daily lab task is one of these, and it is checked in your lab."}
-        </p>
-        <Link href={READINESS_PATH} className="rd-cta dr-findings__go">
-          Open report <ArrowRight className="h-4 w-4" />
-        </Link>
+    <li>
+      <div className="ax-path__row">
+        <span className="ax-path__n">04</span>
+        <span className="ax-path__main">
+          <span className="ax-path__title">What your lab needs</span>
+          <span className="ax-path__body">
+            {items.length === 0
+              ? "Nothing is wrong in your lab right now. Your daily case will be a judgement case."
+              : "A real audit of your own lab. Your daily lab task is one of these, and it is checked in your lab."}
+          </span>
+        </span>
+        <span className="ax-path__count">
+          <Link href={READINESS_PATH} className="rd-cta">
+            Open report <ArrowRight className="h-4 w-4" />
+          </Link>
+        </span>
       </div>
       {items.length > 0 && (
         <ul className="dr-findings__list">
@@ -276,7 +280,7 @@ function LabFindings({ items }: { items: Finding[] }) {
           ))}
         </ul>
       )}
-    </section>
+    </li>
   );
 }
 
@@ -979,10 +983,9 @@ export function DrillRunner() {
                 </span>
               </div>
             </li>
+            <LabFindings items={status.findings} />
           </ol>
           {error && <p className="dr-error">{error}</p>}
-
-          <LabFindings items={status.findings} />
           {status.lab.synced && (
             <VerifyLab
               verified={Boolean(status.lab.verified)}
