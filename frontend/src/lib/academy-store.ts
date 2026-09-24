@@ -259,11 +259,11 @@ export async function loadDailyDrill(userId: string, day: string, kind: "daily" 
   return memoryDaily.get(`${userId}:${kind}:${day}`) ?? null;
 }
 
-export async function saveDailyDrill(userId: string, day: string, token: string, kind: "daily" | "ctf" = "daily") {
+export async function saveDailyDrill(userId: string, day: string, token: string, kind: "daily" | "ctf" = "daily", overwrite = false) {
   memoryDaily.set(`${userId}:${kind}:${day}`, token);
   if (!supabaseAdmin) return;
   const { error } = await supabaseAdmin
     .from("academy_drill_daily")
-    .upsert({ user_id: userId, day, kind, token }, { onConflict: "user_id,day,kind", ignoreDuplicates: true });
+    .upsert({ user_id: userId, day, kind, token }, { onConflict: "user_id,day,kind", ignoreDuplicates: !overwrite });
   if (error) console.error("academy_drill_daily upsert failed", error.message);
 }

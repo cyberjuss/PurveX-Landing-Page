@@ -6,9 +6,17 @@ import { COACH_SHOT_ASK, sanitizeCoachImages } from "@/lib/academy-coach-media";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
 import { bumpUsage, loadDrills, loadLabState, loadProgress, readUsage, resetUsage } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
+import { coachBonus } from "@/lib/academy-drills";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
+
+// Drills earn extra chats for the day: harder and longer work earns more.
+async function allowance(userId: string) {
+  const drills = await loadDrills(userId).catch(() => []);
+  const chats = coachBonus(drills, new Date().toISOString().slice(0, 10));
+  return { drills, bonus: chats.bonus, parts: chats.parts, limit: COACH_DAILY_LIMIT + chats.bonus };
+}
 
 export async function GET(request: Request) {
   if (!(await isAcademyUnlocked())) {
@@ -21,10 +29,12 @@ export async function GET(request: Request) {
   const wantReset = process.env.NODE_ENV !== "production" && new URL(request.url).searchParams.get("reset") === "1";
   if (wantReset) await resetUsage(student.id);
   const used = await readUsage(student.id);
+  const { bonus, limit } = await allowance(student.id);
   return NextResponse.json({
     enabled: Boolean(process.env.ANTHROPIC_API_KEY),
-    remaining: Math.max(0, COACH_DAILY_LIMIT - used),
-    limit: COACH_DAILY_LIMIT,
+    remaining: Math.max(0, limit - used),
+    limit,
+    bonus,
   });
 }
 
@@ -85,9 +95,10 @@ export async function POST(request: Request) {
   const results: Results = Object.keys(saved).length > 0 ? saved : sanitizeResults(body.results);
 
   const used = await readUsage(student.id);
-  if (used >= COACH_DAILY_LIMIT) {
+  const { drills, bonus, limit } = await allowance(student.id);
+  if (used >= limit) {
     return NextResponse.json(
-      { error: `Daily coach limit reached (${COACH_DAILY_LIMIT} questions). Try again tomorrow.`, remaining: 0 },
+      { error: `Daily coach limit reached (${limit} questions). A drill earns more, or try again tomorrow.`, remaining: 0, bonus },
       { status: 429 }
     );
   }
@@ -99,11 +110,11 @@ export async function POST(request: Request) {
       userMessage: message,
       images,
       mode: body.mode != null ? parseCoachMode(body.mode) : modeFromReport(results),
-      drills: await loadDrills(student.id).catch(() => []),
+      drills,
       tools: { results, userId: student.id, loadLabState: async () => (await loadLabState(student.id))?.snapshot ?? null },
     });
-    const remaining = COACH_DAILY_LIMIT - (await bumpUsage(student.id, used));
-    return NextResponse.json({ reply: text, remaining, model });
+    const remaining = limit - (await bumpUsage(student.id, used));
+    return NextResponse.json({ reply: text, remaining, model, bonus });
   } catch {
     return NextResponse.json({ error: "PurveX Coach is unavailable right now." }, { status: 502 });
   }

@@ -22,6 +22,7 @@ export type DrillStatus = {
   ctf: { week: string; entry: DrillEntry | null };
   report: Report;
   missed: Missed[];
+  chats: { base: number; bonus: number; parts: { label: string; n: number }[] };
 };
 
 type Missed = { day: string; mode: string; title: string; skill: Skill; prompt: string; picked: string; answer: string; explain: string };
@@ -45,7 +46,8 @@ type Mode = "daily" | "timed" | "ctf";
 const MODE_LABEL: Record<string, string> = { daily: "Daily scenario", timed: "Incident drill", ctf: "Weekly CTF", coach: "Practice" };
 
 type DrillEntry = { id: string; day: string; mode: string; correct: number; total: number; seconds: number; detail?: { t: string }[] };
-type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[]; free?: boolean; format?: string };
+type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[]; free?: boolean; format?: string; kind?: "decide" | "respond" | "change"; long?: boolean; checklist?: string[]; checkCount?: number };
+type CheckRes = { fresh: boolean; results: { label: string; ok: boolean }[]; syncedAgo: string | null; passed: boolean };
 type Review = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string };
 type Run = { mode: Mode; token: string; items: Item[]; limit: number; ai: boolean; startedAt: number };
 type Result = { entry: DrillEntry; review: Review[]; late: boolean; counted: boolean; items: Item[] } & DrillStatus;
@@ -93,6 +95,7 @@ function Scenario({
   onPick,
   hint,
   onHint,
+  checkRes,
 }: {
   caseNo: string;
   item: Item;
@@ -100,6 +103,7 @@ function Scenario({
   onPick: (c: string) => void;
   hint: string | null;
   onHint: () => void;
+  checkRes: CheckRes | null;
 }) {
   return (
     <div className="dr-card">
@@ -120,7 +124,57 @@ function Scenario({
         </div>
       )}
       <h3 className="dr-question">{item.prompt}</h3>
-      {item.free ? (
+      {item.kind === "change" ? (
+        <div className="dr-task">
+          <span className="rd-kicker">Make this change in your lab</span>
+          {item.checklist ? (
+            <ul className="dr-task__list">
+              {item.checklist.map((c) => (
+                <li key={c}>{c}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>
+              You are checked on the result: {item.checkCount} things must be true when you are done. Work out what the job needs.
+            </p>
+          )}
+          <p className="dr-task__sync">
+            Your lab reports about every 15 minutes. To check right away, run <code>.\Build-Environment.ps1 -SyncOnly</code> on the domain controller.
+          </p>
+          {checkRes && (
+            <div className="dr-checks">
+              {!checkRes.fresh && (
+                <p className="dr-checks__stale">
+                  Your lab has not reported since you started{checkRes.syncedAgo ? ` (last report ${checkRes.syncedAgo})` : ""}. Make the change, sync, then check again.
+                </p>
+              )}
+              {checkRes.fresh && (
+                <ul>
+                  {checkRes.results.map((r) => (
+                    <li key={r.label} className={r.ok ? "is-ok" : "is-bad"}>
+                      <span>{r.ok ? "✓" : "✗"}</span>
+                      {r.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+      ) : item.kind === "respond" ? (
+        <div className="dr-free">
+          <label htmlFor="dr-answer">{item.format || "Write your answer"}</label>
+          <textarea
+            id="dr-answer"
+            rows={6}
+            value={picked ?? ""}
+            onChange={(e) => onPick(e.target.value)}
+            maxLength={1200}
+            placeholder="First I would… because… Before that I would check…"
+          />
+          <span className="dr-free__count">{(picked ?? "").length} / 1200</span>
+        </div>
+      ) : item.free ? (
         <div className="dr-free">
           <label htmlFor="dr-answer">{item.format || "Type your answer"}</label>
           <input
@@ -296,14 +350,41 @@ export function DrillRunner() {
     }
   }
 
-  async function start(mode: Mode) {
+  const [checkRes, setCheckRes] = useState<CheckRes | null>(null);
+
+  async function checkLab(current: Run) {
     setBusy(true);
     setError(null);
     try {
       const res = await academyFetch("/academy/api/drill", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "start", mode, day: localDay() }),
+        body: JSON.stringify({ action: "check", token: current.token, day: localDay() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not check your lab.");
+      if (data.passed && data.entry) {
+        setResult({ ...data, items: current.items });
+        setStatus(data);
+        setRun(null);
+        return;
+      }
+      setCheckRes({ fresh: Boolean(data.fresh), results: data.results ?? [], syncedAgo: data.syncedAgo ?? null, passed: false });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not check your lab.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function start(mode: Mode, format?: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await academyFetch("/academy/api/drill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "start", mode, day: localDay(), format }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not start the drill.");
@@ -314,6 +395,7 @@ export function DrillRunner() {
       finishing.current = false;
       setResult(null);
       setHint(null);
+      setCheckRes(null);
       setIdx(0);
       setAnswers(data.items.map(() => null));
       setNow(Date.now());
@@ -386,9 +468,13 @@ export function DrillRunner() {
               ? `Incident drill · ${idx + 1} of ${run.items.length}`
               : run.mode === "ctf"
                 ? "Weekly CTF · type your answer"
-                : run.ai
-                  ? "Daily scenario · written for you"
-                  : "Daily scenario"}
+                : run.items[0]?.kind === "change"
+                  ? "Daily lab task · make the change"
+                  : run.items[0]?.kind === "respond"
+                    ? "Daily written case"
+                    : run.ai
+                      ? "Daily scenario · written for you"
+                      : "Daily scenario"}
           </span>
           <span className="dr-bar__end">
             {leaving ? (
@@ -420,24 +506,44 @@ export function DrillRunner() {
           </div>
         )}
 
-        <Scenario caseNo={String((status?.stats.total ?? 0) + 1).padStart(2, "0")} item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} />
+        <Scenario caseNo={String((status?.stats.total ?? 0) + 1).padStart(2, "0")} item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} checkRes={checkRes} />
 
         <div className="dr-actions">
-          {idx > 0 ? (
-            <button type="button" className="dr-link" onClick={() => setIdx(idx - 1)}>
-              Back
-            </button>
+          {item.kind === "change" ? (
+            <>
+              <span className="dr-actions__side">
+                <button type="button" className="dr-link" disabled={busy} onClick={() => void finish(run, [""])}>
+                  Give up and see the steps
+                </button>
+                {run.mode === "daily" && (
+                  <button type="button" className="dr-link" disabled={busy} onClick={() => void start("daily", "respond")}>
+                    Can&apos;t reach your lab? Do a written case instead
+                  </button>
+                )}
+              </span>
+              <button type="button" className="rd-cta" disabled={busy} onClick={() => void checkLab(run)}>
+                {busy ? "Checking…" : "Check my lab"} <ArrowRight className="h-4 w-4" />
+              </button>
+            </>
           ) : (
-            <span />
+            <>
+              {idx > 0 ? (
+                <button type="button" className="dr-link" onClick={() => setIdx(idx - 1)}>
+                  Back
+                </button>
+              ) : (
+                <span />
+              )}
+              <button
+                type="button"
+                className="rd-cta"
+                disabled={busy || !picked || !picked.trim() || (item.kind === "respond" && picked.trim().length < 40)}
+                onClick={() => (last ? void finish(run, answers) : setIdx(idx + 1))}
+              >
+                {busy && item.kind === "respond" ? "Marking…" : last ? (single ? "Submit answer" : "Finish") : "Next"} <ArrowRight className="h-4 w-4" />
+              </button>
+            </>
           )}
-          <button
-            type="button"
-            className="rd-cta"
-            disabled={busy || !picked || !picked.trim()}
-            onClick={() => (last ? void finish(run, answers) : setIdx(idx + 1))}
-          >
-            {last ? (single ? "Submit answer" : "Finish") : "Next"} <ArrowRight className="h-4 w-4" />
-          </button>
         </div>
         {error && <p className="dr-error">{error}</p>}
       </div>
@@ -485,9 +591,16 @@ export function DrillRunner() {
               <div>
                 <strong>{r.title}</strong>
                 {single && items[i]?.story && <p className="dr-review__story">{items[i].story}</p>}
-                {!r.correct && <p>{items[i]?.free ? "You typed" : "You picked"}: {r.picked ?? "nothing"}.</p>}
+                {!r.correct && items[i]?.kind !== "change" && <p>{items[i]?.free ? "You wrote" : "You picked"}: {r.picked ?? "nothing"}.</p>}
                 <p>
-                  {items[i]?.free ? "Flag" : "Best answer"}: <b>{items[i]?.free ? `gtf{${r.answer}}` : r.answer}</b>
+                  {items[i]?.kind === "respond"
+                    ? "A strong answer"
+                    : items[i]?.kind === "change"
+                      ? "Outcome"
+                      : items[i]?.free
+                        ? "Flag"
+                        : "Best answer"}
+                  : <b>{items[i]?.free && items[i]?.kind !== "respond" ? `gtf{${r.answer}}` : r.answer}</b>
                 </p>
                 <p>{r.explain}</p>
               </div>
@@ -553,6 +666,7 @@ export function DrillRunner() {
             <span className="dr-level">
               Level {status.level.n} · {status.level.name}
             </span>
+            {status.chats.bonus > 0 && <span className="dr-earned">+{status.chats.bonus} Coach chats earned today</span>}
           </div>
 
           <ol className="ax-path dr-rows">
@@ -567,7 +681,7 @@ export function DrillRunner() {
                   <span className="ax-path__body">
                     {s.today
                       ? `Daily scenario · ${clock(s.today.seconds)}. ${streakLine(s)}`
-                      : `Daily scenario. A new case from your lab${status.focus ? `, aimed at ${status.focus}` : ""}. It gets a name when you open it.`}
+                      : `A decision, a written case, or a real change in your lab${status.focus ? `, aimed at ${status.focus}` : ""}. It gets a name when you open it. Earns +${4 + status.level.n} to +${7 + status.level.n} Coach chats.`}
                   </span>
                 </span>
                 <span className="ax-path__count">
@@ -585,7 +699,7 @@ export function DrillRunner() {
                 <span className="ax-path__main">
                   <span className="ax-path__title">Incident drill</span>
                   <span className="ax-path__body">
-                    Five alerts and tickets against a clock. {s.bestTimed ? `Best ${s.bestTimed.correct}/${s.bestTimed.total}.` : ""}
+                    Five alerts and tickets against a clock. Earns +2 Coach chats. {s.bestTimed ? `Best ${s.bestTimed.correct}/${s.bestTimed.total}.` : ""}
                   </span>
                 </span>
                 <span className="ax-path__count">
@@ -604,7 +718,7 @@ export function DrillRunner() {
                     {status.ctf.entry && <em className={`ax-tag ${status.ctf.entry.correct ? "ax-tag--good" : ""}`}>{status.ctf.entry.correct ? "Flag captured" : "Missed"}</em>}
                   </span>
                   <span className="ax-path__body">
-                    {status.ctf.entry ? "A new investigation opens Monday." : "One hard investigation a week. Read the evidence, type the flag."}
+                    {status.ctf.entry ? "A new investigation opens Monday." : "One hard investigation a week. Read the evidence, type the flag. Earns +8 Coach chats, +16 with the flag."}
                   </span>
                 </span>
                 <span className="ax-path__count">

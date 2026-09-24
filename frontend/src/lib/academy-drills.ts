@@ -34,9 +34,27 @@ export type Item = {
   accept?: string[];
   hint?: string;
   format?: string;
+  /** How it is asked. Absent means a multiple-choice decision. */
+  kind?: "decide" | "respond" | "change";
+  /** Written answer (respond). Points a strong answer covers, graded by the model. */
+  rubric?: string[];
+  long?: boolean;
+  /** A real change in the student's lab (change). */
+  task?: Task;
 };
 
-export type PublicItem = Omit<Item, "answer" | "explain" | "accept" | "hint">;
+export type Check =
+  | { t: "member"; sam: string; group: string; want: boolean }
+  | { t: "exists"; sam: string; ou: string }
+  | { t: "enabled"; sam: string; want: boolean }
+  | { t: "desc"; sam: string; text: string };
+
+export type Task = { checks: { c: Check; label: string }[]; guide: string[] };
+
+export type PublicItem = Omit<Item, "answer" | "explain" | "accept" | "hint" | "rubric" | "task"> & {
+  checklist?: string[];
+  checkCount?: number;
+};
 
 /** One question. `x`, `a` and `e` are kept only for misses: what they picked, the best answer, and why. */
 export type DrillDetail = { t: string; s: Skill; c: 0 | 1; p?: string; th?: string; x?: string; a?: string; e?: string };
@@ -57,7 +75,7 @@ export type DrillEntry = {
 
 export type DrillReview = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string };
 
-type Payload = { id: string; u: string; mode: DrillMode; day: string; iat: number; limit: number; source: "lab" | "standard"; ai: boolean; level: number; items: Item[] };
+type Payload = { id: string; u: string; mode: DrillMode; day: string; iat: number; limit: number; source: "lab" | "standard"; ai: boolean; level: number; t0?: number; items: Item[] };
 
 // ---- random helpers -------------------------------------------------------
 
@@ -456,7 +474,7 @@ function unseal(token: string): Payload | null {
   }
 }
 
-function publicItems(items: Item[]): PublicItem[] {
+function publicItems(items: Item[], level: number): PublicItem[] {
   return items.map((item) => ({
     skill: item.skill,
     title: item.title,
@@ -467,6 +485,11 @@ function publicItems(items: Item[]): PublicItem[] {
     free: item.free,
     format: item.format,
     theme: item.theme,
+    kind: item.kind ?? "decide",
+    long: item.long,
+    // Early levels say what to change. Later levels only say how it is checked.
+    checklist: item.task && level <= 2 ? item.task.checks.map((c) => c.label) : undefined,
+    checkCount: item.task?.checks.length,
   }));
 }
 
@@ -506,8 +529,9 @@ export function startDrill(params: {
   const level = Math.min(4, Math.max(1, Math.round(params.level)));
   const limit = params.mode === "timed" ? TIMED_BY_LEVEL[level - 1] : 0;
   const id = params.id ?? (params.mode === "daily" ? `daily-${params.day}` : `${params.mode}-${nonce}`);
-  const token = seal({ id, u: params.userId, mode: params.mode, day: params.day, iat: Date.now(), limit, source, ai, level, items });
-  return { token, limitSeconds: limit, source, ai, level, items: publicItems(items) };
+  const now = Date.now();
+  const token = seal({ id, u: params.userId, mode: params.mode, day: params.day, iat: now, t0: now, limit, source, ai, level, items });
+  return { token, limitSeconds: limit, source, ai, level, items: publicItems(items, level) };
 }
 
 /** Reopen a saved scenario with a fresh clock. */
@@ -515,7 +539,8 @@ export function reissueDrill(userId: string, token: string): StartedDrill | null
   const p = unseal(token);
   if (!p || p.u !== userId || p.mode === "timed") return null;
   const fresh = seal({ ...p, iat: Date.now() });
-  return { token: fresh, limitSeconds: p.limit, source: p.source, ai: p.ai, level: p.level ?? 1, items: publicItems(p.items) };
+  const level = p.level ?? 1;
+  return { token: fresh, limitSeconds: p.limit, source: p.source, ai: p.ai, level, items: publicItems(p.items, level) };
 }
 
 export function drillHint(userId: string, token: string): string | null {
@@ -532,36 +557,53 @@ const flat = (v: string) =>
     .replace(/[\s._]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-export function gradeDrill(
+/** Grades a written answer against the rubric. Returns null when it could not be graded. */
+export type Grader = (item: Item, text: string) => Promise<{ hits: number; total: number; feedback: string } | null>;
+
+export async function gradeDrill(
   userId: string,
   token: string,
-  answers: unknown
-): { entry: DrillEntry; review: DrillReview[]; late: boolean } | null {
+  answers: unknown,
+  opts: { grader?: Grader; changePassed?: boolean } = {}
+): Promise<{ entry: DrillEntry; review: DrillReview[]; late: boolean } | null> {
   const p = unseal(token);
   if (!p || p.u !== userId) return null;
   const given = Array.isArray(answers) ? answers : [];
   const seconds = Math.max(0, Math.round((Date.now() - p.iat) / 1000));
   const late = p.limit > 0 && seconds > p.limit + LATE_GRACE_SECONDS;
-  const review = p.items.map((item, i) => {
-    const raw = typeof given[i] === "string" ? (given[i] as string).slice(0, 200) : null;
+  const review: DrillReview[] = [];
+  for (let i = 0; i < p.items.length; i++) {
+    const item = p.items[i];
+    const raw = typeof given[i] === "string" ? (given[i] as string).slice(0, item.long ? 1200 : 200) : null;
     let picked: string | null;
     let right: boolean;
-    if (item.free) {
+    let explain = item.explain;
+    let answer = item.answer;
+    if (item.kind === "change") {
+      right = opts.changePassed === true;
+      picked = right ? "Change made and checked in your lab" : "Gave up";
+      if (!right) explain = `${item.explain} Steps: ${(item.task?.guide ?? []).join(" ")}`;
+    } else if (item.kind === "respond") {
+      picked = raw && raw.trim() ? raw.trim() : null;
+      right = false;
+      if (picked && opts.grader) {
+        const g = await opts.grader(item, picked);
+        if (!g) throw new Error("ungraded");
+        right = g.hits >= Math.ceil(g.total * 0.6);
+        explain = `${g.feedback} You covered ${g.hits} of ${g.total} points a strong answer hits.`;
+      } else if (!picked) {
+        explain = `You did not write an answer. ${item.explain}`;
+      }
+      answer = item.answer;
+    } else if (item.free) {
       picked = raw && raw.trim() ? raw.trim() : null;
       right = picked !== null && [item.answer, ...(item.accept ?? [])].some((a) => flat(a) === flat(picked!));
     } else {
       picked = raw !== null && item.choices.includes(raw) ? raw : null;
       right = picked === item.answer;
     }
-    return {
-      title: item.title,
-      skill: item.skill,
-      picked,
-      answer: item.answer,
-      correct: !late && right,
-      explain: item.explain,
-    };
-  });
+    review.push({ title: item.title, skill: item.skill, picked, answer, correct: !late && right, explain });
+  }
   const entry: DrillEntry = {
     id: p.id,
     day: p.day,
@@ -581,13 +623,226 @@ export function gradeDrill(
       ...(review[i].correct
         ? {}
         : {
-            x: (review[i].picked ?? "no answer").slice(0, 160),
-            a: item.answer.slice(0, 160),
-            e: item.explain.slice(0, 320),
+            x: (review[i].picked ?? "no answer").slice(0, 300),
+            a: review[i].answer.slice(0, 200),
+            e: review[i].explain.slice(0, 400),
           }),
     })),
   };
   return { entry, review, late };
+}
+
+// ---- lab change tasks -----------------------------------------------------
+// The student makes a real change in their own lab. It is checked against
+// the next snapshot their domain controller sends.
+
+const PROTECTED = new Set([
+  "alex.rivera", "jamie.torres", "riley.kwan", "jordan.ellis", "taylor.osei", "casey.reed",
+  "old.intern", "svc-backup-job", "devon.brooks", "morgan.lee",
+]);
+const ADMIN_GROUPS = ["IT Admins", "Server Admins", "Domain Admins"];
+const CONTRACTORS = [
+  "Nadia Farouk", "Elliot Marsh", "Priyanka Rao", "Tomas Vidal", "Hannah Osei", "Marcus Webb",
+  "Yuki Tanaka", "Camila Ortiz", "Devin Okafor", "Sasha Petrov", "Lena Fischer", "Omar Haddad",
+  "Ingrid Solberg", "Rafael Duarte", "Amara Nwosu", "Felix Brandt",
+];
+const samOf = (full: string) => full.toLowerCase().replace(/[^a-z ]/g, "").trim().split(/\s+/).join(".");
+
+type Dept = { ou: string; label: string; group: string; users: LabUser[] };
+
+function departments(s: LabSnapshot): Dept[] {
+  const map = new Map<string, Dept>();
+  for (const u of s.users) {
+    const ou = deptOf(u.container);
+    const group = u.memberOf.find((m) => /users$/i.test(m));
+    if (!ou || !group) continue;
+    const d = map.get(ou) ?? { ou, label: human(ou), group, users: [] };
+    d.users.push(u);
+    map.set(ou, d);
+  }
+  // Compliance is left alone: a Day One mission counts its group.
+  return [...map.values()].filter((d) => !/compliance/i.test(d.ou));
+}
+
+export type ChangeBrief = {
+  type: "access" | "hire" | "offboard";
+  skill: Skill;
+  theme: string;
+  /** Plain facts for the story writer. */
+  facts: string;
+  /** How much to say about the fix, by level. */
+  temptation?: string;
+  task: Task;
+  summary: string;
+};
+
+const hasGroup = (s: LabSnapshot, name: string) => s.groups.some((g) => g.name.toLowerCase() === name.toLowerCase());
+
+export function buildChangeTask(params: { snapshot: LabSnapshot; seed: string; level: number; avoid: string[] }): ChangeBrief | null {
+  const s = params.snapshot;
+  const r = seeded(`change:${params.seed}`);
+  const level = params.level;
+  const depts = departments(s);
+  if (!depts.length) return null;
+  const admins = ADMIN_GROUPS.filter((g) => hasGroup(s, g));
+  const notAdmin = (sam: string, name: string): { c: Check; label: string }[] =>
+    admins.map((g) => ({ c: { t: "member", sam, group: g, want: false }, label: `${name} is not in ${g}` }));
+  const avoid = new Set(params.avoid);
+  const built: ChangeBrief[] = [];
+
+  // Give a coworker access to another department's files, and nothing more.
+  const movers = depts.flatMap((d) => d.users.filter((u) => u.enabled && !PROTECTED.has(u.sam.toLowerCase())).map((u) => ({ d, u })));
+  const mover = pick(r, movers);
+  if (mover) {
+    const targets = depts.filter((d) => d.ou !== mover.d.ou);
+    const target = pick(r, targets);
+    if (target) {
+      const name = nameOf(mover.u);
+      const admin = admins[0];
+      const checks = [
+        { c: { t: "member", sam: mover.u.sam, group: target.group, want: true } as Check, label: `${name} is a member of ${target.group}` },
+        { c: { t: "member", sam: mover.u.sam, group: mover.d.group, want: true } as Check, label: `${name} is still a member of ${mover.d.group}` },
+        ...notAdmin(mover.u.sam, name),
+      ];
+      built.push({
+        type: "access",
+        skill: "accounts",
+        theme: `change:access:${mover.u.sam}:${target.group}`,
+        facts: `${name} (${mover.u.sam}) works in ${mover.d.label} and is in ${mover.d.group}. They need to help ${target.label} for a few weeks and must reach that team's shared files, which are controlled by the group ${target.group}. The request must NOT be solved by giving admin rights.`,
+        temptation: level >= 3 && admin ? `A manager says: "Just put them in ${admin} so it stops being a problem." That is the wrong fix.` : undefined,
+        task: {
+          checks,
+          guide: [
+            "Open Active Directory Users and Computers (Win+R, dsa.msc).",
+            `Find the group ${target.group}, open Properties, then the Members tab, and add ${name}.`,
+            `Leave ${mover.d.group} as it is and do not add anyone to an admin group.`,
+            "Wait for the lab to report (about 15 minutes) or run Build-Environment.ps1 -SyncOnly, then check.",
+          ],
+        },
+        summary: `${name} joins ${target.group}, keeps ${mover.d.group}, and gets no admin rights.`,
+      });
+    }
+  }
+
+  // A new contractor: right place, right group, no more access than the job needs.
+  const taken = new Set(s.users.map((u) => u.sam.toLowerCase()));
+  const fresh = shuffle(r, CONTRACTORS).find((n) => !taken.has(samOf(n)));
+  const dept = pick(r, depts);
+  if (fresh && dept) {
+    const sam = samOf(fresh);
+    const ou = `OU=Users,OU=${dept.ou},OU=Departments`;
+    const checks: { c: Check; label: string }[] = [
+      { c: { t: "exists", sam, ou }, label: `An account ${sam} exists in the ${dept.label} Users folder` },
+      { c: { t: "enabled", sam, want: true }, label: `${fresh} can sign in (the account is enabled)` },
+      { c: { t: "member", sam, group: dept.group, want: true }, label: `${fresh} is a member of ${dept.group}` },
+      ...notAdmin(sam, fresh),
+    ];
+    if (level >= 3) checks.push({ c: { t: "desc", sam, text: "contractor" }, label: `The Description says this is a contractor` });
+    built.push({
+      type: "hire",
+      skill: "accounts",
+      theme: `change:hire:${sam}`,
+      facts: `${fresh} is a contractor joining ${dept.label} for six months. They need a normal sign-in and the same access as the team, which comes from the group ${dept.group}. Follow the naming pattern first.last for the sign-in name${level >= 3 ? ", and mark the account as a contractor in its Description" : ""}.`,
+      task: {
+        checks,
+        guide: [
+          "Open Active Directory Users and Computers (Win+R, dsa.msc).",
+          `Right-click the Users folder under Departments, ${dept.label}, then New, then User.`,
+          `Use ${sam} as the sign-in name, set a temporary password, and require a change at next logon.`,
+          `Open the new account, Member Of tab, add ${dept.group}. Do not add admin groups.`,
+          "Wait for the lab to report (about 15 minutes) or run Build-Environment.ps1 -SyncOnly, then check.",
+        ],
+      },
+      summary: `${sam} exists in the ${dept.label} Users folder, is enabled, and is in ${dept.group} only.`,
+    });
+  }
+
+  // Offboard a contractor this student created in an earlier drill.
+  const contractorSams = new Set(CONTRACTORS.map(samOf));
+  const leaver = s.users.find((u) => contractorSams.has(u.sam.toLowerCase()) && u.enabled && u.memberOf.length > 0);
+  if (leaver) {
+    const name = nameOf(leaver);
+    const checks: { c: Check; label: string }[] = [
+      { c: { t: "enabled", sam: leaver.sam, want: false }, label: `${name}'s account is disabled` },
+      ...leaver.memberOf.map((g) => ({ c: { t: "member", sam: leaver.sam, group: g, want: false } as Check, label: `${name} is no longer in ${g}` })),
+    ];
+    built.push({
+      type: "offboard",
+      skill: "security",
+      theme: `change:offboard:${leaver.sam}`,
+      facts: `${name} (${leaver.sam}), a contractor, finished today. Their access must end now, but HR wants the account kept for the audit trail, so it must not be deleted.`,
+      task: {
+        checks,
+        guide: [
+          "Open Active Directory Users and Computers (Win+R, dsa.msc) and find the account.",
+          "Right-click it and choose Disable Account. Do not delete it.",
+          "Open the Member Of tab and remove every group.",
+          "Wait for the lab to report (about 15 minutes) or run Build-Environment.ps1 -SyncOnly, then check.",
+        ],
+      },
+      summary: `${leaver.sam} is disabled, removed from every group, and still exists.`,
+    });
+  }
+
+  if (!built.length) return null;
+  // A leaver comes first: closing access is the most time-sensitive change.
+  const order = shuffle(r, built);
+  order.sort((a, b) => Number(b.type === "offboard") - Number(a.type === "offboard"));
+  return order.find((b) => !avoid.has(b.theme)) ?? order[0];
+}
+
+function evalCheck(s: LabSnapshot, c: Check): boolean {
+  const user = s.users.find((u) => u.sam.toLowerCase() === c.sam.toLowerCase());
+  if (c.t === "exists") return Boolean(user) && user!.container.toLowerCase() === c.ou.toLowerCase();
+  if (!user) return c.t === "member" ? !c.want : false;
+  if (c.t === "enabled") return user.enabled === c.want;
+  if (c.t === "desc") return `${user.description} ${user.title}`.toLowerCase().includes(c.text.toLowerCase());
+  const g = c.group.toLowerCase();
+  const inGroup = user.memberOf.some((m) => m.toLowerCase() === g) || s.groups.some((x) => x.name.toLowerCase() === g && x.members.includes(user.name));
+  return inGroup === c.want;
+}
+
+/** Checks a change task against the newest snapshot. It must have arrived after the drill started. */
+export function checkChange(
+  userId: string,
+  token: string,
+  lab: { snapshot: LabSnapshot; uploadedAt: string } | null
+): { fresh: boolean; results: { label: string; ok: boolean }[]; passed: boolean } | null {
+  const p = unseal(token);
+  if (!p || p.u !== userId) return null;
+  const task = p.items[0]?.task;
+  if (!task) return null;
+  if (!lab) return { fresh: false, results: [], passed: false };
+  const fresh = new Date(lab.uploadedAt).getTime() >= (p.t0 ?? p.iat);
+  const results = task.checks.map(({ c, label }) => ({ label, ok: evalCheck(lab.snapshot, c) }));
+  return { fresh, results, passed: fresh && results.every((x) => x.ok) };
+}
+
+/** How the day's scenario is asked. Lab changes need a lab to check. */
+export function pickFormat(seed: string, level: number, hasLab: boolean): "decide" | "respond" | "change" {
+  const r = seeded(`format:${seed}`)();
+  const lv = Math.min(4, Math.max(1, level));
+  const change = hasLab ? [0.4, 0.35, 0.35, 0.4][lv - 1] : 0;
+  const respond = [0.15, 0.3, 0.4, 0.45][lv - 1];
+  if (r < change) return "change";
+  if (r < change + respond) return "respond";
+  return "decide";
+}
+
+// ---- coach chats earned by drills -----------------------------------------
+
+/** Extra Coach chats for today. Harder, longer work earns more. */
+export function coachBonus(entries: DrillEntry[], utcDay: string): { bonus: number; parts: { label: string; n: number }[] } {
+  const today = entries.filter((e) => e.at.startsWith(utcDay));
+  const parts: { label: string; n: number }[] = [];
+  const daily = today.find((e) => e.mode === "daily");
+  if (daily) parts.push({ label: daily.correct ? "Daily scenario, solved" : "Daily scenario", n: 4 + daily.level + (daily.correct ? 3 : 0) });
+  for (const t of today.filter((e) => e.mode === "timed").slice(0, 2)) {
+    parts.push({ label: "Incident drill", n: 2 + (t.correct >= 4 ? 1 : 0) });
+  }
+  const ctf = today.find((e) => e.mode === "ctf");
+  if (ctf) parts.push({ label: ctf.correct ? "Weekly CTF, flag captured" : "Weekly CTF", n: 8 + (ctf.correct ? 8 : 0) });
+  return { bonus: parts.reduce((a, p) => a + p.n, 0), parts };
 }
 
 // ---- difficulty, streaks, and reports -------------------------------------

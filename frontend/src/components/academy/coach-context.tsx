@@ -14,6 +14,7 @@ type CoachState = {
   enabled: boolean;
   remaining: number | null;
   limit: number;
+  bonus: number;
   error: string | null;
   modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
@@ -42,6 +43,7 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
   const [enabled, setEnabled] = useState(true);
   const [remaining, setRemaining] = useState<number | null>(null);
   const [limit, setLimit] = useState(20);
+  const [bonus, setBonus] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [mode, setModeState] = useState<CoachMode>(DEFAULT_COACH_MODE);
@@ -83,6 +85,7 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
         setEnabled(data.enabled !== false);
         if (typeof data.remaining === "number") setRemaining(data.remaining);
         if (typeof data.limit === "number") setLimit(data.limit);
+        if (typeof data.bonus === "number") setBonus(data.bonus);
       })
       .catch(() => {});
   }, []);
@@ -111,6 +114,7 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
         });
         const data = await res.json();
         if (typeof data.remaining === "number") setRemaining(data.remaining);
+        if (typeof data.bonus === "number") setBonus(data.bonus);
         if (!res.ok || typeof data.reply !== "string" || !data.reply.trim()) {
           setError(typeof data.error === "string" && data.error ? data.error : "PurveX Coach is unavailable right now.");
           return;
@@ -158,7 +162,7 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <CoachContext.Provider
-      value={{ messages, busy, enabled, remaining, limit, error, modalOpen, setModalOpen, mode, setMode, send, clear, resetToday, ask, registerInline }}
+      value={{ messages, busy, enabled, remaining, limit, bonus, error, modalOpen, setModalOpen, mode, setMode, send, clear, resetToday, ask, registerInline }}
     >
       {children}
     </CoachContext.Provider>
