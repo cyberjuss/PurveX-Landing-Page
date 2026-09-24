@@ -222,6 +222,17 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
     // Lesson content is re-rendered when you switch tabs, so a mission comes
     // back blank. Put back what was stored for it.
+    // A wrong or blank answer shakes the box and says nothing.
+    const shake = (input: HTMLElement, feedback: HTMLElement) => {
+      feedback.textContent = "";
+      feedback.className = "ad-guess__feedback";
+      feedback.style.setProperty("display", "none", "important");
+      input.classList.remove("ad-guess__input--shake");
+      void input.offsetWidth;
+      input.classList.add("ad-guess__input--shake");
+      input.addEventListener("animationend", () => input.classList.remove("ad-guess__input--shake"), { once: true });
+    };
+
     const placeMiss = (wrap: Element) => {
       const feedback = wrap.querySelector<HTMLElement>(".ad-guess__feedback");
       if (!feedback) return;
@@ -299,9 +310,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       const guess = normalize(input.value);
 
       if (!guess) {
-        feedback.textContent = "Enter an answer first. Blank submissions do not use an attempt.";
-        feedback.className = "ad-guess__feedback ad-guess__feedback--err";
-        placeMiss(wrap);
+        shake(input, feedback);
         input.focus();
         return;
       }
@@ -362,13 +371,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       recordResult(wrap, { wrong: attempts });
       labelHintButton(wrap, wrap.querySelector(".ad-hint__text")?.classList.contains("ad-hint__text--shown") ?? false);
       // A wrong answer shakes the box and says nothing. Three misses show the flag.
-      feedback.textContent = "";
-      feedback.className = "ad-guess__feedback";
-      feedback.style.setProperty("display", "none", "important");
-      input.classList.remove("ad-guess__input--shake");
-      void input.offsetWidth;
-      input.classList.add("ad-guess__input--shake");
-      input.addEventListener("animationend", () => input.classList.remove("ad-guess__input--shake"), { once: true });
+      shake(input, feedback);
       if (attempts >= 3) reveal.classList.add("ad-flag--shown");
     };
 
