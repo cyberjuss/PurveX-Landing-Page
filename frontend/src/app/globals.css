@@ -3971,7 +3971,6 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 
 .ax-quiz__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 10px 20px; padding: 12px 0 4px; border: none; }
 .ax-quiz__q { padding: 22px 0; border: none; }
-.ax-quiz__q + .ax-quiz__q { border-top: 1px solid var(--rd-line); }
 .ax-quiz__qhead { display: flex; gap: 14px; align-items: baseline; }
 .ax-quiz__n { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; font-weight: 700; color: var(--rd-accent); }
 .ax-quiz__qhead p { font-size: 16px; font-weight: 600; line-height: 1.45; color: var(--rd-ink); }
