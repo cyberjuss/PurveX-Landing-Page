@@ -31,6 +31,8 @@ export function MissionPager({
   const [strip, setStrip] = useState<HTMLElement | null>(null);
 
   const missions = useCallback(() => Array.from(root.current?.querySelectorAll<HTMLElement>(".ad-mission") ?? []), []);
+  const brief = useCallback(() => root.current?.querySelector<HTMLElement>(".ad-brief") ?? null, []);
+  const [onBrief, setOnBrief] = useState(false);
 
   const measure = useCallback(() => {
     const list = missions();
@@ -47,10 +49,13 @@ export function MissionPager({
   useLayoutEffect(() => {
     measure();
     const el = root.current;
+    const hash = typeof window !== "undefined" ? window.location.hash.replace(/^#/, "") : "";
+    const jump = hash && missions().some((m) => m.getAttribute("data-id") === hash);
+    if (brief() && !jump) setOnBrief(true);
     const obs = new MutationObserver(measure);
     if (el) obs.observe(el, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
     return () => obs.disconnect();
-  }, [measure]);
+  }, [measure, brief, missions]);
 
   // The question strip sits directly above the first mission.
   const total = solved.length;
@@ -72,7 +77,10 @@ export function MissionPager({
     const go = () => {
       const id = window.location.hash.replace(/^#/, "");
       const at = id ? missions().findIndex((m) => m.getAttribute("data-id") === id) : -1;
-      if (at >= 0) setStep(at);
+      if (at >= 0) {
+        setOnBrief(false);
+        setStep(at);
+      }
     };
     go();
     window.addEventListener("hashchange", go);
@@ -114,16 +122,17 @@ export function MissionPager({
   );
 
   useEffect(() => {
+    brief()?.classList.toggle("ad-brief--off", total >= 2 && !onBrief);
     missions().forEach((m, i) => {
       m.setAttribute("data-n", String(i + 1).padStart(2, "0"));
-      m.classList.toggle("ad-mission--off", total >= 2 && i !== at);
+      m.classList.toggle("ad-mission--off", total >= 2 && (onBrief || i !== at));
     });
     if (first.current) {
       first.current = false;
       return;
     }
     if (total >= 2) strip?.scrollIntoView({ block: "start", behavior: "smooth" });
-  }, [at, total, missions, strip]);
+  }, [at, total, onBrief, brief, missions, strip]);
 
   return (
     <div ref={root}>
@@ -137,10 +146,14 @@ export function MissionPager({
                   key={i}
                   type="button"
                   role="tab"
-                  aria-selected={i === at}
+                  aria-selected={!onBrief && i === at}
                   aria-label={`Question ${i + 1}${ok ? ", solved" : flagged[i] ? ", flagged" : ""}`}
-                  className={`ad-steps__chip${ok ? " is-done" : ""}${flagged[i] ? " is-flagged" : ""}${i === at ? " is-here" : ""}`}
-                  onClick={() => (i > at ? goForward(i) : setStep(i))}
+                  className={`ad-steps__chip${ok ? " is-done" : ""}${flagged[i] ? " is-flagged" : ""}${!onBrief && i === at ? " is-here" : ""}`}
+                  onClick={() => {
+                    setOnBrief(false);
+                    if (!onBrief && i > at) goForward(i);
+                    else setStep(i);
+                  }}
                 >
                   {ok ? <Check className="h-3.5 w-3.5" /> : i + 1}
                 </button>
@@ -151,14 +164,26 @@ export function MissionPager({
         )}
       {paging && (
         <nav className="ad-pager" aria-label="Continue">
-          {!solved[at] && (
+          {!onBrief && !solved[at] && (
             <p className="ad-pager__flag">
               {flagged[at] ? "Flagged for Coach until you solve it." : "You can move on. This stays flagged until you solve it."}
             </p>
           )}
-          {at > 0 ? (
+          {onBrief ? (
+            prevSection ? (
+              <button type="button" className="ad-pager__btn" onClick={prevSection.go}>
+                <ArrowLeft className="h-4 w-4" /> {prevSection.label}
+              </button>
+            ) : (
+              <span />
+            )
+          ) : at > 0 ? (
             <button type="button" className="ad-pager__btn" onClick={() => setStep(at - 1)}>
               <ArrowLeft className="h-4 w-4" /> Previous
+            </button>
+          ) : brief() ? (
+            <button type="button" className="ad-pager__btn" onClick={() => setOnBrief(true)}>
+              <ArrowLeft className="h-4 w-4" /> Briefing
             </button>
           ) : prevSection ? (
             <button type="button" className="ad-pager__btn" onClick={prevSection.go}>
@@ -167,7 +192,11 @@ export function MissionPager({
           ) : (
             <span />
           )}
-          {isLast && nextSection ? (
+          {onBrief ? (
+            <button type="button" className="ad-pager__btn ad-pager__btn--next is-ready" onClick={() => setOnBrief(false)}>
+              Open first ticket <ArrowRight className="h-4 w-4" />
+            </button>
+          ) : isLast && nextSection ? (
             <button type="button" className={`ad-pager__btn ad-pager__btn--next${solved[at] ? " is-ready" : ""}`} onClick={() => { flagCurrent(); nextSection.go(); }}>
               {nextSection.label} <ArrowRight className="h-4 w-4" />
             </button>

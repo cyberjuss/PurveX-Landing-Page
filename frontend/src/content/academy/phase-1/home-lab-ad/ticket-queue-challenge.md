@@ -3,20 +3,21 @@
 <p>When a request lands in your queue, can you check what is actually true in Active Directory, then make the change the ticket needs?</p>
 </div>
 
-### Ticket Queue
-
-This is the help desk queue at GovTech Financial. Tickets arrive as staff requests, HR notices, and auditor questions, and every one is a sysadmin or help desk job. Treat the ticket as a claim. Open Active Directory Users and Computers, check the account or the group or the folder, then do the work:
-
-- Add a member
-- Restore an account
-- Create a hire
-- Remove what does not belong
-- Write a setting
-- Move a transfer
-
-If the ticket and the directory disagree, fix the directory. The answer is what the directory shows after you act. You can move on. This stays flagged until you solve it.
-
-Run `Build-Environment.ps1 -IncludeCTF` first so the ticket objects are planted. If you built the lab earlier, run `Remove-Environment.ps1` and build again with `-IncludeCTF` so the new ticket state is there. Then make the change in Active Directory Users and Computers. The answer is the state after you finish, not the first look. The hint tells you what to open. The finding shows the answer, the problem, and the solution. You get three tries. The hint unlocks after two wrong tries. The explanation unlocks after the third. You can move on. This stays flagged until you solve it.
+<div class="ad-brief">
+<h3>Ticket Queue</h3>
+<p class="ad-lab-gate"><b>Hands</b> No lab. No close.</p>
+<p>This is the help desk queue at GovTech Financial. Tickets arrive as staff requests, HR notices, and auditor questions, and every one is a sysadmin or help desk job. Treat the ticket as a claim. Open Active Directory Users and Computers, check the account or the group or the folder, then do the work:</p>
+<ul>
+<li>Add a member</li>
+<li>Restore an account</li>
+<li>Create a hire</li>
+<li>Remove what does not belong</li>
+<li>Write a setting</li>
+<li>Move a transfer</li>
+</ul>
+<p>If the ticket and the directory disagree, fix the directory. The answer is what the directory shows after you act. You can move on. This stays flagged until you solve it.</p>
+<p>Run <code>Build-Environment.ps1 -IncludeCTF</code> first so the ticket objects are planted. If you built the lab earlier, run <code>Remove-Environment.ps1</code> and build again with <code>-IncludeCTF</code> so the new ticket state is there. Then make the change in Active Directory Users and Computers. The answer is the state after you finish, not the first look. The hint tells you what to open. The finding shows the answer, the problem, and the solution. You get three tries. The hint unlocks after two wrong tries. The explanation unlocks after the third. You can move on. This stays flagged until you solve it.</p>
+</div>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>

@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 import { ArrowRight, Check, ClipboardList, Flame, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
-import { academyFetch, localDay } from "@/lib/academy-client";
+import { academyFetch, localDay, READINESS_PATH } from "@/lib/academy-client";
 import { SKILLS, type Skill } from "@/lib/academy-score";
 
 export type DrillStatus = {
@@ -249,13 +250,16 @@ function LabFindings({ items }: { items: Finding[] }) {
       <div className="rd-sec__head">
         <span className="rd-sec__n">04</span>
         <h2>What your lab needs</h2>
+        <Link href={READINESS_PATH} className="rd-link dr-report__copy">
+          Open report <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
         <p>
           {items.length === 0
             ? "Nothing is wrong in your lab right now. Your daily case will be a judgement case."
             : "A real audit of your own lab. Your daily lab task is one of these, and it is checked in your lab."}
         </p>
       </div>
-      {items.length > 0 && (
+      {items.length > 0 ? (
         <ul className="dr-findings__list">
           {items.map((f) => (
             <li key={f.id} className={`is-${f.severity}`}>
@@ -266,6 +270,11 @@ function LabFindings({ items }: { items: Finding[] }) {
             </li>
           ))}
         </ul>
+      ) : (
+        <Link href={READINESS_PATH} className="dr-reportlink">
+          Open your readiness report
+          <ArrowRight className="h-4 w-4" />
+        </Link>
       )}
     </section>
   );

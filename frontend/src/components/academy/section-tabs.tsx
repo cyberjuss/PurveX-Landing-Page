@@ -68,6 +68,7 @@ export function SectionTabs({
   const items = [...numberedItems, ...labItems, ...challengeItems, ...troubleshootingItems];
 
   const [active, setActive] = useState(0);
+  const [quizFoot, setQuizFoot] = useState<HTMLElement | null>(null);
   // Expanded by default -- collapsing is an option for a long list like Home
   // Lab's 9 sections, not the default state. Collapsed shows just the
   // current section's name so context isn't lost while the list is hidden.
@@ -99,7 +100,7 @@ export function SectionTabs({
 
   const panel =
     current.kind === "quiz" ? (
-      <QuizBlock quiz={quiz!} />
+      <QuizBlock quiz={quiz!} actionHost={quizFoot} />
     ) : current.kind === "lab" ? (
       <div>
         {/* Keyed on the label so switching labs remounts this instead of
@@ -208,7 +209,10 @@ export function SectionTabs({
                     className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
                   >
                     <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                    <span className="min-w-0">{item.label}</span>
+                    <span className="min-w-0">
+                      {item.label}
+                      {item.label === "Ticket Queue" && <i className="ax-tab__hands">Hands</i>}
+                    </span>
                   </button>
                 );
               })}
@@ -259,8 +263,8 @@ export function SectionTabs({
               <span className="hidden sm:inline">{active > 0 ? items[active - 1].label : "Previous"}</span>
             </button>
 
-            <span className="ax-panel__count">
-              {pad(active + 1)} / {pad(items.length)}
+            <span className={current.kind === "quiz" ? "ax-panel__action" : "ax-panel__count"} ref={setQuizFoot}>
+              {current.kind === "quiz" ? null : `${pad(active + 1)} / ${pad(items.length)}`}
             </span>
 
             <button

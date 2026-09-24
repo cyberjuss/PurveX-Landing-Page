@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { QUIZ_PASS_PERCENT, quizPassed, type Quiz } from "@/content/academy/quizzes";
 import { useAcademyProgress } from "./academy-progress";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
 
-export function QuizBlock({ quiz }: { quiz: Quiz }) {
+export function QuizBlock({ quiz, actionHost }: { quiz: Quiz; actionHost?: HTMLElement | null }) {
   const { recordQuizPass } = useAcademyProgress();
   const [answers, setAnswers] = useState<(number | null)[]>(() => quiz.questions.map(() => null));
   const [submitted, setSubmitted] = useState(false);
@@ -34,6 +35,16 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
     setAnswers(quiz.questions.map(() => null));
     setSubmitted(false);
   }
+
+  const action = submitted ? (
+    <button type="button" onClick={reset} className="rd-link">
+      Try again
+    </button>
+  ) : (
+    <button type="button" onClick={submit} disabled={!allAnswered} className="rd-cta">
+      Check answers
+    </button>
+  );
 
   return (
     <div className="ax-quiz">
@@ -86,15 +97,9 @@ export function QuizBlock({ quiz }: { quiz: Quiz }) {
 
       <div className="ax-quiz__foot">
         <p>{foot}</p>
-        {submitted ? (
-          <button type="button" onClick={reset} className="rd-link">
-            Try again
-          </button>
-        ) : (
-          <button type="button" onClick={submit} disabled={!allAnswered} className="rd-cta">
-            Check answers
-          </button>
-        )}
+        {actionHost
+          ? createPortal(action, actionHost)
+          : action}
       </div>
     </div>
   );

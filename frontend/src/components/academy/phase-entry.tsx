@@ -98,7 +98,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
               {prevEntry ? (
                 <Link href={`/academy/${phase.slug}/${prevEntry.slug}`} className="ax-pager__link">
                   <span className="rd-kicker">
-                    <ArrowLeft className="h-3 w-3" /> Previous
+                    <ArrowLeft className="h-3 w-3" />
                   </span>
                   <strong>{prevEntry.title}</strong>
                 </Link>
