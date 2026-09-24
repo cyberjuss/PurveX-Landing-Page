@@ -559,7 +559,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     <AcademyProgressProvider phases={phases}>
       <AcademyAccountProvider student={student}>
       <CoachProvider>
-      <div className="academy-bg min-h-screen" data-academy-theme={theme}>
+      <div className="academy-bg min-h-dvh" data-academy-theme={theme}>
         <header
           className={`sticky top-0 z-40 overflow-visible border-b bg-white transition-shadow ${
             scrolled ? "border-[var(--pvrx-border-light)] shadow-[0_1px_0_rgba(16,25,46,0.03),0_8px_24px_-16px_rgba(16,25,46,0.12)]" : "border-[var(--pvrx-border-light)]"
