@@ -125,7 +125,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
   }, []);
 
   useEffect(() => {
-    document.body.style.backgroundColor = theme === "dark" ? "#05070b" : "";
+    document.body.style.backgroundColor = theme === "dark" ? "#050407" : "";
     document.documentElement.dataset.academyTheme = theme;
     document.querySelector(".ad-hint-card")?.setAttribute("data-academy-theme", theme);
     return () => {
