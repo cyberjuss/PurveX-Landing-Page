@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { ArrowRight, Check, ClipboardList, Copy, Flame, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
@@ -270,39 +271,76 @@ function Scenario({
   );
 }
 
-function JobTasks({ jobs, next, n, security }: { jobs: JobRow[]; next: string | null; n: string; security: boolean }) {
+function JobTasks({ jobs, next, security }: { jobs: JobRow[]; next: string | null; security: boolean }) {
+  const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const proven = jobs.filter((j) => j.status === "proven").length;
   const label = { new: "Not yet", practiced: "Practiced", proven: "Proven" } as const;
+
+  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  const theme = mounted ? document.querySelector(".academy-bg")?.getAttribute("data-academy-theme") || "light" : "light";
+
   return (
-    <section className="rd-sec dr-jobs">
-      <div className="rd-sec__head">
-        <span className="rd-sec__n">{n}</span>
-        <h2>Job tasks</h2>
-        <p>
-          {proven} of {jobs.length} proven. Proven means you did it in your own lab and it checked out, or got it right three times. Your daily case aims at the next one.
-        </p>
-        {!security && (
-          <p className="dr-jobs__note">
-            The {jobs.filter((j) => j.security).length} security configuration tasks (lockout, passwords, auditing, log retention, service account hardening) need the updated lab script. Download it again from Build This Lab and run it once on the domain controller.
-          </p>
+    <>
+      <button type="button" className="dr-jobsbtn" aria-expanded={open} onClick={() => setOpen(true)}>
+        <ClipboardList className="h-5 w-5" />
+        <span>Job tasks</span>
+        <em>
+          {proven} of {jobs.length}
+        </em>
+      </button>
+      {mounted &&
+        createPortal(
+          <div className="dr-jobsheet" data-open={open ? "true" : "false"} data-academy-theme={theme}>
+            <button type="button" className="dr-jobsheet__scrim" aria-label="Close job tasks" onClick={() => setOpen(false)} />
+            <aside className="dr-jobsheet__panel" role="dialog" aria-label="Job tasks">
+              <div className="dr-jobsheet__head">
+                <div>
+                  <span>Job tasks</span>
+                  <p>
+                    {proven} of {jobs.length} proven. Proven means you did it in your own lab and it checked out, or got it right three times. Your daily case aims at the next one.
+                  </p>
+                </div>
+                <button type="button" className="dr-jobsheet__close" onClick={() => setOpen(false)}>
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="dr-jobsheet__body">
+                {!security && (
+                  <p className="dr-jobs__note">
+                    The {jobs.filter((j) => j.security).length} security configuration tasks (lockout, passwords, auditing, log retention, service account hardening) need the updated lab script. Download it again from Build This Lab and run it once on the domain controller.
+                  </p>
+                )}
+                <ul className="dr-jobs__list">
+                  {jobs.map((j) => (
+                    <li key={j.id} className={`is-${j.status}${j.id === next ? " is-next" : ""}`}>
+                      <span className="dr-jobs__mark" aria-hidden>
+                        {j.status === "proven" ? <Check className="h-3.5 w-3.5" /> : <ClipboardList className="h-3.5 w-3.5" />}
+                      </span>
+                      <span className="dr-jobs__name">
+                        {j.label}
+                        <em>{j.security ? "Security configuration, checked in your lab" : j.lab ? "Done in your lab" : "Judgement"}</em>
+                      </span>
+                      {j.id === next && <span className="dr-jobs__next">Up next</span>}
+                      <span className="dr-jobs__status">{label[j.status]}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </aside>
+          </div>,
+          document.body
         )}
-      </div>
-      <ul className="dr-jobs__list">
-        {jobs.map((j) => (
-          <li key={j.id} className={`is-${j.status}${j.id === next ? " is-next" : ""}`}>
-            <span className="dr-jobs__mark" aria-hidden>
-              {j.status === "proven" ? <Check className="h-3.5 w-3.5" /> : <ClipboardList className="h-3.5 w-3.5" />}
-            </span>
-            <span className="dr-jobs__name">
-              {j.label}
-              <em>{j.security ? "Security configuration, checked in your lab" : j.lab ? "Done in your lab" : "Judgement"}</em>
-            </span>
-            {j.id === next && <span className="dr-jobs__next">Up next</span>}
-            <span className="dr-jobs__status">{label[j.status]}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
+    </>
   );
 }
 
@@ -791,7 +829,7 @@ export function DrillRunner() {
           </ol>
           {error && <p className="dr-error">{error}</p>}
 
-          <JobTasks jobs={status.jobs} next={status.nextJob} n="04" security={status.lab.security} />
+          <JobTasks jobs={status.jobs} next={status.nextJob} security={status.lab.security} />
           <Link href={READINESS_PATH} className="dr-reportlink">
             See this week and the questions you missed on your readiness report. Getting them right raises a competency. Missing them keeps it down.
             <ArrowRight className="h-4 w-4" />
