@@ -2797,14 +2797,6 @@ body:has(.lp) {
   background-image: radial-gradient(rgba(16,25,46,.08) 1px, transparent 1px);
   background-size: 22px 22px;
   mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%);
-  animation: academy-print 22s linear infinite;
-}
-@keyframes academy-print {
-  from { background-position: 0 0; }
-  to { background-position: 22px 22px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .academy-bg::before { animation: none; }
 }
 /* :not(header) -- the site header is sticky (position: sticky, z-40, set
    inline via Tailwind classes in academy-shell.tsx). This rule and those
@@ -3846,6 +3838,71 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 .rd-foot button:hover { color: var(--rd-bad); }
 
 /* Academy report chrome — shared by home, lessons, sidebar, quiz */
+.ax-hello {
+  position: fixed; inset: 0; z-index: 90;
+  display: flex; align-items: center; justify-content: center;
+  background: #000;
+  color: #e8eef8;
+  animation: ax-hello-out 0.5s ease 2.45s forwards;
+}
+.ax-hello__print {
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(180, 200, 255, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.ax-hello__card { position: relative; width: min(440px, 86vw); }
+.ax-hello__kicker {
+  margin: 0 0 16px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: #6b768a;
+  animation: ax-hello-in 0.45s ease both;
+}
+.ax-hello__rule {
+  display: block; height: 1px; width: 100%; margin: 0 0 28px;
+  background: #9eb0ff;
+  transform: scaleX(0); transform-origin: left;
+  animation: ax-hello-rule 0.55s ease 0.18s forwards;
+}
+.ax-hello h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(32px, 6vw, 48px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.05;
+  animation: ax-hello-in 0.5s ease 0.32s both;
+}
+.ax-hello__lead {
+  margin: 12px 0 0; font-size: 16px; line-height: 1.5; color: #9aa8bc;
+  animation: ax-hello-in 0.5s ease 0.42s both;
+}
+.ax-hello__meta {
+  display: grid; gap: 10px; margin: 32px 0 0;
+}
+.ax-hello__meta > div {
+  display: flex; justify-content: space-between; gap: 16px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  animation: ax-hello-in 0.4s ease both;
+}
+.ax-hello__meta > div:nth-child(1) { animation-delay: 0.58s; }
+.ax-hello__meta > div:nth-child(2) { animation-delay: 0.7s; }
+.ax-hello__meta > div:nth-child(3) { animation-delay: 0.82s; }
+.ax-hello__meta dt { color: #6b768a; }
+.ax-hello__meta dd { margin: 0; color: #e8eef8; }
+@keyframes ax-hello-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes ax-hello-rule {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes ax-hello-out {
+  to { opacity: 0; visibility: hidden; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ax-hello { display: none; }
+}
+
 .ax-welcome { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px 40px; }
 .ax-welcome .ax-titleblock { flex: 1; min-width: 0; }
 .ax-welcome .ax-status__score {

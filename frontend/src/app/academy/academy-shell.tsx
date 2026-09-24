@@ -9,6 +9,7 @@ import { AcademyAccountProvider, AcademyProfileMenu, type AcademyStudent } from 
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
 import { AcademySignIn } from "@/components/academy/academy-sign-in";
+import { AcademyWelcome } from "@/components/academy/academy-welcome";
 import { CoachProvider } from "@/components/academy/coach-context";
 import { PurvexCoach } from "@/components/academy/purvex-coach";
 import {
@@ -44,6 +45,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
   const [theme, setTheme] = useState<"light" | "dark">("light");
   // undefined while the stored Supabase session is still being read.
   const [student, setStudent] = useState<Student | null | undefined>(supabase ? undefined : null);
+  const [hello, setHello] = useState(false);
 
   useEffect(() => {
     if (!supabase) return;
@@ -58,11 +60,19 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       return { id: u.id, email: u.email ?? null, name: name?.trim() ?? null };
     };
     supabase.auth.getSession().then(({ data }) => setStudent(toStudent(data.session?.user)));
-    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
       setStudent((prev) => {
         const next = toStudent(session?.user);
         return prev?.id === next?.id && prev?.email === next?.email && prev?.name === next?.name ? prev : next;
       });
+      if (event === "SIGNED_IN" && session?.user) {
+        try {
+          const key = "academy-welcome";
+          if (sessionStorage.getItem(key) === session.user.id) return;
+          sessionStorage.setItem(key, session.user.id);
+        } catch {}
+        setHello(true);
+      }
     });
     return () => data.subscription.unsubscribe();
   }, []);
@@ -657,6 +667,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           </main>
         </div>
         <PurvexCoach />
+        {hello && <AcademyWelcome student={student} onDone={() => setHello(false)} />}
       </div>
       </CoachProvider>
       </AcademyAccountProvider>
