@@ -3433,6 +3433,15 @@ body:has(.lp) {
   background: var(--pvrx-surface-alt-light, #f1f5f9); border: 1px solid var(--pvrx-border-light, #e2e8f0);
   border-radius: 4px; padding: 0.08em 0.35em;
 }
+.ad-hint-card__body li.ad-cmd {
+  position: relative; padding-right: 3.8rem;
+}
+.ad-hint-card__body li.ad-cmd > code {
+  display: inline !important; background: none !important; border: 0 !important;
+  padding: 0 !important; border-radius: 0 !important;
+  font-size: 0.82rem; font-weight: 500; color: inherit !important;
+  white-space: pre-wrap !important; word-break: break-word;
+}
 .ad-hint-card__body p.ad-cmd { position: relative; margin: 1rem 0 0; }
 .ad-hint-card__body p.ad-cmd > code {
   display: block !important; box-sizing: border-box; width: 100%;
@@ -3476,7 +3485,7 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body p.ad-cmd > 
 .ad-hint-card[data-academy-theme="dark"] .ad-hint-card__body p.ad-cmd > code {
   background: #050508 !important; border-color: rgba(180, 200, 255, 0.18) !important; color: #e8eef8 !important;
 }
-p.ad-cmd { position: relative; }
+p.ad-cmd, li.ad-cmd { position: relative; }
 .ad-cmd__copy {
   position: absolute; top: 8px; right: 8px; z-index: 1;
   font-size: 0.72rem; font-weight: 650; color: #e2e8f0;

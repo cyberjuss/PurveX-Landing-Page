@@ -47,7 +47,9 @@
 <li>Open the account, then Member Of</li>
 </ol>
 <p>PowerShell is optional last.</p>
-<p><code>Get-ADPrincipalGroupMembership jordan.ellis | Select Name</code></p>
+<ul>
+<li><code>Get-ADPrincipalGroupMembership jordan.ellis | Select Name</code></li>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -90,7 +92,9 @@
 <li>Open it, then Members</li>
 </ol>
 <p>PowerShell is optional last.</p>
-<p><code>Get-ADGroupMember "IT Admins"</code></p>
+<ul>
+<li><code>Get-ADGroupMember "IT Admins"</code></li>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -301,7 +305,9 @@
 <li>Or expand <code>Departments</code>, then <code>Operations</code>, then <code>Users</code>, and read Title on each account</li>
 </ol>
 <p>PowerShell is optional last.</p>
-<p><code>Get-ADUser -Filter "Title -eq 'Settlements Coordinator'"</code></p>
+<ul>
+<li><code>Get-ADUser -Filter "Title -eq 'Settlements Coordinator'"</code></li>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -383,7 +389,9 @@
 <li>Open it, then Members, and count the people</li>
 </ol>
 <p>PowerShell is optional last.</p>
-<p><code>(Get-ADGroupMember "Compliance Users").Count</code></p>
+<ul>
+<li><code>(Get-ADGroupMember "Compliance Users").Count</code></li>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">

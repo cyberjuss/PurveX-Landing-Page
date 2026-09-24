@@ -490,21 +490,21 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     };
 
     const wireCommandCopy = (root: Element) => {
-      root.querySelectorAll("p").forEach((p) => {
-        const code = p.querySelector(":scope > code");
+      root.querySelectorAll("p, li").forEach((el) => {
+        const code = el.querySelector(":scope > code");
         if (!code) return;
-        const onlyCode = [...p.childNodes].every(
+        const onlyCode = [...el.childNodes].every(
           (n) => n === code || (n.nodeType === Node.TEXT_NODE && !n.textContent?.trim()),
         );
-        if (!onlyCode && !p.classList.contains("ad-cmd")) return;
-        if (!p.classList.contains("ad-cmd") && !isCommandLine(code.textContent || "")) return;
-        p.classList.add("ad-cmd");
-        if (p.querySelector(".ad-cmd__copy")) return;
+        if (!onlyCode && !el.classList.contains("ad-cmd")) return;
+        if (!el.classList.contains("ad-cmd") && !isCommandLine(code.textContent || "")) return;
+        el.classList.add("ad-cmd");
+        if (el.querySelector(".ad-cmd__copy")) return;
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "ad-cmd__copy";
         btn.textContent = "Copy";
-        p.appendChild(btn);
+        el.appendChild(btn);
       });
     };
 

@@ -38,7 +38,9 @@
 <li>In the left tree, read the department folder above the computer</li>
 </ol>
 <p>PowerShell is optional last.</p>
-<p><code>(Get-ADComputer WM-WKS07).DistinguishedName</code></p>
+<ul>
+<li><code>(Get-ADComputer WM-WKS07).DistinguishedName</code></li>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -135,7 +137,9 @@
 <li>Find the group that is not just department access</li>
 </ol>
 <p>PowerShell is optional last.</p>
-<p><code>Get-ADPrincipalGroupMembership alex.rivera | Select Name</code></p>
+<ul>
+<li><code>Get-ADPrincipalGroupMembership alex.rivera | Select Name</code></li>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
