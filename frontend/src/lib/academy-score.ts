@@ -138,7 +138,11 @@ export function summarize(results: Results): Summary {
   return { overall, finished, total, level, skills, focus };
 }
 
-export function sanitizeResults(raw: unknown): Results {
+/**
+ * `labOk` says the server saw a ticket's change in the student's lab. Only the server may set it,
+ * so it is dropped from anything a browser sends and kept only when reading what the server saved.
+ */
+export function sanitizeResults(raw: unknown, trustLabOk = false): Results {
   if (!raw || typeof raw !== "object") return {};
   const out: Results = {};
   for (const [id, value] of Object.entries(raw as Record<string, unknown>)) {
@@ -151,7 +155,7 @@ export function sanitizeResults(raw: unknown): Results {
       wrong: Math.min(3, Math.max(0, Math.floor(Number(v.wrong) || 0))),
       hint: v.hint === true,
       ...(flagged ? { flagged: true } : {}),
-      ...(v.labOk === true ? { labOk: true } : {}),
+      ...(trustLabOk && v.labOk === true ? { labOk: true } : {}),
       ...(at ? { at } : {}),
     };
   }

@@ -179,7 +179,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                   </button>
                   {remaining != null && (
                     <small>
-                      {remaining === 0 ? "None left today" : `${remaining} of ${limit} left today`}
+                      {remaining === 0 ? "None left today" : `${Math.min(remaining, limit)} of ${limit} left today`}
                     </small>
                   )}
                 </div>

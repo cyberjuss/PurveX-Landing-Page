@@ -792,7 +792,6 @@ export function DrillRunner() {
             <span className="dr-level">
               Level {status.level.n} · {status.level.name}
             </span>
-            {status.chats.bonus > 0 && <span className="dr-earned">+{status.chats.bonus} Coach chats earned today</span>}
           </div>
 
           <ol className="ax-path dr-rows">
@@ -807,7 +806,7 @@ export function DrillRunner() {
                   <span className="ax-path__body">
                     {s.today
                       ? `Daily scenario · ${clock(s.today.seconds)}. ${streakLine(s)}`
-                      : `A decision, a written case, or a real change in your lab${status.focus ? `, aimed at ${status.focus}` : ""}. It gets a name when you open it. Earns +${4 + status.level.n} to +${7 + status.level.n} Coach chats.`}
+                      : `A decision, a written case, or a real change in your lab${status.focus ? `, aimed at ${status.focus}` : ""}. It gets a name when you open it.`}
                   </span>
                 </span>
                 <span className="ax-path__count">
@@ -827,7 +826,7 @@ export function DrillRunner() {
                   <span className="ax-path__body">
                     {status.incidentUntil
                       ? "Done for today. The next one opens 24 hours after the one you just finished."
-                      : `Five alerts and tickets against a clock. One a day. Earns +2 Coach chats. ${s.bestTimed ? `Best ${s.bestTimed.correct}/${s.bestTimed.total}.` : ""}`}
+                      : `Five alerts and tickets against a clock. One a day. ${s.bestTimed ? `Best ${s.bestTimed.correct}/${s.bestTimed.total}.` : ""}`}
                   </span>
                 </span>
                 <span className="ax-path__count">
@@ -850,7 +849,7 @@ export function DrillRunner() {
                   <span className="ax-path__body">
                     {status.ctf.entry
                       ? "A new investigation opens Monday."
-                      : `One hard investigation a week, asked about your own Security log. Earns +8 Coach chats, +16 with the flag. ${
+                      : `One hard investigation a week, asked about your own Security log. ${
                           status.lab.events
                             ? "Your lab sent its log, so this one is about what really happened in it."
                             : "Update the lab script from Build This Lab so it can ask about your own Security log."

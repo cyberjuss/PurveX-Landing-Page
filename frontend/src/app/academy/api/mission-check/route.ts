@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { formatLabAge } from "@/lib/academy-lab";
 import { checkMission, hasTicketObjects, missionGate } from "@/lib/academy-mission-lab";
-import { loadLabState } from "@/lib/academy-store";
+import { loadLabState, loadProgress, saveProgress } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -27,5 +27,13 @@ export async function POST(request: Request) {
   // A lab built without -IncludeCTF has none of the ticket objects, so there is nothing to check.
   if (!hasTicketObjects(lab.snapshot)) return NextResponse.json({ gated: false, noTicketObjects: true });
   const checked = checkMission(id, lab.snapshot);
+  // The server records that the change was seen. This is the only place labOk is ever set.
+  if (checked?.passed) {
+    const results = await loadProgress(student.id);
+    if (!results[id]?.labOk) {
+      results[id] = { ...(results[id] ?? { solved: false, wrong: 0, hint: false }), labOk: true, at: new Date().toISOString() };
+      await saveProgress(student.id, student.email, results);
+    }
+  }
   return NextResponse.json({ gated: true, ...checked, syncedAgo: formatLabAge(lab.uploadedAt).ago });
 }

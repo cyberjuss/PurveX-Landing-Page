@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
-import { COACH_DAILY_LIMIT, runCoachTurn } from "@/lib/academy-coach";
+import { COACH_DAILY_LIMIT, COACH_DAILY_MAX, runCoachTurn } from "@/lib/academy-coach";
 import { modeFromReport, parseCoachMode } from "@/lib/academy-coach-mode";
 import { COACH_SHOT_ASK, sanitizeCoachImages } from "@/lib/academy-coach-media";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
@@ -15,7 +15,8 @@ export const maxDuration = 60;
 async function allowance(userId: string) {
   const drills = await loadDrills(userId).catch(() => []);
   const chats = coachBonus(drills, new Date().toISOString().slice(0, 10));
-  return { drills, bonus: chats.bonus, parts: chats.parts, limit: COACH_DAILY_LIMIT + chats.bonus };
+  const limit = Math.min(COACH_DAILY_MAX, COACH_DAILY_LIMIT + chats.bonus);
+  return { drills, bonus: chats.bonus, parts: chats.parts, limit };
 }
 
 export async function GET(request: Request) {
@@ -32,7 +33,7 @@ export async function GET(request: Request) {
   const { bonus, limit } = await allowance(student.id);
   return NextResponse.json({
     enabled: Boolean(process.env.ANTHROPIC_API_KEY),
-    remaining: Math.max(0, limit - used),
+    remaining: Math.max(0, Math.min(limit, limit - used)),
     limit,
     bonus,
   });
@@ -113,8 +114,8 @@ export async function POST(request: Request) {
       drills,
       tools: { results, userId: student.id, loadLabState: async () => (await loadLabState(student.id))?.snapshot ?? null },
     });
-    const remaining = limit - (await bumpUsage(student.id, used));
-    return NextResponse.json({ reply: text, remaining, model, bonus });
+    const remaining = Math.max(0, Math.min(limit, limit - (await bumpUsage(student.id, used))));
+    return NextResponse.json({ reply: text, remaining, limit, model, bonus });
   } catch {
     return NextResponse.json({ error: "PurveX Coach is unavailable right now." }, { status: 502 });
   }

@@ -21,7 +21,7 @@ function todayStamp() {
 export async function loadProgress(userId: string): Promise<Results> {
   if (supabaseAdmin) {
     const { data } = await supabaseAdmin.from("academy_progress").select("results").eq("user_id", userId).maybeSingle();
-    return sanitizeResults(data?.results);
+    return sanitizeResults(data?.results, true);
   }
   return memoryProgress.get(userId) || {};
 }

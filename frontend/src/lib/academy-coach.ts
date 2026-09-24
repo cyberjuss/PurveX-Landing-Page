@@ -18,7 +18,9 @@ import {
   type Skill,
 } from "@/lib/academy-score";
 
-export const COACH_DAILY_LIMIT = Number(process.env.ACADEMY_COACH_DAILY_LIMIT || 20);
+/** Hard cap for one day. Drill bonuses can fill up to this, never past it. */
+export const COACH_DAILY_MAX = 25;
+export const COACH_DAILY_LIMIT = Math.min(COACH_DAILY_MAX, Number(process.env.ACADEMY_COACH_DAILY_LIMIT || COACH_DAILY_MAX));
 export const COACH_SONNET_MODEL = process.env.ACADEMY_COACH_MODEL || "claude-sonnet-5";
 export const COACH_HAIKU_MODEL = process.env.ACADEMY_COACH_FAST_MODEL || "claude-haiku-4-5";
 

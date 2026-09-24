@@ -42,7 +42,7 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
   const [busy, setBusy] = useState(false);
   const [enabled, setEnabled] = useState(true);
   const [remaining, setRemaining] = useState<number | null>(null);
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(25);
   const [bonus, setBonus] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -84,8 +84,8 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
       .then((data) => {
         if (!data) return;
         setEnabled(data.enabled !== false);
-        if (typeof data.remaining === "number") setRemaining(data.remaining);
         if (typeof data.limit === "number") setLimit(data.limit);
+        if (typeof data.remaining === "number") setRemaining(Math.min(data.remaining, typeof data.limit === "number" ? data.limit : data.remaining));
         if (typeof data.bonus === "number") setBonus(data.bonus);
       })
       .catch(() => {});
@@ -114,7 +114,8 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
           signal: AbortSignal.timeout(58_000),
         });
         const data = await res.json();
-        if (typeof data.remaining === "number") setRemaining(data.remaining);
+        if (typeof data.limit === "number") setLimit(data.limit);
+        if (typeof data.remaining === "number") setRemaining(Math.min(data.remaining, typeof data.limit === "number" ? data.limit : data.remaining));
         if (typeof data.bonus === "number") setBonus(data.bonus);
         if (!res.ok || typeof data.reply !== "string" || !data.reply.trim()) {
           setError(typeof data.error === "string" && data.error ? data.error : "PurveX Coach is unavailable right now.");
@@ -156,7 +157,8 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
   const resetToday = useCallback(async () => {
     const r = await academyFetch("/academy/api/coach?reset=1");
     const data = r.ok ? await r.json() : null;
-    if (typeof data?.remaining === "number") setRemaining(data.remaining);
+    if (typeof data?.limit === "number") setLimit(data.limit);
+    if (typeof data?.remaining === "number") setRemaining(Math.min(data.remaining, typeof data.limit === "number" ? data.limit : data.remaining));
     setMessages([]);
     setError(null);
   }, []);

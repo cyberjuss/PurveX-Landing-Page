@@ -31,7 +31,12 @@ export async function PUT(request: Request) {
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
+  // The browser cannot claim a ticket was seen in the lab. Keep only what the server already recorded.
   const results = sanitizeResults((payload as { results?: unknown }).results);
+  const saved = await loadProgress(student.id);
+  for (const [id, row] of Object.entries(saved)) {
+    if (row.labOk) results[id] = { ...(results[id] ?? { solved: false, wrong: 0, hint: false }), labOk: true };
+  }
   await saveProgress(student.id, student.email, results);
   return NextResponse.json({ ok: true });
 }

@@ -202,7 +202,7 @@ export function CoachHeader({ children }: { children?: ReactNode }) {
 }
 
 export function CoachChat() {
-  const { messages, busy, enabled, remaining, bonus, error, send, resetToday, mode, setMode } = useCoach();
+  const { messages, busy, enabled, remaining, error, send, resetToday, mode, setMode } = useCoach();
   const results = useResults();
   const prompts = mode === "interview" ? interviewStarters(results) : coachStarters(results);
   const [input, setInput] = useState("");
@@ -324,7 +324,7 @@ export function CoachChat() {
         )}
         {messages.length === 0 && remaining === 0 && (
           <div className="pc-empty">
-            <p>That’s all for today.<br />A drill earns more chats. Or come back tomorrow.</p>
+            <p>That’s all for today.<br />Your 25 chats reset tomorrow.</p>
             {process.env.NODE_ENV !== "production" && (
               <button type="button" className="pc-dock__send" onClick={() => void resetToday()}>
                 Reset for testing
@@ -367,7 +367,7 @@ export function CoachChat() {
 
       {remaining === 0 && messages.length > 0 ? (
         <p className="pc-dock pc-dock__done">
-          That’s all for today. <a href="/academy/drill" className="pc-dock__earn">Do a drill for more chats.</a>
+          That’s all for today. Your 25 chats reset tomorrow.
         </p>
       ) : remaining !== 0 ? (
         <form
@@ -484,7 +484,7 @@ export function CoachChat() {
           {attachError && <p className="pc-dock__err">{attachError}</p>}
           {remaining !== null && (
             <p className="pc-dock__left">
-              {remaining} left{bonus > 0 ? ` · +${bonus} from drills` : ""}
+              {remaining} left today
               {remaining <= 5 && (
                 <>
                   {" · "}

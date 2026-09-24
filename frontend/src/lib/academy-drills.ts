@@ -986,12 +986,13 @@ export function coachBonus(entries: DrillEntry[], utcDay: string): { bonus: numb
   const today = entries.filter((e) => e.at.startsWith(utcDay));
   const parts: { label: string; n: number }[] = [];
   const daily = today.find((e) => e.mode === "daily");
-  if (daily) parts.push({ label: daily.correct ? "Daily scenario, solved" : "Daily scenario", n: 4 + daily.level + (daily.correct ? 3 : 0) });
+  // Chats are earned by getting it right, so giving up or guessing never pays.
+  if (daily) parts.push({ label: daily.correct ? "Daily scenario, solved" : "Daily scenario, tried", n: daily.correct ? 7 + daily.level : 1 });
   for (const t of today.filter((e) => e.mode === "timed").slice(0, 1)) {
-    parts.push({ label: "Incident drill", n: 2 + (t.correct >= 4 ? 1 : 0) });
+    if (t.correct >= 3) parts.push({ label: "Incident drill", n: t.correct >= 4 ? 3 : 2 });
   }
   const ctf = today.find((e) => e.mode === "ctf");
-  if (ctf) parts.push({ label: ctf.correct ? "Weekly CTF, flag captured" : "Weekly CTF", n: 8 + (ctf.correct ? 8 : 0) });
+  if (ctf) parts.push({ label: ctf.correct ? "Weekly CTF, flag captured" : "Weekly CTF, tried", n: ctf.correct ? 16 : 2 });
   return { bonus: parts.reduce((a, p) => a + p.n, 0), parts };
 }
 
@@ -1161,7 +1162,8 @@ export function drillStats(entries: DrillEntry[], today: string): DrillStats {
     days: [...days].sort().reverse().slice(0, 60),
     streak,
     longest,
-    total: entries.length,
+    // Practice recorded by Coach or an assistant is not a drill.
+    total: entries.filter((e) => e.mode !== "coach").length,
     today: daily.find((e) => e.day === today) ?? null,
     bestTimed: timed[0] ?? null,
     lastDay: latest?.day ?? null,
