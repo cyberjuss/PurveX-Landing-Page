@@ -96,9 +96,6 @@ export function SectionTabs({
     : nextWeek
       ? { label: nextWeek.label, go: () => router.push(nextWeek.href) }
       : null;
-  const weekBack: TrailLink | null = prevWeek ? { label: prevWeek.label, go: () => router.push(prevWeek.href) } : null;
-  const weekFwd: TrailLink | null = nextWeek ? { label: nextWeek.label, go: () => router.push(nextWeek.href) } : null;
-
   useEffect(() => {
     const apply = () => setActive(indexForHash(window.location.hash, items));
     apply();
@@ -287,10 +284,8 @@ export function SectionTabs({
           <div ref={setLabFoot} />
         ) : (
           <TrailDock
-            back={weekBack}
-            prev={prevItem ? { go: () => setActive(active - 1) } : null}
-            next={nextItem ? { go: () => setActive(active + 1) } : null}
-            forward={weekFwd}
+            prev={prevTrail ? { go: prevTrail.go, label: prevTrail.label } : null}
+            next={nextTrail ? { go: nextTrail.go, label: nextTrail.label } : null}
             center={<span className="ax-panel__count">{`${pad(active + 1)} / ${pad(items.length)}`}</span>}
           />
         )}

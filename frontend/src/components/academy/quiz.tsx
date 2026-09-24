@@ -68,6 +68,7 @@ export function QuizBlock({
 
   const trail = (
     <TrailDock
+      wide
       back={prevBeyond}
       prev={{ go: () => setAt(at - 1), disabled: at === 0 }}
       next={{ go: () => setAt(at + 1), disabled: isLast || (!submitted && selected === null) }}

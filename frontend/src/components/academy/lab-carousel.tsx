@@ -52,10 +52,16 @@ export function LabCarousel({
 
   const nav = (
     <TrailDock
-      back={prevBeyond}
-      prev={{ go: () => go(index - 1), disabled: index === 0 }}
-      next={{ go: () => go(index + 1), disabled: index === total - 1 }}
-      forward={nextBeyond}
+      prev={{
+        go: () => (index === 0 ? prevBeyond?.go() : go(index - 1)),
+        disabled: index === 0 && !prevBeyond,
+        label: index === 0 && prevBeyond ? prevBeyond.label : "Previous",
+      }}
+      next={{
+        go: () => (index === total - 1 ? nextBeyond?.go() : go(index + 1)),
+        disabled: index === total - 1 && !nextBeyond,
+        label: index === total - 1 && nextBeyond ? nextBeyond.label : "Next",
+      }}
       center={
         <span className="ax-panel__count">
           {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
