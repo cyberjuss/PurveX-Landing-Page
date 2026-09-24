@@ -527,7 +527,7 @@ function Get-PurvexStampPath {
     return (Join-Path $dir "last-sync.txt")
 }
 
-# The task wakes every 3 minutes. It sends a snapshot when 15 minutes have passed,
+# The task wakes every minute. It sends a snapshot when 15 minutes have passed,
 # or when Academy says a lab check is open (live). Otherwise it does nothing.
 function Test-PurvexSyncDue {
     param([string]$Key, [string]$Url)
@@ -538,7 +538,7 @@ function Test-PurvexSyncDue {
     }
     catch { }
     if ($minutes -ge 14) { return $true }
-    if ($minutes -lt 2) { return $false }
+    if ($minutes -lt 0.75) { return $false }
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
         $r = Invoke-RestMethod -Method Get -Uri ($Url.TrimEnd("/") + "/api/academy/lab-state") -TimeoutSec 10 -Headers @{ Authorization = "Bearer $Key" }
@@ -570,13 +570,13 @@ function Install-PurvexLabSync {
     Copy-Item -LiteralPath $source -Destination $dest -Force
     $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$dest`" -SyncOnly -Scheduled"
     $trigger = New-ScheduledTaskTrigger -Once -At ((Get-Date).AddMinutes(1))
-    $trigger.Repetition.Interval = "PT3M"
+    $trigger.Repetition.Interval = "PT1M"
     $trigger.Repetition.Duration = "P3650D"
     $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
     Unregister-ScheduledTask -TaskName $PurvexSyncTask -Confirm:$false -ErrorAction SilentlyContinue
-    Register-ScheduledTask -TaskName $PurvexSyncTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "Sends a read-only Active Directory snapshot to PurveX Coach every 15 minutes, and every few minutes while a lab check is open. No passwords." | Out-Null
-    Write-Host "Coach will refresh from this DC every 15 minutes, and every few minutes while a lab check is open." -ForegroundColor Green
+    Register-ScheduledTask -TaskName $PurvexSyncTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "Sends a read-only Active Directory snapshot to PurveX Coach every 15 minutes, and every minute while a lab task, CTF or check is open. No passwords." | Out-Null
+    Write-Host "Coach will refresh from this DC every 15 minutes, and every minute while a lab task, CTF or check is open." -ForegroundColor Green
     return $true
 }
 

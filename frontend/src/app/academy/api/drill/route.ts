@@ -71,7 +71,7 @@ async function status(userId: string, day: string) {
   const lab = labInfo(labState, isVerified(labLive.verifiedAt));
   const gap = summarize(results).focus[0];
   const level = levelFor(entries);
-  const chats = coachBonus(entries, new Date().toISOString().slice(0, 10));
+  const chats = coachBonus(entries, day);
   // Real findings from the student's own lab. Hands-on work only ever comes from these.
   const findings = labState ? auditLab(labState.snapshot) : [];
   const labJobs = labState ? new Set(findings.filter((f) => f.task).map((f) => f.job)) : null;
@@ -89,6 +89,13 @@ async function status(userId: string, day: string) {
     nextJob: pickTargetJob(entries, `${userId}:${day}`, labJobs, results, labState?.snapshot)?.id ?? null,
     findings: findings.slice(0, 12).map((f) => ({ id: f.id, severity: f.severity, title: f.title, facts: f.facts, fixable: Boolean(f.task), job: f.job })),
   };
+}
+
+/** A lab task or the weekly CTF is waiting on the lab, so let it sync every minute for a while. */
+async function liveForTask(userId: string, mode: DrillMode, drill: { items: { kind?: string }[] }) {
+  if (mode === "ctf" || drill.items.some((i) => i.kind === "change")) {
+    await touchLabLive(userId, LIVE_MINUTES).catch(() => {});
+  }
 }
 
 // First result stands: one daily drill a day, one CTF a week. Timed drills always count unless late.
@@ -192,7 +199,10 @@ export async function POST(request: Request) {
       // Tasks from an older version planted practice accounts. Those are gone, so start fresh.
       const stale = Boolean(reopened?.items.some((i) => i.setup));
       const again = stale ? null : reopened;
-      if (again) return NextResponse.json(again);
+      if (again) {
+        await liveForTask(userId, mode, again);
+        return NextResponse.json(again);
+      }
       replaceSaved = stale;
     }
 
@@ -241,6 +251,7 @@ export async function POST(request: Request) {
       id: mode === "ctf" ? `ctf-${keyDay}` : undefined,
     });
     if (mode !== "timed" && drill.ai) await saveDailyDrill(userId, keyDay, drill.token, kind, swap || replaceSaved);
+    await liveForTask(userId, mode, drill);
     return NextResponse.json(drill);
   }
 
