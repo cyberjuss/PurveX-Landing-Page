@@ -38,8 +38,7 @@ export async function saveProgress(userId: string, email: string | null, results
   if (error) console.error("academy_progress upsert failed", error.message);
 }
 
-export async function readUsage(userId: string): Promise<number> {
-  const day = todayStamp();
+export async function readUsage(userId: string, day = todayStamp()): Promise<number> {
   if (supabaseAdmin) {
     const { data } = await supabaseAdmin
       .from("academy_coach_usage")
@@ -53,8 +52,7 @@ export async function readUsage(userId: string): Promise<number> {
   return row && row.day === day ? row.count : 0;
 }
 
-export async function resetUsage(userId: string) {
-  const day = todayStamp();
+export async function resetUsage(userId: string, day = todayStamp()) {
   memoryUsage.set(userId, { day, count: 0 });
   if (!supabaseAdmin) return;
   const { error } = await supabaseAdmin.from("academy_coach_usage").upsert({
@@ -66,8 +64,7 @@ export async function resetUsage(userId: string) {
   if (error) console.error("academy_coach_usage reset failed", error.message);
 }
 
-export async function bumpUsage(userId: string, current: number): Promise<number> {
-  const day = todayStamp();
+export async function bumpUsage(userId: string, current: number, day = todayStamp()): Promise<number> {
   const next = current + 1;
   memoryUsage.set(userId, { day, count: next });
   if (supabaseAdmin) {

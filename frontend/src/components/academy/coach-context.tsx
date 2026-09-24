@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { academyFetch, RESULTS_CHANGED_EVENT, RESULTS_UPDATED_EVENT } from "@/lib/academy-client";
+import { academyFetch, localDay, RESULTS_CHANGED_EVENT, RESULTS_UPDATED_EVENT } from "@/lib/academy-client";
 import { DEFAULT_COACH_MODE, modeFromReport, type CoachMode } from "@/lib/academy-coach-mode";
 import { COACH_SHOT_ASK, type CoachImage } from "@/lib/academy-coach-media";
 import { loadResults } from "@/lib/academy-score";
@@ -79,7 +79,7 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
 
   // Load on mount and again each time the panel opens: a drill finished since then may have earned chats.
   useEffect(() => {
-    academyFetch("/academy/api/coach")
+    academyFetch(`/academy/api/coach?day=${localDay()}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (!data) return;
@@ -110,7 +110,7 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
         const res = await academyFetch("/academy/api/coach", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: question, images: shots, history, results: loadResults(), mode }),
+          body: JSON.stringify({ message: question, images: shots, history, results: loadResults(), mode, day: localDay() }),
           signal: AbortSignal.timeout(58_000),
         });
         const data = await res.json();
@@ -155,7 +155,7 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const resetToday = useCallback(async () => {
-    const r = await academyFetch("/academy/api/coach?reset=1");
+    const r = await academyFetch(`/academy/api/coach?reset=1&day=${localDay()}`);
     const data = r.ok ? await r.json() : null;
     if (typeof data?.limit === "number") setLimit(data.limit);
     if (typeof data?.remaining === "number") setRemaining(Math.min(data.remaining, typeof data.limit === "number" ? data.limit : data.remaining));

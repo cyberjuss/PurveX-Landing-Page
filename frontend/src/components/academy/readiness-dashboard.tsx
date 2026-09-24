@@ -10,6 +10,9 @@ import {
   LEVELS,
   missionPoints,
   SKILLS,
+  scoreTone,
+  skillNeedsWork,
+  skillSolid,
   summarize,
   type MissionResult,
   type Results,
@@ -25,8 +28,7 @@ const CHALLENGES: { key: MissionCatalogEntry["challenge"]; label: string; blurb:
 type Tone = "good" | "warn" | "bad" | "live" | "none";
 
 function toneOfScore(score: number | null): Tone {
-  if (score === null) return "none";
-  return score >= 85 ? "good" : score >= 65 ? "warn" : "bad";
+  return scoreTone(score);
 }
 
 function missionStatus(r: MissionResult | undefined): { tone: Tone; label: string; points: number | null; needsHelp: boolean } {
@@ -75,8 +77,8 @@ function verdict(s: Summary) {
   if (s.finished === 0) {
     return "None of the competencies have work on them yet. Start Operation Day One. Look people up in the directory and we will see what you can already do.";
   }
-  const strong = s.skills.filter((k) => k.score !== null && k.score >= 65);
-  const weak = s.skills.filter((k) => k.score === null || k.score < 65);
+  const strong = s.skills.filter((k) => skillSolid(k.score));
+  const weak = s.skills.filter((k) => skillNeedsWork(k.score));
   const strongNames = joinNames(strong.map((k) => k.label));
   const weakNames = joinNames(weak.map((k) => k.label));
   const can = strong.slice(0, 2).map((k) => CAN[k.key]);

@@ -788,12 +788,19 @@ function jobsSeenInLab(s: LabSnapshot | null | undefined): Set<string> {
   const riley = user("riley.kwan");
   if (riley && ticket("riley.kwan", "CTF-TICKET-1042") && riley.enabled && !riley.lockedOut) proven.add("enable-account");
   const casey = user("casey.reed");
-  if (casey && member("casey.reed", "IT Users") && !member("old.intern", "IT Users")) proven.add("create-user");
+  // The hire ticket plants old.intern (and svc-backup-job). Missing intern is only
+  // proof after that plant. A stock lab with no intern must not count Casey as done.
+  const intern = user("old.intern");
+  const internCleared = intern
+    ? ticket("old.intern", "CTF-TICKET-1043") && !member("old.intern", "IT Users")
+    : Boolean(user("svc-backup-job"));
+  if (casey && member("casey.reed", "IT Users") && internCleared) proven.add("create-user");
   const svc = user("svc-backup-job");
   if (svc && `${svc.description} ${svc.title}`.toLowerCase().includes("01:00-03:00")) proven.add("service-account");
   const taylor = user("taylor.osei");
   if (
     taylor &&
+    ticket("taylor.osei", "CTF-TICKET-1045") &&
     taylor.container.toLowerCase() === "ou=users,ou=compliance,ou=departments" &&
     member("taylor.osei", "Compliance Users") &&
     !member("taylor.osei", "Operations Users")
@@ -981,9 +988,9 @@ export function pickFormat(seed: string, level: number, hasLab: boolean, targets
 
 // ---- coach chats earned by drills -----------------------------------------
 
-/** Extra Coach chats for today. Harder, longer work earns more. */
-export function coachBonus(entries: DrillEntry[], utcDay: string): { bonus: number; parts: { label: string; n: number }[] } {
-  const today = entries.filter((e) => e.at.startsWith(utcDay));
+/** Extra Coach chats for the student's local day. Harder, longer work earns more. */
+export function coachBonus(entries: DrillEntry[], day: string): { bonus: number; parts: { label: string; n: number }[] } {
+  const today = entries.filter((e) => e.day === day);
   const parts: { label: string; n: number }[] = [];
   const daily = today.find((e) => e.mode === "daily");
   // Chats are earned by getting it right, so giving up or guessing never pays.

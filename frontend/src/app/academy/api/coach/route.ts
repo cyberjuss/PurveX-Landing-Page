@@ -6,15 +6,15 @@ import { COACH_SHOT_ASK, sanitizeCoachImages } from "@/lib/academy-coach-media";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
 import { bumpUsage, loadDrills, loadLabState, loadProgress, readUsage, resetUsage } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
-import { coachBonus } from "@/lib/academy-drills";
+import { cleanDay, coachBonus } from "@/lib/academy-drills";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-// Drills earn extra chats for the day: harder and longer work earns more.
-async function allowance(userId: string) {
+// Drills earn extra chats for the student's local day. Harder work earns more.
+async function allowance(userId: string, day: string) {
   const drills = await loadDrills(userId).catch(() => []);
-  const chats = coachBonus(drills, new Date().toISOString().slice(0, 10));
+  const chats = coachBonus(drills, day);
   const bonus = effectiveCoachBonus(chats.bonus);
   return { drills, bonus, parts: chats.parts, limit: COACH_DAILY_LIMIT + bonus };
 }
@@ -27,10 +27,12 @@ export async function GET(request: Request) {
   if (!student) {
     return NextResponse.json({ error: "Sign in first." }, { status: 401 });
   }
-  const wantReset = process.env.NODE_ENV !== "production" && new URL(request.url).searchParams.get("reset") === "1";
-  if (wantReset) await resetUsage(student.id);
-  const used = await readUsage(student.id);
-  const { bonus, limit } = await allowance(student.id);
+  const url = new URL(request.url);
+  const day = cleanDay(url.searchParams.get("day"));
+  const wantReset = process.env.NODE_ENV !== "production" && url.searchParams.get("reset") === "1";
+  if (wantReset) await resetUsage(student.id, day);
+  const used = await readUsage(student.id, day);
+  const { bonus, limit } = await allowance(student.id, day);
   return NextResponse.json({
     enabled: Boolean(process.env.ANTHROPIC_API_KEY),
     remaining: Math.max(0, Math.min(limit, limit - used)),
@@ -69,7 +71,9 @@ export async function POST(request: Request) {
     results?: unknown;
     images?: unknown;
     mode?: unknown;
+    day?: unknown;
   };
+  const day = cleanDay(body.day);
   const rawImages = Array.isArray(body.images) ? body.images : [];
   const images = sanitizeCoachImages(rawImages);
   if (rawImages.length > 0 && images.length === 0) {
@@ -95,8 +99,8 @@ export async function POST(request: Request) {
   const saved = await loadProgress(student.id);
   const results: Results = Object.keys(saved).length > 0 ? saved : sanitizeResults(body.results);
 
-  const used = await readUsage(student.id);
-  const { drills, bonus, limit } = await allowance(student.id);
+  const used = await readUsage(student.id, day);
+  const { drills, bonus, limit } = await allowance(student.id, day);
   if (used >= limit) {
     return NextResponse.json(
       { error: `Daily coach limit reached (${limit} questions). A drill earns more, or try again tomorrow.`, remaining: 0, bonus },
@@ -114,7 +118,7 @@ export async function POST(request: Request) {
       drills,
       tools: { results, userId: student.id, loadLabState: async () => (await loadLabState(student.id))?.snapshot ?? null },
     });
-    const remaining = Math.max(0, Math.min(limit, limit - (await bumpUsage(student.id, used))));
+    const remaining = Math.max(0, Math.min(limit, limit - (await bumpUsage(student.id, used, day))));
     return NextResponse.json({ reply: text, remaining, limit, model, bonus });
   } catch {
     return NextResponse.json({ error: "PurveX Coach is unavailable right now." }, { status: 502 });

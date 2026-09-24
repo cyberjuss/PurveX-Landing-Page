@@ -14,6 +14,9 @@ export const RESULTS_CHANGED_EVENT = "academy-results-changed";
 export const RESULTS_UPDATED_EVENT = "academy-results-updated";
 export const READINESS_PATH = "/academy/readiness";
 
+/** The student's local calendar day, same shape the drill APIs accept. */
+export const localDay = (d = new Date()) => d.toLocaleDateString("sv-SE");
+
 const RESULT_EVENTS = [RESULTS_CHANGED_EVENT, RESULTS_UPDATED_EVENT, "storage"];
 
 function subscribeResults(onChange: () => void) {

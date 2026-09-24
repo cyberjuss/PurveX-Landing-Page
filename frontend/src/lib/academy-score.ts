@@ -92,6 +92,24 @@ export type Summary = {
   focus: { key: Skill; label: string; advice: string; score: number | null }[];
 };
 
+/** Competent / Almost Ready. Coach focus and the report use the same cut. */
+export const SCORE_SOLID = 65;
+/** Ready: overall must hit this, and no skill may sit under SCORE_SOLID. */
+export const SCORE_READY = 85;
+
+export function skillSolid(score: number | null): boolean {
+  return score !== null && score >= SCORE_SOLID;
+}
+
+export function skillNeedsWork(score: number | null): boolean {
+  return !skillSolid(score);
+}
+
+export function scoreTone(score: number | null): "good" | "warn" | "bad" | "none" {
+  if (score === null) return "none";
+  return score >= SCORE_READY ? "good" : score >= SCORE_SOLID ? "warn" : "bad";
+}
+
 export function summarize(results: Results): Summary {
   const ids = Object.keys(MISSION_SKILLS);
   const total = ids.length;
@@ -122,18 +140,18 @@ export function summarize(results: Results): Summary {
     done: per[key].done,
     total: per[key].total,
   }));
-  // Focus areas: unfinished or below 80, weakest first, at most two.
+  // Focus areas: unfinished or below the competent bar, weakest first, at most two.
   const focus = skills
-    .filter((s) => s.score === null || s.score < 80)
+    .filter((s) => skillNeedsWork(s.score))
     .sort((a, b) => (a.score ?? -1) - (b.score ?? -1))
     .slice(0, 2)
     .map((s) => ({ key: s.key, label: s.label, advice: SKILLS[s.key].advice, score: s.score }));
   let level: Summary["level"] = "none";
   if (finished > 0) level = "progress";
   if (finished === total) {
-    // "Ready" needs a strong total and no weak skill, so one big gap cannot hide behind a good average.
+    // Ready needs a strong total and every skill at the same bar the verdict calls competent.
     const weakest = Math.min(...skills.map((k) => k.score ?? 0));
-    level = overall >= 85 && weakest >= 60 ? "ready" : overall >= 65 ? "almost" : "practice";
+    level = overall >= SCORE_READY && weakest >= SCORE_SOLID ? "ready" : overall >= SCORE_SOLID ? "almost" : "practice";
   }
   return { overall, finished, total, level, skills, focus };
 }

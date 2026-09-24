@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ArrowRight, Check, ClipboardList, Flame, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
-import { academyFetch } from "@/lib/academy-client";
+import { academyFetch, localDay } from "@/lib/academy-client";
 import { SKILLS, type Skill } from "@/lib/academy-score";
 
 export type DrillStatus = {
@@ -62,7 +62,7 @@ type Review = { title: string; skill: Skill; picked: string | null; answer: stri
 type Run = { mode: Mode; token: string; items: Item[]; limit: number; ai: boolean; startedAt: number };
 type Result = { entry: DrillEntry; review: Review[]; late: boolean; counted: boolean; items: Item[] } & DrillStatus;
 
-export const localDay = (d = new Date()) => d.toLocaleDateString("sv-SE");
+export { localDay };
 
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 const LETTERS = ["A", "B", "C", "D"];
@@ -332,7 +332,7 @@ function VerifyLab({ verified, onVerified }: { verified: boolean; onVerified: ()
             <strong>Your code: {open.code}</strong>
             <p>Set the description of {open.target} to this code. In PowerShell on your domain controller:</p>
             <code style={{ display: "block", padding: "10px 12px", border: "1px solid var(--rd-line)", borderRadius: 8, fontSize: "var(--ty-small)", overflowX: "auto", maxWidth: "100%" }}>{open.command}</code>
-            <p>Your lab now syncs every few minutes. When it has reported, check it. The code expires in an hour.</p>
+            <p>Your lab now syncs every few minutes. When it has reported, check it. The code lasts 4 hours.</p>
             <button type="button" className="dr-outline" disabled={busy} onClick={() => void run("check")}>
               {busy ? "Checking…" : "Check my lab"} <ArrowRight className="h-4 w-4" />
             </button>
