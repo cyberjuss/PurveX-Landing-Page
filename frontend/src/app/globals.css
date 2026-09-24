@@ -3851,7 +3851,7 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
   display: flex; align-items: center; justify-content: center;
   background: #000;
   color: #e8eef8;
-  animation: ax-hello-out 0.5s ease 3.95s forwards;
+  animation: ax-hello-out 0.5s ease 2.5s forwards;
 }
 .ax-hello__print {
   position: absolute; inset: 0;

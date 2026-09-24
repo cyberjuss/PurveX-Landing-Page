@@ -36,7 +36,7 @@ export function AcademyWelcome({ student, onDone }: { student: AcademyStudent; o
 
   useEffect(() => {
     const tick = window.setInterval(() => setClock(clockNow()), 1000);
-    const end = window.setTimeout(onDone, 4700);
+    const end = window.setTimeout(onDone, 3100);
     return () => {
       window.clearInterval(tick);
       window.clearTimeout(end);
