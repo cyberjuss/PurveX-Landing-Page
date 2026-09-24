@@ -3499,7 +3499,7 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 .academy-prose .ad-guess__feedback {
   display: block;
   width: 100%;
-  margin: 2.2rem 0 0.35rem;
+  margin: 4.5rem 0 0.35rem;
   font-size: 0.82rem;
   font-weight: 600;
   line-height: 1.4;
