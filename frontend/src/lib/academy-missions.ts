@@ -106,7 +106,7 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     id: "tq-04",
     challenge: "ticket-queue",
     title: "The Backup Account (INC-1044)",
-    prompt: "Auditors require 01:00-03:00 written on svc-backup-job. Put that window on the account, then report it.",
+    prompt: "Auditors require a written run window on svc-backup-job. Put the window from the ticket on the account, then report it.",
     skill: "troubleshooting",
   },
   "tq-05": {

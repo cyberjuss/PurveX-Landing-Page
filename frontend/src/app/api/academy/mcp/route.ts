@@ -6,8 +6,9 @@ export const runtime = "nodejs";
 
 // PurveX Academy MCP server (Streamable HTTP, stateless, JSON responses).
 // Students connect their own MCP client with a personal pvx_ key created in
-// the Academy. Every tool is read-only and scoped to the key's student, and
-// no tool returns mission flags or explanations.
+// the Academy. Every tool is scoped to the key's student and none returns
+// mission flags or explanations. Tools only read, except record_practice_result,
+// which logs a practice question the student answered with their assistant.
 
 const SUPPORTED_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26"];
 const SERVER_INFO = { name: "purvex-academy", title: "PurveX Academy", version: "1.0.0" };
@@ -83,7 +84,7 @@ export async function POST(request: Request) {
           name: t.name,
           description: t.description,
           inputSchema: t.input_schema,
-          annotations: { readOnlyHint: true, openWorldHint: false },
+          annotations: { readOnlyHint: t.name !== "record_practice_result", openWorldHint: false },
         })),
       });
     case "tools/call": {
@@ -96,6 +97,7 @@ export async function POST(request: Request) {
       const text = await runCoachTool(name, args, {
         results,
         loadLabState: async () => (await loadLabState(userId))?.snapshot ?? null,
+        userId,
       });
       return rpcResult(id, { content: [{ type: "text", text }], isError: text.startsWith('{"error"') });
     }

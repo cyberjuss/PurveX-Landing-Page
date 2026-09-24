@@ -175,27 +175,39 @@ export async function resolveMcpKey(key: string): Promise<string | null> {
 
 // Drill history: one row per finished drill, newest last. The daily drill
 // keeps its first result for the day; a timed run is always its own row.
+const MODES = ["daily", "timed", "ctf", "coach"] as const;
+
+function toEntry(r: Record<string, unknown>): DrillEntry {
+  const mode = MODES.find((m) => m === r.mode) ?? "daily";
+  return {
+    id: String(r.drill_id),
+    day: String(r.day),
+    mode,
+    correct: Number(r.correct) || 0,
+    total: Number(r.total) || 0,
+    seconds: Number(r.seconds) || 0,
+    misses: Array.isArray(r.misses) ? (r.misses as DrillEntry["misses"]) : [],
+    at: String(r.created_at),
+    level: Math.min(4, Math.max(1, Number(r.level) || 1)),
+    detail: Array.isArray(r.detail) ? (r.detail as DrillEntry["detail"]) : [],
+  };
+}
+
 export async function loadDrills(userId: string): Promise<DrillEntry[]> {
   if (supabaseAdmin) {
-    const { data, error } = await supabaseAdmin
-      .from("academy_drill_log")
-      .select("drill_id, day, mode, correct, total, seconds, misses, created_at")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(200);
-    if (!error && data) {
-      return data.map((r) => ({
-        id: r.drill_id as string,
-        day: String(r.day),
-        mode: r.mode === "timed" ? "timed" : "daily",
-        correct: Number(r.correct) || 0,
-        total: Number(r.total) || 0,
-        seconds: Number(r.seconds) || 0,
-        misses: Array.isArray(r.misses) ? (r.misses as DrillEntry["misses"]) : [],
-        at: String(r.created_at),
-      }));
-    }
-    if (error) console.error("academy_drill_log read failed", error.message);
+    const base = "drill_id, day, mode, correct, total, seconds, misses, created_at";
+    const read = (cols: string) =>
+      supabaseAdmin!
+        .from("academy_drill_log")
+        .select(cols)
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(200);
+    let res = await read(`${base}, level, detail`);
+    // Older databases have not run the level/detail migration yet.
+    if (res.error) res = await read(base);
+    if (!res.error && res.data) return (res.data as unknown as Record<string, unknown>[]).map(toEntry);
+    if (res.error) console.error("academy_drill_log read failed", res.error.message);
   }
   return memoryDrills.get(userId) ?? [];
 }
@@ -204,43 +216,47 @@ export async function saveDrill(userId: string, entry: DrillEntry) {
   const rows = memoryDrills.get(userId) ?? [];
   if (!rows.some((r) => r.id === entry.id)) memoryDrills.set(userId, [...rows, entry]);
   if (!supabaseAdmin) return;
-  const { error } = await supabaseAdmin.from("academy_drill_log").upsert(
-    {
-      user_id: userId,
-      drill_id: entry.id,
-      day: entry.day,
-      mode: entry.mode,
-      correct: entry.correct,
-      total: entry.total,
-      seconds: entry.seconds,
-      misses: entry.misses,
-      created_at: entry.at,
-    },
-    { onConflict: "user_id,drill_id", ignoreDuplicates: true }
-  );
+  const row = {
+    user_id: userId,
+    drill_id: entry.id,
+    day: entry.day,
+    mode: entry.mode,
+    correct: entry.correct,
+    total: entry.total,
+    seconds: entry.seconds,
+    misses: entry.misses,
+    created_at: entry.at,
+  };
+  const opts = { onConflict: "user_id,drill_id", ignoreDuplicates: true };
+  let { error } = await supabaseAdmin.from("academy_drill_log").upsert({ ...row, level: entry.level, detail: entry.detail }, opts);
+  if (error && entry.mode !== "ctf" && entry.mode !== "coach") {
+    ({ error } = await supabaseAdmin.from("academy_drill_log").upsert(row, opts));
+  }
   if (error) console.error("academy_drill_log upsert failed", error.message);
 }
 
-// Today's AI-written daily scenario, kept as the sealed drill token so the
-// same question comes back on reload and answers never sit in plain text.
-export async function loadDailyDrill(userId: string, day: string): Promise<string | null> {
+// A saved AI-written scenario (today's daily, or this week's CTF), kept as
+// the sealed drill token so the same question comes back on reload and
+// answers never sit in plain text.
+export async function loadDailyDrill(userId: string, day: string, kind: "daily" | "ctf" = "daily"): Promise<string | null> {
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin
       .from("academy_drill_daily")
       .select("token")
       .eq("user_id", userId)
       .eq("day", day)
+      .eq("kind", kind)
       .maybeSingle();
     if (!error && data?.token) return data.token as string;
   }
-  return memoryDaily.get(`${userId}:${day}`) ?? null;
+  return memoryDaily.get(`${userId}:${kind}:${day}`) ?? null;
 }
 
-export async function saveDailyDrill(userId: string, day: string, token: string) {
-  memoryDaily.set(`${userId}:${day}`, token);
+export async function saveDailyDrill(userId: string, day: string, token: string, kind: "daily" | "ctf" = "daily") {
+  memoryDaily.set(`${userId}:${kind}:${day}`, token);
   if (!supabaseAdmin) return;
   const { error } = await supabaseAdmin
     .from("academy_drill_daily")
-    .upsert({ user_id: userId, day, token }, { onConflict: "user_id,day", ignoreDuplicates: true });
+    .upsert({ user_id: userId, day, kind, token }, { onConflict: "user_id,day,kind", ignoreDuplicates: true });
   if (error) console.error("academy_drill_daily upsert failed", error.message);
 }

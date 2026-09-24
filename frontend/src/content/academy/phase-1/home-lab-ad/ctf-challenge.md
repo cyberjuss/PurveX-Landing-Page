@@ -24,8 +24,8 @@ The **Ticket Queue** is next. Staff and HR tickets you work in this same directo
 - Write a setting
 - Move a transfer
 
-<div class="ad-answer-guide">
-<span class="ad-answer-guide__label">How answers work</span>
+<details class="ad-answer-guide">
+<summary class="ad-answer-guide__label">How answers work</summary>
 <p>Use Active Directory Users and Computers in your lab. Each task asks for a short answer:</p>
 <ul>
 <li>A group name</li>
@@ -33,7 +33,7 @@ The **Ticket Queue** is next. Staff and HR tickets you work in this same directo
 <li>A number</li>
 </ul>
 <p>Case, spaces, dots, and dashes do not matter. The hint tells you what to open. The finding shows the answer, the problem, and the solution. You get three tries per task. The hint unlocks after two wrong tries. The explanation unlocks after the third.</p>
-</div>
+</details>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>

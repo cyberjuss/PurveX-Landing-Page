@@ -1,17 +1,21 @@
 import "server-only";
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "crypto";
 import { BASELINE_GROUPS, BASELINE_USERS, type LabGroup, type LabSnapshot, type LabUser } from "@/lib/academy-lab";
-import { summarize, type Results, type Skill } from "@/lib/academy-score";
+import { SKILLS, summarize, type Results, type Skill } from "@/lib/academy-score";
 
 // Daily and timed drills. Questions come from the student's own lab
 // snapshot when they have one, and from the standard GovTech build when
 // they do not. Answers never leave the server: the drill token carries
 // them encrypted, so grading needs no database row.
 
-export type DrillMode = "daily" | "timed";
+export type DrillMode = "daily" | "timed" | "ctf";
+/** Modes that can sit in the log: also results recorded by Coach or an MCP client. */
+export type EntryMode = DrillMode | "coach";
 
 export const TIMED_SIZE = 5;
 export const TIMED_LIMIT_SECONDS = 180;
+export const LEVEL_NAMES = ["Foundation", "Standard", "Hard", "Expert"] as const;
+const TIMED_BY_LEVEL = [180, 165, 150, 120];
 const LATE_GRACE_SECONDS = 10;
 
 export type Item = {
@@ -23,24 +27,36 @@ export type Item = {
   choices: string[];
   answer: string;
   explain: string;
+  /** What this question is about. Used to keep drills from repeating. */
+  theme?: string;
+  /** Typed-answer question (the weekly CTF). No choices. */
+  free?: boolean;
+  accept?: string[];
+  hint?: string;
+  format?: string;
 };
 
-export type PublicItem = Omit<Item, "answer" | "explain">;
+export type PublicItem = Omit<Item, "answer" | "explain" | "accept" | "hint">;
+
+export type DrillDetail = { t: string; s: Skill; c: 0 | 1; p?: string; th?: string };
 
 export type DrillEntry = {
   id: string;
   day: string;
-  mode: DrillMode;
+  mode: EntryMode;
   correct: number;
   total: number;
   seconds: number;
   misses: Skill[];
   at: string;
+  level: number;
+  /** One row per question, so weak spots can be measured later. */
+  detail: DrillDetail[];
 };
 
 export type DrillReview = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string };
 
-type Payload = { id: string; u: string; mode: DrillMode; day: string; iat: number; limit: number; source: "lab" | "standard"; ai: boolean; items: Item[] };
+type Payload = { id: string; u: string; mode: DrillMode; day: string; iat: number; limit: number; source: "lab" | "standard"; ai: boolean; level: number; items: Item[] };
 
 // ---- random helpers -------------------------------------------------------
 
@@ -375,7 +391,7 @@ export function pickSkill(seed: string, results: Results): Skill {
 
 export { seeded, shuffle };
 
-function pickItems(seed: string, snapshot: LabSnapshot, results: Results, mode: DrillMode, size: number): Item[] {
+function pickItems(seed: string, snapshot: LabSnapshot, results: Results, mode: DrillMode, size: number, avoid: Set<string>): Item[] {
   const r = seeded(seed);
   const scores = new Map(summarize(results).skills.map((k) => [k.key, k.score]));
   // Weak skills get asked more. Timed runs lean on alerts and ticket checks.
@@ -405,8 +421,9 @@ function pickItems(seed: string, snapshot: LabSnapshot, results: Results, mode: 
         break;
       }
     }
-    const item = queues.get(skill)!.shift()!(snapshot, r);
-    if (!item || seen.has(item.prompt)) continue;
+    const made = queues.get(skill)!.shift()!(snapshot, r);
+    const item = made ? { ...made, theme: made.theme ?? made.title } : null;
+    if (!item || seen.has(item.prompt) || avoid.has(item.prompt)) continue;
     seen.add(item.prompt);
     used.set(skill, (used.get(skill) ?? 0) + 1);
     items.push(item);
@@ -446,10 +463,20 @@ function publicItems(items: Item[]): PublicItem[] {
     prompt: item.prompt,
     evidence: item.evidence,
     choices: item.choices,
+    free: item.free,
+    format: item.format,
+    theme: item.theme,
   }));
 }
 
-export type StartedDrill = { token: string; items: PublicItem[]; limitSeconds: number; source: "lab" | "standard"; ai: boolean };
+export type StartedDrill = {
+  token: string;
+  items: PublicItem[];
+  limitSeconds: number;
+  source: "lab" | "standard";
+  ai: boolean;
+  level: number;
+};
 
 export function startDrill(params: {
   userId: string;
@@ -457,8 +484,13 @@ export function startDrill(params: {
   day: string;
   snapshot: LabSnapshot | null;
   results: Results;
+  level: number;
+  /** Prompts asked recently. Stock questions skip these. */
+  avoid?: string[];
   /** A ready-made scenario (from the AI writer) that replaces the stock questions. */
   items?: Item[];
+  /** Overrides the drill id, e.g. one CTF per week. */
+  id?: string;
 }): StartedDrill {
   const source = params.snapshot ? "lab" : "standard";
   const snapshot = params.snapshot ?? standardSnapshot();
@@ -466,21 +498,38 @@ export function startDrill(params: {
   // The daily drill is the same all day; a timed run is fresh every time.
   const seed = params.mode === "daily" ? `${params.userId}:${params.day}` : `${params.userId}:${nonce}`;
   const ai = Boolean(params.items?.length);
-  const size = params.mode === "daily" ? 1 : TIMED_SIZE;
-  const items = params.items?.length ? params.items : pickItems(seed, snapshot, params.results, params.mode, size);
-  const limit = params.mode === "timed" ? TIMED_LIMIT_SECONDS : 0;
-  const id = params.mode === "daily" ? `daily-${params.day}` : `timed-${nonce}`;
-  const token = seal({ id, u: params.userId, mode: params.mode, day: params.day, iat: Date.now(), limit, source, ai, items });
-  return { token, limitSeconds: limit, source, ai, items: publicItems(items) };
+  const size = params.mode === "timed" ? TIMED_SIZE : 1;
+  const items = params.items?.length
+    ? params.items
+    : pickItems(seed, snapshot, params.results, params.mode, size, new Set(params.avoid ?? []));
+  const level = Math.min(4, Math.max(1, Math.round(params.level)));
+  const limit = params.mode === "timed" ? TIMED_BY_LEVEL[level - 1] : 0;
+  const id = params.id ?? (params.mode === "daily" ? `daily-${params.day}` : `${params.mode}-${nonce}`);
+  const token = seal({ id, u: params.userId, mode: params.mode, day: params.day, iat: Date.now(), limit, source, ai, level, items });
+  return { token, limitSeconds: limit, source, ai, level, items: publicItems(items) };
 }
 
-/** Reopen a saved daily scenario with a fresh clock. */
+/** Reopen a saved scenario with a fresh clock. */
 export function reissueDrill(userId: string, token: string): StartedDrill | null {
   const p = unseal(token);
-  if (!p || p.u !== userId || p.mode !== "daily") return null;
+  if (!p || p.u !== userId || p.mode === "timed") return null;
   const fresh = seal({ ...p, iat: Date.now() });
-  return { token: fresh, limitSeconds: p.limit, source: p.source, ai: p.ai, items: publicItems(p.items) };
+  return { token: fresh, limitSeconds: p.limit, source: p.source, ai: p.ai, level: p.level ?? 1, items: publicItems(p.items) };
 }
+
+export function drillHint(userId: string, token: string): string | null {
+  const p = unseal(token);
+  if (!p || p.u !== userId) return null;
+  return p.items[0]?.hint ?? null;
+}
+
+const flat = (v: string) =>
+  v
+    .trim()
+    .toLowerCase()
+    .replace(/^gtf\{|\}$/g, "")
+    .replace(/[\s._]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 export function gradeDrill(
   userId: string,
@@ -493,8 +542,24 @@ export function gradeDrill(
   const seconds = Math.max(0, Math.round((Date.now() - p.iat) / 1000));
   const late = p.limit > 0 && seconds > p.limit + LATE_GRACE_SECONDS;
   const review = p.items.map((item, i) => {
-    const picked = typeof given[i] === "string" && item.choices.includes(given[i]) ? (given[i] as string) : null;
-    return { title: item.title, skill: item.skill, picked, answer: item.answer, correct: !late && picked === item.answer, explain: item.explain };
+    const raw = typeof given[i] === "string" ? (given[i] as string).slice(0, 200) : null;
+    let picked: string | null;
+    let right: boolean;
+    if (item.free) {
+      picked = raw && raw.trim() ? raw.trim() : null;
+      right = picked !== null && [item.answer, ...(item.accept ?? [])].some((a) => flat(a) === flat(picked!));
+    } else {
+      picked = raw !== null && item.choices.includes(raw) ? raw : null;
+      right = picked === item.answer;
+    }
+    return {
+      title: item.title,
+      skill: item.skill,
+      picked,
+      answer: item.answer,
+      correct: !late && right,
+      explain: item.explain,
+    };
   });
   const entry: DrillEntry = {
     id: p.id,
@@ -505,11 +570,86 @@ export function gradeDrill(
     seconds,
     misses: review.filter((x) => !x.correct).map((x) => x.skill),
     at: new Date().toISOString(),
+    level: p.level ?? 1,
+    detail: p.items.map((item, i) => ({
+      t: item.title.slice(0, 80),
+      s: item.skill,
+      c: review[i].correct ? 1 : 0,
+      p: item.prompt.slice(0, 160),
+      th: (item.theme ?? item.title).slice(0, 80),
+    })),
   };
   return { entry, review, late };
 }
 
-// ---- streaks and stats ----------------------------------------------------
+// ---- difficulty, streaks, and reports -------------------------------------
+
+/** Newest first, every recorded question, up to `limit`. */
+function recentQuestions(entries: DrillEntry[], limit: number): DrillDetail[] {
+  const out: DrillDetail[] = [];
+  for (const e of [...entries].sort((a, b) => b.at.localeCompare(a.at))) {
+    for (const d of e.detail ?? []) {
+      out.push(d);
+      if (out.length >= limit) return out;
+    }
+  }
+  return out;
+}
+
+/** 1 to 4. Rises with recent accuracy and never on a handful of lucky answers. */
+export function levelFor(entries: DrillEntry[]): number {
+  const recent = recentQuestions(entries, 20);
+  const n = recent.length;
+  if (n < 5) return 1;
+  const acc = recent.filter((q) => q.c).length / n;
+  if (acc >= 0.85 && n >= 12) return 4;
+  if (acc >= 0.7 && n >= 8) return 3;
+  if (acc >= 0.5) return 2;
+  return 1;
+}
+
+/** What was asked lately, so a new drill can steer away from it. */
+export function recentPrompts(entries: DrillEntry[], limit = 24): { t: string; p: string; th: string }[] {
+  return recentQuestions(entries, limit).map((q) => ({ t: q.t, p: q.p ?? "", th: q.th ?? q.t }));
+}
+
+export type SkillRow = { skill: Skill; label: string; asked: number; correct: number; pct: number | null };
+
+export function skillAccuracy(entries: DrillEntry[], sinceDay?: string): SkillRow[] {
+  const rows = new Map<Skill, { asked: number; correct: number }>();
+  for (const e of entries) {
+    if (sinceDay && e.day < sinceDay) continue;
+    for (const d of e.detail ?? []) {
+      const r = rows.get(d.s) ?? { asked: 0, correct: 0 };
+      r.asked += 1;
+      r.correct += d.c;
+      rows.set(d.s, r);
+    }
+  }
+  return (Object.keys(SKILLS) as Skill[]).map((skill) => {
+    const r = rows.get(skill) ?? { asked: 0, correct: 0 };
+    return { skill, label: SKILLS[skill].label, asked: r.asked, correct: r.correct, pct: r.asked ? Math.round((r.correct / r.asked) * 100) : null };
+  });
+}
+
+/** Themes the student keeps missing, most missed first. */
+export function missedThemes(entries: DrillEntry[], limit = 5): { theme: string; skill: Skill; missed: number; asked: number }[] {
+  const map = new Map<string, { skill: Skill; missed: number; asked: number }>();
+  for (const e of entries) {
+    for (const d of e.detail ?? []) {
+      const key = d.th ?? d.t;
+      const r = map.get(key) ?? { skill: d.s, missed: 0, asked: 0 };
+      r.asked += 1;
+      r.missed += d.c ? 0 : 1;
+      map.set(key, r);
+    }
+  }
+  return [...map.entries()]
+    .filter(([, r]) => r.missed > 0)
+    .map(([theme, r]) => ({ theme, ...r }))
+    .sort((a, b) => b.missed - a.missed || b.missed / b.asked - a.missed / a.asked)
+    .slice(0, limit);
+}
 
 export type DrillStats = {
   /** Days with a finished daily drill, newest first. */
@@ -526,6 +666,12 @@ function shiftDay(day: string, by: number) {
   const d = new Date(`${day}T00:00:00Z`);
   d.setUTCDate(d.getUTCDate() + by);
   return d.toISOString().slice(0, 10);
+}
+
+/** Monday of the week a day falls in. The weekly CTF resets then. */
+export function weekStart(day: string) {
+  const dow = new Date(`${day}T00:00:00Z`).getUTCDay();
+  return shiftDay(day, -((dow + 6) % 7));
 }
 
 export function drillStats(entries: DrillEntry[], today: string): DrillStats {
@@ -560,6 +706,71 @@ export function drillStats(entries: DrillEntry[], today: string): DrillStats {
     bestTimed: timed[0] ?? null,
     lastDay: latest?.day ?? null,
   };
+}
+
+export type WeeklyReport = {
+  from: string;
+  to: string;
+  drills: number;
+  daysActive: number;
+  asked: number;
+  correct: number;
+  accuracy: number | null;
+  level: number;
+  levelName: string;
+  ctf: DrillEntry | null;
+  skills: SkillRow[];
+  weakest: SkillRow | null;
+  strongest: SkillRow | null;
+  themes: { theme: string; skill: Skill; missed: number; asked: number }[];
+  next: string;
+};
+
+export function weeklyReport(entries: DrillEntry[], today: string): WeeklyReport {
+  const from = shiftDay(today, -6);
+  const inWeek = entries.filter((e) => e.day >= from && e.day <= today);
+  const skills = skillAccuracy(inWeek);
+  const asked = skills.reduce((a, r) => a + r.asked, 0);
+  const correct = skills.reduce((a, r) => a + r.correct, 0);
+  const measured = skills.filter((r) => r.asked >= 2 && r.pct !== null);
+  const weakest = [...measured].sort((a, b) => (a.pct ?? 0) - (b.pct ?? 0))[0] ?? null;
+  const strongest = [...measured].sort((a, b) => (b.pct ?? 0) - (a.pct ?? 0))[0] ?? null;
+  const level = levelFor(entries);
+  const ctf = entries.find((e) => e.mode === "ctf" && e.id === `ctf-${weekStart(today)}`) ?? null;
+  let next = "Do today's scenario to start this week's record.";
+  if (weakest && (weakest.pct ?? 100) < 70) next = `Spend this week on ${weakest.label}. You got ${weakest.pct}% of those right.`;
+  else if (!ctf && asked > 0) next = "Try the weekly CTF. It is the hardest question of the week.";
+  else if (asked > 0) next = "Steady week. The next level is harder, so keep the streak going.";
+  return {
+    from,
+    to: today,
+    drills: inWeek.length,
+    daysActive: new Set(inWeek.filter((e) => e.mode === "daily").map((e) => e.day)).size,
+    asked,
+    correct,
+    accuracy: asked ? Math.round((correct / asked) * 100) : null,
+    level,
+    levelName: LEVEL_NAMES[level - 1],
+    ctf,
+    skills,
+    weakest,
+    strongest,
+    themes: missedThemes(inWeek, 3),
+    next,
+  };
+}
+
+/** One paragraph for the coach's brief: where drills say this student needs help. */
+export function weaknessLine(entries: DrillEntry[]): string {
+  if (!entries.some((e) => e.detail?.length)) return "No drills on record yet.";
+  const level = levelFor(entries);
+  const skills = skillAccuracy(entries).filter((r) => r.asked > 0);
+  const parts = skills.map((r) => `${r.label} ${r.pct}% of ${r.asked}`);
+  const themes = missedThemes(entries, 3).map((t) => `${t.theme} (missed ${t.missed} of ${t.asked})`);
+  const last = [...entries].sort((a, b) => b.at.localeCompare(a.at))[0];
+  return `Drill level ${level} (${LEVEL_NAMES[level - 1]}). Accuracy: ${parts.join("; ")}.${
+    themes.length ? ` Keeps missing: ${themes.join("; ")}.` : ""
+  } Last drill ${last.day}.`;
 }
 
 export function cleanDay(value: unknown): string {

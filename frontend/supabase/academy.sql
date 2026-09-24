@@ -63,11 +63,13 @@ create table if not exists public.academy_drill_log (
   user_id uuid not null references auth.users (id) on delete cascade,
   drill_id text not null,
   day date not null,
-  mode text not null check (mode in ('daily', 'timed')),
+  mode text not null,
   correct integer not null default 0,
   total integer not null default 0,
   seconds integer not null default 0,
   misses jsonb not null default '[]'::jsonb,
+  level integer not null default 1,
+  detail jsonb not null default '[]'::jsonb,
   created_at timestamptz not null default now(),
   primary key (user_id, drill_id)
 );
@@ -84,9 +86,21 @@ create policy "Students read their own drill log"
 create table if not exists public.academy_drill_daily (
   user_id uuid not null references auth.users (id) on delete cascade,
   day date not null,
+  kind text not null default 'daily',
   token text not null,
   created_at timestamptz not null default now(),
-  primary key (user_id, day)
+  primary key (user_id, day, kind)
 );
 
 alter table public.academy_drill_daily enable row level security;
+
+-- Difficulty levels, per-question detail, the weekly CTF, and results
+-- recorded by Coach. Safe to run on a database that already has the tables.
+alter table public.academy_drill_log add column if not exists level integer not null default 1;
+alter table public.academy_drill_log add column if not exists detail jsonb not null default '[]'::jsonb;
+alter table public.academy_drill_log drop constraint if exists academy_drill_log_mode_check;
+alter table public.academy_drill_log add constraint academy_drill_log_mode_check check (mode in ('daily', 'timed', 'ctf', 'coach'));
+
+alter table public.academy_drill_daily add column if not exists kind text not null default 'daily';
+alter table public.academy_drill_daily drop constraint if exists academy_drill_daily_pkey;
+alter table public.academy_drill_daily add primary key (user_id, day, kind);

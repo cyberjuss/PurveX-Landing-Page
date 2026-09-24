@@ -73,6 +73,8 @@ export function SectionTabs({
   // current section's name so context isn't lost while the list is hidden.
   const [collapsed, setCollapsed] = useState(false);
   const current = items[active];
+  const prevItem = active > 0 ? items[active - 1] : null;
+  const nextItem = active < items.length - 1 ? items[active + 1] : null;
 
   useEffect(() => {
     const apply = () => setActive(indexForHash(window.location.hash, items));
@@ -107,7 +109,11 @@ export function SectionTabs({
         <LabCarousel key={current.label} slides={splitMarkdownIntoSlides(current.markdown)} />
       </div>
     ) : (
-      <MissionPager key={current.label}>
+      <MissionPager
+        key={current.label}
+        prevSection={prevItem ? { label: prevItem.label, go: () => setActive(active - 1) } : null}
+        nextSection={nextItem ? { label: nextItem.label, go: () => setActive(active + 1) } : null}
+      >
         <Markdown content={current.markdown} />
       </MissionPager>
     );
@@ -240,7 +246,7 @@ export function SectionTabs({
             the sidebar after every section -- and, once it reaches the labs,
             the same control that was previously only reachable by clicking
             a sidebar link. */}
-        {items.length > 1 && (
+        {items.length > 1 && current.kind !== "challenge" && (
           <div className="ax-panel__foot">
             <button
               type="button"

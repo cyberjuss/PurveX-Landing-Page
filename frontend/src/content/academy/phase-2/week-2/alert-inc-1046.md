@@ -11,10 +11,10 @@ You already know how to look that host up in Active Directory. Here you read the
 
 Build the Phase 1 lab with `-IncludeCTF` if you have not already.
 
-<div class="ad-answer-guide">
-<span class="ad-answer-guide__label">Hands-on required</span>
+<details class="ad-answer-guide">
+<summary class="ad-answer-guide__label">Hands-on required</summary>
 <p>The first and third steps need your lab. The log steps use the export on this page. The hint tells you what to open. The finding shows the answer, the problem, and the solution.</p>
-</div>
+</details>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
@@ -159,7 +159,7 @@ Build the Phase 1 lab with `-IncludeCTF` if you have not already.
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
 <button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
-<p class="ad-hint__text">First you stop the session and keep the evidence. Wiping the PC deletes the log you need. Emailing and waiting gives the attacker time. Deleting events to quiet the alert is tampering.</p>
+<p class="ad-hint__text">Ask what the first move must do. It has to stop the session and keep the evidence.<br><br>Then ask what each other option costs you. One deletes the log. One gives the attacker time. One hides the alert.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">

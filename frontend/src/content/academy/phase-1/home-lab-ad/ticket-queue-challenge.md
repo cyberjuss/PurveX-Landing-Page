@@ -24,10 +24,10 @@ The ticket is a claim not proof. Open Active Directory Users and Computers, chec
 
 If the ticket and the directory disagree fix the directory. The answer is what the directory shows after you act.
 
-<div class="ad-answer-guide">
-<span class="ad-answer-guide__label">Hands-on required</span>
+<details class="ad-answer-guide">
+<summary class="ad-answer-guide__label">Hands-on required</summary>
 <p>Run <code>Build-Environment.ps1 -IncludeCTF</code> first so the ticket objects are planted. If you built the lab earlier run <code>Remove-Environment.ps1</code> and build again with <code>-IncludeCTF</code> so the new ticket state is there. Then make the change in Active Directory Users and Computers. The answer is the state after you finish not the first look. The hint tells you what to open. The finding shows the answer, the problem, and the solution. You get three tries. The hint unlocks after two wrong tries. The explanation unlocks after the third.</p>
-</div>
+</details>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
@@ -38,7 +38,7 @@ If the ticket and the directory disagree fix the directory. The answer is what t
 <span class="ad-mission__num">Ticket 01 · INC-1041 · Low</span>
 <h4>Missing Announcements</h4>
 <p><strong>Jamie Torres · Wealth Management · 9:12 AM</strong><br>I started last week and I still have not gotten a single company-wide email. Everyone else on my team has. Can you check my access?</p>
-<p><strong>Question:</strong> Add Jamie to <code>All Employees</code> if she is missing. After you fix it, how many members does that group have? The firm has 9 staff accounts.</p>
+<p><strong>Question:</strong> Add Jamie to <code>All Employees</code> if she is missing. After you fix it, how many members does that group have?</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{9}">Submit</button>
@@ -74,7 +74,7 @@ If the ticket and the directory disagree fix the directory. The answer is what t
 <button type="button" class="ad-guess__submit" data-answer="gtf{true}">Submit</button>
 <button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
-<p class="ad-hint__text">Locked and disabled are different. Unlock does nothing if the account is disabled.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>riley.kwan</code>, open the account → Account. Read Unlock account and Account is disabled. If the account is disabled, clear that checkbox and click Apply. Then confirm the account is enabled.<br><br>PowerShell is optional: <code>Get-ADUser riley.kwan -Properties LockedOut, Enabled | Select Name, LockedOut, Enabled</code> then <code>Enable-ADAccount riley.kwan</code></p>
+<p class="ad-hint__text">Locked and disabled are different. Unlock does nothing if the account is disabled.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>riley.kwan</code>, open the account → Account. Read Unlock account and Account is disabled. Act on what is actually checked. Then open the tab again and read Enabled before you submit.<br><br>PowerShell is optional: <code>Get-ADUser riley.kwan -Properties LockedOut, Enabled | Select Name, LockedOut, Enabled</code></p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -134,7 +134,7 @@ If the ticket and the directory disagree fix the directory. The answer is what t
 <button type="button" class="ad-guess__submit" data-answer="gtf{01:00-03:00}">Submit</button>
 <button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
-<p class="ad-hint__text">The auditor wants the hours on the account, not hours you remember from the ticket and never write down.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>svc-backup-job</code>, open the account → General. Replace the Description with <code>01:00-03:00</code> and click Apply. Read it back before you submit.<br><br>PowerShell is optional: <code>Set-ADUser svc-backup-job -Description "01:00-03:00"</code></p>
+<p class="ad-hint__text">The auditor wants the hours on the account, not hours you remember from the ticket and never write down.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>svc-backup-job</code>, open the account → General. Write the window from the ticket on Description, click Apply, then read it back before you submit.<br><br>PowerShell is optional: <code>Set-ADUser svc-backup-job -Description</code> with the same window the ticket named, then read Description again.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -164,7 +164,7 @@ If the ticket and the directory disagree fix the directory. The answer is what t
 <button type="button" class="ad-guess__submit" data-answer="gtf{compliance}">Submit</button>
 <button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
-<p class="ad-hint__text">Policy follows the folder the account lives in. An HR email does not move the object.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>taylor.osei</code>. Right-click the account → Move, and choose <code>Departments</code> → <code>Compliance</code> → <code>Users</code>. Open Member Of, add <code>Compliance Users</code>, and remove <code>Operations Users</code>. Confirm the folders above the account now read Compliance.<br><br>PowerShell is optional: <code>Move-ADObject</code> then <code>Add-ADGroupMember</code> / <code>Remove-ADGroupMember</code></p>
+<p class="ad-hint__text">Policy follows the folder the account lives in. An HR email does not move the object.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>taylor.osei</code>. Right-click the account → Move, and pick the Users folder under the department the ticket named. Open Member Of. Add that department group and remove the old one. Confirm the folders above the account match the ticket before you submit.<br><br>PowerShell is optional: <code>Move-ADObject</code> then <code>Add-ADGroupMember</code> / <code>Remove-ADGroupMember</code></p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">

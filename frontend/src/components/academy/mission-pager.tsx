@@ -1,16 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { READINESS_PATH } from "@/lib/academy-client";
 
+type Neighbor = { label: string; go: () => void };
+
 // Challenge lessons are authored as a stack of .ad-mission blocks. This
 // shows one at a time: a question strip above it (where you are, which are
-// solved) and Back / Next below it. Lessons with fewer than two missions
-// are left alone.
-export function MissionPager({ children }: { children: ReactNode }) {
+// solved) and one trail below it. On the first and last ticket the same
+// trail steps into the neighboring section, so the page does not grow a
+// second Previous / Next bar.
+export function MissionPager({
+  children,
+  prevSection,
+  nextSection,
+}: {
+  children: ReactNode;
+  prevSection?: Neighbor | null;
+  nextSection?: Neighbor | null;
+}) {
   const root = useRef<HTMLDivElement>(null);
   const first = useRef(true);
   const [step, setStep] = useState(0);
@@ -28,15 +39,14 @@ export function MissionPager({ children }: { children: ReactNode }) {
   }, [missions]);
 
   // Follow mission blocks as they render, restore, or become solved.
-  useEffect(() => {
-    const frame = window.requestAnimationFrame(measure);
+  // Layout effect so a section jump (new key) sees the tickets on the
+  // same paint, not after a frame that can miss the first measure.
+  useLayoutEffect(() => {
+    measure();
     const el = root.current;
     const obs = new MutationObserver(measure);
     if (el) obs.observe(el, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
-    return () => {
-      window.cancelAnimationFrame(frame);
-      obs.disconnect();
-    };
+    return () => obs.disconnect();
   }, [measure]);
 
   // The question strip sits directly above the first mission.
@@ -69,6 +79,7 @@ export function MissionPager({ children }: { children: ReactNode }) {
   const at = Math.min(step, Math.max(0, total - 1));
   const done = solved.filter(Boolean).length;
   const isLast = at === total - 1;
+  const paging = total >= 2;
 
   useEffect(() => {
     missions().forEach((m, i) => {
@@ -87,11 +98,7 @@ export function MissionPager({ children }: { children: ReactNode }) {
       {children}
       {strip &&
         createPortal(
-          <div className="ad-steps" role="tablist" aria-label="Questions">
-            <span className="ad-steps__count">
-              Question {at + 1} of {total}
-              <em>{done} solved</em>
-            </span>
+          <div className="ad-steps" role="tablist" aria-label={`Question ${at + 1} of ${total}, ${done} solved`}>
             <span className="ad-steps__chips">
               {solved.map((ok, i) => (
                 <button
@@ -110,12 +117,24 @@ export function MissionPager({ children }: { children: ReactNode }) {
           </div>,
           strip
         )}
-      {total >= 2 && (
-        <nav className="ad-pager" aria-label="Question navigation">
-          <button type="button" className="ad-pager__btn" disabled={at === 0} onClick={() => setStep(at - 1)}>
-            <ArrowLeft className="h-4 w-4" /> Previous question
-          </button>
-          {isLast ? (
+      {paging && (
+        <nav className="ad-pager" aria-label="Continue">
+          {at > 0 ? (
+            <button type="button" className="ad-pager__btn" onClick={() => setStep(at - 1)}>
+              <ArrowLeft className="h-4 w-4" /> Previous
+            </button>
+          ) : prevSection ? (
+            <button type="button" className="ad-pager__btn" onClick={prevSection.go}>
+              <ArrowLeft className="h-4 w-4" /> {prevSection.label}
+            </button>
+          ) : (
+            <span />
+          )}
+          {isLast && nextSection ? (
+            <button type="button" className={`ad-pager__btn ad-pager__btn--next${solved[at] ? " is-ready" : ""}`} onClick={nextSection.go}>
+              {nextSection.label} <ArrowRight className="h-4 w-4" />
+            </button>
+          ) : isLast ? (
             <Link href={READINESS_PATH} className={`ad-pager__btn ad-pager__btn--next${solved[at] ? " is-ready" : ""}`}>
               See my readiness <ArrowRight className="h-4 w-4" />
             </Link>
@@ -125,7 +144,7 @@ export function MissionPager({ children }: { children: ReactNode }) {
               className={`ad-pager__btn ad-pager__btn--next${solved[at] ? " is-ready" : ""}`}
               onClick={() => setStep(at + 1)}
             >
-              Next question <ArrowRight className="h-4 w-4" />
+              Next <ArrowRight className="h-4 w-4" />
             </button>
           )}
         </nav>

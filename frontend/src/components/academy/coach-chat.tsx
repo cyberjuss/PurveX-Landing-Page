@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useRef, useState, useSyncExternalStore, type DragEvent, type ReactNode } from "react";
-import { Check, Copy, Mic, RotateCcw, ShieldCheck, Square, Volume2, VolumeX, X } from "lucide-react";
+import { Check, Copy, Mic, RotateCcw, ShieldCheck, Square, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { COACH_MODE_LABELS, COACH_MODES, coachStarters, interviewStarters } from "@/lib/academy-coach-mode";
 import { useResults } from "@/lib/academy-client";
@@ -30,8 +30,6 @@ function recognizerCtor(): (new () => Recognizer) | null {
 const noopSubscribe = () => () => {};
 const canSpeak = () => typeof window !== "undefined" && "speechSynthesis" in window;
 const canListen = () => recognizerCtor() !== null;
-const VOICE_KEY = "coach-voice";
-
 function spokenText(text: string) {
   return text
     .replace(/```[\s\S]*?```/g, " ")
@@ -211,13 +209,6 @@ export function CoachChat() {
   const [images, setImages] = useState<CoachImage[]>([]);
   const [attachError, setAttachError] = useState<string | null>(null);
   const [attaching, setAttaching] = useState(false);
-  const [voice, setVoice] = useState(() => {
-    try {
-      return typeof window !== "undefined" && window.localStorage.getItem(VOICE_KEY) === "on";
-    } catch {
-      return false;
-    }
-  });
   const [listening, setListening] = useState(false);
   const speechOut = useSyncExternalStore(noopSubscribe, canSpeak, () => false);
   const speechIn = useSyncExternalStore(noopSubscribe, canListen, () => false);
@@ -228,7 +219,7 @@ export function CoachChat() {
   const blocked = busy || !enabled || remaining === 0;
   const canSend = Boolean(input.trim() || images.length);
 
-  // Read each new Coach reply aloud in Interview mode when voice is on.
+  // Interview reads each new Coach reply aloud. No toggle. Speech is on.
   useEffect(() => {
     if (messages.length <= spoken.current) {
       spoken.current = messages.length;
@@ -236,8 +227,8 @@ export function CoachChat() {
     }
     spoken.current = messages.length;
     const last = messages[messages.length - 1];
-    if (mode === "interview" && voice && speechOut && last?.role === "assistant") speak(last.content);
-  }, [messages, mode, voice, speechOut]);
+    if (mode === "interview" && speechOut && last?.role === "assistant") speak(last.content);
+  }, [messages, mode, speechOut]);
 
   useEffect(
     () => () => {
@@ -246,19 +237,6 @@ export function CoachChat() {
     },
     []
   );
-
-  function toggleVoice() {
-    const next = !voice;
-    setVoice(next);
-    try {
-      window.localStorage.setItem(VOICE_KEY, next ? "on" : "off");
-    } catch {}
-    if (!next && canSpeak()) window.speechSynthesis.cancel();
-    else if (next) {
-      const last = messages[messages.length - 1];
-      if (mode === "interview" && last?.role === "assistant") speak(last.content);
-    }
-  }
 
   function toggleMic() {
     if (listening) {
@@ -485,17 +463,6 @@ export function CoachChat() {
             >
               Upload
             </button>
-            {mode === "interview" && speechOut && (
-              <button
-                type="button"
-                className="pc-dock__tool inline-flex items-center justify-center gap-1.5"
-                aria-pressed={voice}
-                onClick={toggleVoice}
-              >
-                {voice ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-                {voice ? "Voice on" : "Voice off"}
-              </button>
-            )}
             {mode === "interview" && speechIn && (
               <button
                 type="button"

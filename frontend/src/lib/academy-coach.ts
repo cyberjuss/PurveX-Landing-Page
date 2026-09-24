@@ -2,6 +2,8 @@ import "server-only";
 
 import { coachModeInstructions, parseCoachMode, type CoachMode } from "@/lib/academy-coach-mode";
 import { formatLabAge, labEvidence, labStateForTool, type LabSnapshot } from "@/lib/academy-lab";
+import { LEVEL_NAMES, levelFor, missedThemes, skillAccuracy, weaknessLine, type DrillEntry } from "@/lib/academy-drills";
+import { loadDrills, saveDrill } from "@/lib/academy-store";
 import { type CoachImage } from "@/lib/academy-coach-media";
 import { findMissionsByQuery, MISSION_CATALOG } from "@/lib/academy-missions";
 import {
@@ -124,7 +126,7 @@ function handsOnLine(results: Results, lab: LabSnapshot | null): string {
 }
 
 // Live context for every turn so replies are about this student, not a generic learner.
-export function buildStudentBrief(results: Results, lab: LabSnapshot | null): string {
+export function buildStudentBrief(results: Results, lab: LabSnapshot | null, drills = ""): string {
   const s = summarize(results);
   const skills = s.skills
     .map((k) => `${k.label} ${k.score === null ? "not started" : `${k.score}%`} (${k.done} of ${k.total} finished)`)
@@ -143,6 +145,7 @@ Readiness: ${s.finished === 0 ? "no score yet" : `${s.overall}/100`} (${LEVELS[s
 Skills: ${skills}.
 Biggest gap: ${gap ? `${gap.label}${gap.score === null ? " (not started)" : ` (${gap.score}%)`}` : "none yet"}.
 Hands-on: ${handsOnLine(results, lab)}
+Drills: ${drills || "not loaded"} Use get_weakness_profile for the full picture, and get_environment_question_seeds to build questions from their own lab.
 Missions:
 ${missions}
 Lab: ${labLine}`;
@@ -158,6 +161,8 @@ When helping this student:
 - If they attach a screenshot, read the console and ask what the finding means. Never confirm a mission answer from the image.
 - Never give the answer to a hands-on mission, flag, or multiple-choice letter. Ask one specific question that makes them interpret what they see. Point to the GUI first (ADUC, Event Viewer) with enough clicks to get there without PowerShell. Add a command only if they ask.
 - Use get_skill_gaps and get_mission_history to tailor help to their actual results.
+- Start a coaching session with get_weakness_profile. It blends mission scores, drill accuracy, and what they keep missing, so you know where to spend the time.
+- Develop your own practice questions from their real environment: call get_environment_question_seeds, write a short scenario whose evidence is on screen, ask the student, and wait for their answer. Then call record_practice_result so the result shapes their weakness profile and future drill difficulty. Make each question different from the last. Raise the difficulty when they keep getting it right.
 - Do not invent lab values. get_lab_state returns the student's real lab snapshot saved the last time they ran Build-Environment.ps1. It can be older than their latest changes. Use it to check their work, and point them to what to inspect instead of reading out values that answer unsolved missions.`;
 
 type AnthropicContent =
@@ -168,7 +173,7 @@ type AnthropicContent =
 
 type AnthropicMessage = { role: "user" | "assistant"; content: string | AnthropicContent[] };
 
-export const COACH_TOOLS = [
+export const COACH_TOOLS: { name: string; description: string; input_schema: Record<string, unknown> }[] = [
   {
     name: "get_skill_gaps",
     description: "Return the student's Readiness score and per-skill gaps.",
@@ -216,6 +221,47 @@ export const COACH_TOOLS = [
   },
 ];
 
+COACH_TOOLS.push(
+  {
+    name: "get_weakness_profile",
+    description:
+      "Where this student needs help, from everything on record: readiness skill scores, drill accuracy by skill, the topics they keep missing, their drill level, and what changed in their lab. Ranked weakest first, with a suggested focus. Call this before deciding what to teach or ask.",
+    input_schema: { type: "object", properties: {}, additionalProperties: false },
+  },
+  {
+    name: "get_drill_history",
+    description: "Recent daily drills, timed drills and weekly CTFs: title, skill, result, level and day. Does not include answers.",
+    input_schema: { type: "object", properties: {}, additionalProperties: false },
+  },
+  {
+    name: "get_environment_question_seeds",
+    description:
+      "Real facts from this student's own Active Directory lab, aimed at their weakest skills, that you can turn into practice questions. Write a short scenario from a seed that is answerable from the text you show, ask the student, then call record_practice_result with what happened.",
+    input_schema: {
+      type: "object",
+      properties: { skill: { type: "string", description: "Optional: accounts, directory, troubleshooting or security." } },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "record_practice_result",
+    description:
+      "Record how the student did on a practice question you asked them. This feeds their weakness profile and the difficulty of their drills. Only record a question the student actually answered.",
+    input_schema: {
+      type: "object",
+      properties: {
+        skill: { type: "string", description: "accounts, directory, troubleshooting or security." },
+        topic: { type: "string", description: "Short name of what the question tested, e.g. group membership audit." },
+        correct: { type: "boolean" },
+        level: { type: "number", description: "Difficulty 1 to 4." },
+        note: { type: "string", description: "Optional: what they got wrong." },
+      },
+      required: ["skill", "topic", "correct"],
+      additionalProperties: false,
+    },
+  }
+);
+
 export function pickCoachModel(latestUserText: string, hasImages = false): string {
   if (hasImages) return COACH_SONNET_MODEL;
   const t = latestUserText.trim().toLowerCase();
@@ -239,7 +285,73 @@ function statusOf(results: Results, id: string) {
 export type CoachToolContext = {
   results: Results;
   loadLabState: () => Promise<LabSnapshot | null>;
+  userId?: string;
 };
+
+const DAY = () => new Date().toISOString().slice(0, 10);
+
+/** Concrete lab facts to build practice questions from, weakest skill first. */
+function questionSeeds(snap: LabSnapshot | null, results: Results, entries: DrillEntry[], only?: string) {
+  if (!snap) return { connected: false, note: "No lab snapshot yet. Ask the student to run Build-Environment.ps1, or write questions from the standard GovTech build." };
+  const rank = new Map(
+    summarize(results).skills.map((k) => {
+      const drill = skillAccuracy(entries).find((r) => r.skill === k.key);
+      const parts = [k.score, drill?.pct ?? null].filter((v): v is number => v !== null);
+      return [k.key, parts.length ? parts.reduce((a, b) => a + b, 0) / parts.length : 40] as const;
+    })
+  );
+  const seeds: { skill: Skill; fact: string; angle: string }[] = [];
+  const ev = labEvidence(snap);
+  for (const sam of ev.lockedUsers.slice(0, 2)) seeds.push({ skill: "troubleshooting", fact: `${sam} is locked out right now.`, angle: "A ticket blames something else. Have them check the account state before acting." });
+  for (const sam of ev.disabledUsers.slice(0, 2)) seeds.push({ skill: "troubleshooting", fact: `${sam} is disabled.`, angle: "A caller says they cannot sign in. What is the first check and who decides to enable it?" });
+  for (const g of snap.groups.filter((x) => x.members.length >= 2).slice(0, 4)) seeds.push({ skill: "accounts", fact: `${g.name} has ${g.members.length} members.`, angle: "An auditor asks who has this access and whether anyone should not." });
+  for (const u of snap.users.filter((x) => x.passwordNeverExpires).slice(0, 2)) seeds.push({ skill: "security", fact: `${u.sam} has a password that never expires.`, angle: "Is this normal for this account? What risk does it add?" });
+  for (const d of ev.diffs.slice(0, 4)) seeds.push({ skill: "directory", fact: d, angle: "The lab differs from the standard build. Was it a mistake or a legitimate change, and how do they tell?" });
+  for (const c of snap.computers.slice(0, 2)) seeds.push({ skill: "directory", fact: `Computer ${c.name} lives in ${c.container}.`, angle: "Find it, and say whether its location matches its department." });
+  seeds.push({ skill: "security", fact: "Event IDs 4624, 4625, 4740 and 4728 are the ones a Tier 1 reads first.", angle: "Write a short log excerpt using this lab's real user names and ask for the first response." });
+  const picked = seeds
+    .filter((s) => !only || s.skill === only)
+    .sort((a, b) => (rank.get(a.skill) ?? 40) - (rank.get(b.skill) ?? 40))
+    .slice(0, 10);
+  return {
+    connected: true,
+    labSyncedAgo: ev.lastCapturedAgo,
+    seeds: picked,
+    howTo:
+      "Pick a seed on the student's weakest skill. Write a two or three sentence scenario with the evidence on screen, so it can be answered from your text. Offer four choices where the wrong ones are real new-hire mistakes, or ask an open question. Do not reveal the answer until they reply. Then call record_practice_result. Raise the difficulty if they keep getting it right.",
+  };
+}
+
+async function weaknessProfile(ctx: CoachToolContext) {
+  const entries = ctx.userId ? await loadDrills(ctx.userId) : [];
+  const s = summarize(ctx.results);
+  const drill = skillAccuracy(entries);
+  const rows = s.skills.map((k) => {
+    const d = drill.find((r) => r.skill === k.key);
+    const parts = [k.score, d?.pct ?? null].filter((v): v is number => v !== null);
+    const blended = parts.length ? Math.round(parts.reduce((a, b) => a + b, 0) / parts.length) : null;
+    return { skill: k.key, label: k.label, readiness: k.score, drillAccuracy: d?.pct ?? null, drillQuestions: d?.asked ?? 0, blended };
+  });
+  const ranked = [...rows].sort((a, b) => (a.blended ?? -1) - (b.blended ?? -1));
+  const lab = await ctx.loadLabState();
+  const level = levelFor(entries);
+  return {
+    focusFirst: ranked.slice(0, 2).map((r) => ({ skill: r.skill, label: r.label, why: r.blended === null ? "Not started." : `${r.blended}% across missions and drills.` })),
+    skills: ranked,
+    drills: {
+      level,
+      levelName: LEVEL_NAMES[level - 1],
+      total: entries.length,
+      keepsMissing: missedThemes(entries, 5),
+      lastDrill: [...entries].sort((a, b) => b.at.localeCompare(a.at))[0]?.day ?? null,
+    },
+    lab: lab ? { syncedAgo: formatLabAge(lab.capturedAt).ago, differencesFromStandard: labEvidence(lab).diffs.slice(0, 6) } : null,
+    suggestion:
+      ranked[0] && ranked[0].blended !== null
+        ? `Work ${ranked[0].label} first. Use get_environment_question_seeds to build questions from their own lab, then record_practice_result.`
+        : "They have little on record. Start with a short check on accounts and directory, then record the results.",
+  };
+}
 
 export async function runCoachTool(name: string, input: Record<string, unknown>, ctx: CoachToolContext): Promise<string> {
   const { results } = ctx;
@@ -278,6 +390,48 @@ export async function runCoachTool(name: string, input: Record<string, unknown>,
   }
   if (name === "get_lab_state") {
     return labStateForTool(await ctx.loadLabState(), String(input.name || ""));
+  }
+  if (name === "get_weakness_profile") return JSON.stringify(await weaknessProfile(ctx));
+  if (name === "get_drill_history") {
+    if (!ctx.userId) return JSON.stringify({ drills: [] });
+    const entries = await loadDrills(ctx.userId);
+    return JSON.stringify({
+      drills: [...entries]
+        .sort((a, b) => b.at.localeCompare(a.at))
+        .slice(0, 25)
+        .map((e) => ({ day: e.day, mode: e.mode, level: e.level, correct: e.correct, total: e.total, seconds: e.seconds, questions: e.detail.map((d) => ({ title: d.t, skill: d.s, correct: d.c === 1 })) })),
+    });
+  }
+  if (name === "get_environment_question_seeds") {
+    const entries = ctx.userId ? await loadDrills(ctx.userId) : [];
+    const only = typeof input.skill === "string" && input.skill in SKILLS ? input.skill : undefined;
+    return JSON.stringify(questionSeeds(await ctx.loadLabState(), ctx.results, entries, only));
+  }
+  if (name === "record_practice_result") {
+    if (!ctx.userId) return JSON.stringify({ error: "not signed in" });
+    const skill = String(input.skill || "");
+    if (!(skill in SKILLS)) return JSON.stringify({ error: "unknown skill" });
+    const topic = String(input.topic || "").replace(/\s+/g, " ").trim().slice(0, 80);
+    if (!topic || typeof input.correct !== "boolean") return JSON.stringify({ error: "topic and correct are required" });
+    const entries = await loadDrills(ctx.userId);
+    const today = DAY();
+    if (entries.filter((e) => e.mode === "coach" && e.day === today).length >= 40) return JSON.stringify({ error: "daily limit for recorded practice reached" });
+    const level = Math.min(4, Math.max(1, Math.round(Number(input.level) || levelFor(entries))));
+    const note = String(input.note || "").slice(0, 160);
+    const correct = input.correct ? 1 : 0;
+    await saveDrill(ctx.userId, {
+      id: `coach-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+      day: today,
+      mode: "coach",
+      correct,
+      total: 1,
+      seconds: 0,
+      misses: correct ? [] : [skill as Skill],
+      at: new Date().toISOString(),
+      level,
+      detail: [{ t: topic, s: skill as Skill, c: correct ? 1 : 0, p: note, th: topic }],
+    });
+    return JSON.stringify({ recorded: true, skill, topic, correct: Boolean(correct) });
   }
   if (name === "explain_concept") {
     const skill = input.skill as Skill;
@@ -318,6 +472,7 @@ export async function runCoachTurn(params: {
   images?: CoachImage[];
   mode?: CoachMode;
   tools: CoachToolContext;
+  drills?: DrillEntry[];
 }): Promise<{ text: string; model: string }> {
   const images = params.images?.slice(0, 2) ?? [];
   let model = pickCoachModel(params.userMessage, images.length > 0);
@@ -325,7 +480,7 @@ export async function runCoachTurn(params: {
   const lab = await params.tools.loadLabState().catch(() => null);
   const tools: CoachToolContext = { ...params.tools, loadLabState: async () => lab };
   const mode = parseCoachMode(params.mode);
-  const system = `${COACH_SYSTEM_PROMPT}\n\n${coachModeInstructions(mode)}\n\n${buildStudentBrief(params.tools.results, lab)}`;
+  const system = `${COACH_SYSTEM_PROMPT}\n\n${coachModeInstructions(mode)}\n\n${buildStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills) : "")}`;
   const messages: AnthropicMessage[] = [
     ...params.history.slice(-10).map((m) => ({ role: m.role, content: m.content })),
     { role: "user", content: userTurnContent(params.userMessage, images) },

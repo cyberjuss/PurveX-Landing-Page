@@ -4,7 +4,7 @@ import { COACH_DAILY_LIMIT, runCoachTurn } from "@/lib/academy-coach";
 import { modeFromReport, parseCoachMode } from "@/lib/academy-coach-mode";
 import { COACH_SHOT_ASK, sanitizeCoachImages } from "@/lib/academy-coach-media";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
-import { bumpUsage, loadLabState, loadProgress, readUsage, resetUsage } from "@/lib/academy-store";
+import { bumpUsage, loadDrills, loadLabState, loadProgress, readUsage, resetUsage } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -99,7 +99,8 @@ export async function POST(request: Request) {
       userMessage: message,
       images,
       mode: body.mode != null ? parseCoachMode(body.mode) : modeFromReport(results),
-      tools: { results, loadLabState: async () => (await loadLabState(student.id))?.snapshot ?? null },
+      drills: await loadDrills(student.id).catch(() => []),
+      tools: { results, userId: student.id, loadLabState: async () => (await loadLabState(student.id))?.snapshot ?? null },
     });
     const remaining = COACH_DAILY_LIMIT - (await bumpUsage(student.id, used));
     return NextResponse.json({ reply: text, remaining, model });
