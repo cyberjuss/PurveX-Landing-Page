@@ -1113,6 +1113,7 @@ export type DrillStats = {
   total: number;
   today: DrillEntry | null;
   bestTimed: DrillEntry | null;
+  lastTimed: DrillEntry | null;
   lastDay: string | null;
 };
 
@@ -1164,6 +1165,9 @@ export function drillStats(entries: DrillEntry[], today: string): DrillStats {
   const timed = entries
     .filter((e) => e.mode === "timed" && e.total > 0)
     .sort((a, b) => b.correct - a.correct || a.seconds - b.seconds);
+  const lastTimed = entries
+    .filter((e) => e.mode === "timed" && e.total > 0)
+    .sort((a, b) => b.at.localeCompare(a.at))[0] ?? null;
   const latest = [...entries].sort((a, b) => b.at.localeCompare(a.at))[0];
   return {
     days: [...days].sort().reverse().slice(0, 60),
@@ -1173,6 +1177,7 @@ export function drillStats(entries: DrillEntry[], today: string): DrillStats {
     total: entries.filter((e) => e.mode !== "coach").length,
     today: daily.find((e) => e.day === today) ?? null,
     bestTimed: timed[0] ?? null,
+    lastTimed,
     lastDay: latest?.day ?? null,
   };
 }

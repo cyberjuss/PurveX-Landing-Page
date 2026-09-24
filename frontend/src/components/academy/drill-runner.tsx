@@ -16,6 +16,7 @@ export type DrillStatus = {
     total: number;
     today: DrillEntry | null;
     bestTimed: DrillEntry | null;
+    lastTimed: DrillEntry | null;
     lastDay: string | null;
   };
   lab: { synced: boolean; syncedAt: string | null; ago: string | null; days: number | null; security: boolean; events: boolean; verified?: boolean };
@@ -70,6 +71,10 @@ const LETTERS = ["A", "B", "C", "D"];
 
 export function scoreLabel(e: DrillEntry) {
   return e.total === 1 ? (e.correct ? "Correct" : "Missed") : `${e.correct}/${e.total}`;
+}
+
+export function drillPassed(e: DrillEntry) {
+  return e.total > 0 && e.correct * 2 >= e.total;
 }
 
 export function labLine(lab: DrillStatus["lab"]) {
@@ -913,19 +918,34 @@ export function DrillRunner() {
               <div className="ax-path__row">
                 <span className="ax-path__n">02</span>
                 <span className="ax-path__main">
-                  <span className="ax-path__title">Incident drill</span>
+                  <span className="ax-path__title">
+                    Incident drill
+                    {status.incidentUntil && s.lastTimed && (
+                      <em className={`ax-tag ${drillPassed(s.lastTimed) ? "ax-tag--good" : "ax-tag--bad"}`}>
+                        {drillPassed(s.lastTimed) ? "Passed" : "Failed"}
+                      </em>
+                    )}
+                  </span>
                   <span className="ax-path__body">
-                    {status.incidentUntil
-                      ? "Done for today. The next one opens 24 hours after the one you just finished."
+                    {status.incidentUntil && s.lastTimed
+                      ? `${scoreLabel(s.lastTimed)}. The next one opens 24 hours after the one you just finished.`
+                      : status.incidentUntil
+                        ? "Done for today. The next one opens 24 hours after the one you just finished."
                       : `Five alerts and tickets against a clock. One a day. ${s.bestTimed ? `Best ${s.bestTimed.correct}/${s.bestTimed.total}.` : ""}`}
                   </span>
                 </span>
                 <span className="ax-path__count">
-                  {!status.incidentUntil && (
+                  {status.incidentUntil && s.lastTimed ? (
+                    drillPassed(s.lastTimed) ? (
+                      <Check className="h-5 w-5 text-[var(--rd-good)]" aria-label="Passed" />
+                    ) : (
+                      <X className="h-5 w-5 text-[var(--rd-bad)]" aria-label="Failed" />
+                    )
+                  ) : !status.incidentUntil ? (
                     <button type="button" className="dr-outline" disabled={busy} onClick={() => void start("timed")}>
                       Start <ArrowRight className="h-4 w-4" />
                     </button>
-                  )}
+                  ) : null}
                 </span>
               </div>
             </li>
