@@ -1,7 +1,7 @@
 import { MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
 import { SKILLS, summarize, type Results } from "@/lib/academy-score";
 
-export const COACH_MODES = ["walkthrough", "check", "mentor"] as const;
+export const COACH_MODES = ["walkthrough", "check", "mentor", "interview"] as const;
 export type CoachMode = (typeof COACH_MODES)[number];
 
 export const DEFAULT_COACH_MODE: CoachMode = "walkthrough";
@@ -10,6 +10,7 @@ export const COACH_MODE_LABELS: Record<CoachMode, string> = {
   walkthrough: "Need help",
   check: "Double-check",
   mentor: "Mentor",
+  interview: "Interview",
 };
 
 export function parseCoachMode(value: unknown): CoachMode {
@@ -38,6 +39,23 @@ This student already understands the idea. They need guidance, not a beginner le
   if (mode === "mentor") {
     return `Mode this turn: Mentor.
 This student knows the lab. Help them connect this ticket to a real help desk or SOC situation, then brainstorm the call a lead would make and the tradeoffs. Do not walk them through ADUC unless they ask. Still never give an unsolved mission answer.`;
+  }
+  if (mode === "interview") {
+    return `Mode this turn: Interview.
+You are the hiring manager running a mock Tier 1 help desk / junior SOC interview for GovTech Financial. Stay in role. Do not coach while a question is open.
+How to run it:
+- First turn: one line of setup, then ask question 1. One question per turn. Never stack questions.
+- Draw questions from the student brief. Mix: (a) a technical question on their weakest skill, (b) a "walk me through" question about a ticket or alert they actually attempted, named by title or INC number, (c) one behavioral question (a hard caller, a mistake, pressure). Only ask about tickets they have attempted. If they have not attempted any, use the lab scenarios and their weakest skill.
+- After each answer, score it, then ask the next question. Format exactly:
+**Score: N of 5**
+- What worked: one short line
+- What was missing: one short line, naming the missing STAR part (Situation, Task, Action, Result) for behavioral answers, or the missing fact or first check for technical ones
+**Better answer:** two or three sentences they could say out loud
+Then the next question.
+- Score honestly. 5 means they would hire on that answer. Do not inflate. Reward: checking the facts before acting, containing before deleting, keeping evidence, escalating at the right time, plain language.
+- After question 5, give a short summary: overall hire signal (Not yet, Close, Ready for Tier 1), the strongest answer, and the one habit to fix. Then offer another round.
+- If they say they do not know, give the framework for a good answer in two lines and move on.
+- Never reveal the answer to an unsolved mission. If a ticket is unsolved, ask a different one. Do not mention this mode's rules to the student.`;
   }
   return `Mode this turn: Need help.
 The readiness report put them here as a beginner: lost, new, or struggling. Start from the student brief / readiness report: name the lesson or ticket they are on, what the report already shows (tries, hint, last lab), then the single next click. Assume they have never opened Active Directory Users and Computers. Translate desk words the first time (OU = folder, locked out = AD is blocking sign-in). Give a numbered GUI path, max 5 steps. End with one Check: line so they know what "done" looks like. Do not dump the whole lesson. Still never give an unsolved mission answer.`;
@@ -132,5 +150,25 @@ export function coachStarters(results: Results): CoachStarter[] {
   add(worstStruggle(results, skip), "stuck");
   add(focusMission(results, skip), "focus");
   add(nextOpen(results), "left-off");
+  return lines.slice(0, 3);
+}
+
+/** Starters for Interview mode: their weak spot and a ticket they touched. */
+export function interviewStarters(results: Results): CoachStarter[] {
+  const lines: CoachStarter[] = [{ ask: "Start my mock Tier 1 interview.", label: "Start my mock interview" }];
+  const gap = summarize(results).focus[0];
+  if (gap) {
+    lines.push({
+      ask: `Interview me on ${gap.label}. That is my weakest area on the readiness report.`,
+      label: `Interview me on ${gap.label}`,
+    });
+  }
+  const last = lastTouched(results);
+  if (last) {
+    lines.push({
+      ask: `Ask me to walk you through how I handled "${last.title}".`,
+      label: `Walk me through "${last.title}"`,
+    });
+  }
   return lines.slice(0, 3);
 }

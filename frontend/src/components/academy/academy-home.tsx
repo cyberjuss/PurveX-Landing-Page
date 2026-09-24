@@ -6,6 +6,7 @@ import type { PhaseDef, WeekDef } from "@/lib/academy-content";
 import { READINESS_PATH, useResults } from "@/lib/academy-client";
 import { challengeHref, lastTouchedMission } from "@/lib/academy-missions";
 import { LEVELS, summarize } from "@/lib/academy-score";
+import { DrillCard } from "./drill-card";
 import { accountFirstName, useAcademyAccount } from "./academy-account";
 import { useAcademyProgress } from "./academy-progress";
 
@@ -102,6 +103,8 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
           )}
         </div>
       </header>
+
+      <DrillCard />
 
       <ol className="ax-path">
         {PHASE_COPY.map((copy, i) => {

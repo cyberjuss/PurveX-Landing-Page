@@ -111,7 +111,7 @@ export function sanitizeLabSnapshot(raw: unknown): LabSnapshot | null {
 // The core objects Build-Environment.ps1 creates. Differences are not
 // necessarily mistakes: working a ticket (moving an account, adding a
 // member) legitimately changes the lab.
-const BASELINE_USERS: { sam: string; deptOu: string; group: string; extra?: string[] }[] = [
+export const BASELINE_USERS: { sam: string; deptOu: string; group: string; extra?: string[] }[] = [
   { sam: "alex.rivera", deptOu: "IT", group: "IT Users", extra: ["IT Admins"] },
   { sam: "priya.nair", deptOu: "IT", group: "IT Users" },
   { sam: "devon.brooks", deptOu: "Compliance", group: "Compliance Users" },
@@ -122,7 +122,7 @@ const BASELINE_USERS: { sam: string; deptOu: string; group: string; extra?: stri
   { sam: "riley.kwan", deptOu: "Operations", group: "Operations Users" },
   { sam: "jordan.ellis", deptOu: "FinanceAccounting", group: "Finance Accounting Users" },
 ];
-const BASELINE_GROUPS = [
+export const BASELINE_GROUPS = [
   "IT Users",
   "IT Admins",
   "Compliance Users",

@@ -35,7 +35,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
   // phase or a lesson, where it's a real jump-around tool rather than a
   // second copy of the page you're looking at.
   const isReadiness = pathname === READINESS_PATH;
-  const showSidebar = pathname !== "/academy" && !isReadiness;
+  const showSidebar = pathname !== "/academy" && !isReadiness && pathname !== "/academy/drill";
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [scrolled, setScrolled] = useState(false);

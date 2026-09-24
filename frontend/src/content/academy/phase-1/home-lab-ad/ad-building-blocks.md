@@ -5,9 +5,12 @@
 
 ### Active Directory's Building Blocks
 
-You need four objects cold because every ticket in this domain is built from them:
+You need these objects cold because every ticket in this domain is built from them:
 
 - **Organizational Units**
+- **User accounts**
+- **Computer objects**
+- **Service accounts**
 - **Containers**
 - **Security Groups**
 - **Group Policy Objects (GPOs)**
@@ -124,6 +127,39 @@ You can also delegate control over a single OU so Helpdesk can reset passwords o
 
 When a ticket names a person find the folder first. If Alex is not under IT the chart and the directory already disagree.
 
+### User Accounts
+
+A **user account** is a person in this directory. Jordan Ellis is an account. `jordan.ellis` is how you find him.
+
+The account is the object you open on a ticket. The folder tells you where that person lives. Member Of tells you what they can reach. Title is a field on the account not a group so Priya Nair can be a Help Desk Technician and still sit only in `IT Users`.
+
+Nine people live in this domain and each one lives in exactly one department OU. Alex Rivera is the one to remember because he is the only person in two groups.
+
+When a ticket names a person open the account and check both:
+
+- The folders above it
+- Member Of
+
+If either one disagrees with The Environment tab stop.
+
+### Computer Objects
+
+A **computer object** is a machine in this directory the same way a user account is a person. `IT-WKS01` is the only client workstation in this lab and it lives under `OU=Workstations,OU=IT`.
+
+You find it the same way you find a person. You read the folder then you read Member Of. The name has no spaces.
+
+If a later ticket names a different workstation or this one sits under a different department that is already a finding. Confirm the folder before you treat the name as proof.
+
+### Service Accounts
+
+A **service account** is still a user object but it is not a person. It gives an identity to a job such as a scheduled task or an automated process so a login can happen with nobody at a keyboard.
+
+`svc-backup-job` is the one in this lab. The name starts with `svc-` so you can tell it from `jordan.ellis` at a glance.
+
+It does not belong in a staff group. If you find it in `IT Users` that is leftover access not a person who works in IT.
+
+When you open an account check the name and the Description before you treat it like a person. A service account gets a written window and a written job. A person gets a department and a group.
+
 ### Containers
 
 A **Container** looks like an OU in the console with the same folder icon but it is a different kind of object. The icon will fool you if you stop at appearance.
@@ -199,11 +235,14 @@ If a setting is not applying ask where the object lives before you blame the GPO
 
 ### Putting It Together
 
-Those four objects answer four different questions and you need all of them before you decide an account is in the right place.
+Those objects answer different questions and you need all of them before you decide something is in the right place.
 
 | Object | Answers | Can hold a GPO link? | Can nest? |
 | ----- | ----- | ----- | ----- |
 | Organizational Unit | Where does this account live? | Yes | Yes |
+| User account | Who is this person? | n/a | n/a |
+| Computer object | What machine is this? | n/a | n/a |
+| Service account | Is this a person or a job? | n/a | n/a |
 | Container | Where did Windows put this by default? | No | No |
 | Security Group | What can this account access? | No (can filter one) | Yes, groups can contain groups |
 | Group Policy Object | What settings apply here? | n/a | Links to Sites, Domains, or OUs |
@@ -211,7 +250,8 @@ Those four objects answer four different questions and you need all of them befo
 Use that table on every object you open:
 
 - Folder first
-- Group second
+- Person or machine second
+- Group third
 - Settings last
 
 If any one of those does not match GovTech Financial you have something to explain.

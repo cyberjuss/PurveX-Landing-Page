@@ -1,5 +1,6 @@
 import "server-only";
 import { createHash, randomBytes } from "crypto";
+import type { DrillEntry } from "@/lib/academy-drills";
 import { sanitizeLabSnapshot, type LabSnapshot } from "@/lib/academy-lab";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
 import { supabaseAdmin } from "@/lib/supabase-admin";
@@ -9,6 +10,7 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 const memoryProgress = new Map<string, Results>();
 const memoryUsage = new Map<string, { day: string; count: number }>();
 const memoryKeys = new Map<string, { userId: string; createdAt: string; lastUsedAt: string | null }>();
+const memoryDrills = new Map<string, DrillEntry[]>();
 const memoryLab = new Map<string, { snapshot: LabSnapshot; uploadedAt: string }>();
 
 function todayStamp() {
@@ -168,4 +170,52 @@ export async function resolveMcpKey(key: string): Promise<string | null> {
   if (!row) return null;
   row.lastUsedAt = now;
   return row.userId;
+}
+
+// Drill history: one row per finished drill, newest last. The daily drill
+// keeps its first result for the day; a timed run is always its own row.
+export async function loadDrills(userId: string): Promise<DrillEntry[]> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin
+      .from("academy_drill_log")
+      .select("drill_id, day, mode, correct, total, seconds, misses, created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (!error && data) {
+      return data.map((r) => ({
+        id: r.drill_id as string,
+        day: String(r.day),
+        mode: r.mode === "timed" ? "timed" : "daily",
+        correct: Number(r.correct) || 0,
+        total: Number(r.total) || 0,
+        seconds: Number(r.seconds) || 0,
+        misses: Array.isArray(r.misses) ? (r.misses as DrillEntry["misses"]) : [],
+        at: String(r.created_at),
+      }));
+    }
+    if (error) console.error("academy_drill_log read failed", error.message);
+  }
+  return memoryDrills.get(userId) ?? [];
+}
+
+export async function saveDrill(userId: string, entry: DrillEntry) {
+  const rows = memoryDrills.get(userId) ?? [];
+  if (!rows.some((r) => r.id === entry.id)) memoryDrills.set(userId, [...rows, entry]);
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin.from("academy_drill_log").upsert(
+    {
+      user_id: userId,
+      drill_id: entry.id,
+      day: entry.day,
+      mode: entry.mode,
+      correct: entry.correct,
+      total: entry.total,
+      seconds: entry.seconds,
+      misses: entry.misses,
+      created_at: entry.at,
+    },
+    { onConflict: "user_id,drill_id", ignoreDuplicates: true }
+  );
+  if (error) console.error("academy_drill_log upsert failed", error.message);
 }

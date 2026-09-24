@@ -4071,3 +4071,58 @@ textarea.pc-dock__field {
 }
 .pc-dock__send:disabled { opacity: 0.28; }
 .pc-dock__left { margin: 10px 0 0; font-size: 12px; color: var(--pc-text-3); }
+
+/* Drills: daily and timed practice on the student's own directory */
+.dr { max-width: 760px; padding-bottom: 64px; }
+.dr-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 24px; padding: 18px 0; border-top: 1px solid var(--rd-line); border-bottom: 1px solid var(--rd-line); }
+.dr-stats strong { display: flex; align-items: baseline; gap: 6px; margin-top: 6px; font-family: var(--font-display); font-size: 34px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: var(--rd-ink); font-variant-numeric: tabular-nums; }
+.dr-stats strong svg { align-self: center; color: var(--rd-warn); }
+.dr-stats small { font-size: 14px; font-weight: 500; letter-spacing: 0; color: var(--rd-ink-3); }
+.dr-note { margin: 14px 0 0; font-size: 14px; line-height: 1.55; color: var(--rd-ink-2); }
+.dr-note--lab { margin-top: 6px; color: var(--rd-ink-3); }
+.dr-modes { display: grid; gap: 16px; margin-top: 28px; }
+@media (min-width: 720px) { .dr-modes { grid-template-columns: 1fr 1fr; } }
+.dr-mode { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 22px; border: 1px solid var(--rd-line); border-radius: 14px; background: var(--rd-line-2); box-shadow: 0 8px 24px -16px rgba(15, 23, 42, 0.35); }
+.dr-mode h3 { font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }
+.dr-mode p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--rd-ink-2); }
+.dr-mode .rd-cta { margin-top: auto; }
+.dr-mode .dr-note { margin-top: 0; }
+.dr-done { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: var(--rd-good) !important; }
+.dr .rd-cta:disabled { opacity: 0.4; cursor: default; }
+.dr-link { padding: 0; background: none; border: 0; font-size: 14px; font-weight: 600; color: var(--rd-accent); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.dr-error { margin-top: 14px; font-size: 13px; color: var(--rd-bad); }
+
+.dr-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 8px; }
+.dr-clock { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono, ui-monospace, monospace); font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--rd-ink); }
+.dr-clock--low { color: var(--rd-bad); }
+.dr-segs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; margin: 12px 0 24px; }
+.dr-segs i { height: 6px; border-radius: 3px; }
+.dr-card { padding: 28px; border: 1px solid var(--rd-line); border-radius: 16px; background: var(--rd-line-2); box-shadow: 0 12px 32px -18px rgba(15, 23, 42, 0.4); }
+.dr-card h2 { margin: 10px 0 0; font-family: var(--font-display); font-size: clamp(20px, 3vw, 26px); font-weight: 600; line-height: 1.25; letter-spacing: -0.02em; color: var(--rd-ink); }
+.dr-log { margin: 18px 0 0; padding: 14px 16px; overflow-x: auto; border-radius: 8px; background: #0b0f17; color: #cfe3ff; font-family: var(--font-mono, ui-monospace, monospace); font-size: 12.5px; line-height: 1.7; }
+.dr-choices { display: grid; gap: 10px; margin-top: 20px; }
+.dr-choice { display: flex; align-items: center; width: 100%; padding: 14px 16px; border: 1.5px solid var(--rd-line); border-radius: 10px; background: transparent; text-align: left; font-size: 15px; line-height: 1.4; color: var(--rd-ink); cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+.dr-choice:hover { border-color: var(--rd-accent); }
+.dr-choice--on { border-color: var(--rd-accent); background: rgba(85, 70, 224, 0.08); box-shadow: inset 3px 0 0 var(--rd-accent); }
+.dr-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 20px; margin-top: 22px; }
+
+.dr-score { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 20px; margin-top: 8px; }
+.dr-score strong { font-family: var(--font-display); font-size: clamp(72px, 12vw, 112px); font-weight: 700; letter-spacing: -0.06em; line-height: 0.9; color: var(--rd-accent); font-variant-numeric: tabular-nums; }
+.dr-score small { font-size: 26px; font-weight: 500; letter-spacing: 0; color: var(--rd-ink-3); }
+.dr-score span { font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; font-weight: 700; color: var(--rd-ink-2); }
+.dr-review { display: grid; gap: 12px; margin: 28px 0 8px; padding: 0; list-style: none; }
+.dr-review li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; padding: 16px; border: 1px solid var(--rd-line); border-radius: 12px; background: var(--rd-line-2); }
+.dr-review strong { color: var(--rd-ink); }
+.dr-review p { margin: 6px 0 0; font-size: 14px; line-height: 1.55; color: var(--rd-ink-2); }
+.dr-review b { color: var(--rd-ink); }
+.dr-review__mark { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; color: #fff; }
+.dr-review .is-right .dr-review__mark { background: var(--rd-good); }
+.dr-review .is-wrong .dr-review__mark { background: var(--rd-bad); }
+
+.dr-home { display: flex; align-items: center; gap: 16px; margin-top: 8px; padding: 18px 20px; border: 1px solid var(--rd-line); border-radius: 14px; background: var(--rd-line-2); color: var(--rd-ink); box-shadow: 0 8px 24px -16px rgba(15, 23, 42, 0.35); transition: border-color 0.12s; }
+.dr-home:hover { border-color: var(--rd-accent); }
+.dr-home__flame { display: inline-flex; flex-direction: column; align-items: center; min-width: 44px; color: var(--rd-warn); }
+.dr-home__flame b { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--rd-ink); }
+.dr-home__main { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 4px; }
+.dr-home__main strong { font-family: var(--font-display); font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+.dr-home__main em { font-style: normal; font-size: 13px; line-height: 1.45; color: var(--rd-ink-2); }

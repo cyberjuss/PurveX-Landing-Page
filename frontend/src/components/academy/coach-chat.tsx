@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useRef, useState, type DragEvent, type ReactNode } from "react";
 import { Check, Copy, RotateCcw, ShieldCheck, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
-import { COACH_MODE_LABELS, COACH_MODES, coachStarters } from "@/lib/academy-coach-mode";
+import { COACH_MODE_LABELS, COACH_MODES, coachStarters, interviewStarters } from "@/lib/academy-coach-mode";
 import { useResults } from "@/lib/academy-client";
 import { filesToCoachImages, imagesFromClipboard } from "@/lib/academy-coach-capture";
 import { COACH_IMAGE_MAX, coachImageSrc, type CoachImage } from "@/lib/academy-coach-media";
@@ -161,7 +161,8 @@ export function CoachHeader({ children }: { children?: ReactNode }) {
 
 export function CoachChat() {
   const { messages, busy, enabled, remaining, error, send, resetToday, mode, setMode } = useCoach();
-  const prompts = coachStarters(useResults());
+  const results = useResults();
+  const prompts = mode === "interview" ? interviewStarters(results) : coachStarters(results);
   const [input, setInput] = useState("");
   const [images, setImages] = useState<CoachImage[]>([]);
   const [attachError, setAttachError] = useState<string | null>(null);
@@ -206,7 +207,11 @@ export function CoachChat() {
       <div ref={listRef} className="pc-scroll min-h-0 flex-1 overflow-y-auto">
         {messages.length === 0 && remaining !== 0 && (
           <div className="pc-open">
-            <p className="pc-open__lead">Picked from where you left off or where you struggled.</p>
+            <p className="pc-open__lead">
+              {mode === "interview"
+                ? "A mock Tier 1 interview. One question at a time, scored like a real one."
+                : "Picked from where you left off or where you struggled."}
+            </p>
             <ul className="pc-tickets">
               {prompts.map((s) => (
                 <li key={s.ask}>
@@ -332,7 +337,9 @@ export function CoachChat() {
                 ? "What do you want guidance on?"
                 : mode === "mentor"
                   ? "What real-world situation are you mapping?"
-                  : "Where are you stuck?"
+                  : mode === "interview"
+                    ? "Answer the question, or say start."
+                    : "Where are you stuck?"
             }
             maxLength={2000}
             disabled={!enabled}
