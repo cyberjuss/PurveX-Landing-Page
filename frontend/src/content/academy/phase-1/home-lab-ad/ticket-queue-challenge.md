@@ -5,15 +5,7 @@
 
 ### Ticket Queue
 
-This is the help desk queue at GovTech Financial:
-
-- Staff requests
-- HR notices
-- Auditor questions
-
-Every ticket is a sysadmin or help desk job.
-
-The ticket is a claim not proof. Open Active Directory Users and Computers, check the account or the group or the folder, then do the work:
+This is the help desk queue at GovTech Financial. Tickets arrive as staff requests, HR notices, and auditor questions, and every one is a sysadmin or help desk job. Treat the ticket as a claim. Open Active Directory Users and Computers, check the account or the group or the folder, then do the work:
 
 - Add a member
 - Restore an account
@@ -22,7 +14,7 @@ The ticket is a claim not proof. Open Active Directory Users and Computers, chec
 - Write a setting
 - Move a transfer
 
-If the ticket and the directory disagree fix the directory. The answer is what the directory shows after you act.
+If the ticket and the directory disagree, fix the directory. The answer is what the directory shows after you act.
 
 <details class="ad-answer-guide">
 <summary class="ad-answer-guide__label">Hands-on required</summary>
