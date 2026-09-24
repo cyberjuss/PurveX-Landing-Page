@@ -108,7 +108,7 @@ export function CoachShowcase() {
         <span className="pg-dark__kicker">PurveX Coach</span>
         <h2>A coach that never hands over the answer</h2>
         <p className="pg-dark__lead">
-          Coach reads the student&apos;s own lab and results, and it teaches the method while the student finds the answer.
+          Coach knows their lab because the lab syncs, and it can read and assess the ticket, the drill, and the CTF. It helps from that live picture, and it never hands over the answer.
         </p>
         <div className="cs__tabs" role="tablist" aria-label="Coach modes">
           {MODES.map((t, i) => (

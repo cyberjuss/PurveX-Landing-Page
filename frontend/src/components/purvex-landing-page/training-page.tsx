@@ -40,7 +40,7 @@ const steps = [
   },
   {
     n: "02", title: "Work", Icon: IconChain,
-    body: "Students run the help desk of a company that they build themselves.",
+    body: "Daily drills and a weekly CTF run on the company they built, and Coach can read that lab because it syncs.",
     points: ["Tickets checked against a live directory", "A daily drill and a weekly CTF"],
   },
   {
@@ -136,8 +136,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           <span className="sp-tag">Cybersecurity training</span>
           <h1 className="pg-hero__h1">Think Like a SOC Analyst 101</h1>
           <p className="pg-hero__sub">
-            A cohort course in which students build a working company network, clear real tickets
-            against it, and finish with a readiness score that employers can read.
+            Daily drills and a weekly CTF are scored on a lab that syncs from each student&apos;s machine. PurveX Coach can read that lab and assess the work, so the help it gives is about their directory, not a generic walkthrough.
           </p>
           <div className="pg-hero__actions">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
@@ -183,12 +182,12 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         <div className="pg-split" data-r>
           <div className="pg-head">
             <span className="sp-tag">The lab</span>
-            <h2>Tickets and the weekly CTF close only when the directory shows the change</h2>
-            <p>Each student builds a company on their own machine, and the lab syncs so that every ticket check and the weekly CTF read live data.</p>
+            <h2>Coach reads their lab because it syncs</h2>
+            <p>Each student builds a company on their own machine, and that lab syncs so Coach can read it and assess the work. Daily drills and a weekly CTF are graded on the live directory and Security log, not on a self-report.</p>
             <ul className="pg-bullets">
-              <li>Hands-on work is verified in the directory, not self-reported</li>
-              <li>Answers must be found in the lab, since they cannot be copied from a ticket</li>
-              <li>A weekly CTF is graded on their live Security log</li>
+              <li>The lab syncs, so every check reads live data</li>
+              <li>Coach knows their lab, and that is how it helps</li>
+              <li>Daily drills and a weekly CTF are scored on those live results</li>
             </ul>
             <Link href="/academy" className="pg-more">
               Sign in to open the first ticket <ArrowRight size={15} />
@@ -262,7 +261,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
             <h2>A score a hiring manager can read</h2>
             <p>Four competencies are measured against the bar for a Tier 1 hire, so a score means the same thing for every student.</p>
             <ul className="pg-bullets">
-              <li>Scores update as students finish tickets and drills</li>
+              <li>Scores update as students finish tickets, drills, and the weekly CTF</li>
               <li>The full report opens in the portal</li>
             </ul>
           </div>
@@ -311,7 +310,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         <div className="pg-close__copy">
           <p className="pg-close__kicker">Next step</p>
           <h2>Start with your cohort</h2>
-          <p className="pg-close__sub">The tickets, the drills, and Coach are inside the portal. Book a cohort for your program, or sign in if you already have a seat.</p>
+          <p className="pg-close__sub">The synced lab, the drills, the weekly CTF, and a Coach that can read them are inside the portal. Book a cohort for your program, or sign in if you already have a seat.</p>
           <div className="pg-close__row">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="pg-close__book">
               Book 30 minutes <ArrowRight size={16} />

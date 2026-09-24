@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Linkedin, Quote, Star } from "lucide-react";
-import { IconCoverage, IconHeadset, IconMic, IconSchedule } from "./brand-icons";
+import {
+  IconBook, IconChain, IconCoverage, IconGraduate, IconHeadset, IconLifebuoy,
+  IconLog, IconMic, IconSchedule, IconTune, IconValidate,
+} from "./brand-icons";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
 
@@ -151,17 +154,65 @@ const charges = [
     n: "01",
     title: "Unproven detections",
     body: "The rules are in. Nobody has shown they fire.",
+    Icon: IconValidate,
   },
   {
     n: "02",
     title: "Exam-only training",
     body: "Students leave with terms. Employers want investigation.",
+    Icon: IconBook,
   },
   {
     n: "03",
     title: "Assumed coverage",
     body: "If it has not been tested, you do not know what it covers.",
+    Icon: IconCoverage,
   },
+];
+
+const perks = [
+  {
+    n: "01",
+    title: "Readiness",
+    body: "A hiring manager can read a readiness score built from four skills and the job tasks already proven in their lab. The full report opens once they are in the portal.",
+    Icon: IconCoverage,
+  },
+  {
+    n: "02",
+    title: "Daily drill",
+    body: "Each day they work a new scenario drawn from their own directory, and a weekly CTF sits on their Security log. Those tickets wait inside after they join.",
+    Icon: IconSchedule,
+  },
+  {
+    n: "03",
+    title: "Four modes",
+    body: "Need help, Mentor, and Interview each talk differently once a ticket is open, and a screenshot of the console can be the question. You hear that voice when they sign in.",
+    Icon: IconHeadset,
+  },
+  {
+    n: "04",
+    title: "Hire",
+    body: "Closed tickets become resume lines they can defend, and a spoken mock interview ends with a hire signal. Both wait until they have done the work.",
+    Icon: IconMic,
+  },
+];
+
+const programPoints = [
+  { text: "Live tickets on a real directory", Icon: IconChain },
+  { text: "Daily drills and a weekly CTF", Icon: IconLog },
+  { text: "A readiness score they can defend", Icon: IconCoverage },
+];
+
+const coachPoints = [
+  { text: "On every ticket, never the unsolved answer", Icon: IconLifebuoy },
+  { text: "Need help, Mentor, and a spoken interview", Icon: IconHeadset },
+  { text: "The rest waits inside the portal", Icon: IconMic },
+];
+
+const opsPoints = [
+  { text: "SIEM and detection engineering", Icon: IconTune },
+  { text: "Optimization and assessments", Icon: IconCoverage },
+  { text: "Detection validation", Icon: IconValidate },
 ];
 
 export default function HomePage() {
@@ -172,7 +223,7 @@ export default function HomePage() {
           <span className="sp-tag">Security operations and training</span>
           <h1 className="hp-hero__h1">Improve detections and train analysts</h1>
           <p className="hp-hero__sub">
-            Lean security teams and academies that need hands-on work, not another slide deck. SIEM engineering, live lab tickets, and PurveX Coach are included, and a conversation is how you see the rest.
+            We work with lean security teams and academies that need hands-on work, not another slide deck. Book thirty minutes to see SIEM engineering, the live lab, and PurveX Coach.
           </p>
           <div className="hp-hero__actions">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
@@ -202,6 +253,7 @@ export default function HomePage() {
             {charges.map((c) => (
               <li key={c.n}>
                 <span>{c.n}</span>
+                <i className="hp-mark"><c.Icon size={26} /></i>
                 <strong>{c.title}</strong>
                 <p>{c.body}</p>
               </li>
@@ -216,7 +268,7 @@ export default function HomePage() {
             <p className="hp-perk__kicker">The perk</p>
             <h2>The friendly neighborhood AI Coach</h2>
             <p>
-              PurveX Coach sits on every ticket with the student as the subject matter expert on this desk, and it trains judgment instead of handing over an unsolved answer. Join the program to see how it reads their live lab, a console screenshot, and the next click they should take.
+              PurveX Coach knows their lab because it syncs, and it can read and assess the work in front of them. Join the program to see how it helps on a drill and a weekly CTF without handing over the answer.
             </p>
             <Link href="/cybersecurity-training" className="hp-perk__go">
               See Coach with training <ArrowRight size={16} />
@@ -268,38 +320,16 @@ export default function HomePage() {
             </div>
           </aside>
           <ol className="hp-perk__cards">
-            <li>
-              <header>
-                <span>01</span>
-                <span className="hp-perk__ico"><IconCoverage size={17} /></span>
-              </header>
-              <strong>Readiness</strong>
-              <p>A hiring manager can read a readiness score built from four skills and the job tasks already proven in their lab. The full report opens once they are in the portal.</p>
-            </li>
-            <li>
-              <header>
-                <span>02</span>
-                <span className="hp-perk__ico"><IconSchedule size={17} /></span>
-              </header>
-              <strong>Daily drill</strong>
-              <p>Each day they work a new scenario drawn from their own directory, and a weekly CTF sits on their Security log. Those tickets wait inside after they join.</p>
-            </li>
-            <li>
-              <header>
-                <span>03</span>
-                <span className="hp-perk__ico"><IconHeadset size={17} /></span>
-              </header>
-              <strong>Four modes</strong>
-              <p>Need help, Mentor, and Interview each talk differently once a ticket is open, and a screenshot of the console can be the question. You hear that voice when they sign in.</p>
-            </li>
-            <li>
-              <header>
-                <span>04</span>
-                <span className="hp-perk__ico"><IconMic size={17} /></span>
-              </header>
-              <strong>Hire</strong>
-              <p>Closed tickets become resume lines they can defend, and a spoken mock interview ends with a hire signal. Both wait until they have done the work.</p>
-            </li>
+            {perks.map((p) => (
+              <li key={p.n}>
+                <header>
+                  <span>{p.n}</span>
+                  <p.Icon size={22} />
+                </header>
+                <strong>{p.title}</strong>
+                <p>{p.body}</p>
+              </li>
+            ))}
           </ol>
         </div>
       </section>
@@ -317,7 +347,7 @@ export default function HomePage() {
               <span>01</span>
               <span>Includes Coach</span>
             </div>
-            <h3>Cybersecurity Training</h3>
+            <h3><IconGraduate size={22} /> Cybersecurity Training</h3>
             <p>
               Students work live tickets on a real directory with a live instructor and PurveX Coach on the desk, across Active Directory, SIEM, and incident response. Join a cohort to open the queue and see how readiness is scored.
             </p>
@@ -325,17 +355,17 @@ export default function HomePage() {
               <div>
                 <p className="hp-tile__label">The program</p>
                 <ul>
-                  <li>Live tickets on a real directory</li>
-                  <li>Daily drills and a weekly CTF</li>
-                  <li>A readiness score they can defend</li>
+                  {programPoints.map((item) => (
+                    <li key={item.text}><item.Icon size={16} /> {item.text}</li>
+                  ))}
                 </ul>
               </div>
               <div>
                 <p className="hp-tile__label">PurveX Coach</p>
                 <ul>
-                  <li>On every ticket, never the unsolved answer</li>
-                  <li>Need help, Mentor, and a spoken interview</li>
-                  <li>The rest waits inside the portal</li>
+                  {coachPoints.map((item) => (
+                    <li key={item.text}><item.Icon size={16} /> {item.text}</li>
+                  ))}
                 </ul>
               </div>
             </div>
@@ -349,12 +379,12 @@ export default function HomePage() {
               <span>02</span>
               <span>Operations</span>
             </div>
-            <h3>Security Operations</h3>
+            <h3><IconTune size={22} /> Security Operations</h3>
             <p>We tune your SIEM, write the detections you are missing, and test whether they fire.</p>
             <ul>
-              <li>SIEM and detection engineering</li>
-              <li>Optimization and assessments</li>
-              <li>Detection validation</li>
+              {opsPoints.map((item) => (
+                <li key={item.text}><item.Icon size={16} /> {item.text}</li>
+              ))}
             </ul>
             <Link href="/security-operations" className="hp-tile__link">
               See how we help <ArrowRight size={14} />
@@ -366,7 +396,7 @@ export default function HomePage() {
               <span>03</span>
               <span>In development</span>
             </div>
-            <h3>PurveX Labs</h3>
+            <h3><IconValidate size={22} /> PurveX Labs</h3>
             <p>Scheduled detection tests, with the evidence kept, still in private development.</p>
             <Link href="/platform" className="hp-tile__link hp-tile__link--light">
               Request early access <ArrowRight size={14} />
@@ -592,10 +622,11 @@ const HP_CSS = `
 }
 .hp-see__grid li + li { padding-left: 28px; border-left: 1px solid var(--border) }
 .hp-see__grid span {
-  display: block; margin-bottom: 18px;
+  display: block; margin-bottom: 12px;
   font-family: var(--font-mono); font-size: 4.2rem; font-weight: 700; line-height: .8;
   letter-spacing: -.06em; color: rgba(85,70,224,.16);
 }
+.hp-mark { display: flex; color: var(--accent-deep); margin: 0 0 14px }
 .hp-see__grid strong { display: block; font-size: 1.05rem; font-weight: 650; letter-spacing: -.014em }
 .hp-see__grid p { margin: 8px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.55; max-width: 28ch }
 .hp-see[data-r] { opacity: 1; transform: none; filter: none }
@@ -682,16 +713,10 @@ const HP_CSS = `
 }
 .hp-perk__cards li:hover { transform: translateY(-4px); box-shadow: 0 30px 46px -24px rgba(16,8,64,.7) }
 .hp-perk__cards header {
-  display: flex; justify-content: space-between; align-items: center; margin: 0 0 16px;
+  display: flex; align-items: center; gap: 10px; margin: 0 0 16px; color: var(--accent-deep);
 }
-.hp-perk__cards header span:first-child {
-  display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
-  background: var(--accent); color: #fff;
-  font-family: var(--font-mono); font-size: .68rem; font-weight: 700;
-}
-.hp-perk__ico {
-  display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px;
-  background: var(--accent-soft); color: var(--accent-deep);
+.hp-perk__cards header span {
+  font-family: var(--font-mono); font-size: .68rem; font-weight: 700; letter-spacing: .08em;
 }
 .hp-perk__cards strong { display: block; font-size: 1.04rem; font-weight: 650; letter-spacing: -.014em }
 .hp-perk__cards p { margin: 8px 0 0; color: var(--ink-soft); font-size: .86rem; line-height: 1.55 }
@@ -732,9 +757,12 @@ const HP_CSS = `
 .hp-tile--labs .hp-tile__stub { background: rgba(255,255,255,.12); color: #fff; margin-bottom: 26px }
 .hp-tile--labs:hover { box-shadow: 0 26px 50px -22px rgba(85,70,224,.5) }
 .hp-tile h3 {
-  margin: 0; font-family: var(--font-display); font-size: clamp(1.28rem, 2vw, 1.55rem);
+  display: flex; align-items: center; gap: 10px; margin: 0;
+  font-family: var(--font-display); font-size: clamp(1.28rem, 2vw, 1.55rem);
   font-weight: 700; letter-spacing: -.02em;
 }
+.hp-tile h3 svg { flex: none; color: var(--accent-deep) }
+.hp-tile--labs h3 svg { color: #fff }
 .hp-tile--labs h3 { color: #fff }
 .hp-tile p { margin: 12px 0 0; color: var(--ink-soft); font-size: .94rem; line-height: 1.6 }
 .hp-tile--labs p { color: #c5cce0; margin-top: 8px; line-height: 1.55 }
@@ -748,10 +776,10 @@ const HP_CSS = `
 }
 .hp-tile ul { list-style: none; margin: 20px 0 26px; padding: 0; display: flex; flex-direction: column; gap: 10px }
 .hp-tile__split ul { margin: 10px 0 0 }
-.hp-tile li { position: relative; padding-left: 14px; font-size: .88rem; color: var(--ink) }
-.hp-tile li::before {
-  content: ""; position: absolute; left: 0; top: .55em; width: 5px; height: 5px; background: var(--accent-deep);
+.hp-tile li {
+  display: flex; align-items: flex-start; gap: 8px; font-size: .88rem; color: var(--ink);
 }
+.hp-tile li svg { flex: none; margin-top: 1px; color: var(--accent-deep) }
 .hp-tile .sp-btn { margin-top: auto; align-self: flex-start }
 .hp-tile__link {
   display: inline-flex; align-items: center; gap: 7px; margin-top: auto;
