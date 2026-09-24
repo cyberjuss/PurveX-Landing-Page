@@ -26,139 +26,93 @@ An **OU** is the folder an account lives in and the boundary you attach work to.
 GovTechFinancial's five departments are each their own OU. Each one nests a `Users` sub-OU one level deeper and IT also gets a `Workstations` sub-OU because the one client machine in this lab belongs under IT rather than next to people.
 
 <div class="ad-tree" aria-label="govtechfinancial.local directory">
-  <div class="ad-tree__domain">
+  <div class="ad-tree__root">
     <span class="ad-tree__kind ad-tree__kind--domain">Domain</span>
     <strong>govtechfinancial.local</strong>
   </div>
-  <div class="ad-tree__split">
-    <div class="ad-tree__col">
-      <div class="ad-tree__row">
+  <div class="ad-tree__fork" aria-hidden="true"></div>
+  <div class="ad-tree__map">
+    <section class="ad-tree__pane">
+      <header class="ad-tree__ou">
         <span class="ad-tree__kind">OU</span>
         <span class="ad-tree__name">Departments</span>
+      </header>
+      <div class="ad-tree__depts">
+        <article class="ad-tree__dept">
+          <h4>IT</h4>
+          <div class="ad-tree__slot">
+            <span>Users</span>
+            <div class="ad-tree__chips">
+              <span>Alex Rivera</span>
+              <span>Priya Nair</span>
+            </div>
+          </div>
+          <div class="ad-tree__slot">
+            <span>Workstations</span>
+            <div class="ad-tree__chips">
+              <span>IT-WKS01</span>
+            </div>
+          </div>
+        </article>
+        <article class="ad-tree__dept">
+          <h4>Compliance</h4>
+          <div class="ad-tree__slot">
+            <span>Users</span>
+            <div class="ad-tree__chips">
+              <span>Devon Brooks</span>
+              <span>Morgan Lee</span>
+            </div>
+          </div>
+        </article>
+        <article class="ad-tree__dept">
+          <h4>WealthManagement</h4>
+          <div class="ad-tree__slot">
+            <span>Users</span>
+            <div class="ad-tree__chips">
+              <span>Sam Whitfield</span>
+              <span>Jamie Torres</span>
+            </div>
+          </div>
+        </article>
+        <article class="ad-tree__dept">
+          <h4>Operations</h4>
+          <div class="ad-tree__slot">
+            <span>Users</span>
+            <div class="ad-tree__chips">
+              <span>Taylor Osei</span>
+              <span>Riley Kwan</span>
+            </div>
+          </div>
+        </article>
+        <article class="ad-tree__dept">
+          <h4>FinanceAccounting</h4>
+          <div class="ad-tree__slot">
+            <span>Users</span>
+            <div class="ad-tree__chips">
+              <span>Jordan Ellis</span>
+            </div>
+          </div>
+        </article>
       </div>
-      <ul class="ad-tree__kids">
-        <li>
-          <div class="ad-tree__row">
-            <span class="ad-tree__kind">OU</span>
-            <span class="ad-tree__name">IT</span>
-          </div>
-          <ul class="ad-tree__kids">
-            <li>
-              <div class="ad-tree__row">
-                <span class="ad-tree__kind">OU</span>
-                <span class="ad-tree__name">Users</span>
-                <span class="ad-tree__chips">
-                  <span>Alex Rivera</span>
-                  <span>Priya Nair</span>
-                </span>
-              </div>
-            </li>
-            <li>
-              <div class="ad-tree__row">
-                <span class="ad-tree__kind">OU</span>
-                <span class="ad-tree__name">Workstations</span>
-                <span class="ad-tree__chips">
-                  <span>IT-WKS01</span>
-                </span>
-              </div>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <div class="ad-tree__row">
-            <span class="ad-tree__kind">OU</span>
-            <span class="ad-tree__name">Compliance</span>
-          </div>
-          <ul class="ad-tree__kids">
-            <li>
-              <div class="ad-tree__row">
-                <span class="ad-tree__kind">OU</span>
-                <span class="ad-tree__name">Users</span>
-                <span class="ad-tree__chips">
-                  <span>Devon Brooks</span>
-                  <span>Morgan Lee</span>
-                </span>
-              </div>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <div class="ad-tree__row">
-            <span class="ad-tree__kind">OU</span>
-            <span class="ad-tree__name">WealthManagement</span>
-          </div>
-          <ul class="ad-tree__kids">
-            <li>
-              <div class="ad-tree__row">
-                <span class="ad-tree__kind">OU</span>
-                <span class="ad-tree__name">Users</span>
-                <span class="ad-tree__chips">
-                  <span>Sam Whitfield</span>
-                  <span>Jamie Torres</span>
-                </span>
-              </div>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <div class="ad-tree__row">
-            <span class="ad-tree__kind">OU</span>
-            <span class="ad-tree__name">Operations</span>
-          </div>
-          <ul class="ad-tree__kids">
-            <li>
-              <div class="ad-tree__row">
-                <span class="ad-tree__kind">OU</span>
-                <span class="ad-tree__name">Users</span>
-                <span class="ad-tree__chips">
-                  <span>Taylor Osei</span>
-                  <span>Riley Kwan</span>
-                </span>
-              </div>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <div class="ad-tree__row">
-            <span class="ad-tree__kind">OU</span>
-            <span class="ad-tree__name">FinanceAccounting</span>
-          </div>
-          <ul class="ad-tree__kids">
-            <li>
-              <div class="ad-tree__row">
-                <span class="ad-tree__kind">OU</span>
-                <span class="ad-tree__name">Users</span>
-                <span class="ad-tree__chips">
-                  <span>Jordan Ellis</span>
-                </span>
-              </div>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-    <div class="ad-tree__col ad-tree__col--access">
-      <div class="ad-tree__row">
+    </section>
+    <section class="ad-tree__pane ad-tree__pane--access">
+      <header class="ad-tree__ou">
         <span class="ad-tree__kind">OU</span>
         <span class="ad-tree__name">AccessLevels</span>
+      </header>
+      <div class="ad-tree__groups">
+        <div class="ad-tree__group">
+          <span class="ad-tree__kind ad-tree__kind--group">Group</span>
+          <strong>Server Admins</strong>
+          <em>Level 2</em>
+        </div>
+        <div class="ad-tree__group">
+          <span class="ad-tree__kind ad-tree__kind--group">Group</span>
+          <strong>Helpdesk</strong>
+          <em>Level 3</em>
+        </div>
       </div>
-      <ul class="ad-tree__kids">
-        <li>
-          <div class="ad-tree__row">
-            <span class="ad-tree__kind ad-tree__kind--group">Group</span>
-            <span class="ad-tree__name">Server Admins</span>
-            <span class="ad-tree__meta">Level 2</span>
-          </div>
-        </li>
-        <li>
-          <div class="ad-tree__row">
-            <span class="ad-tree__kind ad-tree__kind--group">Group</span>
-            <span class="ad-tree__name">Helpdesk</span>
-            <span class="ad-tree__meta">Level 3</span>
-          </div>
-        </li>
-      </ul>
-    </div>
+    </section>
   </div>
 </div>
 
