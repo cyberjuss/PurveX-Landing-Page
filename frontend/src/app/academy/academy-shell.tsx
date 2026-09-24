@@ -257,10 +257,6 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       if (r.solved) {
         if (input) input.disabled = true;
         if (submit) submit.disabled = true;
-        if (feedback) {
-          feedback.textContent = "Completed earlier.";
-          feedback.className = "ad-guess__feedback ad-guess__feedback--ok";
-        }
         reveal?.classList.add("ad-flag--shown");
         wrap.classList.add("ad-mission--solved");
       } else if (r.wrong >= 3) {
