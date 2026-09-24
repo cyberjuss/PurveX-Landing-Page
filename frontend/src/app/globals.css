@@ -2794,9 +2794,17 @@ body:has(.lp) {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: radial-gradient(rgba(16,25,46,.08) 1px, transparent 1px);
-  background-size: 22px 22px;
+  background-image: radial-gradient(rgba(16,25,46,.11) 2px, transparent 2px);
+  background-size: 26px 26px;
   mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%);
+  animation: academy-print-live 5.5s ease-in-out infinite;
+}
+@keyframes academy-print-live {
+  0%, 100% { opacity: 0.42; }
+  50% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .academy-bg::before { animation: none; opacity: 0.85; }
 }
 /* :not(header) -- the site header is sticky (position: sticky, z-40, set
    inline via Tailwind classes in academy-shell.tsx). This rule and those
@@ -3556,7 +3564,7 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
   color: var(--pvrx-text-primary-light);
 }
 .academy-bg[data-academy-theme="dark"]::before {
-  background-image: radial-gradient(rgba(180, 200, 255, 0.055) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(180, 200, 255, 0.09) 2px, transparent 2px);
 }
 
 /* surfaces */
