@@ -145,11 +145,6 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
             A cohort course in which students build a working company network, clear real tickets
             against it, and finish with a readiness score that employers can read.
           </p>
-          <ul className="pg-bullets">
-            <li>A live Active Directory lab on each student&apos;s own machine</li>
-            <li>Tickets, drills, and a 2 AM alert graded on real results</li>
-            <li>PurveX Coach guides every step without giving away the answer</li>
-          </ul>
           <div className="pg-hero__actions">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
               Bring it to your program <ArrowRight size={16} />
@@ -171,7 +166,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section">
         <div className="pg-head" data-r>
           <span className="sp-tag">How it works</span>
-          <h2>From lesson to lab to proof</h2>
+          <h2>Where learning turns into proof</h2>
         </div>
         <ol className="pg-grid pg-grid--3 pg-grid--icons" data-r>
           {steps.map((s) => (
@@ -224,7 +219,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section">
         <div className="pg-head" data-r>
           <span className="sp-tag">Beyond the help desk</span>
-          <h2>One lab with four roles</h2>
+          <h2>One lab for four careers</h2>
           <p>The lab starts at the help desk and supports three more career paths from the same directory.</p>
         </div>
         <ol className="pg-rows" data-r>
