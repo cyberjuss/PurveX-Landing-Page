@@ -5,7 +5,6 @@
 
 <div class="ad-brief">
 <h3>Ticket Queue</h3>
-<p class="ad-lab-gate"><b>Hands</b> No lab. No close.</p>
 <p>This is the help desk queue at GovTech Financial. Tickets arrive as staff requests, HR notices, and auditor questions, and every one is a sysadmin or help desk job. Treat the ticket as a claim. Open Active Directory Users and Computers, check the account or the group or the folder, then do the work:</p>
 <ul>
 <li>Add a member</li>

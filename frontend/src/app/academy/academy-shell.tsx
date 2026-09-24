@@ -218,12 +218,6 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     const restoreMission = (wrap: HTMLElement) => {
       wrap.setAttribute("data-restored", "1");
       const id = wrap.getAttribute("data-id");
-      if (id && LAB_GATED_MISSIONS.includes(id) && !wrap.querySelector(".ad-lab-gate")) {
-        const note = document.createElement("p");
-        note.className = "ad-lab-gate";
-        note.innerHTML = "<b>Hands</b> No lab. No close.";
-        wrap.querySelector(".ad-guess")?.before(note);
-      }
       const r = id ? loadResults()[id] : undefined;
       if (!r) {
         labelHintButton(wrap, false);

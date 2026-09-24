@@ -3905,11 +3905,6 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 }
 .ax-tab:hover, .ax-tab--on { color: var(--rd-ink); }
 .ax-tab--on { font-weight: 600; }
-.ax-tab__hands {
-  display: block; margin-top: 2px; font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 9.5px; font-style: normal; font-weight: 700; letter-spacing: 0.16em;
-  text-transform: uppercase; color: var(--rd-accent);
-}
 .ax-panel { min-width: 0; }
 .ax-panel__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 16px; }
 .ax-panel__count { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; font-weight: 700; color: var(--rd-ink-3); }
@@ -4527,19 +4522,6 @@ textarea.pc-dock__field {
 .is-proven .dr-jobs__status { color: var(--rd-good); }
 .is-practiced .dr-jobs__status { color: var(--rd-warn); }
 .dr-jobs__note { margin-top: 10px !important; padding: 12px 14px; border-radius: 8px; background: rgba(196, 130, 14, 0.12); color: var(--rd-ink) !important; }
-
-/* Hands-on tickets. Short stamp, not a lecture. */
-.academy-prose .ad-lab-gate {
-  display: flex; align-items: baseline; gap: 10px;
-  margin: 0.85rem 0 0; padding: 0; border: 0; background: none;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em;
-  color: var(--rd-ink-3, #8a94a8);
-}
-.academy-prose .ad-brief .ad-lab-gate { margin: 0.35rem 0 1rem; }
-.academy-prose .ad-lab-gate b {
-  font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--rd-accent, #5546e0);
-}
 
 /* Live investigation in the student's own lab */
 .dr-live { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; padding: 14px 16px; border-radius: 10px; background: rgba(85, 70, 224, 0.08); box-shadow: inset 3px 0 0 var(--rd-accent); }

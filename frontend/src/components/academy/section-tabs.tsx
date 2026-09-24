@@ -211,7 +211,6 @@ export function SectionTabs({
                     <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     <span className="min-w-0">
                       {item.label}
-                      {item.label === "Ticket Queue" && <i className="ax-tab__hands">Hands</i>}
                     </span>
                   </button>
                 );
