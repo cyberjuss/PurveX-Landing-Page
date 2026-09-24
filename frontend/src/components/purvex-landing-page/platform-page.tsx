@@ -2,16 +2,16 @@
 
 import { useCallback, useState } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { Archive, ArrowRight, Search, Timer } from "lucide-react";
 import { joinWaitlist } from "@/lib/waitlist";
 import { SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
 
 const points = [
-  { n: "01", title: "Run the test", body: "The behaviors you care about. On a schedule." },
-  { n: "02", title: "See the miss", body: "Fired, or not. And where the chain broke." },
-  { n: "03", title: "Keep the evidence", body: "Coverage you can show, not coverage you assume." },
+  { n: "01", title: "Run the test", body: "The behaviors you care about. On a schedule.", Icon: Timer },
+  { n: "02", title: "See the miss", body: "Fired, or not. And where the chain broke.", Icon: Search },
+  { n: "03", title: "Keep the evidence", body: "Coverage you can show, not coverage you assume.", Icon: Archive },
 ];
 
 const rows = [
@@ -141,10 +141,11 @@ export default function PlatformPage() {
           <h2>What it does</h2>
           <p>A test run. A miss you can name. Evidence you keep.</p>
         </div>
-        <ol className="pg-grid pg-grid--3" data-r>
+        <ol className="pg-grid pg-grid--3 pg-grid--icons" data-r>
           {points.map((p) => (
             <li key={p.n}>
               <span>{p.n}</span>
+              <i className="pg-ico"><p.Icon size={21} /></i>
               <strong>{p.title}</strong>
               <p>{p.body}</p>
             </li>

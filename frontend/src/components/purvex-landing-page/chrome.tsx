@@ -244,12 +244,6 @@ export function SiteChrome({
               <span>PurveX</span>
             </Link>
             <p>Strengthening security operations. Developing cybersecurity talent.</p>
-            {/* The one contact CTA for the whole site, lives here so every
-                page gets it automatically instead of each page carrying its
-                own (previously inconsistent) version. */}
-            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg sp-footer__cta">
-              Schedule a Conversation <ArrowRight size={16} />
-            </a>
           </div>
           <div className="sp-footer__cols">
             <div className="sp-footer__col">
@@ -579,7 +573,6 @@ export const CHROME_CSS = `
 .sp-footer__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px }
 .sp-footer__brand { max-width: 280px }
 .sp-footer__brand p { margin: 12px 0 0; color: var(--muted); font-size: .89rem; line-height: 1.65 }
-.sp-footer__cta { margin-top: 20px }
 .sp-footer__cols { display: flex; gap: 56px }
 .sp-footer__col { display: flex; flex-direction: column; gap: 12px }
 .sp-footer__col h4 { margin: 0 0 4px; font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted-dim); font-weight: 600 }
@@ -627,7 +620,6 @@ export const CHROME_CSS = `
   .sp-panel { padding: 32px; --cut: 22px }
   .sp-footer { margin-top: 112px; padding: 44px 16px calc(96px + env(safe-area-inset-bottom)) }
   .sp-footer__brand { max-width: none }
-  .sp-footer__cta { width: 100% }
   .sp-footer__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 20px }
   .sp-footer__col a { padding: 4px 0 }
   .sp-footer__bottom { flex-direction: column; align-items: flex-start; gap: 10px }

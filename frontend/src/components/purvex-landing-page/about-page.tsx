@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Lightbulb, Rocket, Users } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
 
 const notes = [
-  { n: "01", title: "How we think", body: "You defend better when you know how the other side moves." },
-  { n: "02", title: "The work", body: "The person on your operations is the same person teaching the desk." },
-  { n: "03", title: "What is next", body: "Labs is the product that keeps the evidence. Still in development." },
+  { n: "01", title: "How we think", body: "You defend better when you know how the other side moves.", Icon: Lightbulb },
+  { n: "02", title: "The work", body: "The person on your operations is the same person teaching the desk.", Icon: Users },
+  { n: "03", title: "What is next", body: "Labs is the product that keeps the evidence. Still in development.", Icon: Rocket },
 ];
 
 export default function AboutPage() {
@@ -70,10 +70,11 @@ export default function AboutPage() {
           <h2>How we run</h2>
           <p>Short, and the same on every engagement.</p>
         </div>
-        <ol className="pg-grid pg-grid--3" data-r>
+        <ol className="pg-grid pg-grid--3 pg-grid--icons" data-r>
           {notes.map((n) => (
             <li key={n.n}>
               <span>{n.n}</span>
+              <i className="pg-ico"><n.Icon size={21} /></i>
               <strong>{n.title}</strong>
               <p>{n.body}</p>
             </li>

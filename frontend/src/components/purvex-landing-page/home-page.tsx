@@ -215,7 +215,7 @@ export default function HomePage() {
             <p className="hp-perk__kicker">The perk</p>
             <h2>The friendly neighborhood AI Coach</h2>
             <p>
-              PurveX Coach is the SME on this desk. Years as a Windows AD sysadmin, Tier 2 help desk, and junior SOC. It trains a new hire to think like a systems administrator and a security analyst. Not to click blindly. Judgment, not a recipe. It knows their lab, reads a console screenshot, and never hands over an unsolved answer.
+              PurveX Coach is the SME on this desk. After years as a Windows AD sysadmin, Tier 2 help desk, and junior SOC, it trains a new hire to think like a systems administrator and a security analyst. Rather than a click recipe, it teaches judgment. Because it knows their lab and can read a console screenshot, it names the next move and still never hands over an unsolved answer.
             </p>
             <Link href="/cybersecurity-training" className="hp-perk__go">
               See Coach with training <ArrowRight size={16} />

@@ -1,28 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BadgeCheck, Braces, ClipboardList, Search, ShieldCheck, SlidersHorizontal, Wrench } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
 
 const services = [
-  { n: "01", title: "Detection engineering", body: "Rules built around your environment, not a vendor template." },
-  { n: "02", title: "Optimization", body: "Noisy rules get cut. Real alerts stop getting buried." },
-  { n: "03", title: "Assessment", body: "What the SIEM sees, and what it misses." },
-  { n: "04", title: "Validation", body: "A clear answer. Fires, or does not." },
+  { n: "01", title: "Detection engineering", body: "Rules built around your environment, not a vendor template.", Icon: Braces },
+  { n: "02", title: "Optimization", body: "Noisy rules get cut. Real alerts stop getting buried.", Icon: SlidersHorizontal },
+  { n: "03", title: "Assessment", body: "What the SIEM sees, and what it misses.", Icon: Search },
+  { n: "04", title: "Validation", body: "A clear answer. Fires, or does not.", Icon: ShieldCheck },
 ];
 
 const steps = [
-  { n: "01", title: "Assess", body: "Coverage, tools, and the gaps." },
-  { n: "02", title: "Improve", body: "Tune and write what matters first." },
-  { n: "03", title: "Validate", body: "Test it. Keep the evidence." },
+  { n: "01", title: "Assess", body: "Coverage, tools, and the gaps.", Icon: ClipboardList },
+  { n: "02", title: "Improve", body: "Tune and write what matters first.", Icon: Wrench },
+  { n: "03", title: "Validate", body: "Test it. Keep the evidence.", Icon: BadgeCheck },
 ];
 
 export default function SecurityOperationsPage() {
   return (
     <SiteChrome active="security-operations">
-      <section className="pg-hero">
+      <section className="pg-hero pg-hero--flip">
         <div className="pg-hero__copy">
           <span className="sp-tag">Operations</span>
           <h1 className="pg-hero__h1">Prove your detections</h1>
@@ -77,10 +77,11 @@ export default function SecurityOperationsPage() {
           <h2>Four ways we help</h2>
           <p>Engineering, cleanup, a map of coverage, and a test.</p>
         </div>
-        <ol className="pg-grid" data-r>
+        <ol className="pg-grid pg-grid--4 pg-grid--icons" data-r>
           {services.map((s) => (
             <li key={s.n}>
               <span>{s.n}</span>
+              <i className="pg-ico"><s.Icon size={21} /></i>
               <strong>{s.title}</strong>
               <p>{s.body}</p>
             </li>
@@ -94,10 +95,11 @@ export default function SecurityOperationsPage() {
           <h2>Three steps</h2>
           <p>You always know where the work stands.</p>
         </div>
-        <ol className="pg-grid pg-grid--3" data-r>
+        <ol className="pg-grid pg-grid--3 pg-grid--icons" data-r>
           {steps.map((s) => (
             <li key={s.n}>
               <span>{s.n}</span>
+              <i className="pg-ico"><s.Icon size={21} /></i>
               <strong>{s.title}</strong>
               <p>{s.body}</p>
             </li>

@@ -3,26 +3,34 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  BadgeCheck,
+  BookOpen,
+  Briefcase,
   Check,
-  Server,
+  CheckCheck,
+  ClipboardCheck,
+  Compass,
   GraduationCap,
+  Headset,
+  KeyRound,
+  Landmark,
+  LifeBuoy,
+  Mic,
+  School,
+  Server,
+  ShieldAlert,
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
+import { HoldCard } from "./hold-card";
+import { PG_CSS } from "./page-skin";
 import { MISSION_CATALOG } from "@/lib/academy-missions";
 import { SCORE_READY, SCORE_SOLID, SKILLS, type Skill } from "@/lib/academy-score";
 import { COACH_MODE_LABELS } from "@/lib/academy-coach-mode";
 
-/* ─────────────────────────────────────────────────────────
-   Cybersecurity Training -- Think Like a SOC Analyst 101.
-
-   Built from the Academy portal itself: the syllabus comes from the
-   portal's content (passed in by the route), and the missions,
-   competencies, score bars and coach modes are imported from the same
-   modules the portal runs on, so this page describes the course that
-   actually exists. Visual language is the marketing site's own:
-   rounded surfaces, soft purple, and the shared premium depth from
-   chrome.tsx.
-   ───────────────────────────────────────────────────────── */
+/* Cybersecurity Training. Same skin as the home page (page-skin.ts).
+   The syllabus is passed in by the route from the Academy portal's own
+   content, and the skills, thresholds and coach modes come from the same
+   modules the portal runs on, so this page describes the course that exists. */
 
 export type CourseOutline = {
   label: string;
@@ -37,53 +45,10 @@ const TOTAL_MISSIONS = Object.keys(MISSION_CATALOG).length;
 // Illustrative student, for the report preview only.
 const SAMPLE_SCORES: Record<Skill, number> = { accounts: 92, directory: 78, troubleshooting: 88, security: 61 };
 
-const COACH_NOTES: Record<keyof typeof COACH_MODE_LABELS, string> = {
-  walkthrough: "For students who are new or stuck. It offers one next step, a numbered path through the real tools, and a check so the student knows what done looks like.",
-  check: "For students who already understand the idea. It tests their reasoning and points to the next step without repeating the basics.",
-  mentor: "For students who know the lab. It connects the ticket to a real help desk or SOC decision and discusses the tradeoffs that a team lead would weigh.",
-  interview: "It plays the PurveX Financial hiring manager and asks five questions, scoring each one out of five before it gives a final hire signal.",
-};
-
-const roles = [
-  {
-    title: "Help desk technician",
-    body: "Works the ticket queue and confirms what is true in the directory before changing anything.",
-    tasks: ["Restore a blocked account", "Create an account to the naming standard", "Check a ticket before acting on it"],
-  },
-  {
-    title: "Security analyst",
-    body: "Reads the log and decides whether an alert is a mistake or an attack.",
-    tasks: ["Read Windows security events", "Triage a login alert", "Write a clear escalation"],
-  },
-  {
-    title: "Systems administrator",
-    body: "Keeps access accurate as people join, move, and leave the company.",
-    tasks: ["Build role-based access with groups", "Offboard without deleting", "Retire unused accounts and computers"],
-  },
-  {
-    title: "Audit and compliance support",
-    body: "Turns policy into settings that an auditor can verify.",
-    tasks: ["Turn on the auditing a SOC needs", "Keep the Security log long enough to investigate", "Set password and lockout policies"],
-  },
-];
-
-const audiences = [
-  {
-    title: "Students",
-    body: "Build a lab, clear real tickets, and leave with tasks that were proven in a directory and resume lines that can be defended in an interview.",
-  },
-  {
-    title: "Schools and academies",
-    body: "See each student's readiness, weakest competency, and closed tickets without grading by hand, in a course shaped around your tools.",
-  },
-  {
-    title: "Government and workforce programs",
-    body: "Offer a consistent curriculum and a readiness report for every participant, so progress into IT and security roles can be measured.",
-  },
-  {
-    title: "Employers and business teams",
-    body: "Hire or upskill staff on the basis of proof, including a readiness score, verified tasks, and a spoken interview that ends with a hire signal.",
-  },
+const steps = [
+  { n: "01", title: "Learn", body: "Weekly lessons and a short quiz.", Icon: BookOpen },
+  { n: "02", title: "Work", body: "A live directory, a ticket queue, and a 2 AM alert.", Icon: Server },
+  { n: "03", title: "Prove", body: "Every attempt feeds a readiness score.", Icon: BadgeCheck },
 ];
 
 const proofs = [
@@ -93,23 +58,62 @@ const proofs = [
   { ok: false, text: "taylor.osei is still in Operations Users" },
 ];
 
+const roles = [
+  {
+    title: "Help desk technician",
+    body: "Confirms what is true before changing anything.",
+    tasks: ["Restore a blocked account", "Create an account to standard", "Check a ticket first"],
+    Icon: Headset,
+  },
+  {
+    title: "Security analyst",
+    body: "Decides whether an alert is a mistake or an attack.",
+    tasks: ["Read Windows security events", "Triage a login alert", "Write an escalation"],
+    Icon: ShieldAlert,
+  },
+  {
+    title: "Systems administrator",
+    body: "Keeps access accurate as people join, move, and leave.",
+    tasks: ["Build role-based access", "Offboard without deleting", "Retire unused accounts"],
+    Icon: KeyRound,
+  },
+  {
+    title: "Audit and compliance support",
+    body: "Turns policy into settings that an auditor can verify.",
+    tasks: ["Turn on auditing", "Keep the log long enough", "Set password and lockout policy"],
+    Icon: ClipboardCheck,
+  },
+];
+
+const modes: Record<keyof typeof COACH_MODE_LABELS, { body: string; Icon: typeof LifeBuoy }> = {
+  walkthrough: { body: "For students who are new or stuck. One next step and a way to check it.", Icon: LifeBuoy },
+  check: { body: "For students who understand the idea. It tests their reasoning.", Icon: CheckCheck },
+  mentor: { body: "For students who know the lab. It discusses the call a team lead would make.", Icon: Compass },
+  interview: { body: "It plays the hiring manager with five scored questions and a hire signal.", Icon: Mic },
+};
+
+const audiences = [
+  { title: "Students", body: "Leave with tasks proven in a real directory and resume lines they can defend.", Icon: GraduationCap },
+  { title: "Schools and academies", body: "See every student's readiness and weakest skill without grading by hand.", Icon: School },
+  { title: "Government and workforce programs", body: "Measure progress into IT and security roles with one consistent curriculum.", Icon: Landmark },
+  { title: "Employers and business teams", body: "Hire or upskill on proof, ending in a spoken interview and a hire signal.", Icon: Briefcase },
+];
+
 export default function TrainingPage({ outline }: { outline: CourseOutline }) {
   const lessonCount = outline.reduce((n, p) => n + p.entries.filter((e) => e.live).length, 0);
+  const skillKeys = Object.keys(SKILLS) as Skill[];
 
   return (
     <SiteChrome active="training">
-      {/* ═══════════ HERO — copy left, the portal itself right ═══════════ */}
-      <section className="sp-hero sp-hero--course">
-        <div className="sp-hero__copy">
-          <span className="sp-hero__badge">Cohort course · Student portal</span>
-          <h1 className="sp-hero__h1">Think Like a SOC Analyst 101</h1>
-          <p className="sp-hero__sub">
-            Students begin with the fundamentals and then work a live Active Directory lab, a
-            ticket queue, and a 2 AM login alert. The same environment prepares them for the
-            help desk, security operations, systems administration, and audit support, and it
-            ends with a readiness score that a hiring manager can read at a glance.
+      <section className="pg-hero">
+        <div className="pg-hero__copy">
+          <span className="sp-tag">Cybersecurity training</span>
+          <h1 className="pg-hero__h1">Think Like a SOC Analyst 101</h1>
+          <p className="pg-hero__sub">
+            Students work a live Active Directory lab and a ticket queue, and they finish with a
+            readiness score that a hiring manager can read at a glance.
           </p>
-          <div className="sp-hero__actions">
+          <div className="pg-hero__actions">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
               Bring it to your program <ArrowRight size={16} />
             </a>
@@ -117,125 +121,80 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
               Student sign in
             </Link>
           </div>
-          <dl className="sp-facts">
-            <div><dt>Phases</dt><dd>{pad(outline.length)}</dd></div>
-            <div><dt>Lessons live</dt><dd>{pad(lessonCount)}</dd></div>
-            <div><dt>Graded missions</dt><dd>{pad(TOTAL_MISSIONS)}</dd></div>
-          </dl>
+          <ul className="pg-facts">
+            <li><strong>{pad(outline.length)}</strong><span>Phases</span></li>
+            <li><strong>{pad(lessonCount)}</strong><span>Lessons live</span></li>
+            <li><strong>{pad(TOTAL_MISSIONS)}</strong><span>Graded missions</span></li>
+          </ul>
         </div>
 
-        <figure className="sp-pv" data-r aria-label="Preview of the student portal">
-          <div className="sp-pv__bar" aria-hidden="true">
-            <span className="sp-pv__mark"><GraduationCap size={14} /></span>
-            <span className="sp-pv__name">Think Like a SOC Analyst <em>101</em></span>
-            <span className="sp-pv__av">JD</span>
-          </div>
-          <div className="sp-pv__body" aria-hidden="true">
-            <div className="sp-pv__head">
-              <div>
-                <strong className="sp-pv__h">Welcome back</strong>
-                <span className="sp-pv__sub">Pick up where you left off.</span>
-              </div>
-              <div className="sp-pv__score">
-                <span className="sp-kick">Readiness</span>
-                <strong>72<small>/100</small></strong>
-                <span className="sp-kick sp-kick--warn">Almost ready</span>
-              </div>
+        <aside className="pg-floor" aria-hidden="true">
+          <div className="pg-floor__wash" />
+          <article className="pg-case">
+            <header>
+              <span>STU-0142</span>
+              <span data-sev="High">Almost ready</span>
+              <span>Cohort</span>
+            </header>
+            <h2>Readiness</h2>
+            <div className="pg-score">
+              <strong>72<small>/100</small></strong>
+              <em>Tier 1 track</em>
             </div>
-            <div className="sp-pv__next">
-              <span className="sp-kick">Start here</span>
-              <strong>Week 2: Log Analysis Fundamentals <ArrowRight size={13} /></strong>
+            <ul className="pg-bars">
+              {skillKeys.map((k) => (
+                <li key={k}>
+                  <span>{SKILLS[k].label}</span>
+                  <b>{SAMPLE_SCORES[k]}</b>
+                  <i style={{ ["--w" as string]: `${SAMPLE_SCORES[k]}%` }} />
+                </li>
+              ))}
+            </ul>
+            <p>Next: prove the 2 AM login before the interview round.</p>
+          </article>
+          <div className="pg-dock">
+            <p><span className="pg-live" /> Portal</p>
+            <div className="pg-dock__row">
+              <strong>Log Analysis Fundamentals</strong>
+              <em data-sev="High">Next</em>
+              <span>Week 2</span>
+              <span>Phase 2</span>
             </div>
-            {outline.map((p, i) => {
-              const live = p.entries.filter((e) => e.live).length;
-              // Illustrative progress: Phase 1 finished, one week into Phase 2.
-              const done = i === 0 ? p.entries.length : i === 1 ? 1 : 0;
-              return (
-                <div key={p.title} className={`sp-pv__row${live === 0 ? " sp-pv__row--off" : ""}`}>
-                  <span className="sp-pv__num">{pad(i + 1)}</span>
-                  <div className="sp-pv__rowbody">
-                    <span className="sp-pv__rowtitle">
-                      {p.title}
-                      {live === 0 && <em className="sp-square">In preparation</em>}
-                    </span>
-                    {live > 0 && (
-                      <span className="sp-pv__segs">
-                        {p.entries.map((e, j) => (
-                          <i key={e.title} className={j < done ? "on" : j === done ? "here" : ""} />
-                        ))}
-                      </span>
-                    )}
-                  </div>
-                  <span className="sp-pv__count">{live > 0 ? `${done}/${p.entries.length}` : "Soon"}</span>
-                </div>
-              );
-            })}
+            <div className="pg-dock__row">
+              <strong>The 2 AM Login</strong>
+              <em data-sev="High">Open</em>
+              <span>INC-1046</span>
+              <span>Alert</span>
+            </div>
           </div>
-          <figcaption className="sp-pv__cap">The student portal, as a student sees it</figcaption>
-        </figure>
+        </aside>
       </section>
 
-      {/* ═══════════ HOW IT WORKS ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-head sp-head--left" data-r>
-          <span className="sp-tag">How the course works</span>
+      <section className="pg-section">
+        <div className="pg-head" data-r>
+          <span className="sp-tag">How it works</span>
           <h2>Learn it. Work it. Prove it.</h2>
-          <p>
-            Certifications mostly teach vocabulary, while this course teaches judgment and then
-            checks it against work that looks like the real job.
-          </p>
         </div>
-        <ol className="sp-loop" data-r>
-          <li>
-            <span className="sp-loop__n">01</span>
-            <h3>Learn</h3>
-            <p>
-              Each week opens with an essential question and a set of lessons, and a short quiz
-              must be passed before the week can be marked complete.
-            </p>
-          </li>
-          <li>
-            <span className="sp-loop__n">02</span>
-            <h3>Work</h3>
-            <p>
-              Students build the Active Directory of the PurveX Financial company on
-              their own machine and then work its help desk.
-            </p>
-            <ul className="tr-ul">
-              <li>Directory lookups</li>
-              <li>Help desk tickets</li>
-              <li>A SIEM alert at 2 AM</li>
-            </ul>
-          </li>
-          <li>
-            <span className="sp-loop__n">03</span>
-            <h3>Prove</h3>
-            <p>
-              Every attempt is recorded in a mission log and rolled into a readiness score that is
-              measured against the bar for a Tier 1 hire.
-            </p>
-          </li>
+        <ol className="pg-grid pg-grid--3 pg-grid--icons" data-r>
+          {steps.map((s) => (
+            <li key={s.n}>
+              <span>{s.n}</span>
+              <i className="pg-ico"><s.Icon size={21} /></i>
+              <strong>{s.title}</strong>
+              <p>{s.body}</p>
+            </li>
+          ))}
         </ol>
       </section>
 
-      {/* ═══════════ THE LAB — proof of work ═══════════ */}
-      <section className="sp-section">
-        <div className="tr-split" data-r>
-          <div className="sp-head sp-head--left">
+      <section className="pg-section">
+        <div className="pg-split" data-r>
+          <div className="pg-head">
             <span className="sp-tag">The lab</span>
             <h2>A ticket closes only when the directory shows the change</h2>
-            <p>
-              Each student runs one script that builds the PurveX Financial company, with five departments,
-              nine people, and the groups that connect them. The lab syncs to their account every
-              minute, which is what makes the score worth trusting.
-            </p>
-            <ul className="tr-ul">
-              <li>A hands-on ticket closes only when the change appears in the student&apos;s own directory</li>
-              <li>A typed answer has to be found in the lab because it cannot be copied from the ticket</li>
-              <li>Every check reads the live directory</li>
-            </ul>
+            <p>Each student builds the PurveX Financial company on their own machine, and every check reads that live directory.</p>
           </div>
-          <div className="tr-proof" aria-hidden="true">
+          <div className="pg-proof" aria-hidden="true">
             <header>
               <span><Server size={14} /> purvexfinancial.local</span>
               <em><i /> Synced</em>
@@ -248,30 +207,25 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
                 </li>
               ))}
             </ul>
-            <footer>Each check reads the live directory, and a lab check code remains valid for 4 hours.</footer>
           </div>
         </div>
       </section>
 
-      {/* ═══════════ ROLES AND STAKEHOLDERS ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-head sp-head--left" data-r>
+      <section className="pg-section">
+        <div className="pg-head" data-r>
           <span className="sp-tag">Beyond the help desk</span>
-          <h2>One lab that prepares students for more than one role</h2>
-          <p>
-            The help desk is where many careers in this field begin, so the lab starts there. The
-            same directory and the same Security log then support three other roles.
-          </p>
+          <h2>One lab, four roles</h2>
+          <p>The lab starts at the help desk, and the same directory supports every role below.</p>
         </div>
-        <ol className="tr-rows" data-r>
-          {roles.map((r, i) => (
+        <ol className="pg-rows" data-r>
+          {roles.map((r) => (
             <li key={r.title}>
-              <span className="tr-rows__n">{pad(i + 1)}</span>
-              <div className="tr-rows__head">
+              <i className="pg-ico"><r.Icon size={21} /></i>
+              <div>
                 <h3>{r.title}</h3>
                 <p>{r.body}</p>
               </div>
-              <ul className="tr-rows__tasks">
+              <ul className="pg-chips">
                 {r.tasks.map((t) => (
                   <li key={t}>{t}</li>
                 ))}
@@ -281,384 +235,122 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         </ol>
       </section>
 
-      {/* ═══════════ SYLLABUS (from the portal's own content) ═══════════ */}
-      <section className="sp-section" id="syllabus">
-        <div className="sp-head sp-head--left" data-r>
+      <section className="pg-section" id="syllabus">
+        <div className="pg-head" data-r>
           <span className="sp-tag">The syllabus</span>
-          <h2>The same phases your students open in the portal</h2>
-          <p>New weeks go live in the portal as they are finished, and this list updates along with them.</p>
+          <h2>Three phases</h2>
+          <p>The same phases students open in the portal, updated as weeks are published.</p>
         </div>
-        <div className="sp-phases" data-r>
+        <ol className="pg-phases" data-r>
           {outline.map((p, i) => {
             const live = p.entries.filter((e) => e.live).length;
             return (
-              <div key={p.title} className={`sp-phase${p.entries.length === 0 ? " sp-phase--off" : ""}`}>
-                <span className="sp-phase__num">{pad(i + 1)}</span>
-                <div className="sp-phase__main">
-                  <h3>
-                    {p.title}
-                    {p.entries.length === 0 && <em className="sp-square">In preparation</em>}
-                  </h3>
-                  {p.entries.length === 0 ? (
-                    <p className="sp-phase__empty">Triage, investigation, containment, and a written report of what happened.</p>
-                  ) : (
-                    <ul className="sp-phase__weeks">
-                      {p.entries.map((e) => (
-                        <li key={e.title} className={e.live ? "" : "is-soon"}>
-                          <span className="sp-phase__wk">{e.title}</span>
-                          <span className="sp-phase__sum">{e.summary}</span>
-                          {!e.live && <em className="sp-square sp-square--mute">Soon</em>}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-                <span className="sp-phase__count">{p.entries.length ? `${live}/${p.entries.length} live` : "Soon"}</span>
-              </div>
+              <li key={p.title}>
+                <header>
+                  <span>Phase {pad(i + 1)}</span>
+                </header>
+                <h3>{p.title}</h3>
+                {p.entries.length > 0 && (
+                  <ul>
+                    {p.entries.map((e) => (
+                      <li key={e.title} className={e.live ? "" : "is-soon"}>
+                        {e.title}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <footer>{p.entries.length ? `${live} of ${p.entries.length} live` : "In preparation"}</footer>
+              </li>
             );
           })}
-        </div>
+        </ol>
       </section>
 
-      {/* ═══════════ READINESS ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-readiness" data-r>
-          <div className="sp-head sp-head--left sp-readiness__copy">
+      <section className="pg-section">
+        <div className="pg-split" data-r>
+          <div className="pg-head">
             <span className="sp-tag">The readiness report</span>
             <h2>A score a hiring manager can read</h2>
-            <p>
-              The report scores four competencies against the bar for a Tier 1 hire. A student is
-              almost ready at {SCORE_SOLID} and ready at {SCORE_READY} overall with no weak
-              competency.
-            </p>
-            <ul className="sp-levels">
-              <li><i className="sp-dot sp-dot--bad" /> Keep practicing <span>under {SCORE_SOLID}</span></li>
-              <li><i className="sp-dot sp-dot--warn" /> Almost ready <span>{SCORE_SOLID}+</span></li>
-              <li><i className="sp-dot sp-dot--good" /> Ready <span>{SCORE_READY}+</span></li>
+            <p>Four competencies are measured against the bar for a Tier 1 hire.</p>
+            <ul className="pg-levels">
+              <li><i /> Keep practicing <span>under {SCORE_SOLID}</span></li>
+              <li><i /> Almost ready <span>{SCORE_SOLID}+</span></li>
+              <li><i /> Ready <span>{SCORE_READY}+</span></li>
             </ul>
           </div>
-          <div className="sp-report" aria-label="Example readiness report">
-            <div className="sp-report__top">
-              <span className="sp-kick">Competencies</span>
-              <span className="sp-kick">Example student</span>
-            </div>
-            {(Object.keys(SKILLS) as Skill[]).map((k, i) => {
-              const v = SAMPLE_SCORES[k];
-              const tone = v >= SCORE_READY ? "good" : v >= SCORE_SOLID ? "warn" : "bad";
-              return (
-                <div key={k} className="sp-report__row">
-                  <div className="sp-report__name">
-                    <strong>{SKILLS[k].label}</strong>
-                    <span>{SKILLS[k].advice}</span>
-                  </div>
-                  <div className="sp-report__scale">
-                    <div className={`sp-report__fill sp-bg-${tone}`} style={{ width: `${v}%` }} />
-                    <i style={{ left: `${SCORE_SOLID}%` }} data-mark={i === 0 ? `Almost · ${SCORE_SOLID}` : undefined} />
-                    <i style={{ left: `${SCORE_READY}%` }} data-mark={i === 0 ? `Ready · ${SCORE_READY}` : undefined} />
-                  </div>
-                  <span className={`sp-report__v sp-text-${tone}`}>{v}</span>
-                </div>
-              );
-            })}
+          <div className="pg-report" aria-label="Example readiness report">
+            <header>
+              <span>Competencies</span>
+              <span>Example student</span>
+            </header>
+            <ul className="pg-bars">
+              {skillKeys.map((k) => (
+                <li key={k}>
+                  <span>{SKILLS[k].label}</span>
+                  <b>{SAMPLE_SCORES[k]}</b>
+                  <i style={{ ["--w" as string]: `${SAMPLE_SCORES[k]}%` }} />
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
 
-      {/* ═══════════ COACH + DRILLS ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-head sp-head--left" data-r>
-          <span className="sp-tag">PurveX Coach</span>
+      <section className="pg-section">
+        <div className="pg-dark" data-r>
+          <span className="pg-dark__kicker">PurveX Coach</span>
           <h2>A coach that never hands over the answer</h2>
-          <p>
-            Coach reads the student&apos;s own report and lab and then works in one of four
-            modes. On an unsolved mission it teaches the method and never reveals the flag.
-          </p>
-        </div>
-        <div className="tr-modes" data-r>
-          {(Object.keys(COACH_MODE_LABELS) as (keyof typeof COACH_MODE_LABELS)[]).map((m) => (
-            <div key={m}>
-              <strong>{COACH_MODE_LABELS[m]}</strong>
-              <p>{COACH_NOTES[m]}</p>
-            </div>
-          ))}
+          <p className="pg-dark__lead">It reads the student&apos;s own lab and results, and it teaches the method without revealing the flag.</p>
+          <ul className="pg-modes">
+            {(Object.keys(COACH_MODE_LABELS) as (keyof typeof COACH_MODE_LABELS)[]).map((m) => {
+              const { Icon, body } = modes[m];
+              return (
+                <li key={m}>
+                  <i className="pg-ico"><Icon size={19} /></i>
+                  <strong>{COACH_MODE_LABELS[m]}</strong>
+                  <p>{body}</p>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </section>
 
-      {/* ═══════════ WHO IT SERVES ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-head sp-head--left" data-r>
+      <section className="pg-section">
+        <div className="pg-head" data-r>
           <span className="sp-tag">Who it serves</span>
-          <h2>One record that every stakeholder can read</h2>
-          <p>
-            Students, program leaders, and employers each need something different from the same
-            work, and the readiness report gives all of them a shared and honest picture.
-          </p>
+          <h2>One record for every stakeholder</h2>
         </div>
-        <dl className="tr-who" data-r>
-          {audiences.map((a) => (
-            <div key={a.title}>
-              <dt>{a.title}</dt>
-              <dd>{a.body}</dd>
-            </div>
+        <ul className="pg-grid pg-grid--4 pg-grid--icons" data-r>
+          {audiences.map((a, i) => (
+            <li key={a.title}>
+              <span>{pad(i + 1)}</span>
+              <i className="pg-ico"><a.Icon size={21} /></i>
+              <strong>{a.title}</strong>
+              <p>{a.body}</p>
+            </li>
           ))}
-        </dl>
-
-        <div className="sp-cta" data-r>
-          <p>Are you running a bootcamp, a college program, or an academy cohort?</p>
-          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Talk about your cohort <ArrowRight size={16} />
-          </a>
-        </div>
+        </ul>
       </section>
 
-      <style>{`
-/* ── Shared bits ── */
-.sp-kick { font-size: .66rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted-dim) }
-.sp-kick--warn { color: #b7700a }
-.sp-square { display: inline-flex; align-items: center; margin-left: 10px; padding: 3px 9px; border-radius: 999px; background: linear-gradient(180deg, #fff, #f3f1ff); border: 1px solid rgba(106,92,255,.22); font-size: .6rem; font-style: normal; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep); vertical-align: middle; white-space: nowrap }
-.sp-square--mute { background: var(--surface-alt); border-color: var(--border); color: var(--muted-dim) }
-.sp-bg-good { background: linear-gradient(90deg, #22c55e, #16a34a) } .sp-bg-warn { background: linear-gradient(90deg, #f5b544, #d98a0b) } .sp-bg-bad { background: linear-gradient(90deg, #f07174, #e5484d) }
-.sp-text-good { color: #16a34a } .sp-text-warn { color: #c47a09 } .sp-text-bad { color: var(--red) }
-.sp-surface { background: linear-gradient(180deg, #fff, #fcfcff); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--highlight), var(--shadow-md) }
+      <section className="pg-close" data-r>
+        <div className="pg-close__copy">
+          <p className="pg-close__kicker">Next step</p>
+          <h2>Talk about a cohort</h2>
+          <p className="pg-close__sub">Thirty minutes on your program, your tools, and the desk.</p>
+          <div className="pg-close__row">
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="pg-close__book">
+              Book 30 minutes <ArrowRight size={16} />
+            </a>
+            <Link href="/academy" className="pg-close__more">
+              Academy portal <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+        <HoldCard source="training" />
+      </section>
 
-/* ── Hero: copy left, the portal window right ── */
-.sp-hero.sp-hero--course { text-align: left; max-width: none; display: grid; grid-template-columns: 1fr minmax(0, 520px); gap: 64px; align-items: center; padding-top: 104px }
-.sp-hero--course .sp-hero__h1 { font-size: clamp(2.4rem, 4.6vw, 3.8rem) }
-.sp-hero--course .sp-hero__sub { margin: 24px 0 0 }
-.sp-hero--course .sp-hero__actions { margin: 34px 0 0; justify-content: flex-start }
-.sp-facts { display: grid; grid-template-columns: repeat(3, 1fr); margin: 40px 0 0; max-width: 460px; padding: 6px; border-radius: 18px; background: rgba(255,255,255,.7); border: 1px solid var(--border); box-shadow: var(--highlight), var(--shadow-sm); opacity: 0; animation: sp-hero-in .85s var(--ease) .45s both }
-.sp-facts div { padding: 12px 14px; border-radius: 13px }
-.sp-facts div:first-child { background: #fff; box-shadow: var(--shadow-sm) }
-.sp-facts dt { font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted-dim) }
-.sp-facts dd { margin: 4px 0 0; font-size: 1.75rem; font-weight: 750; letter-spacing: -.04em; background: var(--grad-accent); -webkit-background-clip: text; background-clip: text; color: transparent }
-@media (prefers-reduced-motion: reduce) { .sp-facts { animation: none; opacity: 1 } }
-
-.sp-pv { position: relative; margin: 0; border-radius: 22px; border: 1px solid transparent; background: linear-gradient(#fff, #fff) padding-box, var(--grad-border) border-box; box-shadow: var(--highlight), var(--shadow-lg); overflow: hidden }
-.sp-pv::before { content: ""; position: absolute; inset: -40% -20% auto; height: 70%; background: radial-gradient(closest-side, rgba(106,92,255,.12), transparent); pointer-events: none }
-.sp-pv__bar { position: relative; display: flex; align-items: center; gap: 10px; height: 50px; padding: 0 16px; border-bottom: 1px solid var(--border); background: rgba(250,250,255,.8) }
-.sp-pv__mark { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 8px; background: var(--grad-accent); color: #fff; box-shadow: 0 4px 10px -4px rgba(85,70,224,.7) }
-.sp-pv__name { font-size: .8rem; font-weight: 600; color: var(--ink) }
-.sp-pv__name em { margin-left: 6px; font-style: normal; font-size: .66rem; color: var(--muted-dim) }
-.sp-pv__av { margin-left: auto; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--grad-accent); color: #fff; font-size: .58rem; font-weight: 700; letter-spacing: .04em }
-.sp-pv__body { position: relative; padding: 22px }
-.sp-pv__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px }
-.sp-pv__h { display: block; font-size: 1.5rem; font-weight: 750; letter-spacing: -.04em; color: var(--ink); line-height: 1.1 }
-.sp-pv__sub { display: block; margin-top: 6px; font-size: .8rem; color: var(--ink-soft) }
-.sp-pv__score { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; padding: 10px 14px; border-radius: 14px; background: linear-gradient(180deg, #fff, #f6f5ff); border: 1px solid rgba(106,92,255,.18) }
-.sp-pv__score strong { font-size: 1.6rem; font-weight: 750; letter-spacing: -.04em; background: var(--grad-accent); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1 }
-.sp-pv__score small { font-size: .78rem; font-weight: 600; -webkit-text-fill-color: var(--muted-dim) }
-.sp-pv__next { margin: 18px 0 8px; padding: 14px 16px; border-radius: 14px; background: var(--surface-alt); display: flex; flex-direction: column; gap: 5px }
-.sp-pv__next strong { display: inline-flex; align-items: center; gap: 6px; font-size: .92rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
-.sp-pv__row { display: grid; grid-template-columns: 30px 1fr auto; gap: 10px; align-items: start; padding: 14px 4px; border-top: 1px solid var(--border) }
-.sp-pv__row:first-of-type { border-top: 0 }
-.sp-pv__row--off { opacity: .55 }
-.sp-pv__num { font-size: .68rem; font-weight: 700; color: var(--accent-deep); padding-top: 3px }
-.sp-pv__rowtitle { display: block; font-size: .92rem; font-weight: 650; letter-spacing: -.02em; color: var(--ink) }
-.sp-pv__segs { display: flex; gap: 4px; margin-top: 10px }
-.sp-pv__segs i { flex: 1; height: 5px; border-radius: 999px; background: rgba(16,25,46,.07) }
-.sp-pv__segs i.on { background: var(--grad-accent) }
-.sp-pv__segs i.here { background: transparent; box-shadow: inset 0 0 0 1.5px var(--accent) }
-.sp-pv__count { font-size: .7rem; font-weight: 700; color: var(--ink-soft); padding-top: 3px }
-.sp-pv__cap { position: relative; padding: 11px 16px; border-top: 1px solid var(--border); font-size: .66rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-dim); background: rgba(250,250,255,.8) }
-
-/* ── Learn / Work / Prove ── */
-.sp-loop { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px }
-.sp-loop li { position: relative; padding: 30px 28px 32px; background: linear-gradient(180deg, #fff, #fcfcff); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--highlight), var(--shadow-md); overflow: hidden }
-.sp-loop__n { position: absolute; top: 10px; right: 18px; font-size: 4.2rem; font-weight: 800; letter-spacing: -.06em; line-height: 1; background: linear-gradient(180deg, rgba(106,92,255,.18), rgba(106,92,255,0)); -webkit-background-clip: text; background-clip: text; color: transparent }
-.sp-loop h3 { margin: 0; font-size: 1.6rem; font-weight: 750; letter-spacing: -.04em; color: var(--ink) }
-.sp-loop p { position: relative; margin: 12px 0 0; color: var(--ink-soft); font-size: .95rem; line-height: 1.65 }
-
-/* ── Syllabus: each phase a card ── */
-.sp-phases { display: flex; flex-direction: column; gap: 16px }
-.sp-phase { display: grid; grid-template-columns: 52px 1fr auto; gap: 16px; padding: 26px 28px; background: linear-gradient(180deg, #fff, #fcfcff); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--highlight), var(--shadow-md) }
-.sp-phase__num { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 12px; background: var(--grad-accent); color: #fff; font-size: .8rem; font-weight: 700; box-shadow: 0 8px 18px -8px rgba(85,70,224,.7) }
-.sp-phase h3 { margin: 6px 0 0; font-size: 1.35rem; font-weight: 720; letter-spacing: -.03em; color: var(--ink) }
-.sp-phase--off { background: var(--surface-alt); box-shadow: none }
-.sp-phase--off h3 { color: var(--muted) }
-.sp-phase--off .sp-phase__num { background: #e7e9f2; color: var(--muted); box-shadow: none }
-.sp-phase__empty { margin: 8px 0 0; color: var(--muted); font-size: .95rem }
-.sp-phase__weeks { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px }
-.sp-phase__weeks li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 0; padding: 14px 16px; border-radius: 14px; background: var(--surface-alt); border: 1px solid transparent; transition: border-color .3s var(--ease), background .3s var(--ease) }
-.sp-phase__weeks li:not(.is-soon):hover { background: #fff; border-color: rgba(106,92,255,.25) }
-.sp-phase__wk { flex: 1 1 auto; font-size: .92rem; font-weight: 650; color: var(--ink) }
-.sp-phase__sum { flex: 1 0 100%; order: 3; margin-top: 4px; font-size: .84rem; line-height: 1.55; color: var(--muted) }
-.sp-phase__weeks li.is-soon .sp-phase__wk, .sp-phase__weeks li.is-soon .sp-phase__sum { color: var(--muted-dim) }
-.sp-phase__count { align-self: start; margin-top: 8px; padding: 5px 10px; border-radius: 999px; background: var(--accent-soft); font-size: .7rem; font-weight: 700; color: var(--accent-deep); white-space: nowrap }
-.sp-phase--off .sp-phase__count { background: transparent; color: var(--muted-dim) }
-
-/* ── Missions ── */
-.sp-sets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: start }
-.sp-set { padding: 26px 24px 14px; background: linear-gradient(180deg, #fff, #fcfcff); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--highlight), var(--shadow-md) }
-.sp-set__head { display: flex; justify-content: space-between; align-items: center; gap: 12px }
-.sp-set__head h3 { margin: 0; font-size: 1.2rem; font-weight: 720; letter-spacing: -.03em; color: var(--ink) }
-.sp-set__count { padding: 4px 9px; border-radius: 999px; background: var(--accent-soft); font-size: .66rem; font-weight: 700; color: var(--accent-deep); white-space: nowrap }
-.sp-set__brief { margin: 10px 0 16px; color: var(--muted); font-size: .88rem; line-height: 1.55; min-height: 2.8em }
-.sp-set__list { list-style: none; margin: 0 -8px; padding: 0 }
-.sp-set__list li { display: flex; gap: 12px; align-items: baseline; padding: 9px 8px; border-radius: 10px; font-size: .86rem; color: var(--ink); transition: background .2s }
-.sp-set__list li:hover { background: var(--surface-alt) }
-.sp-set__n { font-size: .66rem; font-weight: 700; color: var(--accent); flex-shrink: 0; font-variant-numeric: tabular-nums }
-
-/* ── Readiness ── */
-.sp-readiness { display: grid; grid-template-columns: minmax(0, 380px) 1fr; gap: 56px; align-items: center }
-.sp-head.sp-readiness__copy { margin: 0 }
-.sp-levels { list-style: none; margin: 24px 0 0; padding: 6px; display: flex; flex-direction: column; gap: 4px; border-radius: 16px; background: var(--surface-alt) }
-.sp-levels li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 11px; font-size: .9rem; font-weight: 650; color: var(--ink) }
-.sp-levels li:last-child { background: #fff; box-shadow: var(--shadow-sm) }
-.sp-levels span { margin-left: auto; font-size: .72rem; font-weight: 700; color: var(--muted-dim) }
-.sp-dot { width: 9px; height: 9px; border-radius: 50% }
-.sp-dot--bad { background: var(--red) } .sp-dot--warn { background: #e0a020 } .sp-dot--good { background: #16a34a }
-.sp-report { padding: 8px 26px 12px; background: linear-gradient(180deg, #fff, #fcfcff); border: 1px solid transparent; background-clip: padding-box; border-radius: 22px; box-shadow: var(--highlight), var(--shadow-lg); position: relative }
-.sp-report::before { content: ""; position: absolute; inset: -1px; border-radius: 23px; padding: 1px; background: var(--grad-border); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none }
-.sp-report__top { display: flex; justify-content: space-between; padding: 14px 0 }
-.sp-report__row { display: grid; grid-template-columns: minmax(0, 1.1fr) 1.4fr 40px; gap: 20px; align-items: center; padding: 20px 0; border-top: 1px solid var(--border) }
-.sp-report__name strong { display: block; font-size: .95rem; font-weight: 650; color: var(--ink) }
-.sp-report__name span { display: block; margin-top: 4px; font-size: .78rem; line-height: 1.5; color: var(--muted) }
-.sp-report__scale { position: relative; height: 10px; border-radius: 999px; background: rgba(16,25,46,.06) }
-.sp-report__fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; transform-origin: left; transform: scaleX(0); transition: transform 1.1s var(--ease) .2s }
-.sp-readiness.in .sp-report__fill { transform: scaleX(1) }
-.sp-report__scale i { position: absolute; top: -5px; bottom: -5px; width: 2px; border-radius: 2px; background: var(--ink); opacity: .7 }
-.sp-report__scale i::after { content: attr(data-mark); position: absolute; bottom: calc(100% + 5px); right: 4px; white-space: nowrap; font-size: .58rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft) }
-/* Almost sits left of its tick, Ready right of its own, so they never meet. */
-.sp-report__scale i:last-of-type::after { right: auto; left: 6px }
-.sp-report__v { font-size: 1.25rem; font-weight: 750; letter-spacing: -.03em; text-align: right }
-@media (prefers-reduced-motion: reduce) { .sp-report__fill { transform: none; transition: none } }
-
-/* ── Coach modes ── */
-.sp-modes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px }
-.sp-mode { padding: 24px 22px 26px; background: linear-gradient(180deg, #fff, #fcfcff); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--highlight), var(--shadow-md); transition: transform .45s var(--ease), box-shadow .45s var(--ease), border-color .45s var(--ease) }
-.sp-mode:hover { transform: translateY(-4px); border-color: rgba(106,92,255,.3); box-shadow: var(--highlight), var(--shadow-lg) }
-.sp-mode__label { display: inline-flex; padding: 5px 11px; border-radius: 999px; background: var(--grad-accent); color: #fff; font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; box-shadow: 0 6px 14px -6px rgba(85,70,224,.7) }
-.sp-mode p { margin: 14px 0 0; color: var(--ink-soft); font-size: .9rem; line-height: 1.6 }
-.sp-extras { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px }
-.sp-extras > div { padding: 22px 24px; border-radius: 18px; background: linear-gradient(135deg, #f7f5ff, #fff 60%); border: 1px solid rgba(106,92,255,.18); box-shadow: var(--highlight) }
-.sp-extras .sp-kick { color: var(--accent-deep) }
-.sp-extras p { margin: 8px 0 0; color: var(--ink-soft); font-size: .94rem; line-height: 1.65 }
-
-/* ── Mindset ── */
-.sp-xlate { padding: 8px; border-radius: 20px; background: var(--surface-alt); border: 1px solid var(--border) }
-.sp-xlate__row { display: grid; grid-template-columns: 40px 1fr 28px 1fr; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 14px }
-.sp-xlate__row + .sp-xlate__row { margin-top: 4px }
-.sp-xlate__row:hover { background: #fff; box-shadow: var(--shadow-sm) }
-.sp-xlate__icon { box-sizing: content-box; padding: 9px; border-radius: 10px; background: #fff; border: 1px solid var(--border); color: var(--muted) }
-.sp-xlate__a { font-size: 1rem; color: var(--ink-soft) }
-.sp-xlate__arrow { color: var(--accent) }
-.sp-xlate__b { font-size: 1.08rem; font-weight: 700; letter-spacing: -.02em; color: var(--accent-deep) }
-
-/* ── Career ladder ── */
-.sp-rungs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px }
-.sp-rungs[data-r] { opacity: 1; transform: none; filter: none; transition: none }
-.sp-rungs[data-r] > * { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease), transform .6s var(--ease) }
-.sp-rungs[data-r].in > * { opacity: 1; transform: none }
-.sp-rungs[data-r] > *:nth-child(2) { transition-delay: .07s } .sp-rungs[data-r] > *:nth-child(3) { transition-delay: .14s }
-.sp-rungs[data-r] > *:nth-child(4) { transition-delay: .21s } .sp-rungs[data-r] > *:nth-child(5) { transition-delay: .28s }
-.sp-rung { position: relative; padding: 26px 20px 28px; border-radius: 18px; background: linear-gradient(180deg, #fff, #fcfcff); border: 1px solid var(--border); box-shadow: var(--highlight), var(--shadow-sm); overflow: hidden }
-.sp-rung--here { border-color: rgba(106,92,255,.35); background: linear-gradient(180deg, #f6f4ff, #fff); box-shadow: var(--highlight), var(--shadow-lg) }
-/* --fill is set inline and repointed at height on narrow screens (see below). */
-.sp-rung__fill { position: absolute; top: 0; left: 0; width: var(--fill); height: 3px; background: var(--grad-accent) }
-.sp-rung__icon { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px }
-.sp-rung h3 { margin: 16px 0 0; font-size: 1rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink); line-height: 1.25 }
-.sp-rung p { margin: 8px 0 0; font-size: .82rem; color: var(--muted); line-height: 1.55 }
-.sp-rung__tag { margin: 14px 0 0 }
-
-/* ── Formats + CTA ── */
-.sp-formats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px }
-.sp-format { padding: 24px 22px 26px; border-radius: 18px; background: linear-gradient(180deg, #fff, #fcfcff); border: 1px solid var(--border); box-shadow: var(--highlight), var(--shadow-md) }
-.sp-format__n { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(145deg, #fff, #efedff); border: 1px solid rgba(106,92,255,.2); font-size: .72rem; font-weight: 700; color: var(--accent-deep) }
-.sp-format h3 { margin: 16px 0 0; font-size: 1.05rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
-.sp-format p { margin: 8px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.6 }
-.sp-cta { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 56px; padding: 36px 40px; border-radius: 24px; overflow: hidden; background: radial-gradient(120% 140% at 0% 0%, #6a5cff 0%, #4a3bd4 45%, #1d1a4d 100%); box-shadow: 0 30px 60px -30px rgba(74,59,212,.8) }
-.sp-cta::after { content: ""; position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,.14) 1px, transparent 1px); background-size: 18px 18px; mask-image: linear-gradient(90deg, transparent, #000); pointer-events: none }
-.sp-cta p { position: relative; margin: 0; font-size: 1.45rem; font-weight: 700; letter-spacing: -.03em; color: #fff }
-.sp-cta .sp-btn--prim { position: relative; z-index: 1; background: #fff; color: var(--accent-deep); box-shadow: 0 10px 24px -10px rgba(0,0,0,.45) }
-.sp-cta .sp-btn--prim:hover { background: #fff; filter: none }
-
-/* ── Tablet ── */
-@media (max-width: 1000px) {
-  .sp-hero.sp-hero--course { grid-template-columns: 1fr; gap: 48px }
-  .sp-pv { max-width: 560px }
-  .sp-readiness { grid-template-columns: 1fr; gap: 32px }
-  .sp-modes, .sp-formats { grid-template-columns: 1fr 1fr }
-  .sp-sets { grid-template-columns: 1fr }
-  .sp-set__brief { min-height: 0 }
-  .sp-rungs { grid-template-columns: 1fr; gap: 10px }
-  /* Icon in its own column, title + body stacked beside it. */
-  .sp-rung { display: grid; grid-template-columns: 40px 1fr; column-gap: 16px; align-items: start; padding: 20px 18px 20px 22px }
-  .sp-rung__fill { top: 0; left: 0; width: 3px; height: var(--fill) }
-  .sp-rung__icon { grid-row: span 3 }
-  .sp-rung h3 { margin: 2px 0 0 }
-  .sp-rung p { margin: 4px 0 0; font-size: .88rem }
-  .sp-rung__tag { justify-self: start; margin: 10px 0 0 }
-}
-
-/* ── Phones ── */
-@media (max-width: 680px) {
-  .sp-hero.sp-hero--course { padding-top: 56px }
-  .sp-facts { max-width: none }
-  .sp-facts dd { font-size: 1.5rem }
-  .sp-pv__body { padding: 18px 16px }
-  .sp-pv__h { font-size: 1.25rem }
-  .sp-loop { grid-template-columns: 1fr; gap: 12px }
-  .sp-loop li { padding: 24px 22px 26px }
-  .sp-loop h3 { font-size: 1.4rem }
-  .sp-phase { grid-template-columns: 1fr; gap: 10px; padding: 22px 18px }
-  .sp-phase__count { justify-self: start; margin-top: 0 }
-  .sp-phase--off .sp-phase__count { display: none }
-  .sp-phase h3 { font-size: 1.2rem; margin: 0 }
-  .sp-phase__weeks { grid-template-columns: 1fr; gap: 8px }
-  .sp-report { padding: 6px 18px 10px }
-  .sp-report__row { grid-template-columns: 1fr 40px; gap: 10px 14px }
-  .sp-report__scale { grid-column: 1 / -1; grid-row: 2; margin-top: 20px }
-  .sp-report__name span { display: none }
-  .sp-modes, .sp-formats, .sp-extras { grid-template-columns: 1fr; gap: 12px }
-  .sp-xlate__row { grid-template-columns: 40px 1fr; row-gap: 4px }
-  .sp-xlate__arrow { display: none }
-  .sp-xlate__b { grid-column: 2 }
-  .sp-cta { flex-direction: column; align-items: stretch; padding: 28px 22px; margin-top: 40px }
-  .sp-cta p { font-size: 1.2rem }
-}
-      `}</style>
-      <style>{`
-.tr-ul { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 10px }
-.tr-ul li { position: relative; padding-left: 20px; font-size: .95rem; line-height: 1.55; color: var(--ink-soft) }
-.tr-ul li::before { content: ""; position: absolute; left: 0; top: .6em; width: 7px; height: 7px; border-radius: 50%; background: var(--accent) }
-@media (max-width: 860px) { .tr-rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border-strong) }
-.tr-rows > li { display: grid; grid-template-columns: 2.5rem 1fr 1fr; gap: 24px; align-items: start; padding: 26px 0; border-bottom: 1px solid var(--border) }
-.tr-rows__n { font-family: var(--font-mono); font-size: .72rem; font-weight: 700; letter-spacing: .08em; color: var(--accent-deep); padding-top: 5px }
-.tr-rows__head h3 { margin: 0; font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
-.tr-rows__head p { margin: 8px 0 0; color: var(--ink-soft); font-size: .93rem; line-height: 1.65; max-width: 40ch }
-.tr-rows__tasks { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px }
-.tr-rows__tasks li { padding: 7px 13px; border-radius: 999px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.16); font-size: .8rem; font-weight: 550; color: var(--accent-deep) }
-.tr-modes { border-radius: 22px; background: linear-gradient(135deg, #f7f5ff, #fff 65%); border: 1px solid rgba(106,92,255,.18); box-shadow: var(--shadow-md); overflow: hidden }
-.tr-modes > div { display: grid; grid-template-columns: 11rem 1fr; gap: 24px; align-items: baseline; padding: 20px 28px; border-bottom: 1px solid rgba(106,92,255,.12) }
-.tr-modes > div:last-child { border-bottom: 0 }
-.tr-modes strong { font-family: var(--font-display); font-size: 1.02rem; font-weight: 700; letter-spacing: -.015em; color: var(--accent-deep) }
-.tr-modes p { margin: 0; color: var(--ink-soft); font-size: .93rem; line-height: 1.65 }
-.tr-who { display: grid; grid-template-columns: 1fr 1fr; gap: 0 56px; margin: 0 }
-.tr-who > div { padding: 24px 0; border-top: 1px solid var(--border-strong) }
-.tr-who dt { font-family: var(--font-display); font-size: 1.08rem; font-weight: 700; letter-spacing: -.018em; color: var(--ink) }
-.tr-who dd { margin: 8px 0 0; color: var(--ink-soft); font-size: .93rem; line-height: 1.7; max-width: 46ch }
-@media (max-width: 860px) {
-  .tr-rows > li { grid-template-columns: 2rem 1fr; gap: 12px 16px }
-  .tr-rows__tasks { grid-column: 2 }
-  .tr-modes > div { grid-template-columns: 1fr; gap: 6px; padding: 18px 20px }
-  .tr-who { grid-template-columns: 1fr }
-}
-.tr-split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center }
-.tr-split .sp-head { margin-bottom: 0 }
-.tr-split .sp-head p + p { margin-top: 14px }
-.tr-proof { border-radius: 22px; background: #fff; border: 1px solid var(--border-strong); overflow: hidden; box-shadow: var(--shadow-lg) }
-.tr-proof header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--accent-soft); font-family: var(--font-mono); font-size: .68rem; font-weight: 700; letter-spacing: .08em; color: var(--accent-deep) }
-.tr-proof header span, .tr-proof header em { display: inline-flex; align-items: center; gap: 8px }
-.tr-proof header em { font-style: normal; text-transform: uppercase; letter-spacing: .1em }
-.tr-proof header em i { width: 7px; height: 7px; border-radius: 50%; background: #1fa971 }
-.tr-proof ul { list-style: none; margin: 0; padding: 8px 20px }
-.tr-proof li { display: flex; align-items: center; gap: 12px; padding: 14px 0; font-size: .9rem; color: var(--ink); border-bottom: 1px solid var(--border) }
-.tr-proof li:last-child { border-bottom: 0 }
-.tr-proof li > span { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #e3f6ee; color: #12805a; font-weight: 700; font-size: .78rem }
-.tr-proof li[data-ok="false"] > span { background: #fdeaea; color: #c23030 }
-.tr-proof footer { padding: 14px 20px 18px; font-size: .78rem; color: var(--muted); background: #fafaff; border-top: 1px solid var(--border) }
-@media (prefers-reduced-motion: reduce) { @media (prefers-reduced-motion: reduce) { @media (max-width: 860px) { @media (max-width: 860px) { @media (max-width: 1100px) { @media (max-width: 860px) { .tr-split { grid-template-columns: 1fr; gap: 32px } }
-@media (max-width: 680px) {       `}</style>
+      <style>{PG_CSS}</style>
     </SiteChrome>
   );
 }
