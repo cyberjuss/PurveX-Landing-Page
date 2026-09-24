@@ -365,7 +365,7 @@ export const PG_CSS = `
 
 .pg-rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border-strong) }
 .pg-rows > li {
-  display: grid; grid-template-columns: auto 1fr 1.1fr; gap: 22px; align-items: center; padding: 22px 0;
+  display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: center; padding: 22px 0;
   border-bottom: 1px solid var(--border); border-radius: 0;
   transition: background .35s var(--ease), padding .35s var(--ease);
 }
@@ -463,4 +463,29 @@ export const PG_CSS = `
   .pg-dark { padding: 28px 18px; border-radius: 22px }
   .pg-facts li { flex: 1; min-width: 0 }
 }
+
+/* ── Readability and polish ── */
+html { scroll-behavior: smooth }
+.pg-head h2, .pg-dark h2, .pg-close h2 { text-wrap: balance }
+.pg-head p, .pg-hero__sub, .pg-dark__lead { text-wrap: pretty }
+.pg-bullets { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 10px }
+.pg-bullets li {
+  position: relative; padding-left: 22px; font-size: .95rem; line-height: 1.55; color: var(--ink-soft);
+}
+.pg-bullets li::before {
+  content: ""; position: absolute; left: 0; top: .5em; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 0 4px rgba(106,92,255,.14);
+}
+.pg-hero .pg-bullets { margin-top: 22px }
+.pg-hero .pg-bullets li { font-size: 1rem; color: var(--ink) }
+/* Bullets inside a grid card: reset the grid's own li rules. */
+.pg-grid .pg-bullets li, .pg-grid[data-r] .pg-bullets li { padding: 0 0 0 22px; border: 0; opacity: 1; transform: none; transition: none }
+.pg-grid .pg-bullets li + li { padding-left: 22px; border: 0 }
+.pg-grid--icons p { max-width: 34ch }
+.pg-more {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; font-size: .92rem; font-weight: 650;
+  color: var(--accent-deep); text-decoration: none; transition: gap .25s var(--ease);
+}
+.pg-more:hover { gap: 13px }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto } }
 `;

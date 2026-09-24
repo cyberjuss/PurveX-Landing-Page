@@ -25,7 +25,7 @@ import { CaseFloor, type FloorAlert, type FloorCase } from "./case-floor";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
 import { MISSION_CATALOG } from "@/lib/academy-missions";
-import { SCORE_READY, SCORE_SOLID, SKILLS, type Skill } from "@/lib/academy-score";
+import { SKILLS, type Skill } from "@/lib/academy-score";
 import { COACH_MODE_LABELS } from "@/lib/academy-coach-mode";
 
 /* Cybersecurity Training. Same skin as the home page (page-skin.ts).
@@ -47,57 +47,49 @@ const TOTAL_MISSIONS = Object.keys(MISSION_CATALOG).length;
 const SAMPLE_SCORES: Record<Skill, number> = { accounts: 92, directory: 78, troubleshooting: 88, security: 61 };
 
 const steps = [
-  { n: "01", title: "Learn", body: "Weekly lessons and a short quiz.", Icon: BookOpen },
-  { n: "02", title: "Work", body: "A live directory, a ticket queue, and a 2 AM alert.", Icon: Server },
-  { n: "03", title: "Prove", body: "Every attempt feeds a readiness score.", Icon: BadgeCheck },
+  {
+    n: "01", title: "Learn", Icon: BookOpen,
+    body: "Short weekly lessons, each opened by one guiding question.",
+    points: ["Security fundamentals through incident response", "A quiz before each week is complete"],
+  },
+  {
+    n: "02", title: "Work", Icon: Server,
+    body: "Students run the help desk of a company that they build themselves.",
+    points: ["Tickets checked against a live directory", "A daily drill and a weekly investigation"],
+  },
+  {
+    n: "03", title: "Prove", Icon: BadgeCheck,
+    body: "Every attempt is measured instead of only being submitted.",
+    points: ["A readiness score out of 100", "Resume lines drawn from closed tickets"],
+  },
 ];
 
 const proofs = [
-  { ok: true, text: "jamie.torres is a member of the announcement group" },
-  { ok: true, text: "riley.kwan is enabled and no longer locked out" },
-  { ok: true, text: "svc-backup-job Description holds the run window" },
-  { ok: false, text: "taylor.osei is still in Operations Users" },
+  { ok: true, text: "Account is restored" },
+  { ok: true, text: "Group membership holds" },
+  { ok: true, text: "Service account is documented" },
+  { ok: false, text: "A transfer is still open" },
 ];
 
 const roles = [
-  {
-    title: "Help desk technician",
-    body: "Confirms what is true before changing anything.",
-    tasks: ["Restore a blocked account", "Create an account to standard", "Check a ticket first"],
-    Icon: Headset,
-  },
-  {
-    title: "Security analyst",
-    body: "Decides whether an alert is a mistake or an attack.",
-    tasks: ["Read Windows security events", "Triage a login alert", "Write an escalation"],
-    Icon: ShieldAlert,
-  },
-  {
-    title: "Systems administrator",
-    body: "Keeps access accurate as people join, move, and leave.",
-    tasks: ["Build role-based access", "Offboard without deleting", "Retire unused accounts"],
-    Icon: KeyRound,
-  },
-  {
-    title: "Audit and compliance support",
-    body: "Turns policy into settings that an auditor can verify.",
-    tasks: ["Turn on auditing", "Keep the log long enough", "Set password and lockout policy"],
-    Icon: ClipboardCheck,
-  },
+  { title: "Help desk technician", body: "Confirms what is true in the directory before changing anything.", Icon: Headset },
+  { title: "Security analyst", body: "Decides whether an alert is a mistake or an attack, and explains the call.", Icon: ShieldAlert },
+  { title: "Systems administrator", body: "Keeps access accurate as people join, move, and leave.", Icon: KeyRound },
+  { title: "Audit and compliance support", body: "Turns policy into settings that an auditor can verify.", Icon: ClipboardCheck },
 ];
 
 const modes: Record<keyof typeof COACH_MODE_LABELS, { body: string; Icon: typeof LifeBuoy }> = {
-  walkthrough: { body: "For students who are new or stuck. One next step and a way to check it.", Icon: LifeBuoy },
-  check: { body: "For students who understand the idea. It tests their reasoning.", Icon: CheckCheck },
-  mentor: { body: "For students who know the lab. It discusses the call a team lead would make.", Icon: Compass },
-  interview: { body: "It plays the hiring manager with five scored questions and a hire signal.", Icon: Mic },
+  walkthrough: { body: "For a student who is new or stuck, one next step and a way to check it.", Icon: LifeBuoy },
+  check: { body: "For a student who thinks they understand, a test of the reasoning before anything changes.", Icon: CheckCheck },
+  mentor: { body: "For a student who knows the lab, a talk through the call a team lead would make.", Icon: Compass },
+  interview: { body: "For a student who is ready for the job, a scored spoken interview that ends in a hire signal.", Icon: Mic },
 };
 
 const audiences = [
-  { title: "Students", body: "Leave with tasks proven in a real directory and resume lines they can defend.", Icon: GraduationCap },
+  { title: "Students", body: "Leave with tasks proven in a real directory and resume lines that they can defend.", Icon: GraduationCap },
   { title: "Schools and academies", body: "See every student's readiness and weakest skill without grading by hand.", Icon: School },
-  { title: "Government and workforce programs", body: "Measure progress into IT and security roles with one consistent curriculum.", Icon: Landmark },
-  { title: "Employers and business teams", body: "Hire or upskill on proof, ending in a spoken interview and a hire signal.", Icon: Briefcase },
+  { title: "Government and workforce programs", body: "Measure progress into IT and security roles on one consistent curriculum.", Icon: Landmark },
+  { title: "Employers and business teams", body: "Hire or upskill on proof that ends in a spoken interview and a hire signal.", Icon: Briefcase },
 ];
 
 const TRAINING_CASES: FloorCase[] = [
@@ -164,9 +156,14 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           <span className="sp-tag">Cybersecurity training</span>
           <h1 className="pg-hero__h1">Think Like a SOC Analyst 101</h1>
           <p className="pg-hero__sub">
-            Students work a live Active Directory lab and a ticket queue, and they finish with a
-            readiness score that a hiring manager can read at a glance.
+            A cohort course in which students build a working company network, clear real tickets
+            against it, and finish with a readiness score that employers can read.
           </p>
+          <ul className="pg-bullets">
+            <li>A live Active Directory lab on each student&apos;s own machine</li>
+            <li>Tickets, drills, and a 2 AM alert graded on real results</li>
+            <li>PurveX Coach guides every step without giving away the answer</li>
+          </ul>
           <div className="pg-hero__actions">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
               Bring it to your program <ArrowRight size={16} />
@@ -197,6 +194,11 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
               <i className="pg-ico"><s.Icon size={21} /></i>
               <strong>{s.title}</strong>
               <p>{s.body}</p>
+              <ul className="pg-bullets">
+                {s.points.map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
+              </ul>
             </li>
           ))}
         </ol>
@@ -207,7 +209,14 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           <div className="pg-head">
             <span className="sp-tag">The lab</span>
             <h2>A ticket closes only when the directory shows the change</h2>
-            <p>Each student builds the PurveX Financial company on their own machine, and every check reads that live directory.</p>
+            <p>Each student builds a company on their own machine, and the lab syncs so that every check reads live data.</p>
+            <ul className="pg-bullets">
+              <li>Hands-on work is verified in the directory, not self-reported</li>
+              <li>Answers must be found in the lab, since they cannot be copied from a ticket</li>
+            </ul>
+            <Link href="/academy" className="pg-more">
+              Sign in to open the first ticket <ArrowRight size={15} />
+            </Link>
           </div>
           <div className="pg-proof" aria-hidden="true">
             <header>
@@ -230,7 +239,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         <div className="pg-head" data-r>
           <span className="sp-tag">Beyond the help desk</span>
           <h2>One lab, four roles</h2>
-          <p>The lab starts at the help desk, and the same directory supports every role below.</p>
+          <p>The lab starts at the help desk and supports three more career paths from the same directory.</p>
         </div>
         <ol className="pg-rows" data-r>
           {roles.map((r) => (
@@ -240,11 +249,6 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
                 <h3>{r.title}</h3>
                 <p>{r.body}</p>
               </div>
-              <ul className="pg-chips">
-                {r.tasks.map((t) => (
-                  <li key={t}>{t}</li>
-                ))}
-              </ul>
             </li>
           ))}
         </ol>
@@ -254,7 +258,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         <div className="pg-head" data-r>
           <span className="sp-tag">The syllabus</span>
           <h2>Three phases</h2>
-          <p>The same phases students open in the portal, updated as weeks are published.</p>
+          <p>Students open the same three phases in the portal, and weeks unlock as they are published.</p>
         </div>
         <ol className="pg-phases" data-r>
           {outline.map((p, i) => {
@@ -265,20 +269,14 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
                   <span>Phase {pad(i + 1)}</span>
                 </header>
                 <h3>{p.title}</h3>
-                {p.entries.length > 0 && (
-                  <ul>
-                    {p.entries.map((e) => (
-                      <li key={e.title} className={e.live ? "" : "is-soon"}>
-                        {e.title}
-                      </li>
-                    ))}
-                  </ul>
-                )}
                 <footer>{p.entries.length ? `${live} of ${p.entries.length} live` : "In preparation"}</footer>
               </li>
             );
           })}
         </ol>
+        <Link href="/academy" className="pg-more">
+          Sign in to see the weeks <ArrowRight size={15} />
+        </Link>
       </section>
 
       <section className="pg-section">
@@ -286,11 +284,10 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           <div className="pg-head">
             <span className="sp-tag">The readiness report</span>
             <h2>A score a hiring manager can read</h2>
-            <p>Four competencies are measured against the bar for a Tier 1 hire.</p>
-            <ul className="pg-levels">
-              <li><i /> Keep practicing <span>under {SCORE_SOLID}</span></li>
-              <li><i /> Almost ready <span>{SCORE_SOLID}+</span></li>
-              <li><i /> Ready <span>{SCORE_READY}+</span></li>
+            <p>Four competencies are measured against the bar for a Tier 1 hire, so a score means the same thing for every student.</p>
+            <ul className="pg-bullets">
+              <li>Scores update as students finish tickets and drills</li>
+              <li>The full report opens in the portal</li>
             </ul>
           </div>
           <div className="pg-report" aria-label="Example readiness report">
@@ -315,7 +312,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         <div className="pg-dark" data-r>
           <span className="pg-dark__kicker">PurveX Coach</span>
           <h2>A coach that never hands over the answer</h2>
-          <p className="pg-dark__lead">It reads the student&apos;s own lab and results, and it teaches the method without revealing the flag.</p>
+          <p className="pg-dark__lead">Coach reads the student&apos;s own lab and results, and it teaches the method while the student finds the answer.</p>
           <ul className="pg-modes">
             {(Object.keys(COACH_MODE_LABELS) as (keyof typeof COACH_MODE_LABELS)[]).map((m) => {
               const { Icon, body } = modes[m];
@@ -352,7 +349,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         <div className="pg-close__copy">
           <p className="pg-close__kicker">Next step</p>
           <h2>Talk about a cohort</h2>
-          <p className="pg-close__sub">Thirty minutes on your program, your tools, and the desk.</p>
+          <p className="pg-close__sub">The tickets, the drills, and Coach are inside the portal. Book a cohort for your program, or sign in if you already have a seat.</p>
           <div className="pg-close__row">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="pg-close__book">
               Book 30 minutes <ArrowRight size={16} />
