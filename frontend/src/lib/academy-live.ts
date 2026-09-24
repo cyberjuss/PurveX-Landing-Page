@@ -61,7 +61,7 @@ export async function checkRealCtf(userId: string, day: string, answer: string) 
         stillToDo: checked.fresh ? checked.results.filter((r) => !r.ok).map((r) => r.label) : [],
         next: checked.fresh
           ? "Right answer. Now fix what made it possible in your lab, then check again after the lab reports."
-          : "Right answer. Fix it in your lab, then wait for the lab to report (about 15 minutes, or run .\\Build-Environment.ps1 -SyncOnly) and check again.",
+          : "Right answer. Fix it in your lab, then wait about 1 minute for the lab to report and check again.",
       };
     }
     const graded = await gradeDrill(userId, token, [answer], { changePassed: true });

@@ -323,7 +323,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         if (!gate.passed) {
           const missing = (gate.results ?? []).filter((r) => !r.ok).map((r) => r.label).join("; ");
           feedback.textContent = missing
-            ? `Your lab does not show this change yet: ${missing}. Make the change, then wait for your lab to report or run Build-Environment.ps1 -SyncOnly. This does not use an attempt.`
+            ? `Your lab does not show this change yet: ${missing}. Make the change, then wait about 1 minute for the lab to report. This does not use an attempt.`
             : "Your lab does not show this change yet. Make it, then wait for the lab to report. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
           return;

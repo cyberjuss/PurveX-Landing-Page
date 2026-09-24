@@ -111,7 +111,7 @@ drop table if exists public.academy_lab_jobs;
 
 -- Live lab verification and faster sync. A student starts a challenge, plants the
 -- code in their lab, and the next snapshot proves the lab is live. While a
--- challenge or a lab check is open, the lab script syncs every few minutes.
+-- challenge or a lab check is open, the lab script syncs about every minute.
 alter table public.academy_lab_state add column if not exists live_until timestamptz;
 alter table public.academy_lab_state add column if not exists challenge_code text;
 alter table public.academy_lab_state add column if not exists challenge_at timestamptz;

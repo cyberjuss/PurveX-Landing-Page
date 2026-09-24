@@ -21,13 +21,10 @@
     Adds the optional ticket-queue challenge objects.
 
 .PARAMETER SyncOnly
-    Read the current lab and send a snapshot to PurveX Coach. Does not create
-    or change any objects. Use this after you work tickets so Coach can see
-    what you actually did.
+    Used by the scheduled task. Students do not run this.
 
 .PARAMETER InstallSync
-    Install a scheduled task that sends a snapshot every 15 minutes, and
-    every few minutes while you have a lab check open on the Drills page.
+    Install a scheduled task that sends a snapshot about every minute.
     The Academy download does this automatically after a successful build.
 
 .PARAMETER UninstallSync
@@ -35,9 +32,6 @@
 
 .EXAMPLE
     ./Build-Environment.ps1 -WhatIf
-
-.EXAMPLE
-    ./Build-Environment.ps1 -SyncOnly
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
@@ -183,7 +177,7 @@ function Ensure-CTFChallengeData {
 
     Write-Host "`n== Optional CTF ticket queue data ==" -ForegroundColor Cyan
 
-    $serviceAccountsOU = Ensure-OU -Name "ServiceAccounts" -ParentDN $DomainDN -Description "Service accounts, kept separate from real user accounts."
+    $serviceAccountsOU = Ensure-OU -Name "ServiceAccounts" -ParentDN $DomainDN -Description "Service accounts, kept separate from real user accounts. CTF-TICKET-1044: Approved nightly backup window 01:00-03:00."
     Ensure-Group -Name "All Employees" -OUPath $AccessLevelsOU -Scope "Universal" -Description "Firm-wide distribution group for company-wide announcements."
 
     foreach ($sam in @("alex.rivera", "priya.nair", "devon.brooks", "morgan.lee", "sam.whitfield", "taylor.osei", "riley.kwan", "jordan.ellis")) {
@@ -208,10 +202,16 @@ function Ensure-CTFChallengeData {
         -OUPath $serviceAccountsOU `
         -Groups @("IT Users")
     if ($PSCmdlet.ShouldProcess("svc-backup-job", "Apply service-account flags")) {
-        Set-ADUser -Identity "svc-backup-job" `
-            -Description "Window not set" `
-            -PasswordNeverExpires $true `
-            -ChangePasswordAtLogon $false
+        $svc = Get-ADUser -Identity "svc-backup-job" -Properties Description
+        $svcArgs = @{
+            Identity              = "svc-backup-job"
+            PasswordNeverExpires  = $true
+            ChangePasswordAtLogon = $false
+        }
+        if (-not $svc.Description -or $svc.Description -eq "Window not set") {
+            $svcArgs.Description = "Window not set"
+        }
+        Set-ADUser @svcArgs
         Write-Host "    ~ svc-backup-job service-account flags applied" -ForegroundColor Green
     }
 
@@ -414,8 +414,7 @@ function Get-PurvexStampPath {
     return (Join-Path $dir "last-sync.txt")
 }
 
-# The task wakes every minute. It sends a snapshot when 15 minutes have passed,
-# or when Academy says a lab check is open (live). Otherwise it does nothing.
+# The task wakes every minute and sends a snapshot unless one just went out.
 function Test-PurvexSyncDue {
     param([string]$Key, [string]$Url)
     $minutes = 999
@@ -424,14 +423,7 @@ function Test-PurvexSyncDue {
         $minutes = ((Get-Date).ToUniversalTime() - $last.ToUniversalTime()).TotalMinutes
     }
     catch { }
-    if ($minutes -ge 14) { return $true }
-    if ($minutes -lt 0.75) { return $false }
-    try {
-        [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-        $r = Invoke-RestMethod -Method Get -Uri ($Url.TrimEnd("/") + "/api/academy/lab-state") -TimeoutSec 10 -Headers @{ Authorization = "Bearer $Key" }
-        return [bool]$r.live
-    }
-    catch { return $false }
+    return $minutes -ge 1
 }
 
 $PurvexSyncTask = "PurveX Coach Lab Sync"
@@ -462,8 +454,8 @@ function Install-PurvexLabSync {
     $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
     Unregister-ScheduledTask -TaskName $PurvexSyncTask -Confirm:$false -ErrorAction SilentlyContinue
-    Register-ScheduledTask -TaskName $PurvexSyncTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "Sends a read-only Active Directory snapshot to PurveX Coach every 15 minutes, and every minute while a lab task, CTF or check is open. No passwords." | Out-Null
-    Write-Host "Coach will refresh from this DC every 15 minutes, and every minute while a lab task, CTF or check is open." -ForegroundColor Green
+    Register-ScheduledTask -TaskName $PurvexSyncTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "Sends a read-only Active Directory snapshot to PurveX Coach about every minute. No passwords." | Out-Null
+    Write-Host "Coach will refresh from this DC about every minute." -ForegroundColor Green
     return $true
 }
 
@@ -492,7 +484,7 @@ if ($InstallSync) {
 
 if ($SyncOnly) {
     if (-not $PurvexKey -or -not $PurvexUrl) {
-        Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build This Lab, then run: ./Build-Environment.ps1 -SyncOnly" -ForegroundColor Yellow
+        Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build This Lab and run it once." -ForegroundColor Yellow
         return
     }
     if ($Scheduled -and -not (Test-PurvexSyncDue -Key $PurvexKey -Url $PurvexUrl)) { return }
@@ -581,7 +573,6 @@ if ($PurvexKey -and $PurvexUrl -and -not $WhatIfPreference) {
     try { Send-PurvexLabSnapshot -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN } catch { }
     try { Install-PurvexLabSync | Out-Null } catch {
         Write-Host "Could not start automatic Coach sync: $($_.Exception.Message)" -ForegroundColor Yellow
-        Write-Host "You can still refresh by hand: ./Build-Environment.ps1 -SyncOnly" -ForegroundColor DarkGray
     }
 }
 

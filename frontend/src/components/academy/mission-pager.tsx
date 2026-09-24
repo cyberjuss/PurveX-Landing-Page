@@ -164,11 +164,6 @@ export function MissionPager({
         )}
       {paging && (
         <nav className="ad-pager" aria-label="Continue">
-          {!onBrief && !solved[at] && (
-            <p className="ad-pager__flag">
-              {flagged[at] ? "Flagged for Coach until you solve it." : "You can move on. This stays flagged until you solve it."}
-            </p>
-          )}
           {onBrief ? (
             prevSection ? (
               <button type="button" className="ad-pager__btn" onClick={prevSection.go}>

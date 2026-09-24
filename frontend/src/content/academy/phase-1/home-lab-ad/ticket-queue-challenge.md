@@ -117,28 +117,28 @@
 <div class="ad-mission" data-id="tq-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 04 · INC-1044 · Medium</span>
 <h4>The Backup Account</h4>
-<p><strong>Compliance Audit · Auditor request · 1:05 PM</strong><br>The approved run window for <code>svc-backup-job</code> is 01:00-03:00. Write that window on the account Description so we have it on the record.</p>
-<p><strong>Question:</strong> Write the window on Description. Then look at the folders above the account. Which OU does <code>svc-backup-job</code> live in?</p>
+<p><strong>Compliance Audit · Auditor request · 1:05 PM</strong><br><code>svc-backup-job</code> has no usable run window on Description. Auditors want the approved hours written on the account. Those hours are not on this ticket. They are already recorded on the folder that holds the account.</p>
+<p><strong>Question:</strong> Find the approved window, write it on Description, then type the window you wrote. Use the format 00:00-00:00.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{serviceaccounts}" data-accept="service-accounts">Submit</button>
+<input type="text" class="ad-guess__input" placeholder="00:00-00:00" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{01:00-03:00}" data-accept="1:00-3:00">Submit</button>
 <button type="button" class="ad-hint__btn">Get a hint</button>
 </div>
-<p class="ad-hint__text">The hours belong on the account. The answer is not the hours. After you write Description, read the path above the object. Service accounts are kept out of the staff folders on purpose.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>svc-backup-job</code>, open General, write the window from the ticket, Apply. Then look at the OU list above the account in the tree.<br><br>PowerShell is optional last.</p>
+<p class="ad-hint__text">The account Description currently says the window is not set. Open the account, then open the folder above it. That folder Description has the approved hours. Copy them onto the account, Apply, then type the same window here.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>svc-backup-job</code>. Note the folder path above the account. Open that OU → Properties and read Description. Open the account → General, write that window, Apply.<br><br>PowerShell is optional last.</p>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
 <span>Answer</span>
-        <p class="ad-flag__code"><code>GTF{serviceaccounts}</code></p>
+        <p class="ad-flag__code"><code>GTF{01:00-03:00}</code></p>
 </div>
 <div>
 <span>Problem</span>
-<p>The account had no usable window on it. An auditor cannot use a ticket you never wrote into the directory.</p>
+<p>The account had no usable window on it. An auditor cannot use hours that only live on a folder.</p>
 </div>
 <div>
 <span>Solution</span>
-<p>Write <code>01:00-03:00</code> on the Description and confirm it is there. Later, a sign-in at noon is a problem because you have this range to compare against.</p>
+<p>Read the approved window on the ServiceAccounts folder. Write it on the account Description and confirm it is there. Later, a sign-in at noon is a problem because you have this range to compare against.</p>
 </div>
 </div>
 </div>

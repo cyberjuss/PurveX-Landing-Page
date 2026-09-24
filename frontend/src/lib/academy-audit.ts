@@ -50,7 +50,7 @@ const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, "");
 const ADMIN_GROUPS = ["IT Admins", "Server Admins", "Domain Admins"];
 const ADUC = "Open Active Directory Users and Computers (Win+R, dsa.msc).";
 const GPMC = "Open Group Policy Management (Win+R, gpmc.msc)";
-const SYNC_STEP = "Wait for the lab to report (about 15 minutes) or run Build-Environment.ps1 -SyncOnly on the domain controller, then press Check my lab.";
+const SYNC_STEP = "Wait for the lab to report (about 1 minute), then press Check my lab.";
 const secStep = (t: string) => `${t} Then run gpupdate /force on the domain controller.`;
 const isService = (u: LabUser) => /^svc[-_.]/i.test(u.sam) || /^OU=ServiceAccounts/i.test(u.container);
 const usable = (u: LabUser) => !MISSION_OBJECTS.has(u.sam.toLowerCase());

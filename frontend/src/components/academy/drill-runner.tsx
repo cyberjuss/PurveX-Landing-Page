@@ -115,7 +115,7 @@ function TaskPanel({ task, checkRes }: { task: TaskInfo; checkRes: CheckRes | nu
         </p>
       )}
       <p className="dr-task__sync">
-        Your lab reports about every 15 minutes. To check right away, run <code>.\Build-Environment.ps1 -SyncOnly</code> on the domain controller.
+        Your lab reports about every minute. Make the change, wait for it to report, then check.
       </p>
       {checkRes && (
         <div className="dr-checks">
@@ -308,7 +308,7 @@ function VerifyLab({ verified, onVerified }: { verified: boolean; onVerified: ()
           setNote("Verified. You can remove the code from the description now.");
           onVerified();
         } else {
-          setNote(data.fresh ? "Your lab reported, but the code is not in it yet. Check the description and try again." : "Waiting for your lab to report. It syncs every few minutes now.");
+          setNote(data.fresh ? "Your lab reported, but the code is not in it yet. Check the description and try again." : "Waiting for your lab to report. It syncs about every minute now.");
         }
       }
     } catch (err) {
@@ -336,7 +336,7 @@ function VerifyLab({ verified, onVerified }: { verified: boolean; onVerified: ()
             <strong>Your code: {open.code}</strong>
             <p>Set the description of {open.target} to this code. In PowerShell on your domain controller:</p>
             <code style={{ display: "block", padding: "10px 12px", border: "1px solid var(--rd-line)", borderRadius: 8, fontSize: "var(--ty-small)", overflowX: "auto", maxWidth: "100%" }}>{open.command}</code>
-            <p>Your lab now syncs every few minutes. When it has reported, check it. The code lasts 4 hours.</p>
+            <p>Your lab now syncs about every minute. When it has reported, check it. The code lasts 4 hours.</p>
             <button type="button" className="dr-outline" disabled={busy} onClick={() => void run("check")}>
               {busy ? "Checking…" : "Check my lab"} <ArrowRight className="h-4 w-4" />
             </button>
