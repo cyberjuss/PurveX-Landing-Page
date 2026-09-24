@@ -2,17 +2,25 @@
 
 import { useCallback, useState } from "react";
 import Link from "next/link";
-import { Archive, ArrowRight, Search, Timer } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { joinWaitlist } from "@/lib/waitlist";
 import { SiteChrome } from "./chrome";
 import { CaseFloor, DETECTION_ALERTS, DETECTION_CASES } from "./case-floor";
 import { HoldCard } from "./hold-card";
+import { IconChain, IconLog, IconValidate } from "./brand-icons";
+import { ChainDiagram, CoverageMatrix, COVERAGE_PERCENT, HealthTrend, LAB_CSS } from "./lab-visuals";
 import { PG_CSS } from "./page-skin";
 
-const points = [
-  { n: "01", title: "Run the test", body: "The behaviors you care about, run on a schedule you set.", Icon: Timer },
-  { n: "02", title: "See the miss", body: "Whether it fired or not, and where the chain broke between telemetry and alert.", Icon: Search },
-  { n: "03", title: "Keep the evidence", body: "Coverage you can show to a stakeholder, not coverage you assume from a rule that has never been tested.", Icon: Archive },
+const facts = [
+  { title: "Runs Atomic Red Team tests", body: "Real adversary behavior, run against your own environment.", Icon: IconValidate },
+  { title: "Queries your SIEM", body: "Works with Splunk, Elastic, and Microsoft Sentinel.", Icon: IconLog },
+  { title: "Names the stage that failed", body: "Telemetry, parser, rule, or alert, with the evidence attached.", Icon: IconChain },
+];
+
+const runs = [
+  { id: "T1059.001", name: "PowerShell execution", state: "Fired" },
+  { id: "T1003.001", name: "LSASS memory access", state: "Missed" },
+  { id: "T1053.005", name: "Scheduled task creation", state: "Fired" },
 ];
 
 const tiers = [
@@ -102,22 +110,70 @@ export default function PlatformPage() {
         <CaseFloor cases={DETECTION_CASES} alerts={DETECTION_ALERTS} label="Scheduled runs" />
       </section>
 
-      <section className="pg-section">
+      <section className="pg-section" id="how">
         <div className="pg-head" data-r>
-          <span className="sp-tag">Labs</span>
-          <h2>What it does</h2>
-          <p>A scheduled test run names the miss, and you keep the evidence so coverage is something you can show.</p>
+          <span className="sp-tag">How it works</span>
+          <h2>Most misses happen after the rule is written</h2>
+          <p>PurveX runs a real attack behavior and follows the alert through every stage, so the report shows exactly where the chain broke.</p>
         </div>
-        <ol className="pg-grid pg-grid--3 pg-grid--icons" data-r>
-          {points.map((p) => (
-            <li key={p.n}>
-              <span>{p.n}</span>
-              <i className="pg-ico"><p.Icon size={21} /></i>
-              <strong>{p.title}</strong>
-              <p>{p.body}</p>
+        <ChainDiagram />
+        <ul className="lb-facts" data-r>
+          {facts.map((f) => (
+            <li key={f.title}>
+              <i className="pg-ico"><f.Icon size={22} /></i>
+              <strong>{f.title}</strong>
+              <p>{f.body}</p>
             </li>
           ))}
-        </ol>
+        </ul>
+      </section>
+
+      <section className="pg-section">
+        <div className="pg-dark" data-r>
+          <div className="lb-band">
+            <div>
+              <span className="pg-dark__kicker">Coverage</span>
+              <h2>Coverage you can show, mapped to MITRE ATT&amp;CK</h2>
+              <ul className="lb-legend">
+                <li><i data-s="fired" /> Fired</li>
+                <li><i data-s="missed" /> Missed</li>
+                <li><i data-s="untested" /> Not yet tested</li>
+              </ul>
+            </div>
+            <div className="lb-big">
+              <strong>{COVERAGE_PERCENT}%</strong>
+              <span>of tested techniques fired<br />Example matrix</span>
+            </div>
+          </div>
+          <CoverageMatrix />
+        </div>
+      </section>
+
+      <section className="pg-section">
+        <div className="lb-evidence">
+          <div>
+            <HealthTrend />
+            <ul className="lb-runs" data-r>
+              {runs.map((r) => (
+                <li key={r.id}>
+                  <code>{r.id}</code>
+                  <span>{r.name}</span>
+                  <em data-s={r.state.toLowerCase()}>{r.state}</em>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="pg-head lb-evidence__copy" data-r>
+            <span className="sp-tag">Evidence</span>
+            <h2>A score that moves with every run</h2>
+            <p>Each run is scored and kept, so improvement is something you can show to a stakeholder.</p>
+            <ul className="pg-bullets">
+              <li>Scores update after every run</li>
+              <li>Reports carry the evidence for each technique</li>
+              <li>AI-assisted analysis explains failed tests</li>
+            </ul>
+          </div>
+        </div>
       </section>
 
       <section className="pg-section" id="pricing">
@@ -180,6 +236,7 @@ export default function PlatformPage() {
       </section>
 
       <style>{PG_CSS}</style>
+      <style>{LAB_CSS}</style>
     </SiteChrome>
   );
 }

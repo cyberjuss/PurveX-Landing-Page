@@ -1,16 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Lightbulb, Rocket, Users } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { IconIdentity, IconSchedule, IconShield } from "./brand-icons";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { CaseFloor, type FloorAlert, type FloorCase } from "./case-floor";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
 
 const notes = [
-  { n: "01", title: "How we think", body: "You defend better when you know how the other side moves.", Icon: Lightbulb },
-  { n: "02", title: "The work", body: "The person on your operations is the same person teaching the desk.", Icon: Users },
-  { n: "03", title: "What is next", body: "Labs is the product that keeps the evidence. Still in development.", Icon: Rocket },
+  { n: "01", title: "How we think", body: "You defend better when you know how the other side moves.", Icon: IconShield },
+  { n: "02", title: "The work", body: "The person on your operations is the same person teaching the desk.", Icon: IconIdentity },
+  { n: "03", title: "What is next", body: "Labs is the product that keeps the evidence. Still in development.", Icon: IconSchedule },
 ];
 
 const ABOUT_CASES: FloorCase[] = [

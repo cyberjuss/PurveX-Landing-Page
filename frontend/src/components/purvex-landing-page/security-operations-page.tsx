@@ -1,23 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Braces, ClipboardList, Search, ShieldCheck, SlidersHorizontal, Wrench } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { IconCoverage, IconLog, IconShield, IconSignal, IconTune, IconValidate } from "./brand-icons";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { CaseFloor, DETECTION_ALERTS, DETECTION_CASES } from "./case-floor";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
 
 const services = [
-  { n: "01", title: "Detection engineering", body: "Rules built around your environment, not a vendor template.", Icon: Braces },
-  { n: "02", title: "Optimization", body: "Noisy rules get cut. Real alerts stop getting buried.", Icon: SlidersHorizontal },
-  { n: "03", title: "Assessment", body: "What the SIEM sees, and what it misses.", Icon: Search },
-  { n: "04", title: "Validation", body: "A clear answer on whether it fires or does not.", Icon: ShieldCheck },
+  { n: "01", title: "Detection engineering", body: "Rules built around your environment, not a vendor template.", Icon: IconSignal },
+  { n: "02", title: "Optimization", body: "Noisy rules get cut. Real alerts stop getting buried.", Icon: IconTune },
+  { n: "03", title: "Assessment", body: "What the SIEM sees, and what it misses.", Icon: IconCoverage },
+  { n: "04", title: "Validation", body: "A clear answer on whether it fires or does not.", Icon: IconValidate },
 ];
 
 const steps = [
-  { n: "01", title: "Assess", body: "Coverage, tools, and the gaps.", Icon: ClipboardList },
-  { n: "02", title: "Improve", body: "Tune and write what matters first.", Icon: Wrench },
-  { n: "03", title: "Validate", body: "Test it, and keep the evidence.", Icon: BadgeCheck },
+  { n: "01", title: "Assess", body: "Coverage, tools, and the gaps.", Icon: IconLog },
+  { n: "02", title: "Improve", body: "Tune and write what matters first.", Icon: IconSignal },
+  { n: "03", title: "Validate", body: "Test it, and keep the evidence.", Icon: IconShield },
 ];
 
 export default function SecurityOperationsPage() {
