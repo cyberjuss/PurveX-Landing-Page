@@ -171,7 +171,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section">
         <div className="pg-head" data-r>
           <span className="sp-tag">How it works</span>
-          <h2>Learn it, work it, and prove it</h2>
+          <h2>From lesson to lab to proof</h2>
         </div>
         <ol className="pg-grid pg-grid--3 pg-grid--icons" data-r>
           {steps.map((s) => (
@@ -224,7 +224,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section">
         <div className="pg-head" data-r>
           <span className="sp-tag">Beyond the help desk</span>
-          <h2>One lab, four roles</h2>
+          <h2>One lab with four roles</h2>
           <p>The lab starts at the help desk and supports three more career paths from the same directory.</p>
         </div>
         <ol className="pg-rows" data-r>

@@ -163,7 +163,7 @@ export default function PlatformPage() {
           <div className="lb-band">
             <div>
               <span className="pg-dark__kicker">Coverage</span>
-              <h2>Coverage you can show, mapped to MITRE ATT&amp;CK</h2>
+              <h2>Coverage you can show across MITRE ATT&amp;CK</h2>
               <ul className="lb-legend">
                 <li><i data-s="fired" /> Fired</li>
                 <li><i data-s="missed" /> Missed</li>
@@ -217,7 +217,7 @@ export default function PlatformPage() {
       <section className="pg-section">
         <div className="pg-head" data-r>
           <span className="sp-tag">Who it is for</span>
-          <h2>Three ways in, one system</h2>
+          <h2>Three ways in to one system</h2>
           <p>Each role looks at a different part of the same detection chain.</p>
         </div>
         <Pathways />

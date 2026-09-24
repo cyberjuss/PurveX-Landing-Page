@@ -72,7 +72,7 @@ export default function SecurityOperationsPage() {
           <div className="lb-band">
             <div>
               <span className="pg-dark__kicker">Assessment</span>
-              <h2>See what your SIEM covers, mapped to ATT&amp;CK</h2>
+              <h2>See what your SIEM covers across ATT&amp;CK</h2>
               <ul className="lb-legend">
                 <li><i data-s="fired" /> Fired</li>
                 <li><i data-s="missed" /> Missed</li>
