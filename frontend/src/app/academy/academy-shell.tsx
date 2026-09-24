@@ -222,10 +222,28 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
     // Lesson content is re-rendered when you switch tabs, so a mission comes
     // back blank. Put back what was stored for it.
-    const parkFeedback = (wrap: HTMLElement) => {
+    const placeMiss = (wrap: HTMLElement, dropped: boolean) => {
       const feedback = wrap.querySelector<HTMLElement>(".ad-guess__feedback");
       const reveal = wrap.querySelector<HTMLElement>(".ad-flag");
-      if (feedback && reveal && feedback.nextElementSibling !== reveal) reveal.before(feedback);
+      if (feedback && reveal && dropped && feedback.parentElement !== reveal) reveal.prepend(feedback);
+      if (feedback) {
+        feedback.style.setProperty("display", "block", "important");
+        feedback.style.setProperty("font-size", "0.68rem", "important");
+        feedback.style.setProperty("font-weight", "600", "important");
+        feedback.style.setProperty("line-height", "1.4", "important");
+        feedback.style.setProperty("margin", dropped ? "0 0 0.45rem" : "1.25rem 0 0", "important");
+      }
+      if (reveal) {
+        reveal.classList.toggle("ad-flag--dropped", dropped);
+        if (dropped) reveal.style.setProperty("margin-top", "22rem", "important");
+        else reveal.style.removeProperty("margin-top");
+      }
+    };
+
+    const parkFeedback = (wrap: HTMLElement) => {
+      const id = wrap.getAttribute("data-id");
+      const r = id ? loadResults()[id] : undefined;
+      placeMiss(wrap, Boolean(r && !r.solved && r.wrong >= 3));
     };
 
     const restoreMission = (wrap: HTMLElement) => {
@@ -302,6 +320,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       if (!guess) {
         feedback.textContent = "Enter an answer first. Blank submissions do not use an attempt.";
         feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+        placeMiss(wrap, false);
         input.focus();
         return;
       }
@@ -316,16 +335,19 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         if (!gate) {
           feedback.textContent = "Could not check your lab. Try submit again. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          placeMiss(wrap, false);
           return;
         }
         if (gate.noLab) {
           feedback.textContent = "No lab is connected. Connect it from Build This Lab, then make the change. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          placeMiss(wrap, false);
           return;
         }
         if (gate.noTicketObjects) {
           feedback.textContent = "This lab was built without -IncludeCTF. Remove it and build again with -IncludeCTF. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          placeMiss(wrap, false);
           return;
         }
         if (!gate.passed) {
@@ -334,6 +356,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
             ? `Your lab does not show this change yet: ${missing}. Make the change, then wait about 1 minute for the lab to report. This does not use an attempt.`
             : "Your lab does not show this change yet. Make it, then wait for the lab to report. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          placeMiss(wrap, false);
           return;
         }
         wrap.classList.add("ad-mission--labok");
@@ -344,6 +367,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         feedback.textContent = "Correct — nice work.";
         feedback.className = "ad-guess__feedback ad-guess__feedback--ok";
         reveal.classList.add("ad-flag--shown");
+        placeMiss(wrap, false);
         input.disabled = true;
         btn.disabled = true;
         wrap.classList.add("ad-mission--solved");
@@ -360,10 +384,12 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       if (attempts >= 3) {
         feedback.textContent = "Not quite, three tries used. Here's the flag.";
         reveal.classList.add("ad-flag--shown");
+        placeMiss(wrap, true);
       } else {
         const left = 3 - attempts;
         const hintNote = attempts === 2 ? " Your hint is now unlocked." : "";
         feedback.textContent = `Not quite. ${left} attempt${left === 1 ? "" : "s"} left before the flag unlocks.${hintNote}`;
+        placeMiss(wrap, false);
       }
     };
 

@@ -3518,15 +3518,22 @@ p.ad-cmd { position: relative; }
 .academy-prose .ad-guess__submit:hover,
 .academy-prose .ad-guess .ad-hint__btn:hover { background: none; opacity: 0.75; }
 .academy-prose .ad-guess__submit:disabled { background: none; color: var(--rd-ink-3, #8a94a8); cursor: default; }
-.academy-prose .ad-mission > p.ad-guess__feedback {
-  display: block;
-  width: 100%;
-  margin: 22rem 0 0.35rem;
-  font-size: 0.68rem;
-  font-weight: 600;
-  line-height: 1.4;
+.academy-prose .ad-guess__feedback,
+.academy-prose p.ad-guess__feedback,
+.academy-prose .ad-flag > .ad-guess__feedback {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 1.25rem 0 0 !important;
+  font-size: 0.68rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
 }
-.academy-prose .ad-mission > p.ad-guess__feedback:empty { display: none; margin: 0; }
+.academy-prose .ad-flag > .ad-guess__feedback {
+  margin: 0 0 0.45rem !important;
+}
+.academy-prose .ad-guess__feedback:empty,
+.academy-prose p.ad-guess__feedback:empty { display: none !important; margin: 0 !important; }
 .academy-prose .ad-guess__feedback--ok { color: #16a34a; }
 .academy-prose .ad-guess__feedback--err { color: #e5484d; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--ok { color: #6ee7b7; }
@@ -3543,6 +3550,7 @@ p.ad-cmd { position: relative; }
 }
 .academy-prose .ad-guess__feedback + .ad-flag,
 .academy-prose .ad-guess__feedback + .ad-flag--shown { margin-top: 0.35rem; }
+.academy-prose .ad-flag.ad-flag--dropped { margin-top: 22rem !important; }
 .academy-prose .ad-flag--shown { display: block; animation: ax-enter var(--ax-dur, 280ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)) both; }
 .academy-prose .ad-flag__label {
   display: block; margin-bottom: 0.6rem; font-family: var(--font-mono, ui-monospace, monospace);
