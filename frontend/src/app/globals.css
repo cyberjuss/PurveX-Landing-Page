@@ -2790,6 +2790,19 @@ body:has(.lp) {
   --ax-ease: cubic-bezier(.16, 1, .3, 1);
   --ax-dur: 280ms;
 }
+.academy-bg a,
+.academy-bg button:not(:disabled),
+.academy-bg [role="button"]:not(:disabled),
+.academy-bg [role="tab"],
+.academy-bg summary,
+.academy-bg label[for] {
+  cursor: pointer;
+}
+.academy-bg button:disabled,
+.academy-bg [role="button"]:disabled,
+.academy-bg [aria-disabled="true"] {
+  cursor: default;
+}
 .academy-bg::before {
   content: "";
   position: fixed;
