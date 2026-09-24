@@ -192,7 +192,7 @@ export default function SecurityOperationsPage() {
 .sp-console__row:hover { background: var(--surface-alt) }
 .sp-console__row + .sp-console__row { border-top: 1px solid var(--border) }
 .sp-console__idx { font-family: var(--font-mono); font-size: .8rem; font-weight: 600; color: var(--accent-deep); flex-shrink: 0; padding-top: 9px; width: 20px }
-.sp-console__icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.2); color: var(--accent-deep); display: flex; align-items: center; justify-content: center }
+.sp-console__icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: var(--radius); background: transparent; border: 1px solid var(--border-strong); color: var(--accent-deep); display: flex; align-items: center; justify-content: center }
 .sp-console__row h3 { margin: 0; font-family: var(--font-display); font-size: 1.02rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
 .sp-console__row p { margin: 6px 0 0; font-size: .88rem; color: var(--muted); line-height: 1.6; max-width: 560px }
 

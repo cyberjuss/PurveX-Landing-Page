@@ -153,6 +153,7 @@ export default function HomePage() {
           </div>
         </div>
 
+        <span className="sp-hero__badge">Detection engineering · Analyst training</span>
         <h1 className="sp-hero__h1">Prove it works</h1>
         <p className="sp-hero__sub">
           We tune your detections. We train your analysts. Then we test both against a
@@ -195,7 +196,7 @@ export default function HomePage() {
           {offers.map((o) => (
             <article className="sp-offer" key={o.key}>
               <div className="sp-offer__panel">
-                <o.icon size={30} />
+                <o.icon size={20} />
               </div>
               <div className="sp-offer__body">
                 <span className="sp-tag">{o.tag}</span>
@@ -209,11 +210,11 @@ export default function HomePage() {
                   ))}
                 </ul>
                 {o.external ? (
-                  <a href={o.href} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--sm">
+                  <a href={o.href} target="_blank" rel="noreferrer" className="sp-btn sp-btn--ghost sp-btn--sm">
                     {o.cta} <ArrowRight size={15} />
                   </a>
                 ) : (
-                  <Link href={o.href} className="sp-btn sp-btn--prim sp-btn--sm">
+                  <Link href={o.href} className="sp-btn sp-btn--ghost sp-btn--sm">
                     {o.cta} <ArrowRight size={15} />
                   </Link>
                 )}
@@ -296,16 +297,16 @@ export default function HomePage() {
   .sp-hero__deco--left { left: -264px; top: 76px; animation-name: sp-deco-in-left; animation-delay: .35s }
   .sp-hero__deco--right { right: -264px; top: 204px; animation-name: sp-deco-in-right; animation-delay: .55s }
 }
-@keyframes sp-deco-in-left { from { opacity: 0; transform: translateY(16px) rotate(-2deg) scale(.94) } to { opacity: 1; transform: translateY(0) rotate(-7deg) scale(1) } }
-@keyframes sp-deco-in-right { from { opacity: 0; transform: translateY(16px) rotate(2deg) scale(.94) } to { opacity: 1; transform: translateY(0) rotate(6deg) scale(1) } }
+@keyframes sp-deco-in-left { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+@keyframes sp-deco-in-right { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
 .sp-deco-float { animation: sp-deco-float 6.5s ease-in-out infinite }
 .sp-deco-float--alt { animation-duration: 7.5s; animation-delay: -3s }
 @keyframes sp-deco-float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-10px) } }
 
 .sp-deco-card {
-  width: 218px; border-radius: 14px; padding: 14px 15px;
-  background: var(--surface); border: 1px solid var(--border-strong);
-  box-shadow: 0 24px 48px -22px rgba(16,25,46,.28);
+  width: 218px; border-radius: 0; padding: 16px;
+  background: var(--surface); border: 1px solid var(--border); border-top: 2px solid var(--accent-deep);
+  box-shadow: 0 24px 48px -28px rgba(16,25,46,.22);
 }
 .sp-deco-card__pulse { position: relative; width: 7px; height: 7px; border-radius: 50%; background: var(--green) }
 .sp-deco-card__pulse::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1.5px solid var(--green); opacity: .55; animation: sp-pulse-ring 2s ease-out infinite }
@@ -314,47 +315,45 @@ export default function HomePage() {
 /* Left card: ATT&CK coverage gauge */
 .sp-deco-card--ring { width: 264px; display: flex; align-items: center; gap: 14px }
 .sp-deco-card__ringwrap { position: relative; flex-shrink: 0; width: 72px; height: 72px }
-.sp-deco-card__ringpct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; letter-spacing: -.01em; color: var(--ink) }
-.sp-deco-card__ringlabel { margin: 0; text-align: left; font-size: .76rem; line-height: 1.42; color: var(--muted) }
+.sp-deco-card__ringpct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; letter-spacing: -.03em; color: var(--ink) }
+.sp-deco-card__ringlabel { margin: 0; text-align: left; font-family: var(--font-mono); font-size: .62rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; line-height: 1.6; color: var(--muted-dim) }
 
 /* Right card: live alert queue */
 .sp-deco-card--queue { width: 240px }
-.sp-deco-card__queuehead { display: flex; align-items: center; gap: 7px; margin: 0 0 11px; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted) }
+.sp-deco-card__queuehead { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font-family: var(--font-mono); font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .16em; color: var(--muted-dim) }
 .sp-deco-card__queuerow { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid var(--border) }
 .sp-deco-card__queuerow:first-of-type { border-top: none; padding-top: 0 }
 .sp-deco-card__queuerow--in { animation: sp-queue-row-in .45s var(--ease) both }
 @keyframes sp-queue-row-in { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: none } }
-.sp-deco-card__sev { flex-shrink: 0; font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; padding: 3px 7px; border-radius: 999px }
-.sp-deco-card__sev--crit { background: rgba(229,72,77,.12); color: var(--red) }
-.sp-deco-card__sev--med { background: rgba(244,183,64,.18); color: #a15b06 }
-.sp-deco-card__sev--low { background: rgba(106,92,255,.12); color: var(--accent-deep) }
+.sp-deco-card__sev { flex-shrink: 0; font-family: var(--font-mono); font-size: .58rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; padding: 2px 6px; border-radius: 0; border: 1px solid currentColor }
+.sp-deco-card__sev--crit { color: var(--red) }
+.sp-deco-card__sev--med { color: #c4820e }
+.sp-deco-card__sev--low { color: var(--accent-deep) }
 @media (prefers-reduced-motion: reduce) {
   .sp-deco-card__queuerow--in { animation: none }
 }
 .sp-deco-card__queuetext { font-size: .74rem; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 @media (prefers-reduced-motion: reduce) {
   .sp-hero__deco { animation: none; opacity: 1; transform: none }
-  .sp-hero__deco--left { transform: rotate(-7deg) }
-  .sp-hero__deco--right { transform: rotate(6deg) }
   .sp-deco-float { animation: none }
   .sp-deco-card__pulse::after { animation: none; display: none }
 }
 
 /* ── Problems strip ── */
-.sp-problems { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px }
-.sp-problem { padding: 52px 32px; position: relative; transition: background .35s var(--ease) }
+.sp-problems { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--border); text-align: left }
+.sp-problem { padding: 40px 32px 44px; position: relative; transition: background .35s var(--ease) }
 .sp-problem:hover { background: var(--surface-alt) }
-.sp-problem { border: 1px solid var(--border); border-radius: 18px; background: var(--surface) }
-.sp-problem__icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); color: var(--accent-deep); transition: transform .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease), color .35s var(--ease) }
-.sp-problem:hover .sp-problem__icon { transform: scale(1.08) rotate(-4deg); background: var(--accent-deep); border-color: var(--accent-deep); color: #fff }
-.sp-problem h3 { margin: 26px 0 0; font-family: var(--font-display); font-size: 1.04rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
+.sp-problem:not(:first-child) { border-left: 1px solid var(--border) }
+.sp-problem__icon { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--radius); border: 1px solid var(--border-strong); color: var(--accent-deep); transition: background .35s var(--ease), border-color .35s var(--ease), color .35s var(--ease) }
+.sp-problem:hover .sp-problem__icon { background: var(--accent-deep); border-color: var(--accent-deep); color: #fff }
+.sp-problem h3 { margin: 24px 0 0; font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; letter-spacing: -.025em; color: var(--ink) }
 .sp-problem p { margin: 14px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.65; text-wrap: pretty }
 @media (prefers-reduced-motion: reduce) {
   .sp-problem, .sp-problem__icon { transition: none }
 }
-.sp-problems[data-r] { opacity: 1; transform: none; filter: none; transition: none }
-.sp-problems[data-r] > * { opacity: 0; transform: translateY(20px); filter: blur(4px); transition: opacity .6s var(--ease), transform .6s var(--ease), filter .6s var(--ease) }
-.sp-problems[data-r].in > * { opacity: 1; transform: none; filter: blur(0) }
+.sp-problems[data-r] { opacity: 1; transform: none; transition: none }
+.sp-problems[data-r] > * { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease), transform .6s var(--ease) }
+.sp-problems[data-r].in > * { opacity: 1; transform: none }
 .sp-problems[data-r] > *:nth-child(1) { transition-delay: .03s }
 .sp-problems[data-r] > *:nth-child(2) { transition-delay: .1s }
 .sp-problems[data-r] > *:nth-child(3) { transition-delay: .17s }
@@ -367,28 +366,26 @@ export default function HomePage() {
     scroll-padding-inline: 16px; overscroll-behavior-x: contain; scrollbar-width: none;
   }
   .sp-problems::-webkit-scrollbar { display: none }
-  .sp-problem { padding: 28px 22px; scroll-snap-align: start }
+  .sp-problems { border: 0 }
+  .sp-problem { padding: 26px 20px; scroll-snap-align: start; border: 1px solid var(--border) !important; border-top: 2px solid var(--accent-deep) !important; background: var(--surface) }
   .sp-problem h3 { margin-top: 18px }
   .sp-problem p { margin-top: 8px }
-  .sp-offer { padding: 30px 22px }
-  .sp-offer__body { margin-top: 20px }
-  .sp-offer__list { margin: 20px 0 24px }
 }
 
 /* ── Offers (static, replaces the old auto-rotating carousel) ── */
-.sp-offers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px }
-.sp-offer { display: flex; flex-direction: column; padding: 48px 32px; transition: background .35s var(--ease) }
+.sp-offers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--border) }
+.sp-offer { display: flex; flex-direction: column; padding: 40px 32px 44px; transition: background .35s var(--ease) }
 .sp-offer:hover { background: var(--surface-alt) }
-.sp-offer { border: 1px solid var(--border); border-radius: 18px; background: var(--surface) }
+.sp-offer:not(:first-child) { border-left: 1px solid var(--border) }
 .sp-offer__panel {
   display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
-  width: 52px; height: 52px; border-radius: 50%;
-  background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); color: var(--accent-deep);
-  transition: transform .35s var(--ease), background .35s var(--ease), color .35s var(--ease);
+  width: 44px; height: 44px; border-radius: var(--radius);
+  border: 1px solid var(--border-strong); color: var(--accent-deep);
+  transition: background .35s var(--ease), border-color .35s var(--ease), color .35s var(--ease);
 }
-.sp-offer:hover .sp-offer__panel { transform: scale(1.06) rotate(-4deg); background: var(--accent-deep); color: #fff }
-.sp-offer__body { padding: 0; margin-top: 28px; display: flex; flex-direction: column; flex: 1 }
-.sp-offer__body h3 { margin: 12px 0 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: -.015em; color: var(--ink) }
+.sp-offer:hover .sp-offer__panel { background: var(--accent-deep); border-color: var(--accent-deep); color: #fff }
+.sp-offer__body { padding: 0; margin-top: 26px; display: flex; flex-direction: column; flex: 1 }
+.sp-offer__body h3 { margin: 12px 0 0; font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; letter-spacing: -.03em; color: var(--ink) }
 .sp-offer__body p { margin: 14px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.6; text-wrap: pretty }
 @media (prefers-reduced-motion: reduce) {
   .sp-offer, .sp-offer__panel { transition: none }
@@ -397,14 +394,21 @@ export default function HomePage() {
 .sp-offer__list li { display: flex; align-items: center; gap: 7px; font-size: .82rem; color: var(--ink-soft); font-weight: 500 }
 .sp-offer__list li svg { color: var(--accent-deep); flex-shrink: 0 }
 .sp-offer .sp-btn { margin-top: auto }
-.sp-offers[data-r] { opacity: 1; transform: none; filter: none; transition: none }
-.sp-offers[data-r] > * { opacity: 0; transform: translateY(22px); filter: blur(4px); transition: opacity .6s var(--ease), transform .6s var(--ease), filter .6s var(--ease) }
-.sp-offers[data-r].in > * { opacity: 1; transform: none; filter: blur(0) }
+.sp-offers[data-r] { opacity: 1; transform: none; transition: none }
+.sp-offers[data-r] > * { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease), transform .6s var(--ease) }
+.sp-offers[data-r].in > * { opacity: 1; transform: none }
 .sp-offers[data-r] > *:nth-child(1) { transition-delay: .03s }
 .sp-offers[data-r] > *:nth-child(2) { transition-delay: .1s }
 .sp-offers[data-r] > *:nth-child(3) { transition-delay: .17s }
 @media (max-width: 940px) {
   .sp-offers { grid-template-columns: 1fr }
+  .sp-offer:not(:first-child) { border-left: 0; border-top: 1px solid var(--border) }
+}
+@media (max-width: 680px) {
+  .sp-offer { padding: 30px 0 32px }
+  .sp-offer:hover { background: none }
+  .sp-offer__body { margin-top: 20px }
+  .sp-offer__list { margin: 20px 0 24px }
 }
 @media (prefers-reduced-motion: reduce) {
   .sp-problems[data-r] > *, .sp-offers[data-r] > * { opacity: 1; transform: none; filter: none; transition: none }
@@ -416,10 +420,9 @@ export default function HomePage() {
 .sp-feature-quote {
   max-width: 460px; width: 100%;
   display: flex; flex-direction: column; align-items: center; text-align: center;
-  padding: 56px 40px 52px;
-  border: 1px solid var(--border); border-radius: 22px;
+  padding: 52px 40px 48px;
+  border: 1px solid var(--border); border-top: 2px solid var(--accent-deep); border-radius: 0;
   background: var(--surface);
-  box-shadow: 0 28px 56px -32px rgba(16,25,46,.22);
 }
 .sp-feature-quote__person { display: flex; flex-direction: column; align-items: center; gap: 8px }
 .sp-feature-quote__photo { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; box-shadow: 0 10px 24px -10px rgba(16,25,46,.3) }
@@ -432,9 +435,9 @@ export default function HomePage() {
 .sp-feature-quote__linkedin:hover { color: var(--accent-deep) }
 .sp-feature-quote__body { display: flex; flex-direction: column; align-items: center; margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--border) }
 .sp-feature-quote__mark { color: var(--accent); opacity: .3 }
-.sp-feature-quote__text { margin: 10px 0 0; font-size: 1.05rem; font-weight: 400; line-height: 1.6; color: var(--ink) }
+.sp-feature-quote__text { margin: 10px 0 0; font-family: var(--font-display); font-size: 1.2rem; font-weight: 500; line-height: 1.5; letter-spacing: -.02em; color: var(--ink) }
 .sp-feature-quote__tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 18px }
-.sp-tagchip { font-size: .74rem; font-weight: 550; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); border-radius: 999px; padding: 5px 11px }
+.sp-tagchip { font-family: var(--font-mono); font-size: .62rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-deep); border: 1px solid var(--accent-deep); border-radius: 0; padding: 4px 8px }
 @media (max-width: 560px) {
   .sp-feature-quote { padding: 44px 24px }
 }
