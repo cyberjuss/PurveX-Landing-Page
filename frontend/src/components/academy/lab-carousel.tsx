@@ -2,11 +2,9 @@
 
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Markdown } from "@/lib/markdown";
 import type { MarkdownSlide } from "@/lib/markdown";
-
-type Beyond = { label: string; go: () => void };
+import { TrailDock, type TrailLink } from "./trail-dock";
 
 // A lab used to be one long scroll of Step 1 through Step N. This shows
 // one slide at a time instead -- buttons, arrow keys, and a swipe on
@@ -20,8 +18,8 @@ export function LabCarousel({
 }: {
   slides: MarkdownSlide[];
   actionHost?: HTMLElement | null;
-  prevBeyond?: Beyond | null;
-  nextBeyond?: Beyond | null;
+  prevBeyond?: TrailLink | null;
+  nextBeyond?: TrailLink | null;
 }) {
   const [index, setIndex] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
@@ -52,34 +50,18 @@ export function LabCarousel({
 
   if (total === 0) return null;
 
-  const atFirst = index === 0;
-  const atLast = index === total - 1;
   const nav = (
-    <>
-      <button
-        type="button"
-        onClick={() => (atFirst ? prevBeyond?.go() : go(index - 1))}
-        disabled={atFirst && !prevBeyond}
-        aria-label="Previous"
-        className="ax-step"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        <span className="hidden sm:inline">{atFirst && prevBeyond ? prevBeyond.label : "Previous"}</span>
-      </button>
-      <span className="ax-panel__count">
-        {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-      </span>
-      <button
-        type="button"
-        onClick={() => (atLast ? nextBeyond?.go() : go(index + 1))}
-        disabled={atLast && !nextBeyond}
-        aria-label="Next"
-        className="ax-step ax-step--next"
-      >
-        <span className="hidden sm:inline">{atLast && nextBeyond ? nextBeyond.label : "Next"}</span>
-        <ChevronRight className="h-4 w-4" />
-      </button>
-    </>
+    <TrailDock
+      back={prevBeyond}
+      prev={{ go: () => go(index - 1), disabled: index === 0 }}
+      next={{ go: () => go(index + 1), disabled: index === total - 1 }}
+      forward={nextBeyond}
+      center={
+        <span className="ax-panel__count">
+          {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+        </span>
+      }
+    />
   );
 
   return (
@@ -98,7 +80,7 @@ export function LabCarousel({
           <Markdown content={slides[index].markdown} />
         </div>
       </div>
-      {actionHost ? createPortal(nav, actionHost) : null}
+      {actionHost ? createPortal(nav, actionHost) : nav}
     </div>
   );
 }

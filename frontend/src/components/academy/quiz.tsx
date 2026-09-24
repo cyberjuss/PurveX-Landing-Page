@@ -2,13 +2,11 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { QUIZ_PASS_PERCENT, quizPassed, type Quiz } from "@/content/academy/quizzes";
 import { useAcademyProgress } from "./academy-progress";
+import { TrailDock, type TrailLink } from "./trail-dock";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
-
-type Beyond = { label: string; go: () => void };
 
 export function QuizBlock({
   quiz,
@@ -18,8 +16,8 @@ export function QuizBlock({
 }: {
   quiz: Quiz;
   actionHost?: HTMLElement | null;
-  prevBeyond?: Beyond | null;
-  nextBeyond?: Beyond | null;
+  prevBeyond?: TrailLink | null;
+  nextBeyond?: TrailLink | null;
 }) {
   const { recordQuizPass } = useAcademyProgress();
   const [answers, setAnswers] = useState<(number | null)[]>(() => quiz.questions.map(() => null));
@@ -69,29 +67,13 @@ export function QuizBlock({
   );
 
   const trail = (
-    <>
-      <button
-        type="button"
-        onClick={() => (at > 0 ? setAt(at - 1) : prevBeyond?.go())}
-        disabled={at === 0 && !prevBeyond}
-        aria-label="Previous"
-        className="ax-step"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        <span className="hidden sm:inline">{at === 0 && prevBeyond ? prevBeyond.label : "Previous"}</span>
-      </button>
-      {action}
-      <button
-        type="button"
-        onClick={() => (isLast ? nextBeyond?.go() : setAt(at + 1))}
-        disabled={(!isLast && !submitted && selected === null) || (isLast && !nextBeyond)}
-        aria-label="Next"
-        className="ax-step ax-step--next"
-      >
-        <span className="hidden sm:inline">{isLast && nextBeyond ? nextBeyond.label : "Next"}</span>
-        <ChevronRight className="h-4 w-4" />
-      </button>
-    </>
+    <TrailDock
+      back={prevBeyond}
+      prev={{ go: () => setAt(at - 1), disabled: at === 0 }}
+      next={{ go: () => setAt(at + 1), disabled: isLast || (!submitted && selected === null) }}
+      forward={nextBeyond}
+      center={action}
+    />
   );
 
   return (

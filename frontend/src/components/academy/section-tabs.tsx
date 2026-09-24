@@ -2,16 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ChevronLeft, ChevronRight, Flag, FlaskConical, Wrench } from "lucide-react";
+import { ChevronDown, Flag, FlaskConical, Wrench } from "lucide-react";
 import { Markdown, splitMarkdownIntoSlides } from "@/lib/markdown";
 import { CHALLENGE_PATHS, MISSION_CATALOG } from "@/lib/academy-missions";
 import { QuizBlock } from "./quiz";
 import { LabCarousel } from "./lab-carousel";
 import { MissionPager } from "./mission-pager";
+import { TrailDock, type TrailLink } from "./trail-dock";
 import type { Quiz } from "@/content/academy/quizzes";
 
 type WeekLink = { label: string; href: string };
-type Trail = { label: string; go: () => void };
 
 interface TabSection {
   label: string;
@@ -86,16 +86,18 @@ export function SectionTabs({
   const current = items[active];
   const prevItem = active > 0 ? items[active - 1] : null;
   const nextItem = active < items.length - 1 ? items[active + 1] : null;
-  const prevTrail: Trail | null = prevItem
+  const prevTrail: TrailLink | null = prevItem
     ? { label: prevItem.label, go: () => setActive(active - 1) }
     : prevWeek
       ? { label: prevWeek.label, go: () => router.push(prevWeek.href) }
       : null;
-  const nextTrail: Trail | null = nextItem
+  const nextTrail: TrailLink | null = nextItem
     ? { label: nextItem.label, go: () => setActive(active + 1) }
     : nextWeek
       ? { label: nextWeek.label, go: () => router.push(nextWeek.href) }
       : null;
+  const weekBack: TrailLink | null = prevWeek ? { label: prevWeek.label, go: () => router.push(prevWeek.href) } : null;
+  const weekFwd: TrailLink | null = nextWeek ? { label: nextWeek.label, go: () => router.push(nextWeek.href) } : null;
 
   useEffect(() => {
     const apply = () => setActive(indexForHash(window.location.hash, items));
@@ -279,37 +281,19 @@ export function SectionTabs({
             the sidebar after every section -- and, once it reaches the labs,
             the same control that was previously only reachable by clicking
             a sidebar link. */}
-        {current.kind === "lab" || current.kind === "quiz" ? (
-          <div className="ax-panel__foot" ref={current.kind === "lab" ? setLabFoot : setQuizFoot} />
-        ) : current.kind !== "challenge" && (items.length > 1 || prevTrail || nextTrail) ? (
-          <div className="ax-panel__foot">
-            <button
-              type="button"
-              onClick={() => prevTrail?.go()}
-              disabled={!prevTrail}
-              aria-label="Previous section"
-              className="ax-step"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">{prevTrail?.label ?? "Previous"}</span>
-            </button>
-
-            <span className={current.kind === "quiz" ? "ax-panel__action" : "ax-panel__count"} ref={setQuizFoot}>
-              {current.kind === "quiz" ? null : `${pad(active + 1)} / ${pad(items.length)}`}
-            </span>
-
-            <button
-              type="button"
-              onClick={() => nextTrail?.go()}
-              disabled={!nextTrail}
-              aria-label="Next section"
-              className="ax-step ax-step--next"
-            >
-              <span className="hidden sm:inline">{nextTrail?.label ?? "Next"}</span>
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-        ) : null}
+        {current.kind === "challenge" ? null : current.kind === "quiz" ? (
+          <div ref={setQuizFoot} />
+        ) : current.kind === "lab" ? (
+          <div ref={setLabFoot} />
+        ) : (
+          <TrailDock
+            back={weekBack}
+            prev={prevItem ? { go: () => setActive(active - 1) } : null}
+            next={nextItem ? { go: () => setActive(active + 1) } : null}
+            forward={weekFwd}
+            center={<span className="ax-panel__count">{`${pad(active + 1)} / ${pad(items.length)}`}</span>}
+          />
+        )}
       </div>
     </div>
   );
