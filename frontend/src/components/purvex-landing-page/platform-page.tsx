@@ -5,9 +5,9 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { joinWaitlist } from "@/lib/waitlist";
 import { SiteChrome } from "./chrome";
-import { CaseFloor, DETECTION_ALERTS, DETECTION_CASES } from "./case-floor";
 import { HoldCard } from "./hold-card";
-import { IconChain, IconLog, IconValidate } from "./brand-icons";
+import { IconChain, IconLog, IconReadOnly, IconRecord, IconValidate } from "./brand-icons";
+import { AssuranceConsole, Comparison, Pathways, PRODUCT_CSS, ProvenChain, TrustStrip } from "./lab-product";
 import { ChainDiagram, CoverageMatrix, COVERAGE_PERCENT, HealthTrend, LAB_CSS } from "./lab-visuals";
 import { PG_CSS } from "./page-skin";
 
@@ -27,7 +27,7 @@ const tiers = [
   {
     name: "Free",
     price: "$0",
-    note: "Self-hosted",
+    note: "self-hosted",
     items: ["ATT&CK-mapped tests", "Splunk, Elastic, or Sentinel", "3 people, 3 runs a day"],
     href: "/account/signup?plan=free",
     cta: "Get started free",
@@ -44,10 +44,31 @@ const tiers = [
   },
 ];
 
-const faqs: [string, string][] = [
-  ["Is this BAS", "BAS hits endpoints, and we test the chain after that: telemetry, parser, rule, and alert."],
-  ["Does it run in production", "Read-only on the SIEM by default. Production tests need an opt-in."],
-  ["Does it replace the SIEM", "No. Your SIEM stays, and we prove the detections fire."],
+const faqs = [
+  {
+    q: "Is this BAS",
+    Icon: IconChain,
+    a: <>BAS hits endpoints, and we test the chain after that: telemetry, parser, rule, and alert.</>,
+  },
+  {
+    q: "Does it run in production",
+    Icon: IconReadOnly,
+    a: (
+      <>
+        <mark>Read-only</mark> on the SIEM by default. Production tests need an <mark>explicit opt-in</mark>, and every run
+        is <mark>auditable</mark>.
+      </>
+    ),
+  },
+  {
+    q: "Does it replace the SIEM",
+    Icon: IconRecord,
+    a: (
+      <>
+        No. Your SIEM remains the <mark>system of record</mark>, and we prove that the detections fire.
+      </>
+    ),
+  },
 ];
 
 export default function PlatformPage() {
@@ -89,7 +110,7 @@ export default function PlatformPage() {
       <section className="pg-hero" id="top">
         <div className="pg-hero__copy">
           <span className="sp-tag">In development</span>
-          <h1 className="pg-hero__h1">See what fires</h1>
+          <h1 className="pg-hero__h1">See the miss. Know exactly why.</h1>
           <p className="pg-hero__sub">Scheduled detection tests, with the evidence kept, while the product is still in private development. Join the list to see a run when a seat opens.</p>
           <form className="pg-wl" onSubmit={submitWaitlist}>
             <div className="pg-wl__row">
@@ -107,7 +128,16 @@ export default function PlatformPage() {
             {wlMsg && <p className={`pg-wl__msg pg-wl__msg--${wlState}`}>{wlMsg}</p>}
           </form>
         </div>
-        <CaseFloor cases={DETECTION_CASES} alerts={DETECTION_ALERTS} label="Scheduled runs" />
+        <AssuranceConsole />
+      </section>
+
+      <section className="pg-section" id="proof">
+        <div className="pg-head pg-head--xl" data-r>
+          <span className="sp-tag">Not another dashboard</span>
+          <h2>A rule that exists is not a rule that works.</h2>
+          <p>A dashboard shows the rules you have. PurveX proves each stage of the chain, from the first event to the ticket.</p>
+        </div>
+        <ProvenChain />
       </section>
 
       <section className="pg-section" id="how">
@@ -176,30 +206,48 @@ export default function PlatformPage() {
         </div>
       </section>
 
+      <section className="pg-section">
+        <div className="pg-head" data-r>
+          <span className="sp-tag">The difference</span>
+          <h2>From assumed to evidenced</h2>
+        </div>
+        <Comparison />
+      </section>
+
+      <section className="pg-section">
+        <div className="pg-head" data-r>
+          <span className="sp-tag">Who it is for</span>
+          <h2>Three ways in, one system</h2>
+          <p>Each role looks at a different part of the same detection chain.</p>
+        </div>
+        <Pathways />
+      </section>
+
       <section className="pg-section" id="pricing">
         <div className="pg-head" data-r>
           <span className="sp-tag">When it ships</span>
           <h2>Start small</h2>
           <p>The same software on both plans, and paid lifts the team and runner limits when you are ready.</p>
         </div>
-        <div className="pg-deck" data-r>
+        <div className="pr" data-r>
           {tiers.map((t) => (
-            <article key={t.name} className={`pg-tile${t.dark ? " pg-tile--dark" : ""}`}>
-              <div className="pg-tile__stub">
-                <span>{t.name}</span>
-                <span>{t.note}</span>
-              </div>
-              <h3>{t.price}</h3>
-              <ul>
+            <article key={t.name} className={`pr__side${t.dark ? " pr__side--paid" : ""}`}>
+              <span className="pr__name">{t.name}</span>
+              <p className="pr__price">
+                {t.price}
+                <small>{t.note}</small>
+              </p>
+              <ul className="pr__list">
                 {t.items.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
-              <a href={t.href} className={t.dark ? "pg-tile__link pg-tile__link--light" : "pg-tile__link"}>
-                {t.cta} <ArrowRight size={14} />
+              <a href={t.href} className="sp-btn sp-btn--ghost sp-btn--lg">
+                {t.cta} <ArrowRight size={16} />
               </a>
             </article>
           ))}
+          <span className="pr__seam">Same software</span>
         </div>
       </section>
 
@@ -208,11 +256,17 @@ export default function PlatformPage() {
           <span className="sp-tag">Questions</span>
           <h2>Before you join</h2>
         </div>
-        <div className="pg-faq" data-r>
-          {faqs.map(([q, a]) => (
-            <details key={q}>
-              <summary>{q}</summary>
-              <p>{a}</p>
+        <TrustStrip />
+        <div className="fq" data-r>
+          {faqs.map((f) => (
+            <details key={f.q}>
+              <summary>
+                <i><f.Icon size={22} /></i>
+                <strong>{f.q}</strong>
+              </summary>
+              <div>
+                <p>{f.a}</p>
+              </div>
             </details>
           ))}
         </div>
@@ -237,6 +291,7 @@ export default function PlatformPage() {
 
       <style>{PG_CSS}</style>
       <style>{LAB_CSS}</style>
+      <style>{PRODUCT_CSS}</style>
     </SiteChrome>
   );
 }

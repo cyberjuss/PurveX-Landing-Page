@@ -202,4 +202,68 @@ export const IconBriefcase = (p: IconProps) => (
   </Glyph>
 );
 
+export const IconTelemetry = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M4.5 14.5a10 10 0 0115 0M7.8 17.6a5.6 5.6 0 018.4 0" />
+    <Node cx={12} cy={20.5} r={1.6} />
+  </Glyph>
+);
+
+export const IconParser = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M8.5 6L3 12l5.5 6M15.5 6L21 12l-5.5 6" />
+    <Node cx={12} cy={12} r={1.6} />
+  </Glyph>
+);
+
+export const IconRule = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M3.5 5h17l-6.5 8v6l-4 1.5V13z" />
+    <Node cx={12} cy={8.4} r={1.3} />
+  </Glyph>
+);
+
+export const IconAlert = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M6 17v-6a6 6 0 0112 0v6l1.5 2h-15zM10 21a2 2 0 004 0" />
+    <Node cx={12} cy={4} r={1.4} />
+  </Glyph>
+);
+
+export const IconTicket = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M3.5 7h17v3a2 2 0 000 4v3h-17v-3a2 2 0 000-4z" />
+    <path d="M14.5 7v10" strokeDasharray="1.6 2.4" />
+    <Node cx={9} cy={12} r={1.5} />
+  </Glyph>
+);
+
+export const IconAI = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M12 3l2 5.5 5.5 2-5.5 2L12 18l-2-5.5-5.5-2L10 8.5z" />
+    <Node cx={19} cy={18.5} r={1.5} />
+  </Glyph>
+);
+
+export const IconReadOnly = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" />
+    <Node cx={12} cy={12} r={2.4} />
+  </Glyph>
+);
+
+export const IconOptIn = (p: IconProps) => (
+  <Glyph {...p}>
+    <rect x="3" y="8" width="18" height="8" />
+    <Node cx={16.5} cy={12} r={2.4} />
+  </Glyph>
+);
+
+export const IconRecord = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" />
+    <Node cx={12} cy={6} r={1.2} />
+  </Glyph>
+);
+
 export type BrandIcon = (p: IconProps) => ReactNode;

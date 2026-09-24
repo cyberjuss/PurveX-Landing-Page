@@ -757,4 +757,16 @@ export const CHROME_CSS = `
 .sp .pg-dark .sp-btn:hover, .sp .hp-tile--labs .sp-btn:hover, .sp .pg-tile--dark .sp-btn:hover {
   background: rgba(255,255,255,.2); border-color: #fff; color: #fff;
 }
+
+/* Eyebrows: small text with a short rule instead of a pill. */
+.sp .sp-tag, .sp .sp-hero__badge {
+  display: inline-flex; align-items: center; gap: 10px; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none;
+  font-size: .72rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--accent-deep);
+}
+.sp .sp-tag::before, .sp .sp-hero__badge::before { content: ""; width: 22px; height: 2px; border-radius: 0; background: var(--accent); box-shadow: none; flex-shrink: 0 }
+.sp .pg-dark__kicker, .sp .hp-perk__kicker {
+  display: inline-flex; align-items: center; gap: 10px; padding: 0; border: 0; border-radius: 0; background: none;
+  font-size: .72rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #fff;
+}
+.sp .pg-dark__kicker::before, .sp .hp-perk__kicker::before { content: ""; width: 22px; height: 2px; background: #fff; opacity: .8 }
 `;

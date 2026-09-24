@@ -1,4 +1,4 @@
-import { IconChain, IconLog, IconShield, IconSignal, IconValidate } from "./brand-icons";
+import { IconAlert, IconLog, IconParser, IconRule, IconTicket, IconValidate } from "./brand-icons";
 
 /* Custom visuals for the Labs page: the detection chain, an ATT&CK coverage
    matrix, and a detection health trend. All values are illustrative. */
@@ -6,9 +6,10 @@ import { IconChain, IconLog, IconShield, IconSignal, IconValidate } from "./bran
 const NODES = [
   { s: "test", name: "Attack test", note: "Real behavior", Icon: IconValidate },
   { s: "ok", name: "Telemetry", note: "Events arrive", Icon: IconLog },
-  { s: "break", name: "Parser", note: "Fields dropped", Icon: IconChain },
-  { s: "idle", name: "Rule", note: "Never evaluated", Icon: IconShield },
-  { s: "idle", name: "Alert", note: "None", Icon: IconSignal },
+  { s: "break", name: "Parser", note: "Fields dropped", Icon: IconParser },
+  { s: "idle", name: "Rule", note: "Never evaluated", Icon: IconRule },
+  { s: "idle", name: "Alert", note: "None", Icon: IconAlert },
+  { s: "idle", name: "Ticket", note: "Never opened", Icon: IconTicket },
 ] as const;
 
 export function ChainDiagram() {
@@ -116,10 +117,10 @@ export const LAB_CSS = `
 .lb-chain[data-r], .lb-matrix[data-r], .lb-trend[data-r], .lb-facts[data-r], .lb-runs[data-r] { opacity: 1; transform: none; filter: none }
 .lb-chain { margin-top: 44px }
 .lb-chain__track { position: relative }
-.lb-chain ol { list-style: none; margin: 0; padding: 0; position: relative; display: grid; grid-template-columns: repeat(5, 1fr) }
+.lb-chain ol { list-style: none; margin: 0; padding: 0; position: relative; display: grid; grid-template-columns: repeat(6, 1fr) }
 .lb-chain ol::before, .lb-chain ol::after { content: ""; position: absolute; top: 32px; height: 2px }
-.lb-chain ol::before { left: 10%; width: 40%; background: linear-gradient(90deg, var(--accent), var(--accent)) }
-.lb-chain ol::after { left: 50%; width: 40%; background: repeating-linear-gradient(90deg, rgba(106,92,255,.35) 0 8px, transparent 8px 16px) }
+.lb-chain ol::before { left: 8.33%; width: 33.34%; background: linear-gradient(90deg, var(--accent), var(--accent)) }
+.lb-chain ol::after { left: 41.67%; width: 50%; background: repeating-linear-gradient(90deg, rgba(106,92,255,.35) 0 8px, transparent 8px 16px) }
 .lb-chain li { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px }
 .lb-chain li i {
   display: grid; place-items: center; width: 64px; height: 64px; margin-bottom: 12px; border-radius: 20px;
@@ -133,10 +134,10 @@ export const LAB_CSS = `
 .lb-chain li[data-s="idle"] strong { color: var(--muted) }
 .lb-chain li[data-s="break"] i { background: #fdeaea; border-color: #e5484d; color: #c23030; animation: lb-break 4.5s ease-in-out infinite }
 .lb-chain li[data-s="break"] span { color: #c23030; font-weight: 600 }
-.lb-pulse { position: absolute; top: 27px; left: 10%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 6px rgba(106,92,255,.18); animation: lb-run 4.5s ease-in-out infinite; z-index: 2 }
+.lb-pulse { position: absolute; top: 27px; left: 8.33%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 6px rgba(106,92,255,.18); animation: lb-run 4.5s ease-in-out infinite; z-index: 2 }
 .lb-chain__verdict { margin: 34px 0 0; padding: 18px 22px; border-radius: 16px; background: linear-gradient(135deg, #f7f5ff, #fff 70%); border: 1px solid rgba(106,92,255,.18); font-size: .98rem; line-height: 1.6; color: var(--ink-soft) }
 .lb-chain__verdict b { color: var(--ink) }
-@keyframes lb-run { 0% { left: 10%; opacity: 0 } 8% { opacity: 1 } 55% { left: 50%; opacity: 1 } 70% { left: 50%; opacity: 0 } 100% { left: 50%; opacity: 0 } }
+@keyframes lb-run { 0% { left: 8.33%; opacity: 0 } 8% { opacity: 1 } 55% { left: 41.67%; opacity: 1 } 70% { left: 41.67%; opacity: 0 } 100% { left: 41.67%; opacity: 0 } }
 @keyframes lb-break { 0%, 50% { box-shadow: 0 0 0 0 rgba(229,72,77,0) } 58% { box-shadow: 0 0 0 10px rgba(229,72,77,.22) } 80%, 100% { box-shadow: 0 0 0 0 rgba(229,72,77,0) } }
 
 .lb-facts { list-style: none; margin: 48px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px }
@@ -212,4 +213,6 @@ export const LAB_CSS = `
   .lb-matrix__cols, .lb-matrix__col { gap: 3px }
   .lb-runs li { grid-template-columns: 5.5rem 1fr auto }
 }
+.pg-head--xl h2 { font-size: clamp(2.2rem, 4.8vw, 3.7rem); letter-spacing: -.045em; line-height: 1.02; max-width: 18ch }
+.pg-head--xl p { max-width: 46ch }
 `;
