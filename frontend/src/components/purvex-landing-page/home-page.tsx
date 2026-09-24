@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CalendarDays, Gauge, Headset, Linkedin, Mic, Star } from "lucide-react";
+import { ArrowRight, CalendarDays, Gauge, Headset, Linkedin, Mic, Quote, Star } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
 
@@ -376,23 +376,32 @@ export default function HomePage() {
 
       <section className="hp-voice-wrap">
         <figure className="hp-voice" data-r>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/kenneth.jpg" alt="Kenneth Ellington" />
+          <div className="hp-voice__photo">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/kenneth.jpg" alt="Kenneth Ellington" />
+            <span className="hp-voice__chip">
+              <Star size={13} /> 5.0 rating
+            </span>
+          </div>
           <figcaption>
             <span className="sp-tag">Cybersecurity Training</span>
+            <Quote className="hp-voice__mark" size={64} aria-hidden="true" />
             <blockquote>
-              Hands down one of the best services. Our students now work in tech, running their own SOC projects thanks to real hands-on experience.
+              Hands down one of the best services. Our students now work in tech, running their own SOC projects thanks to{" "}
+              <mark>real hands-on experience</mark>.
             </blockquote>
             <div className="hp-voice__who">
-              <strong>Kenneth Ellington</strong>
-              <span>Cybersecurity Coach + Instructor, Ellington Cyber Academy</span>
-              <span className="hp-voice__stars" aria-label="5 stars">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} size={12} />
-                ))}
-              </span>
-              <a href="https://www.linkedin.com/in/kenneth-ellington/" target="_blank" rel="noreferrer">
-                <Linkedin size={13} /> LinkedIn
+              <div>
+                <strong>Kenneth Ellington</strong>
+                <span>Cybersecurity Coach + Instructor, Ellington Cyber Academy</span>
+                <span className="hp-voice__stars" aria-label="5 stars">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} size={14} />
+                  ))}
+                </span>
+              </div>
+              <a href="https://www.linkedin.com/in/kenneth-ellington/" target="_blank" rel="noreferrer" className="sp-btn sp-btn--ghost sp-btn--sm">
+                <Linkedin size={14} /> View on LinkedIn
               </a>
             </div>
           </figcaption>
@@ -759,29 +768,49 @@ const HP_CSS = `
 
 .hp-voice-wrap { padding-top: 120px }
 .hp-voice {
-  display: grid; grid-template-columns: 280px 1fr; gap: 0; margin: 0;
-  background: var(--accent-soft); border: 1px solid rgba(106,92,255,.2);
-  box-shadow: 0 22px 50px -32px rgba(85,70,224,.35);
+  position: relative; overflow: hidden; display: grid; grid-template-columns: 320px 1fr; gap: 0; margin: 0;
+  border-radius: 28px; background: linear-gradient(135deg, #fff 0%, #f4f2ff 100%);
+  border: 1px solid rgba(106,92,255,.2); box-shadow: 0 40px 80px -44px rgba(85,70,224,.55);
 }
-.hp-voice img { width: 100%; height: 100%; min-height: 320px; object-fit: cover; object-position: top center }
+.hp-voice::before {
+  content: ""; position: absolute; inset: -30% -10% auto auto; width: 60%; height: 90%; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(106,92,255,.16), transparent);
+}
+.hp-voice__photo { position: relative; overflow: hidden; min-height: 380px }
+.hp-voice__photo::after {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 40%; pointer-events: none;
+  background: linear-gradient(to top, rgba(42,34,128,.55), transparent);
+}
+.hp-voice img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center;
+  transition: transform 1.2s var(--ease);
+}
+.hp-voice:hover img { transform: scale(1.04) }
+.hp-voice__chip {
+  position: absolute; left: 18px; bottom: 18px; z-index: 1; display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.4);
+  backdrop-filter: blur(10px); color: #fff; font-size: .78rem; font-weight: 650;
+}
+.hp-voice__chip svg { fill: #f5b544; color: #f5b544 }
 .hp-voice figcaption {
-  display: flex; flex-direction: column; justify-content: center; padding: 40px 44px;
-  border-left: 3px solid var(--accent);
+  position: relative; display: flex; flex-direction: column; justify-content: center; padding: 48px 56px;
 }
+.hp-voice__mark { position: absolute; top: 34px; right: 44px; color: var(--accent); opacity: .13 }
 .hp-voice blockquote {
-  margin: 16px 0 0; font-family: var(--font-display);
-  font-size: clamp(1.2rem, 2.1vw, 1.55rem); font-weight: 550; line-height: 1.4;
-  letter-spacing: -.02em; color: var(--ink);
+  margin: 22px 0 0; max-width: 34ch; font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.4vw, 1.85rem); font-weight: 600; line-height: 1.32;
+  letter-spacing: -.028em; color: var(--ink); text-wrap: balance;
 }
-.hp-voice__who { display: flex; flex-direction: column; gap: 4px; margin-top: 22px }
-.hp-voice__who span { color: var(--muted); font-size: .82rem; line-height: 1.4 }
-.hp-voice__stars { display: flex; gap: 3px; color: var(--accent); margin-top: 4px }
+.hp-voice mark { background: linear-gradient(transparent 62%, rgba(106,92,255,.26) 62%); color: inherit; padding: 0 2px }
+.hp-voice__who {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px;
+  margin-top: 30px; padding-top: 24px; border-top: 1px solid rgba(106,92,255,.16);
+}
+.hp-voice__who > div { display: flex; flex-direction: column; gap: 4px }
+.hp-voice__who strong { font-family: var(--font-display); font-size: 1.05rem; letter-spacing: -.015em }
+.hp-voice__who span { color: var(--muted); font-size: .84rem; line-height: 1.4 }
+.hp-voice__stars { display: flex; gap: 3px; margin-top: 4px; color: #f5b544 }
 .hp-voice__stars svg { fill: currentColor }
-.hp-voice__who a {
-  display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
-  color: var(--muted); font-size: .8rem; text-decoration: none; width: fit-content;
-}
-.hp-voice__who a:hover { color: var(--accent-deep) }
 
 .hp-close {
   position: relative; overflow: hidden;
@@ -881,9 +910,10 @@ const HP_CSS = `
   .hp-deck { grid-template-columns: 1fr }
   .hp-tile--lead { grid-row: auto }
   .hp-tile__split { grid-template-columns: 1fr }
-  .hp-voice { grid-template-columns: 1fr }
-  .hp-voice img { min-height: 220px; max-height: 280px }
-  .hp-voice figcaption { padding: 28px 24px }
+  .hp-voice { grid-template-columns: 1fr; border-radius: 22px }
+  .hp-voice__photo { min-height: 260px }
+  .hp-voice figcaption { padding: 30px 24px }
+  .hp-voice__mark { top: 24px; right: 22px; width: 44px; height: 44px }
   .hp-close, .hp-perk { grid-template-columns: 1fr; gap: 28px; padding: 40px 24px }
   .hp-perk__stage .hp-case { margin: 0 auto }
   .hp-perk__stage .hp-dock { margin: -34px auto 0 }
