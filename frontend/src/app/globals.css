@@ -3331,7 +3331,6 @@ body:has(.lp) {
 .academy-prose .ad-mission--capstone .ad-mission__num { color: #e5484d; }
 .academy-prose .ad-mission--bonus .ad-mission__num { color: #b7791f; }
 .academy-prose .ad-mission--solved .ad-mission__num { color: #16a34a; }
-.academy-prose .ad-mission--solved .ad-mission__num::after { content: " \2713 Solved"; }
 .academy-prose .ad-mission h4 { margin: 0.15rem 0 1rem; font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; }
 .academy-prose .ad-mission > p { margin: 0; max-width: 68ch; font-size: 1.02rem; line-height: 1.6; color: var(--rd-ink-2, var(--pvrx-text-secondary-light)); }
 .academy-prose .ad-mission > p + p { margin-top: 0.85rem; }
@@ -3435,7 +3434,7 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 @media (prefers-reduced-motion: reduce) {
   .ad-hint-card__panel { transition: none; }
 }
-.academy-prose .ad-guess { display: flex; align-items: center; gap: 0.5rem 0.7rem; margin-top: 1.6rem; padding-top: 1.1rem; border-top: 1px solid var(--rd-line, var(--pvrx-border-light)); flex-wrap: wrap; }
+.academy-prose .ad-guess { display: flex; align-items: center; gap: 0.5rem 0.7rem; margin-top: 1.6rem; padding-top: 0; border: none; flex-wrap: wrap; }
 .academy-prose .ad-guess__input {
   flex: 1 1 14rem; width: auto; max-width: 22rem; min-width: 0; height: 36px; padding: 0 !important;
   border-radius: 0 !important;
@@ -4296,7 +4295,7 @@ textarea.pc-dock__field {
 .ad-steps__chip.is-flagged { color: var(--rd-warn, #c4820e); }
 .ad-steps__chip.is-here { color: var(--rd-ink, #0f172a); border-bottom-color: var(--rd-accent, #5546e0); box-shadow: none; }
 .ad-steps__chip.is-flagged.is-here { color: var(--rd-warn, #c4820e); border-bottom-color: var(--rd-warn, #c4820e); }
-.ad-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 20px 0 0; padding: 0; border: none; border-radius: 0; background: transparent; }
+.ad-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 16px 0 0; padding: 0; border: none !important; border-radius: 0; background: transparent; box-shadow: none; }
 .ad-pager__flag { flex: 1 0 100%; margin: 0 0 2px; font-size: 13px; line-height: 1.4; color: var(--rd-warn, #c4820e); }
 .ad-pager__btn { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; border-radius: 0; background: none; font-size: 13px; font-weight: 600; color: var(--rd-ink-2, #475569); text-decoration: none; cursor: pointer; }
 .ad-pager__btn:hover:not(:disabled) { color: var(--rd-accent, #5546e0); }
