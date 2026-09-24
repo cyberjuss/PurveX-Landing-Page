@@ -1,12 +1,56 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState, type DragEvent, type ReactNode } from "react";
-import { Check, Copy, RotateCcw, ShieldCheck, X } from "lucide-react";
+import { Fragment, useEffect, useRef, useState, useSyncExternalStore, type DragEvent, type ReactNode } from "react";
+import { Check, Copy, Mic, RotateCcw, ShieldCheck, Square, Volume2, VolumeX, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { COACH_MODE_LABELS, COACH_MODES, coachStarters, interviewStarters } from "@/lib/academy-coach-mode";
 import { useResults } from "@/lib/academy-client";
 import { filesToCoachImages, imagesFromClipboard } from "@/lib/academy-coach-capture";
 import { COACH_IMAGE_MAX, coachImageSrc, type CoachImage } from "@/lib/academy-coach-media";
+
+// Voice for Interview mode uses the browser's own speech tools, so there is
+// nothing to install and no audio leaves the device through PurveX.
+type Recognizer = {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+};
+
+function recognizerCtor(): (new () => Recognizer) | null {
+  if (typeof window === "undefined") return null;
+  const w = window as unknown as { SpeechRecognition?: new () => Recognizer; webkitSpeechRecognition?: new () => Recognizer };
+  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
+}
+
+const noopSubscribe = () => () => {};
+const canSpeak = () => typeof window !== "undefined" && "speechSynthesis" in window;
+const canListen = () => recognizerCtor() !== null;
+const VOICE_KEY = "coach-voice";
+
+function spokenText(text: string) {
+  return text
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*\n]+)\*/g, "$1")
+    .replace(/^\s*[-*•]\s+/gm, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function speak(text: string) {
+  if (!canSpeak()) return;
+  window.speechSynthesis.cancel();
+  const say = new SpeechSynthesisUtterance(spokenText(text));
+  say.lang = "en-US";
+  say.rate = 1;
+  window.speechSynthesis.speak(say);
+}
 
 function inline(text: string, key: string): ReactNode[] {
   return text.split(/(\*\*[^*]+\*\*|`[^`]+`|\*[^*\s][^*]*\*)/g).map((part, i) => {
@@ -167,10 +211,84 @@ export function CoachChat() {
   const [images, setImages] = useState<CoachImage[]>([]);
   const [attachError, setAttachError] = useState<string | null>(null);
   const [attaching, setAttaching] = useState(false);
+  const [voice, setVoice] = useState(() => {
+    try {
+      return typeof window !== "undefined" && window.localStorage.getItem(VOICE_KEY) === "on";
+    } catch {
+      return false;
+    }
+  });
+  const [listening, setListening] = useState(false);
+  const speechOut = useSyncExternalStore(noopSubscribe, canSpeak, () => false);
+  const speechIn = useSyncExternalStore(noopSubscribe, canListen, () => false);
+  const heard = useRef<Recognizer | null>(null);
+  const spoken = useRef(messages.length);
   const listRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const blocked = busy || !enabled || remaining === 0;
   const canSend = Boolean(input.trim() || images.length);
+
+  // Read each new Coach reply aloud in Interview mode when voice is on.
+  useEffect(() => {
+    if (messages.length <= spoken.current) {
+      spoken.current = messages.length;
+      return;
+    }
+    spoken.current = messages.length;
+    const last = messages[messages.length - 1];
+    if (mode === "interview" && voice && speechOut && last?.role === "assistant") speak(last.content);
+  }, [messages, mode, voice, speechOut]);
+
+  useEffect(
+    () => () => {
+      heard.current?.stop();
+      if (canSpeak()) window.speechSynthesis.cancel();
+    },
+    []
+  );
+
+  function toggleVoice() {
+    const next = !voice;
+    setVoice(next);
+    try {
+      window.localStorage.setItem(VOICE_KEY, next ? "on" : "off");
+    } catch {}
+    if (!next && canSpeak()) window.speechSynthesis.cancel();
+    else if (next) {
+      const last = messages[messages.length - 1];
+      if (mode === "interview" && last?.role === "assistant") speak(last.content);
+    }
+  }
+
+  function toggleMic() {
+    if (listening) {
+      heard.current?.stop();
+      return;
+    }
+    const Ctor = recognizerCtor();
+    if (!Ctor) return;
+    if (canSpeak()) window.speechSynthesis.cancel();
+    const rec = new Ctor();
+    const base = input.trim();
+    rec.lang = "en-US";
+    rec.interimResults = true;
+    rec.continuous = true;
+    rec.onresult = (e) => {
+      const said = Array.from(e.results, (r) => r[0]?.transcript ?? "").join(" ").trim();
+      setInput(`${base ? `${base} ` : ""}${said}`.slice(0, 2000));
+    };
+    rec.onend = () => {
+      setListening(false);
+      heard.current = null;
+    };
+    rec.onerror = () => {
+      setListening(false);
+      heard.current = null;
+    };
+    heard.current = rec;
+    setListening(true);
+    rec.start();
+  }
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
@@ -196,6 +314,8 @@ export function CoachChat() {
 
   function submit() {
     if (blocked || !canSend) return;
+    heard.current?.stop();
+    if (canSpeak()) window.speechSynthesis.cancel();
     send(input, images);
     setInput("");
     setImages([]);
@@ -365,6 +485,29 @@ export function CoachChat() {
             >
               Upload
             </button>
+            {mode === "interview" && speechOut && (
+              <button
+                type="button"
+                className="pc-dock__tool inline-flex items-center justify-center gap-1.5"
+                aria-pressed={voice}
+                onClick={toggleVoice}
+              >
+                {voice ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                {voice ? "Voice on" : "Voice off"}
+              </button>
+            )}
+            {mode === "interview" && speechIn && (
+              <button
+                type="button"
+                className="pc-dock__tool inline-flex items-center justify-center gap-1.5"
+                disabled={blocked}
+                aria-pressed={listening}
+                onClick={toggleMic}
+              >
+                {listening ? <Square className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                {listening ? "Stop" : "Speak"}
+              </button>
+            )}
           </div>
           <button type="submit" disabled={blocked || attaching || !canSend} className="pc-dock__send">
             Send

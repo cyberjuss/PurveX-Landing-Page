@@ -81,7 +81,7 @@ export default function proxy(request: NextRequest) {
   res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   res.headers.set("X-Content-Type-Options", "nosniff");
   res.headers.set("X-Frame-Options", "DENY");
-  res.headers.set("Permissions-Policy", "geolocation=(), microphone=(), camera=(), interest-cohort=()");
+  res.headers.set("Permissions-Policy", "geolocation=(), microphone=(self), camera=(), interest-cohort=()");
   res.headers.set("Cross-Origin-Opener-Policy", "same-origin");
   res.headers.set("Cross-Origin-Resource-Policy", "same-origin");
   res.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
