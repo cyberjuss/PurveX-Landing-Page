@@ -42,6 +42,10 @@ function missionStatus(r: MissionResult | undefined): { tone: Tone; label: strin
       needsHelp: !clean,
     };
   }
+  if (r.flagged) {
+    if (r.wrong >= 3) return { tone: "bad", label: "Flagged · missed", points, needsHelp: true };
+    return { tone: "warn", label: r.wrong ? `Flagged · ${r.wrong} wrong` : "Flagged", points, needsHelp: true };
+  }
   if (r.wrong >= 3) return { tone: "bad", label: "Missed", points, needsHelp: true };
   return { tone: "live", label: `Open · ${r.wrong} wrong`, points, needsHelp: r.wrong > 0 };
 }

@@ -46,7 +46,7 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "tq-10": "security",
 };
 
-export type MissionResult = { solved: boolean; wrong: number; hint: boolean; at?: string };
+export type MissionResult = { solved: boolean; wrong: number; hint: boolean; flagged?: boolean; at?: string };
 export type Results = Record<string, MissionResult>;
 
 export const RESULTS_STORAGE_KEY = "academy-results-v1";
@@ -145,10 +145,12 @@ export function sanitizeResults(raw: unknown): Results {
     if (!(id in MISSION_SKILLS) || !value || typeof value !== "object") continue;
     const v = value as Record<string, unknown>;
     const at = typeof v.at === "string" && !Number.isNaN(new Date(v.at).getTime()) ? new Date(v.at).toISOString() : undefined;
+    const flagged = v.flagged === true && v.solved !== true;
     out[id] = {
       solved: v.solved === true,
       wrong: Math.min(3, Math.max(0, Math.floor(Number(v.wrong) || 0))),
       hint: v.hint === true,
+      ...(flagged ? { flagged: true } : {}),
       ...(at ? { at } : {}),
     };
   }

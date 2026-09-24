@@ -99,7 +99,7 @@ function worstStruggle(results: Results, skip: Set<string>): MissionCatalogEntry
     if (skip.has(m.id)) continue;
     const r = results[m.id];
     if (!r) continue;
-    const score = (r.solved ? 0 : 8) + r.wrong * 3 + (r.hint ? 2 : 0);
+    const score = (r.solved ? 0 : 8) + r.wrong * 3 + (r.hint ? 2 : 0) + (r.flagged && !r.solved ? 6 : 0);
     if (score < 3) continue;
     if (!best || score > best.score) best = { m, score };
   }

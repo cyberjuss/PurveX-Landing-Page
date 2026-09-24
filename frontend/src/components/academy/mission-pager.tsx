@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
-import { READINESS_PATH } from "@/lib/academy-client";
+import { academyFetch, READINESS_PATH, RESULTS_UPDATED_EVENT } from "@/lib/academy-client";
+import { loadResults, saveResults, type MissionResult } from "@/lib/academy-score";
 
 type Neighbor = { label: string; go: () => void };
 
@@ -26,16 +27,18 @@ export function MissionPager({
   const first = useRef(true);
   const [step, setStep] = useState(0);
   const [solved, setSolved] = useState<boolean[]>([]);
+  const [flagged, setFlagged] = useState<boolean[]>([]);
   const [strip, setStrip] = useState<HTMLElement | null>(null);
 
   const missions = useCallback(() => Array.from(root.current?.querySelectorAll<HTMLElement>(".ad-mission") ?? []), []);
 
   const measure = useCallback(() => {
     const list = missions();
-    setSolved((prev) => {
-      const next = list.length < 2 ? [] : list.map((m) => m.classList.contains("ad-mission--solved"));
-      return prev.length === next.length && prev.every((v, i) => v === next[i]) ? prev : next;
-    });
+    const stored = loadResults();
+    const marks = list.length < 2 ? [] : list.map((m) => m.classList.contains("ad-mission--solved"));
+    const flags = list.length < 2 ? [] : list.map((m) => Boolean(stored[m.getAttribute("data-id") || ""]?.flagged) && !m.classList.contains("ad-mission--solved"));
+    setSolved((prev) => (prev.length === marks.length && prev.every((v, i) => v === marks[i]) ? prev : marks));
+    setFlagged((prev) => (prev.length === flags.length && prev.every((v, i) => v === flags[i]) ? prev : flags));
   }, [missions]);
 
   // Follow mission blocks as they render, restore, or become solved.
@@ -81,6 +84,35 @@ export function MissionPager({
   const isLast = at === total - 1;
   const paging = total >= 2;
 
+  // Leaving an unsolved question going forward flags it for Coach. Going
+  // back does not. Solving later clears the flag.
+  const flagCurrent = useCallback(() => {
+    const el = missions()[at];
+    if (!el || el.classList.contains("ad-mission--solved")) return;
+    const id = el.getAttribute("data-id");
+    if (!id) return;
+    const all = loadResults();
+    const base: MissionResult = all[id] ?? { solved: false, wrong: 0, hint: false };
+    if (base.solved || base.flagged) return;
+    all[id] = { ...base, flagged: true, at: new Date().toISOString() };
+    saveResults(all);
+    window.dispatchEvent(new Event(RESULTS_UPDATED_EVENT));
+    academyFetch("/academy/api/progress", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ results: all }),
+    }).catch(() => {});
+    setFlagged((prev) => prev.map((v, i) => (i === at ? true : v)));
+  }, [at, missions]);
+
+  const goForward = useCallback(
+    (next: number) => {
+      if (next > at) flagCurrent();
+      setStep(next);
+    },
+    [at, flagCurrent]
+  );
+
   useEffect(() => {
     missions().forEach((m, i) => {
       m.setAttribute("data-n", String(i + 1).padStart(2, "0"));
@@ -106,9 +138,9 @@ export function MissionPager({
                   type="button"
                   role="tab"
                   aria-selected={i === at}
-                  aria-label={`Question ${i + 1}${ok ? ", solved" : ""}`}
-                  className={`ad-steps__chip${ok ? " is-done" : ""}${i === at ? " is-here" : ""}`}
-                  onClick={() => setStep(i)}
+                  aria-label={`Question ${i + 1}${ok ? ", solved" : flagged[i] ? ", flagged" : ""}`}
+                  className={`ad-steps__chip${ok ? " is-done" : ""}${flagged[i] ? " is-flagged" : ""}${i === at ? " is-here" : ""}`}
+                  onClick={() => (i > at ? goForward(i) : setStep(i))}
                 >
                   {ok ? <Check className="h-3.5 w-3.5" /> : i + 1}
                 </button>
@@ -119,6 +151,11 @@ export function MissionPager({
         )}
       {paging && (
         <nav className="ad-pager" aria-label="Continue">
+          {!solved[at] && (
+            <p className="ad-pager__flag">
+              {flagged[at] ? "Flagged for Coach until you solve it." : "You can move on. This stays flagged until you solve it."}
+            </p>
+          )}
           {at > 0 ? (
             <button type="button" className="ad-pager__btn" onClick={() => setStep(at - 1)}>
               <ArrowLeft className="h-4 w-4" /> Previous
@@ -131,18 +168,18 @@ export function MissionPager({
             <span />
           )}
           {isLast && nextSection ? (
-            <button type="button" className={`ad-pager__btn ad-pager__btn--next${solved[at] ? " is-ready" : ""}`} onClick={nextSection.go}>
+            <button type="button" className={`ad-pager__btn ad-pager__btn--next${solved[at] ? " is-ready" : ""}`} onClick={() => { flagCurrent(); nextSection.go(); }}>
               {nextSection.label} <ArrowRight className="h-4 w-4" />
             </button>
           ) : isLast ? (
-            <Link href={READINESS_PATH} className={`ad-pager__btn ad-pager__btn--next${solved[at] ? " is-ready" : ""}`}>
+            <Link href={READINESS_PATH} className={`ad-pager__btn ad-pager__btn--next${solved[at] ? " is-ready" : ""}`} onClick={flagCurrent}>
               See my readiness <ArrowRight className="h-4 w-4" />
             </Link>
           ) : (
             <button
               type="button"
               className={`ad-pager__btn ad-pager__btn--next${solved[at] ? " is-ready" : ""}`}
-              onClick={() => setStep(at + 1)}
+              onClick={() => goForward(at + 1)}
             >
               Next <ArrowRight className="h-4 w-4" />
             </button>

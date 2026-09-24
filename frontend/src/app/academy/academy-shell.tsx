@@ -203,7 +203,9 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       if (!id) return;
       const all = loadResults();
       const base: MissionResult = all[id] ?? { solved: false, wrong: 0, hint: false };
-      all[id] = { ...base, ...patch, at: new Date().toISOString() };
+      const next: MissionResult = { ...base, ...patch, at: new Date().toISOString() };
+      if (next.solved || !next.flagged) delete next.flagged;
+      all[id] = next;
       saveResults(all);
       syncProgress(all);
       renderScore();
@@ -272,7 +274,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         input.disabled = true;
         btn.disabled = true;
         wrap.classList.add("ad-mission--solved");
-        recordResult(wrap, { solved: true, wrong: parseInt(wrap.getAttribute("data-attempts") || "0", 10) });
+        recordResult(wrap, { solved: true, flagged: false, wrong: parseInt(wrap.getAttribute("data-attempts") || "0", 10) });
         updateProgress();
         return;
       }
