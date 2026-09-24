@@ -10,7 +10,6 @@ import {
   gradeDrill,
   jobProgress,
   LEVEL_NAMES,
-  liveJobId,
   levelFor,
   missedQuestions,
   pickFormat,
@@ -26,10 +25,11 @@ import {
   type DrillMode,
 } from "@/lib/academy-drills";
 import { formatLabAge } from "@/lib/academy-lab";
-import { createLiveCtf } from "@/lib/academy-live";
+import { auditLab } from "@/lib/academy-audit";
+import { createRealCtf } from "@/lib/academy-live";
 import { generateCtf, generateDaily, responseGrader } from "@/lib/academy-scenario";
 import { summarize } from "@/lib/academy-score";
-import { getLabJob, loadDailyDrill, loadDrills, loadLabState, loadProgress, saveDailyDrill, saveDrill } from "@/lib/academy-store";
+import { loadDailyDrill, loadDrills, loadLabState, loadProgress, saveDailyDrill, saveDrill } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -43,9 +43,8 @@ async function auth(request: Request) {
 }
 
 // What the student's own lab says about when they last worked in it.
-async function labInfo(userId: string) {
-  const lab = await loadLabState(userId);
-  if (!lab) return { synced: false, syncedAt: null, ago: null, days: null, security: false, scenarios: false, logonAudit: false };
+function labInfo(lab: Awaited<ReturnType<typeof loadLabState>>) {
+  if (!lab) return { synced: false, syncedAt: null, ago: null, days: null, security: false, events: false };
   const age = formatLabAge(lab.uploadedAt);
   return {
     synced: true,
@@ -54,9 +53,8 @@ async function labInfo(userId: string) {
     days: Number.isNaN(age.hours) ? null : Math.floor(age.hours / 24),
     // False until the student runs the updated lab script, which reports security settings.
     security: Boolean(lab.snapshot.security?.passwordPolicy || lab.snapshot.security?.audit),
-    // Whether this lab can host the live weekly investigation.
-    scenarios: Boolean(lab.snapshot.agent?.scenarios),
-    logonAudit: /success/i.test(lab.snapshot.security?.audit?.Logon ?? "") && /failure/i.test(lab.snapshot.security?.audit?.Logon ?? ""),
+    // Whether the lab sent a digest of its real Security log, which the weekly CTF asks about.
+    events: Boolean(lab.snapshot.events),
   };
 }
 
@@ -65,10 +63,14 @@ function ctfOf(entries: DrillEntry[], day: string) {
 }
 
 async function status(userId: string, day: string) {
-  const [entries, lab, results] = await Promise.all([loadDrills(userId), labInfo(userId), loadProgress(userId)]);
+  const [entries, labState, results] = await Promise.all([loadDrills(userId), loadLabState(userId), loadProgress(userId)]);
+  const lab = labInfo(labState);
   const gap = summarize(results).focus[0];
   const level = levelFor(entries);
   const chats = coachBonus(entries, new Date().toISOString().slice(0, 10));
+  // Real findings from the student's own lab. Hands-on work only ever comes from these.
+  const findings = labState ? auditLab(labState.snapshot) : [];
+  const labJobs = labState ? new Set(findings.filter((f) => f.task).map((f) => f.job)) : null;
   return {
     stats: drillStats(entries, day),
     lab,
@@ -79,7 +81,8 @@ async function status(userId: string, day: string) {
     missed: missedQuestions(entries, 8),
     chats: { base: COACH_DAILY_LIMIT, ...chats },
     jobs: jobProgress(entries, results),
-    nextJob: pickTargetJob(entries, `${userId}:${day}`, Boolean(lab.synced), lab.security, results)?.id ?? null,
+    nextJob: pickTargetJob(entries, `${userId}:${day}`, labJobs, results)?.id ?? null,
+    findings: findings.slice(0, 12).map((f) => ({ id: f.id, severity: f.severity, title: f.title, facts: f.facts, fixable: Boolean(f.task), job: f.job })),
   };
 }
 
@@ -124,13 +127,6 @@ export async function POST(request: Request) {
   const day = cleanDay(body.day);
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
-  // Progress of the live investigation's job on the student's domain controller.
-  if (body.action === "job") {
-    const id = typeof body.token === "string" ? liveJobId(userId, body.token) : null;
-    const job = id ? await getLabJob(userId, id) : null;
-    return NextResponse.json({ status: job?.status ?? "queued", result: job?.result ?? null });
-  }
-
   if (body.action === "hint") {
     const hint = typeof body.token === "string" ? drillHint(userId, body.token) : null;
     return NextResponse.json({ hint: hint ?? "No hint for this one." });
@@ -159,14 +155,13 @@ export async function POST(request: Request) {
       if (again) return NextResponse.json(again);
     }
 
-    // With scenarios turned on in their lab, the weekly CTF is a live investigation
-    // in their own Security log.
+    // The weekly CTF is asked about the student's own Security log when it has one.
     if (mode === "ctf") {
-      const live = await createLiveCtf(userId, day).catch((err) => {
-        console.error("live ctf: could not start", err);
+      const real = await createRealCtf(userId, day).catch((err) => {
+        console.error("ctf: real log question failed", err);
         return null;
       });
-      if (live) return NextResponse.json(live);
+      if (real) return NextResponse.json(real);
     }
 
     const [snapshot, results] = await Promise.all([
@@ -179,8 +174,10 @@ export async function POST(request: Request) {
     let item = null;
     if (apiKey && mode === "daily") {
       // Aim at the on-the-job task they have shown the least, so the daily drill covers what the job needs.
-      const target = pickTargetJob(entries, `${userId}:${day}`, Boolean(snapshot), Boolean(snapshot?.security?.passwordPolicy || snapshot?.security?.audit), results);
-      const format = swap ? "respond" : pickFormat(`${userId}:${day}`, level, Boolean(snapshot), Boolean(target?.lab));
+      const fixable = snapshot ? auditLab(snapshot).filter((f) => f.task) : [];
+      const labJobs = snapshot ? new Set(fixable.map((f) => f.job)) : null;
+      const target = pickTargetJob(entries, `${userId}:${day}`, labJobs, results);
+      const format = swap ? "respond" : pickFormat(`${userId}:${day}`, level, fixable.length > 0, Boolean(target?.lab));
       const targetJob = target ? { id: target.id, label: target.label } : null;
       item = await generateDaily({ apiKey, userId, day, snapshot, results, level, recent, format, targetJob }).catch(() => null);
     } else if (apiKey && mode === "ctf") {

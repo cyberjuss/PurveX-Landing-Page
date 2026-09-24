@@ -1,6 +1,7 @@
 import "server-only";
 import { COACH_HAIKU_MODEL, COACH_SONNET_MODEL } from "@/lib/academy-coach";
-import { buildChangeTask, isJob, JOBS, LEVEL_NAMES, pickSkill, seeded, shuffle, standardSnapshot, type ChangeBrief, type Grader, type Item } from "@/lib/academy-drills";
+import { pickFinding } from "@/lib/academy-audit";
+import { isJob, JOBS, LEVEL_NAMES, pickSkill, seeded, shuffle, standardSnapshot, type Grader, type Item } from "@/lib/academy-drills";
 import type { LabSnapshot } from "@/lib/academy-lab";
 import { summarize, SKILLS, type Results, type Skill } from "@/lib/academy-score";
 
@@ -288,16 +289,6 @@ export async function generateCtf(params: {
   // The weekly CTF is always a step above the student's level.
   const level = Math.min(4, params.level + 1);
 
-  // With a lab, the CTF has a second half: after naming the compromised account,
-  // the student must contain it for real before the flag counts.
-  const plant = params.snapshot
-    ? buildChangeTask({ snapshot: params.snapshot, seed: `ctf:${params.userId}:${params.week}`, level, avoid: [], targetJob: "contain-account", only: "contain" })
-    : null;
-  const plantRules = plant?.subject
-    ? `
-- The compromised account is ${plant.subject.name}, with the sign-in name ${plant.subject.sam}. That exact sign-in name is the single correct answer, and the question must ask for it (for example, which account was used in the suspicious logon). Show this account's activity on at least two different evidence lines, and never state outright that it is the attacker. Add two or three decoy accounts, using other sign-in names from the lab facts. The story must not name the account.`
-    : "";
-
   const system = `You write one weekly CTF-style investigation for a trainee at GovTech Financial's service desk who is learning to be a junior SOC analyst. The trainee reads the evidence, works out one fact, and types it in.
 
 Rules:
@@ -306,7 +297,6 @@ ${BASE_RULES}
 - Give 8 to 12 evidence lines. Mix Windows security log lines (event IDs 4624, 4625, 4634, 4648, 4720, 4728, 4740, 4768, 4769) with directory facts and, if it helps, DNS or DHCP lines that tie an IP address to a host.
 - The answer takes at least two evidence lines to find. For example, tie an address to a host in one place and that host to an account in another. Include two or three lines that look important and are not.
 - Exactly one correct answer, a short exact token: an account name, a host name, an IP address, or an event ID. Walk through the evidence yourself before you answer and make sure it is unambiguous.
-${plantRules}
 - Difficulty: ${LEVEL_RULES[level - 1]}
 Return only JSON, no other text:
 {"title": "3 to 5 words", "skill": "security", "story": "three to five sentences setting up the alert", "evidence": ["..."], "question": "one question with exactly one short answer", "answerFormat": "what to type, for example an account name like first.last", "answer": "the exact answer", "accept": ["other spellings that are also right"], "hint": "one sentence that points at the right evidence without giving the answer", "explain": "three or four sentences walking through how the evidence leads to the answer"}`;
@@ -318,15 +308,7 @@ Return only JSON, no other text:
     // Leave room in a 60 second function for the second draft.
     if (attempt && Date.now() - began > 24_000) break;
     const raw = await ask(params.apiKey, system, user, 3400, attempt ? 30_000 : 48_000);
-    let item = raw ? parseCtf(raw, skill, "Weekly CTF") : null;
-    if (item && plant?.subject) {
-      const sam = plant.subject.sam.toLowerCase();
-      const shows = item.evidence?.filter((l) => l.toLowerCase().includes(sam)).length ?? 0;
-      // Only gate it when the evidence really points at the planted account.
-      if (shows >= 2 && !item.story?.toLowerCase().includes(sam)) {
-        item = { ...item, answer: plant.subject.sam, accept: [plant.subject.name], gate: true, task: plant.task, job: "trace-logon" };
-      }
-    }
+    const item = raw ? parseCtf(raw, skill, "Weekly CTF") : null;
     if (item && (attempt === 1 || !tooSimilar(item, params.recent))) return { ...item, theme: `CTF: ${item.title}` };
     if (item && attempt === 0) continue;
   }
@@ -420,27 +402,6 @@ Return only JSON: {"hits": [true, false, ...one per rubric point, in order], "fe
 
 // ---- lab change -----------------------------------------------------------
 
-const CHANGE_STORY: Record<ChangeBrief["type"], (facts: string) => { title: string; story: string; question: string }> = {
-  access: (f) => ({ title: "Access request", story: f, question: "Make the change in your lab that gives them what the job needs and nothing more, then check it." }),
-  hire: (f) => ({ title: "New contractor", story: f, question: "Set them up in your lab the way the desk would, then check it." }),
-  offboard: (f) => ({ title: "Contractor leaves", story: f, question: "End their access in your lab without deleting the account, then check it." }),
-  enable: (f) => ({ title: "Cannot sign in", story: f, question: "Set up the ticket in your lab, find the real cause, fix only that, then check it." }),
-  wrongou: (f) => ({ title: "Wrong department", story: f, question: "Set up the ticket in your lab, correct where the account belongs, then check it." }),
-  excess: (f) => ({ title: "Access review finding", story: f, question: "Set up the ticket in your lab, remove only what should not be there, then check it." }),
-  service: (f) => ({ title: "New service account", story: f, question: "Create the account to the company standard in your lab, then check it." }),
-  lockout: (f) => ({ title: "No lockout policy", story: f, question: "Fix the domain's account lockout settings in your lab, then check it." }),
-  password: (f) => ({ title: "Weak password policy", story: f, question: "Bring the domain's password policy up to the standard in your lab, then check it." }),
-  audit: (f) => ({ title: "Missing audit events", story: f, question: "Turn on the missing auditing in your lab, then check it." }),
-  logsize: (f) => ({ title: "Log wraps too fast", story: f, question: "Give the Security log room to keep evidence in your lab, then check it." }),
-  harden: (f) => ({ title: "Roastable service account", story: f, question: "Set up the ticket in your lab, close the finding without breaking the job, then check it." }),
-  reset: (f) => ({ title: "Forgotten password", story: f, question: "Set up the call in your lab, get them back in the safe way, then check it." }),
-  hygiene: (f) => ({ title: "Password never expires", story: f, question: "Set up the ticket in your lab, fix the audit finding, then check it." }),
-  grouptype: (f) => ({ title: "Group grants nothing", story: f, question: "Set up the group in your lab, fix why it cannot grant access, then check it." }),
-  role: (f) => ({ title: "New team access", story: f, question: "Build the access the way the standard asks in your lab, then check it." }),
-  contain: (f) => ({ title: "Compromised account", story: f, question: "Set up the incident in your lab, stop the attacker without losing evidence, then check it." }),
-  pso: (f) => ({ title: "Stricter admin passwords", story: f, question: "Put the stricter policy in place in your lab, then check it." }),
-};
-
 export async function generateChange(params: {
   apiKey: string;
   userId: string;
@@ -452,36 +413,29 @@ export async function generateChange(params: {
 }): Promise<Item | null> {
   if (!params.snapshot) return null;
   const level = Math.min(4, Math.max(1, params.level));
-  const brief = buildChangeTask({
+  // A real finding from the student's own lab. If the lab has nothing wrong, there is nothing to fix.
+  const brief = pickFinding({
     snapshot: params.snapshot,
     seed: `${params.userId}:${params.day}`,
     level,
     avoid: params.recent.map((r) => r.th),
     targetJob: params.targetJob?.id,
   });
-  if (!brief) return null;
+  if (!brief?.task) return null;
 
-  const fallback = CHANGE_STORY[brief.type](brief.facts + (brief.temptation ? ` ${brief.temptation}` : ""));
-  let { title, story, question } = fallback;
+  let title = brief.title.slice(0, 60);
+  let story = brief.facts;
+  let question = "Fix this in your lab, then check it.";
 
-  // The model only dresses the facts up as a real ticket. The checks stay fixed.
-  const system = `You write the ticket for a hands-on task at GovTech Financial's service desk. The trainee will make a real change in their Active Directory lab.
+  // The model only words the finding. It never adds facts, and the checks stay fixed.
+  const system = `You write a finding from a real audit of a trainee's own Active Directory lab at GovTech Financial. The trainee will fix it in that lab.
 Rules:
-- Use only the facts given. Do not add people, groups or systems.
+- Use only the facts given. Do not invent people, tickets, managers, deadlines or systems. Nothing here is a role-play.
 - Refer to people by name or as they/them. Never guess a gender from a name.
-- Write it the way a real requester would, in a short paragraph of two to four sentences. Name the need, not the steps${level >= 2 ? ". Do not tell them which group to use or which buttons to press" : ""}.
-- Include the pressure or constraint given, if any.
-- The question asks them to make the change and check it${level >= 2 ? ". It must not name the exact change, the group, or the button. Ask them to fix what the ticket describes, not to enable X or add Y" : ""}.
-- If the facts say the account already exists, write it as a live ticket about an account that is already there. Do not mention scripts.
-Return only JSON: {"title": "3 to 5 words", "story": "...", "question": "one sentence asking them to make the change and then check it"}`;
-  const raw = await ask(
-    params.apiKey,
-    system,
-    `Facts: ${brief.facts}${brief.temptation ? `\nPressure: ${brief.temptation}` : ""}\nLevel: ${level}.`,
-    600,
-    15_000,
-    COACH_HAIKU_MODEL
-  ).catch(() => null);
+- Write it as an audit finding, in a short paragraph of two to four sentences: what was found and why it matters.${level >= 2 ? " Do not tell them which setting to change or which buttons to press." : ""}
+- The question asks them to fix the finding and check it${level >= 2 ? ". It must not name the exact change, the group, or the button" : ""}.
+Return only JSON: {"title": "3 to 6 words", "story": "...", "question": "one sentence asking them to fix it and then check it"}`;
+  const raw = await ask(params.apiKey, system, `Finding: ${brief.facts}\nLevel: ${level}.`, 600, 15_000, COACH_HAIKU_MODEL).catch(() => null);
   const j = raw ? json(raw) : null;
   if (j) {
     title = text(j.title, 60) || title;

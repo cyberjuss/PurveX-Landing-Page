@@ -4349,10 +4349,16 @@ textarea.pc-dock__field {
 .dr-outline:disabled { opacity: 0.4; cursor: default; }
 .dr-streakline { display: inline-flex; align-items: center; gap: 6px; font-size: var(--ty-body); font-weight: 600; color: var(--rd-ink); }
 .dr-streakline svg { color: var(--rd-warn); }
-.dr-days { display: inline-flex; gap: 6px; }
-.dr-days i { width: 12px; height: 12px; border-radius: 50%; background: var(--rd-none); }
-.dr-days i.is-done { background: var(--rd-good); }
-.dr-days i.is-today { box-shadow: 0 0 0 2px var(--rd-accent); }
+.dr-days { display: inline-flex; gap: 8px; }
+.dr-days i {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 50%; background: var(--rd-none);
+  font-family: var(--font-mono, ui-monospace, monospace); font-size: 10px; font-style: normal; font-weight: 700;
+  color: var(--rd-ink-3);
+}
+.dr-days i.is-done { background: var(--rd-good); color: #fff; }
+.dr-days i.is-today { box-shadow: 0 0 0 2px var(--rd-accent); color: var(--rd-ink); }
+.dr-days i.is-done.is-today { color: #fff; }
 .dr-lab { margin: 16px 0 0; font-size: var(--ty-small); color: var(--rd-ink-3); }
 .dr-reportlink {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
@@ -4382,7 +4388,7 @@ textarea.pc-dock__field {
 
 
 /* Drills in the report style: ruled rows, no cards */
-.dr-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; margin-top: 24px; padding: 16px 0; border-top: 1px solid var(--rd-line); }
+.dr-strip { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 10px 18px; margin-top: 24px; padding: 16px 0; border-top: 1px solid var(--rd-line); }
 .dr-rows { margin-top: 0; border-top: 1px solid var(--rd-line); }
 .dr-rows .ax-path__row { align-items: center; grid-template-columns: 44px minmax(0, 1fr); }
 .dr-rows .ax-path__main { min-width: 0; }

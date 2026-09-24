@@ -803,8 +803,9 @@ export function jobProgress(entries: DrillEntry[], results?: Results): JobRow[] 
 }
 
 /** The job to work on next: never-tried first, then half-done, then the one not seen for longest. */
-export function pickTargetJob(entries: DrillEntry[], seed: string, hasLab: boolean, hasSecurity = false, results?: Results): JobRow | null {
-  const rows = jobProgress(entries, results).filter((j) => (j.lab ? hasLab : true) && (j.security ? hasSecurity : true));
+export function pickTargetJob(entries: DrillEntry[], seed: string, labJobs: Set<string> | null, results?: Results): JobRow | null {
+  // A hands-on job is only offered when the student's real lab has something to do for it.
+  const rows = jobProgress(entries, results).filter((j) => (j.lab ? Boolean(labJobs?.has(j.id)) : true));
   if (!rows.length) return null;
   const rank = { new: 0, practiced: 1, proven: 2 } as const;
   const best = Math.min(...rows.map((j) => rank[j.status]));

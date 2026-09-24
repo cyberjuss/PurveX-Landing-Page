@@ -819,13 +819,15 @@ export function DrillRunner() {
               <Flame className="h-4 w-4" />
               {s.streak} day streak
             </span>
-            <span className="dr-days" aria-label="Last seven days">
+            <span className="dr-days" aria-label="Last seven days, oldest on the left">
               {week.map((d) => (
                 <i
                   key={d.day}
-                  title={d.day}
+                  title={`${d.label} ${d.date}`}
                   className={`${s.days.includes(d.day) ? "is-done" : ""}${d.day === today ? " is-today" : ""}`}
-                />
+                >
+                  {d.label.slice(0, 1)}
+                </i>
               ))}
             </span>
             <span className="dr-level">

@@ -1,98 +1,79 @@
 import "server-only";
-import { randomUUID } from "crypto";
-import {
-  buildInvestigation,
-  checkChange,
-  gradeDrill,
-  levelFor,
-  liveJobId,
-  liveReady,
-  startDrill,
-  unlockGate,
-  weekStart,
-  type StartedDrill,
-} from "@/lib/academy-drills";
-import { getLabJob, loadDailyDrill, loadDrills, loadLabState, loadProgress, queueLabJob, saveDailyDrill, saveDrill } from "@/lib/academy-store";
+import { checkChange, gradeDrill, levelFor, startDrill, unlockGate, weekStart, type StartedDrill } from "@/lib/academy-drills";
+import { buildLogCtf } from "@/lib/academy-logctf";
+import { loadDailyDrill, loadDrills, loadLabState, loadProgress, saveDailyDrill, saveDrill } from "@/lib/academy-store";
 
-// The live weekly CTF. Used by the Drills page and by the MCP tools, so a
-// student can start it and check their answer from either place.
+// The weekly CTF built from the student's own Security log. Used by the Drills
+// page and by the MCP tools, so a student can start it and answer it from either.
+// Nothing here changes their lab: it only reads the digest their lab already sent.
 
-/** Queue the investigation for this week's CTF, if the student's lab can host it. */
-export async function createLiveCtf(userId: string, day: string): Promise<StartedDrill | null> {
+/** Start this week's CTF from the real log, if the log can support a question. */
+export async function createRealCtf(userId: string, day: string): Promise<StartedDrill | null> {
   const lab = await loadLabState(userId);
-  if (!lab) return null;
-  const ready = liveReady(lab.snapshot);
-  if (!ready.agent || !ready.audit) return null;
+  if (!lab?.snapshot.events) return null;
   const [entries, results] = await Promise.all([loadDrills(userId), loadProgress(userId)]);
   const week = weekStart(day);
   const level = Math.min(4, levelFor(entries) + 1);
-  const built = buildInvestigation({ snapshot: lab.snapshot, seed: `${userId}:${week}`, level });
-  if (!built) return null;
-
-  const jobId = randomUUID();
-  built.item.live = { jobId };
-  // One job per student per week, only for this CTF. If it cannot be queued, use the normal CTF.
-  const queued = await queueLabJob(userId, { id: jobId, type: "investigation", week, params: { accounts: built.accounts } });
-  if (!queued) return null;
-  const drill = startDrill({ userId, mode: "ctf", day, snapshot: lab.snapshot, results, level, items: [built.item], id: `ctf-${week}` });
+  const item = buildLogCtf({ snapshot: lab.snapshot, seed: `${userId}:${week}`, level });
+  if (!item) return null;
+  const drill = startDrill({ userId, mode: "ctf", day, snapshot: lab.snapshot, results, level, items: [item], id: `ctf-${week}` });
   await saveDailyDrill(userId, week, drill.token, "ctf");
   return drill;
 }
 
-export type LiveState = "unavailable" | "not_started" | "queued" | "sent" | "done" | "failed" | "finished";
+export type CtfState = "finished" | "open" | "not_started" | "unavailable";
 
-export async function liveCtfStatus(userId: string, day: string): Promise<{ state: LiveState; detail: string; ready: { agent: boolean; audit: boolean }; captured?: boolean }> {
+export async function ctfStatus(userId: string, day: string): Promise<{ state: CtfState; detail: string; hasLog: boolean; captured?: boolean }> {
   const lab = await loadLabState(userId);
-  const ready = liveReady(lab?.snapshot ?? null);
+  const hasLog = Boolean(lab?.snapshot.events);
   const week = weekStart(day);
   const entries = await loadDrills(userId);
-  const finished = entries.find((e) => e.mode === "ctf" && e.id === `ctf-${week}`);
-  if (finished) return { state: "finished", detail: finished.correct ? "This week's CTF is captured." : "This week's CTF is closed.", ready, captured: finished.correct > 0 };
-
-  const token = await loadDailyDrill(userId, week, "ctf");
-  const jobId = token ? liveJobId(userId, token) : null;
-  if (!token || !jobId) {
-    if (!ready.agent) return { state: "unavailable", detail: "Live investigations are off in your lab. Run .\Build-Environment.ps1 -InstallSync -AllowScenarios on your domain controller to turn them on.", ready };
-    if (!ready.audit) return { state: "unavailable", detail: "Turn on Logon auditing for success and failure first, so your Security log records the sign-ins. The Turn on the auditing a SOC needs drill covers it.", ready };
-    return { state: "not_started", detail: "Not started yet.", ready };
-  }
-  const job = await getLabJob(userId, jobId);
-  if (!job) return { state: "queued", detail: "Waiting for your domain controller.", ready };
-  const detail =
-    job.status === "queued" ? "Queued. Your domain controller picks it up within 15 minutes, or run .\Build-Environment.ps1 -SyncOnly -AllowScenarios to start it now."
-    : job.status === "sent" ? "Your domain controller is building it."
-    : job.status === "done" ? "Ready. The practice accounts and their sign-in events are in your Security log."
-    : `Your lab could not build it${job.result ? `: ${job.result}` : "."}`;
-  return { state: job.status, detail, ready };
-}
-
-/** Check the typed answer, then the containment, and record the CTF when both are done. */
-export async function checkLiveCtf(userId: string, day: string, answer: string) {
-  const week = weekStart(day);
-  const token = await loadDailyDrill(userId, week, "ctf");
-  if (!token || !liveJobId(userId, token)) return { error: "No live investigation is running this week. Start one first." };
-  const unlocked = unlockGate(userId, token, [answer]);
-  if (!unlocked) return { error: "No live investigation is running this week. Start one first." };
-  if (!unlocked.ok) {
-    return { correct: false, message: "That is not the account. Look at the failed and successful sign-ins in the Security log again, and count the failures per account before its first success." };
-  }
-  const lab = await loadLabState(userId);
-  const checked = checkChange(userId, token, lab, [answer]);
-  if (!checked) return { error: "Could not check your lab." };
-  if (!checked.passed) {
+  const done = entries.find((e) => e.mode === "ctf" && e.id === `ctf-${week}`);
+  if (done) return { state: "finished", detail: done.correct ? "This week's CTF is captured." : "This week's CTF is closed.", hasLog, captured: done.correct > 0 };
+  if (await loadDailyDrill(userId, week, "ctf")) return { state: "open", detail: "This week's CTF is open.", hasLog };
+  if (!hasLog) {
     return {
-      correct: true,
-      contained: false,
-      labReportedSinceStart: checked.fresh,
-      stillToDo: checked.fresh ? checked.results.filter((r) => !r.ok).map((r) => r.label) : [],
-      next: checked.fresh
-        ? "Right account. Now contain it in the lab and keep the evidence, then check again after the lab reports."
-        : "Right account. Contain it in the lab, then wait for the lab to report (about 15 minutes, or run .\Build-Environment.ps1 -SyncOnly) and check again.",
+      state: "unavailable",
+      detail: "Your lab has not sent a Security log digest yet. Download the lab script again from Build This Lab and run it once, or the log has no recent activity to ask about.",
+      hasLog,
     };
   }
-  const graded = await gradeDrill(userId, token, [answer], { changePassed: true });
+  return { state: "not_started", detail: "Not started yet.", hasLog };
+}
+
+/** Check the typed answer, then, when the CTF has a second half, the real fix in their lab. */
+export async function checkRealCtf(userId: string, day: string, answer: string) {
+  const week = weekStart(day);
+  const token = await loadDailyDrill(userId, week, "ctf");
+  if (!token) return { error: "This week's CTF has not been started. Start it first." };
+
+  const unlocked = unlockGate(userId, token, [answer]);
+  if (unlocked) {
+    if (!unlocked.ok) return { correct: false, message: "That is not right. Go back to the Security log and count again." };
+    const lab = await loadLabState(userId);
+    const checked = checkChange(userId, token, lab, [answer]);
+    if (!checked) return { error: "Could not check your lab." };
+    if (!checked.passed) {
+      return {
+        correct: true,
+        fixed: false,
+        labReportedSinceStart: checked.fresh,
+        stillToDo: checked.fresh ? checked.results.filter((r) => !r.ok).map((r) => r.label) : [],
+        next: checked.fresh
+          ? "Right answer. Now fix what made it possible in your lab, then check again after the lab reports."
+          : "Right answer. Fix it in your lab, then wait for the lab to report (about 15 minutes, or run .\\Build-Environment.ps1 -SyncOnly) and check again.",
+      };
+    }
+    const graded = await gradeDrill(userId, token, [answer], { changePassed: true });
+    if (!graded) return { error: "Could not score it." };
+    if (!(await loadDrills(userId)).some((e) => e.id === graded.entry.id)) await saveDrill(userId, graded.entry);
+    return { correct: true, fixed: true, captured: true, explanation: graded.review[0]?.explain };
+  }
+
+  // No second half: the typed answer is the whole CTF.
+  const graded = await gradeDrill(userId, token, [answer]);
   if (!graded) return { error: "Could not score it." };
-  const entries = await loadDrills(userId);
-  if (!entries.some((e) => e.id === graded.entry.id)) await saveDrill(userId, graded.entry);
-  return { correct: true, contained: true, captured: true, explanation: graded.review[0]?.explain };
+  if (!graded.review[0]?.correct) return { correct: false, message: "That is not right. Go back to the Security log and count again." };
+  if (!(await loadDrills(userId)).some((e) => e.id === graded.entry.id)) await saveDrill(userId, graded.entry);
+  return { correct: true, captured: true, explanation: graded.review[0]?.explain };
 }
