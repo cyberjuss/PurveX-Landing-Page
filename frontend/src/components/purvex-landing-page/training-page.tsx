@@ -5,10 +5,7 @@ import {
   ArrowRight,
   Check,
   Server,
-  FileText,
   GraduationCap,
-  Search,
-  ScrollText,
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { MISSION_CATALOG } from "@/lib/academy-missions";
@@ -47,13 +44,6 @@ const COACH_NOTES: Record<keyof typeof COACH_MODE_LABELS, string> = {
   interview: "It plays the PurveX Financial hiring manager and asks five questions, scoring each one out of five before it gives a final hire signal.",
 };
 
-const formats = [
-  { title: "Taught live", body: "One-on-one or small-group sessions led by an instructor who still works a queue." },
-  { title: "Embedded in your program", body: "We teach inside your existing curriculum and on your calendar." },
-  { title: "A portal for each cohort", body: "Every student receives an Academy sign-in with progress tracking and a readiness report." },
-  { title: "A lab on their own machine", body: "One script builds the PurveX Financial directory locally, so there is nothing for you to host." },
-];
-
 const roles = [
   {
     title: "Help desk technician",
@@ -75,15 +65,6 @@ const roles = [
     body: "Turns policy into settings that an auditor can verify.",
     tasks: ["Turn on the auditing a SOC needs", "Keep the Security log long enough to investigate", "Set password and lockout policies"],
   },
-];
-
-// From the portal's company briefing: who owns which data, and how critical it is.
-const departments = [
-  { name: "Wealth Management", data: "Client financial records and personal information", critical: true },
-  { name: "Compliance", data: "Audit trails and regulatory filings", critical: true },
-  { name: "Finance and Accounting", data: "Payroll and internal ledgers", critical: true },
-  { name: "Operations", data: "Settlements and daily business processes", critical: false },
-  { name: "IT", data: "The systems themselves, with elevated access", critical: false },
 ];
 
 const audiences = [
@@ -110,13 +91,6 @@ const proofs = [
   { ok: true, text: "riley.kwan is enabled and no longer locked out" },
   { ok: true, text: "svc-backup-job Description holds the run window" },
   { ok: false, text: "taylor.osei is still in Operations Users" },
-];
-
-// What Coach can do, each backed by a tool it actually calls.
-const coachCaps = [
-  { icon: Search, title: "Reads the real lab", body: "Coach works from the student's own directory and audits it for real problems, worst first, and it never invents an account or a broken object." },
-  { icon: ScrollText, title: "Reads the Security log", body: "A 30 day digest of sign-ins, lockouts, and group changes powers the weekly CTF, and Coach checks both the answer and the real fix in the lab." },
-  { icon: FileText, title: "Writes resume lines from proof", body: "Resume lines come only from tickets the student closed or work the lab shows, and never from a task that was only practiced." },
 ];
 
 export default function TrainingPage({ outline }: { outline: CourseOutline }) {
@@ -170,7 +144,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
             </div>
             <div className="sp-pv__next">
               <span className="sp-kick">Start here</span>
-              <strong>Week 2 — Log Analysis Fundamentals <ArrowRight size={13} /></strong>
+              <strong>Week 2: Log Analysis Fundamentals <ArrowRight size={13} /></strong>
             </div>
             {outline.map((p, i) => {
               const live = p.entries.filter((e) => e.live).length;
@@ -192,7 +166,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
                       </span>
                     )}
                   </div>
-                  <span className="sp-pv__count">{live > 0 ? `${done}/${p.entries.length}` : "—"}</span>
+                  <span className="sp-pv__count">{live > 0 ? `${done}/${p.entries.length}` : "Soon"}</span>
                 </div>
               );
             })}
@@ -289,39 +263,22 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
             same directory and the same Security log then support three other roles.
           </p>
         </div>
-        <div className="sp-formats" data-r>
+        <ol className="tr-rows" data-r>
           {roles.map((r, i) => (
-            <article key={r.title} className="sp-format">
-              <span className="sp-format__n">{pad(i + 1)}</span>
-              <h3>{r.title}</h3>
-              <p>{r.body}</p>
-              <ul className="tr-ul">
+            <li key={r.title}>
+              <span className="tr-rows__n">{pad(i + 1)}</span>
+              <div className="tr-rows__head">
+                <h3>{r.title}</h3>
+                <p>{r.body}</p>
+              </div>
+              <ul className="tr-rows__tasks">
                 {r.tasks.map((t) => (
                   <li key={t}>{t}</li>
                 ))}
               </ul>
-            </article>
+            </li>
           ))}
-        </div>
-        <div className="tr-depts" data-r>
-          <div className="tr-depts__copy">
-            <h3>Every ticket has an owner</h3>
-            <p>
-              Tickets arrive from five departments, and the same event carries a different weight
-              depending on the data that the department holds. Students learn to size a ticket
-              against this table before they decide how urgent it is.
-            </p>
-          </div>
-          <ul className="tr-depts__list">
-            {departments.map((d) => (
-              <li key={d.name}>
-                <strong>{d.name}</strong>
-                <span>{d.data}</span>
-                <em data-critical={d.critical}>{d.critical ? "Critical" : "Standard"}</em>
-              </li>
-            ))}
-          </ul>
-        </div>
+        </ol>
       </section>
 
       {/* ═══════════ SYLLABUS (from the portal's own content) ═══════════ */}
@@ -356,7 +313,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
                     </ul>
                   )}
                 </div>
-                <span className="sp-phase__count">{p.entries.length ? `${live}/${p.entries.length} live` : "—"}</span>
+                <span className="sp-phase__count">{p.entries.length ? `${live}/${p.entries.length} live` : "Soon"}</span>
               </div>
             );
           })}
@@ -417,26 +374,14 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
             modes. On an unsolved mission it teaches the method and never reveals the flag.
           </p>
         </div>
-        <div className="sp-modes" data-r>
+        <div className="tr-modes" data-r>
           {(Object.keys(COACH_MODE_LABELS) as (keyof typeof COACH_MODE_LABELS)[]).map((m) => (
-            <div key={m} className="sp-mode">
-              <span className="sp-mode__label">{COACH_MODE_LABELS[m]}</span>
+            <div key={m}>
+              <strong>{COACH_MODE_LABELS[m]}</strong>
               <p>{COACH_NOTES[m]}</p>
             </div>
           ))}
         </div>
-        <ul className="tr-caps" data-r>
-          {coachCaps.map((c, i) => (
-            <li key={c.title}>
-              <header>
-                <span>{pad(i + 1)}</span>
-                <i><c.icon size={17} /></i>
-              </header>
-              <strong>{c.title}</strong>
-              <p>{c.body}</p>
-            </li>
-          ))}
-        </ul>
       </section>
 
       {/* ═══════════ WHO IT SERVES ═══════════ */}
@@ -449,32 +394,15 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
             work, and the readiness report gives all of them a shared and honest picture.
           </p>
         </div>
-        <div className="sp-formats" data-r>
-          {audiences.map((a, i) => (
-            <article key={a.title} className="sp-format">
-              <span className="sp-format__n">{pad(i + 1)}</span>
-              <h3>{a.title}</h3>
-              <p>{a.body}</p>
-            </article>
+        <dl className="tr-who" data-r>
+          {audiences.map((a) => (
+            <div key={a.title}>
+              <dt>{a.title}</dt>
+              <dd>{a.body}</dd>
+            </div>
           ))}
-        </div>
-      </section>
+        </dl>
 
-      {/* ═══════════ FOR PROGRAMS ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-head sp-head--left" data-r>
-          <span className="sp-tag">For programs</span>
-          <h2>Fits the way your program already runs</h2>
-        </div>
-        <div className="sp-formats" data-r>
-          {formats.map((f, i) => (
-            <article key={f.title} className="sp-format">
-              <span className="sp-format__n">{pad(i + 1)}</span>
-              <h3>{f.title}</h3>
-              <p>{f.body}</p>
-            </article>
-          ))}
-        </div>
         <div className="sp-cta" data-r>
           <p>Are you running a bootcamp, a college program, or an academy cohort?</p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
@@ -693,17 +621,28 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
 .tr-ul { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 10px }
 .tr-ul li { position: relative; padding-left: 20px; font-size: .95rem; line-height: 1.55; color: var(--ink-soft) }
 .tr-ul li::before { content: ""; position: absolute; left: 0; top: .6em; width: 7px; height: 7px; border-radius: 50%; background: var(--accent) }
-.tr-depts { display: grid; grid-template-columns: .9fr 1.1fr; gap: 40px; align-items: center; margin-top: 40px; padding: 32px; border-radius: 22px; background: linear-gradient(135deg, #f7f5ff, #fff 60%); border: 1px solid rgba(106,92,255,.18); box-shadow: var(--shadow-md) }
-.tr-depts__copy h3 { margin: 0; font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; letter-spacing: -.02em }
-.tr-depts__copy p { margin: 12px 0 0; color: var(--ink-soft); font-size: .95rem; line-height: 1.7 }
-.tr-depts__list { list-style: none; margin: 0; padding: 0; border-radius: 16px; background: #fff; border: 1px solid var(--border-strong); overflow: hidden }
-.tr-depts__list li { display: grid; grid-template-columns: 11rem 1fr auto; gap: 14px; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: .88rem }
-.tr-depts__list li:last-child { border-bottom: 0 }
-.tr-depts__list strong { font-weight: 650; color: var(--ink) }
-.tr-depts__list span { color: var(--ink-soft); line-height: 1.45 }
-.tr-depts__list em { font-style: normal; padding: 3px 10px; border-radius: 999px; font-family: var(--font-mono); font-size: .58rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; background: var(--accent-soft); color: var(--accent-deep) }
-.tr-depts__list em[data-critical="true"] { background: var(--accent); color: #fff }
-@media (max-width: 860px) { .tr-depts { grid-template-columns: 1fr; gap: 20px; padding: 24px 20px } .tr-depts__list li { grid-template-columns: 1fr auto; } .tr-depts__list li span { grid-column: 1 / -1; grid-row: 2 } }
+@media (max-width: 860px) { .tr-rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border-strong) }
+.tr-rows > li { display: grid; grid-template-columns: 2.5rem 1fr 1fr; gap: 24px; align-items: start; padding: 26px 0; border-bottom: 1px solid var(--border) }
+.tr-rows__n { font-family: var(--font-mono); font-size: .72rem; font-weight: 700; letter-spacing: .08em; color: var(--accent-deep); padding-top: 5px }
+.tr-rows__head h3 { margin: 0; font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
+.tr-rows__head p { margin: 8px 0 0; color: var(--ink-soft); font-size: .93rem; line-height: 1.65; max-width: 40ch }
+.tr-rows__tasks { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px }
+.tr-rows__tasks li { padding: 7px 13px; border-radius: 999px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.16); font-size: .8rem; font-weight: 550; color: var(--accent-deep) }
+.tr-modes { border-radius: 22px; background: linear-gradient(135deg, #f7f5ff, #fff 65%); border: 1px solid rgba(106,92,255,.18); box-shadow: var(--shadow-md); overflow: hidden }
+.tr-modes > div { display: grid; grid-template-columns: 11rem 1fr; gap: 24px; align-items: baseline; padding: 20px 28px; border-bottom: 1px solid rgba(106,92,255,.12) }
+.tr-modes > div:last-child { border-bottom: 0 }
+.tr-modes strong { font-family: var(--font-display); font-size: 1.02rem; font-weight: 700; letter-spacing: -.015em; color: var(--accent-deep) }
+.tr-modes p { margin: 0; color: var(--ink-soft); font-size: .93rem; line-height: 1.65 }
+.tr-who { display: grid; grid-template-columns: 1fr 1fr; gap: 0 56px; margin: 0 }
+.tr-who > div { padding: 24px 0; border-top: 1px solid var(--border-strong) }
+.tr-who dt { font-family: var(--font-display); font-size: 1.08rem; font-weight: 700; letter-spacing: -.018em; color: var(--ink) }
+.tr-who dd { margin: 8px 0 0; color: var(--ink-soft); font-size: .93rem; line-height: 1.7; max-width: 46ch }
+@media (max-width: 860px) {
+  .tr-rows > li { grid-template-columns: 2rem 1fr; gap: 12px 16px }
+  .tr-rows__tasks { grid-column: 2 }
+  .tr-modes > div { grid-template-columns: 1fr; gap: 6px; padding: 18px 20px }
+  .tr-who { grid-template-columns: 1fr }
+}
 .tr-split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center }
 .tr-split .sp-head { margin-bottom: 0 }
 .tr-split .sp-head p + p { margin-top: 14px }
@@ -718,22 +657,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
 .tr-proof li > span { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #e3f6ee; color: #12805a; font-weight: 700; font-size: .78rem }
 .tr-proof li[data-ok="false"] > span { background: #fdeaea; color: #c23030 }
 .tr-proof footer { padding: 14px 20px 18px; font-size: .78rem; color: var(--muted); background: #fafaff; border-top: 1px solid var(--border) }
-@media (prefers-reduced-motion: reduce) { .tr-caps { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px }
-.tr-caps li { padding: 22px 22px 26px; border-radius: 20px; background: #fff; border: 1px solid var(--border-strong); box-shadow: var(--shadow-md); transition: transform .3s var(--ease), box-shadow .3s var(--ease) }
-.tr-caps li:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg) }
-.tr-caps header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px }
-.tr-caps header span { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff; font-family: var(--font-mono); font-size: .68rem; font-weight: 700 }
-.tr-caps header i { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-deep) }
-.tr-caps strong { display: block; font-size: 1.04rem; font-weight: 650; letter-spacing: -.014em }
-.tr-caps p { margin: 8px 0 0; color: var(--ink-soft); font-size: .88rem; line-height: 1.6 }
-.tr-caps[data-r] { opacity: 1; transform: none; filter: none }
-.tr-caps[data-r] li { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease), transform .6s var(--ease), box-shadow .3s var(--ease) }
-.tr-caps[data-r].in li { opacity: 1; transform: none }
-.tr-caps[data-r].in li:nth-child(3n+2) { transition-delay: .08s }
-.tr-caps[data-r].in li:nth-child(3n) { transition-delay: .16s }
-@media (prefers-reduced-motion: reduce) { .tr-caps[data-r] li { opacity: 1; transform: none; transition: none } }
-@media (max-width: 860px) { @media (max-width: 860px) { .tr-caps { grid-template-columns: 1fr } }
-@media (max-width: 1100px) { @media (max-width: 860px) { .tr-split { grid-template-columns: 1fr; gap: 32px } }
+@media (prefers-reduced-motion: reduce) { @media (prefers-reduced-motion: reduce) { @media (max-width: 860px) { @media (max-width: 860px) { @media (max-width: 1100px) { @media (max-width: 860px) { .tr-split { grid-template-columns: 1fr; gap: 32px } }
 @media (max-width: 680px) {       `}</style>
     </SiteChrome>
   );

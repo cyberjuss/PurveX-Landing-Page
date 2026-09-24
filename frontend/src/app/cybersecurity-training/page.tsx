@@ -21,7 +21,7 @@ function outline(): CourseOutline {
     label: p.label,
     title: p.title,
     entries: [...p.weeks, ...(p.homeLab ? [p.homeLab] : [])].map((w) => ({
-      title: w.title,
+      title: w.title.replace(" — ", ": "),
       summary: w.summary,
       live: w.sections.length > 0,
     })),

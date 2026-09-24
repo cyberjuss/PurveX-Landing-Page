@@ -213,9 +213,9 @@ export default function HomePage() {
         <div className="hp-perk" data-r>
           <div className="hp-perk__copy">
             <p className="hp-perk__kicker">The perk</p>
-            <h2>Coach that makes a Tier 1</h2>
+            <h2>The friendly neighborhood AI Coach</h2>
             <p>
-              Coach trains a Tier 1 help desk and junior SOC analyst. It reads their live directory, their readiness, and a screenshot of the console. It never hands over the answer.
+              PurveX Coach is the SME on this desk. Years as a Windows AD sysadmin, Tier 2 help desk, and junior SOC. It trains a new hire to think like a systems administrator and a security analyst. Not to click blindly. Judgment, not a recipe. It knows their lab, reads a console screenshot, and never hands over an unsolved answer.
             </p>
             <Link href="/cybersecurity-training" className="hp-perk__go">
               See Coach with training <ArrowRight size={16} />
