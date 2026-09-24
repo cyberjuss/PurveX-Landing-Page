@@ -3,7 +3,8 @@ import "server-only";
 import { coachModeInstructions, parseCoachMode, type CoachMode } from "@/lib/academy-coach-mode";
 import { formatLabAge, labEvidence, labStateForTool, type LabSnapshot } from "@/lib/academy-lab";
 import { jobProgress, LEVEL_NAMES, levelFor, missedQuestions, missedThemes, skillAccuracy, weaknessLine, type DrillEntry } from "@/lib/academy-drills";
-import { checkLiveCtf, createLiveCtf, liveCtfStatus } from "@/lib/academy-live";
+import { auditLab } from "@/lib/academy-audit";
+import { checkRealCtf, createRealCtf, ctfStatus } from "@/lib/academy-live";
 import { loadDrills, saveDrill } from "@/lib/academy-store";
 import { type CoachImage } from "@/lib/academy-coach-media";
 import { findMissionsByQuery, MISSION_CATALOG } from "@/lib/academy-missions";
@@ -142,6 +143,8 @@ export function buildStudentBrief(results: Results, lab: LabSnapshot | null, dri
     labLine = `Last sync ${ev.lastCapturedAgo} (${ev.lastCaptured}) on ${ev.domain}. ${
       ev.diffs.length ? `Differences from the standard build: ${ev.diffs.slice(0, 12).join(" ")}` : "Matches the standard build."
     } Call get_lab_state with a name for details.`;
+    const found = auditLab(lab);
+    labLine += ` Real findings in their lab: ${found.length ? found.slice(0, 5).map((f) => f.title).join("; ") : "none right now"}. Call get_lab_findings for detail. Never invent broken objects.`;
   }
   return `Student brief (live data; use it, do not recite it)
 Readiness: ${s.finished === 0 ? "no score yet" : `${s.overall}/100`} (${LEVELS[s.level].label}), ${s.finished} of ${s.total} missions finished.
@@ -165,7 +168,7 @@ When helping this student:
 - Never give the answer to a hands-on mission, flag, or multiple-choice letter. Ask one specific question that makes them interpret what they see. Point to the GUI first (ADUC, Event Viewer) with enough clicks to get there without PowerShell. Add a command only if they ask.
 - Use get_skill_gaps and get_mission_history to tailor help to their actual results.
 - Start a coaching session with get_weakness_profile. It blends mission scores, drill accuracy, and what they keep missing, so you know where to spend the time.
-- The weekly CTF can be a live investigation in the student's own Security log. Call start_investigation, tell them what to do in Event Viewer, and ask them to investigate. Use investigation_status to see if their lab has built it. When they tell you the account, call check_investigation. If they are right it checks whether they contained the account in their lab, so walk them through containing it (disable, remove admin groups, keep the account) and call it again. Never reveal the answer or read the events to them.
+- Hands-on work is real. Call get_lab_findings to see what is actually wrong in the student's own lab, and get_event_digest for what really happened in their Security log. Never invent an account, a ticket or a broken object. If the lab has nothing wrong, ask judgement questions. The weekly CTF is asked about their own Security log: call start_investigation, tell them where to look in Event Viewer, and ask them to investigate. When they answer, call check_investigation. If it has a second half it checks a real fix in their lab, so guide them to find and fix it, then call it again. Never read the answer to them.
 - Develop your own practice questions from their real environment: call get_environment_question_seeds, write a short scenario whose evidence is on screen, ask the student, and wait for their answer. Then call record_practice_result so the result shapes their weakness profile and future drill difficulty. Make each question different from the last. Raise the difficulty when they keep getting it right.
 - Do not invent lab values. get_lab_state returns the student's real lab snapshot saved the last time they ran Build-Environment.ps1. It can be older than their latest changes. Use it to check their work, and point them to what to inspect instead of reading out values that answer unsolved missions.`;
 
@@ -248,23 +251,35 @@ COACH_TOOLS.push(
     },
   },
   {
+    name: "get_lab_findings",
+    description:
+      "A real audit of the student's own Active Directory lab: what is actually wrong right now, worst first. Each finding says what was found, which on-the-job task it practices, and whether it can be fixed and checked in their lab. Nothing here is invented. Use it to decide what to teach and to send the student to a real problem in their own environment.",
+    input_schema: { type: "object", properties: {}, additionalProperties: false },
+  },
+  {
+    name: "get_event_digest",
+    description:
+      "A digest of the real Security log on the student's domain controller for the last 30 days: failed sign-ins and lockouts per account, accounts created and disabled, and group additions. Counts and names only. Use it to ask questions about what really happened in their lab, and to check what they tell you. Do not read answers out to them.",
+    input_schema: { type: "object", properties: {}, additionalProperties: false },
+  },
+  {
     name: "start_investigation",
     description:
-      "Start this week's live CTF in the student's own lab. It asks their domain controller to plant three practice accounts and generate real failed and successful sign-ins in the Security log. It needs the student to have turned scenarios on (Build-Environment.ps1 -InstallSync -AllowScenarios) and Logon auditing on. Nothing runs until their lab picks it up, within about 15 minutes. Then ask the student to investigate in Event Viewer. Never tell them the answer.",
+      "Start this week's CTF. It is asked about the student's own Security log, so the evidence is real and nothing is planted in their lab. Tell them where to look in Event Viewer and ask them to investigate. If their lab has not sent a log digest, it says so.",
     input_schema: { type: "object", properties: {}, additionalProperties: false },
   },
   {
     name: "investigation_status",
-    description: "Where this week's live investigation is: not started, waiting for the student's lab, ready to investigate, finished, or unavailable and why.",
+    description: "Where this week's CTF is: not started, open, finished, or unavailable and why.",
     input_schema: { type: "object", properties: {}, additionalProperties: false },
   },
   {
     name: "check_investigation",
     description:
-      "Check the student's answer for the live investigation: the sign-in name of the account with the most failed sign-ins before a success. If right, it then checks whether they contained that account in their lab (disabled, out of admin groups, still in the directory) and records the CTF when both are done. Call it again after they contain the account.",
+      "Check the student's answer to this week's CTF. If it has a second half, it then checks whether they fixed the real problem in their lab that made the answer possible, and records the CTF when both are done. Call it again after they fix it.",
     input_schema: {
       type: "object",
-      properties: { answer: { type: "string", description: "The sign-in name the student found, like first.last." } },
+      properties: { answer: { type: "string", description: "What the student found, in the format the question asked for." } },
       required: ["answer"],
       additionalProperties: false,
     },
@@ -328,6 +343,7 @@ function questionSeeds(snap: LabSnapshot | null, results: Results, entries: Dril
     })
   );
   const seeds: { skill: Skill; fact: string; angle: string }[] = [];
+  for (const f of auditLab(snap).slice(0, 4)) seeds.push({ skill: f.skill, fact: f.facts, angle: "This is a real finding in their lab. Ask what they would check first and what a fix has to make true." });
   const ev = labEvidence(snap);
   for (const sam of ev.lockedUsers.slice(0, 2)) seeds.push({ skill: "troubleshooting", fact: `${sam} is locked out right now.`, angle: "A ticket blames something else. Have them check the account state before acting." });
   for (const sam of ev.disabledUsers.slice(0, 2)) seeds.push({ skill: "troubleshooting", fact: `${sam} is disabled.`, angle: "A caller says they cannot sign in. What is the first check and who decides to enable it?" });
@@ -467,30 +483,53 @@ export async function runCoachTool(name: string, input: Record<string, unknown>,
     });
     return JSON.stringify({ recorded: true, skill, topic, correct: Boolean(correct) });
   }
+  if (name === "get_lab_findings") {
+    const lab = await ctx.loadLabState();
+    if (!lab) return JSON.stringify({ connected: false, note: "No lab snapshot yet. Ask the student to run Build-Environment.ps1 from Build This Lab." });
+    const findings = auditLab(lab);
+    return JSON.stringify({
+      connected: true,
+      labSyncedAgo: formatLabAge(lab.capturedAt).ago,
+      openFindings: findings.length,
+      findings: findings.slice(0, 15).map((f) => ({
+        severity: f.severity,
+        title: f.title,
+        found: f.facts,
+        practices: f.job,
+        fixableInTheirLab: Boolean(f.task),
+        fixMustMakeTrue: f.task?.checks.map((c) => c.label),
+      })),
+      note: findings.length ? "These are real. Coach the student toward one, and let them find and fix it. Do not just read the fix out." : "Nothing is wrong in their lab right now. Ask judgement questions instead.",
+    });
+  }
+  if (name === "get_event_digest") {
+    const lab = await ctx.loadLabState();
+    if (!lab?.events) return JSON.stringify({ available: false, note: "The lab has not sent a Security log digest. The student needs the latest lab script from Build This Lab, and the log needs some recent activity." });
+    return JSON.stringify({ available: true, digest: lab.events });
+  }
   if (name === "start_investigation") {
     if (!ctx.userId) return JSON.stringify({ error: "not signed in" });
     const day = DAY();
-    const before = await liveCtfStatus(ctx.userId, day);
-    if (before.state === "not_started") {
-      const drill = await createLiveCtf(ctx.userId, day).catch(() => null);
-      if (!drill) return JSON.stringify({ started: false, ...(await liveCtfStatus(ctx.userId, day)) });
-    }
-    const now = await liveCtfStatus(ctx.userId, day);
+    const before = await ctfStatus(ctx.userId, day);
+    if (before.state === "not_started") await createRealCtf(ctx.userId, day).catch(() => null);
+    const now = await ctfStatus(ctx.userId, day);
     return JSON.stringify({
       ...now,
       whatToTellTheStudent:
-        "Your lab will plant three practice contractor accounts and generate failed and successful sign-ins. When it is ready, open Event Viewer on the domain controller, go to Windows Logs, Security, and filter for events 4771 or 4625 (failures) and 4768 or 4624 (successes). One account has the most failures before a success. Tell me its sign-in name. Do not give the answer.",
+        now.state === "open"
+          ? "This week's CTF is a question about your own Security log. Open the Drills page to read it, or ask me. Then open Event Viewer on the domain controller, go to Windows Logs, Security, filter for the events the question points at, and tell me what you find. I will not give you the answer."
+          : now.detail,
     });
   }
   if (name === "investigation_status") {
     if (!ctx.userId) return JSON.stringify({ error: "not signed in" });
-    return JSON.stringify(await liveCtfStatus(ctx.userId, DAY()));
+    return JSON.stringify(await ctfStatus(ctx.userId, DAY()));
   }
   if (name === "check_investigation") {
     if (!ctx.userId) return JSON.stringify({ error: "not signed in" });
     const answer = String(input.answer || "").slice(0, 120);
     if (!answer.trim()) return JSON.stringify({ error: "answer is required" });
-    return JSON.stringify(await checkLiveCtf(ctx.userId, DAY(), answer));
+    return JSON.stringify(await checkRealCtf(ctx.userId, DAY(), answer));
   }
   if (name === "explain_concept") {
     const skill = input.skill as Skill;
