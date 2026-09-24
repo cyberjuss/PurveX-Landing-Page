@@ -98,7 +98,7 @@ function PortalLoginContent() {
           type="button"
           onClick={handleGoogle}
           disabled={isLoading}
-          className="flex h-12 items-center justify-center gap-2.5 rounded-2xl border border-[var(--pvrx-border-light)] bg-white text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60"
+          className="flex h-12 items-center justify-center gap-2.5 rounded-full border border-[var(--pvrx-border-light)] bg-white text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
@@ -136,7 +136,7 @@ function PortalLoginContent() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label htmlFor="password" className="block text-sm font-semibold text-slate-700">Password</label>
-            <Link href="/forgot-password" className="text-xs font-medium text-slate-500 hover:text-[#6a5cff]">Forgot password?</Link>
+            <Link href="/forgot-password" className="text-xs font-medium text-slate-500 hover:text-[#5546e0]">Forgot password?</Link>
           </div>
           <div className="relative">
             <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -165,14 +165,14 @@ function PortalLoginContent() {
         </div>
 
         {error && (
-          <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">{error}</p>
+          <p className="rounded-none border-0 border-l-2 border-red-500 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">{error}</p>
         )}
 
         <Button
           type="submit"
           disabled={isLoading}
           size="lg"
-          className="mt-2 h-12 w-full rounded-2xl border-0 bg-[#6a5cff] text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] hover:bg-[#5546e0]"
+          className="mt-2 h-12 w-full rounded-full border-0 bg-[#5546e0] text-white shadow-none hover:bg-[#4a3bd4]"
         >
           {phase === "submitting" ? (<><Loader2 className="h-4 w-4 animate-spin" /> Signing in...</>) : "Sign in"}
         </Button>
@@ -181,7 +181,7 @@ function PortalLoginContent() {
           New to PurveX?{" "}
           <Link
             href={planFromNext ? `/account/signup?plan=${planFromNext}` : "/account/signup"}
-            className="font-medium text-[#6a5cff] hover:text-[#5546e0]"
+            className="font-medium text-[#5546e0] hover:text-[#4a3bd4]"
           >
             Create an account
           </Link>

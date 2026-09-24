@@ -36,7 +36,7 @@ function CheckItem({ children, tone = "neutral" }: { children: React.ReactNode; 
       <span
         className={
           tone === "accent"
-            ? "mt-px flex h-[19px] w-[19px] shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#6a5cff] to-[#5546e0] text-white"
+            ? "mt-px flex h-[19px] w-[19px] shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#5546e0] to-[#5546e0] text-white"
             : "mt-px flex h-[19px] w-[19px] shrink-0 items-center justify-center rounded-full bg-slate-400 text-white"
         }
       >
@@ -229,7 +229,7 @@ function PricingContent() {
     return (
       <AuthShell theme="light" width="sm" bare hideHeader>
         <div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[rgba(106,92,255,0.1)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-[#6a5cff]">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[rgba(106,92,255,0.1)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-[#5546e0]">
             <Check className="h-3 w-3" strokeWidth={3} />
             Paid plan selected
           </span>
@@ -246,13 +246,13 @@ function PricingContent() {
             onClick={handlePaid}
             disabled={busyPlan !== null}
             size="lg"
-            className="mt-6 h-11 w-full rounded-2xl border-0 bg-[#6a5cff] text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] hover:bg-[#5546e0]"
+            className="mt-6 h-11 w-full rounded-full border-0 bg-[#5546e0] text-white shadow-none hover:bg-[#4a3bd4]"
           >
             {busyPlan === "paid" ? <><Loader2 className="h-4 w-4 animate-spin" /> Redirecting to checkout...</> : "Continue to checkout"}
           </Button>
         </div>
         <p className="mt-3 text-center text-xs text-slate-500">
-          Picked the wrong plan? <Link href="/pricing?plan=choose" className="text-[#6a5cff] hover:text-[#5546e0]">Choose again</Link>
+          Picked the wrong plan? <Link href="/pricing?plan=choose" className="text-[#5546e0] hover:text-[#4a3bd4]">Choose again</Link>
         </p>
         {signOutRow}
       </AuthShell>
@@ -272,7 +272,7 @@ function PricingContent() {
         </div>
 
         <div className="grid gap-5 pt-2 sm:grid-cols-2 sm:items-start">
-          <div className="flex flex-col rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-7">
+          <div className="flex flex-col rounded-none border border-[var(--pvrx-border-light)] border-t-2 border-t-slate-900 bg-white p-6 sm:p-7">
             <p className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">Free</p>
             <p className="mt-2 text-[1.9rem] font-display font-semibold tracking-tight text-slate-900">$0</p>
             <p className="mt-0.5 text-sm text-slate-500">Forever, no card required</p>
@@ -287,17 +287,17 @@ function PricingContent() {
               disabled={busyPlan !== null}
               size="lg"
               variant="outline"
-              className="mt-6 h-11 w-full rounded-2xl border-[var(--pvrx-border-light)] bg-white text-slate-900 hover:bg-slate-50"
+              className="mt-6 h-11 w-full rounded-full border-[var(--pvrx-border-light)] bg-white text-slate-900 hover:bg-slate-50"
             >
               {busyPlan === "free" ? <><Loader2 className="h-4 w-4 animate-spin" /> Setting up...</> : "Get PurveX free"}
             </Button>
           </div>
 
-          <div className="relative flex flex-col rounded-2xl border border-[rgba(106,92,255,0.32)] bg-gradient-to-b from-[rgba(106,92,255,0.07)] to-white p-6 shadow-[0_24px_48px_-24px_rgba(106,92,255,0.4)] sm:-translate-y-2.5 sm:p-7">
-            <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gradient-to-br from-[#6a5cff] to-[#5546e0] px-4 py-1 text-[10px] font-bold uppercase tracking-[0.07em] text-white shadow-[0_10px_22px_-8px_rgba(106,92,255,0.65)]">
+          <div className="relative flex flex-col rounded-none border border-[rgba(85,70,224,0.3)] border-t-2 border-t-[#5546e0] bg-white p-6 shadow-[0_28px_56px_-36px_rgba(85,70,224,0.45)] sm:p-7">
+            <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-none bg-[#5546e0] px-2.5 py-1 font-mono text-[9.5px] font-bold uppercase tracking-[0.16em] text-white" style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" }}>
               Most popular
             </span>
-            <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#6a5cff]">Paid</p>
+            <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#5546e0]">Paid</p>
             <p className="mt-2 text-[1.9rem] font-display font-semibold tracking-tight text-slate-900">
               $99<span className="text-base font-medium text-slate-500"> / mo</span>
             </p>
@@ -312,7 +312,7 @@ function PricingContent() {
               onClick={handlePaid}
               disabled={busyPlan !== null}
               size="lg"
-              className="mt-6 h-11 w-full rounded-2xl border-0 bg-[#6a5cff] text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] hover:bg-[#5546e0]"
+              className="mt-6 h-11 w-full rounded-full border-0 bg-[#5546e0] text-white shadow-none hover:bg-[#4a3bd4]"
             >
               {busyPlan === "paid" ? <><Loader2 className="h-4 w-4 animate-spin" /> Redirecting to checkout...</> : "Continue to checkout"}
             </Button>
@@ -320,7 +320,7 @@ function PricingContent() {
         </div>
 
         <p className="mt-6 text-center text-xs text-slate-500">
-          Questions first? <Link href="https://calendly.com/purvex-llc/30min" className="text-[#6a5cff] hover:text-[#5546e0]">Book a 30-minute call</Link> instead.
+          Questions first? <Link href="https://calendly.com/purvex-llc/30min" className="text-[#5546e0] hover:text-[#4a3bd4]">Book a 30-minute call</Link> instead.
         </p>
         {signOutRow}
       </div>

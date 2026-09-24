@@ -12,12 +12,10 @@ interface AuthShellProps {
   children: ReactNode;
   className?: string;
   hideHeader?: boolean;
-  /** "dark" (default) matches the original account-flow treatment, used by
-   * forgot/reset-password. "light" matches the rest of the marketing site
-   * (white background, #6a5cff purple accent, same as chrome.tsx's --accent)
-   * -- used by the newer portal account pages (/account/*, /pricing,
-   * /get-purvex) so navigating from /platform's pricing cards doesn't jump
-   * to a different color scheme. */
+  /** "light" (default) matches the marketing site and the Academy portal:
+   * white, the dot grid, one purple accent. Every account page uses it,
+   * forgot/reset-password included. "dark" is the original account-flow
+   * treatment, kept for any caller that still asks for it. */
   theme?: "dark" | "light";
   /** "lg" (default) is the original wide layout (pricing's 2-card grid).
    * "md" fits a content page (a command block, a short numbered list) --
@@ -55,11 +53,11 @@ const WIDTH_PX: Record<"sm" | "md" | "lg", number | undefined> = {
 // input's width on the side with nothing in it -- felt fine on a wide
 // desktop field, but visibly cramped the typing area on a phone.
 export const AUTH_INPUT_CLASSNAME_LIGHT =
-  "w-full rounded-2xl border border-[var(--pvrx-border-light)] bg-white pl-10 pr-4 py-4 text-base md:text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[rgba(106,92,255,0.6)] focus:outline-none focus:ring-4 focus:ring-[rgba(106,92,255,0.12)] disabled:opacity-60";
+  "w-full rounded-full border border-[var(--pvrx-border-light)] bg-white pl-10 pr-4 py-4 text-base md:text-sm text-slate-900 shadow-none transition placeholder:text-slate-400 focus:border-[#5546e0] focus:outline-none focus:ring-4 focus:ring-[rgba(85,70,224,0.12)] disabled:opacity-60";
 export const AUTH_INPUT_CLASSNAME_DARK =
-  "w-full rounded-2xl border border-white/10 bg-[#0c1220] pl-10 pr-4 py-4 text-base md:text-sm text-white shadow-none transition placeholder:text-slate-500 focus:border-[rgba(72,99,255,0.75)] focus:outline-none focus:ring-4 focus:ring-[rgba(72,99,255,0.12)] disabled:opacity-100";
+  "w-full rounded-full border border-white/10 bg-[#0c1220] pl-10 pr-4 py-4 text-base md:text-sm text-white shadow-none transition placeholder:text-slate-500 focus:border-[rgba(72,99,255,0.75)] focus:outline-none focus:ring-4 focus:ring-[rgba(72,99,255,0.12)] disabled:opacity-100";
 
-export function AuthShell({ title, subtitle, children, className, hideHeader = false, theme = "dark", width = "lg", bare = false }: AuthShellProps) {
+export function AuthShell({ title, subtitle, children, className, hideHeader = false, theme = "light", width = "lg", bare = false }: AuthShellProps) {
   const isLight = theme === "light";
   const maxWidthPx = WIDTH_PX[width];
   const maxWidthClass = maxWidthPx ? undefined : "max-w-5xl";
@@ -72,27 +70,14 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
         isLight ? "bg-white text-slate-900" : "bg-[#060810] text-slate-100"
       )}
     >
-      {/* Orbs - same as landing. Sized down and dimmed below sm: at 600px/500px
-          wide with a 100px blur, these are bigger than most phone viewports
-          are tall -- on a short page like a bare passcode form, the "ambient
-          glow" ends up sitting directly behind the input instead of softly
-          in the background. */}
-      <div className="pointer-events-none fixed inset-0">
-        <div
-          className={cn(
-            "absolute -left-24 top-0 h-[260px] w-[260px] rounded-full blur-[50px] sm:h-[600px] sm:w-[600px] sm:blur-[100px]",
-            isLight ? "bg-[rgba(106,92,255,0.05)] sm:bg-[rgba(106,92,255,0.08)]" : "bg-[rgba(72,99,255,0.08)] sm:bg-[rgba(72,99,255,0.13)]"
-          )}
-          style={{ animation: "ct-orbit 22s ease-in-out infinite" }}
-        />
-        <div
-          className={cn(
-            "absolute right-[-5rem] bottom-[5%] h-[220px] w-[220px] rounded-full blur-[50px] sm:h-[500px] sm:w-[500px] sm:blur-[100px]",
-            isLight ? "bg-[rgba(106,92,255,0.04)] sm:bg-[rgba(106,92,255,0.06)]" : "bg-[rgba(72,99,255,0.06)] sm:bg-[rgba(72,99,255,0.10)]"
-          )}
-          style={{ animation: "ct-orbit 28s ease-in-out infinite reverse" }}
-        />
-      </div>
+      {/* The portal's printed dot grid, fading out from the top -- the same
+          backdrop as the marketing pages and the Academy, instead of the
+          old drifting orbs. */}
+      <div
+        aria-hidden
+        className="auth-shell-grid pointer-events-none fixed inset-0"
+        style={{ opacity: isLight ? 1 : 0.35 }}
+      />
 
       {
         // Always rendered, independent of hideHeader -- this is the way
@@ -105,7 +90,7 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
           href="/"
           aria-label="Home"
           className={cn(
-            "relative z-20 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border transition",
+            "relative z-20 flex h-10 w-10 shrink-0 items-center justify-center rounded-md border transition",
             isLight
               ? "border-[var(--pvrx-border-light)] bg-white text-slate-900 hover:bg-slate-50"
               : "border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.06]"
@@ -129,18 +114,23 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
             hideHeader || bare
               ? "mx-auto w-full px-0 py-0"
               : isLight
-                ? "w-full rounded-[36px] border border-[var(--pvrx-border-light)] bg-white px-4 py-8 shadow-[0_40px_100px_-40px_rgba(15,23,42,0.18)] sm:px-8 sm:py-10"
-                : "w-full rounded-[36px] border border-white/8 bg-[rgba(10,17,31,0.6)] px-4 py-8 shadow-[0_40px_100px_-40px_rgba(0,0,0,0.5)] backdrop-blur-xl sm:px-8 sm:py-10",
+                ? "w-full rounded-none border border-[var(--pvrx-border-light)] border-t-2 border-t-[#5546e0] bg-white px-4 py-8 shadow-[0_40px_80px_-48px_rgba(15,23,42,0.22)] sm:px-8 sm:py-10"
+                : "w-full rounded-none border border-white/8 bg-[rgba(10,17,31,0.6)] px-4 py-8 shadow-[0_40px_100px_-40px_rgba(0,0,0,0.5)] backdrop-blur-xl sm:px-8 sm:py-10",
             className
           )}
         >
           {!hideHeader && (
             <div className={cn("flex flex-col items-center text-center", bare ? "mb-6" : "mb-10")}>
-              <div className={cn("mb-5 flex h-16 w-16 items-center justify-center rounded-[20px] border shadow-[0_18px_48px_-22px_rgba(15,23,42,0.25)]", isLight ? "border-[var(--pvrx-border-light)] bg-white" : "border-white/10 bg-white/95")}>
-                <Image src="/logo.png" alt="" width={42} height={42} priority />
+              <div className={cn("mb-5 flex h-14 w-14 items-center justify-center rounded-md border", isLight ? "border-[var(--pvrx-border-light)] bg-white" : "border-white/10 bg-white/95")}>
+                <Image src="/logo.png" alt="" width={36} height={36} priority />
               </div>
               {title ? (
-                <h1 className={cn("font-display font-semibold tracking-tight", bare ? "text-2xl" : "text-3xl sm:text-[2.125rem]", isLight ? "text-slate-900" : "text-white")}>
+                <h1
+                  className={cn("font-display font-semibold", bare ? "text-[1.9rem] sm:text-[2.25rem]" : "text-3xl sm:text-[2.4rem]", isLight ? "text-slate-900" : "text-white")}
+                  // Inline: globals.css sets h1 letter-spacing outside any
+                  // layer, which beats a Tailwind tracking utility.
+                  style={{ letterSpacing: "-0.04em", lineHeight: 1.08 }}
+                >
                   {title}
                 </h1>
               ) : null}
@@ -157,11 +147,11 @@ export function AuthShell({ title, subtitle, children, className, hideHeader = f
       </div>
 
       <style>{`
-        @keyframes ct-orbit {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          25% { transform: translate(60px, -40px) scale(1.08); }
-          50% { transform: translate(-30px, 50px) scale(0.95); }
-          75% { transform: translate(40px, 20px) scale(1.05); }
+        .auth-shell-grid {
+          background-image: radial-gradient(rgba(16,25,46,.11) 1.6px, transparent 1.6px);
+          background-size: 26px 26px;
+          -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%);
+          mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%);
         }
         @keyframes auth-shell-enter {
           from { opacity: 0; transform: translateY(6px); }

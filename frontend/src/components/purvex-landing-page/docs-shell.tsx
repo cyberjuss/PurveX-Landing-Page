@@ -12,8 +12,9 @@ import { DOCS_CONTENT_CSS } from "./docs-content";
    PurveX Install Guide — docs shell
    A dedicated, minimal shell (not the marketing SiteChrome) --
    real docs sites use their own focused nav, not the full mega
-   menu. Same brand tokens as chrome.tsx (#6a5cff/#5546e0), just
-   scoped locally so this shell works standalone.
+   menu. Same tokens and type as chrome.tsx and the Academy portal
+   (Space Grotesk, mono kickers, hairlines), scoped locally so this
+   shell works standalone.
    ───────────────────────────────────────────────────────── */
 
 export type GuidePageId =
@@ -184,22 +185,22 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
 
 const DOCS_CSS = `
 .ds {
-  --bg: #fbfcfe; --surface: #ffffff; --surface-alt: #f5f7fc;
-  --border: #e6eaf2; --border-strong: #d6dcea;
-  --ink: #10192e; --ink-soft: #3f4a63; --muted: #64708a; --muted-dim: #8a95ac;
-  --accent: #6a5cff; --accent-deep: #5546e0; --accent-soft: #eef0ff;
-  --font-display: var(--font-inter), system-ui, sans-serif;
+  --bg: #ffffff; --surface: #ffffff; --surface-alt: #f8fafc;
+  --border: rgba(15,23,42,.1); --border-strong: rgba(15,23,42,.18);
+  --ink: #0f172a; --ink-soft: #475569; --muted: #64748b; --muted-dim: #8a94a8;
+  --accent: #6a5cff; --accent-deep: #5546e0; --accent-soft: rgba(85,70,224,.07);
+  --font-display: var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
-  --font-mono: var(--font-mono), ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   min-height: 100vh; background: var(--bg); color: var(--ink); font-family: var(--font-body);
 }
 
-.ds-topbar { position: sticky; top: 0; z-index: 30; background: rgba(251,252,254,.88); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border) }
+.ds-topbar { position: sticky; top: 0; z-index: 30; background: rgba(255,255,255,.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border) }
 .ds-topbar__inner { max-width: 1180px; margin: 0 auto; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px }
-.ds-logo { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; color: var(--ink); font-family: var(--font-display); font-weight: 700; font-size: .96rem; letter-spacing: -.01em }
+.ds-logo { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; color: var(--ink); font-family: var(--font-display); font-weight: 600; font-size: 1.02rem; letter-spacing: -.03em }
 .ds-logo__img { border-radius: 6px }
 .ds-logo__divider { width: 1px; height: 16px; background: var(--border-strong) }
-.ds-logo__suffix { color: var(--muted); font-weight: 600 }
+.ds-logo__suffix { color: var(--muted); font-weight: 500 }
 .ds-back { display: inline-flex; align-items: center; gap: 6px; font-size: .82rem; font-weight: 600; color: var(--muted); text-decoration: none; transition: color .15s }
 .ds-back:hover { color: var(--accent-deep) }
 
@@ -225,19 +226,21 @@ const DOCS_CSS = `
 }
 
 .ds-sidebar__group + .ds-sidebar__group { margin-top: 22px }
-.ds-sidebar__label { margin: 0 0 8px; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted-dim) }
-.ds-sidebar__link { display: block; padding: 6px 10px; margin: 0 -10px; border-radius: 7px; font-size: .85rem; font-weight: 500; color: var(--ink-soft); text-decoration: none; transition: background .15s, color .15s }
-.ds-sidebar__link:hover { background: var(--surface-alt); color: var(--ink) }
-.ds-sidebar__link--active { background: var(--accent-soft); color: var(--accent-deep); font-weight: 700 }
+.ds-sidebar__label { margin: 0 0 8px; font-family: var(--font-mono); font-size: .64rem; font-weight: 700; text-transform: uppercase; letter-spacing: .16em; color: var(--muted-dim) }
+.ds-sidebar__link { position: relative; display: block; padding: 6px 12px; margin: 0 -12px; font-size: .86rem; font-weight: 500; color: var(--ink-soft); text-decoration: none; transition: color .15s }
+.ds-sidebar__link::before { content: ""; position: absolute; left: 0; top: 50%; width: 2px; height: 16px; background: var(--accent-deep); transform: translateY(-50%) scaleY(0); transition: transform .2s }
+.ds-sidebar__link:hover { color: var(--ink) }
+.ds-sidebar__link--active { color: var(--ink); font-weight: 600 }
+.ds-sidebar__link--active::before { transform: translateY(-50%) scaleY(1) }
 
 .ds-main { min-width: 0; padding: 0 24px }
 .ds-main__inner { max-width: 720px; margin: 0 auto; padding: 48px 0 80px }
 
 .ds-pagenav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--border) }
 @media (max-width: 560px) { .ds-pagenav { grid-template-columns: 1fr } }
-.ds-pagenav__link { display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; text-decoration: none; color: var(--ink); font-size: .88rem; font-weight: 600; transition: border-color .15s, transform .15s }
-.ds-pagenav__link:hover { border-color: var(--accent); transform: translateY(-1px) }
+.ds-pagenav__link { display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); border-radius: 0; padding: 14px 16px; text-decoration: none; color: var(--ink); font-family: var(--font-display); font-size: .95rem; font-weight: 600; letter-spacing: -.02em; transition: border-color .15s, background .15s }
+.ds-pagenav__link:hover { border-color: var(--accent-deep); background: var(--surface-alt) }
 .ds-pagenav__link--next { grid-column: 2; justify-content: flex-end; text-align: right }
 @media (max-width: 560px) { .ds-pagenav__link--next { grid-column: 1 } }
-.ds-pagenav__eyebrow { display: block; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted-dim); margin-bottom: 2px }
+.ds-pagenav__eyebrow { display: block; font-family: var(--font-mono); font-size: .6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .16em; color: var(--muted-dim); margin-bottom: 4px }
 `;

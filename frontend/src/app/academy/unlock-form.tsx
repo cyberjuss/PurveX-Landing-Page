@@ -42,12 +42,12 @@ export function UnlockForm() {
         </div>
 
         {state?.error && (
-          <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+          <p className="rounded-none border-0 border-l-2 border-red-500 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
             {state.error}
           </p>
         )}
 
-        <Button type="submit" disabled={isPending} size="lg" className="h-12 w-full rounded-2xl border-0 bg-[#6a5cff] text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] hover:bg-[#5546e0]">
+        <Button type="submit" disabled={isPending} size="lg" className="h-12 w-full rounded-full border-0 bg-[#5546e0] text-white shadow-none hover:bg-[#4a3bd4]">
           {isPending ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" /> Checking...

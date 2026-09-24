@@ -3,11 +3,11 @@
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { hasRecoverySession, updatePassword } from "@/lib/portal-auth";
-import { AuthShell, AUTH_INPUT_CLASSNAME_DARK } from "@/components/auth/auth-shell";
+import { AuthShell, AUTH_INPUT_CLASSNAME_LIGHT } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { Loader2, Lock, Eye, EyeOff, ArrowLeft, CheckCircle2, AlertCircle } from "lucide-react";
 
-const AUTH_INPUT_CLASSNAME = AUTH_INPUT_CLASSNAME_DARK;
+const AUTH_INPUT_CLASSNAME = AUTH_INPUT_CLASSNAME_LIGHT;
 
 function getErrorMessage(err: unknown, fallback: string) {
   if (err instanceof Error && err.message) return err.message;
@@ -111,7 +111,7 @@ function ResetPasswordContent() {
           </p>
           <Link
             href="/forgot-password"
-            className="text-sm font-medium text-slate-500 transition hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-300"
+            className="text-sm font-medium text-slate-500 transition hover:text-[#4a3bd4] dark:text-zinc-400 dark:hover:text-blue-300"
           >
             Request new reset link
           </Link>
@@ -130,7 +130,7 @@ function ResetPasswordContent() {
           <p className="text-center text-sm text-slate-600 dark:text-zinc-300">
             Your password has been reset successfully.
           </p>
-          <Button asChild variant="default" size="lg" className="mt-2 h-12 w-full rounded-2xl border-slate-950 bg-slate-950 text-white shadow-none hover:border-slate-800 hover:bg-slate-800 dark:border-white dark:bg-white dark:text-slate-950 dark:hover:border-zinc-200 dark:hover:bg-zinc-100">
+          <Button asChild variant="default" size="lg" className="mt-2 h-12 w-full rounded-full border-0 bg-[#5546e0] text-white shadow-none hover:bg-[#4a3bd4]">
             <Link href="/">Back home</Link>
           </Button>
         </div>
@@ -206,7 +206,7 @@ function ResetPasswordContent() {
           </div>
 
           {error && (
-            <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200" role="alert">{error}</p>
+            <p className="rounded-none border-0 border-l-2 border-red-500 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200" role="alert">{error}</p>
           )}
 
           <Button
@@ -214,7 +214,7 @@ function ResetPasswordContent() {
             variant="default"
             size="lg"
             disabled={phase === "submitting"}
-            className="mt-2 h-12 w-full rounded-2xl border-slate-950 bg-slate-950 text-white shadow-none hover:border-slate-800 hover:bg-slate-800 dark:border-white dark:bg-white dark:text-slate-950 dark:hover:border-zinc-200 dark:hover:bg-zinc-100"
+            className="mt-2 h-12 w-full rounded-full border-0 bg-[#5546e0] text-white shadow-none hover:bg-[#4a3bd4]"
           >
             {phase === "submitting" ? (
               <>
@@ -227,7 +227,7 @@ function ResetPasswordContent() {
           </Button>
 
           <div className="flex justify-center mt-4">
-            <Link href="/" className="flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-300">
+            <Link href="/" className="flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#4a3bd4] dark:text-zinc-400 dark:hover:text-blue-300">
               <ArrowLeft className="h-4 w-4" />
               Back home
             </Link>
@@ -240,7 +240,7 @@ function ResetPasswordContent() {
 
 function PageShell({ children }: { children: React.ReactNode }) {
   return (
-    <AuthShell title="New password" subtitle="Choose a strong password for your account.">
+    <AuthShell width="sm" bare title="New password" subtitle="Choose a strong password for your account.">
       {children}
     </AuthShell>
   );

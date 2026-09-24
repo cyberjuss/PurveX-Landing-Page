@@ -3,11 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { requestPasswordReset } from "@/lib/portal-auth";
-import { AuthShell, AUTH_INPUT_CLASSNAME_DARK } from "@/components/auth/auth-shell";
+import { AuthShell, AUTH_INPUT_CLASSNAME_LIGHT } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { Loader2, Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
 
-const AUTH_INPUT_CLASSNAME = AUTH_INPUT_CLASSNAME_DARK;
+const AUTH_INPUT_CLASSNAME = AUTH_INPUT_CLASSNAME_LIGHT;
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -36,6 +36,8 @@ export default function ForgotPasswordPage() {
 
   return (
     <AuthShell
+      width="sm"
+      bare
       title="Reset password"
       subtitle={
         phase === "sent"
@@ -55,7 +57,7 @@ export default function ForgotPasswordPage() {
                     </p>
                     <Link
                       href="/"
-                      className="mt-2 flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-300"
+                      className="mt-2 flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#4a3bd4] dark:text-zinc-400 dark:hover:text-blue-300"
                     >
                       <ArrowLeft className="h-4 w-4" />
                       Back home
@@ -84,7 +86,7 @@ export default function ForgotPasswordPage() {
                     </div>
 
                     {error && (
-                      <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200" role="alert">{error}</p>
+                      <p className="rounded-none border-0 border-l-2 border-red-500 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200" role="alert">{error}</p>
                     )}
 
                     <Button
@@ -92,7 +94,7 @@ export default function ForgotPasswordPage() {
                       variant="default"
                       size="lg"
                       disabled={phase === "sending"}
-                      className="mt-2 h-12 w-full rounded-2xl border-0 bg-[rgb(72,99,255)] text-white shadow-[0_10px_30px_rgba(72,99,255,0.35)] hover:bg-[rgb(86,111,255)]"
+                      className="mt-2 h-12 w-full rounded-full border-0 bg-[#5546e0] text-white shadow-none hover:bg-[#4a3bd4]"
                     >
                       {phase === "sending" ? (
                         <>
@@ -105,7 +107,7 @@ export default function ForgotPasswordPage() {
                     </Button>
 
                     <div className="flex justify-center mt-4">
-                      <Link href="/" className="flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-300">
+                      <Link href="/" className="flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#4a3bd4] dark:text-zinc-400 dark:hover:text-blue-300">
                         <ArrowLeft className="h-4 w-4" />
                         Back home
                       </Link>
