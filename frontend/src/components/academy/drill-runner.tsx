@@ -18,7 +18,7 @@ export type DrillStatus = {
     bestTimed: DrillEntry | null;
     lastDay: string | null;
   };
-  lab: { synced: boolean; syncedAt: string | null; ago: string | null; days: number | null; security: boolean };
+  lab: { synced: boolean; syncedAt: string | null; ago: string | null; days: number | null; security: boolean; scenarios: boolean; logonAudit: boolean };
   focus: string | null;
   level: { n: number; name: string };
   ctf: { week: string; entry: DrillEntry | null };
@@ -52,7 +52,7 @@ type Mode = "daily" | "timed" | "ctf";
 const MODE_LABEL: Record<string, string> = { daily: "Daily scenario", timed: "Incident drill", ctf: "Weekly CTF", coach: "Practice" };
 
 type DrillEntry = { id: string; day: string; mode: string; correct: number; total: number; seconds: number; detail?: { t: string }[] };
-type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[]; free?: boolean; format?: string; kind?: "decide" | "respond" | "change"; long?: boolean; checklist?: string[]; checkCount?: number; setup?: { note: string; script: string }; job?: string; gated?: boolean };
+type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[]; free?: boolean; format?: string; kind?: "decide" | "respond" | "change"; long?: boolean; checklist?: string[]; checkCount?: number; setup?: { note: string; script: string }; job?: string; gated?: boolean; live?: boolean };
 type TaskInfo = { setup?: { note: string; script: string }; checklist?: string[]; checkCount?: number };
 type CheckRes = { needsSetup?: boolean; fresh: boolean; results: { label: string; ok: boolean }[]; syncedAgo: string | null; passed: boolean };
 type Review = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string; runbook?: string[] };
@@ -173,6 +173,55 @@ function TaskPanel({ task, checkRes }: { task: TaskInfo; checkRes: CheckRes | nu
   );
 }
 
+const LIVE_TEXT: Record<string, string> = {
+  queued: "Queued. Your domain controller picks it up within 15 minutes. To start it now, run .\\Build-Environment.ps1 -SyncOnly -AllowScenarios on the domain controller.",
+  sent: "Your domain controller is building it now.",
+  done: "Ready. Three practice accounts and their sign-in events are in your Security log. Open Event Viewer on the domain controller and start hunting.",
+  failed: "Your lab could not build it.",
+};
+
+function LiveStatus({ token }: { token: string }) {
+  const [job, setJob] = useState<{ status: string; result: string | null }>({ status: "queued", result: null });
+  useEffect(() => {
+    let stop = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const tick = async () => {
+      try {
+        const res = await academyFetch("/academy/api/drill", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "job", token }),
+        });
+        const d = await res.json();
+        if (stop) return;
+        if (res.ok) setJob({ status: d.status, result: d.result });
+        if (!res.ok || (d.status !== "done" && d.status !== "failed")) timer = setTimeout(tick, 15000);
+      } catch {
+        if (!stop) timer = setTimeout(tick, 20000);
+      }
+    };
+    void tick();
+    return () => {
+      stop = true;
+      if (timer) clearTimeout(timer);
+    };
+  }, [token]);
+  return (
+    <div className={`dr-live dr-live--${job.status}`}>
+      <span className="rd-kicker">Live investigation · your own Security log</span>
+      <p>
+        {LIVE_TEXT[job.status] ?? LIVE_TEXT.queued}
+        {job.status === "failed" && job.result ? ` ${job.result}` : ""}
+      </p>
+      <ol>
+        <li>Event Viewer, Windows Logs, Security, then Filter Current Log.</li>
+        <li>Failures are event 4771 or 4625. Successes are 4768 or 4624.</li>
+        <li>One account has the most failures before a success. Type its sign-in name below.</li>
+      </ol>
+    </div>
+  );
+}
+
 function Scenario({
   caseNo,
   item,
@@ -182,6 +231,7 @@ function Scenario({
   onHint,
   checkRes,
   unlock,
+  token,
 }: {
   caseNo: string;
   item: Item;
@@ -191,6 +241,7 @@ function Scenario({
   onHint: () => void;
   checkRes: CheckRes | null;
   unlock: TaskInfo | null;
+  token: string;
 }) {
   return (
     <div className="dr-card">
@@ -211,6 +262,7 @@ function Scenario({
           <pre>{item.evidence.join("\n")}</pre>
         </div>
       )}
+      {item.live && <LiveStatus token={token} />}
       <h3 className="dr-question">{item.prompt}</h3>
       {item.kind === "change" ? (
         <TaskPanel task={item} checkRes={checkRes} />
@@ -271,11 +323,10 @@ function Scenario({
   );
 }
 
-function JobTasks({ jobs, next, security }: { jobs: JobRow[]; next: string | null; security: boolean }) {
+function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const proven = jobs.filter((j) => j.status === "proven").length;
-  const label = { new: "Not yet", practiced: "Practiced", proven: "Proven" } as const;
+  const done = jobs.filter((j) => j.status === "proven");
 
   useEffect(() => setMounted(true), []);
   useEffect(() => {
@@ -291,23 +342,22 @@ function JobTasks({ jobs, next, security }: { jobs: JobRow[]; next: string | nul
 
   return (
     <>
-      <button type="button" className="dr-jobsbtn" aria-expanded={open} onClick={() => setOpen(true)}>
-        <ClipboardList className="h-5 w-5" />
-        <span>Job tasks</span>
+      <button type="button" className="dr-clip" aria-expanded={open} aria-label="Completed tasks" onClick={() => setOpen(true)}>
+        <ClipboardList />
         <em>
-          {proven} of {jobs.length}
+          {done.length} of {jobs.length}
         </em>
       </button>
       {mounted &&
         createPortal(
           <div className="dr-jobsheet" data-open={open ? "true" : "false"} data-academy-theme={theme}>
             <button type="button" className="dr-jobsheet__scrim" aria-label="Close job tasks" onClick={() => setOpen(false)} />
-            <aside className="dr-jobsheet__panel" role="dialog" aria-label="Job tasks">
+            <aside className="dr-jobsheet__panel" role="dialog" aria-label="Completed tasks">
               <div className="dr-jobsheet__head">
                 <div>
-                  <span>Job tasks</span>
+                  <span>Completed</span>
                   <p>
-                    {proven} of {jobs.length} proven. Proven means you did it in your own lab and it checked out, or got it right three times. Your daily case aims at the next one.
+                    {done.length} of {jobs.length} proven. Proven means you did it in your own lab and it checked out, or got it right three times.
                   </p>
                 </div>
                 <button type="button" className="dr-jobsheet__close" onClick={() => setOpen(false)}>
@@ -315,26 +365,29 @@ function JobTasks({ jobs, next, security }: { jobs: JobRow[]; next: string | nul
                 </button>
               </div>
               <div className="dr-jobsheet__body">
-                {!security && (
+                {!security && jobs.some((j) => j.security) && (
                   <p className="dr-jobs__note">
-                    The {jobs.filter((j) => j.security).length} security configuration tasks (lockout, passwords, auditing, log retention, service account hardening) need the updated lab script. Download it again from Build This Lab and run it once on the domain controller.
+                    The {jobs.filter((j) => j.security).length} security configuration tasks need the updated lab script. Download it again from Build This Lab and run it once on the domain controller.
                   </p>
                 )}
-                <ul className="dr-jobs__list">
-                  {jobs.map((j) => (
-                    <li key={j.id} className={`is-${j.status}${j.id === next ? " is-next" : ""}`}>
-                      <span className="dr-jobs__mark" aria-hidden>
-                        {j.status === "proven" ? <Check className="h-3.5 w-3.5" /> : <ClipboardList className="h-3.5 w-3.5" />}
-                      </span>
-                      <span className="dr-jobs__name">
-                        {j.label}
-                        <em>{j.security ? "Security configuration, checked in your lab" : j.lab ? "Done in your lab" : "Judgement"}</em>
-                      </span>
-                      {j.id === next && <span className="dr-jobs__next">Up next</span>}
-                      <span className="dr-jobs__status">{label[j.status]}</span>
-                    </li>
-                  ))}
-                </ul>
+                {done.length === 0 ? (
+                  <p className="dr-jobs__empty">None proven yet.</p>
+                ) : (
+                  <ul className="dr-jobs__list">
+                    {done.map((j) => (
+                      <li key={j.id} className="is-proven">
+                        <span className="dr-jobs__mark" aria-hidden>
+                          <Check className="h-3.5 w-3.5" />
+                        </span>
+                        <span className="dr-jobs__name">
+                          {j.label}
+                          <em>{j.security ? "Security configuration, checked in your lab" : j.lab ? "Done in your lab" : "Judgement"}</em>
+                        </span>
+                        <span className="dr-jobs__status">Proven</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </aside>
           </div>,
@@ -580,7 +633,7 @@ export function DrillRunner() {
           </div>
         )}
 
-        <Scenario caseNo={String((status?.stats.total ?? 0) + 1).padStart(2, "0")} item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} checkRes={checkRes} unlock={unlock} />
+        <Scenario caseNo={String((status?.stats.total ?? 0) + 1).padStart(2, "0")} item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} checkRes={checkRes} unlock={unlock} token={run.token} />
 
         <div className="dr-actions">
           {item.gated && !unlock ? (
@@ -738,9 +791,12 @@ export function DrillRunner() {
   const nameOf = (e: DrillEntry | null | undefined) => e?.detail?.[0]?.t ?? null;
   return (
     <div className="rd dr dr--floor">
-      <header className="ax-titleblock">
-        <h1>Drills</h1>
-        <p>Practice on your own directory. One named case a day.</p>
+      <header className="dr-mast">
+        <div className="ax-titleblock">
+          <h1>Drills</h1>
+          <p>Practice on your own directory. One named case a day.</p>
+        </div>
+        {status && <JobTasks jobs={status.jobs} security={status.lab.security} />}
       </header>
 
       {status && s ? (
@@ -814,7 +870,15 @@ export function DrillRunner() {
                     {status.ctf.entry && <em className={`ax-tag ${status.ctf.entry.correct ? "ax-tag--good" : ""}`}>{status.ctf.entry.correct ? "Flag captured" : "Missed"}</em>}
                   </span>
                   <span className="ax-path__body">
-                    {status.ctf.entry ? "A new investigation opens Monday." : "One hard investigation a week. Read the evidence, type the flag. Earns +8 Coach chats, +16 with the flag."}
+                    {status.ctf.entry
+                      ? "A new investigation opens Monday."
+                      : `One hard investigation a week. Find the account, then contain it. Earns +8 Coach chats, +16 with the flag. ${
+                          status.lab.scenarios && status.lab.logonAudit
+                            ? "Live: the evidence is planted in your own Security log."
+                            : status.lab.scenarios
+                              ? "To make it live, turn on Logon auditing for success and failure first."
+                              : "To make it live in your own Security log, run .\\Build-Environment.ps1 -InstallSync -AllowScenarios on your domain controller."
+                        }`}
                   </span>
                 </span>
                 <span className="ax-path__count">
@@ -829,9 +893,8 @@ export function DrillRunner() {
           </ol>
           {error && <p className="dr-error">{error}</p>}
 
-          <JobTasks jobs={status.jobs} next={status.nextJob} security={status.lab.security} />
           <Link href={READINESS_PATH} className="dr-reportlink">
-            See this week and the questions you missed on your readiness report. Getting them right raises a competency. Missing them keeps it down.
+            This week and missed questions
             <ArrowRight className="h-4 w-4" />
           </Link>
           <p className="dr-lab">{labLine(status.lab)}</p>

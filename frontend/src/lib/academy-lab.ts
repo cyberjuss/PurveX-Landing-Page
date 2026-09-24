@@ -48,6 +48,8 @@ export type LabSecurity = {
 
 export type LabSnapshot = {
   security?: LabSecurity;
+  /** What the student's lab script is allowed to do. Scenarios stay off unless they turned them on. */
+  agent?: { version: number; scenarios: boolean };
   capturedAt: string;
   domain: { dnsRoot: string; netbios: string };
   ous: LabOu[];
@@ -141,6 +143,10 @@ export function sanitizeLabSnapshot(raw: unknown): LabSnapshot | null {
   const domain = (r.domain && typeof r.domain === "object" ? r.domain : {}) as Record<string, unknown>;
   const snapshot: LabSnapshot = {
     security: sanitizeSecurity(r.security),
+    agent:
+      r.agent && typeof r.agent === "object"
+        ? { version: num((r.agent as Record<string, unknown>).version, 100) ?? 1, scenarios: bool((r.agent as Record<string, unknown>).scenarios) }
+        : undefined,
     capturedAt: date(r.capturedAt) ?? new Date().toISOString(),
     domain: { dnsRoot: str(domain.dnsRoot, 200), netbios: str(domain.netbios, 50) },
     ous: objects(r.ous).map((o) => ({ path: str(o.path), description: str(o.description) })),

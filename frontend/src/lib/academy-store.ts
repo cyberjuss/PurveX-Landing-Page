@@ -267,3 +267,93 @@ export async function saveDailyDrill(userId: string, day: string, token: string,
     .upsert({ user_id: userId, day, kind, token }, { onConflict: "user_id,day,kind", ignoreDuplicates: !overwrite });
   if (error) console.error("academy_drill_daily upsert failed", error.message);
 }
+
+// Work the student's own domain controller can pick up: for now, planting a
+// live investigation. The lab script pulls these; nothing is pushed to it.
+export type LabJobType = "investigation";
+export type LabJobStatus = "queued" | "sent" | "done" | "failed";
+export type InvestigationAccount = { sam: string; name: string; dept: string; groups: string[]; failures: number; success: boolean };
+export type LabJob = {
+  id: string;
+  type: LabJobType;
+  params: { accounts: InvestigationAccount[] };
+  status: LabJobStatus;
+  createdAt: string;
+  result?: string;
+};
+
+const memoryJobs = new Map<string, LabJob[]>();
+const JOB_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
+function toJob(r: Record<string, unknown>): LabJob {
+  return {
+    id: String(r.id),
+    type: "investigation",
+    params: (r.params as LabJob["params"]) ?? { accounts: [] },
+    status: (["queued", "sent", "done", "failed"] as const).find((x) => x === r.status) ?? "queued",
+    createdAt: String(r.created_at),
+    result: typeof r.result === "string" ? r.result : undefined,
+  };
+}
+
+export async function queueLabJob(userId: string, job: { id: string; type: LabJobType; params: LabJob["params"] }): Promise<LabJob> {
+  const row: LabJob = { ...job, status: "queued", createdAt: new Date().toISOString() };
+  memoryJobs.set(userId, [...(memoryJobs.get(userId) ?? []), row]);
+  if (supabaseAdmin) {
+    const { error } = await supabaseAdmin
+      .from("academy_lab_jobs")
+      .insert({ id: job.id, user_id: userId, type: job.type, params: job.params, status: "queued", created_at: row.createdAt });
+    if (error) console.error("academy_lab_jobs insert failed", error.message);
+  }
+  return row;
+}
+
+export async function getLabJob(userId: string, id: string): Promise<LabJob | null> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin
+      .from("academy_lab_jobs")
+      .select("id, type, params, status, result, created_at")
+      .eq("user_id", userId)
+      .eq("id", id)
+      .maybeSingle();
+    if (!error && data) return toJob(data as Record<string, unknown>);
+  }
+  return (memoryJobs.get(userId) ?? []).find((j) => j.id === id) ?? null;
+}
+
+/** Hand queued jobs to the student's lab script, once. Anything older than a day is dropped. */
+export async function claimLabJobs(userId: string): Promise<LabJob[]> {
+  const fresh = new Date(Date.now() - JOB_MAX_AGE_MS).toISOString();
+  let claimed: LabJob[] = [];
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin
+      .from("academy_lab_jobs")
+      .select("id, type, params, status, result, created_at")
+      .eq("user_id", userId)
+      .eq("status", "queued")
+      .gte("created_at", fresh)
+      .order("created_at", { ascending: true })
+      .limit(3);
+    if (!error && data?.length) {
+      claimed = data.map((r) => toJob(r as Record<string, unknown>));
+      await supabaseAdmin.from("academy_lab_jobs").update({ status: "sent", sent_at: new Date().toISOString() }).in("id", claimed.map((j) => j.id));
+    }
+  }
+  const mem = memoryJobs.get(userId) ?? [];
+  const local = mem.filter((j) => j.status === "queued" && j.createdAt >= fresh).slice(0, 3);
+  for (const j of local) j.status = "sent";
+  const seen = new Set(claimed.map((j) => j.id));
+  return [...claimed, ...local.filter((j) => !seen.has(j.id))].slice(0, 3);
+}
+
+export async function finishLabJob(userId: string, id: string, status: "done" | "failed", result: string) {
+  const text = result.slice(0, 300);
+  for (const j of memoryJobs.get(userId) ?? []) if (j.id === id) Object.assign(j, { status, result: text });
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin
+    .from("academy_lab_jobs")
+    .update({ status, result: text, done_at: new Date().toISOString() })
+    .eq("user_id", userId)
+    .eq("id", id);
+  if (error) console.error("academy_lab_jobs update failed", error.message);
+}

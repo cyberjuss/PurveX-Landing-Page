@@ -4448,14 +4448,16 @@ textarea.pc-dock__field {
 .dr-term__copy:hover { color: #fff; }
 .dr-term--small { margin-top: 12px; }
 .dr-term--small pre { font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
-.dr-jobsbtn {
-  display: inline-flex; align-items: center; gap: 10px; margin-top: 28px;
-  padding: 10px 14px; border: 1px solid var(--rd-line); border-radius: 999px;
-  background: transparent; color: var(--rd-ink); cursor: pointer;
-  font-size: var(--ty-body, 14px); font-weight: 600;
+.dr-mast { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.dr-mast .ax-titleblock { padding-bottom: 0; }
+.dr-clip {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  margin-top: 28px; padding: 8px; border: 0; background: none; color: var(--rd-ink); cursor: pointer;
 }
-.dr-jobsbtn em { font-style: normal; font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; font-weight: 700; color: var(--rd-ink-3); }
-.dr-jobsbtn:hover { border-color: var(--rd-accent); color: var(--rd-accent); }
+.dr-clip svg { width: 64px; height: 64px; stroke-width: 1.25; }
+.dr-clip em { font-style: normal; font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; font-weight: 700; color: var(--rd-ink-3); }
+.dr-clip:hover { color: var(--rd-accent); }
+.dr-jobs__empty { margin: 18px 0 0; font-size: 14px; color: var(--rd-ink-2); }
 .dr-jobsheet {
   --rd-ink: #0f172a; --rd-ink-2: #475569; --rd-ink-3: #8a94a8;
   --rd-line: rgba(15, 23, 42, 0.12); --rd-accent: #5546e0; --rd-good: #0f9f6e; --rd-warn: #c4820e; --rd-none: rgba(15, 23, 42, 0.1);
@@ -4499,3 +4501,11 @@ textarea.pc-dock__field {
 
 /* Tickets that are checked in the student's lab */
 .academy-prose .ad-lab-gate { margin: 0.6rem 0 0; padding: 0.55rem 0.8rem; border-left: 3px solid var(--rd-accent, #5546e0); background: rgba(85, 70, 224, 0.07); font-size: 0.85rem; color: var(--pvrx-text-secondary-light, #475569); }
+
+/* Live investigation in the student's own lab */
+.dr-live { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; padding: 14px 16px; border-radius: 10px; background: rgba(85, 70, 224, 0.08); box-shadow: inset 3px 0 0 var(--rd-accent); }
+.dr-live--done { background: rgba(15, 159, 110, 0.1); box-shadow: inset 3px 0 0 var(--rd-good); }
+.dr-live--failed { background: rgba(217, 58, 63, 0.1); box-shadow: inset 3px 0 0 var(--rd-bad); }
+.dr-live .rd-kicker { color: var(--rd-accent); }
+.dr-live p { margin: 0; font-size: var(--ty-body, 14px); line-height: 1.55; color: var(--rd-ink); }
+.dr-live ol { margin: 0; padding-left: 18px; font-size: var(--ty-small, 13px); line-height: 1.6; color: var(--rd-ink-2); }

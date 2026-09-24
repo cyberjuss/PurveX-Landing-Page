@@ -104,3 +104,22 @@ alter table public.academy_drill_log add constraint academy_drill_log_mode_check
 alter table public.academy_drill_daily add column if not exists kind text not null default 'daily';
 alter table public.academy_drill_daily drop constraint if exists academy_drill_daily_pkey;
 alter table public.academy_drill_daily add primary key (user_id, day, kind);
+
+-- Work a student's own domain controller can pick up, such as planting a live
+-- weekly investigation. The lab script pulls jobs with the student's key and
+-- only runs them if the student turned scenarios on.
+create table if not exists public.academy_lab_jobs (
+  id uuid primary key,
+  user_id uuid not null references auth.users (id) on delete cascade,
+  type text not null,
+  params jsonb not null default '{}'::jsonb,
+  status text not null default 'queued' check (status in ('queued', 'sent', 'done', 'failed')),
+  result text,
+  created_at timestamptz not null default now(),
+  sent_at timestamptz,
+  done_at timestamptz
+);
+
+create index if not exists academy_lab_jobs_user_status on public.academy_lab_jobs (user_id, status, created_at);
+
+alter table public.academy_lab_jobs enable row level security;

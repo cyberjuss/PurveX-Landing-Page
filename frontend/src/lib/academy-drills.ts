@@ -46,6 +46,8 @@ export type Item = {
   job?: string;
   /** A typed-answer question that also needs a lab change to finish. The change unlocks after the answer. */
   gate?: boolean;
+  /** The evidence is the real Security log in the student's lab, planted by a queued job. */
+  live?: { jobId: string };
 };
 
 export type Check =
@@ -71,8 +73,9 @@ export type Task = {
   setup?: { sam: string; note: string; script: string };
 };
 
-export type PublicItem = Omit<Item, "answer" | "explain" | "accept" | "hint" | "rubric" | "task" | "job" | "gate"> & {
+export type PublicItem = Omit<Item, "answer" | "explain" | "accept" | "hint" | "rubric" | "task" | "job" | "gate" | "live"> & {
   gated?: boolean;
+  live?: boolean;
   checklist?: string[];
   checkCount?: number;
   setup?: { note: string; script: string };
@@ -548,6 +551,7 @@ function publicItems(items: Item[], level: number): PublicItem[] {
     long: item.long,
     // Early levels say what to change. Later levels only say how it is checked.
     gated: item.gate ? true : undefined,
+    live: item.live ? true : undefined,
     // A gated CTF keeps its task hidden until the answer is right.
     checklist: item.task && !item.gate && level <= 2 ? item.task.checks.map((c) => c.label) : undefined,
     checkCount: item.gate ? undefined : item.task?.checks.length,
@@ -868,6 +872,8 @@ export type ChangeBrief = {
   summary: string;
   /** The account the task is about, when it is a planted practice account. */
   subject?: { sam: string; name: string };
+  /** Where a planted practice account goes: its department folder and groups. */
+  plant?: { dept: string; groups: string[] };
 };
 
 const hasGroup = (s: LabSnapshot, name: string) => s.groups.some((g) => g.name.toLowerCase() === name.toLowerCase());
@@ -1349,6 +1355,7 @@ export function buildChangeTask(params: { snapshot: LabSnapshot; seed: string; l
       skill: "security",
       theme: `change:contain:${sam}`,
       subject: { sam, name: conName },
+      plant: { dept: conDept.ou, groups: [conDept.group, conAdmin] },
       facts: `The SOC confirmed that ${conName}'s account signed in from an unknown host at 2 AM and was used to add someone to ${conAdmin}. The account is compromised. Stop the attacker now, but keep the account in the directory so investigators can read its history.`,
       temptation: level >= 3 ? `A manager says to just delete the account so it is gone. Deleting it destroys the evidence and cannot be undone.` : undefined,
       task: {
@@ -1675,6 +1682,89 @@ export function pickFormat(seed: string, level: number, hasLab: boolean, targets
   if (r < change) return "change";
   if (r < change + respond) return "respond";
   return "decide";
+}
+
+
+// ---- live investigation ---------------------------------------------------
+// The weekly CTF, built from the student's own Security log. A queued job
+// makes their domain controller plant three practice accounts and produce
+// real failed and successful sign-ins. The evidence is what they find in
+// Event Viewer, not text on this page.
+
+export type InvestigationAccount = { sam: string; name: string; dept: string; groups: string[]; failures: number; success: boolean };
+
+/** Whether the student's lab can host a live investigation. */
+export function liveReady(snapshot: LabSnapshot | null): { agent: boolean; audit: boolean } {
+  const agent = Boolean(snapshot?.agent?.scenarios);
+  const v = (snapshot?.security?.audit?.Logon ?? "").toLowerCase();
+  return { agent, audit: v.includes("success") && v.includes("failure") };
+}
+
+export function buildInvestigation(params: { snapshot: LabSnapshot; seed: string; level: number }): { item: Item; accounts: InvestigationAccount[] } | null {
+  const s = params.snapshot;
+  const level = Math.min(4, Math.max(1, params.level));
+  const brief = buildChangeTask({ snapshot: s, seed: `live:${params.seed}`, level, avoid: [], targetJob: "contain-account", only: "contain" });
+  if (!brief?.subject || !brief.plant) return null;
+  const r = seeded(`investigation:${params.seed}`);
+
+  // A lockout policy would lock the accounts before the successes, so stay under it.
+  const threshold = s.security?.passwordPolicy?.lockoutThreshold ?? 0;
+  const cap = threshold > 0 ? threshold - 1 : 12;
+  const target = Math.min([8, 7, 6, 6][level - 1], cap);
+  if (target < 4) return null;
+  const typo = Math.max(1, Math.min(target - 2, [1, 2, 3, 4][level - 1]));
+  const never = Math.max(1, Math.min(target - 1, [2, 3, 4, 5][level - 1]));
+
+  const depts = departments(s);
+  const taken = new Set(s.users.map((u) => u.sam.toLowerCase()));
+  taken.add(brief.subject.sam);
+  const names = shuffle(r, CONTRACTORS).filter((n) => !taken.has(samOf(n)));
+  const decoyDepts = shuffle(r, depts);
+  if (names.length < 2 || !decoyDepts.length) return null;
+  const decoy = (name: string, i: number, failures: number, success: boolean): InvestigationAccount => {
+    const d = decoyDepts[i % decoyDepts.length];
+    return { sam: samOf(name), name, dept: d.ou, groups: [d.group], failures, success };
+  };
+  const accounts: InvestigationAccount[] = [
+    { sam: brief.subject.sam, name: brief.subject.name, dept: brief.plant.dept, groups: brief.plant.groups, failures: target, success: true },
+    decoy(names[0], 0, never, false),
+    decoy(names[1], 1, typo, true),
+  ];
+  const [a, b] = [accounts[1], accounts[2]];
+
+  const titles = ["Guessed their way in", "One account, many failures", "The pattern in the log"];
+  const item: Item = {
+    skill: "security",
+    title: titles[Math.floor(r() * titles.length)],
+    story:
+      "The domain controller's Security log shows a burst of failed sign-ins on a few contractor accounts, and some of them then got in. Most are people mistyping a password. One is someone guessing. The evidence is the real log on your own domain controller, from the last hour or so.",
+    prompt: "Which account had the most failed sign-ins before a successful one?",
+    evidence: [
+      "Your evidence is the live Security log on your domain controller.",
+      "Event Viewer, Windows Logs, Security, then Filter Current Log.",
+      "Failures: event 4771 (Kerberos) or 4625 (NTLM). Successes: 4768 or 4624.",
+      "PowerShell: Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4771,4625,4768,4624} -MaxEvents 200",
+    ],
+    choices: [],
+    answer: brief.subject.sam,
+    accept: [brief.subject.name],
+    explain: `${brief.subject.sam} failed ${target} times and then signed in, which is what a password being guessed looks like. ${b.sam} failed ${b.failures} time${b.failures === 1 ? "" : "s"} and then signed in, an ordinary typing streak. ${a.sam} failed ${a.failures} times and never got in.`,
+    hint: "Filter the Security log for failures and successes, then count the failures per account before that account's first success.",
+    format: "Sign-in name, like first.last",
+    free: true,
+    gate: true,
+    task: { ...brief.task, setup: undefined },
+    job: "trace-logon",
+    live: { jobId: "" },
+    theme: "CTF: live sign-in investigation",
+  };
+  return { item, accounts };
+}
+
+export function liveJobId(userId: string, token: string): string | null {
+  const p = unseal(token);
+  if (!p || p.u !== userId) return null;
+  return p.items[0]?.live?.jobId || null;
 }
 
 // ---- coach chats earned by drills -----------------------------------------

@@ -29,6 +29,13 @@
     Install a scheduled task that sends a snapshot every 15 minutes. The
     Academy download does this automatically after a successful build.
 
+.PARAMETER AllowScenarios
+    Use with -InstallSync. Lets the Academy plant a live weekly investigation in
+    this lab: a few practice accounts and real sign-in events in the Security
+    log. It is off unless you turn it on, it runs one fixed job type only, and it
+    only touches accounts whose Description starts with "PurveX practice". The
+    Academy never sends commands to run.
+
 .PARAMETER UninstallSync
     Remove the PurveX Coach sync task.
 
@@ -45,6 +52,7 @@ param(
     [switch]$IncludeCTF,
     [switch]$SyncOnly,
     [switch]$InstallSync,
+    [switch]$AllowScenarios,
     [switch]$UninstallSync,
     [string]$PurvexKey = "",
     [string]$PurvexUrl = ""
@@ -230,6 +238,109 @@ function Ensure-CTFChallengeData {
 
 # Read-only security settings, so PurveX can check the hardening drills. Each
 # piece is optional: if one cannot be read, the rest still sync.
+# Live investigations. The Academy can ask this lab to plant a few practice
+# accounts and generate real sign-in events for the weekly CTF. It runs only if
+# the sync was installed with -AllowScenarios, only one fixed job type, and it
+# only touches accounts whose Description starts with "PurveX practice". Every
+# value is checked here before it is used. The Academy never sends commands.
+function New-PurvexRandomPassword {
+    $chars = (48..57) + (65..90) + (97..122)
+    $body = -join ($chars | Get-Random -Count 24 | ForEach-Object { [char]$_ })
+    return "$body-aA1!"
+}
+
+function Invoke-PurvexInvestigation {
+    param($Job, [string]$DomainDN)
+    if ($Job.type -ne "investigation") { throw "Unsupported job type." }
+    $accounts = @($Job.params.accounts)
+    if ($accounts.Count -lt 1 -or $accounts.Count -gt 4) { throw "Unexpected number of accounts." }
+
+    $allowedGroups = @()
+    foreach ($root in @("OU=Departments,$DomainDN", "OU=AccessLevels,$DomainDN")) {
+        if (Get-ADOrganizationalUnit -Filter "DistinguishedName -eq '$root'" -ErrorAction SilentlyContinue) {
+            $allowedGroups += @(Get-ADGroup -SearchBase $root -Filter * | ForEach-Object { $_.Name })
+        }
+    }
+
+    foreach ($a in $accounts) {
+        if ([string]$a.sam -notmatch '^[a-z]{2,20}\.[a-z]{2,20}$') { throw "Unexpected sign-in name." }
+        if ([string]$a.name -notmatch '^[A-Za-z]{2,25}( [A-Za-z]{2,25}){1,2}$') { throw "Unexpected display name." }
+        if ([string]$a.dept -notmatch '^[A-Za-z][A-Za-z ]{1,40}$') { throw "Unexpected department." }
+        $f = [int]$a.failures
+        if ($f -lt 0 -or $f -gt 12) { throw "Unexpected failure count." }
+        $ouDn = "OU=Users,OU=$($a.dept),OU=Departments,$DomainDN"
+        if (-not (Get-ADOrganizationalUnit -Filter "DistinguishedName -eq '$ouDn'" -ErrorAction SilentlyContinue)) { throw "Department folder not found." }
+        foreach ($g in @($a.groups)) {
+            if ($allowedGroups -notcontains [string]$g) { throw "Group is not one of this lab's groups." }
+        }
+    }
+
+    Add-Type -AssemblyName System.DirectoryServices.AccountManagement
+    $ctx = New-Object System.DirectoryServices.AccountManagement.PrincipalContext([System.DirectoryServices.AccountManagement.ContextType]::Domain, $domain.DNSRoot)
+
+    $planned = @()
+    foreach ($a in $accounts) {
+        $sam = [string]$a.sam
+        $ouDn = "OU=Users,OU=$($a.dept),OU=Departments,$DomainDN"
+        $pw = New-PurvexRandomPassword
+        $secure = ConvertTo-SecureString $pw -AsPlainText -Force
+        $existing = Get-ADUser -Filter "SamAccountName -eq '$sam'" -Properties Description -ErrorAction SilentlyContinue
+        if ($existing) {
+            if (-not ([string]$existing.Description).StartsWith("PurveX practice")) { throw "$sam already exists and is not a practice account." }
+            Set-ADAccountPassword -Identity $sam -Reset -NewPassword $secure
+            Enable-ADAccount -Identity $sam
+        }
+        else {
+            New-ADUser -Name ([string]$a.name) -SamAccountName $sam -UserPrincipalName "$sam@$($domain.DNSRoot)" -Path $ouDn `
+                -AccountPassword $secure -Enabled $true -ChangePasswordAtLogon $false `
+                -Description "PurveX practice account (safe to delete)"
+        }
+        foreach ($g in @($a.groups)) { Add-ADGroupMember -Identity ([string]$g) -Members $sam -ErrorAction SilentlyContinue }
+        $planned += [pscustomobject]@{ Sam = $sam; Failures = [int]$a.failures; Success = [bool]$a.success; Password = $pw }
+    }
+
+    # Failures are interleaved across accounts, then the successes, the way a real log reads.
+    $rounds = ($planned | Measure-Object -Property Failures -Maximum).Maximum
+    for ($i = 1; $i -le $rounds; $i++) {
+        foreach ($p in $planned) {
+            if ($p.Failures -ge $i) {
+                try { [void]$ctx.ValidateCredentials($p.Sam, ("Wrong-" + [guid]::NewGuid().ToString("N"))) } catch { }
+                Start-Sleep -Milliseconds 600
+            }
+        }
+    }
+    foreach ($p in $planned) {
+        if ($p.Success) {
+            try { [void]$ctx.ValidateCredentials($p.Sam, $p.Password) } catch { }
+            Start-Sleep -Milliseconds 400
+        }
+    }
+    return "Planted $($planned.Count) practice accounts and generated their sign-in events."
+}
+
+function Invoke-PurvexScenarioJobs {
+    param([string]$Key, [string]$Url, [string]$DomainDN)
+    $headers = @{ Authorization = "Bearer $Key" }
+    $endpoint = $Url.TrimEnd("/") + "/api/academy/lab-jobs"
+    $reply = Invoke-RestMethod -Method Get -Uri $endpoint -Headers $headers -TimeoutSec 20
+    $ran = 0
+    foreach ($job in @($reply.jobs)) {
+        $status = "done"
+        try { $result = Invoke-PurvexInvestigation -Job $job -DomainDN $DomainDN }
+        catch {
+            $status = "failed"
+            $result = "$($_.Exception.Message)"
+            if ($result.Length -gt 250) { $result = $result.Substring(0, 250) }
+        }
+        $body = @{ id = "$($job.id)"; status = $status; result = $result } | ConvertTo-Json -Compress
+        Invoke-RestMethod -Method Post -Uri $endpoint -Headers $headers -ContentType "application/json; charset=utf-8" `
+            -Body ([System.Text.Encoding]::UTF8.GetBytes($body)) -TimeoutSec 20 | Out-Null
+        Write-Host "PurveX scenario: $status. $result" -ForegroundColor $(if ($status -eq "done") { "Green" } else { "Yellow" })
+        $ran++
+    }
+    return $ran
+}
+
 function Get-PurvexSecurityState {
     param($Domain)
     $sec = [ordered]@{}
@@ -353,6 +464,7 @@ function Send-PurvexLabSnapshot {
         groups     = @($groups)
         computers  = @($computers)
         security   = $security
+        agent      = [ordered]@{ version = 2; scenarios = [bool]$AllowScenarios }
     }
     $json = $snapshot | ConvertTo-Json -Depth 6 -Compress
 
@@ -384,7 +496,7 @@ function Install-PurvexLabSync {
     }
     $dest = Get-PurvexSyncScriptPath
     Copy-Item -LiteralPath $source -Destination $dest -Force
-    $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$dest`" -SyncOnly"
+    $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$dest`" -SyncOnly$(if ($AllowScenarios) { ' -AllowScenarios' })"
     $trigger = New-ScheduledTaskTrigger -Once -At ((Get-Date).AddMinutes(1))
     $trigger.Repetition.Interval = "PT15M"
     $trigger.Repetition.Duration = "P3650D"
@@ -393,6 +505,9 @@ function Install-PurvexLabSync {
     Unregister-ScheduledTask -TaskName $PurvexSyncTask -Confirm:$false -ErrorAction SilentlyContinue
     Register-ScheduledTask -TaskName $PurvexSyncTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "Sends a read-only Active Directory snapshot to PurveX Coach every 15 minutes. No passwords." | Out-Null
     Write-Host "Coach will refresh from this DC every 15 minutes while the server is on." -ForegroundColor Green
+    if ($AllowScenarios) {
+        Write-Host "Live investigations are ON. The Academy can plant practice accounts and sign-in events here for the weekly CTF. Turn it off by running -InstallSync again without -AllowScenarios." -ForegroundColor Yellow
+    }
     return $true
 }
 
@@ -407,7 +522,7 @@ if ($UninstallSync) {
 }
 
 if ($InstallSync) {
-    if (Install-PurvexLabSync -and $PurvexKey -and $PurvexUrl) {
+    if ((Install-PurvexLabSync) -and $PurvexKey -and $PurvexUrl) {
         try {
             Send-PurvexLabSnapshot -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN
             Write-Host "Lab snapshot sent to PurveX Coach." -ForegroundColor Green
@@ -430,6 +545,17 @@ if ($SyncOnly) {
     }
     catch {
         Write-Host "Could not send the lab snapshot: $($_.Exception.Message)" -ForegroundColor Red
+    }
+    if ($AllowScenarios) {
+        try {
+            if ((Invoke-PurvexScenarioJobs -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN) -gt 0) {
+                # Show the new practice accounts to Coach right away.
+                Send-PurvexLabSnapshot -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN
+            }
+        }
+        catch {
+            Write-Host "Could not check for PurveX scenarios: $($_.Exception.Message)" -ForegroundColor Yellow
+        }
     }
     return
 }

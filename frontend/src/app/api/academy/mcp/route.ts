@@ -84,7 +84,7 @@ export async function POST(request: Request) {
           name: t.name,
           description: t.description,
           inputSchema: t.input_schema,
-          annotations: { readOnlyHint: t.name !== "record_practice_result", openWorldHint: false },
+          annotations: { readOnlyHint: !["record_practice_result", "start_investigation", "check_investigation"].includes(t.name), openWorldHint: false },
         })),
       });
     case "tools/call": {
