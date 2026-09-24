@@ -50,11 +50,15 @@ export function streakLine(s: DrillStatus["stats"]) {
 }
 
 function lastSeven() {
-  const out: { day: string; label: string }[] = [];
+  const out: { day: string; label: string; date: string }[] = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    out.push({ day: localDay(d), label: d.toLocaleDateString("en-US", { weekday: "narrow" }) });
+    out.push({
+      day: localDay(d),
+      label: d.toLocaleDateString("en-US", { weekday: "short" }),
+      date: String(d.getDate()),
+    });
   }
   return out;
 }
@@ -189,7 +193,7 @@ export function DrillRunner() {
     const picked = answers[idx];
     const pick = (c: string) => setAnswers((a) => a.map((v, i) => (i === idx ? c : v)));
     return (
-      <div className="rd dr">
+      <div className="rd dr dr--play">
         <div className="dr-bar">
           <span className="rd-kicker">
             {run.mode === "timed"
@@ -241,7 +245,7 @@ export function DrillRunner() {
     const first = review[0];
     const misses = [...new Set(review.filter((r) => !r.correct).map((r) => SKILLS[r.skill].label))];
     return (
-      <div className="rd dr">
+      <div className="rd dr dr--play">
         <span className="rd-kicker">{entry.mode === "timed" ? "Incident drill" : "Daily scenario"} · Result</span>
 
         {single ? (
@@ -315,20 +319,28 @@ export function DrillRunner() {
   const s = status?.stats;
   const week = lastSeven();
   const today = localDay();
+  const todayDone = Boolean(s?.today);
   return (
-    <div className="rd dr">
-      <header className="ax-titleblock">
-        <h1>Drills</h1>
-        <p>Practice on your own directory. One scenario a day keeps the skills sharp.</p>
+    <div className="rd dr dr--floor">
+      <header className="dr-mast">
+        <div>
+          <span className="rd-kicker">Practice floor</span>
+          <h1>Drills</h1>
+        </div>
+        <p>Practice on your own directory. One scenario a day. A timed drill when you want pressure.</p>
       </header>
 
       {status && s ? (
         <>
-          <section className="dr-hero">
-            <div className="dr-hero__main">
-              <span className="rd-kicker">
-                <Sparkles className="h-3.5 w-3.5" /> Today&apos;s scenario
-              </span>
+          <div className="dr-board">
+            <section className={`dr-assign${todayDone ? " is-done" : ""}`}>
+              <div className="dr-assign__meta">
+                <span className="dr-assign__n">01</span>
+                <span className="rd-kicker">
+                  <Sparkles className="h-3.5 w-3.5" /> Today&apos;s scenario
+                </span>
+                {status.focus && <em className="dr-assign__gap">Gap · {status.focus}</em>}
+              </div>
               <h2>
                 {s.today
                   ? s.today.correct
@@ -337,64 +349,98 @@ export function DrillRunner() {
                   : "One real problem, built from your lab"}
               </h2>
               <p>
-                {status.focus && !s.today ? `Aimed at your gap in ${status.focus}. ` : ""}
                 {s.today ? streakLine(s) : "Read the situation, pick the right first move, and see why."}
               </p>
-              {s.today ? (
-                <span className={`dr-chip ${s.today.correct ? "is-right" : "is-wrong"}`}>
-                  {scoreLabel(s.today)} · {clock(s.today.seconds)}
-                </span>
-              ) : (
-                <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("daily")}>
-                  {busy ? "Writing your scenario…" : "Start today's scenario"} <ArrowRight className="h-4 w-4" />
-                </button>
-              )}
-              <small className="dr-hero__lab">{labLine(status.lab)}</small>
-            </div>
-            <div className="dr-hero__streak">
-              <strong>
-                <Flame className="h-7 w-7" />
-                {s.streak}
-              </strong>
-              <span>day streak</span>
-              <div className="dr-week" aria-label="Last seven days">
+              <ol className="dr-steps" aria-label="How a daily scenario works">
+                <li>
+                  <b>01</b>
+                  <strong>Read</strong>
+                  <span>The ticket and the evidence.</span>
+                </li>
+                <li>
+                  <b>02</b>
+                  <strong>Choose</strong>
+                  <span>The first move. Not a guess.</span>
+                </li>
+                <li>
+                  <b>03</b>
+                  <strong>See why</strong>
+                  <span>What a desk lead would do.</span>
+                </li>
+              </ol>
+              <div className="dr-assign__act">
+                {s.today ? (
+                  <span className={`dr-chip ${s.today.correct ? "is-right" : "is-wrong"}`}>
+                    {scoreLabel(s.today)} · {clock(s.today.seconds)}
+                  </span>
+                ) : (
+                  <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("daily")}>
+                    {busy ? "Writing your scenario…" : "Start today's scenario"} <ArrowRight className="h-4 w-4" />
+                  </button>
+                )}
+                <small>{labLine(status.lab)}</small>
+              </div>
+            </section>
+
+            <aside className="dr-logboard">
+              <div className="dr-streak">
+                <strong>
+                  <Flame className="h-8 w-8" />
+                  {s.streak}
+                </strong>
+                <span>day streak</span>
+              </div>
+              <ol className="dr-roster" aria-label="Last seven days">
                 {week.map((d) => {
                   const done = s.days.includes(d.day);
+                  const isToday = d.day === today;
                   return (
-                    <span key={d.day} className={`dr-week__day${done ? " is-done" : ""}${d.day === today ? " is-today" : ""}`}>
-                      <i>{done ? <Check className="h-3 w-3" /> : null}</i>
-                      {d.label}
-                    </span>
+                    <li
+                      key={d.day}
+                      className={`dr-roster__day${done ? " is-done" : ""}${isToday ? " is-today" : ""}`}
+                    >
+                      <b>{d.label}</b>
+                      <em>{d.date}</em>
+                      <i>{done ? <Check className="h-3 w-3" /> : isToday ? "now" : ""}</i>
+                    </li>
                   );
                 })}
+              </ol>
+              <div className="dr-meters">
+                <div>
+                  <span className="rd-kicker">Best streak</span>
+                  <strong>{s.longest}</strong>
+                </div>
+                <div>
+                  <span className="rd-kicker">Drills done</span>
+                  <strong>{s.total}</strong>
+                </div>
+                <div>
+                  <span className="rd-kicker">Best incident</span>
+                  <strong>{s.bestTimed ? `${s.bestTimed.correct}/${s.bestTimed.total}` : "—"}</strong>
+                </div>
               </div>
-            </div>
-          </section>
+            </aside>
 
-          <div className="dr-stats">
-            <div>
-              <span className="rd-kicker">Best streak</span>
-              <strong>{s.longest}</strong>
-            </div>
-            <div>
-              <span className="rd-kicker">Drills done</span>
-              <strong>{s.total}</strong>
-            </div>
-            <div>
-              <span className="rd-kicker">Best incident drill</span>
-              <strong>{s.bestTimed ? `${s.bestTimed.correct}/${s.bestTimed.total}` : "—"}</strong>
-            </div>
-          </div>
-
-          <div className="dr-mode dr-mode--wide">
-            <div>
-              <span className="rd-kicker">Incident drill</span>
-              <h3>Five alerts and tickets, three minutes</h3>
-              <p>A random mix with a clock. Practice choosing well under pressure.</p>
-            </div>
-            <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("timed")}>
-              Start <ArrowRight className="h-4 w-4" />
-            </button>
+            <section className="dr-pressure">
+              <div className="dr-pressure__copy">
+                <div className="dr-assign__meta">
+                  <span className="dr-assign__n">02</span>
+                  <span className="rd-kicker">
+                    <Timer className="h-3.5 w-3.5" /> Incident drill
+                  </span>
+                </div>
+                <h3>Five alerts and tickets, three minutes</h3>
+                <p>A random mix with a clock. Practice choosing well under pressure.</p>
+              </div>
+              <div className="dr-pressure__clock" aria-hidden>
+                <b>3:00</b>
+                <span>clock</span>
+              </div>
+              <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("timed")}>
+                Start <ArrowRight className="h-4 w-4" />
+              </button>
+            </section>
           </div>
           {error && <p className="dr-error">{error}</p>}
           <p className="dr-note">

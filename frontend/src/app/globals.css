@@ -3264,15 +3264,29 @@ body:has(.lp) {
    used near-identical local <style> blocks and every past edit had to
    be made twice. */
 .academy-prose .ad-answer-guide {
-  display: grid; gap: 0.35rem; margin: 1rem 0 1.35rem; padding: 0.85rem 0;
+  margin: 1rem 0 1.35rem;
+  padding: 0;
   border: none;
   background: transparent;
 }
+.academy-prose .ad-answer-guide > summary,
 .academy-prose .ad-answer-guide__label {
-  font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.68rem; font-weight: 700;
-  letter-spacing: 0.06em; text-transform: uppercase; color: #5546e0;
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #5546e0;
 }
+.academy-prose .ad-answer-guide > summary::-webkit-details-marker { display: none; }
+.academy-prose .ad-answer-guide > summary::before { content: "▸ "; }
+.academy-prose .ad-answer-guide > :not(summary) { margin: 0.5rem 0 0; font-size: 0.9rem; color: var(--pvrx-text-secondary-light); }
 .academy-prose .ad-answer-guide p { margin: 0; font-size: 0.9rem; color: var(--pvrx-text-secondary-light); }
+.academy-prose .ad-answer-guide ul { margin: 0.4rem 0; padding-left: 1.15rem; }
 .academy-prose .ad-progress { display: flex; align-items: center; gap: 0.85rem; margin: 1.25rem 0 1.75rem; }
 .academy-prose .ad-progress__track { flex: 1; height: 8px; border-radius: 2px; background: var(--rd-line-2, var(--pvrx-border-light)); overflow: hidden; }
 .academy-prose .ad-progress__bar { height: 100%; width: 0%; border-radius: 2px; background: var(--rd-accent, #5546e0); transition: width 0.4s ease; }
@@ -4549,3 +4563,40 @@ textarea.pc-dock__field {
 .dr-review__story { font-style: italic; }
 .academy-prose .ad-mission[data-n] { border-bottom: none; padding-bottom: 0; }
 .ad-pager { margin-top: 12px; }
+
+/* Academy type scale. Drills use the same sizes as Home and Readiness:
+   page 32-48, section 24, item 20, lead 16, body 14, small 13, kicker 10.5,
+   stat 36, hero number 72. */
+.academy-bg {
+  --ty-page: clamp(32px, 5vw, 48px);
+  --ty-h2: 24px;
+  --ty-h3: 20px;
+  --ty-lead: 16px;
+  --ty-body: 14px;
+  --ty-small: 13px;
+  --ty-kicker: 10.5px;
+  --ty-stat: 36px;
+  --ty-hero: 72px;
+}
+.dr--floor, .dr--play { max-width: none; }
+.dr--play { max-width: 880px; margin-inline: auto; }
+.dr-mast h1 { font-size: var(--ty-page); line-height: 1.05; font-weight: 600; letter-spacing: -0.03em; }
+.dr-mast p { max-width: 44ch; font-size: var(--ty-lead); line-height: 1.6; }
+.dr-assign h2 { max-width: 24ch; font-size: var(--ty-h2); line-height: 1.2; letter-spacing: -0.02em; }
+.dr-assign > p { font-size: var(--ty-lead); }
+.dr-steps span, .dr-assign__act small { font-size: var(--ty-small); }
+.dr-assign__gap, .dr-pressure__clock span, .dr-roster__day i { font-size: var(--ty-kicker); }
+.dr-streak strong { font-size: var(--ty-hero); }
+.dr-meters strong, .dr-stats strong { font-size: var(--ty-stat); }
+.dr-pressure h3, .dr-mode h3 { font-size: var(--ty-h3); letter-spacing: -0.02em; }
+.dr-pressure p, .dr-mode p, .dr-note, .dr-review p { font-size: var(--ty-body); }
+.dr-card h2, .dr-card__title { font-size: var(--ty-h2); line-height: 1.2; letter-spacing: -0.02em; }
+.dr-question { font-size: var(--ty-h3); }
+.dr-story { font-size: var(--ty-lead); }
+.dr-choice { font-size: var(--ty-lead); }
+.dr-verdict strong { font-size: var(--ty-stat); }
+.dr-score strong { font-size: var(--ty-hero); }
+.dr-score small { font-size: var(--ty-h2); }
+.dr-home__main strong { font-size: var(--ty-h3); }
+.dr-home__main em, .dr-error { font-size: var(--ty-small); }
+.dr-link { font-size: var(--ty-body); }

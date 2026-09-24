@@ -35,7 +35,8 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
   // phase or a lesson, where it's a real jump-around tool rather than a
   // second copy of the page you're looking at.
   const isReadiness = pathname === READINESS_PATH;
-  const showSidebar = pathname !== "/academy" && !isReadiness && pathname !== "/academy/drill";
+  const isDrill = pathname === "/academy/drill";
+  const showSidebar = pathname !== "/academy" && !isReadiness && !isDrill;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -591,7 +592,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           )}
 
           <main className="min-w-0 flex-1 px-4 py-10 sm:px-6 lg:px-10">
-            <div className={`mx-auto ${isReadiness ? "max-w-6xl" : "max-w-4xl"}`}>{children}</div>
+            <div className={`mx-auto ${isReadiness || isDrill ? "max-w-6xl" : "max-w-4xl"}`}>{children}</div>
           </main>
         </div>
         <PurvexCoach />
