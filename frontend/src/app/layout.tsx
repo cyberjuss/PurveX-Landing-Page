@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import "./globals.css";
 import { Geist, Space_Grotesk } from "next/font/google";
@@ -34,15 +34,6 @@ export const metadata: Metadata = {
     description: defaultDescription,
     images: ["/logo.png"],
   },
-};
-
-// viewport-fit=cover lets the mobile nav, menu and contact dock pad
-// themselves around notches and the home indicator via env(safe-area-*).
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",
-  themeColor: "#fbfcfe",
 };
 
 const inter = Geist({

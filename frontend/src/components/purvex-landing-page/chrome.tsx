@@ -51,7 +51,6 @@ export function SiteChrome({
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [showDock, setShowDock] = useState(false);
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -62,10 +61,6 @@ export function SiteChrome({
       const doc = document.documentElement;
       const max = doc.scrollHeight - doc.clientHeight;
       setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0);
-      // Phone-only contact dock: the nav's CTA is hidden on small screens,
-      // so it slides up once the hero is out of view and tucks away again
-      // near the footer, which carries its own CTA.
-      setShowDock(window.scrollY > 520 && max - window.scrollY > 520);
       // Background orbs drift slower than the page scrolls -- written
       // straight to the DOM (not React state) since this fires every
       // scroll frame and a transform doesn't need a re-render to apply.
@@ -172,27 +167,15 @@ export function SiteChrome({
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--sm">
               Get in Touch
             </a>
-            <button
-              className="sp-nav__burger"
-              onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label={mobileOpen ? "Close menu" : "Open menu"}
-              aria-expanded={mobileOpen}
-              aria-controls="sp-mobile-menu"
-            >
+            <button className="sp-nav__burger" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
               {mobileOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
           </div>
         </div>
       </header>
 
-      <div
-        id="sp-mobile-menu"
-        className={`sp-mobile${mobileOpen ? " sp-mobile--open" : ""}`}
-        onClick={closeNav}
-        aria-hidden={!mobileOpen}
-        inert={!mobileOpen}
-      >
-        <nav className="sp-mobile__nav" aria-label="Mobile" onClick={(e) => e.stopPropagation()}>
+      <div className={`sp-mobile${mobileOpen ? " sp-mobile--open" : ""}`} onClick={closeNav}>
+        <nav className="sp-mobile__nav" onClick={(e) => e.stopPropagation()}>
           {NAV_MENUS.map((menu, i) => (
             <div key={menu.key} className="sp-mobile__group" style={{ animationDelay: `${0.06 + i * 0.06}s` }}>
               <Link
@@ -214,24 +197,7 @@ export function SiteChrome({
           >
             Get in Touch
           </a>
-          <div className="sp-mobile__meta">
-            <Link href="/academy" onClick={closeNav}>Academy Portal</Link>
-            <Link href="/legal/privacy" onClick={closeNav}>Privacy</Link>
-            <Link href="/legal/terms" onClick={closeNav}>Terms</Link>
-          </div>
         </nav>
-      </div>
-
-      <div className={`sp-dock${showDock && !mobileOpen ? " sp-dock--show" : ""}`} aria-hidden={!showDock || mobileOpen}>
-        <a
-          href={BOOKING_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="sp-btn sp-btn--prim sp-btn--lg sp-btn--full"
-          tabIndex={showDock && !mobileOpen ? 0 : -1}
-        >
-          Schedule a Conversation <ArrowRight size={16} />
-        </a>
       </div>
 
       <main className="sp-main">{children}</main>
@@ -310,15 +276,7 @@ export const CHROME_CSS = `
   --radius: 16px;
   --font-display: var(--font-inter), system-ui, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  /* Premium layer: layered shadows and a hairline top highlight, used by
-     every card-like surface so depth reads the same on every page. */
-  --shadow-sm: 0 1px 1px rgba(16,25,46,.03), 0 2px 4px -2px rgba(16,25,46,.06);
-  --shadow-md: 0 1px 2px rgba(16,25,46,.04), 0 8px 20px -8px rgba(16,25,46,.10), 0 24px 48px -24px rgba(16,25,46,.12);
-  --shadow-lg: 0 2px 4px rgba(16,25,46,.04), 0 18px 40px -14px rgba(16,25,46,.16), 0 48px 96px -40px rgba(85,70,224,.22);
-  --highlight: inset 0 1px 0 rgba(255,255,255,.9);
-  --grad-accent: linear-gradient(135deg, #7b6dff 0%, #5546e0 55%, #4a3bd4 100%);
-  --grad-border: linear-gradient(135deg, rgba(123,109,255,.55), rgba(85,70,224,.12) 40%, rgba(16,25,46,.06) 70%, rgba(123,109,255,.35));
+  --font-mono: var(--font-mono), ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --ease: cubic-bezier(.16,1,.3,1);
 
   position: relative;
@@ -457,27 +415,6 @@ export const CHROME_CSS = `
 @keyframes sp-menu-in { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: none } }
 @media (prefers-reduced-motion: reduce) { .sp-mobile__group { animation: none; opacity: 1 } }
 
-/* Secondary links under the menu CTA -- small, so the primary list stays
-   the focus, but reachable without scrolling to the footer. */
-.sp-mobile__meta { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 22px; margin-top: 22px }
-.sp-mobile__meta a { font-size: .86rem; font-weight: 550; color: var(--muted); text-decoration: none; padding: 6px 0 }
-.sp-mobile__meta a:hover { color: var(--accent-deep) }
-
-/* ── Mobile contact dock -- phones only (the nav CTA is hidden there).
-   Sits above the home indicator via safe-area insets. ── */
-.sp-dock { display: none }
-@media (max-width: 680px) {
-  .sp-dock {
-    display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
-    background: linear-gradient(to top, rgba(251,252,254,.96) 55%, rgba(251,252,254,0));
-    transform: translateY(110%); transition: transform .4s var(--ease); pointer-events: none;
-  }
-  .sp-dock--show { transform: none; pointer-events: auto }
-  .sp-dock .sp-btn { box-shadow: 0 14px 30px -12px rgba(85,70,224,.55) }
-}
-@media (prefers-reduced-motion: reduce) { .sp-dock { transition: none } }
-
 /* ── Main ── */
 .sp-main { position: relative; z-index: 1; max-width: 1140px; margin: 0 auto; padding: 0 24px 48px }
 
@@ -590,152 +527,24 @@ export const CHROME_CSS = `
   .sp-cards--2 .sp-card:nth-child(n+3), .sp-cards--3 .sp-card:nth-child(n+3), .sp-cards--4 .sp-card:nth-child(n+3) { border-top: 1px solid var(--border) }
   .sp-footer__top { flex-direction: column; gap: 30px }
 }
-/* Touch devices: no sticky hover lifts after a tap, no grey tap flash. */
-.sp a, .sp button { -webkit-tap-highlight-color: transparent }
-@media (hover: none) {
-  .sp-btn--prim:hover, .sp-btn--ghost:hover { transform: none }
-}
 @media (max-width: 680px) {
-  .sp-main { padding: 0 16px 16px }
-  .sp-nav { top: max(10px, env(safe-area-inset-top)); padding: 0 max(10px, env(safe-area-inset-left)) }
-  .sp-nav__inner { height: 58px; padding: 0 6px 0 16px }
-  .sp-nav__burger { width: 44px; height: 44px; margin-right: 0 }
-  .sp-mobile { padding: calc(90px + env(safe-area-inset-top)) 0 calc(40px + env(safe-area-inset-bottom)) }
-  /* Big blurred orbs are the most expensive paint on the page; phones get
-     a still background and no scroll parallax. */
-  .sp-bg__orb { animation: none; filter: blur(50px) }
-  .sp-bg__parallax { transform: none !important }
+  .sp-main { padding: 0 16px 64px }
+  .sp-nav { top: 10px; padding: 0 10px }
+  .sp-nav__inner { padding: 0 8px 0 16px }
   .sp-nav__right .sp-btn { display: none }
   .sp-hero { padding-top: 56px }
   .sp-hero__badge { margin-bottom: 18px }
   .sp-hero__sub { margin-top: 18px }
   .sp-hero__actions { flex-direction: column; margin-top: 28px }
   .sp-hero__actions .sp-btn { width: 100% }
-  .sp-section { padding-top: 96px; scroll-margin-top: 76px }
-  .sp-section--tight { padding-top: 96px }
+  .sp-section { padding-top: 104px }
+  .sp-section--tight { padding-top: 104px }
   .sp-head { margin-bottom: 40px }
   .sp-cards--2, .sp-cards--3, .sp-cards--4 { grid-template-columns: 1fr }
   .sp-card { padding: 28px 24px; border-left: none !important; border-top: none }
   .sp-card:not(:first-child) { border-top: 1px solid var(--border) }
   .sp-panel { padding: 32px; --cut: 22px }
-  .sp-footer { margin-top: 112px; padding: 44px 16px calc(96px + env(safe-area-inset-bottom)) }
-  .sp-footer__brand { max-width: none }
-  .sp-footer__cta { width: 100% }
-  .sp-footer__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 20px }
-  .sp-footer__col a { padding: 4px 0 }
+  .sp-footer__cols { flex-wrap: wrap; gap: 32px }
   .sp-footer__bottom { flex-direction: column; align-items: flex-start; gap: 10px }
-}
-
-/* ═══════════════════════════════════════════════
-   PREMIUM LAYER
-   Same rounded, soft-purple site -- refined. Loaded last so it can
-   lift shared components and each page's own surfaces consistently:
-   layered depth, gradient hairlines, a lit primary button, a glass
-   nav, tighter display type, and a whisper of film grain.
-   ═══════════════════════════════════════════════ */
-
-/* Film grain over the ambient background: breaks up flat gradients the
-   way print does, so large soft areas read as material, not screen. */
-.sp-bg::after {
-  content: ""; position: absolute; inset: 0; opacity: .035; mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-}
-
-/* globals.css gives every span the body font at weight 400 with a 1.6
-   line-height; inside a heading that breaks two-tone headlines apart. */
-.sp :is(h1, h2, h3, h4) span { font: inherit; letter-spacing: inherit; line-height: inherit }
-
-/* ── Type ── */
-.sp-hero__h1 { font-weight: 750; letter-spacing: -.045em; line-height: 1.02; font-size: clamp(2.5rem, 5.6vw, 4.4rem);
-  background: linear-gradient(180deg, #10192e 30%, #2a2f5c 100%); -webkit-background-clip: text; background-clip: text; color: transparent }
-.sp-hero__grad { background: var(--grad-accent); -webkit-background-clip: text; background-clip: text; color: transparent }
-.sp-hero__sub { color: var(--ink-soft); font-size: 1.14rem; line-height: 1.62 }
-.sp-head h2, .sp-statement h2, .sp-panel h2, .sp-zigzag__text h2 { font-weight: 720; letter-spacing: -.035em; line-height: 1.1 }
-.sp-head h2 { font-size: clamp(1.8rem, 3.3vw, 2.65rem) }
-.sp-head p, .sp-statement p { color: var(--ink-soft) }
-
-/* Eyebrows become a small pill with a lit dot, everywhere. */
-.sp-tag, .sp-hero__badge {
-  display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 10px; border-radius: 999px;
-  background: linear-gradient(180deg, #fff, #f6f5ff); border: 1px solid rgba(106,92,255,.2);
-  box-shadow: var(--highlight), 0 1px 2px rgba(85,70,224,.08);
-  font-size: .7rem; font-weight: 650; letter-spacing: .09em; text-transform: uppercase; color: var(--accent-deep)
-}
-.sp-tag::before, .sp-hero__badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--grad-accent); box-shadow: 0 0 0 3px rgba(106,92,255,.14); flex-shrink: 0 }
-.sp-hero__badge { margin-bottom: 26px }
-/* In flex columns (offer cards, heroes) the pill hugs its text instead of stretching. */
-.sp-tag, .sp-hero__badge { align-self: flex-start; width: fit-content }
-.sp-head .sp-tag, .sp-statement .sp-tag, .sp-hero .sp-hero__badge { align-self: auto }
-
-/* ── Buttons: a lit gradient primary with an inner top highlight ── */
-.sp-btn { border-radius: 12px; letter-spacing: -.005em }
-.sp-btn--prim {
-  background: var(--grad-accent); color: #fff;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.28), inset 0 -1px 0 rgba(0,0,0,.12), 0 1px 2px rgba(85,70,224,.3), 0 10px 24px -10px rgba(85,70,224,.65);
-}
-.sp-btn--prim:hover { background: var(--grad-accent); filter: brightness(1.06); box-shadow: inset 0 1px 0 rgba(255,255,255,.3), inset 0 -1px 0 rgba(0,0,0,.12), 0 2px 4px rgba(85,70,224,.3), 0 16px 32px -12px rgba(85,70,224,.75) }
-.sp-btn--ghost { background: linear-gradient(180deg, #fff, #fafbff); border: 1px solid var(--border-strong); box-shadow: var(--highlight), var(--shadow-sm) }
-.sp-btn--ghost:hover { border-color: rgba(106,92,255,.45); color: var(--accent-deep); box-shadow: var(--highlight), 0 8px 20px -10px rgba(85,70,224,.35) }
-.sp-btn svg { transition: transform .25s var(--ease) }
-.sp-btn:hover svg { transform: translateX(2px) }
-
-/* ── Nav: glass with a gradient hairline edge ── */
-.sp-nav__inner {
-  border: 1px solid transparent;
-  background: linear-gradient(rgba(255,255,255,.78), rgba(255,255,255,.78)) padding-box, var(--grad-border) border-box;
-  box-shadow: var(--highlight), 0 1px 2px rgba(16,25,46,.04), 0 18px 40px -22px rgba(16,25,46,.22);
-}
-.sp-nav--s .sp-nav__inner { background: linear-gradient(rgba(255,255,255,.92), rgba(255,255,255,.92)) padding-box, var(--grad-border) border-box }
-.sp-nav__link--active, .sp-nav__link--active:hover { background: #fff; color: var(--accent-deep); box-shadow: var(--highlight), 0 1px 2px rgba(16,25,46,.06), 0 4px 12px -6px rgba(85,70,224,.35) }
-.sp-logo { font-weight: 700; letter-spacing: -.03em }
-
-/* ── Surfaces: every card-like block shares one depth recipe ── */
-.sp-problem, .sp-offer, .sp-feature-quote, .sp-panel, .sp-tile, .sp-founder-page__facts, .sp-console, .sp-faq {
-  background: linear-gradient(180deg, #fff, #fcfcff);
-  box-shadow: var(--highlight), var(--shadow-md);
-  transition: transform .45s var(--ease), box-shadow .45s var(--ease), border-color .45s var(--ease);
-}
-.sp-problem:hover, .sp-offer:hover, .sp-tile:hover {
-  transform: translateY(-4px); background: linear-gradient(180deg, #fff, #fcfcff);
-  border-color: rgba(106,92,255,.3); box-shadow: var(--highlight), var(--shadow-lg);
-}
-/* PurveX Labs bento: rounded tiles; the accent tile keeps its own fill. */
-.sp-tile { border-radius: 20px }
-.sp-tile--accent, .sp-tile--accent:hover { background: radial-gradient(120% 140% at 0% 0%, #7b6dff 0%, #5546e0 50%, #2b2280 100%); border-color: transparent; box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 24px 48px -24px rgba(85,70,224,.7) }
-.sp-panel { clip-path: none; filter: none; border-radius: 22px; border: 1px solid var(--border) }
-.sp-panel:hover { filter: none }
-.sp-console { border: 1px solid var(--border); border-radius: 20px; overflow: hidden }
-
-/* Icon holders: a soft gradient tile with an inner edge instead of a flat circle */
-.sp-card__icon, .sp-problem__icon, .sp-offer__panel, .sp-tile__icon, .sp-console__icon, .sp-mag__point-icon, .sp-format__icon, .sp-step__icon, .sp-rung__icon, .sp-versus__icon {
-  border-radius: 12px !important;
-  background: linear-gradient(145deg, #ffffff, #efedff) !important;
-  border: 1px solid rgba(106,92,255,.2) !important;
-  box-shadow: var(--highlight), 0 6px 14px -8px rgba(85,70,224,.45) !important;
-  color: var(--accent-deep) !important;
-}
-.sp-problem:hover .sp-problem__icon, .sp-offer:hover .sp-offer__panel, .sp-format:hover .sp-format__icon, .sp-step:hover .sp-step__icon {
-  background: var(--grad-accent) !important; color: #fff !important; border-color: transparent !important; transform: none;
-}
-
-/* Divided strips (cards grid) get a gradient hairline top and bottom */
-.sp-cards { border: 0; position: relative }
-.sp-cards::before, .sp-cards::after { content: ""; position: absolute; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--border-strong) 15%, var(--border-strong) 85%, transparent) }
-.sp-cards::before { top: 0 } .sp-cards::after { bottom: 0 }
-
-/* ── Footer: a gradient hairline and a quieter, more considered block ── */
-.sp-footer { border-top: 0; position: relative }
-.sp-footer::before { content: ""; position: absolute; top: 0; left: 24px; right: 24px; height: 1px; background: linear-gradient(90deg, transparent, rgba(106,92,255,.35), var(--border-strong) 50%, transparent) }
-.sp-footer__col h4 { letter-spacing: .12em }
-
-/* Scroll progress: thinner, still lit */
-.sp-progress { height: 2px }
-
-@media (hover: none) {
-  .sp-problem:hover, .sp-offer:hover, .sp-tile:hover { transform: none }
-}
-@media (max-width: 680px) {
-  .sp-hero__h1 { font-size: clamp(2.3rem, 10vw, 2.9rem) }
-  .sp-footer::before { left: 16px; right: 16px }
 }
 `;
