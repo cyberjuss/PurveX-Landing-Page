@@ -72,47 +72,68 @@ export default function AboutPage() {
       </section>
 
       <section className="pg-section">
-        <div className="pg-head" data-r>
-          <span className="sp-tag">Notes</span>
-          <h2>How we run</h2>
-          <p>Short engagements, and the same person on every one.</p>
+        <div className="ab-split">
+          <div className="ab-venn" data-r role="img" aria-label="Operations and training overlap in one person">
+            <svg viewBox="0 0 460 340">
+              <defs>
+                <clipPath id="ab-clip">
+                  <circle cx="168" cy="170" r="122" />
+                </clipPath>
+                <linearGradient id="ab-a" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stopColor="#8b7fff" stopOpacity=".22" />
+                  <stop offset="1" stopColor="#6a5cff" stopOpacity=".1" />
+                </linearGradient>
+              </defs>
+              <circle cx="168" cy="170" r="122" className="ab-c ab-c--a" />
+              <circle cx="292" cy="170" r="122" className="ab-c ab-c--b" />
+              <circle cx="292" cy="170" r="122" clipPath="url(#ab-clip)" className="ab-lens" />
+              <g className="ab-label">
+                <text x="108" y="166" className="ab-t1" textAnchor="middle">Operations</text>
+                <text x="108" y="188" className="ab-t2" textAnchor="middle">SIEM work</text>
+                <text x="356" y="166" className="ab-t1" textAnchor="middle">Training</text>
+                <text x="356" y="188" className="ab-t2" textAnchor="middle">The desk</text>
+              </g>
+              <g className="ab-core">
+                <circle cx="230" cy="150" r="5" />
+                <text x="230" y="184" textAnchor="middle" className="ab-t3">One person</text>
+              </g>
+            </svg>
+          </div>
+          <div>
+            <div className="pg-head" data-r>
+              <span className="sp-tag">How we run</span>
+              <h2>The same person on every engagement</h2>
+              <p>Short engagements, and no account manager between you and the work.</p>
+            </div>
+            <ol className="ab-rows" data-r>
+              {notes.map((n) => (
+                <li key={n.n}>
+                  <i className="pg-ico"><n.Icon size={22} /></i>
+                  <div>
+                    <h3>{n.title}</h3>
+                    <p>{n.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
-        <ol className="pg-grid pg-grid--3 pg-grid--icons" data-r>
-          {notes.map((n) => (
-            <li key={n.n}>
-              <span>{n.n}</span>
-              <i className="pg-ico"><n.Icon size={21} /></i>
-              <strong>{n.title}</strong>
-              <p>{n.body}</p>
-            </li>
-          ))}
-        </ol>
       </section>
 
       <section className="pg-section">
-        <div className="pg-deck" data-r>
-          <article className="pg-tile">
-            <div className="pg-tile__stub">
-              <span>01</span>
-              <span>People</span>
-            </div>
-            <h3>Meet the founder</h3>
+        <div className="ab-links" data-r>
+          <Link href="/about/founder">
+            <span>People</span>
+            <strong>Meet the founder</strong>
             <p>The person doing the work talks with you directly, not through a relay.</p>
-            <Link href="/about/founder" className="pg-tile__link">
-              Read more <ArrowRight size={14} />
-            </Link>
-          </article>
-          <article className="pg-tile pg-tile--dark">
-            <div className="pg-tile__stub">
-              <span>02</span>
-              <span>In development</span>
-            </div>
-            <h3>PurveX Labs</h3>
-            <p>Scheduled detection tests, with the evidence kept, while the product is still in private development.</p>
-            <Link href="/platform" className="pg-tile__link pg-tile__link--light">
-              Request early access <ArrowRight size={14} />
-            </Link>
-          </article>
+            <i><ArrowRight size={20} /></i>
+          </Link>
+          <Link href="/platform">
+            <span>In development</span>
+            <strong>PurveX Labs</strong>
+            <p>Scheduled detection tests, with the evidence kept, while the product is in private development.</p>
+            <i><ArrowRight size={20} /></i>
+          </Link>
         </div>
       </section>
 
