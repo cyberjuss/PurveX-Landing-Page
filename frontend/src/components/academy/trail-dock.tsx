@@ -35,7 +35,7 @@ export function TrailDock({
           Previous
         </button>
       </div>
-      {center}
+      <div className="ax-dock__mid">{center}</div>
       <div className="ax-dock__pair">
         <button type="button" onClick={() => next?.go()} disabled={!next || next.disabled} className="ax-dock__btn">
           Next
