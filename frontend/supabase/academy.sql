@@ -108,3 +108,11 @@ alter table public.academy_drill_daily add primary key (user_id, day, kind);
 -- Removed: an earlier draft queued jobs for the student's domain controller. Drills
 -- now read the student's real lab and Security log instead. Safe to run:
 drop table if exists public.academy_lab_jobs;
+
+-- Live lab verification and faster sync. A student starts a challenge, plants the
+-- code in their lab, and the next snapshot proves the lab is live. While a
+-- challenge or a lab check is open, the lab script syncs every few minutes.
+alter table public.academy_lab_state add column if not exists live_until timestamptz;
+alter table public.academy_lab_state add column if not exists challenge_code text;
+alter table public.academy_lab_state add column if not exists challenge_at timestamptz;
+alter table public.academy_lab_state add column if not exists verified_at timestamptz;

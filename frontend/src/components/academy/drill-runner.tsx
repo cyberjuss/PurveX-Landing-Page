@@ -17,7 +17,7 @@ export type DrillStatus = {
     bestTimed: DrillEntry | null;
     lastDay: string | null;
   };
-  lab: { synced: boolean; syncedAt: string | null; ago: string | null; days: number | null; security: boolean; events: boolean };
+  lab: { synced: boolean; syncedAt: string | null; ago: string | null; days: number | null; security: boolean; events: boolean; verified?: boolean };
   focus: string | null;
   level: { n: number; name: string };
   ctf: { week: string; entry: DrillEntry | null };
@@ -267,6 +267,83 @@ function LabFindings({ items }: { items: Finding[] }) {
           ))}
         </ul>
       )}
+    </section>
+  );
+}
+
+type Challenge = { code: string; target: string; command: string; expiresAt: string };
+type VerifyState = { verified: boolean; verifiedAt: string | null; live: boolean; challenge: Challenge | null };
+
+// Proves the lab is live: plant a one-time code, and the next snapshot has to contain it.
+function VerifyLab({ verified, onVerified }: { verified: boolean; onVerified: () => void }) {
+  const [state, setState] = useState<VerifyState | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState<string | null>(null);
+
+  const call = useCallback(async (action?: "start" | "check") => {
+    const res = await academyFetch("/academy/api/lab-verify", action
+      ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action }) }
+      : undefined);
+    const data = await res.json();
+    if (!res.ok && !data.challenge) throw new Error(data.error || "Could not reach the lab check.");
+    return data as VerifyState & { passed?: boolean; fresh?: boolean; error?: string };
+  }, []);
+
+  useEffect(() => {
+    call().then(setState).catch(() => {});
+  }, [call]);
+
+  async function run(action: "start" | "check") {
+    setBusy(true);
+    setNote(null);
+    try {
+      const data = await call(action);
+      setState(data);
+      if (action === "check") {
+        if (data.passed) {
+          setNote("Verified. You can remove the code from the description now.");
+          onVerified();
+        } else {
+          setNote(data.fresh ? "Your lab reported, but the code is not in it yet. Check the description and try again." : "Waiting for your lab to report. It syncs every few minutes now.");
+        }
+      }
+    } catch (err) {
+      setNote(err instanceof Error ? err.message : "Could not check your lab.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const open = state?.challenge ?? null;
+  return (
+    <section className="rd-sec dr-findings">
+      <div className="rd-sec__head">
+        <span className="rd-sec__n">05</span>
+        <h2>Verify your lab</h2>
+        <p>
+          {verified
+            ? "Your lab is verified. A code you planted showed up in a live snapshot. Verify again any time."
+            : "Plant a one-time code in your lab to show your snapshots come from a lab you control right now."}
+        </p>
+      </div>
+      {open ? (
+        <ul className="dr-findings__list">
+          <li>
+            <strong>Your code: {open.code}</strong>
+            <p>Set the description of {open.target} to this code. In PowerShell on your domain controller:</p>
+            <code style={{ display: "block", padding: "10px 12px", border: "1px solid var(--rd-line)", borderRadius: 8, fontSize: "var(--ty-small)", overflowX: "auto", maxWidth: "100%" }}>{open.command}</code>
+            <p>Your lab now syncs every few minutes. When it has reported, check it. The code expires in an hour.</p>
+            <button type="button" className="dr-outline" disabled={busy} onClick={() => void run("check")}>
+              {busy ? "Checking…" : "Check my lab"} <ArrowRight className="h-4 w-4" />
+            </button>
+          </li>
+        </ul>
+      ) : (
+        <button type="button" className="dr-outline" disabled={busy} onClick={() => void run("start")}>
+          {busy ? "Starting…" : verified ? "Verify again" : "Start verification"} <ArrowRight className="h-4 w-4" />
+        </button>
+      )}
+      {note && <p className="dr-lab">{note}</p>}
     </section>
   );
 }
@@ -879,6 +956,12 @@ export function DrillRunner() {
           {error && <p className="dr-error">{error}</p>}
 
           <LabFindings items={status.findings} />
+          {status.lab.synced && (
+            <VerifyLab
+              verified={Boolean(status.lab.verified)}
+              onVerified={() => setStatus((s) => (s ? { ...s, lab: { ...s.lab, verified: true } } : s))}
+            />
+          )}
 
           <p className="dr-lab">{labLine(status.lab)}</p>
         </>

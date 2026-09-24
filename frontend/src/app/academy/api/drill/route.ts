@@ -30,7 +30,8 @@ import { auditLab } from "@/lib/academy-audit";
 import { createRealCtf } from "@/lib/academy-live";
 import { generateCtf, generateDaily, responseGrader } from "@/lib/academy-scenario";
 import { summarize } from "@/lib/academy-score";
-import { loadDailyDrill, loadDrills, loadLabState, loadProgress, saveDailyDrill, saveDrill } from "@/lib/academy-store";
+import { loadDailyDrill, loadDrills, loadLabLive, loadLabState, loadProgress, saveDailyDrill, saveDrill, touchLabLive } from "@/lib/academy-store";
+import { LIVE_MINUTES, isVerified } from "@/lib/academy-verify";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -44,8 +45,8 @@ async function auth(request: Request) {
 }
 
 // What the student's own lab says about when they last worked in it.
-function labInfo(lab: Awaited<ReturnType<typeof loadLabState>>) {
-  if (!lab) return { synced: false, syncedAt: null, ago: null, days: null, security: false, events: false };
+function labInfo(lab: Awaited<ReturnType<typeof loadLabState>>, verified = false) {
+  if (!lab) return { synced: false, syncedAt: null, ago: null, days: null, security: false, events: false, verified: false };
   const age = formatLabAge(lab.uploadedAt);
   return {
     synced: true,
@@ -56,6 +57,8 @@ function labInfo(lab: Awaited<ReturnType<typeof loadLabState>>) {
     security: Boolean(lab.snapshot.security?.passwordPolicy || lab.snapshot.security?.audit),
     // Whether the lab sent a digest of its real Security log, which the weekly CTF asks about.
     events: Boolean(lab.snapshot.events),
+    // True when a planted challenge code showed up in a snapshot in the last 30 days.
+    verified,
   };
 }
 
@@ -64,8 +67,8 @@ function ctfOf(entries: DrillEntry[], day: string) {
 }
 
 async function status(userId: string, day: string) {
-  const [entries, labState, results] = await Promise.all([loadDrills(userId), loadLabState(userId), loadProgress(userId)]);
-  const lab = labInfo(labState);
+  const [entries, labState, results, labLive] = await Promise.all([loadDrills(userId), loadLabState(userId), loadProgress(userId), loadLabLive(userId)]);
+  const lab = labInfo(labState, isVerified(labLive.verifiedAt));
   const gap = summarize(results).focus[0];
   const level = levelFor(entries);
   const chats = coachBonus(entries, new Date().toISOString().slice(0, 10));
@@ -256,7 +259,11 @@ export async function POST(request: Request) {
     const checked = checkChange(userId, body.token, lab, body.answers);
     if (!checked) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
     const syncedAgo = lab ? formatLabAge(lab.uploadedAt).ago : null;
-    if (!checked.passed) return NextResponse.json({ ...checked, syncedAgo });
+    if (!checked.passed) {
+      // The student is waiting on the lab, so let it sync every few minutes for a while.
+      if (lab) await touchLabLive(userId, LIVE_MINUTES).catch(() => {});
+      return NextResponse.json({ ...checked, syncedAgo });
+    }
     const graded = await gradeDrill(userId, body.token, body.answers ?? [], { changePassed: true });
     if (!graded) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
     const recorded = await record(userId, graded, day);

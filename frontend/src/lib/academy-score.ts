@@ -6,19 +6,19 @@ export type Skill = "accounts" | "directory" | "troubleshooting" | "security";
 export const SKILLS: Record<Skill, { label: string; advice: string }> = {
   accounts: {
     label: "Accounts and Groups",
-    advice: "Review Admin Tasks and the Full User Directory in The Environment. Practice reading Member Of tabs and counting group members.",
+    advice: "Read the Member Of tab and count the members before you change a group.",
   },
   directory: {
     label: "Directory Navigation",
-    advice: "Review AD Building Blocks. Practice telling OUs from Containers and finding objects under Departments and AccessLevels.",
+    advice: "Find objects under Departments and AccessLevels without using Find.",
   },
   troubleshooting: {
     label: "Troubleshooting and Verification",
-    advice: "Review Admin Tasks. Practice checking the facts in the directory before acting on what a caller or a notice says.",
+    advice: "Open the account first. Believe the directory, not the caller.",
   },
   security: {
     label: "Security Response",
-    advice: "Work The 2 AM Login in Phase 2 — Log Analysis. Practice reading log evidence and choosing to contain first and keep the evidence.",
+    advice: "Read the log before you change anything. Contain first. Keep the evidence.",
   },
 };
 

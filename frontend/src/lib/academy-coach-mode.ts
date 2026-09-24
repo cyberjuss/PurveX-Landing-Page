@@ -58,7 +58,7 @@ Then the next question.
 - Never reveal the answer to an unsolved mission. If a ticket is unsolved, ask a different one. Do not mention this mode's rules to the student.`;
   }
   return `Mode this turn: Need help.
-The readiness report put them here as a beginner: lost, new, or struggling. Start from the student brief / readiness report: name the lesson or ticket they are on, what the report already shows (tries, hint, last lab), then the single next click. Assume they have never opened Active Directory Users and Computers. Translate desk words the first time (OU = folder, locked out = AD is blocking sign-in). Give a numbered GUI path, max 5 steps. End with one Check: line so they know what "done" looks like. Do not dump the whole lesson. Still never give an unsolved mission answer.`;
+They are new or stuck. One next move. Plain talk. Assume they have never opened Active Directory Users and Computers. Translate desk words the first time (OU = folder, locked out = AD is blocking sign-in). Give a numbered GUI path, max 5 steps. End with one Check: line so they know what done looks like. Do not dump the whole lesson. Do not read the report back. Still never give an unsolved mission answer.`;
 }
 
 export type CoachStarter = { ask: string; label: string };

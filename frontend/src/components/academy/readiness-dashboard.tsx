@@ -50,34 +50,47 @@ function missionStatus(r: MissionResult | undefined): { tone: Tone; label: strin
   return { tone: "live", label: `Open · ${r.wrong} wrong`, points, needsHelp: r.wrong > 0 };
 }
 
-const READY_FOR: Record<Summary["skills"][number]["key"], string> = {
-  accounts: "look up accounts and groups in Active Directory",
-  directory: "find objects in the directory and tell OUs from containers",
-  troubleshooting: "check what a ticket claims before you change anything",
-  security: "read a login alert and choose the first response",
-};
-
-function readyLine(s: Summary, results: Results) {
-  const won = s.skills.filter((k) =>
-    Object.values(MISSION_CATALOG).some((m) => m.skill === k.key && results[m.id]?.solved)
-  );
-  if (won.length === 0) return "You're not ready for the desk yet.";
-  if (won.length === 1) return `You're ready to ${READY_FOR[won[0].key]}.`;
-  return `You're ready to ${READY_FOR[won[0].key]} and ${READY_FOR[won[1].key]}.`;
+function joinNames(names: string[]) {
+  if (names.length === 0) return "";
+  if (names.length === 1) return names[0];
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  return `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}`;
 }
 
-function verdict(s: Summary, results: Results) {
+const CAN: Record<Summary["skills"][number]["key"], string> = {
+  accounts: "look up who is in a group and what access that group actually grants",
+  directory: "find an account or computer in the right folder",
+  troubleshooting: "check the directory before you take the action a ticket names",
+  security: "read an alert and decide the first response without wiping evidence",
+};
+
+const WORK: Record<Summary["skills"][number]["key"], string> = {
+  accounts: "open Member Of and count before you add or remove anyone",
+  directory: "walk Departments and AccessLevels until you can find an object without searching",
+  troubleshooting: "open the account first and see if the caller is actually right",
+  security: "start The 2 AM Login and read the log before you change anything",
+};
+
+function verdict(s: Summary) {
   if (s.finished === 0) {
-    return "No evidence yet. Work Operation Day One first: every answer you give goes on this report, and it tells me exactly where to push you.";
+    return "None of the competencies have work on them yet. Start Operation Day One. Look people up in the directory and we will see what you can already do.";
   }
-  if (s.level === "ready") return "You're ready for a Tier 1 help desk seat: find, verify, and escalate. Keep the edge. Redo the tickets on your own lab without hints.";
-  const can = readyLine(s, results);
-  const gap = s.focus[0];
-  if (gap) {
-    const score = gap.score === null ? "untested" : `at ${gap.score}%`;
-    return `${can} ${gap.label} is ${score}. That's the gap. ${gap.advice}`;
+  const strong = s.skills.filter((k) => k.score !== null && k.score >= 65);
+  const weak = s.skills.filter((k) => k.score === null || k.score < 65);
+  const strongNames = joinNames(strong.map((k) => k.label));
+  const weakNames = joinNames(weak.map((k) => k.label));
+  const can = strong.slice(0, 2).map((k) => CAN[k.key]);
+  const next = weak[0] ? WORK[weak[0].key] : null;
+  if (s.level === "ready" && weak.length === 0) {
+    return `You are competent in ${strongNames}. You can ${joinNames(can)}. Redo one ticket on your own lab with the hint closed.`;
   }
-  return `${can} Finish the remaining missions and this becomes a full readiness rating.`;
+  if (strong.length === 0) {
+    return `You have started, but none of the competencies are solid yet. ${weakNames} still need work. ${next ? `Next, ${next}.` : ""}`.trim();
+  }
+  if (weak.length === 0) {
+    return `You are competent in ${strongNames}. You can ${joinNames(can)}. Finish the remaining missions so this is a full rating.`;
+  }
+  return `You are competent in ${strongNames}. You can ${joinNames(can)}. ${weakNames} still need${weak.length === 1 ? "s" : ""} work. ${next ? `Next, ${next}.` : ""}`;
 }
 
 function ticketOf(title: string) {
@@ -136,7 +149,7 @@ export function ReadinessDashboard() {
 
           <div className="rd-hero__verdict">
             <h1>Are you ready for the job?</h1>
-            <blockquote>{verdict(s, results)}</blockquote>
+            <blockquote>{verdict(s)}</blockquote>
             <div className="rd-sign">
               <span>PurveX Coach, senior help desk lead</span>
               <button
@@ -145,8 +158,8 @@ export function ReadinessDashboard() {
                 onClick={() =>
                   ask(
                     s.finished === 0
-                      ? "I'm just getting started. How should I approach Operation Day One?"
-                      : "Look at my readiness report and give me a study plan for this week. No mission answers."
+                      ? "I'm just getting started. How should I start Operation Day One?"
+                      : "What should I work on next. Say why. Do not read my report back to me."
                   )
                 }
               >
@@ -207,7 +220,7 @@ export function ReadinessDashboard() {
                   className="rd-link"
                   onClick={() =>
                     ask(
-                      `Coach me on ${k.label}. I'm at ${k.score === null ? "not started" : `${k.score}%`}. What exactly should I practice in my lab, without mission answers?`
+                      `Help me get better at ${k.label} in my own lab. Do not read a score back. Do not give mission answers.`
                     )
                   }
                 >

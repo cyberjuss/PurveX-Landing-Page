@@ -221,7 +221,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       if (id && LAB_GATED_MISSIONS.includes(id) && !wrap.querySelector(".ad-lab-gate")) {
         const note = document.createElement("p");
         note.className = "ad-lab-gate";
-        note.textContent = "If your lab is connected, this ticket is checked there. Make the change, wait for your lab to report, then submit your answer.";
+        note.textContent = "Your lab is checked for this change. Make it, wait for the lab to report, then submit.";
         wrap.querySelector(".ad-guess")?.before(note);
       }
       const r = id ? loadResults()[id] : undefined;

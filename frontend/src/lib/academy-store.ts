@@ -108,6 +108,46 @@ export async function saveLabState(userId: string, snapshot: LabSnapshot) {
   if (error) throw new Error(error.message);
 }
 
+// Live lab verification. The lab script syncs every few minutes while `liveUntil`
+// is in the future, and a planted challenge code proves the lab is live.
+export type LabLive = { liveUntil: string | null; challengeCode: string | null; challengeAt: string | null; verifiedAt: string | null };
+const memoryLive = new Map<string, LabLive>();
+const NO_LIVE: LabLive = { liveUntil: null, challengeCode: null, challengeAt: null, verifiedAt: null };
+
+export async function loadLabLive(userId: string): Promise<LabLive> {
+  const mem = memoryLive.get(userId) ?? NO_LIVE;
+  if (!supabaseAdmin) return mem;
+  const { data, error } = await supabaseAdmin
+    .from("academy_lab_state")
+    .select("live_until, challenge_code, challenge_at, verified_at")
+    .eq("user_id", userId)
+    .maybeSingle();
+  // Before the migration runs, fall back to what this server instance remembers.
+  if (error || !data) return mem;
+  return { liveUntil: data.live_until ?? null, challengeCode: data.challenge_code ?? null, challengeAt: data.challenge_at ?? null, verifiedAt: data.verified_at ?? null };
+}
+
+export async function saveLabLive(userId: string, patch: Partial<LabLive>) {
+  const next = { ...(memoryLive.get(userId) ?? NO_LIVE), ...patch };
+  memoryLive.set(userId, next);
+  if (!supabaseAdmin) return;
+  const cols: Record<string, string | null> = {};
+  if ("liveUntil" in patch) cols.live_until = patch.liveUntil ?? null;
+  if ("challengeCode" in patch) cols.challenge_code = patch.challengeCode ?? null;
+  if ("challengeAt" in patch) cols.challenge_at = patch.challengeAt ?? null;
+  if ("verifiedAt" in patch) cols.verified_at = patch.verifiedAt ?? null;
+  const { error } = await supabaseAdmin.from("academy_lab_state").update(cols).eq("user_id", userId);
+  if (error) console.error("academy_lab_state live update failed", error.message);
+}
+
+/** Keep the lab syncing every few minutes for a while. Never shortens an existing window. */
+export async function touchLabLive(userId: string, minutes: number) {
+  const until = Date.now() + minutes * 60_000;
+  const cur = await loadLabLive(userId);
+  if (cur.liveUntil && Date.parse(cur.liveUntil) >= until) return;
+  await saveLabLive(userId, { liveUntil: new Date(until).toISOString() });
+}
+
 // MCP connection keys. Only the SHA-256 of a key is stored; the key itself
 // is shown to the student once, when it is created.
 const KEY_PREFIX = "pvx_";

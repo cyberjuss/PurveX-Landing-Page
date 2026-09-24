@@ -139,8 +139,9 @@ You can also copy the current script from here. A pasted copy is not linked to y
     what you actually did.
 
 .PARAMETER InstallSync
-    Install a scheduled task that sends a snapshot every 15 minutes. The
-    Academy download does this automatically after a successful build.
+    Install a scheduled task that sends a snapshot every 15 minutes, and
+    every few minutes while you have a lab check open on the Drills page.
+    The Academy download does this automatically after a successful build.
 
 .PARAMETER UninstallSync
     Remove the PurveX Coach sync task.
@@ -157,6 +158,7 @@ param(
     [System.Security.SecureString]$InitialPassword,
     [switch]$IncludeCTF,
     [switch]$SyncOnly,
+    [switch]$Scheduled,
     [switch]$InstallSync,
     [switch]$UninstallSync,
     [string]$PurvexKey = "",
@@ -515,6 +517,34 @@ function Send-PurvexLabSnapshot {
         -Headers @{ Authorization = "Bearer $Key" } `
         -ContentType "application/json; charset=utf-8" `
         -Body ([System.Text.Encoding]::UTF8.GetBytes($json)) | Out-Null
+
+    Set-Content -LiteralPath (Get-PurvexStampPath) -Value (Get-Date).ToUniversalTime().ToString("o") -ErrorAction SilentlyContinue
+}
+
+function Get-PurvexStampPath {
+    $dir = Join-Path $env:ProgramData "PurveX"
+    if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+    return (Join-Path $dir "last-sync.txt")
+}
+
+# The task wakes every 3 minutes. It sends a snapshot when 15 minutes have passed,
+# or when Academy says a lab check is open (live). Otherwise it does nothing.
+function Test-PurvexSyncDue {
+    param([string]$Key, [string]$Url)
+    $minutes = 999
+    try {
+        $last = [datetime]::Parse((Get-Content -LiteralPath (Get-PurvexStampPath) -Raw -ErrorAction Stop).Trim(), [Globalization.CultureInfo]::InvariantCulture, [Globalization.DateTimeStyles]::RoundtripKind)
+        $minutes = ((Get-Date).ToUniversalTime() - $last.ToUniversalTime()).TotalMinutes
+    }
+    catch { }
+    if ($minutes -ge 14) { return $true }
+    if ($minutes -lt 2) { return $false }
+    try {
+        [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+        $r = Invoke-RestMethod -Method Get -Uri ($Url.TrimEnd("/") + "/api/academy/lab-state") -TimeoutSec 10 -Headers @{ Authorization = "Bearer $Key" }
+        return [bool]$r.live
+    }
+    catch { return $false }
 }
 
 $PurvexSyncTask = "PurveX Coach Lab Sync"
@@ -538,15 +568,15 @@ function Install-PurvexLabSync {
     }
     $dest = Get-PurvexSyncScriptPath
     Copy-Item -LiteralPath $source -Destination $dest -Force
-    $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$dest`" -SyncOnly"
+    $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$dest`" -SyncOnly -Scheduled"
     $trigger = New-ScheduledTaskTrigger -Once -At ((Get-Date).AddMinutes(1))
-    $trigger.Repetition.Interval = "PT15M"
+    $trigger.Repetition.Interval = "PT3M"
     $trigger.Repetition.Duration = "P3650D"
     $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
     Unregister-ScheduledTask -TaskName $PurvexSyncTask -Confirm:$false -ErrorAction SilentlyContinue
-    Register-ScheduledTask -TaskName $PurvexSyncTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "Sends a read-only Active Directory snapshot to PurveX Coach every 15 minutes. No passwords." | Out-Null
-    Write-Host "Coach will refresh from this DC every 15 minutes while the server is on." -ForegroundColor Green
+    Register-ScheduledTask -TaskName $PurvexSyncTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "Sends a read-only Active Directory snapshot to PurveX Coach every 15 minutes, and every few minutes while a lab check is open. No passwords." | Out-Null
+    Write-Host "Coach will refresh from this DC every 15 minutes, and every few minutes while a lab check is open." -ForegroundColor Green
     return $true
 }
 
@@ -578,6 +608,7 @@ if ($SyncOnly) {
         Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build This Lab, then run: ./Build-Environment.ps1 -SyncOnly" -ForegroundColor Yellow
         return
     }
+    if ($Scheduled -and -not (Test-PurvexSyncDue -Key $PurvexKey -Url $PurvexUrl)) { return }
     try {
         Send-PurvexLabSnapshot -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN
         Write-Host "Lab snapshot sent to PurveX Coach." -ForegroundColor Green
