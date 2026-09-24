@@ -284,8 +284,8 @@ export function SectionTabs({
           <div ref={setLabFoot} />
         ) : (
           <TrailDock
-            prev={prevTrail ? { go: prevTrail.go, label: prevTrail.label } : null}
-            next={nextTrail ? { go: nextTrail.go, label: nextTrail.label } : null}
+            prev={prevTrail ? { go: prevTrail.go } : null}
+            next={nextTrail ? { go: nextTrail.go } : null}
             center={<span className="ax-panel__count">{`${pad(active + 1)} / ${pad(items.length)}`}</span>}
           />
         )}
