@@ -3556,7 +3556,7 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
   color: var(--pvrx-text-primary-light);
 }
 .academy-bg[data-academy-theme="dark"]::before {
-  background-image: none;
+  background-image: radial-gradient(rgba(180, 200, 255, 0.055) 1px, transparent 1px);
 }
 
 /* surfaces */
