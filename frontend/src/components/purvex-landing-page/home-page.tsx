@@ -358,8 +358,21 @@ export default function HomePage() {
 .sp-problems[data-r] > *:nth-child(1) { transition-delay: .03s }
 .sp-problems[data-r] > *:nth-child(2) { transition-delay: .1s }
 .sp-problems[data-r] > *:nth-child(3) { transition-delay: .17s }
+/* Phones: the three problems become a swipeable row that peeks the next
+   card, instead of three tall stacked boxes the reader scrolls past. */
 @media (max-width: 680px) {
-  .sp-problems { grid-template-columns: 1fr }
+  .sp-problems {
+    grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 82%; gap: 12px;
+    margin: 0 -16px; padding: 4px 16px 8px; overflow-x: auto; scroll-snap-type: x mandatory;
+    scroll-padding-inline: 16px; overscroll-behavior-x: contain; scrollbar-width: none;
+  }
+  .sp-problems::-webkit-scrollbar { display: none }
+  .sp-problem { padding: 28px 22px; scroll-snap-align: start }
+  .sp-problem h3 { margin-top: 18px }
+  .sp-problem p { margin-top: 8px }
+  .sp-offer { padding: 30px 22px }
+  .sp-offer__body { margin-top: 20px }
+  .sp-offer__list { margin: 20px 0 24px }
 }
 
 /* ── Offers (static, replaces the old auto-rotating carousel) ── */
