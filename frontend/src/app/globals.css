@@ -3539,7 +3539,7 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   line-height: 1.4 !important;
 }
 .academy-prose .ad-flag > .ad-guess__feedback {
-  margin: 0 0 0.45rem !important;
+  margin: 1rem 0 1rem !important;
 }
 .academy-prose .ad-guess__feedback:empty,
 .academy-prose p.ad-guess__feedback:empty { display: none !important; margin: 0 !important; }
