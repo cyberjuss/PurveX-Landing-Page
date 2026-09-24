@@ -35,3 +35,6 @@ backend/purvex.db
 Thumbs.db
 .vscode/
 .idea/
+
+# ── Supabase CLI local state ──
+frontend/supabase/.temp/
