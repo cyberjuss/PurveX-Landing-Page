@@ -1,9 +1,9 @@
-# GovTech Financial AD lab -- build scripts
+# PurveX Financial AD lab -- build scripts
 
 Builds the Active Directory environment described on the course's Home Lab
 page (`/academy/phase-1/home-lab-active-directory`): 5 departments, 9 users,
 8 custom security groups, and 1 workstation, all under the
-`govtechfinancial.local` domain.
+`purvexfinancial.local` domain.
 
 **Instructor-only.** This is infrastructure tooling for standing up the
 actual lab VMs/network, not student-facing content -- it isn't linked from
@@ -13,7 +13,7 @@ the site and shouldn't be.
 
 | File | Purpose |
 | --- | --- |
-| `Install-Forest.ps1` | One-time bootstrap: promotes a clean Windows Server to the `govtechfinancial.local` forest root. Skip this if the domain already exists. |
+| `Install-Forest.ps1` | One-time bootstrap: promotes a clean Windows Server to the `purvexfinancial.local` forest root. Skip this if the domain already exists. |
 | `Build-Environment.ps1` | Idempotent: creates the OUs, groups, users, and workstation object. Safe to re-run any time. |
 
 ## Prerequisites
@@ -31,7 +31,7 @@ the site and shouldn't be.
 1. **New environment only:** run `Install-Forest.ps1` on the server that
    will be the DC. It installs the AD DS role, promotes the forest, and
    reboots automatically.
-2. Log back in as `GOVTECHFINANCIAL\Administrator` after reboot.
+2. Log back in as `PURVEXFINANCIAL\Administrator` after reboot.
 3. Run `Build-Environment.ps1`. You'll be prompted once for an initial
    password used for all 9 created accounts (every account is created with
    "must change password at next logon," so this password is never a
@@ -67,7 +67,7 @@ Matches the site's Home Lab tabs directly:
   `IT/Workstations`. The site names it "IT WKS01"; since AD computer names
   can't contain spaces, the object is created as `IT-WKS01`. This only
   creates the AD object -- join an actual machine to the domain with that
-  name to complete it (`Add-Computer -DomainName govtechfinancial.local
+  name to complete it (`Add-Computer -DomainName purvexfinancial.local
   -NewName IT-WKS01`, run on the workstation itself).
 
 ## Verifying the build

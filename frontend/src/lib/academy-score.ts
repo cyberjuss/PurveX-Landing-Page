@@ -6,19 +6,19 @@ export type Skill = "accounts" | "directory" | "troubleshooting" | "security";
 export const SKILLS: Record<Skill, { label: string; advice: string }> = {
   accounts: {
     label: "Accounts and Groups",
-    advice: "Read the Member Of tab and count the members before you change a group.",
+    advice: "Read the Member Of tab and count the members before changing a group.",
   },
   directory: {
     label: "Directory Navigation",
-    advice: "Find objects under Departments and AccessLevels without using Find.",
+    advice: "Find objects under Departments and AccessLevels by browsing the tree instead of using Find.",
   },
   troubleshooting: {
     label: "Troubleshooting and Verification",
-    advice: "Open the account first. Believe the directory, not the caller.",
+    advice: "Open the account first, and trust what the directory shows over what the caller says.",
   },
   security: {
     label: "Security Response",
-    advice: "Read the log before you change anything. Contain first. Keep the evidence.",
+    advice: "Read the log before changing anything, contain the problem first, and keep the evidence.",
   },
 };
 

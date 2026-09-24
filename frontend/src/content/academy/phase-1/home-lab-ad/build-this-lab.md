@@ -7,13 +7,13 @@
 
 The other tabs describe the departments, the access levels, and the user directory. Those objects only exist in your lab after you run the two scripts below.
 
-Building it yourself is how you see what normal looks like here. Until the scripts finish you are reading a chart. After they finish you have a live copy of GovTech Financial you can open, query, and check a ticket against.
+Building it yourself is how you see what normal looks like here. Until the scripts finish you are reading a chart. After they finish you have a live copy of PurveX Financial you can open, query, and check a ticket against.
 
 By the end of this tab you should be able to open Active Directory Users and Computers and find the same departments and accounts the other tabs named. If you cannot the lab is not built yet. Do not start a challenge on a half-built directory.
 
 **At a glance:**
 
-* `Install-Forest.ps1` is one-time setup. It turns a blank Windows Server into the domain controller for `govtechfinancial.local`. Skip it if that domain already exists.
+* `Install-Forest.ps1` is one-time setup. It turns a blank Windows Server into the domain controller for `purvexfinancial.local`. Skip it if that domain already exists.
 * `Build-Environment.ps1` does the real work. It creates every department, group, user, and workstation described above so the environment matches what you have been studying. It is safe to re-run any time.
 
 **What you will need:**
@@ -24,13 +24,13 @@ By the end of this tab you should be able to open Active Directory Users and Com
 
 ### Step 1. Install the Domain (Skip If You Already Have One)
 
-If your server is not yet a domain controller, download and run this first. It installs Active Directory Domain Services and promotes the server to the root of a new domain, `govtechfinancial.local`. It asks for a recovery-mode password and then reboots automatically. Without a domain, the departments, users, and groups in the next step have nowhere to live.
+If your server is not yet a domain controller, download and run this first. It installs Active Directory Domain Services and promotes the server to the root of a new domain, `purvexfinancial.local`. It asks for a recovery-mode password and then reboots automatically. Without a domain, the departments, users, and groups in the next step have nowhere to live.
 
 **What this script does:**
 
 * Installs the AD DS (Active Directory Domain Services) Windows Server role
 * Prompts you for a DSRM (Directory Services Restore Mode) recovery password. It is separate from any domain account password and is used only for AD recovery
-* Promotes the server to the root of a new forest called `govtechfinancial.local`, with DNS installed alongside it
+* Promotes the server to the root of a new forest called `purvexfinancial.local`, with DNS installed alongside it
 * Reboots the server automatically once promotion finishes
 
 [Download Install-Forest.ps1](/lab-scripts/Install-Forest.ps1)
@@ -48,7 +48,7 @@ You can also copy it straight from here:
 &lt;#
 .SYNOPSIS
     Promotes a clean Windows Server to the root domain controller of
-    govtechfinancial.local.
+    purvexfinancial.local.
 
 .DESCRIPTION
     Run once on a fresh server that is not yet a domain controller. It installs
@@ -59,8 +59,8 @@ You can also copy it straight from here:
 
 [CmdletBinding()]
 param(
-    [string]$DomainName = "govtechfinancial.local",
-    [string]$DomainNetbiosName = "GOVTECHFINANCIAL"
+    [string]$DomainName = "purvexfinancial.local",
+    [string]$DomainNetbiosName = "PURVEXFINANCIAL"
 )
 
 $ErrorActionPreference = "Stop"
@@ -85,7 +85,7 @@ Install-ADDSForest `
 
 ### Step 2. Build the Environment
 
-After the reboot, log back in as `GOVTECHFINANCIAL\Administrator` and run this script. It creates every department, group, user, and the workstation object described in the other tabs. This step turns the org chart and user directory from a description into a live environment you can query and investigate.
+After the reboot, log back in as `PURVEXFINANCIAL\Administrator` and run this script. It creates every department, group, user, and the workstation object described in the other tabs. This step turns the org chart and user directory from a description into a live environment you can query and investigate.
 
 **What this script does:**
 
@@ -115,7 +115,7 @@ You can also copy the current script from here. A pasted copy is not linked to y
 #Requires -Modules ActiveDirectory
 &lt;#
 .SYNOPSIS
-    Builds the GovTech Financial Active Directory lab: 5 departments, 9 users,
+    Builds the PurveX Financial Active Directory lab: 5 departments, 9 users,
     8 groups, and 1 workstation object.
 
 .DESCRIPTION
@@ -676,7 +676,7 @@ foreach ($u in $users) {
 
 Write-Host "`n== Workstation ==" -ForegroundColor Cyan
 $computerName = "IT-WKS01"
-Ensure-Computer -Name $computerName -OUPath $itWorkstationsOU -Description "Standard IT workstation for GovTechFinancial administrators."
+Ensure-Computer -Name $computerName -OUPath $itWorkstationsOU -Description "Standard IT workstation for PurveXFinancial administrators."
 
 if ($IncludeCTF) {
     Ensure-CTFChallengeData -DeptOUPaths $deptOUPaths -DomainDN $domainDN -AccessLevelsOU $accessLevelsOU -Password $InitialPassword

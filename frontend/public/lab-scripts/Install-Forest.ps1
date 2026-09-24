@@ -2,7 +2,7 @@
 <#
 .SYNOPSIS
     Promotes a clean Windows Server to the root domain controller of
-    govtechfinancial.local.
+    purvexfinancial.local.
 
 .DESCRIPTION
     Run once on a fresh server that is not yet a domain controller. It installs
@@ -13,8 +13,8 @@
 
 [CmdletBinding()]
 param(
-    [string]$DomainName = "govtechfinancial.local",
-    [string]$DomainNetbiosName = "GOVTECHFINANCIAL"
+    [string]$DomainName = "purvexfinancial.local",
+    [string]$DomainNetbiosName = "PURVEXFINANCIAL"
 )
 
 $ErrorActionPreference = "Stop"

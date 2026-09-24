@@ -26,12 +26,12 @@ Confirm both:
 
 An **OU** is the folder an account lives in and the boundary you attach work to. Permissions and Group Policy link to it directly so the folder is not decoration. It is how this domain records a department and how that department is governed.
 
-GovTechFinancial's five departments are each their own OU. Each one nests a `Users` sub-OU one level deeper and IT also gets a `Workstations` sub-OU because the one client machine in this lab belongs under IT rather than next to people.
+PurveXFinancial's five departments are each their own OU. Each one nests a `Users` sub-OU one level deeper and IT also gets a `Workstations` sub-OU because the one client machine in this lab belongs under IT rather than next to people.
 
-<div class="ad-tree" aria-label="govtechfinancial.local directory">
+<div class="ad-tree" aria-label="purvexfinancial.local directory">
   <div class="ad-tree__root">
     <span class="ad-tree__kind ad-tree__kind--domain">Domain</span>
-    <strong>govtechfinancial.local</strong>
+    <strong>purvexfinancial.local</strong>
   </div>
   <div class="ad-tree__fork" aria-hidden="true"></div>
   <div class="ad-tree__map">
@@ -276,7 +276,7 @@ Use that table on every object you open:
 - Group third
 - Settings last
 
-If any one of those does not match GovTech Financial you have something to explain.
+If any one of those does not match PurveX Financial you have something to explain.
 
 <style>
 .ad-diagram {

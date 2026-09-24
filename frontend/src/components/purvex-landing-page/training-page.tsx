@@ -3,21 +3,15 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  Award,
   Check,
   Server,
-  BookOpen,
-  Compass,
-  Eye,
   FileText,
-  Footprints,
   GraduationCap,
-  Lock,
-  ShieldAlert,
-  Siren,
+  Search,
+  ScrollText,
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
-import { CHALLENGE_LABELS, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
+import { MISSION_CATALOG } from "@/lib/academy-missions";
 import { SCORE_READY, SCORE_SOLID, SKILLS, type Skill } from "@/lib/academy-score";
 import { COACH_MODE_LABELS } from "@/lib/academy-coach-mode";
 
@@ -41,47 +35,74 @@ export type CourseOutline = {
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-const MISSION_SETS: { key: MissionCatalogEntry["challenge"]; brief: string }[] = [
-  { key: "day-one", brief: "First day on the desk. Find the facts in the directory before anyone asks." },
-  { key: "ticket-queue", brief: "Real help desk tickets. Change the directory, then prove the fix held." },
-  { key: "alert-queue", brief: "One alert at 2 AM. Read the log, then decide: mistake or attack." },
-];
-
-const missionsBySet = (key: MissionCatalogEntry["challenge"]) =>
-  Object.values(MISSION_CATALOG).filter((m) => m.challenge === key);
-
 const TOTAL_MISSIONS = Object.keys(MISSION_CATALOG).length;
 
 // Illustrative student, for the report preview only.
 const SAMPLE_SCORES: Record<Skill, number> = { accounts: 92, directory: 78, troubleshooting: 88, security: 61 };
 
 const COACH_NOTES: Record<keyof typeof COACH_MODE_LABELS, string> = {
-  walkthrough: "New or stuck. One next move, a numbered path through the real tools, and a check so you know what done looks like.",
-  check: "You already get the idea. It checks your reasoning and points to the next step, without the beginner lecture.",
-  mentor: "You know the lab. It ties the ticket to a real desk or SOC call and talks through the tradeoffs a lead would weigh.",
-  interview: "It plays the GovTech Financial hiring manager. Five questions, each scored out of five, then a hire signal.",
+  walkthrough: "For students who are new or stuck. It offers one next step, a numbered path through the real tools, and a check so the student knows what done looks like.",
+  check: "For students who already understand the idea. It tests their reasoning and points to the next step without repeating the basics.",
+  mentor: "For students who know the lab. It connects the ticket to a real help desk or SOC decision and discusses the tradeoffs that a team lead would weigh.",
+  interview: "It plays the PurveX Financial hiring manager and asks five questions, scoring each one out of five before it gives a final hire signal.",
 };
 
-const translations = [
-  { icon: Siren, detective: "A crime scene", analyst: "An alert in the queue" },
-  { icon: FileText, detective: "Witness statements", analyst: "Raw log lines" },
-  { icon: Footprints, detective: "A suspect's known M.O.", analyst: "Attacker TTPs (MITRE ATT&CK)" },
-  { icon: Lock, detective: "Closing the case", analyst: "Containing the breach" },
-];
-
-const careerLadder = [
-  { level: "Trainee", icon: BookOpen, body: "Networks, operating systems, and how to read a raw log line." },
-  { level: "Tier 1 SOC Analyst", icon: Eye, body: "Work the queue, triage alerts, and tell noise from a real signal." },
-  { level: "Tier 2 / Incident Responder", icon: ShieldAlert, body: "Take a confirmed incident from start to finish. Contain, eradicate, document." },
-  { level: "Threat Hunter", icon: Compass, body: "Don't wait for the alarm. Hunt the attacker who hasn't tripped one yet." },
-  { level: "Senior Analyst / SOC Lead", icon: Award, body: "Mentor the next Tier 1 and shape how the whole team investigates." },
-];
-
 const formats = [
-  { title: "Taught live", body: "1:1 or small-group sessions, led by an instructor who still works a queue." },
-  { title: "Embedded in your program", body: "We teach inside your existing curriculum, on your calendar." },
-  { title: "A portal per cohort", body: "Your students get their own Academy sign-in, progress and readiness report." },
-  { title: "A lab on their own machine", body: "One script builds the GovTech Financial directory locally. Nothing to host." },
+  { title: "Taught live", body: "One-on-one or small-group sessions led by an instructor who still works a queue." },
+  { title: "Embedded in your program", body: "We teach inside your existing curriculum and on your calendar." },
+  { title: "A portal for each cohort", body: "Every student receives an Academy sign-in with progress tracking and a readiness report." },
+  { title: "A lab on their own machine", body: "One script builds the PurveX Financial directory locally, so there is nothing for you to host." },
+];
+
+const roles = [
+  {
+    title: "Help desk technician",
+    body: "Works the ticket queue and confirms what is true in the directory before changing anything.",
+    tasks: ["Restore a blocked account", "Create an account to the naming standard", "Check a ticket before acting on it"],
+  },
+  {
+    title: "Security analyst",
+    body: "Reads the log and decides whether an alert is a mistake or an attack.",
+    tasks: ["Read Windows security events", "Triage a login alert", "Write a clear escalation"],
+  },
+  {
+    title: "Systems administrator",
+    body: "Keeps access accurate as people join, move, and leave the company.",
+    tasks: ["Build role-based access with groups", "Offboard without deleting", "Retire unused accounts and computers"],
+  },
+  {
+    title: "Audit and compliance support",
+    body: "Turns policy into settings that an auditor can verify.",
+    tasks: ["Turn on the auditing a SOC needs", "Keep the Security log long enough to investigate", "Set password and lockout policies"],
+  },
+];
+
+// From the portal's company briefing: who owns which data, and how critical it is.
+const departments = [
+  { name: "Wealth Management", data: "Client financial records and personal information", critical: true },
+  { name: "Compliance", data: "Audit trails and regulatory filings", critical: true },
+  { name: "Finance and Accounting", data: "Payroll and internal ledgers", critical: true },
+  { name: "Operations", data: "Settlements and daily business processes", critical: false },
+  { name: "IT", data: "The systems themselves, with elevated access", critical: false },
+];
+
+const audiences = [
+  {
+    title: "Students",
+    body: "Build a lab, clear real tickets, and leave with tasks that were proven in a directory and resume lines that can be defended in an interview.",
+  },
+  {
+    title: "Schools and academies",
+    body: "See each student's readiness, weakest competency, and closed tickets without grading by hand, in a course shaped around your tools.",
+  },
+  {
+    title: "Government and workforce programs",
+    body: "Offer a consistent curriculum and a readiness report for every participant, so progress into IT and security roles can be measured.",
+  },
+  {
+    title: "Employers and business teams",
+    body: "Hire or upskill staff on the basis of proof, including a readiness score, verified tasks, and a spoken interview that ends with a hire signal.",
+  },
 ];
 
 const proofs = [
@@ -91,50 +112,11 @@ const proofs = [
   { ok: false, text: "taylor.osei is still in Operations Users" },
 ];
 
-// The 24 on-the-job tasks the drills and tickets are tied to. `lab` means the
-// change is checked in the student's own directory.
-const jobGroups: { skill: string; items: { t: string; lab: boolean }[] }[] = [
-  {
-    skill: "Accounts and Groups",
-    items: [
-      { t: "Grant access with a group, never admin rights", lab: true },
-      { t: "Create an account to the naming standard", lab: true },
-      { t: "Fix a group that cannot grant access", lab: true },
-      { t: "Build role-based access with groups", lab: false },
-    ],
-  },
-  {
-    skill: "Directory Navigation",
-    items: [
-      { t: "Correct a misplaced account", lab: true },
-      { t: "Retire accounts and computers nobody uses", lab: true },
-    ],
-  },
-  {
-    skill: "Troubleshooting",
-    items: [
-      { t: "Restore a blocked account", lab: true },
-      { t: "Reset a password the safe way", lab: false },
-      { t: "Check a ticket before acting on it", lab: false },
-    ],
-  },
-  {
-    skill: "Security Response",
-    items: [
-      { t: "Remove access that should not be there", lab: true },
-      { t: "Offboard without deleting", lab: true },
-      { t: "Set up a service account safely", lab: true },
-      { t: "Fix a password that never expires", lab: true },
-      { t: "Set an account lockout policy", lab: true },
-      { t: "Turn on the auditing a SOC needs", lab: true },
-      { t: "Keep the Security log long enough to investigate", lab: true },
-      { t: "Fix a roastable service account", lab: true },
-      { t: "Contain a compromised account, keep the evidence", lab: false },
-      { t: "Triage a login alert: contain, preserve, escalate", lab: false },
-      { t: "Trace a logon across log sources", lab: false },
-      { t: "Write a clear escalation", lab: false },
-    ],
-  },
+// What Coach can do, each backed by a tool it actually calls.
+const coachCaps = [
+  { icon: Search, title: "Reads the real lab", body: "Coach works from the student's own directory and audits it for real problems, worst first, and it never invents an account or a broken object." },
+  { icon: ScrollText, title: "Reads the Security log", body: "A 30 day digest of sign-ins, lockouts, and group changes powers the weekly CTF, and Coach checks both the answer and the real fix in the lab." },
+  { icon: FileText, title: "Writes resume lines from proof", body: "Resume lines come only from tickets the student closed or work the lab shows, and never from a task that was only practiced." },
 ];
 
 export default function TrainingPage({ outline }: { outline: CourseOutline }) {
@@ -148,8 +130,10 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           <span className="sp-hero__badge">Cohort course · Student portal</span>
           <h1 className="sp-hero__h1">Think Like a SOC Analyst 101</h1>
           <p className="sp-hero__sub">
-            Students learn the fundamentals, then work a live directory, a ticket queue and a
-            2 AM login. They finish with a readiness score a hiring manager can read.
+            Students begin with the fundamentals and then work a live Active Directory lab, a
+            ticket queue, and a 2 AM login alert. The same environment prepares them for the
+            help desk, security operations, systems administration, and audit support, and it
+            ends with a readiness score that a hiring manager can read at a glance.
           </p>
           <div className="sp-hero__actions">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
@@ -223,8 +207,8 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           <span className="sp-tag">How the course works</span>
           <h2>Learn it. Work it. Prove it.</h2>
           <p>
-            Certifications teach vocabulary. This course teaches judgment, and then checks it on
-            work that looks like the job.
+            Certifications mostly teach vocabulary, while this course teaches judgment and then
+            checks it against work that looks like the real job.
           </p>
         </div>
         <ol className="sp-loop" data-r>
@@ -232,24 +216,29 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
             <span className="sp-loop__n">01</span>
             <h3>Learn</h3>
             <p>
-              Weekly lessons, each opened by an essential question. A quiz stands between you and
-              marking the week complete.
+              Each week opens with an essential question and a set of lessons, and a short quiz
+              must be passed before the week can be marked complete.
             </p>
           </li>
           <li>
             <span className="sp-loop__n">02</span>
             <h3>Work</h3>
             <p>
-              Build GovTech Financial, a fictional company&apos;s Active Directory, on your own
-              machine. Then work its desk: lookups, tickets, and an alert.
+              Students build the Active Directory of the PurveX Financial company on
+              their own machine and then work its help desk.
             </p>
+            <ul className="tr-ul">
+              <li>Directory lookups</li>
+              <li>Help desk tickets</li>
+              <li>A SIEM alert at 2 AM</li>
+            </ul>
           </li>
           <li>
             <span className="sp-loop__n">03</span>
             <h3>Prove</h3>
             <p>
-              Every attempt lands in a mission log and a readiness score, measured against the bar
-              for a Tier 1 hire.
+              Every attempt is recorded in a mission log and rolled into a readiness score that is
+              measured against the bar for a Tier 1 hire.
             </p>
           </li>
         </ol>
@@ -260,19 +249,21 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         <div className="tr-split" data-r>
           <div className="sp-head sp-head--left">
             <span className="sp-tag">The lab</span>
-            <h2>No lab change, no closed ticket</h2>
+            <h2>A ticket closes only when the directory shows the change</h2>
             <p>
-              Students run one script to build GovTech Financial: five departments, nine people,
-              and the groups that connect them. It syncs to their account every minute.
+              Each student runs one script that builds the PurveX Financial company, with five departments,
+              nine people, and the groups that connect them. The lab syncs to their account every
+              minute, which is what makes the score worth trusting.
             </p>
-            <p>
-              A hands-on ticket only closes when the change shows up in their directory, and a
-              typed answer cannot be copied off the ticket. That is why the score is worth reading.
-            </p>
+            <ul className="tr-ul">
+              <li>A hands-on ticket closes only when the change appears in the student&apos;s own directory</li>
+              <li>A typed answer has to be found in the lab because it cannot be copied from the ticket</li>
+              <li>Every check reads the live directory</li>
+            </ul>
           </div>
           <div className="tr-proof" aria-hidden="true">
             <header>
-              <span><Server size={14} /> govtechfinancial.local</span>
+              <span><Server size={14} /> purvexfinancial.local</span>
               <em><i /> Synced</em>
             </header>
             <ul>
@@ -283,8 +274,53 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
                 </li>
               ))}
             </ul>
-            <footer>Checked against the live directory. A lab check code lasts 4 hours.</footer>
+            <footer>Each check reads the live directory, and a lab check code remains valid for 4 hours.</footer>
           </div>
+        </div>
+      </section>
+
+      {/* ═══════════ ROLES AND STAKEHOLDERS ═══════════ */}
+      <section className="sp-section">
+        <div className="sp-head sp-head--left" data-r>
+          <span className="sp-tag">Beyond the help desk</span>
+          <h2>One lab that prepares students for more than one role</h2>
+          <p>
+            The help desk is where many careers in this field begin, so the lab starts there. The
+            same directory and the same Security log then support three other roles.
+          </p>
+        </div>
+        <div className="sp-formats" data-r>
+          {roles.map((r, i) => (
+            <article key={r.title} className="sp-format">
+              <span className="sp-format__n">{pad(i + 1)}</span>
+              <h3>{r.title}</h3>
+              <p>{r.body}</p>
+              <ul className="tr-ul">
+                {r.tasks.map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+        <div className="tr-depts" data-r>
+          <div className="tr-depts__copy">
+            <h3>Every ticket has an owner</h3>
+            <p>
+              Tickets arrive from five departments, and the same event carries a different weight
+              depending on the data that the department holds. Students learn to size a ticket
+              against this table before they decide how urgent it is.
+            </p>
+          </div>
+          <ul className="tr-depts__list">
+            {departments.map((d) => (
+              <li key={d.name}>
+                <strong>{d.name}</strong>
+                <span>{d.data}</span>
+                <em data-critical={d.critical}>{d.critical ? "Critical" : "Standard"}</em>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
@@ -293,7 +329,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">The syllabus</span>
           <h2>The same phases your students open in the portal</h2>
-          <p>New weeks go live in the portal as they are finished. This list updates with them.</p>
+          <p>New weeks go live in the portal as they are finished, and this list updates along with them.</p>
         </div>
         <div className="sp-phases" data-r>
           {outline.map((p, i) => {
@@ -307,7 +343,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
                     {p.entries.length === 0 && <em className="sp-square">In preparation</em>}
                   </h3>
                   {p.entries.length === 0 ? (
-                    <p className="sp-phase__empty">Triage, investigation, containment, and writing it up.</p>
+                    <p className="sp-phase__empty">Triage, investigation, containment, and a written report of what happened.</p>
                   ) : (
                     <ul className="sp-phase__weeks">
                       {p.entries.map((e) => (
@@ -327,40 +363,6 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         </div>
       </section>
 
-      {/* ═══════════ MISSIONS ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-head sp-head--left" data-r>
-          <span className="sp-tag">The missions</span>
-          <h2>{TOTAL_MISSIONS} missions on a directory they built</h2>
-          <p>
-            Each one is graded. Hints cost something, wrong answers are recorded, and the answer
-            never comes from the coach.
-          </p>
-        </div>
-        <div className="sp-sets" data-r>
-          {MISSION_SETS.map((set) => {
-            const list = missionsBySet(set.key);
-            return (
-              <div key={set.key} className="sp-set">
-                <div className="sp-set__head">
-                  <h3>{CHALLENGE_LABELS[set.key]}</h3>
-                  <span className="sp-set__count">{pad(list.length)} missions</span>
-                </div>
-                <p className="sp-set__brief">{set.brief}</p>
-                <ol className="sp-set__list">
-                  {list.map((m, i) => (
-                    <li key={m.id}>
-                      <span className="sp-set__n">{pad(i + 1)}</span>
-                      <span className="sp-set__t">{m.title}</span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
       {/* ═══════════ READINESS ═══════════ */}
       <section className="sp-section">
         <div className="sp-readiness" data-r>
@@ -368,8 +370,9 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
             <span className="sp-tag">The readiness report</span>
             <h2>A score a hiring manager can read</h2>
             <p>
-              Four competencies, each measured against the bar for a Tier 1 hire. Almost ready
-              starts at {SCORE_SOLID}. Ready means {SCORE_READY} overall with nothing weak.
+              The report scores four competencies against the bar for a Tier 1 hire. A student is
+              almost ready at {SCORE_SOLID} and ready at {SCORE_READY} overall with no weak
+              competency.
             </p>
             <ul className="sp-levels">
               <li><i className="sp-dot sp-dot--bad" /> Keep practicing <span>under {SCORE_SOLID}</span></li>
@@ -404,44 +407,14 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         </div>
       </section>
 
-      {/* ═══════════ JOB TASKS ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-head sp-head--left" data-r>
-          <span className="sp-tag">Job tasks</span>
-          <h2>24 tasks a Tier 1 is hired to do</h2>
-          <p>
-            Each drill and ticket maps to one. Filled dots are checked in the student&apos;s own
-            directory. Outlined dots are proven in written and scenario work.
-          </p>
-        </div>
-        <div className="tr-jobs" data-r>
-          {jobGroups.map((g) => (
-            <article key={g.skill}>
-              <header>
-                <strong>{g.skill}</strong>
-                <span>{g.items.length}</span>
-              </header>
-              <ul>
-                {g.items.map((j) => (
-                  <li key={j.t} data-lab={j.lab}>
-                    <i />
-                    {j.t}
-                  </li>
-                ))}
-              </ul>
-            </article>
-          ))}
-        </div>
-      </section>
-
       {/* ═══════════ COACH + DRILLS ═══════════ */}
       <section className="sp-section">
         <div className="sp-head sp-head--left" data-r>
           <span className="sp-tag">PurveX Coach</span>
-          <h2>A coach that won&apos;t hand over the answer</h2>
+          <h2>A coach that never hands over the answer</h2>
           <p>
-            It reads the student&apos;s own report and lab, then works in one of four modes. On an
-            unsolved mission it teaches the method, never the flag.
+            Coach reads the student&apos;s own report and lab and then works in one of four
+            modes. On an unsolved mission it teaches the method and never reveals the flag.
           </p>
         </div>
         <div className="sp-modes" data-r>
@@ -452,55 +425,37 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
             </div>
           ))}
         </div>
-        <div className="sp-extras" data-r>
-          <div>
-            <span className="sp-kick">Daily drills</span>
-            <p>One named case a day, drawn from the student&apos;s own directory. Graded on the server, so the answer never ships to the browser.</p>
-          </div>
-          <div>
-            <span className="sp-kick">Bring your own assistant</span>
-            <p>Students can connect their own AI client with a personal key. It can see their progress and practice with them. It can&apos;t see a flag.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════ THE MINDSET ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-head sp-head--left" data-r>
-          <span className="sp-tag">The mindset</span>
-          <h2>The instinct is already yours</h2>
-          <p>A SOC analyst does what a detective does. Walk into a scene, gather evidence, decide what happened.</p>
-        </div>
-        <div className="sp-xlate" data-r>
-          {translations.map((t) => (
-            <div key={t.detective} className="sp-xlate__row">
-              <t.icon size={17} className="sp-xlate__icon" />
-              <span className="sp-xlate__a">{t.detective}</span>
-              <ArrowRight size={14} className="sp-xlate__arrow" />
-              <span className="sp-xlate__b">{t.analyst}</span>
-            </div>
+        <ul className="tr-caps" data-r>
+          {coachCaps.map((c, i) => (
+            <li key={c.title}>
+              <header>
+                <span>{pad(i + 1)}</span>
+                <i><c.icon size={17} /></i>
+              </header>
+              <strong>{c.title}</strong>
+              <p>{c.body}</p>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
-      {/* ═══════════ CAREER LADDER ═══════════ */}
+      {/* ═══════════ WHO IT SERVES ═══════════ */}
       <section className="sp-section">
         <div className="sp-head sp-head--left" data-r>
-          <span className="sp-tag">Where this leads</span>
-          <h2>A career ladder employers recognize</h2>
-          <p>101 gets a student to the first rung with proof. The rest is the job.</p>
+          <span className="sp-tag">Who it serves</span>
+          <h2>One record that every stakeholder can read</h2>
+          <p>
+            Students, program leaders, and employers each need something different from the same
+            work, and the readiness report gives all of them a shared and honest picture.
+          </p>
         </div>
-        <div className="sp-rungs" data-r>
-          {careerLadder.map((r, i) => (
-            <div key={r.level} className={`sp-rung${i === 1 ? " sp-rung--here" : ""}`}>
-              <div className="sp-rung__fill" style={{ "--fill": `${((i + 1) / careerLadder.length) * 100}%` } as React.CSSProperties} />
-              <div className="sp-rung__icon">
-                <r.icon size={18} />
-              </div>
-              <h3>{r.level}</h3>
-              <p>{r.body}</p>
-              {i === 1 && <em className="sp-square sp-rung__tag">101 ends here</em>}
-            </div>
+        <div className="sp-formats" data-r>
+          {audiences.map((a, i) => (
+            <article key={a.title} className="sp-format">
+              <span className="sp-format__n">{pad(i + 1)}</span>
+              <h3>{a.title}</h3>
+              <p>{a.body}</p>
+            </article>
           ))}
         </div>
       </section>
@@ -521,7 +476,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           ))}
         </div>
         <div className="sp-cta" data-r>
-          <p>Running a bootcamp, a college program or an academy cohort?</p>
+          <p>Are you running a bootcamp, a college program, or an academy cohort?</p>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Talk about your cohort <ArrowRight size={16} />
           </a>
@@ -735,6 +690,20 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
 }
       `}</style>
       <style>{`
+.tr-ul { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 10px }
+.tr-ul li { position: relative; padding-left: 20px; font-size: .95rem; line-height: 1.55; color: var(--ink-soft) }
+.tr-ul li::before { content: ""; position: absolute; left: 0; top: .6em; width: 7px; height: 7px; border-radius: 50%; background: var(--accent) }
+.tr-depts { display: grid; grid-template-columns: .9fr 1.1fr; gap: 40px; align-items: center; margin-top: 40px; padding: 32px; border-radius: 22px; background: linear-gradient(135deg, #f7f5ff, #fff 60%); border: 1px solid rgba(106,92,255,.18); box-shadow: var(--shadow-md) }
+.tr-depts__copy h3 { margin: 0; font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; letter-spacing: -.02em }
+.tr-depts__copy p { margin: 12px 0 0; color: var(--ink-soft); font-size: .95rem; line-height: 1.7 }
+.tr-depts__list { list-style: none; margin: 0; padding: 0; border-radius: 16px; background: #fff; border: 1px solid var(--border-strong); overflow: hidden }
+.tr-depts__list li { display: grid; grid-template-columns: 11rem 1fr auto; gap: 14px; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: .88rem }
+.tr-depts__list li:last-child { border-bottom: 0 }
+.tr-depts__list strong { font-weight: 650; color: var(--ink) }
+.tr-depts__list span { color: var(--ink-soft); line-height: 1.45 }
+.tr-depts__list em { font-style: normal; padding: 3px 10px; border-radius: 999px; font-family: var(--font-mono); font-size: .58rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; background: var(--accent-soft); color: var(--accent-deep) }
+.tr-depts__list em[data-critical="true"] { background: var(--accent); color: #fff }
+@media (max-width: 860px) { .tr-depts { grid-template-columns: 1fr; gap: 20px; padding: 24px 20px } .tr-depts__list li { grid-template-columns: 1fr auto; } .tr-depts__list li span { grid-column: 1 / -1; grid-row: 2 } }
 .tr-split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center }
 .tr-split .sp-head { margin-bottom: 0 }
 .tr-split .sp-head p + p { margin-top: 14px }
@@ -749,27 +718,23 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
 .tr-proof li > span { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #e3f6ee; color: #12805a; font-weight: 700; font-size: .78rem }
 .tr-proof li[data-ok="false"] > span { background: #fdeaea; color: #c23030 }
 .tr-proof footer { padding: 14px 20px 18px; font-size: .78rem; color: var(--muted); background: #fafaff; border-top: 1px solid var(--border) }
-.tr-jobs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: start }
-.tr-jobs article { padding: 22px; border-radius: 20px; background: #fff; border: 1px solid var(--border-strong); box-shadow: var(--shadow-md) }
-.tr-jobs header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px }
-.tr-jobs header strong { font-size: .98rem; font-weight: 650; letter-spacing: -.012em }
-.tr-jobs header span { display: grid; place-items: center; min-width: 28px; height: 28px; padding: 0 8px; border-radius: 999px; background: var(--accent); color: #fff; font-family: var(--font-mono); font-size: .68rem; font-weight: 700 }
-.tr-jobs ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px }
-.tr-jobs li { display: flex; gap: 10px; align-items: flex-start; font-size: .84rem; line-height: 1.4; color: var(--ink-soft) }
-.tr-jobs li i { flex: none; width: 10px; height: 10px; margin-top: .3em; border-radius: 50%; border: 2px solid var(--accent) }
-.tr-jobs li[data-lab="true"] { color: var(--ink) }
-.tr-jobs li[data-lab="true"] i { background: var(--accent) }
-.tr-jobs[data-r] { opacity: 1; transform: none; filter: none }
-.tr-jobs[data-r] article { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease), transform .6s var(--ease) }
-.tr-jobs[data-r].in article { opacity: 1; transform: none }
-.tr-jobs[data-r].in article:nth-child(2) { transition-delay: .08s }
-.tr-jobs[data-r].in article:nth-child(3) { transition-delay: .16s }
-.tr-jobs[data-r].in article:nth-child(4) { transition-delay: .24s }
-@media (prefers-reduced-motion: reduce) { .tr-jobs[data-r] article { opacity: 1; transform: none; transition: none } }
-@media (max-width: 1100px) { .tr-jobs { grid-template-columns: 1fr 1fr } }
-@media (max-width: 860px) { .tr-split { grid-template-columns: 1fr; gap: 32px } }
-@media (max-width: 680px) { .tr-jobs { grid-template-columns: 1fr } }
-      `}</style>
+@media (prefers-reduced-motion: reduce) { .tr-caps { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px }
+.tr-caps li { padding: 22px 22px 26px; border-radius: 20px; background: #fff; border: 1px solid var(--border-strong); box-shadow: var(--shadow-md); transition: transform .3s var(--ease), box-shadow .3s var(--ease) }
+.tr-caps li:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg) }
+.tr-caps header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px }
+.tr-caps header span { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff; font-family: var(--font-mono); font-size: .68rem; font-weight: 700 }
+.tr-caps header i { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-deep) }
+.tr-caps strong { display: block; font-size: 1.04rem; font-weight: 650; letter-spacing: -.014em }
+.tr-caps p { margin: 8px 0 0; color: var(--ink-soft); font-size: .88rem; line-height: 1.6 }
+.tr-caps[data-r] { opacity: 1; transform: none; filter: none }
+.tr-caps[data-r] li { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease), transform .6s var(--ease), box-shadow .3s var(--ease) }
+.tr-caps[data-r].in li { opacity: 1; transform: none }
+.tr-caps[data-r].in li:nth-child(3n+2) { transition-delay: .08s }
+.tr-caps[data-r].in li:nth-child(3n) { transition-delay: .16s }
+@media (prefers-reduced-motion: reduce) { .tr-caps[data-r] li { opacity: 1; transform: none; transition: none } }
+@media (max-width: 860px) { @media (max-width: 860px) { .tr-caps { grid-template-columns: 1fr } }
+@media (max-width: 1100px) { @media (max-width: 860px) { .tr-split { grid-template-columns: 1fr; gap: 32px } }
+@media (max-width: 680px) {       `}</style>
     </SiteChrome>
   );
 }

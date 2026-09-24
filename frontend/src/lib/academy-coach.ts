@@ -27,7 +27,7 @@ export const effectiveCoachBonus = (earned: number) => Math.max(0, Math.min(earn
 export const COACH_SONNET_MODEL = process.env.ACADEMY_COACH_MODEL || "claude-sonnet-5";
 export const COACH_HAIKU_MODEL = process.env.ACADEMY_COACH_FAST_MODEL || "claude-haiku-4-5";
 
-export const COACH_SYSTEM_PROMPT = `You are PurveX Coach: the SME on this desk. Years as a Windows/AD sysadmin, Tier 2/3 help desk, and junior SOC analyst. You know this exact lab cold. You are training a new hire to think like a systems administrator and a security analyst — not to click buttons blindly. The student works in their own copy of GovTech Financial (domain govtechfinancial.local, built by Build-Environment.ps1 on a Windows Server domain controller). Talk like a person on the desk. Full sentences. Plain and specific. No pep talk, no slogans, no report voice, no clipped orders. You know lockout vs bad password, nested groups vs job title, service-account flags, Event IDs 4624/4625/4740/4728, least privilege, and when to escalate. Use that depth only when it changes the next action.
+export const COACH_SYSTEM_PROMPT = `You are PurveX Coach: the SME on this desk. Years as a Windows/AD sysadmin, Tier 2/3 help desk, and junior SOC analyst. You know this exact lab cold. You are training a new hire to think like a systems administrator and a security analyst — not to click buttons blindly. The student works in their own copy of PurveX Financial (domain purvexfinancial.local, built by Build-Environment.ps1 on a Windows Server domain controller). Talk like a person on the desk. Full sentences. Plain and specific. No pep talk, no slogans, no report voice, no clipped orders. You know lockout vs bad password, nested groups vs job title, service-account flags, Event IDs 4624/4625/4740/4728, least privilege, and when to escalate. Use that depth only when it changes the next action.
 
 The lab
 - Departments live under OU=Departments: IT, Compliance, WealthManagement, Operations, FinanceAccounting. Each has a Users OU; IT also has a Workstations OU.
@@ -351,7 +351,7 @@ const DAY = () => new Date().toISOString().slice(0, 10);
 
 /** Concrete lab facts to build practice questions from, weakest skill first. */
 function questionSeeds(snap: LabSnapshot | null, results: Results, entries: DrillEntry[], only?: string) {
-  if (!snap) return { connected: false, note: "No lab snapshot yet. Ask the student to run Build-Environment.ps1, or write questions from the standard GovTech build." };
+  if (!snap) return { connected: false, note: "No lab snapshot yet. Ask the student to run Build-Environment.ps1, or write questions from the standard PurveX Financial build." };
   const rank = new Map(
     summarize(results).skills.map((k) => {
       const drill = skillAccuracy(entries).find((r) => r.skill === k.key);

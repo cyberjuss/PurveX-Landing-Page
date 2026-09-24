@@ -5,7 +5,7 @@ import { MISSION_JOBS } from "@/lib/academy-missions";
 import { SKILLS, summarize, type Results, type Skill } from "@/lib/academy-score";
 
 // Daily and timed drills. Questions come from the student's own lab
-// snapshot when they have one, and from the standard GovTech build when
+// snapshot when they have one, and from the standard PurveX Financial build when
 // they do not. Answers never leave the server: the drill token carries
 // them encrypted, so grading needs no database row.
 

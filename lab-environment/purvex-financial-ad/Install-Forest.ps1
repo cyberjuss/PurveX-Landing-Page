@@ -2,7 +2,7 @@
 <#
 .SYNOPSIS
     Promotes a clean Windows Server into the root domain controller for the
-    govtechfinancial.local forest used by the "Think Like a SOC Analyst 101"
+    purvexfinancial.local forest used by the "Think Like a SOC Analyst 101"
     home lab.
 
 .DESCRIPTION
@@ -11,7 +11,7 @@
     the AD DS role and promotes the box to a new forest root domain.
 
     The server reboots automatically at the end of promotion. After reboot,
-    log back in as govtechfinancial\Administrator and run
+    log back in as purvexfinancial\Administrator and run
     Build-Environment.ps1 to create the OUs, groups, users, and workstation
     object described on the course's Home Lab page.
 
@@ -23,8 +23,8 @@
 
 [CmdletBinding()]
 param(
-    [string]$DomainName = "govtechfinancial.local",
-    [string]$DomainNetbiosName = "GOVTECHFINANCIAL"
+    [string]$DomainName = "purvexfinancial.local",
+    [string]$DomainNetbiosName = "PURVEXFINANCIAL"
 )
 
 $ErrorActionPreference = "Stop"

@@ -56,7 +56,7 @@ const protocolRows = [
   ["SMTP/POP3/IMAP", "Sending mail (SMTP) and pulling it down to a client (POP3/IMAP)."],
 ];
 
-const govtechDepartments = [
+const purvexDepartments = [
   ["IT", "Runs and supports the company's technology. Only department with elevated access.", "No"],
   ["Compliance", "Ensures regulatory compliance (GLBA, SOX). Handles sensitive records and audit material.", "Yes"],
   ["Wealth Management", "Client-facing financial planning and advisory. Large volume of sensitive client data.", "Yes"],
@@ -64,7 +64,7 @@ const govtechDepartments = [
   ["Finance and Accounting", "Manages the organization's own internal finances.", "Yes"],
 ];
 
-const govtechAccessLevels = [
+const purvexAccessLevels = [
   ["Level 1. Domain Admin", "The Domain Controller and Active Directory itself.", "Nothing above it"],
   ["Level 2. Server Admin", "Servers, application and file servers.", "The Domain Controller"],
   ["Level 3. Helpdesk", "Workstations only, password resets, local support.", "Servers or the Domain Controller"],
@@ -301,17 +301,17 @@ const categories: RefCategory[] = [
     label: "Home Lab",
     items: [
       {
-        id: "govtech-financial",
-        title: "GovTech Financial (Home Lab)",
+        id: "purvex-financial",
+        title: "PurveX Financial (Home Lab)",
         icon: Building2,
-        keywords: "govtech financial department access level domain admin server helpdesk it compliance wealth management operations finance",
+        keywords: "purvex financial department access level domain admin server helpdesk it compliance wealth management operations finance",
         body: (
           <>
             <p>The reference table the Home Lab tells you to come back to after every lab. Every account and alert belongs to one of these departments.</p>
             <table>
               <thead><tr><th>Department</th><th>Function</th><th>Critical</th></tr></thead>
               <tbody>
-                {govtechDepartments.map((row) => (
+                {purvexDepartments.map((row) => (
                   <tr key={row[0]}>{row.map((cell, i) => <td key={i}>{cell}</td>)}</tr>
                 ))}
               </tbody>
@@ -319,7 +319,7 @@ const categories: RefCategory[] = [
             <table className="mt-4">
               <thead><tr><th>Access Level</th><th>Controls</th><th>Cannot Touch</th></tr></thead>
               <tbody>
-                {govtechAccessLevels.map((row) => (
+                {purvexAccessLevels.map((row) => (
                   <tr key={row[0]}>{row.map((cell, i) => <td key={i}>{cell}</td>)}</tr>
                 ))}
               </tbody>

@@ -318,7 +318,7 @@ export default function HomePage() {
             </div>
             <h3>Cybersecurity Training</h3>
             <p>
-              Graduates who can work a ticket. GovTech Financial, a live instructor, and PurveX Coach on the desk. AD, SIEM, and incident response. Nobody waits for office hours.
+              Graduates who can work a ticket, read a log, and explain a control. Students train in the PurveX Financial lab with a live instructor and PurveX Coach, across Active Directory, SIEM, and incident response.
             </p>
             <div className="hp-tile__split">
               <div>
@@ -326,17 +326,17 @@ export default function HomePage() {
                 <ul>
                   <li>Live tickets on a real directory</li>
                   <li>Daily drills and a weekly CTF</li>
-                  <li>Readiness score and proven job tasks</li>
-                  <li>Curriculum shaped around your tools</li>
+                  <li>A readiness score and proven job tasks</li>
+                  <li>A curriculum shaped around your tools</li>
                 </ul>
               </div>
               <div>
                 <p className="hp-tile__label">PurveX Coach</p>
                 <ul>
-                  <li>Desk SME trained to make a Tier 1</li>
+                  <li>A subject matter expert on every ticket</li>
                   <li>Need help, Mentor, and a spoken interview</li>
-                  <li>Reads a screenshot of their console</li>
-                  <li>Resume lines from tickets they closed</li>
+                  <li>Reads a screenshot of the console</li>
+                  <li>Resume lines from tickets the student closed</li>
                 </ul>
               </div>
             </div>

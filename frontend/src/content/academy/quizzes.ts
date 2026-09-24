@@ -177,7 +177,7 @@ export const quizzes: Quiz[] = [
     weekSlug: "home-lab-active-directory",
     questions: [
       {
-        question: "In the GovTech Financial environment, how many administrative access levels are there, and what is the point of splitting them up?",
+        question: "In the PurveX Financial environment, how many administrative access levels are there, and what is the point of splitting them up?",
         options: [
           "One all-powerful admin account, for simplicity",
           "Three levels (Domain Admin, Server Admin, Helpdesk), so that a compromise at one level cannot automatically reach the levels above it",

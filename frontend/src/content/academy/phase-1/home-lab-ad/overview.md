@@ -5,11 +5,11 @@
 
 ### Before You Touch a Ticket, Learn the Environment
 
-Before you can call something suspicious you need to know what **normal** looks like. That starts with GovTech Financial.
+Before you can call something suspicious you need to know what **normal** looks like. That starts with PurveX Financial.
 
-GovTech Financial is not flavor text. It is the baseline you use to judge every account, every group, and every login you encounter.
+PurveX Financial is not flavor text. It is the baseline you use to judge every account, every group, and every login you encounter.
 
-GovTech Financial is a mid-sized wealth firm and that tells you the stakes. Client money, financial records, and regulated data such as GLBA and SOX sit in this environment.
+PurveX Financial is a mid-sized wealth firm and that tells you the stakes. Client money, financial records, and regulated data such as GLBA and SOX sit in this environment.
 
 Context matters because a 2 AM login from a workstation in Wealth Management is not the same question as a 2 AM login from a random lab machine. The activity might still be legitimate but you still need the environment before you decide whether it fits.
 
@@ -69,6 +69,6 @@ You cannot spot abnormal if you do not know normal first. Learn the environment 
 
 Then you have a baseline when something does not fit.
 
-**If you do not know GovTech Financial you are not investigating. You are guessing.**
+**If you do not know PurveX Financial you are not investigating. You are guessing.**
 
-***Domain: govtechfinancial.local***
+***Domain: purvexfinancial.local***

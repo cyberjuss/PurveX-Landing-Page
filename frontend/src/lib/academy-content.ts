@@ -42,7 +42,7 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-1",
     title: "Week 1 — CIA Triad",
-    summary: "Name what failed then split threat from vulnerability before you rank risk.",
+    summary: "Name what failed, then separate a threat from a vulnerability before ranking the risk.",
     sections: [
       { label: "Overview", file: "phase-1/week-1/lesson-overview.md" },
       { label: "The CIA Triad", file: "phase-1/week-1/lesson-cia-triad.md" },
@@ -54,13 +54,13 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-2",
     title: "Week 2 — Encryption & Hashing",
-    summary: "How symmetric and asymmetric encryption and hashing actually get used.",
+    summary: "How symmetric encryption, asymmetric encryption, and hashing are used in practice.",
     sections: [],
   },
   {
     slug: "week-3",
     title: "Week 3 — Networking",
-    summary: "Read a capture the way a desk does. Address, handshake, port, protocol, then ordinary vs not.",
+    summary: "Read a network capture by checking the address, the handshake, the port, and the protocol, and then decide whether the traffic is ordinary.",
     sections: [
       { label: "Overview", file: "phase-1/week-3/lesson-overview.md" },
       { label: "TCP/IP", file: "phase-1/week-3/lesson-tcpip.md" },
@@ -76,7 +76,7 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-4",
     title: "Week 4 — Authentication, Authorization, Access Control",
-    summary: "Prove what happens when an app trusts the client to say who it is, then delete Carlos.",
+    summary: "See what happens when an application trusts the client to say who it is, and then use that flaw to delete a user.",
     sections: [
       { label: "Lab: Broken Access Control (PortSwigger)", file: "phase-1/week-4/lab-triple-a.md" },
       { label: "Resources", file: "phase-1/week-4/resources.md" },
@@ -87,7 +87,7 @@ const phase1Weeks: WeekDef[] = [
 const phase1HomeLab: HomeLabDef = {
   slug: "home-lab-active-directory",
   title: "Home Lab — Active Directory",
-  summary: "Learn GovTech Financial before you touch a ticket then work the directory.",
+  summary: "Learn the PurveX Financial environment before touching a ticket, and then work its directory.",
   sections: [
     { label: "Overview", file: "phase-1/home-lab-ad/overview.md" },
     { label: "Build This Lab", file: "phase-1/home-lab-ad/build-this-lab.md" },
@@ -106,13 +106,13 @@ const phase2Weeks: WeekDef[] = [
   {
     slug: "week-1",
     title: "Week 1 — Malware",
-    summary: "How malware works and spreads and what rides along with it.",
+    summary: "How malware works, how it spreads, and what arrives along with it.",
     sections: [],
   },
   {
     slug: "week-2",
     title: "Week 2 — Log Analysis Fundamentals",
-    summary: "Read the host, the account, and the log before you decide what happened.",
+    summary: "Read the host, the account, and the log before deciding what happened.",
     sections: [
       { label: "Overview", file: "phase-2/week-2/overview.md" },
       { label: "Challenge: The 2 AM Login", file: "phase-2/week-2/alert-inc-1046.md" },
@@ -121,13 +121,13 @@ const phase2Weeks: WeekDef[] = [
   {
     slug: "week-3",
     title: "Week 3 — SIEM Basics",
-    summary: "Centralized logging and building your first detections.",
+    summary: "Centralized logging and how to build a first set of detections.",
     sections: [],
   },
   {
     slug: "week-4",
     title: "Week 4 — Detection Engineering",
-    summary: "MITRE ATT&CK and mapping detections to real techniques.",
+    summary: "How MITRE ATT&CK maps detections to real attacker techniques.",
     sections: [],
   },
 ];

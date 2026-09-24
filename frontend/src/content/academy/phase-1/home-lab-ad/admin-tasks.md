@@ -1,6 +1,6 @@
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
-<p>If GovTechFinancial's domain already exists and the accounts are already built, what does an IT admin actually spend their day doing in it?</p>
+<p>If PurveXFinancial's domain already exists and the accounts are already built, what does an IT admin actually spend their day doing in it?</p>
 </div>
 
 ### What IT Actually Does Here, Day to Day
@@ -12,7 +12,7 @@ Almost nobody builds a domain from scratch. In a real IT job Active Directory is
 - Move someone between departments
 - Set up a service account
 
-This tab walks through each one using GovTech Financial's own accounts. Do the task then confirm the directory shows what you think it shows because the click is not the finish. The check is.
+This tab walks through each one using PurveX Financial's own accounts. Do the task then confirm the directory shows what you think it shows because the click is not the finish. The check is.
 
 ### Finding Users and Computers
 
@@ -132,7 +132,7 @@ That is why an account can log on every night at 2 AM with nobody at a keyboard.
 
 Best practice every time:
 
-* **Dedicated OU.** Keep service accounts out of the same OU as real people. You can apply different policy and spot them at a glance. GovTechFinancial does not have one yet. Creating `OU=ServiceAccounts` under the domain root is itself good practice.
+* **Dedicated OU.** Keep service accounts out of the same OU as real people. You can apply different policy and spot them at a glance. PurveXFinancial does not have one yet. Creating `OU=ServiceAccounts` under the domain root is itself good practice.
 * **Naming convention.** Prefix it so it is unmistakable. `svc-` or a leading `$`. `svc-backup-job` is a service account. `j.smith` is not.
 * **Password never expires. Do not force a change.** A service account cannot type in a new password when the old one expires. `PasswordNeverExpires = $true` and `ChangePasswordAtLogon = $false` are intentional here. The opposite of what you set for a person.
 * **Restrict logon hours if the job is scheduled.** If a backup job only needs to run overnight the account's **Logon Hours** should reflect that. Anything outside that window is a red flag.
@@ -142,7 +142,7 @@ If you open an account and the name, the OU, and the Description do not all say 
 
 ### Onboarding by Mirroring Group Membership
 
-The fastest way to onboard someone into an existing role is to copy a peer's group membership. Say GovTechFinancial hires a second Help Desk Technician alongside Priya Nair. Open Priya's **Member Of** tab. Note every group listed. Then open the new hire's **Member Of** tab and add the same ones. Keep both Properties windows open side by side so you do not miss one.
+The fastest way to onboard someone into an existing role is to copy a peer's group membership. Say PurveXFinancial hires a second Help Desk Technician alongside Priya Nair. Open Priya's **Member Of** tab. Note every group listed. Then open the new hire's **Member Of** tab and add the same ones. Keep both Properties windows open side by side so you do not miss one.
 
 Check this during an investigation too. An account with more group memberships than its peers and no onboarding record to explain why is worth asking about. Compare against The Environment tab. Not against the ticket.
 

@@ -15,7 +15,7 @@ const PHASE_COPY: { slug: string; href: string; title: string; body: string }[] 
     slug: "phase-1",
     href: "/academy/phase-1",
     title: "Fundamentals",
-    body: "Name what failed then stand up GovTech Financial and work the directory yourself.",
+    body: "Name what failed then stand up PurveX Financial and work the directory yourself.",
   },
   {
     slug: "phase-2",

@@ -2,7 +2,7 @@
 #Requires -Modules ActiveDirectory
 <#
 .SYNOPSIS
-    Builds the GovTech Financial Active Directory lab: 5 departments, 9 users,
+    Builds the PurveX Financial Active Directory lab: 5 departments, 9 users,
     8 groups, and 1 workstation object.
 
 .DESCRIPTION
@@ -563,7 +563,7 @@ foreach ($u in $users) {
 
 Write-Host "`n== Workstation ==" -ForegroundColor Cyan
 $computerName = "IT-WKS01"
-Ensure-Computer -Name $computerName -OUPath $itWorkstationsOU -Description "Standard IT workstation for GovTechFinancial administrators."
+Ensure-Computer -Name $computerName -OUPath $itWorkstationsOU -Description "Standard IT workstation for PurveXFinancial administrators."
 
 if ($IncludeCTF) {
     Ensure-CTFChallengeData -DeptOUPaths $deptOUPaths -DomainDN $domainDN -AccessLevelsOU $accessLevelsOU -Password $InitialPassword

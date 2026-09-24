@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Operation Day One</h3>
 <p class="ad-brief__ask">Can you find your way around Active Directory well enough to do a help desk technician's first-day work?</p>
-<p>First day on the GovTech Financial IT help desk. Nobody expects you to close an incident yet but they do expect you to:</p>
+<p>First day on the PurveX Financial IT help desk. Nobody expects you to close an incident yet but they do expect you to:</p>
 <ul>
 <li>Find people</li>
 <li>Find groups</li>
@@ -133,7 +133,7 @@
 <p>Do this:</p>
 <ol>
 <li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Expand <code>govtechfinancial.local</code></li>
+<li>Expand <code>purvexfinancial.local</code></li>
 <li>Look at the folders sitting next to <code>Departments</code></li>
 <li>Find the one that holds <code>Server Admins</code> and <code>Helpdesk</code></li>
 </ol>
@@ -175,7 +175,7 @@
 <p>Do this:</p>
 <ol>
 <li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Expand <code>govtechfinancial.local</code></li>
+<li>Expand <code>purvexfinancial.local</code></li>
 <li>Turn on View, then Advanced Features if you need the full name</li>
 <li>Find the built-in folder that is not an OU. It does not say Organizational Unit</li>
 </ol>
@@ -346,7 +346,7 @@
 <p>Do this:</p>
 <ol>
 <li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Expand <code>govtechfinancial.local</code>, then <code>Departments</code>, then <code>IT</code>, then <code>Workstations</code></li>
+<li>Expand <code>purvexfinancial.local</code>, then <code>Departments</code>, then <code>IT</code>, then <code>Workstations</code></li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -430,7 +430,7 @@
 <p>Do this:</p>
 <ol>
 <li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Expand <code>govtechfinancial.local</code>, then <code>Departments</code></li>
+<li>Expand <code>purvexfinancial.local</code>, then <code>Departments</code></li>
 <li>Count the folders directly under Departments</li>
 </ol>
 </div>

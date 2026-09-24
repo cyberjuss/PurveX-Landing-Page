@@ -2,14 +2,14 @@
 #Requires -Modules ActiveDirectory
 <#
 .SYNOPSIS
-    Builds the GovTech Financial Active Directory environment described on
+    Builds the PurveX Financial Active Directory environment described on
     the "Think Like a SOC Analyst 101" Home Lab page (Phase 1 -> Home Lab --
     Active Directory) -- 5 departments, 9 users, 6 department/elevated
     groups, 2 custom access-level groups, and 1 workstation object.
 
 .DESCRIPTION
     Run this on the domain controller (or any management host with the
-    ActiveDirectory module and RSAT installed) after the govtechfinancial.local
+    ActiveDirectory module and RSAT installed) after the purvexfinancial.local
     forest already exists -- see Install-Forest.ps1 for that one-time step.
 
     The script is idempotent: run it as many times as you want. Anything
@@ -19,7 +19,7 @@
 
     Structure created:
 
-      govtechfinancial.local
+      purvexfinancial.local
       |-- OU=Departments
       |   |-- OU=IT
       |   |   |-- OU=Users        (Alex Rivera, Priya Nair)

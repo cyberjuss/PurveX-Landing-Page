@@ -68,7 +68,7 @@ function labFacts(s: LabSnapshot): string {
   });
   const groups = s.groups.slice(0, 16).map((g) => `- ${g.name}: ${g.members.length} members`);
   const computers = s.computers.slice(0, 10).map((c) => `- ${c.name}: ${c.container}`);
-  return `Domain: ${s.domain.dnsRoot || "govtechfinancial.local"}\nUsers:\n${users.join("\n")}\nGroups:\n${groups.join("\n")}\nComputers:\n${computers.join("\n")}`;
+  return `Domain: ${s.domain.dnsRoot || "purvexfinancial.local"}\nUsers:\n${users.join("\n")}\nGroups:\n${groups.join("\n")}\nComputers:\n${computers.join("\n")}`;
 }
 
 function text(v: unknown, max: number): string {
@@ -243,7 +243,7 @@ export async function generateScenario(params: {
   const { lab, scores } = context(params);
   const level = Math.min(4, Math.max(1, params.level));
 
-  const system = `You write one short, realistic daily practice scenario for a trainee at GovTech Financial's service desk who is learning to be a Tier 1 help desk and junior SOC analyst.
+  const system = `You write one short, realistic daily practice scenario for a trainee at PurveX Financial's service desk who is learning to be a Tier 1 help desk and junior SOC analyst.
 
 Rules:
 ${BASE_RULES}
@@ -289,7 +289,7 @@ export async function generateCtf(params: {
   // The weekly CTF is always a step above the student's level.
   const level = Math.min(4, params.level + 1);
 
-  const system = `You write one weekly CTF-style investigation for a trainee at GovTech Financial's service desk who is learning to be a junior SOC analyst. The trainee reads the evidence, works out one fact, and types it in.
+  const system = `You write one weekly CTF-style investigation for a trainee at PurveX Financial's service desk who is learning to be a junior SOC analyst. The trainee reads the evidence, works out one fact, and types it in.
 
 Rules:
 ${BASE_RULES}
@@ -366,7 +366,7 @@ export async function generateRespond(params: {
   const { lab, scores } = context(params);
   const level = Math.min(4, Math.max(1, params.level));
 
-  const system = `You write one written-response case for a trainee at GovTech Financial who is learning to be a Tier 1 help desk, junior sysadmin and SOC analyst. The trainee must decide what to change and defend it in two to four sentences, the way they would in a ticket note or an escalation.
+  const system = `You write one written-response case for a trainee at PurveX Financial who is learning to be a Tier 1 help desk, junior sysadmin and SOC analyst. The trainee must decide what to change and defend it in two to four sentences, the way they would in a ticket note or an escalation.
 
 Rules:
 ${BASE_RULES}
@@ -428,7 +428,7 @@ export async function generateChange(params: {
   let question = "Fix this in your lab, then check it.";
 
   // The model only words the finding. It never adds facts, and the checks stay fixed.
-  const system = `You write a finding from a real audit of a trainee's own Active Directory lab at GovTech Financial. The trainee will fix it in that lab.
+  const system = `You write a finding from a real audit of a trainee's own Active Directory lab at PurveX Financial. The trainee will fix it in that lab.
 Rules:
 - Use only the facts given. Do not invent people, tickets, managers, deadlines or systems. Nothing here is a role-play.
 - Refer to people by name or as they/them. Never guess a gender from a name.
