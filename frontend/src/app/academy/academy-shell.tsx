@@ -151,6 +151,20 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     });
   }
 
+  // Mobile course drawer: lock the page behind it and let Escape close it.
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSidebarOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [sidebarOpen]);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
@@ -618,8 +632,9 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
                 <button
                   type="button"
                   onClick={() => setSidebarOpen(true)}
-                  className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] text-slate-600 transition hover:bg-slate-50 lg:hidden"
+                  className="flex h-10 w-10 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] text-slate-600 transition hover:bg-slate-50 lg:hidden"
                   aria-label="Open course menu"
+                  aria-expanded={sidebarOpen}
                 >
                   <Menu className="h-[18px] w-[18px]" />
                 </button>
@@ -683,35 +698,34 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
             </div>
           </aside>
 
-          {/* Mobile drawer */}
-          {showSidebar && sidebarOpen && (
-            <div className="fixed inset-0 z-50 lg:hidden">
-              <div className="ax-drawer__scrim absolute inset-0 bg-slate-900/30" onClick={() => setSidebarOpen(false)} />
-              <div className="ax-drawer__panel absolute left-0 top-0 h-full w-80 max-w-[85vw] shadow-2xl">
-                <div className="flex items-center justify-between border-b border-[var(--pvrx-border-light)] px-5 py-4">
-                  <span className="font-display text-sm font-semibold">Course menu</span>
-                  <button
-                    type="button"
-                    onClick={() => setSidebarOpen(false)}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100"
-                    aria-label="Close course menu"
-                  >
-                    <X className="h-[18px] w-[18px]" />
-                  </button>
-                </div>
-                <div className="h-[calc(100%-57px)]">
-                  <AcademySidebar phases={phases} onNavigate={() => setSidebarOpen(false)} />
-                </div>
-              </div>
-            </div>
-          )}
-
           <main className={`min-w-0 flex-1 px-4 sm:px-6 lg:px-10 ${isHome ? "py-5" : "py-6"}`}>
             <div key={pathname} className={`ax-page mx-auto ${isReadiness || isDrill ? "max-w-6xl" : "max-w-4xl"}`}>
               {children}
             </div>
           </main>
         </div>
+        {/* Mobile drawer */}
+        {showSidebar && sidebarOpen && (
+          <div className="ax-drawer fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Course menu">
+            <div className="ax-drawer__scrim absolute inset-0 bg-slate-900/30" onClick={() => setSidebarOpen(false)} />
+            <div className="ax-drawer__panel absolute left-0 top-0 h-full w-80 max-w-[85vw] shadow-2xl">
+              <div className="flex items-center justify-between border-b border-[var(--pvrx-border-light)] px-5 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+                <span className="font-display text-sm font-semibold">Course menu</span>
+                <button
+                  type="button"
+                  onClick={() => setSidebarOpen(false)}
+                  className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100"
+                  aria-label="Close course menu"
+                >
+                  <X className="h-[18px] w-[18px]" />
+                </button>
+              </div>
+              <div className="h-[calc(100%-65px)] overflow-y-auto pb-[env(safe-area-inset-bottom)]">
+                <AcademySidebar phases={phases} onNavigate={() => setSidebarOpen(false)} />
+              </div>
+            </div>
+          </div>
+        )}
         <PurvexCoach />
         {hello && <AcademyWelcome student={student} onDone={() => setHello(false)} />}
       </div>

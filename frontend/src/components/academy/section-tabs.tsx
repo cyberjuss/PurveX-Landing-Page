@@ -85,12 +85,23 @@ export function SectionTabs({
   // Lab's 9 sections, not the default state. Collapsed shows just the
   // current section's name so context isn't lost while the list is hidden.
   const [collapsed, setCollapsed] = useState(false);
+  // Phones stack the list above the lesson, so an open list pushes the
+  // content a full screen down. There it starts collapsed, as a "you are
+  // here" dropdown, and folds back up after a pick.
+  const isPhone = () => window.matchMedia("(max-width: 767px)").matches;
+  useEffect(() => {
+    const fold = () => {
+      if (isPhone()) setCollapsed(true);
+    };
+    fold();
+  }, []);
   const current = items[active];
   const prevItem = active > 0 ? items[active - 1] : null;
   const nextItem = active < items.length - 1 ? items[active + 1] : null;
   function goTo(i: number) {
     setDir(i >= active ? 1 : -1);
     setActive(i);
+    if (isPhone()) setCollapsed(true);
   }
 
   const prevTrail: TrailLink | null = prevItem
@@ -199,94 +210,99 @@ export function SectionTabs({
           }`}
           aria-hidden={collapsed}
         >
-          <div role="tablist" aria-orientation="vertical" className="flex flex-col gap-0.5 overflow-hidden pt-1">
-            {numberedItems.map((item, i) => (
-              <button
-                key={item.label}
-                type="button"
-                role="tab"
-                tabIndex={collapsed ? -1 : 0}
-                aria-selected={active === i}
-                onClick={() => goTo(i)}
-                className={`ax-tab ${active === i ? "ax-tab--on" : ""}`}
-              >
-                <span className="font-mono text-[10px] font-normal text-slate-400">{pad(i + 1)}</span>
-                <span className="truncate">{item.label}</span>
-              </button>
-            ))}
+          {/* One grid child: the 0fr row only folds the first child, so
+              the Labs/Challenges/Troubleshooting groups used to stay full
+              height (invisible, but still taking space and taps). */}
+          <div className="min-h-0 overflow-hidden">
+            <div role="tablist" aria-orientation="vertical" className="flex flex-col gap-0.5 overflow-hidden pt-1">
+              {numberedItems.map((item, i) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  role="tab"
+                  tabIndex={collapsed ? -1 : 0}
+                  aria-selected={active === i}
+                  onClick={() => goTo(i)}
+                  className={`ax-tab ${active === i ? "ax-tab--on" : ""}`}
+                >
+                  <span className="font-mono text-[10px] font-normal text-slate-400">{pad(i + 1)}</span>
+                  <span className="truncate">{item.label}</span>
+                </button>
+              ))}
+            </div>
+            {labItems.length > 0 && (
+              <div className="mt-1 flex flex-col gap-0.5 overflow-hidden border-t border-[var(--pvrx-border-light)] pt-2">
+                <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">Labs</p>
+                {labItems.map((item, i) => {
+                  const idx = numberedItems.length + i;
+                  return (
+                    <button
+                      key={item.label}
+                      type="button"
+                      role="tab"
+                      tabIndex={collapsed ? -1 : 0}
+                      aria-selected={active === idx}
+                      onClick={() => goTo(idx)}
+                      className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
+                    >
+                      <FlaskConical className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                      {/* Lab titles run longer than a section's ("Network
+                          Forensics -- Hidden Tear Ransomware") -- truncating
+                          to one line lost the part that actually identifies
+                          the lab, so this wraps instead. */}
+                      <span className="min-w-0">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            {challengeItems.length > 0 && (
+              <div className="mt-1 flex flex-col gap-0.5 overflow-hidden border-t border-[var(--pvrx-border-light)] pt-2">
+                <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">Challenges</p>
+                {challengeItems.map((item, i) => {
+                  const idx = numberedItems.length + labItems.length + i;
+                  return (
+                    <button
+                      key={item.label}
+                      type="button"
+                      role="tab"
+                      tabIndex={collapsed ? -1 : 0}
+                      aria-selected={active === idx}
+                      onClick={() => goTo(idx)}
+                      className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
+                    >
+                      <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                      <span className="min-w-0">
+                        {item.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            {troubleshootingItems.length > 0 && (
+              <div className="mt-1 flex flex-col gap-0.5 overflow-hidden border-t border-[var(--pvrx-border-light)] pt-2">
+                <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">Troubleshooting</p>
+                {troubleshootingItems.map((item, i) => {
+                  const idx = numberedItems.length + labItems.length + challengeItems.length + i;
+                  return (
+                    <button
+                      key={item.label}
+                      type="button"
+                      role="tab"
+                      tabIndex={collapsed ? -1 : 0}
+                      aria-selected={active === idx}
+                      onClick={() => goTo(idx)}
+                      className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
+                    >
+                      <Wrench className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                      <span className="min-w-0">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
-          {labItems.length > 0 && (
-            <div className="mt-1 flex flex-col gap-0.5 overflow-hidden border-t border-[var(--pvrx-border-light)] pt-2">
-              <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">Labs</p>
-              {labItems.map((item, i) => {
-                const idx = numberedItems.length + i;
-                return (
-                  <button
-                    key={item.label}
-                    type="button"
-                    role="tab"
-                    tabIndex={collapsed ? -1 : 0}
-                    aria-selected={active === idx}
-                    onClick={() => goTo(idx)}
-                    className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
-                  >
-                    <FlaskConical className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                    {/* Lab titles run longer than a section's ("Network
-                        Forensics -- Hidden Tear Ransomware") -- truncating
-                        to one line lost the part that actually identifies
-                        the lab, so this wraps instead. */}
-                    <span className="min-w-0">{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-          {challengeItems.length > 0 && (
-            <div className="mt-1 flex flex-col gap-0.5 overflow-hidden border-t border-[var(--pvrx-border-light)] pt-2">
-              <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">Challenges</p>
-              {challengeItems.map((item, i) => {
-                const idx = numberedItems.length + labItems.length + i;
-                return (
-                  <button
-                    key={item.label}
-                    type="button"
-                    role="tab"
-                    tabIndex={collapsed ? -1 : 0}
-                    aria-selected={active === idx}
-                    onClick={() => goTo(idx)}
-                    className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
-                  >
-                    <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                    <span className="min-w-0">
-                      {item.label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-          {troubleshootingItems.length > 0 && (
-            <div className="mt-1 flex flex-col gap-0.5 overflow-hidden border-t border-[var(--pvrx-border-light)] pt-2">
-              <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">Troubleshooting</p>
-              {troubleshootingItems.map((item, i) => {
-                const idx = numberedItems.length + labItems.length + challengeItems.length + i;
-                return (
-                  <button
-                    key={item.label}
-                    type="button"
-                    role="tab"
-                    tabIndex={collapsed ? -1 : 0}
-                    aria-selected={active === idx}
-                    onClick={() => goTo(idx)}
-                    className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
-                  >
-                    <Wrench className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                    <span className="min-w-0">{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
         </div>
       </div>
 
