@@ -4599,4 +4599,9 @@ textarea.pc-dock__field {
 .dr-score small { font-size: var(--ty-h2); }
 .dr-home__main strong { font-size: var(--ty-h3); }
 .dr-home__main em, .dr-error { font-size: var(--ty-small); }
+.dr-bar__end { display: inline-flex; align-items: center; gap: 18px; }
+.dr-exit { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid var(--rd-line); border-radius: 999px; background: transparent; font-size: var(--ty-body, 14px); font-weight: 600; color: var(--rd-ink-2); cursor: pointer; }
+.dr-exit:hover { border-color: var(--rd-bad); color: var(--rd-bad); }
+.dr-leave { display: inline-flex; align-items: center; gap: 12px; font-size: var(--ty-body, 14px); color: var(--rd-ink-2); }
+.dr-link--bad { color: var(--rd-bad); }
 .dr-link { font-size: var(--ty-body); }

@@ -110,6 +110,7 @@ export function DrillRunner() {
   const [result, setResult] = useState<Result | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [leaving, setLeaving] = useState(false);
   const finishing = useRef(false);
 
   const load = useCallback(() => {
@@ -147,6 +148,15 @@ export function DrillRunner() {
     } finally {
       setBusy(false);
     }
+  }
+
+  function exitDrill() {
+    finishing.current = false;
+    setLeaving(false);
+    setRun(null);
+    setAnswers([]);
+    setIdx(0);
+    setError(null);
   }
 
   const finish = useCallback(async (current: Run, given: (string | null)[]) => {
@@ -202,9 +212,26 @@ export function DrillRunner() {
                 ? "Daily scenario · written for you"
                 : "Daily scenario"}
           </span>
-          <span className={`dr-clock${left !== null && left <= 30 ? " dr-clock--low" : ""}`}>
-            <Timer className="h-4 w-4" />
-            {clock(left ?? elapsed)}
+          <span className="dr-bar__end">
+            {leaving ? (
+              <span className="dr-leave">
+                Leave this drill?
+                <button type="button" className="dr-link" onClick={() => setLeaving(false)}>
+                  Stay
+                </button>
+                <button type="button" className="dr-link dr-link--bad" onClick={exitDrill}>
+                  Leave
+                </button>
+              </span>
+            ) : (
+              <button type="button" className="dr-exit" onClick={() => setLeaving(true)}>
+                <X className="h-4 w-4" /> Exit
+              </button>
+            )}
+            <span className={`dr-clock${left !== null && left <= 30 ? " dr-clock--low" : ""}`}>
+              <Timer className="h-4 w-4" />
+              {clock(left ?? elapsed)}
+            </span>
           </span>
         </div>
         {!single && (
