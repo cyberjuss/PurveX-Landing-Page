@@ -2,12 +2,9 @@
 
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import { hasRecoverySession, updatePassword } from "@/lib/portal-auth";
-import { AuthShell, AUTH_INPUT_CLASSNAME_DARK } from "@/components/auth/auth-shell";
-import { Button } from "@/components/ui/button";
-import { Loader2, Lock, Eye, EyeOff, ArrowLeft, CheckCircle2, AlertCircle } from "lucide-react";
-
-const AUTH_INPUT_CLASSNAME = AUTH_INPUT_CLASSNAME_DARK;
+import { AuthError, AuthHeading, AuthMinimal, PasswordInput, passwordStrength, StrengthBar } from "@/components/auth/auth-minimal";
 
 function getErrorMessage(err: unknown, fallback: string) {
   if (err instanceof Error && err.message) return err.message;
@@ -16,38 +13,25 @@ function getErrorMessage(err: unknown, fallback: string) {
 
 function ResetPasswordContent() {
   const [hasSession, setHasSession] = useState<boolean | null>(null);
-
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [phase, setPhase] = useState<"form" | "submitting" | "success" | "error">("form");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Supabase's reset-password link establishes a "recovery" session via
-    // the URL hash automatically on load (detectSessionInUrl) -- there's no
-    // separate token query param to read here, unlike the old backend flow.
+    // the URL hash automatically on load (detectSessionInUrl) -- there is no
+    // separate token query param to read here.
     let cancelled = false;
     hasRecoverySession().then((ok) => {
       if (!cancelled) setHasSession(ok);
     });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  // Password strength indicator
-  const getStrength = (pw: string) => {
-    let score = 0;
-    if (pw.length >= 8) score++;
-    if (/[a-z]/.test(pw)) score++;
-    if (/[A-Z]/.test(pw)) score++;
-    if (/\d/.test(pw)) score++;
-    if (/[!@#$%^&*(),.?":{}|<>\[\]\\/+=~`_-]/.test(pw)) score++;
-    return score;
-  };
-
-  const strength = getStrength(password);
-  const strengthLabel = ["", "Weak", "Fair", "Fair", "Good", "Strong"][strength] || "";
-  const strengthColor = ["", "bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-blue-500", "bg-emerald-500"][strength] || "";
+  const strength = passwordStrength(password);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,7 +40,6 @@ function ResetPasswordContent() {
       setError("Your reset link has expired. Please request a new one.");
       return;
     }
-
     if (password.length < 8) {
       setError("Password must be at least 8 characters.");
       return;
@@ -73,11 +56,10 @@ function ResetPasswordContent() {
       setError("Password must contain a number.");
       return;
     }
-    if (!/[!@#$%^&*(),.?":{}|<>\[\]\\/_ +=~`-]/.test(password)) {
+    if (!/[!@#$%^&*(),.?":{}|<>[\]\\/_ +=~`-]/.test(password)) {
       setError("Password must contain a special character.");
       return;
     }
-
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
@@ -96,159 +78,88 @@ function ResetPasswordContent() {
   }
 
   if (hasSession === null) {
-    return <PageShell><div className="mt-4 min-h-[120px]" /></PageShell>;
+    return (
+      <AuthMinimal>
+        <div className="min-h-[160px]" />
+      </AuthMinimal>
+    );
   }
 
   if (!hasSession) {
     return (
-      <PageShell>
-        <div className="flex flex-col items-center gap-4 mt-4 px-8 pb-6">
-          <div className="rounded-full bg-red-500/20 p-3">
-            <AlertCircle className="h-8 w-8 text-red-400" />
-          </div>
-          <p className="text-center text-sm text-slate-600 dark:text-zinc-300">
-            No valid reset link found. Please use the link from your email, or request a new one.
-          </p>
-          <Link
-            href="/forgot-password"
-            className="text-sm font-medium text-slate-500 transition hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-300"
-          >
-            Request new reset link
-          </Link>
-        </div>
-      </PageShell>
+      <AuthMinimal>
+        <AuthHeading sub="Use the link from your email, or request a new one.">This reset link is not valid</AuthHeading>
+        <Link href="/forgot-password" className="am-primary mt-8">
+          Request a new link
+        </Link>
+      </AuthMinimal>
     );
   }
 
   if (phase === "success") {
     return (
-      <PageShell>
-        <div className="flex flex-col items-center gap-4 mt-4 px-8 pb-6">
-          <div className="rounded-full bg-emerald-500/12 p-3 dark:bg-emerald-500/18">
-            <CheckCircle2 className="h-8 w-8 text-emerald-500 dark:text-emerald-300" />
-          </div>
-          <p className="text-center text-sm text-slate-600 dark:text-zinc-300">
-            Your password has been reset successfully.
-          </p>
-          <Button asChild variant="default" size="lg" className="mt-2 h-12 w-full rounded-2xl border-slate-950 bg-slate-950 text-white shadow-none hover:border-slate-800 hover:bg-slate-800 dark:border-white dark:bg-white dark:text-slate-950 dark:hover:border-zinc-200 dark:hover:bg-zinc-100">
-            <Link href="/">Back home</Link>
-          </Button>
-        </div>
-      </PageShell>
+      <AuthMinimal>
+        <AuthHeading sub="Your password has been reset. You can sign in with it now.">Password updated</AuthHeading>
+        <Link href="/account/login" className="am-primary mt-8">
+          Continue to sign in
+        </Link>
+      </AuthMinimal>
     );
   }
 
+  const busy = phase === "submitting";
+
   return (
-    <PageShell>
-      <div className="w-full">
-        <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-7">
-          <div className="space-y-3">
-            <label htmlFor="password" className="block text-sm font-semibold text-slate-700 dark:text-zinc-200">
-              New password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400 dark:text-zinc-500 pointer-events-none" />
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                className={`${AUTH_INPUT_CLASSNAME} pr-12`}
-                placeholder="At least 8 characters"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="new-password"
-                passwordrules="minlength: 8; required: lower; required: upper; required: digit;"
-                required
-                disabled={phase === "submitting"}
-              />
-              <button
-                type="button"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 transition hover:text-slate-700 dark:text-zinc-500 dark:hover:text-white"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                tabIndex={-1}
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-            {password.length > 0 && (
-              <div className="flex items-center gap-2 mt-3">
-                <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all ${strengthColor}`}
-                    style={{ width: `${(strength / 5) * 100}%` }}
-                  />
-                </div>
-                <span className="text-xs text-slate-500 dark:text-zinc-400">{strengthLabel}</span>
-              </div>
-            )}
-          </div>
+    <AuthMinimal>
+      <AuthHeading sub="Choose a strong password for your account.">Choose a new password</AuthHeading>
+      <form onSubmit={handleSubmit} className="mt-7" noValidate>
+        <PasswordInput
+          id="password"
+          value={password}
+          onChange={setPassword}
+          placeholder="At least 8 characters"
+          autoComplete="new-password"
+          autoFocus
+          invalid={Boolean(error)}
+          disabled={busy}
+          label="New password"
+        />
+        <StrengthBar password={password} />
+        <p className="mt-2 text-xs leading-5 text-slate-500">
+          {strength < 5 ? "Use upper and lowercase letters, a number, and a symbol." : "That is a strong password."}
+        </p>
 
-          <div className="space-y-3">
-            <label htmlFor="confirm-password" className="block text-sm font-semibold text-slate-700 dark:text-zinc-200">
-              Confirm password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400 dark:text-zinc-500 pointer-events-none" />
-              <input
-                id="confirm-password"
-                type={showPassword ? "text" : "password"}
-                className={AUTH_INPUT_CLASSNAME}
-                placeholder="Confirm your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                autoComplete="new-password"
-                passwordrules="minlength: 8; required: lower; required: upper; required: digit;"
-                required
-                disabled={phase === "submitting"}
-              />
-            </div>
-          </div>
+        <div className="mt-4">
+          <PasswordInput
+            id="confirm-password"
+            value={confirmPassword}
+            onChange={setConfirmPassword}
+            placeholder="Confirm your password"
+            autoComplete="new-password"
+            invalid={Boolean(error)}
+            disabled={busy}
+            label="Confirm password"
+          />
+        </div>
 
-          {error && (
-            <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200" role="alert">{error}</p>
-          )}
-
-          <Button
-            type="submit"
-            variant="default"
-            size="lg"
-            disabled={phase === "submitting"}
-            className="mt-2 h-12 w-full rounded-2xl border-slate-950 bg-slate-950 text-white shadow-none hover:border-slate-800 hover:bg-slate-800 dark:border-white dark:bg-white dark:text-slate-950 dark:hover:border-zinc-200 dark:hover:bg-zinc-100"
-          >
-            {phase === "submitting" ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Resetting...
-              </>
-            ) : (
-              "Reset password"
-            )}
-          </Button>
-
-          <div className="flex justify-center mt-4">
-            <Link href="/" className="flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-300">
-              <ArrowLeft className="h-4 w-4" />
-              Back home
-            </Link>
-          </div>
-        </form>
-      </div>
-    </PageShell>
-  );
-}
-
-function PageShell({ children }: { children: React.ReactNode }) {
-  return (
-    <AuthShell title="New password" subtitle="Choose a strong password for your account.">
-      {children}
-    </AuthShell>
+        <AuthError>{error}</AuthError>
+        <button type="submit" className="am-primary mt-4" disabled={busy}>
+          {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : "Reset password"}
+        </button>
+      </form>
+    </AuthMinimal>
   );
 }
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[var(--surface-page)] dark:bg-[#090909]" />}>
+    <Suspense
+      fallback={
+        <AuthMinimal>
+          <div className="min-h-[160px]" />
+        </AuthMinimal>
+      }
+    >
       <ResetPasswordContent />
     </Suspense>
   );

@@ -2,12 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import { requestPasswordReset } from "@/lib/portal-auth";
-import { AuthShell, AUTH_INPUT_CLASSNAME_DARK } from "@/components/auth/auth-shell";
-import { Button } from "@/components/ui/button";
-import { Loader2, Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
-
-const AUTH_INPUT_CLASSNAME = AUTH_INPUT_CLASSNAME_DARK;
+import { AuthError, AuthHeading, AuthMinimal } from "@/components/auth/auth-minimal";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -17,7 +14,7 @@ export default function ForgotPasswordPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email.trim()) {
-      setError("Please enter your email address.");
+      setError("Enter your email address.");
       return;
     }
 
@@ -34,85 +31,53 @@ export default function ForgotPasswordPage() {
     }
   }
 
+  if (phase === "sent") {
+    return (
+      <AuthMinimal>
+        <AuthHeading
+          sub={
+            <>
+              If an account exists for <strong className="text-[#10192e]">{email}</strong>, you will receive a password reset link shortly.
+            </>
+          }
+        >
+          Check your inbox
+        </AuthHeading>
+        <Link href="/account/login" className="am-secondary mt-8">
+          Back to sign in
+        </Link>
+      </AuthMinimal>
+    );
+  }
+
   return (
-    <AuthShell
-      title="Reset password"
-      subtitle={
-        phase === "sent"
-          ? "Check your inbox for a reset link."
-          : "Enter the email associated with your account."
-      }
-    >
-      <div className="w-full">
-                {phase === "sent" ? (
-                    <div className="mt-4 flex flex-col items-center gap-4">
-                      <div className="rounded-full bg-emerald-500/12 p-3 dark:bg-emerald-500/18">
-                        <CheckCircle2 className="h-8 w-8 text-emerald-500 dark:text-emerald-300" />
-                      </div>
-                    <p className="text-center text-sm leading-relaxed text-slate-600 dark:text-zinc-300">
-                      If an account exists for <strong className="text-slate-900 dark:text-white">{email}</strong>,
-                      you&apos;ll receive a password reset link shortly.
-                    </p>
-                    <Link
-                      href="/"
-                      className="mt-2 flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-300"
-                    >
-                      <ArrowLeft className="h-4 w-4" />
-                      Back home
-                    </Link>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-7">
-                    <div className="space-y-3">
-                      <label htmlFor="email" className="block text-sm font-semibold text-slate-700 dark:text-zinc-200">
-                        Email address
-                      </label>
-                      <div className="relative">
-                        <Mail className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400 dark:text-zinc-500 pointer-events-none" />
-                        <input
-                          id="email"
-                          type="email"
-                          className={AUTH_INPUT_CLASSNAME}
-                          placeholder="you@company.com"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          autoComplete="email"
-                          required
-                          disabled={phase === "sending"}
-                        />
-                      </div>
-                    </div>
-
-                    {error && (
-                      <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200" role="alert">{error}</p>
-                    )}
-
-                    <Button
-                      type="submit"
-                      variant="default"
-                      size="lg"
-                      disabled={phase === "sending"}
-                      className="mt-2 h-12 w-full rounded-2xl border-0 bg-[rgb(72,99,255)] text-white shadow-[0_10px_30px_rgba(72,99,255,0.35)] hover:bg-[rgb(86,111,255)]"
-                    >
-                      {phase === "sending" ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          Sending...
-                        </>
-                      ) : (
-                        "Send reset link"
-                      )}
-                    </Button>
-
-                    <div className="flex justify-center mt-4">
-                      <Link href="/" className="flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-300">
-                        <ArrowLeft className="h-4 w-4" />
-                        Back home
-                      </Link>
-                    </div>
-                  </form>
-                )}
-      </div>
-    </AuthShell>
+    <AuthMinimal>
+      <AuthHeading sub="Enter the email for your account and we will send you a reset link.">Reset your password</AuthHeading>
+      <form onSubmit={handleSubmit} className="mt-7" noValidate>
+        <input
+          id="email"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          autoFocus
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="am-input"
+          aria-label="Email"
+          aria-invalid={Boolean(error)}
+          disabled={phase === "sending"}
+        />
+        <AuthError>{error}</AuthError>
+        <button type="submit" className="am-primary mt-4" disabled={phase === "sending"}>
+          {phase === "sending" ? <Loader2 className="h-5 w-5 animate-spin" /> : "Send reset link"}
+        </button>
+      </form>
+      <p className="mt-6 text-sm">
+        <Link href="/account/login" className="am-link">
+          Back to sign in
+        </Link>
+      </p>
+    </AuthMinimal>
   );
 }

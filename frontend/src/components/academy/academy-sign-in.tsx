@@ -2,8 +2,16 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
-import { AuthMinimal } from "@/components/auth/auth-minimal";
+import { Loader2 } from "lucide-react";
+import {
+  AuthDivider,
+  AuthError,
+  AuthHeading,
+  AuthMinimal,
+  BackButton,
+  GoogleMark,
+  PasswordInput,
+} from "@/components/auth/auth-minimal";
 import { signInWithGoogle, signInWithPassword, signUpWithPassword } from "@/lib/portal-auth";
 import { markAcademyWelcome } from "@/components/academy/academy-welcome";
 
@@ -11,23 +19,11 @@ function errorText(err: unknown, fallback: string) {
   return err instanceof Error && err.message ? err.message : fallback;
 }
 
-function GoogleMark() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
-      <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z" />
-      <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z" />
-      <path fill="#FBBC05" d="M10.5 28.7c-.5-1.5-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.1z" />
-      <path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z" />
-    </svg>
-  );
-}
-
 export function AcademySignIn({ configured }: { configured: boolean }) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [step, setStep] = useState<"email" | "password">("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null);
@@ -101,26 +97,29 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
   function back() {
     setStep("email");
     setPassword("");
-    setShowPassword(false);
     setError(null);
   }
 
   if (!configured) {
     return (
-      <AuthMinimal>
-        <h1 className="text-[2rem] font-bold leading-tight tracking-tight">Student accounts are not set up yet</h1>
-        <p className="mt-3 text-base text-slate-600">Ask your instructor to finish setting up PurveX Academy.</p>
+      <AuthMinimal product="Academy">
+        <AuthHeading sub="Ask your instructor to finish setting up PurveX Academy.">Student accounts are not set up yet</AuthHeading>
       </AuthMinimal>
     );
   }
 
   if (sentTo) {
     return (
-      <AuthMinimal>
-        <h1 className="text-[2rem] font-bold leading-tight tracking-tight">Check your inbox</h1>
-        <p className="mt-3 text-base text-slate-600">
-          We sent a confirmation link to <strong className="text-[#10192e]">{sentTo}</strong>. Confirm your email and you will land back in the Academy, signed in.
-        </p>
+      <AuthMinimal product="Academy">
+        <AuthHeading
+          sub={
+            <>
+              We sent a confirmation link to <strong className="text-[#10192e]">{sentTo}</strong>. Confirm your email and you will land back in the Academy, signed in.
+            </>
+          }
+        >
+          Check your inbox
+        </AuthHeading>
         <button
           type="button"
           className="am-secondary mt-8"
@@ -138,12 +137,11 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
 
   if (step === "email") {
     return (
-      <AuthMinimal>
+      <AuthMinimal product="Academy">
         <div key="email" className="am-step">
-          <h1 className="text-[2rem] font-bold leading-tight tracking-tight">
+          <AuthHeading sub={mode === "signup" ? "Start with your email address." : undefined}>
             {mode === "signin" ? "What is your email?" : "Create your account"}
-          </h1>
-          {mode === "signup" && <p className="mt-2 text-base text-slate-600">Start with your email address.</p>}
+          </AuthHeading>
 
           <form onSubmit={handleEmail} className="mt-7" noValidate>
             <input
@@ -160,21 +158,13 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
               aria-invalid={Boolean(error)}
               disabled={busy}
             />
-            {error && (
-              <p className="mt-2 text-sm font-medium text-[#d92d20]" role="alert">
-                {error}
-              </p>
-            )}
+            <AuthError>{error}</AuthError>
             <button type="submit" className="am-primary mt-4" disabled={busy}>
               Continue
             </button>
           </form>
 
-          <div className="my-6 flex items-center gap-4 text-sm text-slate-500">
-            <span className="h-px flex-1 bg-slate-200" />
-            or
-            <span className="h-px flex-1 bg-slate-200" />
-          </div>
+          <AuthDivider />
 
           <button type="button" className="am-secondary" onClick={handleGoogle} disabled={busy}>
             {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleMark />}
@@ -198,54 +188,33 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
   }
 
   return (
-    <AuthMinimal>
+    <AuthMinimal product="Academy">
       <div key="password" className="am-step">
-        <button
-          type="button"
-          onClick={back}
-          aria-label="Back"
-          className="-ml-2 mb-6 grid h-10 w-10 place-items-center rounded-full text-[#10192e] transition hover:bg-slate-100"
+        <BackButton onClick={back} />
+        <AuthHeading
+          sub={
+            <span className="flex items-center gap-2">
+              <span className="truncate">{email}</span>
+              <button type="button" onClick={back} className="am-link text-sm">Edit</button>
+            </span>
+          }
         >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <h1 className="text-[2rem] font-bold leading-tight tracking-tight">
           {mode === "signin" ? "Enter your password" : "Create a password"}
-        </h1>
-        <p className="mt-2 flex items-center gap-2 text-base text-slate-600">
-          <span className="truncate">{email}</span>
-          <button type="button" onClick={back} className="am-link text-sm">Edit</button>
-        </p>
+        </AuthHeading>
 
         <form onSubmit={handleSubmit} className="mt-7" noValidate>
-          <div className="relative">
-            <input
-              id="academy-password"
-              type={showPassword ? "text" : "password"}
-              autoComplete={mode === "signin" ? "current-password" : "new-password"}
-              autoFocus
-              placeholder={mode === "signin" ? "Password" : "At least 8 characters"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="am-input"
-              style={{ paddingRight: 52 }}
-              aria-label="Password"
-              aria-invalid={Boolean(error)}
-              disabled={busy}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((v) => !v)}
-              aria-label={showPassword ? "Hide password" : "Show password"}
-              className="absolute right-2 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full text-slate-500 hover:text-[#10192e]"
-            >
-              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-            </button>
-          </div>
-          {error && (
-            <p className="mt-2 text-sm font-medium text-[#d92d20]" role="alert">
-              {error}
-            </p>
-          )}
+          <PasswordInput
+            id="academy-password"
+            value={password}
+            onChange={setPassword}
+            placeholder={mode === "signin" ? "Password" : "At least 8 characters"}
+            autoComplete={mode === "signin" ? "current-password" : "new-password"}
+            autoFocus
+            invalid={Boolean(error)}
+            disabled={busy}
+            label="Password"
+          />
+          <AuthError>{error}</AuthError>
           <button type="submit" className="am-primary mt-4" disabled={busy}>
             {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : mode === "signin" ? "Sign in" : "Create account"}
           </button>
