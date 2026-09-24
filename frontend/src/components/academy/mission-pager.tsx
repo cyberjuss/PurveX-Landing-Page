@@ -220,7 +220,7 @@ export function MissionPager({
             </button>
           )}
         </nav>
-      )}
+      ) : null}
     </div>
   );
 }
