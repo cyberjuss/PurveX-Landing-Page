@@ -6,7 +6,7 @@ import { BOOKING_URL, SiteChrome } from "./chrome";
 import { CaseFloor, type FloorAlert, type FloorCase } from "./case-floor";
 import { HoldCard } from "./hold-card";
 import { CoachShowcase, COACH_CSS } from "./coach-showcase";
-import { TrainingBenefits, BENEFITS_CSS } from "./training-benefits";
+import { TrainingAudiences, AUDIENCE_CSS } from "./training-audiences";
 import { PG_CSS } from "./page-skin";
 
 /* Cybersecurity Training. Same skin as the home page (page-skin.ts).
@@ -19,15 +19,6 @@ export type CourseOutline = {
   title: string;
   entries: { title: string; summary: string; live: boolean }[];
 }[];
-
-const pad = (n: number) => String(n).padStart(2, "0");
-
-const audiences = [
-  { title: "Students", body: "Leave with tasks proven in a real directory and resume lines that they can defend." },
-  { title: "Schools and academies", body: "See every student's readiness and weakest skill without grading by hand." },
-  { title: "Government and workforce programs", body: "Measure progress into IT and security roles on one consistent curriculum." },
-  { title: "Employers and business teams", body: "Hire or upskill on proof that ends in a spoken interview and a hire signal." },
-];
 
 const TRAINING_CASES: FloorCase[] = [
   {
@@ -94,10 +85,10 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           </p>
           <div className="pg-hero__actions">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-              Bring it to your program <ArrowRight size={16} />
+              Book a cohort <ArrowRight size={16} />
             </a>
             <Link href="/academy" className="sp-btn sp-btn--ghost sp-btn--lg">
-              Student sign in
+              Sign in
             </Link>
           </div>
         </div>
@@ -105,34 +96,18 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         <CaseFloor cases={TRAINING_CASES} alerts={TRAINING_ALERTS} label="Portal" />
       </section>
 
-      <section className="pg-section" id="syllabus">
+      <section className="pg-section" id="benefits">
         <div className="pg-head" data-r>
           <span className="sp-tag">Why it works</span>
-          <h2>Follow one ticket to see what students gain</h2>
+          <h2>See what it gives you</h2>
         </div>
-        <TrainingBenefits outline={outline} />
+        <TrainingAudiences outline={outline} />
       </section>
 
       <section className="pg-section">
         <div className="pg-dark">
           <CoachShowcase />
         </div>
-      </section>
-
-      <section className="pg-section">
-        <div className="pg-head" data-r>
-          <span className="sp-tag">Who it serves</span>
-          <h2>What each group takes away</h2>
-        </div>
-        <ol className="pg-grid pg-grid--4" data-r>
-          {audiences.map((a, i) => (
-            <li key={a.title}>
-              <span>{pad(i + 1)}</span>
-              <strong>{a.title}</strong>
-              <p>{a.body}</p>
-            </li>
-          ))}
-        </ol>
       </section>
 
       <section className="pg-close" data-r>
@@ -154,7 +129,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
 
       <style>{PG_CSS}</style>
       <style>{COACH_CSS}</style>
-      <style>{BENEFITS_CSS}</style>
+      <style>{AUDIENCE_CSS}</style>
     </SiteChrome>
   );
 }
