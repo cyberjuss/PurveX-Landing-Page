@@ -689,7 +689,9 @@ export function DrillRunner() {
           </div>
         )}
 
-        <Scenario caseNo={String((status?.stats.total ?? 0) + 1).padStart(2, "0")} item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} checkRes={checkRes} unlock={unlock} />
+        <div key={idx} className="ax-enter">
+          <Scenario caseNo={String((status?.stats.total ?? 0) + 1).padStart(2, "0")} item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} checkRes={checkRes} unlock={unlock} />
+        </div>
 
         <div className="dr-actions">
           {item.gated && !unlock ? (
@@ -754,7 +756,7 @@ export function DrillRunner() {
     const first = review[0];
     const misses = [...new Set(review.filter((r) => !r.correct).map((r) => SKILLS[r.skill].label))];
     return (
-      <div className="rd dr dr--play">
+      <div className="rd dr dr--play ax-enter">
         <span className="rd-kicker">{MODE_LABEL[entry.mode] ?? "Drill"} · Result</span>
 
         {single ? (

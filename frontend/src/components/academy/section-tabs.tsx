@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronLeft, ChevronRight, Flag, FlaskConical, Wrench } from "lucide-react";
 import { Markdown, splitMarkdownIntoSlides } from "@/lib/markdown";
 import { CHALLENGE_PATHS, MISSION_CATALOG } from "@/lib/academy-missions";
@@ -8,6 +9,9 @@ import { QuizBlock } from "./quiz";
 import { LabCarousel } from "./lab-carousel";
 import { MissionPager } from "./mission-pager";
 import type { Quiz } from "@/content/academy/quizzes";
+
+type WeekLink = { label: string; href: string };
+type Trail = { label: string; go: () => void };
 
 interface TabSection {
   label: string;
@@ -51,12 +55,16 @@ export function SectionTabs({
   labs,
   challenges,
   troubleshooting,
+  prevWeek,
+  nextWeek,
 }: {
   sections: TabSection[];
   quiz?: Quiz;
   labs?: TabSection[];
   challenges?: TabSection[];
   troubleshooting?: TabSection[];
+  prevWeek?: WeekLink | null;
+  nextWeek?: WeekLink | null;
 }) {
   const numberedItems: Item[] = [
     ...sections.map((s): Item => ({ kind: "section", label: s.label, markdown: s.markdown })),
@@ -67,8 +75,10 @@ export function SectionTabs({
   const troubleshootingItems: Item[] = (troubleshooting ?? []).map((t) => ({ kind: "troubleshooting", label: t.label, markdown: t.markdown }));
   const items = [...numberedItems, ...labItems, ...challengeItems, ...troubleshootingItems];
 
+  const router = useRouter();
   const [active, setActive] = useState(0);
   const [quizFoot, setQuizFoot] = useState<HTMLElement | null>(null);
+  const [labFoot, setLabFoot] = useState<HTMLElement | null>(null);
   // Expanded by default -- collapsing is an option for a long list like Home
   // Lab's 9 sections, not the default state. Collapsed shows just the
   // current section's name so context isn't lost while the list is hidden.
@@ -76,6 +86,16 @@ export function SectionTabs({
   const current = items[active];
   const prevItem = active > 0 ? items[active - 1] : null;
   const nextItem = active < items.length - 1 ? items[active + 1] : null;
+  const prevTrail: Trail | null = prevItem
+    ? { label: prevItem.label, go: () => setActive(active - 1) }
+    : prevWeek
+      ? { label: prevWeek.label, go: () => router.push(prevWeek.href) }
+      : null;
+  const nextTrail: Trail | null = nextItem
+    ? { label: nextItem.label, go: () => setActive(active + 1) }
+    : nextWeek
+      ? { label: nextWeek.label, go: () => router.push(nextWeek.href) }
+      : null;
 
   useEffect(() => {
     const apply = () => setActive(indexForHash(window.location.hash, items));
@@ -107,13 +127,19 @@ export function SectionTabs({
             reusing the instance -- otherwise it kept whatever step index
             you were on in the previous lab instead of starting over at
             Overview. */}
-        <LabCarousel key={current.label} slides={splitMarkdownIntoSlides(current.markdown)} />
+        <LabCarousel
+          key={current.label}
+          slides={splitMarkdownIntoSlides(current.markdown)}
+          actionHost={labFoot}
+          prevBeyond={prevTrail}
+          nextBeyond={nextTrail}
+        />
       </div>
     ) : (
       <MissionPager
         key={current.label}
-        prevSection={prevItem ? { label: prevItem.label, go: () => setActive(active - 1) } : null}
-        nextSection={nextItem ? { label: nextItem.label, go: () => setActive(active + 1) } : null}
+        prevSection={prevTrail}
+        nextSection={nextTrail}
       >
         <Markdown content={current.markdown} />
       </MissionPager>
@@ -243,23 +269,29 @@ export function SectionTabs({
       </div>
 
       <div className="ax-panel min-w-0 flex-1">
-        <div className="py-2 sm:py-4">{panel}</div>
+        <div className="overflow-hidden py-2 sm:py-4">
+          <div key={current.label} className={current.kind === "lab" ? undefined : "ax-enter"}>
+            {panel}
+          </div>
+        </div>
 
         {/* Lets you read straight through a lesson without dropping back to
             the sidebar after every section -- and, once it reaches the labs,
             the same control that was previously only reachable by clicking
             a sidebar link. */}
-        {items.length > 1 && current.kind !== "challenge" && (
+        {current.kind === "lab" ? (
+          <div className="ax-panel__foot" ref={setLabFoot} />
+        ) : current.kind !== "challenge" && (items.length > 1 || prevTrail || nextTrail) ? (
           <div className="ax-panel__foot">
             <button
               type="button"
-              onClick={() => setActive((a) => Math.max(0, a - 1))}
-              disabled={active === 0}
+              onClick={() => prevTrail?.go()}
+              disabled={!prevTrail}
               aria-label="Previous section"
               className="ax-step"
             >
               <ChevronLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">{active > 0 ? items[active - 1].label : "Previous"}</span>
+              <span className="hidden sm:inline">{prevTrail?.label ?? "Previous"}</span>
             </button>
 
             <span className={current.kind === "quiz" ? "ax-panel__action" : "ax-panel__count"} ref={setQuizFoot}>
@@ -268,16 +300,16 @@ export function SectionTabs({
 
             <button
               type="button"
-              onClick={() => setActive((a) => Math.min(items.length - 1, a + 1))}
-              disabled={active === items.length - 1}
+              onClick={() => nextTrail?.go()}
+              disabled={!nextTrail}
               aria-label="Next section"
               className="ax-step ax-step--next"
             >
-              <span className="hidden sm:inline">{active < items.length - 1 ? items[active + 1].label : "Next"}</span>
+              <span className="hidden sm:inline">{nextTrail?.label ?? "Next"}</span>
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

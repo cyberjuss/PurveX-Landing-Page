@@ -639,10 +639,10 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           {/* Mobile drawer */}
           {showSidebar && sidebarOpen && (
             <div className="fixed inset-0 z-50 lg:hidden">
-              <div className="absolute inset-0 bg-slate-900/30" onClick={() => setSidebarOpen(false)} />
-              <div className="absolute left-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl">
+              <div className="ax-drawer__scrim absolute inset-0 bg-slate-900/30" onClick={() => setSidebarOpen(false)} />
+              <div className="ax-drawer__panel absolute left-0 top-0 h-full w-80 max-w-[85vw] shadow-2xl">
                 <div className="flex items-center justify-between border-b border-[var(--pvrx-border-light)] px-5 py-4">
-                  <span className="font-display text-sm font-semibold text-slate-900">Course menu</span>
+                  <span className="font-display text-sm font-semibold">Course menu</span>
                   <button
                     type="button"
                     onClick={() => setSidebarOpen(false)}
@@ -659,8 +659,10 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
             </div>
           )}
 
-          <main className={`min-w-0 flex-1 px-4 sm:px-6 lg:px-10 ${isHome ? "py-5" : "py-10"}`}>
-            <div className={`mx-auto ${isReadiness || isDrill ? "max-w-6xl" : "max-w-4xl"}`}>{children}</div>
+          <main className={`min-w-0 flex-1 px-4 sm:px-6 lg:px-10 ${isHome ? "py-5" : "py-6"}`}>
+            <div key={pathname} className={`ax-page mx-auto ${isReadiness || isDrill ? "max-w-6xl" : "max-w-4xl"}`}>
+              {children}
+            </div>
           </main>
         </div>
         <PurvexCoach />

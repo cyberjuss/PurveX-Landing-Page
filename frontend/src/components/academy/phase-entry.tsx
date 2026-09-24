@@ -76,21 +76,8 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
       )}
 
       {sections.length === 0 ? (
-        <ComingSoon message="Content for this week is still being written. It will appear here as soon as it is ready." />
-      ) : (
         <>
-          {(otherSections.length > 0 || labSections.length > 0 || challengeSections.length > 0 || troubleshootingSections.length > 0) && (
-            <div className="mt-8">
-              <SectionTabs
-                sections={otherSections.map((s) => ({ label: s.label, markdown: s.markdown! }))}
-                quiz={quiz}
-                labs={labSections.map((s) => ({ label: s.label.replace(/^Lab:\s*/, ""), markdown: s.markdown! }))}
-                challenges={challengeSections.map((s) => ({ label: s.label.replace(/^Challenge:\s*/, ""), markdown: s.markdown! }))}
-                troubleshooting={troubleshootingSections.map((s) => ({ label: s.label.replace(/^Troubleshooting:\s*/, ""), markdown: s.markdown! }))}
-              />
-            </div>
-          )}
-
+          <ComingSoon message="Content for this week is still being written. It will appear here as soon as it is ready." />
           {(prevEntry || nextEntry) && (
             <nav className="ax-pager">
               {prevEntry ? (
@@ -114,6 +101,22 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
                 <span />
               )}
             </nav>
+          )}
+        </>
+      ) : (
+        <>
+          {(otherSections.length > 0 || labSections.length > 0 || challengeSections.length > 0 || troubleshootingSections.length > 0) && (
+            <div className="mt-8">
+              <SectionTabs
+                sections={otherSections.map((s) => ({ label: s.label, markdown: s.markdown! }))}
+                quiz={quiz}
+                labs={labSections.map((s) => ({ label: s.label.replace(/^Lab:\s*/, ""), markdown: s.markdown! }))}
+                challenges={challengeSections.map((s) => ({ label: s.label.replace(/^Challenge:\s*/, ""), markdown: s.markdown! }))}
+                troubleshooting={troubleshootingSections.map((s) => ({ label: s.label.replace(/^Troubleshooting:\s*/, ""), markdown: s.markdown! }))}
+                prevWeek={prevEntry ? { label: prevEntry.title, href: `/academy/${phase.slug}/${prevEntry.slug}` } : null}
+                nextWeek={nextEntry ? { label: nextEntry.title, href: `/academy/${phase.slug}/${nextEntry.slug}` } : null}
+              />
+            </div>
           )}
         </>
       )}

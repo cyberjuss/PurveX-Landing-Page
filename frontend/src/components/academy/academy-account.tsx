@@ -141,6 +141,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
             `}</style>
             <div
               ref={panel}
+              className="ax-enter"
               data-ax-account=""
               data-theme={dark ? "dark" : "light"}
               role="dialog"

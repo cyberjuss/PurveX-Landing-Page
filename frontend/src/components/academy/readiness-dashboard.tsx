@@ -153,7 +153,7 @@ export function ReadinessDashboard() {
             <h1>Are you ready for the job?</h1>
             <blockquote>{verdict(s)}</blockquote>
             <div className="rd-sign">
-              <span>PurveX Coach, senior help desk lead</span>
+              <span>PurveX Coach, Senior Help Desk Lead</span>
               <button
                 type="button"
                 className="rd-cta"

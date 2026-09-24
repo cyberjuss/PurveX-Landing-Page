@@ -486,9 +486,6 @@ export default function ReferencePage() {
   return (
     <div className="rd">
       <header className="rd-mast">
-        <div className="rd-meta">
-          <span>Appendix</span>
-        </div>
         <div className="ax-titleblock">
           <h1>Cheat sheet</h1>
           <p>

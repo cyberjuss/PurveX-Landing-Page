@@ -122,7 +122,8 @@ export function MissionPager({
   );
 
   useEffect(() => {
-    brief()?.classList.toggle("ad-brief--off", total >= 2 && !onBrief);
+    const briefing = brief();
+    briefing?.classList.toggle("ad-brief--off", total >= 2 && !onBrief);
     missions().forEach((m, i) => {
       m.setAttribute("data-n", String(i + 1).padStart(2, "0"));
       m.classList.toggle("ad-mission--off", total >= 2 && (onBrief || i !== at));
@@ -130,6 +131,12 @@ export function MissionPager({
     if (first.current) {
       first.current = false;
       return;
+    }
+    const shown = onBrief ? briefing : missions()[at];
+    if (shown) {
+      shown.classList.remove("ax-enter");
+      void shown.offsetWidth;
+      shown.classList.add("ax-enter");
     }
     if (total >= 2) strip?.scrollIntoView({ block: "start", behavior: "smooth" });
   }, [at, total, onBrief, brief, missions, strip]);

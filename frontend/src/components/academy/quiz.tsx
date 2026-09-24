@@ -67,7 +67,8 @@ export function QuizBlock({ quiz, actionHost }: { quiz: Quiz; actionHost?: HTMLE
         </p>
       </div>
 
-      <div className="ax-quiz__q">
+      <div className="overflow-hidden">
+      <div key={at} className="ax-quiz__q ax-enter">
         <div className="ax-quiz__qhead">
           <span className="ax-quiz__n">{String(at + 1).padStart(2, "0")}</span>
           <p>{q.question}</p>
@@ -99,6 +100,7 @@ export function QuizBlock({ quiz, actionHost }: { quiz: Quiz; actionHost?: HTMLE
             {q.explanation}
           </div>
         )}
+      </div>
       </div>
 
       <div className="ax-quiz__foot">
