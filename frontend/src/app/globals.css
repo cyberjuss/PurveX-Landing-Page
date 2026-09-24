@@ -3396,6 +3396,10 @@ body:has(.lp) {
   font-size: 0.92rem; line-height: 1.55; color: var(--pvrx-text-secondary-light, #475569);
 }
 .ad-hint-card__body br { display: block; content: ""; margin-top: 0.55rem; }
+.ad-hint-card__body p { margin: 0.7rem 0 0; }
+.ad-hint-card__body p:first-child { margin-top: 0; }
+.ad-hint-card__body ul, .ad-hint-card__body ol { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+.ad-hint-card__body li { margin: 0.32rem 0; }
 .ad-hint-card__body code {
   font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.84em; font-weight: 650;
   background: var(--pvrx-surface-alt-light, #f1f5f9); border: 1px solid var(--pvrx-border-light, #e2e8f0);

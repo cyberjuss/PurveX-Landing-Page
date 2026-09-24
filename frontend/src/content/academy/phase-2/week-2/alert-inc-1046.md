@@ -23,7 +23,23 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{wealthmanagement}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">Before you read any logs, look at the machine. An IT admin on a workstation outside IT at 2 AM is already the wrong pairing.<br><br>An OU is the folder the computer lives in. Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, change the type to Computers, type <code>WM-WKS07</code>. In the left tree, read the department folder above the computer. Use that name as AD writes it, no spaces.<br><br>PowerShell is optional: <code>(Get-ADComputer WM-WKS07).DistinguishedName</code></p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>Look at the machine before you read any logs</li>
+<li>An OU is the folder the computer lives in</li>
+<li>Use the name as AD writes it, no spaces</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Right-click the domain, then Find</li>
+<li>Change the type to Computers and type <code>WM-WKS07</code></li>
+<li>In the left tree, read the department folder above the computer</li>
+</ol>
+<p>PowerShell is optional last.</p>
+<p><code>(Get-ADComputer WM-WKS07).DistinguishedName</code></p>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -61,7 +77,20 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{4}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">You do not need PowerShell for this one. Use the export on this page, or open Event Viewer (Win+R then <code>eventvwr.msc</code>) if you are reading the live Security log.<br><br>Event 4625 is a failed sign-in. Event 4624 is a success. Count the 4625 rows that happen before the first 4624.</p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>Event 4625 is a failed sign-in</li>
+<li>Event 4624 is a success</li>
+<li>You do not need PowerShell for this one</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Use the export on this page</li>
+<li>Or open Event Viewer (Win+R then <code>eventvwr.msc</code>) if you are reading the live Security log</li>
+<li>Count the 4625 rows that happen before the first 4624</li>
+</ol>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -91,7 +120,23 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-admins}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">Event 4672 is unusual for a normal user. It means Windows gave this session admin-level rights. A staff group does not do that.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>alex.rivera</code>, open the account → Member Of. Find the group that is not just department access.<br><br>PowerShell is optional: <code>Get-ADPrincipalGroupMembership alex.rivera | Select Name</code></p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>Event 4672 is unusual for a normal user</li>
+<li>It means Windows gave this session admin-level rights</li>
+<li>A staff group does not do that</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Right-click the domain, then Find, and type <code>alex.rivera</code></li>
+<li>Open the account, then Member Of</li>
+<li>Find the group that is not just department access</li>
+</ol>
+<p>PowerShell is optional last.</p>
+<p><code>Get-ADPrincipalGroupMembership alex.rivera | Select Name</code></p>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -121,7 +166,20 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">Stack the facts: four failures in two seconds, 2 AM, wrong department PC, admin account. A person does not type that fast. A maintenance job does not try four bad passwords.</p>
+<div class="ad-hint__text">
+<p>Stack the facts:</p>
+<ul>
+<li>Four failures in two seconds</li>
+<li>2 AM</li>
+<li>Wrong department PC</li>
+<li>Admin account</li>
+</ul>
+<p>Remember:</p>
+<ul>
+<li>A person does not type that fast</li>
+<li>A maintenance job does not try four bad passwords</li>
+</ul>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -151,7 +209,19 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">Ask what the first move must do. It has to stop the session and keep the evidence.<br><br>Then ask what each other option costs you. One deletes the log. One gives the attacker time. One hides the alert.</p>
+<div class="ad-hint__text">
+<p>The first move must:</p>
+<ul>
+<li>Stop the session</li>
+<li>Keep the evidence</li>
+</ul>
+<p>Ask what each other option costs you:</p>
+<ul>
+<li>One deletes the log</li>
+<li>One gives the attacker time</li>
+<li>One hides the alert</li>
+</ul>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">

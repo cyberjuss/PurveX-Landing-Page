@@ -34,7 +34,21 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{finance-accounting-users}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>jordan.ellis</code>, open the account → Member Of. Ignore Domain Users. Everyone has that. The department group is the one that actually gives mail and file access.<br><br>PowerShell is optional: <code>Get-ADPrincipalGroupMembership jordan.ellis | Select Name</code></p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>Ignore Domain Users. Everyone has that</li>
+<li>The department group is the one that gives mail and file access</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Right-click the domain, then Find, and type <code>jordan.ellis</code></li>
+<li>Open the account, then Member Of</li>
+</ol>
+<p>PowerShell is optional last.</p>
+<p><code>Get-ADPrincipalGroupMembership jordan.ellis | Select Name</code></p>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -63,7 +77,21 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{alex-rivera}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>IT Admins</code>, open it → Members. That list is who can change the directory. It should be short.<br><br>PowerShell is optional: <code>Get-ADGroupMember "IT Admins"</code></p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>That Members list is who can change the directory</li>
+<li>It should be short</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Right-click the domain, then Find, and type <code>IT Admins</code></li>
+<li>Open it, then Members</li>
+</ol>
+<p>PowerShell is optional last.</p>
+<p><code>Get-ADGroupMember "IT Admins"</code></p>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -92,7 +120,20 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{accesslevels}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">An OU is a folder. Department folders hold people.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand <code>govtechfinancial.local</code>. Look at the folders sitting next to <code>Departments</code>. One of those is where <code>Server Admins</code> and <code>Helpdesk</code> live.</p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>An OU is a folder</li>
+<li>Department folders hold people</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Expand <code>govtechfinancial.local</code></li>
+<li>Look at the folders sitting next to <code>Departments</code></li>
+<li>Find the one that holds <code>Server Admins</code> and <code>Helpdesk</code></li>
+</ol>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -121,7 +162,20 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{cn=users}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">New accounts land in a default folder if nobody picks a department folder.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand <code>govtechfinancial.local</code>. View → Advanced Features if you need the full name. The built-in folder that is not an OU (it does not say Organizational Unit) is that default folder. Group Policy cannot attach to it.</p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>New accounts land in a default folder if nobody picks a department folder</li>
+<li>Group Policy cannot attach to that folder</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Expand <code>govtechfinancial.local</code></li>
+<li>Turn on View, then Advanced Features if you need the full name</li>
+<li>Find the built-in folder that is not an OU. It does not say Organizational Unit</li>
+</ol>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -150,7 +204,19 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-systems-administrators}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>IT Admins</code>, open it → General and read Description. It should say who the group is for, not just repeat the group name.</p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>Description should say who the group is for</li>
+<li>It should not just repeat the group name</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Right-click the domain, then Find, and type <code>IT Admins</code></li>
+<li>Open it, then General, and read Description</li>
+</ol>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -179,7 +245,20 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{no}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">A title is a label on the account. Access is a group.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>Helpdesk</code>, open it → Members. Do not decide from the word Technician on her account.</p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>A title is a label on the account</li>
+<li>Access is a group</li>
+<li>Do not decide from the word Technician on her account</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Right-click the domain, then Find, and type <code>Helpdesk</code></li>
+<li>Open it, then Members</li>
+</ol>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -208,7 +287,22 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{riley-kwan}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">Tickets often say a job, not a username.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find → Advanced → Field: Title, value <code>Settlements Coordinator</code>. Or expand <code>Departments</code> → <code>Operations</code> → <code>Users</code> and read Title on each account. Confirm the name before you change anything.<br><br>PowerShell is optional: <code>Get-ADUser -Filter "Title -eq 'Settlements Coordinator'"</code></p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>Tickets often say a job, not a username</li>
+<li>Confirm the name before you change anything</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Right-click the domain, then Find, then Advanced</li>
+<li>Set Field to Title and the value to <code>Settlements Coordinator</code></li>
+<li>Or expand <code>Departments</code>, then <code>Operations</code>, then <code>Users</code>, and read Title on each account</li>
+</ol>
+<p>PowerShell is optional last.</p>
+<p><code>Get-ADUser -Filter "Title -eq 'Settlements Coordinator'"</code></p>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -237,7 +331,18 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-wks01}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand <code>govtechfinancial.local</code> → <code>Departments</code> → <code>IT</code> → <code>Workstations</code>. Find the computer object the same way you find a user. Computer names have no spaces.</p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>Find the computer object the same way you find a user</li>
+<li>Computer names have no spaces</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Expand <code>govtechfinancial.local</code>, then <code>Departments</code>, then <code>IT</code>, then <code>Workstations</code></li>
+</ol>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -266,7 +371,20 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>Compliance Users</code>, open it → Members and count the people. If that number changes later, you know someone was added.<br><br>PowerShell is optional: <code>(Get-ADGroupMember "Compliance Users").Count</code></p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>If that number changes later, someone was added</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Right-click the domain, then Find, and type <code>Compliance Users</code></li>
+<li>Open it, then Members, and count the people</li>
+</ol>
+<p>PowerShell is optional last.</p>
+<p><code>(Get-ADGroupMember "Compliance Users").Count</code></p>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -295,7 +413,19 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{5}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand <code>govtechfinancial.local</code> → <code>Departments</code>. Count only the first-level folders. Skip Users and Workstations. Those sit inside a department. They are not departments.</p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>Count only the first-level folders</li>
+<li>Skip Users and Workstations. Those sit inside a department. They are not departments</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Expand <code>govtechfinancial.local</code>, then <code>Departments</code></li>
+<li>Count the folders directly under Departments</li>
+</ol>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">

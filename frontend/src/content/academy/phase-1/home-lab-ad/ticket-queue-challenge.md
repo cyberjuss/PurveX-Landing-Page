@@ -39,7 +39,23 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{9}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">Company-wide mail is not a department group. Look under AccessLevels for a firm-wide group, read its Description, then open Members. Add Jamie if she is missing. Count the names after you add her.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand AccessLevels. Open the group that says it is for company-wide announcements → Members. Add <code>jamie.torres</code> if she is not there. Count again.<br><br>PowerShell is optional last.</p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>Company-wide mail is not a department group</li>
+<li>Look under AccessLevels</li>
+<li>Read Description, then open Members</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Expand AccessLevels</li>
+<li>Open the group for company-wide announcements, then Members</li>
+<li>Add <code>jamie.torres</code> if she is missing</li>
+<li>Count the names</li>
+</ol>
+<p>PowerShell is optional last.</p>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -69,7 +85,24 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{disabled}" data-accept="account-is-disabled|account-disabled">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">A caller names a symptom. The Account tab names the cause. Locked and disabled are different boxes. Unlock does nothing if the other box is the one that is checked. Fix what you see, then type the problem you found.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>riley.kwan</code>, open the account → Account. Read both boxes. Act on the one that is actually checked. Submit the problem, not the word she used.<br><br>PowerShell is optional last.</p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>A caller names a symptom</li>
+<li>The Account tab names the cause</li>
+<li>Locked and disabled are different boxes</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Right-click the domain, then Find, and type <code>riley.kwan</code></li>
+<li>Open the account, then Account</li>
+<li>Read both boxes</li>
+<li>Act on the one that is checked</li>
+<li>Submit the problem, not the word she used</li>
+</ol>
+<p>PowerShell is optional last.</p>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -99,7 +132,25 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{ctf-ticket-1043}" data-accept="1043|ctf-1043">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">Create Casey in the IT Users folder and mirror a current IT person. Then open Members. A leftover intern and a service account do not belong. Read the intern account before you delete it. The Description names a ticket.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand <code>Departments</code> → <code>IT</code> → <code>Users</code>. Create Casey. Open <code>IT Users</code> → Members. Open each name that is not a current IT person. Copy the ticket number from Description, then delete the intern and remove the service account.<br><br>PowerShell is optional last.</p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>Create Casey in the IT Users folder and mirror a current IT person</li>
+<li>A leftover intern and a service account do not belong</li>
+<li>Read the intern Description before you delete it</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Expand <code>Departments</code>, then <code>IT</code>, then <code>Users</code></li>
+<li>Create Casey</li>
+<li>Open <code>IT Users</code>, then Members</li>
+<li>Open each name that is not a current IT person</li>
+<li>Copy the ticket number from Description</li>
+<li>Delete the intern and remove the service account</li>
+</ol>
+<p>PowerShell is optional last.</p>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -129,7 +180,23 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{01:00-03:00}" data-accept="1:00-3:00">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">The account Description currently says the window is not set. Open the account, then open the folder above it. That folder Description has the approved hours. Copy them onto the account, Apply, then type the same window here.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>svc-backup-job</code>. Note the folder path above the account. Open that OU → Properties and read Description. Open the account → General, write that window, Apply.<br><br>PowerShell is optional last.</p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>The account Description currently says the window is not set</li>
+<li>The folder above the account has the approved hours</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Right-click the domain, then Find, and type <code>svc-backup-job</code></li>
+<li>Note the folder path above the account</li>
+<li>Open that OU, then Properties, and read Description</li>
+<li>Open the account, then General, write that window, and Apply</li>
+<li>Type the same window here</li>
+</ol>
+<p>PowerShell is optional last.</p>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
@@ -159,7 +226,25 @@
 <button type="button" class="ad-guess__submit" data-answer="gtf{operations-analyst}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
-<p class="ad-hint__text">Policy follows the folder. Groups follow the folder. Title is a different box on General. Move first, then read the account again. Type the title you see, not the department HR named.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Find <code>taylor.osei</code>. Right-click → Move into the Users folder under the department the ticket named. Open Member Of. Add that department group and remove the old one. Open General and read Title.<br><br>PowerShell is optional last.</p>
+<div class="ad-hint__text">
+<p>Remember:</p>
+<ul>
+<li>Policy follows the folder</li>
+<li>Groups follow the folder</li>
+<li>Title is a different box on General</li>
+</ul>
+<p>Do this:</p>
+<ol>
+<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
+<li>Find <code>taylor.osei</code></li>
+<li>Right-click, then Move into the Users folder under the department the ticket named</li>
+<li>Open Member Of</li>
+<li>Add that department group and remove the old one</li>
+<li>Open General and read Title</li>
+<li>Type the title you see, not the department HR named</li>
+</ol>
+<p>PowerShell is optional last.</p>
+</div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
 <div class="ad-break">
