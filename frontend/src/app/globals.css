@@ -2797,6 +2797,14 @@ body:has(.lp) {
   background-image: radial-gradient(rgba(16,25,46,.08) 1px, transparent 1px);
   background-size: 22px 22px;
   mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%);
+  animation: academy-print 22s linear infinite;
+}
+@keyframes academy-print {
+  from { background-position: 0 0; }
+  to { background-position: 22px 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .academy-bg::before { animation: none; }
 }
 /* :not(header) -- the site header is sticky (position: sticky, z-40, set
    inline via Tailwind classes in academy-shell.tsx). This rule and those
@@ -3460,7 +3468,7 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 }
 .academy-prose .ad-guess__submit:hover { background: none; opacity: 0.75; }
 .academy-prose .ad-guess__submit:disabled { background: none; color: var(--rd-ink-3, #8a94a8); cursor: default; }
-.academy-prose .ad-guess__feedback { margin: 0.7rem 0 0; font-size: 0.82rem; font-weight: 600; }
+.academy-prose .ad-guess__feedback { margin: 1.5rem 0 0; font-size: 0.82rem; font-weight: 600; }
 .academy-prose .ad-guess__feedback:empty { display: none; margin: 0; }
 .academy-prose .ad-guess__feedback--ok { color: #16a34a; }
 .academy-prose .ad-guess__feedback--err { color: #e5484d; }
@@ -3873,6 +3881,10 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 .ax-path__row, .ax-curriculum__row {
   display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 16px; align-items: start;
   padding: 22px 0; border-bottom: 1px solid var(--rd-line); color: inherit;
+}
+.ax-path li:last-child .ax-path__row,
+.ax-curriculum li:last-child .ax-curriculum__row {
+  border-bottom: none;
 }
 .ax-path__row:hover .ax-path__title, .ax-curriculum__row:hover .ax-curriculum__title { color: var(--rd-accent); }
 .ax-path__row--soon, .ax-curriculum__row--soon { opacity: 0.55; cursor: default; }
