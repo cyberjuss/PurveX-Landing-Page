@@ -3288,8 +3288,18 @@ body:has(.lp) {
 .academy-prose .ad-answer-guide p { margin: 0; font-size: 0.9rem; color: var(--pvrx-text-secondary-light); }
 .academy-prose .ad-answer-guide ul { margin: 0.4rem 0; padding-left: 1.15rem; }
 .academy-prose .ad-brief { max-width: 68ch; margin: 0 0 1.25rem; }
-.academy-prose .ad-brief h3 { margin-top: 0; }
+.academy-prose .ad-brief .rd-kicker { margin: 0 0 6px; }
+.academy-prose .ad-brief h3 { margin: 0 0 0.65rem; }
+.academy-prose .ad-brief__ask {
+  margin: 0 0 1.1rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  line-height: 1.4;
+  font-weight: 400;
+  color: var(--rd-ink-2, #475569);
+}
 .academy-prose .ad-brief--off { display: none; }
+.rd:has(.ad-brief) .ax-question { display: none; }
 .academy-prose:has(.ad-brief:not(.ad-brief--off)) .ad-progress { display: none; }
 .ad-brief-start { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; margin: 28px 0 0; }
 .ad-brief-ctfs { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0; font-size: 13px; font-weight: 600; }
@@ -4286,7 +4296,7 @@ textarea.pc-dock__field {
 .ad-steps__chip.is-flagged { color: var(--rd-warn, #c4820e); }
 .ad-steps__chip.is-here { color: var(--rd-ink, #0f172a); border-bottom-color: var(--rd-accent, #5546e0); box-shadow: none; }
 .ad-steps__chip.is-flagged.is-here { color: var(--rd-warn, #c4820e); border-bottom-color: var(--rd-warn, #c4820e); }
-.ad-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 28px 0 0; padding: 14px 0 0; border: none; border-top: 1px solid var(--rd-line, rgba(15, 23, 42, 0.12)); border-radius: 0; background: transparent; }
+.ad-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 20px 0 0; padding: 0; border: none; border-radius: 0; background: transparent; }
 .ad-pager__flag { flex: 1 0 100%; margin: 0 0 2px; font-size: 13px; line-height: 1.4; color: var(--rd-warn, #c4820e); }
 .ad-pager__btn { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; border-radius: 0; background: none; font-size: 13px; font-weight: 600; color: var(--rd-ink-2, #475569); text-decoration: none; cursor: pointer; }
 .ad-pager__btn:hover:not(:disabled) { color: var(--rd-accent, #5546e0); }

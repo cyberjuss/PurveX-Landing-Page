@@ -16,6 +16,11 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
     .map((section: ContentSection) => {
       const raw = loadLesson(section.file);
       if (!raw) return { section: { ...section, markdown: raw }, question: null };
+      // Challenges keep their own briefing and title. Do not lift their
+      // question to the page or strip it from the tab.
+      if (section.label.startsWith("Challenge:")) {
+        return { section: { ...section, markdown: raw }, question: null };
+      }
       const { question, rest } = extractEssentialQuestion(raw);
       return { section: { ...section, markdown: rest }, question };
     });

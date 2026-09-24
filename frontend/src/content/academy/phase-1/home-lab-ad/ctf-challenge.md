@@ -1,10 +1,7 @@
-<div class="academy-question">
-<span class="academy-question__tag">Essential Question</span>
-<p>Can you find your way around Active Directory well enough to do a help desk technician's first-day work?</p>
-</div>
-
 <div class="ad-brief">
+<p class="rd-kicker">Briefing</p>
 <h3>Operation Day One</h3>
+<p class="ad-brief__ask">Can you find your way around Active Directory well enough to do a help desk technician's first-day work?</p>
 <p>First day on the GovTech Financial IT help desk. Nobody expects you to close an incident yet but they do expect you to:</p>
 <ul>
 <li>Find people</li>
