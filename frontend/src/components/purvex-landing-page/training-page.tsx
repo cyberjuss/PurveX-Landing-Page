@@ -4,6 +4,8 @@ import Link from "next/link";
 import {
   ArrowRight,
   Award,
+  Check,
+  Server,
   BookOpen,
   Compass,
   Eye,
@@ -80,6 +82,59 @@ const formats = [
   { title: "Embedded in your program", body: "We teach inside your existing curriculum, on your calendar." },
   { title: "A portal per cohort", body: "Your students get their own Academy sign-in, progress and readiness report." },
   { title: "A lab on their own machine", body: "One script builds the GovTech Financial directory locally. Nothing to host." },
+];
+
+const proofs = [
+  { ok: true, text: "jamie.torres is a member of the announcement group" },
+  { ok: true, text: "riley.kwan is enabled and no longer locked out" },
+  { ok: true, text: "svc-backup-job Description holds the run window" },
+  { ok: false, text: "taylor.osei is still in Operations Users" },
+];
+
+// The 24 on-the-job tasks the drills and tickets are tied to. `lab` means the
+// change is checked in the student's own directory.
+const jobGroups: { skill: string; items: { t: string; lab: boolean }[] }[] = [
+  {
+    skill: "Accounts and Groups",
+    items: [
+      { t: "Grant access with a group, never admin rights", lab: true },
+      { t: "Create an account to the naming standard", lab: true },
+      { t: "Fix a group that cannot grant access", lab: true },
+      { t: "Build role-based access with groups", lab: false },
+    ],
+  },
+  {
+    skill: "Directory Navigation",
+    items: [
+      { t: "Correct a misplaced account", lab: true },
+      { t: "Retire accounts and computers nobody uses", lab: true },
+    ],
+  },
+  {
+    skill: "Troubleshooting",
+    items: [
+      { t: "Restore a blocked account", lab: true },
+      { t: "Reset a password the safe way", lab: false },
+      { t: "Check a ticket before acting on it", lab: false },
+    ],
+  },
+  {
+    skill: "Security Response",
+    items: [
+      { t: "Remove access that should not be there", lab: true },
+      { t: "Offboard without deleting", lab: true },
+      { t: "Set up a service account safely", lab: true },
+      { t: "Fix a password that never expires", lab: true },
+      { t: "Set an account lockout policy", lab: true },
+      { t: "Turn on the auditing a SOC needs", lab: true },
+      { t: "Keep the Security log long enough to investigate", lab: true },
+      { t: "Fix a roastable service account", lab: true },
+      { t: "Contain a compromised account, keep the evidence", lab: false },
+      { t: "Triage a login alert: contain, preserve, escalate", lab: false },
+      { t: "Trace a logon across log sources", lab: false },
+      { t: "Write a clear escalation", lab: false },
+    ],
+  },
 ];
 
 export default function TrainingPage({ outline }: { outline: CourseOutline }) {
@@ -200,6 +255,39 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         </ol>
       </section>
 
+      {/* ═══════════ THE LAB — proof of work ═══════════ */}
+      <section className="sp-section">
+        <div className="tr-split" data-r>
+          <div className="sp-head sp-head--left">
+            <span className="sp-tag">The lab</span>
+            <h2>No lab change, no closed ticket</h2>
+            <p>
+              Students run one script to build GovTech Financial: five departments, nine people,
+              and the groups that connect them. It syncs to their account every minute.
+            </p>
+            <p>
+              A hands-on ticket only closes when the change shows up in their directory, and a
+              typed answer cannot be copied off the ticket. That is why the score is worth reading.
+            </p>
+          </div>
+          <div className="tr-proof" aria-hidden="true">
+            <header>
+              <span><Server size={14} /> govtechfinancial.local</span>
+              <em><i /> Synced</em>
+            </header>
+            <ul>
+              {proofs.map((p) => (
+                <li key={p.text} data-ok={p.ok}>
+                  <span>{p.ok ? <Check size={13} /> : "!"}</span>
+                  {p.text}
+                </li>
+              ))}
+            </ul>
+            <footer>Checked against the live directory. A lab check code lasts 4 hours.</footer>
+          </div>
+        </div>
+      </section>
+
       {/* ═══════════ SYLLABUS (from the portal's own content) ═══════════ */}
       <section className="sp-section" id="syllabus">
         <div className="sp-head sp-head--left" data-r>
@@ -313,6 +401,36 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
               );
             })}
           </div>
+        </div>
+      </section>
+
+      {/* ═══════════ JOB TASKS ═══════════ */}
+      <section className="sp-section">
+        <div className="sp-head sp-head--left" data-r>
+          <span className="sp-tag">Job tasks</span>
+          <h2>24 tasks a Tier 1 is hired to do</h2>
+          <p>
+            Each drill and ticket maps to one. Filled dots are checked in the student&apos;s own
+            directory. Outlined dots are proven in written and scenario work.
+          </p>
+        </div>
+        <div className="tr-jobs" data-r>
+          {jobGroups.map((g) => (
+            <article key={g.skill}>
+              <header>
+                <strong>{g.skill}</strong>
+                <span>{g.items.length}</span>
+              </header>
+              <ul>
+                {g.items.map((j) => (
+                  <li key={j.t} data-lab={j.lab}>
+                    <i />
+                    {j.t}
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -615,6 +733,42 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
   .sp-cta { flex-direction: column; align-items: stretch; padding: 28px 22px; margin-top: 40px }
   .sp-cta p { font-size: 1.2rem }
 }
+      `}</style>
+      <style>{`
+.tr-split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center }
+.tr-split .sp-head { margin-bottom: 0 }
+.tr-split .sp-head p + p { margin-top: 14px }
+.tr-proof { border-radius: 22px; background: #fff; border: 1px solid var(--border-strong); overflow: hidden; box-shadow: var(--shadow-lg) }
+.tr-proof header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--accent-soft); font-family: var(--font-mono); font-size: .68rem; font-weight: 700; letter-spacing: .08em; color: var(--accent-deep) }
+.tr-proof header span, .tr-proof header em { display: inline-flex; align-items: center; gap: 8px }
+.tr-proof header em { font-style: normal; text-transform: uppercase; letter-spacing: .1em }
+.tr-proof header em i { width: 7px; height: 7px; border-radius: 50%; background: #1fa971 }
+.tr-proof ul { list-style: none; margin: 0; padding: 8px 20px }
+.tr-proof li { display: flex; align-items: center; gap: 12px; padding: 14px 0; font-size: .9rem; color: var(--ink); border-bottom: 1px solid var(--border) }
+.tr-proof li:last-child { border-bottom: 0 }
+.tr-proof li > span { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #e3f6ee; color: #12805a; font-weight: 700; font-size: .78rem }
+.tr-proof li[data-ok="false"] > span { background: #fdeaea; color: #c23030 }
+.tr-proof footer { padding: 14px 20px 18px; font-size: .78rem; color: var(--muted); background: #fafaff; border-top: 1px solid var(--border) }
+.tr-jobs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: start }
+.tr-jobs article { padding: 22px; border-radius: 20px; background: #fff; border: 1px solid var(--border-strong); box-shadow: var(--shadow-md) }
+.tr-jobs header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px }
+.tr-jobs header strong { font-size: .98rem; font-weight: 650; letter-spacing: -.012em }
+.tr-jobs header span { display: grid; place-items: center; min-width: 28px; height: 28px; padding: 0 8px; border-radius: 999px; background: var(--accent); color: #fff; font-family: var(--font-mono); font-size: .68rem; font-weight: 700 }
+.tr-jobs ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px }
+.tr-jobs li { display: flex; gap: 10px; align-items: flex-start; font-size: .84rem; line-height: 1.4; color: var(--ink-soft) }
+.tr-jobs li i { flex: none; width: 10px; height: 10px; margin-top: .3em; border-radius: 50%; border: 2px solid var(--accent) }
+.tr-jobs li[data-lab="true"] { color: var(--ink) }
+.tr-jobs li[data-lab="true"] i { background: var(--accent) }
+.tr-jobs[data-r] { opacity: 1; transform: none; filter: none }
+.tr-jobs[data-r] article { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease), transform .6s var(--ease) }
+.tr-jobs[data-r].in article { opacity: 1; transform: none }
+.tr-jobs[data-r].in article:nth-child(2) { transition-delay: .08s }
+.tr-jobs[data-r].in article:nth-child(3) { transition-delay: .16s }
+.tr-jobs[data-r].in article:nth-child(4) { transition-delay: .24s }
+@media (prefers-reduced-motion: reduce) { .tr-jobs[data-r] article { opacity: 1; transform: none; transition: none } }
+@media (max-width: 1100px) { .tr-jobs { grid-template-columns: 1fr 1fr } }
+@media (max-width: 860px) { .tr-split { grid-template-columns: 1fr; gap: 32px } }
+@media (max-width: 680px) { .tr-jobs { grid-template-columns: 1fr } }
       `}</style>
     </SiteChrome>
   );

@@ -33,9 +33,9 @@ type NavMenu = {
 
 const NAV_MENUS: NavMenu[] = [
   { key: "home", label: "Home", href: "/" },
-  { key: "security-operations", label: "Security Operations", href: "/security-operations" },
-  { key: "training", label: "Cybersecurity Training", href: "/cybersecurity-training" },
-  { key: "platform", label: "PurveX Labs", href: "/platform" },
+  { key: "security-operations", label: "Operations", href: "/security-operations" },
+  { key: "training", label: "Training", href: "/cybersecurity-training" },
+  { key: "platform", label: "Labs", href: "/platform" },
   { key: "about", label: "About", href: "/about" },
 ];
 
@@ -169,8 +169,8 @@ export function SiteChrome({
           </nav>
 
           <div className="sp-nav__right">
-            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--sm">
-              Get in Touch
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-nav__book">
+              Book <ArrowRight size={14} />
             </a>
             <button
               className="sp-nav__burger"
@@ -382,50 +382,57 @@ export const CHROME_CSS = `
   [data-r], .sp-cards[data-r] > *, .sp-process[data-r] > *, .sp-formats[data-r] > *, .sp-arc[data-r] > * { opacity: 1; transform: none; filter: none; transition: none }
 }
 
-/* ── Nav — floating pill, inset from the viewport edges instead of a
-   full-bleed bar, so it reads as a piece of UI sitting on the page
-   rather than blending into it until you scroll. ── */
-.sp-nav { position: sticky; top: 14px; z-index: 50; padding: 0 16px }
+/* ── Nav — flush bar aligned with the page, not a floating capsule. ── */
+.sp-nav {
+  position: sticky; top: 0; z-index: 50; padding: 0;
+  background: rgba(251,252,254,.62);
+  backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  border-bottom: 1px solid transparent;
+  transition: background .3s var(--ease), border-color .3s var(--ease);
+}
+.sp-nav--s {
+  background: rgba(251,252,254,.92);
+  border-bottom-color: rgba(106,92,255,.16);
+}
 .sp-nav__inner {
   max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;
-  height: 62px; padding: 0 10px 0 20px; border-radius: 18px;
-  background: rgba(255,255,255,.72); border: 1px solid var(--border);
-  backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  box-shadow: 0 1px 2px rgba(16,25,46,.04), 0 16px 40px -24px rgba(16,25,46,.18);
-  transition: box-shadow .35s, border-color .35s, background .35s;
-}
-.sp-nav--s .sp-nav__inner {
-  background: rgba(255,255,255,.88);
-  box-shadow: 0 1px 2px rgba(16,25,46,.05), 0 20px 44px -20px rgba(16,25,46,.26);
-  border-color: var(--border-strong);
+  height: 64px; padding: 0 24px; background: none; border: 0; box-shadow: none;
 }
 .sp-logo { display: inline-flex; align-items: center; gap: 9px; justify-self: start; font-family: var(--font-display); font-weight: 650; font-size: 1.2rem; color: var(--ink); text-decoration: none; letter-spacing: -.015em }
 .sp-logo__img { border-radius: 8px }
-.sp-nav .sp-logo { font-size: 1.15rem; gap: 9px }
-.sp-nav__right { display: flex; align-items: center; gap: 10px; justify-self: end }
+.sp-nav .sp-logo { font-size: 1.05rem; gap: 8px }
+.sp-nav__right { display: flex; align-items: center; gap: 8px; justify-self: end }
 .sp-nav__burger { display: flex; align-items: center; justify-content: center; background: none; border: 0; color: var(--ink); cursor: pointer; padding: 6px; margin-right: -6px }
+.sp-nav__book {
+  display: none; align-items: center; gap: 6px; height: 36px; padding: 0 14px;
+  border: 1px solid rgba(106,92,255,.35); color: var(--accent-deep);
+  font-size: .8rem; font-weight: 650; text-decoration: none; letter-spacing: .01em;
+  transition: background .2s var(--ease), gap .2s var(--ease), border-color .2s var(--ease);
+}
+.sp-nav__book:hover { background: var(--accent-soft); border-color: var(--accent); gap: 9px }
 
-/* ── Desktop primary nav ──
-   Hidden below 940px; the hamburger + slide-over panel below handles
-   mobile/tablet. Active/hovered links get a pill background fill,
-   matching the tag/badge chip language used everywhere else on the
-   site, instead of an underline. ── */
 .sp-nav__links { display: none }
 @media (min-width: 940px) {
-  .sp-nav__inner { display: grid; grid-template-columns: auto 1fr auto; gap: 20px }
-  .sp-nav__links { display: flex; align-items: center; justify-content: center; gap: 2px }
-}
-.sp-nav__link {
-  position: relative; display: inline-flex; align-items: center; height: 36px; padding: 0 15px;
-  border-radius: 999px; font-size: .87rem; font-weight: 560; color: var(--ink-soft);
-  text-decoration: none; transition: color .2s var(--ease), background .2s var(--ease);
-}
-.sp-nav__link:hover, .sp-nav__link:focus-visible { color: var(--ink); background: rgba(16,25,46,.05) }
-.sp-nav__link--active { color: var(--accent-deep); background: var(--accent-soft) }
-.sp-nav__link--active:hover { background: var(--accent-soft) }
-@media (min-width: 940px) {
+  .sp-nav__inner { display: grid; grid-template-columns: auto 1fr auto; gap: 28px }
+  .sp-nav__links { display: flex; align-items: stretch; justify-content: flex-end; gap: 2px }
+  .sp-nav__book { display: inline-flex }
   .sp-nav__burger { display: none }
 }
+.sp-nav__link {
+  position: relative; display: inline-flex; align-items: center; height: 64px; padding: 0 13px;
+  font-size: .8rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--ink-soft); text-decoration: none;
+  transition: color .2s var(--ease);
+}
+.sp-nav__link::after {
+  content: ""; position: absolute; left: 13px; right: 13px; bottom: 0; height: 2px;
+  background: var(--accent); transform: scaleX(0); transform-origin: left;
+  transition: transform .25s var(--ease);
+}
+.sp-nav__link:hover, .sp-nav__link:focus-visible { color: var(--ink) }
+.sp-nav__link:hover::after, .sp-nav__link:focus-visible::after { transform: scaleX(1) }
+.sp-nav__link--active { color: var(--accent-deep); background: none }
+.sp-nav__link--active::after { transform: scaleX(1) }
 
 /* ── Buttons ── */
 .sp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 0; border-radius: 11px; font-weight: 620; font-size: .88rem; text-decoration: none; cursor: pointer; white-space: nowrap; transition: transform .25s var(--ease), background .25s, box-shadow .25s, border-color .25s, color .25s; outline: none }
@@ -679,14 +686,7 @@ export const CHROME_CSS = `
 .sp-btn svg { transition: transform .25s var(--ease) }
 .sp-btn:hover svg { transform: translateX(2px) }
 
-/* ── Nav: glass with a gradient hairline edge ── */
-.sp-nav__inner {
-  border: 1px solid transparent;
-  background: linear-gradient(rgba(255,255,255,.78), rgba(255,255,255,.78)) padding-box, var(--grad-border) border-box;
-  box-shadow: var(--highlight), 0 1px 2px rgba(16,25,46,.04), 0 18px 40px -22px rgba(16,25,46,.22);
-}
-.sp-nav--s .sp-nav__inner { background: linear-gradient(rgba(255,255,255,.92), rgba(255,255,255,.92)) padding-box, var(--grad-border) border-box }
-.sp-nav__link--active, .sp-nav__link--active:hover { background: #fff; color: var(--accent-deep); box-shadow: var(--highlight), 0 1px 2px rgba(16,25,46,.06), 0 4px 12px -6px rgba(85,70,224,.35) }
+/* ── Nav: the flush bar above is the nav; the premium layer leaves it alone ── */
 .sp-logo { font-weight: 700; letter-spacing: -.03em }
 
 /* ── Surfaces: every card-like block shares one depth recipe ── */

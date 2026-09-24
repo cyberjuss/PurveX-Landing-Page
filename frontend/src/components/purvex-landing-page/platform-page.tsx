@@ -1,176 +1,56 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { joinWaitlist } from "@/lib/waitlist";
-import {
-  ArrowRight,
-  BrainCircuit,
-  Check,
-  ChevronDown,
-  ChevronRight,
-  Crosshair,
-  Database,
-  GitBranch,
-  Mail,
-  Radar,
-  ShieldCheck,
-  Sliders,
-  Terminal,
-  X,
-} from "lucide-react";
 import { SiteChrome } from "./chrome";
+import { HoldCard } from "./hold-card";
+import { PG_CSS } from "./page-skin";
 
-/* ─────────────────────────────────────────────────────────
-   PurveX — Platform (product) page · bento-grid structure
-
-   Runs on the shared SiteChrome (nav/footer/base styles) so it
-   stays pixel-consistent with the rest of the site. Only the
-   platform-specific layout (waitlist hero, bento grid, dashboard
-   mockup, compare table, pricing tiers, FAQ) lives here.
-   ───────────────────────────────────────────────────────── */
-
-/* ─────────────────── data ─────────────────── */
-
-const features = [
-  {
-    icon: Crosshair,
-    title: "Validate what matters",
-    body: "Test the behaviors you care about. See what fires before an attacker finds the gap.",
-  },
-  {
-    icon: Radar,
-    title: "Isolate the failure",
-    body: "Blind spot, rule failure, tuning, or drift? Know exactly what to fix.",
-  },
-  {
-    icon: BrainCircuit,
-    title: "AI-assisted explanation",
-    body: "AI speeds up triage and prioritization, without the noise.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Defensible coverage",
-    body: "Turn claimed ATT&CK coverage into measured evidence you can defend.",
-  },
+const points = [
+  { n: "01", title: "Run the test", body: "The behaviors you care about. On a schedule." },
+  { n: "02", title: "See the miss", body: "Fired, or not. And where the chain broke." },
+  { n: "03", title: "Keep the evidence", body: "Coverage you can show, not coverage you assume." },
 ];
 
-const audience = [
-  {
-    icon: Database,
-    eyebrow: "Detection engineers",
-    body: "Know if the miss was telemetry, parser drift, rule logic, or tuning, before the review starts.",
-  },
-  {
-    icon: Sliders,
-    eyebrow: "SOC managers",
-    body: "Turn ad hoc checks into a repeatable workflow that shows coverage improving.",
-  },
-  {
-    icon: GitBranch,
-    eyebrow: "Security leadership",
-    body: "Replace claimed coverage and screenshots with measured results for a program review.",
-  },
-];
-
-// Each line pairs 1:1 with the same index in withItems below -- same
-// problem, same grammatical shape, so the two columns read as a direct
-// before/after rather than two loosely related lists.
-const withoutItems = [
-  "Manual triage to determine whether telemetry or rule logic failed",
-  "Coverage claims backed by screenshots and assumptions, not test evidence",
-  "Validation squeezed in before audits, skipped the rest of the year",
-  "Leadership told a rule exists, not that it fires",
-];
-
-const withItems = [
-  "One run that shows what fired, what missed, and where the chain broke",
-  "Coverage backed by test evidence, tracked across every environment",
-  "Validation that runs continuously, not just before an audit",
-  "Leadership shown proof the rule fires, not just that it exists",
-];
-
-const dashRows = [
-  { tech: "T1059.001", name: "PowerShell Execution", status: "pass", badge: "Fired" },
-  { tech: "T1053.005", name: "Scheduled Task", status: "pass", badge: "Fired" },
-  { tech: "T1003.001", name: "LSASS Memory", status: "fail", badge: "Missed" },
-  { tech: "T1547.001", name: "Registry Run Keys", status: "pass", badge: "Fired" },
+const rows = [
+  { title: "PowerShell execution", sev: "Fired", id: "T1059.001", host: "WIN-APP08" },
+  { title: "LSASS memory access", sev: "Missed", id: "T1003.001", host: "WIN-DC02" },
+  { title: "Scheduled task", sev: "Fired", id: "T1053.005", host: "WIN-WKS12" },
 ];
 
 const tiers = [
   {
     name: "Free",
     price: "$0",
-    note: "Self-hosted, forever",
-    summary: "Know which detections actually fire, before you scale.",
-    items: [
-      "Full Atomic Red Team test library, mapped to MITRE ATT&CK",
-      "Connect Splunk, Elastic, or Microsoft Sentinel",
-      "Coverage heatmap across every ATT&CK technique",
-      "Up to 3 team members with role-based access",
-      "1 test runner, 3 test runs a day",
-      "30-day audit log retention",
-    ],
+    note: "Self-hosted",
+    items: ["ATT&CK-mapped tests", "Splunk, Elastic, or Sentinel", "3 people, 3 runs a day"],
     href: "/account/signup?plan=free",
     cta: "Get started free",
-    featured: false,
+    dark: false,
   },
   {
     name: "Paid",
     price: "$99",
-    note: "per month, unlimited users",
-    summary: "Track coverage across your whole team, without limits.",
-    items: [
-      "Everything in Free, fully unlocked",
-      "Unlimited team members",
-      "Multiple test runners, unlimited daily test runs",
-      "Scheduled, automated recurring test runs",
-      "Detection-as-Code: sync rules from git",
-      "Unlimited audit history",
-    ],
+    note: "per month",
+    items: ["Unlimited people and runs", "Scheduled tests", "Detection-as-code from git"],
     href: "/account/signup?plan=paid",
     cta: "Get started",
-    featured: true,
+    dark: true,
   },
 ];
 
 const faqs: [string, string][] = [
-  ["Is this BAS? How is it different from AttackIQ or SafeBreach?", "BAS simulates attacker behavior on endpoints. We validate the full chain (telemetry, parser, rule, alert, ticket) and isolate where it broke. We complement BAS and do not replace it."],
-  ["Do you run anything in production? What is the safety model?", "Read-only against your SIEM by default. Actions are scoped, auditable, and approved per environment. Production tests need explicit opt-in."],
-  ["How long until we see our first coverage signal?", "Within hours of connecting your SIEM and running your first test."],
-  ["Does PurveX replace the SIEM?", "No. Your SIEM stays the system of record. We just add a layer that proves detections fire and tracks coverage over time."],
+  ["Is this BAS", "BAS hits endpoints. We test the chain after that. Telemetry, parser, rule, alert."],
+  ["Does it run in production", "Read-only on the SIEM by default. Production tests need an opt-in."],
+  ["Does it replace the SIEM", "No. Your SIEM stays. We prove the detections fire."],
 ];
 
-/* ─────────────────── hooks ─────────────────── */
-
-function useInView(ref: React.RefObject<HTMLElement | null>, threshold = 0.2) {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    if (!ref.current) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setVisible(true);
-          io.disconnect();
-        }
-      },
-      { threshold },
-    );
-    io.observe(ref.current);
-    return () => io.disconnect();
-  }, [ref, threshold]);
-  return visible;
-}
-
-/* ─────────────────── component ─────────────────── */
-
 export default function PlatformPage() {
-  const dashRef = useRef<HTMLDivElement>(null);
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [email, setEmail] = useState("");
   const [wlState, setWlState] = useState<"idle" | "loading" | "success" | "exists" | "error">("idle");
   const [wlMsg, setWlMsg] = useState("");
-
-  const dashVisible = useInView(dashRef);
 
   const submitWaitlist = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -203,432 +83,135 @@ export default function PlatformPage() {
 
   return (
     <SiteChrome active="platform">
-      {/* ═══════════ HERO — left copy, right validation-score card ═══════════ */}
-      <section id="top" className="sp-hero sp-hero--product">
-        <div className="sp-hero__copy">
-          <h1 className="sp-hero__h1">
-            See the miss.
-            <br />
-            <span className="sp-hero__grad">Know exactly why.</span>
-          </h1>
-          <p className="sp-hero__sub">
-            Most teams assume their detections work. We prove which ones fire, and show you
-            why the rest don&apos;t.
-          </p>
-          <form className="sp-wl" onSubmit={submitWaitlist}>
-            <div className="sp-wl__row">
-              <div className="sp-wl__field">
-                <Mail size={17} />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@company.com"
-                  className="sp-wl__input"
-                  autoComplete="email"
-                />
-              </div>
-              <button type="submit" className="sp-btn sp-btn--prim sp-btn--lg" disabled={wlState === "loading"}>
-                {wlState === "loading" ? "Joining..." : <><span>Join the waitlist</span><ArrowRight size={15} /></>}
+      <section className="pg-hero" id="top">
+        <div className="pg-hero__copy">
+          <span className="sp-tag">In development</span>
+          <h1 className="pg-hero__h1">See what fires</h1>
+          <p className="pg-hero__sub">Scheduled detection tests. The evidence kept. Private development.</p>
+          <form className="pg-wl" onSubmit={submitWaitlist}>
+            <div className="pg-wl__row">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@company.com"
+                autoComplete="email"
+              />
+              <button type="submit" className="sp-btn sp-btn--prim sp-btn--sm" disabled={wlState === "loading"}>
+                {wlState === "loading" ? "Joining..." : <>Join waitlist <ArrowRight size={14} /></>}
               </button>
             </div>
-            {wlMsg && <p className={`sp-wl__msg sp-wl__msg--${wlState}`}>{wlMsg}</p>}
+            {wlMsg && <p className={`pg-wl__msg pg-wl__msg--${wlState}`}>{wlMsg}</p>}
           </form>
-          <a href="#pricing" className="sp-hero__ghost-link">
-            View pricing <ChevronRight size={14} />
-          </a>
         </div>
-
-        <div className="sp-hero__signal" data-r aria-hidden="true">
-          <div className="sp-signal">
-            <div className="sp-signal__chrome">
-              <div className="sp-signal__dots"><span /><span /><span /></div>
-              <span className="sp-signal__live"><span className="sp-signal__pulse" />Live</span>
-            </div>
-            <div className="sp-signal__ringwrap">
-              <svg viewBox="0 0 100 100" width="120" height="120">
-                <circle cx="50" cy="50" r="42" fill="none" stroke="var(--border)" strokeWidth="9" />
-                <circle
-                  cx="50" cy="50" r="42" fill="none" stroke="var(--accent-deep)" strokeWidth="9"
-                  strokeLinecap="round" strokeDasharray="263.9" strokeDashoffset="13"
-                  transform="rotate(-90 50 50)"
-                />
-              </svg>
-              <span className="sp-signal__pct">95</span>
-            </div>
-            <span className="sp-signal__label">Validation Score</span>
-            <p className="sp-signal__desc">Detections that fired the last time we tested them.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════ BENTO — THE PRODUCT ═══════════ */}
-      <section className="sp-section" id="product">
-        <div className="sp-head sp-head--left" data-r>
-          <span className="sp-tag">The platform</span>
-          <h2>Everything on one screen</h2>
-        </div>
-
-        <div className="sp-bento" data-r>
-          {/* Dashboard — large tile */}
-          <article className="sp-tile sp-tile--dash" ref={dashRef}>
-            <div className="sp-dash__chrome">
-              <div className="sp-dash__dots"><span /><span /><span /></div>
-              <span className="sp-dash__title"><Terminal size={12} /> Detection Assurance Workflow</span>
-              <span className="sp-dash__live"><span className="sp-dash__pulse" />Live</span>
-            </div>
-            <div className="sp-dash__body">
-              {dashRows.map((r) => (
-                <div key={r.tech} className="sp-dash__row">
-                  <span className={`sp-dash__dot sp-dash__dot--${r.status}`} />
-                  <code className="sp-dash__tech">{r.tech}</code>
-                  <span className="sp-dash__name">{r.name}</span>
-                  <span className={`sp-dash__badge sp-dash__badge--${r.status}`}>{r.badge}</span>
-                </div>
-              ))}
-              <div className="sp-dash__score">
-                <span className="sp-dash__score-label">Validation Score</span>
-                <div className="sp-dash__track"><div className={`sp-dash__fill${dashVisible ? " sp-dash__fill--in" : ""}`} /></div>
-                <span className="sp-dash__score-val">95<span className="sp-dash__score-max">/100</span></span>
-              </div>
-              <div className="sp-dash__insight">
-                <span className="sp-dash__insight-kicker">Aha moment</span>
-                <p>
-                  <strong>LSASS Memory missed.</strong> We isolate the issue to parser drift, so
-                  the team fixes the broken ingest path instead of the rule.
-                </p>
-              </div>
-            </div>
+        <aside className="pg-floor" aria-hidden="true">
+          <div className="pg-floor__wash" />
+          <article className="pg-case">
+            <header>
+              <span>RUN-14</span>
+              <span data-sev="Crit">Missed</span>
+              <span>Open</span>
+            </header>
+            <h2>LSASS memory access</h2>
+            <dl>
+              <div><dt>Technique</dt><dd>T1003.001</dd></div>
+              <div><dt>Host</dt><dd>WIN-DC02</dd></div>
+              <div><dt>Rule</dt><dd>Exists</dd></div>
+              <div><dt>Alert</dt><dd>None</dd></div>
+            </dl>
+            <p>The miss is parser drift. Fix the ingest, not the rule.</p>
           </article>
-
-          {/* First two feature tiles (right of dashboard) */}
-          {features.slice(0, 2).map((f) => (
-            <article key={f.title} className="sp-tile sp-tile--feat">
-              <div className="sp-tile__icon"><f.icon size={18} /></div>
-              <h3 className="sp-tile__title">{f.title}</h3>
-              <p className="sp-tile__body">{f.body}</p>
-            </article>
-          ))}
-
-          {/* Row: remaining features + accent tile */}
-          {features.slice(2).map((f) => (
-            <article key={f.title} className="sp-tile sp-tile--feat">
-              <div className="sp-tile__icon"><f.icon size={18} /></div>
-              <h3 className="sp-tile__title">{f.title}</h3>
-              <p className="sp-tile__body">{f.body}</p>
-            </article>
-          ))}
-          <article className="sp-tile sp-tile--accent">
-            <span className="sp-tile__kick">The point</span>
-            <p className="sp-tile__accent-text">
-              Not another dashboard. It tests, isolates, and proves.
-            </p>
-            <ShieldCheck size={20} className="sp-tile__accent-icon" />
-          </article>
-
-          {/* Audience tiles */}
-          {audience.map((a) => (
-            <article key={a.eyebrow} className="sp-tile sp-tile--aud">
-              <div className="sp-tile__aud-top">
-                <a.icon size={16} />
-                <span className="sp-tile__ey">{a.eyebrow}</span>
+          <div className="pg-dock">
+            <p><span className="pg-live" /> Last run</p>
+            {rows.map((r) => (
+              <div key={r.id} className="pg-dock__row">
+                <strong>{r.title}</strong>
+                <em data-sev={r.sev === "Fired" ? "High" : undefined}>{r.sev}</em>
+                <span>{r.id}</span>
+                <span>{r.host}</span>
               </div>
-              <p className="sp-tile__body sp-tile__body--sm">{a.body}</p>
-            </article>
+            ))}
+          </div>
+        </aside>
+      </section>
+
+      <section className="pg-section">
+        <div className="pg-head" data-r>
+          <span className="sp-tag">Labs</span>
+          <h2>What it does</h2>
+          <p>A test run. A miss you can name. Evidence you keep.</p>
+        </div>
+        <ol className="pg-grid pg-grid--3" data-r>
+          {points.map((p) => (
+            <li key={p.n}>
+              <span>{p.n}</span>
+              <strong>{p.title}</strong>
+              <p>{p.body}</p>
+            </li>
           ))}
-        </div>
+        </ol>
       </section>
 
-      {/* ═══════════ COMPARE ═══════════ */}
-      <section className="sp-section">
-        <div className="sp-head sp-head--left" data-r>
-          <span className="sp-tag">The risk of guessing</span>
-          <h2>Every untested detection is a blind spot</h2>
-          <p>
-            A rule that exists isn&apos;t a rule that works. Test the chain, or you&apos;re just
-            trusting coverage you&apos;ve never watched fire.
-          </p>
+      <section className="pg-section" id="pricing">
+        <div className="pg-head" data-r>
+          <span className="sp-tag">When it ships</span>
+          <h2>Start small</h2>
+          <p>Same software. Paid lifts the team and runner limits.</p>
         </div>
-        <div className="sp-compare" data-r>
-          <div className="sp-compare__col sp-compare__col--without">
-            <h3 className="sp-compare__h">Without PurveX</h3>
-            <ul>{withoutItems.map((t) => <li key={t}><X size={15} className="sp-compare__icon sp-compare__icon--x" /><span>{t}</span></li>)}</ul>
-          </div>
-          <div className="sp-compare__col sp-compare__col--with">
-            <h3 className="sp-compare__h">With PurveX</h3>
-            <ul>{withItems.map((t) => <li key={t}><Check size={15} className="sp-compare__icon sp-compare__icon--ok" /><span>{t}</span></li>)}</ul>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════ PRICING ═══════════ */}
-      <section className="sp-section" id="pricing">
-        <div className="sp-head sp-head--left" data-r>
-          <span className="sp-tag">Pricing</span>
-          <h2>Start small. Grow when you&apos;re ready</h2>
-          <p>
-            Same self-hosted software either way, running on your own infrastructure. Paid just
-            removes the team and runner limits.
-          </p>
-        </div>
-        <div className="sp-pricing">
-          {tiers.map((tier, i) => (
-            <article key={tier.name} className={`sp-tier${tier.featured ? " sp-tier--feat" : ""}`} data-r data-d={String(i + 1)}>
-              {tier.featured && <div className="sp-tier__badge">Most Popular</div>}
-              <div className="sp-tier__name">{tier.name}</div>
-              <div className="sp-tier__price">{tier.price}</div>
-              <div className="sp-tier__note">{tier.note}</div>
-              <p className="sp-tier__sum">{tier.summary}</p>
-              <div className="sp-tier__sep" />
-              <ul className="sp-tier__list">
-                {tier.items.map((it) => (
-                  <li key={it}>
-                    <span className={`sp-tier__check${tier.featured ? " sp-tier__check--accent" : ""}`}>
-                      <Check size={12} strokeWidth={3} />
-                    </span>
-                    <span>{it}</span>
-                  </li>
+        <div className="pg-deck" data-r>
+          {tiers.map((t) => (
+            <article key={t.name} className={`pg-tile${t.dark ? " pg-tile--dark" : ""}`}>
+              <div className="pg-tile__stub">
+                <span>{t.name}</span>
+                <span>{t.note}</span>
+              </div>
+              <h3>{t.price}</h3>
+              <ul>
+                {t.items.map((item) => (
+                  <li key={item}>{item}</li>
                 ))}
               </ul>
-              <a href={tier.href} className={`sp-btn sp-btn--full sp-btn--lg ${tier.featured ? "sp-btn--prim" : "sp-btn--ghost"}`}>
-                {tier.cta}
-                <ChevronRight size={14} />
+              <a href={t.href} className={t.dark ? "pg-tile__link pg-tile__link--light" : "pg-tile__link"}>
+                {t.cta} <ArrowRight size={14} />
               </a>
             </article>
           ))}
         </div>
       </section>
 
-      {/* ═══════════ FAQ ═══════════ */}
-      <section className="sp-section" id="faq">
-        <div className="sp-head" data-r>
-          <span className="sp-tag">FAQ</span>
-          <h2>Questions before you commit</h2>
+      <section className="pg-section">
+        <div className="pg-head" data-r>
+          <span className="sp-tag">Questions</span>
+          <h2>Before you join</h2>
         </div>
-        <div className="sp-faq" data-r>
-          {faqs.map(([q, a], i) => {
-            const open = openFaq === i;
-            return (
-              <div key={q} className={`sp-faq__item${open ? " sp-faq__item--open" : ""}`}>
-                <button className="sp-faq__btn" onClick={() => setOpenFaq(open ? null : i)}>
-                  <span>{q}</span>
-                  <ChevronDown size={16} className={`sp-faq__chev${open ? " sp-faq__chev--open" : ""}`} />
-                </button>
-                <div className={`sp-faq__body${open ? " sp-faq__body--open" : ""}`}>
-                  <p>{a}</p>
-                </div>
-              </div>
-            );
-          })}
+        <div className="pg-faq" data-r>
+          {faqs.map(([q, a]) => (
+            <details key={q}>
+              <summary>{q}</summary>
+              <p>{a}</p>
+            </details>
+          ))}
         </div>
       </section>
 
+      <section className="pg-close" data-r>
+        <div className="pg-close__copy">
+          <p className="pg-close__kicker">Early access</p>
+          <h2>Get on the list</h2>
+          <p className="pg-close__sub">Private development. We write when a seat opens.</p>
+          <div className="pg-close__row">
+            <a href="#top" className="pg-close__book">
+              Join waitlist <ArrowRight size={16} />
+            </a>
+            <Link href="/security-operations" className="pg-close__more">
+              Operations today <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+        <HoldCard source="labs" />
+      </section>
 
-      <style>{`
-.sp-tile__icon {
-  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
-  width: 44px; height: 44px; border-radius: 50%;
-  background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); color: var(--accent-deep);
-}
-
-/* ── Waitlist ── */
-.sp-wl { margin: 30px auto 0; max-width: 480px }
-.sp-wl__row {
-  display: flex; align-items: center; gap: 4px; padding: 4px;
-  border-radius: 15px; border: 1px solid var(--border-strong); background: var(--surface);
-  box-shadow: 0 16px 36px -20px rgba(16,25,46,.28);
-  transition: border-color .2s, box-shadow .2s;
-}
-.sp-wl__row:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(106,92,255,.14), 0 16px 36px -20px rgba(16,25,46,.28) }
-.sp-wl__field { flex: 1; display: flex; align-items: center; gap: 9px; height: 46px; padding: 0 14px; color: var(--muted-dim) }
-.sp-wl__input { flex: 1; height: 100%; border: none; background: transparent; padding: 0; font-size: .92rem; color: var(--ink); outline: none }
-.sp-wl__input::placeholder { color: var(--muted-dim) }
-.sp-wl__row .sp-btn { border-radius: 11px; flex-shrink: 0 }
-.sp-wl__msg { margin: 10px 0 0; font-size: .82rem }
-.sp-wl__msg--success, .sp-wl__msg--exists { color: var(--green) }
-.sp-wl__msg--error { color: var(--red) }
-.sp-hero__ghost-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 18px; font-size: .86rem; font-weight: 600; color: var(--muted); text-decoration: none; transition: color .2s, gap .2s }
-.sp-hero__ghost-link:hover { color: var(--accent-deep); gap: 8px }
-
-/* ── Hero, product: left copy + right validation-score card, so the
-   product page reads as a split pitch rather than a centered headline
-   stack like the home page ── */
-.sp-hero.sp-hero--product { text-align: left; max-width: 1180px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 64px; align-items: center }
-.sp-hero--product .sp-hero__h1 { text-align: left }
-.sp-hero--product .sp-hero__sub { margin: 22px 0 0; text-align: left }
-.sp-hero--product .sp-wl { margin: 30px 0 0 }
-.sp-hero__signal { display: flex; justify-content: center }
-.sp-signal {
-  width: 100%; max-width: 300px; padding: 22px 24px 26px;
-  border: 1px solid var(--border-strong); border-radius: 18px; background: var(--surface);
-  box-shadow: 0 28px 56px -30px rgba(16,25,46,.3);
-  display: flex; flex-direction: column; align-items: center; text-align: center;
-}
-.sp-signal__chrome { display: flex; align-items: center; width: 100%; gap: 10px; margin-bottom: 20px }
-.sp-signal__dots { display: flex; gap: 6px }
-.sp-signal__dots span { width: 8px; height: 8px; border-radius: 50% }
-.sp-signal__dots span:nth-child(1) { background: #f2777a }
-.sp-signal__dots span:nth-child(2) { background: #f4c059 }
-.sp-signal__dots span:nth-child(3) { background: #5ec269 }
-.sp-signal__live { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: .66rem; font-weight: 700; letter-spacing: .05em; color: var(--accent-deep) }
-.sp-signal__pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: sp-pulse 2s ease-in-out infinite }
-.sp-signal__ringwrap { position: relative; width: 120px; height: 120px }
-.sp-signal__pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
-.sp-signal__label { display: block; margin-top: 16px; font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep) }
-.sp-signal__desc { margin: 10px 0 0; font-size: .84rem; line-height: 1.6; color: var(--muted) }
-@media (max-width: 940px) {
-  .sp-hero.sp-hero--product { grid-template-columns: 1fr; text-align: center; gap: 40px }
-  .sp-hero--product .sp-hero__h1, .sp-hero--product .sp-hero__sub { text-align: center }
-  .sp-hero--product .sp-hero__sub { margin-left: auto; margin-right: auto }
-  .sp-hero--product .sp-wl { margin-left: auto; margin-right: auto }
-}
-
-/* ── Bento ── */
-.sp-bento {
-  display: grid; grid-template-columns: repeat(6, 1fr);
-  grid-auto-rows: minmax(120px, auto); gap: 16px;
-}
-.sp-tile { display: flex; flex-direction: column; padding: 26px; border: 1px solid var(--border) }
-.sp-tile--feat { grid-column: span 2 }
-.sp-tile--accent { grid-column: span 2 }
-.sp-tile--aud { grid-column: span 2 }
-.sp-tile--dash { grid-column: span 4; grid-row: span 2; padding: 0; overflow: hidden; border: 1px solid var(--border) }
-
-.sp-tile__title { margin: 16px 0 0; font-family: var(--font-display); font-size: 1.14rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
-.sp-tile__body { margin: 9px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.66 }
-.sp-tile__body--sm { font-size: .84rem }
-
-/* accent tile */
-.sp-tile--accent { position: relative; background: linear-gradient(140deg, var(--accent), var(--accent-deep)); border-color: transparent; justify-content: center }
-.sp-tile__kick { font-size: .66rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.75) }
-.sp-tile__accent-text { margin: 12px 0 0; font-family: var(--font-display); font-size: 1.04rem; font-weight: 600; line-height: 1.4; letter-spacing: -.015em; color: #fff }
-.sp-tile__accent-icon { position: absolute; right: 18px; bottom: 16px; color: rgba(255,255,255,.35) }
-
-/* audience tile */
-.sp-tile__aud-top { display: flex; align-items: center; gap: 9px; color: var(--accent-deep) }
-.sp-tile__ey { font-size: .72rem; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; color: var(--muted-dim) }
-.sp-tile--aud .sp-tile__aud-top svg { color: var(--accent-deep) }
-
-/* ── Dashboard (inside big tile) ── */
-.sp-dash__chrome { display: flex; align-items: center; gap: 10px; padding: 13px 18px; border-bottom: 1px solid var(--border); background: var(--surface-alt) }
-.sp-dash__dots { display: flex; gap: 6px }
-.sp-dash__dots span { width: 9px; height: 9px; border-radius: 50% }
-.sp-dash__dots span:nth-child(1) { background: #f2777a }
-.sp-dash__dots span:nth-child(2) { background: #f4c059 }
-.sp-dash__dots span:nth-child(3) { background: #5ec269 }
-.sp-dash__title { display: flex; align-items: center; gap: 7px; font-size: .72rem; font-weight: 700; letter-spacing: .04em; color: var(--muted) }
-.sp-dash__live { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: .68rem; font-weight: 700; letter-spacing: .05em; color: var(--accent-deep) }
-.sp-dash__pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: sp-pulse 2s ease-in-out infinite }
-.sp-dash__body { flex: 1; padding: 18px; display: flex; flex-direction: column; gap: 8px }
-.sp-dash__row { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-alt); font-size: .86rem }
-.sp-dash__dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0 }
-.sp-dash__dot--pass { background: var(--green) }
-.sp-dash__dot--fail { background: var(--red) }
-.sp-dash__tech { font-family: var(--font-mono); font-size: .78rem; color: var(--accent-deep); font-weight: 600; min-width: 82px }
-.sp-dash__name { flex: 1; color: var(--ink-soft); font-size: .84rem }
-.sp-dash__badge { font-size: .64rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; padding: 3px 9px; border-radius: 999px }
-.sp-dash__badge--pass { background: rgba(22,163,74,.1); color: var(--green); border: 1px solid rgba(22,163,74,.2) }
-.sp-dash__badge--fail { background: rgba(229,72,77,.1); color: var(--red); border: 1px solid rgba(229,72,77,.2) }
-.sp-dash__score { display: flex; align-items: center; gap: 14px; margin-top: 4px; padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(106,92,255,.18); background: var(--accent-soft) }
-.sp-dash__score-label { font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap }
-.sp-dash__track { flex: 1; height: 5px; border-radius: 999px; background: rgba(16,25,46,.08); overflow: hidden }
-.sp-dash__fill { height: 100%; border-radius: 999px; width: 0; background: var(--accent); transition: width 1.2s var(--ease) .3s }
-.sp-dash__fill--in { width: 95% }
-.sp-dash__score-val { font-family: var(--font-display); font-weight: 700; font-size: .95rem; color: var(--accent-deep) }
-.sp-dash__score-max { color: var(--muted-dim); font-size: .78rem }
-.sp-dash__insight { margin-top: auto; padding: 16px; border-radius: 12px; border: 1px solid rgba(106,92,255,.2); background: rgba(106,92,255,.05) }
-.sp-dash__insight-kicker { display: inline-flex; font-size: .64rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
-.sp-dash__insight p { margin: 8px 0 0; color: var(--ink-soft); font-size: .88rem; line-height: 1.65 }
-.sp-dash__insight strong { color: var(--ink) }
-
-/* ── Compare ── */
-.sp-compare { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border) }
-.sp-compare__col { padding: 32px 32px 36px }
-.sp-compare__col:not(:first-child) { border-left: 1px solid var(--border) }
-.sp-compare__col--without { border-top: 3px solid rgba(229,72,77,.4) }
-.sp-compare__col--with { border-top: 3px solid var(--accent); background: linear-gradient(180deg, rgba(106,92,255,.04), var(--surface)) }
-.sp-compare__h { margin: 0 0 18px; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
-.sp-compare__col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px }
-.sp-compare__col li { display: flex; align-items: flex-start; gap: 11px; color: var(--ink-soft); font-size: .9rem; line-height: 1.55 }
-.sp-compare__icon { flex-shrink: 0; margin-top: 2px }
-.sp-compare__icon--x { color: var(--red) }
-.sp-compare__icon--ok { color: var(--accent-deep) }
-
-/* ── Pricing ── */
-.sp-pricing { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; align-items: start; padding-top: 14px }
-.sp-tier {
-  position: relative; display: flex; flex-direction: column; padding: 40px 36px;
-  border: 1px solid var(--border); border-radius: 20px; background: var(--surface);
-  box-shadow: 0 1px 2px rgba(16,25,46,.04);
-  transition: transform .3s var(--ease), box-shadow .3s var(--ease);
-}
-.sp-tier--feat {
-  border-color: rgba(106,92,255,.32);
-  background: linear-gradient(180deg, rgba(106,92,255,.07), var(--surface) 60%);
-  box-shadow: 0 28px 56px -24px rgba(106,92,255,.4), 0 1px 2px rgba(16,25,46,.04);
-  transform: translateY(-12px);
-}
-.sp-tier__badge {
-  position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
-  padding: 5px 16px; border-radius: 999px; white-space: nowrap;
-  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-  font-size: .64rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: #fff;
-  box-shadow: 0 10px 22px -8px rgba(106,92,255,.65);
-}
-.sp-tier__name { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted-dim); font-weight: 700 }
-.sp-tier__price { margin-top: 10px; font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; letter-spacing: -.04em; color: var(--ink) }
-.sp-tier__note { margin-top: 2px; color: var(--muted); font-size: .82rem }
-.sp-tier__sum { margin: 14px 0 0; color: var(--muted); font-size: .86rem; line-height: 1.6; min-height: 2.9em }
-.sp-tier__sep { height: 1px; background: var(--border); margin: 22px 0 }
-.sp-tier__list { list-style: none; padding: 0; margin: 0 0 26px; display: flex; flex-direction: column; gap: 13px }
-.sp-tier__list li { display: flex; align-items: flex-start; gap: 11px; color: var(--ink-soft); font-size: .86rem; line-height: 1.5 }
-.sp-tier__check {
-  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
-  width: 19px; height: 19px; border-radius: 50%;
-  background: var(--muted-dim, #eef1f6); color: #fff;
-}
-.sp-tier__check--accent { background: linear-gradient(135deg, var(--accent), var(--accent-deep)); }
-.sp-tier .sp-btn { margin-top: auto }
-
-/* ── FAQ ── */
-.sp-faq { max-width: 720px; margin: 0 auto; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); overflow: hidden; box-shadow: 0 18px 44px -40px rgba(16,25,46,.28) }
-.sp-faq__item + .sp-faq__item { border-top: 1px solid var(--border) }
-.sp-faq__item--open { background: var(--accent-soft) }
-.sp-faq__btn { display: flex; align-items: center; width: 100%; justify-content: space-between; gap: 16px; padding: 20px 24px; background: none; border: 0; color: var(--ink); font-size: .94rem; font-weight: 650; text-align: left; cursor: pointer; transition: color .2s }
-.sp-faq__btn:hover { color: var(--accent-deep) }
-.sp-faq__chev { flex-shrink: 0; color: var(--muted-dim); transition: transform .35s var(--ease) }
-.sp-faq__chev--open { transform: rotate(180deg); color: var(--accent-deep) }
-.sp-faq__body { max-height: 0; overflow: hidden; opacity: 0; transition: max-height .4s var(--ease), opacity .3s }
-.sp-faq__body--open { max-height: 240px; opacity: 1 }
-.sp-faq__body p { padding: 0 24px 20px; margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.7 }
-
-@keyframes sp-pulse { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
-
-/* ── Responsive ── */
-@media (max-width: 940px) {
-  .sp-bento { grid-template-columns: repeat(2, 1fr) }
-  .sp-tile--dash { grid-column: 1 / -1; grid-row: auto }
-  .sp-tile--feat { grid-column: span 1 }
-  .sp-tile--accent { grid-column: 1 / -1 }
-  .sp-tile--aud { grid-column: 1 / -1 }
-  .sp-compare { grid-template-columns: 1fr }
-  .sp-compare__col:not(:first-child) { border-left: none }
-  .sp-pricing { grid-template-columns: 1fr; padding-top: 20px }
-  .sp-tier--feat { transform: none }
-}
-@media (max-width: 680px) {
-  .sp-wl { margin-top: 22px }
-  .sp-wl__row { flex-direction: column; align-items: stretch; gap: 10px; padding: 0; border: none; background: none; box-shadow: none }
-  .sp-wl__row:focus-within { box-shadow: none }
-  .sp-wl__field { flex: none; height: 50px; padding: 0 16px; border-radius: 11px; border: 1px solid var(--border-strong); background: var(--surface) }
-  .sp-wl__row:focus-within .sp-wl__field { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(106,92,255,.12) }
-  .sp-wl__input { font-size: 16px }
-  .sp-hero__ghost-link { margin-top: 14px }
-  .sp-bento { grid-template-columns: 1fr }
-  .sp-tile--feat { grid-column: 1 / -1 }
-  .sp-dash__name { display: none }
-}
-      `}</style>
+      <style>{PG_CSS}</style>
     </SiteChrome>
   );
 }
