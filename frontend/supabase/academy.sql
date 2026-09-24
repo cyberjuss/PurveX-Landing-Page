@@ -78,3 +78,15 @@ drop policy if exists "Students read their own drill log" on public.academy_dril
 create policy "Students read their own drill log"
   on public.academy_drill_log for select
   using (auth.uid() = user_id);
+
+-- The AI-written daily scenario, stored as an encrypted token so the same
+-- question returns all day and the answer is never readable here.
+create table if not exists public.academy_drill_daily (
+  user_id uuid not null references auth.users (id) on delete cascade,
+  day date not null,
+  token text not null,
+  created_at timestamptz not null default now(),
+  primary key (user_id, day)
+);
+
+alter table public.academy_drill_daily enable row level security;

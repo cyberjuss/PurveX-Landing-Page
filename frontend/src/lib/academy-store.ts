@@ -10,6 +10,7 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 const memoryProgress = new Map<string, Results>();
 const memoryUsage = new Map<string, { day: string; count: number }>();
 const memoryKeys = new Map<string, { userId: string; createdAt: string; lastUsedAt: string | null }>();
+const memoryDaily = new Map<string, string>();
 const memoryDrills = new Map<string, DrillEntry[]>();
 const memoryLab = new Map<string, { snapshot: LabSnapshot; uploadedAt: string }>();
 
@@ -218,4 +219,28 @@ export async function saveDrill(userId: string, entry: DrillEntry) {
     { onConflict: "user_id,drill_id", ignoreDuplicates: true }
   );
   if (error) console.error("academy_drill_log upsert failed", error.message);
+}
+
+// Today's AI-written daily scenario, kept as the sealed drill token so the
+// same question comes back on reload and answers never sit in plain text.
+export async function loadDailyDrill(userId: string, day: string): Promise<string | null> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin
+      .from("academy_drill_daily")
+      .select("token")
+      .eq("user_id", userId)
+      .eq("day", day)
+      .maybeSingle();
+    if (!error && data?.token) return data.token as string;
+  }
+  return memoryDaily.get(`${userId}:${day}`) ?? null;
+}
+
+export async function saveDailyDrill(userId: string, day: string, token: string) {
+  memoryDaily.set(`${userId}:${day}`, token);
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin
+    .from("academy_drill_daily")
+    .upsert({ user_id: userId, day, token }, { onConflict: "user_id,day", ignoreDuplicates: true });
+  if (error) console.error("academy_drill_daily upsert failed", error.message);
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowRight, Flame } from "lucide-react";
-import { labLine, localDay, streakLine, type DrillStatus } from "@/components/academy/drill-runner";
+import { labLine, localDay, scoreLabel, streakLine, type DrillStatus } from "@/components/academy/drill-runner";
 import { academyFetch } from "@/lib/academy-client";
 
 export const DRILL_PATH = "/academy/drill";
@@ -30,8 +30,8 @@ export function DrillCard() {
         <b>{stats.streak}</b>
       </span>
       <span className="dr-home__main">
-        <span className="rd-kicker">{stats.today ? "Daily drill · done" : "Daily drill"}</span>
-        <strong>{stats.today ? `${stats.today.correct}/${stats.today.total} today` : "Five questions on your directory"}</strong>
+        <span className="rd-kicker">{stats.today ? "Daily scenario · done" : "Daily scenario"}</span>
+        <strong>{stats.today ? `${scoreLabel(stats.today)} today` : "A scenario built from your lab"}</strong>
         <em>{staleLab || !lab.synced ? labLine(lab) : streakLine(stats)}</em>
       </span>
       <ArrowRight className="h-4 w-4" />

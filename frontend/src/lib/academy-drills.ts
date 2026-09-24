@@ -10,13 +10,14 @@ import { summarize, type Results, type Skill } from "@/lib/academy-score";
 
 export type DrillMode = "daily" | "timed";
 
-export const DRILL_SIZE = 5;
+export const TIMED_SIZE = 5;
 export const TIMED_LIMIT_SECONDS = 180;
 const LATE_GRACE_SECONDS = 10;
 
-type Item = {
+export type Item = {
   skill: Skill;
   title: string;
+  story?: string;
   prompt: string;
   evidence?: string[];
   choices: string[];
@@ -39,7 +40,7 @@ export type DrillEntry = {
 
 export type DrillReview = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string };
 
-type Payload = { id: string; u: string; mode: DrillMode; day: string; iat: number; limit: number; source: "lab" | "standard"; items: Item[] };
+type Payload = { id: string; u: string; mode: DrillMode; day: string; iat: number; limit: number; source: "lab" | "standard"; ai: boolean; items: Item[] };
 
 // ---- random helpers -------------------------------------------------------
 
@@ -358,7 +359,23 @@ const GENERATORS: Record<Skill, Gen[]> = {
 
 // ---- building a drill -----------------------------------------------------
 
-function pickItems(seed: string, snapshot: LabSnapshot, results: Results, mode: DrillMode): Item[] {
+/** The skill to drill today: weak skills come up more often. */
+export function pickSkill(seed: string, results: Results): Skill {
+  const r = seeded(`skill:${seed}`);
+  const scores = new Map(summarize(results).skills.map((k) => [k.key, k.score]));
+  const skills = Object.keys(GENERATORS) as Skill[];
+  const weights = skills.map((k) => 1 + (100 - (scores.get(k) ?? 40)) / 25);
+  let roll = r() * weights.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < skills.length; i++) {
+    roll -= weights[i];
+    if (roll <= 0) return skills[i];
+  }
+  return skills[skills.length - 1];
+}
+
+export { seeded, shuffle };
+
+function pickItems(seed: string, snapshot: LabSnapshot, results: Results, mode: DrillMode, size: number): Item[] {
   const r = seeded(seed);
   const scores = new Map(summarize(results).skills.map((k) => [k.key, k.score]));
   // Weak skills get asked more. Timed runs lean on alerts and ticket checks.
@@ -373,7 +390,7 @@ function pickItems(seed: string, snapshot: LabSnapshot, results: Results, mode: 
   const seen = new Set<string>();
   let guard = 0;
 
-  while (items.length < DRILL_SIZE && guard++ < 80) {
+  while (items.length < size && guard++ < 80) {
     const live = skills.filter((k) => queues.get(k)!.length > 0);
     const open = live.filter((k) => (used.get(k) ?? 0) < 2);
     const pool = open.length ? open : live;
@@ -421,34 +438,48 @@ function unseal(token: string): Payload | null {
   }
 }
 
+function publicItems(items: Item[]): PublicItem[] {
+  return items.map((item) => ({
+    skill: item.skill,
+    title: item.title,
+    story: item.story,
+    prompt: item.prompt,
+    evidence: item.evidence,
+    choices: item.choices,
+  }));
+}
+
+export type StartedDrill = { token: string; items: PublicItem[]; limitSeconds: number; source: "lab" | "standard"; ai: boolean };
+
 export function startDrill(params: {
   userId: string;
   mode: DrillMode;
   day: string;
   snapshot: LabSnapshot | null;
   results: Results;
-}): { token: string; items: PublicItem[]; limitSeconds: number; source: "lab" | "standard" } {
+  /** A ready-made scenario (from the AI writer) that replaces the stock questions. */
+  items?: Item[];
+}): StartedDrill {
   const source = params.snapshot ? "lab" : "standard";
   const snapshot = params.snapshot ?? standardSnapshot();
   const nonce = randomBytes(6).toString("hex");
   // The daily drill is the same all day; a timed run is fresh every time.
   const seed = params.mode === "daily" ? `${params.userId}:${params.day}` : `${params.userId}:${nonce}`;
-  const items = pickItems(seed, snapshot, params.results, params.mode);
+  const ai = Boolean(params.items?.length);
+  const size = params.mode === "daily" ? 1 : TIMED_SIZE;
+  const items = params.items?.length ? params.items : pickItems(seed, snapshot, params.results, params.mode, size);
   const limit = params.mode === "timed" ? TIMED_LIMIT_SECONDS : 0;
   const id = params.mode === "daily" ? `daily-${params.day}` : `timed-${nonce}`;
-  const token = seal({ id, u: params.userId, mode: params.mode, day: params.day, iat: Date.now(), limit, source, items });
-  return {
-    token,
-    limitSeconds: limit,
-    source,
-    items: items.map((item) => ({
-      skill: item.skill,
-      title: item.title,
-      prompt: item.prompt,
-      evidence: item.evidence,
-      choices: item.choices,
-    })),
-  };
+  const token = seal({ id, u: params.userId, mode: params.mode, day: params.day, iat: Date.now(), limit, source, ai, items });
+  return { token, limitSeconds: limit, source, ai, items: publicItems(items) };
+}
+
+/** Reopen a saved daily scenario with a fresh clock. */
+export function reissueDrill(userId: string, token: string): StartedDrill | null {
+  const p = unseal(token);
+  if (!p || p.u !== userId || p.mode !== "daily") return null;
+  const fresh = seal({ ...p, iat: Date.now() });
+  return { token: fresh, limitSeconds: p.limit, source: p.source, ai: p.ai, items: publicItems(p.items) };
 }
 
 export function gradeDrill(
@@ -481,6 +512,8 @@ export function gradeDrill(
 // ---- streaks and stats ----------------------------------------------------
 
 export type DrillStats = {
+  /** Days with a finished daily drill, newest first. */
+  days: string[];
   streak: number;
   longest: number;
   total: number;
@@ -519,6 +552,7 @@ export function drillStats(entries: DrillEntry[], today: string): DrillStats {
     .sort((a, b) => b.correct - a.correct || a.seconds - b.seconds);
   const latest = [...entries].sort((a, b) => b.at.localeCompare(a.at))[0];
   return {
+    days: [...days].sort().reverse().slice(0, 60),
     streak,
     longest,
     total: entries.length,

@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
-import { cleanDay, drillStats, gradeDrill, startDrill, type DrillMode } from "@/lib/academy-drills";
+import { cleanDay, drillStats, gradeDrill, reissueDrill, startDrill, type DrillMode } from "@/lib/academy-drills";
+import { generateScenario } from "@/lib/academy-scenario";
 import { formatLabAge } from "@/lib/academy-lab";
 import { summarize } from "@/lib/academy-score";
-import { loadDrills, loadLabState, loadProgress, saveDrill } from "@/lib/academy-store";
+import { loadDailyDrill, loadDrills, loadLabState, loadProgress, saveDailyDrill, saveDrill } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 async function auth(request: Request) {
   if (!(await isAcademyUnlocked())) return { error: NextResponse.json({ error: "Locked" }, { status: 401 }) };
@@ -60,11 +62,24 @@ export async function POST(request: Request) {
       const stats = drillStats(await loadDrills(userId), day);
       if (stats.today) return NextResponse.json({ done: true, entry: stats.today, ...(await status(userId, day)) });
     }
+    if (mode === "daily") {
+      const saved = await loadDailyDrill(userId, day);
+      const again = saved ? reissueDrill(userId, saved) : null;
+      if (again) return NextResponse.json(again);
+    }
     const [snapshot, results] = await Promise.all([
       loadLabState(userId).then((l) => l?.snapshot ?? null),
       loadProgress(userId),
     ]);
-    const drill = startDrill({ userId, mode, day, snapshot, results });
+    // The daily drill is one scenario written for this student. If the
+    // writer is unavailable it falls back to a stock question.
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const scenario =
+      mode === "daily" && apiKey
+        ? await generateScenario({ apiKey, userId, day, snapshot, results }).catch(() => null)
+        : null;
+    const drill = startDrill({ userId, mode, day, snapshot, results, items: scenario ? [scenario] : undefined });
+    if (mode === "daily" && drill.ai) await saveDailyDrill(userId, day, drill.token);
     return NextResponse.json(drill);
   }
 
