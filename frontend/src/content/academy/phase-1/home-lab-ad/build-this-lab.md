@@ -24,9 +24,14 @@ By the end of this tab you should be able to open Active Directory Users and Com
 
 ### Step 1. Install the Domain (Skip If You Already Have One)
 
-If your server is not yet a domain controller, run this first, as Administrator. It installs Active Directory, creates the domain `govtechfinancial.local`, and reboots the server.
+If your server is not yet a domain controller, download and run this first. It installs Active Directory Domain Services and promotes the server to the root of a new domain, `govtechfinancial.local`. It asks for a recovery-mode password and then reboots automatically. Without a domain, the departments, users, and groups in the next step have nowhere to live.
 
-**What you need to know:** it asks once for a recovery (DSRM) password. Keep it somewhere safe. It is separate from your account passwords and is only used to recover Active Directory.
+**What this script does:**
+
+* Installs the AD DS (Active Directory Domain Services) Windows Server role
+* Prompts you for a DSRM (Directory Services Restore Mode) recovery password. It is separate from any domain account password and is used only for AD recovery
+* Promotes the server to the root of a new forest called `govtechfinancial.local`, with DNS installed alongside it
+* Reboots the server automatically once promotion finishes
 
 [Download Install-Forest.ps1](/lab-scripts/Install-Forest.ps1)
 
@@ -80,32 +85,255 @@ Install-ADDSForest `
 
 ### Step 2. Build the Environment
 
-After the reboot, log in as `GOVTECHFINANCIAL\Administrator`, open PowerShell as Administrator, and run the script you download here. It builds the departments, groups, users, and workstation from the other tabs.
+After the reboot, log back in as `GOVTECHFINANCIAL\Administrator` and run this script. It creates every department, group, user, and the workstation object described in the other tabs. This step turns the org chart and user directory from a description into a live environment you can query and investigate.
 
-**What you need to know:**
+**What this script does:**
 
-* It asks once for an initial password. Every account must change it at next logon.
-* It is safe to run again. It only creates what is missing and never deletes or resets anything.
-* Download it from this page, not from somewhere else. This copy is linked to your Academy account, which is how Coach and your drills can see your lab.
+* Creates two top-level OUs: `Departments` and `AccessLevels`
+* Creates all 5 department OUs (IT, Compliance, Wealth Management, Operations, Finance and Accounting), each with its own `Users` sub-OU (IT also gets a `Workstations` sub-OU)
+* Creates all 9 security groups. Each department gets a standard access group, `IT Admins` is elevated, and `Server Admins` and `Helpdesk` are the Level 2 and Level 3 access groups
+* Creates all 9 user accounts from the Full User Directory in The Environment tab, in the right OU, with the right title and department, and adds each one to the right group(s)
+* Pre-stages the `IT-WKS01` computer object
+* Prompts once for an initial password. Every account must change it at next logon, so nobody keeps that password long-term
+* Is safe to run more than once. It only creates what is missing and never resets or deletes anything that exists
+* Optional: add `-IncludeCTF` to plant ticket-queue challenge objects after the clean baseline is built
+* The Academy download starts a 15-minute Coach sync on the domain controller after the first successful build. The VM only has to stay on. To stop it: `./Build-Environment.ps1 -UninstallSync`. A one-off refresh is still `./Build-Environment.ps1 -SyncOnly`.
+* The sync now also sends your security settings (password and lockout policy, auditing, log size) and a 30-day count of Security log events, such as failed sign-ins and accounts created. It never sends passwords or raw log entries. Your drills and the weekly CTF use it, so download the script again and run it once to get it.
 
 [Download Build-Environment.ps1](/lab-scripts/Build-Environment.ps1)
+
+You can also copy the clean baseline version from here. Use the downloadable script above when you want the optional `-IncludeCTF` ticket data.
+
+<details class="ad-code">
+<summary>Show Build-Environment.ps1 (copy/paste)</summary>
+<div class="ad-code__bar">
+<span class="ad-code__label">Build-Environment.ps1</span>
+<button type="button" class="ad-code__copy">Copy</button>
+</div>
+
+<pre class="ad-code__pre--tall"><code>#Requires -RunAsAdministrator
+#Requires -Modules ActiveDirectory
+&lt;#
+.SYNOPSIS
+    Builds the GovTech Financial Active Directory lab: 5 departments, 9 users,
+    8 groups, and 1 workstation object.
+
+.DESCRIPTION
+    Run on the domain controller after Install-Forest.ps1. It is safe to
+    re-run. Anything that already exists is skipped.
+
+.PARAMETER InitialPassword
+    Initial password for new accounts. You are prompted if it is omitted.
+    Every account must change it at next logon.
+
+.EXAMPLE
+    ./Build-Environment.ps1 -WhatIf
+#&gt;
+
+[CmdletBinding(SupportsShouldProcess = $true)]
+param(
+    [System.Security.SecureString]$InitialPassword
+)
+
+Import-Module ActiveDirectory -ErrorAction Stop
+
+if (-not $InitialPassword) {
+    $InitialPassword = Read-Host -AsSecureString -Prompt "Initial password for all new lab accounts"
+}
+
+$domain   = Get-ADDomain
+$domainDN = $domain.DistinguishedName
+
+function Ensure-OU {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param([string]$Name, [string]$ParentDN, [string]$Description = "")
+    $path = "OU=$Name,$ParentDN"
+    $existing = $null
+    try {
+        $existing = Get-ADOrganizationalUnit -Identity $path -Properties Description -ErrorAction Stop
+    }
+    catch {
+        $existing = $null
+    }
+    if ($existing) {
+        Write-Host "  OU exists:   $path" -ForegroundColor DarkGray
+    }
+    elseif ($PSCmdlet.ShouldProcess($path, "Create OU")) {
+        New-ADOrganizationalUnit -Name $Name -Path $ParentDN -Description $Description -ProtectedFromAccidentalDeletion $true
+        Write-Host "  OU created:  $path" -ForegroundColor Green
+    }
+    if ($Description -and $existing -and $existing.Description -ne $Description -and $PSCmdlet.ShouldProcess($path, "Update OU description")) {
+        Set-ADOrganizationalUnit -Identity $path -Description $Description
+        Write-Host "    ~ $path description updated" -ForegroundColor Green
+    }
+    return $path
+}
+
+function Ensure-Group {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param([string]$Name, [string]$OUPath, [ValidateSet("Global", "DomainLocal", "Universal")][string]$Scope = "Global", [string]$Description = "")
+    $existing = Get-ADGroup -Filter "Name -eq '$Name'" -Properties Description -ErrorAction SilentlyContinue
+    if ($existing) {
+        Write-Host "  Group exists: $Name" -ForegroundColor DarkGray
+    }
+    elseif ($PSCmdlet.ShouldProcess($Name, "Create security group")) {
+        New-ADGroup -Name $Name -GroupScope $Scope -GroupCategory Security -Path $OUPath -Description $Description
+        Write-Host "  Group created: $Name" -ForegroundColor Green
+    }
+    if ($Description -and $existing -and $existing.Description -ne $Description -and $PSCmdlet.ShouldProcess($Name, "Update group description")) {
+        Set-ADGroup -Identity $Name -Description $Description
+        Write-Host "    ~ $Name description updated" -ForegroundColor Green
+    }
+}
+
+function Ensure-User {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param(
+        [string]$First,
+        [string]$Last,
+        [string]$SamAccountName,
+        [string]$Title,
+        [string]$Department,
+        [string]$OUPath,
+        [string[]]$Groups
+    )
+    $existing = Get-ADUser -Filter "SamAccountName -eq '$SamAccountName'" -ErrorAction SilentlyContinue
+    if ($existing) {
+        Write-Host "  User exists: $SamAccountName" -ForegroundColor DarkGray
+    }
+    elseif ($PSCmdlet.ShouldProcess($SamAccountName, "Create user")) {
+        New-ADUser `
+            -Name "$First $Last" `
+            -GivenName $First `
+            -Surname $Last `
+            -SamAccountName $SamAccountName `
+            -UserPrincipalName "$SamAccountName@$($domain.DNSRoot)" `
+            -Title $Title `
+            -Department $Department `
+            -Path $OUPath `
+            -AccountPassword $InitialPassword `
+            -ChangePasswordAtLogon $true `
+            -Enabled $true
+        Write-Host "  User created: $SamAccountName ($Title, $Department)" -ForegroundColor Green
+    }
+
+    foreach ($groupName in $Groups) {
+        $isMember = Get-ADGroupMember -Identity $groupName -ErrorAction SilentlyContinue |
+            Where-Object { $_.SamAccountName -eq $SamAccountName }
+        if (-not $isMember -and $PSCmdlet.ShouldProcess("$SamAccountName -&gt; $groupName", "Add group membership")) {
+            Add-ADGroupMember -Identity $groupName -Members $SamAccountName
+            Write-Host "    + $SamAccountName added to $groupName" -ForegroundColor Green
+        }
+    }
+}
+
+function Ensure-Computer {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param(
+        [string]$Name,
+        [string]$OUPath,
+        [string]$Description = ""
+    )
+    $existing = Get-ADComputer -Filter "Name -eq '$Name'" -Properties Description -ErrorAction SilentlyContinue
+    if ($existing) {
+        Write-Host "  Computer exists: $Name" -ForegroundColor DarkGray
+    }
+    elseif ($PSCmdlet.ShouldProcess($Name, "Pre-stage computer object")) {
+        New-ADComputer -Name $Name -SAMAccountName "$Name$" -Path $OUPath -Description $Description
+        Write-Host "  Computer pre-staged: $Name ($OUPath)" -ForegroundColor Green
+    }
+
+    if ($Description -and $existing -and $existing.Description -ne $Description -and $PSCmdlet.ShouldProcess($Name, "Update computer description")) {
+        Set-ADComputer -Identity $Name -Description $Description
+        Write-Host "    ~ $Name description updated" -ForegroundColor Green
+    }
+}
+
+Write-Host "`n== Top-level OUs ==" -ForegroundColor Cyan
+$departmentsOU  = Ensure-OU -Name "Departments"  -ParentDN $domainDN -Description "Top-level container for all department OUs."
+$accessLevelsOU = Ensure-OU -Name "AccessLevels" -ParentDN $domainDN -Description "Domain-wide access-level groups (Server Admins, Helpdesk), separate from department membership."
+
+$departments = @(
+    @{ Display = "IT";                      OU = "IT";                 Group = "IT Users";                 Desc = "IT department: accounts, workstations, and infrastructure." },
+    @{ Display = "Compliance";               OU = "Compliance";         Group = "Compliance Users";          Desc = "Compliance department: regulatory (GLBA/SOX) and audit staff." },
+    @{ Display = "Wealth Management";        OU = "WealthManagement";   Group = "Wealth Management Users";   Desc = "Wealth Management department: client-facing financial advisory staff." },
+    @{ Display = "Operations";               OU = "Operations";         Group = "Operations Users";          Desc = "Operations department: settlements and internal process staff." },
+    @{ Display = "Finance and Accounting";   OU = "FinanceAccounting";  Group = "Finance Accounting Users";  Desc = "Finance and Accounting department: internal ledgers, payroll, and budget staff." }
+)
+
+$deptOUPaths = @{}
+foreach ($dept in $departments) {
+    Write-Host "`n== Department: $($dept.Display) ==" -ForegroundColor Cyan
+    $deptOU  = Ensure-OU -Name $dept.OU -ParentDN $departmentsOU -Description $dept.Desc
+    $usersOU = Ensure-OU -Name "Users" -ParentDN $deptOU -Description "$($dept.Display) user accounts."
+    Ensure-Group -Name $dept.Group -OUPath $deptOU -Description "Standard access group for $($dept.Display) staff."
+    $deptOUPaths[$dept.Display] = @{ DeptOU = $deptOU; UsersOU = $usersOU }
+}
+
+$itWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $deptOUPaths["IT"].DeptOU -Description "IT department workstation computer objects."
+Ensure-Group -Name "IT Admins" -OUPath $deptOUPaths["IT"].DeptOU -Description "Elevated access for IT Systems Administrators, beyond standard IT Users access."
+
+Write-Host "`n== Access-level groups ==" -ForegroundColor Cyan
+Ensure-Group -Name "Server Admins" -OUPath $accessLevelsOU -Description "Level 2 access: servers, application and file servers. Empty by default."
+Ensure-Group -Name "Helpdesk"      -OUPath $accessLevelsOU -Description "Level 3 access: workstations, password resets, local support only. Empty by default."
+Write-Host "  (Level 1 / Domain Admin uses the built-in 'Domain Admins' group -- nothing to create)" -ForegroundColor DarkGray
+
+$users = @(
+    @{ First = "Alex";   Last = "Rivera";    Sam = "alex.rivera";   Title = "IT Systems Administrator";       Dept = "IT";                    Extra = @("IT Admins") },
+    @{ First = "Priya";  Last = "Nair";      Sam = "priya.nair";    Title = "Help Desk Technician";           Dept = "IT";                    Extra = @() },
+    @{ First = "Devon";  Last = "Brooks";    Sam = "devon.brooks";  Title = "Compliance Officer";             Dept = "Compliance";            Extra = @() },
+    @{ First = "Morgan"; Last = "Lee";       Sam = "morgan.lee";    Title = "Regulatory Analyst";             Dept = "Compliance";            Extra = @() },
+    @{ First = "Sam";    Last = "Whitfield"; Sam = "sam.whitfield"; Title = "Senior Financial Advisor";       Dept = "Wealth Management";     Extra = @() },
+    @{ First = "Jamie";  Last = "Torres";    Sam = "jamie.torres";  Title = "Client Relationship Manager";    Dept = "Wealth Management";     Extra = @() },
+    @{ First = "Taylor"; Last = "Osei";      Sam = "taylor.osei";   Title = "Operations Analyst";             Dept = "Operations";            Extra = @() },
+    @{ First = "Riley";  Last = "Kwan";      Sam = "riley.kwan";    Title = "Settlements Coordinator";        Dept = "Operations";            Extra = @() },
+    @{ First = "Jordan"; Last = "Ellis";     Sam = "jordan.ellis";  Title = "Staff Accountant";               Dept = "Finance and Accounting"; Extra = @() }
+)
+
+$deptGroup = @{
+    "IT"                    = "IT Users"
+    "Compliance"            = "Compliance Users"
+    "Wealth Management"     = "Wealth Management Users"
+    "Operations"            = "Operations Users"
+    "Finance and Accounting" = "Finance Accounting Users"
+}
+
+Write-Host "`n== Users ==" -ForegroundColor Cyan
+foreach ($u in $users) {
+    $groups = @($deptGroup[$u.Dept]) + $u.Extra
+    Ensure-User `
+        -First $u.First -Last $u.Last -SamAccountName $u.Sam `
+        -Title $u.Title -Department $u.Dept `
+        -OUPath $deptOUPaths[$u.Dept].UsersOU `
+        -Groups $groups
+}
+
+Write-Host "`n== Workstation ==" -ForegroundColor Cyan
+$computerName = "IT-WKS01"
+Ensure-Computer -Name $computerName -OUPath $itWorkstationsOU -Description "Standard IT workstation for GovTechFinancial administrators."
+
+Write-Host "`nDone. Verify with: Get-ADOrganizationalUnit -Filter * | Where-Object DistinguishedName -like '*Departments*'" -ForegroundColor Cyan</code></pre>
+</details>
 
 ```powershell
 ./Build-Environment.ps1
 ```
 
-**Switches you may want:**
+To see exactly what the script is about to do before committing to it, run it with `-WhatIf` first:
 
-* `-WhatIf` previews what it would do without changing anything.
-* `-IncludeCTF` adds the Ticket Queue objects. Use it after you understand the clean baseline.
-* `-SyncOnly` sends your lab to the Academy right now.
-* `-UninstallSync` stops the automatic sync.
+```powershell
+./Build-Environment.ps1 -WhatIf
+```
 
-**What it shares with the Academy:** after the first build it starts a sync every 15 minutes while the server is on. It sends a read-only summary of your lab objects, your security settings (password and lockout policy, auditing, log size), and a 30-day count of Security log events, such as failed sign-ins and accounts created. It never sends passwords or raw log entries. Your drills, Coach, and the weekly CTF are built from it.
+If the script will not run, see **If the Script Will Not Run** at the end of this tab for the three most common causes and their fixes.
 
-Download it again and run it once whenever the Academy adds new checks. That refreshes the sync to the newest version.
+To add the optional ticket-queue challenge data, run the same script with the CTF switch:
 
-If it will not run, see **If the Script Will Not Run** at the end of this tab.
+```powershell
+./Build-Environment.ps1 -IncludeCTF
+```
+
+This adds a service-account OU, a backup service account, a leftover intern account, a firm-wide group with one intentional membership gap, a disabled Operations account, and a few workstation objects that back the Ticket Queue. Use this after you understand the clean baseline. The tickets ask you to add, create, remove, write, and move objects, not only read them.
 
 ### Step 3. Verify It Built, or Reset It
 
