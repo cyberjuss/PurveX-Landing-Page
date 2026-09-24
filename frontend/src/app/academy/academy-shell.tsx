@@ -222,7 +222,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
     // Lesson content is re-rendered when you switch tabs, so a mission comes
     // back blank. Put back what was stored for it.
-    const placeMiss = (wrap: HTMLElement, dropped: boolean) => {
+    const placeMiss = (wrap: Element, dropped: boolean) => {
       const feedback = wrap.querySelector<HTMLElement>(".ad-guess__feedback");
       const reveal = wrap.querySelector<HTMLElement>(".ad-flag");
       if (feedback && reveal && dropped && feedback.parentElement !== reveal) reveal.prepend(feedback);
@@ -272,10 +272,6 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         reveal?.classList.add("ad-flag--shown");
         wrap.classList.add("ad-mission--solved");
       } else if (r.wrong >= 3) {
-        if (feedback) {
-          feedback.textContent = "Not quite, three tries used. Here's the flag.";
-          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
-        }
         reveal?.classList.add("ad-flag--shown");
       }
     };
@@ -380,17 +376,15 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       wrap.setAttribute("data-attempts", String(attempts));
       recordResult(wrap, { wrong: attempts });
       labelHintButton(wrap, wrap.querySelector(".ad-hint__text")?.classList.contains("ad-hint__text--shown") ?? false);
-      feedback.className = "ad-guess__feedback ad-guess__feedback--err";
-      if (attempts >= 3) {
-        feedback.textContent = "Not quite, three tries used. Here's the flag.";
-        reveal.classList.add("ad-flag--shown");
-        placeMiss(wrap, true);
-      } else {
-        const left = 3 - attempts;
-        const hintNote = attempts === 2 ? " Your hint is now unlocked." : "";
-        feedback.textContent = `Not quite. ${left} attempt${left === 1 ? "" : "s"} left before the flag unlocks.${hintNote}`;
-        placeMiss(wrap, false);
-      }
+      // A wrong answer shakes the box and says nothing. Three misses show the flag.
+      feedback.textContent = "";
+      feedback.className = "ad-guess__feedback";
+      feedback.style.setProperty("display", "none", "important");
+      input.classList.remove("ad-guess__input--shake");
+      void input.offsetWidth;
+      input.classList.add("ad-guess__input--shake");
+      input.addEventListener("animationend", () => input.classList.remove("ad-guess__input--shake"), { once: true });
+      if (attempts >= 3) reveal.classList.add("ad-flag--shown");
     };
 
     const hintUnlocked = (wrap: Element) => parseInt(wrap.getAttribute("data-attempts") || "0", 10) >= 2;

@@ -4903,3 +4903,13 @@ textarea.pc-dock__field {
 .dr-findings__tag { padding: 2px 8px; border-radius: 999px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: var(--rd-line-2); color: var(--rd-ink-2); }
 .is-high .dr-findings__tag { background: rgba(217, 58, 63, 0.14); color: var(--rd-bad); }
 .is-medium .dr-findings__tag { background: rgba(196, 130, 14, 0.14); color: var(--rd-warn); }
+
+/* A wrong answer shakes the input instead of printing a message. */
+@keyframes ad-shake {
+  0%, 100% { transform: translateX(0); }
+  15%, 55% { transform: translateX(-7px); }
+  35%, 75% { transform: translateX(7px); }
+  90% { transform: translateX(-3px); }
+}
+.academy-prose .ad-guess__input--shake { animation: ad-shake 0.45s ease both; border-color: #e5484d !important; }
+@media (prefers-reduced-motion: reduce) { .academy-prose .ad-guess__input--shake { animation: none; } }
