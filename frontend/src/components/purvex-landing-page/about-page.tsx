@@ -57,7 +57,7 @@ export default function AboutPage() {
         <div className="pg-hero__copy">
           <span className="sp-tag">About</span>
           <h1 className="pg-hero__h1">The desk and the classroom</h1>
-          <p className="pg-hero__sub">We strengthen operations, and we train the people who run them.</p>
+          <p className="pg-hero__sub">We strengthen security operations, and we train the people who run them, from the same desk. Book thirty minutes if you want to see how that work actually looks.</p>
           <div className="pg-hero__actions">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
               Book 30 minutes <ArrowRight size={16} />
@@ -74,7 +74,7 @@ export default function AboutPage() {
         <div className="pg-head" data-r>
           <span className="sp-tag">Notes</span>
           <h2>How we run</h2>
-          <p>Short, and the same on every engagement.</p>
+          <p>Short engagements, and the same person on every one.</p>
         </div>
         <ol className="pg-grid pg-grid--3 pg-grid--icons" data-r>
           {notes.map((n) => (
@@ -96,7 +96,7 @@ export default function AboutPage() {
               <span>People</span>
             </div>
             <h3>Meet the founder</h3>
-            <p>The person doing the work, not a relay.</p>
+            <p>The person doing the work talks with you directly, not through a relay.</p>
             <Link href="/about/founder" className="pg-tile__link">
               Read more <ArrowRight size={14} />
             </Link>
@@ -107,7 +107,7 @@ export default function AboutPage() {
               <span>In development</span>
             </div>
             <h3>PurveX Labs</h3>
-            <p>Scheduled tests, with the evidence kept.</p>
+            <p>Scheduled detection tests, with the evidence kept, while the product is still in private development.</p>
             <Link href="/platform" className="pg-tile__link pg-tile__link--light">
               Request early access <ArrowRight size={14} />
             </Link>
@@ -119,7 +119,7 @@ export default function AboutPage() {
         <div className="pg-close__copy">
           <p className="pg-close__kicker">Next step</p>
           <h2>Talk with us</h2>
-          <p className="pg-close__sub">Thirty minutes covers operations, training, or Labs.</p>
+          <p className="pg-close__sub">Thirty minutes covers operations, training, or Labs, and that is where we walk through the rest.</p>
           <div className="pg-close__row">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="pg-close__book">
               Book 30 minutes <ArrowRight size={16} />

@@ -171,7 +171,7 @@ export default function HomePage() {
           <span className="sp-tag">Security operations and training</span>
           <h1 className="hp-hero__h1">Improve detections and train analysts</h1>
           <p className="hp-hero__sub">
-            Lean security teams and academies that need hands-on work. SIEM engineering, live lab tickets, and PurveX Coach included.
+            Lean security teams and academies that need hands-on work, not another slide deck. SIEM engineering, live lab tickets, and PurveX Coach are included, and a conversation is how you see the rest.
           </p>
           <div className="hp-hero__actions">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
@@ -215,7 +215,7 @@ export default function HomePage() {
             <p className="hp-perk__kicker">The perk</p>
             <h2>The friendly neighborhood AI Coach</h2>
             <p>
-              PurveX Coach is the subject matter expert on this desk, formed by years as a Windows Active Directory administrator, Tier 2 help desk, and junior SOC analyst. From that experience it prepares a new hire to work the Ticket Queue as a systems administrator and a security analyst, training judgment instead of a rote procedure, because it knows their lab, can read a console screenshot, directs the next action, and does not disclose an unsolved answer.
+              PurveX Coach sits on every ticket with the student as the subject matter expert on this desk, and it trains judgment instead of handing over an unsolved answer. Join the program to see how it reads their live lab, a console screenshot, and the next click they should take.
             </p>
             <Link href="/cybersecurity-training" className="hp-perk__go">
               See Coach with training <ArrowRight size={16} />
@@ -273,7 +273,7 @@ export default function HomePage() {
                 <span className="hp-perk__ico"><Gauge size={15} /></span>
               </header>
               <strong>Readiness</strong>
-              <p>Are they ready for the job? A score, four skills, and the job tasks already proven in their lab.</p>
+              <p>A hiring manager can read a readiness score built from four skills and the job tasks already proven in their lab. The full report opens once they are in the portal.</p>
             </li>
             <li>
               <header>
@@ -281,7 +281,7 @@ export default function HomePage() {
                 <span className="hp-perk__ico"><CalendarDays size={15} /></span>
               </header>
               <strong>Daily drill</strong>
-              <p>One scenario each day from their own directory. A weekly CTF on their Security log.</p>
+              <p>Each day they work a new scenario drawn from their own directory, and a weekly CTF sits on their Security log. Those tickets wait inside after they join.</p>
             </li>
             <li>
               <header>
@@ -289,7 +289,7 @@ export default function HomePage() {
                 <span className="hp-perk__ico"><Headset size={15} /></span>
               </header>
               <strong>Four modes</strong>
-              <p>Need help, Mentor, or Interview. Upload a screenshot when the console is the question.</p>
+              <p>Need help, Mentor, and Interview each talk differently once a ticket is open, and a screenshot of the console can be the question. You hear that voice when they sign in.</p>
             </li>
             <li>
               <header>
@@ -297,7 +297,7 @@ export default function HomePage() {
                 <span className="hp-perk__ico"><Mic size={15} /></span>
               </header>
               <strong>Hire</strong>
-              <p>Resume lines from tickets they closed. A spoken mock interview with a hire signal.</p>
+              <p>Closed tickets become resume lines they can defend, and a spoken mock interview ends with a hire signal. Both wait until they have done the work.</p>
             </li>
           </ol>
         </div>
@@ -318,7 +318,7 @@ export default function HomePage() {
             </div>
             <h3>Cybersecurity Training</h3>
             <p>
-              Graduates who can work a ticket, read a log, and explain a control. Students train in the PurveX Financial lab with a live instructor and PurveX Coach, across Active Directory, SIEM, and incident response.
+              Students work live tickets on a real directory with a live instructor and PurveX Coach on the desk, across Active Directory, SIEM, and incident response. Join a cohort to open the queue and see how readiness is scored.
             </p>
             <div className="hp-tile__split">
               <div>
@@ -326,17 +326,15 @@ export default function HomePage() {
                 <ul>
                   <li>Live tickets on a real directory</li>
                   <li>Daily drills and a weekly CTF</li>
-                  <li>A readiness score and proven job tasks</li>
-                  <li>A curriculum shaped around your tools</li>
+                  <li>A readiness score they can defend</li>
                 </ul>
               </div>
               <div>
                 <p className="hp-tile__label">PurveX Coach</p>
                 <ul>
-                  <li>A subject matter expert on every ticket</li>
+                  <li>On every ticket, never the unsolved answer</li>
                   <li>Need help, Mentor, and a spoken interview</li>
-                  <li>Reads a screenshot of the console</li>
-                  <li>Resume lines from tickets the student closed</li>
+                  <li>The rest waits inside the portal</li>
                 </ul>
               </div>
             </div>
@@ -405,7 +403,7 @@ export default function HomePage() {
         <div className="hp-close__copy">
           <p className="hp-close__kicker">Next step</p>
           <h2>Talk with us</h2>
-          <p className="hp-close__sub">Thirty minutes covers detections, the training desk, or Labs.</p>
+          <p className="hp-close__sub">Thirty minutes covers detections, the training desk, or Labs, and that conversation is where the rest of the work is explained.</p>
           <div className="hp-close__row">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="hp-close__book">
               Book 30 minutes <ArrowRight size={16} />

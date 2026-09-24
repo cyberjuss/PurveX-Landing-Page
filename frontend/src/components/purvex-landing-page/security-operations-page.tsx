@@ -27,7 +27,7 @@ export default function SecurityOperationsPage() {
         <div className="pg-hero__copy">
           <span className="sp-tag">Operations</span>
           <h1 className="pg-hero__h1">Prove your detections</h1>
-          <p className="pg-hero__sub">We tune the SIEM, write what is missing, and test whether it fires.</p>
+          <p className="pg-hero__sub">We tune the SIEM, write what is missing, and test whether it fires on your stack. Book thirty minutes to walk the misses we would start with.</p>
           <div className="pg-hero__actions">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
               Book 30 minutes <ArrowRight size={16} />
@@ -44,7 +44,7 @@ export default function SecurityOperationsPage() {
         <div className="pg-head" data-r>
           <span className="sp-tag">What we do</span>
           <h2>Four ways we help</h2>
-          <p>Engineering, cleanup, a map of coverage, and a test.</p>
+          <p>Engineering, cleanup, a map of coverage, and a test that shows what actually fires.</p>
         </div>
         <ol className="pg-grid pg-grid--4 pg-grid--icons" data-r>
           {services.map((s) => (
@@ -80,7 +80,7 @@ export default function SecurityOperationsPage() {
         <div className="pg-close__copy">
           <p className="pg-close__kicker">Next step</p>
           <h2>Walk the queue with us</h2>
-          <p className="pg-close__sub">Thirty minutes on your SIEM, covering what fires and what does not.</p>
+          <p className="pg-close__sub">Bring one detection you already trust, and we will tell you whether it actually fires. Thirty minutes is enough to see how the rest of the work would run.</p>
           <div className="pg-close__row">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="pg-close__book">
               Book 30 minutes <ArrowRight size={16} />

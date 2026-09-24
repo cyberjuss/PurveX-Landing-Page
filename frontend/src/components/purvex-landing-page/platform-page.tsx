@@ -10,9 +10,9 @@ import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
 
 const points = [
-  { n: "01", title: "Run the test", body: "The behaviors you care about. On a schedule.", Icon: Timer },
-  { n: "02", title: "See the miss", body: "Fired, or not. And where the chain broke.", Icon: Search },
-  { n: "03", title: "Keep the evidence", body: "Coverage you can show, not coverage you assume.", Icon: Archive },
+  { n: "01", title: "Run the test", body: "The behaviors you care about, run on a schedule you set.", Icon: Timer },
+  { n: "02", title: "See the miss", body: "Whether it fired or not, and where the chain broke between telemetry and alert.", Icon: Search },
+  { n: "03", title: "Keep the evidence", body: "Coverage you can show to a stakeholder, not coverage you assume from a rule that has never been tested.", Icon: Archive },
 ];
 
 const tiers = [
@@ -82,7 +82,7 @@ export default function PlatformPage() {
         <div className="pg-hero__copy">
           <span className="sp-tag">In development</span>
           <h1 className="pg-hero__h1">See what fires</h1>
-          <p className="pg-hero__sub">Scheduled detection tests, with the evidence kept. The product is in private development.</p>
+          <p className="pg-hero__sub">Scheduled detection tests, with the evidence kept, while the product is still in private development. Join the list to see a run when a seat opens.</p>
           <form className="pg-wl" onSubmit={submitWaitlist}>
             <div className="pg-wl__row">
               <input
@@ -106,7 +106,7 @@ export default function PlatformPage() {
         <div className="pg-head" data-r>
           <span className="sp-tag">Labs</span>
           <h2>What it does</h2>
-          <p>A test run names the miss, and you keep the evidence.</p>
+          <p>A scheduled test run names the miss, and you keep the evidence so coverage is something you can show.</p>
         </div>
         <ol className="pg-grid pg-grid--3 pg-grid--icons" data-r>
           {points.map((p) => (
@@ -124,7 +124,7 @@ export default function PlatformPage() {
         <div className="pg-head" data-r>
           <span className="sp-tag">When it ships</span>
           <h2>Start small</h2>
-          <p>Same software. Paid lifts the team and runner limits.</p>
+          <p>The same software on both plans, and paid lifts the team and runner limits when you are ready.</p>
         </div>
         <div className="pg-deck" data-r>
           {tiers.map((t) => (
@@ -166,7 +166,7 @@ export default function PlatformPage() {
         <div className="pg-close__copy">
           <p className="pg-close__kicker">Early access</p>
           <h2>Get on the list</h2>
-          <p className="pg-close__sub">The product is in private development, and we write when a seat opens.</p>
+          <p className="pg-close__sub">The product is still in private development, and we write when a seat opens. Join the list if you want to see a run before it is public.</p>
           <div className="pg-close__row">
             <a href="#top" className="pg-close__book">
               Join waitlist <ArrowRight size={16} />
