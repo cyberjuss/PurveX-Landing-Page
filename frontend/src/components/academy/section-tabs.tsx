@@ -6,6 +6,7 @@ import { Markdown, splitMarkdownIntoSlides } from "@/lib/markdown";
 import { CHALLENGE_PATHS, MISSION_CATALOG } from "@/lib/academy-missions";
 import { QuizBlock } from "./quiz";
 import { LabCarousel } from "./lab-carousel";
+import { MissionPager } from "./mission-pager";
 import type { Quiz } from "@/content/academy/quizzes";
 
 interface TabSection {
@@ -105,12 +106,10 @@ export function SectionTabs({
             Overview. */}
         <LabCarousel key={current.label} slides={splitMarkdownIntoSlides(current.markdown)} />
       </div>
-    ) : current.kind === "challenge" ? (
-      <Markdown content={current.markdown} />
-    ) : current.kind === "troubleshooting" ? (
-      <Markdown content={current.markdown} />
     ) : (
-      <Markdown content={current.markdown} />
+      <MissionPager key={current.label}>
+        <Markdown content={current.markdown} />
+      </MissionPager>
     );
 
   return (
