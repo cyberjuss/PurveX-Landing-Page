@@ -6,8 +6,17 @@ import { marked } from "marked";
 // rest of the site already uses for its own JSX, no sanitizer needed.
 marked.setOptions({ gfm: true, breaks: false });
 
+function isCommandLine(text: string) {
+  const t = text.replace(/<[^>]+>/g, "").trim();
+  if (t.length > 40) return true;
+  if (/[|]/.test(t)) return true;
+  return /^(Get|Set|New|Remove|Add|Enable|Disable|Search|Unlock|Move)-/i.test(t);
+}
+
 function markCommandParagraphs(html: string) {
-  return html.replace(/<p>\s*(<code\b[\s\S]*?<\/code>)\s*<\/p>/gi, '<p class="ad-cmd">$1</p>');
+  return html.replace(/<p>\s*(<code\b[\s\S]*?<\/code>)\s*<\/p>/gi, (full, tag: string) =>
+    isCommandLine(tag) ? `<p class="ad-cmd">${tag}</p>` : full
+  );
 }
 
 export function Markdown({ content, className }: { content: string; className?: string }) {

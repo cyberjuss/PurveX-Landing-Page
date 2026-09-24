@@ -3497,9 +3497,9 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 .academy-prose .ad-guess .ad-hint__btn:hover { background: none; opacity: 0.75; }
 .academy-prose .ad-guess__submit:disabled { background: none; color: var(--rd-ink-3, #8a94a8); cursor: default; }
 .academy-prose .ad-guess__feedback {
-  flex: 1 1 100%;
+  display: block;
   width: 100%;
-  margin: 8px 0 0;
+  margin: 2.2rem 0 0.35rem;
   font-size: 0.82rem;
   font-weight: 600;
   line-height: 1.4;
@@ -3519,6 +3519,8 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
   display: none; margin-top: 1.1rem; padding: 0 0 0.35rem;
   border: none; border-radius: 0; background: transparent;
 }
+.academy-prose .ad-guess__feedback + .ad-flag,
+.academy-prose .ad-guess__feedback + .ad-flag--shown { margin-top: 0.35rem; }
 .academy-prose .ad-flag--shown { display: block; animation: ax-enter var(--ax-dur, 280ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)) both; }
 .academy-prose .ad-flag__label {
   display: block; margin-bottom: 0.6rem; font-family: var(--font-mono, ui-monospace, monospace);
@@ -3711,9 +3713,9 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 
 .academy-bg[data-academy-theme="dark"] .academy-prose a { color: #9eb0ff; }
 .academy-bg[data-academy-theme="dark"] .academy-prose :not(pre) > code { background: #000000; }
-.academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission p code,
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission p:not(.ad-cmd) code,
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission h4 code {
-  background: none; border: 0; color: inherit;
+  background: none !important; border: 0 !important; color: inherit;
 }
 .academy-bg[data-academy-theme="dark"] .academy-prose pre,
 .academy-bg[data-academy-theme="dark"] .academy-prose p.ad-cmd > code,
@@ -3726,10 +3728,17 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__input::placeholder { color: #6b768a; }
 
-.academy-prose .ad-mission p code,
+.academy-prose .ad-mission p:not(.ad-cmd) code,
 .academy-prose .ad-mission h4 code {
-  background: none; border: 0; padding: 0; border-radius: 0;
-  font-weight: 650; color: inherit;
+  display: inline !important;
+  width: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  white-space: normal !important;
+  font-weight: 650;
+  color: inherit;
 }
 .academy-prose .ad-mission p.ad-cmd > code {
   display: block; box-sizing: border-box; width: 100%;
