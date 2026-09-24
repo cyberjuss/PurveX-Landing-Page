@@ -2851,8 +2851,8 @@ body:has(.lp) {
 .academy-prose blockquote p { margin: 0.3rem 0; }
 .academy-prose code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85em; background: var(--pvrx-surface-alt-light); border: 1px solid var(--pvrx-border-light); border-radius: 4px; padding: 0.1em 0.4em; }
 .academy-prose pre { margin: 1rem 0; padding: 0.9rem 1rem; background: #0c1220; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow-x: auto; }
-.academy-prose p:has(> code:only-child):not(.ad-flag__code) { margin: 0.85rem 0; }
-.academy-prose p:has(> code:only-child):not(.ad-flag__code) > code {
+.academy-prose p.ad-cmd { margin: 0.85rem 0; }
+.academy-prose p.ad-cmd > code {
   display: block; box-sizing: border-box; width: 100%;
   background: #0c1220; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
   padding: 0.85rem 1rem; color: #e2e8f0; font-weight: 500;
@@ -3496,10 +3496,19 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 .academy-prose .ad-guess__submit:hover,
 .academy-prose .ad-guess .ad-hint__btn:hover { background: none; opacity: 0.75; }
 .academy-prose .ad-guess__submit:disabled { background: none; color: var(--rd-ink-3, #8a94a8); cursor: default; }
-.academy-prose .ad-guess__feedback { margin: 2.4rem 0 0; font-size: 0.82rem; font-weight: 600; }
+.academy-prose .ad-guess__feedback {
+  flex: 1 1 100%;
+  width: 100%;
+  margin: 8px 0 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
 .academy-prose .ad-guess__feedback:empty { display: none; margin: 0; }
 .academy-prose .ad-guess__feedback--ok { color: #16a34a; }
 .academy-prose .ad-guess__feedback--err { color: #e5484d; }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--ok { color: #6ee7b7; }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--err { color: #fca5a5; }
 /* The reveal panel -- previously a bare dashed rule with two paragraphs
    under it, easy to miss as anything other than leftover text. Framed
    now as its own labeled note ("Finding"), matching how the rest of the
@@ -3707,8 +3716,8 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
   background: none; border: 0; color: inherit;
 }
 .academy-bg[data-academy-theme="dark"] .academy-prose pre,
-.academy-bg[data-academy-theme="dark"] .academy-prose p:has(> code:only-child):not(.ad-flag__code) > code,
-.academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission p:has(> code:only-child):not(.ad-flag__code) > code {
+.academy-bg[data-academy-theme="dark"] .academy-prose p.ad-cmd > code,
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission p.ad-cmd > code {
   background: #050508;
   border: 1px solid rgba(180, 200, 255, 0.18);
   color: #e8eef8;
@@ -3722,7 +3731,7 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
   background: none; border: 0; padding: 0; border-radius: 0;
   font-weight: 650; color: inherit;
 }
-.academy-prose .ad-mission p:has(> code:only-child):not(.ad-flag__code) > code {
+.academy-prose .ad-mission p.ad-cmd > code {
   display: block; box-sizing: border-box; width: 100%;
   background: #0c1220; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
   padding: 0.85rem 1rem; color: #e2e8f0; font-weight: 500;

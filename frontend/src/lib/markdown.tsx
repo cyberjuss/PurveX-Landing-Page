@@ -6,8 +6,12 @@ import { marked } from "marked";
 // rest of the site already uses for its own JSX, no sanitizer needed.
 marked.setOptions({ gfm: true, breaks: false });
 
+function markCommandParagraphs(html: string) {
+  return html.replace(/<p>\s*(<code\b[\s\S]*?<\/code>)\s*<\/p>/gi, '<p class="ad-cmd">$1</p>');
+}
+
 export function Markdown({ content, className }: { content: string; className?: string }) {
-  const html = marked.parse(content, { async: false }) as string;
+  const html = markCommandParagraphs(marked.parse(content, { async: false }) as string);
   return <div className={`academy-prose ${className ?? ""}`} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 

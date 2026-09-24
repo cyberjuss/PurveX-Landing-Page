@@ -222,8 +222,15 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
     // Lesson content is re-rendered when you switch tabs, so a mission comes
     // back blank. Put back what was stored for it.
+    const parkFeedback = (wrap: HTMLElement) => {
+      const guess = wrap.querySelector(".ad-guess");
+      const feedback = wrap.querySelector<HTMLElement>(".ad-guess__feedback");
+      if (guess && feedback && feedback.parentElement !== guess) guess.appendChild(feedback);
+    };
+
     const restoreMission = (wrap: HTMLElement) => {
       wrap.setAttribute("data-restored", "1");
+      parkFeedback(wrap);
       const id = wrap.getAttribute("data-id");
       const r = id ? loadResults()[id] : undefined;
       if (!r) {
