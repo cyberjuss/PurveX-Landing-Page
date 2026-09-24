@@ -1,6 +1,6 @@
 import "server-only";
 import { COACH_HAIKU_MODEL, COACH_SONNET_MODEL } from "@/lib/academy-coach";
-import { buildChangeTask, LEVEL_NAMES, pickSkill, seeded, shuffle, standardSnapshot, type ChangeBrief, type Grader, type Item } from "@/lib/academy-drills";
+import { buildChangeTask, isJob, JOBS, LEVEL_NAMES, pickSkill, seeded, shuffle, standardSnapshot, type ChangeBrief, type Grader, type Item } from "@/lib/academy-drills";
 import type { LabSnapshot } from "@/lib/academy-lab";
 import { summarize, SKILLS, type Results, type Skill } from "@/lib/academy-score";
 
@@ -135,6 +135,7 @@ function parseChoice(raw: string, fallback: Skill, seed: string, theme: string):
     answer: choices[idx],
     explain,
     theme,
+    job: isJob(j.job) ? j.job : undefined,
   };
 }
 
@@ -165,6 +166,7 @@ function parseCtf(raw: string, fallback: Skill, theme: string): Item | null {
     format: format || undefined,
     free: true,
     theme,
+    job: "trace-logon",
   };
 }
 
@@ -204,6 +206,16 @@ const BASE_RULES = `- Use the real names, groups, departments and computers from
 - Plain, direct language. No filler.
 - Never use these objects: ${OFF_LIMITS}.`;
 
+export type TargetJob = { id: string; label: string } | null;
+
+const jobList = () => JOBS.map((j) => `${j.id}: ${j.label}`).join("; ");
+
+/** Steers a written scenario toward the on-the-job task the student has not shown yet. */
+function jobBlock(target: TargetJob) {
+  const pick = target ? `Aim this case at the job task "${target.label}" (${target.id}) unless it cannot be done as a decision or a written answer, then choose the closest one. ` : "";
+  return `\n\n${pick}Tag it with the closest job id from: ${jobList()}.`;
+}
+
 export async function generateScenario(params: {
   apiKey: string;
   userId: string;
@@ -212,9 +224,10 @@ export async function generateScenario(params: {
   results: Results;
   level: number;
   recent: Recent[];
+  targetJob?: TargetJob;
 }): Promise<Item | null> {
   const seed = `${params.userId}:${params.day}`;
-  const skill = pickSkill(seed, params.results);
+  const skill = params.targetJob ? (JOBS.find((j) => j.id === params.targetJob!.id)?.skill ?? pickSkill(seed, params.results)) : pickSkill(seed, params.results);
   const usedThemes = new Set(params.recent.map((r) => r.th));
   const pool = THEMES[skill].filter((t) => !usedThemes.has(t));
   const r = seeded(`theme:${seed}`);
@@ -234,9 +247,9 @@ ${BASE_RULES}
 - The story is two to four sentences.
 - Difficulty: ${LEVEL_RULES[level - 1]}
 Return only JSON, no other text:
-{"title": "3 to 5 words", "skill": "accounts|directory|troubleshooting|security", "story": "...", "evidence": ["..."], "question": "...", "choices": ["...","...","...","..."], "answerIndex": 0, "explain": "two or three sentences: why the answer is right and what the trap was"}`;
+{"title": "3 to 5 words", "skill": "accounts|directory|troubleshooting|security", "job": "one job id", "story": "...", "evidence": ["..."], "question": "...", "choices": ["...","...","...","..."], "answerIndex": 0, "explain": "two or three sentences: why the answer is right and what the trap was"}`;
 
-  const user = `Lab facts:\n${labFacts(lab)}\n\nTrainee skill scores: ${scores}.\nTrainee level: ${level} (${LEVEL_NAMES[level - 1]}).\nToday's focus skill: ${SKILLS[skill].label}.\nScenario theme: ${theme}.${avoidBlock(params.recent)}`;
+  const user = `Lab facts:\n${labFacts(lab)}\n\nTrainee skill scores: ${scores}.\nTrainee level: ${level} (${LEVEL_NAMES[level - 1]}).\nToday's focus skill: ${SKILLS[skill].label}.\nScenario theme: ${theme}.${jobBlock(params.targetJob ?? null)}${avoidBlock(params.recent)}`;
 
   // One retry if the first draft reads like something they already had.
   const began = Date.now();
@@ -322,6 +335,7 @@ function parseRespond(raw: string, fallback: Skill, theme: string): Item | null 
     long: true,
     format: "Write two to four sentences, as you would in a ticket note.",
     theme,
+    job: isJob(j.job) ? j.job : undefined,
   };
 }
 
@@ -333,9 +347,10 @@ export async function generateRespond(params: {
   results: Results;
   level: number;
   recent: Recent[];
+  targetJob?: TargetJob;
 }): Promise<Item | null> {
   const seed = `${params.userId}:${params.day}`;
-  const skill = pickSkill(seed, params.results);
+  const skill = params.targetJob ? (JOBS.find((j) => j.id === params.targetJob!.id)?.skill ?? pickSkill(seed, params.results)) : pickSkill(seed, params.results);
   const usedThemes = new Set(params.recent.map((r) => r.th));
   const pool = THEMES[skill].filter((t) => !usedThemes.has(t));
   const themes = pool.length ? pool : THEMES[skill];
@@ -353,9 +368,9 @@ ${BASE_RULES}
 - The rubric is four short points a strong answer must cover. Each names a specific action, check or reason so it can be marked yes or no.
 - Difficulty: ${LEVEL_RULES[level - 1]}
 Return only JSON, no other text:
-{"title": "3 to 5 words", "skill": "accounts|directory|troubleshooting|security", "story": "...", "evidence": ["..."], "question": "...", "rubric": ["...","...","...","..."], "modelAnswer": "a strong answer in two to four sentences", "explain": "two or three sentences on the tradeoff and the common mistake"}`;
+{"title": "3 to 5 words", "skill": "accounts|directory|troubleshooting|security", "job": "one job id", "story": "...", "evidence": ["..."], "question": "...", "rubric": ["...","...","...","..."], "modelAnswer": "a strong answer in two to four sentences", "explain": "two or three sentences on the tradeoff and the common mistake"}`;
 
-  const user = `Lab facts:\n${labFacts(lab)}\n\nTrainee skill scores: ${scores}.\nTrainee level: ${level} (${LEVEL_NAMES[level - 1]}).\nFocus skill: ${SKILLS[skill].label}.\nCase theme: ${theme}.${avoidBlock(params.recent)}`;
+  const user = `Lab facts:\n${labFacts(lab)}\n\nTrainee skill scores: ${scores}.\nTrainee level: ${level} (${LEVEL_NAMES[level - 1]}).\nFocus skill: ${SKILLS[skill].label}.\nCase theme: ${theme}.${jobBlock(params.targetJob ?? null)}${avoidBlock(params.recent)}`;
   const raw = await ask(params.apiKey, system, user, 2400, 28_000);
   return raw ? parseRespond(raw, skill, theme) : null;
 }
@@ -383,6 +398,10 @@ const CHANGE_STORY: Record<ChangeBrief["type"], (facts: string) => { title: stri
   access: (f) => ({ title: "Access request", story: f, question: "Make the change in your lab that gives them what the job needs and nothing more, then check it." }),
   hire: (f) => ({ title: "New contractor", story: f, question: "Set them up in your lab the way the desk would, then check it." }),
   offboard: (f) => ({ title: "Contractor leaves", story: f, question: "End their access in your lab without deleting the account, then check it." }),
+  enable: (f) => ({ title: "Cannot sign in", story: f, question: "Set up the ticket in your lab, find the real cause, fix only that, then check it." }),
+  wrongou: (f) => ({ title: "Wrong department", story: f, question: "Set up the ticket in your lab, correct where the account belongs, then check it." }),
+  excess: (f) => ({ title: "Access review finding", story: f, question: "Set up the ticket in your lab, remove only what should not be there, then check it." }),
+  service: (f) => ({ title: "New service account", story: f, question: "Create the account to the company standard in your lab, then check it." }),
 };
 
 export async function generateChange(params: {
@@ -392,6 +411,7 @@ export async function generateChange(params: {
   snapshot: LabSnapshot | null;
   level: number;
   recent: Recent[];
+  targetJob?: TargetJob;
 }): Promise<Item | null> {
   if (!params.snapshot) return null;
   const level = Math.min(4, Math.max(1, params.level));
@@ -400,6 +420,7 @@ export async function generateChange(params: {
     seed: `${params.userId}:${params.day}`,
     level,
     avoid: params.recent.map((r) => r.th),
+    targetJob: params.targetJob?.id,
   });
   if (!brief) return null;
 
@@ -413,6 +434,8 @@ Rules:
 - Refer to people by name or as they/them. Never guess a gender from a name.
 - Write it the way a real requester would, in a short paragraph of two to four sentences. Name the need, not the steps${level >= 2 ? ". Do not tell them which group to use or which buttons to press" : ""}.
 - Include the pressure or constraint given, if any.
+- The question asks them to make the change and check it${level >= 2 ? ". It must not name the exact change, the group, or the button" : ""}.
+- If the facts say the account already exists, write it as a live ticket about an account that is already there. Do not mention scripts.
 Return only JSON: {"title": "3 to 5 words", "story": "...", "question": "one sentence asking them to make the change and then check it"}`;
   const raw = await ask(
     params.apiKey,
@@ -440,6 +463,7 @@ Return only JSON: {"title": "3 to 5 words", "story": "...", "question": "one sen
     kind: "change",
     task: brief.task,
     theme: brief.theme,
+    job: brief.job,
   };
 }
 
@@ -452,6 +476,7 @@ export async function generateDaily(params: {
   results: Results;
   level: number;
   recent: Recent[];
+  targetJob?: TargetJob;
   format: "decide" | "respond" | "change";
 }): Promise<Item | null> {
   const { format, ...rest } = params;

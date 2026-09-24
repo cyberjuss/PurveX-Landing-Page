@@ -41,23 +41,36 @@ export type Item = {
   long?: boolean;
   /** A real change in the student's lab (change). */
   task?: Task;
+  /** Which on-the-job task this practices. See JOBS. */
+  job?: string;
 };
 
 export type Check =
   | { t: "member"; sam: string; group: string; want: boolean }
   | { t: "exists"; sam: string; ou: string }
+  | { t: "container"; sam: string; ou: string }
   | { t: "enabled"; sam: string; want: boolean }
+  | { t: "noexpire"; sam: string; want: boolean }
   | { t: "desc"; sam: string; text: string };
 
-export type Task = { checks: { c: Check; label: string }[]; guide: string[] };
+export type Task = {
+  checks: { c: Check; label: string }[];
+  guide: string[];
+  /** The same change as PowerShell, shown after the task. */
+  runbook?: string[];
+  /** A script that plants a practice account for a break-and-fix ticket. */
+  setup?: { sam: string; note: string; script: string };
+};
 
-export type PublicItem = Omit<Item, "answer" | "explain" | "accept" | "hint" | "rubric" | "task"> & {
+export type PublicItem = Omit<Item, "answer" | "explain" | "accept" | "hint" | "rubric" | "task" | "job"> & {
   checklist?: string[];
   checkCount?: number;
+  setup?: { note: string; script: string };
+  job?: string;
 };
 
 /** One question. `x`, `a` and `e` are kept only for misses: what they picked, the best answer, and why. */
-export type DrillDetail = { t: string; s: Skill; c: 0 | 1; p?: string; th?: string; x?: string; a?: string; e?: string };
+export type DrillDetail = { t: string; s: Skill; c: 0 | 1; p?: string; th?: string; x?: string; a?: string; e?: string; j?: string; k?: string };
 
 export type DrillEntry = {
   id: string;
@@ -73,7 +86,7 @@ export type DrillEntry = {
   detail: DrillDetail[];
 };
 
-export type DrillReview = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string };
+export type DrillReview = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string; runbook?: string[] };
 
 type Payload = { id: string; u: string; mode: DrillMode; day: string; iat: number; limit: number; source: "lab" | "standard"; ai: boolean; level: number; t0?: number; items: Item[] };
 
@@ -490,6 +503,8 @@ function publicItems(items: Item[], level: number): PublicItem[] {
     // Early levels say what to change. Later levels only say how it is checked.
     checklist: item.task && level <= 2 ? item.task.checks.map((c) => c.label) : undefined,
     checkCount: item.task?.checks.length,
+    setup: item.task?.setup ? { note: item.task.setup.note, script: item.task.setup.script } : undefined,
+    job: item.job ? JOBS.find((j) => j.id === item.job)?.label : undefined,
   }));
 }
 
@@ -602,7 +617,7 @@ export async function gradeDrill(
       picked = raw !== null && item.choices.includes(raw) ? raw : null;
       right = picked === item.answer;
     }
-    review.push({ title: item.title, skill: item.skill, picked, answer, correct: !late && right, explain });
+    review.push({ title: item.title, skill: item.skill, picked, answer, correct: !late && right, explain, runbook: item.kind === "change" ? item.task?.runbook : undefined });
   }
   const entry: DrillEntry = {
     id: p.id,
@@ -620,6 +635,8 @@ export async function gradeDrill(
       c: review[i].correct ? 1 : 0,
       p: item.prompt.slice(0, 200),
       th: (item.theme ?? item.title).slice(0, 80),
+      ...(isJob(item.job) ? { j: item.job } : {}),
+      k: item.kind ?? (item.free ? "ctf" : "decide"),
       ...(review[i].correct
         ? {}
         : {
@@ -632,9 +649,82 @@ export async function gradeDrill(
   return { entry, review, late };
 }
 
+// ---- job tasks ------------------------------------------------------------
+// What a Tier 1 help desk analyst or junior sysadmin is actually asked to do.
+// A job is "proven" when the student did it in their own lab and it checked
+// out, or, for judgement jobs, got it right three times.
+
+export type JobDef = { id: string; label: string; skill: Skill; lab: boolean };
+
+export const JOBS: JobDef[] = [
+  { id: "enable-account", label: "Restore a blocked account", skill: "troubleshooting", lab: true },
+  { id: "group-access", label: "Grant access with a group, never admin rights", skill: "accounts", lab: true },
+  { id: "create-user", label: "Create an account to the naming standard", skill: "accounts", lab: true },
+  { id: "fix-ou", label: "Correct a misplaced account", skill: "directory", lab: true },
+  { id: "least-privilege", label: "Remove access that should not be there", skill: "security", lab: true },
+  { id: "offboard", label: "Offboard without deleting", skill: "security", lab: true },
+  { id: "service-account", label: "Set up a service account safely", skill: "security", lab: true },
+  { id: "verify-claim", label: "Check a ticket before acting on it", skill: "troubleshooting", lab: false },
+  { id: "triage-alert", label: "Triage a login alert: contain, preserve, escalate", skill: "security", lab: false },
+  { id: "read-logs", label: "Read Windows security events", skill: "security", lab: false },
+  { id: "escalate-note", label: "Write a clear escalation", skill: "security", lab: false },
+  { id: "trace-logon", label: "Trace a logon across log sources", skill: "security", lab: false },
+];
+
+const JOB_IDS = new Set(JOBS.map((j) => j.id));
+export const isJob = (id: unknown): id is string => typeof id === "string" && JOB_IDS.has(id);
+
+export type JobStatus = "new" | "practiced" | "proven";
+export type JobRow = { id: string; label: string; skill: Skill; lab: boolean; status: JobStatus; correct: number; asked: number; last: string | null };
+
+export function jobProgress(entries: DrillEntry[]): JobRow[] {
+  return JOBS.map((job) => {
+    let asked = 0;
+    let correct = 0;
+    let labProven = false;
+    let last: string | null = null;
+    for (const e of entries) {
+      for (const d of e.detail ?? []) {
+        if (d.j !== job.id) continue;
+        asked += 1;
+        if (!last || e.at > last) last = e.at;
+        if (d.c) {
+          correct += 1;
+          if (d.k === "change") labProven = true;
+        }
+      }
+    }
+    const status: JobStatus = job.lab
+      ? labProven ? "proven" : correct > 0 ? "practiced" : "new"
+      : correct >= 3 ? "proven" : correct > 0 ? "practiced" : "new";
+    return { id: job.id, label: job.label, skill: job.skill, lab: job.lab, status, correct, asked, last };
+  });
+}
+
+/** The job to work on next: never-tried first, then half-done, then the one not seen for longest. */
+export function pickTargetJob(entries: DrillEntry[], seed: string, hasLab: boolean): JobRow | null {
+  const rows = jobProgress(entries).filter((j) => (j.lab ? hasLab : true));
+  if (!rows.length) return null;
+  const rank = { new: 0, practiced: 1, proven: 2 } as const;
+  const best = Math.min(...rows.map((j) => rank[j.status]));
+  const pool = rows.filter((j) => rank[j.status] === best).sort((a, b) => (a.last ?? "").localeCompare(b.last ?? ""));
+  // Among the least recent few, vary by day so it is not always the same one.
+  return pool[Math.floor(seeded(`job:${seed}`)() * Math.min(3, pool.length))];
+}
+
+/** One line for Coach: how much of the job this student has shown they can do. */
+export function jobLine(entries: DrillEntry[]): string {
+  const rows = jobProgress(entries);
+  const proven = rows.filter((r) => r.status === "proven");
+  const open = rows.filter((r) => r.status !== "proven").map((r) => r.label);
+  return `Job tasks proven ${proven.length} of ${rows.length}.${proven.length ? ` Proven: ${proven.map((r) => r.label).join("; ")}.` : ""}${open.length ? ` Not yet: ${open.slice(0, 5).join("; ")}.` : ""}`;
+}
+
 // ---- lab change tasks -----------------------------------------------------
 // The student makes a real change in their own lab. It is checked against
-// the next snapshot their domain controller sends.
+// the next snapshot their domain controller sends. Some tasks start with a
+// short setup script that plants a broken account, so there is something
+// real to fix.
 
 const PROTECTED = new Set([
   "alex.rivera", "jamie.torres", "riley.kwan", "jordan.ellis", "taylor.osei", "casey.reed",
@@ -644,8 +734,11 @@ const ADMIN_GROUPS = ["IT Admins", "Server Admins", "Domain Admins"];
 const CONTRACTORS = [
   "Nadia Farouk", "Elliot Marsh", "Priyanka Rao", "Tomas Vidal", "Hannah Osei", "Marcus Webb",
   "Yuki Tanaka", "Camila Ortiz", "Devin Okafor", "Sasha Petrov", "Lena Fischer", "Omar Haddad",
-  "Ingrid Solberg", "Rafael Duarte", "Amara Nwosu", "Felix Brandt",
+  "Ingrid Solberg", "Rafael Duarte", "Amara Nwosu", "Felix Brandt", "Zoe Alvarez", "Kenji Mori",
+  "Bianca Rossi", "Idris Kamara", "Petra Novak", "Mateo Silva", "Ruth Adeyemi", "Callum Reid",
+  "Farah Nasser", "Diego Herrera", "Anika Sharma", "Jonas Lindqvist", "Selin Aydin", "Noel Baptiste",
 ];
+const APPS = ["payroll-sync", "report-runner", "print-queue", "scan-archive", "inventory-feed", "backup-verify"];
 const samOf = (full: string) => full.toLowerCase().replace(/[^a-z ]/g, "").trim().split(/\s+/).join(".");
 
 type Dept = { ou: string; label: string; group: string; users: LabUser[] };
@@ -665,20 +758,37 @@ function departments(s: LabSnapshot): Dept[] {
 }
 
 export type ChangeBrief = {
-  type: "access" | "hire" | "offboard";
+  type: "access" | "hire" | "offboard" | "enable" | "wrongou" | "excess" | "service";
+  job: string;
   skill: Skill;
   theme: string;
   /** Plain facts for the story writer. */
   facts: string;
-  /** How much to say about the fix, by level. */
   temptation?: string;
   task: Task;
   summary: string;
 };
 
 const hasGroup = (s: LabSnapshot, name: string) => s.groups.some((g) => g.name.toLowerCase() === name.toLowerCase());
+const usersOu = (ou: string) => `OU=Users,OU=${ou},OU=Departments`;
+const SYNC_STEP = "Wait for the lab to report (about 15 minutes) or run Build-Environment.ps1 -SyncOnly on the domain controller, then press Check my lab.";
+const ADUC = "Open Active Directory Users and Computers (Win+R, dsa.msc).";
 
-export function buildChangeTask(params: { snapshot: LabSnapshot; seed: string; level: number; avoid: string[] }): ChangeBrief | null {
+/** PowerShell that plants one practice account for a break-and-fix ticket. */
+function setupScript(lines: string[]) {
+  return [
+    "Import-Module ActiveDirectory",
+    "$dom = Get-ADDomain",
+    "$dn = $dom.DistinguishedName",
+    "$pw = ConvertTo-SecureString ('Tmp-' + (Get-Random -Minimum 100000 -Maximum 999999) + '-aA!') -AsPlainText -Force",
+    ...lines,
+  ].join("\n");
+}
+
+const newUserLine = (name: string, sam: string, ou: string, desc: string) =>
+  `New-ADUser -Name "${name}" -SamAccountName "${sam}" -UserPrincipalName "${sam}@$($dom.DNSRoot)" -Path "${usersOu(ou)},$dn" -AccountPassword $pw -Enabled $true -ChangePasswordAtLogon $true -Description "${desc}"`;
+
+export function buildChangeTask(params: { snapshot: LabSnapshot; seed: string; level: number; avoid: string[]; targetJob?: string }): ChangeBrief | null {
   const s = params.snapshot;
   const r = seeded(`change:${params.seed}`);
   const level = params.level;
@@ -689,34 +799,40 @@ export function buildChangeTask(params: { snapshot: LabSnapshot; seed: string; l
     admins.map((g) => ({ c: { t: "member", sam, group: g, want: false }, label: `${name} is not in ${g}` }));
   const avoid = new Set(params.avoid);
   const built: ChangeBrief[] = [];
+  const taken = new Set(s.users.map((u) => u.sam.toLowerCase()));
+  const freshNames = shuffle(r, CONTRACTORS).filter((n) => !taken.has(samOf(n)));
+  const nextName = () => freshNames.shift();
 
   // Give a coworker access to another department's files, and nothing more.
   const movers = depts.flatMap((d) => d.users.filter((u) => u.enabled && !PROTECTED.has(u.sam.toLowerCase())).map((u) => ({ d, u })));
   const mover = pick(r, movers);
   if (mover) {
-    const targets = depts.filter((d) => d.ou !== mover.d.ou);
-    const target = pick(r, targets);
+    const target = pick(r, depts.filter((d) => d.ou !== mover.d.ou));
     if (target) {
       const name = nameOf(mover.u);
       const admin = admins[0];
-      const checks = [
-        { c: { t: "member", sam: mover.u.sam, group: target.group, want: true } as Check, label: `${name} is a member of ${target.group}` },
-        { c: { t: "member", sam: mover.u.sam, group: mover.d.group, want: true } as Check, label: `${name} is still a member of ${mover.d.group}` },
-        ...notAdmin(mover.u.sam, name),
-      ];
       built.push({
         type: "access",
+        job: "group-access",
         skill: "accounts",
         theme: `change:access:${mover.u.sam}:${target.group}`,
         facts: `${name} (${mover.u.sam}) works in ${mover.d.label} and is in ${mover.d.group}. They need to help ${target.label} for a few weeks and must reach that team's shared files, which are controlled by the group ${target.group}. The request must NOT be solved by giving admin rights.`,
         temptation: level >= 3 && admin ? `A manager says: "Just put them in ${admin} so it stops being a problem." That is the wrong fix.` : undefined,
         task: {
-          checks,
+          checks: [
+            { c: { t: "member", sam: mover.u.sam, group: target.group, want: true }, label: `${name} is a member of ${target.group}` },
+            { c: { t: "member", sam: mover.u.sam, group: mover.d.group, want: true }, label: `${name} is still a member of ${mover.d.group}` },
+            ...notAdmin(mover.u.sam, name),
+          ],
           guide: [
-            "Open Active Directory Users and Computers (Win+R, dsa.msc).",
+            ADUC,
             `Find the group ${target.group}, open Properties, then the Members tab, and add ${name}.`,
             `Leave ${mover.d.group} as it is and do not add anyone to an admin group.`,
-            "Wait for the lab to report (about 15 minutes) or run Build-Environment.ps1 -SyncOnly, then check.",
+            SYNC_STEP,
+          ],
+          runbook: [
+            `Add-ADGroupMember -Identity "${target.group}" -Members ${mover.u.sam}`,
+            `Get-ADPrincipalGroupMembership ${mover.u.sam} | Select-Object Name`,
           ],
         },
         summary: `${name} joins ${target.group}, keeps ${mover.d.group}, and gets no admin rights.`,
@@ -725,35 +841,38 @@ export function buildChangeTask(params: { snapshot: LabSnapshot; seed: string; l
   }
 
   // A new contractor: right place, right group, no more access than the job needs.
-  const taken = new Set(s.users.map((u) => u.sam.toLowerCase()));
-  const fresh = shuffle(r, CONTRACTORS).find((n) => !taken.has(samOf(n)));
-  const dept = pick(r, depts);
-  if (fresh && dept) {
-    const sam = samOf(fresh);
-    const ou = `OU=Users,OU=${dept.ou},OU=Departments`;
+  const hireName = nextName();
+  const hireDept = pick(r, depts);
+  if (hireName && hireDept) {
+    const sam = samOf(hireName);
     const checks: { c: Check; label: string }[] = [
-      { c: { t: "exists", sam, ou }, label: `An account ${sam} exists in the ${dept.label} Users folder` },
-      { c: { t: "enabled", sam, want: true }, label: `${fresh} can sign in (the account is enabled)` },
-      { c: { t: "member", sam, group: dept.group, want: true }, label: `${fresh} is a member of ${dept.group}` },
-      ...notAdmin(sam, fresh),
+      { c: { t: "exists", sam, ou: usersOu(hireDept.ou) }, label: `An account ${sam} exists in the ${hireDept.label} Users folder` },
+      { c: { t: "enabled", sam, want: true }, label: `${hireName} can sign in (the account is enabled)` },
+      { c: { t: "member", sam, group: hireDept.group, want: true }, label: `${hireName} is a member of ${hireDept.group}` },
+      ...notAdmin(sam, hireName),
     ];
     if (level >= 3) checks.push({ c: { t: "desc", sam, text: "contractor" }, label: `The Description says this is a contractor` });
     built.push({
       type: "hire",
+      job: "create-user",
       skill: "accounts",
       theme: `change:hire:${sam}`,
-      facts: `${fresh} is a contractor joining ${dept.label} for six months. They need a normal sign-in and the same access as the team, which comes from the group ${dept.group}. Follow the naming pattern first.last for the sign-in name${level >= 3 ? ", and mark the account as a contractor in its Description" : ""}.`,
+      facts: `${hireName} is a contractor joining ${hireDept.label} for six months. They need a normal sign-in and the same access as the team, which comes from the group ${hireDept.group}. Follow the naming pattern first.last for the sign-in name${level >= 3 ? ", and mark the account as a contractor in its Description" : ""}.`,
       task: {
         checks,
         guide: [
-          "Open Active Directory Users and Computers (Win+R, dsa.msc).",
-          `Right-click the Users folder under Departments, ${dept.label}, then New, then User.`,
+          ADUC,
+          `Right-click the Users folder under Departments, ${hireDept.label}, then New, then User.`,
           `Use ${sam} as the sign-in name, set a temporary password, and require a change at next logon.`,
-          `Open the new account, Member Of tab, add ${dept.group}. Do not add admin groups.`,
-          "Wait for the lab to report (about 15 minutes) or run Build-Environment.ps1 -SyncOnly, then check.",
+          `Open the new account, Member Of tab, add ${hireDept.group}. Do not add admin groups.`,
+          SYNC_STEP,
+        ],
+        runbook: [
+          `New-ADUser -Name "${hireName}" -SamAccountName ${sam} -Path "${usersOu(hireDept.ou)},$((Get-ADDomain).DistinguishedName)" -AccountPassword (Read-Host -AsSecureString "Temp password") -ChangePasswordAtLogon $true -Enabled $true -Description "Contractor"`,
+          `Add-ADGroupMember -Identity "${hireDept.group}" -Members ${sam}`,
         ],
       },
-      summary: `${sam} exists in the ${dept.label} Users folder, is enabled, and is in ${dept.group} only.`,
+      summary: `${sam} exists in the ${hireDept.label} Users folder, is enabled, and is in ${hireDept.group} only.`,
     });
   }
 
@@ -762,40 +881,213 @@ export function buildChangeTask(params: { snapshot: LabSnapshot; seed: string; l
   const leaver = s.users.find((u) => contractorSams.has(u.sam.toLowerCase()) && u.enabled && u.memberOf.length > 0);
   if (leaver) {
     const name = nameOf(leaver);
-    const checks: { c: Check; label: string }[] = [
-      { c: { t: "enabled", sam: leaver.sam, want: false }, label: `${name}'s account is disabled` },
-      ...leaver.memberOf.map((g) => ({ c: { t: "member", sam: leaver.sam, group: g, want: false } as Check, label: `${name} is no longer in ${g}` })),
-    ];
     built.push({
       type: "offboard",
+      job: "offboard",
       skill: "security",
       theme: `change:offboard:${leaver.sam}`,
       facts: `${name} (${leaver.sam}), a contractor, finished today. Their access must end now, but HR wants the account kept for the audit trail, so it must not be deleted.`,
       task: {
-        checks,
+        checks: [
+          { c: { t: "enabled", sam: leaver.sam, want: false }, label: `${name}'s account is disabled` },
+          ...leaver.memberOf.map((g) => ({ c: { t: "member", sam: leaver.sam, group: g, want: false } as Check, label: `${name} is no longer in ${g}` })),
+        ],
         guide: [
-          "Open Active Directory Users and Computers (Win+R, dsa.msc) and find the account.",
+          `${ADUC} Find the account.`,
           "Right-click it and choose Disable Account. Do not delete it.",
           "Open the Member Of tab and remove every group.",
-          "Wait for the lab to report (about 15 minutes) or run Build-Environment.ps1 -SyncOnly, then check.",
+          SYNC_STEP,
+        ],
+        runbook: [
+          `Disable-ADAccount -Identity ${leaver.sam}`,
+          `Get-ADPrincipalGroupMembership ${leaver.sam} | Where-Object Name -ne "Domain Users" | ForEach-Object { Remove-ADGroupMember -Identity $_ -Members ${leaver.sam} -Confirm:$false }`,
         ],
       },
       summary: `${leaver.sam} is disabled, removed from every group, and still exists.`,
     });
   }
 
+  // Break and fix: a returning employee whose account is still disabled.
+  const enableName = nextName();
+  const enableDept = pick(r, depts);
+  if (enableName && enableDept) {
+    const sam = samOf(enableName);
+    built.push({
+      type: "enable",
+      job: "enable-account",
+      skill: "troubleshooting",
+      theme: `change:enable:${sam}`,
+      facts: `${enableName} is back from leave today and HR confirmed the return in writing. They cannot sign in. Their account is in ${enableDept.label} and was disabled while they were away.`,
+      temptation: level >= 3 ? `The caller asks you to reset the password "to be safe". A reset would not fix a disabled account.` : undefined,
+      task: {
+        setup: {
+          sam,
+          note: "Run this once on the domain controller. It creates a practice account with the problem in this ticket.",
+          script: setupScript([
+            newUserLine(enableName, sam, enableDept.ou, "Returning from leave"),
+            `Add-ADGroupMember -Identity "${enableDept.group}" -Members ${sam}`,
+            `Disable-ADAccount -Identity ${sam}`,
+          ]),
+        },
+        checks: [
+          { c: { t: "enabled", sam, want: true }, label: `${enableName}'s account is enabled` },
+          { c: { t: "member", sam, group: enableDept.group, want: true }, label: `${enableName} is still in ${enableDept.group}` },
+          ...notAdmin(sam, enableName),
+        ],
+        guide: [
+          ADUC,
+          "Find the account and open its Properties, Account tab. Read the state before you change anything.",
+          "Right-click the account and choose Enable Account. Do not reset the password and do not add groups.",
+          SYNC_STEP,
+        ],
+        runbook: [
+          `Get-ADUser ${sam} -Properties Enabled,LockedOut | Select-Object Name,Enabled,LockedOut`,
+          `Enable-ADAccount -Identity ${sam}`,
+          `Unlock-ADAccount -Identity ${sam}   # only if LockedOut is True`,
+        ],
+      },
+      summary: `${sam} is enabled and keeps its group. Nothing else was changed.`,
+    });
+  }
+
+  // Break and fix: provisioned into the wrong department.
+  const wrongName = nextName();
+  const pair = shuffle(r, depts).slice(0, 2);
+  if (wrongName && pair.length === 2) {
+    const [wrong, right] = pair;
+    const sam = samOf(wrongName);
+    built.push({
+      type: "wrongou",
+      job: "fix-ou",
+      skill: "directory",
+      theme: `change:wrongou:${sam}`,
+      facts: `${wrongName} works in ${right.label}, but the account was created in the ${wrong.label} folder and put in ${wrong.group}. They cannot open the ${right.label} shared files and the audit flagged the account as misplaced.`,
+      temptation: level >= 3 ? `A coworker suggests just adding ${wrongName} to ${right.group} and leaving the rest. That leaves them with access to ${wrong.label} they should not have.` : undefined,
+      task: {
+        setup: {
+          sam,
+          note: "Run this once on the domain controller. It creates a practice account that was set up in the wrong department.",
+          script: setupScript([
+            newUserLine(wrongName, sam, wrong.ou, `${right.label} analyst`),
+            `Add-ADGroupMember -Identity "${wrong.group}" -Members ${sam}`,
+          ]),
+        },
+        checks: [
+          { c: { t: "container", sam, ou: usersOu(right.ou) }, label: `${wrongName} is in the ${right.label} Users folder` },
+          { c: { t: "member", sam, group: right.group, want: true }, label: `${wrongName} is in ${right.group}` },
+          { c: { t: "member", sam, group: wrong.group, want: false }, label: `${wrongName} is no longer in ${wrong.group}` },
+          { c: { t: "enabled", sam, want: true }, label: `${wrongName}'s account is still enabled` },
+          ...notAdmin(sam, wrongName),
+        ],
+        guide: [
+          ADUC,
+          `Find the account, right-click it, choose Move, and pick Departments, ${right.label}, Users.`,
+          `On the Member Of tab, add ${right.group} and remove ${wrong.group}.`,
+          SYNC_STEP,
+        ],
+        runbook: [
+          `Move-ADObject -Identity (Get-ADUser ${sam}).DistinguishedName -TargetPath "${usersOu(right.ou)},$((Get-ADDomain).DistinguishedName)"`,
+          `Add-ADGroupMember -Identity "${right.group}" -Members ${sam}`,
+          `Remove-ADGroupMember -Identity "${wrong.group}" -Members ${sam} -Confirm:$false`,
+        ],
+      },
+      summary: `${sam} sits in the ${right.label} Users folder, is in ${right.group}, and is out of ${wrong.group}.`,
+    });
+  }
+
+  // Break and fix: a contractor copied from an admin's account and left with admin rights.
+  const excessName = nextName();
+  const excessDept = pick(r, depts);
+  const adminGroup = admins[0];
+  if (excessName && excessDept && adminGroup) {
+    const sam = samOf(excessName);
+    built.push({
+      type: "excess",
+      job: "least-privilege",
+      skill: "security",
+      theme: `change:excess:${sam}`,
+      facts: `An access review found ${excessName}, a ${excessDept.label} contractor, in ${adminGroup}. The account was made by copying an administrator's account. They need only the normal ${excessDept.group} access.`,
+      temptation: level >= 3 ? `The contractor's manager says removing it "might break something" and asks you to leave it until Friday. Extra admin rights do not wait for Friday.` : undefined,
+      task: {
+        setup: {
+          sam,
+          note: "Run this once on the domain controller. It creates a practice account that was copied from an admin.",
+          script: setupScript([
+            newUserLine(excessName, sam, excessDept.ou, "Contractor"),
+            `Add-ADGroupMember -Identity "${excessDept.group}" -Members ${sam}`,
+            `Add-ADGroupMember -Identity "${adminGroup}" -Members ${sam}`,
+          ]),
+        },
+        checks: [
+          ...admins.map((g) => ({ c: { t: "member", sam, group: g, want: false } as Check, label: `${excessName} is not in ${g}` })),
+          { c: { t: "member", sam, group: excessDept.group, want: true }, label: `${excessName} is still in ${excessDept.group}` },
+          { c: { t: "enabled", sam, want: true }, label: `${excessName}'s account is still enabled` },
+        ],
+        guide: [
+          ADUC,
+          "Find the account and read the Member Of tab. Note every group before you change anything.",
+          `Remove ${adminGroup}. Keep ${excessDept.group}, and do not disable or delete the account.`,
+          SYNC_STEP,
+        ],
+        runbook: [
+          `Get-ADPrincipalGroupMembership ${sam} | Select-Object Name`,
+          `Remove-ADGroupMember -Identity "${adminGroup}" -Members ${sam} -Confirm:$false`,
+        ],
+      },
+      summary: `${sam} is out of every admin group, still in ${excessDept.group}, and still enabled.`,
+    });
+  }
+
+  // A service account done the way an audit expects. Needs the ServiceAccounts folder from the CTF build.
+  const svcApp = shuffle(r, APPS).find((a) => !taken.has(`svc-${a}`));
+  const owner = pick(r, s.users.filter((u) => u.enabled));
+  const hasSvcOu = s.ous.some((o) => o.path.toLowerCase() === "ou=serviceaccounts");
+  if (svcApp && owner && hasSvcOu) {
+    const sam = `svc-${svcApp}`;
+    built.push({
+      type: "service",
+      job: "service-account",
+      skill: "security",
+      theme: `change:service:${sam}`,
+      facts: `The ${svcApp.replace(/-/g, " ")} job needs an account to run under. ${nameOf(owner)} (${owner.sam}) owns it. Company standard: it lives in the ServiceAccounts folder, has no groups, is not an admin, its password does not expire (it is set once and stored in the vault), and the Description names the owner so someone can be asked about it later.`,
+      task: {
+        checks: [
+          { c: { t: "exists", sam, ou: "OU=ServiceAccounts" }, label: `${sam} exists in the ServiceAccounts folder` },
+          { c: { t: "noexpire", sam, want: true }, label: `${sam} has "Password never expires" set` },
+          { c: { t: "desc", sam, text: owner.sam }, label: `The Description names the owner (${owner.sam})` },
+          { c: { t: "enabled", sam, want: true }, label: `${sam} is enabled` },
+          ...notAdmin(sam, sam),
+        ],
+        guide: [
+          ADUC,
+          `Right-click the ServiceAccounts folder, New, User. Use ${sam} as the sign-in name.`,
+          "On the password page choose Password never expires. Clear the change-at-next-logon box.",
+          `Open the account and put "Owner: ${owner.sam}" in the Description. Do not add any groups.`,
+          SYNC_STEP,
+        ],
+        runbook: [
+          `New-ADUser -Name ${sam} -SamAccountName ${sam} -Path "OU=ServiceAccounts,$((Get-ADDomain).DistinguishedName)" -AccountPassword (Read-Host -AsSecureString "Vault password") -PasswordNeverExpires $true -Enabled $true -Description "Owner: ${owner.sam}. ${svcApp}"`,
+        ],
+      },
+      summary: `${sam} is in ServiceAccounts, has a non-expiring password, names ${owner.sam} as owner, and has no admin rights.`,
+    });
+  }
+
   if (!built.length) return null;
-  // A leaver comes first: closing access is the most time-sensitive change.
   const order = shuffle(r, built);
+  // Closing access is the most time-sensitive change, then whatever job they have not shown yet.
   order.sort((a, b) => Number(b.type === "offboard") - Number(a.type === "offboard"));
-  return order.find((b) => !avoid.has(b.theme)) ?? order[0];
+  const wanted = params.targetJob ? order.find((b) => b.job === params.targetJob && !avoid.has(b.theme)) : undefined;
+  return wanted ?? order.find((b) => !avoid.has(b.theme)) ?? order[0];
 }
 
 function evalCheck(s: LabSnapshot, c: Check): boolean {
   const user = s.users.find((u) => u.sam.toLowerCase() === c.sam.toLowerCase());
   if (c.t === "exists") return Boolean(user) && user!.container.toLowerCase() === c.ou.toLowerCase();
   if (!user) return c.t === "member" ? !c.want : false;
+  if (c.t === "container") return user.container.toLowerCase() === c.ou.toLowerCase();
   if (c.t === "enabled") return user.enabled === c.want;
+  if (c.t === "noexpire") return user.passwordNeverExpires === c.want;
   if (c.t === "desc") return `${user.description} ${user.title}`.toLowerCase().includes(c.text.toLowerCase());
   const g = c.group.toLowerCase();
   const inGroup = user.memberOf.some((m) => m.toLowerCase() === g) || s.groups.some((x) => x.name.toLowerCase() === g && x.members.includes(user.name));
@@ -807,22 +1099,26 @@ export function checkChange(
   userId: string,
   token: string,
   lab: { snapshot: LabSnapshot; uploadedAt: string } | null
-): { fresh: boolean; results: { label: string; ok: boolean }[]; passed: boolean } | null {
+): { fresh: boolean; results: { label: string; ok: boolean }[]; passed: boolean; needsSetup: boolean } | null {
   const p = unseal(token);
   if (!p || p.u !== userId) return null;
   const task = p.items[0]?.task;
   if (!task) return null;
-  if (!lab) return { fresh: false, results: [], passed: false };
+  if (!lab) return { fresh: false, results: [], passed: false, needsSetup: false };
   const fresh = new Date(lab.uploadedAt).getTime() >= (p.t0 ?? p.iat);
+  // A break-and-fix ticket needs its practice account planted first.
+  const needsSetup =
+    fresh && Boolean(task.setup) && !lab.snapshot.users.some((u) => u.sam.toLowerCase() === task.setup!.sam.toLowerCase());
   const results = task.checks.map(({ c, label }) => ({ label, ok: evalCheck(lab.snapshot, c) }));
-  return { fresh, results, passed: fresh && results.every((x) => x.ok) };
+  return { fresh, results, passed: fresh && !needsSetup && results.every((x) => x.ok), needsSetup };
 }
 
 /** How the day's scenario is asked. Lab changes need a lab to check. */
-export function pickFormat(seed: string, level: number, hasLab: boolean): "decide" | "respond" | "change" {
+export function pickFormat(seed: string, level: number, hasLab: boolean, targetsLab = false): "decide" | "respond" | "change" {
   const r = seeded(`format:${seed}`)();
   const lv = Math.min(4, Math.max(1, level));
-  const change = hasLab ? [0.4, 0.35, 0.35, 0.4][lv - 1] : 0;
+  // When the job to practice can be done in the lab, usually make them do it there.
+  const change = hasLab ? (targetsLab ? 0.8 : [0.4, 0.35, 0.35, 0.4][lv - 1]) : 0;
   const respond = [0.15, 0.3, 0.4, 0.45][lv - 1];
   if (r < change) return "change";
   if (r < change + respond) return "respond";
@@ -1065,9 +1361,10 @@ export function weaknessLine(entries: DrillEntry[]): string {
   const themes = missedThemes(entries, 3).map((t) => `${t.theme} (missed ${t.missed} of ${t.asked})`);
   const last = [...entries].sort((a, b) => b.at.localeCompare(a.at))[0];
   const recent = missedQuestions(entries, 4).map((m) => m.title);
+  const jobs = jobLine(entries);
   return `Drill level ${level} (${LEVEL_NAMES[level - 1]}). Accuracy: ${parts.join("; ")}.${
     themes.length ? ` Keeps missing: ${themes.join("; ")}.` : ""
-  }${recent.length ? ` Latest missed questions: ${recent.join("; ")}. Use get_drill_history for what they picked.` : ""} Last drill ${last.day}.`;
+  }${recent.length ? ` Latest missed questions: ${recent.join("; ")}. Use get_drill_history for what they picked.` : ""} ${jobs} Last drill ${last.day}.`;
 }
 
 export function cleanDay(value: unknown): string {

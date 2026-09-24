@@ -23,7 +23,11 @@ export type DrillStatus = {
   report: Report;
   missed: Missed[];
   chats: { base: number; bonus: number; parts: { label: string; n: number }[] };
+  jobs: JobRow[];
+  nextJob: string | null;
 };
+
+type JobRow = { id: string; label: string; skill: Skill; lab: boolean; status: "new" | "practiced" | "proven"; correct: number; asked: number };
 
 type Missed = { day: string; mode: string; title: string; skill: Skill; prompt: string; picked: string; answer: string; explain: string };
 
@@ -46,9 +50,9 @@ type Mode = "daily" | "timed" | "ctf";
 const MODE_LABEL: Record<string, string> = { daily: "Daily scenario", timed: "Incident drill", ctf: "Weekly CTF", coach: "Practice" };
 
 type DrillEntry = { id: string; day: string; mode: string; correct: number; total: number; seconds: number; detail?: { t: string }[] };
-type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[]; free?: boolean; format?: string; kind?: "decide" | "respond" | "change"; long?: boolean; checklist?: string[]; checkCount?: number };
-type CheckRes = { fresh: boolean; results: { label: string; ok: boolean }[]; syncedAgo: string | null; passed: boolean };
-type Review = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string };
+type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[]; free?: boolean; format?: string; kind?: "decide" | "respond" | "change"; long?: boolean; checklist?: string[]; checkCount?: number; setup?: { note: string; script: string }; job?: string };
+type CheckRes = { needsSetup?: boolean; fresh: boolean; results: { label: string; ok: boolean }[]; syncedAgo: string | null; passed: boolean };
+type Review = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string; runbook?: string[] };
 type Run = { mode: Mode; token: string; items: Item[]; limit: number; ai: boolean; startedAt: number };
 type Result = { entry: DrillEntry; review: Review[]; late: boolean; counted: boolean; items: Item[] } & DrillStatus;
 
@@ -88,6 +92,37 @@ function lastSeven() {
   return out;
 }
 
+function SetupBlock({ setup }: { setup: { note: string; script: string } }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div className="dr-setup">
+      <span className="rd-kicker">Step 1 · Set up the ticket</span>
+      <p>{setup.note}</p>
+      <div className="dr-term">
+        <div className="dr-term__bar">
+          <i />
+          <i />
+          <i />
+          <span>PowerShell on the domain controller</span>
+          <button
+            type="button"
+            className="dr-term__copy"
+            onClick={() => {
+              navigator.clipboard?.writeText(setup.script).then(() => {
+                setCopied(true);
+                window.setTimeout(() => setCopied(false), 1500);
+              }).catch(() => {});
+            }}
+          >
+            <Copy className="h-3.5 w-3.5" /> {copied ? "Copied" : "Copy"}
+          </button>
+        </div>
+        <pre>{setup.script}</pre>
+      </div>
+    </div>
+  );
+}
+
 function Scenario({
   caseNo,
   item,
@@ -109,6 +144,7 @@ function Scenario({
     <div className="dr-card">
       <span className="rd-kicker">
         Case {caseNo} · {SKILLS[item.skill].label}
+        {item.job ? ` · Job task: ${item.job}` : ""}
       </span>
       <h2 className="dr-card__title">{item.title}</h2>
       {item.story && <p className="dr-story">{item.story}</p>}
@@ -126,7 +162,8 @@ function Scenario({
       <h3 className="dr-question">{item.prompt}</h3>
       {item.kind === "change" ? (
         <div className="dr-task">
-          <span className="rd-kicker">Make this change in your lab</span>
+          {item.setup && <SetupBlock setup={item.setup} />}
+          <span className="rd-kicker">{item.setup ? "Step 2 · Fix it in your lab" : "Make this change in your lab"}</span>
           {item.checklist ? (
             <ul className="dr-task__list">
               {item.checklist.map((c) => (
@@ -143,12 +180,17 @@ function Scenario({
           </p>
           {checkRes && (
             <div className="dr-checks">
+              {checkRes.needsSetup && (
+                <p className="dr-checks__stale">
+                  Your lab reported, but the practice account is not there yet. Run the setup script on the domain controller, wait for the next report, then check again.
+                </p>
+              )}
               {!checkRes.fresh && (
                 <p className="dr-checks__stale">
                   Your lab has not reported since you started{checkRes.syncedAgo ? ` (last report ${checkRes.syncedAgo})` : ""}. Make the change, sync, then check again.
                 </p>
               )}
-              {checkRes.fresh && (
+              {checkRes.fresh && !checkRes.needsSetup && (
                 <ul>
                   {checkRes.results.map((r) => (
                     <li key={r.label} className={r.ok ? "is-ok" : "is-bad"}>
@@ -213,6 +255,37 @@ function Scenario({
         </div>
       )}
     </div>
+  );
+}
+
+function JobTasks({ jobs, next, n }: { jobs: JobRow[]; next: string | null; n: string }) {
+  const proven = jobs.filter((j) => j.status === "proven").length;
+  const label = { new: "Not yet", practiced: "Practiced", proven: "Proven" } as const;
+  return (
+    <section className="rd-sec dr-jobs">
+      <div className="rd-sec__head">
+        <span className="rd-sec__n">{n}</span>
+        <h2>Job tasks</h2>
+        <p>
+          {proven} of {jobs.length} proven. Proven means you did it in your own lab and it checked out, or got it right three times. Your daily case aims at the next one.
+        </p>
+      </div>
+      <ul className="dr-jobs__list">
+        {jobs.map((j) => (
+          <li key={j.id} className={`is-${j.status}${j.id === next ? " is-next" : ""}`}>
+            <span className="dr-jobs__mark" aria-hidden>
+              {j.status === "proven" ? <Check className="h-3.5 w-3.5" /> : null}
+            </span>
+            <span className="dr-jobs__name">
+              {j.label}
+              <em>{j.lab ? "Done in your lab" : "Judgement"}</em>
+            </span>
+            {j.id === next && <span className="dr-jobs__next">Up next</span>}
+            <span className="dr-jobs__status">{label[j.status]}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -369,7 +442,7 @@ export function DrillRunner() {
         setRun(null);
         return;
       }
-      setCheckRes({ fresh: Boolean(data.fresh), results: data.results ?? [], syncedAgo: data.syncedAgo ?? null, passed: false });
+      setCheckRes({ needsSetup: Boolean(data.needsSetup), fresh: Boolean(data.fresh), results: data.results ?? [], syncedAgo: data.syncedAgo ?? null, passed: false });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not check your lab.");
     } finally {
@@ -603,6 +676,17 @@ export function DrillRunner() {
                   : <b>{items[i]?.free && items[i]?.kind !== "respond" ? `gtf{${r.answer}}` : r.answer}</b>
                 </p>
                 <p>{r.explain}</p>
+                {r.runbook && r.runbook.length > 0 && (
+                  <div className="dr-term dr-term--small">
+                    <div className="dr-term__bar">
+                      <i />
+                      <i />
+                      <i />
+                      <span>On the job, the same thing in PowerShell</span>
+                    </div>
+                    <pre>{r.runbook.join("\n")}</pre>
+                  </div>
+                )}
               </div>
             </li>
           ))}
@@ -732,8 +816,9 @@ export function DrillRunner() {
             </li>
           </ol>
 
-          <WeekReport r={status.report} n="04" />
-          {status.missed.length > 0 && <MissedList items={status.missed} n="05" />}
+          <JobTasks jobs={status.jobs} next={status.nextJob} n="04" />
+          <WeekReport r={status.report} n="05" />
+          {status.missed.length > 0 && <MissedList items={status.missed} n="06" />}
           <p className="dr-lab">{labLine(status.lab)}</p>
           {error && <p className="dr-error">{error}</p>}
         </>

@@ -2,7 +2,7 @@ import "server-only";
 
 import { coachModeInstructions, parseCoachMode, type CoachMode } from "@/lib/academy-coach-mode";
 import { formatLabAge, labEvidence, labStateForTool, type LabSnapshot } from "@/lib/academy-lab";
-import { LEVEL_NAMES, levelFor, missedQuestions, missedThemes, skillAccuracy, weaknessLine, type DrillEntry } from "@/lib/academy-drills";
+import { jobProgress, LEVEL_NAMES, levelFor, missedQuestions, missedThemes, skillAccuracy, weaknessLine, type DrillEntry } from "@/lib/academy-drills";
 import { loadDrills, saveDrill } from "@/lib/academy-store";
 import { type CoachImage } from "@/lib/academy-coach-media";
 import { findMissionsByQuery, MISSION_CATALOG } from "@/lib/academy-missions";
@@ -348,6 +348,10 @@ async function weaknessProfile(ctx: CoachToolContext) {
       keepsMissing: missedThemes(entries, 5),
       recentMisses: missedQuestions(entries, 5),
       lastDrill: [...entries].sort((a, b) => b.at.localeCompare(a.at))[0]?.day ?? null,
+    },
+    jobTasks: {
+      note: "On-the-job tasks. proven = done in their own lab and checked, or right three times. Teach and quiz on the ones not proven first.",
+      rows: jobProgress(entries).map((j) => ({ task: j.label, status: j.status, needsLab: j.lab, timesRight: j.correct })),
     },
     lab: lab ? { syncedAgo: formatLabAge(lab.capturedAt).ago, differencesFromStandard: labEvidence(lab).diffs.slice(0, 6) } : null,
     suggestion:

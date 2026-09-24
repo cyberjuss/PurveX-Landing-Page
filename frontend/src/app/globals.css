@@ -4424,3 +4424,25 @@ textarea.pc-dock__field {
 .dr-checks__stale { padding: 12px 14px; border-radius: 8px; background: rgba(196, 130, 14, 0.12); color: var(--rd-ink) !important; }
 .dr-actions__side { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .dr-earned { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-good); }
+
+/* Job tasks, setup scripts, and the PowerShell runbook */
+.dr-setup { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.dr-setup .rd-kicker { color: var(--rd-accent); }
+.dr-setup p { margin: 0; font-size: var(--ty-body, 14px); line-height: 1.55; color: var(--rd-ink-2); }
+.dr-setup .dr-term { margin-top: 0; }
+.dr-term__copy { display: inline-flex; align-items: center; gap: 5px; margin-left: auto; padding: 0; background: none; border: 0; font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; color: #9aa5bd; cursor: pointer; }
+.dr-term__copy:hover { color: #fff; }
+.dr-term--small { margin-top: 12px; }
+.dr-term--small pre { font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.dr-jobs { margin-top: 48px; }
+.dr-jobs__list { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--rd-line); }
+.dr-jobs__list li { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--rd-line); }
+.dr-jobs__mark { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--rd-none); color: #fff; }
+.is-proven .dr-jobs__mark { background: var(--rd-good); }
+.is-practiced .dr-jobs__mark { background: transparent; box-shadow: inset 0 0 0 2px var(--rd-warn); }
+.dr-jobs__name { display: flex; flex-direction: column; gap: 2px; font-size: var(--ty-lead, 16px); font-weight: 600; color: var(--rd-ink); }
+.dr-jobs__name em { font-style: normal; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-ink-3); }
+.dr-jobs__next { padding: 3px 8px; border-radius: 999px; background: rgba(85, 70, 224, 0.14); font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-accent); }
+.dr-jobs__status { min-width: 84px; text-align: right; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small, 13px); font-weight: 700; color: var(--rd-ink-3); }
+.is-proven .dr-jobs__status { color: var(--rd-good); }
+.is-practiced .dr-jobs__status { color: var(--rd-warn); }

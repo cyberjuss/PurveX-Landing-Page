@@ -8,10 +8,12 @@ import {
   drillHint,
   drillStats,
   gradeDrill,
+  jobProgress,
   LEVEL_NAMES,
   levelFor,
   missedQuestions,
   pickFormat,
+  pickTargetJob,
   recentPrompts,
   reissueDrill,
   startDrill,
@@ -67,6 +69,8 @@ async function status(userId: string, day: string) {
     report: weeklyReport(entries, day),
     missed: missedQuestions(entries, 8),
     chats: { base: COACH_DAILY_LIMIT, ...chats },
+    jobs: jobProgress(entries),
+    nextJob: pickTargetJob(entries, `${userId}:${day}`, Boolean(lab.synced))?.id ?? null,
   };
 }
 
@@ -148,8 +152,11 @@ export async function POST(request: Request) {
 
     let item = null;
     if (apiKey && mode === "daily") {
-      const format = swap ? "respond" : pickFormat(`${userId}:${day}`, level, Boolean(snapshot));
-      item = await generateDaily({ apiKey, userId, day, snapshot, results, level, recent, format }).catch(() => null);
+      // Aim at the on-the-job task they have shown the least, so the daily drill covers what the job needs.
+      const target = pickTargetJob(entries, `${userId}:${day}`, Boolean(snapshot));
+      const format = swap ? "respond" : pickFormat(`${userId}:${day}`, level, Boolean(snapshot), Boolean(target?.lab));
+      const targetJob = target ? { id: target.id, label: target.label } : null;
+      item = await generateDaily({ apiKey, userId, day, snapshot, results, level, recent, format, targetJob }).catch(() => null);
     } else if (apiKey && mode === "ctf") {
       item = await generateCtf({ apiKey, userId, week: keyDay, snapshot, results, level, recent }).catch(() => null);
     }
