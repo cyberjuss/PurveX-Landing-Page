@@ -164,7 +164,7 @@ export const COACH_CSS = `
 .cs__tabs { display: grid; gap: 10px; margin-top: 34px }
 .cs__tabs button {
   display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; width: 100%; padding: 14px 16px; text-align: left;
-  color: #fff; cursor: pointer; border: 1px solid rgba(238,240,255,.16); border-radius: 18px; background: rgba(16,8,64,.24);
+  color: #fff; cursor: pointer; border: 1px solid rgba(238,240,255,.16); border-radius: 0; background: rgba(16,8,64,.24);
   transition: background .3s var(--ease), border-color .3s var(--ease), transform .3s var(--ease);
 }
 .cs__tabs button:hover { background: rgba(16,8,64,.4); transform: translateX(4px) }
@@ -174,7 +174,9 @@ export const COACH_CSS = `
 .cs__tabs strong { display: block; font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; letter-spacing: -.015em }
 .cs__tabs em { display: block; margin-top: 2px; font-style: normal; font-size: .84rem; color: var(--hp-mist) }
 .cs__sheet {
-  position: relative; background: #fff; color: var(--ink); border-radius: 22px; padding: 22px 26px 26px;
+  position: relative; background: #fff; color: var(--ink); border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+  padding: 22px 26px 26px;
   box-shadow: 0 40px 70px -30px rgba(10,6,48,.75); animation: cs-in .5s var(--ease) both;
 }
 .cs__sheet header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border) }
@@ -184,7 +186,7 @@ export const COACH_CSS = `
 .cs__turn > span { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: .62rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted) }
 .cs__turn > span i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent) }
 .cs__turn--student > p { margin: 8px 0 0; font-size: 1rem; line-height: 1.55; color: var(--ink-soft); font-style: italic }
-.cs__turn--coach { margin-top: 22px; padding: 20px 20px 22px; border-radius: 16px; background: linear-gradient(135deg, #f7f5ff, #fff 80%); border: 1px solid rgba(106,92,255,.16) }
+.cs__turn--coach { margin-top: 22px; padding: 20px 20px 22px; border-radius: 0; background: linear-gradient(135deg, #f7f5ff, #fff 80%); border: 1px solid rgba(106,92,255,.16) }
 .cs__turn--coach > span { color: var(--accent-deep) }
 .cs__turn--coach > div { margin-top: 10px; font-size: .96rem; line-height: 1.65; color: var(--ink) }
 .cs__turn--coach p { margin: 0 0 10px }

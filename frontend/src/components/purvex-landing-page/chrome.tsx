@@ -692,11 +692,11 @@ export const CHROME_CSS = `
   border-color: rgba(106,92,255,.3); box-shadow: var(--highlight), var(--shadow-lg);
 }
 /* PurveX Labs bento: rounded tiles; the accent tile keeps its own fill. */
-.sp-tile { border-radius: 20px }
+.sp-tile { border-radius: 0 }
 .sp-tile--accent, .sp-tile--accent:hover { background: radial-gradient(120% 140% at 0% 0%, #7b6dff 0%, #5546e0 50%, #2b2280 100%); border-color: transparent; box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 24px 48px -24px rgba(85,70,224,.7) }
-.sp-panel { clip-path: none; filter: none; border-radius: 22px; border: 1px solid var(--border) }
+.sp-panel { clip-path: none; filter: none; border-radius: 0; border: 1px solid var(--border) }
 .sp-panel:hover { filter: none }
-.sp-console { border: 1px solid var(--border); border-radius: 20px; overflow: hidden }
+.sp-console { border: 1px solid var(--border); border-radius: 0; overflow: hidden }
 
 /* Icon holders: a soft gradient tile with an inner edge instead of a flat circle */
 .sp-card__icon, .sp-problem__icon, .sp-offer__panel, .sp-tile__icon, .sp-console__icon, .sp-mag__point-icon, .sp-format__icon, .sp-step__icon, .sp-rung__icon, .sp-versus__icon {

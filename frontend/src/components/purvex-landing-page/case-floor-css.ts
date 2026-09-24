@@ -21,12 +21,13 @@ export const FLOOR_CSS = `
   margin: 8px auto 32px; min-height: 318px;
 }
 .cf-case__stack, .cf-case__stack--2 {
-  position: absolute; inset: 14px 10px -10px 10px; border-radius: 4px;
+  position: absolute; inset: 14px 10px -10px 10px; border-radius: 0;
   background: rgba(238,240,255,.18); border: 1px solid rgba(238,240,255,.2);
 }
 .cf-case__stack--2 { inset: 22px 20px -16px 20px; opacity: .55 }
 .cf-ticket {
-  position: relative; overflow: hidden; background: #fff;
+  position: relative; overflow: hidden; background: #fff; border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%);
   border-left: 4px solid var(--accent);
   box-shadow: 0 28px 56px -18px rgba(42,34,128,.72);
   animation: cf-ticket-in .7s var(--ease) both;

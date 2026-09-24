@@ -513,12 +513,13 @@ const HP_CSS = `
   margin: 8px auto 32px; min-height: 318px;
 }
 .hp-case__stack, .hp-case__stack--2 {
-  position: absolute; inset: 14px 10px -10px 10px; border-radius: 4px;
+  position: absolute; inset: 14px 10px -10px 10px; border-radius: 0;
   background: rgba(238,240,255,.18); border: 1px solid rgba(238,240,255,.2);
 }
 .hp-case__stack--2 { inset: 22px 20px -16px 20px; opacity: .55 }
 .hp-ticket {
-  position: relative; overflow: hidden; background: #fff;
+  position: relative; overflow: hidden; background: #fff; border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%);
   border-left: 4px solid var(--accent);
   box-shadow: 0 28px 56px -18px rgba(42,34,128,.72);
   animation: hp-ticket-in .7s var(--ease) both;
@@ -641,7 +642,7 @@ const HP_CSS = `
 .hp-perk {
   position: relative; overflow: hidden;
   display: grid; grid-template-columns: 1fr 1fr; gap: 40px 56px; align-items: center;
-  padding: 64px 56px 48px; border-radius: 28px;
+  padding: 64px 56px 48px; border-radius: 0;
   background:
     radial-gradient(60% 80% at 100% 0%, rgba(238,240,255,.22), transparent 55%),
     radial-gradient(50% 60% at 0% 100%, rgba(106,92,255,.5), transparent 60%),
@@ -682,9 +683,9 @@ const HP_CSS = `
 .hp-perk__go:hover { transform: translateY(-2px); gap: 12px }
 .hp-perk__stage { display: block; padding: 0 0 20px }
 .hp-perk__stage .hp-case { width: min(420px, 100%); margin: 0 0 0 auto; min-height: 0 }
-.hp-perk__stage .hp-case__stack { border-radius: 18px }
+.hp-perk__stage .hp-case__stack { border-radius: 0 }
 .hp-perk__stage .hp-ticket {
-  animation: none; border-left: 0; border-radius: 18px;
+  animation: none; border-left: 0; border-radius: 0;
   box-shadow: 0 32px 60px -24px rgba(16,8,64,.75);
 }
 .hp-perk__stage .hp-ticket__bar { padding: 16px 20px 0 }
@@ -693,11 +694,11 @@ const HP_CSS = `
 .hp-perk__stage .hp-ticket__sheet { padding: 12px 20px 20px }
 .hp-perk__stage .hp-ticket h2 { color: var(--ink); font-size: 1.6rem; letter-spacing: -.03em }
 .hp-perk__stage .hp-ticket__ask {
-  padding: 12px 14px; border: 0; border-radius: 12px; background: var(--accent-soft);
+  padding: 12px 14px; border: 0; border-radius: 0; background: var(--accent-soft);
 }
 .hp-perk__stage .hp-dock {
   width: min(360px, 88%); margin: -34px auto 0 0; padding: 14px 18px 12px;
-  border-radius: 18px; border: 1px solid rgba(238,240,255,.24);
+  border-radius: 0; border: 1px solid rgba(238,240,255,.24);
   background: rgba(30,22,112,.78); box-shadow: 0 26px 48px -22px rgba(10,6,48,.8);
 }
 .hp-perk__cards {
@@ -706,7 +707,8 @@ const HP_CSS = `
   position: relative; z-index: 1;
 }
 .hp-perk__cards li {
-  background: #fff; color: var(--ink); border-radius: 20px;
+  background: #fff; color: var(--ink); border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
   padding: 20px 20px 22px;
   box-shadow: 0 24px 40px -26px rgba(16,8,64,.6);
   transition: transform .3s var(--ease), box-shadow .3s var(--ease);
@@ -726,7 +728,8 @@ const HP_CSS = `
 }
 .hp-tile {
   position: relative; display: flex; flex-direction: column;
-  min-height: 100%; padding: 0 28px 28px;
+  min-height: 100%; padding: 0 28px 28px; border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
   background: #fff; border: 1px solid var(--border-strong);
   box-shadow: 0 18px 40px -30px rgba(16,25,46,.3);
   transition: transform .4s var(--ease), box-shadow .4s var(--ease);
@@ -798,7 +801,7 @@ const HP_CSS = `
 .hp-voice-wrap { padding-top: 144px }
 .hp-voice {
   position: relative; overflow: hidden; display: grid; grid-template-columns: 320px 1fr; gap: 0; margin: 0;
-  border-radius: 28px; background: linear-gradient(135deg, #fff 0%, #f4f2ff 100%);
+  border-radius: 0; background: linear-gradient(135deg, #fff 0%, #f4f2ff 100%);
   border: 1px solid rgba(106,92,255,.2); box-shadow: 0 40px 80px -44px rgba(85,70,224,.55);
 }
 .hp-voice::before {
@@ -939,7 +942,7 @@ const HP_CSS = `
   .hp-deck { grid-template-columns: 1fr }
   .hp-tile--lead { grid-row: auto }
   .hp-tile__split { grid-template-columns: 1fr }
-  .hp-voice { grid-template-columns: 1fr; border-radius: 22px }
+  .hp-voice { grid-template-columns: 1fr; border-radius: 0 }
   .hp-voice__photo { min-height: 260px }
   .hp-voice figcaption { padding: 30px 24px }
   .hp-voice__mark { top: 24px; right: 22px; width: 44px; height: 44px }

@@ -205,7 +205,8 @@ export const PG_CSS = `
   display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
 }
 .pg-tile {
-  display: flex; flex-direction: column; padding: 0 28px 28px;
+  display: flex; flex-direction: column; padding: 0 28px 28px; border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
   background: #fff; border: 1px solid var(--border-strong);
   transition: transform .4s var(--ease), box-shadow .4s var(--ease);
 }
@@ -338,7 +339,7 @@ export const PG_CSS = `
 
 .pg-facts { list-style: none; margin: 30px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px }
 .pg-facts li {
-  min-width: 108px; padding: 14px 18px; border-radius: 16px; background: #fff; border: 1px solid var(--border-strong);
+  min-width: 108px; padding: 14px 18px; border-radius: 0; background: #fff; border: 1px solid var(--border-strong);
   box-shadow: 0 18px 30px -24px rgba(42,34,128,.5);
 }
 .pg-facts strong { display: block; font-family: var(--font-display); font-size: 1.7rem; font-weight: 700; letter-spacing: -.04em; color: var(--accent-deep) }
@@ -378,7 +379,7 @@ export const PG_CSS = `
 
 .pg-split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center }
 .pg-split .pg-head { margin-bottom: 0 }
-.pg-proof { border-radius: 24px; background: #fff; border: 1px solid var(--border-strong); overflow: hidden; box-shadow: 0 40px 70px -38px rgba(42,34,128,.6) }
+.pg-proof { border-radius: 0; clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%); background: #fff; border: 1px solid var(--border-strong); overflow: hidden; box-shadow: 0 40px 70px -38px rgba(42,34,128,.6) }
 .pg-proof header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--accent-soft); font-family: var(--font-mono); font-size: .68rem; font-weight: 700; letter-spacing: .08em; color: var(--accent-deep) }
 .pg-proof header span, .pg-proof header em { display: inline-flex; align-items: center; gap: 8px }
 .pg-proof header em { font-style: normal; text-transform: uppercase; letter-spacing: .1em }
@@ -391,7 +392,7 @@ export const PG_CSS = `
 .pg-proof li[data-ok="false"] > span { background: #fdeaea; color: #c23030 }
 
 .pg-dark {
-  position: relative; overflow: hidden; padding: 56px; border-radius: 28px; color: var(--hp-mist);
+  position: relative; overflow: hidden; padding: 56px; border-radius: 0; color: var(--hp-mist);
   background:
     radial-gradient(60% 80% at 100% 0%, rgba(238,240,255,.22), transparent 55%),
     radial-gradient(50% 60% at 0% 100%, rgba(106,92,255,.5), transparent 60%),
@@ -409,7 +410,7 @@ export const PG_CSS = `
 .pg-dark__lead { margin: 14px 0 0; max-width: 46ch; font-size: 1.04rem; line-height: 1.65; color: var(--hp-mist) }
 .pg-modes { list-style: none; margin: 34px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px }
 .pg-modes li {
-  padding: 20px; border-radius: 20px; background: rgba(16,8,64,.32); border: 1px solid rgba(238,240,255,.16);
+  padding: 20px; border-radius: 0; background: rgba(16,8,64,.32); border: 1px solid rgba(238,240,255,.16);
   transition: transform .35s var(--ease), background .35s var(--ease);
 }
 .pg-modes li:hover { transform: translateY(-4px); background: rgba(16,8,64,.46) }
@@ -418,7 +419,7 @@ export const PG_CSS = `
 .pg-modes p { margin: 6px 0 0; font-size: .85rem; line-height: 1.55; color: var(--hp-mist) }
 
 .pg-phases { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px }
-.pg-phases > li { padding: 26px; border-radius: 24px; background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 26px 46px -34px rgba(42,34,128,.55); transition: transform .35s var(--ease), box-shadow .35s var(--ease) }
+.pg-phases > li { padding: 26px; border-radius: 0; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%); background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 26px 46px -34px rgba(42,34,128,.55); transition: transform .35s var(--ease), box-shadow .35s var(--ease) }
 .pg-phases > li:hover { transform: translateY(-5px); box-shadow: 0 34px 54px -30px rgba(85,70,224,.55) }
 .pg-phases header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px }
 .pg-phases header span { padding: 5px 12px; border-radius: 999px; background: var(--accent); color: #fff; font-family: var(--font-mono); font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase }
@@ -430,7 +431,7 @@ export const PG_CSS = `
 .pg-phases ul li.is-soon::before { background: none; border: 2px solid rgba(106,92,255,.4) }
 .pg-phases footer { margin-top: 14px; font-family: var(--font-mono); font-size: .64rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-dim) }
 
-.pg-report { padding: 26px; border-radius: 24px; background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 40px 70px -38px rgba(42,34,128,.6) }
+.pg-report { padding: 26px; border-radius: 0; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%); background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 40px 70px -38px rgba(42,34,128,.6) }
 .pg-report > header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; font-family: var(--font-mono); font-size: .64rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted) }
 .pg-report .pg-bars { margin: 0; padding: 0; border: 0; gap: 18px }
 .pg-report .pg-bars li { font-size: .9rem; color: var(--ink) }
@@ -460,7 +461,7 @@ export const PG_CSS = `
 }
 @media (max-width: 680px) {
   .pg-modes { grid-template-columns: 1fr }
-  .pg-dark { padding: 28px 18px; border-radius: 22px }
+  .pg-dark { padding: 28px 18px; border-radius: 0 }
   .pg-facts li { flex: 1; min-width: 0 }
 }
 
