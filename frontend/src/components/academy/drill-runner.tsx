@@ -324,9 +324,12 @@ function Scenario({
 }
 
 function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
+  const { ask } = useCoach();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const done = jobs.filter((j) => j.status === "proven");
+  const practiced = jobs.filter((j) => j.status === "practiced");
+  const label = { new: "Not yet", practiced: "Practiced", proven: "Proven" } as const;
 
   useEffect(() => setMounted(true), []);
   useEffect(() => {
@@ -355,7 +358,7 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
             <aside className="dr-jobsheet__panel" role="dialog" aria-label="Completed tasks">
               <div className="dr-jobsheet__head">
                 <div>
-                  <span>Completed</span>
+                  <span>Job tasks</span>
                   <p>
                     {done.length} of {jobs.length} proven. Proven means you did it in your own lab and it checked out, or got it right three times.
                   </p>
@@ -370,24 +373,34 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
                     The {jobs.filter((j) => j.security).length} security configuration tasks need the updated lab script. Download it again from Build This Lab and run it once on the domain controller.
                   </p>
                 )}
-                {done.length === 0 ? (
-                  <p className="dr-jobs__empty">None proven yet.</p>
-                ) : (
-                  <ul className="dr-jobs__list">
-                    {done.map((j) => (
-                      <li key={j.id} className="is-proven">
-                        <span className="dr-jobs__mark" aria-hidden>
-                          <Check className="h-3.5 w-3.5" />
-                        </span>
-                        <span className="dr-jobs__name">
-                          {j.label}
-                          <em>{j.security ? "Security configuration, checked in your lab" : j.lab ? "Done in your lab" : "Judgement"}</em>
-                        </span>
-                        <span className="dr-jobs__status">Proven</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <ul className="dr-jobs__list">
+                  {jobs.map((j) => (
+                    <li key={j.id} className={`is-${j.status}`}>
+                      <span className="dr-jobs__mark" aria-hidden>
+                        {j.status === "proven" ? <Check className="h-3.5 w-3.5" /> : <ClipboardList className="h-3.5 w-3.5" />}
+                      </span>
+                      <span className="dr-jobs__name">
+                        {j.label}
+                        <em>{j.security ? "Security configuration, checked in your lab" : j.lab ? "Done in your lab" : "Judgement"}</em>
+                      </span>
+                      <span className="dr-jobs__status">{label[j.status]}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  className="dr-jobs__bullet"
+                  onClick={() => {
+                    const proven = done.map((j) => j.label).join(", ") || "none yet";
+                    const tried = practiced.map((j) => j.label).join(", ") || "none yet";
+                    setOpen(false);
+                    ask(
+                      `Write one project bullet I can put on a resume. Base it only on help desk work I have already done. One line, strong verb, the tool, and the result.\n\nProven: ${proven}.\nPracticed: ${tried}.`
+                    );
+                  }}
+                >
+                  Ask Coach for a project bullet
+                </button>
               </div>
             </aside>
           </div>,

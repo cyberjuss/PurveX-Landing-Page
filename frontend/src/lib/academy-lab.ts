@@ -46,10 +46,19 @@ export type LabSecurity = {
   psos?: { name: string; precedence: number; minLength: number; lockoutThreshold: number; appliesTo: string[] }[];
 };
 
+/** A digest of the real Security log on the student's domain controller. Counts and names only, never raw events. */
+export type LabEvents = {
+  windowDays: number;
+  failures: { account: string; count: number; last: string | null }[];
+  lockouts: { account: string; count: number; last: string | null }[];
+  created: { account: string; at: string; by: string }[];
+  disabled: { account: string; at: string; by: string }[];
+  groupAdds: { member: string; group: string; at: string; by: string }[];
+};
+
 export type LabSnapshot = {
   security?: LabSecurity;
-  /** What the student's lab script is allowed to do. Scenarios stay off unless they turned them on. */
-  agent?: { version: number; scenarios: boolean };
+  events?: LabEvents;
   capturedAt: string;
   domain: { dnsRoot: string; netbios: string };
   ous: LabOu[];
@@ -137,16 +146,39 @@ function sanitizeSecurity(raw: unknown): LabSecurity | undefined {
   return Object.keys(out).length ? out : undefined;
 }
 
+function rows(v: unknown, max = 40): Record<string, unknown>[] {
+  const arr = Array.isArray(v) ? v : v && typeof v === "object" ? [v] : [];
+  return arr.filter((x): x is Record<string, unknown> => !!x && typeof x === "object").slice(0, max);
+}
+
+function sanitizeEvents(raw: unknown): LabEvents | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const r = raw as Record<string, unknown>;
+  const counted = (v: unknown) =>
+    rows(v).map((x) => ({ account: str(x.account, 80), count: num(x.count, 100000) ?? 0, last: date(x.last) })).filter((x) => x.account);
+  const acted = (v: unknown) =>
+    rows(v).map((x) => ({ account: str(x.account, 80), at: date(x.at) ?? "", by: str(x.by, 80) })).filter((x) => x.account && x.at);
+  const out: LabEvents = {
+    windowDays: num(r.windowDays, 365) ?? 30,
+    failures: counted(r.failures),
+    lockouts: counted(r.lockouts),
+    created: acted(r.created),
+    disabled: acted(r.disabled),
+    groupAdds: rows(r.groupAdds)
+      .map((x) => ({ member: str(x.member, 100), group: str(x.group, 100), at: date(x.at) ?? "", by: str(x.by, 80) }))
+      .filter((x) => x.member && x.group && x.at),
+  };
+  const any = out.failures.length + out.lockouts.length + out.created.length + out.disabled.length + out.groupAdds.length;
+  return any ? out : undefined;
+}
+
 export function sanitizeLabSnapshot(raw: unknown): LabSnapshot | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
   const domain = (r.domain && typeof r.domain === "object" ? r.domain : {}) as Record<string, unknown>;
   const snapshot: LabSnapshot = {
     security: sanitizeSecurity(r.security),
-    agent:
-      r.agent && typeof r.agent === "object"
-        ? { version: num((r.agent as Record<string, unknown>).version, 100) ?? 1, scenarios: bool((r.agent as Record<string, unknown>).scenarios) }
-        : undefined,
+    events: sanitizeEvents(r.events),
     capturedAt: date(r.capturedAt) ?? new Date().toISOString(),
     domain: { dnsRoot: str(domain.dnsRoot, 200), netbios: str(domain.netbios, 50) },
     ous: objects(r.ous).map((o) => ({ path: str(o.path), description: str(o.description) })),
