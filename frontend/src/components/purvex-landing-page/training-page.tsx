@@ -3,16 +3,16 @@
 import Link from "next/link";
 import { ArrowRight, Check, Server } from "lucide-react";
 import {
-  IconAudit, IconBook, IconBriefcase, IconCampus, IconChain, IconChecks, IconCivic, IconCompass, IconEvidence,
-  IconGraduate, IconHeadset, IconKey, IconLifebuoy, IconMic, IconSignal, type BrandIcon,
+  IconAudit, IconBook, IconBriefcase, IconCampus, IconChain, IconCivic, IconEvidence,
+  IconGraduate, IconHeadset, IconKey, IconSignal,
 } from "./brand-icons";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { CaseFloor, type FloorAlert, type FloorCase } from "./case-floor";
 import { HoldCard } from "./hold-card";
+import { CoachShowcase, COACH_CSS } from "./coach-showcase";
 import { PG_CSS } from "./page-skin";
 import { MISSION_CATALOG } from "@/lib/academy-missions";
 import { SKILLS, type Skill } from "@/lib/academy-score";
-import { COACH_MODE_LABELS } from "@/lib/academy-coach-mode";
 
 /* Cybersecurity Training. Same skin as the home page (page-skin.ts).
    The syllabus is passed in by the route from the Academy portal's own
@@ -41,7 +41,7 @@ const steps = [
   {
     n: "02", title: "Work", Icon: IconChain,
     body: "Students run the help desk of a company that they build themselves.",
-    points: ["Tickets checked against a live directory", "A daily drill and a weekly investigation"],
+    points: ["Tickets checked against a live directory", "A daily drill and a weekly CTF"],
   },
   {
     n: "03", title: "Prove", Icon: IconEvidence,
@@ -55,6 +55,7 @@ const proofs = [
   { ok: true, text: "Group membership holds" },
   { ok: true, text: "Service account is documented" },
   { ok: false, text: "A transfer is still open" },
+  { ok: true, text: "Weekly CTF is scored on the Security log" },
 ];
 
 const roles = [
@@ -63,13 +64,6 @@ const roles = [
   { title: "Systems administrator", body: "Keeps access accurate as people join, move, and leave.", Icon: IconKey },
   { title: "Audit and compliance support", body: "Turns policy into settings that an auditor can verify.", Icon: IconAudit },
 ];
-
-const modes: Record<keyof typeof COACH_MODE_LABELS, { body: string; Icon: BrandIcon }> = {
-  walkthrough: { body: "For a student who is new or stuck, one next step and a way to check it.", Icon: IconLifebuoy },
-  check: { body: "For a student who thinks they understand, a test of the reasoning before anything changes.", Icon: IconChecks },
-  mentor: { body: "For a student who knows the lab, a talk through the call a team lead would make.", Icon: IconCompass },
-  interview: { body: "For a student who is ready for the job, a scored spoken interview that ends in a hire signal.", Icon: IconMic },
-};
 
 const audiences = [
   { title: "Students", body: "Leave with tasks proven in a real directory and resume lines that they can defend.", Icon: IconGraduate },
@@ -189,11 +183,12 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         <div className="pg-split" data-r>
           <div className="pg-head">
             <span className="sp-tag">The lab</span>
-            <h2>A ticket closes only when the directory shows the change</h2>
-            <p>Each student builds a company on their own machine, and the lab syncs so that every check reads live data.</p>
+            <h2>Tickets and the weekly CTF close only when the directory shows the change</h2>
+            <p>Each student builds a company on their own machine, and the lab syncs so that every ticket check and the weekly CTF read live data.</p>
             <ul className="pg-bullets">
               <li>Hands-on work is verified in the directory, not self-reported</li>
               <li>Answers must be found in the lab, since they cannot be copied from a ticket</li>
+              <li>A weekly CTF is graded on their live Security log</li>
             </ul>
             <Link href="/academy" className="pg-more">
               Sign in to open the first ticket <ArrowRight size={15} />
@@ -290,22 +285,8 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       </section>
 
       <section className="pg-section">
-        <div className="pg-dark" data-r>
-          <span className="pg-dark__kicker">PurveX Coach</span>
-          <h2>A coach that never hands over the answer</h2>
-          <p className="pg-dark__lead">Coach reads the student&apos;s own lab and results, and it teaches the method while the student finds the answer.</p>
-          <ul className="pg-modes">
-            {(Object.keys(COACH_MODE_LABELS) as (keyof typeof COACH_MODE_LABELS)[]).map((m) => {
-              const { Icon, body } = modes[m];
-              return (
-                <li key={m}>
-                  <i className="pg-ico"><Icon size={19} /></i>
-                  <strong>{COACH_MODE_LABELS[m]}</strong>
-                  <p>{body}</p>
-                </li>
-              );
-            })}
-          </ul>
+        <div className="pg-dark">
+          <CoachShowcase />
         </div>
       </section>
 
@@ -344,6 +325,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       </section>
 
       <style>{PG_CSS}</style>
+      <style>{COACH_CSS}</style>
     </SiteChrome>
   );
 }
