@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowRight, Check, Copy, Flag, Flame, Sparkles, Timer, X } from "lucide-react";
+import { ArrowRight, Check, Copy, Flame, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch } from "@/lib/academy-client";
 import { SKILLS, type Skill } from "@/lib/academy-score";
@@ -41,7 +41,7 @@ type Report = {
 type Mode = "daily" | "timed" | "ctf";
 const MODE_LABEL: Record<string, string> = { daily: "Daily scenario", timed: "Incident drill", ctf: "Weekly CTF", coach: "Practice" };
 
-type DrillEntry = { id: string; day: string; mode: string; correct: number; total: number; seconds: number };
+type DrillEntry = { id: string; day: string; mode: string; correct: number; total: number; seconds: number; detail?: { t: string }[] };
 type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[]; free?: boolean; format?: string };
 type Review = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string };
 type Run = { mode: Mode; token: string; items: Item[]; limit: number; ai: boolean; startedAt: number };
@@ -84,12 +84,14 @@ function lastSeven() {
 }
 
 function Scenario({
+  caseNo,
   item,
   picked,
   onPick,
   hint,
   onHint,
 }: {
+  caseNo: string;
   item: Item;
   picked: string | null;
   onPick: (c: string) => void;
@@ -98,7 +100,9 @@ function Scenario({
 }) {
   return (
     <div className="dr-card">
-      <span className="rd-kicker">{SKILLS[item.skill].label}</span>
+      <span className="rd-kicker">
+        Case {caseNo} · {SKILLS[item.skill].label}
+      </span>
       <h2 className="dr-card__title">{item.title}</h2>
       {item.story && <p className="dr-story">{item.story}</p>}
       {item.evidence && (
@@ -166,15 +170,16 @@ function reportText(r: Report) {
   return lines.filter(Boolean).join("\n");
 }
 
-function WeekReport({ r }: { r: Report }) {
+function WeekReport({ r, n }: { r: Report; n: string }) {
   const [copied, setCopied] = useState(false);
   return (
-    <section className="dr-report">
-      <div className="dr-report__head">
-        <span className="rd-kicker">This week</span>
+    <section className="rd-sec dr-report">
+      <div className="rd-sec__head">
+        <span className="rd-sec__n">{n}</span>
+        <h2>This week</h2>
         <button
           type="button"
-          className="dr-link"
+          className="dr-link dr-report__copy"
           onClick={() => {
             navigator.clipboard?.writeText(reportText(r)).then(() => {
               setCopied(true);
@@ -184,12 +189,11 @@ function WeekReport({ r }: { r: Report }) {
         >
           <Copy className="h-3.5 w-3.5" /> {copied ? "Copied" : "Copy report"}
         </button>
-      </div>
-      <div className="dr-report__top">
-        <strong>{r.accuracy === null ? "–" : `${r.accuracy}%`}</strong>
-        <span>
-          {r.asked === 0 ? "No questions yet this week." : `${r.correct} of ${r.asked} right · ${r.daysActive} ${r.daysActive === 1 ? "day" : "days"} active · ${r.levelName}`}
-        </span>
+        <p>
+          {r.asked === 0
+            ? "No questions yet this week."
+            : `${r.accuracy}% right · ${r.correct} of ${r.asked} · ${r.daysActive} ${r.daysActive === 1 ? "day" : "days"} active · ${r.levelName}`}
+        </p>
       </div>
       {r.asked > 0 && (
         <ul className="dr-bars">
@@ -370,7 +374,7 @@ export function DrillRunner() {
           </div>
         )}
 
-        <Scenario item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} />
+        <Scenario caseNo={String((status?.stats.total ?? 0) + 1).padStart(2, "0")} item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} />
 
         <div className="dr-actions">
           {idx > 0 ? (
@@ -475,83 +479,100 @@ export function DrillRunner() {
   const s = status?.stats;
   const week = lastSeven();
   const today = localDay();
+  const caseNo = String((s?.total ?? 0) + 1).padStart(2, "0");
+  const nameOf = (e: DrillEntry | null | undefined) => e?.detail?.[0]?.t ?? null;
   return (
     <div className="rd dr dr--floor">
-      <header className="dr-mast">
+      <header className="ax-titleblock">
         <h1>Drills</h1>
-        <p>Practice on your own directory. One scenario a day.</p>
+        <p>Practice on your own directory. One named case a day.</p>
       </header>
 
       {status && s ? (
         <>
-          <div className="dr-grid">
-            <section className="dr-today">
-              <span className="rd-kicker">
-                <Sparkles className="h-3.5 w-3.5" /> Today&apos;s scenario
-              </span>
-              <h2>
-                {s.today
-                  ? s.today.correct
-                    ? "Nice work. You got it."
-                    : "Missed today. Try again tomorrow."
-                  : "One real problem from your lab"}
-              </h2>
-              <p>{s.today ? streakLine(s) : "Read the situation and pick the right first move."}</p>
-              {s.today ? (
-                <span className={`dr-chip ${s.today.correct ? "is-right" : "is-wrong"}`}>
-                  {scoreLabel(s.today)} · {clock(s.today.seconds)}
+          <div className="dr-strip">
+            <span className="dr-streakline">
+              <Flame className="h-4 w-4" />
+              {s.streak} day streak
+            </span>
+            <span className="dr-days" aria-label="Last seven days">
+              {week.map((d) => (
+                <i
+                  key={d.day}
+                  title={d.day}
+                  className={`${s.days.includes(d.day) ? "is-done" : ""}${d.day === today ? " is-today" : ""}`}
+                />
+              ))}
+            </span>
+            <span className="dr-level">
+              Level {status.level.n} · {status.level.name}
+            </span>
+          </div>
+
+          <ol className="ax-path dr-rows">
+            <li>
+              <div className="ax-path__row">
+                <span className="ax-path__n">01</span>
+                <span className="ax-path__main">
+                  <span className="ax-path__title">
+                    {s.today ? (nameOf(s.today) ?? "Daily scenario") : `Case ${caseNo}`}
+                    {s.today && <em className={`ax-tag ${s.today.correct ? "ax-tag--good" : ""}`}>{scoreLabel(s.today)}</em>}
+                  </span>
+                  <span className="ax-path__body">
+                    {s.today
+                      ? `Daily scenario · ${clock(s.today.seconds)}. ${streakLine(s)}`
+                      : `Daily scenario. A new case from your lab${status.focus ? `, aimed at ${status.focus}` : ""}. It gets a name when you open it.`}
+                  </span>
                 </span>
-              ) : (
-                <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("daily")}>
-                  {busy ? "Writing your scenario…" : "Start"} <ArrowRight className="h-4 w-4" />
-                </button>
-              )}
-              <div className="dr-today__foot">
-                <span className="dr-streakline">
-                  <Flame className="h-4 w-4" />
-                  {s.streak} day streak
-                </span>
-                <span className="dr-level">
-                  Level {status.level.n} · {status.level.name}
-                </span>
-                <span className="dr-days" aria-label="Last seven days">
-                  {week.map((d) => (
-                    <i
-                      key={d.day}
-                      title={d.day}
-                      className={`${s.days.includes(d.day) ? "is-done" : ""}${d.day === today ? " is-today" : ""}`}
-                    />
-                  ))}
+                <span className="ax-path__count">
+                  {!s.today && (
+                    <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("daily")}>
+                      {busy ? "Writing…" : "Open case"} <ArrowRight className="h-4 w-4" />
+                    </button>
+                  )}
                 </span>
               </div>
-            </section>
-
-            <div className="dr-side">
-              <section className="dr-quick">
-                <span className="rd-kicker">
-                  <Timer className="h-3.5 w-3.5" /> Incident drill
+            </li>
+            <li>
+              <div className="ax-path__row">
+                <span className="ax-path__n">02</span>
+                <span className="ax-path__main">
+                  <span className="ax-path__title">Incident drill</span>
+                  <span className="ax-path__body">
+                    Five alerts and tickets against a clock. {s.bestTimed ? `Best ${s.bestTimed.correct}/${s.bestTimed.total}.` : ""}
+                  </span>
                 </span>
-                <h3>Five questions, a clock</h3>
-                <p>{s.bestTimed ? `Best: ${s.bestTimed.correct}/${s.bestTimed.total}` : "Alerts and tickets against time."}</p>
-                <button type="button" className="dr-outline" disabled={busy} onClick={() => void start("timed")}>
-                  Start <ArrowRight className="h-4 w-4" />
-                </button>
-              </section>
-              <section className="dr-quick">
-                <span className="rd-kicker">
-                  <Flag className="h-3.5 w-3.5" /> Weekly CTF
-                </span>
-                <h3>{status.ctf.entry ? (status.ctf.entry.correct ? "Flag captured" : "Not this week") : "One hard investigation"}</h3>
-                <p>{status.ctf.entry ? "A new one opens Monday." : "Read the evidence, find the flag. One a week."}</p>
-                {!status.ctf.entry && (
-                  <button type="button" className="dr-outline" disabled={busy} onClick={() => void start("ctf")}>
-                    {busy ? "Writing…" : "Start"} <ArrowRight className="h-4 w-4" />
+                <span className="ax-path__count">
+                  <button type="button" className="dr-outline" disabled={busy} onClick={() => void start("timed")}>
+                    Start <ArrowRight className="h-4 w-4" />
                   </button>
-                )}
-              </section>
-            </div>
-          </div>
-          <WeekReport r={status.report} />
+                </span>
+              </div>
+            </li>
+            <li>
+              <div className="ax-path__row">
+                <span className="ax-path__n">03</span>
+                <span className="ax-path__main">
+                  <span className="ax-path__title">
+                    {status.ctf.entry ? (nameOf(status.ctf.entry) ?? "Weekly CTF") : "Weekly CTF"}
+                    {status.ctf.entry && <em className={`ax-tag ${status.ctf.entry.correct ? "ax-tag--good" : ""}`}>{status.ctf.entry.correct ? "Flag captured" : "Missed"}</em>}
+                  </span>
+                  <span className="ax-path__body">
+                    {status.ctf.entry ? "A new investigation opens Monday." : "One hard investigation a week. Read the evidence, type the flag."}
+                  </span>
+                </span>
+                <span className="ax-path__count">
+                  {!status.ctf.entry && (
+                    <button type="button" className="dr-outline" disabled={busy} onClick={() => void start("ctf")}>
+                      {busy ? "Writing…" : "Start"} <ArrowRight className="h-4 w-4" />
+                    </button>
+                  )}
+                </span>
+              </div>
+            </li>
+          </ol>
+
+          <WeekReport r={status.report} n="04" />
           <p className="dr-lab">{labLine(status.lab)}</p>
           {error && <p className="dr-error">{error}</p>}
         </>
