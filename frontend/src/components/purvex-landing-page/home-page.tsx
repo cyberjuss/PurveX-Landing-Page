@@ -195,7 +195,7 @@ export default function HomePage() {
         <div className="hp-see" data-r>
           <div className="hp-see__intro">
             <span className="sp-tag">In the field</span>
-            <h2>What we see</h2>
+            <h2>The gaps we keep finding</h2>
             <p>Short-staffed teams, and programs that need graduates ready for a queue.</p>
           </div>
           <ol className="hp-see__grid">
@@ -307,7 +307,7 @@ export default function HomePage() {
       <section className="hp-section" id="what-we-offer">
         <div className="hp-head" data-r>
           <span className="sp-tag">What we offer</span>
-          <h2>What we do</h2>
+          <h2>Two ways we help</h2>
           <p>Training with PurveX Coach included, operations support, and a validation product still in development.</p>
         </div>
 
@@ -412,7 +412,7 @@ export default function HomePage() {
       <section className="hp-close" data-r>
         <div className="hp-close__copy">
           <p className="hp-close__kicker">Next step</p>
-          <h2>Talk with us</h2>
+          <h2>Start with a conversation</h2>
           <p className="hp-close__sub">Thirty minutes covers detections, the training desk, or Labs, and that conversation is where the rest of the work is explained.</p>
           <div className="hp-close__row">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="hp-close__book">

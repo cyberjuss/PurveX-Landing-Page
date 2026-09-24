@@ -143,7 +143,7 @@ export default function AboutPage() {
         <div className="ox-split">
           <div className="pg-head" data-r>
             <span className="sp-tag">Working together</span>
-            <h2>Three steps from hello to scope</h2>
+            <h2>From first call to agreed scope</h2>
             <p>No long sales process, and no hand-off to someone new.</p>
           </div>
           <ol className="ox-steps" data-r>
@@ -181,7 +181,7 @@ export default function AboutPage() {
       <section className="pg-close" data-r>
         <div className="pg-close__copy">
           <p className="pg-close__kicker">Next step</p>
-          <h2>Talk with us</h2>
+          <h2>Start with a conversation</h2>
           <p className="pg-close__sub">Thirty minutes covers operations, training, or Labs, and that is where we walk through the rest.</p>
           <div className="pg-close__row">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="pg-close__book">

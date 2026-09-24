@@ -163,7 +163,7 @@ export default function PlatformPage() {
           <div className="lb-band">
             <div>
               <span className="pg-dark__kicker">Coverage</span>
-              <h2>Coverage you can show across MITRE ATT&amp;CK</h2>
+              <h2>ATT&amp;CK coverage you can show</h2>
               <ul className="lb-legend">
                 <li><i data-s="fired" /> Fired</li>
                 <li><i data-s="missed" /> Missed</li>
@@ -209,7 +209,7 @@ export default function PlatformPage() {
       <section className="pg-section">
         <div className="pg-head" data-r>
           <span className="sp-tag">The difference</span>
-          <h2>From assumed to evidenced</h2>
+          <h2>From assumed to proven</h2>
         </div>
         <Comparison />
       </section>
@@ -217,7 +217,7 @@ export default function PlatformPage() {
       <section className="pg-section">
         <div className="pg-head" data-r>
           <span className="sp-tag">Who it is for</span>
-          <h2>Three ways in to one system</h2>
+          <h2>One system for three roles</h2>
           <p>Each role looks at a different part of the same detection chain.</p>
         </div>
         <Pathways />
@@ -254,7 +254,7 @@ export default function PlatformPage() {
       <section className="pg-section">
         <div className="pg-head" data-r>
           <span className="sp-tag">Questions</span>
-          <h2>Before you join</h2>
+          <h2>Answers before you join</h2>
         </div>
         <TrustStrip />
         <div className="fq" data-r>

@@ -52,7 +52,7 @@ export default function SecurityOperationsPage() {
       <section className="pg-section" id="work">
         <div className="pg-head" data-r>
           <span className="sp-tag">What we do</span>
-          <h2>Four ways we help</h2>
+          <h2>From first rule to proven result</h2>
           <p>Engineering, cleanup, a map of coverage, and a test that shows what actually fires.</p>
         </div>
         <ol className="ox-flow" data-r>
@@ -72,7 +72,7 @@ export default function SecurityOperationsPage() {
           <div className="lb-band">
             <div>
               <span className="pg-dark__kicker">Assessment</span>
-              <h2>See what your SIEM covers across ATT&amp;CK</h2>
+              <h2>What your SIEM really covers</h2>
               <ul className="lb-legend">
                 <li><i data-s="fired" /> Fired</li>
                 <li><i data-s="missed" /> Missed</li>
@@ -92,7 +92,7 @@ export default function SecurityOperationsPage() {
         <div className="ab-split">
           <div className="pg-head" data-r>
             <span className="sp-tag">What you receive</span>
-            <h2>Four things you keep after the engagement</h2>
+            <h2>What you keep when we finish</h2>
             <p>Each one is written down and handed over, so the work stays useful after we leave.</p>
           </div>
           <ol className="ab-rows" data-r>
@@ -113,7 +113,7 @@ export default function SecurityOperationsPage() {
         <div className="ox-split">
           <div className="pg-head" data-r>
             <span className="sp-tag">How we work</span>
-            <h2>Three steps</h2>
+            <h2>How every engagement runs</h2>
             <p>You always know where the work stands.</p>
           </div>
           <ol className="ox-steps" data-r>

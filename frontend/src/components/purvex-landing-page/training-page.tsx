@@ -238,7 +238,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section" id="syllabus">
         <div className="pg-head" data-r>
           <span className="sp-tag">The syllabus</span>
-          <h2>Three phases</h2>
+          <h2>From fundamentals to incident response</h2>
           <p>Students open the same three phases in the portal, and weeks unlock as they are published.</p>
         </div>
         <ol className="pg-phases" data-r>
@@ -312,7 +312,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section">
         <div className="pg-head" data-r>
           <span className="sp-tag">Who it serves</span>
-          <h2>One record for every stakeholder</h2>
+          <h2>One record that everyone can trust</h2>
         </div>
         <ul className="pg-grid pg-grid--4 pg-grid--icons" data-r>
           {audiences.map((a, i) => (
@@ -329,7 +329,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-close" data-r>
         <div className="pg-close__copy">
           <p className="pg-close__kicker">Next step</p>
-          <h2>Talk about a cohort</h2>
+          <h2>Start with your cohort</h2>
           <p className="pg-close__sub">The tickets, the drills, and Coach are inside the portal. Book a cohort for your program, or sign in if you already have a seat.</p>
           <div className="pg-close__row">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="pg-close__book">
