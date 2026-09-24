@@ -782,10 +782,11 @@ function jobsSeenInLab(s: LabSnapshot | null | undefined): Set<string> {
     return user.memberOf.some((m) => m.toLowerCase() === g) || s.groups.some((x) => x.name.toLowerCase() === g && x.members.includes(user.name));
   };
   const user = (sam: string) => s.users.find((u) => u.sam.toLowerCase() === sam);
+  const ticket = (sam: string, id: string) => (user(sam)?.description ?? "").includes(id);
   const jamie = user("jamie.torres");
-  if (jamie && member("jamie.torres", "All Employees")) proven.add("group-access");
+  if (jamie && ticket("jamie.torres", "CTF-TICKET-1041") && member("jamie.torres", "All Employees")) proven.add("group-access");
   const riley = user("riley.kwan");
-  if (riley?.enabled && !riley.lockedOut) proven.add("enable-account");
+  if (riley && ticket("riley.kwan", "CTF-TICKET-1042") && riley.enabled && !riley.lockedOut) proven.add("enable-account");
   const casey = user("casey.reed");
   if (casey && member("casey.reed", "IT Users") && !member("old.intern", "IT Users")) proven.add("create-user");
   const svc = user("svc-backup-job");
@@ -881,9 +882,9 @@ export function pickTargetJob(entries: DrillEntry[], seed: string, labJobs: Set<
 /** One line for Coach: how much of the job this student has shown they can do. */
 export function jobLine(entries: DrillEntry[], results?: Results, snapshot?: LabSnapshot | null): string {
   const rows = jobProgress(entries, results, snapshot);
-  const proven = rows.filter((r) => r.status === "proven");
-  const open = rows.filter((r) => r.status !== "proven").map((r) => r.label);
-  return `Job tasks proven ${proven.length} of ${rows.length}.${proven.length ? ` Proven: ${proven.map((r) => r.label).join("; ")}.` : ""}${open.length ? ` Not yet: ${open.slice(0, 5).join("; ")}.` : ""}`;
+  const done = rows.filter((r) => r.status === "proven" && r.lab);
+  const open = rows.filter((r) => r.lab && r.status !== "proven").map((r) => r.label);
+  return `Work their lab shows${done.length ? `: ${done.map((r) => r.label).join("; ")}` : ": nothing yet"}.${open.length ? ` Not in the lab yet: ${open.slice(0, 5).join("; ")}.` : ""}`;
 }
 
 // ---- lab change checks ----------------------------------------------------
@@ -986,7 +987,7 @@ export function coachBonus(entries: DrillEntry[], utcDay: string): { bonus: numb
   const parts: { label: string; n: number }[] = [];
   const daily = today.find((e) => e.mode === "daily");
   if (daily) parts.push({ label: daily.correct ? "Daily scenario, solved" : "Daily scenario", n: 4 + daily.level + (daily.correct ? 3 : 0) });
-  for (const t of today.filter((e) => e.mode === "timed").slice(0, 2)) {
+  for (const t of today.filter((e) => e.mode === "timed").slice(0, 1)) {
     parts.push({ label: "Incident drill", n: 2 + (t.correct >= 4 ? 1 : 0) });
   }
   const ctf = today.find((e) => e.mode === "ctf");
@@ -1117,6 +1118,20 @@ function shiftDay(day: string, by: number) {
 export function weekStart(day: string) {
   const dow = new Date(`${day}T00:00:00Z`).getUTCDay();
   return shiftDay(day, -((dow + 6) % 7));
+}
+
+const INCIDENT_WAIT_MS = 24 * 60 * 60 * 1000;
+
+/** The last incident drill, if it was finished less than 24 hours ago. */
+export function incidentHold(entries: DrillEntry[], now = Date.now()): { until: string } | null {
+  const last = entries
+    .filter((e) => e.mode === "timed" && e.total > 0)
+    .sort((a, b) => b.at.localeCompare(a.at))[0];
+  if (!last) return null;
+  const at = new Date(last.at).getTime();
+  if (Number.isNaN(at)) return null;
+  const until = at + INCIDENT_WAIT_MS;
+  return now < until ? { until: new Date(until).toISOString() } : null;
 }
 
 export function drillStats(entries: DrillEntry[], today: string): DrillStats {

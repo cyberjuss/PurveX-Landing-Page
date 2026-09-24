@@ -8,6 +8,7 @@ import {
   drillHint,
   drillStats,
   gradeDrill,
+  incidentHold,
   jobProgress,
   LEVEL_NAMES,
   levelFor,
@@ -80,6 +81,7 @@ async function status(userId: string, day: string) {
     report: weeklyReport(entries, day),
     missed: missedQuestions(entries, 8),
     chats: { base: COACH_DAILY_LIMIT, ...chats },
+    incidentUntil: incidentHold(entries)?.until ?? null,
     jobs: jobProgress(entries, results, labState?.snapshot),
     nextJob: pickTargetJob(entries, `${userId}:${day}`, labJobs, results, labState?.snapshot)?.id ?? null,
     findings: findings.slice(0, 12).map((f) => ({ id: f.id, severity: f.severity, title: f.title, facts: f.facts, fixable: Boolean(f.task), job: f.job })),
@@ -95,6 +97,15 @@ async function record(userId: string, graded: NonNullable<Awaited<ReturnType<typ
     if (prior) entry = prior;
     else await saveDrill(userId, entry);
   } else if (!graded.late) {
+    if (entry.mode === "timed" && incidentHold(await loadDrills(userId))) {
+      return {
+        entry,
+        review: graded.review,
+        late: graded.late,
+        counted: false,
+        ...(await status(userId, day)),
+      };
+    }
     await saveDrill(userId, entry);
   }
   return {
@@ -137,6 +148,9 @@ export async function POST(request: Request) {
     const entries = await loadDrills(userId);
 
     if (mode === "daily" && drillStats(entries, day).today) {
+      return NextResponse.json({ done: true, ...(await status(userId, day)) });
+    }
+    if (mode === "timed" && incidentHold(entries)) {
       return NextResponse.json({ done: true, ...(await status(userId, day)) });
     }
     if (mode === "ctf" && ctfOf(entries, day)) {

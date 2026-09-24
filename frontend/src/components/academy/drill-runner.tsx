@@ -2,10 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";
 import { ArrowRight, Check, ClipboardList, Flame, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
-import { academyFetch, READINESS_PATH } from "@/lib/academy-client";
+import { academyFetch } from "@/lib/academy-client";
 import { SKILLS, type Skill } from "@/lib/academy-score";
 
 export type DrillStatus = {
@@ -25,6 +24,7 @@ export type DrillStatus = {
   report: Report;
   missed: Missed[];
   chats: { base: number; bonus: number; parts: { label: string; n: number }[] };
+  incidentUntil: string | null;
   jobs: JobRow[];
   nextJob: string | null;
   findings: Finding[];
@@ -275,41 +275,42 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
   const { ask } = useCoach();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const done = jobs.filter((j) => j.status === "proven");
-  const practiced = jobs.filter((j) => j.status === "practiced");
-  const label = { new: "Not yet", practiced: "Practiced", proven: "Proven" } as const;
-
+  const done = jobs.filter((j) => j.status === "proven" && j.lab);
   useEffect(() => setMounted(true), []);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
     };
+    const prevBody = document.body.style.overflow;
+    const prevHtml = document.documentElement.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prevBody;
+      document.documentElement.style.overflow = prevHtml;
+      window.removeEventListener("keydown", onKey);
+    };
   }, [open]);
 
   const theme = mounted ? document.querySelector(".academy-bg")?.getAttribute("data-academy-theme") || "light" : "light";
 
   return (
     <>
-      <button type="button" className="dr-clip" aria-expanded={open} aria-label="Completed tasks" onClick={() => setOpen(true)}>
+      <button type="button" className="dr-clip" aria-expanded={open} aria-label="Work you have done" onClick={() => setOpen(true)}>
         <ClipboardList />
-        <em>
-          {done.length} of {jobs.length}
-        </em>
+        {done.length > 0 && <em>{done.length}</em>}
       </button>
       {mounted &&
         createPortal(
           <div className="dr-jobsheet" data-open={open ? "true" : "false"} data-academy-theme={theme}>
             <button type="button" className="dr-jobsheet__scrim" aria-label="Close job tasks" onClick={() => setOpen(false)} />
-            <aside className="dr-jobsheet__panel" role="dialog" aria-label="Completed tasks">
+            <aside className="dr-jobsheet__panel" role="dialog" aria-label="Work you have done">
               <div className="dr-jobsheet__head">
                 <div>
-                  <span>Job tasks</span>
-                  <p>
-                    {done.length} of {jobs.length} proven. A hands-on task is proven when your lab shows the configuration. A judgement task is proven after three right answers.
-                  </p>
+                  <span>Work you have done</span>
+                  <p>Use this when you apply. It lists only the real work your lab already shows, so you can talk about what you have done.</p>
                 </div>
                 <button type="button" className="dr-jobsheet__close" onClick={() => setOpen(false)}>
                   <X className="h-4 w-4" />
@@ -318,32 +319,34 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
               <div className="dr-jobsheet__body">
                 {!security && jobs.some((j) => j.security) && (
                   <p className="dr-jobs__note">
-                    The {jobs.filter((j) => j.security).length} security configuration tasks need the updated lab script. Download it again from Build This Lab and run it once on the domain controller.
+                    Security settings show up here after you run the updated lab script from Build This Lab once on the domain controller.
                   </p>
                 )}
-                <ul className="dr-jobs__list">
-                  {jobs.map((j) => (
-                    <li key={j.id} className={`is-${j.status}`}>
-                      <span className="dr-jobs__mark" aria-hidden>
-                        {j.status === "proven" ? <Check className="h-3.5 w-3.5" /> : <ClipboardList className="h-3.5 w-3.5" />}
-                      </span>
-                      <span className="dr-jobs__name">
-                        {j.label}
-                        <em>{j.security ? "Security configuration, checked in your lab" : j.lab ? "Done in your lab" : "Judgement"}</em>
-                      </span>
-                      <span className="dr-jobs__status">{label[j.status]}</span>
-                    </li>
-                  ))}
-                </ul>
+                {done.length === 0 ? (
+                  <p className="dr-jobs__empty">Nothing here yet. When your lab shows a change you made, it is added so you have it for applications.</p>
+                ) : (
+                  <ul className="dr-jobs__list">
+                    {done.map((j) => (
+                      <li key={j.id} className="is-proven">
+                        <span className="dr-jobs__mark" aria-hidden>
+                          <Check className="h-3.5 w-3.5" />
+                        </span>
+                        <span className="dr-jobs__name">
+                          {j.label}
+                          <em>{j.security ? "Security configuration in your lab" : "Seen in your lab"}</em>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 <button
                   type="button"
                   className="dr-jobs__bullet"
                   onClick={() => {
                     const proven = done.map((j) => j.label).join(", ") || "none yet";
-                    const tried = practiced.map((j) => j.label).join(", ") || "none yet";
                     setOpen(false);
                     ask(
-                      `Write one project bullet I can put on a resume. Base it only on help desk work I have already done. One line, strong verb, the tool, and the result.\n\nProven: ${proven}.\nPracticed: ${tried}.`
+                      `Write my resume bullets from work I have already done. Use your resume-bullet rule. One line each. Each line must say what I did, the tool by its full name, how I did it, and the impact.\n\nAlready in my lab: ${proven}.`
                     );
                   }}
                 >
@@ -662,8 +665,8 @@ export function DrillRunner() {
           <div className={`dr-verdict ${first.correct ? "is-right" : "is-wrong"}`}>
             <span className="dr-verdict__mark">{first.correct ? <Check className="h-6 w-6" /> : <X className="h-6 w-6" />}</span>
             <div>
-              <strong>{first.correct ? "Correct" : "Not quite"}</strong>
-              <span>{clock(entry.seconds)}</span>
+              <strong>{entry.mode === "ctf" ? (first.correct ? "Captured" : "Not captured") : first.correct ? "Correct" : "Not quite"}</strong>
+              {entry.mode !== "ctf" && <span>{clock(entry.seconds)}</span>}
             </div>
           </div>
         ) : (
@@ -680,7 +683,7 @@ export function DrillRunner() {
         )}
 
         {entry.mode === "daily" && <p className="dr-note">{streakLine(result.stats)}</p>}
-        {entry.mode === "ctf" && <p className="dr-note">One CTF a week. A new one opens on Monday.</p>}
+        {entry.mode === "ctf" && <p className="dr-note">One investigation a week. The next one opens Monday.</p>}
         {!result.counted && entry.mode === "daily" && <p className="dr-note">Today&apos;s first result stands. This is your score for the day.</p>}
 
         <ol className="dr-review">
@@ -696,10 +699,10 @@ export function DrillRunner() {
                     ? "A strong answer"
                     : items[i]?.kind === "change"
                       ? "Outcome"
-                      : items[i]?.free
-                        ? "Flag"
+                      : items[i]?.format
+                        ? items[i].format
                         : "Best answer"}
-                  : <b>{items[i]?.free && items[i]?.kind !== "respond" ? `gtf{${r.answer}}` : r.answer}</b>
+                  : <b>{/flag/i.test(items[i]?.format ?? "") ? `gtf{${r.answer}}` : r.answer}</b>
                 </p>
                 <p>{r.explain}</p>
                 {r.runbook && r.runbook.length > 0 && (
@@ -719,9 +722,15 @@ export function DrillRunner() {
         </ol>
 
         <div className="dr-actions">
-          <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("timed")}>
-            Try an incident drill <ArrowRight className="h-4 w-4" />
-          </button>
+          {entry.mode === "daily" && !result.incidentUntil ? (
+            <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("timed")}>
+              Try an incident drill <ArrowRight className="h-4 w-4" />
+            </button>
+          ) : (
+            <button type="button" className="rd-cta" onClick={() => setResult(null)}>
+              Done <ArrowRight className="h-4 w-4" />
+            </button>
+          )}
           {misses.length > 0 && (
             <button
               type="button"
@@ -737,9 +746,11 @@ export function DrillRunner() {
               Ask Coach about it
             </button>
           )}
-          <button type="button" className="dr-link" onClick={() => setResult(null)}>
-            Done
-          </button>
+          {entry.mode === "daily" && !result.incidentUntil && (
+            <button type="button" className="dr-link" onClick={() => setResult(null)}>
+              Done
+            </button>
+          )}
         </div>
       </div>
     );
@@ -814,13 +825,17 @@ export function DrillRunner() {
                 <span className="ax-path__main">
                   <span className="ax-path__title">Incident drill</span>
                   <span className="ax-path__body">
-                    Five alerts and tickets against a clock. Earns +2 Coach chats. {s.bestTimed ? `Best ${s.bestTimed.correct}/${s.bestTimed.total}.` : ""}
+                    {status.incidentUntil
+                      ? "Done for today. The next one opens 24 hours after the one you just finished."
+                      : `Five alerts and tickets against a clock. One a day. Earns +2 Coach chats. ${s.bestTimed ? `Best ${s.bestTimed.correct}/${s.bestTimed.total}.` : ""}`}
                   </span>
                 </span>
                 <span className="ax-path__count">
-                  <button type="button" className="dr-outline" disabled={busy} onClick={() => void start("timed")}>
-                    Start <ArrowRight className="h-4 w-4" />
-                  </button>
+                  {!status.incidentUntil && (
+                    <button type="button" className="dr-outline" disabled={busy} onClick={() => void start("timed")}>
+                      Start <ArrowRight className="h-4 w-4" />
+                    </button>
+                  )}
                 </span>
               </div>
             </li>
@@ -830,7 +845,7 @@ export function DrillRunner() {
                 <span className="ax-path__main">
                   <span className="ax-path__title">
                     {status.ctf.entry ? (nameOf(status.ctf.entry) ?? "Weekly CTF") : "Weekly CTF"}
-                    {status.ctf.entry && <em className={`ax-tag ${status.ctf.entry.correct ? "ax-tag--good" : ""}`}>{status.ctf.entry.correct ? "Flag captured" : "Missed"}</em>}
+                    {status.ctf.entry && <em className={`ax-tag ${status.ctf.entry.correct ? "ax-tag--good" : ""}`}>{status.ctf.entry.correct ? "Captured" : "Not captured"}</em>}
                   </span>
                   <span className="ax-path__body">
                     {status.ctf.entry
@@ -856,10 +871,6 @@ export function DrillRunner() {
 
           <LabFindings items={status.findings} />
 
-          <Link href={READINESS_PATH} className="dr-reportlink">
-            This week and missed questions
-            <ArrowRight className="h-4 w-4" />
-          </Link>
           <p className="dr-lab">{labLine(status.lab)}</p>
         </>
       ) : (

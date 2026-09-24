@@ -4100,6 +4100,7 @@ html:has(.academy-bg[data-academy-theme="dark"]) .pc-backdrop { background: rgba
   border-radius: 0;
   box-shadow: none;
   color: var(--pc-text);
+  overflow: hidden;
   animation: pc-slide 0.24s ease both;
 }
 @keyframes pc-slide { from { transform: translateX(100%) } to { transform: translateX(0) } }
@@ -4408,7 +4409,6 @@ textarea.pc-dock__field {
 .dr-choice { padding: 16px 6px; border: 0; border-bottom: 1px solid var(--rd-line); border-radius: 0; background: transparent; box-shadow: none; }
 .dr-choice:hover { background: rgba(85, 70, 224, 0.05); }
 .dr-choice--on { background: rgba(85, 70, 224, 0.08); box-shadow: inset 3px 0 0 var(--rd-accent); }
-.dr-verdict { padding: 0; background: none; }
 .dr-review li { padding: 16px 0; border: 0; border-bottom: 1px solid var(--rd-line); border-radius: 0; background: none; }
 .dr-review { gap: 0; border-top: 1px solid var(--rd-line); }
 .dr-home { padding: 18px 0; border-width: 1px 0; border-radius: 0; background: none; box-shadow: none; }
@@ -4487,7 +4487,7 @@ textarea.pc-dock__field {
   border-left: 1px solid var(--rd-line, rgba(15, 23, 42, 0.12));
   box-shadow: -18px 0 40px -20px rgba(15, 23, 42, 0.28);
   transform: translateX(100%); transition: transform 0.32s cubic-bezier(.16,1,.3,1);
-  pointer-events: none;
+  pointer-events: none; overflow: hidden;
 }
 .dr-jobsheet[data-open="true"] .dr-jobsheet__panel { transform: translateX(0); pointer-events: auto; }
 .dr-jobsheet[data-academy-theme="dark"] .dr-jobsheet__panel { background: #0c0e14; color: #e8ebf4; border-left-color: rgba(255, 255, 255, 0.08); }
@@ -4498,7 +4498,8 @@ textarea.pc-dock__field {
 .dr-jobsheet__body { flex: 1; overflow: auto; padding: 8px 22px 28px; }
 .dr-jobs { margin-top: 48px; }
 .dr-jobs__list { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--rd-line); }
-.dr-jobs__list li { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--rd-line); }
+.dr-jobs__list li { display: grid; grid-template-columns: 22px minmax(0, 1fr); align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--rd-line); }
+.dr-jobs__empty { margin: 18px 0 0; font-size: 14px; line-height: 1.5; color: var(--rd-ink-2); }
 .dr-jobs__mark { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: transparent; color: var(--rd-ink-3); }
 .is-proven .dr-jobs__mark { background: var(--rd-good); color: #fff; }
 .is-practiced .dr-jobs__mark { background: transparent; box-shadow: inset 0 0 0 2px var(--rd-warn); }

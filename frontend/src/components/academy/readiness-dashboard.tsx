@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { ArrowRight, ArrowUpRight, Copy } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch, RESULTS_CHANGED_EVENT, useResults } from "@/lib/academy-client";
-import type { DrillStatus } from "@/components/academy/drill-runner";
 import { challengeHref, missionHref, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
 import {
   clearResults,
@@ -82,100 +80,6 @@ function verdict(s: Summary, results: Results) {
   return `${can} Finish the remaining missions and this becomes a full readiness rating.`;
 }
 
-function reportText(r: DrillStatus["report"]) {
-  const lines = [
-    `PurveX drill report, ${r.from} to ${r.to}`,
-    `Accuracy: ${r.accuracy === null ? "no drills yet" : `${r.accuracy}% (${r.correct} of ${r.asked})`}. Days active: ${r.daysActive}. Level: ${r.levelName}.`,
-    ...r.skills.filter((k) => k.asked > 0).map((k) => `${k.label}: ${k.pct}% of ${k.asked}`),
-    r.themes.length ? `Keeps missing: ${r.themes.map((t) => t.theme).join(", ")}.` : "",
-    r.next,
-  ];
-  return lines.filter(Boolean).join("\n");
-}
-
-function WeekReport({ r }: { r: DrillStatus["report"] }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <section className="rd-sec dr-report">
-      <div className="rd-sec__head">
-        <span className="rd-sec__n">02</span>
-        <h2>This week</h2>
-        <button
-          type="button"
-          className="rd-link dr-report__copy"
-          onClick={() => {
-            navigator.clipboard?.writeText(reportText(r)).then(() => {
-              setCopied(true);
-              window.setTimeout(() => setCopied(false), 1500);
-            }).catch(() => {});
-          }}
-        >
-          <Copy className="h-3.5 w-3.5" /> {copied ? "Copied" : "Copy report"}
-        </button>
-        <p>
-          {r.asked === 0
-            ? "No questions yet this week. A week of drills is what moves these bars."
-            : `${r.accuracy}% right · ${r.correct} of ${r.asked} · ${r.daysActive} ${r.daysActive === 1 ? "day" : "days"} active · ${r.levelName}`}
-        </p>
-      </div>
-      {r.asked > 0 && (
-        <ul className="dr-bars">
-          {r.skills.map((k) => (
-            <li key={k.skill}>
-              <span>{k.label}</span>
-              <i>
-                <b style={{ width: `${k.pct ?? 0}%` }} className={k.pct === null ? "" : k.pct >= 70 ? "is-good" : "is-low"} />
-              </i>
-              <em>{k.pct === null ? "–" : `${k.pct}%`}</em>
-            </li>
-          ))}
-        </ul>
-      )}
-      <p className="dr-report__next">{r.next}</p>
-    </section>
-  );
-}
-
-function MissedList({ items }: { items: DrillStatus["missed"] }) {
-  const { ask } = useCoach();
-  if (items.length === 0) return null;
-  return (
-    <section className="rd-sec dr-missed">
-      <div className="rd-sec__head">
-        <span className="rd-sec__n">03</span>
-        <h2>Missed questions</h2>
-        <p>Study these to raise the competency they sit under. The newest is first.</p>
-      </div>
-      <ol className="dr-missed__list">
-        {items.map((m, i) => (
-          <li key={`${m.day}-${i}`}>
-            <div className="dr-missed__meta">
-              <span className="rd-kicker">{SKILLS[m.skill].label}</span>
-              <em>{m.day}</em>
-            </div>
-            <strong>{m.title}</strong>
-            {m.prompt && <p>{m.prompt}</p>}
-            {m.picked && <p className="dr-missed__you">You: {m.picked}</p>}
-            {m.answer && (
-              <p>
-                Best answer: <b>{m.mode === "ctf" ? `gtf{${m.answer}}` : m.answer}</b>
-              </p>
-            )}
-            {m.explain && <p className="dr-missed__why">{m.explain}</p>}
-            <button
-              type="button"
-              className="rd-link"
-              onClick={() => ask(`I missed this drill question: "${m.title}" (${SKILLS[m.skill].label}). Coach me on the thinking behind it, then give me a fresh one like it.`)}
-            >
-              Ask Coach about this
-            </button>
-          </li>
-        ))}
-      </ol>
-    </section>
-  );
-}
-
 function ticketOf(title: string) {
   const m = title.match(/^(.*?)\s*\((INC-\d+)\)$/);
   return m ? { name: m[1], ticket: m[2] } : { name: title, ticket: null };
@@ -204,15 +108,6 @@ export function ReadinessDashboard() {
   const lv = LEVELS[s.level];
   const scoreTone: Tone = s.finished === 0 ? "none" : s.level === "ready" ? "good" : s.level === "almost" ? "warn" : s.level === "practice" ? "bad" : "live";
   const focusKey = s.finished > 0 ? s.focus[0]?.key : undefined;
-  const [drills, setDrills] = useState<DrillStatus | null>(null);
-
-  useEffect(() => {
-    const day = new Date().toLocaleDateString("sv-SE");
-    academyFetch(`/academy/api/drill?day=${day}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => d && setDrills(d))
-      .catch(() => {});
-  }, []);
 
   function reset() {
     if (!window.confirm("Reset your readiness score? This clears every mission result.")) return;
@@ -324,13 +219,10 @@ export function ReadinessDashboard() {
         </div>
       </section>
 
-      {drills && <WeekReport r={drills.report} />}
-      {drills && <MissedList items={drills.missed} />}
-
       {/* Mission log */}
       <section className="rd-sec">
         <div className="rd-sec__head">
-          <span className="rd-sec__n">04</span>
+          <span className="rd-sec__n">02</span>
           <h2>Mission log</h2>
           <p>Every attempt, as it will look to a hiring manager.</p>
         </div>
