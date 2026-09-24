@@ -47,11 +47,11 @@ export default function SecurityOperationsPage() {
           <h2>Four ways we help</h2>
           <p>Engineering, cleanup, a map of coverage, and a test that shows what actually fires.</p>
         </div>
-        <ol className="pg-grid pg-grid--4 pg-grid--icons" data-r>
+        <ol className="ox-flow" data-r>
           {services.map((s) => (
             <li key={s.n}>
+              <i className="pg-ico"><s.Icon size={28} /></i>
               <span>{s.n}</span>
-              <i className="pg-ico"><s.Icon size={21} /></i>
               <strong>{s.title}</strong>
               <p>{s.body}</p>
             </li>
@@ -60,21 +60,25 @@ export default function SecurityOperationsPage() {
       </section>
 
       <section className="pg-section">
-        <div className="pg-head" data-r>
-          <span className="sp-tag">How we work</span>
-          <h2>Three steps</h2>
-          <p>You always know where the work stands.</p>
+        <div className="ox-split">
+          <div className="pg-head" data-r>
+            <span className="sp-tag">How we work</span>
+            <h2>Three steps</h2>
+            <p>You always know where the work stands.</p>
+          </div>
+          <ol className="ox-steps" data-r>
+            {steps.map((s) => (
+              <li key={s.n}>
+                <span className="ox-steps__n">{s.n}</span>
+                <div>
+                  <h3>{s.title}</h3>
+                  <p>{s.body}</p>
+                </div>
+                <i className="pg-ico"><s.Icon size={24} /></i>
+              </li>
+            ))}
+          </ol>
         </div>
-        <ol className="pg-grid pg-grid--3 pg-grid--icons" data-r>
-          {steps.map((s) => (
-            <li key={s.n}>
-              <span>{s.n}</span>
-              <i className="pg-ico"><s.Icon size={21} /></i>
-              <strong>{s.title}</strong>
-              <p>{s.body}</p>
-            </li>
-          ))}
-        </ol>
       </section>
 
       <section className="pg-close" data-r>

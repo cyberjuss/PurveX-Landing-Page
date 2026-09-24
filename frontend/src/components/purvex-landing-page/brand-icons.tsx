@@ -108,4 +108,98 @@ export const IconIdentity = (p: IconProps) => (
   </Glyph>
 );
 
+export const IconBook = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M3.5 5h7.5v14H3.5zM13 5h7.5v14H13z" />
+    <Node cx={16.75} cy={9.5} r={1.4} />
+  </Glyph>
+);
+
+export const IconHeadset = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M4.5 13v-1.5a7.5 7.5 0 0115 0V13" />
+    <rect x="3.5" y="13" width="3.5" height="5" />
+    <rect x="17" y="13" width="3.5" height="5" />
+    <path d="M18.7 18c0 1.8-2.2 3-5.2 3" />
+    <Node cx={12.5} cy={21} r={1.4} />
+  </Glyph>
+);
+
+export const IconKey = (p: IconProps) => (
+  <Glyph {...p}>
+    <circle cx="8" cy="12" r="4" />
+    <path d="M12 12h9M18 12v3.2M21 12v2.2" />
+    <Node cx={8} cy={12} r={1.3} />
+  </Glyph>
+);
+
+export const IconAudit = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M5.5 4.5h13v17h-13zM9 4.5V3h6v1.5" />
+    <path d="M8.5 10h7M8.5 13.5h4" />
+    <path d="M9 18l1.8 1.8 4-4" stroke="var(--accent)" />
+  </Glyph>
+);
+
+export const IconLifebuoy = (p: IconProps) => (
+  <Glyph {...p}>
+    <circle cx="12" cy="12" r="8.5" />
+    <circle cx="12" cy="12" r="3.4" />
+    <path d="M6 6l3.6 3.6M18 6l-3.6 3.6M6 18l3.6-3.6M18 18l-3.6-3.6" />
+    <Node cx={12} cy={12} r={1.2} />
+  </Glyph>
+);
+
+export const IconChecks = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M3 12.5l4 4 6-8" />
+    <path d="M11 16.5l1 1 8-9.5" stroke="var(--accent)" />
+  </Glyph>
+);
+
+export const IconCompass = (p: IconProps) => (
+  <Glyph {...p}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M15.8 8.2l-2.2 5.4-5.4 2.2 2.2-5.4z" />
+    <Node cx={12} cy={12} r={1.2} />
+  </Glyph>
+);
+
+export const IconMic = (p: IconProps) => (
+  <Glyph {...p}>
+    <rect x="9" y="3" width="6" height="11" />
+    <path d="M5.5 11.5a6.5 6.5 0 0013 0M12 18v3M9 21h6" />
+    <Node cx={12} cy={8.5} r={1.4} />
+  </Glyph>
+);
+
+export const IconGraduate = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M2.5 9L12 4.5 21.5 9 12 13.5z" />
+    <path d="M6 11.3V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.7" />
+    <Node cx={12} cy={9} r={1.3} />
+  </Glyph>
+);
+
+export const IconCampus = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M3 20.5h18M5 20.5V10l7-5 7 5v10.5M9.5 20.5v-5h5v5" />
+    <Node cx={12} cy={10.5} r={1.5} />
+  </Glyph>
+);
+
+export const IconCivic = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M3 9.5L12 4.5l9 5zM5.5 11v7M10 11v7M14 11v7M18.5 11v7M3.5 20.5h17" />
+    <Node cx={12} cy={7.6} r={1.2} />
+  </Glyph>
+);
+
+export const IconBriefcase = (p: IconProps) => (
+  <Glyph {...p}>
+    <path d="M3 7.5h18v12H3zM9 7.5V5h6v2.5M3 13h18" />
+    <Node cx={12} cy={13} r={1.6} />
+  </Glyph>
+);
+
 export type BrandIcon = (p: IconProps) => ReactNode;

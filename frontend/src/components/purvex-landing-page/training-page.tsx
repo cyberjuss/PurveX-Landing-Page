@@ -1,25 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowRight, Check, Server } from "lucide-react";
 import {
-  ArrowRight,
-  BadgeCheck,
-  BookOpen,
-  Briefcase,
-  Check,
-  CheckCheck,
-  ClipboardCheck,
-  Compass,
-  GraduationCap,
-  Headset,
-  KeyRound,
-  Landmark,
-  LifeBuoy,
-  Mic,
-  School,
-  Server,
-  ShieldAlert,
-} from "lucide-react";
+  IconAudit, IconBook, IconBriefcase, IconCampus, IconChain, IconChecks, IconCivic, IconCompass, IconEvidence,
+  IconGraduate, IconHeadset, IconKey, IconLifebuoy, IconMic, IconSignal, type BrandIcon,
+} from "./brand-icons";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { CaseFloor, type FloorAlert, type FloorCase } from "./case-floor";
 import { HoldCard } from "./hold-card";
@@ -48,17 +34,17 @@ const SAMPLE_SCORES: Record<Skill, number> = { accounts: 92, directory: 78, trou
 
 const steps = [
   {
-    n: "01", title: "Learn", Icon: BookOpen,
+    n: "01", title: "Learn", Icon: IconBook,
     body: "Short weekly lessons, each opened by one guiding question.",
     points: ["Security fundamentals through incident response", "A quiz before each week is complete"],
   },
   {
-    n: "02", title: "Work", Icon: Server,
+    n: "02", title: "Work", Icon: IconChain,
     body: "Students run the help desk of a company that they build themselves.",
     points: ["Tickets checked against a live directory", "A daily drill and a weekly investigation"],
   },
   {
-    n: "03", title: "Prove", Icon: BadgeCheck,
+    n: "03", title: "Prove", Icon: IconEvidence,
     body: "Every attempt is measured instead of only being submitted.",
     points: ["A readiness score out of 100", "Resume lines drawn from closed tickets"],
   },
@@ -72,24 +58,24 @@ const proofs = [
 ];
 
 const roles = [
-  { title: "Help desk technician", body: "Confirms what is true in the directory before changing anything.", Icon: Headset },
-  { title: "Security analyst", body: "Decides whether an alert is a mistake or an attack, and explains the call.", Icon: ShieldAlert },
-  { title: "Systems administrator", body: "Keeps access accurate as people join, move, and leave.", Icon: KeyRound },
-  { title: "Audit and compliance support", body: "Turns policy into settings that an auditor can verify.", Icon: ClipboardCheck },
+  { title: "Help desk technician", body: "Confirms what is true in the directory before changing anything.", Icon: IconHeadset },
+  { title: "Security analyst", body: "Decides whether an alert is a mistake or an attack, and explains the call.", Icon: IconSignal },
+  { title: "Systems administrator", body: "Keeps access accurate as people join, move, and leave.", Icon: IconKey },
+  { title: "Audit and compliance support", body: "Turns policy into settings that an auditor can verify.", Icon: IconAudit },
 ];
 
-const modes: Record<keyof typeof COACH_MODE_LABELS, { body: string; Icon: typeof LifeBuoy }> = {
-  walkthrough: { body: "For a student who is new or stuck, one next step and a way to check it.", Icon: LifeBuoy },
-  check: { body: "For a student who thinks they understand, a test of the reasoning before anything changes.", Icon: CheckCheck },
-  mentor: { body: "For a student who knows the lab, a talk through the call a team lead would make.", Icon: Compass },
-  interview: { body: "For a student who is ready for the job, a scored spoken interview that ends in a hire signal.", Icon: Mic },
+const modes: Record<keyof typeof COACH_MODE_LABELS, { body: string; Icon: BrandIcon }> = {
+  walkthrough: { body: "For a student who is new or stuck, one next step and a way to check it.", Icon: IconLifebuoy },
+  check: { body: "For a student who thinks they understand, a test of the reasoning before anything changes.", Icon: IconChecks },
+  mentor: { body: "For a student who knows the lab, a talk through the call a team lead would make.", Icon: IconCompass },
+  interview: { body: "For a student who is ready for the job, a scored spoken interview that ends in a hire signal.", Icon: IconMic },
 };
 
 const audiences = [
-  { title: "Students", body: "Leave with tasks proven in a real directory and resume lines that they can defend.", Icon: GraduationCap },
-  { title: "Schools and academies", body: "See every student's readiness and weakest skill without grading by hand.", Icon: School },
-  { title: "Government and workforce programs", body: "Measure progress into IT and security roles on one consistent curriculum.", Icon: Landmark },
-  { title: "Employers and business teams", body: "Hire or upskill on proof that ends in a spoken interview and a hire signal.", Icon: Briefcase },
+  { title: "Students", body: "Leave with tasks proven in a real directory and resume lines that they can defend.", Icon: IconGraduate },
+  { title: "Schools and academies", body: "See every student's readiness and weakest skill without grading by hand.", Icon: IconCampus },
+  { title: "Government and workforce programs", body: "Measure progress into IT and security roles on one consistent curriculum.", Icon: IconCivic },
+  { title: "Employers and business teams", body: "Hire or upskill on proof that ends in a spoken interview and a hire signal.", Icon: IconBriefcase },
 ];
 
 const TRAINING_CASES: FloorCase[] = [

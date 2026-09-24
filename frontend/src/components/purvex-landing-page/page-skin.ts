@@ -488,4 +488,54 @@ html { scroll-behavior: smooth }
 }
 .pg-more:hover { gap: 13px }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto } }
+
+/* ── Operations: a four-stage flow and a numbered timeline ── */
+.ox-flow[data-r], .ox-steps[data-r] { opacity: 1; transform: none; filter: none }
+.ox-flow { list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); position: relative }
+.ox-flow::before {
+  content: ""; position: absolute; top: 36px; left: 12.5%; right: 12.5%; height: 2px;
+  background: linear-gradient(90deg, var(--accent), rgba(106,92,255,.2)); transform-origin: left;
+}
+.ox-flow[data-r]::before { transform: scaleX(0); transition: transform 1.4s var(--ease) .2s }
+.ox-flow[data-r].in::before { transform: none }
+.ox-flow li { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 16px }
+.ox-flow .pg-ico { width: 72px; height: 72px; border-radius: 24px; margin-bottom: 20px; background: #fff; z-index: 1 }
+.ox-flow li:hover .pg-ico { transform: translateY(-4px) rotate(-6deg); background: linear-gradient(145deg, #7b6dff, #4a3bd4); color: #fff }
+.ox-flow li > span { font-family: var(--font-mono); font-size: .68rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep) }
+.ox-flow strong { margin-top: 8px; font-family: var(--font-display); font-size: 1.12rem; font-weight: 700; letter-spacing: -.02em }
+.ox-flow p { margin: 8px 0 0; max-width: 24ch; color: var(--ink-soft); font-size: .92rem; line-height: 1.6 }
+.ox-flow[data-r] li { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease), transform .6s var(--ease) }
+.ox-flow[data-r].in li { opacity: 1; transform: none }
+.ox-flow[data-r].in li:nth-child(2) { transition-delay: .15s } .ox-flow[data-r].in li:nth-child(3) { transition-delay: .3s } .ox-flow[data-r].in li:nth-child(4) { transition-delay: .45s }
+.ox-split { display: grid; grid-template-columns: .8fr 1.2fr; gap: 64px; align-items: start }
+.ox-split .pg-head { margin-bottom: 0; position: sticky; top: 110px }
+.ox-steps { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border-strong) }
+.ox-steps > li {
+  display: grid; grid-template-columns: 6.5rem 1fr auto; gap: 24px; align-items: center; padding: 30px 0;
+  border-bottom: 1px solid var(--border); transition: background .35s var(--ease), padding .35s var(--ease);
+}
+.ox-steps > li:hover { background: linear-gradient(90deg, var(--accent-soft), transparent 75%); padding-left: 16px }
+.ox-steps__n { font-family: var(--font-display); font-size: clamp(3rem, 6vw, 4.4rem); font-weight: 700; line-height: .9; letter-spacing: -.06em; color: rgba(85,70,224,.16); transition: color .35s var(--ease) }
+.ox-steps > li:hover .ox-steps__n { color: var(--accent) }
+.ox-steps h3 { margin: 0; font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; letter-spacing: -.025em }
+.ox-steps p { margin: 6px 0 0; color: var(--ink-soft); font-size: .95rem; line-height: 1.6 }
+.ox-steps > li:hover .pg-ico { transform: translateY(-3px) rotate(-6deg); background: linear-gradient(145deg, #7b6dff, #4a3bd4); color: #fff }
+@media (prefers-reduced-motion: reduce) {
+  .ox-flow[data-r]::before { transform: none; transition: none }
+  .ox-flow[data-r] li { opacity: 1; transform: none; transition: none }
+}
+@media (max-width: 980px) {
+  .ox-split { grid-template-columns: 1fr; gap: 32px }
+  .ox-split .pg-head { position: static }
+}
+@media (max-width: 760px) {
+  .ox-flow { grid-template-columns: 1fr; gap: 26px }
+  .ox-flow::before { top: 36px; bottom: 36px; left: 35px; right: auto; width: 2px; height: auto }
+  .ox-flow li { flex-direction: row; flex-wrap: wrap; text-align: left; align-items: center; gap: 2px 18px; padding: 0 }
+  .ox-flow .pg-ico { margin: 0 }
+  .ox-flow strong, .ox-flow p { flex-basis: calc(100% - 90px); margin: 0 0 0 auto }
+  .ox-flow li > span { display: none }
+  .ox-steps > li { grid-template-columns: 4.5rem 1fr; gap: 14px }
+  .ox-steps .pg-ico { display: none }
+}
 `;

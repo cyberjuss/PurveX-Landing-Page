@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CalendarDays, Gauge, Headset, Linkedin, Mic, Quote, Star } from "lucide-react";
+import { ArrowRight, Linkedin, Quote, Star } from "lucide-react";
+import { IconCoverage, IconHeadset, IconMic, IconSchedule } from "./brand-icons";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
 
@@ -270,7 +271,7 @@ export default function HomePage() {
             <li>
               <header>
                 <span>01</span>
-                <span className="hp-perk__ico"><Gauge size={15} /></span>
+                <span className="hp-perk__ico"><IconCoverage size={17} /></span>
               </header>
               <strong>Readiness</strong>
               <p>A hiring manager can read a readiness score built from four skills and the job tasks already proven in their lab. The full report opens once they are in the portal.</p>
@@ -278,7 +279,7 @@ export default function HomePage() {
             <li>
               <header>
                 <span>02</span>
-                <span className="hp-perk__ico"><CalendarDays size={15} /></span>
+                <span className="hp-perk__ico"><IconSchedule size={17} /></span>
               </header>
               <strong>Daily drill</strong>
               <p>Each day they work a new scenario drawn from their own directory, and a weekly CTF sits on their Security log. Those tickets wait inside after they join.</p>
@@ -286,7 +287,7 @@ export default function HomePage() {
             <li>
               <header>
                 <span>03</span>
-                <span className="hp-perk__ico"><Headset size={15} /></span>
+                <span className="hp-perk__ico"><IconHeadset size={17} /></span>
               </header>
               <strong>Four modes</strong>
               <p>Need help, Mentor, and Interview each talk differently once a ticket is open, and a screenshot of the console can be the question. You hear that voice when they sign in.</p>
@@ -294,7 +295,7 @@ export default function HomePage() {
             <li>
               <header>
                 <span>04</span>
-                <span className="hp-perk__ico"><Mic size={15} /></span>
+                <span className="hp-perk__ico"><IconMic size={17} /></span>
               </header>
               <strong>Hire</strong>
               <p>Closed tickets become resume lines they can defend, and a spoken mock interview ends with a hire signal. Both wait until they have done the work.</p>
