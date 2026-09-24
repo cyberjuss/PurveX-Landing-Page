@@ -55,17 +55,10 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
     (s) => !s.label.startsWith("Lab:") && !s.label.startsWith("Challenge:") && !s.label.startsWith("Troubleshooting:")
   );
 
-  const entryNumber = phaseEntries.findIndex((e) => e.slug === entry.slug) + 1;
-
   return (
     <div className="rd">
       <RecordLastStop phaseSlug={phase.slug} entrySlug={entry.slug} />
       <header className="rd-mast">
-        <div className="rd-meta">
-          <span>
-            {entry === phase.homeLab ? "Home lab" : `${String(entryNumber).padStart(2, "0")} of ${String(phaseEntries.length).padStart(2, "0")}`}
-          </span>
-        </div>
         <div className="ax-entryhead">
           <div className="ax-titleblock">
             <h1>{entry.title}</h1>

@@ -3938,9 +3938,11 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 .ax-question .rd-kicker { font-size: 16px; letter-spacing: 0.08em; font-weight: 700; color: var(--rd-ink); }
 .ax-question p { margin-top: 4px; font-family: var(--font-display); font-size: 15px; line-height: 1.4; font-weight: 400; letter-spacing: 0; color: var(--rd-ink-2); }
 
-.rd:has(.ad-pager) .ax-pager,
-.rd:has(.ad-mission) .ax-pager { display: none; }
 .ax-pager { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--rd-line); }
+.rd:has(.ad-pager) .ax-pager,
+.rd:has(.ad-brief-start) .ax-pager,
+.rd:has(.ad-steps) .ax-pager,
+.rd:has(.ad-mission) .ax-pager { display: none; }
 .ax-pager__link { display: flex; flex-direction: column; gap: 6px; min-width: 0; padding: 10px 12px; margin: -10px -12px; border-radius: 10px; transition: background 0.15s; }
 .ax-pager__link strong { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--rd-ink); transition: color 0.15s; }
 .ax-pager__link .rd-kicker { transition: color 0.15s; }
@@ -4287,7 +4289,7 @@ textarea.pc-dock__field {
 .academy-prose:has(.ad-steps) .ad-progress { display: none; }
 .academy-prose:has(.ad-steps) .ad-mission { padding-left: 0; }
 .academy-prose:has(.ad-steps) .ad-mission::before { content: none; }
-.ad-steps { display: flex; margin: 0 0 18px; padding: 0 0 8px; border-bottom: 1px solid var(--rd-line, rgba(15, 23, 42, 0.12)); }
+.ad-steps { display: flex; margin: 0 0 18px; padding: 0; border: none; }
 .ad-steps__chips { display: flex; flex-wrap: wrap; gap: 2px 14px; }
 .ad-steps__chip { display: inline-flex; align-items: center; justify-content: center; min-width: 1.1rem; padding: 0 0 4px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none; box-shadow: none; font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; font-weight: 700; color: var(--rd-ink-3, #8a94a8); cursor: pointer; }
 .ad-steps__chip:hover { color: var(--rd-ink, #0f172a); }
