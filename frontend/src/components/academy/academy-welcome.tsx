@@ -49,10 +49,10 @@ export function AcademyWelcome({ student, onDone }: { student: AcademyStudent; o
     <div className="ax-hello" role="status" aria-live="polite">
       <div className="ax-hello__print" aria-hidden="true" />
       <div className="ax-hello__card">
-        <p className="ax-hello__kicker">PurveX Academy</p>
+        <p className="ax-hello__kicker">PurveX</p>
         <i className="ax-hello__rule" aria-hidden="true" />
         <h2>{name ? `Welcome, ${name}` : "Welcome"}</h2>
-        <p className="ax-hello__lead">Your desk is open.</p>
+        <p className="ax-hello__lead">The defense starts with you</p>
         <dl className="ax-hello__meta">
           <div>
             <dt>Desk</dt>
