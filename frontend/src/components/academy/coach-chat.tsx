@@ -357,7 +357,14 @@ export function CoachChat() {
           {busy && (
             <div className="pc-turn">
               <p className="pc-reply__who">Coach</p>
-              <p className="pc-thinking">{messages[messages.length - 1]?.images?.length ? "Looking at the shot…" : "Looking that up…"}</p>
+              <div className="pc-thinking">
+                <span className="pc-dots" aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                </span>
+                <p>{messages[messages.length - 1]?.images?.length ? "Looking at the shot…" : "Looking that up…"}</p>
+              </div>
             </div>
           )}
         </div>

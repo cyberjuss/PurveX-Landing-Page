@@ -5,15 +5,9 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNo
 import { createPortal } from "react-dom";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { academyFetch, READINESS_PATH, RESULTS_UPDATED_EVENT } from "@/lib/academy-client";
-import {
-  CHALLENGE_LABELS,
-  challengeFromMission,
-  challengeTabHref,
-} from "@/lib/academy-missions";
 import { loadResults, saveResults, type MissionResult } from "@/lib/academy-score";
 
 type Neighbor = { label: string; go: () => void };
-type ChallengeKey = keyof typeof CHALLENGE_LABELS;
 
 // Challenge lessons are authored as a stack of .ad-mission blocks. This
 // shows one at a time: a question strip above it (where you are, which are
@@ -97,8 +91,6 @@ export function MissionPager({
   const done = solved.filter(Boolean).length;
   const isLast = at === total - 1;
   const paging = total >= 2;
-  const here = challengeFromMission(missions()[0]?.getAttribute("data-id") || "");
-  const otherChallenges = (Object.keys(CHALLENGE_LABELS) as ChallengeKey[]).filter((id) => id !== here);
 
   // Leaving an unsolved question going forward flags it for Coach. Going
   // back does not. Solving later clears the flag.
@@ -175,15 +167,6 @@ export function MissionPager({
           <button type="button" className="rd-cta" onClick={() => setOnBrief(false)}>
             Get Started <ArrowRight className="h-4 w-4" />
           </button>
-          {otherChallenges.length > 0 && (
-            <p className="ad-brief-ctfs">
-              {otherChallenges.map((id) => (
-                <Link key={id} href={challengeTabHref(id)}>
-                  {CHALLENGE_LABELS[id]}
-                </Link>
-              ))}
-            </p>
-          )}
         </div>
       ) : paging ? (
         <nav className="ad-pager" aria-label="Continue">
