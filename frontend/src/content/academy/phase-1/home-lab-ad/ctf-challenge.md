@@ -3,37 +3,25 @@
 <p>Can you find your way around Active Directory well enough to do a help desk technician's first-day work?</p>
 </div>
 
-### Operation Day One
-
-First day on the GovTech Financial IT help desk. Nobody expects you to close an incident yet but they do expect you to:
-
-- find people
-- find groups
-- find where things live
-- read what the directory says
-
-Every answer comes from your lab. Open Active Directory Users and Computers and do not answer from memory or from a tab you read earlier.
-
-If a title and a group disagree trust the group. If a ticket and the folder disagree trust the folder. Day One is the job of looking it up.
-
-The **Ticket Queue** is next. Staff and HR tickets you work in this same directory. You will do the work not only look them up:
-
-- Add a member
-- Create an account
-- Delete what does not belong
-- Write a setting
-- Move a transfer
-
-<details class="ad-answer-guide">
-<summary class="ad-answer-guide__label">How answers work</summary>
-<p>Use Active Directory Users and Computers in your lab. Each task asks for a short answer:</p>
+<div class="ad-brief">
+<h3>Operation Day One</h3>
+<p>First day on the GovTech Financial IT help desk. Nobody expects you to close an incident yet but they do expect you to:</p>
+<ul>
+<li>Find people</li>
+<li>Find groups</li>
+<li>Find where things live</li>
+<li>Read what the directory says</li>
+</ul>
+<p>Every answer comes from your lab. Open Active Directory Users and Computers and do not answer from memory or from a tab you read earlier.</p>
+<p>If a title and a group disagree, trust the group. If a ticket and the folder disagree, trust the folder. Day One is the job of looking it up.</p>
+<p>Each task asks for a short answer:</p>
 <ul>
 <li>A group name</li>
 <li>A person</li>
 <li>A number</li>
 </ul>
 <p>Case, spaces, dots, and dashes do not matter. The hint tells you what to open. The finding shows the answer, the problem, and the solution. You get three tries per task. The hint unlocks after two wrong tries. The explanation unlocks after the third.</p>
-</details>
+</div>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>

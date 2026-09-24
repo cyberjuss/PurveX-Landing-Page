@@ -3,18 +3,13 @@
 <p>Can you work one SIEM alert from the host, through the log, to the first response move?</p>
 </div>
 
-### The 2 AM Login (INC-1046)
-
-This is a SOC queue item not a help desk ticket. A detection fired on `alex.rivera` at 2:00 AM from `WM-WKS07`.
-
-You already know how to look that host up in Active Directory. Here you read the exported events and decide what to do asking whether a 2 AM login from that workstation fits this account and this firm. Do not treat the alert text as the finding.
-
-Build the Phase 1 lab with `-IncludeCTF` if you have not already.
-
-<details class="ad-answer-guide">
-<summary class="ad-answer-guide__label">Hands-on required</summary>
-<p>The first and third steps need your lab. The log steps use the export on this page. The hint tells you what to open. The finding shows the answer, the problem, and the solution.</p>
-</details>
+<div class="ad-brief">
+<h3>The 2 AM Login</h3>
+<p>This is a SOC queue item, not a help desk ticket. A detection fired on <code>alex.rivera</code> at 2:00 AM from <code>WM-WKS07</code>.</p>
+<p>You already know how to look that host up in Active Directory. Here you read the exported events and decide whether a 2 AM login from that workstation fits this account and this firm. Do not treat the alert text as the finding.</p>
+<p>Build the Phase 1 lab with <code>-IncludeCTF</code> if you have not already. The host and group steps need your lab. The log steps use the export on this page.</p>
+<p>Each step asks for a short finding from the host, the log, or the first response. The hint tells you what to open. The finding shows the answer, the problem, and the solution.</p>
+</div>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>

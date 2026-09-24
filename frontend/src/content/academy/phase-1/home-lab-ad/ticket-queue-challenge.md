@@ -5,7 +5,7 @@
 
 <div class="ad-brief">
 <h3>Ticket Queue</h3>
-<p>This is the help desk queue at GovTech Financial. Tickets arrive as staff requests, HR notices, and auditor questions, and every one is a sysadmin or help desk job. Treat the ticket as a claim. Open Active Directory Users and Computers, check the account or the group or the folder, then do the work:</p>
+<p>This is the help desk queue at GovTech Financial. Tickets arrive as staff requests, HR notices, and auditor questions. Treat the ticket as a claim. Open Active Directory Users and Computers, check the account or the group or the folder, then do the work:</p>
 <ul>
 <li>Add a member</li>
 <li>Restore an account</li>
@@ -14,8 +14,17 @@
 <li>Write a setting</li>
 <li>Move a transfer</li>
 </ul>
-<p>If the ticket and the directory disagree, fix the directory. The answer is what the directory shows after you act. You can move on. This stays flagged until you solve it.</p>
-<p>Run <code>Build-Environment.ps1 -IncludeCTF</code> first so the ticket objects are planted. If you built the lab earlier, run <code>Remove-Environment.ps1</code> and build again with <code>-IncludeCTF</code> so the new ticket state is there. Then make the change in Active Directory Users and Computers. The answer is the state after you finish, not the first look. The hint tells you what to open. The finding shows the answer, the problem, and the solution. You get three tries. The hint unlocks after two wrong tries. The explanation unlocks after the third. You can move on. This stays flagged until you solve it.</p>
+<p>If the ticket and the directory disagree, fix the directory. The answer is what the directory shows after you act, not the first look.</p>
+<p>Run <code>Build-Environment.ps1 -IncludeCTF</code> first so the ticket objects are planted. If you built the lab earlier, run <code>Remove-Environment.ps1</code> and build again with <code>-IncludeCTF</code>.</p>
+<p>Each ticket asks for a short finding after you finish:</p>
+<ul>
+<li>A count</li>
+<li>A state</li>
+<li>A ticket number</li>
+<li>A window</li>
+<li>A title</li>
+</ul>
+<p>Case, spaces, dots, and dashes do not matter. The hint tells you what to open. The finding shows the answer, the problem, and the solution. You get three tries. The hint unlocks after two wrong tries. The explanation unlocks after the third.</p>
 </div>
 
 <div class="ad-progress">

@@ -9,6 +9,12 @@ import { loadResults, saveResults, type MissionResult } from "@/lib/academy-scor
 
 type Neighbor = { label: string; go: () => void };
 
+function openFirstLabel(num: string) {
+  if (/^alert/i.test(num)) return "Open first alert";
+  if (/^ticket/i.test(num)) return "Open first ticket";
+  return "Open first task";
+}
+
 // Challenge lessons are authored as a stack of .ad-mission blocks. This
 // shows one at a time: a question strip above it (where you are, which are
 // solved) and one trail below it. On the first and last ticket the same
@@ -91,6 +97,7 @@ export function MissionPager({
   const done = solved.filter(Boolean).length;
   const isLast = at === total - 1;
   const paging = total >= 2;
+  const firstLabel = openFirstLabel(missions()[0]?.querySelector(".ad-mission__num")?.textContent || "");
 
   // Leaving an unsolved question going forward flags it for Coach. Going
   // back does not. Solving later clears the flag.
@@ -189,7 +196,7 @@ export function MissionPager({
           )}
           {onBrief ? (
             <button type="button" className="ad-pager__btn ad-pager__btn--next is-ready" onClick={() => setOnBrief(false)}>
-              Open first ticket <ArrowRight className="h-4 w-4" />
+              {firstLabel} <ArrowRight className="h-4 w-4" />
             </button>
           ) : isLast && nextSection ? (
             <button type="button" className={`ad-pager__btn ad-pager__btn--next${solved[at] ? " is-ready" : ""}`} onClick={() => { flagCurrent(); nextSection.go(); }}>
