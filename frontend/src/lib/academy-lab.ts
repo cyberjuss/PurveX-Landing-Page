@@ -18,11 +18,34 @@ export type LabUser = {
   passwordExpired: boolean;
   lastLogon: string | null;
   memberOf: string[];
+  /** Risky account flags. Absent when the lab script is older than these fields. */
+  pwdNotRequired?: boolean;
+  noPreAuth?: boolean;
+  delegation?: boolean;
+  spns?: number;
 };
 export type LabGroup = { name: string; scope: string; category: string; description: string; container: string; members: string[] };
 export type LabComputer = { name: string; description: string; container: string; enabled: boolean; lastLogon: string | null };
 export type LabOu = { path: string; description: string };
+export type LabSecurity = {
+  passwordPolicy?: {
+    minLength: number;
+    complexity: boolean;
+    history: number;
+    maxAgeDays: number;
+    lockoutThreshold: number;
+    lockoutDurationMin: number;
+    lockoutWindowMin: number;
+    reversible: boolean;
+  };
+  /** Advanced audit policy: subcategory to "Success", "Failure", "Success and Failure" or "No Auditing". */
+  audit?: Record<string, string>;
+  securityLogMaxMB?: number;
+  smb1?: boolean;
+};
+
 export type LabSnapshot = {
+  security?: LabSecurity;
   capturedAt: string;
   domain: { dnsRoot: string; netbios: string };
   ous: LabOu[];
@@ -59,11 +82,50 @@ function objects(v: unknown): Record<string, unknown>[] {
   return arr.filter((x): x is Record<string, unknown> => !!x && typeof x === "object").slice(0, MAX_ITEMS);
 }
 
+const AUDIT_KEYS = ["Logon", "Account Lockout", "Special Logon", "Process Creation", "Security Group Management", "User Account Management"];
+
+function num(v: unknown, max: number): number | undefined {
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.max(0, Math.min(max, Math.round(n))) : undefined;
+}
+
+function sanitizeSecurity(raw: unknown): LabSecurity | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const r = raw as Record<string, unknown>;
+  const out: LabSecurity = {};
+  const pp = r.passwordPolicy && typeof r.passwordPolicy === "object" ? (r.passwordPolicy as Record<string, unknown>) : null;
+  if (pp) {
+    out.passwordPolicy = {
+      minLength: num(pp.minLength, 128) ?? 0,
+      complexity: bool(pp.complexity),
+      history: num(pp.history, 1000) ?? 0,
+      maxAgeDays: num(pp.maxAgeDays, 100000) ?? 0,
+      lockoutThreshold: num(pp.lockoutThreshold, 1000) ?? 0,
+      lockoutDurationMin: num(pp.lockoutDurationMin, 100000) ?? 0,
+      lockoutWindowMin: num(pp.lockoutWindowMin, 100000) ?? 0,
+      reversible: bool(pp.reversible),
+    };
+  }
+  if (r.audit && typeof r.audit === "object") {
+    const audit: Record<string, string> = {};
+    for (const k of AUDIT_KEYS) {
+      const v = (r.audit as Record<string, unknown>)[k];
+      if (typeof v === "string") audit[k] = v.slice(0, 40);
+    }
+    if (Object.keys(audit).length) out.audit = audit;
+  }
+  const log = num(r.securityLogMaxMB, 1_000_000);
+  if (log !== undefined) out.securityLogMaxMB = log;
+  if (typeof r.smb1 === "boolean") out.smb1 = r.smb1;
+  return Object.keys(out).length ? out : undefined;
+}
+
 export function sanitizeLabSnapshot(raw: unknown): LabSnapshot | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
   const domain = (r.domain && typeof r.domain === "object" ? r.domain : {}) as Record<string, unknown>;
   const snapshot: LabSnapshot = {
+    security: sanitizeSecurity(r.security),
     capturedAt: date(r.capturedAt) ?? new Date().toISOString(),
     domain: { dnsRoot: str(domain.dnsRoot, 200), netbios: str(domain.netbios, 50) },
     ous: objects(r.ous).map((o) => ({ path: str(o.path), description: str(o.description) })),
@@ -82,6 +144,10 @@ export function sanitizeLabSnapshot(raw: unknown): LabSnapshot | null {
         passwordExpired: bool(u.passwordExpired),
         lastLogon: date(u.lastLogon),
         memberOf: list(u.memberOf),
+        ...(typeof u.pwdNotRequired === "boolean" ? { pwdNotRequired: u.pwdNotRequired } : {}),
+        ...(typeof u.noPreAuth === "boolean" ? { noPreAuth: u.noPreAuth } : {}),
+        ...(typeof u.delegation === "boolean" ? { delegation: u.delegation } : {}),
+        ...(num(u.spns, 1000) !== undefined ? { spns: num(u.spns, 1000) } : {}),
       }))
       .filter((u) => u.sam),
     groups: objects(r.groups)
@@ -242,6 +308,7 @@ export function labStateForTool(s: LabSnapshot | null, query: string): string {
     domain: s.domain.dnsRoot,
     counts: { ous: s.ous.length, users: s.users.length, groups: s.groups.length, computers: s.computers.length },
     differencesFromStandardBuild: compareToBaseline(s),
+    security: s.security ?? "not reported yet: the student's lab script is older than the security checks",
     users: s.users.map((u) => ({
       sam: u.sam,
       title: u.title,

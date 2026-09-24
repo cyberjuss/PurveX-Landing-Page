@@ -402,6 +402,11 @@ const CHANGE_STORY: Record<ChangeBrief["type"], (facts: string) => { title: stri
   wrongou: (f) => ({ title: "Wrong department", story: f, question: "Set up the ticket in your lab, correct where the account belongs, then check it." }),
   excess: (f) => ({ title: "Access review finding", story: f, question: "Set up the ticket in your lab, remove only what should not be there, then check it." }),
   service: (f) => ({ title: "New service account", story: f, question: "Create the account to the company standard in your lab, then check it." }),
+  lockout: (f) => ({ title: "No lockout policy", story: f, question: "Fix the domain's account lockout settings in your lab, then check it." }),
+  password: (f) => ({ title: "Weak password policy", story: f, question: "Bring the domain's password policy up to the standard in your lab, then check it." }),
+  audit: (f) => ({ title: "Missing audit events", story: f, question: "Turn on the missing auditing in your lab, then check it." }),
+  logsize: (f) => ({ title: "Log wraps too fast", story: f, question: "Give the Security log room to keep evidence in your lab, then check it." }),
+  harden: (f) => ({ title: "Roastable service account", story: f, question: "Set up the ticket in your lab, close the finding without breaking the job, then check it." }),
 };
 
 export async function generateChange(params: {
@@ -434,7 +439,7 @@ Rules:
 - Refer to people by name or as they/them. Never guess a gender from a name.
 - Write it the way a real requester would, in a short paragraph of two to four sentences. Name the need, not the steps${level >= 2 ? ". Do not tell them which group to use or which buttons to press" : ""}.
 - Include the pressure or constraint given, if any.
-- The question asks them to make the change and check it${level >= 2 ? ". It must not name the exact change, the group, or the button" : ""}.
+- The question asks them to make the change and check it${level >= 2 ? ". It must not name the exact change, the group, or the button. Ask them to fix what the ticket describes, not to enable X or add Y" : ""}.
 - If the facts say the account already exists, write it as a live ticket about an account that is already there. Do not mention scripts.
 Return only JSON: {"title": "3 to 5 words", "story": "...", "question": "one sentence asking them to make the change and then check it"}`;
   const raw = await ask(

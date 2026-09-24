@@ -51,7 +51,11 @@ export type Check =
   | { t: "container"; sam: string; ou: string }
   | { t: "enabled"; sam: string; want: boolean }
   | { t: "noexpire"; sam: string; want: boolean }
-  | { t: "desc"; sam: string; text: string };
+  | { t: "desc"; sam: string; text: string }
+  | { t: "flag"; sam: string; flag: "pwdNotRequired" | "noPreAuth" | "delegation"; want: boolean }
+  | { t: "policy"; key: "minLength" | "complexity" | "history" | "lockoutThreshold" | "lockoutDurationMin" | "lockoutWindowMin"; min?: number; max?: number; bool?: boolean }
+  | { t: "audit"; sub: string; need: "Success" | "Failure" | "Both" }
+  | { t: "logsize"; minMB: number };
 
 export type Task = {
   checks: { c: Check; label: string }[];
@@ -654,7 +658,7 @@ export async function gradeDrill(
 // A job is "proven" when the student did it in their own lab and it checked
 // out, or, for judgement jobs, got it right three times.
 
-export type JobDef = { id: string; label: string; skill: Skill; lab: boolean };
+export type JobDef = { id: string; label: string; skill: Skill; lab: boolean; /** Needs the security settings the updated lab script reports. */ security?: boolean };
 
 export const JOBS: JobDef[] = [
   { id: "enable-account", label: "Restore a blocked account", skill: "troubleshooting", lab: true },
@@ -664,6 +668,11 @@ export const JOBS: JobDef[] = [
   { id: "least-privilege", label: "Remove access that should not be there", skill: "security", lab: true },
   { id: "offboard", label: "Offboard without deleting", skill: "security", lab: true },
   { id: "service-account", label: "Set up a service account safely", skill: "security", lab: true },
+  { id: "lockout-policy", label: "Set an account lockout policy", skill: "security", lab: true, security: true },
+  { id: "password-policy", label: "Set a password policy that resists guessing", skill: "security", lab: true, security: true },
+  { id: "enable-auditing", label: "Turn on the auditing a SOC needs", skill: "security", lab: true, security: true },
+  { id: "log-retention", label: "Keep the Security log long enough to investigate", skill: "security", lab: true, security: true },
+  { id: "harden-account", label: "Fix a roastable service account", skill: "security", lab: true, security: true },
   { id: "verify-claim", label: "Check a ticket before acting on it", skill: "troubleshooting", lab: false },
   { id: "triage-alert", label: "Triage a login alert: contain, preserve, escalate", skill: "security", lab: false },
   { id: "read-logs", label: "Read Windows security events", skill: "security", lab: false },
@@ -675,7 +684,7 @@ const JOB_IDS = new Set(JOBS.map((j) => j.id));
 export const isJob = (id: unknown): id is string => typeof id === "string" && JOB_IDS.has(id);
 
 export type JobStatus = "new" | "practiced" | "proven";
-export type JobRow = { id: string; label: string; skill: Skill; lab: boolean; status: JobStatus; correct: number; asked: number; last: string | null };
+export type JobRow = { id: string; label: string; skill: Skill; lab: boolean; security: boolean; status: JobStatus; correct: number; asked: number; last: string | null };
 
 export function jobProgress(entries: DrillEntry[]): JobRow[] {
   return JOBS.map((job) => {
@@ -697,13 +706,13 @@ export function jobProgress(entries: DrillEntry[]): JobRow[] {
     const status: JobStatus = job.lab
       ? labProven ? "proven" : correct > 0 ? "practiced" : "new"
       : correct >= 3 ? "proven" : correct > 0 ? "practiced" : "new";
-    return { id: job.id, label: job.label, skill: job.skill, lab: job.lab, status, correct, asked, last };
+    return { id: job.id, label: job.label, skill: job.skill, lab: job.lab, security: Boolean(job.security), status, correct, asked, last };
   });
 }
 
 /** The job to work on next: never-tried first, then half-done, then the one not seen for longest. */
-export function pickTargetJob(entries: DrillEntry[], seed: string, hasLab: boolean): JobRow | null {
-  const rows = jobProgress(entries).filter((j) => (j.lab ? hasLab : true));
+export function pickTargetJob(entries: DrillEntry[], seed: string, hasLab: boolean, hasSecurity = false): JobRow | null {
+  const rows = jobProgress(entries).filter((j) => (j.lab ? hasLab : true) && (j.security ? hasSecurity : true));
   if (!rows.length) return null;
   const rank = { new: 0, practiced: 1, proven: 2 } as const;
   const best = Math.min(...rows.map((j) => rank[j.status]));
@@ -758,7 +767,7 @@ function departments(s: LabSnapshot): Dept[] {
 }
 
 export type ChangeBrief = {
-  type: "access" | "hire" | "offboard" | "enable" | "wrongou" | "excess" | "service";
+  type: "access" | "hire" | "offboard" | "enable" | "wrongou" | "excess" | "service" | "lockout" | "password" | "audit" | "logsize" | "harden";
   job: string;
   skill: Skill;
   theme: string;
@@ -1073,6 +1082,178 @@ export function buildChangeTask(params: { snapshot: LabSnapshot; seed: string; l
     });
   }
 
+  // Security configuration. These read the settings the updated lab script reports.
+  const sec = s.security;
+  const pp = sec?.passwordPolicy;
+  const secStep = (where: string) => `${where} Then run gpupdate /force on the domain controller.`;
+  const GPMC = "Open Group Policy Management (Win+R, gpmc.msc)";
+  if (pp && (pp.lockoutThreshold === 0 || pp.lockoutThreshold > 10 || pp.lockoutDurationMin < 15)) {
+    const max = level >= 3 ? 5 : 10;
+    built.push({
+      type: "lockout",
+      job: "lockout-policy",
+      skill: "security",
+      theme: "change:lockout-policy",
+      facts: `An audit found that GovTech Financial's domain never locks an account after failed sign-ins (the threshold is ${pp.lockoutThreshold === 0 ? "0, meaning never" : pp.lockoutThreshold}). An attacker can guess passwords forever, which is exactly how password spraying works. The company standard is to lock an account for at least 15 minutes after ${max} or fewer failed attempts.`,
+      temptation: level >= 3 ? `The help desk lead asks for a threshold of 50 "so nobody calls us". That is too loose to stop guessing.` : undefined,
+      task: {
+        checks: [
+          { c: { t: "policy", key: "lockoutThreshold", min: 1, max }, label: `Accounts lock after between 1 and ${max} failed attempts` },
+          { c: { t: "policy", key: "lockoutDurationMin", min: 15 }, label: "A locked account stays locked for at least 15 minutes" },
+          { c: { t: "policy", key: "lockoutWindowMin", min: 15 }, label: "The failed-attempt counter resets after at least 15 minutes" },
+        ],
+        guide: [
+          `${GPMC}, then edit the Default Domain Policy.`,
+          "Go to Computer Configuration, Policies, Windows Settings, Security Settings, Account Policies, Account Lockout Policy.",
+          `Set Account lockout threshold to ${Math.min(max, 5)}, Account lockout duration to 15 minutes, and Reset account lockout counter after to 15 minutes.`,
+          secStep("Save the policy."),
+          SYNC_STEP,
+        ],
+        runbook: [
+          `Get-ADDefaultDomainPasswordPolicy | Select-Object LockoutThreshold,LockoutDuration,LockoutObservationWindow`,
+          `Set-ADDefaultDomainPasswordPolicy -Identity (Get-ADDomain).DNSRoot -LockoutThreshold ${Math.min(max, 5)} -LockoutDuration 00:15:00 -LockoutObservationWindow 00:15:00`,
+        ],
+      },
+      summary: `The domain locks accounts after ${Math.min(max, 5)} failed attempts for 15 minutes.`,
+    });
+  }
+  if (pp && (pp.minLength < 12 || !pp.complexity)) {
+    built.push({
+      type: "password",
+      job: "password-policy",
+      skill: "security",
+      theme: "change:password-policy",
+      facts: `The domain password policy requires only ${pp.minLength} characters${pp.complexity ? "" : " and does not require complexity"}. Short passwords fall quickly to guessing tools. The company standard is at least 12 characters with complexity on. Keep in mind that the temporary passwords used when creating accounts must be at least that long.`,
+      temptation: level >= 3 ? `A manager objects that long passwords "cause tickets". You still have to set the standard, and tell the desk to expect the extra resets.` : undefined,
+      task: {
+        checks: [
+          { c: { t: "policy", key: "minLength", min: 12 }, label: "The minimum password length is at least 12" },
+          { c: { t: "policy", key: "complexity", bool: true }, label: "Password complexity is required" },
+        ],
+        guide: [
+          `${GPMC}, then edit the Default Domain Policy.`,
+          "Go to Computer Configuration, Policies, Windows Settings, Security Settings, Account Policies, Password Policy.",
+          "Set Minimum password length to 12 and Password must meet complexity requirements to Enabled.",
+          secStep("Save the policy."),
+          SYNC_STEP,
+        ],
+        runbook: [
+          `Get-ADDefaultDomainPasswordPolicy | Select-Object MinPasswordLength,ComplexityEnabled,PasswordHistoryCount`,
+          `Set-ADDefaultDomainPasswordPolicy -Identity (Get-ADDomain).DNSRoot -MinPasswordLength 12 -ComplexityEnabled $true`,
+        ],
+      },
+      summary: "The domain requires 12 or more characters with complexity.",
+    });
+  }
+  const AUDIT_GOALS: { sub: string; need: "Success" | "Failure" | "Both"; category: string; event: string; why: string }[] = [
+    { sub: "Process Creation", need: "Success", category: "Detailed Tracking", event: "4688", why: "no event is written when a program starts, so an analyst cannot see what an attacker ran" },
+    { sub: "Logon", need: "Both", category: "Logon/Logoff", event: "4624 and 4625", why: "sign-ins are not fully logged, so a password-guessing run leaves no trail" },
+    { sub: "Special Logon", need: "Success", category: "Logon/Logoff", event: "4672", why: "nobody is told when an account signs in with administrator rights" },
+    { sub: "Security Group Management", need: "Success", category: "Account Management", event: "4728 and 4732", why: "adding someone to an admin group leaves no record" },
+  ];
+  const audit = sec?.audit;
+  const audMissing = audit
+    ? AUDIT_GOALS.filter((g) => {
+        const v = (audit[g.sub] ?? "").toLowerCase();
+        if (!v) return false;
+        const hasS = v.includes("success");
+        const hasF = v.includes("failure");
+        return g.need === "Both" ? !(hasS && hasF) : g.need === "Success" ? !hasS : !hasF;
+      })
+    : [];
+  const goal = audMissing.length ? pick(r, audMissing) : null;
+  if (goal) {
+    const flags = goal.need === "Both" ? "/success:enable /failure:enable" : goal.need === "Success" ? "/success:enable" : "/failure:enable";
+    built.push({
+      type: "audit",
+      job: "enable-auditing",
+      skill: "security",
+      theme: `change:audit:${goal.sub}`,
+      facts: `The SOC asked why it cannot investigate an incident. On the domain controller, ${goal.why}. The events it needs are ${goal.event}. Turn on ${goal.need === "Both" ? "success and failure" : goal.need.toLowerCase()} auditing for the "${goal.sub}" setting.`,
+      task: {
+        checks: [{ c: { t: "audit", sub: goal.sub, need: goal.need }, label: `Auditing for "${goal.sub}" includes ${goal.need === "Both" ? "success and failure" : goal.need.toLowerCase()}` }],
+        guide: [
+          `${GPMC}, then edit the Default Domain Controllers Policy.`,
+          `Go to Computer Configuration, Policies, Windows Settings, Security Settings, Advanced Audit Policy Configuration, Audit Policies, ${goal.category}, ${goal.sub}.`,
+          `Tick Configure the following audit events and choose ${goal.need === "Both" ? "Success and Failure" : goal.need}.`,
+          secStep("Save the policy."),
+          SYNC_STEP,
+        ],
+        runbook: [
+          `auditpol /get /subcategory:"${goal.sub}"`,
+          `auditpol /set /subcategory:"${goal.sub}" ${flags}`,
+        ],
+      },
+      summary: `"${goal.sub}" is audited for ${goal.need === "Both" ? "success and failure" : goal.need.toLowerCase()}.`,
+    });
+  }
+  if (sec?.securityLogMaxMB !== undefined && sec.securityLogMaxMB < 512) {
+    built.push({
+      type: "logsize",
+      job: "log-retention",
+      skill: "security",
+      theme: "change:log-retention",
+      facts: `The Security event log on the domain controller is capped at ${sec.securityLogMaxMB} MB. On a busy domain that fills in hours and old events are overwritten, so by the time an incident is noticed the evidence is gone. The standard is at least 512 MB.`,
+      task: {
+        checks: [{ c: { t: "logsize", minMB: 512 }, label: "The Security log can grow to at least 512 MB" }],
+        guide: [
+          "Open Event Viewer (Win+R, eventvwr.msc) on the domain controller.",
+          "Expand Windows Logs, right-click Security, and choose Properties.",
+          "Set Maximum log size to 524288 KB or more and leave Overwrite events as needed. Do not clear the log.",
+          SYNC_STEP,
+        ],
+        runbook: [
+          `Get-WinEvent -ListLog Security | Select-Object LogName,MaximumSizeInBytes,RecordCount`,
+          `wevtutil sl Security /ms:536870912`,
+        ],
+      },
+      summary: "The Security log can grow to 512 MB or more.",
+    });
+  }
+  // Break and fix: a service account an attacker could crack offline or log in to without a password.
+  const hardenApp = shuffle(r, APPS).find((a) => !taken.has(`svc-${a}`));
+  const hasSvcFolder = s.ous.some((o) => o.path.toLowerCase() === "ou=serviceaccounts");
+  if (sec && hardenApp && hasSvcFolder) {
+    const sam = `svc-${hardenApp}`;
+    built.push({
+      type: "harden",
+      job: "harden-account",
+      skill: "security",
+      theme: `change:harden:${sam}`,
+      facts: `A security scan flagged ${sam}, the account the ${hardenApp.replace(/-/g, " ")} job runs under. It does not require a password and does not require Kerberos pre-authentication, and it has a service principal name. Anyone on the network can request its password hash and crack it offline, or even use it with no password at all. The job still has to run, so the account must stay enabled.`,
+      temptation: level >= 3 ? `The job owner says "just leave it, it has worked for years". A working weak account is still a finding.` : undefined,
+      task: {
+        setup: {
+          sam,
+          note: "Run this once on the domain controller. It creates a practice service account with the problems the scan found.",
+          script: setupScript([
+            `New-ADUser -Name "${sam}" -SamAccountName "${sam}" -Path "OU=ServiceAccounts,$dn" -AccountPassword $pw -Enabled $true -PasswordNotRequired $true -Description "Owner: ${nameOf(pick(r, s.users) ?? s.users[0])}. ${hardenApp}"`,
+            `Set-ADAccountControl -Identity ${sam} -DoesNotRequirePreAuth $true`,
+            `Set-ADUser -Identity ${sam} -ServicePrincipalNames @{Add="MSSQLSvc/sql01.$($dom.DNSRoot):1433"}`,
+          ]),
+        },
+        checks: [
+          { c: { t: "flag", sam, flag: "pwdNotRequired", want: false }, label: `${sam} requires a password` },
+          { c: { t: "flag", sam, flag: "noPreAuth", want: false }, label: `${sam} requires Kerberos pre-authentication` },
+          { c: { t: "enabled", sam, want: true }, label: `${sam} is still enabled so the job keeps running` },
+          ...notAdmin(sam, sam),
+        ],
+        guide: [
+          `${ADUC} Find the account in the ServiceAccounts folder and open its Properties.`,
+          'On the Account tab, under Account options, clear "Do not require Kerberos preauthentication". Leave the account enabled.',
+          `Turn off the no-password flag in PowerShell, because the console does not show it: Set-ADUser ${sam} -PasswordNotRequired $false, then set a real password with Set-ADAccountPassword.`,
+          SYNC_STEP,
+        ],
+        runbook: [
+          `Get-ADUser ${sam} -Properties PasswordNotRequired,DoesNotRequirePreAuth,ServicePrincipalNames | Select-Object Name,PasswordNotRequired,DoesNotRequirePreAuth,ServicePrincipalNames`,
+          `Set-ADAccountControl -Identity ${sam} -DoesNotRequirePreAuth $false -PasswordNotRequired $false`,
+          `Set-ADAccountPassword -Identity ${sam} -Reset -NewPassword (Read-Host -AsSecureString "New long random password")`,
+        ],
+      },
+      summary: `${sam} requires a password and Kerberos pre-authentication, and is still enabled.`,
+    });
+  }
+
   if (!built.length) return null;
   const order = shuffle(r, built);
   // Closing access is the most time-sensitive change, then whatever job they have not shown yet.
@@ -1082,12 +1263,26 @@ export function buildChangeTask(params: { snapshot: LabSnapshot; seed: string; l
 }
 
 function evalCheck(s: LabSnapshot, c: Check): boolean {
+  if (c.t === "policy") {
+    const v = s.security?.passwordPolicy?.[c.key];
+    if (v === undefined) return false;
+    if (typeof v === "boolean") return c.bool === undefined ? true : v === c.bool;
+    return (c.min === undefined || v >= c.min) && (c.max === undefined || v <= c.max);
+  }
+  if (c.t === "audit") {
+    const v = (s.security?.audit?.[c.sub] ?? "").toLowerCase();
+    const hasS = v.includes("success");
+    const hasF = v.includes("failure");
+    return c.need === "Both" ? hasS && hasF : c.need === "Success" ? hasS : hasF;
+  }
+  if (c.t === "logsize") return (s.security?.securityLogMaxMB ?? 0) >= c.minMB;
   const user = s.users.find((u) => u.sam.toLowerCase() === c.sam.toLowerCase());
   if (c.t === "exists") return Boolean(user) && user!.container.toLowerCase() === c.ou.toLowerCase();
   if (!user) return c.t === "member" ? !c.want : false;
   if (c.t === "container") return user.container.toLowerCase() === c.ou.toLowerCase();
   if (c.t === "enabled") return user.enabled === c.want;
   if (c.t === "noexpire") return user.passwordNeverExpires === c.want;
+  if (c.t === "flag") return (user[c.flag] ?? false) === c.want;
   if (c.t === "desc") return `${user.description} ${user.title}`.toLowerCase().includes(c.text.toLowerCase());
   const g = c.group.toLowerCase();
   const inGroup = user.memberOf.some((m) => m.toLowerCase() === g) || s.groups.some((x) => x.name.toLowerCase() === g && x.members.includes(user.name));

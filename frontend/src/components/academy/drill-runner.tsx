@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { ArrowRight, Check, Copy, Flame, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
-import { academyFetch } from "@/lib/academy-client";
+import { academyFetch, READINESS_PATH } from "@/lib/academy-client";
 import { SKILLS, type Skill } from "@/lib/academy-score";
 
 export type DrillStatus = {
@@ -16,7 +17,7 @@ export type DrillStatus = {
     bestTimed: DrillEntry | null;
     lastDay: string | null;
   };
-  lab: { synced: boolean; syncedAt: string | null; ago: string | null; days: number | null };
+  lab: { synced: boolean; syncedAt: string | null; ago: string | null; days: number | null; security: boolean };
   focus: string | null;
   level: { n: number; name: string };
   ctf: { week: string; entry: DrillEntry | null };
@@ -27,7 +28,7 @@ export type DrillStatus = {
   nextJob: string | null;
 };
 
-type JobRow = { id: string; label: string; skill: Skill; lab: boolean; status: "new" | "practiced" | "proven"; correct: number; asked: number };
+type JobRow = { id: string; label: string; skill: Skill; lab: boolean; security: boolean; status: "new" | "practiced" | "proven"; correct: number; asked: number };
 
 type Missed = { day: string; mode: string; title: string; skill: Skill; prompt: string; picked: string; answer: string; explain: string };
 
@@ -258,7 +259,7 @@ function Scenario({
   );
 }
 
-function JobTasks({ jobs, next, n }: { jobs: JobRow[]; next: string | null; n: string }) {
+function JobTasks({ jobs, next, n, security }: { jobs: JobRow[]; next: string | null; n: string; security: boolean }) {
   const proven = jobs.filter((j) => j.status === "proven").length;
   const label = { new: "Not yet", practiced: "Practiced", proven: "Proven" } as const;
   return (
@@ -269,6 +270,11 @@ function JobTasks({ jobs, next, n }: { jobs: JobRow[]; next: string | null; n: s
         <p>
           {proven} of {jobs.length} proven. Proven means you did it in your own lab and it checked out, or got it right three times. Your daily case aims at the next one.
         </p>
+        {!security && (
+          <p className="dr-jobs__note">
+            The {jobs.filter((j) => j.security).length} security configuration tasks (lockout, passwords, auditing, log retention, service account hardening) need the updated lab script. Download it again from Build This Lab and run it once on the domain controller.
+          </p>
+        )}
       </div>
       <ul className="dr-jobs__list">
         {jobs.map((j) => (
@@ -278,110 +284,13 @@ function JobTasks({ jobs, next, n }: { jobs: JobRow[]; next: string | null; n: s
             </span>
             <span className="dr-jobs__name">
               {j.label}
-              <em>{j.lab ? "Done in your lab" : "Judgement"}</em>
+              <em>{j.security ? "Security configuration, checked in your lab" : j.lab ? "Done in your lab" : "Judgement"}</em>
             </span>
             {j.id === next && <span className="dr-jobs__next">Up next</span>}
             <span className="dr-jobs__status">{label[j.status]}</span>
           </li>
         ))}
       </ul>
-    </section>
-  );
-}
-
-function MissedList({ items, n }: { items: Missed[]; n: string }) {
-  const { ask } = useCoach();
-  return (
-    <section className="rd-sec dr-missed">
-      <div className="rd-sec__head">
-        <span className="rd-sec__n">{n}</span>
-        <h2>Missed questions</h2>
-        <p>Saved so you can study them. The newest is first.</p>
-      </div>
-      <ol className="dr-missed__list">
-        {items.map((m, i) => (
-          <li key={`${m.day}-${i}`}>
-            <div className="dr-missed__meta">
-              <span className="rd-kicker">{SKILLS[m.skill].label}</span>
-              <em>{m.day}</em>
-            </div>
-            <strong>{m.title}</strong>
-            {m.prompt && <p>{m.prompt}</p>}
-            {m.picked && (
-              <p className="dr-missed__you">
-                You: {m.picked}
-              </p>
-            )}
-            {m.answer && (
-              <p>
-                Best answer: <b>{m.mode === "ctf" ? `gtf{${m.answer}}` : m.answer}</b>
-              </p>
-            )}
-            {m.explain && <p className="dr-missed__why">{m.explain}</p>}
-            <button
-              type="button"
-              className="dr-link"
-              onClick={() => ask(`I missed this drill question: "${m.title}" (${SKILLS[m.skill].label}). Coach me on the thinking behind it, then give me a fresh one like it.`)}
-            >
-              Ask Coach about this
-            </button>
-          </li>
-        ))}
-      </ol>
-    </section>
-  );
-}
-
-function reportText(r: Report) {
-  const lines = [
-    `PurveX drill report, ${r.from} to ${r.to}`,
-    `Accuracy: ${r.accuracy === null ? "no drills yet" : `${r.accuracy}% (${r.correct} of ${r.asked})`}. Days active: ${r.daysActive}. Level: ${r.levelName}.`,
-    ...r.skills.filter((k) => k.asked > 0).map((k) => `${k.label}: ${k.pct}% of ${k.asked}`),
-    r.themes.length ? `Keeps missing: ${r.themes.map((t) => t.theme).join("; ")}.` : "",
-    r.next,
-  ];
-  return lines.filter(Boolean).join("\n");
-}
-
-function WeekReport({ r, n }: { r: Report; n: string }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <section className="rd-sec dr-report">
-      <div className="rd-sec__head">
-        <span className="rd-sec__n">{n}</span>
-        <h2>This week</h2>
-        <button
-          type="button"
-          className="dr-link dr-report__copy"
-          onClick={() => {
-            navigator.clipboard?.writeText(reportText(r)).then(() => {
-              setCopied(true);
-              window.setTimeout(() => setCopied(false), 1500);
-            }).catch(() => {});
-          }}
-        >
-          <Copy className="h-3.5 w-3.5" /> {copied ? "Copied" : "Copy report"}
-        </button>
-        <p>
-          {r.asked === 0
-            ? "No questions yet this week."
-            : `${r.accuracy}% right · ${r.correct} of ${r.asked} · ${r.daysActive} ${r.daysActive === 1 ? "day" : "days"} active · ${r.levelName}`}
-        </p>
-      </div>
-      {r.asked > 0 && (
-        <ul className="dr-bars">
-          {r.skills.map((k) => (
-            <li key={k.skill}>
-              <span>{k.label}</span>
-              <i>
-                <b style={{ width: `${k.pct ?? 0}%` }} className={k.pct === null ? "" : k.pct >= 70 ? "is-good" : "is-low"} />
-              </i>
-              <em>{k.pct === null ? "–" : `${k.pct}%`}</em>
-            </li>
-          ))}
-        </ul>
-      )}
-      <p className="dr-report__next">{r.next}</p>
     </section>
   );
 }
@@ -453,17 +362,29 @@ export function DrillRunner() {
   async function start(mode: Mode, format?: string) {
     setBusy(true);
     setError(null);
+    const ctrl = new AbortController();
+    const timer = window.setTimeout(() => ctrl.abort(), 70_000);
     try {
       const res = await academyFetch("/academy/api/drill", {
         method: "POST",
+        signal: ctrl.signal,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "start", mode, day: localDay(), format }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Could not start the drill.");
+      const text = await res.text();
+      let data: { error?: string; done?: boolean; items?: unknown[]; token?: string; limitSeconds?: number; ai?: boolean } | null = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        data = null;
+      }
+      if (!res.ok || !data) throw new Error(data?.error || "Could not start the drill. Try again in a minute.");
       if (data.done) {
-        setStatus(data);
+        setStatus(data as DrillStatus);
         return;
+      }
+      if (!data.token || !Array.isArray(data.items) || data.items.length === 0) {
+        throw new Error(data.error || "Could not write this one. Try again in a minute.");
       }
       finishing.current = false;
       setResult(null);
@@ -472,10 +393,12 @@ export function DrillRunner() {
       setIdx(0);
       setAnswers(data.items.map(() => null));
       setNow(Date.now());
-      setRun({ mode, token: data.token, items: data.items, limit: data.limitSeconds, ai: Boolean(data.ai), startedAt: Date.now() });
+      setRun({ mode, token: data.token, items: data.items as Run["items"], limit: data.limitSeconds ?? 0, ai: Boolean(data.ai), startedAt: Date.now() });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not start the drill.");
+      const aborted = err instanceof DOMException && err.name === "AbortError";
+      setError(aborted ? "That took too long. Try again in a minute." : err instanceof Error ? err.message : "Could not start the drill.");
     } finally {
+      window.clearTimeout(timer);
       setBusy(false);
     }
   }
@@ -815,10 +738,12 @@ export function DrillRunner() {
               </div>
             </li>
           </ol>
+          {error && <p className="dr-error">{error}</p>}
 
-          <JobTasks jobs={status.jobs} next={status.nextJob} n="04" />
-          <WeekReport r={status.report} n="05" />
-          {status.missed.length > 0 && <MissedList items={status.missed} n="06" />}
+          <JobTasks jobs={status.jobs} next={status.nextJob} n="04" security={status.lab.security} />
+          <p className="dr-lab">
+            <Link href={READINESS_PATH}>See this week and the questions you missed</Link> on your readiness report. Getting them right raises a competency. Missing them keeps it down.
+          </p>
           <p className="dr-lab">{labLine(status.lab)}</p>
           {error && <p className="dr-error">{error}</p>}
         </>

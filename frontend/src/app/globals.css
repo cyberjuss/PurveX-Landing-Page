@@ -4354,6 +4354,7 @@ textarea.pc-dock__field {
 .dr-days i.is-done { background: var(--rd-good); }
 .dr-days i.is-today { box-shadow: 0 0 0 2px var(--rd-accent); }
 .dr-lab { margin: 16px 0 0; font-size: var(--ty-small); color: var(--rd-ink-3); }
+.dr-lab a { color: var(--rd-accent, #5546e0); font-weight: 600; }
 
 /* Drill levels, weekly CTF, and the weekly report */
 .dr-level { padding: 3px 10px; border-radius: 999px; background: rgba(85, 70, 224, 0.14); font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-accent); }
@@ -4376,8 +4377,13 @@ textarea.pc-dock__field {
 /* Drills in the report style: ruled rows, no cards */
 .dr-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; margin-top: 24px; padding: 16px 0; border-top: 1px solid var(--rd-line); }
 .dr-rows { margin-top: 0; border-top: 1px solid var(--rd-line); }
-.dr-rows .ax-path__row { align-items: center; }
-.dr-rows .ax-path__count { padding-top: 0; }
+.dr-rows .ax-path__row { align-items: center; grid-template-columns: 44px minmax(0, 1fr); }
+.dr-rows .ax-path__count { grid-column: 2; justify-self: start; padding-top: 12px; }
+.dr-outline, .dr-rows .rd-cta { white-space: nowrap; flex-shrink: 0; }
+@media (min-width: 760px) {
+  .dr-rows .ax-path__row { grid-template-columns: 44px minmax(0, 1fr) auto; }
+  .dr-rows .ax-path__count { grid-column: auto; justify-self: end; padding-top: 0; }
+}
 .dr-report { margin-top: 48px; padding: 0; border: 0; border-radius: 0; background: none; }
 .dr-report .rd-sec__head { align-items: center; }
 .dr-report__copy { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; text-decoration: none; }
@@ -4446,3 +4452,4 @@ textarea.pc-dock__field {
 .dr-jobs__status { min-width: 84px; text-align: right; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small, 13px); font-weight: 700; color: var(--rd-ink-3); }
 .is-proven .dr-jobs__status { color: var(--rd-good); }
 .is-practiced .dr-jobs__status { color: var(--rd-warn); }
+.dr-jobs__note { margin-top: 10px !important; padding: 12px 14px; border-radius: 8px; background: rgba(196, 130, 14, 0.12); color: var(--rd-ink) !important; }

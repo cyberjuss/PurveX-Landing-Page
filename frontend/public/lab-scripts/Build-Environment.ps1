@@ -228,6 +228,37 @@ function Ensure-CTFChallengeData {
     Ensure-Computer -Name "OPS-WKS03" -OUPath $opsWorkstationsOU -Description "CTF-TICKET-201: Dormant Operations workstation. Check whether this asset still belongs in scope."
 }
 
+# Read-only security settings, so PurveX can check the hardening drills. Each
+# piece is optional: if one cannot be read, the rest still sync.
+function Get-PurvexSecurityState {
+    param($Domain)
+    $sec = [ordered]@{}
+    try {
+        $pp = Get-ADDefaultDomainPasswordPolicy -Identity $Domain.DNSRoot
+        $sec.passwordPolicy = [ordered]@{
+            minLength          = [int]$pp.MinPasswordLength
+            complexity         = [bool]$pp.ComplexityEnabled
+            history            = [int]$pp.PasswordHistoryCount
+            maxAgeDays         = [int]$pp.MaxPasswordAge.TotalDays
+            lockoutThreshold   = [int]$pp.LockoutThreshold
+            lockoutDurationMin = [int]$pp.LockoutDuration.TotalMinutes
+            lockoutWindowMin   = [int]$pp.LockoutObservationWindow.TotalMinutes
+            reversible         = [bool]$pp.ReversibleEncryptionEnabled
+        }
+    } catch {}
+    try {
+        $wanted = @("Logon", "Account Lockout", "Special Logon", "Process Creation", "Security Group Management", "User Account Management")
+        $audit = [ordered]@{}
+        foreach ($row in (auditpol /get /category:* /r | ConvertFrom-Csv)) {
+            if ($wanted -contains $row.Subcategory) { $audit[$row.Subcategory] = "$($row.'Inclusion Setting')" }
+        }
+        if ($audit.Count -gt 0) { $sec.audit = $audit }
+    } catch {}
+    try { $sec.securityLogMaxMB = [int]((Get-WinEvent -ListLog Security).MaximumSizeInBytes / 1MB) } catch {}
+    try { $sec.smb1 = [bool](Get-SmbServerConfiguration).EnableSMB1Protocol } catch {}
+    return $sec
+}
+
 function Send-PurvexLabSnapshot {
     param([string]$Key, [string]$Url, [string]$DomainDN)
     $ErrorActionPreference = "Stop"
@@ -246,7 +277,7 @@ function Send-PurvexLabSnapshot {
         $ous += Get-ADOrganizationalUnit -SearchBase $root -Filter * -Properties Description | ForEach-Object {
             [ordered]@{ path = ($_.DistinguishedName -replace $domainSuffix, ''); description = $_.Description }
         }
-        $users += Get-ADUser -SearchBase $root -Filter * -Properties Title, Department, Description, Enabled, LockedOut, BadLogonCount, PasswordNeverExpires, PasswordExpired, LastLogonDate, MemberOf | ForEach-Object {
+        $users += Get-ADUser -SearchBase $root -Filter * -Properties Title, Department, Description, Enabled, LockedOut, BadLogonCount, PasswordNeverExpires, PasswordExpired, LastLogonDate, MemberOf, PasswordNotRequired, DoesNotRequirePreAuth, TrustedForDelegation, ServicePrincipalNames | ForEach-Object {
             [ordered]@{
                 sam                  = $_.SamAccountName
                 name                 = $_.Name
@@ -259,6 +290,10 @@ function Send-PurvexLabSnapshot {
                 badLogonCount        = [int]$_.BadLogonCount
                 passwordNeverExpires = [bool]$_.PasswordNeverExpires
                 passwordExpired      = [bool]$_.PasswordExpired
+                pwdNotRequired       = [bool]$_.PasswordNotRequired
+                noPreAuth            = [bool]$_.DoesNotRequirePreAuth
+                delegation           = [bool]$_.TrustedForDelegation
+                spns                 = @($_.ServicePrincipalNames).Count
                 lastLogon            = & $date $_.LastLogonDate
                 memberOf             = @($_.MemberOf | ForEach-Object { & $short $_ })
             }
@@ -296,6 +331,8 @@ function Send-PurvexLabSnapshot {
         }
     }
 
+    $security = Get-PurvexSecurityState -Domain $domain
+
     $snapshot = [ordered]@{
         version    = 1
         capturedAt = (Get-Date).ToUniversalTime().ToString("o")
@@ -304,6 +341,7 @@ function Send-PurvexLabSnapshot {
         users      = @($users)
         groups     = @($groups)
         computers  = @($computers)
+        security   = $security
     }
     $json = $snapshot | ConvertTo-Json -Depth 6 -Compress
 

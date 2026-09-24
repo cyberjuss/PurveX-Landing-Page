@@ -41,13 +41,15 @@ async function auth(request: Request) {
 // What the student's own lab says about when they last worked in it.
 async function labInfo(userId: string) {
   const lab = await loadLabState(userId);
-  if (!lab) return { synced: false, syncedAt: null, ago: null, days: null };
+  if (!lab) return { synced: false, syncedAt: null, ago: null, days: null, security: false };
   const age = formatLabAge(lab.uploadedAt);
   return {
     synced: true,
     syncedAt: lab.uploadedAt,
     ago: age.ago,
     days: Number.isNaN(age.hours) ? null : Math.floor(age.hours / 24),
+    // False until the student runs the updated lab script, which reports security settings.
+    security: Boolean(lab.snapshot.security?.passwordPolicy || lab.snapshot.security?.audit),
   };
 }
 
@@ -70,7 +72,7 @@ async function status(userId: string, day: string) {
     missed: missedQuestions(entries, 8),
     chats: { base: COACH_DAILY_LIMIT, ...chats },
     jobs: jobProgress(entries),
-    nextJob: pickTargetJob(entries, `${userId}:${day}`, Boolean(lab.synced))?.id ?? null,
+    nextJob: pickTargetJob(entries, `${userId}:${day}`, Boolean(lab.synced), lab.security)?.id ?? null,
   };
 }
 
@@ -153,7 +155,7 @@ export async function POST(request: Request) {
     let item = null;
     if (apiKey && mode === "daily") {
       // Aim at the on-the-job task they have shown the least, so the daily drill covers what the job needs.
-      const target = pickTargetJob(entries, `${userId}:${day}`, Boolean(snapshot));
+      const target = pickTargetJob(entries, `${userId}:${day}`, Boolean(snapshot), Boolean(snapshot?.security?.passwordPolicy || snapshot?.security?.audit));
       const format = swap ? "respond" : pickFormat(`${userId}:${day}`, level, Boolean(snapshot), Boolean(target?.lab));
       const targetJob = target ? { id: target.id, label: target.label } : null;
       item = await generateDaily({ apiKey, userId, day, snapshot, results, level, recent, format, targetJob }).catch(() => null);
