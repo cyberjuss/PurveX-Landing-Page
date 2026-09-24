@@ -4753,32 +4753,40 @@ textarea.pc-dock__field {
 }
 .dr-jobs__bullet:hover { text-decoration: underline; text-underline-offset: 3px; }
 .dr-jobsheet {
+  --js-top: 0px;
   --rd-ink: #0f172a; --rd-ink-2: #475569; --rd-ink-3: #8a94a8;
-  --rd-line: rgba(15, 23, 42, 0.12); --rd-accent: #5546e0; --rd-good: #0f9f6e; --rd-warn: #c4820e; --rd-none: rgba(15, 23, 42, 0.1);
-  position: fixed; inset: 0; z-index: 80; pointer-events: none;
+  --rd-line: #d9e2ec; --rd-accent: #5546e0; --rd-good: #0f9f6e; --rd-warn: #c4820e; --rd-none: rgba(15, 23, 42, 0.1);
+  position: fixed !important; inset: 0 !important; z-index: 35 !important; pointer-events: none;
 }
 .dr-jobsheet[data-academy-theme="dark"] {
   --rd-ink: #e8eef8; --rd-ink-2: #9aa8bc; --rd-ink-3: #6b768a;
-  --rd-line: rgba(180, 200, 255, 0.14); --rd-accent: #9eb0ff; --rd-good: #34d399; --rd-warn: #fbbf24; --rd-none: rgba(180, 200, 255, 0.1);
+  --rd-line: #0d0b12; --rd-accent: #9eb0ff; --rd-good: #34d399; --rd-warn: #fbbf24; --rd-none: rgba(180, 200, 255, 0.1);
 }
-.dr-jobsheet__scrim { position: absolute; inset: 0; border: 0; padding: 0; background: rgba(8, 10, 16, 0.35); opacity: 0; pointer-events: none; transition: opacity var(--ax-dur, 280ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)); }
+.dr-jobsheet__scrim {
+  position: absolute; top: var(--js-top); right: 0; bottom: 0; left: 0;
+  border: 0; padding: 0; background: rgba(15, 23, 42, 0.28);
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--ax-dur, 280ms) var(--ax-ease, cubic-bezier(.16,1,.3,1));
+}
+.dr-jobsheet[data-academy-theme="dark"] .dr-jobsheet__scrim { background: rgba(0, 0, 0, 0.55); }
 .dr-jobsheet[data-open="true"] { pointer-events: auto; }
 .dr-jobsheet[data-open="true"] .dr-jobsheet__scrim { opacity: 1; pointer-events: auto; cursor: pointer; }
 .dr-jobsheet__panel {
-  position: absolute; top: 0; right: 0; bottom: 0; width: min(440px, 92vw);
+  position: fixed !important; top: var(--js-top) !important; right: 0 !important; bottom: 0 !important; left: auto !important;
+  width: min(380px, 100vw) !important; height: calc(100dvh - var(--js-top)) !important;
   display: flex; flex-direction: column; background: #fff; color: var(--rd-ink, #0f172a);
-  border-left: 1px solid var(--rd-line, rgba(15, 23, 42, 0.12));
-  box-shadow: none;
+  border: 0; border-left: 1px solid var(--rd-line, #d9e2ec); border-radius: 0;
+  box-shadow: none !important; filter: none !important;
   transform: translateX(100%); transition: transform var(--ax-dur, 280ms) var(--ax-ease, cubic-bezier(.16,1,.3,1));
   pointer-events: none; overflow: hidden;
 }
 .dr-jobsheet[data-open="true"] .dr-jobsheet__panel { transform: translateX(0); pointer-events: auto; }
-.dr-jobsheet[data-academy-theme="dark"] .dr-jobsheet__panel { background: #000000; color: #e8eef8; border-left-color: rgba(180, 200, 255, 0.16); }
-.dr-jobsheet__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 22px 22px 8px; }
-.dr-jobsheet__head span { font-family: var(--font-display); font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
-.dr-jobsheet__head p { margin: 8px 0 0; font-size: 13px; line-height: 1.5; font-weight: 400; color: var(--rd-ink-2, #8b93a7); }
+.dr-jobsheet[data-academy-theme="dark"] .dr-jobsheet__panel { background: #000000; color: #e8eef8; border-left-color: #0d0b12; }
+.dr-jobsheet__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 18px 22px; }
+.dr-jobsheet__head span { font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: -0.03em; }
+.dr-jobsheet__head p { margin: 8px 0 0; font-size: 14px; line-height: 1.5; font-weight: 400; color: var(--rd-ink-2, #8b93a7); }
 .dr-jobsheet__close { display: inline-flex; border: 0; background: none; padding: 4px; color: inherit; cursor: pointer; }
-.dr-jobsheet__body { flex: 1; overflow: auto; padding: 8px 22px 28px; }
+.dr-jobsheet__body { flex: 1; overflow: auto; padding: 8px 22px 24px; }
 .dr-jobs { margin-top: 48px; }
 .dr-jobs__list { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--rd-line); }
 .dr-jobs__list li { display: grid; grid-template-columns: 22px minmax(0, 1fr); align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--rd-line); }
@@ -4792,7 +4800,12 @@ textarea.pc-dock__field {
 .dr-jobs__status { min-width: 84px; text-align: right; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small, 13px); font-weight: 700; color: var(--rd-ink-3); }
 .is-proven .dr-jobs__status { color: var(--rd-good); }
 .is-practiced .dr-jobs__status { color: var(--rd-warn); }
-.dr-jobs__note { margin-top: 10px !important; padding: 0; border-radius: 0; background: none; color: var(--rd-ink-2) !important; }
+.dr-jobsheet .dr-jobs__note,
+.dr-jobsheet p.dr-jobs__note {
+  margin: 0 0 16px !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important;
+  background: transparent !important; box-shadow: none !important; filter: none !important;
+  color: var(--rd-ink-2) !important;
+}
 
 /* Live investigation in the student's own lab */
 .dr-live { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; padding: 14px 16px; border-radius: 10px; background: rgba(85, 70, 224, 0.08); box-shadow: inset 3px 0 0 var(--rd-accent); }

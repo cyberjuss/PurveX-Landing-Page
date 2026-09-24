@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { ArrowRight, Check, ClipboardList, Flame, Timer, X } from "lucide-react";
@@ -361,14 +361,26 @@ function VerifyLab({ verified, onVerified }: { verified: boolean; onVerified: ()
   );
 }
 
+function academyChrome() {
+  const root = document.querySelector(".academy-bg");
+  const header = root?.querySelector("header");
+  return {
+    theme: root?.getAttribute("data-academy-theme") === "dark" ? "dark" : "light",
+    top: header ? Math.round(header.getBoundingClientRect().bottom) : 0,
+  };
+}
+
 function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
   const { ask } = useCoach();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [, setLayout] = useState(0);
   const done = jobs.filter((j) => j.status === "proven" && j.lab);
   useEffect(() => setMounted(true), []);
   useEffect(() => {
     if (!open) return;
+    const sync = () => setLayout((n) => n + 1);
+    sync();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
     };
@@ -377,14 +389,18 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
+    window.addEventListener("resize", sync);
+    window.addEventListener("scroll", sync, true);
     return () => {
       document.body.style.overflow = prevBody;
       document.documentElement.style.overflow = prevHtml;
       window.removeEventListener("keydown", onKey);
+      window.removeEventListener("resize", sync);
+      window.removeEventListener("scroll", sync, true);
     };
   }, [open]);
 
-  const theme = mounted ? document.querySelector(".academy-bg")?.getAttribute("data-academy-theme") || "light" : "light";
+  const { theme, top } = mounted ? academyChrome() : { theme: "light", top: 0 };
 
   return (
     <>
@@ -394,7 +410,12 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
       </button>
       {mounted &&
         createPortal(
-          <div className="dr-jobsheet" data-open={open ? "true" : "false"} data-academy-theme={theme}>
+          <div
+            className="dr-jobsheet"
+            data-open={open ? "true" : "false"}
+            data-academy-theme={theme}
+            style={{ ["--js-top"]: `${top}px` } as CSSProperties}
+          >
             <button type="button" className="dr-jobsheet__scrim" aria-label="Close job tasks" onClick={() => setOpen(false)} />
             <aside className="dr-jobsheet__panel" role="dialog" aria-label="Work you have done">
               <div className="dr-jobsheet__head">
