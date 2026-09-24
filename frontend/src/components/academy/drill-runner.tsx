@@ -21,7 +21,10 @@ export type DrillStatus = {
   level: { n: number; name: string };
   ctf: { week: string; entry: DrillEntry | null };
   report: Report;
+  missed: Missed[];
 };
+
+type Missed = { day: string; mode: string; title: string; skill: Skill; prompt: string; picked: string; answer: string; explain: string };
 
 type Report = {
   from: string;
@@ -156,6 +159,49 @@ function Scenario({
         </div>
       )}
     </div>
+  );
+}
+
+function MissedList({ items, n }: { items: Missed[]; n: string }) {
+  const { ask } = useCoach();
+  return (
+    <section className="rd-sec dr-missed">
+      <div className="rd-sec__head">
+        <span className="rd-sec__n">{n}</span>
+        <h2>Missed questions</h2>
+        <p>Saved so you can study them. The newest is first.</p>
+      </div>
+      <ol className="dr-missed__list">
+        {items.map((m, i) => (
+          <li key={`${m.day}-${i}`}>
+            <div className="dr-missed__meta">
+              <span className="rd-kicker">{SKILLS[m.skill].label}</span>
+              <em>{m.day}</em>
+            </div>
+            <strong>{m.title}</strong>
+            {m.prompt && <p>{m.prompt}</p>}
+            {m.picked && (
+              <p className="dr-missed__you">
+                You: {m.picked}
+              </p>
+            )}
+            {m.answer && (
+              <p>
+                Best answer: <b>{m.mode === "ctf" ? `gtf{${m.answer}}` : m.answer}</b>
+              </p>
+            )}
+            {m.explain && <p className="dr-missed__why">{m.explain}</p>}
+            <button
+              type="button"
+              className="dr-link"
+              onClick={() => ask(`I missed this drill question: "${m.title}" (${SKILLS[m.skill].label}). Coach me on the thinking behind it, then give me a fresh one like it.`)}
+            >
+              Ask Coach about this
+            </button>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }
 
@@ -573,6 +619,7 @@ export function DrillRunner() {
           </ol>
 
           <WeekReport r={status.report} n="04" />
+          {status.missed.length > 0 && <MissedList items={status.missed} n="05" />}
           <p className="dr-lab">{labLine(status.lab)}</p>
           {error && <p className="dr-error">{error}</p>}
         </>

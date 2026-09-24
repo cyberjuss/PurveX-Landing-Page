@@ -2,7 +2,7 @@ import "server-only";
 
 import { coachModeInstructions, parseCoachMode, type CoachMode } from "@/lib/academy-coach-mode";
 import { formatLabAge, labEvidence, labStateForTool, type LabSnapshot } from "@/lib/academy-lab";
-import { LEVEL_NAMES, levelFor, missedThemes, skillAccuracy, weaknessLine, type DrillEntry } from "@/lib/academy-drills";
+import { LEVEL_NAMES, levelFor, missedQuestions, missedThemes, skillAccuracy, weaknessLine, type DrillEntry } from "@/lib/academy-drills";
 import { loadDrills, saveDrill } from "@/lib/academy-store";
 import { type CoachImage } from "@/lib/academy-coach-media";
 import { findMissionsByQuery, MISSION_CATALOG } from "@/lib/academy-missions";
@@ -49,6 +49,7 @@ How you answer
 - How-to knowledge is fair game: opening a console, running a cmdlet, reading a field, how a ticket should be worked, why something matters. Explain it fully and precisely.
 - Mission answers are not. Never state the value an unsolved mission asks for (a group name, a count, a person, a computer name, a yes or no, a multiple-choice letter). Give the exact command or place that reveals it and have the student report back what they found. For solved missions you may discuss the answer freely.
 - Use the student brief below. Name the mission and ticket, what went wrong (wrong tries, hint used), last lab sync, and what to do about it. If their lab snapshot differs from the standard build in a way that matters, name the object.
+- A flagged mission means they moved on without solving it. Bring them back to that ticket before new material. Do not give the answer.
 - Never invent lab state. The snapshot is last known: use it as fact until a newer sync or screenshot replaces it. Name when it was last seen if that helps, but do not call it stale, expired, or useless. Never offer to fetch or refresh it yourself. You cannot reach their lab from here.
 
 Hands-on evidence
@@ -82,6 +83,7 @@ function missionLine(results: Results, id: string): string {
   const extras = [
     r.wrong ? `${r.wrong} wrong ${r.wrong === 1 ? "try" : "tries"}` : "",
     r.hint ? "hint used" : "",
+    r.flagged && !r.solved ? "flagged, moved on without solving" : "",
     r.at ? formatLabAge(r.at).ago : "",
   ].filter(Boolean);
   const status = r.solved ? "solved" : points === 0 ? "failed (out of tries)" : "attempted, not solved";
@@ -181,7 +183,7 @@ export const COACH_TOOLS: { name: string; description: string; input_schema: Rec
   },
   {
     name: "get_mission_history",
-    description: "Return every mission result: solved, wrong tries, hint used, and points.",
+    description: "Return every mission result: solved, wrong tries, hint used, flagged (moved on unsolved), and points.",
     input_schema: { type: "object", properties: {}, additionalProperties: false },
   },
   {
@@ -277,6 +279,7 @@ function statusOf(results: Results, id: string) {
     solved: r?.solved === true,
     wrong: r?.wrong ?? 0,
     hint: r?.hint === true,
+    flagged: r?.flagged === true && r?.solved !== true,
     points,
     finished: points !== null,
   };
@@ -343,6 +346,7 @@ async function weaknessProfile(ctx: CoachToolContext) {
       levelName: LEVEL_NAMES[level - 1],
       total: entries.length,
       keepsMissing: missedThemes(entries, 5),
+      recentMisses: missedQuestions(entries, 5),
       lastDrill: [...entries].sort((a, b) => b.at.localeCompare(a.at))[0]?.day ?? null,
     },
     lab: lab ? { syncedAgo: formatLabAge(lab.capturedAt).ago, differencesFromStandard: labEvidence(lab).diffs.slice(0, 6) } : null,
@@ -400,6 +404,8 @@ export async function runCoachTool(name: string, input: Record<string, unknown>,
         .sort((a, b) => b.at.localeCompare(a.at))
         .slice(0, 25)
         .map((e) => ({ day: e.day, mode: e.mode, level: e.level, correct: e.correct, total: e.total, seconds: e.seconds, questions: e.detail.map((d) => ({ title: d.t, skill: d.s, correct: d.c === 1 })) })),
+      missedQuestions: missedQuestions(entries, 10),
+      note: "missedQuestions lists what the student got wrong: the question, what they picked, and the best answer. Use it to coach them, and to write a fresh question on the same idea.",
     });
   }
   if (name === "get_environment_question_seeds") {

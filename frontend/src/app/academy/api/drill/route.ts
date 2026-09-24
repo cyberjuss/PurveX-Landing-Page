@@ -7,6 +7,7 @@ import {
   gradeDrill,
   LEVEL_NAMES,
   levelFor,
+  missedQuestions,
   recentPrompts,
   reissueDrill,
   startDrill,
@@ -59,6 +60,7 @@ async function status(userId: string, day: string) {
     level: { n: level, name: LEVEL_NAMES[level - 1] },
     ctf: { week: weekStart(day), entry: ctfOf(entries, day) },
     report: weeklyReport(entries, day),
+    missed: missedQuestions(entries, 8),
   };
 }
 

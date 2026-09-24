@@ -177,8 +177,14 @@ export async function resolveMcpKey(key: string): Promise<string | null> {
 // keeps its first result for the day; a timed run is always its own row.
 const MODES = ["daily", "timed", "ctf", "coach"] as const;
 
+// Databases that have not run the level/detail migration keep the question
+// detail inside the misses column, so missed questions are never lost.
+type Packed = { skills: DrillEntry["misses"]; level: number; detail: DrillEntry["detail"] };
+
 function toEntry(r: Record<string, unknown>): DrillEntry {
   const mode = MODES.find((m) => m === r.mode) ?? "daily";
+  const packed =
+    r.misses && typeof r.misses === "object" && !Array.isArray(r.misses) ? (r.misses as unknown as Packed) : null;
   return {
     id: String(r.drill_id),
     day: String(r.day),
@@ -186,10 +192,10 @@ function toEntry(r: Record<string, unknown>): DrillEntry {
     correct: Number(r.correct) || 0,
     total: Number(r.total) || 0,
     seconds: Number(r.seconds) || 0,
-    misses: Array.isArray(r.misses) ? (r.misses as DrillEntry["misses"]) : [],
+    misses: Array.isArray(r.misses) ? (r.misses as DrillEntry["misses"]) : packed?.skills ?? [],
     at: String(r.created_at),
-    level: Math.min(4, Math.max(1, Number(r.level) || 1)),
-    detail: Array.isArray(r.detail) ? (r.detail as DrillEntry["detail"]) : [],
+    level: Math.min(4, Math.max(1, Number(r.level) || packed?.level || 1)),
+    detail: Array.isArray(r.detail) && r.detail.length ? (r.detail as DrillEntry["detail"]) : packed?.detail ?? [],
   };
 }
 
@@ -229,8 +235,9 @@ export async function saveDrill(userId: string, entry: DrillEntry) {
   };
   const opts = { onConflict: "user_id,drill_id", ignoreDuplicates: true };
   let { error } = await supabaseAdmin.from("academy_drill_log").upsert({ ...row, level: entry.level, detail: entry.detail }, opts);
-  if (error && entry.mode !== "ctf" && entry.mode !== "coach") {
-    ({ error } = await supabaseAdmin.from("academy_drill_log").upsert(row, opts));
+  if (error) {
+    const packed: Packed = { skills: entry.misses, level: entry.level, detail: entry.detail };
+    ({ error } = await supabaseAdmin.from("academy_drill_log").upsert({ ...row, misses: packed }, opts));
   }
   if (error) console.error("academy_drill_log upsert failed", error.message);
 }

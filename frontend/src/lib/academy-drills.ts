@@ -38,7 +38,8 @@ export type Item = {
 
 export type PublicItem = Omit<Item, "answer" | "explain" | "accept" | "hint">;
 
-export type DrillDetail = { t: string; s: Skill; c: 0 | 1; p?: string; th?: string };
+/** One question. `x`, `a` and `e` are kept only for misses: what they picked, the best answer, and why. */
+export type DrillDetail = { t: string; s: Skill; c: 0 | 1; p?: string; th?: string; x?: string; a?: string; e?: string };
 
 export type DrillEntry = {
   id: string;
@@ -575,8 +576,15 @@ export function gradeDrill(
       t: item.title.slice(0, 80),
       s: item.skill,
       c: review[i].correct ? 1 : 0,
-      p: item.prompt.slice(0, 160),
+      p: item.prompt.slice(0, 200),
       th: (item.theme ?? item.title).slice(0, 80),
+      ...(review[i].correct
+        ? {}
+        : {
+            x: (review[i].picked ?? "no answer").slice(0, 160),
+            a: item.answer.slice(0, 160),
+            e: item.explain.slice(0, 320),
+          }),
     })),
   };
   return { entry, review, late };
@@ -606,6 +614,39 @@ export function levelFor(entries: DrillEntry[]): number {
   if (acc >= 0.7 && n >= 8) return 3;
   if (acc >= 0.5) return 2;
   return 1;
+}
+
+export type MissedQuestion = {
+  day: string;
+  mode: EntryMode;
+  title: string;
+  skill: Skill;
+  prompt: string;
+  picked: string;
+  answer: string;
+  explain: string;
+};
+
+/** The questions the student got wrong, newest first, with what they picked and the best answer. */
+export function missedQuestions(entries: DrillEntry[], limit = 10): MissedQuestion[] {
+  const out: MissedQuestion[] = [];
+  for (const e of [...entries].sort((a, b) => b.at.localeCompare(a.at))) {
+    for (const d of e.detail ?? []) {
+      if (d.c) continue;
+      out.push({
+        day: e.day,
+        mode: e.mode,
+        title: d.t,
+        skill: d.s,
+        prompt: d.p ?? "",
+        picked: d.x ?? "",
+        answer: d.a ?? "",
+        explain: d.e ?? "",
+      });
+      if (out.length >= limit) return out;
+    }
+  }
+  return out;
 }
 
 /** What was asked lately, so a new drill can steer away from it. */
@@ -768,9 +809,10 @@ export function weaknessLine(entries: DrillEntry[]): string {
   const parts = skills.map((r) => `${r.label} ${r.pct}% of ${r.asked}`);
   const themes = missedThemes(entries, 3).map((t) => `${t.theme} (missed ${t.missed} of ${t.asked})`);
   const last = [...entries].sort((a, b) => b.at.localeCompare(a.at))[0];
+  const recent = missedQuestions(entries, 4).map((m) => m.title);
   return `Drill level ${level} (${LEVEL_NAMES[level - 1]}). Accuracy: ${parts.join("; ")}.${
     themes.length ? ` Keeps missing: ${themes.join("; ")}.` : ""
-  } Last drill ${last.day}.`;
+  }${recent.length ? ` Latest missed questions: ${recent.join("; ")}. Use get_drill_history for what they picked.` : ""} Last drill ${last.day}.`;
 }
 
 export function cleanDay(value: unknown): string {
