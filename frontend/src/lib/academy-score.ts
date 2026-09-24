@@ -46,7 +46,7 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "tq-10": "security",
 };
 
-export type MissionResult = { solved: boolean; wrong: number; hint: boolean; flagged?: boolean; at?: string };
+export type MissionResult = { solved: boolean; wrong: number; hint: boolean; flagged?: boolean; /** The change this ticket needs was seen in the student's lab. */ labOk?: boolean; at?: string };
 export type Results = Record<string, MissionResult>;
 
 export const RESULTS_STORAGE_KEY = "academy-results-v1";
@@ -151,6 +151,7 @@ export function sanitizeResults(raw: unknown): Results {
       wrong: Math.min(3, Math.max(0, Math.floor(Number(v.wrong) || 0))),
       hint: v.hint === true,
       ...(flagged ? { flagged: true } : {}),
+      ...(v.labOk === true ? { labOk: true } : {}),
       ...(at ? { at } : {}),
     };
   }

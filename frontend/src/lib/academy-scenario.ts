@@ -282,6 +282,16 @@ export async function generateCtf(params: {
   // The weekly CTF is always a step above the student's level.
   const level = Math.min(4, params.level + 1);
 
+  // With a lab, the CTF has a second half: after naming the compromised account,
+  // the student must contain it for real before the flag counts.
+  const plant = params.snapshot
+    ? buildChangeTask({ snapshot: params.snapshot, seed: `ctf:${params.userId}:${params.week}`, level, avoid: [], targetJob: "contain-account", only: "contain" })
+    : null;
+  const plantRules = plant?.subject
+    ? `
+- The compromised account is ${plant.subject.name}, with the sign-in name ${plant.subject.sam}. That exact sign-in name is the single correct answer, and the question must ask for it (for example, which account was used in the suspicious logon). Show this account's activity on at least two different evidence lines, and never state outright that it is the attacker. Add two or three decoy accounts, using other sign-in names from the lab facts. The story must not name the account.`
+    : "";
+
   const system = `You write one weekly CTF-style investigation for a trainee at GovTech Financial's service desk who is learning to be a junior SOC analyst. The trainee reads the evidence, works out one fact, and types it in.
 
 Rules:
@@ -289,6 +299,7 @@ ${BASE_RULES}
 - Give 8 to 14 evidence lines. Mix Windows security log lines (event IDs 4624, 4625, 4634, 4648, 4720, 4728, 4740, 4768, 4769) with directory facts and, if it helps, DNS or DHCP lines that tie an IP address to a host.
 - The answer takes at least two evidence lines to find. For example, tie an address to a host in one place and that host to an account in another. Include two or three lines that look important and are not.
 - Exactly one correct answer, a short exact token: an account name, a host name, an IP address, or an event ID. Walk through the evidence yourself before you answer and make sure it is unambiguous.
+${plantRules}
 - Difficulty: ${LEVEL_RULES[level - 1]}
 Return only JSON, no other text:
 {"title": "3 to 5 words", "skill": "security", "story": "three to five sentences setting up the alert", "evidence": ["..."], "question": "one question with exactly one short answer", "answerFormat": "what to type, for example an account name like first.last", "answer": "the exact answer", "accept": ["other spellings that are also right"], "hint": "one sentence that points at the right evidence without giving the answer", "explain": "three or four sentences walking through how the evidence leads to the answer"}`;
@@ -300,7 +311,15 @@ Return only JSON, no other text:
     // Leave room in a 60 second function for the second draft.
     if (attempt && Date.now() - began > 24_000) break;
     const raw = await ask(params.apiKey, system, user, 2200, attempt ? 30_000 : 40_000);
-    const item = raw ? parseCtf(raw, skill, "Weekly CTF") : null;
+    let item = raw ? parseCtf(raw, skill, "Weekly CTF") : null;
+    if (item && plant?.subject) {
+      const sam = plant.subject.sam.toLowerCase();
+      const shows = item.evidence?.filter((l) => l.toLowerCase().includes(sam)).length ?? 0;
+      // Only gate it when the evidence really points at the planted account.
+      if (shows >= 2 && !item.story?.toLowerCase().includes(sam)) {
+        item = { ...item, answer: plant.subject.sam, accept: [plant.subject.name], gate: true, task: plant.task, job: "trace-logon" };
+      }
+    }
     if (item && (attempt === 1 || !tooSimilar(item, params.recent))) return { ...item, theme: `CTF: ${item.title}` };
     if (item && attempt === 0) continue;
   }
@@ -407,6 +426,12 @@ const CHANGE_STORY: Record<ChangeBrief["type"], (facts: string) => { title: stri
   audit: (f) => ({ title: "Missing audit events", story: f, question: "Turn on the missing auditing in your lab, then check it." }),
   logsize: (f) => ({ title: "Log wraps too fast", story: f, question: "Give the Security log room to keep evidence in your lab, then check it." }),
   harden: (f) => ({ title: "Roastable service account", story: f, question: "Set up the ticket in your lab, close the finding without breaking the job, then check it." }),
+  reset: (f) => ({ title: "Forgotten password", story: f, question: "Set up the call in your lab, get them back in the safe way, then check it." }),
+  hygiene: (f) => ({ title: "Password never expires", story: f, question: "Set up the ticket in your lab, fix the audit finding, then check it." }),
+  grouptype: (f) => ({ title: "Group grants nothing", story: f, question: "Set up the group in your lab, fix why it cannot grant access, then check it." }),
+  role: (f) => ({ title: "New team access", story: f, question: "Build the access the way the standard asks in your lab, then check it." }),
+  contain: (f) => ({ title: "Compromised account", story: f, question: "Set up the incident in your lab, stop the attacker without losing evidence, then check it." }),
+  pso: (f) => ({ title: "Stricter admin passwords", story: f, question: "Put the stricter policy in place in your lab, then check it." }),
 };
 
 export async function generateChange(params: {

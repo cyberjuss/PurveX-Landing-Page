@@ -256,6 +256,17 @@ function Get-PurvexSecurityState {
     } catch {}
     try { $sec.securityLogMaxMB = [int]((Get-WinEvent -ListLog Security).MaximumSizeInBytes / 1MB) } catch {}
     try { $sec.smb1 = [bool](Get-SmbServerConfiguration).EnableSMB1Protocol } catch {}
+    try {
+        $sec.psos = @(Get-ADFineGrainedPasswordPolicy -Filter * | ForEach-Object {
+            [ordered]@{
+                name             = $_.Name
+                precedence       = [int]$_.Precedence
+                minLength        = [int]$_.MinPasswordLength
+                lockoutThreshold = [int]$_.LockoutThreshold
+                appliesTo        = @($_.AppliesTo | ForEach-Object { (($_ -split '(?<!\\),', 2)[0] -replace '^(CN|OU)=', '') })
+            }
+        })
+    } catch {}
     return $sec
 }
 

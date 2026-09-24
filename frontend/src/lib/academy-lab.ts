@@ -42,6 +42,8 @@ export type LabSecurity = {
   audit?: Record<string, string>;
   securityLogMaxMB?: number;
   smb1?: boolean;
+  /** Fine-grained password policies. An empty list means the lab reported none. */
+  psos?: { name: string; precedence: number; minLength: number; lockoutThreshold: number; appliesTo: string[] }[];
 };
 
 export type LabSnapshot = {
@@ -117,6 +119,19 @@ function sanitizeSecurity(raw: unknown): LabSecurity | undefined {
   const log = num(r.securityLogMaxMB, 1_000_000);
   if (log !== undefined) out.securityLogMaxMB = log;
   if (typeof r.smb1 === "boolean") out.smb1 = r.smb1;
+  if (r.psos !== undefined) {
+    const arr = Array.isArray(r.psos) ? r.psos : r.psos && typeof r.psos === "object" ? [r.psos] : [];
+    out.psos = arr
+      .filter((x): x is Record<string, unknown> => !!x && typeof x === "object")
+      .slice(0, 20)
+      .map((x) => ({
+        name: str(x.name, 100),
+        precedence: num(x.precedence, 100000) ?? 0,
+        minLength: num(x.minLength, 128) ?? 0,
+        lockoutThreshold: num(x.lockoutThreshold, 1000) ?? 0,
+        appliesTo: list(x.appliesTo, 20),
+      }));
+  }
   return Object.keys(out).length ? out : undefined;
 }
 

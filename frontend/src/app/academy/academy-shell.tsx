@@ -20,6 +20,7 @@ import {
   RESULTS_OWNER_KEY,
   RESULTS_UPDATED_EVENT,
 } from "@/lib/academy-client";
+import { LAB_GATED_MISSIONS } from "@/lib/academy-missions";
 import { clearResults, loadResults, saveResults, scorecardHtml, summarize, type MissionResult, type Results } from "@/lib/academy-score";
 import { signOut } from "@/lib/portal-auth";
 import { supabase } from "@/lib/supabase";
@@ -217,12 +218,19 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     const restoreMission = (wrap: HTMLElement) => {
       wrap.setAttribute("data-restored", "1");
       const id = wrap.getAttribute("data-id");
+      if (id && LAB_GATED_MISSIONS.includes(id) && !wrap.querySelector(".ad-lab-gate")) {
+        const note = document.createElement("p");
+        note.className = "ad-lab-gate";
+        note.textContent = "If your lab is connected, this ticket is checked there. Make the change, wait for your lab to report, then submit your answer.";
+        wrap.querySelector(".ad-guess")?.before(note);
+      }
       const r = id ? loadResults()[id] : undefined;
       if (!r) {
         labelHintButton(wrap, false);
         return;
       }
       wrap.setAttribute("data-attempts", String(Math.min(r.wrong, 3)));
+      if (r.labOk) wrap.classList.add("ad-mission--labok");
       const input = wrap.querySelector<HTMLInputElement>(".ad-guess__input");
       const submit = wrap.querySelector<HTMLButtonElement>(".ad-guess__submit");
       const feedback = wrap.querySelector<HTMLElement>(".ad-guess__feedback");
@@ -246,7 +254,22 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       }
     };
 
-    const checkFlag = (btn: HTMLButtonElement) => {
+    // Some tickets need a real change. Ask the server whether the student's lab
+    // shows it. No lab connected, or a failed request, never traps a student.
+    const labGate = async (id: string): Promise<{ gated: boolean; passed?: boolean; results?: { label: string; ok: boolean }[] } | null> => {
+      try {
+        const res = await academyFetch("/academy/api/mission-check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id }),
+        });
+        return res.ok ? await res.json() : null;
+      } catch {
+        return null;
+      }
+    };
+
+    const checkFlag = async (btn: HTMLButtonElement) => {
       const answer = btn.dataset.answer;
       const wrap = btn.closest(".ad-mission");
       if (!answer || !wrap) return;
@@ -265,6 +288,25 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         feedback.className = "ad-guess__feedback ad-guess__feedback--err";
         input.focus();
         return;
+      }
+
+      const missionId = wrap.getAttribute("data-id") || "";
+      if (!wrap.classList.contains("ad-mission--labok") && LAB_GATED_MISSIONS.includes(missionId)) {
+        btn.disabled = true;
+        feedback.textContent = "Checking your lab…";
+        feedback.className = "ad-guess__feedback";
+        const gate = await labGate(missionId);
+        btn.disabled = false;
+        if (gate?.gated && !gate.passed) {
+          const missing = (gate.results ?? []).filter((r) => !r.ok).map((r) => r.label).join("; ");
+          feedback.textContent = `Your lab does not show this change yet: ${missing}. Make the change, then wait for your lab to report (about 15 minutes) or run Build-Environment.ps1 -SyncOnly on the domain controller. This does not use an attempt.`;
+          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          return;
+        }
+        if (gate?.gated && gate.passed) {
+          wrap.classList.add("ad-mission--labok");
+          recordResult(wrap, { labOk: true });
+        }
       }
 
       if (guess === normalize(answer)) {

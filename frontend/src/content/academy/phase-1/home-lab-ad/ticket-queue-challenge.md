@@ -14,12 +14,9 @@ This is the help desk queue at GovTech Financial. Tickets arrive as staff reques
 - Write a setting
 - Move a transfer
 
-If the ticket and the directory disagree, fix the directory. The answer is what the directory shows after you act.
+If the ticket and the directory disagree, fix the directory. The answer is what the directory shows after you act. You can move on. This stays flagged until you solve it.
 
-<details class="ad-answer-guide">
-<summary class="ad-answer-guide__label">Hands-on required</summary>
-<p>Run <code>Build-Environment.ps1 -IncludeCTF</code> first so the ticket objects are planted. If you built the lab earlier run <code>Remove-Environment.ps1</code> and build again with <code>-IncludeCTF</code> so the new ticket state is there. Then make the change in Active Directory Users and Computers. The answer is the state after you finish not the first look. The hint tells you what to open. The finding shows the answer, the problem, and the solution. You get three tries. The hint unlocks after two wrong tries. The explanation unlocks after the third.</p>
-</details>
+Run `Build-Environment.ps1 -IncludeCTF` first so the ticket objects are planted. If you built the lab earlier, run `Remove-Environment.ps1` and build again with `-IncludeCTF` so the new ticket state is there. Then make the change in Active Directory Users and Computers. The answer is the state after you finish, not the first look. The hint tells you what to open. The finding shows the answer, the problem, and the solution. You get three tries. The hint unlocks after two wrong tries. The explanation unlocks after the third. You can move on. This stays flagged until you solve it.
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>

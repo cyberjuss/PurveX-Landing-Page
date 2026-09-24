@@ -17,6 +17,8 @@ import {
   recentPrompts,
   reissueDrill,
   startDrill,
+  stockCtf,
+  unlockGate,
   weekStart,
   weeklyReport,
   type DrillEntry,
@@ -71,8 +73,8 @@ async function status(userId: string, day: string) {
     report: weeklyReport(entries, day),
     missed: missedQuestions(entries, 8),
     chats: { base: COACH_DAILY_LIMIT, ...chats },
-    jobs: jobProgress(entries),
-    nextJob: pickTargetJob(entries, `${userId}:${day}`, Boolean(lab.synced), lab.security)?.id ?? null,
+    jobs: jobProgress(entries, results),
+    nextJob: pickTargetJob(entries, `${userId}:${day}`, Boolean(lab.synced), lab.security, results)?.id ?? null,
   };
 }
 
@@ -155,16 +157,17 @@ export async function POST(request: Request) {
     let item = null;
     if (apiKey && mode === "daily") {
       // Aim at the on-the-job task they have shown the least, so the daily drill covers what the job needs.
-      const target = pickTargetJob(entries, `${userId}:${day}`, Boolean(snapshot), Boolean(snapshot?.security?.passwordPolicy || snapshot?.security?.audit));
+      const target = pickTargetJob(entries, `${userId}:${day}`, Boolean(snapshot), Boolean(snapshot?.security?.passwordPolicy || snapshot?.security?.audit), results);
       const format = swap ? "respond" : pickFormat(`${userId}:${day}`, level, Boolean(snapshot), Boolean(target?.lab));
       const targetJob = target ? { id: target.id, label: target.label } : null;
       item = await generateDaily({ apiKey, userId, day, snapshot, results, level, recent, format, targetJob }).catch(() => null);
     } else if (apiKey && mode === "ctf") {
-      item = await generateCtf({ apiKey, userId, week: keyDay, snapshot, results, level, recent }).catch(() => null);
+      item = await generateCtf({ apiKey, userId, week: keyDay, snapshot, results, level, recent }).catch((err) => {
+        console.error("ctf: writer failed", err);
+        return null;
+      });
     }
-    if (mode === "ctf" && !item) {
-      return NextResponse.json({ error: "Could not write this week's CTF. Try again in a minute." }, { status: 503 });
-    }
+    if (mode === "ctf" && !item) item = stockCtf(snapshot, keyDay);
 
     const drill = startDrill({
       userId,
@@ -181,15 +184,23 @@ export async function POST(request: Request) {
     return NextResponse.json(drill);
   }
 
+  // A gated CTF: the typed answer unlocks the lab task.
+  if (body.action === "unlock") {
+    if (typeof body.token !== "string") return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    const unlocked = unlockGate(userId, body.token, body.answers);
+    if (!unlocked) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
+    return NextResponse.json(unlocked);
+  }
+
   // Check a lab change against the newest snapshot the student's domain controller sent.
   if (body.action === "check") {
     if (typeof body.token !== "string") return NextResponse.json({ error: "Invalid request." }, { status: 400 });
     const lab = await loadLabState(userId);
-    const checked = checkChange(userId, body.token, lab);
+    const checked = checkChange(userId, body.token, lab, body.answers);
     if (!checked) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
     const syncedAgo = lab ? formatLabAge(lab.uploadedAt).ago : null;
     if (!checked.passed) return NextResponse.json({ ...checked, syncedAgo });
-    const graded = await gradeDrill(userId, body.token, [], { changePassed: true });
+    const graded = await gradeDrill(userId, body.token, body.answers ?? [], { changePassed: true });
     if (!graded) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
     return NextResponse.json({ ...checked, syncedAgo, ...(await record(userId, graded, day)) });
   }

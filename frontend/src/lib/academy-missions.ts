@@ -220,3 +220,20 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
     return hay.includes(q) || q.includes(m.id);
   });
 }
+
+/** Tickets that need a real change in the student's lab before they can answer. */
+export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05"];
+
+/** The on-the-job task each mission practices. A gated ticket seen in the lab counts as proven. */
+export const MISSION_JOBS: Record<string, string> = {
+  "tq-01": "group-access",
+  "tq-02": "enable-account",
+  "tq-03": "create-user",
+  "tq-04": "service-account",
+  "tq-05": "fix-ou",
+  "tq-06": "trace-logon",
+  "tq-07": "read-logs",
+  "tq-08": "read-logs",
+  "tq-09": "triage-alert",
+  "tq-10": "triage-alert",
+};

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Check, Copy, Flame, Timer, X } from "lucide-react";
+import { ArrowRight, Check, ClipboardList, Copy, Flame, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch, READINESS_PATH } from "@/lib/academy-client";
 import { SKILLS, type Skill } from "@/lib/academy-score";
@@ -280,7 +280,7 @@ function JobTasks({ jobs, next, n, security }: { jobs: JobRow[]; next: string | 
         {jobs.map((j) => (
           <li key={j.id} className={`is-${j.status}${j.id === next ? " is-next" : ""}`}>
             <span className="dr-jobs__mark" aria-hidden>
-              {j.status === "proven" ? <Check className="h-3.5 w-3.5" /> : null}
+              {j.status === "proven" ? <Check className="h-3.5 w-3.5" /> : <ClipboardList className="h-3.5 w-3.5" />}
             </span>
             <span className="dr-jobs__name">
               {j.label}
@@ -741,11 +741,11 @@ export function DrillRunner() {
           {error && <p className="dr-error">{error}</p>}
 
           <JobTasks jobs={status.jobs} next={status.nextJob} n="04" security={status.lab.security} />
-          <p className="dr-lab">
-            <Link href={READINESS_PATH}>See this week and the questions you missed</Link> on your readiness report. Getting them right raises a competency. Missing them keeps it down.
-          </p>
+          <Link href={READINESS_PATH} className="dr-reportlink">
+            See this week and the questions you missed on your readiness report. Getting them right raises a competency. Missing them keeps it down.
+            <ArrowRight className="h-4 w-4" />
+          </Link>
           <p className="dr-lab">{labLine(status.lab)}</p>
-          {error && <p className="dr-error">{error}</p>}
         </>
       ) : (
         <p className="dr-note">Loading your drills…</p>

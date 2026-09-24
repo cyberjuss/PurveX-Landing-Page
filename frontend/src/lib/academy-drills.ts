@@ -1,6 +1,7 @@
 import "server-only";
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "crypto";
 import { BASELINE_GROUPS, BASELINE_USERS, type LabGroup, type LabSnapshot, type LabUser } from "@/lib/academy-lab";
+import { MISSION_JOBS } from "@/lib/academy-missions";
 import { SKILLS, summarize, type Results, type Skill } from "@/lib/academy-score";
 
 // Daily and timed drills. Questions come from the student's own lab
@@ -43,6 +44,8 @@ export type Item = {
   task?: Task;
   /** Which on-the-job task this practices. See JOBS. */
   job?: string;
+  /** A typed-answer question that also needs a lab change to finish. The change unlocks after the answer. */
+  gate?: boolean;
 };
 
 export type Check =
@@ -52,7 +55,9 @@ export type Check =
   | { t: "enabled"; sam: string; want: boolean }
   | { t: "noexpire"; sam: string; want: boolean }
   | { t: "desc"; sam: string; text: string }
-  | { t: "flag"; sam: string; flag: "pwdNotRequired" | "noPreAuth" | "delegation"; want: boolean }
+  | { t: "flag"; sam: string; flag: "pwdNotRequired" | "noPreAuth" | "delegation" | "lockedOut" | "passwordExpired"; want: boolean }
+  | { t: "group"; name: string; category?: "Security" | "Distribution"; scope?: string; container?: string; member?: string }
+  | { t: "pso"; minLength: number; appliesTo: string; maxLockout?: number }
   | { t: "policy"; key: "minLength" | "complexity" | "history" | "lockoutThreshold" | "lockoutDurationMin" | "lockoutWindowMin"; min?: number; max?: number; bool?: boolean }
   | { t: "audit"; sub: string; need: "Success" | "Failure" | "Both" }
   | { t: "logsize"; minMB: number };
@@ -66,7 +71,8 @@ export type Task = {
   setup?: { sam: string; note: string; script: string };
 };
 
-export type PublicItem = Omit<Item, "answer" | "explain" | "accept" | "hint" | "rubric" | "task" | "job"> & {
+export type PublicItem = Omit<Item, "answer" | "explain" | "accept" | "hint" | "rubric" | "task" | "job" | "gate"> & {
+  gated?: boolean;
   checklist?: string[];
   checkCount?: number;
   setup?: { note: string; script: string };
@@ -163,6 +169,42 @@ export function standardSnapshot(): LabSnapshot {
     users,
     groups,
     computers: [{ name: "IT-WKS01", description: "", container: "OU=Workstations,OU=IT,OU=Departments", enabled: true, lastLogon: null }],
+  };
+}
+
+/** A typed-answer investigation from the lab, used when the weekly writer does not return one. */
+export function stockCtf(snapshot: LabSnapshot | null, week: string): Item {
+  const s = snapshot && snapshot.users.length ? snapshot : standardSnapshot();
+  const r = seeded(`ctf-stock:${week}`);
+  const people = s.users.filter((u) => u.sam && !u.sam.startsWith("svc-"));
+  const actor = people[Math.floor(r() * people.length)] ?? s.users[0];
+  const other = people.find((u) => u.sam !== actor.sam) ?? actor;
+  const host = s.computers.find((c) => c.enabled)?.name || s.computers[0]?.name || "WM-WKS07";
+  const ip = "10.20.14.47";
+  const otherIp = "10.20.8.12";
+  return {
+    skill: "security",
+    title: "After hours sign-in",
+    story: "A detection fired for a successful sign-in at 02:14. The alert names an address, not a person. Tie the address to a workstation, then the workstation to the account that actually signed in.",
+    prompt: "Which account completed the 02:14 sign-in?",
+    evidence: [
+      `4625 Failure. Account ${other.sam}. Workstation ${host}. Source ${otherIp}. 02:11.`,
+      `DHCP. ${otherIp} leased to IT-WKS01. 18:40.`,
+      `4624 Success. Logon type 3. Account ${actor.sam}. Source ${ip}. 02:14.`,
+      `DNS. ${ip} is ${host}.`,
+      `4740 Account locked. ${other.sam}. 02:12.`,
+      `4634 Logoff. ${actor.sam}. ${host}. 02:19.`,
+      `4768 Kerberos TGT. ${other.sam}. 09:02.`,
+    ],
+    choices: [],
+    answer: actor.sam,
+    accept: actor.name && actor.name !== actor.sam ? [actor.name] : [],
+    explain: `The 02:14 success is the 4624 from ${ip}. DNS says that address is ${host}. The account on that 4624 is ${actor.sam}. The failure and the lockout are ${other.sam}, from a different address, three minutes earlier.`,
+    hint: "Start with the successful 4624 at 02:14, then match its source address in the DNS line.",
+    format: "Account name, like first.last",
+    free: true,
+    theme: "CTF: After hours sign-in",
+    job: "trace-logon",
   };
 }
 
@@ -505,9 +547,11 @@ function publicItems(items: Item[], level: number): PublicItem[] {
     kind: item.kind ?? "decide",
     long: item.long,
     // Early levels say what to change. Later levels only say how it is checked.
-    checklist: item.task && level <= 2 ? item.task.checks.map((c) => c.label) : undefined,
-    checkCount: item.task?.checks.length,
-    setup: item.task?.setup ? { note: item.task.setup.note, script: item.task.setup.script } : undefined,
+    gated: item.gate ? true : undefined,
+    // A gated CTF keeps its task hidden until the answer is right.
+    checklist: item.task && !item.gate && level <= 2 ? item.task.checks.map((c) => c.label) : undefined,
+    checkCount: item.gate ? undefined : item.task?.checks.length,
+    setup: item.task?.setup && !item.gate ? { note: item.task.setup.note, script: item.task.setup.script } : undefined,
     job: item.job ? JOBS.find((j) => j.id === item.job)?.label : undefined,
   }));
 }
@@ -616,12 +660,15 @@ export async function gradeDrill(
       answer = item.answer;
     } else if (item.free) {
       picked = raw && raw.trim() ? raw.trim() : null;
-      right = picked !== null && [item.answer, ...(item.accept ?? [])].some((a) => flat(a) === flat(picked!));
+      const said = picked !== null && [item.answer, ...(item.accept ?? [])].some((a) => flat(a) === flat(picked!));
+      // A gated CTF also needs the containment change seen in the lab.
+      right = item.gate ? said && opts.changePassed === true : said;
+      if (item.gate && !right) explain = `${item.explain} To finish: ${(item.task?.guide ?? []).join(" ")}`;
     } else {
       picked = raw !== null && item.choices.includes(raw) ? raw : null;
       right = picked === item.answer;
     }
-    review.push({ title: item.title, skill: item.skill, picked, answer, correct: !late && right, explain, runbook: item.kind === "change" ? item.task?.runbook : undefined });
+    review.push({ title: item.title, skill: item.skill, picked, answer, correct: !late && right, explain, runbook: item.kind === "change" || item.gate ? item.task?.runbook : undefined });
   }
   const entry: DrillEntry = {
     id: p.id,
@@ -650,7 +697,35 @@ export async function gradeDrill(
           }),
     })),
   };
+  // A contained CTF also proves the containment job.
+  p.items.forEach((item, i) => {
+    if (item.gate && review[i].correct) {
+      entry.detail.push({ t: `Contain: ${item.title}`.slice(0, 80), s: "security", c: 1, th: "contain-account", j: "contain-account", k: "change" });
+    }
+  });
   return { entry, review, late };
+}
+
+/** The typed answer to a gated CTF, and, if right, the lab task it unlocks. */
+export function unlockGate(
+  userId: string,
+  token: string,
+  answers: unknown
+): { ok: boolean; setup?: { note: string; script: string }; checklist?: string[]; checkCount?: number } | null {
+  const p = unseal(token);
+  if (!p || p.u !== userId) return null;
+  const item = p.items[0];
+  if (!item?.gate || !item.task) return null;
+  const given = Array.isArray(answers) && typeof answers[0] === "string" ? (answers[0] as string).slice(0, 200) : "";
+  const ok = Boolean(given.trim()) && [item.answer, ...(item.accept ?? [])].some((a) => flat(a) === flat(given));
+  if (!ok) return { ok: false };
+  const setup = item.task.setup ? { note: item.task.setup.note, script: item.task.setup.script } : undefined;
+  return {
+    ok: true,
+    setup,
+    checklist: (p.level ?? 1) <= 2 ? item.task.checks.map((c) => c.label) : undefined,
+    checkCount: item.task.checks.length,
+  };
 }
 
 // ---- job tasks ------------------------------------------------------------
@@ -668,6 +743,12 @@ export const JOBS: JobDef[] = [
   { id: "least-privilege", label: "Remove access that should not be there", skill: "security", lab: true },
   { id: "offboard", label: "Offboard without deleting", skill: "security", lab: true },
   { id: "service-account", label: "Set up a service account safely", skill: "security", lab: true },
+  { id: "reset-password", label: "Reset a password the safe way", skill: "troubleshooting", lab: true },
+  { id: "password-hygiene", label: "Fix a password that never expires", skill: "security", lab: true },
+  { id: "group-type", label: "Fix a group that cannot grant access", skill: "accounts", lab: true },
+  { id: "role-based-access", label: "Build role-based access with groups", skill: "accounts", lab: true },
+  { id: "contain-account", label: "Contain a compromised account, keep the evidence", skill: "security", lab: true },
+  { id: "admin-password-policy", label: "Give admins a stricter password policy", skill: "security", lab: true, security: true },
   { id: "lockout-policy", label: "Set an account lockout policy", skill: "security", lab: true, security: true },
   { id: "password-policy", label: "Set a password policy that resists guessing", skill: "security", lab: true, security: true },
   { id: "enable-auditing", label: "Turn on the auditing a SOC needs", skill: "security", lab: true, security: true },
@@ -686,12 +767,21 @@ export const isJob = (id: unknown): id is string => typeof id === "string" && JO
 export type JobStatus = "new" | "practiced" | "proven";
 export type JobRow = { id: string; label: string; skill: Skill; lab: boolean; security: boolean; status: JobStatus; correct: number; asked: number; last: string | null };
 
-export function jobProgress(entries: DrillEntry[]): JobRow[] {
+export function jobProgress(entries: DrillEntry[], results?: Results): JobRow[] {
   return JOBS.map((job) => {
     let asked = 0;
     let correct = 0;
     let labProven = false;
     let last: string | null = null;
+    // Lesson tickets and CTF missions count too. One seen in the lab is proof.
+    for (const [id, r] of Object.entries(results ?? {})) {
+      if (MISSION_JOBS[id] !== job.id) continue;
+      if (!r.solved) continue;
+      asked += 1;
+      correct += 1;
+      if (r.labOk) labProven = true;
+      if (r.at && (!last || r.at > last)) last = r.at;
+    }
     for (const e of entries) {
       for (const d of e.detail ?? []) {
         if (d.j !== job.id) continue;
@@ -711,8 +801,8 @@ export function jobProgress(entries: DrillEntry[]): JobRow[] {
 }
 
 /** The job to work on next: never-tried first, then half-done, then the one not seen for longest. */
-export function pickTargetJob(entries: DrillEntry[], seed: string, hasLab: boolean, hasSecurity = false): JobRow | null {
-  const rows = jobProgress(entries).filter((j) => (j.lab ? hasLab : true) && (j.security ? hasSecurity : true));
+export function pickTargetJob(entries: DrillEntry[], seed: string, hasLab: boolean, hasSecurity = false, results?: Results): JobRow | null {
+  const rows = jobProgress(entries, results).filter((j) => (j.lab ? hasLab : true) && (j.security ? hasSecurity : true));
   if (!rows.length) return null;
   const rank = { new: 0, practiced: 1, proven: 2 } as const;
   const best = Math.min(...rows.map((j) => rank[j.status]));
@@ -722,8 +812,8 @@ export function pickTargetJob(entries: DrillEntry[], seed: string, hasLab: boole
 }
 
 /** One line for Coach: how much of the job this student has shown they can do. */
-export function jobLine(entries: DrillEntry[]): string {
-  const rows = jobProgress(entries);
+export function jobLine(entries: DrillEntry[], results?: Results): string {
+  const rows = jobProgress(entries, results);
   const proven = rows.filter((r) => r.status === "proven");
   const open = rows.filter((r) => r.status !== "proven").map((r) => r.label);
   return `Job tasks proven ${proven.length} of ${rows.length}.${proven.length ? ` Proven: ${proven.map((r) => r.label).join("; ")}.` : ""}${open.length ? ` Not yet: ${open.slice(0, 5).join("; ")}.` : ""}`;
@@ -767,7 +857,7 @@ function departments(s: LabSnapshot): Dept[] {
 }
 
 export type ChangeBrief = {
-  type: "access" | "hire" | "offboard" | "enable" | "wrongou" | "excess" | "service" | "lockout" | "password" | "audit" | "logsize" | "harden";
+  type: "access" | "hire" | "offboard" | "enable" | "wrongou" | "excess" | "service" | "lockout" | "password" | "audit" | "logsize" | "harden" | "reset" | "hygiene" | "grouptype" | "role" | "contain" | "pso";
   job: string;
   skill: Skill;
   theme: string;
@@ -776,6 +866,8 @@ export type ChangeBrief = {
   temptation?: string;
   task: Task;
   summary: string;
+  /** The account the task is about, when it is a planted practice account. */
+  subject?: { sam: string; name: string };
 };
 
 const hasGroup = (s: LabSnapshot, name: string) => s.groups.some((g) => g.name.toLowerCase() === name.toLowerCase());
@@ -794,10 +886,10 @@ function setupScript(lines: string[]) {
   ].join("\n");
 }
 
-const newUserLine = (name: string, sam: string, ou: string, desc: string) =>
-  `New-ADUser -Name "${name}" -SamAccountName "${sam}" -UserPrincipalName "${sam}@$($dom.DNSRoot)" -Path "${usersOu(ou)},$dn" -AccountPassword $pw -Enabled $true -ChangePasswordAtLogon $true -Description "${desc}"`;
+const newUserLine = (name: string, sam: string, ou: string, desc: string, opts: { change?: boolean; extra?: string } = {}) =>
+  `New-ADUser -Name "${name}" -SamAccountName "${sam}" -UserPrincipalName "${sam}@$($dom.DNSRoot)" -Path "${usersOu(ou)},$dn" -AccountPassword $pw -Enabled $true -ChangePasswordAtLogon ${opts.change === false ? "$false" : "$true"} -Description "${desc}"${opts.extra ?? ""}`;
 
-export function buildChangeTask(params: { snapshot: LabSnapshot; seed: string; level: number; avoid: string[]; targetJob?: string }): ChangeBrief | null {
+export function buildChangeTask(params: { snapshot: LabSnapshot; seed: string; level: number; avoid: string[]; targetJob?: string; only?: ChangeBrief["type"] }): ChangeBrief | null {
   const s = params.snapshot;
   const r = seeded(`change:${params.seed}`);
   const level = params.level;
@@ -1082,6 +1174,245 @@ export function buildChangeTask(params: { snapshot: LabSnapshot; seed: string; l
     });
   }
 
+  // Passwords and access: reset one safely, fix one that never expires.
+  const resetName = nextName();
+  const resetDept = pick(r, depts);
+  if (resetName && resetDept) {
+    const sam = samOf(resetName);
+    built.push({
+      type: "reset",
+      job: "reset-password",
+      skill: "troubleshooting",
+      theme: `change:reset:${sam}`,
+      subject: { sam, name: resetName },
+      facts: `${resetName} (${resetDept.label}) forgot their password and is on the phone. You already verified who they are with the questions on the verification card. Get them back in without you ever knowing their password.`,
+      temptation: level >= 3 ? `They ask you to set it to something easy to remember, like Welcome1. A password you chose and said out loud is one you also know.` : undefined,
+      task: {
+        setup: {
+          sam,
+          note: "Run this once on the domain controller. It creates a practice account for this call.",
+          script: setupScript([
+            newUserLine(resetName, sam, resetDept.ou, "Forgot password", { change: false }),
+            `Add-ADGroupMember -Identity "${resetDept.group}" -Members ${sam}`,
+          ]),
+        },
+        checks: [
+          { c: { t: "flag", sam, flag: "passwordExpired", want: true }, label: `${resetName} must change their password at next sign-in` },
+          { c: { t: "enabled", sam, want: true }, label: `${resetName}'s account is enabled` },
+          { c: { t: "flag", sam, flag: "lockedOut", want: false }, label: `${resetName}'s account is not locked` },
+          { c: { t: "member", sam, group: resetDept.group, want: true }, label: `${resetName} is still in ${resetDept.group}` },
+          ...notAdmin(sam, resetName),
+        ],
+        guide: [
+          ADUC,
+          "Find the account, right-click it, and choose Reset Password.",
+          "Type a temporary password and tick User must change password at next logon. Tick Unlock the account if it is shown.",
+          SYNC_STEP,
+        ],
+        runbook: [
+          `Set-ADAccountPassword -Identity ${sam} -Reset -NewPassword (Read-Host -AsSecureString "Temporary password")`,
+          `Set-ADUser -Identity ${sam} -ChangePasswordAtLogon $true`,
+          `Unlock-ADAccount -Identity ${sam}   # only if the account is locked`,
+        ],
+      },
+      summary: `${sam} has a temporary password and must change it at next sign-in. Nothing else changed.`,
+    });
+  }
+
+  const hygName = nextName();
+  const hygDept = pick(r, depts);
+  if (hygName && hygDept) {
+    const sam = samOf(hygName);
+    built.push({
+      type: "hygiene",
+      job: "password-hygiene",
+      skill: "security",
+      theme: `change:hygiene:${sam}`,
+      subject: { sam, name: hygName },
+      facts: `A password audit found that ${hygName}, a ${hygDept.label} employee, has "Password never expires" set. Only service accounts may have that. A person's password that never expires stays valid forever if it leaks. The account itself is fine and must keep working.`,
+      temptation: level >= 3 ? `${hygName} says they hate changing passwords and asks you to leave it. Preference is not a reason to skip the standard.` : undefined,
+      task: {
+        setup: {
+          sam,
+          note: "Run this once on the domain controller. It creates a practice account with the problem the audit found.",
+          script: setupScript([
+            newUserLine(hygName, sam, hygDept.ou, `${hygDept.label} analyst`, { change: false, extra: " -PasswordNeverExpires $true" }),
+            `Add-ADGroupMember -Identity "${hygDept.group}" -Members ${sam}`,
+          ]),
+        },
+        checks: [
+          { c: { t: "noexpire", sam, want: false }, label: `${hygName}'s password can expire like everyone else's` },
+          { c: { t: "enabled", sam, want: true }, label: `${hygName}'s account is still enabled` },
+          { c: { t: "member", sam, group: hygDept.group, want: true }, label: `${hygName} is still in ${hygDept.group}` },
+          ...notAdmin(sam, hygName),
+        ],
+        guide: [
+          ADUC,
+          "Find the account, open Properties, and go to the Account tab.",
+          "Under Account options, clear Password never expires. Leave everything else alone.",
+          SYNC_STEP,
+        ],
+        runbook: [
+          `Get-ADUser ${sam} -Properties PasswordNeverExpires | Select-Object Name,PasswordNeverExpires`,
+          `Set-ADUser -Identity ${sam} -PasswordNeverExpires $false`,
+        ],
+      },
+      summary: `${sam}'s password can expire normally and the account is unchanged otherwise.`,
+    });
+  }
+
+  // Access control done with groups. Needs the AccessLevels folder.
+  const hasAccessOu = s.ous.some((o) => o.path.toLowerCase() === "ou=accesslevels");
+  const people = shuffle(r, movers.map((m) => m.u)).slice(0, 2);
+  const grpName = shuffle(r, ["Payments-Approvers", "Vendor-Onboarding", "Wire-Reviewers", "Client-Records-RO", "Audit-Readers", "Treasury-Ops"]).find((g) => !hasGroup(s, g));
+  if (hasAccessOu && grpName && people.length === 2) {
+    const [a, b] = people;
+    built.push({
+      type: "grouptype",
+      job: "group-type",
+      skill: "accounts",
+      theme: `change:grouptype:${grpName}`,
+      facts: `The group ${grpName} was created to give ${nameOf(a)} and ${nameOf(b)} access to a shared folder, but the folder permission does nothing. It was created as a Distribution group, which is for email and cannot be used to grant access. The members are right and must stay.`,
+      task: {
+        setup: {
+          sam: grpName,
+          note: "Run this once on the domain controller. It creates the group as it was first set up.",
+          script: setupScript([
+            `New-ADGroup -Name "${grpName}" -SamAccountName "${grpName}" -GroupScope Global -GroupCategory Distribution -Path "OU=AccessLevels,$dn" -Description "Folder access"`,
+            `Add-ADGroupMember -Identity "${grpName}" -Members ${a.sam},${b.sam}`,
+          ]),
+        },
+        checks: [
+          { c: { t: "group", name: grpName, category: "Security", container: "OU=AccessLevels" }, label: `${grpName} is a Security group` },
+          { c: { t: "group", name: grpName, member: nameOf(a) }, label: `${nameOf(a)} is still a member` },
+          { c: { t: "group", name: grpName, member: nameOf(b) }, label: `${nameOf(b)} is still a member` },
+        ],
+        guide: [
+          ADUC,
+          `Open the AccessLevels folder, right-click ${grpName}, and choose Properties.`,
+          "On the General tab, under Group type, choose Security. Leave the scope and the members alone.",
+          SYNC_STEP,
+        ],
+        runbook: [
+          `Get-ADGroup ${grpName} | Select-Object Name,GroupCategory,GroupScope`,
+          `Set-ADGroup -Identity ${grpName} -GroupCategory Security`,
+        ],
+      },
+      summary: `${grpName} is a Security group with the same two members.`,
+    });
+  }
+
+  // Role-based access the way administrators build it: people, then a role group, then a resource group.
+  const roleName = shuffle(r, ["Role-Finance-Reviewers", "Role-Wire-Approvers", "Role-Records-Clerks", "Role-Audit-Support"]).find((g) => !hasGroup(s, g));
+  const resName = shuffle(r, ["ACL-FinanceShare-Read", "ACL-Payments-Modify", "ACL-Records-Read", "ACL-AuditLogs-Read"]).find((g) => !hasGroup(s, g));
+  if (hasAccessOu && roleName && resName && people.length === 2) {
+    const [a, b] = people;
+    built.push({
+      type: "role",
+      job: "role-based-access",
+      skill: "accounts",
+      theme: `change:role:${roleName}`,
+      facts: `A new team needs read access to a shared folder, and ${nameOf(a)} and ${nameOf(b)} are the first two members. Do not put people straight on the folder. Company standard for access: people go in a Global security group for the role, that role group goes in a Domain Local security group for the resource, and only the resource group is given the folder permission later. Both groups live in the AccessLevels folder.`,
+      temptation: level >= 3 ? `Someone suggests skipping the second group "to save time". Then every future change means editing folder permissions by hand.` : undefined,
+      task: {
+        checks: [
+          { c: { t: "group", name: roleName, category: "Security", scope: "Global", container: "OU=AccessLevels", member: nameOf(a) }, label: `${roleName} is a Global security group in AccessLevels with ${nameOf(a)}` },
+          { c: { t: "group", name: roleName, member: nameOf(b) }, label: `${roleName} also contains ${nameOf(b)}` },
+          { c: { t: "group", name: resName, category: "Security", scope: "DomainLocal", container: "OU=AccessLevels", member: roleName }, label: `${resName} is a Domain Local security group in AccessLevels that contains ${roleName}` },
+        ],
+        guide: [
+          ADUC,
+          `Right-click AccessLevels, New, Group. Name it ${roleName}, scope Global, type Security. Add ${nameOf(a)} and ${nameOf(b)}.`,
+          `Make a second group named ${resName}, scope Domain local, type Security. Add ${roleName} as its only member.`,
+          SYNC_STEP,
+        ],
+        runbook: [
+          `New-ADGroup -Name "${roleName}" -GroupScope Global -GroupCategory Security -Path "OU=AccessLevels,$((Get-ADDomain).DistinguishedName)"`,
+          `Add-ADGroupMember -Identity "${roleName}" -Members ${a.sam},${b.sam}`,
+          `New-ADGroup -Name "${resName}" -GroupScope DomainLocal -GroupCategory Security -Path "OU=AccessLevels,$((Get-ADDomain).DistinguishedName)"`,
+          `Add-ADGroupMember -Identity "${resName}" -Members "${roleName}"`,
+        ],
+      },
+      summary: `${roleName} (Global) holds the two people and sits inside ${resName} (Domain Local).`,
+    });
+  }
+
+  // Contain a compromised account without destroying the evidence.
+  const conName = nextName();
+  const conDept = pick(r, depts);
+  const conAdmin = admins[0];
+  if (conName && conDept && conAdmin) {
+    const sam = samOf(conName);
+    built.push({
+      type: "contain",
+      job: "contain-account",
+      skill: "security",
+      theme: `change:contain:${sam}`,
+      subject: { sam, name: conName },
+      facts: `The SOC confirmed that ${conName}'s account signed in from an unknown host at 2 AM and was used to add someone to ${conAdmin}. The account is compromised. Stop the attacker now, but keep the account in the directory so investigators can read its history.`,
+      temptation: level >= 3 ? `A manager says to just delete the account so it is gone. Deleting it destroys the evidence and cannot be undone.` : undefined,
+      task: {
+        setup: {
+          sam,
+          note: "Run this once on the domain controller. It creates the compromised account as the SOC found it.",
+          script: setupScript([
+            newUserLine(conName, sam, conDept.ou, "Contractor"),
+            `Add-ADGroupMember -Identity "${conDept.group}" -Members ${sam}`,
+            `Add-ADGroupMember -Identity "${conAdmin}" -Members ${sam}`,
+          ]),
+        },
+        checks: [
+          { c: { t: "enabled", sam, want: false }, label: `${conName}'s account is disabled` },
+          ...admins.map((g) => ({ c: { t: "member", sam, group: g, want: false } as Check, label: `${conName} is not in ${g}` })),
+          { c: { t: "container", sam, ou: usersOu(conDept.ou) }, label: `The account still exists in the ${conDept.label} Users folder` },
+          ...(level >= 3 ? [{ c: { t: "desc", sam, text: "incident" } as Check, label: 'The Description records why (it mentions "incident")' }] : []),
+        ],
+        guide: [
+          ADUC,
+          "Find the account. Right-click it and choose Disable Account. Do not delete it and do not move it.",
+          `On the Member Of tab, remove ${conAdmin}. Note every group first so the investigators know what it had.`,
+          ...(level >= 3 ? ['Put "Incident" and the ticket number in the Description so the next person knows why it is disabled.'] : []),
+          SYNC_STEP,
+        ],
+        runbook: [
+          `Get-ADPrincipalGroupMembership ${sam} | Select-Object Name   # record this first`,
+          `Disable-ADAccount -Identity ${sam}`,
+          `Remove-ADGroupMember -Identity "${conAdmin}" -Members ${sam} -Confirm:$false`,
+          `Set-ADUser -Identity ${sam} -Description "Incident: compromised, contained"`,
+        ],
+      },
+      summary: `${sam} is disabled and out of every admin group, and still exists for the investigators.`,
+    });
+  }
+
+  // Admins get a stricter password policy than everyone else.
+  const psoTarget = admins.includes("IT Admins") ? "IT Admins" : admins[0];
+  const psos = s.security?.psos;
+  if (psos !== undefined && psoTarget && !psos.some((x) => x.minLength >= 16 && x.appliesTo.some((a) => a.toLowerCase() === psoTarget.toLowerCase()))) {
+    built.push({
+      type: "pso",
+      job: "admin-password-policy",
+      skill: "security",
+      theme: "change:admin-password-policy",
+      facts: `The domain password policy is fine for staff, but ${psoTarget} can change almost anything, so their accounts are the ones attackers want. Company standard: a separate, stricter password policy just for ${psoTarget}, with at least 16 characters and a lockout after at most 5 failed attempts. It must not change the rules for everyone else.`,
+      temptation: level >= 3 ? `Someone suggests raising the length for the whole domain instead. That breaks account creation for staff and is not what was asked.` : undefined,
+      task: {
+        checks: [{ c: { t: "pso", minLength: 16, appliesTo: psoTarget, maxLockout: 5 }, label: `A password policy applies to ${psoTarget} with at least 16 characters and a lockout of 5 or fewer` }],
+        guide: [
+          "Open Active Directory Administrative Center (Win+R, dsac.exe).",
+          "Go to your domain, System, Password Settings Container, then New, Password Settings.",
+          `Give it a name and a precedence such as 10. Set Minimum password length to 16, enable the lockout with 5 failed attempts, and under Directly Applies To add ${psoTarget}.`,
+          SYNC_STEP,
+        ],
+        runbook: [
+          `New-ADFineGrainedPasswordPolicy -Name "PSO-${psoTarget.replace(/\s+/g, "-")}" -Precedence 10 -MinPasswordLength 16 -ComplexityEnabled $true -PasswordHistoryCount 24 -LockoutThreshold 5 -LockoutDuration 00:30:00 -LockoutObservationWindow 00:30:00`,
+          `Add-ADFineGrainedPasswordPolicySubject -Identity "PSO-${psoTarget.replace(/\s+/g, "-")}" -Subjects "${psoTarget}"`,
+        ],
+      },
+      summary: `A password policy applies to ${psoTarget} with 16 or more characters and a lockout of 5 or fewer.`,
+    });
+  }
+
   // Security configuration. These read the settings the updated lab script reports.
   const sec = s.security;
   const pp = sec?.passwordPolicy;
@@ -1254,15 +1585,33 @@ export function buildChangeTask(params: { snapshot: LabSnapshot; seed: string; l
     });
   }
 
-  if (!built.length) return null;
-  const order = shuffle(r, built);
+  const pool = params.only ? built.filter((b) => b.type === params.only) : built;
+  if (!pool.length) return null;
+  const order = shuffle(r, pool);
   // Closing access is the most time-sensitive change, then whatever job they have not shown yet.
   order.sort((a, b) => Number(b.type === "offboard") - Number(a.type === "offboard"));
   const wanted = params.targetJob ? order.find((b) => b.job === params.targetJob && !avoid.has(b.theme)) : undefined;
   return wanted ?? order.find((b) => !avoid.has(b.theme)) ?? order[0];
 }
 
-function evalCheck(s: LabSnapshot, c: Check): boolean {
+export function evalCheck(s: LabSnapshot, c: Check): boolean {
+  if (c.t === "group") {
+    const g = s.groups.find((x) => x.name.toLowerCase() === c.name.toLowerCase());
+    if (!g) return false;
+    if (c.category && g.category.toLowerCase() !== c.category.toLowerCase()) return false;
+    if (c.scope && g.scope.toLowerCase() !== c.scope.toLowerCase()) return false;
+    if (c.container && g.container.toLowerCase() !== c.container.toLowerCase()) return false;
+    if (c.member && !g.members.some((m) => m.toLowerCase() === c.member!.toLowerCase())) return false;
+    return true;
+  }
+  if (c.t === "pso") {
+    return (s.security?.psos ?? []).some(
+      (x) =>
+        x.minLength >= c.minLength &&
+        x.appliesTo.some((a) => a.toLowerCase() === c.appliesTo.toLowerCase()) &&
+        (c.maxLockout === undefined || (x.lockoutThreshold >= 1 && x.lockoutThreshold <= c.maxLockout))
+    );
+  }
   if (c.t === "policy") {
     const v = s.security?.passwordPolicy?.[c.key];
     if (v === undefined) return false;
@@ -1293,19 +1642,27 @@ function evalCheck(s: LabSnapshot, c: Check): boolean {
 export function checkChange(
   userId: string,
   token: string,
-  lab: { snapshot: LabSnapshot; uploadedAt: string } | null
-): { fresh: boolean; results: { label: string; ok: boolean }[]; passed: boolean; needsSetup: boolean } | null {
+  lab: { snapshot: LabSnapshot; uploadedAt: string } | null,
+  answers?: unknown
+): { fresh: boolean; results: { label: string; ok: boolean }[]; passed: boolean; needsSetup: boolean; answerOk: boolean } | null {
   const p = unseal(token);
   if (!p || p.u !== userId) return null;
-  const task = p.items[0]?.task;
+  const item = p.items[0];
+  const task = item?.task;
   if (!task) return null;
-  if (!lab) return { fresh: false, results: [], passed: false, needsSetup: false };
+  // A gated CTF also needs its typed answer to be right.
+  const given = Array.isArray(answers) && typeof answers[0] === "string" ? (answers[0] as string).slice(0, 200) : "";
+  const answerOk = item.gate ? Boolean(given.trim()) && [item.answer, ...(item.accept ?? [])].some((a) => flat(a) === flat(given)) : true;
+  if (!lab) return { fresh: false, results: [], passed: false, needsSetup: false, answerOk };
   const fresh = new Date(lab.uploadedAt).getTime() >= (p.t0 ?? p.iat);
   // A break-and-fix ticket needs its practice account planted first.
   const needsSetup =
-    fresh && Boolean(task.setup) && !lab.snapshot.users.some((u) => u.sam.toLowerCase() === task.setup!.sam.toLowerCase());
+    fresh &&
+    Boolean(task.setup) &&
+    !lab.snapshot.users.some((u) => u.sam.toLowerCase() === task.setup!.sam.toLowerCase()) &&
+    !lab.snapshot.groups.some((g) => g.name.toLowerCase() === task.setup!.sam.toLowerCase());
   const results = task.checks.map(({ c, label }) => ({ label, ok: evalCheck(lab.snapshot, c) }));
-  return { fresh, results, passed: fresh && !needsSetup && results.every((x) => x.ok), needsSetup };
+  return { fresh, results, passed: fresh && !needsSetup && answerOk && results.every((x) => x.ok), needsSetup, answerOk };
 }
 
 /** How the day's scenario is asked. Lab changes need a lab to check. */
@@ -1548,7 +1905,7 @@ export function weeklyReport(entries: DrillEntry[], today: string): WeeklyReport
 }
 
 /** One paragraph for the coach's brief: where drills say this student needs help. */
-export function weaknessLine(entries: DrillEntry[]): string {
+export function weaknessLine(entries: DrillEntry[], results?: Results): string {
   if (!entries.some((e) => e.detail?.length)) return "No drills on record yet.";
   const level = levelFor(entries);
   const skills = skillAccuracy(entries).filter((r) => r.asked > 0);
@@ -1556,7 +1913,7 @@ export function weaknessLine(entries: DrillEntry[]): string {
   const themes = missedThemes(entries, 3).map((t) => `${t.theme} (missed ${t.missed} of ${t.asked})`);
   const last = [...entries].sort((a, b) => b.at.localeCompare(a.at))[0];
   const recent = missedQuestions(entries, 4).map((m) => m.title);
-  const jobs = jobLine(entries);
+  const jobs = jobLine(entries, results);
   return `Drill level ${level} (${LEVEL_NAMES[level - 1]}). Accuracy: ${parts.join("; ")}.${
     themes.length ? ` Keeps missing: ${themes.join("; ")}.` : ""
   }${recent.length ? ` Latest missed questions: ${recent.join("; ")}. Use get_drill_history for what they picked.` : ""} ${jobs} Last drill ${last.day}.`;
