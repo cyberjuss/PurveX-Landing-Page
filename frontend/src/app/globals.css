@@ -4552,6 +4552,7 @@ textarea.pc-dock__field {
 /* Real findings from the student's own lab */
 .dr-findings { margin-top: 48px; }
 .dr-findings .rd-sec__head { align-items: center; }
+.dr-findings__go { margin-top: 14px; text-decoration: none; }
 .dr-findings__list { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--rd-line); }
 .dr-findings__list li { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px 0; border-bottom: 1px solid var(--rd-line); }
 .dr-findings__list strong { font-family: var(--font-display); font-size: var(--ty-h3, 20px); font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }

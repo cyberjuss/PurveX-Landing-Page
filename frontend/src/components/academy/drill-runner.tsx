@@ -250,16 +250,16 @@ function LabFindings({ items }: { items: Finding[] }) {
       <div className="rd-sec__head">
         <span className="rd-sec__n">04</span>
         <h2>What your lab needs</h2>
-        <Link href={READINESS_PATH} className="rd-link dr-report__copy">
-          Open report <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
         <p>
           {items.length === 0
             ? "Nothing is wrong in your lab right now. Your daily case will be a judgement case."
             : "A real audit of your own lab. Your daily lab task is one of these, and it is checked in your lab."}
         </p>
+        <Link href={READINESS_PATH} className="rd-cta dr-findings__go">
+          Open report <ArrowRight className="h-4 w-4" />
+        </Link>
       </div>
-      {items.length > 0 ? (
+      {items.length > 0 && (
         <ul className="dr-findings__list">
           {items.map((f) => (
             <li key={f.id} className={`is-${f.severity}`}>
@@ -270,11 +270,6 @@ function LabFindings({ items }: { items: Finding[] }) {
             </li>
           ))}
         </ul>
-      ) : (
-        <Link href={READINESS_PATH} className="dr-reportlink">
-          Open your readiness report
-          <ArrowRight className="h-4 w-4" />
-        </Link>
       )}
     </section>
   );

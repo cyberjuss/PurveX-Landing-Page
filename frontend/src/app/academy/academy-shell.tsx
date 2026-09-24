@@ -256,7 +256,15 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
     // Some tickets need a real change. Ask the server whether the student's lab
     // shows it. No lab connected, or a failed request, never traps a student.
-    const labGate = async (id: string): Promise<{ gated: boolean; passed?: boolean; results?: { label: string; ok: boolean }[] } | null> => {
+    const labGate = async (
+      id: string
+    ): Promise<{
+      gated: boolean;
+      passed?: boolean;
+      noLab?: boolean;
+      noTicketObjects?: boolean;
+      results?: { label: string; ok: boolean }[];
+    } | null> => {
       try {
         const res = await academyFetch("/academy/api/mission-check", {
           method: "POST",
@@ -297,19 +305,34 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         feedback.className = "ad-guess__feedback";
         const gate = await labGate(missionId);
         btn.disabled = false;
-        if (gate?.gated && !gate.passed) {
-          const missing = (gate.results ?? []).filter((r) => !r.ok).map((r) => r.label).join("; ");
-          feedback.textContent = `Your lab does not show this change yet: ${missing}. Make the change, then wait for your lab to report (about 15 minutes) or run Build-Environment.ps1 -SyncOnly on the domain controller. This does not use an attempt.`;
+        if (!gate) {
+          feedback.textContent = "Could not check your lab. Try submit again. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
           return;
         }
-        if (gate?.gated && gate.passed) {
-          wrap.classList.add("ad-mission--labok");
-          recordResult(wrap, { labOk: true });
+        if (gate.noLab) {
+          feedback.textContent = "No lab is connected. Connect it from Build This Lab, then make the change. This does not use an attempt.";
+          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          return;
         }
+        if (gate.noTicketObjects) {
+          feedback.textContent = "This lab was built without -IncludeCTF. Remove it and build again with -IncludeCTF. This does not use an attempt.";
+          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          return;
+        }
+        if (!gate.passed) {
+          const missing = (gate.results ?? []).filter((r) => !r.ok).map((r) => r.label).join("; ");
+          feedback.textContent = missing
+            ? `Your lab does not show this change yet: ${missing}. Make the change, then wait for your lab to report or run Build-Environment.ps1 -SyncOnly. This does not use an attempt.`
+            : "Your lab does not show this change yet. Make it, then wait for the lab to report. This does not use an attempt.";
+          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          return;
+        }
+        wrap.classList.add("ad-mission--labok");
       }
 
-      if (guess === normalize(answer)) {
+      const accepts = [answer, ...(btn.dataset.accept || "").split("|")].map(normalize).filter(Boolean);
+      if (accepts.includes(guess)) {
         feedback.textContent = "Correct — nice work.";
         feedback.className = "ad-guess__feedback ad-guess__feedback--ok";
         reveal.classList.add("ad-flag--shown");

@@ -7,8 +7,8 @@ import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
 
-// Does the student's own lab show the change this ticket asks for? A student
-// with no lab connected is not gated, so they can still answer.
+// Does the student's own lab show the change this ticket asks for?
+// Hands-on tickets stay open until the lab shows the change.
 export async function POST(request: Request) {
   if (!(await isAcademyUnlocked())) return NextResponse.json({ error: "Locked" }, { status: 401 });
   const student = await getAcademyStudent(request);
@@ -23,9 +23,9 @@ export async function POST(request: Request) {
   if (!missionGate(id)) return NextResponse.json({ gated: false });
 
   const lab = await loadLabState(student.id);
-  if (!lab) return NextResponse.json({ gated: false, noLab: true });
-  // A lab built without -IncludeCTF has none of the ticket objects, so there is nothing to check.
-  if (!hasTicketObjects(lab.snapshot)) return NextResponse.json({ gated: false, noTicketObjects: true });
+  if (!lab) return NextResponse.json({ gated: true, passed: false, noLab: true, results: [] });
+  // A lab built without -IncludeCTF has none of the ticket objects.
+  if (!hasTicketObjects(lab.snapshot)) return NextResponse.json({ gated: true, passed: false, noTicketObjects: true, results: [] });
   const checked = checkMission(id, lab.snapshot);
   // The server records that the change was seen. This is the only place labOk is ever set.
   if (checked?.passed) {
