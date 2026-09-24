@@ -237,7 +237,9 @@ export function auditLab(s: LabSnapshot): Finding[] {
   // ---- policy and configuration --------------------------------------------
   const sec = s.security;
   const pp = sec?.passwordPolicy;
-  if (pp && (pp.lockoutThreshold === 0 || pp.lockoutThreshold > 10 || pp.lockoutDurationMin < 15)) {
+  // A lock time of 0 means an administrator must unlock the account, which is stricter than 15 minutes.
+  const lockTimeShort = pp !== undefined && pp.lockoutDurationMin !== 0 && pp.lockoutDurationMin < 15;
+  if (pp && (pp.lockoutThreshold === 0 || pp.lockoutThreshold > 10 || lockTimeShort)) {
     out.push({
       id: "lockout-policy",
       kind: "lockout-policy",
@@ -247,10 +249,11 @@ export function auditLab(s: LabSnapshot): Finding[] {
       title: pp.lockoutThreshold === 0 ? "The domain never locks an account" : "The lockout policy is too loose",
       facts: `The domain's account lockout threshold is ${pp.lockoutThreshold === 0 ? "0, meaning accounts are never locked" : pp.lockoutThreshold}, with a lock time of ${pp.lockoutDurationMin} minutes. An attacker can keep guessing passwords, which is how password spraying works. The usual standard is a lock of at least 15 minutes after 10 or fewer failed attempts.`,
       task: {
+        // Only check what is actually wrong, so a stricter choice (such as an admin-only unlock) is never marked down.
         checks: [
           { c: { t: "policy", key: "lockoutThreshold", min: 1, max: 10 }, label: "Accounts lock after between 1 and 10 failed attempts" },
-          { c: { t: "policy", key: "lockoutDurationMin", min: 15 }, label: "A locked account stays locked for at least 15 minutes" },
-          { c: { t: "policy", key: "lockoutWindowMin", min: 15 }, label: "The failed-attempt counter resets after at least 15 minutes" },
+          ...(lockTimeShort ? [{ c: { t: "policy", key: "lockoutDurationMin", min: 15 } as Check, label: "A locked account stays locked for at least 15 minutes" }] : []),
+          ...(pp.lockoutWindowMin > 0 && pp.lockoutWindowMin < 15 ? [{ c: { t: "policy", key: "lockoutWindowMin", min: 15 } as Check, label: "The failed-attempt counter resets after at least 15 minutes" }] : []),
         ],
         guide: [
           `${GPMC}, then edit the Default Domain Policy.`,
