@@ -397,7 +397,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       const unlocked = hintUnlocked(wrap);
       btn.disabled = !unlocked;
       btn.setAttribute("aria-expanded", unlocked && open ? "true" : "false");
-      btn.textContent = !unlocked ? "Hint locked" : open ? "Hide hint" : "Get a hint";
+      btn.textContent = !unlocked ? "Hint locked" : open ? "Hide hint" : "Hint";
     };
 
     const closeHintCard = () => {

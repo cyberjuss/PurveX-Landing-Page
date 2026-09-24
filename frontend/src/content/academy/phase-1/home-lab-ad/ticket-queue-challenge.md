@@ -37,7 +37,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{9}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">Company-wide mail is not a department group. Look under AccessLevels for a firm-wide group, read its Description, then open Members. Add Jamie if she is missing. Count the names after you add her.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand AccessLevels. Open the group that says it is for company-wide announcements → Members. Add <code>jamie.torres</code> if she is not there. Count again.<br><br>PowerShell is optional last.</p>
 <p class="ad-guess__feedback"></p>
@@ -67,7 +67,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="locked or disabled" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{disabled}" data-accept="account-is-disabled|account-disabled">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">A caller names a symptom. The Account tab names the cause. Locked and disabled are different boxes. Unlock does nothing if the other box is the one that is checked. Fix what you see, then type the problem you found.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>riley.kwan</code>, open the account → Account. Read both boxes. Act on the one that is actually checked. Submit the problem, not the word she used.<br><br>PowerShell is optional last.</p>
 <p class="ad-guess__feedback"></p>
@@ -97,7 +97,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="ticket number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{ctf-ticket-1043}" data-accept="1043|ctf-1043">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">Create Casey in the IT Users folder and mirror a current IT person. Then open Members. A leftover intern and a service account do not belong. Read the intern account before you delete it. The Description names a ticket.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand <code>Departments</code> → <code>IT</code> → <code>Users</code>. Create Casey. Open <code>IT Users</code> → Members. Open each name that is not a current IT person. Copy the ticket number from Description, then delete the intern and remove the service account.<br><br>PowerShell is optional last.</p>
 <p class="ad-guess__feedback"></p>
@@ -127,7 +127,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="00:00-00:00" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{01:00-03:00}" data-accept="1:00-3:00">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">The account Description currently says the window is not set. Open the account, then open the folder above it. That folder Description has the approved hours. Copy them onto the account, Apply, then type the same window here.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>svc-backup-job</code>. Note the folder path above the account. Open that OU → Properties and read Description. Open the account → General, write that window, Apply.<br><br>PowerShell is optional last.</p>
 <p class="ad-guess__feedback"></p>
@@ -157,7 +157,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="title on the account" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{operations-analyst}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">Policy follows the folder. Groups follow the folder. Title is a different box on General. Move first, then read the account again. Type the title you see, not the department HR named.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Find <code>taylor.osei</code>. Right-click → Move into the Users folder under the department the ticket named. Open Member Of. Add that department group and remove the old one. Open General and read Title.<br><br>PowerShell is optional last.</p>
 <p class="ad-guess__feedback"></p>

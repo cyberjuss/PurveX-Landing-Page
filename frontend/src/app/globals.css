@@ -3653,7 +3653,7 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 }
 
 /* Hint stays locked until two wrong tries. Button label is set in JS
-   (Hint locked / Get a hint / Hide hint) so spaces stay readable. */
+   (Hint locked / Hint / Hide hint) so spaces stay readable. */
 .academy-prose .ad-mission[data-attempts="0"] .ad-hint__btn,
 .academy-prose .ad-mission[data-attempts="1"] .ad-hint__btn {
   cursor: not-allowed; color: var(--pvrx-text-secondary-light); border-color: var(--pvrx-border-light); background: none;

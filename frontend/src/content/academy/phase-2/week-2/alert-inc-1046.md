@@ -21,7 +21,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="department OU" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{wealthmanagement}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">Before you read any logs, look at the machine. An IT admin on a workstation outside IT at 2 AM is already the wrong pairing.<br><br>An OU is the folder the computer lives in. Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, change the type to Computers, type <code>WM-WKS07</code>. In the left tree, read the department folder above the computer. Use that name as AD writes it, no spaces.<br><br>PowerShell is optional: <code>(Get-ADComputer WM-WKS07).DistinguishedName</code></p>
 <p class="ad-guess__feedback"></p>
@@ -59,7 +59,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{4}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">You do not need PowerShell for this one. Use the export on this page, or open Event Viewer (Win+R then <code>eventvwr.msc</code>) if you are reading the live Security log.<br><br>Event 4625 is a failed sign-in. Event 4624 is a success. Count the 4625 rows that happen before the first 4624.</p>
 <p class="ad-guess__feedback"></p>
@@ -89,7 +89,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-admins}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">Event 4672 is unusual for a normal user. It means Windows gave this session admin-level rights. A staff group does not do that.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>alex.rivera</code>, open the account → Member Of. Find the group that is not just department access.<br><br>PowerShell is optional: <code>Get-ADPrincipalGroupMembership alex.rivera | Select Name</code></p>
 <p class="ad-guess__feedback"></p>
@@ -119,7 +119,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">Stack the facts: four failures in two seconds, 2 AM, wrong department PC, admin account. A person does not type that fast. A maintenance job does not try four bad passwords.</p>
 <p class="ad-guess__feedback"></p>
@@ -149,7 +149,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">Ask what the first move must do. It has to stop the session and keep the evidence.<br><br>Then ask what each other option costs you. One deletes the log. One gives the attacker time. One hides the alert.</p>
 <p class="ad-guess__feedback"></p>

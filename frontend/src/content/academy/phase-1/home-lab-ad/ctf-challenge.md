@@ -32,7 +32,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{finance-accounting-users}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>jordan.ellis</code>, open the account → Member Of. Ignore Domain Users. Everyone has that. The department group is the one that actually gives mail and file access.<br><br>PowerShell is optional: <code>Get-ADPrincipalGroupMembership jordan.ellis | Select Name</code></p>
 <p class="ad-guess__feedback"></p>
@@ -61,7 +61,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{alex-rivera}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>IT Admins</code>, open it → Members. That list is who can change the directory. It should be short.<br><br>PowerShell is optional: <code>Get-ADGroupMember "IT Admins"</code></p>
 <p class="ad-guess__feedback"></p>
@@ -90,7 +90,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{accesslevels}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">An OU is a folder. Department folders hold people.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand <code>govtechfinancial.local</code>. Look at the folders sitting next to <code>Departments</code>. One of those is where <code>Server Admins</code> and <code>Helpdesk</code> live.</p>
 <p class="ad-guess__feedback"></p>
@@ -119,7 +119,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="exact name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{cn=users}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">New accounts land in a default folder if nobody picks a department folder.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand <code>govtechfinancial.local</code>. View → Advanced Features if you need the full name. The built-in folder that is not an OU (it does not say Organizational Unit) is that default folder. Group Policy cannot attach to it.</p>
 <p class="ad-guess__feedback"></p>
@@ -148,7 +148,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="role" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-systems-administrators}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>IT Admins</code>, open it → General and read Description. It should say who the group is for, not just repeat the group name.</p>
 <p class="ad-guess__feedback"></p>
@@ -177,7 +177,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{no}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">A title is a label on the account. Access is a group.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>Helpdesk</code>, open it → Members. Do not decide from the word Technician on her account.</p>
 <p class="ad-guess__feedback"></p>
@@ -206,7 +206,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{riley-kwan}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">Tickets often say a job, not a username.<br><br>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find → Advanced → Field: Title, value <code>Settlements Coordinator</code>. Or expand <code>Departments</code> → <code>Operations</code> → <code>Users</code> and read Title on each account. Confirm the name before you change anything.<br><br>PowerShell is optional: <code>Get-ADUser -Filter "Title -eq 'Settlements Coordinator'"</code></p>
 <p class="ad-guess__feedback"></p>
@@ -235,7 +235,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="computer name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-wks01}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand <code>govtechfinancial.local</code> → <code>Departments</code> → <code>IT</code> → <code>Workstations</code>. Find the computer object the same way you find a user. Computer names have no spaces.</p>
 <p class="ad-guess__feedback"></p>
@@ -264,7 +264,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Right-click the domain → Find, type <code>Compliance Users</code>, open it → Members and count the people. If that number changes later, you know someone was added.<br><br>PowerShell is optional: <code>(Get-ADGroupMember "Compliance Users").Count</code></p>
 <p class="ad-guess__feedback"></p>
@@ -293,7 +293,7 @@
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{5}">Submit</button>
-<button type="button" class="ad-hint__btn">Get a hint</button>
+<button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <p class="ad-hint__text">Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>). Expand <code>govtechfinancial.local</code> → <code>Departments</code>. Count only the first-level folders. Skip Users and Workstations. Those sit inside a department. They are not departments.</p>
 <p class="ad-guess__feedback"></p>
