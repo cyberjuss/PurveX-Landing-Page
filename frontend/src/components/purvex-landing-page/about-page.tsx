@@ -264,7 +264,7 @@ export default function AboutPage() {
 /* Our-goal points — inline, not boxed cards */
 .sp-mag__points { display: flex; flex-direction: column; gap: 18px; margin-top: 8px }
 .sp-mag__point { display: flex; gap: 14px; align-items: flex-start }
-.sp-mag__point-icon { flex-shrink: 0; width: 34px; height: 34px; border-radius: var(--radius); background: transparent; border: 1px solid var(--border-strong); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; margin-top: 2px }
+.sp-mag__point-icon { flex-shrink: 0; width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-deep); display: flex; align-items: center; justify-content: center; margin-top: 2px }
 .sp-mag__point strong { display: block; font-size: .98rem; font-weight: 650; color: var(--ink) }
 .sp-mag__point span { display: block; margin-top: 4px; font-size: .92rem; color: var(--muted); line-height: 1.6 }
       `}</style>

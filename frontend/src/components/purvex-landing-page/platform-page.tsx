@@ -427,15 +427,15 @@ export default function PlatformPage() {
       <style>{`
 .sp-tile__icon {
   display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
-  width: 42px; height: 42px; border-radius: var(--radius);
-  background: transparent; border: 1px solid var(--border-strong); color: var(--accent-deep);
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--accent-soft); border: 1px solid rgba(106,92,255,.18); color: var(--accent-deep);
 }
 
 /* ── Waitlist ── */
 .sp-wl { margin: 30px auto 0; max-width: 480px }
 .sp-wl__row {
   display: flex; align-items: center; gap: 4px; padding: 4px;
-  border-radius: 999px; border: 1px solid var(--border-strong); background: var(--surface);
+  border-radius: 15px; border: 1px solid var(--border-strong); background: var(--surface);
   box-shadow: 0 16px 36px -20px rgba(16,25,46,.28);
   transition: border-color .2s, box-shadow .2s;
 }
@@ -443,7 +443,7 @@ export default function PlatformPage() {
 .sp-wl__field { flex: 1; display: flex; align-items: center; gap: 9px; height: 46px; padding: 0 14px; color: var(--muted-dim) }
 .sp-wl__input { flex: 1; height: 100%; border: none; background: transparent; padding: 0; font-size: .92rem; color: var(--ink); outline: none }
 .sp-wl__input::placeholder { color: var(--muted-dim) }
-.sp-wl__row .sp-btn { flex-shrink: 0 }
+.sp-wl__row .sp-btn { border-radius: 11px; flex-shrink: 0 }
 .sp-wl__msg { margin: 10px 0 0; font-size: .82rem }
 .sp-wl__msg--success, .sp-wl__msg--exists { color: var(--green) }
 .sp-wl__msg--error { color: var(--red) }
@@ -460,7 +460,7 @@ export default function PlatformPage() {
 .sp-hero__signal { display: flex; justify-content: center }
 .sp-signal {
   width: 100%; max-width: 300px; padding: 22px 24px 26px;
-  border: 1px solid var(--border); border-top: 2px solid var(--accent-deep); border-radius: 0; background: var(--surface);
+  border: 1px solid var(--border-strong); border-radius: 18px; background: var(--surface);
   box-shadow: 0 28px 56px -30px rgba(16,25,46,.3);
   display: flex; flex-direction: column; align-items: center; text-align: center;
 }
@@ -520,23 +520,23 @@ export default function PlatformPage() {
 .sp-dash__live { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: .68rem; font-weight: 700; letter-spacing: .05em; color: var(--accent-deep) }
 .sp-dash__pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: sp-pulse 2s ease-in-out infinite }
 .sp-dash__body { flex: 1; padding: 18px; display: flex; flex-direction: column; gap: 8px }
-.sp-dash__row { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-radius: 0; border: 1px solid var(--border); background: var(--surface-alt); font-size: .86rem }
+.sp-dash__row { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-alt); font-size: .86rem }
 .sp-dash__dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0 }
 .sp-dash__dot--pass { background: var(--green) }
 .sp-dash__dot--fail { background: var(--red) }
 .sp-dash__tech { font-family: var(--font-mono); font-size: .78rem; color: var(--accent-deep); font-weight: 600; min-width: 82px }
 .sp-dash__name { flex: 1; color: var(--ink-soft); font-size: .84rem }
-.sp-dash__badge { font-size: .64rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; padding: 2px 7px; border-radius: 0; border: 1px solid currentColor; font-family: var(--font-mono) }
+.sp-dash__badge { font-size: .64rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; padding: 3px 9px; border-radius: 999px }
 .sp-dash__badge--pass { background: rgba(22,163,74,.1); color: var(--green); border: 1px solid rgba(22,163,74,.2) }
 .sp-dash__badge--fail { background: rgba(229,72,77,.1); color: var(--red); border: 1px solid rgba(229,72,77,.2) }
-.sp-dash__score { display: flex; align-items: center; gap: 14px; margin-top: 4px; padding: 14px 16px; border-radius: 0; border: 1px solid rgba(106,92,255,.18); background: var(--accent-soft) }
+.sp-dash__score { display: flex; align-items: center; gap: 14px; margin-top: 4px; padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(106,92,255,.18); background: var(--accent-soft) }
 .sp-dash__score-label { font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap }
 .sp-dash__track { flex: 1; height: 5px; border-radius: 999px; background: rgba(16,25,46,.08); overflow: hidden }
 .sp-dash__fill { height: 100%; border-radius: 999px; width: 0; background: var(--accent); transition: width 1.2s var(--ease) .3s }
 .sp-dash__fill--in { width: 95% }
 .sp-dash__score-val { font-family: var(--font-display); font-weight: 700; font-size: .95rem; color: var(--accent-deep) }
 .sp-dash__score-max { color: var(--muted-dim); font-size: .78rem }
-.sp-dash__insight { margin-top: auto; padding: 16px; border-radius: 0; border: 1px solid rgba(106,92,255,.2); background: rgba(106,92,255,.05) }
+.sp-dash__insight { margin-top: auto; padding: 16px; border-radius: 12px; border: 1px solid rgba(106,92,255,.2); background: rgba(106,92,255,.05) }
 .sp-dash__insight-kicker { display: inline-flex; font-size: .64rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep) }
 .sp-dash__insight p { margin: 8px 0 0; color: var(--ink-soft); font-size: .88rem; line-height: 1.65 }
 .sp-dash__insight strong { color: var(--ink) }
@@ -558,7 +558,8 @@ export default function PlatformPage() {
 .sp-pricing { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; align-items: start; padding-top: 14px }
 .sp-tier {
   position: relative; display: flex; flex-direction: column; padding: 40px 36px;
-  border: 1px solid var(--border); border-radius: 0; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 20px; background: var(--surface);
+  box-shadow: 0 1px 2px rgba(16,25,46,.04);
   transition: transform .3s var(--ease), box-shadow .3s var(--ease);
 }
 .sp-tier--feat {
@@ -569,12 +570,13 @@ export default function PlatformPage() {
 }
 .sp-tier__badge {
   position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
-  padding: 4px 10px; border-radius: 0; white-space: nowrap;
-  background: var(--accent-deep);
-  font-family: var(--font-mono); font-size: .6rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #fff;
+  padding: 5px 16px; border-radius: 999px; white-space: nowrap;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  font-size: .64rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: #fff;
+  box-shadow: 0 10px 22px -8px rgba(106,92,255,.65);
 }
-.sp-tier__name { font-family: var(--font-mono); font-size: .64rem; text-transform: uppercase; letter-spacing: .16em; color: var(--muted-dim); font-weight: 700 }
-.sp-tier__price { margin-top: 10px; font-family: var(--font-display); font-size: 2.6rem; font-weight: 600; letter-spacing: -.04em; color: var(--ink) }
+.sp-tier__name { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted-dim); font-weight: 700 }
+.sp-tier__price { margin-top: 10px; font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; letter-spacing: -.04em; color: var(--ink) }
 .sp-tier__note { margin-top: 2px; color: var(--muted); font-size: .82rem }
 .sp-tier__sum { margin: 14px 0 0; color: var(--muted); font-size: .86rem; line-height: 1.6; min-height: 2.9em }
 .sp-tier__sep { height: 1px; background: var(--border); margin: 22px 0 }
@@ -589,7 +591,7 @@ export default function PlatformPage() {
 .sp-tier .sp-btn { margin-top: auto }
 
 /* ── FAQ ── */
-.sp-faq { max-width: 720px; margin: 0 auto; border-radius: 0; border: 1px solid var(--border); background: var(--surface); overflow: hidden; box-shadow: 0 18px 44px -40px rgba(16,25,46,.28) }
+.sp-faq { max-width: 720px; margin: 0 auto; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); overflow: hidden; box-shadow: 0 18px 44px -40px rgba(16,25,46,.28) }
 .sp-faq__item + .sp-faq__item { border-top: 1px solid var(--border) }
 .sp-faq__item--open { background: var(--accent-soft) }
 .sp-faq__btn { display: flex; align-items: center; width: 100%; justify-content: space-between; gap: 16px; padding: 20px 24px; background: none; border: 0; color: var(--ink); font-size: .94rem; font-weight: 650; text-align: left; cursor: pointer; transition: color .2s }
@@ -618,7 +620,7 @@ export default function PlatformPage() {
   .sp-wl { margin-top: 22px }
   .sp-wl__row { flex-direction: column; align-items: stretch; gap: 10px; padding: 0; border: none; background: none; box-shadow: none }
   .sp-wl__row:focus-within { box-shadow: none }
-  .sp-wl__field { flex: none; height: 50px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--surface) }
+  .sp-wl__field { flex: none; height: 50px; padding: 0 16px; border-radius: 11px; border: 1px solid var(--border-strong); background: var(--surface) }
   .sp-wl__row:focus-within .sp-wl__field { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(106,92,255,.12) }
   .sp-wl__input { font-size: 16px }
   .sp-hero__ghost-link { margin-top: 14px }

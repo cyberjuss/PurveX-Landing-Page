@@ -113,7 +113,7 @@ export default function FounderPage() {
 }
 .sp-founder-page__section p { margin: 0; font-size: 1.03rem; line-height: 1.75; color: var(--ink-soft); text-wrap: pretty }
 
-.sp-founder-page__facts { position: sticky; top: 100px; border: 1px solid var(--border); border-top: 2px solid var(--accent-deep); border-radius: 0; padding: 24px; background: var(--surface) }
+.sp-founder-page__facts { position: sticky; top: 100px; border: 1px solid var(--border); border-radius: 20px; padding: 24px; background: var(--surface) }
 .sp-founder-page__facts h3 { margin: 0 0 18px; font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-dim) }
 .sp-founder-page__fact { padding: 13px 0; border-top: 1px solid var(--border) }
 .sp-founder-page__fact:first-of-type { padding-top: 0; border-top: none }
