@@ -73,7 +73,7 @@ export function scoreLabel(e: DrillEntry) {
 }
 
 export function labLine(lab: DrillStatus["lab"]) {
-  if (!lab.synced) return "Using the standard GovTech directory. Connect your lab to drill on your own.";
+  if (!lab.synced) return "";
   const stale = lab.days !== null && lab.days >= 7;
   return `Written from your lab. It last checked in ${lab.ago}.${stale ? " Turn your domain controller on to refresh it." : ""}`;
 }
@@ -967,7 +967,7 @@ export function DrillRunner() {
             />
           )}
 
-          <p className="dr-lab">{labLine(status.lab)}</p>
+          {status.lab.synced && <p className="dr-lab">{labLine(status.lab)}</p>}
         </>
       ) : (
         <p className="dr-note">Loading your drills…</p>

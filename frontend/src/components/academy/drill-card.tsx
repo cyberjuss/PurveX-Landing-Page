@@ -32,7 +32,7 @@ export function DrillCard() {
       <span className="dr-home__main">
         <span className="rd-kicker">{stats.today ? "Daily scenario · done" : "Daily scenario"}</span>
         <strong>{stats.today ? `${scoreLabel(stats.today)} today` : "A scenario built from your lab"}</strong>
-        <em>{staleLab || !lab.synced ? labLine(lab) : streakLine(stats)}</em>
+        <em>{staleLab ? labLine(lab) : streakLine(stats)}</em>
       </span>
       <ArrowRight className="h-4 w-4" />
     </Link>
