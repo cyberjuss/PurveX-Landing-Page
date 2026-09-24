@@ -31,7 +31,9 @@ export async function createLiveCtf(userId: string, day: string): Promise<Starte
 
   const jobId = randomUUID();
   built.item.live = { jobId };
-  await queueLabJob(userId, { id: jobId, type: "investigation", params: { accounts: built.accounts } });
+  // One job per student per week, only for this CTF. If it cannot be queued, use the normal CTF.
+  const queued = await queueLabJob(userId, { id: jobId, type: "investigation", week, params: { accounts: built.accounts } });
+  if (!queued) return null;
   const drill = startDrill({ userId, mode: "ctf", day, snapshot: lab.snapshot, results, level, items: [built.item], id: `ctf-${week}` });
   await saveDailyDrill(userId, week, drill.token, "ctf");
   return drill;

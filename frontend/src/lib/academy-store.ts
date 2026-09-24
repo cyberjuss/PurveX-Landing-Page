@@ -1,6 +1,7 @@
 import "server-only";
 import { createHash, randomBytes } from "crypto";
 import type { DrillEntry } from "@/lib/academy-drills";
+import { weekStart } from "@/lib/academy-drills";
 import { sanitizeLabSnapshot, type LabSnapshot } from "@/lib/academy-lab";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
 import { supabaseAdmin } from "@/lib/supabase-admin";
@@ -268,14 +269,17 @@ export async function saveDailyDrill(userId: string, day: string, token: string,
   if (error) console.error("academy_drill_daily upsert failed", error.message);
 }
 
-// Work the student's own domain controller can pick up: for now, planting a
-// live investigation. The lab script pulls these; nothing is pushed to it.
+// The one thing the student's own domain controller can pick up: this week's
+// live CTF investigation. There is one job per student per week, and a job from
+// an earlier week is never handed out. The lab script pulls it; nothing is pushed.
 export type LabJobType = "investigation";
 export type LabJobStatus = "queued" | "sent" | "done" | "failed";
 export type InvestigationAccount = { sam: string; name: string; dept: string; groups: string[]; failures: number; success: boolean };
 export type LabJob = {
   id: string;
   type: LabJobType;
+  /** Monday of the CTF week this job belongs to. */
+  week: string;
   params: { accounts: InvestigationAccount[] };
   status: LabJobStatus;
   createdAt: string;
@@ -289,6 +293,7 @@ function toJob(r: Record<string, unknown>): LabJob {
   return {
     id: String(r.id),
     type: "investigation",
+    week: String(r.week ?? ""),
     params: (r.params as LabJob["params"]) ?? { accounts: [] },
     status: (["queued", "sent", "done", "failed"] as const).find((x) => x === r.status) ?? "queued",
     createdAt: String(r.created_at),
@@ -296,15 +301,22 @@ function toJob(r: Record<string, unknown>): LabJob {
   };
 }
 
-export async function queueLabJob(userId: string, job: { id: string; type: LabJobType; params: LabJob["params"] }): Promise<LabJob> {
+/** Queue this week's investigation. Returns null if the database refused it, so the caller can fall back. */
+export async function queueLabJob(
+  userId: string,
+  job: { id: string; type: LabJobType; week: string; params: LabJob["params"] }
+): Promise<LabJob | null> {
   const row: LabJob = { ...job, status: "queued", createdAt: new Date().toISOString() };
-  memoryJobs.set(userId, [...(memoryJobs.get(userId) ?? []), row]);
   if (supabaseAdmin) {
     const { error } = await supabaseAdmin
       .from("academy_lab_jobs")
-      .insert({ id: job.id, user_id: userId, type: job.type, params: job.params, status: "queued", created_at: row.createdAt });
-    if (error) console.error("academy_lab_jobs insert failed", error.message);
+      .insert({ id: job.id, user_id: userId, type: job.type, week: job.week, params: job.params, status: "queued", created_at: row.createdAt });
+    if (error) {
+      console.error("academy_lab_jobs insert failed", error.message);
+      return null;
+    }
   }
+  memoryJobs.set(userId, [...(memoryJobs.get(userId) ?? []), row]);
   return row;
 }
 
@@ -312,7 +324,7 @@ export async function getLabJob(userId: string, id: string): Promise<LabJob | nu
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin
       .from("academy_lab_jobs")
-      .select("id, type, params, status, result, created_at")
+      .select("id, type, week, params, status, result, created_at")
       .eq("user_id", userId)
       .eq("id", id)
       .maybeSingle();
@@ -321,16 +333,18 @@ export async function getLabJob(userId: string, id: string): Promise<LabJob | nu
   return (memoryJobs.get(userId) ?? []).find((j) => j.id === id) ?? null;
 }
 
-/** Hand queued jobs to the student's lab script, once. Anything older than a day is dropped. */
+/** Hand this week's queued investigation to the student's lab script, once. Older jobs are dropped. */
 export async function claimLabJobs(userId: string): Promise<LabJob[]> {
   const fresh = new Date(Date.now() - JOB_MAX_AGE_MS).toISOString();
+  const week = weekStart(new Date().toISOString().slice(0, 10));
   let claimed: LabJob[] = [];
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin
       .from("academy_lab_jobs")
-      .select("id, type, params, status, result, created_at")
+      .select("id, type, week, params, status, result, created_at")
       .eq("user_id", userId)
       .eq("status", "queued")
+      .eq("week", week)
       .gte("created_at", fresh)
       .order("created_at", { ascending: true })
       .limit(3);
@@ -340,7 +354,7 @@ export async function claimLabJobs(userId: string): Promise<LabJob[]> {
     }
   }
   const mem = memoryJobs.get(userId) ?? [];
-  const local = mem.filter((j) => j.status === "queued" && j.createdAt >= fresh).slice(0, 3);
+  const local = mem.filter((j) => j.status === "queued" && j.week === week && j.createdAt >= fresh).slice(0, 3);
   for (const j of local) j.status = "sent";
   const seen = new Set(claimed.map((j) => j.id));
   return [...claimed, ...local.filter((j) => !seen.has(j.id))].slice(0, 3);
