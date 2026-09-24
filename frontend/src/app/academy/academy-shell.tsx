@@ -433,7 +433,10 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       const kicker = root.querySelector(".ad-hint-card__kicker");
       const body = root.querySelector(".ad-hint-card__body");
       if (kicker) kicker.textContent = wrap.querySelector("h4")?.textContent?.trim() || "Hint";
-      if (body) body.innerHTML = src?.innerHTML ?? "";
+      if (body) {
+        body.innerHTML = src?.innerHTML ?? "";
+        wireCommandCopy(body);
+      }
       root.dataset.open = "true";
       openHintId = id;
       labelHintButton(wrap, true);
@@ -453,8 +456,36 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       openHintCard(wrap);
     };
 
+    const isCommandLine = (text: string) => {
+      const t = text.trim();
+      if (t.length > 40) return true;
+      if (/[|]/.test(t)) return true;
+      return /^(Get|Set|New|Remove|Add|Enable|Disable|Search|Unlock|Move)-/i.test(t);
+    };
+
+    const wireCommandCopy = (root: Element) => {
+      root.querySelectorAll("p").forEach((p) => {
+        const code = p.querySelector(":scope > code");
+        if (!code) return;
+        const onlyCode = [...p.childNodes].every(
+          (n) => n === code || (n.nodeType === Node.TEXT_NODE && !n.textContent?.trim()),
+        );
+        if (!onlyCode && !p.classList.contains("ad-cmd")) return;
+        if (!p.classList.contains("ad-cmd") && !isCommandLine(code.textContent || "")) return;
+        p.classList.add("ad-cmd");
+        if (p.querySelector(".ad-cmd__copy")) return;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "ad-cmd__copy";
+        btn.textContent = "Copy";
+        p.appendChild(btn);
+      });
+    };
+
     const copyCode = (btn: HTMLButtonElement) => {
-      const code = btn.closest(".ad-code")?.querySelector("code")?.innerText;
+      const code =
+        btn.closest(".ad-code")?.querySelector("code")?.innerText ||
+        btn.closest(".ad-cmd")?.querySelector("code")?.innerText;
       if (!code) return;
       navigator.clipboard.writeText(code);
       const original = btn.textContent;
@@ -492,7 +523,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       }
       const hintBtn = target.closest<HTMLButtonElement>(".ad-hint__btn");
       if (hintBtn) return toggleHint(hintBtn);
-      const copyBtn = target.closest<HTMLButtonElement>(".ad-code__copy");
+      const copyBtn = target.closest<HTMLButtonElement>(".ad-code__copy, .ad-cmd__copy");
       if (copyBtn) return copyCode(copyBtn);
     };
 
@@ -515,6 +546,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     const sync = () => {
       frame = 0;
       document.querySelectorAll<HTMLElement>(".ad-mission[data-id]:not([data-restored])").forEach(restoreMission);
+      document.querySelectorAll(".academy-prose").forEach(wireCommandCopy);
       if (openHintId) {
         const live = missionById(openHintId);
         if (live) labelHintButton(live, true);
