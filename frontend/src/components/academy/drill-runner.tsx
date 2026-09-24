@@ -51,7 +51,8 @@ type Mode = "daily" | "timed" | "ctf";
 const MODE_LABEL: Record<string, string> = { daily: "Daily scenario", timed: "Incident drill", ctf: "Weekly CTF", coach: "Practice" };
 
 type DrillEntry = { id: string; day: string; mode: string; correct: number; total: number; seconds: number; detail?: { t: string }[] };
-type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[]; free?: boolean; format?: string; kind?: "decide" | "respond" | "change"; long?: boolean; checklist?: string[]; checkCount?: number; setup?: { note: string; script: string }; job?: string };
+type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[]; free?: boolean; format?: string; kind?: "decide" | "respond" | "change"; long?: boolean; checklist?: string[]; checkCount?: number; setup?: { note: string; script: string }; job?: string; gated?: boolean };
+type TaskInfo = { setup?: { note: string; script: string }; checklist?: string[]; checkCount?: number };
 type CheckRes = { needsSetup?: boolean; fresh: boolean; results: { label: string; ok: boolean }[]; syncedAgo: string | null; passed: boolean };
 type Review = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string; runbook?: string[] };
 type Run = { mode: Mode; token: string; items: Item[]; limit: number; ai: boolean; startedAt: number };
@@ -124,6 +125,53 @@ function SetupBlock({ setup }: { setup: { note: string; script: string } }) {
   );
 }
 
+function TaskPanel({ task, checkRes }: { task: TaskInfo; checkRes: CheckRes | null }) {
+  return (
+    <div className="dr-task">
+      {task.setup && <SetupBlock setup={task.setup} />}
+      <span className="rd-kicker">{task.setup ? "Step 2 · Fix it in your lab" : "Make this change in your lab"}</span>
+      {task.checklist ? (
+        <ul className="dr-task__list">
+          {task.checklist.map((c) => (
+            <li key={c}>{c}</li>
+          ))}
+        </ul>
+      ) : (
+        <p>
+          You are checked on the result: {task.checkCount} things must be true when you are done. Work out what the job needs.
+        </p>
+      )}
+      <p className="dr-task__sync">
+        Your lab reports about every 15 minutes. To check right away, run <code>.\Build-Environment.ps1 -SyncOnly</code> on the domain controller.
+      </p>
+      {checkRes && (
+        <div className="dr-checks">
+          {checkRes.needsSetup && (
+            <p className="dr-checks__stale">
+              Your lab reported, but the practice account is not there yet. Run the setup script on the domain controller, wait for the next report, then check again.
+            </p>
+          )}
+          {!checkRes.fresh && (
+            <p className="dr-checks__stale">
+              Your lab has not reported since you started{checkRes.syncedAgo ? ` (last report ${checkRes.syncedAgo})` : ""}. Make the change, sync, then check again.
+            </p>
+          )}
+          {checkRes.fresh && !checkRes.needsSetup && (
+            <ul>
+              {checkRes.results.map((r) => (
+                <li key={r.label} className={r.ok ? "is-ok" : "is-bad"}>
+                  <span>{r.ok ? "✓" : "✗"}</span>
+                  {r.label}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Scenario({
   caseNo,
   item,
@@ -132,6 +180,7 @@ function Scenario({
   hint,
   onHint,
   checkRes,
+  unlock,
 }: {
   caseNo: string;
   item: Item;
@@ -140,6 +189,7 @@ function Scenario({
   hint: string | null;
   onHint: () => void;
   checkRes: CheckRes | null;
+  unlock: TaskInfo | null;
 }) {
   return (
     <div className="dr-card">
@@ -162,48 +212,7 @@ function Scenario({
       )}
       <h3 className="dr-question">{item.prompt}</h3>
       {item.kind === "change" ? (
-        <div className="dr-task">
-          {item.setup && <SetupBlock setup={item.setup} />}
-          <span className="rd-kicker">{item.setup ? "Step 2 · Fix it in your lab" : "Make this change in your lab"}</span>
-          {item.checklist ? (
-            <ul className="dr-task__list">
-              {item.checklist.map((c) => (
-                <li key={c}>{c}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>
-              You are checked on the result: {item.checkCount} things must be true when you are done. Work out what the job needs.
-            </p>
-          )}
-          <p className="dr-task__sync">
-            Your lab reports about every 15 minutes. To check right away, run <code>.\Build-Environment.ps1 -SyncOnly</code> on the domain controller.
-          </p>
-          {checkRes && (
-            <div className="dr-checks">
-              {checkRes.needsSetup && (
-                <p className="dr-checks__stale">
-                  Your lab reported, but the practice account is not there yet. Run the setup script on the domain controller, wait for the next report, then check again.
-                </p>
-              )}
-              {!checkRes.fresh && (
-                <p className="dr-checks__stale">
-                  Your lab has not reported since you started{checkRes.syncedAgo ? ` (last report ${checkRes.syncedAgo})` : ""}. Make the change, sync, then check again.
-                </p>
-              )}
-              {checkRes.fresh && !checkRes.needsSetup && (
-                <ul>
-                  {checkRes.results.map((r) => (
-                    <li key={r.label} className={r.ok ? "is-ok" : "is-bad"}>
-                      <span>{r.ok ? "✓" : "✗"}</span>
-                      {r.label}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
-        </div>
+        <TaskPanel task={item} checkRes={checkRes} />
       ) : item.kind === "respond" ? (
         <div className="dr-free">
           <label htmlFor="dr-answer">{item.format || "Write your answer"}</label>
@@ -229,6 +238,7 @@ function Scenario({
             autoCapitalize="off"
             spellCheck={false}
             placeholder="answer"
+            disabled={Boolean(item.gated && unlock)}
           />
           {hint ? (
             <p className="dr-hint">Hint: {hint}</p>
@@ -237,6 +247,7 @@ function Scenario({
               Need a hint?
             </button>
           )}
+          {item.gated && unlock && <TaskPanel task={unlock} checkRes={checkRes} />}
         </div>
       ) : (
         <div className="dr-choices" role="radiogroup">
@@ -333,15 +344,39 @@ export function DrillRunner() {
   }
 
   const [checkRes, setCheckRes] = useState<CheckRes | null>(null);
+  const [unlock, setUnlock] = useState<TaskInfo | null>(null);
 
-  async function checkLab(current: Run) {
+  async function unlockTask(current: Run, given: (string | null)[]) {
     setBusy(true);
     setError(null);
     try {
       const res = await academyFetch("/academy/api/drill", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "check", token: current.token, day: localDay() }),
+        body: JSON.stringify({ action: "unlock", token: current.token, answers: given }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not check your answer.");
+      if (!data.ok) {
+        setError("That is not the account. Read the evidence again, or ask for the hint.");
+        return;
+      }
+      setUnlock({ setup: data.setup, checklist: data.checklist, checkCount: data.checkCount });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not check your answer.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function checkLab(current: Run, given: (string | null)[] = []) {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await academyFetch("/academy/api/drill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "check", token: current.token, answers: given, day: localDay() }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not check your lab.");
@@ -390,6 +425,7 @@ export function DrillRunner() {
       setResult(null);
       setHint(null);
       setCheckRes(null);
+      setUnlock(null);
       setIdx(0);
       setAnswers(data.items.map(() => null));
       setNow(Date.now());
@@ -409,6 +445,8 @@ export function DrillRunner() {
     setRun(null);
     setAnswers([]);
     setHint(null);
+    setCheckRes(null);
+    setUnlock(null);
     setIdx(0);
     setError(null);
   }
@@ -463,7 +501,9 @@ export function DrillRunner() {
             {run.mode === "timed"
               ? `Incident drill · ${idx + 1} of ${run.items.length}`
               : run.mode === "ctf"
-                ? "Weekly CTF · type your answer"
+                ? run.items[0]?.gated
+                  ? "Weekly CTF · find it, then contain it"
+                  : "Weekly CTF · type your answer"
                 : run.items[0]?.kind === "change"
                   ? "Daily lab task · make the change"
                   : run.items[0]?.kind === "respond"
@@ -502,22 +542,33 @@ export function DrillRunner() {
           </div>
         )}
 
-        <Scenario caseNo={String((status?.stats.total ?? 0) + 1).padStart(2, "0")} item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} checkRes={checkRes} />
+        <Scenario caseNo={String((status?.stats.total ?? 0) + 1).padStart(2, "0")} item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} checkRes={checkRes} unlock={unlock} />
 
         <div className="dr-actions">
-          {item.kind === "change" ? (
+          {item.gated && !unlock ? (
             <>
               <span className="dr-actions__side">
-                <button type="button" className="dr-link" disabled={busy} onClick={() => void finish(run, [""])}>
+                <button type="button" className="dr-link" disabled={busy} onClick={() => void finish(run, answers)}>
+                  Give up and see the answer
+                </button>
+              </span>
+              <button type="button" className="rd-cta" disabled={busy || !picked || !picked.trim()} onClick={() => void unlockTask(run, answers)}>
+                {busy ? "Checking…" : "Check my answer"} <ArrowRight className="h-4 w-4" />
+              </button>
+            </>
+          ) : item.kind === "change" || (item.gated && unlock) ? (
+            <>
+              <span className="dr-actions__side">
+                <button type="button" className="dr-link" disabled={busy} onClick={() => void finish(run, item.gated ? answers : [""])}>
                   Give up and see the steps
                 </button>
-                {run.mode === "daily" && (
+                {run.mode === "daily" && item.kind === "change" && (
                   <button type="button" className="dr-link" disabled={busy} onClick={() => void start("daily", "respond")}>
                     Can&apos;t reach your lab? Do a written case instead
                   </button>
                 )}
               </span>
-              <button type="button" className="rd-cta" disabled={busy} onClick={() => void checkLab(run)}>
+              <button type="button" className="rd-cta" disabled={busy} onClick={() => void checkLab(run, answers)}>
                 {busy ? "Checking…" : "Check my lab"} <ArrowRight className="h-4 w-4" />
               </button>
             </>

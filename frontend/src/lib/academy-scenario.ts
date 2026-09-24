@@ -141,7 +141,10 @@ function parseChoice(raw: string, fallback: Skill, seed: string, theme: string):
 
 function parseCtf(raw: string, fallback: Skill, theme: string): Item | null {
   const j = json(raw);
-  if (!j) return null;
+  if (!j) {
+    console.error("ctf: no JSON in reply", raw.slice(0, 160));
+    return null;
+  }
   const title = text(j.title, 60);
   const story = text(j.story, 900);
   const prompt = text(j.question, 300);
@@ -151,7 +154,10 @@ function parseCtf(raw: string, fallback: Skill, theme: string): Item | null {
   const format = text(j.answerFormat, 100);
   const evidence = Array.isArray(j.evidence) ? j.evidence.map((e) => text(e, 180)).filter(Boolean).slice(0, 16) : [];
   const accept = Array.isArray(j.accept) ? j.accept.map((a) => text(a, 80)).filter(Boolean).slice(0, 6) : [];
-  if (!title || !story || !prompt || !explain || !answer || evidence.length < 6) return null;
+  if (!title || !story || !prompt || !explain || !answer || evidence.length < 6) {
+    console.error("ctf: incomplete reply", { title: !!title, story: !!story, prompt: !!prompt, explain: !!explain, answer: !!answer, evidence: evidence.length });
+    return null;
+  }
   return {
     skill: skillOf(j.skill, fallback),
     title,
@@ -296,7 +302,8 @@ export async function generateCtf(params: {
 
 Rules:
 ${BASE_RULES}
-- Give 8 to 14 evidence lines. Mix Windows security log lines (event IDs 4624, 4625, 4634, 4648, 4720, 4728, 4740, 4768, 4769) with directory facts and, if it helps, DNS or DHCP lines that tie an IP address to a host.
+- Keep every evidence line under 130 characters and the explanation under four sentences.
+- Give 8 to 12 evidence lines. Mix Windows security log lines (event IDs 4624, 4625, 4634, 4648, 4720, 4728, 4740, 4768, 4769) with directory facts and, if it helps, DNS or DHCP lines that tie an IP address to a host.
 - The answer takes at least two evidence lines to find. For example, tie an address to a host in one place and that host to an account in another. Include two or three lines that look important and are not.
 - Exactly one correct answer, a short exact token: an account name, a host name, an IP address, or an event ID. Walk through the evidence yourself before you answer and make sure it is unambiguous.
 ${plantRules}
@@ -310,7 +317,7 @@ Return only JSON, no other text:
   for (let attempt = 0; attempt < 2; attempt++) {
     // Leave room in a 60 second function for the second draft.
     if (attempt && Date.now() - began > 24_000) break;
-    const raw = await ask(params.apiKey, system, user, 2200, attempt ? 30_000 : 40_000);
+    const raw = await ask(params.apiKey, system, user, 3400, attempt ? 30_000 : 48_000);
     let item = raw ? parseCtf(raw, skill, "Weekly CTF") : null;
     if (item && plant?.subject) {
       const sam = plant.subject.sam.toLowerCase();
