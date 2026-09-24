@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Flag, FlaskConical, Wrench } from "lucide-react";
 import { Markdown, splitMarkdownIntoSlides } from "@/lib/markdown";
@@ -77,6 +77,7 @@ export function SectionTabs({
 
   const router = useRouter();
   const [active, setActive] = useState(0);
+  const [dir, setDir] = useState<1 | -1>(1);
   const [quizFoot, setQuizFoot] = useState<HTMLElement | null>(null);
   const [labFoot, setLabFoot] = useState<HTMLElement | null>(null);
   // Expanded by default -- collapsing is an option for a long list like Home
@@ -86,13 +87,18 @@ export function SectionTabs({
   const current = items[active];
   const prevItem = active > 0 ? items[active - 1] : null;
   const nextItem = active < items.length - 1 ? items[active + 1] : null;
+  function goTo(i: number) {
+    setDir(i >= active ? 1 : -1);
+    setActive(i);
+  }
+
   const prevTrail: TrailLink | null = prevItem
-    ? { label: prevItem.label, go: () => setActive(active - 1) }
+    ? { label: prevItem.label, go: () => goTo(active - 1) }
     : prevWeek
       ? { label: prevWeek.label, go: () => router.push(prevWeek.href) }
       : null;
   const nextTrail: TrailLink | null = nextItem
-    ? { label: nextItem.label, go: () => setActive(active + 1) }
+    ? { label: nextItem.label, go: () => goTo(active + 1) }
     : nextWeek
       ? { label: nextWeek.label, go: () => router.push(nextWeek.href) }
       : null;
@@ -104,6 +110,21 @@ export function SectionTabs({
     // items is rebuilt each render from the same labels; hash is the trigger.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (prevWeek) router.prefetch(prevWeek.href);
+    if (nextWeek) router.prefetch(nextWeek.href);
+  }, [prevWeek, nextWeek, router]);
+
+  const skipScroll = useRef(true);
+  useEffect(() => {
+    if (skipScroll.current) {
+      skipScroll.current = false;
+      return;
+    }
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.querySelector(".ax-entryhead")?.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+  }, [active]);
 
   useEffect(() => {
     const id = window.location.hash.replace(/^#/, "");
@@ -184,7 +205,7 @@ export function SectionTabs({
                 role="tab"
                 tabIndex={collapsed ? -1 : 0}
                 aria-selected={active === i}
-                onClick={() => setActive(i)}
+                onClick={() => goTo(i)}
                 className={`ax-tab ${active === i ? "ax-tab--on" : ""}`}
               >
                 <span className="font-mono text-[10px] font-normal text-slate-400">{pad(i + 1)}</span>
@@ -204,7 +225,7 @@ export function SectionTabs({
                     role="tab"
                     tabIndex={collapsed ? -1 : 0}
                     aria-selected={active === idx}
-                    onClick={() => setActive(idx)}
+                    onClick={() => goTo(idx)}
                     className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
                   >
                     <FlaskConical className="mt-0.5 h-3.5 w-3.5 shrink-0" />
@@ -230,7 +251,7 @@ export function SectionTabs({
                     role="tab"
                     tabIndex={collapsed ? -1 : 0}
                     aria-selected={active === idx}
-                    onClick={() => setActive(idx)}
+                    onClick={() => goTo(idx)}
                     className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
                   >
                     <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0" />
@@ -254,7 +275,7 @@ export function SectionTabs({
                     role="tab"
                     tabIndex={collapsed ? -1 : 0}
                     aria-selected={active === idx}
-                    onClick={() => setActive(idx)}
+                    onClick={() => goTo(idx)}
                     className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
                   >
                     <Wrench className="mt-0.5 h-3.5 w-3.5 shrink-0" />
@@ -269,7 +290,7 @@ export function SectionTabs({
 
       <div className="ax-panel min-w-0 flex-1">
         <div className="overflow-hidden py-2 sm:py-4">
-          <div key={current.label} className={current.kind === "lab" ? undefined : "ax-enter"}>
+          <div key={current.label} className={dir === 1 ? "ax-enter-fwd" : "ax-enter-back"}>
             {panel}
           </div>
         </div>

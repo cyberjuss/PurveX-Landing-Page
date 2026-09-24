@@ -23,12 +23,14 @@ export function LabCarousel({
 }) {
   const [index, setIndex] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
+  const skipEnter = useRef(true);
   const touchStartX = useRef<number | null>(null);
   const total = slides.length;
 
   function go(next: number) {
     const clamped = Math.max(0, Math.min(total - 1, next));
     if (clamped === index) return;
+    skipEnter.current = false;
     setDir(clamped > index ? 1 : -1);
     setIndex(clamped);
   }
@@ -49,6 +51,12 @@ export function LabCarousel({
   }
 
   if (total === 0) return null;
+
+  const slideClass = skipEnter.current
+    ? undefined
+    : dir === 1
+      ? "academy-slide-in-right"
+      : "academy-slide-in-left";
 
   const nav = (
     <TrailDock
@@ -80,7 +88,7 @@ export function LabCarousel({
         onTouchEnd={onTouchEnd}
         className="overflow-hidden outline-none"
       >
-        <div key={index} className={dir === 1 ? "academy-slide-in-right" : "academy-slide-in-left"}>
+        <div key={index} className={slideClass}>
           <Markdown content={slides[index].markdown} />
         </div>
       </div>

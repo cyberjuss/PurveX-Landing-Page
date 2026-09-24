@@ -25,6 +25,8 @@ export function MissionPager({
 }) {
   const root = useRef<HTMLDivElement>(null);
   const first = useRef(true);
+  const prevAt = useRef(0);
+  const prevBrief = useRef(false);
   const [step, setStep] = useState(0);
   const [solved, setSolved] = useState<boolean[]>([]);
   const [flagged, setFlagged] = useState<boolean[]>([]);
@@ -130,13 +132,25 @@ export function MissionPager({
     });
     if (first.current) {
       first.current = false;
+      prevAt.current = at;
+      prevBrief.current = onBrief;
       return;
     }
     const shown = onBrief ? briefing : missions()[at];
+    const enter =
+      onBrief !== prevBrief.current
+        ? onBrief
+          ? "ax-enter-back"
+          : "ax-enter-fwd"
+        : at >= prevAt.current
+          ? "ax-enter-fwd"
+          : "ax-enter-back";
+    prevAt.current = at;
+    prevBrief.current = onBrief;
     if (shown) {
-      shown.classList.remove("ax-enter");
+      shown.classList.remove("ax-enter", "ax-enter-fwd", "ax-enter-back");
       void shown.offsetWidth;
-      shown.classList.add("ax-enter");
+      shown.classList.add(enter);
     }
     if (total >= 2) strip?.scrollIntoView({ block: "start", behavior: "smooth" });
   }, [at, total, onBrief, brief, missions, strip]);

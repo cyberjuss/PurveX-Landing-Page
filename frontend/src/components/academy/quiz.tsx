@@ -23,6 +23,7 @@ export function QuizBlock({
   const [answers, setAnswers] = useState<(number | null)[]>(() => quiz.questions.map(() => null));
   const [submitted, setSubmitted] = useState(false);
   const [at, setAt] = useState(0);
+  const [dir, setDir] = useState<1 | -1>(1);
 
   const total = quiz.questions.length;
   const q = quiz.questions[at];
@@ -70,8 +71,8 @@ export function QuizBlock({
     <TrailDock
       wide
       back={prevBeyond}
-      prev={{ go: () => setAt(at - 1), disabled: at === 0 }}
-      next={{ go: () => setAt(at + 1), disabled: isLast || (!submitted && selected === null) }}
+      prev={{ go: () => { setDir(-1); setAt(at - 1); }, disabled: at === 0 }}
+      next={{ go: () => { setDir(1); setAt(at + 1); }, disabled: isLast || (!submitted && selected === null) }}
       forward={nextBeyond}
       center={action}
     />
@@ -87,7 +88,7 @@ export function QuizBlock({
       </div>
 
       <div className="overflow-hidden">
-      <div key={at} className="ax-quiz__q ax-enter">
+      <div key={at} className={`ax-quiz__q ${dir === 1 ? "ax-enter-fwd" : "ax-enter-back"}`}>
         <div className="ax-quiz__qhead">
           <span className="ax-quiz__n">{String(at + 1).padStart(2, "0")}</span>
           <p>{q.question}</p>

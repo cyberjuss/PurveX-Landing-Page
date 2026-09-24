@@ -87,7 +87,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
             <em>{LEVELS[readiness.level].label}</em>
           </Link>
         </div>
-        <div className="ax-status">
+        <div className="ax-status ax-rise" style={{ ["--ax-i" as string]: 0 }}>
           {pin ? (
             <Link href={go ?? pin.href} className="ax-status__next">
               <span className="rd-kicker">{pin.kind === "last" ? "Last stop" : "Start here"}</span>
@@ -104,7 +104,9 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
         </div>
       </header>
 
-      <DrillCard />
+      <div className="ax-rise" style={{ ["--ax-i" as string]: 1 }}>
+        <DrillCard />
+      </div>
 
       <ol className="ax-path">
         {PHASE_COPY.map((copy, i) => {
@@ -155,7 +157,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
             </>
           );
           return (
-            <li key={copy.slug}>
+            <li key={copy.slug} className="ax-rise" style={{ ["--ax-i" as string]: i + 2 }}>
               {soon ? (
                 <div className="ax-path__row ax-path__row--soon">{row}</div>
               ) : (

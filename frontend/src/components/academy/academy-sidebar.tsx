@@ -105,12 +105,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                   const hasContent = entry.sections.length > 0;
                   return (
                     <li key={entry.slug} className="relative">
-                      {active && (
-                        <span
-                          aria-hidden
-                          className="absolute -left-3 top-1/2 h-4 w-[2px] -translate-y-1/2 bg-[#5546e0]"
-                        />
-                      )}
+                      <span aria-hidden className={`ax-sidemark${active ? " ax-sidemark--on" : ""}`} />
                       {hasContent ? (
                         <Link
                           href={href}

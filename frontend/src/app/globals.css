@@ -2788,7 +2788,8 @@ body:has(.lp) {
   position: relative;
   background: var(--pvrx-bg-light, #fff);
   --ax-ease: cubic-bezier(.16, 1, .3, 1);
-  --ax-dur: 280ms;
+  --ax-dur: 320ms;
+  --ax-dur-page: 420ms;
 }
 .academy-bg a,
 .academy-bg button:not(:disabled),
@@ -3532,25 +3533,25 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 .academy-prose .ad-baseline-list li { margin: 0.3rem 0; color: var(--pvrx-text-secondary-light); }
 .academy-prose .ad-baseline-list strong { color: var(--pvrx-text-primary-light); }
 
-/* One motion language for Academy: 280ms, same ease as the lab carousel
-   and the hint sheet. Soft Y for tabs, tickets, quiz, drills, menus.
-   Directional X for carousel steps. Opacity-only for route changes so a
-   transform on the page wrapper never breaks sticky header or coach. */
-@keyframes ax-enter { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
-@keyframes ax-enter-fwd { from { opacity: 0; transform: translateX(14px) } to { opacity: 1; transform: none } }
-@keyframes ax-enter-back { from { opacity: 0; transform: translateX(-14px) } to { opacity: 1; transform: none } }
-@keyframes ax-enter-page { from { opacity: 0 } to { opacity: 1 } }
+/* One motion language for Academy. Soft Y for first paint, menus, drills.
+   Directional X for next and previous. A short rise on routes lives on
+   the content column only, so sticky header and coach stay put. */
+@keyframes ax-enter { from { opacity: 0; transform: translate3d(0, 10px, 0) } to { opacity: 1; transform: none } }
+@keyframes ax-enter-fwd { from { opacity: 0; transform: translate3d(16px, 0, 0) } to { opacity: 1; transform: none } }
+@keyframes ax-enter-back { from { opacity: 0; transform: translate3d(-16px, 0, 0) } to { opacity: 1; transform: none } }
+@keyframes ax-enter-page { from { opacity: 0; transform: translate3d(0, 14px, 0) } to { opacity: 1; transform: none } }
 @keyframes ax-drawer-in { from { transform: translateX(-100%) } to { transform: none } }
 @keyframes ax-scrim-in { from { opacity: 0 } to { opacity: 1 } }
-.ax-enter { animation: ax-enter var(--ax-dur, 280ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)) both }
-.ax-enter-fwd, .academy-slide-in-right { animation: ax-enter-fwd var(--ax-dur, 280ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)) both }
-.ax-enter-back, .academy-slide-in-left { animation: ax-enter-back var(--ax-dur, 280ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)) both }
-.ax-page { animation: ax-enter-page var(--ax-dur, 280ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)) both }
-.ax-drawer__scrim { animation: ax-scrim-in var(--ax-dur, 280ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)) both }
-.ax-drawer__panel { animation: ax-drawer-in var(--ax-dur, 280ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)) both; background: #fff; color: #0f172a; }
+.ax-enter { animation: ax-enter var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)) both }
+.ax-enter-fwd, .academy-slide-in-right { animation: ax-enter-fwd var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)) both }
+.ax-enter-back, .academy-slide-in-left { animation: ax-enter-back var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)) both }
+.ax-page { animation: ax-enter-page var(--ax-dur-page, 420ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)) both }
+.ax-rise { animation: ax-enter var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)) both; animation-delay: calc(var(--ax-i, 0) * 55ms) }
+.ax-drawer__scrim { animation: ax-scrim-in var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)) both }
+.ax-drawer__panel { animation: ax-drawer-in var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)) both; background: #fff; color: #0f172a; }
 .academy-bg[data-academy-theme="dark"] .ax-drawer__panel { background: #000; color: #e8eef8; }
 @media (prefers-reduced-motion: reduce) {
-  .ax-enter, .ax-enter-fwd, .ax-enter-back, .ax-page,
+  .ax-enter, .ax-enter-fwd, .ax-enter-back, .ax-page, .ax-rise,
   .academy-slide-in-right, .academy-slide-in-left,
   .ax-drawer__scrim, .ax-drawer__panel,
   .academy-prose .ad-flag--shown { animation: none }
@@ -4036,7 +4037,10 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 .ax-curriculum li:last-child .ax-curriculum__row {
   border-bottom: none;
 }
+.ax-path__title, .ax-curriculum__title { transition: color var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)); }
+.ax-path__count svg, .ax-status__next svg { transition: transform var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)); }
 .ax-path__row:hover .ax-path__title, .ax-curriculum__row:hover .ax-curriculum__title { color: var(--rd-accent); }
+.ax-path__row:hover .ax-path__count svg, .ax-status__next:hover svg { transform: translateX(3px); }
 .ax-path__row--soon, .ax-curriculum__row--soon { opacity: 0.55; cursor: default; }
 .ax-path__row--soon:hover .ax-path__title, .ax-curriculum__row--soon:hover .ax-curriculum__title { color: inherit; }
 .ax-path__n, .ax-curriculum__n { font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; font-weight: 700; color: var(--rd-accent); padding-top: 4px; }
@@ -4068,7 +4072,15 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 .ax-sideprog p { margin-top: 8px; font-size: 12px; color: var(--rd-ink-3); }
 .ax-sideprog__on { background: #fff; }
 .academy-bg:not([data-academy-theme="dark"]) .ax-sideprog__on { background: #0f172a; }
-.ax-sidelink { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 13.5px; color: var(--rd-ink-2); transition: color var(--ax-dur, 280ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)); }
+.ax-sidemark {
+  position: absolute; left: -12px; top: 50%; width: 2px; height: 16px;
+  background: var(--rd-accent, #5546e0); border-radius: 1px;
+  transform: translateY(-50%) scaleY(0.4); opacity: 0;
+  transition: opacity var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)),
+    transform var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1));
+}
+.ax-sidemark--on { opacity: 1; transform: translateY(-50%) scaleY(1); }
+.ax-sidelink { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 13.5px; color: var(--rd-ink-2); transition: color var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)); }
 .ax-sidelink:hover, .ax-sidelink--on { color: var(--rd-ink); }
 .ax-sidelink--on { font-weight: 600; }
 .ax-check { display: inline-flex; align-items: center; justify-content: center; width: 12px; height: 12px; border: 1.5px solid var(--rd-line); border-radius: 2px; color: transparent; flex-shrink: 0; }
@@ -4118,6 +4130,7 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
   color: var(--rd-ink-2);
   background: none;
   border: 0;
+  transition: color var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1));
 }
 .ax-dock__ico { display: block; width: 16px; height: 16px; flex: 0 0 16px; }
 .ax-dock__btn:hover:not(:disabled) { color: var(--rd-accent); }

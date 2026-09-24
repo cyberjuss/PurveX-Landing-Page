@@ -453,6 +453,7 @@ export function DrillRunner() {
   const [run, setRun] = useState<Run | null>(null);
   const [answers, setAnswers] = useState<(string | null)[]>([]);
   const [idx, setIdx] = useState(0);
+  const [dir, setDir] = useState<1 | -1>(1);
   const [now, setNow] = useState(0);
   const [result, setResult] = useState<Result | null>(null);
   const [busy, setBusy] = useState(false);
@@ -689,7 +690,7 @@ export function DrillRunner() {
           </div>
         )}
 
-        <div key={idx} className="ax-enter">
+        <div key={idx} className={dir === 1 ? "ax-enter-fwd" : "ax-enter-back"}>
           <Scenario caseNo={String((status?.stats.total ?? 0) + 1).padStart(2, "0")} item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} checkRes={checkRes} unlock={unlock} />
         </div>
 
@@ -724,7 +725,7 @@ export function DrillRunner() {
           ) : (
             <>
               {idx > 0 ? (
-                <button type="button" className="dr-link" onClick={() => setIdx(idx - 1)}>
+                <button type="button" className="dr-link" onClick={() => { setDir(-1); setIdx(idx - 1); }}>
                   Back
                 </button>
               ) : run.mode === "ctf" ? (
@@ -738,7 +739,7 @@ export function DrillRunner() {
                 type="button"
                 className="rd-cta"
                 disabled={busy || !picked || !picked.trim() || (item.kind === "respond" && picked.trim().length < 40)}
-                onClick={() => (last ? void finish(run, answers) : setIdx(idx + 1))}
+                onClick={() => (last ? void finish(run, answers) : (setDir(1), setIdx(idx + 1)))}
               >
                 {busy && item.kind === "respond" ? "Marking…" : last ? (single ? "Submit answer" : "Finish") : "Next"} <ArrowRight className="h-4 w-4" />
               </button>
