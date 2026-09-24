@@ -89,7 +89,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
             setSentTo(null);
             setMode("signin");
           }}
-          className="mt-6 w-full text-center text-sm font-medium text-[#5546e0] hover:text-[#4a3bd4]"
+          className="mt-6 w-full text-center text-sm font-medium text-[#6a5cff] hover:text-[#5546e0]"
         >
           Back to sign in
         </button>
@@ -110,7 +110,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
           type="button"
           onClick={handleGoogle}
           disabled={busy}
-          className="flex h-12 items-center justify-center gap-2.5 rounded-full border border-[var(--pvrx-border-light)] bg-white text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60"
+          className="flex h-12 items-center justify-center gap-2.5 rounded-2xl border border-[var(--pvrx-border-light)] bg-white text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60"
         >
           Continue with Google
         </button>
@@ -143,7 +143,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
           <div className="flex items-center justify-between">
             <label htmlFor="academy-password" className="block text-sm font-semibold text-slate-700">Password</label>
             {mode === "signin" && (
-              <Link href="/forgot-password" className="text-xs font-medium text-slate-500 hover:text-[#5546e0]">
+              <Link href="/forgot-password" className="text-xs font-medium text-slate-500 hover:text-[#6a5cff]">
                 Forgot password?
               </Link>
             )}
@@ -165,7 +165,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
         </div>
 
         {error && (
-          <p className="rounded-none border-0 border-l-2 border-red-500 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+          <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
             {error}
           </p>
         )}
@@ -174,7 +174,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
           type="submit"
           disabled={busy}
           size="lg"
-          className="h-12 w-full rounded-full border-0 bg-[#5546e0] text-white shadow-none hover:bg-[#4a3bd4]"
+          className="h-12 w-full rounded-2xl border-0 bg-[#6a5cff] text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] hover:bg-[#5546e0]"
         >
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : mode === "signin" ? "Sign in" : "Create account"}
         </Button>
@@ -187,7 +187,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
               setMode(mode === "signin" ? "signup" : "signin");
               setError(null);
             }}
-            className="font-medium text-[#5546e0] hover:text-[#4a3bd4]"
+            className="font-medium text-[#6a5cff] hover:text-[#5546e0]"
           >
             {mode === "signin" ? "Create an account" : "Sign in"}
           </button>

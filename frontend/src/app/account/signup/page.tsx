@@ -134,7 +134,7 @@ function PortalSignupContent() {
           </p>
           <Link
             href={plan ? `/account/login?next=${encodeURIComponent(pricingTarget)}` : "/account/login"}
-            className="mt-2 flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#5546e0]"
+            className="mt-2 flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#6a5cff]"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to sign in
@@ -156,15 +156,15 @@ function PortalSignupContent() {
               if (error) setError(null);
             }}
             disabled={isLoading}
-            className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-[#5546e0] focus:ring-[#6a5cff]"
+            className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-[#6a5cff] focus:ring-[#6a5cff]"
           />
           <span>
             I agree to the{" "}
-            <Link href="/legal/terms" target="_blank" rel="noreferrer" className="font-medium text-[#5546e0] hover:text-[#4a3bd4]">
+            <Link href="/legal/terms" target="_blank" rel="noreferrer" className="font-medium text-[#6a5cff] hover:text-[#5546e0]">
               Terms of Service
             </Link>{" "}
             and{" "}
-            <Link href="/legal/privacy" target="_blank" rel="noreferrer" className="font-medium text-[#5546e0] hover:text-[#4a3bd4]">
+            <Link href="/legal/privacy" target="_blank" rel="noreferrer" className="font-medium text-[#6a5cff] hover:text-[#5546e0]">
               Privacy Policy
             </Link>
             .
@@ -175,7 +175,7 @@ function PortalSignupContent() {
           type="button"
           onClick={handleGoogle}
           disabled={isLoading}
-          className="flex h-12 items-center justify-center gap-2.5 rounded-full border border-[var(--pvrx-border-light)] bg-white text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60"
+          className="flex h-12 items-center justify-center gap-2.5 rounded-2xl border border-[var(--pvrx-border-light)] bg-white text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
@@ -277,14 +277,14 @@ function PortalSignupContent() {
         </div>
 
         {error && (
-          <p className="rounded-none border-0 border-l-2 border-red-500 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">{error}</p>
+          <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">{error}</p>
         )}
 
         <Button
           type="submit"
           disabled={isLoading}
           size="lg"
-          className="mt-2 h-12 w-full rounded-full border-0 bg-[#5546e0] text-white shadow-none hover:bg-[#4a3bd4]"
+          className="mt-2 h-12 w-full rounded-2xl border-0 bg-[#6a5cff] text-white shadow-[0_10px_30px_rgba(106,92,255,0.3)] hover:bg-[#5546e0]"
         >
           {phase === "submitting" ? (
             <><Loader2 className="h-4 w-4 animate-spin" /> Creating account...</>
@@ -297,7 +297,7 @@ function PortalSignupContent() {
           Already have an account?{" "}
           <Link
             href={plan ? `/account/login?next=${encodeURIComponent(pricingTarget)}` : "/account/login"}
-            className="font-medium text-[#5546e0] hover:text-[#4a3bd4]"
+            className="font-medium text-[#6a5cff] hover:text-[#5546e0]"
           >
             Sign in
           </Link>

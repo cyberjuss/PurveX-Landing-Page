@@ -18,7 +18,7 @@ const TERMINAL_DOTS = ["#f2777a", "#f4c059", "#5ec269"];
 function TerminalCommand({ command }: { command: string }) {
   const [copied, setCopied] = useState(false);
   return (
-    <div className="overflow-hidden rounded-md border border-[var(--pvrx-border-light)] shadow-[0_24px_48px_-28px_rgba(15,23,42,0.35)]">
+    <div className="overflow-hidden rounded-2xl border border-[var(--pvrx-border-light)] shadow-[0_24px_48px_-28px_rgba(15,23,42,0.35)]">
       <div className="flex items-center gap-1.5 bg-[#12161f] px-4 py-2.5">
         {TERMINAL_DOTS.map((color) => (
           <span key={color} className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
@@ -50,7 +50,7 @@ function Step({ number, title, last, children }: { number: number; title: string
   return (
     <div className="flex gap-4">
       <div className="flex flex-col items-center">
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#5546e0] font-mono text-xs font-bold text-white">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#6a5cff] text-xs font-bold text-white shadow-[0_6px_16px_-6px_rgba(106,92,255,0.6)]">
           {number}
         </div>
         {!last && <div className="mt-1 w-px flex-1 bg-[var(--pvrx-border-light)]" />}
@@ -90,14 +90,14 @@ function GetPurveXContent() {
     >
       <div className="w-full space-y-7">
         <div className="flex justify-center">
-          <span className="inline-flex items-center gap-1.5 rounded-none border border-[#5546e0] px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#5546e0]" style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" }}>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--pvrx-border-light)] bg-slate-50 px-3 py-1 text-xs font-medium text-slate-500">
             <Timer className="h-3.5 w-3.5" />
             About 5 minutes, start to finish
           </span>
         </div>
 
         {plan === "paid" && (
-          <div className="rounded-none border-0 border-l-2 border-[#5546e0] bg-[rgba(85,70,224,0.05)] p-4 text-sm leading-relaxed text-slate-700">
+          <div className="rounded-2xl border border-[rgba(106,92,255,0.25)] bg-[rgba(106,92,255,0.05)] p-4 text-sm leading-relaxed text-slate-700">
             <strong className="text-slate-900">Your license key is on its way.</strong> We issue keys by hand
             right now, so expect it within one business day. Check{" "}
             <Link href="/my-license" className="font-medium text-[#5546e0] hover:underline">purvex-llc.com/my-license</Link>{" "}
@@ -126,7 +126,7 @@ function GetPurveXContent() {
         <div className="flex flex-col gap-3 border-t border-[var(--pvrx-border-light)] pt-6 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href="/install-guide"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#5546e0] transition hover:text-[#4a3bd4]"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#6a5cff] transition hover:text-[#5546e0]"
           >
             <BookOpen className="h-4 w-4" />
             Full install guide

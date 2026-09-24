@@ -1,48 +1,24 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { FileQuestion } from "lucide-react";
 
-// Same language as the marketing site and the Academy: dot grid, mono
-// kicker, Space Grotesk headline, pill CTA, hairline rule.
 export default function NotFound() {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-white px-6 text-center">
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0"
-        style={{
-          backgroundImage: "radial-gradient(rgba(16,25,46,.11) 1.6px, transparent 1.6px)",
-          backgroundSize: "26px 26px",
-          maskImage: "radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%)",
-          WebkitMaskImage: "radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%)",
-        }}
-      />
-      <div className="relative w-full" style={{ maxWidth: 460 }}>
-        <p
-          className="text-[11px] font-bold uppercase text-slate-400"
-          style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace", letterSpacing: "0.16em" }}
-        >
-          <span className="text-[#5546e0]" style={{ font: "inherit", letterSpacing: "inherit" }}>404</span> &nbsp;·&nbsp; Not found
-        </p>
-        <h1 className="mt-4 font-display text-[2.4rem] font-semibold text-slate-900 sm:text-5xl" style={{ letterSpacing: "-0.04em", lineHeight: 1.05 }}>
-          This page isn&apos;t here
+    <div className="min-h-[70vh] flex flex-col items-center justify-center px-6 text-center">
+      <div className="rounded-2xl border border-border bg-card/80 backdrop-blur-sm px-10 py-12 max-w-md shadow-sm">
+        <FileQuestion className="h-12 w-12 mx-auto text-muted-foreground mb-4" aria-hidden />
+        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">404</p>
+        <h1 className="mt-2 text-2xl font-semibold text-foreground font-[family-name:var(--font-display)]">
+          Page not found
         </h1>
-        <p className="mt-4 text-[15px] leading-relaxed text-slate-600">
-          It may have moved, or the link is wrong. Check the URL, or head back to the start.
+        <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+          The page you requested does not exist or was moved. Check the URL or return home.
         </p>
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 border-t border-slate-900 pt-8 sm:flex-row">
-          <Link
-            href="/"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#5546e0] px-6 text-sm font-semibold text-white transition hover:bg-[#4a3bd4]"
-          >
-            Back home <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link
-            href="/academy"
-            className="inline-flex h-12 items-center justify-center rounded-full border border-slate-300 px-6 text-sm font-semibold text-slate-900 transition hover:border-slate-900"
-          >
-            Academy portal
-          </Link>
-        </div>
+        <Link
+          href="/"
+          className="mt-8 inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity"
+        >
+          Back home
+        </Link>
       </div>
     </div>
   );

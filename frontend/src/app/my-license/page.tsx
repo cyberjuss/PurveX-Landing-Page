@@ -97,7 +97,7 @@ function downloadLicenseFile(token: string, email: string | undefined) {
 function LicenseKeyBlock({ token, email }: { token: string; email: string | undefined }) {
   const [copied, setCopied] = useState(false);
   return (
-    <div className="overflow-hidden rounded-md border border-[var(--pvrx-border-light)] bg-slate-50">
+    <div className="overflow-hidden rounded-2xl border border-[var(--pvrx-border-light)] bg-slate-50">
       <div className="flex items-start justify-between gap-3 p-4">
         <code className="min-w-0 flex-1 break-all font-mono text-xs leading-relaxed text-slate-700">{token}</code>
         <div className="flex shrink-0 gap-1.5">
@@ -175,7 +175,7 @@ function MyLicenseContent() {
             <Loader2 className="h-5 w-5 animate-spin" />
           </div>
         ) : loadError ? (
-          <p className="rounded-none border-0 border-l-2 border-red-500 bg-red-50 px-4 py-3 text-sm text-red-700">{loadError}</p>
+          <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{loadError}</p>
         ) : license?.current_license_key ? (
           <div className="space-y-3">
             <LicenseKeyBlock token={license.current_license_key} email={user?.email} />
@@ -192,7 +192,7 @@ function MyLicenseContent() {
           </div>
         ) : license?.plan === "paid" ? (
           <div className="space-y-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] bg-slate-50">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--pvrx-border-light)] bg-slate-50">
               <KeyRound className="h-5 w-5 text-slate-400" />
             </div>
             <p className="text-sm leading-relaxed text-slate-600">
@@ -205,7 +205,7 @@ function MyLicenseContent() {
           <div className="space-y-3">
             <p className="text-sm leading-relaxed text-slate-600">
               You&apos;re on the free plan, which doesn&apos;t need a license key at all -- it just works. Want
-              team limits and scheduled runs removed? <Link href="/pricing" className="font-medium text-[#5546e0] hover:text-[#4a3bd4]">See paid plans</Link>.
+              team limits and scheduled runs removed? <Link href="/pricing" className="font-medium text-[#6a5cff] hover:text-[#5546e0]">See paid plans</Link>.
             </p>
           </div>
         )}
