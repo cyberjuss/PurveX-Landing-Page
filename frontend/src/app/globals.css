@@ -3737,9 +3737,12 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
   border-radius: 0 !important;
   background: none !important;
   white-space: normal !important;
-  font-weight: 650;
+  font: inherit;
+  font-weight: inherit;
   color: inherit;
 }
+.academy-prose .ad-mission > p:not(.ad-cmd):not(.ad-guess__feedback) code::before { content: "\201C"; }
+.academy-prose .ad-mission > p:not(.ad-cmd):not(.ad-guess__feedback) code::after { content: "\201D"; }
 .academy-prose .ad-mission p.ad-cmd > code {
   display: block; box-sizing: border-box; width: 100%;
   background: #0c1220; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
