@@ -108,10 +108,16 @@ function skillOf(v: unknown, fallback: Skill): Skill {
 
 function parseChoice(raw: string, fallback: Skill, seed: string, theme: string): Item | null {
   const j = json(raw);
-  if (!j) return null;
+  if (!j) {
+    console.error("scenario: no JSON in reply", raw.slice(0, 200));
+    return null;
+  }
   const choices = Array.isArray(j.choices) ? j.choices.map((c) => text(c, 200)).filter(Boolean) : [];
   const idx = Number(j.answerIndex);
-  if (choices.length !== 4 || new Set(choices).size !== 4 || !Number.isInteger(idx) || idx < 0 || idx > 3) return null;
+  if (choices.length !== 4 || new Set(choices).size !== 4 || !Number.isInteger(idx) || idx < 0 || idx > 3) {
+    console.error("scenario: bad choices", { choices: choices.length, idx });
+    return null;
+  }
   const title = text(j.title, 60);
   const story = text(j.story, 700);
   const prompt = text(j.question, 300);
@@ -173,7 +179,10 @@ async function ask(apiKey: string, system: string, user: string, maxTokens: numb
     },
     body: JSON.stringify({ model: COACH_SONNET_MODEL, max_tokens: maxTokens, system, messages: [{ role: "user", content: user }] }),
   });
-  if (!res.ok) return null;
+  if (!res.ok) {
+    console.error("scenario: model request failed", res.status);
+    return null;
+  }
   const body = (await res.json()) as { content?: { type: string; text?: string }[] };
   return (body.content ?? []).filter((b) => b.type === "text").map((b) => b.text ?? "").join("\n");
 }
@@ -234,8 +243,8 @@ Return only JSON, no other text:
       params.apiKey,
       system,
       attempt ? `${user}\n\nYour last draft was too close to a recent one. Use a different situation and different people.` : user,
-      1200,
-      25_000
+      2400,
+      28_000
     );
     const item = raw ? parseChoice(raw, skill, `${seed}:${attempt}`, theme) : null;
     if (item && (attempt === 1 || !tooSimilar(item, params.recent))) return item;

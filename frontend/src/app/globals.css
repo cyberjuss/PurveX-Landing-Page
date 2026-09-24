@@ -3314,7 +3314,7 @@ body:has(.lp) {
 .academy-prose .ad-mission--bonus .ad-mission__num { color: #b7791f; }
 .academy-prose .ad-mission--solved .ad-mission__num { color: #16a34a; }
 .academy-prose .ad-mission--solved .ad-mission__num::after { content: " \2713 Solved"; }
-.academy-prose .ad-mission h4 { margin: 0.15rem 0 0.35rem; font-family: var(--font-display); font-size: 1.02rem; font-weight: 700; }
+.academy-prose .ad-mission h4 { margin: 0.2rem 0 0.45rem; font-family: var(--font-display); font-size: clamp(1.35rem, 2.4vw, 1.75rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; }
 .academy-prose .ad-mission > p { margin: 0; }
 .academy-prose .ad-ticket-meta {
   display: grid; grid-template-columns: max-content minmax(0,1fr); gap: 0.35rem 0.65rem;
@@ -3434,11 +3434,11 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 .academy-prose .ad-guess__input:disabled { background: var(--pvrx-surface-alt-light) !important; color: var(--pvrx-text-secondary-light) !important; }
 .academy-prose .ad-guess__submit {
   flex-shrink: 0; appearance: none; -webkit-appearance: none;
-  font-size: 0.82rem; font-weight: 650; color: #fff; background: var(--rd-accent, #5546e0); border: none; border-radius: 0;
-  padding: 0.38rem 0.85rem; cursor: pointer;
+  font-size: 0.95rem; font-weight: 600; color: var(--rd-accent, #5546e0); background: none; border: none; border-radius: 0;
+  padding: 0.2rem 0; cursor: pointer;
 }
-.academy-prose .ad-guess__submit:hover { background: #4636c4; }
-.academy-prose .ad-guess__submit:disabled { background: var(--pvrx-border-light); color: var(--pvrx-text-secondary-light); cursor: default; }
+.academy-prose .ad-guess__submit:hover { background: none; opacity: 0.75; }
+.academy-prose .ad-guess__submit:disabled { background: none; color: var(--rd-ink-3, #8a94a8); cursor: default; }
 .academy-prose .ad-guess__feedback { margin: 0.4rem 0 0; font-size: 0.82rem; font-weight: 600; }
 .academy-prose .ad-guess__feedback:empty { display: none; margin: 0; }
 .academy-prose .ad-guess__feedback--ok { color: #16a34a; }
@@ -3599,10 +3599,10 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
   border-bottom-color: #8b7dff !important;
 }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__submit {
-  background: #8b7dff;
-  color: #0a0c12;
+  background: none;
+  color: #c4bdff;
 }
-.academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__submit:hover { background: #241e42; }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__submit:hover { background: none; }
 
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission { box-shadow: none; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission::before,
@@ -4249,6 +4249,7 @@ textarea.pc-dock__field {
 .academy-prose .ad-mission[data-n]::before { content: attr(data-n); counter-increment: none; }
 .academy-prose .ad-mission--solved[data-n]::before { content: "\2713"; }
 .academy-prose:has(.ad-steps) .ad-progress { display: none; }
+.academy-prose:has(.ad-steps) .ad-mission { padding-left: 0; }
 .academy-prose:has(.ad-steps) .ad-mission::before { content: none; }
 .ad-steps { display: flex; margin: 0 0 18px; padding: 0 0 8px; border-bottom: 1px solid var(--rd-line, rgba(15, 23, 42, 0.12)); }
 .ad-steps__chips { display: flex; flex-wrap: wrap; gap: 2px 14px; }
@@ -4361,3 +4362,26 @@ textarea.pc-dock__field {
 .dr-days i.is-done { background: var(--rd-good); }
 .dr-days i.is-today { box-shadow: 0 0 0 2px var(--rd-accent); }
 .dr-lab { margin: 16px 0 0; font-size: var(--ty-small); color: var(--rd-ink-3); }
+
+/* Drill levels, weekly CTF, and the weekly report */
+.dr-side { display: grid; gap: 16px; align-content: start; }
+.dr-level { padding: 3px 10px; border-radius: 999px; background: rgba(85, 70, 224, 0.14); font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-accent); }
+.dr-free { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.dr-free label { font-size: var(--ty-small, 13px); color: var(--rd-ink-3); }
+.dr-free input { width: 100%; padding: 14px 16px; border: 1.5px solid var(--rd-line); border-radius: 10px; background: transparent; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-lead, 16px); color: var(--rd-ink); outline: none; }
+.dr-free input:focus { border-color: var(--rd-accent); }
+.dr-hint { margin: 0; padding: 12px 14px; border-radius: 8px; background: rgba(196, 130, 14, 0.12); font-size: var(--ty-body, 14px); line-height: 1.5; color: var(--rd-ink); }
+.dr-report { margin-top: 16px; padding: 24px 28px; border: 1px solid var(--rd-line); border-radius: 16px; background: var(--rd-line-2); }
+.dr-report__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dr-report__head .dr-link { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+.dr-report__top { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; }
+.dr-report__top strong { font-family: var(--font-display); font-size: var(--ty-stat, 36px); font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: var(--rd-ink); }
+.dr-report__top span { font-size: var(--ty-body, 14px); color: var(--rd-ink-2); }
+.dr-bars { display: grid; gap: 10px; margin: 18px 0 0; padding: 0; list-style: none; }
+.dr-bars li { display: grid; grid-template-columns: minmax(120px, 200px) minmax(0, 1fr) 44px; align-items: center; gap: 12px; font-size: var(--ty-body, 14px); color: var(--rd-ink-2); }
+.dr-bars i { display: block; height: 8px; border-radius: 4px; background: var(--rd-none); overflow: hidden; }
+.dr-bars b { display: block; height: 100%; border-radius: 4px; background: var(--rd-ink-3); }
+.dr-bars b.is-good { background: var(--rd-good); }
+.dr-bars b.is-low { background: var(--rd-warn); }
+.dr-bars em { font-style: normal; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small, 13px); text-align: right; color: var(--rd-ink); }
+.dr-report__next { margin: 18px 0 0; font-size: var(--ty-body, 14px); line-height: 1.55; color: var(--rd-ink); }

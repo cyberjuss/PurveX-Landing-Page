@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowRight, Check, Flame, Sparkles, Timer, X } from "lucide-react";
+import { ArrowRight, Check, Copy, Flag, Flame, Sparkles, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch } from "@/lib/academy-client";
 import { SKILLS, type Skill } from "@/lib/academy-score";
@@ -18,12 +18,33 @@ export type DrillStatus = {
   };
   lab: { synced: boolean; syncedAt: string | null; ago: string | null; days: number | null };
   focus: string | null;
+  level: { n: number; name: string };
+  ctf: { week: string; entry: DrillEntry | null };
+  report: Report;
 };
 
-type DrillEntry = { id: string; day: string; mode: "daily" | "timed"; correct: number; total: number; seconds: number };
-type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[] };
+type Report = {
+  from: string;
+  to: string;
+  drills: number;
+  daysActive: number;
+  asked: number;
+  correct: number;
+  accuracy: number | null;
+  levelName: string;
+  skills: { skill: Skill; label: string; asked: number; correct: number; pct: number | null }[];
+  weakest: { label: string; pct: number | null } | null;
+  themes: { theme: string; missed: number; asked: number }[];
+  next: string;
+};
+
+type Mode = "daily" | "timed" | "ctf";
+const MODE_LABEL: Record<string, string> = { daily: "Daily scenario", timed: "Incident drill", ctf: "Weekly CTF", coach: "Practice" };
+
+type DrillEntry = { id: string; day: string; mode: string; correct: number; total: number; seconds: number };
+type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[]; free?: boolean; format?: string };
 type Review = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string };
-type Run = { mode: "daily" | "timed"; token: string; items: Item[]; limit: number; ai: boolean; startedAt: number };
+type Run = { mode: Mode; token: string; items: Item[]; limit: number; ai: boolean; startedAt: number };
 type Result = { entry: DrillEntry; review: Review[]; late: boolean; counted: boolean; items: Item[] } & DrillStatus;
 
 export const localDay = (d = new Date()) => d.toLocaleDateString("sv-SE");
@@ -62,7 +83,19 @@ function lastSeven() {
   return out;
 }
 
-function Scenario({ item, picked, onPick }: { item: Item; picked: string | null; onPick: (c: string) => void }) {
+function Scenario({
+  item,
+  picked,
+  onPick,
+  hint,
+  onHint,
+}: {
+  item: Item;
+  picked: string | null;
+  onPick: (c: string) => void;
+  hint: string | null;
+  onHint: () => void;
+}) {
   return (
     <div className="dr-card">
       <span className="rd-kicker">{SKILLS[item.skill].label}</span>
@@ -80,22 +113,99 @@ function Scenario({ item, picked, onPick }: { item: Item; picked: string | null;
         </div>
       )}
       <h3 className="dr-question">{item.prompt}</h3>
-      <div className="dr-choices" role="radiogroup">
-        {item.choices.map((c, i) => (
-          <button
-            key={c}
-            type="button"
-            role="radio"
-            aria-checked={picked === c}
-            className={`dr-choice${picked === c ? " dr-choice--on" : ""}`}
-            onClick={() => onPick(c)}
-          >
-            <b>{LETTERS[i]}</b>
-            <span>{c}</span>
-          </button>
-        ))}
-      </div>
+      {item.free ? (
+        <div className="dr-free">
+          <label htmlFor="dr-answer">{item.format || "Type your answer"}</label>
+          <input
+            id="dr-answer"
+            type="text"
+            value={picked ?? ""}
+            onChange={(e) => onPick(e.target.value)}
+            autoComplete="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            placeholder="answer"
+          />
+          {hint ? (
+            <p className="dr-hint">Hint: {hint}</p>
+          ) : (
+            <button type="button" className="dr-link" onClick={onHint}>
+              Need a hint?
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="dr-choices" role="radiogroup">
+          {item.choices.map((c, i) => (
+            <button
+              key={c}
+              type="button"
+              role="radio"
+              aria-checked={picked === c}
+              className={`dr-choice${picked === c ? " dr-choice--on" : ""}`}
+              onClick={() => onPick(c)}
+            >
+              <b>{LETTERS[i]}</b>
+              <span>{c}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
+  );
+}
+
+function reportText(r: Report) {
+  const lines = [
+    `PurveX drill report, ${r.from} to ${r.to}`,
+    `Accuracy: ${r.accuracy === null ? "no drills yet" : `${r.accuracy}% (${r.correct} of ${r.asked})`}. Days active: ${r.daysActive}. Level: ${r.levelName}.`,
+    ...r.skills.filter((k) => k.asked > 0).map((k) => `${k.label}: ${k.pct}% of ${k.asked}`),
+    r.themes.length ? `Keeps missing: ${r.themes.map((t) => t.theme).join("; ")}.` : "",
+    r.next,
+  ];
+  return lines.filter(Boolean).join("\n");
+}
+
+function WeekReport({ r }: { r: Report }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <section className="dr-report">
+      <div className="dr-report__head">
+        <span className="rd-kicker">This week</span>
+        <button
+          type="button"
+          className="dr-link"
+          onClick={() => {
+            navigator.clipboard?.writeText(reportText(r)).then(() => {
+              setCopied(true);
+              window.setTimeout(() => setCopied(false), 1500);
+            }).catch(() => {});
+          }}
+        >
+          <Copy className="h-3.5 w-3.5" /> {copied ? "Copied" : "Copy report"}
+        </button>
+      </div>
+      <div className="dr-report__top">
+        <strong>{r.accuracy === null ? "–" : `${r.accuracy}%`}</strong>
+        <span>
+          {r.asked === 0 ? "No questions yet this week." : `${r.correct} of ${r.asked} right · ${r.daysActive} ${r.daysActive === 1 ? "day" : "days"} active · ${r.levelName}`}
+        </span>
+      </div>
+      {r.asked > 0 && (
+        <ul className="dr-bars">
+          {r.skills.map((k) => (
+            <li key={k.skill}>
+              <span>{k.label}</span>
+              <i>
+                <b style={{ width: `${k.pct ?? 0}%` }} className={k.pct === null ? "" : k.pct >= 70 ? "is-good" : "is-low"} />
+              </i>
+              <em>{k.pct === null ? "–" : `${k.pct}%`}</em>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="dr-report__next">{r.next}</p>
+    </section>
   );
 }
 
@@ -110,6 +220,7 @@ export function DrillRunner() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [leaving, setLeaving] = useState(false);
+  const [hint, setHint] = useState<string | null>(null);
   const finishing = useRef(false);
 
   const load = useCallback(() => {
@@ -121,7 +232,21 @@ export function DrillRunner() {
 
   useEffect(load, [load]);
 
-  async function start(mode: "daily" | "timed") {
+  async function getHint(token: string) {
+    try {
+      const res = await academyFetch("/academy/api/drill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "hint", token }),
+      });
+      const data = await res.json();
+      setHint(typeof data.hint === "string" ? data.hint : "No hint for this one.");
+    } catch {
+      setHint("Could not load a hint.");
+    }
+  }
+
+  async function start(mode: Mode) {
     setBusy(true);
     setError(null);
     try {
@@ -138,6 +263,7 @@ export function DrillRunner() {
       }
       finishing.current = false;
       setResult(null);
+      setHint(null);
       setIdx(0);
       setAnswers(data.items.map(() => null));
       setNow(Date.now());
@@ -154,6 +280,7 @@ export function DrillRunner() {
     setLeaving(false);
     setRun(null);
     setAnswers([]);
+    setHint(null);
     setIdx(0);
     setError(null);
   }
@@ -207,9 +334,11 @@ export function DrillRunner() {
           <span className="rd-kicker">
             {run.mode === "timed"
               ? `Incident drill · ${idx + 1} of ${run.items.length}`
-              : run.ai
-                ? "Daily scenario · written for you"
-                : "Daily scenario"}
+              : run.mode === "ctf"
+                ? "Weekly CTF · type your answer"
+                : run.ai
+                  ? "Daily scenario · written for you"
+                  : "Daily scenario"}
           </span>
           <span className="dr-bar__end">
             {leaving ? (
@@ -241,7 +370,7 @@ export function DrillRunner() {
           </div>
         )}
 
-        <Scenario item={item} picked={picked} onPick={pick} />
+        <Scenario item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} />
 
         <div className="dr-actions">
           {idx > 0 ? (
@@ -254,7 +383,7 @@ export function DrillRunner() {
           <button
             type="button"
             className="rd-cta"
-            disabled={busy || !picked}
+            disabled={busy || !picked || !picked.trim()}
             onClick={() => (last ? void finish(run, answers) : setIdx(idx + 1))}
           >
             {last ? (single ? "Submit answer" : "Finish") : "Next"} <ArrowRight className="h-4 w-4" />
@@ -272,7 +401,7 @@ export function DrillRunner() {
     const misses = [...new Set(review.filter((r) => !r.correct).map((r) => SKILLS[r.skill].label))];
     return (
       <div className="rd dr dr--play">
-        <span className="rd-kicker">{entry.mode === "timed" ? "Incident drill" : "Daily scenario"} · Result</span>
+        <span className="rd-kicker">{MODE_LABEL[entry.mode] ?? "Drill"} · Result</span>
 
         {single ? (
           <div className={`dr-verdict ${first.correct ? "is-right" : "is-wrong"}`}>
@@ -296,6 +425,7 @@ export function DrillRunner() {
         )}
 
         {entry.mode === "daily" && <p className="dr-note">{streakLine(result.stats)}</p>}
+        {entry.mode === "ctf" && <p className="dr-note">One CTF a week. A new one opens on Monday.</p>}
         {!result.counted && entry.mode === "daily" && <p className="dr-note">Today&apos;s first result stands. This is your score for the day.</p>}
 
         <ol className="dr-review">
@@ -305,9 +435,9 @@ export function DrillRunner() {
               <div>
                 <strong>{r.title}</strong>
                 {single && items[i]?.story && <p className="dr-review__story">{items[i].story}</p>}
-                {!r.correct && <p>You picked: {r.picked ?? "nothing"}.</p>}
+                {!r.correct && <p>{items[i]?.free ? "You typed" : "You picked"}: {r.picked ?? "nothing"}.</p>}
                 <p>
-                  Best answer: <b>{r.answer}</b>
+                  {items[i]?.free ? "Flag" : "Best answer"}: <b>{items[i]?.free ? `gtf{${r.answer}}` : r.answer}</b>
                 </p>
                 <p>{r.explain}</p>
               </div>
@@ -381,6 +511,9 @@ export function DrillRunner() {
                   <Flame className="h-4 w-4" />
                   {s.streak} day streak
                 </span>
+                <span className="dr-level">
+                  Level {status.level.n} · {status.level.name}
+                </span>
                 <span className="dr-days" aria-label="Last seven days">
                   {week.map((d) => (
                     <i
@@ -393,17 +526,32 @@ export function DrillRunner() {
               </div>
             </section>
 
-            <section className="dr-quick">
-              <span className="rd-kicker">
-                <Timer className="h-3.5 w-3.5" /> Incident drill
-              </span>
-              <h3>Five questions, three minutes</h3>
-              <p>{s.bestTimed ? `Best: ${s.bestTimed.correct}/${s.bestTimed.total}` : "Alerts and tickets against a clock."}</p>
-              <button type="button" className="dr-outline" disabled={busy} onClick={() => void start("timed")}>
-                Start <ArrowRight className="h-4 w-4" />
-              </button>
-            </section>
+            <div className="dr-side">
+              <section className="dr-quick">
+                <span className="rd-kicker">
+                  <Timer className="h-3.5 w-3.5" /> Incident drill
+                </span>
+                <h3>Five questions, a clock</h3>
+                <p>{s.bestTimed ? `Best: ${s.bestTimed.correct}/${s.bestTimed.total}` : "Alerts and tickets against time."}</p>
+                <button type="button" className="dr-outline" disabled={busy} onClick={() => void start("timed")}>
+                  Start <ArrowRight className="h-4 w-4" />
+                </button>
+              </section>
+              <section className="dr-quick">
+                <span className="rd-kicker">
+                  <Flag className="h-3.5 w-3.5" /> Weekly CTF
+                </span>
+                <h3>{status.ctf.entry ? (status.ctf.entry.correct ? "Flag captured" : "Not this week") : "One hard investigation"}</h3>
+                <p>{status.ctf.entry ? "A new one opens Monday." : "Read the evidence, find the flag. One a week."}</p>
+                {!status.ctf.entry && (
+                  <button type="button" className="dr-outline" disabled={busy} onClick={() => void start("ctf")}>
+                    {busy ? "Writing…" : "Start"} <ArrowRight className="h-4 w-4" />
+                  </button>
+                )}
+              </section>
+            </div>
           </div>
+          <WeekReport r={status.report} />
           <p className="dr-lab">{labLine(status.lab)}</p>
           {error && <p className="dr-error">{error}</p>}
         </>
