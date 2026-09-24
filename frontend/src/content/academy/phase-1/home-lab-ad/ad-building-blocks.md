@@ -197,25 +197,47 @@ Every department has a standard access group:
 
 IT also has a second group with more privilege called `IT Admins`. That extra group is how two people in the same folder end up with different access.
 
-<div class="ad-diagram">
-<div class="ad-diagram__ou">
-<span class="ad-diagram__ou-label">OU=Users,OU=IT</span>
-<div class="ad-diagram__user ad-diagram__user--1">Priya Nair</div>
-<div class="ad-diagram__user ad-diagram__user--2">Alex Rivera</div>
-</div>
-<div class="ad-diagram__groups">
-<div class="ad-diagram__group ad-diagram__group--users">
-<span class="ad-diagram__group-label">IT Users</span>
-<span class="ad-diagram__group-note">Priya, Alex</span>
-</div>
-<div class="ad-diagram__group ad-diagram__group--admins">
-<span class="ad-diagram__group-label">IT Admins</span>
-<span class="ad-diagram__group-note">Alex only</span>
-</div>
-</div>
+Open one object. Read the folder. Then read every group on Member Of. Compare these two:
+
+<div class="ad-og" aria-label="Alex Rivera and Priya Nair with their groups">
+  <article class="ad-og__card">
+    <header>
+      <span class="ad-og__kind">User</span>
+      <strong>Alex Rivera</strong>
+      <em>alex.rivera</em>
+    </header>
+    <div class="ad-og__row">
+      <span>Lives in</span>
+      <code>OU=Users,OU=IT</code>
+    </div>
+    <div class="ad-og__row">
+      <span>Member Of</span>
+      <div class="ad-og__groups">
+        <b>IT Users</b>
+        <b class="ad-og__groups--admin">IT Admins</b>
+      </div>
+    </div>
+  </article>
+  <article class="ad-og__card">
+    <header>
+      <span class="ad-og__kind">User</span>
+      <strong>Priya Nair</strong>
+      <em>priya.nair</em>
+    </header>
+    <div class="ad-og__row">
+      <span>Lives in</span>
+      <code>OU=Users,OU=IT</code>
+    </div>
+    <div class="ad-og__row">
+      <span>Member Of</span>
+      <div class="ad-og__groups">
+        <b>IT Users</b>
+      </div>
+    </div>
+  </article>
 </div>
 
-Two accounts can share an OU and still have different access. Alex and Priya both live under IT but only Alex is in IT Admins so the folder alone never tells you what they can do.
+Same folder. Different groups. Alex and Priya both live under IT but only Alex is in IT Admins so the folder alone never tells you what they can do.
 
 The OU tells you where an account lives and the group tells you what it can do. Checking only one leaves the job half done so open Member Of then look at the folder. Both have to match what this environment says they should be.
 
