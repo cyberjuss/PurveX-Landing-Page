@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { joinWaitlist } from "@/lib/waitlist";
 import { SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
-import { IconChain, IconLog, IconReadOnly, IconRecord, IconValidate } from "./brand-icons";
+import { IconChain, IconEvidence, IconLog, IconReadOnly, IconRecord, IconValidate } from "./brand-icons";
 import { AssuranceConsole, Comparison, Pathways, PRODUCT_CSS, ProvenChain, TrustStrip } from "./lab-product";
 import { ChainDiagram, CoverageMatrix, COVERAGE_PERCENT, HealthTrend, LAB_CSS } from "./lab-visuals";
 import { PG_CSS } from "./page-skin";
@@ -15,6 +15,13 @@ const facts = [
   { title: "Runs Atomic Red Team tests", body: "Real adversary behavior, run against your own environment.", Icon: IconValidate },
   { title: "Queries your SIEM", body: "Works with Splunk, Elastic, and Microsoft Sentinel.", Icon: IconLog },
   { title: "Names the stage that failed", body: "Telemetry, parser, rule, or alert, with the evidence attached.", Icon: IconChain },
+];
+
+const start = [
+  { n: "01", title: "Connect your SIEM", body: "Read-only access to Splunk, Elastic, or Microsoft Sentinel.", Icon: IconLog },
+  { n: "02", title: "Run a test", body: "Pick an ATT&CK technique and run it against your environment.", Icon: IconValidate },
+  { n: "03", title: "Read the result", body: "See which stage of the chain fired and which one failed.", Icon: IconChain },
+  { n: "04", title: "Fix and run again", body: "Every result is kept as evidence, so progress is easy to show.", Icon: IconEvidence },
 ];
 
 const runs = [
@@ -221,6 +228,28 @@ export default function PlatformPage() {
           <p>Each role looks at a different part of the same detection chain.</p>
         </div>
         <Pathways />
+      </section>
+
+      <section className="pg-section">
+        <div className="ox-split">
+          <div className="pg-head" data-r>
+            <span className="sp-tag">Getting started</span>
+            <h2>From connection to evidence</h2>
+            <p>Four steps from a fresh install to a result you can show.</p>
+          </div>
+          <ol className="ox-steps" data-r>
+            {start.map((s) => (
+              <li key={s.n}>
+                <span className="ox-steps__n">{s.n}</span>
+                <div>
+                  <h3>{s.title}</h3>
+                  <p>{s.body}</p>
+                </div>
+                <i className="pg-ico"><s.Icon size={24} /></i>
+              </li>
+            ))}
+          </ol>
+        </div>
       </section>
 
       <section className="pg-section" id="pricing">

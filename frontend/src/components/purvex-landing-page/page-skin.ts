@@ -609,4 +609,8 @@ html { scroll-behavior: smooth }
 .ab-statement h2 { margin: 20px 0 0; font-family: var(--font-display); font-size: clamp(2.2rem, 5.4vw, 4.2rem); font-weight: 700; letter-spacing: -.05em; line-height: 1.04; color: var(--ink); text-wrap: balance }
 .ab-statement mark { background: linear-gradient(transparent 64%, rgba(106,92,255,.28) 64%); color: inherit; padding: 0 3px }
 .ab-statement p { margin: 28px 0 0; max-width: 50ch; color: var(--ink-soft); font-size: 1.08rem; line-height: 1.7; text-wrap: pretty }
+
+.ox-flow--3 { grid-template-columns: repeat(3, 1fr) }
+.ox-flow--3::before { left: 16.66%; right: 16.66% }
+@media (max-width: 760px) { .ox-flow--3 { grid-template-columns: 1fr } .ox-flow--3::before { left: 35px; right: auto } }
 `;

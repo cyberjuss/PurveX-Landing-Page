@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { ArrowRight, Check, Server } from "lucide-react";
 import {
-  IconAudit, IconBook, IconBriefcase, IconCampus, IconChain, IconCivic, IconEvidence,
-  IconGraduate, IconHeadset, IconKey, IconSignal,
+  IconAudit, IconBook, IconBriefcase, IconCampus, IconChain, IconCivic, IconCoverage, IconEvidence,
+  IconGraduate, IconHeadset, IconKey, IconSchedule, IconSignal, IconValidate,
 } from "./brand-icons";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { CaseFloor, type FloorAlert, type FloorCase } from "./case-floor";
@@ -63,6 +63,13 @@ const roles = [
   { title: "Security analyst", body: "Decides whether an alert is a mistake or an attack, and explains the call.", Icon: IconSignal },
   { title: "Systems administrator", body: "Keeps access accurate as people join, move, and leave.", Icon: IconKey },
   { title: "Audit and compliance support", body: "Turns policy into settings that an auditor can verify.", Icon: IconAudit },
+];
+
+const cohort = [
+  { n: "01", title: "Book", body: "Thirty minutes on your program and your tools.", Icon: IconSchedule },
+  { n: "02", title: "Build the lab", body: "Each student builds the PurveX Financial company with one script.", Icon: IconChain },
+  { n: "03", title: "Work the queue", body: "Tickets, drills, and a weekly investigation run against that lab.", Icon: IconValidate },
+  { n: "04", title: "Review readiness", body: "You read every student's report without grading by hand.", Icon: IconCoverage },
 ];
 
 const audiences = [
@@ -161,18 +168,13 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           <span className="sp-tag">How it works</span>
           <h2>Where learning turns into proof</h2>
         </div>
-        <ol className="pg-grid pg-grid--3 pg-grid--icons" data-r>
+        <ol className="ox-flow ox-flow--3" data-r>
           {steps.map((s) => (
             <li key={s.n}>
+              <i className="pg-ico"><s.Icon size={28} /></i>
               <span>{s.n}</span>
-              <i className="pg-ico"><s.Icon size={21} /></i>
               <strong>{s.title}</strong>
               <p>{s.body}</p>
-              <ul className="pg-bullets">
-                {s.points.map((t) => (
-                  <li key={t}>{t}</li>
-                ))}
-              </ul>
             </li>
           ))}
         </ol>
@@ -290,20 +292,46 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       </section>
 
       <section className="pg-section">
-        <div className="pg-head" data-r>
-          <span className="sp-tag">Who it serves</span>
-          <h2>One record that everyone can trust</h2>
+        <div className="ab-split">
+          <div className="pg-head" data-r>
+            <span className="sp-tag">Who it serves</span>
+            <h2>What each group takes away</h2>
+            <p>One readiness record, read four different ways.</p>
+          </div>
+          <ol className="ab-rows" data-r>
+            {audiences.map((a) => (
+              <li key={a.title}>
+                <i className="pg-ico"><a.Icon size={22} /></i>
+                <div>
+                  <h3>{a.title}</h3>
+                  <p>{a.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
-        <ul className="pg-grid pg-grid--4 pg-grid--icons" data-r>
-          {audiences.map((a, i) => (
-            <li key={a.title}>
-              <span>{pad(i + 1)}</span>
-              <i className="pg-ico"><a.Icon size={21} /></i>
-              <strong>{a.title}</strong>
-              <p>{a.body}</p>
-            </li>
-          ))}
-        </ul>
+      </section>
+
+      <section className="pg-section">
+        <div className="ox-split">
+          <div className="pg-head" data-r>
+            <span className="sp-tag">How a cohort runs</span>
+            <h2>From first call to a full queue</h2>
+            <p>You know where the cohort stands at every step.</p>
+          </div>
+          <ol className="ox-steps" data-r>
+            {cohort.map((s) => (
+              <li key={s.n}>
+                <span className="ox-steps__n">{s.n}</span>
+                <div>
+                  <h3>{s.title}</h3>
+                  <p>{s.body}</p>
+                </div>
+                <i className="pg-ico"><s.Icon size={24} /></i>
+              </li>
+            ))}
+          </ol>
+        </div>
       </section>
 
       <section className="pg-close" data-r>
