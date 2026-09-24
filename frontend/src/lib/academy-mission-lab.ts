@@ -29,6 +29,17 @@ export function missionGate(id: string) {
   return (MISSION_LAB as Record<string, { checks: { c: Check; label: string }[] }>)[id] ?? null;
 }
 
+/** True when the lab was built with the Ticket Queue objects. Without them there is nothing to check. */
+export function hasTicketObjects(s: LabSnapshot) {
+  const users = new Set(s.users.map((u) => u.sam.toLowerCase()));
+  return (
+    s.groups.some((g) => g.name.toLowerCase() === "all employees") ||
+    users.has("old.intern") ||
+    users.has("svc-backup-job") ||
+    s.computers.some((c) => ["wm-wks07", "ops-wks03"].includes(c.name.toLowerCase()))
+  );
+}
+
 export function checkMission(id: string, snapshot: LabSnapshot) {
   const gate = missionGate(id);
   if (!gate) return null;

@@ -147,12 +147,17 @@ export async function POST(request: Request) {
     // brings back the same question. A student who cannot do a lab change
     // right now can swap today's for a written case.
     const swap = mode === "daily" && body.format === "respond";
+    let replaceSaved = false;
     const kind = mode === "ctf" ? "ctf" : "daily";
     const keyDay = mode === "ctf" ? weekStart(day) : day;
     if (mode !== "timed" && !swap) {
       const saved = await loadDailyDrill(userId, keyDay, kind);
-      const again = saved ? reissueDrill(userId, saved) : null;
+      const reopened = saved ? reissueDrill(userId, saved) : null;
+      // Tasks from an older version planted practice accounts. Those are gone, so start fresh.
+      const stale = Boolean(reopened?.items.some((i) => i.setup));
+      const again = stale ? null : reopened;
       if (again) return NextResponse.json(again);
+      replaceSaved = stale;
     }
 
     // The weekly CTF is asked about the student's own Security log when it has one.
@@ -199,7 +204,7 @@ export async function POST(request: Request) {
       items: item ? [item] : undefined,
       id: mode === "ctf" ? `ctf-${keyDay}` : undefined,
     });
-    if (mode !== "timed" && drill.ai) await saveDailyDrill(userId, keyDay, drill.token, kind, swap);
+    if (mode !== "timed" && drill.ai) await saveDailyDrill(userId, keyDay, drill.token, kind, swap || replaceSaved);
     return NextResponse.json(drill);
   }
 

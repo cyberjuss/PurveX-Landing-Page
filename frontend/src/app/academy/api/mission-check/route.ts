@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { formatLabAge } from "@/lib/academy-lab";
-import { checkMission, missionGate } from "@/lib/academy-mission-lab";
+import { checkMission, hasTicketObjects, missionGate } from "@/lib/academy-mission-lab";
 import { loadLabState } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 
@@ -24,6 +24,8 @@ export async function POST(request: Request) {
 
   const lab = await loadLabState(student.id);
   if (!lab) return NextResponse.json({ gated: false, noLab: true });
+  // A lab built without -IncludeCTF has none of the ticket objects, so there is nothing to check.
+  if (!hasTicketObjects(lab.snapshot)) return NextResponse.json({ gated: false, noTicketObjects: true });
   const checked = checkMission(id, lab.snapshot);
   return NextResponse.json({ gated: true, ...checked, syncedAgo: formatLabAge(lab.uploadedAt).ago });
 }

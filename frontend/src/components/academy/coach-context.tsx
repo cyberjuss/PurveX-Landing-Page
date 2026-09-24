@@ -77,6 +77,7 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
     setModeState(next);
   }, []);
 
+  // Load on mount and again each time the panel opens: a drill finished since then may have earned chats.
   useEffect(() => {
     academyFetch("/academy/api/coach")
       .then((r) => (r.ok ? r.json() : null))
@@ -88,7 +89,7 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
         if (typeof data.bonus === "number") setBonus(data.bonus);
       })
       .catch(() => {});
-  }, []);
+  }, [modalOpen]);
 
   const send = useCallback(
     async (text: string, images?: CoachImage[]) => {

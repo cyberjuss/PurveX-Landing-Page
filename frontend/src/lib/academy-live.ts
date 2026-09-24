@@ -34,7 +34,7 @@ export async function ctfStatus(userId: string, day: string): Promise<{ state: C
   if (!hasLog) {
     return {
       state: "unavailable",
-      detail: "Your lab has not sent a Security log digest yet. Download the lab script again from Build This Lab and run it once, or the log has no recent activity to ask about.",
+      detail: "Your lab has not sent a Security log digest yet. Download the lab script again from Build This Lab and run it once, or the log has no recent activity to ask about. The Drills page still offers the standard weekly CTF.",
       hasLog,
     };
   }
@@ -45,7 +45,7 @@ export async function ctfStatus(userId: string, day: string): Promise<{ state: C
 export async function checkRealCtf(userId: string, day: string, answer: string) {
   const week = weekStart(day);
   const token = await loadDailyDrill(userId, week, "ctf");
-  if (!token) return { error: "This week's CTF has not been started. Start it first." };
+  if (!token) return { error: "This week's CTF has not been started. Start it on the Drills page, or with start_investigation if the lab has sent its Security log." };
 
   const unlocked = unlockGate(userId, token, [answer]);
   if (unlocked) {

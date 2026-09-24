@@ -229,7 +229,6 @@ export const MISSION_JOBS: Record<string, string> = {
   "tq-01": "group-access",
   "tq-02": "enable-account",
   "tq-03": "create-user",
-  "tq-04": "service-account",
   "tq-05": "fix-ou",
   "tq-06": "trace-logon",
   "tq-07": "read-logs",
