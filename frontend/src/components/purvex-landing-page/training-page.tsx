@@ -441,9 +441,13 @@ export default function TrainingPage() {
 @media (max-width: 780px) {
   .sp-rungs { grid-template-columns: 1fr }
   .sp-rung:not(:first-child) { border-left: none; border-top: 1px solid var(--border) }
-  .sp-rung { display: flex; align-items: center; gap: 16px; text-align: left; padding: 18px 20px }
+  /* Icon in its own column, title + body stacked beside it -- a three-way
+     flex row squeezed the title into a sliver on phones. */
+  .sp-rung { display: grid; grid-template-columns: 42px 1fr; column-gap: 16px; align-items: start; text-align: left; padding: 20px 18px }
   .sp-rung__fill { top: 0; left: 0; width: 3px; height: var(--fill) }
-  .sp-rung__icon { margin-top: 0; flex-shrink: 0 }
+  .sp-rung__icon { grid-row: span 2; margin-top: 0 }
+  .sp-rung h3 { margin: 2px 0 0; font-size: 1rem }
+  .sp-rung p { margin: 4px 0 0; font-size: .88rem }
 }
 
 /* ── Delivery formats: same flat bordered-grid recipe as the mindset and

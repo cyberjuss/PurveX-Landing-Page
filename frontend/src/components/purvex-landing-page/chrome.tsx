@@ -51,6 +51,7 @@ export function SiteChrome({
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showDock, setShowDock] = useState(false);
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -61,6 +62,10 @@ export function SiteChrome({
       const doc = document.documentElement;
       const max = doc.scrollHeight - doc.clientHeight;
       setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0);
+      // Phone-only contact dock: the nav's CTA is hidden on small screens,
+      // so it slides up once the hero is out of view and tucks away again
+      // near the footer, which carries its own CTA.
+      setShowDock(window.scrollY > 520 && max - window.scrollY > 520);
       // Background orbs drift slower than the page scrolls -- written
       // straight to the DOM (not React state) since this fires every
       // scroll frame and a transform doesn't need a re-render to apply.
@@ -167,15 +172,27 @@ export function SiteChrome({
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--sm">
               Get in Touch
             </a>
-            <button className="sp-nav__burger" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
+            <button
+              className="sp-nav__burger"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
+              aria-controls="sp-mobile-menu"
+            >
               {mobileOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
           </div>
         </div>
       </header>
 
-      <div className={`sp-mobile${mobileOpen ? " sp-mobile--open" : ""}`} onClick={closeNav}>
-        <nav className="sp-mobile__nav" onClick={(e) => e.stopPropagation()}>
+      <div
+        id="sp-mobile-menu"
+        className={`sp-mobile${mobileOpen ? " sp-mobile--open" : ""}`}
+        onClick={closeNav}
+        aria-hidden={!mobileOpen}
+        inert={!mobileOpen}
+      >
+        <nav className="sp-mobile__nav" aria-label="Mobile" onClick={(e) => e.stopPropagation()}>
           {NAV_MENUS.map((menu, i) => (
             <div key={menu.key} className="sp-mobile__group" style={{ animationDelay: `${0.06 + i * 0.06}s` }}>
               <Link
@@ -197,7 +214,24 @@ export function SiteChrome({
           >
             Get in Touch
           </a>
+          <div className="sp-mobile__meta">
+            <Link href="/academy" onClick={closeNav}>Academy Portal</Link>
+            <Link href="/legal/privacy" onClick={closeNav}>Privacy</Link>
+            <Link href="/legal/terms" onClick={closeNav}>Terms</Link>
+          </div>
         </nav>
+      </div>
+
+      <div className={`sp-dock${showDock && !mobileOpen ? " sp-dock--show" : ""}`} aria-hidden={!showDock || mobileOpen}>
+        <a
+          href={BOOKING_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="sp-btn sp-btn--prim sp-btn--lg sp-btn--full"
+          tabIndex={showDock && !mobileOpen ? 0 : -1}
+        >
+          Schedule a Conversation <ArrowRight size={16} />
+        </a>
       </div>
 
       <main className="sp-main">{children}</main>
@@ -415,6 +449,27 @@ export const CHROME_CSS = `
 @keyframes sp-menu-in { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: none } }
 @media (prefers-reduced-motion: reduce) { .sp-mobile__group { animation: none; opacity: 1 } }
 
+/* Secondary links under the menu CTA -- small, so the primary list stays
+   the focus, but reachable without scrolling to the footer. */
+.sp-mobile__meta { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 22px; margin-top: 22px }
+.sp-mobile__meta a { font-size: .86rem; font-weight: 550; color: var(--muted); text-decoration: none; padding: 6px 0 }
+.sp-mobile__meta a:hover { color: var(--accent-deep) }
+
+/* ── Mobile contact dock -- phones only (the nav CTA is hidden there).
+   Sits above the home indicator via safe-area insets. ── */
+.sp-dock { display: none }
+@media (max-width: 680px) {
+  .sp-dock {
+    display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, rgba(251,252,254,.96) 55%, rgba(251,252,254,0));
+    transform: translateY(110%); transition: transform .4s var(--ease); pointer-events: none;
+  }
+  .sp-dock--show { transform: none; pointer-events: auto }
+  .sp-dock .sp-btn { box-shadow: 0 14px 30px -12px rgba(85,70,224,.55) }
+}
+@media (prefers-reduced-motion: reduce) { .sp-dock { transition: none } }
+
 /* ── Main ── */
 .sp-main { position: relative; z-index: 1; max-width: 1140px; margin: 0 auto; padding: 0 24px 48px }
 
@@ -527,24 +582,39 @@ export const CHROME_CSS = `
   .sp-cards--2 .sp-card:nth-child(n+3), .sp-cards--3 .sp-card:nth-child(n+3), .sp-cards--4 .sp-card:nth-child(n+3) { border-top: 1px solid var(--border) }
   .sp-footer__top { flex-direction: column; gap: 30px }
 }
+/* Touch devices: no sticky hover lifts after a tap, no grey tap flash. */
+.sp a, .sp button { -webkit-tap-highlight-color: transparent }
+@media (hover: none) {
+  .sp-btn--prim:hover, .sp-btn--ghost:hover { transform: none }
+}
 @media (max-width: 680px) {
-  .sp-main { padding: 0 16px 64px }
-  .sp-nav { top: 10px; padding: 0 10px }
-  .sp-nav__inner { padding: 0 8px 0 16px }
+  .sp-main { padding: 0 16px 16px }
+  .sp-nav { top: max(10px, env(safe-area-inset-top)); padding: 0 max(10px, env(safe-area-inset-left)) }
+  .sp-nav__inner { height: 58px; padding: 0 6px 0 16px }
+  .sp-nav__burger { width: 44px; height: 44px; margin-right: 0 }
+  .sp-mobile { padding: calc(90px + env(safe-area-inset-top)) 0 calc(40px + env(safe-area-inset-bottom)) }
+  /* Big blurred orbs are the most expensive paint on the page; phones get
+     a still background and no scroll parallax. */
+  .sp-bg__orb { animation: none; filter: blur(50px) }
+  .sp-bg__parallax { transform: none !important }
   .sp-nav__right .sp-btn { display: none }
   .sp-hero { padding-top: 56px }
   .sp-hero__badge { margin-bottom: 18px }
   .sp-hero__sub { margin-top: 18px }
   .sp-hero__actions { flex-direction: column; margin-top: 28px }
   .sp-hero__actions .sp-btn { width: 100% }
-  .sp-section { padding-top: 104px }
-  .sp-section--tight { padding-top: 104px }
+  .sp-section { padding-top: 96px; scroll-margin-top: 76px }
+  .sp-section--tight { padding-top: 96px }
   .sp-head { margin-bottom: 40px }
   .sp-cards--2, .sp-cards--3, .sp-cards--4 { grid-template-columns: 1fr }
   .sp-card { padding: 28px 24px; border-left: none !important; border-top: none }
   .sp-card:not(:first-child) { border-top: 1px solid var(--border) }
   .sp-panel { padding: 32px; --cut: 22px }
-  .sp-footer__cols { flex-wrap: wrap; gap: 32px }
+  .sp-footer { margin-top: 112px; padding: 44px 16px calc(96px + env(safe-area-inset-bottom)) }
+  .sp-footer__brand { max-width: none }
+  .sp-footer__cta { width: 100% }
+  .sp-footer__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 20px }
+  .sp-footer__col a { padding: 4px 0 }
   .sp-footer__bottom { flex-direction: column; align-items: flex-start; gap: 10px }
 }
 `;

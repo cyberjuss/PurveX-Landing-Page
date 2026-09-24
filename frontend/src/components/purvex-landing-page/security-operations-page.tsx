@@ -262,7 +262,7 @@ export default function SecurityOperationsPage() {
 .sp-versus--compact { max-width: none; margin: 0 }
 @media (max-width: 860px) {
   .sp-zigzag { grid-template-columns: 1fr; gap: 32px }
-  .sp-zigzag--reverse .sp-zigzag__text { order: 0 }
+  .sp-zigzag--reverse .sp-zigzag__text { order: -1 }
 }
 
 /* ── Timeline (Assess / Improve / Validate, vertical) ── */
