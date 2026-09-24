@@ -121,7 +121,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               [data-ax-account] > strong { display: block; margin-top: 4px; font-size: 20px; font-weight: 600; letter-spacing: -0.03em; }
               [data-ax-account] > span { display: block; margin: 2px 0 12px; font-size: 12px; opacity: 0.65; word-break: break-all; }
               [data-ax-account] .ax-account__score { display: block; padding: 14px 0 12px; border-top: 1px solid rgba(255,255,255,0.12); border-bottom: 1px solid rgba(255,255,255,0.12); }
-              [data-ax-account] .ax-account__score em { display: block; margin: 6px 0 4px; font-size: 36px; font-style: normal; font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: #b388ff; }
+              [data-ax-account] .ax-account__score em { display: block; margin: 6px 0 4px; font-size: 36px; font-style: normal; font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: #9eb0ff; }
               [data-ax-account] .ax-account__score small { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.55; }
               [data-ax-account] .ax-account__score b { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 13px; font-weight: 600; }
               [data-ax-account] .ax-account__ask { display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding: 14px 0 12px; border-bottom: 1px solid rgba(255,255,255,0.12); }
@@ -131,7 +131,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                 font-size: 14px; font-weight: 600; color: #fff; cursor: pointer;
                 background: #0f172a;
               }
-              [data-ax-account][data-theme="dark"] .ax-account__coach { background: #f2eef8; color: #000; }
+              [data-ax-account][data-theme="dark"] .ax-account__coach { background: #e8eef8; color: #000; }
               [data-ax-account] .ax-account__ask small { text-align: center; font-size: 11px; font-weight: 700; opacity: 0.55; }
               [data-ax-account] .ax-account__out { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; background: none; border: 0; padding: 0; font-size: 13px; font-weight: 600; color: inherit; cursor: pointer; opacity: 0.7; }
               [data-ax-account] .rd-kicker { font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.5; }
@@ -149,8 +149,8 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                 top: pos.top,
                 right: pos.right,
                 background: dark ? "#000" : "#fff",
-                color: dark ? "#f2eef8" : "#0f172a",
-                border: dark ? "1px solid rgba(179,136,255,0.18)" : "1px solid rgba(15,23,42,0.12)",
+                color: dark ? "#e8eef8" : "#0f172a",
+                border: dark ? "1px solid rgba(180,200,255,0.18)" : "1px solid rgba(15,23,42,0.12)",
                 boxShadow: dark ? "0 20px 48px -16px rgba(0,0,0,0.85)" : "0 18px 40px -20px rgba(15,23,42,0.28)",
               }}
             >
