@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
-import { COACH_DAILY_LIMIT } from "@/lib/academy-coach";
+import { COACH_DAILY_LIMIT, effectiveCoachBonus } from "@/lib/academy-coach";
 import {
   checkChange,
   cleanDay,
@@ -80,7 +80,7 @@ async function status(userId: string, day: string) {
     ctf: { week: weekStart(day), entry: ctfOf(entries, day) },
     report: weeklyReport(entries, day),
     missed: missedQuestions(entries, 8),
-    chats: { base: COACH_DAILY_LIMIT, ...chats },
+    chats: { base: COACH_DAILY_LIMIT, ...chats, bonus: effectiveCoachBonus(chats.bonus) },
     incidentUntil: incidentHold(entries)?.until ?? null,
     jobs: jobProgress(entries, results, labState?.snapshot),
     nextJob: pickTargetJob(entries, `${userId}:${day}`, labJobs, results, labState?.snapshot)?.id ?? null,
@@ -89,7 +89,19 @@ async function status(userId: string, day: string) {
 }
 
 // First result stands: one daily drill a day, one CTF a week. Timed drills always count unless late.
+const DAY_MS = 24 * 60 * 60 * 1000;
+const daysApart = (a: string, b: string) => Math.abs(Date.parse(`${a}T00:00:00Z`) - Date.parse(`${b}T00:00:00Z`)) / DAY_MS;
+
+/** A daily drill can only be finished on its own day (or the next), and a CTF within its week. Old tokens cannot backfill a streak. */
+function tokenExpired(entry: { mode: string; day: string }) {
+  const utc = new Date().toISOString().slice(0, 10);
+  if (entry.mode === "daily") return daysApart(entry.day, utc) > 1;
+  if (entry.mode === "ctf") return daysApart(entry.day, utc) > 8;
+  return false;
+}
+
 async function record(userId: string, graded: NonNullable<Awaited<ReturnType<typeof gradeDrill>>>, day: string) {
+  if (tokenExpired(graded.entry)) return null;
   let entry = graded.entry;
   if (entry.mode === "daily" || entry.mode === "ctf") {
     const entries = await loadDrills(userId);
@@ -129,7 +141,7 @@ export async function POST(request: Request) {
   if (a.error) return a.error;
   const userId = a.student.id;
 
-  let body: { action?: unknown; mode?: unknown; day?: unknown; token?: unknown; answers?: unknown; format?: unknown };
+  let body: { action?: unknown; mode?: unknown; day?: unknown; token?: unknown; answers?: unknown; format?: unknown; final?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -160,8 +172,15 @@ export async function POST(request: Request) {
     // Daily and CTF scenarios are written once and then kept, so a reload
     // brings back the same question. A student who cannot do a lab change
     // right now can swap today's for a written case.
-    const swap = mode === "daily" && body.format === "respond";
+    let swap = mode === "daily" && body.format === "respond";
     let replaceSaved = false;
+    // Swapping a lab task for a written case is a one-time way out. Each swap costs a model call, so it is not repeatable.
+    if (swap) {
+      const current = await loadDailyDrill(userId, day, "daily");
+      const open = current ? reissueDrill(userId, current) : null;
+      if (open && open.items[0]?.kind !== "change") return NextResponse.json(open);
+      if (!open) swap = false;
+    }
     const kind = mode === "ctf" ? "ctf" : "daily";
     const keyDay = mode === "ctf" ? weekStart(day) : day;
     if (mode !== "timed" && !swap) {
@@ -240,7 +259,9 @@ export async function POST(request: Request) {
     if (!checked.passed) return NextResponse.json({ ...checked, syncedAgo });
     const graded = await gradeDrill(userId, body.token, body.answers ?? [], { changePassed: true });
     if (!graded) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
-    return NextResponse.json({ ...checked, syncedAgo, ...(await record(userId, graded, day)) });
+    const recorded = await record(userId, graded, day);
+    if (!recorded) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
+    return NextResponse.json({ ...checked, syncedAgo, ...recorded });
   }
 
   if (body.action === "finish") {
@@ -252,7 +273,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Could not mark your answer just now. Try again." }, { status: 503 });
     }
     if (!graded) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
-    return NextResponse.json(await record(userId, graded, day));
+    // A wrong typed answer to the weekly CTF does not close it, the same as on the assistant side. Only giving up does.
+    if (graded.entry.mode === "ctf" && body.final !== true && graded.review.every((r) => !r.correct)) {
+      return NextResponse.json({ retry: true });
+    }
+    const recorded = await record(userId, graded, day);
+    if (!recorded) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
+    return NextResponse.json(recorded);
   }
 
   return NextResponse.json({ error: "Unknown action." }, { status: 400 });

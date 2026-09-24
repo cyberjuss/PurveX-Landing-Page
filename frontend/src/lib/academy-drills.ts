@@ -987,12 +987,12 @@ export function coachBonus(entries: DrillEntry[], utcDay: string): { bonus: numb
   const parts: { label: string; n: number }[] = [];
   const daily = today.find((e) => e.mode === "daily");
   // Chats are earned by getting it right, so giving up or guessing never pays.
-  if (daily) parts.push({ label: daily.correct ? "Daily scenario, solved" : "Daily scenario, tried", n: daily.correct ? 7 + daily.level : 1 });
+  if (daily?.correct) parts.push({ label: "Daily scenario, solved", n: 3 });
   for (const t of today.filter((e) => e.mode === "timed").slice(0, 1)) {
-    if (t.correct >= 3) parts.push({ label: "Incident drill", n: t.correct >= 4 ? 3 : 2 });
+    if (t.correct >= 3) parts.push({ label: "Incident drill", n: t.correct >= 4 ? 2 : 1 });
   }
   const ctf = today.find((e) => e.mode === "ctf");
-  if (ctf) parts.push({ label: ctf.correct ? "Weekly CTF, flag captured" : "Weekly CTF, tried", n: ctf.correct ? 16 : 2 });
+  if (ctf?.correct) parts.push({ label: "Weekly CTF, flag captured", n: 5 });
   return { bonus: parts.reduce((a, p) => a + p.n, 0), parts };
 }
 

@@ -20,7 +20,10 @@ import {
 
 /** Hard cap for one day. Drill bonuses can fill up to this, never past it. */
 export const COACH_DAILY_MAX = 25;
-export const COACH_DAILY_LIMIT = Math.min(COACH_DAILY_MAX, Number(process.env.ACADEMY_COACH_DAILY_LIMIT || COACH_DAILY_MAX));
+// The base allowance is below the cap so drills have room to earn the rest. A base equal to the cap would make every reward do nothing.
+export const COACH_DAILY_LIMIT = Math.min(COACH_DAILY_MAX, Number(process.env.ACADEMY_COACH_DAILY_LIMIT || 20));
+/** What a day of drills adds, after the cap. */
+export const effectiveCoachBonus = (earned: number) => Math.max(0, Math.min(earned, COACH_DAILY_MAX - COACH_DAILY_LIMIT));
 export const COACH_SONNET_MODEL = process.env.ACADEMY_COACH_MODEL || "claude-sonnet-5";
 export const COACH_HAIKU_MODEL = process.env.ACADEMY_COACH_FAST_MODEL || "claude-haiku-4-5";
 

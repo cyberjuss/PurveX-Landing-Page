@@ -413,7 +413,7 @@ export function DrillRunner() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not check your answer.");
       if (!data.ok) {
-        setError("That is not the account. Read the evidence again, or ask for the hint.");
+        setError("That is not right. Read the evidence again, or ask for the hint.");
         return;
       }
       setUnlock({ setup: data.setup, checklist: data.checklist, checkCount: data.checkCount });
@@ -506,7 +506,7 @@ export function DrillRunner() {
     setError(null);
   }
 
-  const finish = useCallback(async (current: Run, given: (string | null)[]) => {
+  const finish = useCallback(async (current: Run, given: (string | null)[], final = false) => {
     if (finishing.current) return;
     finishing.current = true;
     setBusy(true);
@@ -514,10 +514,16 @@ export function DrillRunner() {
       const res = await academyFetch("/academy/api/drill", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "finish", token: current.token, answers: given, day: localDay() }),
+        body: JSON.stringify({ action: "finish", token: current.token, answers: given, day: localDay(), final }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not score the drill.");
+      // A wrong typed answer to the weekly CTF does not close it. They can try again or give up.
+      if (data.retry) {
+        finishing.current = false;
+        setError("That is not right. Read the evidence again, or ask for the hint.");
+        return;
+      }
       setResult({ ...data, items: current.items });
       setStatus(data);
       setRun(null);
@@ -603,7 +609,7 @@ export function DrillRunner() {
           {item.gated && !unlock ? (
             <>
               <span className="dr-actions__side">
-                <button type="button" className="dr-link" disabled={busy} onClick={() => void finish(run, answers)}>
+                <button type="button" className="dr-link" disabled={busy} onClick={() => void finish(run, answers, true)}>
                   Give up and see the answer
                 </button>
               </span>
@@ -614,7 +620,7 @@ export function DrillRunner() {
           ) : item.kind === "change" || (item.gated && unlock) ? (
             <>
               <span className="dr-actions__side">
-                <button type="button" className="dr-link" disabled={busy} onClick={() => void finish(run, item.gated ? answers : [""])}>
+                <button type="button" className="dr-link" disabled={busy} onClick={() => void finish(run, item.gated ? answers : [""], true)}>
                   Give up and see the steps
                 </button>
                 {run.mode === "daily" && item.kind === "change" && (
@@ -632,6 +638,10 @@ export function DrillRunner() {
               {idx > 0 ? (
                 <button type="button" className="dr-link" onClick={() => setIdx(idx - 1)}>
                   Back
+                </button>
+              ) : run.mode === "ctf" ? (
+                <button type="button" className="dr-link" disabled={busy} onClick={() => void finish(run, answers, true)}>
+                  Give up and see the answer
                 </button>
               ) : (
                 <span />
