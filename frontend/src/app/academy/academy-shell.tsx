@@ -233,8 +233,6 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     };
 
     const parkFeedback = (wrap: HTMLElement) => {
-      const id = wrap.getAttribute("data-id");
-      const r = id ? loadResults()[id] : undefined;
       placeMiss(wrap);
     };
 
@@ -251,7 +249,6 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       if (r.labOk) wrap.classList.add("ad-mission--labok");
       const input = wrap.querySelector<HTMLInputElement>(".ad-guess__input");
       const submit = wrap.querySelector<HTMLButtonElement>(".ad-guess__submit");
-      const feedback = wrap.querySelector<HTMLElement>(".ad-guess__feedback");
       const reveal = wrap.querySelector<HTMLElement>(".ad-flag");
       labelHintButton(wrap, false);
       if (r.solved) {
