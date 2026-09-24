@@ -71,7 +71,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
   const go = lastMission ? challengeHref(lastMission.challenge, results) : pin?.href;
 
   return (
-    <div className="rd">
+    <div className="rd ax-home">
       <header className="rd-mast">
         <div className="ax-welcome">
           <div className="ax-titleblock">
