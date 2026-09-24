@@ -730,4 +730,31 @@ export const CHROME_CSS = `
   .sp-hero__h1 { font-size: clamp(2.3rem, 10vw, 2.9rem) }
   .sp-footer::before { left: 16px; right: 16px }
 }
+
+/* ═══════════════════════════════════════════════
+   ONE BUTTON STYLE
+   Square corners, a lavender hairline, a bold purple label, and a soft
+   fill on hover. Matches the nav Book button. On dark bands the same
+   shape turns white. Prefixed with .sp so it wins over page styles.
+   ═══════════════════════════════════════════════ */
+.sp .sp-btn, .sp .pg-close__book, .sp .hp-close__book, .sp .hp-perk__go, .sp .hold button {
+  border-radius: 0; border: 1px solid rgba(106,92,255,.4); background: rgba(255,255,255,.55);
+  color: var(--accent-deep); font-weight: 650; letter-spacing: .005em; box-shadow: none; filter: none;
+  transition: background .2s var(--ease), border-color .2s var(--ease), gap .2s var(--ease), transform .2s var(--ease);
+}
+.sp .sp-btn::after { display: none }
+.sp .sp-btn--ghost { border-color: rgba(106,92,255,.22) }
+.sp .sp-btn:hover, .sp .pg-close__book:hover, .sp .hp-close__book:hover, .sp .hp-perk__go:hover, .sp .hold button:hover {
+  background: var(--accent-soft); border-color: var(--accent); color: var(--accent-deep); box-shadow: none; filter: none; transform: none;
+}
+.sp .sp-btn:hover { gap: 10px }
+.sp .hold button { height: 40px; padding: 0 16px; margin-top: 16px }
+.sp .pg-close .pg-close__book, .sp .hp-close .hp-close__book, .sp .hp-perk .hp-perk__go,
+.sp .pg-dark .sp-btn, .sp .hp-tile--labs .sp-btn, .sp .pg-tile--dark .sp-btn {
+  background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.6); color: #fff;
+}
+.sp .pg-close .pg-close__book:hover, .sp .hp-close .hp-close__book:hover, .sp .hp-perk .hp-perk__go:hover,
+.sp .pg-dark .sp-btn:hover, .sp .hp-tile--labs .sp-btn:hover, .sp .pg-tile--dark .sp-btn:hover {
+  background: rgba(255,255,255,.2); border-color: #fff; color: #fff;
+}
 `;

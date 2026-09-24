@@ -21,6 +21,7 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
+import { CaseFloor, type FloorAlert, type FloorCase } from "./case-floor";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
 import { MISSION_CATALOG } from "@/lib/academy-missions";
@@ -99,6 +100,59 @@ const audiences = [
   { title: "Employers and business teams", body: "Hire or upskill on proof, ending in a spoken interview and a hire signal.", Icon: Briefcase },
 ];
 
+const TRAINING_CASES: FloorCase[] = [
+  {
+    id: "INC-1042",
+    sev: "High",
+    status: "Open",
+    title: "Locked out",
+    fields: [
+      { k: "Account", v: "riley.kwan" },
+      { k: "Host", v: "OPS-WKS03" },
+      { k: "Seen", v: "07:14" },
+      { k: "Event", v: "4740" },
+    ],
+    body: "A user cannot sign in and believes the account is locked.",
+    ask: "Open the account before you change anything.",
+  },
+  {
+    id: "INC-1045",
+    sev: "High",
+    status: "Open",
+    title: "The transfer that did not happen",
+    fields: [
+      { k: "Account", v: "taylor.osei" },
+      { k: "From", v: "Operations" },
+      { k: "To", v: "Compliance" },
+      { k: "Groups", v: "Not switched" },
+    ],
+    body: "HR moved the user, but the directory still shows the old department.",
+    ask: "Fix the directory, then prove that it held.",
+  },
+  {
+    id: "INC-1046",
+    sev: "Crit",
+    status: "Alert",
+    title: "The 2 AM login",
+    fields: [
+      { k: "Account", v: "alex.rivera" },
+      { k: "Host", v: "DC01" },
+      { k: "Seen", v: "02:11" },
+      { k: "Event", v: "4624" },
+    ],
+    body: "An admin account signed in at 2 AM from a workstation.",
+    ask: "Decide whether this is a mistake or an attack.",
+  },
+];
+
+const TRAINING_ALERTS: FloorAlert[] = [
+  { title: "Log Analysis Fundamentals", sev: "High", time: "Week 2", id: "Phase 2", acct: "Next", host: "Portal" },
+  { title: "Home Lab: Active Directory", sev: "High", time: "Phase 1", id: "Build", acct: "Lab", host: "Portal" },
+  { title: "Networking and Wireshark", sev: "Med", time: "Week 3", id: "Phase 1", acct: "Lesson", host: "Portal" },
+  { title: "Readiness report", sev: "High", time: "Score", id: "72", acct: "Almost", host: "Portal" },
+]
+;
+
 export default function TrainingPage({ outline }: { outline: CourseOutline }) {
   const lessonCount = outline.reduce((n, p) => n + p.entries.filter((e) => e.live).length, 0);
   const skillKeys = Object.keys(SKILLS) as Skill[];
@@ -128,52 +182,13 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           </ul>
         </div>
 
-        <aside className="pg-floor" aria-hidden="true">
-          <div className="pg-floor__wash" />
-          <article className="pg-case">
-            <header>
-              <span>STU-0142</span>
-              <span data-sev="High">Almost ready</span>
-              <span>Cohort</span>
-            </header>
-            <h2>Readiness</h2>
-            <div className="pg-score">
-              <strong>72<small>/100</small></strong>
-              <em>Tier 1 track</em>
-            </div>
-            <ul className="pg-bars">
-              {skillKeys.map((k) => (
-                <li key={k}>
-                  <span>{SKILLS[k].label}</span>
-                  <b>{SAMPLE_SCORES[k]}</b>
-                  <i style={{ ["--w" as string]: `${SAMPLE_SCORES[k]}%` }} />
-                </li>
-              ))}
-            </ul>
-            <p>Next: prove the 2 AM login before the interview round.</p>
-          </article>
-          <div className="pg-dock">
-            <p><span className="pg-live" /> Portal</p>
-            <div className="pg-dock__row">
-              <strong>Log Analysis Fundamentals</strong>
-              <em data-sev="High">Next</em>
-              <span>Week 2</span>
-              <span>Phase 2</span>
-            </div>
-            <div className="pg-dock__row">
-              <strong>The 2 AM Login</strong>
-              <em data-sev="High">Open</em>
-              <span>INC-1046</span>
-              <span>Alert</span>
-            </div>
-          </div>
-        </aside>
+        <CaseFloor cases={TRAINING_CASES} alerts={TRAINING_ALERTS} label="Portal" />
       </section>
 
       <section className="pg-section">
         <div className="pg-head" data-r>
           <span className="sp-tag">How it works</span>
-          <h2>Learn it. Work it. Prove it.</h2>
+          <h2>Learn it, work it, and prove it</h2>
         </div>
         <ol className="pg-grid pg-grid--3 pg-grid--icons" data-r>
           {steps.map((s) => (

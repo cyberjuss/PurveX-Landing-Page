@@ -7,15 +7,15 @@ import { SiteChrome } from "./chrome";
 const bioSections = [
   {
     label: "Where I started",
-    body: "Before this was a company, it was three jobs. Tuning Microsoft Sentinel detections for a federal agency. Automating response workflows in Splunk SOAR. Teaching SOC fundamentals to analysts at Ellington Cyber Academy. All of it taught the same lesson. Real growth comes from hands-on repetition, not from watching someone else do the work.",
+    body: "Before this was a company it was three jobs, tuning Microsoft Sentinel for a federal agency, automating response in Splunk SOAR, and teaching SOC fundamentals at Ellington Cyber Academy. That work taught the same lesson, that real growth comes from hands-on repetition, not from watching someone else do the work.",
   },
   {
     label: "What actually matters",
-    body: "Hands-on alone is not enough, though. AI can write the query now. It can summarize the alert. What still matters is knowing how to think, how to read what a system is telling you, when to trust it, when to push back. That is what I teach. Not shortcuts to capture a flag. The judgment to actually solve the problem.",
+    body: "Hands-on work is not enough once AI can write the query and summarize the alert. What still matters is knowing how to think, how to read what a system is telling you, when to trust it, and when to push back, which is the judgment I teach instead of a shortcut to a flag.",
   },
   {
     label: "Why PurveX exists",
-    body: "I kept running into the same gap. Smaller security teams know they need stronger coverage. They do not have the headcount to build and maintain it by hand. AI agents can close that gap, paired with someone who still understands what is happening underneath them. No team should need to be enterprise-sized to be secure.",
+    body: "I kept running into the same gap, that smaller security teams need stronger coverage and do not have the headcount to build and maintain it by hand. AI agents can close that gap when they are paired with someone who still understands what is happening underneath them, because no team should need to be enterprise-sized to be secure.",
   },
 ];
 

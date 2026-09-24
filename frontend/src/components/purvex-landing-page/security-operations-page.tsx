@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, Braces, ClipboardList, Search, ShieldCheck, SlidersHorizontal, Wrench } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
+import { CaseFloor, DETECTION_ALERTS, DETECTION_CASES } from "./case-floor";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
 
@@ -10,13 +11,13 @@ const services = [
   { n: "01", title: "Detection engineering", body: "Rules built around your environment, not a vendor template.", Icon: Braces },
   { n: "02", title: "Optimization", body: "Noisy rules get cut. Real alerts stop getting buried.", Icon: SlidersHorizontal },
   { n: "03", title: "Assessment", body: "What the SIEM sees, and what it misses.", Icon: Search },
-  { n: "04", title: "Validation", body: "A clear answer. Fires, or does not.", Icon: ShieldCheck },
+  { n: "04", title: "Validation", body: "A clear answer on whether it fires or does not.", Icon: ShieldCheck },
 ];
 
 const steps = [
   { n: "01", title: "Assess", body: "Coverage, tools, and the gaps.", Icon: ClipboardList },
   { n: "02", title: "Improve", body: "Tune and write what matters first.", Icon: Wrench },
-  { n: "03", title: "Validate", body: "Test it. Keep the evidence.", Icon: BadgeCheck },
+  { n: "03", title: "Validate", body: "Test it, and keep the evidence.", Icon: BadgeCheck },
 ];
 
 export default function SecurityOperationsPage() {
@@ -36,39 +37,7 @@ export default function SecurityOperationsPage() {
             </a>
           </div>
         </div>
-        <aside className="pg-floor" aria-hidden="true">
-          <div className="pg-floor__wash" />
-          <article className="pg-case">
-            <header>
-              <span>RUN-14</span>
-              <span data-sev="Crit">Missed</span>
-              <span>Open</span>
-            </header>
-            <h2>LSASS memory access</h2>
-            <dl>
-              <div><dt>Technique</dt><dd>T1003.001</dd></div>
-              <div><dt>Host</dt><dd>WIN-DC02</dd></div>
-              <div><dt>Rule</dt><dd>Exists</dd></div>
-              <div><dt>Alert</dt><dd>None</dd></div>
-            </dl>
-            <p>The rule is in. The ingest path is not. That is the miss.</p>
-          </article>
-          <div className="pg-dock">
-            <p><span className="pg-live" /> Last run</p>
-            <div className="pg-dock__row">
-              <strong>PowerShell execution</strong>
-              <em data-sev="High">Fired</em>
-              <span>T1059.001</span>
-              <span>WIN-APP08</span>
-            </div>
-            <div className="pg-dock__row">
-              <strong>LSASS memory access</strong>
-              <em>Missed</em>
-              <span>T1003.001</span>
-              <span>WIN-DC02</span>
-            </div>
-          </div>
-        </aside>
+        <CaseFloor cases={DETECTION_CASES} alerts={DETECTION_ALERTS} label="Last run" />
       </section>
 
       <section className="pg-section" id="work">
@@ -111,7 +80,7 @@ export default function SecurityOperationsPage() {
         <div className="pg-close__copy">
           <p className="pg-close__kicker">Next step</p>
           <h2>Walk the queue with us</h2>
-          <p className="pg-close__sub">30 minutes on your SIEM. What fires, and what does not.</p>
+          <p className="pg-close__sub">Thirty minutes on your SIEM, covering what fires and what does not.</p>
           <div className="pg-close__row">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="pg-close__book">
               Book 30 minutes <ArrowRight size={16} />

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Archive, ArrowRight, Search, Timer } from "lucide-react";
 import { joinWaitlist } from "@/lib/waitlist";
 import { SiteChrome } from "./chrome";
+import { CaseFloor, DETECTION_ALERTS, DETECTION_CASES } from "./case-floor";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
 
@@ -12,12 +13,6 @@ const points = [
   { n: "01", title: "Run the test", body: "The behaviors you care about. On a schedule.", Icon: Timer },
   { n: "02", title: "See the miss", body: "Fired, or not. And where the chain broke.", Icon: Search },
   { n: "03", title: "Keep the evidence", body: "Coverage you can show, not coverage you assume.", Icon: Archive },
-];
-
-const rows = [
-  { title: "PowerShell execution", sev: "Fired", id: "T1059.001", host: "WIN-APP08" },
-  { title: "LSASS memory access", sev: "Missed", id: "T1003.001", host: "WIN-DC02" },
-  { title: "Scheduled task", sev: "Fired", id: "T1053.005", host: "WIN-WKS12" },
 ];
 
 const tiers = [
@@ -42,9 +37,9 @@ const tiers = [
 ];
 
 const faqs: [string, string][] = [
-  ["Is this BAS", "BAS hits endpoints. We test the chain after that. Telemetry, parser, rule, alert."],
+  ["Is this BAS", "BAS hits endpoints, and we test the chain after that: telemetry, parser, rule, and alert."],
   ["Does it run in production", "Read-only on the SIEM by default. Production tests need an opt-in."],
-  ["Does it replace the SIEM", "No. Your SIEM stays. We prove the detections fire."],
+  ["Does it replace the SIEM", "No. Your SIEM stays, and we prove the detections fire."],
 ];
 
 export default function PlatformPage() {
@@ -87,7 +82,7 @@ export default function PlatformPage() {
         <div className="pg-hero__copy">
           <span className="sp-tag">In development</span>
           <h1 className="pg-hero__h1">See what fires</h1>
-          <p className="pg-hero__sub">Scheduled detection tests. The evidence kept. Private development.</p>
+          <p className="pg-hero__sub">Scheduled detection tests, with the evidence kept. The product is in private development.</p>
           <form className="pg-wl" onSubmit={submitWaitlist}>
             <div className="pg-wl__row">
               <input
@@ -104,42 +99,14 @@ export default function PlatformPage() {
             {wlMsg && <p className={`pg-wl__msg pg-wl__msg--${wlState}`}>{wlMsg}</p>}
           </form>
         </div>
-        <aside className="pg-floor" aria-hidden="true">
-          <div className="pg-floor__wash" />
-          <article className="pg-case">
-            <header>
-              <span>RUN-14</span>
-              <span data-sev="Crit">Missed</span>
-              <span>Open</span>
-            </header>
-            <h2>LSASS memory access</h2>
-            <dl>
-              <div><dt>Technique</dt><dd>T1003.001</dd></div>
-              <div><dt>Host</dt><dd>WIN-DC02</dd></div>
-              <div><dt>Rule</dt><dd>Exists</dd></div>
-              <div><dt>Alert</dt><dd>None</dd></div>
-            </dl>
-            <p>The miss is parser drift. Fix the ingest, not the rule.</p>
-          </article>
-          <div className="pg-dock">
-            <p><span className="pg-live" /> Last run</p>
-            {rows.map((r) => (
-              <div key={r.id} className="pg-dock__row">
-                <strong>{r.title}</strong>
-                <em data-sev={r.sev === "Fired" ? "High" : undefined}>{r.sev}</em>
-                <span>{r.id}</span>
-                <span>{r.host}</span>
-              </div>
-            ))}
-          </div>
-        </aside>
+        <CaseFloor cases={DETECTION_CASES} alerts={DETECTION_ALERTS} label="Scheduled runs" />
       </section>
 
       <section className="pg-section">
         <div className="pg-head" data-r>
           <span className="sp-tag">Labs</span>
           <h2>What it does</h2>
-          <p>A test run. A miss you can name. Evidence you keep.</p>
+          <p>A test run names the miss, and you keep the evidence.</p>
         </div>
         <ol className="pg-grid pg-grid--3 pg-grid--icons" data-r>
           {points.map((p) => (
@@ -199,7 +166,7 @@ export default function PlatformPage() {
         <div className="pg-close__copy">
           <p className="pg-close__kicker">Early access</p>
           <h2>Get on the list</h2>
-          <p className="pg-close__sub">Private development. We write when a seat opens.</p>
+          <p className="pg-close__sub">The product is in private development, and we write when a seat opens.</p>
           <div className="pg-close__row">
             <a href="#top" className="pg-close__book">
               Join waitlist <ArrowRight size={16} />
