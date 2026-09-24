@@ -168,6 +168,18 @@ export function missionHref(id: string): string {
   return `${CHALLENGE_PATHS[mission.challenge].href}#${id}`;
 }
 
+export function challengeTabHref(challenge: MissionCatalogEntry["challenge"]): string {
+  const p = CHALLENGE_PATHS[challenge];
+  return `${p.href}#${p.tab}`;
+}
+
+export function challengeFromMission(id: string): MissionCatalogEntry["challenge"] | null {
+  if (id.startsWith("d1-")) return "day-one";
+  if (/^tq-0[1-5]$/.test(id)) return "ticket-queue";
+  if (id.startsWith("tq-")) return "alert-queue";
+  return MISSION_CATALOG[id]?.challenge ?? null;
+}
+
 /** Next open ticket in a challenge — last one they touched if still open. */
 export function continueMissionId(challenge: MissionCatalogEntry["challenge"], results: Results): string {
   const list = Object.values(MISSION_CATALOG).filter((m) => m.challenge === challenge);

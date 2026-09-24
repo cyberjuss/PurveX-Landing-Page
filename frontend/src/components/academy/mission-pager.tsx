@@ -5,15 +5,15 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNo
 import { createPortal } from "react-dom";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { academyFetch, READINESS_PATH, RESULTS_UPDATED_EVENT } from "@/lib/academy-client";
+import {
+  CHALLENGE_LABELS,
+  challengeFromMission,
+  challengeTabHref,
+} from "@/lib/academy-missions";
 import { loadResults, saveResults, type MissionResult } from "@/lib/academy-score";
 
 type Neighbor = { label: string; go: () => void };
-
-function openFirstLabel(num: string) {
-  if (/^alert/i.test(num)) return "Open first alert";
-  if (/^ticket/i.test(num)) return "Open first ticket";
-  return "Open first task";
-}
+type ChallengeKey = keyof typeof CHALLENGE_LABELS;
 
 // Challenge lessons are authored as a stack of .ad-mission blocks. This
 // shows one at a time: a question strip above it (where you are, which are
@@ -66,7 +66,7 @@ export function MissionPager({
   // The question strip sits directly above the first mission.
   const total = solved.length;
   useEffect(() => {
-    if (total < 2) return;
+    if (total < 2 || onBrief) return;
     const host = document.createElement("div");
     host.className = "ad-steps-host";
     missions()[0]?.before(host);
@@ -76,7 +76,7 @@ export function MissionPager({
       host.remove();
       setStrip(null);
     };
-  }, [total, missions]);
+  }, [total, missions, onBrief]);
 
   // A #tq-03 style link opens that mission.
   useEffect(() => {
@@ -97,7 +97,8 @@ export function MissionPager({
   const done = solved.filter(Boolean).length;
   const isLast = at === total - 1;
   const paging = total >= 2;
-  const firstLabel = openFirstLabel(missions()[0]?.querySelector(".ad-mission__num")?.textContent || "");
+  const here = challengeFromMission(missions()[0]?.getAttribute("data-id") || "");
+  const otherChallenges = (Object.keys(CHALLENGE_LABELS) as ChallengeKey[]).filter((id) => id !== here);
 
   // Leaving an unsolved question going forward flags it for Coach. Going
   // back does not. Solving later clears the flag.
@@ -144,7 +145,7 @@ export function MissionPager({
   return (
     <div ref={root}>
       {children}
-      {strip &&
+      {strip && !onBrief &&
         createPortal(
           <div className="ad-steps" role="tablist" aria-label={`Question ${at + 1} of ${total}, ${done} solved`}>
             <span className="ad-steps__chips">
@@ -169,17 +170,24 @@ export function MissionPager({
           </div>,
           strip
         )}
-      {paging && (
+      {paging && onBrief ? (
+        <div className="ad-brief-start">
+          <button type="button" className="rd-cta" onClick={() => setOnBrief(false)}>
+            Get Started <ArrowRight className="h-4 w-4" />
+          </button>
+          {otherChallenges.length > 0 && (
+            <p className="ad-brief-ctfs">
+              {otherChallenges.map((id) => (
+                <Link key={id} href={challengeTabHref(id)}>
+                  {CHALLENGE_LABELS[id]}
+                </Link>
+              ))}
+            </p>
+          )}
+        </div>
+      ) : paging ? (
         <nav className="ad-pager" aria-label="Continue">
-          {onBrief ? (
-            prevSection ? (
-              <button type="button" className="ad-pager__btn" onClick={prevSection.go}>
-                <ArrowLeft className="h-4 w-4" /> {prevSection.label}
-              </button>
-            ) : (
-              <span />
-            )
-          ) : at > 0 ? (
+          {at > 0 ? (
             <button type="button" className="ad-pager__btn" onClick={() => setStep(at - 1)}>
               <ArrowLeft className="h-4 w-4" /> Previous
             </button>
@@ -194,11 +202,7 @@ export function MissionPager({
           ) : (
             <span />
           )}
-          {onBrief ? (
-            <button type="button" className="ad-pager__btn ad-pager__btn--next is-ready" onClick={() => setOnBrief(false)}>
-              {firstLabel} <ArrowRight className="h-4 w-4" />
-            </button>
-          ) : isLast && nextSection ? (
+          {isLast && nextSection ? (
             <button type="button" className={`ad-pager__btn ad-pager__btn--next${solved[at] ? " is-ready" : ""}`} onClick={() => { flagCurrent(); nextSection.go(); }}>
               {nextSection.label} <ArrowRight className="h-4 w-4" />
             </button>
