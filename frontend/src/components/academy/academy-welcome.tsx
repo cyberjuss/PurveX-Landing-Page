@@ -36,7 +36,7 @@ export function AcademyWelcome({ student, onDone }: { student: AcademyStudent; o
 
   useEffect(() => {
     const tick = window.setInterval(() => setClock(clockNow()), 1000);
-    const end = window.setTimeout(onDone, 3200);
+    const end = window.setTimeout(onDone, 3700);
     return () => {
       window.clearInterval(tick);
       window.clearTimeout(end);
@@ -57,10 +57,6 @@ export function AcademyWelcome({ student, onDone }: { student: AcademyStudent; o
           <div>
             <dt>Desk</dt>
             <dd>Live · {desk}</dd>
-          </div>
-          <div>
-            <dt>Floor</dt>
-            <dd>GovTech Financial</dd>
           </div>
           <div>
             <dt>Time</dt>
