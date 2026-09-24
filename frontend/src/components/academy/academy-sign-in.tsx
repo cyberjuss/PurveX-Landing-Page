@@ -6,6 +6,7 @@ import { Loader2, Lock, Mail } from "lucide-react";
 import { AuthShell, AUTH_INPUT_CLASSNAME_LIGHT } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { signInWithGoogle, signInWithPassword, signUpWithPassword } from "@/lib/portal-auth";
+import { markAcademyWelcome } from "@/components/academy/academy-welcome";
 
 function errorText(err: unknown, fallback: string) {
   return err instanceof Error && err.message ? err.message : fallback;
@@ -28,6 +29,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
     setBusy(true);
     setError(null);
     try {
+      markAcademyWelcome();
       await signInWithGoogle(returnTo());
     } catch (err) {
       busyRef.current = false;
@@ -52,9 +54,11 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
     setError(null);
     try {
       if (mode === "signin") {
+        markAcademyWelcome();
         await signInWithPassword(email.trim(), password);
       } else {
         const { session } = await signUpWithPassword(email.trim(), password, returnTo());
+        if (session) markAcademyWelcome();
         if (!session) setSentTo(email.trim());
       }
     } catch (err) {

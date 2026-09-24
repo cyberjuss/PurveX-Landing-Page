@@ -4,6 +4,24 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { accountFirstName, type AcademyStudent } from "./academy-account";
 
+const WELCOME_PENDING = "academy-welcome-pending";
+
+export function markAcademyWelcome() {
+  try {
+    sessionStorage.setItem(WELCOME_PENDING, "1");
+  } catch {}
+}
+
+export function takeAcademyWelcome() {
+  try {
+    if (sessionStorage.getItem(WELCOME_PENDING) !== "1") return false;
+    sessionStorage.removeItem(WELCOME_PENDING);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function clockNow() {
   return new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
 }
@@ -17,13 +35,8 @@ export function AcademyWelcome({ student, onDone }: { student: AcademyStudent; o
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
-      onDone();
-      return;
-    }
     const tick = window.setInterval(() => setClock(clockNow()), 1000);
-    const end = window.setTimeout(onDone, 3000);
+    const end = window.setTimeout(onDone, 3200);
     return () => {
       window.clearInterval(tick);
       window.clearTimeout(end);
