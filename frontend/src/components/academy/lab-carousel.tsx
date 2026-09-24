@@ -84,7 +84,6 @@ export function LabCarousel({
 
   return (
     <div>
-      {!actionHost && total > 1 && <div className="flex items-center justify-between gap-12 pb-4">{nav}</div>}
       <div
         role="group"
         aria-roledescription="carousel"

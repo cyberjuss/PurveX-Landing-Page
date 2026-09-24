@@ -2,13 +2,25 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { QUIZ_PASS_PERCENT, quizPassed, type Quiz } from "@/content/academy/quizzes";
 import { useAcademyProgress } from "./academy-progress";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
 
-export function QuizBlock({ quiz, actionHost }: { quiz: Quiz; actionHost?: HTMLElement | null }) {
+type Beyond = { label: string; go: () => void };
+
+export function QuizBlock({
+  quiz,
+  actionHost,
+  prevBeyond,
+  nextBeyond,
+}: {
+  quiz: Quiz;
+  actionHost?: HTMLElement | null;
+  prevBeyond?: Beyond | null;
+  nextBeyond?: Beyond | null;
+}) {
   const { recordQuizPass } = useAcademyProgress();
   const [answers, setAnswers] = useState<(number | null)[]>(() => quiz.questions.map(() => null));
   const [submitted, setSubmitted] = useState(false);
@@ -42,12 +54,6 @@ export function QuizBlock({ quiz, actionHost }: { quiz: Quiz; actionHost?: HTMLE
     setAt(0);
   }
 
-  const next = !isLast ? (
-    <button type="button" className="ad-pager__btn ad-pager__btn--next" disabled={!submitted && selected === null} onClick={() => setAt(at + 1)}>
-      Next <ArrowRight className="h-4 w-4" />
-    </button>
-  ) : null;
-
   const action = submitted ? (
     <button type="button" onClick={reset} className="rd-link">
       Try again
@@ -56,7 +62,37 @@ export function QuizBlock({ quiz, actionHost }: { quiz: Quiz; actionHost?: HTMLE
     <button type="button" onClick={submit} disabled={!allAnswered} className="rd-cta">
       Check answers
     </button>
-  ) : null;
+  ) : (
+    <span className="ax-panel__count">
+      {String(at + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+    </span>
+  );
+
+  const trail = (
+    <>
+      <button
+        type="button"
+        onClick={() => (at > 0 ? setAt(at - 1) : prevBeyond?.go())}
+        disabled={at === 0 && !prevBeyond}
+        aria-label="Previous"
+        className="ax-step"
+      >
+        <ChevronLeft className="h-4 w-4" />
+        <span className="hidden sm:inline">{at === 0 && prevBeyond ? prevBeyond.label : "Previous"}</span>
+      </button>
+      {action}
+      <button
+        type="button"
+        onClick={() => (isLast ? nextBeyond?.go() : setAt(at + 1))}
+        disabled={(!isLast && !submitted && selected === null) || (isLast && !nextBeyond)}
+        aria-label="Next"
+        className="ax-step ax-step--next"
+      >
+        <span className="hidden sm:inline">{isLast && nextBeyond ? nextBeyond.label : "Next"}</span>
+        <ChevronRight className="h-4 w-4" />
+      </button>
+    </>
+  );
 
   return (
     <div className="ax-quiz">
@@ -103,18 +139,8 @@ export function QuizBlock({ quiz, actionHost }: { quiz: Quiz; actionHost?: HTMLE
       </div>
       </div>
 
-      <div className="ax-quiz__foot">
-        {at > 0 ? (
-          <button type="button" className="ad-pager__btn" onClick={() => setAt(at - 1)}>
-            <ArrowLeft className="h-4 w-4" /> Previous
-          </button>
-        ) : (
-          <span />
-        )}
-        <p>{foot}</p>
-        {action && actionHost ? createPortal(action, actionHost) : action}
-        {next}
-      </div>
+      {foot && <p className="ax-quiz__mark">{foot}</p>}
+      {actionHost ? createPortal(trail, actionHost) : <div className="ax-panel__foot">{trail}</div>}
     </div>
   );
 }

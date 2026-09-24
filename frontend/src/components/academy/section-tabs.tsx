@@ -120,7 +120,7 @@ export function SectionTabs({
 
   const panel =
     current.kind === "quiz" ? (
-      <QuizBlock quiz={quiz!} actionHost={quizFoot} />
+      <QuizBlock quiz={quiz!} actionHost={quizFoot} prevBeyond={prevTrail} nextBeyond={nextTrail} />
     ) : current.kind === "lab" ? (
       <div>
         {/* Keyed on the label so switching labs remounts this instead of
@@ -279,8 +279,8 @@ export function SectionTabs({
             the sidebar after every section -- and, once it reaches the labs,
             the same control that was previously only reachable by clicking
             a sidebar link. */}
-        {current.kind === "lab" ? (
-          <div className="ax-panel__foot" ref={setLabFoot} />
+        {current.kind === "lab" || current.kind === "quiz" ? (
+          <div className="ax-panel__foot" ref={current.kind === "lab" ? setLabFoot : setQuizFoot} />
         ) : current.kind !== "challenge" && (items.length > 1 || prevTrail || nextTrail) ? (
           <div className="ax-panel__foot">
             <button
