@@ -3496,15 +3496,15 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body code,
 .academy-prose .ad-guess__submit:hover,
 .academy-prose .ad-guess .ad-hint__btn:hover { background: none; opacity: 0.75; }
 .academy-prose .ad-guess__submit:disabled { background: none; color: var(--rd-ink-3, #8a94a8); cursor: default; }
-.academy-prose .ad-guess__feedback {
+.academy-prose .ad-mission > p.ad-guess__feedback {
   display: block;
   width: 100%;
-  margin: 4.5rem 0 0.35rem;
+  margin: 6rem 0 0.35rem;
   font-size: 0.82rem;
   font-weight: 600;
   line-height: 1.4;
 }
-.academy-prose .ad-guess__feedback:empty { display: none; margin: 0; }
+.academy-prose .ad-mission > p.ad-guess__feedback:empty { display: none; margin: 0; }
 .academy-prose .ad-guess__feedback--ok { color: #16a34a; }
 .academy-prose .ad-guess__feedback--err { color: #e5484d; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--ok { color: #6ee7b7; }
