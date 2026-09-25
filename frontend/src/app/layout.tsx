@@ -14,11 +14,11 @@ export const metadata: Metadata = {
   description: defaultDescription,
   icons: {
     icon: [
-      { url: "/purvex-favicon.svg?v=2", type: "image/svg+xml", sizes: "any" },
+      { url: "/purvex-favicon.svg?v=3", type: "image/svg+xml", sizes: "any" },
       { url: "/icon.png", type: "image/png", sizes: "256x256" },
-      { url: "/favicon.ico?v=2", type: "image/x-icon", sizes: "any" },
+      { url: "/favicon.ico?v=3", type: "image/x-icon", sizes: "any" },
     ],
-    shortcut: "/purvex-favicon.svg?v=2",
+    shortcut: "/purvex-favicon.svg?v=3",
     apple: "/icon.png",
   },
   openGraph: {
@@ -73,9 +73,9 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <link rel="icon" href="/purvex-favicon.svg?v=2" />
+        <link rel="icon" href="/purvex-favicon.svg?v=3" />
         <link rel="apple-touch-icon" sizes="180x180" href="/logo.png?v=6" />
-        <link rel="shortcut icon" href="/purvex-favicon.svg?v=2" />
+        <link rel="shortcut icon" href="/purvex-favicon.svg?v=3" />
         {nonce ? <meta name="csp-nonce" content={nonce} /> : null}
       </head>
       <body className={`${inter.className} text-foreground`} suppressHydrationWarning>
