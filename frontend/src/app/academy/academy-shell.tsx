@@ -413,7 +413,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         const waitStart = Date.now();
         while (gate && !gate.noLab && !gate.noTicketObjects && gate.gated !== false && !gate.passed && Date.now() - waitStart < 45000) {
           feedback.textContent = "Waiting for your lab to show the change…";
-          await new Promise((resolve) => setTimeout(resolve, 1500));
+          await new Promise((resolve) => setTimeout(resolve, 400));
           gate = await labGate(missionId);
         }
         if (!gate) {
@@ -437,8 +437,8 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         if (!gate.passed) {
           const missing = (gate.results ?? []).filter((r) => !r.ok).map((r) => r.label).join("; ");
           feedback.textContent = missing
-            ? `Your lab does not show this change yet: ${missing}. Make the change, then wait about a minute for the next report. This does not use an attempt.`
-            : "Your lab does not show this change yet. Make it, then wait for the next report. This does not use an attempt.";
+            ? `Your lab does not show this change yet: ${missing}. Make the change, then submit again. This does not use an attempt.`
+            : "Your lab does not show this change yet. Make it, then submit again. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
           placeMiss(wrap);
           return;

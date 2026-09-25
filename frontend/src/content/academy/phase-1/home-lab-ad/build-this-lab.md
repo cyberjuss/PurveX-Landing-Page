@@ -104,7 +104,7 @@ After the reboot, log back in as `PURVEXFINANCIAL\Administrator` and run this sc
 * Prompts once for an initial password. Every account must change it at next logon, so nobody keeps that password long-term
 * Is safe to run more than once. It only creates what is missing and never resets or deletes anything that exists
 * The Academy download plants the ticket-queue challenge objects on the first build and sends your lab straight away. Add `-NoCTF` to skip them
-* The Academy download starts a background Coach sync on the domain controller after the first successful build. It sends a snapshot as soon as the directory changes, and once a minute when nothing changes. The VM only has to stay on. To stop it: `./Build-Environment.ps1 -UninstallSync`.
+* The Academy download starts a background Coach sync on the domain controller after the first successful build. A change in the lab folders is sent right away. The Security log still goes out once a minute. The VM only has to stay on. To stop it: `./Build-Environment.ps1 -UninstallSync`.
 * The sync now also sends your security settings (password and lockout policy, auditing, log size) and a 30-day count of Security log events, such as failed sign-ins and accounts created. It never sends passwords or raw log entries. Your drills and the weekly CTF use it, so download the script again and run it once to get it.
 
 [Download Build-Environment.ps1](/lab-scripts/Build-Environment.ps1)
@@ -144,8 +144,8 @@ You can also copy the current script from here. A pasted copy is not linked to y
     Skips the ticket-queue challenge objects in the Academy download.
 
 .PARAMETER SyncLoop
-    Used by the sync task. It sends a snapshot as soon as the directory changes, and
-    once a minute when nothing changes. Students do not run this.
+    Used by the sync task. A lab-folder change is sent right away, without the Security log.
+    The log still goes out once a minute. Students do not run this.
 
 .PARAMETER SyncOnly
     Used by the scheduled task. Students do not run this.
@@ -525,10 +525,18 @@ function Send-PurvexLabSnapshot {
         }
     }
 
-    # Fast sends reuse the slow parts (settings and the 30-day log digest) for up to a minute.
-    if ($Fast -and $script:PurvexHeavy -and ((Get-Date) - $script:PurvexHeavy.At).TotalSeconds -lt 60) {
-        $security = $script:PurvexHeavy.Security
-        $events = $script:PurvexHeavy.Events
+    # A directory change must not wait on the Security log. That read is the slow part.
+    # Fast sends reuse the last settings and log digest, however old they are.
+    # The once-a-minute heartbeat is what refreshes them.
+    if ($Fast) {
+        if ($script:PurvexHeavy) {
+            $security = $script:PurvexHeavy.Security
+            $events = $script:PurvexHeavy.Events
+        }
+        else {
+            $security = [ordered]@{}
+            $events = [ordered]@{ windowDays = 30 }
+        }
     }
     else {
         $security = Get-PurvexSecurityState -Domain $domain
@@ -609,23 +617,25 @@ function Get-PurvexHighestUsn {
     return $best
 }
 
-# Runs for as long as the task lives. A directory change sends a snapshot immediately.
-# If nothing changes, one snapshot a minute still goes out. A failed directory read never
-# turns into a burst of uploads.
+# Runs for as long as the task lives. A change in the lab folders sends those
+# folders right away. The Security log rides along once a minute. A failed
+# directory read never turns into a burst of uploads.
 function Start-PurvexSyncLoop {
     param([string]$Key, [string]$Url)
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
     $lastSend = [datetime]::MinValue
     $lastUsn = [int64]-1
     while ($true) {
-        $waitMs = 1000
+        $waitMs = 400
         try {
             $age = ((Get-Date) - $lastSend).TotalSeconds
             $usn = Get-PurvexHighestUsn -DomainDN $domainDN
             $due = $age -ge 60
-            $changed = ($usn -ge 0) -and ($age -ge 2) -and (($lastUsn -lt 0) -or ($usn -ne $lastUsn))
+            # A short gap folds one edit (create, then add to a group) into a single send.
+            $changed = ($usn -ge 0) -and ($age -ge 0.8) -and (($lastUsn -lt 0) -or ($usn -ne $lastUsn))
             if ($changed -or $due) {
-                Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN -Fast
+                if ($changed) { Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN -Fast }
+                else { Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN }
                 $lastSend = Get-Date
                 if ($usn -ge 0) { $lastUsn = $usn }
             }
