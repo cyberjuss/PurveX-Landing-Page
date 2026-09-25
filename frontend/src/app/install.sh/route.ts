@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 // Served at /install.sh so the copy-paste command on /get-purvex reads as
-// "curl https://purvex-llc.com/install.sh | bash" instead of a raw
+// "curl https://purvex.io/install.sh | bash" instead of a raw
 // "git clone github.com/..." -- the repo is public either way, this is
 // purely about not putting a bare GitHub URL in front of a customer as the
 // first thing they type. Falls back to a tarball download (no git

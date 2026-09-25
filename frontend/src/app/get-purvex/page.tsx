@@ -9,7 +9,7 @@ import { Copy, Check, BookOpen, LifeBuoy, Timer } from "lucide-react";
 // Falls back to the production domain for the SSR/pre-mount render; swapped
 // for the real window.location.origin once mounted (see useEffect below) --
 // matters for local dev, harmless everywhere else since it's already correct.
-const DEFAULT_ORIGIN = "https://purvex-llc.com";
+const DEFAULT_ORIGIN = "https://purvex.io";
 
 // Same traffic-light palette as the dashboard mockup dots elsewhere on the
 // site (platform-page.tsx's .sp-dash__dots) -- one visual vocabulary.
@@ -100,7 +100,7 @@ function GetPurveXContent() {
           <div className="rounded-2xl border border-[rgba(106,92,255,0.25)] bg-[rgba(106,92,255,0.05)] p-4 text-sm leading-relaxed text-slate-700">
             <strong className="text-slate-900">Your license key is on its way.</strong> We issue keys by hand
             right now, so expect it within one business day. Check{" "}
-            <Link href="/my-license" className="font-medium text-[#5546e0] hover:underline">purvex-llc.com/my-license</Link>{" "}
+            <Link href="/my-license" className="font-medium text-[#5546e0] hover:underline">purvex.io/my-license</Link>{" "}
             any time for the current one -- no need to wait on an email. Once it&apos;s ready, download it and upload it in{" "}
             <span className="font-mono text-[#5546e0]">Settings → License</span> after you finish setup below.
           </div>

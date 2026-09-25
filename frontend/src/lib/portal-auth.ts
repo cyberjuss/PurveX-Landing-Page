@@ -1,7 +1,7 @@
 "use client";
 
 // Portal identity, backed directly by Supabase Auth. This account is scoped
-// to purvex-llc.com only (plan selection, billing, install access) — it is
+// to purvex.io only (plan selection, billing, install access) — it is
 // never used to authenticate against a customer's own PurveX instance. Each
 // self-hosted instance keeps its own separate admin/user accounts, created
 // via its own /setup bootstrap wizard, unrelated to this login entirely.

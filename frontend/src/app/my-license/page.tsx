@@ -79,7 +79,7 @@ instance, or copy the key below and paste it there directly.
 ${token}
 
 ================================================================
-purvex-llc.com/my-license
+purvex.io/my-license
 ================================================================
 `;
 }

@@ -174,7 +174,7 @@ const sections = [
   {
     title: "20. Contact",
     paragraphs: [
-      "For commercial, legal, or contract questions, contact PurveX through the business contact information provided in your order documentation or at jduru213@gmail.com.",
+      "For commercial, legal, or contract questions, contact PurveX through the business contact information provided in your order documentation or at justinduru@purvex.io.",
     ],
   },
 ];

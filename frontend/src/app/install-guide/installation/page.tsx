@@ -8,7 +8,7 @@ import { Eyebrow, H1, Lede, TermBlock, P, Callout, H2 } from "@/components/purve
 // custom domain isn't live yet (site is still on its *.vercel.app default),
 // harmless once it is since window.location.origin is already correct.
 // Same pattern as get-purvex/page.tsx.
-const DEFAULT_ORIGIN = "https://purvex-llc.com";
+const DEFAULT_ORIGIN = "https://purvex.io";
 
 export default function Page() {
   const [origin, setOrigin] = useState(DEFAULT_ORIGIN);
