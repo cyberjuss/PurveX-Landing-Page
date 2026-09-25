@@ -6,8 +6,9 @@ import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
 import { TrainingHero } from "./training-hero";
+import { TrainingAudiences } from "./training-audiences";
 import {
-  IconAlert, IconBook, IconBriefcase, IconCampus, IconChecks, IconCivic, IconEvidence, IconGraduate,
+  IconAlert, IconBook, IconBriefcase, IconChecks, IconEvidence,
   IconLifebuoy, IconLog, IconMic, IconSchedule, IconShield, IconTicket, IconValidate,
   type BrandIcon,
 } from "./brand-icons";
@@ -43,11 +44,6 @@ const FEATURES: Item[] = [
   { Icon: IconEvidence, title: "Readiness report", body: "Four job skills scored, with what to work on next." },
 ];
 
-const AUDIENCES: Item[] = [
-  { Icon: IconGraduate, title: "Students and career changers", body: "Get hands-on experience before the first job asks for it." },
-  { Icon: IconCampus, title: "Schools and workforce programs", body: "One course for the whole class. A passcode opens it and each student gets a report." },
-  { Icon: IconCivic, title: "Employers and public agencies", body: "Train new hires or upskill a team, and see who is ready." },
-];
 
 
 function plainWeek(title: string) {
@@ -128,20 +124,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       </section>
 
       <section className="pg-section" id="who">
-        <div className="tp-who">
-          <h2>Built for learners and the teams that train them</h2>
-          <ul data-r>
-            {AUDIENCES.map(({ Icon, title, body }) => (
-              <li key={title}>
-                <i><Icon size={22} /></i>
-                <div>
-                  <strong>{title}</strong>
-                  <p>{body}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <TrainingAudiences />
       </section>
 
 
@@ -218,46 +201,39 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         .tp-course ul li::before { content: ""; position: absolute; left: 0; top: .5em; width: 6px; height: 6px; background: var(--accent) }
         .tp-course > li[data-live="0"] > strong, .tp-course > li[data-live="0"] > span { color: var(--muted) }
 
-        .tp-who {
           display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 32px 64px; align-items: center;
           padding: clamp(32px, 5vw, 64px); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.16);
         }
-        .tp-who h2 {
           margin: 0; font-family: var(--font-display); font-weight: 700; letter-spacing: -.028em; line-height: 1.1;
           font-size: clamp(1.8rem, 3.2vw, 2.5rem); color: var(--ink); text-wrap: balance;
         }
-        .tp-who ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px }
-        .tp-who li {
           display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; padding: 18px 20px; background: #fff;
           border-left: 4px solid var(--accent); box-shadow: 0 18px 40px -30px rgba(42,34,128,.4);
         }
-        .tp-who li i { display: grid; place-items: center; width: 44px; height: 44px; color: var(--accent-deep); background: var(--accent-soft) }
-        .tp-who strong { display: block; font-size: 1.05rem; font-weight: 650; letter-spacing: -.014em; color: var(--ink) }
-        .tp-who p { margin: 4px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.5 }
 
 
-        .tp-benefits[data-r], .tp-feature-list[data-r], .tp-course[data-r], .tp-who ul[data-r] { opacity: 1; transform: none; filter: none }
-        .tp-benefits[data-r] > li, .tp-feature-list[data-r] > li, .tp-course[data-r] > li, .tp-who ul[data-r] > li {
+        .tp-benefits[data-r], .tp-feature-list[data-r], .tp-course[data-r] { opacity: 1; transform: none; filter: none }
+        .tp-benefits[data-r] > li, .tp-feature-list[data-r] > li, .tp-course[data-r] > li {
           opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease), transform .6s var(--ease);
           transition-delay: calc(var(--n, 0) * 70ms);
         }
-        .tp-benefits[data-r].in > li, .tp-feature-list[data-r].in > li, .tp-course[data-r].in > li, .tp-who ul[data-r].in > li { opacity: 1; transform: none }
-        .tp-benefits > li:nth-child(2), .tp-feature-list > li:nth-child(2), .tp-course > li:nth-child(2), .tp-who li:nth-child(2) { --n: 1 }
-        .tp-benefits > li:nth-child(3), .tp-feature-list > li:nth-child(3), .tp-course > li:nth-child(3), .tp-who li:nth-child(3) { --n: 2 }
+        .tp-benefits[data-r].in > li, .tp-feature-list[data-r].in > li, .tp-course[data-r].in > li { opacity: 1; transform: none }
+        .tp-benefits > li:nth-child(2), .tp-feature-list > li:nth-child(2), .tp-course > li:nth-child(2) { --n: 1 }
+        .tp-benefits > li:nth-child(3), .tp-feature-list > li:nth-child(3), .tp-course > li:nth-child(3) { --n: 2 }
         .tp-benefits > li:nth-child(4), .tp-feature-list > li:nth-child(4) { --n: 3 }
         .tp-feature-list > li:nth-child(5) { --n: 4 }
         .tp-feature-list > li:nth-child(6) { --n: 5 }
         .tp-feature-list > li:nth-child(7) { --n: 6 }
         .tp-feature-list > li:nth-child(8) { --n: 7 }
         @media (prefers-reduced-motion: reduce) {
-          .tp-benefits[data-r] > li, .tp-feature-list[data-r] > li, .tp-course[data-r] > li, .tp-who ul[data-r] > li { opacity: 1; transform: none; transition: none }
+          .tp-benefits[data-r] > li, .tp-feature-list[data-r] > li, .tp-course[data-r] > li { opacity: 1; transform: none; transition: none }
         }
 
         @media (max-width: 1080px) {
           .tp-benefits { grid-template-columns: 1fr 1fr }
         }
         @media (max-width: 860px) {
-          .tp-features, .tp-who { grid-template-columns: minmax(0, 1fr) }
+          .tp-features { grid-template-columns: minmax(0, 1fr) }
           .tp-features__head { position: static }
           .tp-course { grid-template-columns: 1fr; gap: 32px }
           .tp-course::before { left: 23px; right: auto; top: 24px; bottom: 24px; width: 2px; height: auto }
@@ -266,8 +242,6 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         }
         @media (max-width: 640px) {
           .tp-benefits, .tp-feature-list { grid-template-columns: 1fr }
-          .tp-who { padding: 24px 16px }
-          .tp-who li { padding: 16px }
         }
       `}</style>
     </SiteChrome>
