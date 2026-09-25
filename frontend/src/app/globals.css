@@ -4050,6 +4050,18 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 }
 .academy-prose a.ad-score__link:hover { background: none; color: var(--rd-accent, #5546e0); text-decoration: underline; text-underline-offset: 3px; }
 .academy-bg[data-academy-theme="dark"] .academy-prose a.ad-score__link { color: var(--rd-accent); }
+.ad-challenge-reset {
+  display: inline-flex;
+  margin: 14px 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--rd-ink-3, #8a94a8);
+  cursor: pointer;
+}
+.ad-challenge-reset:hover { color: #e5484d; }
 .academy-prose .ad-score__reset { margin-top: 1rem; padding: 0.35rem 0.85rem; border-radius: 999px; border: 1px solid var(--pvrx-border-light); background: none; font-size: 0.76rem; font-weight: 600; color: var(--pvrx-text-secondary-light); cursor: pointer; }
 .academy-prose .ad-score__reset:hover { border-color: #e5484d; color: #e5484d; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-score__focuslabel { color: #9eb0ff; }

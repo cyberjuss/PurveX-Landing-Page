@@ -4,7 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNo
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Check } from "lucide-react";
-import { academyFetch, READINESS_PATH, RESULTS_UPDATED_EVENT } from "@/lib/academy-client";
+import { academyFetch, READINESS_PATH, RESULTS_CHANGED_EVENT, RESULTS_UPDATED_EVENT } from "@/lib/academy-client";
 import { loadResults, saveResults, type MissionResult } from "@/lib/academy-score";
 import { LabPulse } from "./lab-pulse";
 import { TrailDock } from "./trail-dock";
@@ -37,6 +37,7 @@ export function MissionPager({
   const [flagged, setFlagged] = useState<boolean[]>([]);
   const [strip, setStrip] = useState<HTMLElement | null>(null);
   const [labHost, setLabHost] = useState<HTMLElement | null>(null);
+  const [started, setStarted] = useState(false);
 
   const missions = useCallback(() => Array.from(root.current?.querySelectorAll<HTMLElement>(".ad-mission") ?? []), []);
   const brief = useCallback(() => root.current?.querySelector<HTMLElement>(".ad-brief") ?? null, []);
@@ -49,6 +50,8 @@ export function MissionPager({
     const flags = list.length < 2 ? [] : list.map((m) => Boolean(stored[m.getAttribute("data-id") || ""]?.flagged) && !m.classList.contains("ad-mission--solved"));
     setSolved((prev) => (prev.length === marks.length && prev.every((v, i) => v === marks[i]) ? prev : marks));
     setFlagged((prev) => (prev.length === flags.length && prev.every((v, i) => v === flags[i]) ? prev : flags));
+    const any = list.some((m) => Boolean(stored[m.getAttribute("data-id") || ""]));
+    setStarted((prev) => (prev === any ? prev : any));
   }, [missions]);
 
   // Follow mission blocks as they render, restore, or become solved.
@@ -166,6 +169,27 @@ export function MissionPager({
     if (total >= 2) strip?.scrollIntoView({ block: "start", behavior: "smooth" });
   }, [at, total, onBrief, brief, missions, strip]);
 
+  const resetChallenge = useCallback(() => {
+    const ids = missions()
+      .map((m) => m.getAttribute("data-id"))
+      .filter((id): id is string => Boolean(id));
+    if (!ids.length) return;
+    if (!window.confirm("Reset this challenge? Every ticket in it starts over. Other challenges stay as they are. This does not undo changes in your lab.")) return;
+    const all = loadResults();
+    ids.forEach((id) => {
+      delete all[id];
+    });
+    saveResults(all);
+    window.dispatchEvent(new Event(RESULTS_CHANGED_EVENT));
+    academyFetch("/academy/api/progress", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ results: all }),
+    })
+      .catch(() => {})
+      .finally(() => window.location.reload());
+  }, [missions]);
+
   const nav =
     paging && !onBrief ? (
       <TrailDock
@@ -229,6 +253,11 @@ export function MissionPager({
       ) : null}
       {labHost ? createPortal(<LabPulse />, labHost) : null}
       {nav && actionHost ? createPortal(nav, actionHost) : nav}
+      {started ? (
+        <button type="button" className="ad-challenge-reset" onClick={resetChallenge}>
+          Reset challenge
+        </button>
+      ) : null}
     </div>
   );
 }
