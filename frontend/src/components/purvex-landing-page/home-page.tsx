@@ -234,22 +234,25 @@ const REVIEWS = [
 const OFFERS = [
   {
     label: "Operations",
-    title: "Make it fire",
-    body: "We write the detection for your logs, then we run it. You keep the miss and the evidence.",
+    title: "Detections that actually fire",
+    body: "We write detection rules for your logs, test that they trigger, and cut the noise. You keep every result.",
+    who: "For security teams",
     href: "/security-operations",
     Icon: IconValidate,
   },
   {
     label: "Training",
-    title: "The ticket does not close itself",
-    body: "Students work a real directory. Coach reads that lab and withholds the answer.",
+    title: "Training that builds real skill",
+    body: "Learners practice in their own lab with an AI coach and finish with proof of skill employers trust.",
+    who: "For students, schools, and employers",
     href: "/cybersecurity-training",
     Icon: IconGraduate,
   },
   {
     label: "Platform",
-    title: "Name the stage that failed",
-    body: "Telemetry, parser, rule, or alert. The run keeps the evidence. Still private.",
+    title: "Prove your alerts work",
+    body: "Software that runs real attack tests against your SIEM and shows exactly where an alert failed.",
+    who: "Early access by waitlist",
     href: "/platform",
     Icon: IconChain,
   },
@@ -266,7 +269,8 @@ function OfferDesk() {
             <span>{o.label}</span>
             <strong>{o.title}</strong>
             <p>{o.body}</p>
-            <em>Open</em>
+            <small>{o.who}</small>
+            <em>Learn more</em>
           </Link>
         ))}
       </div>
@@ -500,6 +504,7 @@ const HP_CSS = `
   font-size: clamp(1.85rem, 2.8vw, 2.7rem); line-height: .92; letter-spacing: -.045em;
 }
 .hx-tag p { margin: 14px 0 0; max-width: 32ch; color: var(--ink-soft); font-size: .95rem; line-height: 1.45 }
+.hx-tag small { display: block; margin-top: 12px; font-size: .84rem; font-weight: 600; color: var(--accent-deep) }
 .hx-tag em {
   margin-top: 18px; font-style: normal; font-family: var(--font-display); font-weight: 700;
   color: var(--accent-deep); border-bottom: 2px solid transparent; width: fit-content;
