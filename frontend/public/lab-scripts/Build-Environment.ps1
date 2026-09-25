@@ -458,9 +458,9 @@ function Install-PurvexLabSync {
     $dest = Get-PurvexSyncScriptPath
     Copy-Item -LiteralPath $source -Destination $dest -Force
     $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$dest`" -SyncOnly -Scheduled"
-    $trigger = New-ScheduledTaskTrigger -Once -At ((Get-Date).AddMinutes(1))
-    $trigger.Repetition.Interval = "PT1M"
-    $trigger.Repetition.Duration = "P3650D"
+    # Repetition is null on a plain -Once trigger in Windows PowerShell 5.1, so set it here.
+    $trigger = New-ScheduledTaskTrigger -Once -At ((Get-Date).AddMinutes(1)) `
+        -RepetitionInterval (New-TimeSpan -Minutes 1) -RepetitionDuration (New-TimeSpan -Days 3650)
     $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
     Unregister-ScheduledTask -TaskName $PurvexSyncTask -Confirm:$false -ErrorAction SilentlyContinue
