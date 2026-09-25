@@ -31,7 +31,7 @@ If your server is not yet a domain controller, download and run this first. It i
 **What you should see at the end.** Two green lines mean your lab is connected:
 
 * `Lab snapshot sent to PurveX Coach.`
-* `Coach is syncing this DC now. It updates every 2 seconds while a ticket check is open.`
+* `Coach is syncing this DC now. A directory change is sent as soon as it happens.`
 
 **What this script does:**
 
@@ -104,7 +104,7 @@ After the reboot, log back in as `PURVEXFINANCIAL\Administrator` and run this sc
 * Prompts once for an initial password. Every account must change it at next logon, so nobody keeps that password long-term
 * Is safe to run more than once. It only creates what is missing and never resets or deletes anything that exists
 * The Academy download plants the ticket-queue challenge objects on the first build and sends your lab straight away. Add `-NoCTF` to skip them
-* The Academy download starts a background Coach sync on the domain controller after the first successful build. It reports once a minute, and every 2 seconds while a ticket check is open, so a change you make shows up almost at once. The VM only has to stay on. To stop it: `./Build-Environment.ps1 -UninstallSync`.
+* The Academy download starts a background Coach sync on the domain controller after the first successful build. It sends a snapshot as soon as the directory changes, and once a minute when nothing changes. The VM only has to stay on. To stop it: `./Build-Environment.ps1 -UninstallSync`.
 * The sync now also sends your security settings (password and lockout policy, auditing, log size) and a 30-day count of Security log events, such as failed sign-ins and accounts created. It never sends passwords or raw log entries. Your drills and the weekly CTF use it, so download the script again and run it once to get it.
 
 [Download Build-Environment.ps1](/lab-scripts/Build-Environment.ps1)
@@ -144,8 +144,8 @@ You can also copy the current script from here. A pasted copy is not linked to y
     Skips the ticket-queue challenge objects in the Academy download.
 
 .PARAMETER SyncLoop
-    Used by the sync task. Checks every 2 seconds and sends a fresh snapshot every 2 seconds
-    while a ticket check is open, and every minute otherwise. Students do not run this.
+    Used by the sync task. It sends a snapshot as soon as the directory changes, and
+    once a minute when nothing changes. Students do not run this.
 
 .PARAMETER SyncOnly
     Used by the scheduled task. Students do not run this.
@@ -584,25 +584,47 @@ function Get-PurvexSyncScriptPath {
     return (Join-Path $dir "Build-Environment.ps1")
 }
 
-# Runs for as long as the task lives. The site says when a ticket check is open (live), and
-# only then does it send every 2 seconds. Otherwise one snapshot a minute is enough.
+# Highest update number in the directory. A ticket check only needs a new snapshot when this moves.
+function Get-PurvexHighestUsn {
+    param([string]$DomainDN)
+    try {
+        $searcher = New-Object System.DirectoryServices.DirectorySearcher
+        $searcher.SearchRoot = New-Object System.DirectoryServices.DirectoryEntry("LDAP://$DomainDN")
+        $searcher.Filter = "(uSNChanged>=1)"
+        $searcher.PageSize = 1
+        $searcher.SearchScope = "Subtree"
+        [void]$searcher.PropertiesToLoad.Add("uSNChanged")
+        $searcher.Sort = New-Object System.DirectoryServices.SortOption("uSNChanged", ([System.DirectoryServices.SortDirection]::Descending))
+        $hit = $searcher.FindOne()
+        if ($hit -and $hit.Properties["usnchanged"].Count -gt 0) { return [int64]$hit.Properties["usnchanged"][0] }
+    }
+    catch { }
+    return [int64]-1
+}
+
+# Runs for as long as the task lives. A directory change sends a snapshot immediately.
+# If nothing changes, one snapshot a minute still goes out. A failed directory read never
+# turns into a burst of uploads.
 function Start-PurvexSyncLoop {
     param([string]$Key, [string]$Url)
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-    $endpoint = $Url.TrimEnd("/") + "/api/academy/lab-state"
     $lastSend = [datetime]::MinValue
+    $lastUsn = [int64]-1
     while ($true) {
-        $wait = 2
+        $waitMs = 200
         try {
-            $state = Invoke-RestMethod -Method Get -Uri $endpoint -TimeoutSec 10 -Headers @{ Authorization = "Bearer $Key" }
             $age = ((Get-Date) - $lastSend).TotalSeconds
-            if (([bool]$state.live -and $age -ge 2) -or $age -ge 60) {
+            $usn = Get-PurvexHighestUsn -DomainDN $domainDN
+            $due = $age -ge 60
+            $changed = ($usn -ge 0) -and (($lastUsn -lt 0) -or ($usn -ne $lastUsn))
+            if ($changed -or $due) {
                 Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN -Fast
                 $lastSend = Get-Date
+                if ($usn -ge 0) { $lastUsn = $usn }
             }
         }
-        catch { $wait = 15 }
-        Start-Sleep -Seconds $wait
+        catch { $waitMs = 15000 }
+        Start-Sleep -Milliseconds $waitMs
     }
 }
 
@@ -633,7 +655,7 @@ function Install-PurvexLabSync {
     Unregister-ScheduledTask -TaskName $PurvexSyncTask -Confirm:$false -ErrorAction SilentlyContinue
     Register-ScheduledTask -TaskName $PurvexSyncTask -Action $action -Trigger @($startup, $watchdog) -Principal $principal -Settings $settings -Description "Sends a read-only Active Directory snapshot to PurveX Coach about every minute. No passwords." | Out-Null
     Start-ScheduledTask -TaskName $PurvexSyncTask
-    Write-Host "Coach is syncing this DC now. It updates every 2 seconds while a ticket check is open." -ForegroundColor Green
+    Write-Host "Coach is syncing this DC now. A directory change is sent as soon as it happens." -ForegroundColor Green
     return $true
 }
 

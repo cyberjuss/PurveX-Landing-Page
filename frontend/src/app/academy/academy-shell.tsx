@@ -410,7 +410,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         const waitStart = Date.now();
         while (gate && !gate.noLab && !gate.noTicketObjects && gate.gated !== false && !gate.passed && Date.now() - waitStart < 45000) {
           feedback.textContent = "Waiting for your lab to show the change…";
-          await new Promise((resolve) => setTimeout(resolve, 3000));
+          await new Promise((resolve) => setTimeout(resolve, 400));
           gate = await labGate(missionId);
         }
         btn.disabled = false;

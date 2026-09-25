@@ -249,11 +249,16 @@ export function MissionPager({
           <button type="button" className="rd-cta" onClick={() => setOnBrief(false)}>
             Get Started <ArrowRight className="h-4 w-4" />
           </button>
+          {started ? (
+            <button type="button" className="ad-challenge-reset" onClick={resetChallenge}>
+              Reset challenge
+            </button>
+          ) : null}
         </div>
       ) : null}
       {labHost ? createPortal(<LabPulse />, labHost) : null}
       {nav && actionHost ? createPortal(nav, actionHost) : nav}
-      {started ? (
+      {started && !onBrief ? (
         <button type="button" className="ad-challenge-reset" onClick={resetChallenge}>
           Reset challenge
         </button>
