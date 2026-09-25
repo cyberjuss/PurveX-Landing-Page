@@ -39,20 +39,75 @@ const NODES: MapNode[] = [
 const HUB = NODES[0];
 const STEP_MS = 3200;
 
-// Tools the course content actually puts in students' hands.
-const TOOLS: { name: string; Icon: LucideIcon }[] = [
-  { name: "Active Directory", Icon: Network },
-  { name: "Windows Server", Icon: Server },
-  { name: "PowerShell", Icon: SquareTerminal },
-  { name: "Wireshark", Icon: Activity },
-  { name: "Group Policy", Icon: FileCog },
-  { name: "Splunk", Icon: ChartColumn },
-  { name: "Event Viewer", Icon: ScrollText },
-  { name: "Sysmon", Icon: Eye },
-  { name: "Microsoft Sentinel", Icon: ShieldAlert },
-  { name: "Burp Suite", Icon: Bug },
-  { name: "MITRE ATT&CK", Icon: Crosshair },
+// Tools the course content actually puts in students' hands, and what
+// they do with each one. Two rows so the strip can run both ways.
+type Tool = { name: string; Icon: LucideIcon; use: string };
+
+const TOOL_ROWS: Tool[][] = [
+  [
+    { name: "Active Directory", Icon: Network, use: "Manage accounts, groups, and who can access what." },
+    { name: "Windows Server", Icon: Server, use: "Stand up the server that runs their company." },
+    { name: "PowerShell", Icon: SquareTerminal, use: "Build the lab and script everyday fixes." },
+    { name: "Wireshark", Icon: Activity, use: "Read packet captures, including a real ransomware attack." },
+    { name: "Group Policy", Icon: FileCog, use: "Set security rules for every computer at once." },
+    { name: "Burp Suite", Icon: Bug, use: "Test whether a web app lets the wrong person in." },
+  ],
+  [
+    { name: "Splunk", Icon: ChartColumn, use: "Search logs for the signs an attack leaves behind." },
+    { name: "Event Viewer", Icon: ScrollText, use: "Read Windows sign-in and security events." },
+    { name: "Sysmon", Icon: Eye, use: "Record what runs on a computer, and when." },
+    { name: "Microsoft Sentinel", Icon: ShieldAlert, use: "Work security alerts in a cloud SIEM." },
+    { name: "MITRE ATT&CK", Icon: Crosshair, use: "Name the technique an attacker used." },
+  ],
 ];
+
+function ToolStrip() {
+  const [on, setOn] = useState<Tool | null>(null);
+
+  return (
+    <div className="th-tools" onPointerLeave={() => setOn(null)}>
+      <div className="th-tools__cap" aria-live="polite">
+        {on ? (
+          <p key={on.name} className="th-tools__use">
+            <strong>{on.name}</strong>
+            {on.use}
+          </p>
+        ) : (
+          <p key="idle" className="th-tools__idle">
+            Hands-on with the tools the job uses
+            <span>Hover a tool to see what they do with it</span>
+          </p>
+        )}
+      </div>
+      <div className="th-tools__rails">
+        {TOOL_ROWS.map((row, r) => (
+          <div key={r} className="th-tools__rail" data-dir={r % 2 ? "rev" : "fwd"}>
+            {[0, 1, 2].map((copy) => (
+              <ul key={copy} aria-hidden={copy > 0 ? true : undefined}>
+                {row.map((t) => (
+                  <li key={t.name}>
+                    <button
+                      type="button"
+                      tabIndex={copy > 0 ? -1 : 0}
+                      data-on={on?.name === t.name ? "1" : "0"}
+                      onPointerEnter={() => setOn(t)}
+                      onFocus={() => setOn(t)}
+                      onBlur={() => setOn(null)}
+                      onClick={() => setOn(t)}
+                    >
+                      <i><t.Icon size={15} strokeWidth={2} /></i>
+                      {t.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const QUERY = "(prefers-reduced-motion: reduce)";
 
@@ -205,21 +260,7 @@ export function TrainingHero() {
 
       <NetworkMap />
 
-      <div className="th-tools">
-        <p>Hands-on with the tools the job uses</p>
-        <div className="th-tools__rail">
-          {[0, 1].map((copy) => (
-            <ul key={copy} aria-hidden={copy === 1 ? true : undefined}>
-              {TOOLS.map(({ name, Icon }) => (
-                <li key={name}>
-                  <Icon size={16} strokeWidth={1.9} />
-                  {name}
-                </li>
-              ))}
-            </ul>
-          ))}
-        </div>
-      </div>
+      <ToolStrip />
 
       <style>{HERO_CSS}</style>
     </section>
@@ -314,30 +355,47 @@ const HERO_CSS = `
 
 /* tools strip */
 .th-tools {
-  grid-column: 1 / -1; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 28px;
+  grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 250px) minmax(0, 1fr); align-items: center; gap: 32px;
   margin: clamp(32px, 4.5vw, 56px) 0 0; padding: 22px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
 }
-.th-tools > p { margin: 0; max-width: 16ch; font-family: var(--font-display); font-size: 1rem; font-weight: 600; letter-spacing: -.015em; line-height: 1.3; color: var(--ink) }
-.th-tools__rail {
-  display: flex; overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+.th-tools__cap { min-height: 86px; display: flex; align-items: center }
+.th-tools__cap p { margin: 0; animation: th-cap .35s cubic-bezier(.16,1,.3,1) both }
+.th-tools__idle { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; letter-spacing: -.015em; line-height: 1.3; color: var(--ink) }
+.th-tools__idle span { display: block; margin-top: 6px; font-family: var(--font-sans, inherit); font-size: .8rem; font-weight: 500; letter-spacing: 0; color: var(--muted) }
+.th-tools__use { font-size: .92rem; line-height: 1.45; color: var(--ink-soft) }
+.th-tools__use strong { display: block; margin-bottom: 3px; font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; letter-spacing: -.015em; color: var(--accent-deep) }
+.th-tools__rails {
+  display: flex; flex-direction: column; gap: 4px; min-width: 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
 }
-.th-tools ul { display: flex; flex: none; gap: 10px; list-style: none; margin: 0; padding: 0 10px 0 0; animation: th-slide 38s linear infinite }
-.th-tools__rail:hover ul { animation-play-state: paused }
-.th-tools li {
-  display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; white-space: nowrap;
+.th-tools__rail { display: flex; overflow: hidden; padding: 4px 0 }
+.th-tools ul { display: flex; flex: none; gap: 10px; list-style: none; margin: 0; padding: 0 10px 0 0; animation: th-slide 34s linear infinite }
+.th-tools__rail[data-dir="rev"] ul { animation-direction: reverse; animation-duration: 30s }
+.th-tools__rails:hover ul, .th-tools__rails:focus-within ul { animation-play-state: paused }
+.th-tools button {
+  display: inline-flex; align-items: center; gap: 9px; padding: 6px 14px 6px 6px; white-space: nowrap; cursor: default;
   background: #fff; border: 1px solid var(--border); font-size: .9rem; font-weight: 600; color: var(--ink-soft);
-  transition: border-color .25s var(--ease), color .25s var(--ease);
+  transition: border-color .25s var(--ease), color .25s var(--ease), transform .25s var(--ease), box-shadow .25s var(--ease);
 }
-.th-tools li svg { position: static; color: var(--accent-deep) }
-.th-tools li:hover { border-color: rgba(106,92,255,.4); color: var(--ink) }
+.th-tools button i {
+  display: grid; place-items: center; width: 28px; height: 28px; background: var(--accent-soft); color: var(--accent-deep);
+  transition: background .25s var(--ease), color .25s var(--ease);
+}
+.th-tools button i svg { position: static }
+.th-tools button[data-on="1"] { border-color: var(--accent); color: var(--ink); transform: translateY(-2px); box-shadow: 0 12px 24px -16px rgba(85,70,224,.6) }
+.th-tools button[data-on="1"] i { background: var(--accent); color: #fff }
+.th-tools button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
 @keyframes th-slide { to { transform: translateX(-100%) } }
+@keyframes th-cap { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
 @media (prefers-reduced-motion: reduce) {
-  .th-tools__rail { -webkit-mask-image: none; mask-image: none }
+  .th-tools__rails { -webkit-mask-image: none; mask-image: none }
+  .th-tools__rail { overflow: visible }
   .th-tools ul { flex-wrap: wrap; flex: 1; animation: none }
   .th-tools ul[aria-hidden] { display: none }
+  .th-tools__cap p { animation: none }
 }
+
 
 @keyframes tn-in { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
 @keyframes tn-pop { from { opacity: 0; transform: scale(.6) } to { opacity: 1; transform: none } }
@@ -362,6 +420,7 @@ const HERO_CSS = `
   .tn-zone__label { display: none }
   .tn-detail { padding: 14px }
   .th-tools { grid-template-columns: minmax(0, 1fr); gap: 14px }
-  .th-tools > p { max-width: none }
+  .th-tools__cap { min-height: 64px }
+  .th-tools__idle span { display: none }
 }
 `;
