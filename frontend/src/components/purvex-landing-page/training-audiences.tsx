@@ -1,13 +1,11 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
-import { ArrowRight, Check } from "lucide-react";
-import { LEVELS, SKILLS, type Skill } from "@/lib/academy-score";
+import { useRef, useState, type KeyboardEvent } from "react";
+import { ArrowRight } from "lucide-react";
 import { IconCampus, IconCivic, IconGraduate, type BrandIcon } from "./brand-icons";
 
 /* Who the training is for. The visitor picks who they are; the panel then
-   shows how it works for them, step by step, with a small example of what
-   they would see in the portal. Every figure is labeled as an example. */
+   shows how getting started works for them in four short steps. */
 
 type Key = "students" | "schools" | "employers";
 
@@ -34,10 +32,10 @@ const AUDIENCES: Audience[] = [
     headline: "Get the experience the first job asks for",
     sub: "Practice the real work before anyone is paying you to do it.",
     steps: [
-      "Join with your class passcode",
-      "Build your own company network",
-      "Fix tickets and stop an attack, with Coach when you get stuck",
-      "Finish with a score you can show employers",
+      "Join with a class passcode",
+      "Build your company network",
+      "Fix tickets with Coach's help",
+      "Earn a score employers can read",
     ],
     footLabel: "Prepares you for",
     foot: ["IT help desk", "IT support", "Junior security analyst"],
@@ -51,10 +49,10 @@ const AUDIENCES: Audience[] = [
     headline: "One course for the whole class",
     sub: "Every student gets the same hands-on course, and you see how each one is doing.",
     steps: [
-      "Book a short call to plan your class",
-      "Get a class passcode for your students",
-      "Each student builds a lab on their own computer",
-      "Follow every student's progress and readiness",
+      "Book a short call",
+      "Get a class passcode",
+      "Students build their labs",
+      "Track every student",
     ],
     footLabel: "Good to know",
     foot: ["No servers to set up", "Same lessons and labs for all", "A report for every student"],
@@ -68,102 +66,15 @@ const AUDIENCES: Audience[] = [
     headline: "See who is ready before they start",
     sub: "Train new hires or upskill a team on the tasks they will actually do.",
     steps: [
-      "Book a short call about your team",
-      "Enroll new hires or current staff",
-      "They practice real tasks in their own lab",
-      "Review each person's skills and mock interview",
+      "Book a short call",
+      "Enroll your people",
+      "They practice real tasks",
+      "Review each report",
     ],
     footLabel: "Built for roles like",
     foot: ["Help desk", "IT support", "Security operations"],
   },
 ];
-
-/* ---------- example cards ---------- */
-
-function StudentCard() {
-  const steps = [
-    { done: true, text: "Company network built" },
-    { done: true, text: "First help desk tickets fixed" },
-    { done: false, text: `Readiness 72, ${LEVELS.almost.label}` },
-  ];
-  return (
-    <article className="ta-card">
-      <header><strong>My progress</strong><em>Example</em></header>
-      <ol className="ta-steps">
-        {steps.map((s) => (
-          <li key={s.text} data-done={s.done ? "1" : "0"}>
-            <i>{s.done ? <Check size={13} strokeWidth={3} /> : null}</i>
-            {s.text}
-          </li>
-        ))}
-      </ol>
-      <p className="ta-coach">
-        <b>Coach</b>
-        Nice work. Next, find out why that account locked in the first place.
-      </p>
-    </article>
-  );
-}
-
-const CLASS = [
-  { name: "Amara O.", weeks: 6, level: "Ready" },
-  { name: "Diego R.", weeks: 5, level: "Almost Ready" },
-  { name: "Priya S.", weeks: 4, level: "In progress" },
-  { name: "Tom W.", weeks: 6, level: "Ready" },
-];
-
-function ClassCard() {
-  return (
-    <article className="ta-card">
-      <header><strong>Class progress</strong><em>Example</em></header>
-      <ul className="ta-class">
-        {CLASS.map((s) => (
-          <li key={s.name}>
-            <i>{s.name.split(" ").map((p) => p[0]).join("")}</i>
-            <span>{s.name}</span>
-            <ol aria-label={`${s.weeks} of 6 weeks done`}>
-              {Array.from({ length: 6 }, (_, n) => <li key={n} data-on={n < s.weeks ? "1" : "0"} />)}
-            </ol>
-            <em data-ready={s.level === "Ready" ? "1" : "0"}>{s.level}</em>
-          </li>
-        ))}
-      </ul>
-    </article>
-  );
-}
-
-const SCORES: Record<Skill, number> = { accounts: 92, directory: 78, troubleshooting: 88, security: 61 };
-
-function CandidateCard() {
-  return (
-    <article className="ta-card">
-      <header><strong>Team member report</strong><em>Example</em></header>
-      <div className="ta-cand">
-        <b>JM</b>
-        <div>
-          <strong>Jordan M.</strong>
-          <span>Readiness 72, {LEVELS.almost.label}</span>
-        </div>
-      </div>
-      <ul className="ta-skills">
-        {(Object.keys(SKILLS) as Skill[]).map((k) => (
-          <li key={k}>
-            <span>{SKILLS[k].label}</span>
-            <b>{SCORES[k]}</b>
-            <i style={{ ["--w" as string]: `${SCORES[k]}%` }} />
-          </li>
-        ))}
-      </ul>
-      <p className="ta-mini"><Check size={14} strokeWidth={3} /> Mock interview: 4 of 5</p>
-    </article>
-  );
-}
-
-const CARDS: Record<Key, () => ReactNode> = {
-  students: StudentCard,
-  schools: ClassCard,
-  employers: CandidateCard,
-};
 
 /* ---------- section ---------- */
 
@@ -171,7 +82,6 @@ export function TrainingAudiences() {
   const [i, setI] = useState(0);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const a = AUDIENCES[i];
-  const Card = CARDS[a.key];
 
   function onKey(e: KeyboardEvent<HTMLDivElement>) {
     const d = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : e.key === "ArrowUp" || e.key === "ArrowLeft" ? -1 : 0;
@@ -216,22 +126,14 @@ export function TrainingAudiences() {
           <p>{a.sub}</p>
         </div>
 
-        <div className="ta-panel__body">
-          <div className="ta-how" key={`s-${a.key}`}>
-            <span>How it works</span>
-            <ol>
-              {a.steps.map((s, n) => (
-                <li key={s} style={{ ["--n" as string]: n }}>
-                  <i>{n + 1}</i>
-                  {s}
-                </li>
-              ))}
-            </ol>
-          </div>
-          <div className="ta-stage" key={`v-${a.key}`}>
-            <Card />
-          </div>
-        </div>
+        <ol className="ta-how" key={`s-${a.key}`}>
+          {a.steps.map((st, n) => (
+            <li key={st} style={{ ["--n" as string]: n }}>
+              <i>{n + 1}</i>
+              {st}
+            </li>
+          ))}
+        </ol>
 
         <footer className="ta-panel__foot" key={`f-${a.key}`}>
           <span>{a.footLabel}</span>
@@ -291,79 +193,33 @@ const TA_CSS = `
   font-size: clamp(1.6rem, 2.8vw, 2.3rem); color: var(--ink); text-wrap: balance;
 }
 .ta-panel__head p { margin: 10px 0 0; max-width: 52ch; color: var(--ink-soft); font-size: 1.02rem; line-height: 1.55 }
-.ta-panel__body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 360px); gap: 28px; align-items: stretch; margin-top: 28px }
-
-.ta-how > span { display: block; font-size: .82rem; font-weight: 650; color: var(--accent-deep) }
-.ta-how ol { position: relative; list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 18px }
-.ta-how ol::before { content: ""; position: absolute; left: 15px; top: 16px; bottom: 16px; width: 2px; background: rgba(106,92,255,.2) }
+.ta-how { position: relative; list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 32px 0 0; padding: 0 }
+.ta-how::before { content: ""; position: absolute; left: 19px; right: calc((100% - 48px) / 4 - 19px); top: 18px; height: 2px; background: rgba(106,92,255,.22) }
 .ta-how li {
-  position: relative; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 14px;
-  font-size: .98rem; line-height: 1.45; color: var(--ink);
+  position: relative; display: flex; flex-direction: column; gap: 14px; font-size: .98rem; font-weight: 500; line-height: 1.4; color: var(--ink);
   animation: ta-in .45s cubic-bezier(.16,1,.3,1) both; animation-delay: calc(var(--n) * 70ms + 60ms);
 }
 .ta-how li i {
-  position: relative; display: grid; place-items: center; width: 32px; height: 32px; font-style: normal; font-size: .86rem; font-weight: 700;
+  display: grid; place-items: center; width: 38px; height: 38px; font-style: normal; font-size: .9rem; font-weight: 700;
   background: #fff; border: 2px solid var(--accent); color: var(--accent-deep);
 }
 .ta-how li:last-child i { background: var(--accent); color: #fff }
 
-.ta-stage {
-  display: flex; align-items: center; justify-content: center; padding: 22px;
-  background: repeating-linear-gradient(135deg, rgba(106,92,255,.09) 0 1px, transparent 1px 10px), var(--accent-soft);
-  animation: ta-in .5s .08s cubic-bezier(.16,1,.3,1) both;
-}
-
-.ta-panel__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--border); animation: ta-in .45s .2s cubic-bezier(.16,1,.3,1) both }
+.ta-panel__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 32px; padding-top: 22px; border-top: 1px solid var(--border); animation: ta-in .45s .2s cubic-bezier(.16,1,.3,1) both }
 .ta-panel__foot > span { font-size: .86rem; font-weight: 650; color: var(--ink) }
 .ta-panel__foot ul { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0 }
-.ta-panel__foot li { padding: 6px 12px; border: 1px solid rgba(106,92,255,.28); background: #fff; font-size: .86rem; font-weight: 600; color: var(--accent-deep) }
-
-/* example card */
-.ta-card { width: 100%; padding: 18px 18px 16px; background: #fff; color: var(--ink); box-shadow: 0 24px 48px -26px rgba(42,34,128,.5) }
-.ta-card header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border) }
-.ta-card header strong { font-family: var(--font-display); font-weight: 600; font-size: 1rem; letter-spacing: -.02em }
-.ta-card header em { padding: 3px 8px; font-style: normal; font-size: .7rem; font-weight: 700; color: var(--accent-deep); background: var(--accent-soft) }
-
-.ta-steps { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px }
-.ta-steps li { display: flex; align-items: center; gap: 10px; font-size: .9rem; color: var(--ink) }
-.ta-steps li i { display: grid; place-items: center; width: 24px; height: 24px; flex: none; background: var(--green); color: #fff }
-.ta-steps li i svg { position: static }
-.ta-steps li[data-done="0"] i { background: #fff; border: 2px solid var(--accent) }
-.ta-coach { margin: 14px 0 0; padding: 10px 12px; background: #f4f4fb; border: 1px solid var(--border); font-size: .86rem; line-height: 1.5; color: var(--ink) }
-.ta-coach b { display: block; margin-bottom: 2px; font-size: .72rem; color: var(--accent-deep) }
-
-.ta-class { list-style: none; margin: 4px 0 0; padding: 0 }
-.ta-class > li { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "av name lvl" "av bar lvl"; align-items: center; gap: 4px 10px; padding: 10px 0 }
-.ta-class > li + li { border-top: 1px solid var(--border) }
-.ta-class > li > i { grid-area: av; display: grid; place-items: center; width: 32px; height: 32px; font-style: normal; font-size: .72rem; font-weight: 700; color: var(--accent-deep); background: var(--accent-soft) }
-.ta-class > li > span { grid-area: name; font-size: .88rem; font-weight: 600 }
-.ta-class ol { grid-area: bar; display: flex; gap: 3px; list-style: none; margin: 0; padding: 0 }
-.ta-class ol li { width: 14px; height: 5px; background: var(--border-strong) }
-.ta-class ol li[data-on="1"] { background: var(--accent) }
-.ta-class em { grid-area: lvl; font-style: normal; font-size: .74rem; font-weight: 700; color: var(--muted) }
-.ta-class em[data-ready="1"] { color: var(--green) }
-
-.ta-cand { display: flex; align-items: center; gap: 12px; margin-top: 12px }
-.ta-cand > b { display: grid; place-items: center; width: 38px; height: 38px; font-size: .78rem; color: #fff; background: var(--accent-deep) }
-.ta-cand strong { display: block; font-size: .95rem }
-.ta-cand span { display: block; font-size: .8rem; color: var(--muted) }
-.ta-skills { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 9px }
-.ta-skills li { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-size: .82rem; color: var(--ink-soft) }
-.ta-skills b { color: var(--ink) }
-.ta-skills i { grid-column: 1 / -1; display: block; width: var(--w); height: 4px; background: var(--accent); transform-origin: left; animation: ta-grow .8s .2s cubic-bezier(.16,1,.3,1) both }
-.ta-mini { display: flex; align-items: center; gap: 8px; margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--border); font-size: .84rem; font-weight: 600; color: var(--ink) }
-.ta-mini svg { position: static; color: var(--green) }
+.ta-panel__foot li { padding: 6px 12px; background: var(--accent-soft); font-size: .86rem; font-weight: 600; color: var(--accent-deep) }
 
 @keyframes ta-in { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
 @keyframes ta-grow { from { transform: scaleX(0) } to { transform: scaleX(1) } }
 @media (prefers-reduced-motion: reduce) {
-  .ta-panel__head, .ta-how li, .ta-stage, .ta-panel__foot, .ta-skills i { animation: none }
+  .ta-panel__head, .ta-how li, .ta-panel__foot { animation: none }
   .ta-pick button, .ta-pick button::before, .ta-pick__arrow { transition: none }
 }
 
 @media (max-width: 1100px) {
-  .ta-panel__body { grid-template-columns: minmax(0, 1fr) }
-  .ta-stage { justify-content: stretch }
+  .ta-how { grid-template-columns: 1fr 1fr; row-gap: 24px }
+  .ta-how::before { display: none }
 }
 @media (max-width: 900px) {
   .ta { grid-template-columns: minmax(0, 1fr) }
@@ -379,6 +235,8 @@ const TA_CSS = `
 @media (max-width: 640px) {
   .ta-pick button > i { width: 38px; height: 38px }
   .ta-panel { padding: 22px 16px }
-  .ta-stage { padding: 14px }
+  .ta-how { grid-template-columns: 1fr; gap: 14px }
+  .ta-how li { flex-direction: row; align-items: center }
+  .ta-how li i { width: 32px; height: 32px; flex: none }
 }
 `;
