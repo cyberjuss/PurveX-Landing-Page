@@ -229,7 +229,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripeE
         <p>Thanks for upgrading to PurveX Paid!</p>
         <p>We issue license keys by hand right now, so expect it within one business day. You don't need to
         wait on an email for it though -- once it's ready, you'll find it any time at
-        <strong>purvex-llc.com/my-license</strong>. Download it there and upload it in
+        <strong>purvex.io/my-license</strong>. Download it there and upload it in
         <strong>Settings &rarr; License</strong> in your PurveX instance -- it takes effect immediately, no
         restart needed.</p>
         <p>Your key is valid for ${LICENSE_DAYS} days and renews automatically with your subscription -- check
