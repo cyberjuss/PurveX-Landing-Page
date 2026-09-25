@@ -302,7 +302,7 @@ export const PG_CSS = `
   .pg-close { margin-top: 64px; padding: 40px 0 0 }
   .pg-close__book { width: 100%; justify-content: center }
   .pg-hero__actions { flex-direction: column }
-  .pg-hero__actions .sp-btn, .pg-wl__row { flex-direction: column }
+  .pg-wl__row { flex-direction: column }
   .pg-hero__actions .sp-btn, .pg-wl__row .sp-btn { width: 100% }
   .pg-tile { padding: 0 20px 22px }
   .pg-tile__stub { margin: 0 -20px 18px; padding: 11px 20px }

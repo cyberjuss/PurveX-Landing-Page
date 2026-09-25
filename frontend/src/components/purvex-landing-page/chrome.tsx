@@ -750,6 +750,8 @@ export const CHROME_CSS = `
   outline: 3px solid var(--accent); outline-offset: 3px;
 }
 .sp .hold button { height: 44px; padding: 0 16px; margin-top: 16px }
+/* The dock floats over content, so its button needs a solid fill. */
+.sp .sp-dock .sp-btn, .sp .sp-dock .sp-btn:hover { background: #fff; box-shadow: 0 14px 30px -14px rgba(85,70,224,.45) }
 
 /* Eyebrows: small text with a short rule instead of a pill. */
 .sp .sp-tag, .sp .sp-hero__badge {

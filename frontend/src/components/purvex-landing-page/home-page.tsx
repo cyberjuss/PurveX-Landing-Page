@@ -573,13 +573,23 @@ const HP_CSS = `
 @keyframes hx-run { from { transform: translateX(0) } to { transform: translateX(-50%) } }
 @media (max-width: 980px) {
   .hx { grid-template-columns: 1fr; min-height: 0; width: auto; margin-left: 0; padding: 8px 0 0 }
+  .hx::before { display: none }
   .hx-index, .hx-copy, .hx-file, .hx-tape { grid-column: 1; grid-row: auto }
-  .hx-index { border-right: 0; padding: 8px 0 0 }
-  .hx-copy { padding: 18px 0 }
+  .hx-copy { order: 1; padding: 32px 0 8px }
+  .hx-file { order: 2; justify-content: center; padding: 24px 6px 36px 0 }
+  .hx-index { order: 3; border-right: 0; padding: 0 0 28px }
+  .hx-tape { order: 4 }
   .hx-copy h1 { font-size: clamp(3.4rem, 16vw, 5.2rem) }
-  .hx-file { justify-content: flex-start }
+  .hx-copy .sp-btn { width: 100% }
+  .hx-index a { display: grid; grid-template-columns: 44px 1fr; column-gap: 12px; padding: 16px 0 }
+  .hx-index span { grid-row: 1 / 3; font-size: 1.5rem }
+  .hx-index strong { margin-top: 0 }
+  .hx-index p { max-width: none; margin-top: 4px }
   .hx-file .hp-ticket, .hx-file .hp-case__stack, .hx-file .hp-case__stack--2 { transform: none }
+  .hx-file .hp-ticket { animation-name: hp-ticket-in }
+  .hx-work, .hx-why { padding-top: 72px }
   .hx-wire { grid-template-columns: 1fr }
+  .hx-tag { min-height: 0; padding-bottom: 28px }
   .hx-tag, .hx-tag:nth-child(2), .hx-tag:nth-child(3) { --hang: 28px; padding-left: 0 }
   .hx-tag::before, .hx-tag:nth-child(2)::before, .hx-tag:nth-child(3)::before { left: 12px }
   .hx-why__sheet { grid-template-columns: 1fr }
@@ -973,7 +983,7 @@ const HP_CSS = `
   width: 108px; height: 132px; overflow: hidden; background: #eef0ff;
   clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
 }
-.hp-voice img { width: 100%; height: 100%; object-fit: cover; object-position: center 16% }
+.hp-voice__photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 16% }
 .hp-reviews blockquote {
   margin: 0; font-weight: 400; font-size: 1.08rem; line-height: 1.55; color: var(--ink);
 }
@@ -1107,7 +1117,10 @@ const HP_CSS = `
 @media (max-width: 680px) {
   .hp-hero__actions { flex-direction: column }
   .hp-hero__actions .sp-btn { width: 100% }
-  .hp-section, .hp-voice-wrap { padding-top: 84px }
+  .hp-section, .hp-voice-wrap { padding-top: 72px }
+  .hp-reviews li { grid-template-columns: 1fr; padding: 20px }
+  .hp-voice__photo { width: 64px; height: 64px }
+  .hp-reviews blockquote { font-size: 1.02rem }
   .hp-tile { padding: 0 20px 22px }
   .hp-tile__stub { margin: 0 -20px 18px; padding: 11px 20px }
   .hp-tile--labs { padding-bottom: 28px }

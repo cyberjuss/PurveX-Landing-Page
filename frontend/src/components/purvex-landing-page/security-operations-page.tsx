@@ -195,7 +195,8 @@ export default function SecurityOperationsPage() {
           100% { opacity: 1; transform: none }
         }
         @media (max-width: 980px) {
-          .ox-hero .cf-stamp { position: relative; right: auto; top: 0; display: block; margin: 0 0 -8px; font-size: 3.4rem }
+          .ox-live { margin: 16px 0 -8px; font-size: clamp(3.6rem, 18vw, 4.8rem) }
+          .ox-hero .cf-floor { margin-top: 0 }
         }
       `}</style>
     </SiteChrome>

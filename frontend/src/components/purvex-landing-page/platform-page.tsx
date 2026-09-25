@@ -354,8 +354,12 @@ export default function PlatformPage() {
         @keyframes lb-fail { 0%, 100% { box-shadow: 0 0 0 0 rgba(229,72,77,.45) } 70% { box-shadow: 0 0 0 8px rgba(229,72,77,0) } }
         @media (max-width: 980px) {
           .lb-motion { min-height: 0; }
-          .lb-spine { grid-template-columns: 1fr 1fr; gap: 12px 0 }
-          .lb-spine::before, .lb-spine::after { display: none }
+        }
+        @media (max-width: 680px) {
+          .lb-spine { margin-top: 20px }
+          .lb-spine li { padding-top: 20px; font-size: .92rem; letter-spacing: -.01em }
+          .lb-spine li::before { width: 10px; height: 10px }
+          .lb-spine::before, .lb-spine::after { top: 6px }
         }
       `}</style>
     </SiteChrome>

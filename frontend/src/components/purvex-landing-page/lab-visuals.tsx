@@ -203,10 +203,10 @@ export const LAB_CSS = `
 @media (max-width: 760px) {
   .lb-chain ol { grid-template-columns: 1fr; gap: 6px }
   .lb-chain ol::before, .lb-chain ol::after, .lb-pulse { display: none }
-  .lb-chain li { flex-direction: row; text-align: left; gap: 2px 16px; flex-wrap: wrap; align-items: center }
-  .lb-chain li i { margin: 0; width: 52px; height: 52px; border-radius: 16px }
-  .lb-chain li strong { flex: 1 }
-  .lb-chain li span { flex-basis: 100%; padding-left: 68px; margin-top: -30px }
+  .lb-chain li { display: grid; grid-template-columns: 52px 1fr; column-gap: 16px; row-gap: 2px; text-align: left; align-items: center }
+  .lb-chain li i { grid-row: 1 / 3; margin: 0; width: 52px; height: 52px; border-radius: 16px }
+  .lb-chain li strong { align-self: end; line-height: 1.2 }
+  .lb-chain li span { align-self: start; line-height: 1.3 }
   .lb-band { grid-template-columns: 1fr }
   .lb-big { text-align: left }
   .lb-matrix__col span { font-size: 0; margin-bottom: 2px }
