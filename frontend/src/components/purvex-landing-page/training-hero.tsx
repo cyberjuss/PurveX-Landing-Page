@@ -2,7 +2,10 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { ArrowRight, Check, FileText, Globe, Laptop, Server, Users, type LucideIcon } from "lucide-react";
+import {
+  Activity, ArrowRight, Bug, ChartColumn, Check, Crosshair, Eye, FileCog, FileText, Globe, Laptop, Network, ScrollText,
+  Server, ShieldAlert, SquareTerminal, Users, type LucideIcon,
+} from "lucide-react";
 import { BOOKING_URL } from "./chrome";
 
 /* Training hero. The student's own company network, drawn as a live map.
@@ -36,10 +39,19 @@ const NODES: MapNode[] = [
 const HUB = NODES[0];
 const STEP_MS = 3200;
 
-const FACTS = [
-  { k: "3", v: "phases, from the basics to incident response" },
-  { k: "25", v: "hands-on missions checked in their own lab" },
-  { k: "4", v: "job skills in a score employers can read" },
+// Tools the course content actually puts in students' hands.
+const TOOLS: { name: string; Icon: LucideIcon }[] = [
+  { name: "Active Directory", Icon: Network },
+  { name: "Windows Server", Icon: Server },
+  { name: "PowerShell", Icon: SquareTerminal },
+  { name: "Wireshark", Icon: Activity },
+  { name: "Group Policy", Icon: FileCog },
+  { name: "Splunk", Icon: ChartColumn },
+  { name: "Event Viewer", Icon: ScrollText },
+  { name: "Sysmon", Icon: Eye },
+  { name: "Microsoft Sentinel", Icon: ShieldAlert },
+  { name: "Burp Suite", Icon: Bug },
+  { name: "MITRE ATT&CK", Icon: Crosshair },
 ];
 
 const QUERY = "(prefers-reduced-motion: reduce)";
@@ -193,14 +205,21 @@ export function TrainingHero() {
 
       <NetworkMap />
 
-      <ul className="th-facts">
-        {FACTS.map((f) => (
-          <li key={f.v}>
-            <b>{f.k}</b>
-            <span>{f.v}</span>
-          </li>
-        ))}
-      </ul>
+      <div className="th-tools">
+        <p>Hands-on with the tools the job uses</p>
+        <div className="th-tools__rail">
+          {[0, 1].map((copy) => (
+            <ul key={copy} aria-hidden={copy === 1 ? true : undefined}>
+              {TOOLS.map(({ name, Icon }) => (
+                <li key={name}>
+                  <Icon size={16} strokeWidth={1.9} />
+                  {name}
+                </li>
+              ))}
+            </ul>
+          ))}
+        </div>
+      </div>
 
       <style>{HERO_CSS}</style>
     </section>
@@ -293,15 +312,32 @@ const HERO_CSS = `
 .tn-detail ol li[data-on="1"] { background: var(--accent) }
 .tn-detail footer span { font-size: .8rem; font-weight: 600; color: var(--muted) }
 
-/* facts */
-.th-facts {
-  grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); list-style: none;
-  margin: clamp(28px, 4vw, 48px) 0 0; padding: 0; border-top: 1px solid var(--border);
+/* tools strip */
+.th-tools {
+  grid-column: 1 / -1; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 28px;
+  margin: clamp(32px, 4.5vw, 56px) 0 0; padding: 22px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
 }
-.th-facts li { display: flex; align-items: baseline; gap: 14px; padding: 22px 24px 0 0 }
-.th-facts li + li { padding-left: 24px; border-left: 1px solid var(--border) }
-.th-facts b { font-family: var(--font-display); font-weight: 500; font-size: 2.2rem; letter-spacing: -.05em; line-height: 1; color: var(--accent-deep) }
-.th-facts span { color: var(--ink-soft); font-size: .95rem; line-height: 1.4 }
+.th-tools > p { margin: 0; max-width: 16ch; font-family: var(--font-display); font-size: 1rem; font-weight: 600; letter-spacing: -.015em; line-height: 1.3; color: var(--ink) }
+.th-tools__rail {
+  display: flex; overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.th-tools ul { display: flex; flex: none; gap: 10px; list-style: none; margin: 0; padding: 0 10px 0 0; animation: th-slide 38s linear infinite }
+.th-tools__rail:hover ul { animation-play-state: paused }
+.th-tools li {
+  display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; white-space: nowrap;
+  background: #fff; border: 1px solid var(--border); font-size: .9rem; font-weight: 600; color: var(--ink-soft);
+  transition: border-color .25s var(--ease), color .25s var(--ease);
+}
+.th-tools li svg { position: static; color: var(--accent-deep) }
+.th-tools li:hover { border-color: rgba(106,92,255,.4); color: var(--ink) }
+@keyframes th-slide { to { transform: translateX(-100%) } }
+@media (prefers-reduced-motion: reduce) {
+  .th-tools__rail { -webkit-mask-image: none; mask-image: none }
+  .th-tools ul { flex-wrap: wrap; flex: 1; animation: none }
+  .th-tools ul[aria-hidden] { display: none }
+}
 
 @keyframes tn-in { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
 @keyframes tn-pop { from { opacity: 0; transform: scale(.6) } to { opacity: 1; transform: none } }
@@ -325,7 +361,7 @@ const HERO_CSS = `
   .tn-node__name { font-size: .68rem; padding: 1px 4px }
   .tn-zone__label { display: none }
   .tn-detail { padding: 14px }
-  .th-facts { grid-template-columns: 1fr }
-  .th-facts li, .th-facts li + li { padding: 16px 0; border-left: 0; border-bottom: 1px solid var(--border) }
+  .th-tools { grid-template-columns: minmax(0, 1fr); gap: 14px }
+  .th-tools > p { max-width: none }
 }
 `;
