@@ -49,12 +49,6 @@ const AUDIENCES: Item[] = [
   { Icon: IconCivic, title: "Employers and public agencies", body: "Train new hires or upskill a team, and see who is ready." },
 ];
 
-const FAQ = [
-  { q: "Do students need any experience?", a: "No. The course starts with the basics and builds from there, one week at a time." },
-  { q: "What do students need?", a: "Their own computer. Each student builds the lab on their machine, so there is no server to set up." },
-  { q: "How does a class join?", a: "A class passcode opens the course. Each student then signs in with their own account." },
-  { q: "Will the AI coach just give answers?", a: "No. It points to the next step and asks questions, so the student still does the work." },
-];
 
 function plainWeek(title: string) {
   return title.replace(/^Week \d+:\s*/, "");
@@ -150,19 +144,6 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         </div>
       </section>
 
-      <section className="pg-section tp-faq" id="faq">
-        <div className="pg-head">
-          <h2>Common questions</h2>
-        </div>
-        <div className="pg-faq">
-          {FAQ.map((f) => (
-            <details key={f.q}>
-              <summary>{f.q}</summary>
-              <p>{f.a}</p>
-            </details>
-          ))}
-        </div>
-      </section>
 
       <section className="pg-close" data-r>
         <div className="pg-close__copy">
@@ -254,10 +235,6 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         .tp-who strong { display: block; font-size: 1.05rem; font-weight: 650; letter-spacing: -.014em; color: var(--ink) }
         .tp-who p { margin: 4px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.5 }
 
-        .tp-faq .pg-faq { max-width: 760px }
-        .tp-faq summary { display: flex; justify-content: space-between; gap: 16px; font-size: 1.05rem }
-        .tp-faq summary::after { content: "+"; color: var(--accent-deep); font-weight: 500; font-size: 1.3rem; line-height: 1 }
-        .tp-faq details[open] summary::after { content: "\\2212" }
 
         .tp-benefits[data-r], .tp-feature-list[data-r], .tp-course[data-r], .tp-who ul[data-r] { opacity: 1; transform: none; filter: none }
         .tp-benefits[data-r] > li, .tp-feature-list[data-r] > li, .tp-course[data-r] > li, .tp-who ul[data-r] > li {
