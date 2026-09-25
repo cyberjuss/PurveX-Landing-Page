@@ -26,6 +26,13 @@ By the end of this tab you should be able to open Active Directory Users and Com
 
 If your server is not yet a domain controller, download and run this first. It installs Active Directory Domain Services and promotes the server to the root of a new domain, `purvexfinancial.local`. It asks for a recovery-mode password and then reboots automatically. Without a domain, the departments, users, and groups in the next step have nowhere to live.
 
+**Before you run it.** Download the script with the link below while you are signed in. That copy is linked to your account, which is how Coach and your drills see your lab. When it asks for the initial password, choose one your domain will accept: at least 8 characters with three of these, lowercase, uppercase, a number, and a symbol. The script checks the password before it creates anything and asks again if it will not work.
+
+**What you should see at the end.** Two green lines mean your lab is connected:
+
+* `Lab snapshot sent to PurveX Coach.`
+* `Coach will refresh from this DC about every minute.`
+
 **What this script does:**
 
 * Installs the AD DS (Active Directory Domain Services) Windows Server role
@@ -131,7 +138,10 @@ You can also copy the current script from here. A pasted copy is not linked to y
     Every account must change it at next logon.
 
 .PARAMETER IncludeCTF
-    Adds the optional ticket-queue challenge objects.
+    Adds the ticket-queue challenge objects. The Academy download does this automatically.
+
+.PARAMETER NoCTF
+    Skips the ticket-queue challenge objects in the Academy download.
 
 .PARAMETER SyncOnly
     Used by the scheduled task. Students do not run this.
@@ -151,6 +161,7 @@ You can also copy the current script from here. A pasted copy is not linked to y
 param(
     [System.Security.SecureString]$InitialPassword,
     [switch]$IncludeCTF,
+    [switch]$NoCTF,
     [switch]$SyncOnly,
     [switch]$Scheduled,
     [switch]$InstallSync,
@@ -160,6 +171,11 @@ param(
 )
 
 Import-Module ActiveDirectory -ErrorAction Stop
+
+$script:PurvexFailures = 0
+
+# The Academy download plants the ticket objects on the first build so the missions work at once.
+if ($PurvexKey -and -not $NoCTF) { $IncludeCTF = $true }
 
 $domain   = Get-ADDomain
 $domainDN = $domain.DistinguishedName
@@ -222,19 +238,27 @@ function Ensure-User {
         Write-Host "  User exists: $SamAccountName" -ForegroundColor DarkGray
     }
     elseif ($PSCmdlet.ShouldProcess($SamAccountName, "Create user")) {
-        New-ADUser `
-            -Name "$First $Last" `
-            -GivenName $First `
-            -Surname $Last `
-            -SamAccountName $SamAccountName `
-            -UserPrincipalName "$SamAccountName@$($domain.DNSRoot)" `
-            -Title $Title `
-            -Department $Department `
-            -Path $OUPath `
-            -AccountPassword $InitialPassword `
-            -ChangePasswordAtLogon $true `
-            -Enabled $true
-        Write-Host "  User created: $SamAccountName ($Title, $Department)" -ForegroundColor Green
+        try {
+            New-ADUser `
+                -Name "$First $Last" `
+                -GivenName $First `
+                -Surname $Last `
+                -SamAccountName $SamAccountName `
+                -UserPrincipalName "$SamAccountName@$($domain.DNSRoot)" `
+                -Title $Title `
+                -Department $Department `
+                -Path $OUPath `
+                -AccountPassword $InitialPassword `
+                -ChangePasswordAtLogon $true `
+                -Enabled $true `
+                -ErrorAction Stop
+            Write-Host "  User created: $SamAccountName ($Title, $Department)" -ForegroundColor Green
+        }
+        catch {
+            Write-Host "  User FAILED: $SamAccountName - $($_.Exception.Message)" -ForegroundColor Red
+            $script:PurvexFailures++
+            return
+        }
     }
 
     foreach ($groupName in $Groups) {
@@ -561,9 +585,9 @@ function Install-PurvexLabSync {
     $dest = Get-PurvexSyncScriptPath
     Copy-Item -LiteralPath $source -Destination $dest -Force
     $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$dest`" -SyncOnly -Scheduled"
-    $trigger = New-ScheduledTaskTrigger -Once -At ((Get-Date).AddMinutes(1))
-    $trigger.Repetition.Interval = "PT1M"
-    $trigger.Repetition.Duration = "P3650D"
+    # Repetition is null on a plain -Once trigger in Windows PowerShell 5.1, so set it here.
+    $trigger = New-ScheduledTaskTrigger -Once -At ((Get-Date).AddMinutes(1)) `
+        -RepetitionInterval (New-TimeSpan -Minutes 1) -RepetitionDuration (New-TimeSpan -Days 3650)
     $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
     Unregister-ScheduledTask -TaskName $PurvexSyncTask -Confirm:$false -ErrorAction SilentlyContinue
@@ -611,8 +635,36 @@ if ($SyncOnly) {
     return
 }
 
-if (-not $InitialPassword) {
-    $InitialPassword = Read-Host -AsSecureString -Prompt "Initial password for all new lab accounts"
+function Get-PurvexPasswordProblem {
+    param([System.Security.SecureString]$Secure)
+    $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($Secure)
+    try { $plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr) }
+    finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr) }
+    $policy = Get-ADDefaultDomainPasswordPolicy
+    $min = [Math]::Max([int]$policy.MinPasswordLength, 8)
+    if ($plain.Length -lt $min) { return "Use at least $min characters." }
+    if ($policy.ComplexityEnabled) {
+        $classes = 0
+        if ($plain -cmatch '[a-z]') { $classes++ }
+        if ($plain -cmatch '[A-Z]') { $classes++ }
+        if ($plain -match '\d') { $classes++ }
+        if ($plain -match '[^a-zA-Z0-9]') { $classes++ }
+        if ($classes -lt 3) { return "Mix three of these: lowercase, uppercase, a number, a symbol." }
+    }
+    return $null
+}
+
+$passwordAttempts = 0
+while ($true) {
+    if (-not $InitialPassword) {
+        $InitialPassword = Read-Host -AsSecureString -Prompt "Initial password for all new lab accounts"
+    }
+    $problem = Get-PurvexPasswordProblem -Secure $InitialPassword
+    if (-not $problem) { break }
+    Write-Host "That password will not work on this domain. $problem" -ForegroundColor Yellow
+    $InitialPassword = $null
+    $passwordAttempts++
+    if ($passwordAttempts -ge 3) { throw "No valid password was entered. Run the script again." }
 }
 
 Write-Host "`n== Top-level OUs ==" -ForegroundColor Cyan
@@ -682,11 +734,26 @@ if ($IncludeCTF) {
     Ensure-CTFChallengeData -DeptOUPaths $deptOUPaths -DomainDN $domainDN -AccessLevelsOU $accessLevelsOU -Password $InitialPassword
 }
 
-if ($PurvexKey -and $PurvexUrl -and -not $WhatIfPreference) {
-    try { Send-PurvexLabSnapshot -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN } catch { }
-    try { Install-PurvexLabSync | Out-Null } catch {
-        Write-Host "Could not start automatic Coach sync: $($_.Exception.Message)" -ForegroundColor Yellow
+if (-not $WhatIfPreference) {
+    if (-not $PurvexKey -or -not $PurvexUrl) {
+        Write-Host "`nThis copy is not linked to PurveX Academy, so your lab was not sent. Download Build-Environment.ps1 from Build This Lab and run it again." -ForegroundColor Yellow
     }
+    else {
+        try {
+            Send-PurvexLabSnapshot -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN
+            Write-Host "`nLab snapshot sent to PurveX Coach." -ForegroundColor Green
+        }
+        catch {
+            Write-Host "`nCould not send the lab snapshot to $PurvexUrl : $($_.Exception.Message)" -ForegroundColor Red
+        }
+        try { Install-PurvexLabSync | Out-Null } catch {
+            Write-Host "Could not start automatic Coach sync: $($_.Exception.Message)" -ForegroundColor Yellow
+        }
+    }
+}
+
+if ($script:PurvexFailures -gt 0) {
+    Write-Host "`n$($script:PurvexFailures) account(s) could not be created. Fix the problem above and run the script again. It only adds what is missing." -ForegroundColor Red
 }
 
 Write-Host "`nDone. Verify with: Get-ADOrganizationalUnit -Filter * | Where-Object DistinguishedName -like '*Departments*'" -ForegroundColor Cyan
@@ -707,13 +774,7 @@ To see exactly what the script is about to do before committing to it, run it wi
 
 If the script will not run, see **If the Script Will Not Run** at the end of this tab for the three most common causes and their fixes.
 
-To add the optional ticket-queue challenge data, run the same script with the CTF switch:
-
-```powershell
-./Build-Environment.ps1 -IncludeCTF
-```
-
-This adds a service-account OU, a backup service account, a leftover intern account, a firm-wide group with one intentional membership gap, a disabled Operations account, and a few workstation objects that back the Ticket Queue. Use this after you understand the clean baseline. The tickets ask you to add, create, remove, write, and move objects, not only read them.
+The Academy download also plants the ticket-queue challenge data on the same run, so the missions work as soon as the lab reports. It adds a service-account OU, a backup service account, a leftover intern account, a firm-wide group with one intentional membership gap, a disabled Operations account, and a few workstation objects. To build the clean baseline without it, run `./Build-Environment.ps1 -NoCTF`.
 
 ### Step 3. Verify It Built, or Reset It
 
@@ -764,6 +825,16 @@ Three errors account for almost every "it will not run" report. Each is easy to 
 </div>
 <pre><code>Unblock-File -Path .\Build-Environment.ps1</code></pre>
 </div>
+</div>
+
+<div class="ad-trouble__item">
+<span class="ad-trouble__label">The script says it is not linked to PurveX Academy</span>
+<p>You ran a copy that does not carry your account key, such as a saved or pasted copy. Sign in, open this tab, and click <strong>Download Build-Environment.ps1</strong> once. Do not right-click and save. If a red message appears under the link, read it, sign in again, and click the link once more. Then run the new file. It only adds what is missing.</p>
+</div>
+
+<div class="ad-trouble__item">
+<span class="ad-trouble__label">The password does not meet the requirement</span>
+<p>The domain rejected the initial password. The script now checks it first and asks again. Choose at least 8 characters with three of these: lowercase, uppercase, a number, a symbol. Any accounts that failed show a red line and are added the next time you run the script.</p>
 </div>
 
 <div class="ad-trouble__item">
