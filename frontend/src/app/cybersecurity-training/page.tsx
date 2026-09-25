@@ -4,7 +4,7 @@ import { phases } from "@/lib/academy-content";
 
 const title = "Cybersecurity Training";
 const description =
-  "Think Like a SOC Analyst 101 is a cohort course with its own student portal, a live Active Directory lab, graded missions, and a readiness score that a hiring manager can read.";
+  "Students build a working company network, work real tickets against it, and finish with a readiness score a hiring manager can read.";
 
 export const metadata: Metadata = {
   title,
@@ -14,8 +14,10 @@ export const metadata: Metadata = {
 };
 
 // The syllabus is read from the same content the Academy portal serves, so
-// the marketing page cannot drift from the course. Only titles and whether a
-// week has lessons yet cross over; lesson files stay server-side.
+// the marketing page cannot drift from the course. Only titles, lesson names,
+// and whether a week has lessons yet cross over; lesson files stay server-side.
+const SKIP = new Set(["Overview", "Resources"]);
+
 function outline(): CourseOutline {
   return phases.map((p) => ({
     label: p.label,
@@ -24,6 +26,7 @@ function outline(): CourseOutline {
       title: w.title.replace(" — ", ": "),
       summary: w.summary,
       live: w.sections.length > 0,
+      lessons: w.sections.map((s) => s.label.replace(/ — .*$/, "")).filter((l) => !SKIP.has(l)),
     })),
   }));
 }
