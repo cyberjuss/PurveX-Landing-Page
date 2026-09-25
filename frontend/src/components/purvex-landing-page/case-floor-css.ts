@@ -2,27 +2,18 @@
 export const FLOOR_CSS = `
 .cf-floor { --cf-dark: #3d32b0; --cf-deep: #2a2280; --cf-mist: #eef0ff; --cf-line: rgba(238,240,255,.16) }
 .cf-floor {
-  position: relative; display: flex; flex-direction: column; justify-content: space-between;
-  min-height: 560px; padding: 36px 28px 0;
-  background:
-    radial-gradient(90% 70% at 85% 0%, rgba(106,92,255,.5), transparent 58%),
-    linear-gradient(165deg, var(--accent) 0%, var(--cf-dark) 48%, var(--cf-deep) 100%);
-  border: 1px solid rgba(106,92,255,.38);
-  overflow: hidden;
-  animation: cf-floor-in 1s var(--ease) .18s both;
+  position: relative; display: flex; flex-direction: column; justify-content: flex-start;
+  min-height: 0; padding: 48px 0 0; background: transparent; border: 0; overflow: visible;
 }
-.cf-floor__wash {
-  position: absolute; inset: auto -20% -30% 20%; height: 70%;
-  background: radial-gradient(circle, rgba(106,92,255,.35), transparent 70%);
-  pointer-events: none;
-}
+.cf-floor__wash { display: none }
 .cf-case {
   position: relative; z-index: 2; width: min(390px, 100%);
   margin: 8px auto 32px; min-height: 318px;
 }
+.cf-stamp { display: none }
 .cf-case__stack, .cf-case__stack--2 {
   position: absolute; inset: 14px 10px -10px 10px; border-radius: 0;
-  background: rgba(238,240,255,.18); border: 1px solid rgba(238,240,255,.2);
+  background: #f4f2fb; border: 1px solid rgba(85,70,224,.16);
 }
 .cf-case__stack--2 { inset: 22px 20px -16px 20px; opacity: .55 }
 .cf-ticket {
@@ -70,15 +61,13 @@ export const FLOOR_CSS = `
   color: var(--accent-deep); font-size: .84rem; font-weight: 600; line-height: 1.45;
 }
 .cf-dock {
-  position: relative; z-index: 2; margin: 0 -28px;
-  padding: 12px 22px 14px;
-  background: rgba(42,34,128,.45); border-top: 1px solid var(--cf-line);
-  backdrop-filter: blur(10px);
+  position: relative; z-index: 2; margin: 10px 0 0; padding: 12px 0 0;
+  background: none; border-top: 1px solid var(--border); backdrop-filter: none;
 }
 .cf-dock p {
   display: flex; align-items: center; gap: 8px; margin: 0 0 6px;
-  font-family: var(--font-mono); font-size: .62rem; font-weight: 700;
-  letter-spacing: .12em; text-transform: uppercase; color: var(--cf-mist);
+  font-family: var(--font-mono); font-size: .68rem; font-weight: 650;
+  letter-spacing: .02em; text-transform: none; color: var(--muted);
 }
 .cf-dock__live {
   width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
@@ -87,26 +76,25 @@ export const FLOOR_CSS = `
 .cf-dock__row {
   display: grid; grid-template-columns: auto auto 1fr auto; align-items: center;
   gap: 4px 14px; padding: 9px 0;
-  font-family: var(--font-mono); font-size: .68rem; color: var(--cf-mist);
-  animation: cf-row .4s var(--ease) both;
+  font-family: var(--font-mono); font-size: .68rem; color: var(--ink-soft);
 }
-.cf-dock__row + .cf-dock__row { border-top: 1px solid rgba(238,240,255,.1) }
+.cf-dock__row + .cf-dock__row { border-top: 1px solid var(--border) }
 .cf-dock__row strong {
   grid-column: 1 / 4; margin: 0;
   font-family: var(--font-display); font-size: .84rem; font-weight: 650;
-  letter-spacing: -.02em; color: #fff;
+  letter-spacing: -.02em; color: var(--ink);
 }
 .cf-dock__row em {
   grid-column: 4; justify-self: end; font-style: normal;
-  font-size: .58rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
-  padding: 2px 6px; border: 1px solid rgba(238,240,255,.28); color: var(--cf-mist);
+  font-size: .58rem; font-weight: 700; letter-spacing: .04em;
+  padding: 2px 6px; border: 1px solid rgba(85,70,224,.22); color: var(--accent-deep);
 }
 .cf-dock__row em[data-sev="High"],
 .cf-dock__row em[data-sev="Crit"] {
-  border-color: rgba(238,240,255,.55); background: rgba(238,240,255,.12); color: #fff;
+  border-color: transparent; background: var(--accent-soft); color: var(--accent-deep);
 }
 .cf-dock__row em[data-sev="Crit"] { letter-spacing: .1em }
-.cf-dock__row span:nth-child(4) { color: #fff; font-weight: 700 }
+.cf-dock__row span:nth-child(4) { color: var(--ink); font-weight: 700 }
 
 
 @keyframes cf-floor-in { from { opacity: 0; transform: translateX(24px) } to { opacity: 1; transform: none } }

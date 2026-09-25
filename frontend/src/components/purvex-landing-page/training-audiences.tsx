@@ -30,11 +30,11 @@ const VIEWS: View[] = [
     tab: "Students",
     sub: "Learn by doing",
     Icon: IconGraduate,
-    headline: "A real lab, a coach, and proof",
+    headline: "Until the directory agrees",
     benefits: [
-      { title: "Practice on a real lab", body: "Build your own company network and work tickets that only close when the directory shows the change." },
-      { title: "Never stuck alone", body: "Coach reads your lab and guides you with the method, never the answer." },
-      { title: "Leave with proof", body: "A readiness score, verified tasks, and resume lines from the tickets you closed." },
+      { title: "A company of your own", body: "Tickets close only when the directory shows the change." },
+      { title: "Coach on the ticket", body: "It gives the next step. The answer stays yours." },
+      { title: "Proof you can show", body: "A score, closed tickets, and lines you can defend." },
     ],
   },
   {
@@ -42,11 +42,11 @@ const VIEWS: View[] = [
     tab: "Programs",
     sub: "Schools, academies, workforce",
     Icon: IconCampus,
-    headline: "One course that runs itself",
+    headline: "Same course. Checked in the lab.",
     benefits: [
-      { title: "One consistent course", body: "Every student works the same curriculum, missions, and drills." },
-      { title: "Results you can trust", body: "Hands-on work is checked in each student's lab, so nothing is self-reported." },
-      { title: "Nothing to host", body: "A class passcode opens the course, and each student builds the lab on their own machine." },
+      { title: "One curriculum", body: "Every student works the same missions and drills." },
+      { title: "Checked, not claimed", body: "The lab has to show the change." },
+      { title: "A passcode, not a server", body: "Each student builds the lab on their own machine." },
     ],
   },
   {
@@ -54,11 +54,11 @@ const VIEWS: View[] = [
     tab: "Employers",
     sub: "Hiring and upskilling",
     Icon: IconBriefcase,
-    headline: "Evidence instead of a résumé claim",
+    headline: "Hire from closed tickets",
     benefits: [
-      { title: "Verified skills", body: "Tasks are proven in a real directory, not just listed on a résumé." },
-      { title: "A score that means something", body: "Four competencies are measured against the bar for a Tier 1 hire." },
-      { title: "A hire signal", body: "Candidates can run a scored spoken interview that ends in a clear signal." },
+      { title: "Work you can open", body: "The directory shows the task. A résumé line does not." },
+      { title: "Four skills, one bar", body: "Scored against what a Tier 1 hire has to do." },
+      { title: "A spoken interview", body: "It ends with a hire signal, after the tickets are closed." },
     ],
   },
 ];

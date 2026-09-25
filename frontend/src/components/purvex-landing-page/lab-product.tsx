@@ -197,11 +197,10 @@ export const PRODUCT_CSS = `
 .as-floor {
   --as-dark: #3d32b0; --as-deep: #2a2280; --as-mist: #eef0ff;
   position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 560px; padding: 32px 26px 0; overflow: hidden;
-  background: radial-gradient(90% 70% at 85% 0%, rgba(106,92,255,.5), transparent 58%), linear-gradient(165deg, var(--accent) 0%, var(--as-dark) 48%, var(--as-deep) 100%);
-  border: 1px solid rgba(106,92,255,.38); animation: pg-floor-in 1s var(--ease) .18s both;
+  background: transparent; border: 0; animation: none; min-height: 0; padding: 36px 0 0;
 }
-.as-floor__wash { position: absolute; inset: auto -20% -30% 20%; height: 70%; background: radial-gradient(circle, rgba(106,92,255,.35), transparent 70%); pointer-events: none }
-.as-sheet { position: relative; z-index: 2; background: #fff; padding: 16px 18px 18px; border-left: 4px solid var(--accent); box-shadow: 0 28px 56px -18px rgba(42,34,128,.72); animation: pg-case-in .7s var(--ease) .3s both }
+.as-floor__wash { display: none }
+.as-sheet { position: relative; z-index: 2; background: #fff; padding: 16px 18px 18px; border: 1px solid rgba(85,70,224,.18); border-left: 4px solid var(--accent); clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%); box-shadow: 0 28px 56px -18px rgba(42,34,128,.28) }
 .as-sheet header { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: .6rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted) }
 .as-sheet header span:first-child { color: var(--accent-deep); margin-right: auto }
 .as-sheet header em, .as-sheet header span:last-child { font-style: normal; padding: 3px 7px; border: 1px solid rgba(106,92,255,.22); color: var(--accent-deep) }
@@ -222,21 +221,21 @@ export const PRODUCT_CSS = `
 .as-cause > i { flex: none; display: grid; place-items: center; width: 34px; height: 34px; background: #fff; color: var(--accent-deep) }
 .as-cause b { font-size: .84rem; color: var(--accent-deep) }
 .as-cause p { margin: 3px 0 0; font-size: .78rem; line-height: 1.5; color: var(--ink-soft) }
-.as-dock { position: relative; z-index: 2; margin: 26px -26px 0; padding: 14px 24px 0; background: rgba(42,34,128,.5); border-top: 1px solid rgba(238,240,255,.16); backdrop-filter: blur(10px) }
-.as-dock > p { display: flex; align-items: center; justify-content: space-between; margin: 0 0 8px; font-family: var(--font-mono); font-size: .62rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--as-mist) }
+.as-dock { position: relative; z-index: 2; margin: 16px 0 0; padding: 12px 0 0; background: none; border-top: 1px solid var(--border); backdrop-filter: none }
+.as-dock > p { display: flex; align-items: center; justify-content: space-between; margin: 0 0 8px; font-family: var(--font-mono); font-size: .68rem; font-weight: 650; letter-spacing: .02em; text-transform: none; color: var(--muted) }
 .as-dock > p span { display: inline-flex; align-items: center; gap: 8px }
-.as-dock > p strong { font-family: var(--font-display); font-size: 1.5rem; letter-spacing: -.03em; color: #fff }
+.as-dock > p strong { font-family: var(--font-display); font-size: 1.5rem; letter-spacing: -.03em; color: var(--ink) }
 .as-dock > p small { font-size: .7rem; opacity: .7; margin-left: 2px }
-.as-live { width: 7px; height: 7px; border-radius: 50%; background: #fff; animation: pg-pulse 1.8s ease-out infinite }
-.as-score { height: 5px; margin-bottom: 6px; background: rgba(238,240,255,.16) }
-.as-score i { display: block; height: 100%; width: 95%; background: linear-gradient(90deg, #cfd4ff, #fff); transform-origin: left; animation: pg-fill 1.4s var(--ease) 1s both }
-.as-row { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; padding: 9px 0; border-top: 1px solid rgba(238,240,255,.1); font-size: .8rem; color: #fff; animation: pg-rise .6s var(--ease) both }
+.as-live { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pg-pulse 1.8s ease-out infinite }
+.as-score { height: 5px; margin-bottom: 6px; background: var(--accent-soft) }
+.as-score i { display: block; height: 100%; width: 95%; background: var(--accent); transform-origin: left; animation: pg-fill 1.4s var(--ease) 1s both }
+.as-row { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; padding: 9px 0; border-top: 1px solid var(--border); font-size: .8rem; color: var(--ink); animation: pg-rise .6s var(--ease) both }
 .as-row:nth-of-type(1) { animation-delay: 1.1s } .as-row:nth-of-type(2) { animation-delay: 1.25s } .as-row:nth-of-type(3) { animation-delay: 1.4s }
 .as-mini { display: inline-flex; gap: 3px }
-.as-mini i { width: 14px; height: 6px; background: #fff }
+.as-mini i { width: 14px; height: 6px; background: var(--accent) }
 .as-mini i[data-s="fail"] { background: #ff8f93 }
-.as-mini i[data-s="skip"] { background: rgba(238,240,255,.22) }
-.as-row em { font-style: normal; font-family: var(--font-mono); font-size: .58rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border: 1px solid rgba(238,240,255,.4) }
+.as-mini i[data-s="skip"] { background: #e6eaf2 }
+.as-row em { font-style: normal; font-family: var(--font-mono); font-size: .58rem; font-weight: 700; letter-spacing: .04em; padding: 2px 7px; border: 1px solid rgba(85,70,224,.28); color: var(--accent-deep) }
 .as-row em[data-r="Missed"] { border-color: #ff8f93; color: #ffb3b6 }
 .as-dock footer { display: flex; align-items: center; gap: 8px; padding: 10px 0 12px; border-top: 1px solid rgba(238,240,255,.1); font-size: .72rem; color: var(--as-mist) }
 @keyframes as-trace { 0% { transform: scaleX(0); opacity: 1 } 40% { transform: scaleX(1); opacity: 1 } 80% { transform: scaleX(1); opacity: 0 } 100% { opacity: 0 } }
@@ -326,19 +325,19 @@ export const PRODUCT_CSS = `
 .fq[data-r] { opacity: 1; transform: none; filter: none }
 
 /* ---- pricing ---- */
-.pr { position: relative; display: grid; grid-template-columns: 1fr 1fr; border-radius: 28px; overflow: hidden; border: 1px solid var(--border-strong); box-shadow: 0 40px 80px -44px rgba(42,34,128,.55) }
+.pr { position: relative; display: grid; grid-template-columns: 1fr 1fr; border-radius: 0; overflow: hidden; border: 1px solid var(--border-strong); clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%) }
 .pr[data-r] { opacity: 1; transform: none; filter: none }
 .pr__side { padding: 44px 44px 40px; display: flex; flex-direction: column; background: linear-gradient(180deg, #fff, #f8f7ff) }
-.pr__side--paid { color: #eef0ff; background: radial-gradient(70% 90% at 100% 0%, rgba(238,240,255,.18), transparent 55%), linear-gradient(145deg, #5546e0, #3d32b0 55%, #2a2280) }
+.pr__side--paid { color: var(--ink); background: #fff; border-left: 4px solid var(--accent) }
 .pr__name { font-family: var(--font-mono); font-size: .72rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--accent-deep) }
-.pr__side--paid .pr__name { color: #fff }
+.pr__side--paid .pr__name { color: var(--accent-deep) }
 .pr__price { margin: 14px 0 0; font-family: var(--font-display); font-size: clamp(3.4rem, 6vw, 4.8rem); font-weight: 700; line-height: .9; letter-spacing: -.055em }
 .pr__price small { margin-left: 8px; font-size: .95rem; font-weight: 500; letter-spacing: 0; color: var(--muted) }
-.pr__side--paid .pr__price small { color: #cfd4ff }
+.pr__side--paid .pr__price small { color: var(--muted) }
 .pr__list { list-style: none; margin: 32px 0 40px; padding: 0; display: grid; gap: 12px }
 .pr__list li { display: flex; align-items: center; gap: 12px; font-size: .96rem }
 .pr__list li::before { content: "✓"; flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-deep); font-size: .7rem; font-weight: 800 }
-.pr__side--paid .pr__list li::before { background: rgba(255,255,255,.18); color: #fff }
+.pr__side--paid .pr__list li::before { background: var(--accent-soft); color: var(--accent-deep) }
 .pr__side .sp-btn { margin-top: auto; align-self: flex-start; height: 48px; padding: 0 22px }
 .pr__seam { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2; padding: 8px 14px; border-radius: 999px; background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 10px 20px -10px rgba(42,34,128,.5); font-family: var(--font-mono); font-size: .58rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep); white-space: nowrap }
 
@@ -370,6 +369,6 @@ export const PRODUCT_CSS = `
   .pr__side { padding: 32px 24px }
 }
 
-.sp .pr__side--paid .sp-btn { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.6); color: #fff }
-.sp .pr__side--paid .sp-btn:hover { background: rgba(255,255,255,.2); border-color: #fff; color: #fff }
+.sp .pr__side--paid .sp-btn { background: rgba(255,255,255,.55); border-color: rgba(106,92,255,.4); color: var(--accent-deep) }
+.sp .pr__side--paid .sp-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-deep) }
 `;

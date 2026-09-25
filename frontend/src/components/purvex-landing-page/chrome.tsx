@@ -33,9 +33,8 @@ type NavMenu = {
 
 const NAV_MENUS: NavMenu[] = [
   { key: "home", label: "Home", href: "/" },
-  { key: "security-operations", label: "Operations", href: "/security-operations" },
   { key: "training", label: "Training", href: "/cybersecurity-training" },
-  { key: "platform", label: "Labs", href: "/platform" },
+  { key: "platform", label: "Platform", href: "/platform" },
   { key: "about", label: "About", href: "/about" },
 ];
 
@@ -248,14 +247,13 @@ export function SiteChrome({
           <div className="sp-footer__cols">
             <div className="sp-footer__col">
               <h4>Company</h4>
-              <Link href="/security-operations">Security Operations</Link>
               <Link href="/cybersecurity-training">Cybersecurity Training</Link>
               <Link href="/academy">Academy Portal</Link>
               <Link href="/about">About</Link>
             </div>
             <div className="sp-footer__col">
               <h4>Platform</h4>
-              <Link href="/platform">PurveX Labs</Link>
+              <Link href="/platform">PurveX Platform</Link>
             </div>
             <div className="sp-footer__col">
               <h4>Legal</h4>
@@ -301,8 +299,8 @@ export const CHROME_CSS = `
   --accent-soft: #eef0ff;
   --green: #16a34a;
   --red: #e5484d;
-  --radius: 16px;
-  --font-display: var(--font-inter), system-ui, sans-serif;
+  --radius: 0;
+  --font-display: var(--font-space-grotesk), system-ui, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   /* Premium layer: layered shadows and a hairline top highlight, used by
@@ -329,7 +327,7 @@ export const CHROME_CSS = `
 .sp-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 80; background: linear-gradient(90deg, var(--accent), var(--accent-deep)); box-shadow: 0 0 12px 1px rgba(106,92,255,.55); transform-origin: left; transform: scaleX(0); transition: transform .1s linear; pointer-events: none }
 
 /* ── Ambient bg ── */
-.sp-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden }
+.sp-bg { display: none }
 .sp-bg__grad {
   position: absolute; inset: 0;
   background:
@@ -359,7 +357,7 @@ export const CHROME_CSS = `
 }
 
 /* ── Reveal ── */
-[data-r] { opacity: 0; transform: translateY(26px) scale(.985); filter: blur(5px); transition: opacity .8s var(--ease), transform .8s var(--ease), filter .8s var(--ease); will-change: opacity, transform, filter }
+[data-r] { opacity: 1; transform: none; filter: none }
 [data-d="1"] { transition-delay: .05s } [data-d="2"] { transition-delay: .12s } [data-d="3"] { transition-delay: .19s } [data-d="4"] { transition-delay: .26s } [data-d="5"] { transition-delay: .33s }
 [data-r].in { opacity: 1; transform: none; filter: blur(0) }
 
@@ -398,12 +396,13 @@ export const CHROME_CSS = `
 .sp-nav__right { display: flex; align-items: center; gap: 8px; justify-self: end }
 .sp-nav__burger { display: flex; align-items: center; justify-content: center; background: none; border: 0; color: var(--ink); cursor: pointer; padding: 6px; margin-right: -6px }
 .sp-nav__book {
-  display: none; align-items: center; gap: 6px; height: 36px; padding: 0 14px;
+  display: none; align-items: center; gap: 6px; height: 44px; padding: 0 16px;
   border: 1px solid rgba(106,92,255,.35); color: var(--accent-deep);
-  font-size: .8rem; font-weight: 650; text-decoration: none; letter-spacing: .01em;
-  transition: background .2s var(--ease), gap .2s var(--ease), border-color .2s var(--ease);
+  font-size: .88rem; font-weight: 650; text-decoration: none; letter-spacing: 0;
+  transition: background .2s var(--ease), border-color .2s var(--ease);
 }
-.sp-nav__book:hover { background: var(--accent-soft); border-color: var(--accent); gap: 9px }
+.sp-nav__book:hover { background: var(--accent-soft); border-color: var(--accent) }
+.sp-nav__book:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px }
 
 .sp-nav__links { display: none }
 @media (min-width: 940px) {
@@ -414,7 +413,7 @@ export const CHROME_CSS = `
 }
 .sp-nav__link {
   position: relative; display: inline-flex; align-items: center; height: 64px; padding: 0 13px;
-  font-size: .8rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  font-size: .92rem; font-weight: 600; letter-spacing: 0; text-transform: none;
   color: var(--ink-soft); text-decoration: none;
   transition: color .2s var(--ease);
 }
@@ -738,25 +737,19 @@ export const CHROME_CSS = `
    shape turns white. Prefixed with .sp so it wins over page styles.
    ═══════════════════════════════════════════════ */
 .sp .sp-btn, .sp .pg-close__book, .sp .hp-close__book, .sp .hp-perk__go, .sp .hold button {
-  border-radius: 0; border: 1px solid rgba(106,92,255,.4); background: rgba(255,255,255,.55);
-  color: var(--accent-deep); font-weight: 650; letter-spacing: .005em; box-shadow: none; filter: none;
-  transition: background .2s var(--ease), border-color .2s var(--ease), gap .2s var(--ease), transform .2s var(--ease);
+  min-height: 44px; border-radius: 0; border: 1px solid rgba(106,92,255,.4); background: rgba(255,255,255,.55);
+  color: var(--accent-deep); font-weight: 650; letter-spacing: 0; box-shadow: none; filter: none; cursor: pointer;
+  transition: background .2s var(--ease), border-color .2s var(--ease);
 }
 .sp .sp-btn::after { display: none }
 .sp .sp-btn--ghost { border-color: rgba(106,92,255,.22) }
 .sp .sp-btn:hover, .sp .pg-close__book:hover, .sp .hp-close__book:hover, .sp .hp-perk__go:hover, .sp .hold button:hover {
   background: var(--accent-soft); border-color: var(--accent); color: var(--accent-deep); box-shadow: none; filter: none; transform: none;
 }
-.sp .sp-btn:hover { gap: 10px }
-.sp .hold button { height: 40px; padding: 0 16px; margin-top: 16px }
-.sp .pg-close .pg-close__book, .sp .hp-close .hp-close__book, .sp .hp-perk .hp-perk__go,
-.sp .pg-dark .sp-btn, .sp .hp-tile--labs .sp-btn, .sp .pg-tile--dark .sp-btn {
-  background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.6); color: #fff;
+.sp .sp-btn:focus-visible, .sp .pg-close__book:focus-visible, .sp .hp-close__book:focus-visible, .sp .hp-perk__go:focus-visible, .sp .hold button:focus-visible, .sp a:focus-visible {
+  outline: 3px solid var(--accent); outline-offset: 3px;
 }
-.sp .pg-close .pg-close__book:hover, .sp .hp-close .hp-close__book:hover, .sp .hp-perk .hp-perk__go:hover,
-.sp .pg-dark .sp-btn:hover, .sp .hp-tile--labs .sp-btn:hover, .sp .pg-tile--dark .sp-btn:hover {
-  background: rgba(255,255,255,.2); border-color: #fff; color: #fff;
-}
+.sp .hold button { height: 44px; padding: 0 16px; margin-top: 16px }
 
 /* Eyebrows: small text with a short rule instead of a pill. */
 .sp .sp-tag, .sp .sp-hero__badge {
@@ -766,7 +759,9 @@ export const CHROME_CSS = `
 .sp .sp-tag::before, .sp .sp-hero__badge::before { content: ""; width: 22px; height: 2px; border-radius: 0; background: var(--accent); box-shadow: none; flex-shrink: 0 }
 .sp .pg-dark__kicker, .sp .hp-perk__kicker {
   display: inline-flex; align-items: center; gap: 10px; padding: 0; border: 0; border-radius: 0; background: none;
-  font-size: .72rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #fff;
+  font-size: .78rem; font-weight: 650; letter-spacing: 0; text-transform: none; color: var(--accent-deep);
 }
-.sp .pg-dark__kicker::before, .sp .hp-perk__kicker::before { content: ""; width: 22px; height: 2px; background: #fff; opacity: .8 }
+.sp .sp-hero__badge, .sp .sp-hero__h1, .sp .sp-hero__sub, .sp .sp-hero__actions, .sp .sp-hero__strip {
+  animation: none; opacity: 1; filter: none;
+}
 `;

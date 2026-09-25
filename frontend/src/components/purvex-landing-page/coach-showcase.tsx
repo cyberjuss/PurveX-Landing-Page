@@ -157,22 +157,23 @@ export function CoachShowcase() {
 }
 
 export const COACH_CSS = `
-.pg-dark:has(.cs) { padding: 68px 56px 52px }
+.pg-dark:has(.cs) { padding: 72px 0 0 }
 .cs[data-r] { opacity: 1; transform: none; filter: none }
 .cs { display: grid; grid-template-columns: 1fr 1.05fr; gap: 0 56px; align-items: start }
 .cs__left h2 { max-width: 16ch }
 .cs__tabs { display: grid; gap: 10px; margin-top: 34px }
 .cs__tabs button {
-  display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; width: 100%; padding: 14px 16px; text-align: left;
-  color: #fff; cursor: pointer; border: 1px solid rgba(238,240,255,.16); border-radius: 0; background: rgba(16,8,64,.24);
-  transition: background .3s var(--ease), border-color .3s var(--ease), transform .3s var(--ease);
+  display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; width: 100%; min-height: 44px; padding: 14px 16px; text-align: left;
+  color: var(--ink); cursor: pointer; border: 1px solid var(--border-strong); border-radius: 0; background: #fff;
+  transition: background .2s var(--ease), border-color .2s var(--ease);
 }
-.cs__tabs button:hover { background: rgba(16,8,64,.4); transform: translateX(4px) }
-.cs__tabs button[data-on="true"] { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.5); transform: none }
-.cs__tabs i { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: rgba(238,240,255,.14); border: 1px solid rgba(238,240,255,.26) }
+.cs__tabs button:hover { background: var(--accent-soft); border-color: rgba(85,70,224,.4) }
+.cs__tabs button[data-on="true"] { background: var(--accent-soft); border-color: var(--accent) }
+.cs__tabs button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px }
+.cs__tabs i { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 0; background: var(--accent-soft); border: 1px solid rgba(85,70,224,.22); color: var(--accent-deep) }
 .cs__tabs button[data-on="true"] i { background: #fff; color: var(--accent-deep) }
 .cs__tabs strong { display: block; font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; letter-spacing: -.015em }
-.cs__tabs em { display: block; margin-top: 2px; font-style: normal; font-size: .84rem; color: var(--hp-mist) }
+.cs__tabs em { display: block; margin-top: 2px; font-style: normal; font-size: .84rem; color: var(--ink-soft) }
 .cs__sheet {
   position: relative; background: #fff; color: var(--ink); border-radius: 0;
   clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
@@ -197,13 +198,13 @@ export const COACH_CSS = `
 .cs-check { margin: 14px 0 0 !important; padding-top: 12px; border-top: 1px solid rgba(106,92,255,.16); color: var(--accent-deep) }
 .cs-check b { font-weight: 700 }
 .cs-score b { font-family: var(--font-display); font-size: 1.15rem; letter-spacing: -.02em; color: var(--accent-deep) }
-.cs__proofs { grid-column: 1 / -1; list-style: none; margin: 44px 0 0; padding: 26px 0 0; border-top: 1px solid rgba(238,240,255,.2); display: flex; flex-wrap: wrap; gap: 14px 40px }
-.cs__proofs li { position: relative; padding-left: 22px; font-size: .94rem; color: #fff }
-.cs__proofs li::before { content: ""; position: absolute; left: 0; top: .5em; width: 8px; height: 8px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 4px rgba(255,255,255,.18) }
+.cs__proofs { grid-column: 1 / -1; list-style: none; margin: 44px 0 0; padding: 26px 0 0; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 14px 40px }
+.cs__proofs li { position: relative; padding-left: 22px; font-size: .94rem; color: var(--ink-soft) }
+.cs__proofs li::before { content: ""; position: absolute; left: 0; top: .5em; width: 8px; height: 8px; background: var(--accent) }
 @keyframes cs-in { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
 @media (prefers-reduced-motion: reduce) { .cs__sheet { animation: none } .cs__tabs button { transition: none } }
 @media (max-width: 980px) {
-  .pg-dark:has(.cs) { padding: 44px 24px 36px }
+  .pg-dark:has(.cs) { padding: 48px 0 0 }
   .cs { grid-template-columns: 1fr; gap: 32px }
   .cs__left h2 { max-width: none }
   .cs__proofs { margin-top: 12px }

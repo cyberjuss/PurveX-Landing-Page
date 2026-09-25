@@ -114,11 +114,17 @@ export default function PlatformPage() {
 
   return (
     <SiteChrome active="platform">
-      <section className="pg-hero" id="top">
+      <section className="pg-hero lb-motion" id="top">
+        <ol className="lb-spine" aria-hidden="true">
+          <li>Telemetry</li>
+          <li>Parser</li>
+          <li>Rule</li>
+          <li data-fail>Alert</li>
+        </ol>
         <div className="pg-hero__copy">
-          <span className="sp-tag">In development</span>
-          <h1 className="pg-hero__h1">See the miss. Know exactly why.</h1>
-          <p className="pg-hero__sub">Scheduled detection tests, with the evidence kept, while the product is still in private development. Join the list to see a run when a seat opens.</p>
+          <span className="sp-tag">Platform</span>
+          <h1 className="pg-hero__h1">Name the stage that failed</h1>
+          <p className="pg-hero__sub">Telemetry, parser, rule, or alert. The run keeps the evidence. Still private.</p>
           <form className="pg-wl" onSubmit={submitWaitlist}>
             <div className="pg-wl__row">
               <input
@@ -140,18 +146,16 @@ export default function PlatformPage() {
 
       <section className="pg-section" id="proof">
         <div className="pg-head pg-head--xl" data-r>
-          <span className="sp-tag">Not another dashboard</span>
-          <h2>A rule that exists is not a rule that works.</h2>
-          <p>A dashboard shows the rules you have. PurveX proves each stage of the chain, from the first event to the ticket.</p>
+          <h2>A rule that exists is not a rule that works</h2>
+          <p>The chain is the proof. A dashboard is the list.</p>
         </div>
         <ProvenChain />
       </section>
 
       <section className="pg-section" id="how">
         <div className="pg-head" data-r>
-          <span className="sp-tag">How it works</span>
-          <h2>Most misses happen after the rule is written</h2>
-          <p>PurveX runs a real attack behavior and follows the alert through every stage, so the report shows exactly where the chain broke.</p>
+          <h2>Most misses happen after the rule</h2>
+          <p>The test follows the alert through every stage and stops where it broke.</p>
         </div>
         <ChainDiagram />
         <ul className="lb-facts" data-r>
@@ -170,7 +174,7 @@ export default function PlatformPage() {
           <div className="lb-band">
             <div>
               <span className="pg-dark__kicker">Coverage</span>
-              <h2>ATT&amp;CK coverage you can show</h2>
+              <h2>Show the miss</h2>
               <ul className="lb-legend">
                 <li><i data-s="fired" /> Fired</li>
                 <li><i data-s="missed" /> Missed</li>
@@ -201,9 +205,8 @@ export default function PlatformPage() {
             </ul>
           </div>
           <div className="pg-head lb-evidence__copy" data-r>
-            <span className="sp-tag">Evidence</span>
-            <h2>A score that moves with every run</h2>
-            <p>Each run is scored and kept, so improvement is something you can show to a stakeholder.</p>
+            <h2>The score moves when the run does</h2>
+            <p>Each run is scored and kept. You can show the difference.</p>
             <ul className="pg-bullets">
               <li>Scores update after every run</li>
               <li>Reports carry the evidence for each technique</li>
@@ -215,17 +218,15 @@ export default function PlatformPage() {
 
       <section className="pg-section">
         <div className="pg-head" data-r>
-          <span className="sp-tag">The difference</span>
-          <h2>From assumed to proven</h2>
+          <h2>Assumed, then proven</h2>
         </div>
         <Comparison />
       </section>
 
       <section className="pg-section">
         <div className="pg-head" data-r>
-          <span className="sp-tag">Who it is for</span>
-          <h2>One system for three roles</h2>
-          <p>Each role looks at a different part of the same detection chain.</p>
+          <h2>Three roles. One chain.</h2>
+          <p>Each role reads a different stage of the same detection.</p>
         </div>
         <Pathways />
       </section>
@@ -233,9 +234,8 @@ export default function PlatformPage() {
       <section className="pg-section">
         <div className="ox-split">
           <div className="pg-head" data-r>
-            <span className="sp-tag">Getting started</span>
-            <h2>From connection to evidence</h2>
-            <p>Four steps from a fresh install to a result you can show.</p>
+            <h2>Connect. Run. Read. Keep.</h2>
+            <p>Four steps from a fresh install to evidence you can show.</p>
           </div>
           <ol className="ox-steps" data-r>
             {start.map((s) => (
@@ -254,9 +254,8 @@ export default function PlatformPage() {
 
       <section className="pg-section" id="pricing">
         <div className="pg-head" data-r>
-          <span className="sp-tag">When it ships</span>
-          <h2>Start small</h2>
-          <p>The same software on both plans, and paid lifts the team and runner limits when you are ready.</p>
+          <h2>Same software. Two limits.</h2>
+          <p>Paid lifts the team and runner caps when you are ready.</p>
         </div>
         <div className="pr" data-r>
           {tiers.map((t) => (
@@ -282,8 +281,7 @@ export default function PlatformPage() {
 
       <section className="pg-section">
         <div className="pg-head" data-r>
-          <span className="sp-tag">Questions</span>
-          <h2>Answers before you join</h2>
+          <h2>Before you join</h2>
         </div>
         <TrustStrip />
         <div className="fq" data-r>
@@ -303,9 +301,8 @@ export default function PlatformPage() {
 
       <section className="pg-close" data-r>
         <div className="pg-close__copy">
-          <p className="pg-close__kicker">Early access</p>
-          <h2>Get on the list</h2>
-          <p className="pg-close__sub">The product is still in private development, and we write when a seat opens. Join the list if you want to see a run before it is public.</p>
+          <h2>Ask for a seat</h2>
+          <p className="pg-close__sub">We write when one opens.</p>
           <div className="pg-close__row">
             <a href="#top" className="pg-close__book">
               Join waitlist <ArrowRight size={16} />
@@ -321,6 +318,46 @@ export default function PlatformPage() {
       <style>{PG_CSS}</style>
       <style>{LAB_CSS}</style>
       <style>{PRODUCT_CSS}</style>
+      <style>{`
+        .lb-motion { position: relative }
+        .lb-spine {
+          grid-column: 1 / -1; list-style: none; display: grid; grid-template-columns: repeat(4, 1fr);
+          gap: 0; margin: 8px 0 0; padding: 0 0 8px; position: relative;
+        }
+        .lb-spine::before {
+          content: ""; position: absolute; left: 0; right: 8%; top: 7px; height: 2px;
+          background: rgba(106,92,255,.18);
+        }
+        .lb-spine::after {
+          content: ""; position: absolute; left: 0; top: 7px; height: 2px; width: 72%;
+          background: var(--accent); transform-origin: left; transform: scaleX(0);
+        }
+        .lb-spine li {
+          position: relative; padding-top: 22px;
+          font-family: var(--font-display); font-weight: 700;
+          font-size: clamp(1.4rem, 2.4vw, 2.1rem); letter-spacing: -.03em;
+        }
+        .lb-spine li::before {
+          content: ""; position: absolute; left: 0; top: 2px; width: 12px; height: 12px;
+          background: #fff; border: 2px solid var(--accent);
+        }
+        .lb-spine li[data-fail] { color: #c23030 }
+        .lb-spine li[data-fail]::before { background: #fdeaea; border-color: #e5484d }
+        .lb-motion .pg-hero__copy, .lb-motion .as-floor { position: relative; z-index: 1 }
+        @media (prefers-reduced-motion: no-preference) {
+          .lb-motion .as-sheet { animation: lb-settle .6s var(--ease) both; }
+          .lb-spine::after { animation: lb-run 2.4s var(--ease) .2s forwards }
+          .lb-spine li[data-fail]::before { animation: lb-fail 1.6s ease-in-out 2.2s infinite }
+        }
+        @keyframes lb-settle { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+        @keyframes lb-run { to { transform: scaleX(1) } }
+        @keyframes lb-fail { 0%, 100% { box-shadow: 0 0 0 0 rgba(229,72,77,.45) } 70% { box-shadow: 0 0 0 8px rgba(229,72,77,0) } }
+        @media (max-width: 980px) {
+          .lb-motion { min-height: 0; }
+          .lb-spine { grid-template-columns: 1fr 1fr; gap: 12px 0 }
+          .lb-spine::before, .lb-spine::after { display: none }
+        }
+      `}</style>
     </SiteChrome>
   );
 }

@@ -37,6 +37,7 @@ function Case({ cases }: { cases: FloorCase[] }) {
 
   return (
     <div className="cf-case">
+      <span className="cf-stamp" key={item.id} data-s={item.status} aria-hidden="true">{item.status}</span>
       <span className="cf-case__stack" aria-hidden />
       <span className="cf-case__stack cf-case__stack--2" aria-hidden />
       <article key={item.id} className="cf-ticket">

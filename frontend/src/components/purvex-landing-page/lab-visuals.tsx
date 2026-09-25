@@ -149,18 +149,18 @@ export const LAB_CSS = `
 .lb-band { display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: end }
 .lb-band h2 { margin-top: 18px }
 .lb-big { text-align: right }
-.lb-big strong { display: block; font-family: var(--font-display); font-size: clamp(3.4rem, 7vw, 5.4rem); font-weight: 700; line-height: .9; letter-spacing: -.055em; color: #fff }
-.lb-big span { display: block; margin-top: 8px; font-size: .84rem; color: var(--hp-mist) }
+.lb-big strong { display: block; font-family: var(--font-display); font-size: clamp(3.4rem, 7vw, 5.4rem); font-weight: 700; line-height: .9; letter-spacing: -.055em; color: var(--ink) }
+.lb-big span { display: block; margin-top: 8px; font-size: .84rem; color: var(--ink-soft) }
 .lb-legend { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px }
-.lb-legend li { display: inline-flex; align-items: center; gap: 8px; font-size: .84rem; color: var(--hp-mist) }
+.lb-legend li { display: inline-flex; align-items: center; gap: 8px; font-size: .84rem; color: var(--ink-soft) }
 .lb-legend i { width: 12px; height: 12px; border-radius: 3px }
 .lb-legend i[data-s="fired"], .lb-matrix i[data-s="fired"] { background: #c8c2ff }
 .lb-legend i[data-s="missed"], .lb-matrix i[data-s="missed"] { background: #ff8f93 }
-.lb-legend i[data-s="untested"], .lb-matrix i[data-s="untested"] { background: rgba(255,255,255,.12) }
+.lb-legend i[data-s="untested"], .lb-matrix i[data-s="untested"] { background: #e6eaf2 }
 .lb-matrix { margin-top: 52px }
 .lb-matrix__cols { display: grid; grid-template-columns: repeat(14, 1fr); gap: 6px; align-items: start }
 .lb-matrix__col { display: flex; flex-direction: column; gap: 6px }
-.lb-matrix__col span { margin-bottom: 4px; font-family: var(--font-mono); font-size: .54rem; font-weight: 700; letter-spacing: .06em; color: rgba(238,240,255,.7); overflow: hidden; text-overflow: clip; white-space: nowrap }
+.lb-matrix__col span { margin-bottom: 4px; font-family: var(--font-mono); font-size: .54rem; font-weight: 700; letter-spacing: .04em; color: var(--muted); overflow: hidden; text-overflow: clip; white-space: nowrap }
 .lb-matrix i { display: block; aspect-ratio: 1.5; border-radius: 4px }
 .lb-matrix[data-r] i { opacity: 0; transform: scale(.6); transition: opacity .5s var(--ease), transform .5s var(--ease); transition-delay: calc(var(--i) * 22ms) }
 .lb-matrix[data-r].in i { opacity: 1; transform: none }
