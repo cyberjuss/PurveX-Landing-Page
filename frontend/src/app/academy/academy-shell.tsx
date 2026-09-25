@@ -343,7 +343,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           return;
         }
         if (gate.noLab) {
-          feedback.textContent = "No lab is connected. Connect it from Build This Lab, then make the change. This does not use an attempt.";
+          feedback.textContent = "No lab has reported yet. Download the script from Build This Lab, run it once as Administrator, and look for Lab snapshot sent. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
           placeMiss(wrap);
           return;

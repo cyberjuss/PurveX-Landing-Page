@@ -569,10 +569,21 @@ if ($IncludeCTF) {
     Ensure-CTFChallengeData -DeptOUPaths $deptOUPaths -DomainDN $domainDN -AccessLevelsOU $accessLevelsOU -Password $InitialPassword
 }
 
-if ($PurvexKey -and $PurvexUrl -and -not $WhatIfPreference) {
-    try { Send-PurvexLabSnapshot -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN } catch { }
-    try { Install-PurvexLabSync | Out-Null } catch {
-        Write-Host "Could not start automatic Coach sync: $($_.Exception.Message)" -ForegroundColor Yellow
+if (-not $WhatIfPreference) {
+    if (-not $PurvexKey -or -not $PurvexUrl) {
+        Write-Host "`nThis copy is not linked to PurveX Academy, so your lab was not sent. Download Build-Environment.ps1 from Build This Lab and run it again." -ForegroundColor Yellow
+    }
+    else {
+        try {
+            Send-PurvexLabSnapshot -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN
+            Write-Host "`nLab snapshot sent to PurveX Coach." -ForegroundColor Green
+        }
+        catch {
+            Write-Host "`nCould not send the lab snapshot to $PurvexUrl : $($_.Exception.Message)" -ForegroundColor Red
+        }
+        try { Install-PurvexLabSync | Out-Null } catch {
+            Write-Host "Could not start automatic Coach sync: $($_.Exception.Message)" -ForegroundColor Yellow
+        }
     }
 }
 
