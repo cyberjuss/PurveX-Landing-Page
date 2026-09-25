@@ -296,6 +296,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       noLab?: boolean;
       noTicketObjects?: boolean;
       results?: { label: string; ok: boolean }[];
+      syncedAgo?: string;
     } | null> => {
       try {
         const res = await academyFetch("/academy/api/mission-check", {
@@ -356,9 +357,14 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         }
         if (!gate.passed) {
           const missing = (gate.results ?? []).filter((r) => !r.ok).map((r) => r.label).join("; ");
+          const ago = gate.syncedAgo ?? "";
+          const mins = /^(\d+) minutes ago$/.exec(ago);
+          const stale = Boolean(ago) && ago !== "just now" && (!mins || Number(mins[1]) >= 5);
+          const seen = ago ? ` Your lab last reported ${ago}.` : "";
+          const fix = stale ? " If that time does not move, run .\Build-Environment.ps1 -SyncOnly on the domain controller." : "";
           feedback.textContent = missing
-            ? `Your lab does not show this change yet: ${missing}. Make the change, then wait about 1 minute for the lab to report. This does not use an attempt.`
-            : "Your lab does not show this change yet. Make it, then wait for the lab to report. This does not use an attempt.";
+            ? `Your lab does not show this change yet: ${missing}.${seen} Make the change, then wait about a minute for the next report.${fix} This does not use an attempt.`
+            : `Your lab does not show this change yet.${seen} Make it, then wait for the next report.${fix} This does not use an attempt.`;
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
           placeMiss(wrap);
           return;
