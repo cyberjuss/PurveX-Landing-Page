@@ -4,7 +4,7 @@
 <p class="ad-brief__ask">Can you work one SIEM alert from the host, through the log, to the first response move?</p>
 <p>This is a SOC queue item, not a help desk ticket. A detection fired on <code>alex.rivera</code> at 2:00 AM from <code>WM-WKS07</code>.</p>
 <p>You already know how to look that host up in Active Directory. Here you read the exported events and decide whether a 2 AM login from that workstation fits this account and this firm. Do not treat the alert text as the finding.</p>
-<p>Build the Phase 1 lab with <code>-IncludeCTF</code> if you have not already. The host and group steps need your lab. The log steps use the export on this page.</p>
+<p>Build the Phase 1 lab from the Academy download if you have not already. The host and group steps need your lab. The log steps use the export on this page.</p>
 <p>Each step asks for a short finding from the host, the log, or the first response. The hint tells you what to open. The finding shows the answer, the problem, and the solution.</p>
 </div>
 

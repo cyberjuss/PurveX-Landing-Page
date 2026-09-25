@@ -13,4 +13,4 @@ Phase 1 taught you to check Active Directory before you take a help desk ticket.
 
 Then you decide whether it fits this environment.
 
-Finish the Home Lab in Phase 1 first including `Build-Environment.ps1 -IncludeCTF`. The alert names objects in that same directory so if you do not already know where `alex.rivera` belongs go back and learn it before you work the queue.
+Finish the Home Lab in Phase 1 first including the Academy download of `Build-Environment.ps1`. The alert names objects in that same directory so if you do not already know where `alex.rivera` belongs go back and learn it before you work the queue.

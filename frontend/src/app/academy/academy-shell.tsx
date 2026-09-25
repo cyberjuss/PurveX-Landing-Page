@@ -349,7 +349,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           return;
         }
         if (gate.noTicketObjects) {
-          feedback.textContent = "This lab was built without -IncludeCTF. Remove it and build again with -IncludeCTF. This does not use an attempt.";
+          feedback.textContent = "The ticket objects are not in your lab yet. Run the script from Build This Lab again and wait a minute. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
           placeMiss(wrap);
           return;

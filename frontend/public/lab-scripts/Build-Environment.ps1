@@ -18,7 +18,10 @@
     Every account must change it at next logon.
 
 .PARAMETER IncludeCTF
-    Adds the optional ticket-queue challenge objects.
+    Adds the ticket-queue challenge objects. The Academy download does this automatically.
+
+.PARAMETER NoCTF
+    Skips the ticket-queue challenge objects in the Academy download.
 
 .PARAMETER SyncOnly
     Used by the scheduled task. Students do not run this.
@@ -38,6 +41,7 @@
 param(
     [System.Security.SecureString]$InitialPassword,
     [switch]$IncludeCTF,
+    [switch]$NoCTF,
     [switch]$SyncOnly,
     [switch]$Scheduled,
     [switch]$InstallSync,
@@ -49,6 +53,9 @@ param(
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
+
+# The Academy download plants the ticket objects on the first build so the missions work at once.
+if ($PurvexKey -and -not $NoCTF) { $IncludeCTF = $true }
 
 $domain   = Get-ADDomain
 $domainDN = $domain.DistinguishedName

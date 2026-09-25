@@ -96,7 +96,7 @@ After the reboot, log back in as `PURVEXFINANCIAL\Administrator` and run this sc
 * Pre-stages the `IT-WKS01` computer object
 * Prompts once for an initial password. Every account must change it at next logon, so nobody keeps that password long-term
 * Is safe to run more than once. It only creates what is missing and never resets or deletes anything that exists
-* Optional: add `-IncludeCTF` to plant ticket-queue challenge objects after the clean baseline is built
+* The Academy download plants the ticket-queue challenge objects on the first build and sends your lab straight away. Add `-NoCTF` to skip them
 * The Academy download starts a one-minute Coach sync on the domain controller after the first successful build. The VM only has to stay on. To stop it: `./Build-Environment.ps1 -UninstallSync`.
 * The sync now also sends your security settings (password and lockout policy, auditing, log size) and a 30-day count of Security log events, such as failed sign-ins and accounts created. It never sends passwords or raw log entries. Your drills and the weekly CTF use it, so download the script again and run it once to get it.
 

@@ -74,7 +74,7 @@ Shape: Restored a locked-out user account in Active Directory Users and Computer
 Hands-on evidence
 - The brief's Hands-on line is what you can actually confirm. Use it. Do not pretend they are in the lab if there is no snapshot.
 - No snapshot + they talk like they already looked: you cannot confirm it. Ask for a console screenshot. Do not accuse them of cheating.
-- Snapshot exists: that is last known lab. Coach from it. Ticket-queue work needs CTF objects (All Employees without jamie.torres, old.intern, svc-backup-job with Description "Window not set" until they copy the approved hours from the ServiceAccounts folder, riley.kwan disabled, taylor.osei still in Operations, WM-WKS07). casey.reed is created by the student on the new-hire ticket. If those planted objects are missing, they have not run -IncludeCTF yet. The ticket answer is the directory after they change it, not the first look. Do not name the backup window.
+- Snapshot exists: that is last known lab. Coach from it. Ticket-queue work needs CTF objects (All Employees without jamie.torres, old.intern, svc-backup-job with Description "Window not set" until they copy the approved hours from the ServiceAccounts folder, riley.kwan disabled, taylor.osei still in Operations, WM-WKS07). casey.reed is created by the student on the new-hire ticket. If those planted objects are missing, they have not run the linked Build-Environment.ps1 from Build This Lab yet. The ticket answer is the directory after they change it, not the first look. Do not name the backup window.
 - A screenshot of a real console counts as live evidence for that turn. A guess with no lab and no shot does not.
 - If a screenshot is attached this turn, you can see it. Read the window title, the tree, the tabs, and the field values. Never say you cannot view images or that screenshots are unsupported.
 - Refer to missions by title and ticket number (for example "Locked Out (INC-1042)"), never by internal ids like tq-02.
@@ -137,7 +137,7 @@ function handsOnLine(results: Results, lab: LabSnapshot | null): string {
   const parts = [
     `Last known lab ${ev.lastCapturedAgo} (${ev.domain}: ${ev.counts.users} users, ${ev.counts.groups} groups, ${ev.counts.computers} computers). Use this as current until a newer sync arrives.`,
     ev.stockUsers >= 9 ? "Stock users are present." : `Only ${ev.stockUsers} of 9 stock users found.`,
-    ev.ctfPlanted ? "Ticket-queue CTF objects are planted." : ticketsTouched ? "Tickets were attempted but CTF objects are missing — they still need -IncludeCTF." : "CTF objects not planted yet.",
+    ev.ctfPlanted ? "Ticket-queue CTF objects are planted." : ticketsTouched ? "Tickets were attempted but CTF objects are missing — they still need to run the linked script from Build This Lab again." : "CTF objects not planted yet.",
   ];
   if (ev.lockedUsers.length) parts.push(`Locked: ${ev.lockedUsers.join(", ")}.`);
   if (ev.disabledUsers.length) parts.push(`Disabled: ${ev.disabledUsers.join(", ")}.`);
