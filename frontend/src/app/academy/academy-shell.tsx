@@ -247,14 +247,31 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       input.addEventListener("animationend", () => input.classList.remove("ad-guess__input--shake"), { once: true });
     };
 
+    const WIN_LINE = "Nice work. This ticket is closed.";
+
     const placeMiss = (wrap: Element) => {
       const feedback = wrap.querySelector<HTMLElement>(".ad-guess__feedback");
       if (!feedback) return;
-      feedback.style.setProperty("display", feedback.textContent ? "block" : "none", "important");
+      const win = feedback.classList.contains("ad-guess__feedback--ok");
+      feedback.style.setProperty("display", feedback.textContent ? (win ? "flex" : "block") : "none", "important");
+      if (win) {
+        feedback.style.removeProperty("font-size");
+        feedback.style.removeProperty("font-weight");
+        feedback.style.removeProperty("line-height");
+        feedback.style.removeProperty("margin");
+        return;
+      }
       feedback.style.setProperty("font-size", "0.68rem", "important");
       feedback.style.setProperty("font-weight", "600", "important");
       feedback.style.setProperty("line-height", "1.4", "important");
       feedback.style.setProperty("margin", "1.25rem 0 0", "important");
+    };
+
+    const markClosed = (wrap: Element, feedback: HTMLElement) => {
+      feedback.textContent = WIN_LINE;
+      feedback.className = "ad-guess__feedback ad-guess__feedback--ok";
+      wrap.classList.add("ad-mission--solved");
+      placeMiss(wrap);
     };
 
     const parkFeedback = (wrap: HTMLElement) => {
@@ -280,7 +297,9 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         if (input) input.disabled = true;
         if (submit) submit.disabled = true;
         reveal?.classList.add("ad-flag--shown");
-        wrap.classList.add("ad-mission--solved");
+        const feedback = wrap.querySelector<HTMLElement>(".ad-guess__feedback");
+        if (feedback) markClosed(wrap, feedback);
+        else wrap.classList.add("ad-mission--solved");
       } else if (r.wrong >= 3) {
         reveal?.classList.add("ad-flag--shown");
       }
@@ -335,7 +354,14 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         btn.disabled = true;
         feedback.textContent = "Checking your lab…";
         feedback.className = "ad-guess__feedback";
-        const gate = await labGate(missionId);
+        let gate = await labGate(missionId);
+        // Give the lab up to 45 seconds to report the change before asking the student to try again.
+        const waitStart = Date.now();
+        while (gate && !gate.noLab && !gate.noTicketObjects && gate.gated !== false && !gate.passed && Date.now() - waitStart < 45000) {
+          feedback.textContent = `Waiting for your lab to show the change…${gate.syncedAgo ? ` Last report ${gate.syncedAgo}.` : ""}`;
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          gate = await labGate(missionId);
+        }
         btn.disabled = false;
         if (!gate) {
           feedback.textContent = "Could not check your lab. Try submit again. This does not use an attempt.";
@@ -374,13 +400,10 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
       const accepts = [answer, ...(btn.dataset.accept || "").split("|")].map(normalize).filter(Boolean);
       if (accepts.includes(guess)) {
-        feedback.textContent = "Correct — nice work.";
-        feedback.className = "ad-guess__feedback ad-guess__feedback--ok";
         reveal.classList.add("ad-flag--shown");
-        placeMiss(wrap);
+        markClosed(wrap, feedback);
         input.disabled = true;
         btn.disabled = true;
-        wrap.classList.add("ad-mission--solved");
         recordResult(wrap, { solved: true, flagged: false, wrong: parseInt(wrap.getAttribute("data-attempts") || "0", 10) });
         updateProgress();
         return;

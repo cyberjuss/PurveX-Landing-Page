@@ -23,6 +23,10 @@
 .PARAMETER NoCTF
     Skips the ticket-queue challenge objects in the Academy download.
 
+.PARAMETER SyncLoop
+    Used by the sync task. Checks every 2 seconds and sends a fresh snapshot every 2 seconds
+    while a ticket check is open, and every minute otherwise. Students do not run this.
+
 .PARAMETER SyncOnly
     Used by the scheduled task. Students do not run this.
 
@@ -43,6 +47,7 @@ param(
     [switch]$IncludeCTF,
     [switch]$NoCTF,
     [switch]$SyncOnly,
+    [switch]$SyncLoop,
     [switch]$Scheduled,
     [switch]$InstallSync,
     [switch]$UninstallSync,
@@ -329,7 +334,7 @@ function Get-PurvexSecurityState {
 }
 
 function Send-PurvexLabSnapshot {
-    param([string]$Key, [string]$Url, [string]$DomainDN)
+    param([string]$Key, [string]$Url, [string]$DomainDN, [switch]$Fast)
     $ErrorActionPreference = "Stop"
 
     $domainSuffix = [regex]::Escape(",$DomainDN") + '$'
@@ -400,8 +405,16 @@ function Send-PurvexLabSnapshot {
         }
     }
 
-    $security = Get-PurvexSecurityState -Domain $domain
-    $events = Get-PurvexEventDigest
+    # Fast sends reuse the slow parts (settings and the 30-day log digest) for up to a minute.
+    if ($Fast -and $script:PurvexHeavy -and ((Get-Date) - $script:PurvexHeavy.At).TotalSeconds -lt 60) {
+        $security = $script:PurvexHeavy.Security
+        $events = $script:PurvexHeavy.Events
+    }
+    else {
+        $security = Get-PurvexSecurityState -Domain $domain
+        $events = Get-PurvexEventDigest
+        $script:PurvexHeavy = @{ At = Get-Date; Security = $security; Events = $events }
+    }
 
     $snapshot = [ordered]@{
         version    = 1
@@ -451,6 +464,28 @@ function Get-PurvexSyncScriptPath {
     return (Join-Path $dir "Build-Environment.ps1")
 }
 
+# Runs for as long as the task lives. The site says when a ticket check is open (live), and
+# only then does it send every 2 seconds. Otherwise one snapshot a minute is enough.
+function Start-PurvexSyncLoop {
+    param([string]$Key, [string]$Url)
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    $endpoint = $Url.TrimEnd("/") + "/api/academy/lab-state"
+    $lastSend = [datetime]::MinValue
+    while ($true) {
+        $wait = 2
+        try {
+            $state = Invoke-RestMethod -Method Get -Uri $endpoint -TimeoutSec 10 -Headers @{ Authorization = "Bearer $Key" }
+            $age = ((Get-Date) - $lastSend).TotalSeconds
+            if (([bool]$state.live -and $age -ge 2) -or $age -ge 60) {
+                Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN -Fast
+                $lastSend = Get-Date
+            }
+        }
+        catch { $wait = 15 }
+        Start-Sleep -Seconds $wait
+    }
+}
+
 function Install-PurvexLabSync {
     if (-not $PurvexKey -or -not $PurvexUrl) {
         Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build This Lab first." -ForegroundColor Yellow
@@ -462,21 +497,28 @@ function Install-PurvexLabSync {
         Write-Host "Could not find this script on disk, so the sync task was not installed." -ForegroundColor Yellow
         return $false
     }
+    Stop-ScheduledTask -TaskName $PurvexSyncTask -ErrorAction SilentlyContinue
     $dest = Get-PurvexSyncScriptPath
     Copy-Item -LiteralPath $source -Destination $dest -Force
-    $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$dest`" -SyncOnly -Scheduled"
+    $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$dest`" -SyncLoop"
     # Repetition is null on a plain -Once trigger in Windows PowerShell 5.1, so set it here.
-    $trigger = New-ScheduledTaskTrigger -Once -At ((Get-Date).AddMinutes(1)) `
+    # One long-running loop, started at boot. The one-minute trigger is a watchdog: it starts the
+    # loop again if it ever stops, and is ignored while the loop is already running.
+    $startup = New-ScheduledTaskTrigger -AtStartup
+    $watchdog = New-ScheduledTaskTrigger -Once -At ((Get-Date).AddMinutes(1)) `
         -RepetitionInterval (New-TimeSpan -Minutes 1) -RepetitionDuration (New-TimeSpan -Days 3650)
     $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
-    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
+    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew `
+        -ExecutionTimeLimit ([TimeSpan]::Zero) -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
     Unregister-ScheduledTask -TaskName $PurvexSyncTask -Confirm:$false -ErrorAction SilentlyContinue
-    Register-ScheduledTask -TaskName $PurvexSyncTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "Sends a read-only Active Directory snapshot to PurveX Coach about every minute. No passwords." | Out-Null
-    Write-Host "Coach will refresh from this DC about every minute." -ForegroundColor Green
+    Register-ScheduledTask -TaskName $PurvexSyncTask -Action $action -Trigger @($startup, $watchdog) -Principal $principal -Settings $settings -Description "Sends a read-only Active Directory snapshot to PurveX Coach about every minute. No passwords." | Out-Null
+    Start-ScheduledTask -TaskName $PurvexSyncTask
+    Write-Host "Coach is syncing this DC now. It updates every 2 seconds while a ticket check is open." -ForegroundColor Green
     return $true
 }
 
 function Uninstall-PurvexLabSync {
+    Stop-ScheduledTask -TaskName $PurvexSyncTask -ErrorAction SilentlyContinue
     Unregister-ScheduledTask -TaskName $PurvexSyncTask -Confirm:$false -ErrorAction SilentlyContinue
     Write-Host "PurveX Coach lab sync is off." -ForegroundColor DarkGray
 }
@@ -496,6 +538,15 @@ if ($InstallSync) {
             Write-Host "Could not send the lab snapshot: $($_.Exception.Message)" -ForegroundColor Red
         }
     }
+    return
+}
+
+if ($SyncLoop) {
+    if (-not $PurvexKey -or -not $PurvexUrl) {
+        Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build This Lab and run it once." -ForegroundColor Yellow
+        return
+    }
+    Start-PurvexSyncLoop -Key $PurvexKey -Url $PurvexUrl
     return
 }
 
