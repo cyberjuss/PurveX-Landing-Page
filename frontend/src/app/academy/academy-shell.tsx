@@ -236,15 +236,29 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
     // Lesson content is re-rendered when you switch tabs, so a mission comes
     // back blank. Put back what was stored for it.
-    // A wrong or blank answer shakes the box and says nothing.
-    const shake = (input: HTMLElement, feedback: HTMLElement) => {
+    const hideLine = (feedback: HTMLElement) => {
       feedback.textContent = "";
       feedback.className = "ad-guess__feedback";
       feedback.style.setProperty("display", "none", "important");
+    };
+
+    const flashMiss = (guess: HTMLElement, input: HTMLElement, feedback: HTMLElement) => {
+      hideLine(feedback);
+      guess.querySelector(".ad-guess__miss")?.remove();
+      const mark = document.createElement("span");
+      mark.className = "ad-guess__miss";
+      mark.setAttribute("aria-hidden", "true");
+      mark.textContent = "\u2715";
+      input.after(mark);
+      guess.classList.add("ad-guess--miss");
       input.classList.remove("ad-guess__input--shake");
       void input.offsetWidth;
       input.classList.add("ad-guess__input--shake");
-      input.addEventListener("animationend", () => input.classList.remove("ad-guess__input--shake"), { once: true });
+      window.setTimeout(() => {
+        guess.classList.remove("ad-guess--miss");
+        mark.remove();
+        input.classList.remove("ad-guess__input--shake");
+      }, 720);
     };
 
     const placeMiss = (wrap: Element) => {
@@ -265,11 +279,48 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       feedback.style.setProperty("margin", "1.25rem 0 0", "important");
     };
 
-    const markClosed = (wrap: Element, feedback: HTMLElement) => {
-      feedback.innerHTML = '<span class="ad-win__copy"><b>Nice work.</b> <span>This ticket is closed.</span></span>';
-      feedback.className = "ad-guess__feedback ad-guess__feedback--ok";
+    const flipGuess = (wrap: Element, animate: boolean) => {
+      const guess = wrap.querySelector<HTMLElement>(".ad-guess");
+      if (!guess) return;
+      if (guess.querySelector(".ad-guess__win")) {
+        guess.classList.add("ad-guess--win");
+        return;
+      }
+      const input = guess.querySelector<HTMLInputElement>(".ad-guess__input");
+      const face = document.createElement("div");
+      face.className = "ad-guess__win";
+      face.innerHTML = '<span class="ad-guess__mark" aria-hidden="true">\u2713</span> Answered right.';
+      let landed = false;
+      const land = () => {
+        if (landed) return;
+        landed = true;
+        if (input?.parentElement) input.replaceWith(face);
+        else if (!guess.querySelector(".ad-guess__win")) guess.prepend(face);
+        guess.classList.add("ad-guess--win");
+      };
+      const motion = animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (input && motion) {
+        input.classList.add("ad-guess__input--out");
+        input.addEventListener("animationend", land, { once: true });
+        window.setTimeout(land, 420);
+      } else {
+        land();
+      }
+    };
+
+    const markClosed = (wrap: Element, feedback: HTMLElement, animate = false) => {
       wrap.classList.add("ad-mission--solved");
-      placeMiss(wrap);
+      const reveal = wrap.querySelector<HTMLElement>(".ad-flag");
+      let box = wrap.querySelector<HTMLElement>(".ad-close");
+      if (!box) {
+        box = document.createElement("div");
+        box.className = "ad-close";
+        (feedback.parentElement === wrap ? feedback : reveal ?? feedback).after(box);
+      }
+      feedback.remove();
+      wrap.querySelectorAll(".ad-win__copy").forEach((el) => el.remove());
+      if (reveal && reveal.parentElement !== box) box.appendChild(reveal);
+      flipGuess(wrap, animate);
     };
 
     const parkFeedback = (wrap: HTMLElement) => {
@@ -342,7 +393,9 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       const guess = normalize(input.value);
 
       if (!guess) {
-        shake(input, feedback);
+        const row = wrap.querySelector<HTMLElement>(".ad-guess");
+        if (row) flashMiss(row, input, feedback);
+        else hideLine(feedback);
         input.focus();
         return;
       }
@@ -394,7 +447,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       const accepts = [answer, ...(btn.dataset.accept || "").split("|")].map(normalize).filter(Boolean);
       if (accepts.includes(guess)) {
         reveal.classList.add("ad-flag--shown");
-        markClosed(wrap, feedback);
+        markClosed(wrap, feedback, true);
         input.disabled = true;
         btn.disabled = true;
         recordResult(wrap, { solved: true, flagged: false, wrong: parseInt(wrap.getAttribute("data-attempts") || "0", 10) });
@@ -406,8 +459,9 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       wrap.setAttribute("data-attempts", String(attempts));
       recordResult(wrap, { wrong: attempts });
       labelHintButton(wrap, wrap.querySelector(".ad-hint__text")?.classList.contains("ad-hint__text--shown") ?? false);
-      // A wrong answer shakes the box and says nothing. Three misses show the flag.
-      shake(input, feedback);
+      const row = wrap.querySelector<HTMLElement>(".ad-guess");
+      if (row) flashMiss(row, input, feedback);
+      else hideLine(feedback);
       if (attempts >= 3) reveal.classList.add("ad-flag--shown");
     };
 

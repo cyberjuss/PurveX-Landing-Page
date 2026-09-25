@@ -39,16 +39,17 @@ export function LabPulse() {
   }, []);
 
   const connected = Boolean(state?.connected);
-  const stale = Boolean(state?.stale);
+  const warn = Boolean(state?.stale || (state?.connected && !state.hasTicketObjects));
+  const tone = !connected ? "off" : warn ? "stale" : "on";
   const tip = tipFor(state);
 
   return (
     <span
-      className={`ad-lab${connected ? " ad-lab--on" : " ad-lab--off"}${stale ? " ad-lab--stale" : ""}`}
+      className={`ad-lab ad-lab--${tone}`}
       tabIndex={0}
       aria-label={tip}
     >
-      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true">
         <rect x="3" y="4" width="18" height="12" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1.75" />
         <path d="M8 20h8M12 16v4" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
       </svg>

@@ -55,6 +55,9 @@ export function MissionPager({
   // Layout effect so a section jump (new key) sees the tickets on the
   // same paint, not after a frame that can miss the first measure.
   useLayoutEffect(() => {
+    root.current?.querySelectorAll(".ad-guess__feedback, .ad-win__copy").forEach((el) => {
+      if (/ticket is closed|Nice work/i.test(el.textContent || "")) el.remove();
+    });
     measure();
     const el = root.current;
     const hash = typeof window !== "undefined" ? window.location.hash.replace(/^#/, "") : "";
