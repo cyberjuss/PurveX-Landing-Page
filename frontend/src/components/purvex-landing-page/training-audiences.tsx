@@ -54,8 +54,8 @@ const AUDIENCES: Audience[] = [
       "Students build their labs",
       "Track every student",
     ],
-    footLabel: "Good to know",
-    foot: ["No servers to set up", "Same lessons and labs for all", "A report for every student"],
+    footLabel: "What your program gets",
+    foot: ["Labs run on students' own computers", "One course for every student", "A progress report per student"],
   },
   {
     key: "employers",
