@@ -38,7 +38,7 @@ const AUDIENCES: Audience[] = [
       "Earn a score employers can read",
     ],
     footLabel: "Prepares you for",
-    foot: ["IT help desk", "IT support", "Junior security analyst"],
+    foot: ["IT help desk", "IT support", "Junior security analyst", "SOC analyst", "Incident responder", "Identity and access analyst"],
   },
   {
     key: "schools",
@@ -72,7 +72,7 @@ const AUDIENCES: Audience[] = [
       "Review each report",
     ],
     footLabel: "Built for roles like",
-    foot: ["Help desk", "IT support", "Security operations"],
+    foot: ["Help desk", "IT support", "SOC analyst", "Incident response", "Identity and access"],
   },
 ];
 
