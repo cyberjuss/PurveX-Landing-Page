@@ -371,6 +371,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id }),
+          signal: AbortSignal.timeout(8000),
         });
         return res.ok ? await res.json() : null;
       } catch {
@@ -405,15 +406,16 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         btn.disabled = true;
         feedback.textContent = "Checking your lab…";
         feedback.className = "ad-guess__feedback";
-        let gate = await labGate(missionId);
+        let gate: Awaited<ReturnType<typeof labGate>> = null;
+        try {
+        gate = await labGate(missionId);
         // Give the lab up to 45 seconds to report the change before asking the student to try again.
         const waitStart = Date.now();
         while (gate && !gate.noLab && !gate.noTicketObjects && gate.gated !== false && !gate.passed && Date.now() - waitStart < 45000) {
           feedback.textContent = "Waiting for your lab to show the change…";
-          await new Promise((resolve) => setTimeout(resolve, 400));
+          await new Promise((resolve) => setTimeout(resolve, 1500));
           gate = await labGate(missionId);
         }
-        btn.disabled = false;
         if (!gate) {
           feedback.textContent = "Could not check your lab. Try submit again. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
@@ -442,6 +444,9 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           return;
         }
         wrap.classList.add("ad-mission--labok");
+        } finally {
+          btn.disabled = false;
+        }
       }
 
       const accepts = [answer, ...(btn.dataset.accept || "").split("|")].map(normalize).filter(Boolean);

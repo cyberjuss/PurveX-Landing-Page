@@ -584,22 +584,29 @@ function Get-PurvexSyncScriptPath {
     return (Join-Path $dir "Build-Environment.ps1")
 }
 
-# Highest update number in the directory. A ticket check only needs a new snapshot when this moves.
+# Highest update number in the lab folders only. The rest of the domain changes on its own
+# and must not trigger a snapshot.
 function Get-PurvexHighestUsn {
     param([string]$DomainDN)
-    try {
-        $searcher = New-Object System.DirectoryServices.DirectorySearcher
-        $searcher.SearchRoot = New-Object System.DirectoryServices.DirectoryEntry("LDAP://$DomainDN")
-        $searcher.Filter = "(uSNChanged>=1)"
-        $searcher.PageSize = 1
-        $searcher.SearchScope = "Subtree"
-        [void]$searcher.PropertiesToLoad.Add("uSNChanged")
-        $searcher.Sort = New-Object System.DirectoryServices.SortOption("uSNChanged", ([System.DirectoryServices.SortDirection]::Descending))
-        $hit = $searcher.FindOne()
-        if ($hit -and $hit.Properties["usnchanged"].Count -gt 0) { return [int64]$hit.Properties["usnchanged"][0] }
+    $best = [int64]-1
+    foreach ($name in @("Departments", "AccessLevels", "ServiceAccounts")) {
+        try {
+            $searcher = New-Object System.DirectoryServices.DirectorySearcher
+            $searcher.SearchRoot = New-Object System.DirectoryServices.DirectoryEntry("LDAP://OU=$name,$DomainDN")
+            $searcher.Filter = "(uSNChanged>=1)"
+            $searcher.PageSize = 1
+            $searcher.SearchScope = "Subtree"
+            [void]$searcher.PropertiesToLoad.Add("uSNChanged")
+            $searcher.Sort = New-Object System.DirectoryServices.SortOption("uSNChanged", ([System.DirectoryServices.SortDirection]::Descending))
+            $hit = $searcher.FindOne()
+            if ($hit -and $hit.Properties["usnchanged"].Count -gt 0) {
+                $n = [int64]$hit.Properties["usnchanged"][0]
+                if ($n -gt $best) { $best = $n }
+            }
+        }
+        catch { }
     }
-    catch { }
-    return [int64]-1
+    return $best
 }
 
 # Runs for as long as the task lives. A directory change sends a snapshot immediately.
@@ -611,12 +618,12 @@ function Start-PurvexSyncLoop {
     $lastSend = [datetime]::MinValue
     $lastUsn = [int64]-1
     while ($true) {
-        $waitMs = 200
+        $waitMs = 1000
         try {
             $age = ((Get-Date) - $lastSend).TotalSeconds
             $usn = Get-PurvexHighestUsn -DomainDN $domainDN
             $due = $age -ge 60
-            $changed = ($usn -ge 0) -and (($lastUsn -lt 0) -or ($usn -ne $lastUsn))
+            $changed = ($usn -ge 0) -and ($age -ge 2) -and (($lastUsn -lt 0) -or ($usn -ne $lastUsn))
             if ($changed -or $due) {
                 Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN -Fast
                 $lastSend = Get-Date
