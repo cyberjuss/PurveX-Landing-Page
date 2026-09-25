@@ -111,6 +111,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section" id="benefits">
         <div className="pg-head">
           <h2>What students walk away with</h2>
+          <p>Real practice, help when they need it, and proof they can show an employer.</p>
         </div>
         <TrainingBenefits />
       </section>
