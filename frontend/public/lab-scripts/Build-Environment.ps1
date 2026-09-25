@@ -48,6 +48,8 @@ param(
 
 Import-Module ActiveDirectory -ErrorAction Stop
 
+$script:PurvexFailures = 0
+
 $domain   = Get-ADDomain
 $domainDN = $domain.DistinguishedName
 
@@ -109,19 +111,27 @@ function Ensure-User {
         Write-Host "  User exists: $SamAccountName" -ForegroundColor DarkGray
     }
     elseif ($PSCmdlet.ShouldProcess($SamAccountName, "Create user")) {
-        New-ADUser `
-            -Name "$First $Last" `
-            -GivenName $First `
-            -Surname $Last `
-            -SamAccountName $SamAccountName `
-            -UserPrincipalName "$SamAccountName@$($domain.DNSRoot)" `
-            -Title $Title `
-            -Department $Department `
-            -Path $OUPath `
-            -AccountPassword $InitialPassword `
-            -ChangePasswordAtLogon $true `
-            -Enabled $true
-        Write-Host "  User created: $SamAccountName ($Title, $Department)" -ForegroundColor Green
+        try {
+            New-ADUser `
+                -Name "$First $Last" `
+                -GivenName $First `
+                -Surname $Last `
+                -SamAccountName $SamAccountName `
+                -UserPrincipalName "$SamAccountName@$($domain.DNSRoot)" `
+                -Title $Title `
+                -Department $Department `
+                -Path $OUPath `
+                -AccountPassword $InitialPassword `
+                -ChangePasswordAtLogon $true `
+                -Enabled $true `
+                -ErrorAction Stop
+            Write-Host "  User created: $SamAccountName ($Title, $Department)" -ForegroundColor Green
+        }
+        catch {
+            Write-Host "  User FAILED: $SamAccountName - $($_.Exception.Message)" -ForegroundColor Red
+            $script:PurvexFailures++
+            return
+        }
     }
 
     foreach ($groupName in $Groups) {
@@ -498,8 +508,36 @@ if ($SyncOnly) {
     return
 }
 
-if (-not $InitialPassword) {
-    $InitialPassword = Read-Host -AsSecureString -Prompt "Initial password for all new lab accounts"
+function Get-PurvexPasswordProblem {
+    param([System.Security.SecureString]$Secure)
+    $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($Secure)
+    try { $plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr) }
+    finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr) }
+    $policy = Get-ADDefaultDomainPasswordPolicy
+    $min = [Math]::Max([int]$policy.MinPasswordLength, 8)
+    if ($plain.Length -lt $min) { return "Use at least $min characters." }
+    if ($policy.ComplexityEnabled) {
+        $classes = 0
+        if ($plain -cmatch '[a-z]') { $classes++ }
+        if ($plain -cmatch '[A-Z]') { $classes++ }
+        if ($plain -match '\d') { $classes++ }
+        if ($plain -match '[^a-zA-Z0-9]') { $classes++ }
+        if ($classes -lt 3) { return "Mix three of these: lowercase, uppercase, a number, a symbol." }
+    }
+    return $null
+}
+
+$passwordAttempts = 0
+while ($true) {
+    if (-not $InitialPassword) {
+        $InitialPassword = Read-Host -AsSecureString -Prompt "Initial password for all new lab accounts"
+    }
+    $problem = Get-PurvexPasswordProblem -Secure $InitialPassword
+    if (-not $problem) { break }
+    Write-Host "That password will not work on this domain. $problem" -ForegroundColor Yellow
+    $InitialPassword = $null
+    $passwordAttempts++
+    if ($passwordAttempts -ge 3) { throw "No valid password was entered. Run the script again." }
 }
 
 Write-Host "`n== Top-level OUs ==" -ForegroundColor Cyan
@@ -585,6 +623,10 @@ if (-not $WhatIfPreference) {
             Write-Host "Could not start automatic Coach sync: $($_.Exception.Message)" -ForegroundColor Yellow
         }
     }
+}
+
+if ($script:PurvexFailures -gt 0) {
+    Write-Host "`n$($script:PurvexFailures) account(s) could not be created. Fix the problem above and run the script again. It only adds what is missing." -ForegroundColor Red
 }
 
 Write-Host "`nDone. Verify with: Get-ADOrganizationalUnit -Filter * | Where-Object DistinguishedName -like '*Departments*'" -ForegroundColor Cyan

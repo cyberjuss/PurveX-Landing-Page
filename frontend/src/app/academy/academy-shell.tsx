@@ -522,9 +522,21 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       const scriptLink = target.closest<HTMLAnchorElement>("a[href]");
       if (scriptLink && new URL(scriptLink.href).pathname === LINKED_SCRIPT_PATH) {
         e.preventDefault();
-        downloadLinkedBuildScript().catch(() => {
-          window.location.href = scriptLink.href;
-        });
+        // Never fall back to the plain file: an unlinked copy builds the lab but never reports it.
+        downloadLinkedBuildScript().then(
+          () => scriptLink.parentElement?.querySelector(".ad-linkerr")?.remove(),
+          (err: unknown) => {
+            let note = scriptLink.parentElement?.querySelector<HTMLElement>(".ad-linkerr");
+            if (!note) {
+              note = document.createElement("span");
+              note.className = "ad-linkerr";
+              note.style.cssText = "display:block;margin-top:6px;color:#d92d20;font-size:.85rem";
+              scriptLink.insertAdjacentElement("afterend", note);
+            }
+            const why = err instanceof Error && err.message ? err.message : "Could not link the script to your account.";
+            note.textContent = `${why} Sign in again, then use this link once more. A plain copy will not report your lab.`;
+          },
+        );
         return;
       }
       const submitBtn = target.closest<HTMLButtonElement>(".ad-guess__submit");

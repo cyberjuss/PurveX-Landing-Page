@@ -66,8 +66,11 @@ export async function downloadLinkedBuildScript() {
     academyFetch("/academy/api/mcp-key", { method: "POST" }),
     fetch(LINKED_SCRIPT_PATH, { cache: "no-store" }),
   ]);
-  const data = await keyRes.json();
-  if (!keyRes.ok || !scriptRes.ok || typeof data.key !== "string") throw new Error("Could not prepare the script.");
+  const data = await keyRes.json().catch(() => ({}));
+  if (!keyRes.ok || typeof data.key !== "string") {
+    throw new Error(typeof data.error === "string" && data.error ? data.error : "Could not link the script to your account.");
+  }
+  if (!scriptRes.ok) throw new Error("Could not load the script.");
   const script = (await scriptRes.text())
     .replace(/\[string\]\$PurvexKey = ""/, `[string]$PurvexKey = ${psString(data.key)}`)
     .replace(/\[string\]\$PurvexUrl = ""/, `[string]$PurvexUrl = ${psString(window.location.origin)}`);
