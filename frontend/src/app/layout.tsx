@@ -9,7 +9,7 @@ const defaultDescription =
   "PurveX helps organizations strengthen their security operations and develop the cybersecurity talent needed to support them.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://purvex.com"),
+  metadataBase: new URL("https://purvex.io"),
   title: { default: defaultTitle, template: "%s | PurveX" },
   description: defaultDescription,
   icons: {
