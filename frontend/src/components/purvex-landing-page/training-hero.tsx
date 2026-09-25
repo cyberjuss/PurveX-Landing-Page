@@ -5,24 +5,23 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { BOOKING_URL } from "./chrome";
 
-/* Training hero. One ticket plays the whole loop the portal runs:
-   the ticket opens, Coach nudges, the student changes their own lab,
-   the portal reads the directory, and only then does the ticket pass. */
+/* Training hero. One ticket plays the whole loop in plain words: it opens,
+   Coach nudges, the student fixes their own lab, and PurveX checks the fix. */
 
 const BEATS = [
-  { stage: 0, status: "Open", kind: "ask", line: "riley.kwan cannot sign in and believes the account is locked." },
-  { stage: 1, status: "Coached", kind: "coach", line: "Open the account before you change anything. What does it say?" },
-  { stage: 1, status: "Working", kind: "cmd", line: "Unlock-ADAccount -Identity riley.kwan" },
-  { stage: 2, status: "Checking", kind: "check", line: "Reading the directory in their lab" },
-  { stage: 2, status: "Proven", kind: "done", line: "The directory shows the unlock. Ticket closed in 3 seconds." },
+  { stage: 0, status: "Open", kind: "ask", line: "Riley cannot sign in and thinks the account is locked." },
+  { stage: 1, status: "Coached", kind: "coach", line: "Check the account before you change anything. What does it say?" },
+  { stage: 1, status: "Working", kind: "cmd", line: "The student finds the lock and clears it in their lab." },
+  { stage: 2, status: "Checking", kind: "check", line: "PurveX checks their lab for the fix" },
+  { stage: 2, status: "Fixed", kind: "done", line: "Fix confirmed. The ticket closes and goes on their record." },
 ] as const;
 
-const STAGES = ["Open", "Coached", "Proven"];
+const STAGES = ["Open", "Coached", "Fixed"];
 
 const FACTS = [
-  { k: "25", v: "missions checked against a live lab" },
-  { k: "2s", v: "lab sync while a ticket is open" },
-  { k: "4", v: "skills in a score a hiring manager can read" },
+  { k: "3", v: "phases, from the basics to incident response" },
+  { k: "25", v: "hands-on missions checked in their own lab" },
+  { k: "4", v: "job skills in a score employers can read" },
 ];
 
 function ProofTicket() {
@@ -48,20 +47,18 @@ function ProofTicket() {
       </ol>
 
       <header className="th-ticket__head">
-        <span>INC-1042 · Ticket queue</span>
+        <span>Help desk ticket</span>
         <em key={beat.status}>{beat.status}</em>
       </header>
       <h3>Locked out</h3>
       <dl>
-        <div><dt>Account</dt><dd>riley.kwan</dd></div>
-        <div><dt>Host</dt><dd>OPS-WKS03</dd></div>
-        <div><dt>Event</dt><dd>4740</dd></div>
-        <div><dt>Lab</dt><dd>purvexfinancial.local</dd></div>
+        <div><dt>From</dt><dd>Riley Kwan</dd></div>
+        <div><dt>Where</dt><dd>Their own lab</dd></div>
       </dl>
 
       <div className="th-beat" key={i}>
         {beat.kind === "coach" && <b>Coach</b>}
-        {beat.kind === "cmd" && <b>PS&gt;</b>}
+        {beat.kind === "cmd" && <b>You</b>}
         {beat.kind === "check" && <b className="th-spin" />}
         {beat.kind === "done" && <b>✓</b>}
         <p>{beat.line}</p>
@@ -76,10 +73,10 @@ export function TrainingHero() {
     <section className="th">
       <div className="th-copy">
         <span className="sp-tag">Training</span>
-        <h1>Train on a network you built yourself</h1>
+        <h1>Job-ready cybersecurity training</h1>
         <p className="th-sub">
-          Students build a working company network and then work real tickets against it. A ticket passes only when
-          their own directory shows the fix, and Coach guides them without giving away the answer.
+          Students practice on their own company network, get help from an AI coach, and finish with proof employers
+          trust.
         </p>
         <div className="th-actions">
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
@@ -172,8 +169,8 @@ const HERO_CSS = `
 }
 .th-beat p { margin: 0; color: var(--ink); font-size: .98rem; line-height: 1.5 }
 .th-ticket[data-kind="cmd"] .th-beat { background: var(--ink) }
-.th-ticket[data-kind="cmd"] .th-beat b { background: transparent; color: var(--accent-soft); padding: 0 }
-.th-ticket[data-kind="cmd"] .th-beat p { font-family: var(--font-mono); font-size: .88rem; color: #fff }
+.th-ticket[data-kind="cmd"] .th-beat b { background: var(--accent-soft); color: var(--accent-deep) }
+.th-ticket[data-kind="cmd"] .th-beat p { color: #fff }
 .th-ticket[data-kind="done"] .th-beat { background: rgba(22,163,74,.08) }
 .th-ticket[data-kind="done"] .th-beat b { background: var(--green) }
 .th-spin { width: 22px; min-width: 22px !important; padding: 0 !important; background: transparent !important; border: 2px solid var(--accent); border-right-color: transparent; border-radius: 50%; animation: th-rot .8s linear infinite }

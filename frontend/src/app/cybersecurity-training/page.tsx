@@ -4,7 +4,7 @@ import { phases } from "@/lib/academy-content";
 
 const title = "Cybersecurity Training";
 const description =
-  "Students build a working company network, work real tickets against it, and finish with a readiness score a hiring manager can read.";
+  "Hands-on cybersecurity training. Students practice on their own company network, get help from an AI coach, and finish with proof employers trust.";
 
 export const metadata: Metadata = {
   title,
