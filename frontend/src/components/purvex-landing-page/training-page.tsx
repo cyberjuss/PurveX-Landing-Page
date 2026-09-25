@@ -7,9 +7,9 @@ import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
 import { TrainingHero } from "./training-hero";
 import { TrainingAudiences } from "./training-audiences";
+import { TrainingBenefits } from "./training-benefits";
 import {
-  IconAlert, IconBook, IconBriefcase, IconChecks, IconEvidence,
-  IconLifebuoy, IconLog, IconMic, IconSchedule, IconShield, IconTicket, IconValidate,
+  IconAlert, IconBook, IconChecks, IconEvidence, IconMic, IconSchedule, IconShield, IconTicket,
   type BrandIcon,
 } from "./brand-icons";
 
@@ -26,12 +26,6 @@ export type CourseOutline = {
 
 type Item = { title: string; body: string; Icon: BrandIcon };
 
-const BENEFITS: Item[] = [
-  { Icon: IconLog, title: "Learn by doing", body: "Every student builds a small company network on their own computer and fixes real problems in it." },
-  { Icon: IconLifebuoy, title: "Help that teaches", body: "An AI coach gives the next step when they are stuck. It never hands over the answer." },
-  { Icon: IconValidate, title: "Skills that are checked", body: "Work passes only when their lab shows the fix. There is no credit for guessing." },
-  { Icon: IconBriefcase, title: "Proof for hiring", body: "They finish with a readiness score and a record of real work a hiring manager can read." },
-];
 
 const FEATURES: Item[] = [
   { Icon: IconBook, title: "Guided course", body: "Weekly lessons from security basics to incident response." },
@@ -83,15 +77,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         <div className="pg-head">
           <h2>What students walk away with</h2>
         </div>
-        <ul className="tp-benefits" data-r>
-          {BENEFITS.map(({ Icon, title, body }) => (
-            <li key={title}>
-              <i><Icon size={24} /></i>
-              <strong>{title}</strong>
-              <p>{body}</p>
-            </li>
-          ))}
-        </ul>
+        <TrainingBenefits />
       </section>
 
       <section className="pg-section tp-features" id="features">
@@ -146,21 +132,13 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
 
       <style>{PG_CSS}</style>
       <style>{`
-        .tp-benefits { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px }
-        .tp-benefits li {
           display: flex; flex-direction: column; padding: 26px 24px 28px; background: #fff;
           border: 1px solid var(--border-strong); border-top: 3px solid var(--accent);
           box-shadow: 0 22px 44px -32px rgba(42,34,128,.35);
         }
-        .tp-benefits li:first-child { background: #3d32b0; border-color: #3d32b0; color: #fff }
-        .tp-benefits i {
           display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 22px;
           background: var(--accent-soft); color: var(--accent-deep);
         }
-        .tp-benefits li:first-child i { background: rgba(238,240,255,.14); color: #fff }
-        .tp-benefits strong { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; letter-spacing: -.02em; line-height: 1.2 }
-        .tp-benefits p { margin: 10px 0 0; color: var(--ink-soft); font-size: .95rem; line-height: 1.55 }
-        .tp-benefits li:first-child p { color: rgba(238,240,255,.82) }
 
         .tp-features { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 32px 72px; align-items: start }
         .tp-features__head { position: sticky; top: 104px }
@@ -212,26 +190,16 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         }
 
 
-        .tp-benefits[data-r], .tp-feature-list[data-r], .tp-course[data-r] { opacity: 1; transform: none; filter: none }
-        .tp-benefits[data-r] > li, .tp-feature-list[data-r] > li, .tp-course[data-r] > li {
           opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease), transform .6s var(--ease);
           transition-delay: calc(var(--n, 0) * 70ms);
         }
-        .tp-benefits[data-r].in > li, .tp-feature-list[data-r].in > li, .tp-course[data-r].in > li { opacity: 1; transform: none }
-        .tp-benefits > li:nth-child(2), .tp-feature-list > li:nth-child(2), .tp-course > li:nth-child(2) { --n: 1 }
-        .tp-benefits > li:nth-child(3), .tp-feature-list > li:nth-child(3), .tp-course > li:nth-child(3) { --n: 2 }
-        .tp-benefits > li:nth-child(4), .tp-feature-list > li:nth-child(4) { --n: 3 }
         .tp-feature-list > li:nth-child(5) { --n: 4 }
         .tp-feature-list > li:nth-child(6) { --n: 5 }
         .tp-feature-list > li:nth-child(7) { --n: 6 }
         .tp-feature-list > li:nth-child(8) { --n: 7 }
         @media (prefers-reduced-motion: reduce) {
-          .tp-benefits[data-r] > li, .tp-feature-list[data-r] > li, .tp-course[data-r] > li { opacity: 1; transform: none; transition: none }
         }
 
-        @media (max-width: 1080px) {
-          .tp-benefits { grid-template-columns: 1fr 1fr }
-        }
         @media (max-width: 860px) {
           .tp-features { grid-template-columns: minmax(0, 1fr) }
           .tp-features__head { position: static }
@@ -241,7 +209,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           .tp-course > li > i { position: absolute; left: 0; top: 0; margin: 0 }
         }
         @media (max-width: 640px) {
-          .tp-benefits, .tp-feature-list { grid-template-columns: 1fr }
+          .tp-feature-list { grid-template-columns: 1fr }
         }
       `}</style>
     </SiteChrome>
