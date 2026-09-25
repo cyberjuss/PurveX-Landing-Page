@@ -12,7 +12,7 @@
 <li>Move a transfer</li>
 </ul>
 <p>If the ticket and the directory disagree, fix the directory. The answer is what the directory shows after you act, not the first look.</p>
-<p>The Academy download plants the ticket objects when it builds your lab. If you built the lab earlier, run the download again from Build This Lab and wait a minute for it to report.</p>
+<p>The Academy download plants the ticket objects when it builds your lab. If you built the lab earlier, run the download again from Build the Environment and wait a minute for it to report.</p>
 <p>Each ticket asks for a short finding after you finish:</p>
 <ul>
 <li>A count</li>

@@ -65,6 +65,6 @@ When editing a Home Lab or lab file specifically, cross-check any command,
 group name, OU path, or access-level claim against the actual `.ps1` script
 it describes (`Install-Forest.ps1`, `Build-Environment.ps1`, etc.) or against
 another tab that already establishes it (e.g. `admin-roles.md` for access
-levels, `ad-building-blocks.md` for OU/Container/GPO facts). If a claim in
+levels, `organizational-units.md`, `groups.md`, and `group-policy.md` for OU, Container, and GPO facts). If a claim in
 prose doesn't match what the script actually does, fix the prose to match
 the script — the script is the ground truth, not the other way around.

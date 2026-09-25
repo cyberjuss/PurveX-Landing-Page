@@ -34,7 +34,7 @@ export async function ctfStatus(userId: string, day: string): Promise<{ state: C
   if (!hasLog) {
     return {
       state: "unavailable",
-      detail: "Your lab has not sent a Security log digest yet. Download the lab script again from Build This Lab and run it once, or the log has no recent activity to ask about. The Drills page still offers the standard weekly CTF.",
+      detail: "Your lab has not sent a Security log digest yet. Download the lab script again from Build the Environment and run it once, or the log has no recent activity to ask about. The Drills page still offers the standard weekly CTF.",
       hasLog,
     };
   }

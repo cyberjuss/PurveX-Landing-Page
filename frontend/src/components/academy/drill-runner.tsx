@@ -292,6 +292,7 @@ function VerifyLab({ verified, onVerified }: { verified: boolean; onVerified: ()
   const [state, setState] = useState<VerifyState | null>(null);
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const call = useCallback(async (action?: "start" | "check") => {
     const res = await academyFetch("/academy/api/lab-verify", action
@@ -317,7 +318,7 @@ function VerifyLab({ verified, onVerified }: { verified: boolean; onVerified: ()
           setNote("Verified. You can remove the code from the description now.");
           onVerified();
         } else {
-          setNote(data.fresh ? "Your lab reported, but the code is not in it yet. Check the description and try again." : "Waiting for your lab to report. It syncs about every minute now.");
+          setNote(data.fresh ? "Your lab reported, but the code is not in it yet. Check the description and try again." : "Waiting for a report that includes this code.");
         }
       }
     } catch (err) {
@@ -340,23 +341,37 @@ function VerifyLab({ verified, onVerified }: { verified: boolean; onVerified: ()
         </p>
       </div>
       {open ? (
-        <ul className="dr-findings__list">
-          <li>
-            <strong>Your code: {open.code}</strong>
-            <p>Set the description of {open.target} to this code. In PowerShell on your domain controller:</p>
-            <code style={{ display: "block", padding: "10px 12px", border: "1px solid var(--rd-line)", borderRadius: 8, fontSize: "var(--ty-small)", overflowX: "auto", maxWidth: "100%" }}>{open.command}</code>
-            <p>Your lab now syncs about every minute. When it has reported, check it. The code lasts 4 hours.</p>
-            <button type="button" className="dr-outline" disabled={busy} onClick={() => void run("check")}>
-              {busy ? "Checking…" : "Check my lab"} <ArrowRight className="h-4 w-4" />
+        <div className="dr-verify">
+          <div className="dr-verify__code">
+            <span>Your code</span>
+            <strong>{open.code}</strong>
+            <em>4 hours</em>
+          </div>
+          <p>Set the description of {open.target} to this code, then check.</p>
+          <div className="dr-verify__cmd">
+            <code>{open.command}</code>
+            <button
+              type="button"
+              onClick={() => {
+                void navigator.clipboard.writeText(open.command);
+                setCopied(true);
+                window.setTimeout(() => setCopied(false), 1200);
+              }}
+            >
+              {copied ? "Copied" : "Copy"}
             </button>
-          </li>
-        </ul>
+          </div>
+          <button type="button" className="dr-verify__go" disabled={busy} onClick={() => void run("check")}>
+            {busy ? "Checking…" : "Check my lab"}
+          </button>
+          {note && <p className="dr-verify__note">{note}</p>}
+        </div>
       ) : (
-        <button type="button" className="dr-outline" disabled={busy} onClick={() => void run("start")}>
-          {busy ? "Starting…" : verified ? "Verify again" : "Start verification"} <ArrowRight className="h-4 w-4" />
+        <button type="button" className="dr-verify__go" disabled={busy} onClick={() => void run("start")}>
+          {busy ? "Starting…" : verified ? "Verify again" : "Start verification"}
         </button>
       )}
-      {note && <p className="dr-lab">{note}</p>}
+      {!open && note && <p className="dr-verify__note">{note}</p>}
     </section>
   );
 }
@@ -430,7 +445,7 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
               <div className="dr-jobsheet__body">
                 {!security && jobs.some((j) => j.security) && (
                   <p className="dr-jobs__note">
-                    Security settings show up here after you run the updated lab script from Build This Lab once on the domain controller.
+                    Security settings show up here after you run the updated lab script from Build the Environment once on the domain controller.
                   </p>
                 )}
                 {done.length === 0 ? (
@@ -991,7 +1006,7 @@ export function DrillRunner() {
                       : `One hard investigation a week, asked about your own Security log. ${
                           status.lab.events
                             ? "Your lab sent its log, so this one is about what really happened in it."
-                            : "Update the lab script from Build This Lab so it can ask about your own Security log."
+                            : "Update the lab script from Build the Environment so it can ask about your own Security log."
                         }`}
                   </span>
                 </span>

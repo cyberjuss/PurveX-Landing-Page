@@ -527,7 +527,7 @@ function Start-PurvexSyncLoop {
 
 function Install-PurvexLabSync {
     if (-not $PurvexKey -or -not $PurvexUrl) {
-        Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build This Lab first." -ForegroundColor Yellow
+        Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build the Environment first." -ForegroundColor Yellow
         return $false
     }
     $source = $PSCommandPath
@@ -582,7 +582,7 @@ if ($InstallSync) {
 
 if ($SyncLoop) {
     if (-not $PurvexKey -or -not $PurvexUrl) {
-        Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build This Lab and run it once." -ForegroundColor Yellow
+        Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build the Environment and run it once." -ForegroundColor Yellow
         return
     }
     Start-PurvexSyncLoop -Key $PurvexKey -Url $PurvexUrl
@@ -591,7 +591,7 @@ if ($SyncLoop) {
 
 if ($SyncOnly) {
     if (-not $PurvexKey -or -not $PurvexUrl) {
-        Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build This Lab and run it once." -ForegroundColor Yellow
+        Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build the Environment and run it once." -ForegroundColor Yellow
         return
     }
     if ($Scheduled -and -not (Test-PurvexSyncDue -Key $PurvexKey -Url $PurvexUrl)) { return }
@@ -706,7 +706,7 @@ if ($IncludeCTF) {
 
 if (-not $WhatIfPreference) {
     if (-not $PurvexKey -or -not $PurvexUrl) {
-        Write-Host "`nThis copy is not linked to PurveX Academy, so your lab was not sent. Download Build-Environment.ps1 from Build This Lab and run it again." -ForegroundColor Yellow
+        Write-Host "`nThis copy is not linked to PurveX Academy, so your lab was not sent. Download Build-Environment.ps1 from Build the Environment and run it again." -ForegroundColor Yellow
     }
     else {
         try {

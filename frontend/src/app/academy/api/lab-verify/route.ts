@@ -46,7 +46,7 @@ export async function POST(request: Request) {
   const userId = a.student.id;
   const body = (await request.json().catch(() => ({}))) as { action?: string };
   const lab = await loadLabState(userId);
-  if (!lab) return NextResponse.json({ error: "Connect your lab first. Run the script from Build This Lab." }, { status: 400 });
+  if (!lab) return NextResponse.json({ error: "Connect your lab first. Run the script from Build the Environment." }, { status: 400 });
 
   if (body.action === "start") {
     const live = await loadLabLive(userId);

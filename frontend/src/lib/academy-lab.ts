@@ -333,7 +333,7 @@ export function labStateForTool(s: LabSnapshot | null, query: string): string {
   if (!s) {
     return JSON.stringify({
       connected: false,
-      note: "No lab snapshot yet. One is saved automatically when the student runs Build-Environment.ps1 downloaded from the Build This Lab page. Until then, ask them to check Active Directory Users and Computers or PowerShell. Do not invent lab values.",
+      note: "No lab snapshot yet. One is saved automatically when the student runs Build-Environment.ps1 downloaded from Build the Environment. Until then, ask them to check Active Directory Users and Computers or PowerShell. Do not invent lab values.",
     });
   }
   const evidence = labEvidence(s);

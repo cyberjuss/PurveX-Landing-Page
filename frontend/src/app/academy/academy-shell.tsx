@@ -423,13 +423,13 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           return;
         }
         if (gate.noLab) {
-          feedback.textContent = "No lab has reported yet. Download the script from Build This Lab, run it once as Administrator, and look for Lab snapshot sent. This does not use an attempt.";
+          feedback.textContent = "No lab has reported yet. Download the script from Build the Environment, run it once as Administrator, and look for Lab snapshot sent. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
           placeMiss(wrap);
           return;
         }
         if (gate.noTicketObjects) {
-          feedback.textContent = "The ticket objects are not in your lab yet. Run the script from Build This Lab again and wait a minute. This does not use an attempt.";
+          feedback.textContent = "The ticket objects are not in your lab yet. Run the script from Build the Environment again and wait a minute. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
           placeMiss(wrap);
           return;
