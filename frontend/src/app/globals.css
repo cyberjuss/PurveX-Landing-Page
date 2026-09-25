@@ -3362,7 +3362,64 @@ body:has(.lp) {
 .academy-prose .ad-mission--capstone .ad-mission__num { color: #e5484d; }
 .academy-prose .ad-mission--bonus .ad-mission__num { color: #b7791f; }
 .academy-prose .ad-mission--solved .ad-mission__num { color: #16a34a; }
+.ad-lab {
+  position: absolute;
+  top: 0.2rem;
+  right: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: #8a94a8;
+  cursor: default;
+  outline: none;
+}
+.ad-lab svg { display: block; }
+.ad-lab--on { color: #6a5cff; }
+.ad-lab--on svg { animation: ad-lab-flash 1.6s ease-in-out infinite; }
+.ad-lab--stale { color: #c4820e; }
+.ad-lab--off { color: #8a94a8; }
+.ad-lab__tip {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(260px, 72vw);
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  font-family: var(--font-sans, inherit);
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0;
+  text-transform: none;
+  text-align: left;
+  box-shadow: 0 12px 28px -16px rgba(15, 23, 42, 0.28);
+}
+.ad-lab:hover .ad-lab__tip,
+.ad-lab:focus-visible .ad-lab__tip { display: block; }
+@keyframes ad-lab-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.28; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ad-lab--on svg { animation: none; }
+}
+.academy-bg[data-academy-theme="dark"] .ad-lab--on { color: #9eb0ff; }
+.academy-bg[data-academy-theme="dark"] .ad-lab--stale { color: #e8a13a; }
+.academy-bg[data-academy-theme="dark"] .ad-lab--off { color: #6b768a; }
+.academy-bg[data-academy-theme="dark"] .ad-lab__tip {
+  background: #050508;
+  border-color: #1a1630;
+  color: #c5d0ff;
+  box-shadow: 0 16px 32px -18px rgba(0, 0, 0, 0.6);
+}
 .academy-prose .ad-mission h4 { margin: 0.15rem 0 1rem; font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; }
+.academy-prose .ad-mission:has(.ad-lab) h4,
+.academy-prose .ad-mission:has(.ad-lab) .ad-mission__num { padding-right: 40px; }
 .academy-prose .ad-mission > p { margin: 0; max-width: 68ch; font-size: 1.02rem; line-height: 1.6; color: var(--rd-ink-2, var(--pvrx-text-secondary-light)); }
 .academy-prose .ad-mission > p + p { margin-top: 0.85rem; }
 .academy-prose .ad-mission > p:first-of-type strong { display: block; margin-bottom: 0.35rem; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rd-ink-3, #8a94a8); }
@@ -3550,6 +3607,110 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 .academy-prose .ad-guess__feedback--err { color: #e5484d; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--ok { color: #6ee7b7; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--err { color: #fca5a5; }
+.academy-prose .ad-mission--solved .ad-guess__feedback--ok {
+  display: flex !important;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 1.5rem 0 0 !important;
+  padding: 18px 20px;
+  font-family: var(--font-display) !important;
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.02em;
+  color: #0b7a52 !important;
+  background: #e8f8f1;
+  border-left: 4px solid #16a34a;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+  animation: ad-win 0.55s cubic-bezier(.16, 1, .3, 1) both;
+}
+.academy-prose .ad-mission--solved .ad-guess__feedback--ok::before {
+  content: "\2713";
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  background: #16a34a;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.academy-prose .ad-mission--solved .ad-win__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.academy-prose .ad-mission--solved .ad-win__copy b {
+  display: block;
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.academy-prose .ad-mission--solved .ad-win__copy > span {
+  display: block;
+  font-family: var(--font-sans, inherit);
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  opacity: 0.82;
+}
+.academy-prose .ad-mission--solved .ad-guess { opacity: 0.42; pointer-events: none; }
+.academy-prose .ad-mission--solved .ad-flag--shown {
+  margin-top: 0 !important;
+  padding: 18px 20px 20px;
+  background: #f4fbf7;
+  border-left: 4px solid #16a34a;
+  animation: ad-win 0.6s cubic-bezier(.16, 1, .3, 1) 0.08s both;
+}
+.academy-prose .ad-mission--solved .ad-break span { color: #0b7a52; }
+.academy-prose .ad-mission--solved .ad-flag__code code,
+.academy-prose .ad-mission--solved .ad-flag p:has(> code:only-child) > code,
+.academy-prose .ad-mission--solved .ad-mission .ad-flag p:has(> code:only-child) > code {
+  display: inline-block !important;
+  margin-top: 2px;
+  padding: 8px 12px !important;
+  background: #fff !important;
+  border: 1px solid rgba(22, 163, 74, 0.35) !important;
+  color: #0b7a52 !important;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission--solved .ad-guess__feedback--ok {
+  color: #6ee7b7 !important;
+  background: rgba(16, 185, 129, 0.12);
+  border-left-color: #34d399;
+}
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission--solved .ad-guess__feedback--ok::before {
+  background: #34d399;
+  color: #04110c;
+}
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission--solved .ad-flag--shown {
+  background: rgba(16, 185, 129, 0.08);
+  border-left-color: #34d399;
+}
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission--solved .ad-break span { color: #6ee7b7; }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission--solved .ad-flag__code code,
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission--solved .ad-flag p:has(> code:only-child) > code {
+  background: #050508 !important;
+  border-color: rgba(52, 211, 153, 0.35) !important;
+  color: #6ee7b7 !important;
+}
+@keyframes ad-win {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .academy-prose .ad-mission--solved .ad-guess__feedback--ok,
+  .academy-prose .ad-mission--solved .ad-flag--shown { animation: none; }
+}
 /* The reveal panel -- previously a bare dashed rule with two paragraphs
    under it, easy to miss as anything other than leftover text. Framed
    now as its own labeled note ("Finding"), matching how the rest of the
@@ -3784,6 +3945,26 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 }
 .academy-prose .ad-mission > p:not(.ad-cmd):not(.ad-guess__feedback) code::before { content: "\201C"; }
 .academy-prose .ad-mission > p:not(.ad-cmd):not(.ad-guess__feedback) code::after { content: "\201D"; }
+.academy-prose .ad-mission--solved .ad-flag .ad-flag__code code {
+  display: inline-block !important;
+  width: auto !important;
+  margin-top: 2px;
+  padding: 8px 12px !important;
+  border: 1px solid rgba(22, 163, 74, 0.35) !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  color: #0b7a52 !important;
+  font-family: var(--font-mono, ui-monospace, monospace) !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+  white-space: nowrap !important;
+}
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission--solved .ad-flag .ad-flag__code code {
+  background: #050508 !important;
+  border-color: rgba(52, 211, 153, 0.35) !important;
+  color: #6ee7b7 !important;
+}
 .academy-prose .ad-mission p.ad-cmd > code {
   display: block; box-sizing: border-box; width: 100%;
   background: #0c1220; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;

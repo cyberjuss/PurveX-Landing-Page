@@ -247,13 +247,11 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       input.addEventListener("animationend", () => input.classList.remove("ad-guess__input--shake"), { once: true });
     };
 
-    const WIN_LINE = "Nice work. This ticket is closed.";
-
     const placeMiss = (wrap: Element) => {
       const feedback = wrap.querySelector<HTMLElement>(".ad-guess__feedback");
       if (!feedback) return;
       const win = feedback.classList.contains("ad-guess__feedback--ok");
-      feedback.style.setProperty("display", feedback.textContent ? (win ? "flex" : "block") : "none", "important");
+      feedback.style.setProperty("display", feedback.textContent || feedback.children.length ? (win ? "flex" : "block") : "none", "important");
       if (win) {
         feedback.style.removeProperty("font-size");
         feedback.style.removeProperty("font-weight");
@@ -268,7 +266,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     };
 
     const markClosed = (wrap: Element, feedback: HTMLElement) => {
-      feedback.textContent = WIN_LINE;
+      feedback.innerHTML = '<span class="ad-win__copy"><b>Nice work.</b> <span>This ticket is closed.</span></span>';
       feedback.className = "ad-guess__feedback ad-guess__feedback--ok";
       wrap.classList.add("ad-mission--solved");
       placeMiss(wrap);
@@ -358,7 +356,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         // Give the lab up to 45 seconds to report the change before asking the student to try again.
         const waitStart = Date.now();
         while (gate && !gate.noLab && !gate.noTicketObjects && gate.gated !== false && !gate.passed && Date.now() - waitStart < 45000) {
-          feedback.textContent = `Waiting for your lab to show the change…${gate.syncedAgo ? ` Last report ${gate.syncedAgo}.` : ""}`;
+          feedback.textContent = "Waiting for your lab to show the change…";
           await new Promise((resolve) => setTimeout(resolve, 3000));
           gate = await labGate(missionId);
         }
@@ -383,14 +381,9 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         }
         if (!gate.passed) {
           const missing = (gate.results ?? []).filter((r) => !r.ok).map((r) => r.label).join("; ");
-          const ago = gate.syncedAgo ?? "";
-          const mins = /^(\d+) minutes ago$/.exec(ago);
-          const stale = Boolean(ago) && ago !== "just now" && (!mins || Number(mins[1]) >= 5);
-          const seen = ago ? ` Your lab last reported ${ago}.` : "";
-          const fix = stale ? " If that time does not move, run .\\Build-Environment.ps1 -SyncOnly on the domain controller." : "";
           feedback.textContent = missing
-            ? `Your lab does not show this change yet: ${missing}.${seen} Make the change, then wait about a minute for the next report.${fix} This does not use an attempt.`
-            : `Your lab does not show this change yet.${seen} Make it, then wait for the next report.${fix} This does not use an attempt.`;
+            ? `Your lab does not show this change yet: ${missing}. Make the change, then wait about a minute for the next report. This does not use an attempt.`
+            : "Your lab does not show this change yet. Make it, then wait for the next report. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
           placeMiss(wrap);
           return;

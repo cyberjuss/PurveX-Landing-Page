@@ -177,10 +177,10 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
               {mode === "signin" ? "Create an account" : "Sign in"}
             </button>
           </p>
-          <p className="mt-6 text-xs leading-5 text-slate-500">
+          <p className="am-legal">
             By continuing you agree to the{" "}
-            <Link href="/legal/terms" className="underline underline-offset-2 hover:text-[#10192e]">Terms</Link> and{" "}
-            <Link href="/legal/privacy" className="underline underline-offset-2 hover:text-[#10192e]">Privacy Policy</Link>.
+            <Link href="/legal/terms">Terms</Link> and{" "}
+            <Link href="/legal/privacy">Privacy Policy</Link>.
           </p>
         </div>
       </AuthMinimal>

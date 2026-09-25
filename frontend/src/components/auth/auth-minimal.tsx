@@ -11,7 +11,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 export function AuthMinimal({ children, product = "" }: { children: ReactNode; product?: string }) {
   return (
-    <div className="am-page flex min-h-screen flex-col bg-white text-[#10192e]">
+    <div className={`am-page flex min-h-screen flex-col bg-white text-[#10192e]${product === "Academy" ? " am-page--academy" : ""}`}>
       <header className="flex h-16 items-center px-5 sm:px-8">
         <Link href="/" className="flex items-center gap-2.5" aria-label="PurveX home">
           <Image src="/logo.png" alt="" width={28} height={28} priority />
@@ -57,6 +57,15 @@ export function AuthMinimal({ children, product = "" }: { children: ReactNode; p
         .am-primary:focus-visible, .am-secondary:focus-visible, .am-link:focus-visible { outline: 2px solid #6a5cff; outline-offset: 2px }
         .am-link { color: #10192e; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; background: none; border: 0; padding: 0; font-size: inherit }
         .am-link:hover { color: #6a5cff }
+        .am-legal { margin: 24px 0 0; text-align: center; font-size: 0.8rem; line-height: 1.5; color: #64748b }
+        .am-legal a { color: #6a5cff; font-weight: 600; text-decoration: underline; text-underline-offset: 3px }
+        .am-legal a:hover { color: #5546e0 }
+        .am-page--academy .am-primary { background: #6a5cff }
+        .am-page--academy .am-primary:hover { background: #5546e0 }
+        .am-page--academy .am-input:focus { border-color: #6a5cff }
+        .am-page--academy .am-link { color: #6a5cff }
+        .am-page--academy .am-link:hover { color: #5546e0 }
+        .am-page--academy footer a:hover { color: #6a5cff }
         @media (prefers-reduced-motion: reduce) { .am-step { animation: none } }
       `}</style>
     </div>
