@@ -361,7 +361,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           const mins = /^(\d+) minutes ago$/.exec(ago);
           const stale = Boolean(ago) && ago !== "just now" && (!mins || Number(mins[1]) >= 5);
           const seen = ago ? ` Your lab last reported ${ago}.` : "";
-          const fix = stale ? " If that time does not move, run .\Build-Environment.ps1 -SyncOnly on the domain controller." : "";
+          const fix = stale ? " If that time does not move, run .\\Build-Environment.ps1 -SyncOnly on the domain controller." : "";
           feedback.textContent = missing
             ? `Your lab does not show this change yet: ${missing}.${seen} Make the change, then wait about a minute for the next report.${fix} This does not use an attempt.`
             : `Your lab does not show this change yet.${seen} Make it, then wait for the next report.${fix} This does not use an attempt.`;
