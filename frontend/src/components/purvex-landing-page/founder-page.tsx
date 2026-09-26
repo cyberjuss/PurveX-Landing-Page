@@ -308,7 +308,7 @@ const FD_CSS = `
 /* consulting */
 .fd-consult { scroll-margin-top: 84px }
 .fd-label { display: block; font-size: .82rem; font-weight: 700; color: var(--accent-deep) }
-.fd-consult__head { max-width: 640px; margin-bottom: 32px }
+.fd-consult__head { max-width: 640px; margin-bottom: 44px }
 .fd-consult__head h2 { margin: 10px 0 0; font-family: var(--font-display); font-weight: 700; letter-spacing: -.025em; line-height: 1.12; font-size: clamp(1.7rem, 3vw, 2.35rem); color: var(--ink); text-wrap: balance }
 .fd-consult__head p { margin: 12px 0 0; max-width: 52ch; font-size: 1.02rem; line-height: 1.6; color: var(--ink-soft) }
 .fd-works { font-size: .92rem !important; color: var(--ink) !important; font-weight: 600 }
@@ -354,8 +354,8 @@ const FD_CSS = `
 @keyframes fx-in { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
 
 /* how it works */
-.fd-how { margin-top: 44px }
-.fd-how ol { position: relative; list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px }
+.fd-how { margin-top: clamp(64px, 8vw, 96px); padding-top: clamp(40px, 5vw, 56px); border-top: 1px solid var(--border) }
+.fd-how ol { position: relative; list-style: none; margin: 24px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px }
 .fd-how ol::before { content: ""; position: absolute; left: 18px; right: calc((100% - 48px) / 3 - 18px); top: 18px; height: 2px; background: linear-gradient(90deg, var(--accent), rgba(106,92,255,.2)) }
 .fd-how li { position: relative }
 .fd-how b { position: relative; display: grid; place-items: center; width: 36px; height: 36px; font-size: .9rem; color: #fff; background: var(--accent-deep); box-shadow: 0 0 0 6px #fbfcfe }
