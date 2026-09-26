@@ -39,9 +39,9 @@ const LOOP: { verb: string; name: string; body: string; href: string; Icon: Bran
 ];
 
 const BELIEFS = [
-  { title: "Prove it, don't assume it.", body: "Every detection and every student skill is checked, not claimed." },
-  { title: "Judgment over shortcuts.", body: "AI can write the query. We build for the person who knows when to trust it." },
-  { title: "Security for every team size.", body: "Small teams deserve the same rigor and tools as large ones." },
+  { title: "Tested, not trusted.", body: "An alert is not coverage until it has fired against a real attack." },
+  { title: "Learn by doing.", body: "Skills come from working real problems, not from watching someone else." },
+  { title: "Clear over clever.", body: "A finding nobody understands never gets fixed." },
 ];
 
 const FACTS = [
