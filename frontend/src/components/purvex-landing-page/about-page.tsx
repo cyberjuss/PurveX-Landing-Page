@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, Crosshair, Eye, Linkedin, Terminal, X, type LucideIcon } from "lucide-react";
+import { ArrowRight, Check, Crosshair, Eye, Linkedin, Quote, Terminal, X, type LucideIcon } from "lucide-react";
 import { IconGraduate, IconTune, IconValidate, type BrandIcon } from "./brand-icons";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
@@ -185,9 +185,10 @@ export default function AboutPage() {
           <div className="ab-founder__copy">
             <span className="sp-tag">Built from real experience</span>
             <figure className="ab-quote">
+              <i aria-hidden="true"><Quote size={18} strokeWidth={2.4} /></i>
               <blockquote>
-                I kept seeing small security teams asked to do enterprise work without enterprise headcount.{" "}
-                <mark>PurveX exists to close that gap.</mark>
+                <p>I kept seeing small security teams asked to do enterprise work without enterprise headcount.</p>
+                <p>PurveX exists to <span>close that gap.</span></p>
               </blockquote>
               <figcaption>
                 <strong>Justin Duru</strong>
@@ -374,12 +375,25 @@ const AB_CSS = `
 .ab-founder__photo { position: relative; margin: 0 22px 22px 0 }
 .ab-founder__photo::before { content: ""; position: absolute; inset: 22px -22px -22px 22px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.25) }
 .ab-founder__photo img { position: relative; display: block; width: 100%; height: auto; aspect-ratio: 360 / 420; object-fit: cover; object-position: center 18%; box-shadow: 0 40px 80px -40px rgba(42,34,128,.5) }
-.ab-quote { margin: 24px 0 0; padding-left: 24px; border-left: 3px solid var(--accent) }
-.ab-quote blockquote { margin: 0; font-family: var(--font-display); font-size: clamp(1.1rem, 1.6vw, 1.3rem); font-weight: 500; line-height: 1.45; letter-spacing: -.015em; color: var(--ink-soft); text-wrap: pretty; max-width: 48ch }
-.ab-quote mark { display: table; margin-top: 8px; background: linear-gradient(transparent 62%, rgba(106,92,255,.2) 62%); color: var(--ink); font-weight: 600; -webkit-box-decoration-break: clone; box-decoration-break: clone }
-.ab-quote figcaption { display: flex; flex-direction: column; gap: 2px; margin-top: 20px }
-.ab-quote figcaption strong { font-size: .95rem; color: var(--ink) }
-.ab-quote figcaption span { font-size: .88rem; color: var(--muted) }
+.ab-quote {
+  position: relative; max-width: 620px; margin: 40px 0 0; padding: 36px 28px 22px;
+  background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 30px 60px -44px rgba(42,34,128,.5);
+}
+.ab-quote > i {
+  position: absolute; top: -20px; left: 28px; display: grid; place-items: center; width: 40px; height: 40px;
+  background: var(--accent); color: #fff; box-shadow: 0 12px 24px -12px rgba(85,70,224,.8);
+}
+.ab-quote > i svg { position: static }
+.ab-quote blockquote { margin: 0 }
+.ab-quote blockquote p { margin: 0; font-size: 1.05rem; line-height: 1.6; color: var(--ink-soft); text-wrap: pretty }
+.ab-quote blockquote p + p {
+  margin-top: 10px; font-family: var(--font-display); font-size: clamp(1.35rem, 2vw, 1.6rem); font-weight: 600;
+  line-height: 1.2; letter-spacing: -.03em; color: var(--ink);
+}
+.ab-quote blockquote p span { color: var(--accent-deep) }
+.ab-quote figcaption { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border) }
+.ab-quote figcaption strong { font-size: .92rem; color: var(--ink) }
+.ab-quote figcaption span { font-size: .86rem; color: var(--muted) }
 .ab-creds { margin-top: 32px; background: #fff; border: 1px solid var(--border-strong); border-left: 4px solid var(--accent); box-shadow: 0 24px 48px -38px rgba(42,34,128,.45) }
 .ab-creds__head { display: block; padding: 14px 20px; border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-deep) }
 .ab-creds ul { list-style: none; margin: 0; padding: 0 }
