@@ -375,8 +375,8 @@ const AB_CSS = `
 .ab-founder__photo::before { content: ""; position: absolute; inset: 22px -22px -22px 22px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.25) }
 .ab-founder__photo img { position: relative; display: block; width: 100%; height: auto; aspect-ratio: 360 / 420; object-fit: cover; object-position: center 18%; box-shadow: 0 40px 80px -40px rgba(42,34,128,.5) }
 .ab-quote { margin: 24px 0 0; padding-left: 24px; border-left: 3px solid var(--accent) }
-.ab-quote blockquote { margin: 0; font-family: var(--font-display); font-size: clamp(1.1rem, 1.6vw, 1.3rem); font-weight: 500; line-height: 1.45; letter-spacing: -.015em; color: var(--ink-soft); text-wrap: pretty }
-.ab-quote mark { background: linear-gradient(transparent 62%, rgba(106,92,255,.2) 62%); color: var(--ink); font-weight: 600 }
+.ab-quote blockquote { margin: 0; font-family: var(--font-display); font-size: clamp(1.1rem, 1.6vw, 1.3rem); font-weight: 500; line-height: 1.45; letter-spacing: -.015em; color: var(--ink-soft); text-wrap: pretty; max-width: 48ch }
+.ab-quote mark { display: table; margin-top: 8px; background: linear-gradient(transparent 62%, rgba(106,92,255,.2) 62%); color: var(--ink); font-weight: 600; -webkit-box-decoration-break: clone; box-decoration-break: clone }
 .ab-quote figcaption { display: flex; flex-direction: column; gap: 2px; margin-top: 20px }
 .ab-quote figcaption strong { font-size: .95rem; color: var(--ink) }
 .ab-quote figcaption span { font-size: .88rem; color: var(--muted) }
