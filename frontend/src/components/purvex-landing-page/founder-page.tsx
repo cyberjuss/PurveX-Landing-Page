@@ -2,7 +2,7 @@
 
 import { useRef, useState, type KeyboardEvent } from "react";
 import Image from "next/image";
-import { ArrowRight, CalendarClock, Check, Database, Linkedin, Users } from "lucide-react";
+import { ArrowRight, Check, Linkedin } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
@@ -226,24 +226,6 @@ export default function FounderPage() {
             <h2>Hands-on help with your SIEM and detections</h2>
             <p>Senior detection help for security teams, so the alerts they count on actually fire.</p>
           </div>
-          <dl className="fd-glance">
-            <div>
-              <dt><Users size={16} /> Built for</dt>
-              <dd>Small security teams without a full-time detection engineer</dd>
-            </div>
-            <div>
-              <dt><Database size={16} /> Works in</dt>
-              <dd className="fd-glance__chips">
-                <span>Microsoft Sentinel</span>
-                <span>Splunk</span>
-                <span>Splunk SOAR</span>
-              </dd>
-            </div>
-            <div>
-              <dt><CalendarClock size={16} /> Starts with</dt>
-              <dd>A 30-minute call about your SIEM and your team</dd>
-            </div>
-          </dl>
         </div>
 
         <ProblemPicker />
@@ -328,17 +310,9 @@ const FD_CSS = `
 /* consulting */
 .fd-consult { scroll-margin-top: 84px }
 .fd-label { display: block; font-size: .82rem; font-weight: 700; color: var(--accent-deep) }
-.fd-consult__head { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 32px 56px; align-items: end; margin-bottom: 48px }
+.fd-consult__head { margin-bottom: 48px }
 .fd-consult__head h2 { margin: 10px 0 0; font-family: var(--font-display); font-weight: 700; letter-spacing: -.025em; line-height: 1.12; font-size: clamp(1.7rem, 3vw, 2.35rem); color: var(--ink); text-wrap: balance }
 .fd-consult__head p { margin: 12px 0 0; max-width: 52ch; font-size: 1.02rem; line-height: 1.6; color: var(--ink-soft) }
-.fd-glance { margin: 0; background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 24px 48px -38px rgba(42,34,128,.45) }
-.fd-glance > div { display: grid; grid-template-columns: 124px minmax(0, 1fr); gap: 16px; align-items: center; padding: 14px 18px }
-.fd-glance > div + div { border-top: 1px solid var(--border) }
-.fd-glance dt { display: flex; align-items: center; gap: 8px; font-size: .82rem; font-weight: 700; color: var(--accent-deep) }
-.fd-glance dt svg { position: static; flex: none }
-.fd-glance dd { margin: 0; font-size: .94rem; font-weight: 550; line-height: 1.45; color: var(--ink) }
-.fd-glance__chips { display: flex; flex-wrap: wrap; gap: 6px }
-.fd-glance__chips span { padding: 3px 9px; background: var(--accent-soft); font-size: .82rem; font-weight: 650; color: var(--accent-deep) }
 
 /* problem picker */
 .pp__ask { margin: 0; font-family: var(--font-display); font-size: clamp(1.25rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -.02em; color: var(--ink) }
@@ -400,7 +374,6 @@ const FD_CSS = `
   .pp__col--get { grid-column: 1 / -1; border-left: 0 !important; border-top: 1px solid var(--border) }
 }
 @media (max-width: 900px) {
-  .fd-consult__head { grid-template-columns: minmax(0, 1fr); align-items: start }
   .fd-hero { grid-template-columns: minmax(0, 1fr) }
   .fd-hero__photo { justify-self: start; width: min(100%, 340px); margin-right: 22px }
   .fd-facts { grid-template-columns: repeat(2, minmax(0, 1fr)) }
@@ -421,8 +394,7 @@ const FD_CSS = `
   .fd-facts li, .fd-facts li + li { padding: 16px 0; border-left: 0 }
   .fd-facts li + li { border-top: 1px solid var(--border) }
   .pp__opts { grid-template-columns: minmax(0, 1fr) }
-  .fd-glance > div { grid-template-columns: minmax(0, 1fr); gap: 6px }
-  .pp__opts button { min-height: 0 }
+    .pp__opts button { min-height: 0 }
   .pp__col { padding: 20px 16px }
 }
 `;
