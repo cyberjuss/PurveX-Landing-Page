@@ -183,12 +183,11 @@ export default function AboutPage() {
             <Image src="/Justin.jpg" alt="Justin Duru" width={360} height={420} />
           </div>
           <div className="ab-founder__copy">
-            <span className="ab-label">Built from real experience</span>
+            <span className="sp-tag">Built from real experience</span>
             <figure className="ab-quote">
-              <span className="ab-quote__mark" aria-hidden="true">&ldquo;</span>
               <blockquote>
-                I kept seeing small security teams asked to do enterprise work without enterprise headcount. PurveX exists
-                to close that gap.
+                I kept seeing small security teams asked to do enterprise work without enterprise headcount.{" "}
+                <mark>PurveX exists to close that gap.</mark>
               </blockquote>
               <figcaption>
                 <strong>Justin Duru</strong>
@@ -375,14 +374,12 @@ const AB_CSS = `
 .ab-founder__photo { position: relative; margin: 0 22px 22px 0 }
 .ab-founder__photo::before { content: ""; position: absolute; inset: 22px -22px -22px 22px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.25) }
 .ab-founder__photo img { position: relative; display: block; width: 100%; height: auto; aspect-ratio: 360 / 420; object-fit: cover; object-position: center 18%; box-shadow: 0 40px 80px -40px rgba(42,34,128,.5) }
-.ab-label { display: block; font-size: .82rem; font-weight: 700; color: var(--accent-deep) }
-.ab-quote { position: relative; margin: 44px 0 0; padding-left: 4px }
-.ab-quote__mark { position: absolute; left: -10px; top: -34px; font-family: var(--font-display); font-size: 6rem; line-height: 1; color: rgba(106,92,255,.22); pointer-events: none }
-.ab-quote blockquote { position: relative; margin: 0; font-family: var(--font-display); font-size: clamp(1.35rem, 2.2vw, 1.75rem); font-weight: 500; line-height: 1.35; letter-spacing: -.022em; color: var(--ink); text-wrap: pretty }
-.ab-quote figcaption { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin-top: 20px }
-.ab-quote figcaption::before { content: ""; width: 28px; height: 2px; background: var(--accent) }
-.ab-quote figcaption strong { font-size: .95rem; white-space: nowrap; color: var(--ink) }
-.ab-quote figcaption span { font-size: .9rem; color: var(--muted) }
+.ab-quote { margin: 24px 0 0; padding-left: 24px; border-left: 3px solid var(--accent) }
+.ab-quote blockquote { margin: 0; font-family: var(--font-display); font-size: clamp(1.35rem, 2.2vw, 1.75rem); font-weight: 500; line-height: 1.35; letter-spacing: -.022em; color: var(--ink-soft); text-wrap: pretty }
+.ab-quote mark { background: linear-gradient(transparent 62%, rgba(106,92,255,.2) 62%); color: var(--ink); font-weight: 600 }
+.ab-quote figcaption { display: flex; flex-direction: column; gap: 2px; margin-top: 20px }
+.ab-quote figcaption strong { font-size: .95rem; color: var(--ink) }
+.ab-quote figcaption span { font-size: .88rem; color: var(--muted) }
 .ab-creds { margin-top: 32px; background: #fff; border: 1px solid var(--border-strong); border-left: 4px solid var(--accent); box-shadow: 0 24px 48px -38px rgba(42,34,128,.45) }
 .ab-creds__head { display: block; padding: 14px 20px; border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-deep) }
 .ab-creds ul { list-style: none; margin: 0; padding: 0 }
