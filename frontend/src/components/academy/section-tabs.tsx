@@ -102,6 +102,9 @@ export function SectionTabs({
     setDir(i >= active ? 1 : -1);
     setActive(i);
     if (isPhone()) setCollapsed(true);
+    // Keep the tab in the URL so a refresh or shared link reopens it.
+    const { pathname, search } = window.location;
+    window.history.replaceState(window.history.state, "", i === 0 ? pathname + search : `${pathname}${search}#${slugify(items[i].label)}`);
   }
 
   const prevTrail: TrailLink | null = prevItem
@@ -161,6 +164,7 @@ export function SectionTabs({
             Overview. */}
         <LabCarousel
           key={current.label}
+          storageKey={current.label}
           slides={splitMarkdownIntoSlides(current.markdown)}
           actionHost={labFoot}
           prevBeyond={prevTrail}
