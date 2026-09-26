@@ -3295,16 +3295,16 @@ body:has(.lp) {
 /* Screenshots: a framed card sized to the image, capped so wide captures
    do not fill the column and small dialogs are never upscaled. */
 .academy-prose .ad-shot {
-  width: fit-content; max-width: min(100%, 540px); margin: 1.1rem 0 1.5rem; padding: 8px;
+  width: fit-content; max-width: min(100%, 440px); margin: 0.9rem 0 1.2rem; padding: 6px;
   background: #fff; border: 1px solid var(--pvrx-border-light); border-radius: 12px;
   box-shadow: 0 1px 2px rgba(16,25,46,0.04), 0 12px 28px -18px rgba(16,25,46,0.28);
 }
 .academy-prose .ad-shot img {
-  display: block; width: auto; max-width: 100%; max-height: 340px; margin: 0; object-fit: contain;
+  display: block; width: auto; max-width: 100%; max-height: 270px; margin: 0; object-fit: contain;
   border: 1px solid var(--pvrx-border-light); border-radius: 8px; background: #f6f7fb;
 }
 /* width 0 + min-width 100% lets the image, not the caption, set the card width. */
-.academy-prose .ad-shot figcaption { width: 0; min-width: 100%; box-sizing: border-box; margin: 0; padding: 0.55rem 0.3rem 0.1rem; font-size: 0.84rem; line-height: 1.45; color: var(--pvrx-text-secondary-light); }
+.academy-prose .ad-shot figcaption { width: 0; min-width: 100%; box-sizing: border-box; margin: 0; padding: 0.45rem 0.25rem 0.05rem; font-size: 0.8rem; line-height: 1.45; color: var(--pvrx-text-secondary-light); }
 
 /* CTF-style challenges (Operation Day One, Ticket Queue) -- shared here
    instead of duplicated per-file, since both challenge markdown files
