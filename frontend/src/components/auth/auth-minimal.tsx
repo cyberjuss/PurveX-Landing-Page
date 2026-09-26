@@ -57,7 +57,7 @@ export function AuthMinimal({ children, product = "" }: { children: ReactNode; p
         .am-primary:focus-visible, .am-secondary:focus-visible, .am-link:focus-visible { outline: 2px solid #6a5cff; outline-offset: 2px }
         .am-link { color: #10192e; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; background: none; border: 0; padding: 0; font-size: inherit }
         .am-link:hover { color: #6a5cff }
-        .am-legal { margin: 24px 0 0; text-align: center; font-size: 0.8rem; line-height: 1.5; color: #64748b }
+        .am-legal { margin: 14px 0 0; text-align: center; font-size: 0.8rem; line-height: 1.5; color: #64748b }
         .am-legal a { color: #6a5cff; font-weight: 600; text-decoration: underline; text-underline-offset: 3px }
         .am-legal a:hover { color: #5546e0 }
         .am-page--academy .am-primary { background: #6a5cff }

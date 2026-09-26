@@ -141,17 +141,17 @@ function PortalLoginContent() {
             {phase === "google" ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleMark />}
             Continue with Google
           </button>
+          <p className="am-legal">
+            By continuing you agree to the{" "}
+            <Link href="/legal/terms">Terms</Link> and{" "}
+            <Link href="/legal/privacy">Privacy Policy</Link>.
+          </p>
 
           <p className="mt-8 text-center text-sm text-slate-600">
             New to PurveX?{" "}
             <Link href={planFromNext ? `/account/signup?plan=${planFromNext}` : "/account/signup"} className="am-link">
               Create an account
             </Link>
-          </p>
-          <p className="mt-6 text-xs leading-5 text-slate-500">
-            By continuing you agree to the{" "}
-            <Link href="/legal/terms" className="underline underline-offset-2 hover:text-[#10192e]">Terms</Link> and{" "}
-            <Link href="/legal/privacy" className="underline underline-offset-2 hover:text-[#10192e]">Privacy Policy</Link>.
           </p>
         </div>
       </AuthMinimal>

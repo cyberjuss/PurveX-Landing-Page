@@ -170,17 +170,17 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
             {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleMark />}
             Continue with Google
           </button>
+          <p className="am-legal">
+            By continuing you agree to the{" "}
+            <Link href="/legal/terms">Terms</Link> and{" "}
+            <Link href="/legal/privacy">Privacy Policy</Link>.
+          </p>
 
           <p className="mt-8 text-center text-sm text-slate-600">
             {mode === "signin" ? "New to the Academy? " : "Already have an account? "}
             <button type="button" onClick={switchMode} className="am-link">
               {mode === "signin" ? "Create an account" : "Sign in"}
             </button>
-          </p>
-          <p className="am-legal">
-            By continuing you agree to the{" "}
-            <Link href="/legal/terms">Terms</Link> and{" "}
-            <Link href="/legal/privacy">Privacy Policy</Link>.
           </p>
         </div>
       </AuthMinimal>
