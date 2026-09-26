@@ -224,7 +224,7 @@ export default function FounderPage() {
           <div className="fd-consult__intro">
             <span className="fd-label">Consulting</span>
             <h2>Hands-on help with your SIEM and detections</h2>
-            <p>Senior detection help for security teams, so the alerts they count on actually fire.</p>
+            <p>I find the alerts that would miss a real attack, then fix them before one happens.</p>
           </div>
         </div>
 
