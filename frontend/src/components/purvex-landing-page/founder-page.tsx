@@ -34,8 +34,9 @@ const story = [
 ];
 
 // Consulting: hands-on SIEM and detection work, booked directly with Justin.
-const services: { title: string; short: string; body: string; problem: string; does: string[]; get: string; Icon: BrandIcon }[] = [
+const services: { pain: string; title: string; short: string; body: string; problem: string; does: string[]; get: string; Icon: BrandIcon }[] = [
   {
+    pain: "Real attacks slip past our alerts",
     title: "Detection engineering",
     short: "New rules for your logs",
     body: "Rules written for your logs and your environment, not a vendor template.",
@@ -49,6 +50,7 @@ const services: { title: string; short: string; body: string; problem: string; d
     Icon: IconRule,
   },
   {
+    pain: "We drown in false alarms",
     title: "Noise reduction",
     short: "Fewer false alarms",
     body: "Tune out false alarms so a real alert is not buried under them.",
@@ -62,6 +64,7 @@ const services: { title: string; short: string; body: string; problem: string; d
     Icon: IconTune,
   },
   {
+    pain: "We can't see where the gaps are",
     title: "Coverage review",
     short: "Know where the gaps are",
     body: "Map what your SIEM can see against MITRE ATT&CK and find the gaps.",
@@ -75,6 +78,7 @@ const services: { title: string; short: string; body: string; problem: string; d
     Icon: IconAudit,
   },
   {
+    pain: "We're not sure our alerts fire",
     title: "Detection validation",
     short: "Proof your alerts fire",
     body: "Test that each alert actually fires, and keep the evidence.",
@@ -90,10 +94,18 @@ const services: { title: string; short: string; body: string; problem: string; d
 ];
 
 
-function ServiceExplorer() {
+const steps = [
+  { title: "Book 30 minutes", body: "Tell me about your SIEM, your team, and what worries you." },
+  { title: "Review together", body: "We look at what fires, what does not, and where the gaps are." },
+  { title: "Agree a scope", body: "A short, focused engagement with a clear result." },
+];
+
+// Consulting told from the buyer's side: pick what is going wrong, and see
+// the service that fixes it, what I do, and what you get.
+function ProblemPicker() {
   const [on, setOn] = useState(0);
-  const tabs = useRef<(HTMLButtonElement | null)[]>([]);
-  const s = services[on];
+  const opts = useRef<(HTMLButtonElement | null)[]>([]);
+  const x = services[on];
 
   function onKey(e: KeyboardEvent<HTMLDivElement>) {
     const d = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : e.key === "ArrowUp" || e.key === "ArrowLeft" ? -1 : 0;
@@ -101,73 +113,57 @@ function ServiceExplorer() {
     e.preventDefault();
     const n = (on + d + services.length) % services.length;
     setOn(n);
-    tabs.current[n]?.focus();
+    opts.current[n]?.focus();
   }
 
   return (
-    <div className="fx">
-      <div className="fx__list" role="tablist" aria-label="Consulting services" aria-orientation="vertical" onKeyDown={onKey}>
-        {services.map((x, n) => (
+    <div className="pp">
+      <p className="pp__ask" id="pp-ask">What is going wrong on your team?</p>
+      <div className="pp__opts" role="radiogroup" aria-labelledby="pp-ask" onKeyDown={onKey}>
+        {services.map((o, n) => (
           <button
-            key={x.title}
-            ref={(el) => { tabs.current[n] = el; }}
+            key={o.title}
+            ref={(el) => { opts.current[n] = el; }}
             type="button"
-            role="tab"
-            id={`fx-tab-${n}`}
-            aria-selected={n === on}
-            aria-controls="fx-panel"
+            role="radio"
+            aria-checked={n === on}
             tabIndex={n === on ? 0 : -1}
             onClick={() => setOn(n)}
           >
-            <i><x.Icon size={20} /></i>
-            <span>
-              <strong>{x.title}</strong>
-              <small>{x.short}</small>
-            </span>
-            <ArrowRight size={16} className="fx__arrow" />
+            <i aria-hidden="true">{n === on ? <Check size={14} strokeWidth={3} /> : null}</i>
+            <span>&ldquo;{o.pain}&rdquo;</span>
           </button>
         ))}
       </div>
 
-      <div className="fx__panel" role="tabpanel" id="fx-panel" aria-labelledby={`fx-tab-${on}`} key={s.title}>
-        <div className="fx__top">
-          <i><s.Icon size={26} /></i>
-          <div>
-            <h3>{s.title}</h3>
-            <p>{s.body}</p>
+      <div className="pp__answer" key={x.title} aria-live="polite">
+        <div className="pp__col pp__col--why">
+          <span className="pp__tag">The fix</span>
+          <div className="pp__svc">
+            <i><x.Icon size={22} /></i>
+            <h3>{x.title}</h3>
           </div>
+          <p className="pp__problem">{x.problem}</p>
         </div>
-        <div className="fx__problem">
-          <span>The problem</span>
-          <p>{s.problem}</p>
-        </div>
-        <div className="fx__does">
-          <span>What I do</span>
+        <div className="pp__col">
+          <span className="pp__tag">What I do</span>
           <ul>
-            {s.does.map((d) => (
+            {x.does.map((d) => (
               <li key={d}><b><Check size={12} strokeWidth={3} /></b>{d}</li>
             ))}
           </ul>
         </div>
-        <div className="fx__get">
-          <div>
-            <span>You get</span>
-            <strong>{s.get}</strong>
-          </div>
+        <div className="pp__col pp__col--get">
+          <span className="pp__tag">You get</span>
+          <strong>{x.get}</strong>
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Book a call about this <ArrowRight size={16} />
+            Book a call <ArrowRight size={16} />
           </a>
         </div>
       </div>
     </div>
   );
 }
-
-const steps = [
-  { title: "Book 30 minutes", body: "Tell me about your SIEM, your team, and what worries you." },
-  { title: "Review together", body: "We look at what fires, what does not, and where the gaps are." },
-  { title: "Agree a scope", body: "A short, focused engagement with a clear result." },
-];
 
 export default function FounderPage() {
   return (
@@ -237,7 +233,7 @@ export default function FounderPage() {
           </p>
         </div>
 
-        <ServiceExplorer />
+        <ProblemPicker />
 
         <div className="fd-how">
           <span className="fd-label">How it works</span>
@@ -325,47 +321,46 @@ const FD_CSS = `
 .fd-works { font-size: .92rem !important; color: var(--ink) !important; font-weight: 600 }
 .fd-works span { margin-right: 8px; font-weight: 600; color: var(--muted) }
 
-/* service explorer */
-.fx { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 40px 80px -56px rgba(42,34,128,.45) }
-.fx__list { display: flex; flex-direction: column; padding: 10px; background: #f8f8fd; border-right: 1px solid var(--border) }
-.fx__list button {
-  position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px;
-  width: 100%; padding: 16px 14px; text-align: left; background: transparent; border: 1px solid transparent; cursor: pointer; color: var(--ink);
-  transition: background .2s, border-color .2s, box-shadow .2s;
+/* problem picker */
+.pp__ask { margin: 0; font-family: var(--font-display); font-size: clamp(1.25rem, 2vw, 1.5rem); font-weight: 600; letter-spacing: -.02em; color: var(--ink) }
+.pp__opts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 18px }
+.pp__opts button {
+  display: flex; align-items: center; gap: 12px; min-height: 72px; padding: 14px 16px; text-align: left; cursor: pointer;
+  background: #fff; border: 1px solid var(--border-strong); color: var(--ink); font-size: .98rem; font-weight: 600; line-height: 1.35;
+  transition: border-color .2s, background .2s, box-shadow .2s, transform .2s;
 }
-.fx__list button + button { margin-top: 4px }
-.fx__list button:hover { background: #fff }
-.fx__list button[aria-selected="true"] { background: #fff; border-color: var(--border); box-shadow: 0 12px 26px -20px rgba(42,34,128,.5) }
-.fx__list button[aria-selected="true"]::before { content: ""; position: absolute; left: -1px; top: -1px; bottom: -1px; width: 3px; background: var(--accent) }
-.fx__list button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px }
-.fx__list i { display: grid; place-items: center; width: 40px; height: 40px; background: var(--accent-soft); color: var(--accent-deep); transition: background .2s, color .2s }
-.fx__list i svg { position: static }
-.fx__list button[aria-selected="true"] i { background: var(--accent-deep); color: #fff }
-.fx__list strong { display: block; font-size: 1rem; font-weight: 650 }
-.fx__list small { display: block; margin-top: 2px; font-size: .84rem; color: var(--muted) }
-.fx__arrow { position: static; color: var(--accent-deep); opacity: 0; transform: translateX(-4px); transition: opacity .2s, transform .2s }
-.fx__list button[aria-selected="true"] .fx__arrow { opacity: 1; transform: none }
+.pp__opts button:hover { border-color: rgba(106,92,255,.45); transform: translateY(-2px) }
+.pp__opts button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.pp__opts button[aria-checked="true"] { background: var(--accent-soft); border-color: var(--accent); box-shadow: 0 16px 32px -24px rgba(85,70,224,.7); transform: none }
+.pp__opts i { display: grid; place-items: center; width: 22px; height: 22px; flex: none; border: 2px solid var(--border-strong); color: #fff; transition: background .2s, border-color .2s }
+.pp__opts i svg { position: static }
+.pp__opts button[aria-checked="true"] i { background: var(--accent-deep); border-color: var(--accent-deep) }
 
-.fx__panel { display: flex; flex-direction: column; gap: 22px; padding: clamp(24px, 3.5vw, 40px); animation: fx-in .35s cubic-bezier(.16,1,.3,1) both }
-.fx__top { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: start }
-.fx__top i { display: grid; place-items: center; width: 56px; height: 56px; background: var(--accent); color: #fff; box-shadow: 0 16px 30px -16px rgba(85,70,224,.8) }
-.fx__top i svg { position: static }
-.fx__top h3 { margin: 4px 0 0; font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; letter-spacing: -.03em; color: var(--ink) }
-.fx__top p { margin: 6px 0 0; max-width: 52ch; font-size: 1.02rem; line-height: 1.55; color: var(--ink-soft) }
-.fx__problem { padding: 14px 16px; background: #fef6f5; border-left: 3px solid #e5484d }
-.fx__problem span { display: block; font-size: .8rem; font-weight: 700; color: #b42318 }
-.fx__problem p { margin: 4px 0 0; max-width: 60ch; font-size: .98rem; line-height: 1.5; color: var(--ink) }
-.fx__does span, .fx__get span { display: block; font-size: .8rem; font-weight: 700; color: var(--muted) }
-.fx__does ul { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 12px }
-.fx__does li { display: flex; align-items: flex-start; gap: 12px; font-size: .98rem; line-height: 1.45; color: var(--ink) }
-.fx__does li b { display: grid; place-items: center; width: 22px; height: 22px; flex: none; margin-top: 1px; color: #fff; background: var(--accent-deep) }
-.fx__does li b svg { position: static }
-.fx__get { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; margin-top: auto; padding: 18px 20px; background: #f0fdf4; border: 1px solid rgba(22,163,74,.25) }
-.fx__get span { color: #15803d }
-.fx__get strong { display: block; margin-top: 3px; font-size: 1.05rem; font-weight: 650; color: #14532d }
-.fx__get .sp-btn { flex: none }
-.fx__get .sp-btn svg { position: static }
-@keyframes fx-in { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+.pp__answer {
+  position: relative; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, .85fr); margin-top: 16px;
+  background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 40px 80px -56px rgba(42,34,128,.45);
+  animation: pp-in .4s cubic-bezier(.16,1,.3,1) both;
+}
+.pp__answer::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: linear-gradient(90deg, var(--accent-deep), var(--accent)) }
+.pp__col { padding: clamp(22px, 3vw, 32px) }
+.pp__col + .pp__col { border-left: 1px solid var(--border) }
+.pp__tag { display: block; font-size: .8rem; font-weight: 700; color: var(--muted) }
+.pp__svc { display: flex; align-items: center; gap: 14px; margin-top: 12px }
+.pp__svc i { display: grid; place-items: center; width: 46px; height: 46px; flex: none; background: var(--accent); color: #fff; box-shadow: 0 14px 28px -14px rgba(85,70,224,.8) }
+.pp__svc i svg { position: static }
+.pp__svc h3 { margin: 0; font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; letter-spacing: -.03em; color: var(--ink) }
+.pp__problem { margin: 16px 0 0; padding-left: 14px; border-left: 3px solid #e5484d; font-size: .98rem; line-height: 1.55; color: var(--ink-soft) }
+.pp__col ul { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 12px }
+.pp__col li { display: flex; align-items: flex-start; gap: 12px; font-size: .96rem; line-height: 1.45; color: var(--ink) }
+.pp__col li b { display: grid; place-items: center; width: 22px; height: 22px; flex: none; margin-top: 1px; color: #fff; background: var(--accent-deep) }
+.pp__col li b svg { position: static }
+.pp__col--get { display: flex; flex-direction: column; background: #f3fbf6 }
+.pp__col--get .pp__tag { color: #15803d }
+.pp__col--get strong { display: block; margin-top: 10px; font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; line-height: 1.3; letter-spacing: -.015em; color: #14532d }
+.pp__col--get .sp-btn { margin-top: auto; justify-content: center }
+.pp__col--get .sp-btn svg { position: static }
+.pp__col--get strong + .sp-btn { margin-top: 24px }
+@keyframes pp-in { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
 
 /* how it works */
 .fd-how { margin-top: clamp(64px, 8vw, 96px); padding-top: clamp(40px, 5vw, 56px); border-top: 1px solid var(--border) }
@@ -378,11 +373,12 @@ const FD_CSS = `
 
 @media (prefers-reduced-motion: reduce) {
   .fd-story li { opacity: 1; transform: none; transition: none }
-  .fx__panel { animation: none }
+  .pp__answer { animation: none }
 }
 @media (max-width: 1080px) {
-  .fx { grid-template-columns: minmax(0, 280px) minmax(0, 1fr) }
-  .fx__get { flex-direction: column; align-items: stretch }
+  .pp__opts { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+  .pp__answer { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) }
+  .pp__col--get { grid-column: 1 / -1; border-left: 0 !important; border-top: 1px solid var(--border) }
 }
 @media (max-width: 900px) {
   .fd-hero { grid-template-columns: minmax(0, 1fr) }
@@ -392,11 +388,8 @@ const FD_CSS = `
   .fd-facts li:nth-child(n+3) { border-top: 1px solid var(--border) }
   .fd-story { grid-template-columns: minmax(0, 1fr) }
   .fd-story__side { position: static }
-  .fx { grid-template-columns: minmax(0, 1fr) }
-  .fx__list { flex-direction: row; overflow-x: auto; gap: 6px; border-right: 0; border-bottom: 1px solid var(--border); scroll-snap-type: x mandatory }
-  .fx__list button { flex: none; width: 230px; scroll-snap-align: start }
-  .fx__list button + button { margin-top: 0 }
-  .fx__arrow { display: none }
+  .pp__answer { grid-template-columns: minmax(0, 1fr) }
+  .pp__col + .pp__col { border-left: 0; border-top: 1px solid var(--border) }
   .fd-how ol { grid-template-columns: minmax(0, 1fr); gap: 20px }
   .fd-how ol::before { left: 17px; right: auto; top: 18px; bottom: 18px; width: 2px; height: auto }
   .fd-how li { padding-left: 54px }
@@ -407,7 +400,8 @@ const FD_CSS = `
   .fd-facts { grid-template-columns: minmax(0, 1fr) }
   .fd-facts li, .fd-facts li + li { padding: 16px 0; border-left: 0 }
   .fd-facts li + li { border-top: 1px solid var(--border) }
-  .fx__panel { padding: 22px 16px }
-  .fx__top { grid-template-columns: minmax(0, 1fr) }
+  .pp__opts { grid-template-columns: minmax(0, 1fr) }
+  .pp__opts button { min-height: 0 }
+  .pp__col { padding: 20px 16px }
 }
 `;
