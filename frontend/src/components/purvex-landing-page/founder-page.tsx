@@ -21,12 +21,34 @@ const bioSections = [
 ];
 
 // Consulting: hands-on SIEM and detection work, booked directly with Justin.
-const services: { title: string; body: string; Icon: BrandIcon }[] = [
-  { title: "Detection engineering", body: "Rules written for your logs and your environment, not a vendor template.", Icon: IconRule },
-  { title: "Noise reduction", body: "Tune out false alarms so a real alert is not buried under them.", Icon: IconTune },
-  { title: "Coverage review", body: "Map what your SIEM can see against MITRE ATT&CK and find the gaps.", Icon: IconAudit },
-  { title: "Detection validation", body: "Test that each alert actually fires, and keep the evidence.", Icon: IconValidate },
+const services: { title: string; body: string; get: string; Icon: BrandIcon }[] = [
+  {
+    title: "Detection engineering",
+    body: "Rules written for your logs and your environment, not a vendor template.",
+    get: "Tested detections, ready to run in your SIEM",
+    Icon: IconRule,
+  },
+  {
+    title: "Noise reduction",
+    body: "Tune out false alarms so a real alert is not buried under them.",
+    get: "A shorter, cleaner alert queue",
+    Icon: IconTune,
+  },
+  {
+    title: "Coverage review",
+    body: "Map what your SIEM can see against MITRE ATT&CK and find the gaps.",
+    get: "A coverage map with the gaps marked and ranked",
+    Icon: IconAudit,
+  },
+  {
+    title: "Detection validation",
+    body: "Test that each alert actually fires, and keep the evidence.",
+    get: "A report of which alerts fired, with evidence",
+    Icon: IconValidate,
+  },
 ];
+
+const platforms = ["Microsoft Sentinel", "Splunk", "Splunk SOAR", "MITRE ATT&CK"];
 
 const steps = [
   { title: "Book 30 minutes", body: "Tell me about your SIEM, your team, and what worries you." },
@@ -99,38 +121,47 @@ export default function FounderPage() {
       </section>
 
       <section className="sp-section fc" id="consulting">
-        <div className="fc__head">
-          <span className="sp-founder-page__section-label">Consulting</span>
-          <h2>Hands-on help with your SIEM and detections</h2>
-          <p>
-            I work with security teams on Microsoft Sentinel, Splunk, and the detections inside them, so the alerts you
-            count on actually fire.
-          </p>
-        </div>
-        <ul className="fc__services" data-r>
-          {services.map(({ title, body, Icon }) => (
-            <li key={title}>
-              <i><Icon size={22} /></i>
-              <strong>{title}</strong>
-              <p>{body}</p>
-            </li>
-          ))}
-        </ul>
-        <div className="fc__how">
-          <ol>
-            {steps.map((s, n) => (
-              <li key={s.title}>
-                <b>{n + 1}</b>
+        <div className="fc__panel">
+          <div className="fc__intro">
+            <span className="fc__label">Consulting</span>
+            <h2>Hands-on help with your SIEM and detections</h2>
+            <p>
+              I work with security teams on the detections inside their SIEM, so the alerts they count on actually fire.
+            </p>
+            <ul className="fc__tags" aria-label="Platforms">
+              {platforms.map((t) => <li key={t}>{t}</li>)}
+            </ul>
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg fc__cta">
+              Book 30 minutes <ArrowRight size={16} />
+            </a>
+          </div>
+
+          <ol className="fc__services" data-r>
+            {services.map(({ title, body, get, Icon }, n) => (
+              <li key={title}>
+                <i><Icon size={22} /></i>
                 <div>
-                  <strong>{s.title}</strong>
-                  <p>{s.body}</p>
+                  <span className="fc__n">{String(n + 1).padStart(2, "0")}</span>
+                  <strong>{title}</strong>
+                  <p>{body}</p>
+                  <em>You get: {get}</em>
                 </div>
               </li>
             ))}
           </ol>
-          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Book 30 minutes <ArrowRight size={16} />
-          </a>
+
+          <div className="fc__how">
+            <span className="fc__label">How it works</span>
+            <ol>
+              {steps.map((st, n) => (
+                <li key={st.title}>
+                  <b>{n + 1}</b>
+                  <strong>{st.title}</strong>
+                  <p>{st.body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       </section>
 
@@ -176,27 +207,66 @@ export default function FounderPage() {
 .sp-founder-page__fact strong { display: block; font-size: .88rem; font-weight: 620; color: var(--ink); line-height: 1.4 }
 
 /* consulting */
-.fc { max-width: 940px; margin: 0 auto; scroll-margin-top: 90px }
-.fc__head h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.6rem, 2.8vw, 2.2rem); font-weight: 700; letter-spacing: -.025em; line-height: 1.15; color: var(--ink) }
-.fc__head p { margin: 12px 0 0; max-width: 58ch; font-size: 1.03rem; line-height: 1.65; color: var(--ink-soft) }
-.fc__services { list-style: none; margin: 32px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px }
-.fc__services[data-r] { opacity: 1; transform: none; filter: none }
-.fc__services li { padding: 22px; background: #fff; border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 18px 36px -30px rgba(42,34,128,.4) }
-.fc__services i { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-deep) }
-.fc__services i svg { position: static }
-.fc__services strong { display: block; margin-top: 14px; font-size: 1.05rem; font-weight: 650; color: var(--ink) }
-.fc__services p { margin: 6px 0 0; font-size: .95rem; line-height: 1.55; color: var(--muted) }
-.fc__how { display: flex; align-items: center; justify-content: space-between; gap: 24px 40px; margin-top: 18px; padding: 24px; border-radius: 16px; background: var(--accent-soft) }
-.fc__how ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; flex: 1 }
-.fc__how li { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start }
-.fc__how b { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; font-size: .82rem; color: #fff; background: var(--accent-deep) }
-.fc__how strong { display: block; font-size: .96rem; font-weight: 650; color: var(--ink) }
-.fc__how p { margin: 3px 0 0; font-size: .88rem; line-height: 1.45; color: var(--ink-soft) }
-.fc__how .sp-btn { flex: none }
+.fc { max-width: 1080px; margin: 0 auto; scroll-margin-top: 90px }
+.fc__panel {
+  display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 40px 56px; padding: clamp(28px, 4vw, 48px);
+  border-radius: 24px; background: linear-gradient(160deg, #f4f3ff 0%, #fbfbff 55%, #fff 100%); border: 1px solid rgba(106,92,255,.18);
+  box-shadow: 0 40px 80px -60px rgba(42,34,128,.45);
+}
+.fc__label { display: block; font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep) }
+.fc__intro { align-self: start; position: sticky; top: 104px }
+.fc__intro h2 { margin: 12px 0 0; font-family: var(--font-display); font-size: clamp(1.7rem, 3vw, 2.35rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.12; color: var(--ink); text-wrap: balance }
+.fc__intro > p { margin: 14px 0 0; max-width: 40ch; font-size: 1.03rem; line-height: 1.65; color: var(--ink-soft) }
+.fc__tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 20px 0 0; padding: 0 }
+.fc__tags li { padding: 6px 12px; border-radius: 999px; background: #fff; border: 1px solid rgba(106,92,255,.22); font-size: .82rem; font-weight: 600; color: var(--ink-soft) }
+.fc__cta { margin-top: 28px }
 
+.fc__services { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px }
+.fc__services[data-r] { opacity: 1; transform: none; filter: none }
+.fc__services li {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; padding: 20px 22px; border-radius: 18px;
+  background: #fff; border: 1px solid #ebebf5; box-shadow: 0 14px 30px -26px rgba(42,34,128,.5);
+  opacity: 0; transform: translateY(12px);
+  transition: opacity .6s var(--ease), transform .6s var(--ease), border-color .25s, box-shadow .25s;
+}
+.fc__services.in li { opacity: 1; transform: none }
+.fc__services.in li:nth-child(2) { transition-delay: .08s, .08s, 0s, 0s }
+.fc__services.in li:nth-child(3) { transition-delay: .16s, .16s, 0s, 0s }
+.fc__services.in li:nth-child(4) { transition-delay: .24s, .24s, 0s, 0s }
+.fc__services li:hover { border-color: rgba(106,92,255,.4); box-shadow: 0 20px 40px -26px rgba(85,70,224,.55) }
+.fc__services i { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: var(--accent-soft); color: var(--accent-deep); transition: background .25s, color .25s }
+.fc__services li:hover i { background: var(--accent-deep); color: #fff }
+.fc__services i svg { position: static }
+.fc__n { display: block; font-family: var(--font-mono); font-size: .72rem; font-weight: 700; color: var(--muted-dim, #9a9cb8) }
+.fc__services strong { display: block; margin-top: 2px; font-size: 1.1rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
+.fc__services p { margin: 5px 0 0; font-size: .95rem; line-height: 1.55; color: var(--ink-soft) }
+.fc__services em {
+  display: inline-block; margin-top: 12px; padding: 5px 10px; border-radius: 8px; font-style: normal;
+  font-size: .82rem; font-weight: 600; color: #166534; background: #ecfdf3;
+}
+
+.fc__how { grid-column: 1 / -1; padding-top: 28px; border-top: 1px solid rgba(106,92,255,.16) }
+.fc__how ol { position: relative; list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px }
+.fc__how ol::before { content: ""; position: absolute; left: 18px; right: calc((100% - 48px) / 3 - 18px); top: 18px; height: 2px; background: linear-gradient(90deg, var(--accent), rgba(106,92,255,.2)) }
+.fc__how li { position: relative }
+.fc__how b {
+  position: relative; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+  font-size: .9rem; color: #fff; background: var(--accent-deep); box-shadow: 0 0 0 5px #f7f6ff;
+}
+.fc__how strong { display: block; margin-top: 14px; font-size: 1rem; font-weight: 650; color: var(--ink) }
+.fc__how p { margin: 4px 0 0; max-width: 30ch; font-size: .9rem; line-height: 1.5; color: var(--ink-soft) }
+
+@media (prefers-reduced-motion: reduce) {
+  .fc__services li { opacity: 1; transform: none; transition: none }
+}
 @media (max-width: 900px) {
-  .fc__how { flex-direction: column; align-items: stretch }
-  .fc__how ol { grid-template-columns: 1fr }
+  .fc__panel { grid-template-columns: minmax(0, 1fr) }
+  .fc__intro { position: static }
+  .fc__how ol { grid-template-columns: minmax(0, 1fr); gap: 20px }
+  .fc__how ol::before { left: 17px; right: auto; top: 18px; bottom: 18px; width: 2px; height: auto }
+  .fc__how li { padding-left: 52px }
+  .fc__how b { position: absolute; left: 0; top: 0 }
+  .fc__how strong { margin-top: 6px }
 }
 @media (max-width: 780px) {
   .sp-founder-page__grid { grid-template-columns: 1fr; gap: 32px }
@@ -205,7 +275,8 @@ export default function FounderPage() {
 @media (max-width: 640px) {
   .sp-founder-page__photo { width: 200px; height: 200px }
   .sp-founder-page__links { flex-wrap: wrap }
-  .fc__services { grid-template-columns: 1fr }
+  .fc__services li { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 18px }
+  .fc__panel { padding: 22px 16px; border-radius: 20px }
 }
       `}</style>
     </SiteChrome>
