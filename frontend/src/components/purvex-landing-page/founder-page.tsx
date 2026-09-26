@@ -1,7 +1,8 @@
 "use client";
 
+import { useRef, useState, type KeyboardEvent } from "react";
 import Image from "next/image";
-import { ArrowRight, Linkedin } from "lucide-react";
+import { ArrowRight, Check, Linkedin } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
@@ -33,34 +34,126 @@ const story = [
 ];
 
 // Consulting: hands-on SIEM and detection work, booked directly with Justin.
-const services: { title: string; body: string; get: string; Icon: BrandIcon }[] = [
+const services: { title: string; short: string; body: string; does: string[]; get: string; Icon: BrandIcon }[] = [
   {
     title: "Detection engineering",
+    short: "New rules for your logs",
     body: "Rules written for your logs and your environment, not a vendor template.",
+    does: [
+      "Review the logs you already collect",
+      "Write rules mapped to MITRE ATT&CK techniques",
+      "Test each rule against real attack behavior before handing it over",
+    ],
     get: "Tested detections, ready to run in your SIEM",
     Icon: IconRule,
   },
   {
     title: "Noise reduction",
+    short: "Fewer false alarms",
     body: "Tune out false alarms so a real alert is not buried under them.",
+    does: [
+      "Find the rules that fire most without a real threat behind them",
+      "Tune the logic, thresholds, and exclusions",
+      "Record every change and the reason for it",
+    ],
     get: "A shorter, cleaner alert queue",
     Icon: IconTune,
   },
   {
     title: "Coverage review",
+    short: "Know where the gaps are",
     body: "Map what your SIEM can see against MITRE ATT&CK and find the gaps.",
+    does: [
+      "List your data sources and the detections you already have",
+      "Map both to MITRE ATT&CK",
+      "Rank the gaps by the risk they pose to your environment",
+    ],
     get: "A coverage map with the gaps marked and ranked",
     Icon: IconAudit,
   },
   {
     title: "Detection validation",
+    short: "Proof your alerts fire",
     body: "Test that each alert actually fires, and keep the evidence.",
+    does: [
+      "Run safe attack simulations with Atomic Red Team",
+      "Check which alerts fired and where the rest broke",
+      "Hand over evidence you can show leadership or auditors",
+    ],
     get: "A report of which alerts fired, with evidence",
     Icon: IconValidate,
   },
 ];
 
-const platforms = ["Microsoft Sentinel", "Splunk", "Splunk SOAR", "MITRE ATT&CK"];
+
+function ServiceExplorer() {
+  const [on, setOn] = useState(0);
+  const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  const s = services[on];
+
+  function onKey(e: KeyboardEvent<HTMLDivElement>) {
+    const d = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : e.key === "ArrowUp" || e.key === "ArrowLeft" ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    const n = (on + d + services.length) % services.length;
+    setOn(n);
+    tabs.current[n]?.focus();
+  }
+
+  return (
+    <div className="fx">
+      <div className="fx__list" role="tablist" aria-label="Consulting services" aria-orientation="vertical" onKeyDown={onKey}>
+        {services.map((x, n) => (
+          <button
+            key={x.title}
+            ref={(el) => { tabs.current[n] = el; }}
+            type="button"
+            role="tab"
+            id={`fx-tab-${n}`}
+            aria-selected={n === on}
+            aria-controls="fx-panel"
+            tabIndex={n === on ? 0 : -1}
+            onClick={() => setOn(n)}
+          >
+            <i><x.Icon size={20} /></i>
+            <span>
+              <strong>{x.title}</strong>
+              <small>{x.short}</small>
+            </span>
+            <ArrowRight size={16} className="fx__arrow" />
+          </button>
+        ))}
+      </div>
+
+      <div className="fx__panel" role="tabpanel" id="fx-panel" aria-labelledby={`fx-tab-${on}`} key={s.title}>
+        <div className="fx__top">
+          <i><s.Icon size={26} /></i>
+          <div>
+            <h3>{s.title}</h3>
+            <p>{s.body}</p>
+          </div>
+        </div>
+        <div className="fx__does">
+          <span>What I do</span>
+          <ul>
+            {s.does.map((d) => (
+              <li key={d}><b><Check size={12} strokeWidth={3} /></b>{d}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="fx__get">
+          <div>
+            <span>You get</span>
+            <strong>{s.get}</strong>
+          </div>
+          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
+            Book a call about this <ArrowRight size={16} />
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const steps = [
   { title: "Book 30 minutes", body: "Tell me about your SIEM, your team, and what worries you." },
@@ -124,42 +217,28 @@ export default function FounderPage() {
 
       <section className="pg-section fd-consult" id="consulting">
         <div className="fd-consult__head">
-          <div>
-            <span className="fd-label">Consulting</span>
-            <h2>Hands-on help with your SIEM and detections</h2>
-            <p>I work with security teams on the detections inside their SIEM, so the alerts they count on actually fire.</p>
-          </div>
-          <ul className="fd-tags" aria-label="Platforms">
-            {platforms.map((t) => <li key={t}>{t}</li>)}
-          </ul>
+          <span className="fd-label">Consulting</span>
+          <h2>Hands-on help with your SIEM and detections</h2>
+          <p>I work with security teams on the detections inside their SIEM, so the alerts they count on actually fire.</p>
+          <p className="fd-works">
+            <span>Works in</span>
+            Microsoft Sentinel, Splunk, and Splunk SOAR
+          </p>
         </div>
 
-        <ul className="fd-services" data-r>
-          {services.map(({ title, body, get, Icon }) => (
-            <li key={title}>
-              <i><Icon size={22} /></i>
-              <strong>{title}</strong>
-              <p>{body}</p>
-              <em>You get: {get}</em>
-            </li>
-          ))}
-        </ul>
+        <ServiceExplorer />
 
         <div className="fd-how">
+          <span className="fd-label">How it works</span>
           <ol>
             {steps.map((st, n) => (
               <li key={st.title}>
                 <b>{n + 1}</b>
-                <div>
-                  <strong>{st.title}</strong>
-                  <p>{st.body}</p>
-                </div>
+                <strong>{st.title}</strong>
+                <p>{st.body}</p>
               </li>
             ))}
           </ol>
-          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
-            Book 30 minutes <ArrowRight size={16} />
-          </a>
         </div>
       </section>
 
@@ -229,45 +308,67 @@ const FD_CSS = `
 /* consulting */
 .fd-consult { scroll-margin-top: 84px }
 .fd-label { display: block; font-size: .82rem; font-weight: 700; color: var(--accent-deep) }
-.fd-consult__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px 48px; margin-bottom: 32px }
-.fd-consult__head h2 { margin: 10px 0 0; max-width: 20ch; font-family: var(--font-display); font-weight: 700; letter-spacing: -.025em; line-height: 1.12; font-size: clamp(1.7rem, 3vw, 2.35rem); color: var(--ink) }
+.fd-consult__head { max-width: 640px; margin-bottom: 32px }
+.fd-consult__head h2 { margin: 10px 0 0; font-family: var(--font-display); font-weight: 700; letter-spacing: -.025em; line-height: 1.12; font-size: clamp(1.7rem, 3vw, 2.35rem); color: var(--ink); text-wrap: balance }
 .fd-consult__head p { margin: 12px 0 0; max-width: 52ch; font-size: 1.02rem; line-height: 1.6; color: var(--ink-soft) }
-.fd-tags { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; max-width: 360px; list-style: none; margin: 0; padding: 0 }
-.fd-tags li { padding: 6px 12px; background: #fff; border: 1px solid var(--border-strong); font-size: .82rem; font-weight: 600; color: var(--ink-soft) }
+.fd-works { font-size: .92rem !important; color: var(--ink) !important; font-weight: 600 }
+.fd-works span { margin-right: 8px; font-weight: 600; color: var(--muted) }
 
-.fd-services { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px }
-.fd-services[data-r] { opacity: 1; transform: none; filter: none }
-.fd-services li {
-  display: flex; flex-direction: column; padding: 24px 22px; background: #fff; border: 1px solid var(--border-strong); border-top: 3px solid var(--accent);
-  box-shadow: 0 22px 44px -34px rgba(42,34,128,.4);
-  opacity: 0; transform: translateY(14px); transition: opacity .6s var(--ease), transform .6s var(--ease), box-shadow .25s;
+/* service explorer */
+.fx { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 40px 80px -56px rgba(42,34,128,.45) }
+.fx__list { display: flex; flex-direction: column; padding: 10px; background: #f8f8fd; border-right: 1px solid var(--border) }
+.fx__list button {
+  position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px;
+  width: 100%; padding: 16px 14px; text-align: left; background: transparent; border: 1px solid transparent; cursor: pointer; color: var(--ink);
+  transition: background .2s, border-color .2s, box-shadow .2s;
 }
-.fd-services.in li { opacity: 1; transform: none }
-.fd-services.in li:nth-child(2) { transition-delay: .08s, .08s, 0s }
-.fd-services.in li:nth-child(3) { transition-delay: .16s, .16s, 0s }
-.fd-services.in li:nth-child(4) { transition-delay: .24s, .24s, 0s }
-.fd-services li:hover { box-shadow: 0 28px 52px -32px rgba(85,70,224,.55) }
-.fd-services i { display: grid; place-items: center; width: 44px; height: 44px; background: var(--accent-soft); color: var(--accent-deep) }
-.fd-services i svg { position: static }
-.fd-services strong { display: block; margin-top: 18px; font-size: 1.08rem; font-weight: 650; color: var(--ink) }
-.fd-services p { margin: 6px 0 0; font-size: .93rem; line-height: 1.55; color: var(--ink-soft) }
-.fd-services em { margin-top: auto; padding-top: 16px; font-style: normal; font-size: .84rem; font-weight: 650; line-height: 1.4; color: #166534 }
+.fx__list button + button { margin-top: 4px }
+.fx__list button:hover { background: #fff }
+.fx__list button[aria-selected="true"] { background: #fff; border-color: var(--border); box-shadow: 0 12px 26px -20px rgba(42,34,128,.5) }
+.fx__list button[aria-selected="true"]::before { content: ""; position: absolute; left: -1px; top: -1px; bottom: -1px; width: 3px; background: var(--accent) }
+.fx__list button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px }
+.fx__list i { display: grid; place-items: center; width: 40px; height: 40px; background: var(--accent-soft); color: var(--accent-deep); transition: background .2s, color .2s }
+.fx__list i svg { position: static }
+.fx__list button[aria-selected="true"] i { background: var(--accent-deep); color: #fff }
+.fx__list strong { display: block; font-size: 1rem; font-weight: 650 }
+.fx__list small { display: block; margin-top: 2px; font-size: .84rem; color: var(--muted) }
+.fx__arrow { position: static; color: var(--accent-deep); opacity: 0; transform: translateX(-4px); transition: opacity .2s, transform .2s }
+.fx__list button[aria-selected="true"] .fx__arrow { opacity: 1; transform: none }
 
-.fd-how { display: flex; align-items: center; gap: 24px 40px; margin-top: 16px; padding: 24px 28px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.16) }
-.fd-how ol { flex: 1; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px }
-.fd-how li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px }
-.fd-how b { display: grid; place-items: center; width: 28px; height: 28px; font-size: .82rem; color: #fff; background: var(--accent-deep) }
-.fd-how strong { display: block; font-size: .98rem; font-weight: 650; color: var(--ink) }
-.fd-how p { margin: 3px 0 0; font-size: .88rem; line-height: 1.45; color: var(--ink-soft) }
-.fd-how .sp-btn { flex: none }
-.fd-how .sp-btn svg { position: static }
+.fx__panel { display: flex; flex-direction: column; gap: 26px; padding: clamp(24px, 3.5vw, 40px); animation: fx-in .35s cubic-bezier(.16,1,.3,1) both }
+.fx__top { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: start }
+.fx__top i { display: grid; place-items: center; width: 56px; height: 56px; background: var(--accent); color: #fff; box-shadow: 0 16px 30px -16px rgba(85,70,224,.8) }
+.fx__top i svg { position: static }
+.fx__top h3 { margin: 4px 0 0; font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; letter-spacing: -.03em; color: var(--ink) }
+.fx__top p { margin: 6px 0 0; max-width: 52ch; font-size: 1.02rem; line-height: 1.55; color: var(--ink-soft) }
+.fx__does span, .fx__get span { display: block; font-size: .8rem; font-weight: 700; color: var(--muted) }
+.fx__does ul { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 12px }
+.fx__does li { display: flex; align-items: flex-start; gap: 12px; font-size: .98rem; line-height: 1.45; color: var(--ink) }
+.fx__does li b { display: grid; place-items: center; width: 22px; height: 22px; flex: none; margin-top: 1px; color: #fff; background: var(--accent-deep) }
+.fx__does li b svg { position: static }
+.fx__get { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; margin-top: auto; padding: 18px 20px; background: #f0fdf4; border: 1px solid rgba(22,163,74,.25) }
+.fx__get span { color: #15803d }
+.fx__get strong { display: block; margin-top: 3px; font-size: 1.05rem; font-weight: 650; color: #14532d }
+.fx__get .sp-btn { flex: none }
+.fx__get .sp-btn svg { position: static }
+@keyframes fx-in { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+
+/* how it works */
+.fd-how { margin-top: 44px }
+.fd-how ol { position: relative; list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px }
+.fd-how ol::before { content: ""; position: absolute; left: 18px; right: calc((100% - 48px) / 3 - 18px); top: 18px; height: 2px; background: linear-gradient(90deg, var(--accent), rgba(106,92,255,.2)) }
+.fd-how li { position: relative }
+.fd-how b { position: relative; display: grid; place-items: center; width: 36px; height: 36px; font-size: .9rem; color: #fff; background: var(--accent-deep); box-shadow: 0 0 0 6px #fbfcfe }
+.fd-how strong { display: block; margin-top: 14px; font-size: 1.02rem; font-weight: 650; color: var(--ink) }
+.fd-how p { margin: 4px 0 0; max-width: 30ch; font-size: .92rem; line-height: 1.5; color: var(--ink-soft) }
 
 @media (prefers-reduced-motion: reduce) {
-  .fd-story li, .fd-services li { opacity: 1; transform: none; transition: none }
+  .fd-story li { opacity: 1; transform: none; transition: none }
+  .fx__panel { animation: none }
 }
 @media (max-width: 1080px) {
-  .fd-services { grid-template-columns: repeat(2, minmax(0, 1fr)) }
-  .fd-how { flex-direction: column; align-items: stretch }
+  .fx { grid-template-columns: minmax(0, 280px) minmax(0, 1fr) }
+  .fx__get { flex-direction: column; align-items: stretch }
 }
 @media (max-width: 900px) {
   .fd-hero { grid-template-columns: minmax(0, 1fr) }
@@ -277,15 +378,22 @@ const FD_CSS = `
   .fd-facts li:nth-child(n+3) { border-top: 1px solid var(--border) }
   .fd-story { grid-template-columns: minmax(0, 1fr) }
   .fd-story__side { position: static }
-  .fd-consult__head { flex-direction: column; align-items: flex-start }
-  .fd-tags { justify-content: flex-start }
-  .fd-how ol { grid-template-columns: minmax(0, 1fr) }
+  .fx { grid-template-columns: minmax(0, 1fr) }
+  .fx__list { flex-direction: row; overflow-x: auto; gap: 6px; border-right: 0; border-bottom: 1px solid var(--border); scroll-snap-type: x mandatory }
+  .fx__list button { flex: none; width: 230px; scroll-snap-align: start }
+  .fx__list button + button { margin-top: 0 }
+  .fx__arrow { display: none }
+  .fd-how ol { grid-template-columns: minmax(0, 1fr); gap: 20px }
+  .fd-how ol::before { left: 17px; right: auto; top: 18px; bottom: 18px; width: 2px; height: auto }
+  .fd-how li { padding-left: 54px }
+  .fd-how b { position: absolute; left: 0; top: 0 }
+  .fd-how strong { margin-top: 6px }
 }
 @media (max-width: 600px) {
   .fd-facts { grid-template-columns: minmax(0, 1fr) }
   .fd-facts li, .fd-facts li + li { padding: 16px 0; border-left: 0 }
   .fd-facts li + li { border-top: 1px solid var(--border) }
-  .fd-services { grid-template-columns: minmax(0, 1fr) }
-  .fd-how { padding: 20px 16px }
+  .fx__panel { padding: 22px 16px }
+  .fx__top { grid-template-columns: minmax(0, 1fr) }
 }
 `;
