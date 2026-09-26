@@ -3,20 +3,32 @@
 import Image from "next/image";
 import { ArrowRight, Linkedin } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
+import { HoldCard } from "./hold-card";
+import { PG_CSS } from "./page-skin";
 import { IconAudit, IconTune, IconValidate, IconRule, type BrandIcon } from "./brand-icons";
 
-const bioSections = [
+/* Founder. Who Justin is, the story behind PurveX, and the consulting he
+   offers, in the same skin as the About page. */
+
+const facts = [
+  { label: "Background", value: "SOC analyst to security instructor" },
+  { label: "Core tools", value: "Microsoft Sentinel, Splunk SOAR" },
+  { label: "Certifications", value: "CySA+, Security+" },
+  { label: "Teaching at", value: "Ellington Cyber Academy" },
+];
+
+const story = [
   {
-    label: "Where I started",
-    body: "Before this was a company it was three jobs, tuning Microsoft Sentinel for a federal agency, automating response in Splunk SOAR, and teaching SOC fundamentals at Ellington Cyber Academy. That work taught the same lesson, that real growth comes from hands-on repetition, not from watching someone else do the work.",
+    title: "Where I started",
+    body: "Before this was a company it was three jobs: tuning Microsoft Sentinel for a federal agency, automating response in Splunk SOAR, and teaching SOC fundamentals at Ellington Cyber Academy. All three taught the same lesson. Real growth comes from hands-on repetition, not from watching someone else do the work.",
   },
   {
-    label: "What actually matters",
-    body: "Hands-on work is not enough once AI can write the query and summarize the alert. What still matters is knowing how to think, how to read what a system is telling you, when to trust it, and when to push back, which is the judgment I teach instead of a shortcut to a flag.",
+    title: "What actually matters",
+    body: "Hands-on work is not enough once AI can write the query and summarize the alert. What still matters is knowing how to think: how to read what a system is telling you, when to trust it, and when to push back. That judgment is what I teach, instead of a shortcut to a flag.",
   },
   {
-    label: "Why PurveX exists",
-    body: "I kept running into the same gap, that smaller security teams need stronger coverage and do not have the headcount to build and maintain it by hand. AI agents can close that gap when they are paired with someone who still understands what is happening underneath them, because no team should need to be enterprise-sized to be secure.",
+    title: "Why PurveX exists",
+    body: "I kept running into the same gap. Smaller security teams need stronger coverage and do not have the headcount to build and maintain it by hand. AI agents can close that gap when they are paired with someone who understands what is happening underneath them, because no team should need to be enterprise-sized to be secure.",
   },
 ];
 
@@ -56,229 +68,224 @@ const steps = [
   { title: "Agree a scope", body: "A short, focused engagement with a clear result." },
 ];
 
-const quickFacts = [
-  { label: "Background", value: "SOC Analyst → Security Instructor" },
-  { label: "Core tools", value: "Microsoft Sentinel, Splunk SOAR" },
-  { label: "Certifications", value: "CySA+, Security+" },
-  { label: "Currently teaching at", value: "Ellington Cyber Academy" },
-];
-
 export default function FounderPage() {
   return (
     <SiteChrome active="about">
-      <section className="sp-hero sp-hero--split">
-        <div className="sp-hero__copy">
-          <span className="sp-hero__badge">Founder</span>
-          <h1 className="sp-hero__h1">Justin Duru</h1>
-          <p className="sp-hero__sub">Founder &amp; Lead Security Consultant, PurveX</p>
-          <div className="sp-founder-page__links">
-            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--sm">
-              Book 30 minutes <ArrowRight size={14} />
+      <section className="fd-hero">
+        <div className="fd-hero__copy">
+          <span className="sp-tag">Founder</span>
+          <h1>Justin Duru</h1>
+          <p className="fd-hero__role">Founder and Lead Security Consultant, PurveX</p>
+          <p className="fd-hero__sub">
+            I help security teams make sure their alerts actually fire, and I train the analysts who will run them.
+          </p>
+          <div className="fd-hero__actions">
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
+              Book 30 minutes <ArrowRight size={16} />
             </a>
-            <a href="#consulting" className="sp-btn sp-btn--ghost sp-btn--sm">Consulting</a>
-            <a
-              href="https://linkedin.com/in/jduru"
-              target="_blank"
-              rel="noreferrer"
-              className="sp-btn sp-btn--ghost sp-btn--sm"
-            >
+            <a href="https://linkedin.com/in/jduru" target="_blank" rel="noreferrer" className="sp-btn sp-btn--ghost sp-btn--lg">
               <Linkedin size={16} /> LinkedIn
             </a>
           </div>
         </div>
-        <div className="sp-hero__preview">
-          <Image
-            src="/Justin.jpg"
-            alt="Justin Duru"
-            width={280}
-            height={280}
-            className="sp-founder-page__photo"
-          />
+        <div className="fd-hero__photo">
+          <Image src="/Justin.jpg" alt="Justin Duru" width={440} height={520} priority />
         </div>
       </section>
 
-      <section className="sp-section sp-section--tight">
-        <div className="sp-founder-page__grid" data-r>
-          <div className="sp-founder-page__bio">
-            <p className="sp-founder-page__quote">I lead by serving the work, not standing above it.</p>
-            {bioSections.map((s) => (
-              <div key={s.label} className="sp-founder-page__section">
-                <span className="sp-founder-page__section-label">{s.label}</span>
-                <p>{s.body}</p>
-              </div>
-            ))}
-          </div>
-          <aside className="sp-founder-page__facts">
-            <h3>At a Glance</h3>
-            {quickFacts.map((f) => (
-              <div key={f.label} className="sp-founder-page__fact">
-                <span>{f.label}</span>
-                <strong>{f.value}</strong>
-              </div>
-            ))}
-          </aside>
-        </div>
-      </section>
+      <ul className="fd-facts">
+        {facts.map((f) => (
+          <li key={f.label}>
+            <span>{f.label}</span>
+            <strong>{f.value}</strong>
+          </li>
+        ))}
+      </ul>
 
-      <section className="sp-section fc" id="consulting">
-        <div className="fc__panel">
-          <div className="fc__intro">
-            <span className="fc__label">Consulting</span>
-            <h2>Hands-on help with your SIEM and detections</h2>
-            <p>
-              I work with security teams on the detections inside their SIEM, so the alerts they count on actually fire.
-            </p>
-            <ul className="fc__tags" aria-label="Platforms">
-              {platforms.map((t) => <li key={t}>{t}</li>)}
-            </ul>
-            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg fc__cta">
-              Book 30 minutes <ArrowRight size={16} />
-            </a>
+      <section className="pg-section" id="story">
+        <div className="fd-story">
+          <div className="fd-story__side">
+            <h2>My story</h2>
+            <blockquote>I lead by serving the work, not standing above it.</blockquote>
           </div>
-
-          <ol className="fc__services" data-r>
-            {services.map(({ title, body, get, Icon }, n) => (
-              <li key={title}>
-                <i><Icon size={22} /></i>
+          <ol data-r>
+            {story.map((s, n) => (
+              <li key={s.title}>
+                <b>{n + 1}</b>
                 <div>
-                  <span className="fc__n">{String(n + 1).padStart(2, "0")}</span>
-                  <strong>{title}</strong>
-                  <p>{body}</p>
-                  <em>You get: {get}</em>
+                  <strong>{s.title}</strong>
+                  <p>{s.body}</p>
                 </div>
               </li>
             ))}
           </ol>
-
-          <div className="fc__how">
-            <span className="fc__label">How it works</span>
-            <ol>
-              {steps.map((st, n) => (
-                <li key={st.title}>
-                  <b>{n + 1}</b>
-                  <strong>{st.title}</strong>
-                  <p>{st.body}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
         </div>
       </section>
 
-      <style>{`
-.sp-hero.sp-hero--split { text-align: left; max-width: 1140px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center }
-.sp-hero--split .sp-hero__badge { margin-bottom: 22px }
-.sp-hero--split .sp-hero__h1 { text-align: left }
-.sp-hero--split .sp-hero__sub { margin: 22px 0 0; max-width: 480px; text-align: left }
-.sp-hero__preview { display: flex; justify-content: center }
-@media (max-width: 940px) {
-  .sp-hero.sp-hero--split { grid-template-columns: 1fr; text-align: center; gap: 40px }
-  .sp-hero--split .sp-hero__h1, .sp-hero--split .sp-hero__badge { text-align: center }
-  .sp-hero--split .sp-hero__sub { margin-left: auto; margin-right: auto; text-align: center }
-  .sp-founder-page__chips, .sp-founder-page__links { justify-content: center }
-}
+      <section className="pg-section fd-consult" id="consulting">
+        <div className="fd-consult__head">
+          <div>
+            <span className="fd-label">Consulting</span>
+            <h2>Hands-on help with your SIEM and detections</h2>
+            <p>I work with security teams on the detections inside their SIEM, so the alerts they count on actually fire.</p>
+          </div>
+          <ul className="fd-tags" aria-label="Platforms">
+            {platforms.map((t) => <li key={t}>{t}</li>)}
+          </ul>
+        </div>
 
-.sp-founder-page__links { display: flex; gap: 12px; margin-top: 26px }
-.sp-founder-page__photo { width: 280px; height: 280px; border-radius: 50%; object-fit: cover; object-position: center 12%; box-shadow: 0 24px 48px -16px rgba(85,70,224,.4) }
+        <ul className="fd-services" data-r>
+          {services.map(({ title, body, get, Icon }) => (
+            <li key={title}>
+              <i><Icon size={22} /></i>
+              <strong>{title}</strong>
+              <p>{body}</p>
+              <em>You get: {get}</em>
+            </li>
+          ))}
+        </ul>
 
-/* ── Bio + facts sidebar: the old version was one undifferentiated
-   680px column of prose. Labeled sections give it scannable structure;
-   the facts card pulls the credentials out of the paragraphs entirely
-   so the prose can stay about the story, not the resume line items. ── */
-.sp-founder-page__grid { display: grid; grid-template-columns: 1fr 260px; gap: 56px; align-items: start; max-width: 940px; margin: 0 auto }
-.sp-founder-page__bio .sp-founder-page__quote {
-  margin: 0 0 32px; padding-left: 20px; border-left: 3px solid var(--accent);
-  font-family: var(--font-display); font-size: clamp(1.2rem, 2.4vw, 1.5rem); font-weight: 650;
-  letter-spacing: -.015em; line-height: 1.4; color: var(--ink);
-}
-.sp-founder-page__section { margin-top: 28px; padding-top: 28px; border-top: 1px solid var(--border) }
-.sp-founder-page__section:first-of-type { margin-top: 0; padding-top: 0; border-top: none }
-.sp-founder-page__section-label {
-  display: block; margin-bottom: 10px; font-size: .74rem; font-weight: 700;
-  letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep);
-}
-.sp-founder-page__section p { margin: 0; font-size: 1.03rem; line-height: 1.75; color: var(--ink-soft); text-wrap: pretty }
+        <div className="fd-how">
+          <ol>
+            {steps.map((st, n) => (
+              <li key={st.title}>
+                <b>{n + 1}</b>
+                <div>
+                  <strong>{st.title}</strong>
+                  <p>{st.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
+            Book 30 minutes <ArrowRight size={16} />
+          </a>
+        </div>
+      </section>
 
-.sp-founder-page__facts { position: sticky; top: 100px; border: 1px solid var(--border); border-radius: 20px; padding: 24px; background: var(--surface) }
-.sp-founder-page__facts h3 { margin: 0 0 18px; font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-dim) }
-.sp-founder-page__fact { padding: 13px 0; border-top: 1px solid var(--border) }
-.sp-founder-page__fact:first-of-type { padding-top: 0; border-top: none }
-.sp-founder-page__fact span { display: block; font-size: .72rem; color: var(--muted); margin-bottom: 3px }
-.sp-founder-page__fact strong { display: block; font-size: .88rem; font-weight: 620; color: var(--ink); line-height: 1.4 }
+      <section className="pg-close" data-r>
+        <div className="pg-close__copy">
+          <h2>Let&apos;s talk</h2>
+          <p className="pg-close__sub">Thirty minutes about your SIEM, your team, or your training program.</p>
+          <div className="pg-close__row">
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="pg-close__book">
+              Book 30 minutes <ArrowRight size={16} />
+            </a>
+            <a href="https://linkedin.com/in/jduru" target="_blank" rel="noreferrer" className="pg-close__more">
+              Connect on LinkedIn <ArrowRight size={14} />
+            </a>
+          </div>
+        </div>
+        <HoldCard source="founder" />
+      </section>
 
-/* consulting */
-.fc { max-width: 1080px; margin: 0 auto; scroll-margin-top: 90px }
-.fc__panel {
-  display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 40px 56px; padding: clamp(28px, 4vw, 48px);
-  border-radius: 24px; background: linear-gradient(160deg, #f4f3ff 0%, #fbfbff 55%, #fff 100%); border: 1px solid rgba(106,92,255,.18);
-  box-shadow: 0 40px 80px -60px rgba(42,34,128,.45);
-}
-.fc__label { display: block; font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep) }
-.fc__intro { align-self: start; position: sticky; top: 104px }
-.fc__intro h2 { margin: 12px 0 0; font-family: var(--font-display); font-size: clamp(1.7rem, 3vw, 2.35rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.12; color: var(--ink); text-wrap: balance }
-.fc__intro > p { margin: 14px 0 0; max-width: 40ch; font-size: 1.03rem; line-height: 1.65; color: var(--ink-soft) }
-.fc__tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 20px 0 0; padding: 0 }
-.fc__tags li { padding: 6px 12px; border-radius: 999px; background: #fff; border: 1px solid rgba(106,92,255,.22); font-size: .82rem; font-weight: 600; color: var(--ink-soft) }
-.fc__cta { margin-top: 28px }
-
-.fc__services { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px }
-.fc__services[data-r] { opacity: 1; transform: none; filter: none }
-.fc__services li {
-  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; padding: 20px 22px; border-radius: 18px;
-  background: #fff; border: 1px solid #ebebf5; box-shadow: 0 14px 30px -26px rgba(42,34,128,.5);
-  opacity: 0; transform: translateY(12px);
-  transition: opacity .6s var(--ease), transform .6s var(--ease), border-color .25s, box-shadow .25s;
-}
-.fc__services.in li { opacity: 1; transform: none }
-.fc__services.in li:nth-child(2) { transition-delay: .08s, .08s, 0s, 0s }
-.fc__services.in li:nth-child(3) { transition-delay: .16s, .16s, 0s, 0s }
-.fc__services.in li:nth-child(4) { transition-delay: .24s, .24s, 0s, 0s }
-.fc__services li:hover { border-color: rgba(106,92,255,.4); box-shadow: 0 20px 40px -26px rgba(85,70,224,.55) }
-.fc__services i { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: var(--accent-soft); color: var(--accent-deep); transition: background .25s, color .25s }
-.fc__services li:hover i { background: var(--accent-deep); color: #fff }
-.fc__services i svg { position: static }
-.fc__n { display: block; font-family: var(--font-mono); font-size: .72rem; font-weight: 700; color: var(--muted-dim, #9a9cb8) }
-.fc__services strong { display: block; margin-top: 2px; font-size: 1.1rem; font-weight: 650; letter-spacing: -.01em; color: var(--ink) }
-.fc__services p { margin: 5px 0 0; font-size: .95rem; line-height: 1.55; color: var(--ink-soft) }
-.fc__services em {
-  display: inline-block; margin-top: 12px; padding: 5px 10px; border-radius: 8px; font-style: normal;
-  font-size: .82rem; font-weight: 600; color: #166534; background: #ecfdf3;
-}
-
-.fc__how { grid-column: 1 / -1; padding-top: 28px; border-top: 1px solid rgba(106,92,255,.16) }
-.fc__how ol { position: relative; list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px }
-.fc__how ol::before { content: ""; position: absolute; left: 18px; right: calc((100% - 48px) / 3 - 18px); top: 18px; height: 2px; background: linear-gradient(90deg, var(--accent), rgba(106,92,255,.2)) }
-.fc__how li { position: relative }
-.fc__how b {
-  position: relative; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
-  font-size: .9rem; color: #fff; background: var(--accent-deep); box-shadow: 0 0 0 5px #f7f6ff;
-}
-.fc__how strong { display: block; margin-top: 14px; font-size: 1rem; font-weight: 650; color: var(--ink) }
-.fc__how p { margin: 4px 0 0; max-width: 30ch; font-size: .9rem; line-height: 1.5; color: var(--ink-soft) }
-
-@media (prefers-reduced-motion: reduce) {
-  .fc__services li { opacity: 1; transform: none; transition: none }
-}
-@media (max-width: 900px) {
-  .fc__panel { grid-template-columns: minmax(0, 1fr) }
-  .fc__intro { position: static }
-  .fc__how ol { grid-template-columns: minmax(0, 1fr); gap: 20px }
-  .fc__how ol::before { left: 17px; right: auto; top: 18px; bottom: 18px; width: 2px; height: auto }
-  .fc__how li { padding-left: 52px }
-  .fc__how b { position: absolute; left: 0; top: 0 }
-  .fc__how strong { margin-top: 6px }
-}
-@media (max-width: 780px) {
-  .sp-founder-page__grid { grid-template-columns: 1fr; gap: 32px }
-  .sp-founder-page__facts { position: static }
-}
-@media (max-width: 640px) {
-  .sp-founder-page__photo { width: 200px; height: 200px }
-  .sp-founder-page__links { flex-wrap: wrap }
-  .fc__services li { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 18px }
-  .fc__panel { padding: 22px 16px; border-radius: 20px }
-}
-      `}</style>
+      <style>{PG_CSS}</style>
+      <style>{FD_CSS}</style>
     </SiteChrome>
   );
 }
+
+const FD_CSS = `
+/* hero */
+.fd-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 40px 72px; align-items: center; padding: clamp(40px, 6vw, 80px) 0 0 }
+.fd-hero h1 { margin: 18px 0 0; font-family: var(--font-display); font-weight: 500; font-size: clamp(2.8rem, 6vw, 4.6rem); line-height: 1; letter-spacing: -.05em; color: var(--ink) }
+.fd-hero__role { margin: 14px 0 0; font-size: 1.05rem; font-weight: 600; color: var(--accent-deep) }
+.fd-hero__sub { margin: 18px 0 0; max-width: 44ch; font-size: 1.12rem; line-height: 1.6; color: var(--ink-soft) }
+.fd-hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px }
+.fd-hero__actions .sp-btn svg { position: static }
+.fd-hero__photo { position: relative; justify-self: end; width: min(100%, 400px) }
+.fd-hero__photo::before { content: ""; position: absolute; inset: 22px -22px -22px 22px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.25) }
+.fd-hero__photo img {
+  position: relative; display: block; width: 100%; height: auto; aspect-ratio: 440 / 520; object-fit: cover; object-position: center 18%;
+  box-shadow: 0 40px 80px -40px rgba(42,34,128,.5);
+}
+
+/* facts */
+.fd-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); list-style: none; margin: clamp(48px, 6vw, 72px) 0 0; padding: 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
+.fd-facts li { padding: 20px 24px 20px 0 }
+.fd-facts li + li { padding-left: 24px; border-left: 1px solid var(--border) }
+.fd-facts span { display: block; font-size: .8rem; font-weight: 600; color: var(--muted) }
+.fd-facts strong { display: block; margin-top: 4px; font-size: 1rem; font-weight: 650; line-height: 1.35; color: var(--ink) }
+
+/* story */
+.fd-story { display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: 32px 72px; align-items: start }
+.fd-story__side { position: sticky; top: 104px }
+.fd-story h2 { margin: 0; font-family: var(--font-display); font-weight: 700; letter-spacing: -.022em; line-height: 1.15; font-size: clamp(1.6rem, 2.6vw, 2.1rem); color: var(--ink) }
+.fd-story blockquote {
+  margin: 20px 0 0; padding-left: 18px; border-left: 3px solid var(--accent);
+  font-family: var(--font-display); font-size: 1.25rem; font-weight: 500; line-height: 1.4; letter-spacing: -.015em; color: var(--ink);
+}
+.fd-story ol { position: relative; list-style: none; margin: 0; padding: 0; display: grid; gap: 32px }
+.fd-story ol[data-r] { opacity: 1; transform: none; filter: none }
+.fd-story ol::before { content: ""; position: absolute; left: 17px; top: 36px; bottom: 36px; width: 2px; background: rgba(106,92,255,.2) }
+.fd-story li { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px; opacity: 0; transform: translateY(12px); transition: opacity .6s var(--ease), transform .6s var(--ease) }
+.fd-story ol.in li { opacity: 1; transform: none }
+.fd-story ol.in li:nth-child(2) { transition-delay: .1s }
+.fd-story ol.in li:nth-child(3) { transition-delay: .2s }
+.fd-story li b { display: grid; place-items: center; width: 36px; height: 36px; font-size: .9rem; color: #fff; background: var(--accent-deep); box-shadow: 0 0 0 6px #fbfcfe }
+.fd-story li strong { display: block; margin-top: 6px; font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; color: var(--ink) }
+.fd-story li p { margin: 10px 0 0; max-width: 62ch; font-size: 1.02rem; line-height: 1.7; color: var(--ink-soft); text-wrap: pretty }
+
+/* consulting */
+.fd-consult { scroll-margin-top: 84px }
+.fd-label { display: block; font-size: .82rem; font-weight: 700; color: var(--accent-deep) }
+.fd-consult__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px 48px; margin-bottom: 32px }
+.fd-consult__head h2 { margin: 10px 0 0; max-width: 20ch; font-family: var(--font-display); font-weight: 700; letter-spacing: -.025em; line-height: 1.12; font-size: clamp(1.7rem, 3vw, 2.35rem); color: var(--ink) }
+.fd-consult__head p { margin: 12px 0 0; max-width: 52ch; font-size: 1.02rem; line-height: 1.6; color: var(--ink-soft) }
+.fd-tags { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; max-width: 360px; list-style: none; margin: 0; padding: 0 }
+.fd-tags li { padding: 6px 12px; background: #fff; border: 1px solid var(--border-strong); font-size: .82rem; font-weight: 600; color: var(--ink-soft) }
+
+.fd-services { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px }
+.fd-services[data-r] { opacity: 1; transform: none; filter: none }
+.fd-services li {
+  display: flex; flex-direction: column; padding: 24px 22px; background: #fff; border: 1px solid var(--border-strong); border-top: 3px solid var(--accent);
+  box-shadow: 0 22px 44px -34px rgba(42,34,128,.4);
+  opacity: 0; transform: translateY(14px); transition: opacity .6s var(--ease), transform .6s var(--ease), box-shadow .25s;
+}
+.fd-services.in li { opacity: 1; transform: none }
+.fd-services.in li:nth-child(2) { transition-delay: .08s, .08s, 0s }
+.fd-services.in li:nth-child(3) { transition-delay: .16s, .16s, 0s }
+.fd-services.in li:nth-child(4) { transition-delay: .24s, .24s, 0s }
+.fd-services li:hover { box-shadow: 0 28px 52px -32px rgba(85,70,224,.55) }
+.fd-services i { display: grid; place-items: center; width: 44px; height: 44px; background: var(--accent-soft); color: var(--accent-deep) }
+.fd-services i svg { position: static }
+.fd-services strong { display: block; margin-top: 18px; font-size: 1.08rem; font-weight: 650; color: var(--ink) }
+.fd-services p { margin: 6px 0 0; font-size: .93rem; line-height: 1.55; color: var(--ink-soft) }
+.fd-services em { margin-top: auto; padding-top: 16px; font-style: normal; font-size: .84rem; font-weight: 650; line-height: 1.4; color: #166534 }
+
+.fd-how { display: flex; align-items: center; gap: 24px 40px; margin-top: 16px; padding: 24px 28px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.16) }
+.fd-how ol { flex: 1; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px }
+.fd-how li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px }
+.fd-how b { display: grid; place-items: center; width: 28px; height: 28px; font-size: .82rem; color: #fff; background: var(--accent-deep) }
+.fd-how strong { display: block; font-size: .98rem; font-weight: 650; color: var(--ink) }
+.fd-how p { margin: 3px 0 0; font-size: .88rem; line-height: 1.45; color: var(--ink-soft) }
+.fd-how .sp-btn { flex: none }
+.fd-how .sp-btn svg { position: static }
+
+@media (prefers-reduced-motion: reduce) {
+  .fd-story li, .fd-services li { opacity: 1; transform: none; transition: none }
+}
+@media (max-width: 1080px) {
+  .fd-services { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+  .fd-how { flex-direction: column; align-items: stretch }
+}
+@media (max-width: 900px) {
+  .fd-hero { grid-template-columns: minmax(0, 1fr) }
+  .fd-hero__photo { justify-self: start; width: min(100%, 340px); margin-right: 22px }
+  .fd-facts { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+  .fd-facts li:nth-child(3) { padding-left: 0; border-left: 0 }
+  .fd-facts li:nth-child(n+3) { border-top: 1px solid var(--border) }
+  .fd-story { grid-template-columns: minmax(0, 1fr) }
+  .fd-story__side { position: static }
+  .fd-consult__head { flex-direction: column; align-items: flex-start }
+  .fd-tags { justify-content: flex-start }
+  .fd-how ol { grid-template-columns: minmax(0, 1fr) }
+}
+@media (max-width: 600px) {
+  .fd-facts { grid-template-columns: minmax(0, 1fr) }
+  .fd-facts li, .fd-facts li + li { padding: 16px 0; border-left: 0 }
+  .fd-facts li + li { border-top: 1px solid var(--border) }
+  .fd-services { grid-template-columns: minmax(0, 1fr) }
+  .fd-how { padding: 20px 16px }
+}
+`;
