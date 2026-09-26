@@ -41,15 +41,15 @@ export function AuthMinimal({ children, product = "" }: { children: ReactNode; p
           background: #f2f2f5; color: #10192e; font-size: 16px; outline: none; transition: border-color .15s, background .15s;
         }
         .am-input::placeholder { color: #6b7280 }
-        .am-input:focus { border-color: #10192e; background: #fff }
+        .am-input:focus { border-color: #5546e0; background: #fff }
         .am-input:disabled { opacity: .6 }
         .am-input[aria-invalid="true"] { border-color: #d92d20; background: #fff }
         .am-primary, .am-secondary {
           display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 52px; border: 0; border-radius: 10px;
           font-size: 16px; font-weight: 600; cursor: pointer; text-decoration: none; transition: background .15s, transform .1s;
         }
-        .am-primary { background: #10192e; color: #fff }
-        .am-primary:hover { background: #222c48 }
+        .am-primary { background: #5546e0; color: #fff; box-shadow: 0 10px 24px -14px rgba(85,70,224,.9) }
+        .am-primary:hover { background: #4637c9 }
         .am-secondary { background: #f2f2f5; color: #10192e }
         .am-secondary:hover { background: #e6e6ec }
         .am-primary:active, .am-secondary:active { transform: scale(.99) }

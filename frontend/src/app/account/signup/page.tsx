@@ -182,7 +182,7 @@ function PortalSignupContent() {
                   if (error) setError(null);
                 }}
                 disabled={isLoading}
-                className="mt-0.5 h-4 w-4 shrink-0 accent-[#10192e]"
+                className="mt-0.5 h-4 w-4 shrink-0 accent-[#5546e0]"
               />
               <span>
                 I agree to the{" "}
