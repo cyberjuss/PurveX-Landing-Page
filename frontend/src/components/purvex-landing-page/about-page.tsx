@@ -42,7 +42,7 @@ const FIXES: { problem: string; detail: string; name: string; answer: string; hr
 const BELIEFS = [
   { title: "Prove it, don't assume it", body: "Every detection and every student skill is checked, not claimed." },
   { title: "Judgment over shortcuts", body: "AI can write the query. We build for the person who knows when to trust it." },
-  { title: "No hand-offs", body: "The person doing the work is the person you talk to." },
+  { title: "Security for every team size", body: "Small teams get the same rigor and tools as large ones." },
 ];
 
 const FACTS = [
@@ -129,7 +129,7 @@ export default function AboutPage() {
 
       <section className="pg-section" id="trust">
         <div className="pg-head">
-          <h2>Built by someone who has done the work</h2>
+          <h2>Built from real experience</h2>
           <p>PurveX comes from years on the SOC floor and in the classroom, not from a slide deck.</p>
         </div>
         <div className="abx-trust">
@@ -168,7 +168,7 @@ export default function AboutPage() {
       <section className="pg-close" data-r>
         <div className="pg-close__copy">
           <h2>Let&apos;s talk about your team</h2>
-          <p className="pg-close__sub">Thirty minutes, with the person who will do the work.</p>
+          <p className="pg-close__sub">Thirty minutes to talk through your team, your SIEM, or your training program.</p>
           <div className="pg-close__row">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="pg-close__book">
               Book 30 minutes <ArrowRight size={16} />
