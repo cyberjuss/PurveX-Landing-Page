@@ -16,6 +16,8 @@ import {
   type StudentProfile,
 } from "@/lib/academy-certs";
 import { academyFetch } from "@/lib/academy-client";
+// Imported here, not in globals.css, so the styles always arrive with the component.
+import "./academy-intake.css";
 
 const STEPS = ["Certifications", "Target role", "Starting point"] as const;
 
