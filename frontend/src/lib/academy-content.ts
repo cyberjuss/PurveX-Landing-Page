@@ -94,6 +94,7 @@ const phase1HomeLab: HomeLabDef = {
     { label: "Access Levels", file: "phase-1/home-lab-ad/access-levels.md" },
     { label: "The Data", file: "phase-1/home-lab-ad/the-data.md" },
     { label: "The Environment", file: "phase-1/home-lab-ad/the-environment.md" },
+    { label: "Set Up the Lab", file: "phase-1/home-lab-ad/set-up-the-lab.md" },
     { label: "The Domain Controller", file: "phase-1/home-lab-ad/the-domain.md" },
     { label: "Install the Domain", file: "phase-1/home-lab-ad/install-the-domain.md" },
     { label: "Build the Environment", file: "phase-1/home-lab-ad/build-the-environment.md" },
