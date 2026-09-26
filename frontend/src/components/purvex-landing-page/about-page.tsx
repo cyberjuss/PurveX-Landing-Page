@@ -210,7 +210,7 @@ export default function AboutPage() {
               <Link href="/about/founder" className="sp-btn sp-btn--ghost sp-btn--lg">
                 Read the full story <ArrowRight size={16} />
               </Link>
-              <a href="https://linkedin.com/in/jduru" target="_blank" rel="noreferrer" className="ab-link">
+              <a href="https://www.linkedin.com/in/justin-duru-97159a250/" target="_blank" rel="noreferrer" className="ab-link">
                 <Linkedin size={15} /> LinkedIn
               </a>
             </div>

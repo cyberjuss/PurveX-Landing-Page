@@ -180,7 +180,7 @@ export default function FounderPage() {
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
               Book 30 minutes <ArrowRight size={16} />
             </a>
-            <a href="https://linkedin.com/in/jduru" target="_blank" rel="noreferrer" className="sp-btn sp-btn--ghost sp-btn--lg">
+            <a href="https://www.linkedin.com/in/justin-duru-97159a250/" target="_blank" rel="noreferrer" className="sp-btn sp-btn--ghost sp-btn--lg">
               <Linkedin size={16} /> LinkedIn
             </a>
           </div>
@@ -252,7 +252,7 @@ export default function FounderPage() {
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="pg-close__book">
               Book 30 minutes <ArrowRight size={16} />
             </a>
-            <a href="https://linkedin.com/in/jduru" target="_blank" rel="noreferrer" className="pg-close__more">
+            <a href="https://www.linkedin.com/in/justin-duru-97159a250/" target="_blank" rel="noreferrer" className="pg-close__more">
               Connect on LinkedIn <ArrowRight size={14} />
             </a>
           </div>
