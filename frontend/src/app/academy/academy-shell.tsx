@@ -13,7 +13,8 @@ import { AcademySignIn } from "@/components/academy/academy-sign-in";
 import { AcademyWelcome, takeAcademyWelcome } from "@/components/academy/academy-welcome";
 import { CoachProvider } from "@/components/academy/coach-context";
 import { PurvexCoach } from "@/components/academy/purvex-coach";
-import { examLinks, sanitizeProfile, type StudentProfile } from "@/lib/academy-certs";
+import { ROLE_BRIEFS } from "@/lib/academy-briefs";
+import { examLinks, roleLabel, sanitizeProfile, type RoleId, type StudentProfile } from "@/lib/academy-certs";
 import {
   academyFetch,
   downloadLinkedBuildScript,
@@ -772,13 +773,40 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       dialog.showModal();
     };
 
-    // Slides the lesson's hidden Analyst Brief in from the right, like the Coach.
+    // The brief for one intake role, in the same markup as the lesson's own.
+    const roleBrief = (role: RoleId) => {
+      const b = ROLE_BRIEFS[role];
+      const el = (tag: string, className?: string, text?: string) => {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text) node.textContent = text;
+        return node;
+      };
+      const out = el("div", "ad-goals");
+      const head = el("div", "ad-goals__head");
+      head.append(el("span", "ad-goals__role", roleLabel(role)), el("span", "ad-goals__scope", "purvexfinancial.local"));
+      const checks = el("ol", "ad-goals__checks");
+      b.checks.forEach((c) => checks.append(el("li", undefined, c)));
+      const flags = el("div", "ad-goals__flags");
+      const flagList = el("ul");
+      b.flags.forEach((f) => flagList.append(el("li", undefined, f)));
+      flags.append(el("span", "ad-goals__label", "Work the lab until these stand out"), flagList);
+      const goal = el("p", "ad-goals__goal");
+      goal.append(el("span", "ad-goals__label", "The goal"), `${b.goal[0]} `, el("strong", undefined, b.goal[1]), ".");
+      out.append(head, el("p", "ad-goals__lede", b.lede), checks, flags, goal);
+      return out;
+    };
+
+    // Slides the Analyst Brief in from the right, like the Coach. It is
+    // written for the role the student picked at intake; with no role on
+    // file it falls back to the lesson's own general brief.
     const openBrief = (trigger: HTMLElement) => {
       const brief = trigger.closest(".academy-prose")?.querySelector(".ad-goals");
       if (!brief || document.querySelector(".ad-drawer-root")) return;
       const root = document.querySelector(".academy-bg");
       const header = root?.querySelector("header");
-      const title = brief.querySelector(".ad-goals__kicker")?.textContent || "Brief";
+      const roles = profileRef.current?.roles ?? [];
+      const title = roles.length ? ROLE_BRIEFS[roles[0]].title : brief.querySelector(".ad-goals__kicker")?.textContent || "Brief";
 
       const wrap = document.createElement("div");
       wrap.className = "ad-drawer-root";
@@ -800,9 +828,33 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       head.append(heading, close);
       const body = document.createElement("div");
       body.className = "ad-drawer__body";
-      const copy = brief.cloneNode(true) as HTMLElement;
-      copy.hidden = false;
-      body.append(copy);
+      if (roles.length > 1) {
+        // Two roles picked: a switch between their briefs.
+        const tabs = document.createElement("div");
+        tabs.className = "ad-drawer__roles";
+        tabs.setAttribute("role", "tablist");
+        const show = (i: number) => {
+          heading.textContent = ROLE_BRIEFS[roles[i]].title;
+          panel.setAttribute("aria-label", heading.textContent);
+          tabs.querySelectorAll("button").forEach((t, j) => t.setAttribute("aria-selected", String(i === j)));
+          body.querySelector(".ad-goals")?.remove();
+          body.append(roleBrief(roles[i]));
+        };
+        roles.forEach((role, i) => {
+          const tab = makeButton("ad-drawer__role", roleLabel(role), ROLE_BRIEFS[role].title.replace(/ Brief$/, ""));
+          tab.setAttribute("role", "tab");
+          tab.addEventListener("click", () => show(i));
+          tabs.append(tab);
+        });
+        body.append(tabs);
+        show(0);
+      } else if (roles.length === 1) {
+        body.append(roleBrief(roles[0]));
+      } else {
+        const copy = brief.cloneNode(true) as HTMLElement;
+        copy.hidden = false;
+        body.append(copy);
+      }
       panel.append(head, body);
       wrap.append(backdrop, panel);
 

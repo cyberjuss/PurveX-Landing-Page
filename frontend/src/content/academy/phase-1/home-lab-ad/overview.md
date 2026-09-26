@@ -33,7 +33,7 @@ Callers and tickets can be wrong, and handling that is part of the job. Do not a
 
 ### Your Role
 
-<div class="ad-goals-cue"><button type="button" class="ad-goals-open"><span class="ad-goals-open__tag">Analyst Brief</span><span class="ad-goals-open__text">The five questions to answer for any account, and the red flags to spot.</span><span class="ad-goals-open__cta">Open brief</span></button></div>
+<div class="ad-goals-cue"><button type="button" class="ad-goals-open"><span class="ad-goals-open__tag">Analyst Brief</span><span class="ad-goals-open__text">Written for the role you picked: the five questions to answer, and the red flags to spot.</span><span class="ad-goals-open__cta">Open brief</span></button></div>
 <div class="ad-goals" hidden>
 <div class="ad-goals__head"><span class="ad-goals__kicker">Analyst Brief</span><span class="ad-goals__scope">purvexfinancial.local</span></div>
 <p class="ad-goals__lede">You are the analyst on this environment. Reading the company page is not enough. For any account in front of you, you should be able to answer five questions.</p>

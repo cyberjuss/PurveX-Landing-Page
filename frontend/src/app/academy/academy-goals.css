@@ -139,8 +139,29 @@
 
 /* The brief inside the panel. */
 .ad-drawer .ad-goals { display: block; }
-.ad-drawer .ad-goals__head { display: flex; justify-content: flex-end; padding: 12px 0 0; }
+.ad-drawer .ad-goals__head { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 12px 0 0; }
 .ad-drawer .ad-goals__kicker { display: none; }
+.ad-drawer .ad-goals__role { margin-right: auto; font-size: 0.8rem; color: var(--dr-ink-2); }
+
+/* Two roles picked at intake: a switch between their briefs. */
+.ad-drawer__roles { display: flex; gap: 4px; margin: 12px 0 0; border-bottom: 1px solid var(--dr-line); }
+.ad-drawer__role {
+  flex: 1;
+  height: 34px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dr-ink-3);
+  cursor: pointer;
+}
+.ad-drawer__role:hover { color: var(--dr-ink); }
+.ad-drawer__role[aria-selected="true"] { color: var(--dr-accent); border-bottom-color: var(--dr-accent); }
 .ad-drawer .ad-goals__scope {
   padding: 3px 8px;
   border: 1px solid var(--dr-line);
