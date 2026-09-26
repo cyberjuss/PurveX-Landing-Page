@@ -11,6 +11,8 @@ import {
   BackButton,
   GoogleMark,
   PasswordInput,
+  AuthTerms,
+  TERMS_ERROR,
 } from "@/components/auth/auth-minimal";
 import { signInWithGoogle, signInWithPassword, signUpWithPassword } from "@/lib/portal-auth";
 import { markAcademyWelcome } from "@/components/academy/academy-welcome";
@@ -26,6 +28,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [agreed, setAgreed] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const busyRef = useRef(false);
 
@@ -33,6 +36,10 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
 
   async function handleGoogle() {
     if (busyRef.current) return;
+    if (!agreed) {
+      setError(TERMS_ERROR);
+      return;
+    }
     busyRef.current = true;
     setBusy(true);
     setError(null);
@@ -51,6 +58,10 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
     const value = email.trim();
     if (!value || !value.includes("@") || !value.includes(".")) {
       setError("Enter a valid email address.");
+      return;
+    }
+    if (!agreed) {
+      setError(TERMS_ERROR);
       return;
     }
     setEmail(value);
@@ -139,8 +150,14 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
     return (
       <AuthMinimal product="Academy">
         <div key="email" className="am-step">
-          <AuthHeading sub={mode === "signup" ? "Start with your email address." : undefined}>
-            {mode === "signin" ? "What is your email?" : "Create your account"}
+          <AuthHeading
+            sub={
+              mode === "signup"
+                ? "One account for your course, your labs, and your progress."
+                : "Sign in with the email you use for the Academy."
+            }
+          >
+            {mode === "signin" ? "Welcome back" : "Create your account"}
           </AuthHeading>
 
           <form onSubmit={handleEmail} className="mt-7" noValidate>
@@ -155,7 +172,15 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
               onChange={(e) => setEmail(e.target.value)}
               className="am-input"
               aria-label="Email"
-              aria-invalid={Boolean(error)}
+              aria-invalid={Boolean(error) && error !== TERMS_ERROR}
+              disabled={busy}
+            />
+            <AuthTerms
+              checked={agreed}
+              onChange={(v) => {
+                setAgreed(v);
+                if (error) setError(null);
+              }}
               disabled={busy}
             />
             <AuthError>{error}</AuthError>
@@ -170,11 +195,6 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
             {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleMark />}
             Continue with Google
           </button>
-          <p className="am-legal">
-            By continuing you agree to the{" "}
-            <Link href="/legal/terms">Terms</Link> and{" "}
-            <Link href="/legal/privacy">Privacy Policy</Link>.
-          </p>
 
           <p className="mt-8 text-center text-sm text-slate-600">
             {mode === "signin" ? "New to the Academy? " : "Already have an account? "}

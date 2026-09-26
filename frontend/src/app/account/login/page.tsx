@@ -12,6 +12,8 @@ import {
   BackButton,
   GoogleMark,
   PasswordInput,
+  AuthTerms,
+  TERMS_ERROR,
 } from "@/components/auth/auth-minimal";
 import { signInWithPassword, signInWithGoogle } from "@/lib/portal-auth";
 
@@ -50,12 +52,17 @@ function PortalLoginContent() {
   const [password, setPassword] = useState("");
   const [phase, setPhase] = useState<"form" | "submitting" | "google">("form");
   const [error, setError] = useState<string | null>(null);
+  const [agreed, setAgreed] = useState(false);
   // A ref is checked and set synchronously, so a fast double-click cannot
   // send two sign-in requests before the disabled state renders.
   const busyRef = useRef(false);
 
   async function handleGoogle() {
     if (busyRef.current) return;
+    if (!agreed) {
+      setError(TERMS_ERROR);
+      return;
+    }
     busyRef.current = true;
     setError(null);
     setPhase("google");
@@ -74,6 +81,10 @@ function PortalLoginContent() {
     const value = email.trim();
     if (!value || !value.includes("@") || !value.includes(".")) {
       setError("Enter a valid email address.");
+      return;
+    }
+    if (!agreed) {
+      setError(TERMS_ERROR);
       return;
     }
     setEmail(value);
@@ -113,7 +124,7 @@ function PortalLoginContent() {
     return (
       <AuthMinimal>
         <div key="email" className="am-step">
-          <AuthHeading>What is your email?</AuthHeading>
+          <AuthHeading sub="Sign in with the email for your PurveX account.">Welcome back</AuthHeading>
           <form onSubmit={handleEmail} className="mt-7" noValidate>
             <input
               id="email"
@@ -126,7 +137,15 @@ function PortalLoginContent() {
               onChange={(e) => setEmail(e.target.value)}
               className="am-input"
               aria-label="Email"
-              aria-invalid={Boolean(error)}
+              aria-invalid={Boolean(error) && error !== TERMS_ERROR}
+              disabled={isLoading}
+            />
+            <AuthTerms
+              checked={agreed}
+              onChange={(v) => {
+                setAgreed(v);
+                if (error) setError(null);
+              }}
               disabled={isLoading}
             />
             <AuthError>{error}</AuthError>
@@ -141,11 +160,6 @@ function PortalLoginContent() {
             {phase === "google" ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleMark />}
             Continue with Google
           </button>
-          <p className="am-legal">
-            By continuing you agree to the{" "}
-            <Link href="/legal/terms">Terms</Link> and{" "}
-            <Link href="/legal/privacy">Privacy Policy</Link>.
-          </p>
 
           <p className="mt-8 text-center text-sm text-slate-600">
             New to PurveX?{" "}

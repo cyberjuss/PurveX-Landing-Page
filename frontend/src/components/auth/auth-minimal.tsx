@@ -72,6 +72,36 @@ export function AuthMinimal({ children, product = "" }: { children: ReactNode; p
   );
 }
 
+export const TERMS_ERROR = "You must agree to the Terms of Service and Privacy Policy to continue.";
+
+/** The same terms checkbox on every sign-in and sign-up screen. */
+export function AuthTerms({
+  checked,
+  onChange,
+  disabled,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <label className="mt-4 flex items-start gap-3 text-sm leading-5 text-slate-600">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        disabled={disabled}
+        className="mt-0.5 h-4 w-4 shrink-0 accent-[#5546e0]"
+      />
+      <span>
+        I agree to the{" "}
+        <Link href="/legal/terms" target="_blank" rel="noreferrer" className="am-link">Terms of Service</Link> and{" "}
+        <Link href="/legal/privacy" target="_blank" rel="noreferrer" className="am-link">Privacy Policy</Link>.
+      </span>
+    </label>
+  );
+}
+
 export function AuthHeading({ children, sub }: { children: ReactNode; sub?: ReactNode }) {
   return (
     <>

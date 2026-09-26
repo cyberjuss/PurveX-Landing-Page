@@ -14,6 +14,8 @@ import {
   PasswordInput,
   passwordStrength,
   StrengthBar,
+  AuthTerms,
+  TERMS_ERROR,
 } from "@/components/auth/auth-minimal";
 import { signUpWithPassword, signInWithGoogle } from "@/lib/portal-auth";
 
@@ -22,7 +24,6 @@ function getErrorMessage(err: unknown, fallback: string) {
   return fallback;
 }
 
-const TERMS_ERROR = "You must agree to the Terms of Service and Privacy Policy to continue.";
 
 function PortalSignupContent() {
   const router = useRouter();
@@ -169,27 +170,18 @@ function PortalSignupContent() {
               onChange={(e) => setEmail(e.target.value)}
               className="am-input"
               aria-label="Work email"
-              aria-invalid={Boolean(error)}
+              aria-invalid={Boolean(error) && error !== TERMS_ERROR}
               disabled={isLoading}
             />
 
-            <label className="mt-4 flex items-start gap-3 text-sm leading-5 text-slate-600">
-              <input
-                type="checkbox"
-                checked={agreedToTerms}
-                onChange={(e) => {
-                  setAgreedToTerms(e.target.checked);
-                  if (error) setError(null);
-                }}
-                disabled={isLoading}
-                className="mt-0.5 h-4 w-4 shrink-0 accent-[#5546e0]"
-              />
-              <span>
-                I agree to the{" "}
-                <Link href="/legal/terms" target="_blank" rel="noreferrer" className="am-link">Terms of Service</Link> and{" "}
-                <Link href="/legal/privacy" target="_blank" rel="noreferrer" className="am-link">Privacy Policy</Link>.
-              </span>
-            </label>
+            <AuthTerms
+              checked={agreedToTerms}
+              onChange={(v) => {
+                setAgreedToTerms(v);
+                if (error) setError(null);
+              }}
+              disabled={isLoading}
+            />
 
             <AuthError>{error}</AuthError>
             <button type="submit" className="am-primary mt-4" disabled={isLoading}>
