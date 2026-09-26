@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import Link from "next/link";
 import {
-  ArrowRight, BellRing, Check, Copy, Crosshair, FastForward, FileText, ListFilter, Play, RotateCcw, ScanSearch, Square, Wrench, X,
+  ArrowRight, BellRing, Check, Crosshair, FastForward, FileText, ListFilter, Play, RotateCcw, ScanSearch, Square, Wrench, X,
   type LucideIcon,
 } from "lucide-react";
 
@@ -11,7 +11,7 @@ import {
    Pick a test from the queue, run it, and watch it move through the five
    stages the product checks while the log streams in. A miss stops at the
    stage that broke and says why. The visitor can explain a miss (the
-   product's AI-assisted analysis, with a fix to copy), apply the fix and
+   product's AI-assisted analysis, with a suggested fix), apply the fix and
    rerun it, or run the whole queue at once like a scheduled run.
    Technique IDs are real ATT&CK IDs; hosts, events, and results are examples. */
 
@@ -237,7 +237,6 @@ function Queue() {
   const [filter, setFilter] = useState<Filter>("all");
   const [view, setView] = useState<"log" | "why">("log");
   const [typed, setTyped] = useState(0);
-  const [copied, setCopied] = useState(false);
   const [batch, setBatch] = useState<{ at: number; total: number } | null>(null);
   const [summary, setSummary] = useState<{ fired: number; missed: number; first: number } | null>(null);
   const timers = useRef<number[]>([]);
@@ -322,14 +321,10 @@ function Queue() {
   }
 
   function explain() {
-    setCopied(false);
     setTyped(reduced ? 9999 : 0);
     setView("why");
   }
 
-  function copyPatch(code: string) {
-    navigator.clipboard?.writeText(code).then(() => setCopied(true), () => setCopied(false));
-  }
 
   // Play the first test once so the visitor sees a full run.
   useEffect(() => {
@@ -546,12 +541,7 @@ function Queue() {
               </p>
               {typed >= base.explain.length && base.patch && (
                 <div className="pq__patch">
-                  <header>
-                    <span>{base.patch.label}</span>
-                    <button type="button" onClick={() => copyPatch(base.patch!.code)}>
-                      {copied ? <><Check size={12} strokeWidth={3} /> Copied</> : <><Copy size={12} /> Copy</>}
-                    </button>
-                  </header>
+                  <header>{base.patch.label}</header>
                   <pre><code>{base.patch.code}</code></pre>
                 </div>
               )}
@@ -801,9 +791,7 @@ const PXH_CSS = `
 .pq__why > p { margin: 0; font-size: .9rem; line-height: 1.55; color: var(--ink) }
 .pq__caret { display: inline-block; width: 7px; height: 1em; margin-left: 2px; vertical-align: -2px; background: var(--accent); animation: pq-blink .8s steps(1) infinite }
 .pq__patch { margin-top: 12px; border: 1px solid var(--q-line); animation: pq-in .35s cubic-bezier(.16,1,.3,1) both }
-.pq__patch header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 10px; background: var(--q-soft); border-bottom: 1px solid var(--q-line); font-size: .74rem; font-weight: 650; color: var(--ink-soft) }
-.pq__patch header button { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border: 1px solid var(--q-line); background: #fff; cursor: pointer; font-size: .72rem; font-weight: 650; color: var(--accent-deep) }
-.pq__patch header button svg { position: static }
+.pq__patch header { padding: 7px 10px; background: var(--q-soft); border-bottom: 1px solid var(--q-line); font-size: .74rem; font-weight: 650; color: var(--ink-soft) }
 .pq__patch pre { margin: 0; padding: 10px 12px; overflow-x: auto; background: #151a33; color: #e6e8ff; font-family: var(--font-mono); font-size: .74rem; line-height: 1.55 }
 .pq__log { flex: 1; min-height: 132px; margin-top: 12px; padding: 12px 14px; background: var(--q-soft); border: 1px solid var(--q-line); font-family: var(--font-mono); font-size: .76rem; line-height: 1.6 }
 .pq__log p { display: grid; grid-template-columns: auto 54px 1fr; gap: 10px; margin: 0 0 2px; color: var(--ink); animation: pq-type .3s cubic-bezier(.16,1,.3,1) both }
