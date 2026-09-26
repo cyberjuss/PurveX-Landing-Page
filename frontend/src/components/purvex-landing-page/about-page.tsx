@@ -53,6 +53,7 @@ const FACTS: { label: string; value: string; Icon: LucideIcon }[] = [
 
 // Background coverage grid: f = covered, m = gap. Fills in as the page loads.
 const GRID = "ffmffffmfffffmffmfffffffmfffffffmffffmfffffffffmfffffmffffffmffffffmffff".split("");
+const FIRED = GRID.filter((c) => c === "f").length;
 
 function Changes() {
   const [on, setOn] = useState(false);
@@ -82,9 +83,6 @@ export default function AboutPage() {
   return (
     <SiteChrome active="about">
       <section className="ab-hero">
-        <div className="ab-hero__grid" aria-hidden="true">
-          {GRID.map((c, n) => <i key={n} data-c={c} style={{ ["--n" as string]: n }} />)}
-        </div>
         <div className="ab-hero__copy">
           <span className="sp-tag">About</span>
           <h1>
@@ -100,6 +98,20 @@ export default function AboutPage() {
             </Link>
           </div>
         </div>
+        <figure className="ab-cov" aria-label={`Coverage test: ${FIRED} of ${GRID.length} alerts fired`}>
+          <header>
+            <span><i className="pg-live" /> Coverage test</span>
+            <strong>{FIRED}/{GRID.length} fired</strong>
+          </header>
+          <div className="ab-cov__grid" aria-hidden="true">
+            {GRID.map((c, n) => <i key={n} data-c={c} style={{ ["--n" as string]: n }} />)}
+          </div>
+          <figcaption>
+            <span data-c="f">Fired</span>
+            <span data-c="m">Missed</span>
+            <em>{GRID.length - FIRED} gaps to fix</em>
+          </figcaption>
+        </figure>
       </section>
 
       <section className="pg-section" id="change">
@@ -228,20 +240,27 @@ export default function AboutPage() {
 }
 
 const AB_CSS = `
-/* hero: manifesto over a coverage grid */
-.ab-hero { position: relative; padding: clamp(56px, 8vw, 112px) 0 clamp(24px, 3vw, 40px); overflow: hidden }
-.ab-hero__grid {
-  position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: min(38%, 460px);
-  display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; pointer-events: none;
-  -webkit-mask-image: radial-gradient(ellipse at 70% 50%, #000 30%, transparent 72%);
-  mask-image: radial-gradient(ellipse at 70% 50%, #000 30%, transparent 72%);
+/* hero: manifesto beside a coverage test */
+.ab-hero {
+  display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 40px 72px; align-items: center;
+  padding: clamp(56px, 8vw, 112px) 0 clamp(24px, 3vw, 40px);
 }
-.ab-hero__grid i { aspect-ratio: 1; background: #fff; border: 1px solid rgba(106,92,255,.16) }
-.ab-hero__grid i[data-c="f"] { animation: ab-fill .5s cubic-bezier(.16,1,.3,1) both; animation-delay: calc(var(--n) * 28ms + .6s) }
-.ab-hero__grid i[data-c="m"] { animation: ab-gap .5s cubic-bezier(.16,1,.3,1) both; animation-delay: calc(var(--n) * 28ms + .6s) }
-@keyframes ab-fill { from { background: #fff } to { background: rgba(106,92,255,.55); border-color: transparent } }
-@keyframes ab-gap { from { background: #fff } to { background: rgba(248,113,113,.4); border-color: transparent } }
-.ab-hero__copy { position: relative; z-index: 1; max-width: 680px }
+.ab-cov { margin: 0; padding: 20px; background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 40px 80px -56px rgba(42,34,128,.5) }
+.ab-cov header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; font-family: var(--font-mono); font-size: .74rem }
+.ab-cov header span { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep) }
+.ab-cov header strong { color: var(--ink) }
+.ab-cov__grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px }
+.ab-cov__grid i { aspect-ratio: 1; background: #f3f3f9 }
+.ab-cov__grid i[data-c="f"] { animation: ab-fill .5s cubic-bezier(.16,1,.3,1) both; animation-delay: calc(var(--n) * 22ms + .5s) }
+.ab-cov__grid i[data-c="m"] { animation: ab-gap .5s cubic-bezier(.16,1,.3,1) both; animation-delay: calc(var(--n) * 22ms + .5s) }
+@keyframes ab-fill { from { background: #f3f3f9 } to { background: rgba(106,92,255,.6) } }
+@keyframes ab-gap { from { background: #f3f3f9 } to { background: #f87171 } }
+.ab-cov figcaption { display: flex; align-items: center; gap: 16px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); font-size: .8rem; font-weight: 600; color: var(--muted) }
+.ab-cov figcaption span { display: inline-flex; align-items: center; gap: 6px }
+.ab-cov figcaption span::before { content: ""; width: 10px; height: 10px; background: rgba(106,92,255,.6) }
+.ab-cov figcaption span[data-c="m"]::before { background: #f87171 }
+.ab-cov figcaption em { margin-left: auto; font-style: normal; font-weight: 700; color: #b42318 }
+.ab-hero__copy { max-width: 680px }
 .ab-hero h1 {
   margin: 20px 0 0; font-family: var(--font-display); font-weight: 500;
   font-size: clamp(2.1rem, 4vw, 3.4rem); line-height: 1.08; letter-spacing: -.04em; color: var(--ink); text-wrap: balance;
@@ -377,9 +396,9 @@ const AB_CSS = `
 .ab-link svg { position: static }
 
 @media (prefers-reduced-motion: reduce) {
-  .ab-hero__grid i { animation: none !important }
-  .ab-hero__grid i[data-c="f"] { background: rgba(106,92,255,.55); border-color: transparent }
-  .ab-hero__grid i[data-c="m"] { background: rgba(248,113,113,.4); border-color: transparent }
+  .ab-cov__grid i { animation: none !important }
+  .ab-cov__grid i[data-c="f"] { background: rgba(106,92,255,.6) }
+  .ab-cov__grid i[data-c="m"] { background: #f87171 }
   .ab-hero s::after { animation: none; transform: scaleX(1) }
   .ab-change li p { animation: none }
   .ab-change__switch i { transition: none }
@@ -387,7 +406,8 @@ const AB_CSS = `
   .ab-beliefs li::before { transition: none }
 }
 @media (max-width: 980px) {
-  .ab-hero__grid { width: 70%; opacity: .45 }
+  .ab-hero { grid-template-columns: minmax(0, 1fr) }
+  .ab-cov { max-width: 460px }
   .ab-change__wrap { grid-template-columns: minmax(0, 1fr) }
   .ab-change__head { position: static }
   .ab-loop ol { grid-template-columns: minmax(0, 1fr); gap: 32px }
