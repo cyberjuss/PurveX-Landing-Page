@@ -5,10 +5,12 @@
 
 ### Resetting and Unlocking a Password
 
-These are two different problems that get confused constantly.
+A locked account and a forgotten password are two different problems. They get confused constantly, and each one has its own fix:
 
-* **Account locked.** The user remembers their password but mistyped it too many times so AD locked the account as a precaution. Open **Properties → Account**, check **Unlock account**, and click Apply. The password does not change.
-* **Password forgotten.** The user does not know it anymore. Right-click the account and choose **Reset Password**, set a new temporary password, and check **User must change password at next logon**. If the account is also locked check **Unlock the user's account** in the same dialog.
+* **Account locked.** The user knows the password but mistyped it too many times, so AD locked the account as a precaution. Open **Properties → Account**, check **Unlock account**, and click Apply. The password stays the same.
+* **Password forgotten.** The user no longer knows the password. Right-click the account, choose **Reset Password**, set a temporary password, and check **User must change password at next logon**.
+
+If a forgotten password also locked the account, check **Unlock the user's account** in the same Reset Password dialog.
 
 <div class="ad-decision">
 <div class="ad-decision__q">User calls in locked out.<br>Does she remember her password?</div>
@@ -30,9 +32,11 @@ These are two different problems that get confused constantly.
 </div>
 </div>
 
-Say Riley Kwan in Operations calls in locked out after three failed logon attempts. If she remembers her password unlock the account. If she has forgotten it reset it and force a change at next logon. A temporary password is never a long-term credential.
+Say Riley Kwan in Operations calls in locked out after three failed logon attempts. The question that decides the fix is whether she still remembers her password.
 
-Do not treat "locked out" as the same job as "forgot my password." Check the Account tab before you change anything. Then open it again and confirm the box you meant to clear is actually cleared.
+If she remembers it, unlock the account. If she has forgotten it, reset it and force a change at next logon. A temporary password is never a long-term credential.
+
+Check the Account tab before you change anything. Afterward, open it again and confirm the box you meant to clear is actually cleared.
 
 <style>
 .ad-decision { margin: 1.25rem 0; }
