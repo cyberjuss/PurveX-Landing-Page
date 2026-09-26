@@ -253,7 +253,7 @@ export function CoachChat() {
     rec.continuous = true;
     rec.onresult = (e) => {
       const said = Array.from(e.results, (r) => r[0]?.transcript ?? "").join(" ").trim();
-      setInput(`${base ? `${base} ` : ""}${said}`.slice(0, 2000));
+      setInput(`${base ? `${base} ` : ""}${said}`.slice(0, 6000));
     };
     rec.onend = () => {
       setListening(false);
@@ -307,7 +307,7 @@ export function CoachChat() {
           <div className="pc-open">
             <p className="pc-open__lead">
               {mode === "interview"
-                ? "A mock Tier 1 interview. One question at a time, scored like a real one."
+                ? "Mock Tier 1 interviews scored like the real thing, and resume help built from the work you have proven."
                 : "Picked from where you left off or where you struggled."}
             </p>
             <ul className="pc-tickets">
@@ -445,10 +445,10 @@ export function CoachChat() {
                 : mode === "mentor"
                   ? "What real-world situation are you mapping?"
                   : mode === "interview"
-                    ? "Answer the question, or say start."
+                    ? "Answer the question, say start, or paste your resume."
                     : "Where are you stuck?"
             }
-            maxLength={2000}
+            maxLength={6000}
             disabled={!enabled}
             autoFocus
           />

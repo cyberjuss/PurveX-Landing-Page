@@ -79,7 +79,8 @@ export async function POST(request: Request) {
   if (rawImages.length > 0 && images.length === 0) {
     return NextResponse.json({ error: "That screenshot could not be read. Paste or upload a PNG or JPG." }, { status: 400 });
   }
-  const message = String(body.message || "").trim().slice(0, 2000) || (images.length ? COACH_SHOT_ASK : "");
+  // Long enough for a pasted resume in Job prep.
+  const message = String(body.message || "").trim().slice(0, 6000) || (images.length ? COACH_SHOT_ASK : "");
   if (!message) {
     return NextResponse.json({ error: "Ask a question first." }, { status: 400 });
   }
@@ -92,7 +93,7 @@ export async function POST(request: Request) {
           return (row.role === "user" || row.role === "assistant") && typeof row.content === "string";
         })
         .slice(-10)
-        .map((m) => ({ role: m.role, content: m.content.slice(0, 4000) }))
+        .map((m) => ({ role: m.role, content: m.content.slice(0, 6000) }))
     : [];
 
   // Saved progress wins; the browser's copy only fills in before the first save.
