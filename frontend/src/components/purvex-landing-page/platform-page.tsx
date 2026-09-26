@@ -1,367 +1,416 @@
 "use client";
 
-import { useCallback, useState } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { joinWaitlist } from "@/lib/waitlist";
-import { SiteChrome } from "./chrome";
+import { ArrowRight, Check, Crosshair, Database, Eye, FileLock2, FlaskConical, Lock, ShieldCheck, ToggleRight, type LucideIcon } from "lucide-react";
+import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
-import { IconChain, IconEvidence, IconLog, IconReadOnly, IconRecord, IconValidate } from "./brand-icons";
-import { AssuranceConsole, Comparison, Pathways, PRODUCT_CSS, ProvenChain, TrustStrip } from "./lab-product";
-import { ChainDiagram, CoverageMatrix, COVERAGE_PERCENT, HealthTrend, LAB_CSS } from "./lab-visuals";
 import { PG_CSS } from "./page-skin";
+import { PlatformHero } from "./platform-hero";
+import { IconAudit, IconChain, IconCompass, IconEvidence, IconLog, IconShield, IconValidate, type BrandIcon } from "./brand-icons";
 
-const facts = [
-  { title: "Runs Atomic Red Team tests", body: "Real adversary behavior, run against your own environment.", Icon: IconValidate },
-  { title: "Queries your SIEM", body: "Works with Splunk, Elastic, and Microsoft Sentinel.", Icon: IconLog },
-  { title: "Names the stage that failed", body: "Telemetry, parser, rule, or alert, with the evidence attached.", Icon: IconChain },
+/* PurveX Platform. Written for security teams in plain words: what it
+   proves, how a test works, who uses it, why it is safe to run, and what
+   it costs. Plan details match the pricing page. */
+
+const WORKS_WITH: { name: string; Icon: LucideIcon }[] = [
+  { name: "Splunk", Icon: Database },
+  { name: "Elastic", Icon: Database },
+  { name: "Microsoft Sentinel", Icon: ShieldCheck },
+  { name: "Atomic Red Team", Icon: FlaskConical },
+  { name: "MITRE ATT&CK", Icon: Crosshair },
 ];
 
-const start = [
-  { n: "01", title: "Connect your SIEM", body: "Read-only access to Splunk, Elastic, or Microsoft Sentinel.", Icon: IconLog },
-  { n: "02", title: "Run a test", body: "Pick an ATT&CK technique and run it against your environment.", Icon: IconValidate },
-  { n: "03", title: "Read the result", body: "See which stage of the chain fired and which one failed.", Icon: IconChain },
-  { n: "04", title: "Fix and run again", body: "Every result is kept as evidence, so progress is easy to show.", Icon: IconEvidence },
+const REASONS = [
+  "The log never reached your SIEM",
+  "The log arrived but was not read",
+  "No rule matched it",
+  "The alert never reached anyone",
 ];
 
-const runs = [
-  { id: "T1059.001", name: "PowerShell execution", state: "Fired" },
-  { id: "T1003.001", name: "LSASS memory access", state: "Missed" },
-  { id: "T1053.005", name: "Scheduled task creation", state: "Fired" },
+// A small example coverage grid: f = fired, m = missed, u = not tested yet.
+const GRID = "ffmfuffmfuufffmfufffmuffufmffuffmfufff".split("");
+
+const STEPS: { title: string; body: string; Icon: BrandIcon }[] = [
+  { title: "Connect your SIEM", body: "Read-only access to Splunk, Elastic, or Microsoft Sentinel.", Icon: IconLog },
+  { title: "Pick an attack", body: "Choose from the Atomic Red Team library, mapped to MITRE ATT&CK.", Icon: IconValidate },
+  { title: "Run the test", body: "A test runner you control plays the attack in your environment.", Icon: IconChain },
+  { title: "Read and fix", body: "See what fired, where a miss broke, and how to fix it.", Icon: IconEvidence },
 ];
 
-const tiers = [
+const ROLES: { title: string; body: string; Icon: BrandIcon }[] = [
+  { title: "Detection engineers", body: "See exactly which stage failed and fix the rule with confidence.", Icon: IconValidate },
+  { title: "SOC managers", body: "Know which alerts your analysts can trust, and which need work.", Icon: IconShield },
+  { title: "Security leaders", body: "Show real coverage and progress to the board, backed by evidence.", Icon: IconCompass },
+];
+
+const SAFE: { title: string; body: string; Icon: LucideIcon }[] = [
+  { title: "Read-only on your SIEM", body: "PurveX only checks whether an alert fired. It never changes your rules.", Icon: Eye },
+  { title: "Your logs stay put", body: "No raw logs, personal data, or case notes are copied out of your SIEM.", Icon: Lock },
+  { title: "Production is opt-in", body: "Tests only run on production machines when you turn that on.", Icon: ToggleRight },
+  { title: "Every run is recorded", body: "A full audit trail shows who ran what, where, and when.", Icon: FileLock2 },
+];
+
+const PLANS = [
   {
     name: "Free",
     price: "$0",
     note: "self-hosted",
-    items: ["ATT&CK-mapped tests", "Splunk, Elastic, or Sentinel", "3 people, 3 runs a day"],
+    items: [
+      "Full Atomic Red Team library, mapped to ATT&CK",
+      "Splunk, Elastic, or Microsoft Sentinel",
+      "Coverage heatmap",
+      "Up to 3 team members",
+      "1 test runner, 3 runs a day",
+      "30 days of audit history",
+    ],
     href: "/account/signup?plan=free",
     cta: "Get started free",
-    dark: false,
+    paid: false,
   },
   {
     name: "Paid",
     price: "$99",
     note: "per month",
-    items: ["Unlimited people and runs", "Scheduled tests", "Detection-as-code from git"],
+    items: [
+      "Everything in Free",
+      "Unlimited team members",
+      "Multiple runners, unlimited runs",
+      "Scheduled, recurring tests",
+      "Detection-as-code, synced from git",
+      "Unlimited audit history",
+    ],
     href: "/account/signup?plan=paid",
-    cta: "Get started",
-    dark: true,
+    cta: "Start with Paid",
+    paid: true,
   },
 ];
 
-const faqs = [
-  {
-    q: "Is this BAS",
-    Icon: IconChain,
-    a: <>BAS hits endpoints, and we test the chain after that: telemetry, parser, rule, and alert.</>,
-  },
-  {
-    q: "Does it run in production",
-    Icon: IconReadOnly,
-    a: (
-      <>
-        <mark>Read-only</mark> on the SIEM by default. Production tests need an <mark>explicit opt-in</mark>, and every run
-        is <mark>auditable</mark>.
-      </>
-    ),
-  },
-  {
-    q: "Does it replace the SIEM",
-    Icon: IconRecord,
-    a: (
-      <>
-        No. Your SIEM remains the <mark>system of record</mark>, and we prove that the detections fire.
-      </>
-    ),
-  },
-];
+function Benefits() {
+  return (
+    <div className="pxb" data-r>
+      <article className="pxb-cell pxb-cell--fire">
+        <div className="pxb-head">
+          <i><IconValidate size={22} /></i>
+          <h3>Know which alerts fire</h3>
+          <p>Test your detections against real attack behavior instead of assuming they work.</p>
+        </div>
+        <ul className="pxb-runs">
+          <li><span>PowerShell run by a user</span><em data-s="fired">Fired</em></li>
+          <li><span>Password theft from memory</span><em data-s="missed">Missed</em></li>
+          <li><span>Scheduled task created</span><em data-s="fired">Fired</em></li>
+        </ul>
+      </article>
+
+      <article className="pxb-cell pxb-cell--why">
+        <div className="pxb-head">
+          <i><IconChain size={22} /></i>
+          <h3>See exactly where it broke</h3>
+          <p>A miss is traced to the stage that failed, with a suggested fix.</p>
+        </div>
+        <ol className="pxb-why">
+          {REASONS.map((r, n) => (
+            <li key={r} data-on={n === 2 ? "1" : "0"} style={{ ["--n" as string]: n }}>{r}</li>
+          ))}
+        </ol>
+      </article>
+
+      <article className="pxb-cell pxb-cell--map">
+        <div className="pxb-head">
+          <i><IconAudit size={22} /></i>
+          <h3>See your coverage</h3>
+          <p>A heatmap across MITRE ATT&amp;CK shows what is covered, what is missed, and what is untested.</p>
+        </div>
+        <div className="pxb-grid" aria-hidden="true">
+          {GRID.map((c, n) => <i key={n} data-c={c} style={{ ["--n" as string]: n }} />)}
+        </div>
+        <ul className="pxb-legend">
+          <li><i data-c="f" /> Fired</li>
+          <li><i data-c="m" /> Missed</li>
+          <li><i data-c="u" /> Not tested</li>
+        </ul>
+      </article>
+
+      <article className="pxb-cell pxb-cell--proof">
+        <div className="pxb-head">
+          <i><IconEvidence size={22} /></i>
+          <h3>Prove progress</h3>
+          <p>Every run is scored and kept, so reports show improvement with evidence behind it.</p>
+        </div>
+        <div className="pxb-trend" aria-hidden="true">
+          <div>
+            <strong>84</strong>
+            <span>Detection health, example</span>
+          </div>
+          <svg viewBox="0 0 200 60" preserveAspectRatio="none">
+            <polyline points="0,50 30,46 60,40 90,42 120,30 150,24 180,16 200,10" />
+          </svg>
+        </div>
+      </article>
+    </div>
+  );
+}
 
 export default function PlatformPage() {
-  const [email, setEmail] = useState("");
-  const [wlState, setWlState] = useState<"idle" | "loading" | "success" | "exists" | "error">("idle");
-  const [wlMsg, setWlMsg] = useState("");
-
-  const submitWaitlist = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      const trimmed = email.trim();
-      if (!trimmed) {
-        setWlState("error");
-        setWlMsg("Enter your work email.");
-        return;
-      }
-      setWlState("loading");
-      setWlMsg("");
-      try {
-        const data = await joinWaitlist(trimmed, "platform-hero");
-        if (data.already_exists) {
-          setWlState("exists");
-          setWlMsg("Already on the waitlist.");
-        } else {
-          setWlState("success");
-          setWlMsg("On the list. We will be in touch.");
-          setEmail("");
-        }
-      } catch (err) {
-        setWlState("error");
-        setWlMsg(err instanceof Error ? err.message : "Unable to join right now. Try again.");
-      }
-    },
-    [email],
-  );
-
   return (
     <SiteChrome active="platform">
-      <section className="pg-hero lb-motion" id="top">
-        <ol className="lb-spine" aria-hidden="true">
-          <li>Telemetry</li>
-          <li>Parser</li>
-          <li>Rule</li>
-          <li data-fail>Alert</li>
-        </ol>
-        <div className="pg-hero__copy">
-          <span className="sp-tag">Platform</span>
-          <h1 className="pg-hero__h1">Name the stage that failed</h1>
-          <p className="pg-hero__sub">Telemetry, parser, rule, or alert. The run keeps the evidence. Still private.</p>
-          <form className="pg-wl" onSubmit={submitWaitlist}>
-            <div className="pg-wl__row">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@company.com"
-                autoComplete="email"
-              />
-              <button type="submit" className="sp-btn sp-btn--prim sp-btn--sm" disabled={wlState === "loading"}>
-                {wlState === "loading" ? "Joining..." : <>Join waitlist <ArrowRight size={14} /></>}
-              </button>
-            </div>
-            {wlMsg && <p className={`pg-wl__msg pg-wl__msg--${wlState}`}>{wlMsg}</p>}
-          </form>
-        </div>
-        <AssuranceConsole />
-      </section>
+      <PlatformHero />
 
-      <section className="pg-section" id="proof">
-        <div className="pg-head pg-head--xl" data-r>
-          <h2>A rule that exists is not a rule that works</h2>
-          <p>The chain is the proof. A dashboard is the list.</p>
+      <div className="px-with">
+        <span>Works with</span>
+        <ul>
+          {WORKS_WITH.map(({ name, Icon }) => (
+            <li key={name}><Icon size={16} strokeWidth={1.9} />{name}</li>
+          ))}
+        </ul>
+      </div>
+
+      <section className="pg-section" id="benefits">
+        <div className="pg-head">
+          <h2>Stop guessing whether your alerts work</h2>
+          <p>Most teams find out a detection is broken during a real attack. PurveX tells you first.</p>
         </div>
-        <ProvenChain />
+        <Benefits />
       </section>
 
       <section className="pg-section" id="how">
-        <div className="pg-head" data-r>
-          <h2>Most misses happen after the rule</h2>
-          <p>The test follows the alert through every stage and stops where it broke.</p>
+        <div className="pg-head">
+          <h2>How a test works</h2>
+          <p>Four steps from install to a result you can act on.</p>
         </div>
-        <ChainDiagram />
-        <ul className="lb-facts" data-r>
-          {facts.map((f) => (
-            <li key={f.title}>
-              <i className="pg-ico"><f.Icon size={22} /></i>
-              <strong>{f.title}</strong>
-              <p>{f.body}</p>
+        <ol className="px-steps" data-r>
+          {STEPS.map(({ title, body, Icon }, n) => (
+            <li key={title}>
+              <i><Icon size={22} /><b>{n + 1}</b></i>
+              <strong>{title}</strong>
+              <p>{body}</p>
             </li>
           ))}
-        </ul>
+        </ol>
       </section>
 
-      <section className="pg-section">
-        <div className="pg-dark" data-r>
-          <div className="lb-band">
-            <div>
-              <span className="pg-dark__kicker">Coverage</span>
-              <h2>Show the miss</h2>
-              <ul className="lb-legend">
-                <li><i data-s="fired" /> Fired</li>
-                <li><i data-s="missed" /> Missed</li>
-                <li><i data-s="untested" /> Not yet tested</li>
-              </ul>
-            </div>
-            <div className="lb-big">
-              <strong>{COVERAGE_PERCENT}%</strong>
-              <span>of tested techniques fired<br />Example matrix</span>
-            </div>
+      <section className="pg-section" id="who">
+        <div className="px-who">
+          <div className="pg-head">
+            <h2>Built for the whole security team</h2>
+            <p>Everyone reads the same result, from the person writing rules to the person reporting risk.</p>
           </div>
-          <CoverageMatrix />
-        </div>
-      </section>
-
-      <section className="pg-section">
-        <div className="lb-evidence">
-          <div>
-            <HealthTrend />
-            <ul className="lb-runs" data-r>
-              {runs.map((r) => (
-                <li key={r.id}>
-                  <code>{r.id}</code>
-                  <span>{r.name}</span>
-                  <em data-s={r.state.toLowerCase()}>{r.state}</em>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="pg-head lb-evidence__copy" data-r>
-            <h2>The score moves when the run does</h2>
-            <p>Each run is scored and kept. You can show the difference.</p>
-            <ul className="pg-bullets">
-              <li>Scores update after every run</li>
-              <li>Reports carry the evidence for each technique</li>
-              <li>AI-assisted analysis explains failed tests</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section className="pg-section">
-        <div className="pg-head" data-r>
-          <h2>Assumed, then proven</h2>
-        </div>
-        <Comparison />
-      </section>
-
-      <section className="pg-section">
-        <div className="pg-head" data-r>
-          <h2>Three roles. One chain.</h2>
-          <p>Each role reads a different stage of the same detection.</p>
-        </div>
-        <Pathways />
-      </section>
-
-      <section className="pg-section">
-        <div className="ox-split">
-          <div className="pg-head" data-r>
-            <h2>Connect. Run. Read. Keep.</h2>
-            <p>Four steps from a fresh install to evidence you can show.</p>
-          </div>
-          <ol className="ox-steps" data-r>
-            {start.map((s) => (
-              <li key={s.n}>
-                <span className="ox-steps__n">{s.n}</span>
+          <ul data-r>
+            {ROLES.map(({ title, body, Icon }) => (
+              <li key={title}>
+                <i><Icon size={22} /></i>
                 <div>
-                  <h3>{s.title}</h3>
-                  <p>{s.body}</p>
+                  <strong>{title}</strong>
+                  <p>{body}</p>
                 </div>
-                <i className="pg-ico"><s.Icon size={24} /></i>
               </li>
             ))}
-          </ol>
+          </ul>
+        </div>
+      </section>
+
+      <section className="pg-section" id="safe">
+        <div className="px-safe">
+          <div className="px-safe__head">
+            <h2>Safe to run in your environment</h2>
+            <p>PurveX is self-hosted and built to stay out of the way of your SIEM and your data.</p>
+          </div>
+          <ul>
+            {SAFE.map(({ title, body, Icon }) => (
+              <li key={title}>
+                <i><Icon size={20} strokeWidth={1.8} /></i>
+                <strong>{title}</strong>
+                <p>{body}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
       <section className="pg-section" id="pricing">
-        <div className="pg-head" data-r>
-          <h2>Same software. Two limits.</h2>
-          <p>Paid lifts the team and runner caps when you are ready.</p>
+        <div className="pg-head">
+          <h2>Start free. Upgrade when your team grows.</h2>
+          <p>Same software on both plans. Paid removes the limits.</p>
         </div>
-        <div className="pr" data-r>
-          {tiers.map((t) => (
-            <article key={t.name} className={`pr__side${t.dark ? " pr__side--paid" : ""}`}>
-              <span className="pr__name">{t.name}</span>
-              <p className="pr__price">
-                {t.price}
-                <small>{t.note}</small>
-              </p>
-              <ul className="pr__list">
-                {t.items.map((item) => (
-                  <li key={item}>{item}</li>
+        <div className="px-plans">
+          {PLANS.map((p) => (
+            <article key={p.name} data-paid={p.paid ? "1" : "0"}>
+              <span className="px-plans__name">{p.name}</span>
+              <p className="px-plans__price">{p.price}<small>{p.note}</small></p>
+              <ul>
+                {p.items.map((item) => (
+                  <li key={item}><Check size={15} strokeWidth={3} />{item}</li>
                 ))}
               </ul>
-              <a href={t.href} className="sp-btn sp-btn--ghost sp-btn--lg">
-                {t.cta} <ArrowRight size={16} />
-              </a>
+              <Link href={p.href} className={`sp-btn sp-btn--lg ${p.paid ? "sp-btn--prim" : "sp-btn--ghost"}`}>
+                {p.cta} <ArrowRight size={16} />
+              </Link>
             </article>
-          ))}
-          <span className="pr__seam">Same software</span>
-        </div>
-      </section>
-
-      <section className="pg-section">
-        <div className="pg-head" data-r>
-          <h2>Before you join</h2>
-        </div>
-        <TrustStrip />
-        <div className="fq" data-r>
-          {faqs.map((f) => (
-            <details key={f.q}>
-              <summary>
-                <i><f.Icon size={22} /></i>
-                <strong>{f.q}</strong>
-              </summary>
-              <div>
-                <p>{f.a}</p>
-              </div>
-            </details>
           ))}
         </div>
       </section>
 
       <section className="pg-close" data-r>
         <div className="pg-close__copy">
-          <h2>Ask for a seat</h2>
-          <p className="pg-close__sub">We write when one opens.</p>
+          <h2>Find out what your alerts miss</h2>
+          <p className="pg-close__sub">Install free with one command, or book a call and we will walk you through it.</p>
           <div className="pg-close__row">
-            <a href="#top" className="pg-close__book">
-              Join waitlist <ArrowRight size={16} />
-            </a>
-            <Link href="/security-operations" className="pg-close__more">
-              Operations today <ArrowRight size={14} />
+            <Link href="/account/signup?plan=free" className="pg-close__book">
+              Get started free <ArrowRight size={16} />
             </Link>
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="pg-close__more">
+              Book a demo <ArrowRight size={14} />
+            </a>
           </div>
         </div>
         <HoldCard source="labs" />
       </section>
 
       <style>{PG_CSS}</style>
-      <style>{LAB_CSS}</style>
-      <style>{PRODUCT_CSS}</style>
-      <style>{`
-        .lb-motion { position: relative }
-        .lb-spine {
-          grid-column: 1 / -1; list-style: none; display: grid; grid-template-columns: repeat(4, 1fr);
-          gap: 0; margin: 8px 0 0; padding: 0 0 8px; position: relative;
-        }
-        .lb-spine::before {
-          content: ""; position: absolute; left: 0; right: 8%; top: 7px; height: 2px;
-          background: rgba(106,92,255,.18);
-        }
-        .lb-spine::after {
-          content: ""; position: absolute; left: 0; top: 7px; height: 2px; width: 72%;
-          background: var(--accent); transform-origin: left; transform: scaleX(0);
-        }
-        .lb-spine li {
-          position: relative; padding-top: 22px;
-          font-family: var(--font-display); font-weight: 700;
-          font-size: clamp(1.4rem, 2.4vw, 2.1rem); letter-spacing: -.03em;
-        }
-        .lb-spine li::before {
-          content: ""; position: absolute; left: 0; top: 2px; width: 12px; height: 12px;
-          background: #fff; border: 2px solid var(--accent);
-        }
-        .lb-spine li[data-fail] { color: #c23030 }
-        .lb-spine li[data-fail]::before { background: #fdeaea; border-color: #e5484d }
-        .lb-motion .pg-hero__copy, .lb-motion .as-floor { position: relative; z-index: 1 }
-        @media (prefers-reduced-motion: no-preference) {
-          .lb-motion .as-sheet { animation: lb-settle .6s var(--ease) both; }
-          .lb-spine::after { animation: lb-run 2.4s var(--ease) .2s forwards }
-          .lb-spine li[data-fail]::before { animation: lb-fail 1.6s ease-in-out 2.2s infinite }
-        }
-        @keyframes lb-settle { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-        @keyframes lb-run { to { transform: scaleX(1) } }
-        @keyframes lb-fail { 0%, 100% { box-shadow: 0 0 0 0 rgba(229,72,77,.45) } 70% { box-shadow: 0 0 0 8px rgba(229,72,77,0) } }
-        @media (max-width: 980px) {
-          .lb-motion { min-height: 0; }
-        }
-        @media (max-width: 680px) {
-          .lb-spine { margin-top: 20px }
-          .lb-spine li { padding-top: 20px; font-size: .92rem; letter-spacing: -.01em }
-          .lb-spine li::before { width: 10px; height: 10px }
-          .lb-spine::before, .lb-spine::after { top: 6px }
-        }
-      `}</style>
+      <style>{PX_CSS}</style>
     </SiteChrome>
   );
 }
+
+const PX_CSS = `
+/* works with */
+.px-with { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 20px; margin: clamp(36px, 5vw, 60px) 0 0; padding: 22px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border) }
+.px-with > span { font-size: .86rem; font-weight: 650; color: var(--muted) }
+.px-with ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; list-style: none; margin: 0; padding: 0 }
+.px-with li { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: #fff; border: 1px solid var(--border); font-size: .9rem; font-weight: 600; color: var(--ink-soft) }
+.px-with li svg { position: static; color: var(--accent-deep) }
+
+/* benefits */
+.pxb[data-r] { opacity: 1; transform: none; filter: none }
+.pxb { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px }
+.pxb-cell {
+  display: flex; flex-direction: column; justify-content: space-between; gap: 24px; padding: 28px;
+  background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 22px 44px -34px rgba(42,34,128,.4);
+  opacity: 0; transform: translateY(18px); transition: opacity .7s var(--ease), transform .7s var(--ease), border-color .3s, box-shadow .3s;
+}
+.pxb.in .pxb-cell { opacity: 1; transform: none }
+.pxb.in .pxb-cell:nth-child(2) { transition-delay: .08s, .08s, 0s, 0s }
+.pxb.in .pxb-cell:nth-child(3) { transition-delay: .16s, .16s, 0s, 0s }
+.pxb.in .pxb-cell:nth-child(4) { transition-delay: .24s, .24s, 0s, 0s }
+.pxb-cell:hover { border-color: rgba(106,92,255,.4); box-shadow: 0 30px 60px -34px rgba(42,34,128,.5) }
+.pxb-cell--fire { grid-column: span 7; background: linear-gradient(150deg, #2a2280, #3d32b0 60%, #4a3fd0); border-color: #2a2280; color: #fff }
+.pxb-cell--why { grid-column: span 5 }
+.pxb-cell--map { grid-column: span 5; background: repeating-linear-gradient(135deg, rgba(106,92,255,.08) 0 1px, transparent 1px 10px), var(--accent-soft); border-color: rgba(106,92,255,.22) }
+.pxb-cell--proof { grid-column: span 7 }
+.pxb-head i { display: grid; place-items: center; width: 44px; height: 44px; background: var(--accent-soft); color: var(--accent-deep) }
+.pxb-head i svg { position: static }
+.pxb-head h3 { margin: 18px 0 0; font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; letter-spacing: -.025em; line-height: 1.15; color: var(--ink) }
+.pxb-head p { margin: 8px 0 0; max-width: 44ch; color: var(--ink-soft); font-size: .98rem; line-height: 1.55 }
+.pxb-cell--fire .pxb-head i { background: rgba(238,240,255,.14); color: #fff }
+.pxb-cell--fire .pxb-head h3 { color: #fff }
+.pxb-cell--fire .pxb-head p { color: rgba(238,240,255,.82) }
+.pxb-cell--map .pxb-head i { background: #fff }
+
+.pxb-runs { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px }
+.pxb-runs li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; background: #fff; color: var(--ink); font-size: .92rem; font-weight: 550; opacity: 0 }
+.pxb.in .pxb-runs li { animation: pxb-in .45s cubic-bezier(.16,1,.3,1) forwards }
+.pxb.in .pxb-runs li:nth-child(1) { animation-delay: .45s }
+.pxb.in .pxb-runs li:nth-child(2) { animation-delay: .6s }
+.pxb.in .pxb-runs li:nth-child(3) { animation-delay: .75s }
+.pxb-runs em { padding: 3px 9px; font-style: normal; font-size: .74rem; font-weight: 700; color: #fff; background: var(--green) }
+.pxb-runs em[data-s="missed"] { background: #e5484d }
+
+.pxb-why { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; counter-reset: why }
+.pxb-why li {
+  display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--border); background: #fbfbff;
+  font-size: .9rem; color: var(--ink-soft); counter-increment: why; transition: background .4s, border-color .4s, color .4s;
+}
+.pxb-why li::before { content: counter(why); display: grid; place-items: center; width: 22px; height: 22px; flex: none; font-size: .74rem; font-weight: 700; color: var(--muted); border: 1px solid var(--border-strong) }
+.pxb.in .pxb-why li[data-on="1"] { animation: pxb-flag .01s 1.1s forwards }
+@keyframes pxb-flag { to { background: #fef3f2; border-color: rgba(229,72,77,.35); color: #b42318 } }
+
+.pxb-grid { display: grid; grid-template-columns: repeat(13, 1fr); gap: 4px }
+.pxb-grid i { aspect-ratio: 1; background: #fff; border: 1px solid rgba(106,92,255,.18); opacity: 0 }
+.pxb-grid i[data-c="f"] { background: var(--accent); border-color: var(--accent) }
+.pxb-grid i[data-c="m"] { background: #f87171; border-color: #f87171 }
+.pxb.in .pxb-grid i { animation: pxb-in .35s cubic-bezier(.16,1,.3,1) forwards; animation-delay: calc(var(--n) * 18ms + .4s) }
+.pxb-legend { display: flex; flex-wrap: wrap; gap: 14px; list-style: none; margin: -10px 0 0; padding: 0; font-size: .8rem; font-weight: 600; color: var(--ink-soft) }
+.pxb-legend li { display: inline-flex; align-items: center; gap: 6px }
+.pxb-legend i { width: 10px; height: 10px; background: #fff; border: 1px solid rgba(106,92,255,.3) }
+.pxb-legend i[data-c="f"] { background: var(--accent); border-color: var(--accent) }
+.pxb-legend i[data-c="m"] { background: #f87171; border-color: #f87171 }
+
+.pxb-trend { display: grid; grid-template-columns: auto 1fr; align-items: end; gap: 24px; padding: 18px 20px; background: #fbfbff; border: 1px solid var(--border) }
+.pxb-trend strong { display: block; font-family: var(--font-display); font-size: 2.6rem; font-weight: 600; letter-spacing: -.05em; line-height: 1; color: var(--accent-deep) }
+.pxb-trend span { display: block; margin-top: 4px; font-size: .8rem; font-weight: 600; color: var(--muted) }
+.pxb-trend svg { width: 100%; height: 64px; overflow: visible }
+.pxb-trend polyline { fill: none; stroke: var(--accent); stroke-width: 3; vector-effect: non-scaling-stroke; stroke-dasharray: 400; stroke-dashoffset: 400 }
+.pxb.in .pxb-trend polyline { animation: pxb-draw 1.4s .5s cubic-bezier(.16,1,.3,1) forwards }
+@keyframes pxb-draw { to { stroke-dashoffset: 0 } }
+@keyframes pxb-in { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+
+/* steps */
+.px-steps { position: relative; list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin: 0; padding: 0 }
+.px-steps::before { content: ""; position: absolute; left: 28px; right: calc((100% - 72px) / 4 - 28px); top: 28px; height: 2px; background: linear-gradient(90deg, rgba(106,92,255,.45), rgba(106,92,255,.15)) }
+.px-steps li { position: relative }
+.px-steps i {
+  position: relative; z-index: 1; display: grid; place-items: center; width: 56px; height: 56px; margin-bottom: 18px;
+  background: var(--accent); color: #fff; box-shadow: 0 0 0 6px #fbfcfe, 0 16px 30px -16px rgba(85,70,224,.7);
+}
+.px-steps i svg { position: static }
+.px-steps i b { position: absolute; top: -8px; right: -8px; display: grid; place-items: center; width: 22px; height: 22px; font-style: normal; font-size: .72rem; font-weight: 700; background: #fff; color: var(--accent-deep); border: 1px solid rgba(106,92,255,.35) }
+.px-steps strong { display: block; font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink) }
+.px-steps p { margin: 6px 0 0; max-width: 28ch; color: var(--ink-soft); font-size: .94rem; line-height: 1.5 }
+
+/* roles */
+.px-who { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 32px 64px; align-items: center }
+.px-who .pg-head { margin: 0 }
+.px-who ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px }
+.px-who li { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 16px; padding: 18px 20px; background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--accent); box-shadow: 0 18px 36px -30px rgba(42,34,128,.45) }
+.px-who li i { display: grid; place-items: center; width: 44px; height: 44px; background: var(--accent-soft); color: var(--accent-deep) }
+.px-who li i svg { position: static }
+.px-who strong { display: block; font-size: 1.05rem; font-weight: 650; color: var(--ink) }
+.px-who p { margin: 3px 0 0; font-size: .93rem; line-height: 1.5; color: var(--muted) }
+
+/* safe */
+.px-safe { padding: clamp(28px, 4.5vw, 52px); background: #151a33; color: #eef0ff }
+.px-safe__head h2 { margin: 0; font-family: var(--font-display); font-weight: 700; letter-spacing: -.025em; line-height: 1.15; font-size: clamp(1.6rem, 2.6vw, 2.1rem); color: #fff }
+.px-safe__head p { margin: 10px 0 0; max-width: 52ch; color: rgba(238,240,255,.72); font-size: 1rem; line-height: 1.6 }
+.px-safe ul { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; list-style: none; margin: 32px 0 0; padding: 0 }
+.px-safe li { padding: 20px; background: rgba(238,240,255,.05); border: 1px solid rgba(238,240,255,.12) }
+.px-safe li i { display: grid; place-items: center; width: 40px; height: 40px; background: rgba(106,92,255,.28); color: #fff }
+.px-safe li i svg { position: static }
+.px-safe li strong { display: block; margin-top: 16px; font-size: 1rem; font-weight: 650; color: #fff }
+.px-safe li p { margin: 6px 0 0; font-size: .9rem; line-height: 1.5; color: rgba(238,240,255,.7) }
+
+/* plans */
+.px-plans { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 920px }
+.px-plans article { display: flex; flex-direction: column; padding: 30px; background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 22px 44px -34px rgba(42,34,128,.4) }
+.px-plans article[data-paid="1"] { border: 2px solid var(--accent); box-shadow: 0 30px 60px -34px rgba(85,70,224,.5) }
+.px-plans__name { font-size: .9rem; font-weight: 700; color: var(--accent-deep) }
+.px-plans__price { margin: 8px 0 0; font-family: var(--font-display); font-size: 3rem; font-weight: 600; letter-spacing: -.05em; line-height: 1; color: var(--ink) }
+.px-plans__price small { margin-left: 8px; font-family: inherit; font-size: .95rem; font-weight: 500; letter-spacing: 0; color: var(--muted) }
+.px-plans ul { list-style: none; margin: 24px 0 28px; padding: 0; display: grid; gap: 10px }
+.px-plans li { display: flex; align-items: flex-start; gap: 10px; font-size: .95rem; line-height: 1.4; color: var(--ink) }
+.px-plans li svg { position: static; flex: none; margin-top: 2px; color: var(--green) }
+.px-plans .sp-btn { margin-top: auto; justify-content: center }
+
+/* reduced motion: finished states */
+@media (prefers-reduced-motion: reduce) {
+  .pxb-cell, .pxb.in .pxb-cell { opacity: 1; transform: none; transition: none }
+  .pxb .pxb-runs li, .pxb .pxb-grid i { opacity: 1 !important; animation: none !important }
+  .pxb .pxb-trend polyline { stroke-dashoffset: 0; animation: none !important }
+  .pxb .pxb-why li[data-on="1"] { background: #fef3f2; border-color: rgba(229,72,77,.35); color: #b42318; animation: none !important }
+}
+
+@media (max-width: 1020px) {
+  .pxb-cell--fire, .pxb-cell--why, .pxb-cell--map, .pxb-cell--proof { grid-column: span 12 }
+  .px-steps { grid-template-columns: 1fr 1fr; row-gap: 32px }
+  .px-steps::before { display: none }
+  .px-who { grid-template-columns: minmax(0, 1fr) }
+  .px-safe ul { grid-template-columns: 1fr 1fr }
+}
+@media (max-width: 640px) {
+  .pxb-cell { padding: 22px 18px }
+  .px-steps { grid-template-columns: 1fr }
+  .px-safe { padding: 24px 18px }
+  .px-safe ul { grid-template-columns: 1fr }
+  .px-plans { grid-template-columns: 1fr }
+  .px-plans article { padding: 24px 20px }
+  .px-with > span { width: 100%; text-align: center }
+}
+`;

@@ -252,7 +252,7 @@ const OFFERS = [
     label: "Platform",
     title: "Prove your alerts work",
     body: "Software that runs real attack tests against your SIEM and shows exactly where an alert failed.",
-    who: "Early access by waitlist",
+    who: "Free to start, self-hosted",
     href: "/platform",
     Icon: IconChain,
   },
