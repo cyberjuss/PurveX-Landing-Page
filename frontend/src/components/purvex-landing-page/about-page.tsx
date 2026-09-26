@@ -45,11 +45,11 @@ const BELIEFS: { title: string; body: string; from: string; to: string; Icon: Lu
 ];
 
 // Resume-style: action, tool, and the result it bought the team.
-const FACTS: { tool: string; before: string; after: string }[] = [
-  { before: "Tuned ", tool: "Microsoft Sentinel", after: " detections for a federal agency SOC, so real threats stood out from the noise." },
-  { before: "Automated incident response in ", tool: "Splunk SOAR", after: ", cutting manual triage for analysts." },
-  { before: "Taught SOC fundamentals at ", tool: "Ellington Cyber Academy", after: ", preparing new analysts for real tickets." },
-  { before: "Certified in ", tool: "CySA+ and Security+", after: "." },
+const FACTS: { tag: string; tool: string; before: string; after: string }[] = [
+  { tag: "Detection", before: "Tuned ", tool: "Microsoft Sentinel", after: " detections for a federal agency SOC, so real threats stood out from the noise." },
+  { tag: "Automation", before: "Automated incident response in ", tool: "Splunk SOAR", after: ", cutting manual triage for analysts." },
+  { tag: "Teaching", before: "Taught SOC fundamentals at ", tool: "Ellington Cyber Academy", after: ", preparing new analysts for real tickets." },
+  { tag: "Certified", before: "Certified in ", tool: "CySA+ and Security+", after: "." },
 ];
 
 // Background coverage grid: f = covered, m = gap. Fills in as the page loads.
@@ -195,14 +195,17 @@ export default function AboutPage() {
                 <span>Founder and Lead Security Consultant</span>
               </figcaption>
             </figure>
-            <ul className="ab-creds">
-              {FACTS.map((f) => (
-                <li key={f.tool}>
-                  <Check size={16} strokeWidth={2.6} aria-hidden="true" />
-                  <span>{f.before}<b>{f.tool}</b>{f.after}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="ab-creds">
+              <span className="ab-creds__head">Track record</span>
+              <ul>
+                {FACTS.map((f) => (
+                  <li key={f.tool}>
+                    <em>{f.tag}</em>
+                    <p>{f.before}<b>{f.tool}</b>{f.after}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
             <div className="ab-founder__links">
               <Link href="/about/founder" className="sp-btn sp-btn--ghost sp-btn--lg">
                 Read the full story <ArrowRight size={16} />
@@ -380,9 +383,13 @@ const AB_CSS = `
 .ab-quote figcaption::before { content: ""; width: 28px; height: 2px; background: var(--accent) }
 .ab-quote figcaption strong { font-size: .95rem; white-space: nowrap; color: var(--ink) }
 .ab-quote figcaption span { font-size: .9rem; color: var(--muted) }
-.ab-creds { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 12px; max-width: 60ch }
-.ab-creds li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; font-size: 1rem; line-height: 1.55; color: var(--ink-soft) }
-.ab-creds svg { position: static; margin-top: 4px; color: var(--accent-deep) }
+.ab-creds { margin-top: 32px; background: #fff; border: 1px solid var(--border-strong); border-left: 4px solid var(--accent); box-shadow: 0 24px 48px -38px rgba(42,34,128,.45) }
+.ab-creds__head { display: block; padding: 14px 20px; border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-deep) }
+.ab-creds ul { list-style: none; margin: 0; padding: 0 }
+.ab-creds li { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 16px; align-items: baseline; padding: 14px 20px }
+.ab-creds li + li { border-top: 1px solid var(--border) }
+.ab-creds em { font-style: normal; font-size: .8rem; font-weight: 700; color: var(--accent-deep) }
+.ab-creds p { margin: 0; font-size: .96rem; line-height: 1.55; color: var(--ink-soft) }
 .ab-creds b { font-weight: 650; color: var(--ink) }
 .ab-founder__links { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 28px }
 .ab-founder__links .sp-btn svg { position: static }
@@ -416,6 +423,7 @@ const AB_CSS = `
   .ab-founder__photo { max-width: 320px }
 }
 @media (max-width: 640px) {
+  .ab-creds li { grid-template-columns: minmax(0, 1fr); gap: 4px }
   .ab-change li { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 18px 16px }
 }
 `;
