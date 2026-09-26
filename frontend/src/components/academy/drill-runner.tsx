@@ -282,23 +282,21 @@ function LabFindings({ items }: { items: Finding[] }) {
           )}
         </span>
       </div>
-      {items.length > 0 && (
-        <div id="dr-findings" className={`dr-findings__drop${open ? " is-open" : ""}`} inert={!open}>
-          <div>
-            <ul className="dr-findings__list">
-              {items.map((f) => (
-                <li key={f.id} className={`is-${f.severity}`}>
-                  <span className="dr-findings__tag">{tone[f.severity]}</span>
-                  <strong>{f.title}</strong>
-                  <p>{f.facts}</p>
-                  {!f.fixable && <em>Needs a decision, not a setting.</em>}
-                </li>
-              ))}
-            </ul>
-            <Link href={READINESS_PATH} className="dr-findings__report">
-              Open full report <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
+      {items.length > 0 && open && (
+        <div id="dr-findings" className="dr-findings__drop">
+          <ul className="dr-findings__list">
+            {items.map((f) => (
+              <li key={f.id} className={`is-${f.severity}`}>
+                <span className="dr-findings__tag">{tone[f.severity]}</span>
+                <strong>{f.title}</strong>
+                <p>{f.facts}</p>
+                {!f.fixable && <em>Needs a decision, not a setting.</em>}
+              </li>
+            ))}
+          </ul>
+          <Link href={READINESS_PATH} className="dr-findings__report">
+            Open full report <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       )}
     </li>

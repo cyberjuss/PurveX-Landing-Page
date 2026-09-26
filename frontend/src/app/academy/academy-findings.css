@@ -1,0 +1,13 @@
+/* Lab findings dropdown on the daily drill. Kept out of globals.css so a
+   change here always ships as a new CSS file instead of a cached one. */
+.dr-findings__drop { animation: dr-findings-open 0.28s ease both; }
+@keyframes dr-findings-open {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+.dr-findings__toggle svg, .dr-findings__toggle:hover svg { transform: none; transition: transform 0.25s ease; }
+.dr-findings__toggle.is-open svg { transform: rotate(180deg); }
+.dr-findings__report { display: inline-flex; align-items: center; gap: 6px; margin: 14px 0 4px 60px; font-size: var(--ty-small, 13px); font-weight: 650; color: var(--rd-accent, #5546e0); text-decoration: none; }
+.dr-findings__report:hover svg { transform: translateX(2px); }
+.dr-findings__report svg { transition: transform 0.15s; }
+@media (prefers-reduced-motion: reduce) { .dr-findings__drop { animation: none; } .dr-findings__toggle svg { transition: none; } }

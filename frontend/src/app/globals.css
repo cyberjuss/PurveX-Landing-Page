@@ -5220,16 +5220,6 @@ textarea.pc-dock__field {
 .dr-findings__tag { padding: 2px 8px; border-radius: 999px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: var(--rd-line-2); color: var(--rd-ink-2); }
 .is-high .dr-findings__tag { background: rgba(217, 58, 63, 0.14); color: var(--rd-bad); }
 .is-medium .dr-findings__tag { background: rgba(196, 130, 14, 0.14); color: var(--rd-warn); }
-/* Findings stay folded until the student opens them. */
-.dr-findings__drop { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows 0.3s ease, opacity 0.2s ease; }
-.dr-findings__drop.is-open { grid-template-rows: 1fr; opacity: 1; }
-.dr-findings__drop > div { min-height: 0; overflow: hidden; }
-.dr-findings__toggle svg, .dr-findings__toggle:hover svg { transform: none; transition: transform 0.25s ease; }
-.dr-findings__toggle.is-open svg { transform: rotate(180deg); }
-.dr-findings__report { display: inline-flex; align-items: center; gap: 6px; margin: 14px 0 4px 60px; font-size: var(--ty-small, 13px); font-weight: 650; color: var(--rd-accent, #5546e0); text-decoration: none; }
-.dr-findings__report:hover svg { transform: translateX(2px); }
-.dr-findings__report svg { transition: transform 0.15s; }
-@media (prefers-reduced-motion: reduce) { .dr-findings__drop, .dr-findings__toggle svg { transition: none; } }
 
 /* A wrong answer shakes the input instead of printing a message. */
 @keyframes ad-shake {
