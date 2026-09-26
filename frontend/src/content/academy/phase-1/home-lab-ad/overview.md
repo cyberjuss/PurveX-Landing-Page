@@ -33,21 +33,26 @@ Callers and tickets can be wrong, and handling that is part of the job. Do not a
 
 ### Your Role
 
-You are the analyst on this environment, and reading the company page is not enough. You should be able to answer these questions:
-
-- Does this account belong in this OU?
-- Should this user be a member of this group?
-- Does this person's department match their account?
-- Is this login consistent with what we know about the user?
-- Does this activity make sense for this environment?
-
-Work the lab until anything out of place starts to stand out:
-
-- A user in the wrong department
-- A group with the wrong member
-- A login that does not fit
-
-The goal is not to memorize the directory to pass a ticket. The goal is to see when something **does not belong**.
+<div class="ad-goals">
+<div class="ad-goals__head"><span class="ad-goals__kicker">Analyst Brief</span><span class="ad-goals__scope">purvexfinancial.local</span></div>
+<p class="ad-goals__lede">You are the analyst on this environment. Reading the company page is not enough. For any account in front of you, you should be able to answer five questions.</p>
+<ol class="ad-goals__checks">
+<li>Does this account belong in this OU?</li>
+<li>Should this user be a member of this group?</li>
+<li>Does this person's department match their account?</li>
+<li>Is this login consistent with what we know about the user?</li>
+<li>Does this activity make sense for this environment?</li>
+</ol>
+<div class="ad-goals__flags">
+<span class="ad-goals__label">Work the lab until these stand out</span>
+<ul>
+<li>A user in the wrong department</li>
+<li>A group with the wrong member</li>
+<li>A login that does not fit</li>
+</ul>
+</div>
+<p class="ad-goals__goal"><span class="ad-goals__label">The goal</span>Not to memorize the directory to pass a ticket. To see when something <strong>does not belong</strong>.</p>
+</div>
 
 ### Start With the Baseline
 

@@ -1,0 +1,207 @@
+/* Analyst Brief: the "what you must be able to answer" panel on a lab
+   overview. A dark console card in both themes so it reads as the one
+   thing on the page to commit to memory. */
+
+.academy-prose .ad-goals {
+  --goals-ink: #eef1fb;
+  --goals-ink-2: #a3adc6;
+  --goals-line: rgba(180, 196, 255, 0.12);
+  --goals-accent: #9d8cff;
+  --goals-alert: #ff6b70;
+  position: relative;
+  margin: 1.4rem 0 1.6rem;
+  padding: 1.5rem 1.6rem 0;
+  overflow: hidden;
+  color: var(--goals-ink);
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(106, 92, 255, 0.28), transparent 55%),
+    radial-gradient(80% 60% at 0% 100%, rgba(229, 72, 77, 0.10), transparent 60%),
+    linear-gradient(180deg, #111830 0%, #0a0f1f 100%);
+  border: 1px solid rgba(157, 140, 255, 0.28);
+  border-radius: 16px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 2px 4px rgba(10, 15, 31, 0.08),
+    0 24px 48px -28px rgba(40, 30, 140, 0.55);
+}
+/* Faint grid texture, fading out toward the bottom. */
+.academy-prose .ad-goals::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 70%);
+  mask-image: linear-gradient(180deg, #000 0%, transparent 70%);
+}
+.academy-prose .ad-goals > * { position: relative; }
+
+.academy-prose .ad-goals__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--goals-line);
+}
+.academy-prose .ad-goals__kicker,
+.academy-prose .ad-goals__scope,
+.academy-prose .ad-goals__label {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.academy-prose .ad-goals__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--goals-ink);
+}
+.academy-prose .ad-goals__kicker::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--goals-accent);
+  box-shadow: 0 0 0 3px rgba(157, 140, 255, 0.18), 0 0 12px rgba(157, 140, 255, 0.8);
+}
+.academy-prose .ad-goals__scope {
+  padding: 0.28rem 0.55rem;
+  border: 1px solid var(--goals-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--goals-ink-2);
+  letter-spacing: 0.06em;
+  text-transform: none;
+  font-weight: 600;
+}
+
+.academy-prose .ad-goals__lede {
+  margin: 1.1rem 0 1rem;
+  max-width: 56ch;
+  font-family: var(--font-display);
+  font-size: 1.08rem;
+  font-weight: 500;
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+  color: var(--goals-ink);
+}
+
+/* The five checks: numbered rows with mono 01-05 indices. */
+.academy-prose .ad-goals__checks {
+  counter-reset: goals;
+  list-style: none;
+  margin: 0 0 1.35rem;
+  padding: 0;
+  border-top: 1px solid var(--goals-line);
+}
+.academy-prose .ad-goals__checks li {
+  counter-increment: goals;
+  display: grid;
+  grid-template-columns: 2.4rem 1fr;
+  align-items: baseline;
+  margin: 0;
+  padding: 0.72rem 0.25rem;
+  border-bottom: 1px solid var(--goals-line);
+  font-size: 0.96rem;
+  line-height: 1.5;
+  color: var(--goals-ink);
+  transition: background-color 0.2s, padding-left 0.2s;
+}
+.academy-prose .ad-goals__checks li::before {
+  content: counter(goals, decimal-leading-zero);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--goals-accent);
+}
+.academy-prose .ad-goals__checks li:hover {
+  padding-left: 0.6rem;
+  background: linear-gradient(90deg, rgba(157, 140, 255, 0.10), transparent 70%);
+}
+
+/* Red flags: the anomalies the student is training their eye for. */
+.academy-prose .ad-goals__label {
+  display: block;
+  margin-bottom: 0.65rem;
+  color: var(--goals-ink-2);
+}
+.academy-prose .ad-goals__flags ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.academy-prose .ad-goals__flags li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.42rem 0.8rem 0.42rem 0.65rem;
+  border: 1px solid rgba(255, 107, 112, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 107, 112, 0.08);
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: #ffd9da;
+}
+.academy-prose .ad-goals__flags li::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--goals-alert);
+  box-shadow: 0 0 8px rgba(255, 107, 112, 0.9);
+}
+
+/* The goal: a full-bleed footer band that closes the card. */
+.academy-prose .ad-goals__goal {
+  margin: 1.5rem -1.6rem 0;
+  padding: 1.15rem 1.6rem 1.3rem;
+  border-top: 1px solid var(--goals-line);
+  background: rgba(255, 255, 255, 0.025);
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--goals-ink);
+}
+.academy-prose .ad-goals__goal .ad-goals__label { margin-bottom: 0.4rem; color: var(--goals-accent); }
+.academy-prose .ad-goals__goal strong {
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, #ff8a8e, #b8a9ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Dark theme: sit on true black like the other Academy panels. */
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-goals {
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(106, 92, 255, 0.22), transparent 55%),
+    radial-gradient(80% 60% at 0% 100%, rgba(229, 72, 77, 0.08), transparent 60%),
+    #05060c;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 24px 60px -30px rgba(106, 92, 255, 0.45);
+}
+
+@media (max-width: 560px) {
+  .academy-prose .ad-goals { padding: 1.2rem 1.1rem 0; }
+  .academy-prose .ad-goals__goal { margin: 1.3rem -1.1rem 0; padding: 1rem 1.1rem 1.15rem; font-size: 1.02rem; }
+  .academy-prose .ad-goals__lede { font-size: 1rem; }
+  .academy-prose .ad-goals__checks li { grid-template-columns: 2rem 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .academy-prose .ad-goals__checks li { transition: none; }
+}
