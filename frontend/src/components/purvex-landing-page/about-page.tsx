@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, Linkedin, X } from "lucide-react";
+import { ArrowRight, BadgeCheck, Check, GraduationCap, Linkedin, ShieldCheck, Workflow, X, type LucideIcon } from "lucide-react";
 import { IconGraduate, IconTune, IconValidate, type BrandIcon } from "./brand-icons";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
@@ -44,11 +44,11 @@ const BELIEFS = [
   { title: "Clear over clever.", body: "A finding nobody understands never gets fixed." },
 ];
 
-const FACTS = [
-  "Tuned Microsoft Sentinel for a federal agency",
-  "Automated response in Splunk SOAR",
-  "Teaches SOC fundamentals at Ellington Cyber Academy",
-  "CySA+ and Security+ certified",
+const FACTS: { label: string; value: string; Icon: LucideIcon }[] = [
+  { label: "Federal SOC", value: "Tuned Microsoft Sentinel for a federal agency", Icon: ShieldCheck },
+  { label: "Automation", value: "Automated response in Splunk SOAR", Icon: Workflow },
+  { label: "Teaching", value: "SOC fundamentals at Ellington Cyber Academy", Icon: GraduationCap },
+  { label: "Certified", value: "CySA+ and Security+", Icon: BadgeCheck },
 ];
 
 // Background coverage grid: f = covered, m = gap. Fills in as the page loads.
@@ -160,18 +160,34 @@ export default function AboutPage() {
           </div>
           <div className="ab-founder__copy">
             <span className="ab-label">Built from real experience</span>
-            <blockquote>
-              I kept seeing small security teams asked to do enterprise work without enterprise headcount. PurveX exists to
-              close that gap.
-            </blockquote>
-            <p className="ab-founder__name"><strong>Justin Duru</strong>Founder and Lead Security Consultant</p>
-            <ul>
-              {FACTS.map((f) => <li key={f}><Check size={14} strokeWidth={3} />{f}</li>)}
+            <figure className="ab-quote">
+              <span className="ab-quote__mark" aria-hidden="true">&ldquo;</span>
+              <blockquote>
+                I kept seeing small security teams asked to do enterprise work without enterprise headcount. PurveX exists
+                to close that gap.
+              </blockquote>
+              <figcaption>
+                <strong>Justin Duru</strong>
+                <span>Founder and Lead Security Consultant</span>
+              </figcaption>
+            </figure>
+            <ul className="ab-creds">
+              {FACTS.map(({ label, value, Icon }) => (
+                <li key={label}>
+                  <i><Icon size={18} strokeWidth={1.9} /></i>
+                  <div>
+                    <span>{label}</span>
+                    <strong>{value}</strong>
+                  </div>
+                </li>
+              ))}
             </ul>
             <div className="ab-founder__links">
-              <Link href="/about/founder" className="ab-link">Read the full story <ArrowRight size={14} /></Link>
+              <Link href="/about/founder" className="sp-btn sp-btn--ghost sp-btn--lg">
+                Read the full story <ArrowRight size={16} />
+              </Link>
               <a href="https://linkedin.com/in/jduru" target="_blank" rel="noreferrer" className="ab-link">
-                <Linkedin size={14} /> LinkedIn
+                <Linkedin size={15} /> LinkedIn
               </a>
             </div>
           </div>
@@ -312,13 +328,22 @@ const AB_CSS = `
 .ab-founder__photo::before { content: ""; position: absolute; inset: 22px -22px -22px 22px; background: var(--accent-soft); border: 1px solid rgba(106,92,255,.25) }
 .ab-founder__photo img { position: relative; display: block; width: 100%; height: auto; aspect-ratio: 360 / 420; object-fit: cover; object-position: center 18%; box-shadow: 0 40px 80px -40px rgba(42,34,128,.5) }
 .ab-label { display: block; font-size: .82rem; font-weight: 700; color: var(--accent-deep) }
-.ab-founder blockquote { margin: 14px 0 0; font-family: var(--font-display); font-size: clamp(1.4rem, 2.4vw, 1.9rem); font-weight: 500; line-height: 1.3; letter-spacing: -.025em; color: var(--ink) }
-.ab-founder__name { margin: 18px 0 0; font-size: .92rem; color: var(--muted) }
-.ab-founder__name strong { margin-right: 8px; color: var(--ink) }
-.ab-founder ul { list-style: none; margin: 22px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 28px }
-.ab-founder li { display: flex; align-items: flex-start; gap: 10px; font-size: .95rem; line-height: 1.45; color: var(--ink) }
-.ab-founder li svg { position: static; flex: none; margin-top: 3px; color: var(--accent-deep) }
-.ab-founder__links { display: flex; flex-wrap: wrap; gap: 22px; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border) }
+.ab-quote { position: relative; margin: 44px 0 0; padding-left: 4px }
+.ab-quote__mark { position: absolute; left: -10px; top: -34px; font-family: var(--font-display); font-size: 6rem; line-height: 1; color: rgba(106,92,255,.22); pointer-events: none }
+.ab-quote blockquote { position: relative; margin: 0; font-family: var(--font-display); font-size: clamp(1.35rem, 2.2vw, 1.75rem); font-weight: 500; line-height: 1.35; letter-spacing: -.022em; color: var(--ink); text-wrap: pretty }
+.ab-quote figcaption { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin-top: 20px }
+.ab-quote figcaption::before { content: ""; width: 28px; height: 2px; background: var(--accent) }
+.ab-quote figcaption strong { font-size: .95rem; white-space: nowrap; color: var(--ink) }
+.ab-quote figcaption span { font-size: .9rem; color: var(--muted) }
+.ab-creds { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px }
+.ab-creds li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start; padding: 16px; background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 16px 32px -28px rgba(42,34,128,.45); transition: border-color .25s, transform .25s }
+.ab-creds li:hover { border-color: rgba(106,92,255,.4); transform: translateY(-2px) }
+.ab-creds i { display: grid; place-items: center; width: 38px; height: 38px; background: var(--accent-soft); color: var(--accent-deep) }
+.ab-creds i svg { position: static }
+.ab-creds span { display: block; font-size: .76rem; font-weight: 700; color: var(--accent-deep) }
+.ab-creds strong { display: block; margin-top: 3px; font-size: .92rem; font-weight: 600; line-height: 1.4; color: var(--ink) }
+.ab-founder__links { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 28px }
+.ab-founder__links .sp-btn svg { position: static }
 .ab-link { display: inline-flex; align-items: center; gap: 6px; font-size: .92rem; font-weight: 650; color: var(--accent-deep); text-decoration: none }
 .ab-link:hover { text-decoration: underline; text-underline-offset: 3px }
 .ab-link svg { position: static }
@@ -349,6 +374,6 @@ const AB_CSS = `
 }
 @media (max-width: 640px) {
   .ab-change li { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 18px 16px }
-  .ab-founder ul { grid-template-columns: minmax(0, 1fr) }
+  .ab-creds { grid-template-columns: minmax(0, 1fr) }
 }
 `;
