@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, Crosshair, Database, Eye, FileLock2, FlaskConical, Lock, ShieldCheck, ToggleRight, type LucideIcon } from "lucide-react";
+import { ArrowRight, Check, Crosshair, Database, Eye, FileLock2, FlaskConical, Lock, Monitor, Server, ShieldCheck, ToggleRight, type LucideIcon } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
@@ -210,19 +210,62 @@ export default function PlatformPage() {
 
       <section className="pg-section" id="safe">
         <div className="px-safe">
-          <div className="px-safe__head">
+          <div className="px-safe__copy">
             <h2>Safe to run in your environment</h2>
-            <p>PurveX is self-hosted and built to stay out of the way of your SIEM and your data.</p>
+            <p>PurveX runs on your own server and only asks your SIEM one question: did the alert fire?</p>
+            <ul>
+              {SAFE.map(({ title, body, Icon }) => (
+                <li key={title}>
+                  <i><Icon size={18} strokeWidth={1.9} /></i>
+                  <div>
+                    <strong>{title}</strong>
+                    <p>{body}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul>
-            {SAFE.map(({ title, body, Icon }) => (
-              <li key={title}>
-                <i><Icon size={20} strokeWidth={1.8} /></i>
-                <strong>{title}</strong>
-                <p>{body}</p>
-              </li>
-            ))}
-          </ul>
+
+          <figure className="px-flow" data-r>
+            <figcaption>Your environment</figcaption>
+            <div className="px-flow__grid">
+              <div className="px-node px-node--main">
+                <i><Server size={18} /></i>
+                <strong>PurveX</strong>
+                <span>Self-hosted on your server</span>
+                <small><FileLock2 size={12} /> Every run recorded</small>
+              </div>
+
+              <div className="px-link" aria-hidden="true">
+                <span>Read-only query</span>
+                <i className="px-link__out"><b /></i>
+                <i className="px-link__back"><b /></i>
+                <span>Fired: yes or no</span>
+              </div>
+
+              <div className="px-node px-node--siem">
+                <i><Database size={18} /></i>
+                <strong>Your SIEM</strong>
+                <span>Splunk, Elastic, or Sentinel</span>
+              </div>
+
+              <div className="px-down" aria-hidden="true">
+                <i><b /></i>
+                <span>Runs the test. Production only if you opt in.</span>
+              </div>
+
+              <div className="px-node px-node--test">
+                <i><Monitor size={18} /></i>
+                <strong>Test machine</strong>
+                <span>A runner you choose</span>
+              </div>
+
+              <div className="px-keep">
+                <Lock size={16} />
+                <p><strong>Stays in your SIEM</strong>Raw logs, personal data, and case notes are never copied out.</p>
+              </div>
+            </div>
+          </figure>
         </div>
       </section>
 
@@ -367,15 +410,76 @@ const PX_CSS = `
 .px-who p { margin: 3px 0 0; font-size: .93rem; line-height: 1.5; color: var(--muted) }
 
 /* safe */
-.px-safe { padding: clamp(28px, 4.5vw, 52px); background: #151a33; color: #eef0ff }
-.px-safe__head h2 { margin: 0; font-family: var(--font-display); font-weight: 700; letter-spacing: -.025em; line-height: 1.15; font-size: clamp(1.6rem, 2.6vw, 2.1rem); color: #fff }
-.px-safe__head p { margin: 10px 0 0; max-width: 52ch; color: rgba(238,240,255,.72); font-size: 1rem; line-height: 1.6 }
-.px-safe ul { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; list-style: none; margin: 32px 0 0; padding: 0 }
-.px-safe li { padding: 20px; background: rgba(238,240,255,.05); border: 1px solid rgba(238,240,255,.12) }
-.px-safe li i { display: grid; place-items: center; width: 40px; height: 40px; background: rgba(106,92,255,.28); color: #fff }
-.px-safe li i svg { position: static }
-.px-safe li strong { display: block; margin-top: 16px; font-size: 1rem; font-weight: 650; color: #fff }
-.px-safe li p { margin: 6px 0 0; font-size: .9rem; line-height: 1.5; color: rgba(238,240,255,.7) }
+.px-safe { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 40px 56px; align-items: center }
+.px-safe__copy h2 { margin: 0; font-family: var(--font-display); font-weight: 700; letter-spacing: -.025em; line-height: 1.15; font-size: clamp(1.6rem, 2.6vw, 2.1rem); color: var(--ink); text-wrap: balance }
+.px-safe__copy > p { margin: 12px 0 0; max-width: 44ch; color: var(--muted); font-size: 1rem; line-height: 1.6 }
+.px-safe__copy ul { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 18px }
+.px-safe__copy li { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start }
+.px-safe__copy li i { display: grid; place-items: center; width: 36px; height: 36px; background: var(--accent-soft); color: var(--accent-deep) }
+.px-safe__copy li i svg { position: static }
+.px-safe__copy li strong { display: block; font-size: 1rem; font-weight: 650; color: var(--ink) }
+.px-safe__copy li p { margin: 3px 0 0; font-size: .92rem; line-height: 1.5; color: var(--muted) }
+
+.px-flow {
+  position: relative; margin: 0; padding: 40px 24px 24px;
+  background: radial-gradient(rgba(85,70,224,.12) 1px, transparent 1.2px) 0 0 / 16px 16px, #fbfbff;
+  border: 1.5px dashed rgba(85,70,224,.35);
+}
+.px-flow[data-r] { opacity: 1; transform: none; filter: none }
+.px-flow figcaption {
+  position: absolute; left: 20px; top: -12px; padding: 3px 10px; background: #fff; border: 1px solid rgba(85,70,224,.3);
+  font-size: .78rem; font-weight: 700; color: var(--accent-deep);
+}
+.px-flow__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(120px, 1fr) minmax(0, 1fr); grid-template-rows: auto auto auto; gap: 0 }
+.px-node {
+  position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 16px;
+  background: #fff; border: 1px solid #e3e4f0; box-shadow: 0 16px 32px -24px rgba(42,34,128,.45);
+}
+.px-node i { display: grid; place-items: center; width: 34px; height: 34px; margin-bottom: 8px; background: var(--accent-soft); color: var(--accent-deep) }
+.px-node i svg { position: static }
+.px-node strong { font-size: .98rem; font-weight: 700; color: var(--ink) }
+.px-node span { font-size: .8rem; color: var(--muted) }
+.px-node small { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; padding: 3px 8px; font-size: .72rem; font-weight: 650; color: var(--accent-deep); background: var(--accent-soft) }
+.px-node small svg { position: static }
+.px-flow .px-node--main { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(106,92,255,.1), 0 18px 36px -22px rgba(85,70,224,.6) }
+.px-node--main i { background: var(--accent); color: #fff }
+.px-node--main { grid-column: 1; grid-row: 1 }
+.px-node--siem { grid-column: 3; grid-row: 1; align-self: start }
+.px-node--test { grid-column: 1; grid-row: 3 }
+
+.px-link { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 0 6px; text-align: center }
+.px-link span { font-size: .72rem; font-weight: 650; color: var(--accent-deep) }
+.px-link i { position: relative; display: block; height: 2px; background: rgba(106,92,255,.45) }
+.px-link i::after { content: ""; position: absolute; top: -4px; border: 5px solid transparent }
+.px-link__out::after { right: -2px; border-left-color: var(--accent); border-right: 0 }
+.px-link__back { background: rgba(22,163,74,.45) !important }
+.px-link__back::after { left: -2px; border-right-color: var(--q-ok, #16a34a); border-left: 0 }
+.px-link b { position: absolute; top: -3px; width: 8px; height: 8px; border-radius: 50%; opacity: 0 }
+.px-link__out b { background: var(--accent) }
+.px-link__back b { background: #16a34a }
+
+.px-down { grid-column: 1; grid-row: 2; display: grid; grid-template-columns: 2px 1fr; gap: 12px; align-items: center; min-height: 86px; padding-left: 32px }
+.px-down i { position: relative; display: block; align-self: stretch; background: rgba(106,92,255,.45) }
+.px-down i::after { content: ""; position: absolute; left: -4px; bottom: -2px; border: 5px solid transparent; border-top-color: var(--accent); border-bottom: 0 }
+.px-down b { position: absolute; left: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); opacity: 0 }
+.px-down span { font-size: .76rem; font-weight: 600; line-height: 1.35; color: var(--ink-soft) }
+
+.px-keep {
+  grid-column: 3; grid-row: 2 / span 2; align-self: end; display: flex; gap: 10px; margin-top: 18px; padding: 14px;
+  background: #fff; border: 1px solid rgba(22,163,74,.3); box-shadow: 0 14px 28px -22px rgba(22,101,52,.5);
+}
+.px-keep svg { position: static; flex: none; margin-top: 2px; color: #16a34a }
+.px-keep p { margin: 0; font-size: .8rem; line-height: 1.45; color: var(--ink-soft) }
+.px-keep strong { display: block; margin-bottom: 2px; font-size: .86rem; color: #166534 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .px-flow.in .px-link__out b { animation: px-right 2.4s .3s ease-in-out infinite }
+  .px-flow.in .px-link__back b { animation: px-left 2.4s 1.5s ease-in-out infinite }
+  .px-flow.in .px-down b { animation: px-drop 2.4s .9s ease-in-out infinite }
+}
+@keyframes px-right { 0% { left: 0; opacity: 0 } 10%, 40% { opacity: 1 } 50%, 100% { left: calc(100% - 8px); opacity: 0 } }
+@keyframes px-left { 0% { left: calc(100% - 8px); opacity: 0 } 10%, 40% { opacity: 1 } 50%, 100% { left: 0; opacity: 0 } }
+@keyframes px-drop { 0% { top: 0; opacity: 0 } 10%, 40% { opacity: 1 } 50%, 100% { top: calc(100% - 8px); opacity: 0 } }
 
 /* plans */
 .px-plans { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 920px }
@@ -402,13 +506,24 @@ const PX_CSS = `
   .px-steps { grid-template-columns: 1fr 1fr; row-gap: 32px }
   .px-steps::before { display: none }
   .px-who { grid-template-columns: minmax(0, 1fr) }
-  .px-safe ul { grid-template-columns: 1fr 1fr }
+  .px-safe { grid-template-columns: minmax(0, 1fr) }
 }
 @media (max-width: 640px) {
   .pxb-cell { padding: 22px 18px }
   .px-steps { grid-template-columns: 1fr }
-  .px-safe { padding: 24px 18px }
-  .px-safe ul { grid-template-columns: 1fr }
+  .px-flow { padding: 32px 14px 16px }
+  .px-flow__grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: none }
+  .px-flow__grid > * { grid-column: 1 !important; grid-row: auto !important }
+  .px-node--siem { order: 1 }
+  .px-keep { order: 2; margin-top: 0 !important; border-top: 0 }
+  .px-link { order: 3 }
+  .px-flow .px-node--main { order: 4 }
+  .px-down { order: 5 }
+  .px-node--test { order: 6 }
+  .px-link { padding: 10px 0; gap: 4px }
+  .px-link i { display: none }
+  .px-down { min-height: 64px }
+  .px-keep { margin-top: 10px }
   .px-plans { grid-template-columns: 1fr }
   .px-plans article { padding: 24px 20px }
   .px-with > span { width: 100%; text-align: center }
