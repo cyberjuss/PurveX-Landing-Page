@@ -194,16 +194,16 @@ export const MAX_ROLES = 2;
 
 export type StartLevel = "new" | "some" | "working";
 export const START_LEVELS: { id: StartLevel; label: string; blurb: string }[] = [
-  { id: "new", label: "Brand new to IT", blurb: "No IT job yet. Starting from the basics." },
-  { id: "some", label: "Some IT experience", blurb: "Classes, a home lab, or help at a past job." },
-  { id: "working", label: "Already working in IT", blurb: "In an IT role now and moving toward security." },
+  { id: "new", label: "New to IT", blurb: "No IT job yet. Starting from the basics." },
+  { id: "some", label: "Early IT experience", blurb: "Classes, a home lab, or help at a past job." },
+  { id: "working", label: "Working in IT", blurb: "In an IT role now and moving toward security." },
 ];
 
 export const CERT_STATUSES: { id: CertStatus; label: string }[] = [
-  { id: "earned", label: "Earned" },
-  { id: "studying", label: "Studying" },
-  { id: "planning", label: "Planning" },
-  { id: "none", label: "Not yet" },
+  { id: "earned", label: "Certified" },
+  { id: "studying", label: "Actively preparing" },
+  { id: "planning", label: "Planning to pursue" },
+  { id: "none", label: "Not at this time" },
 ];
 
 export type CertGoal = { status: CertStatus; /** YYYY-MM-DD, only when studying. */ examDate?: string };

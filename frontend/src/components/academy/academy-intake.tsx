@@ -81,10 +81,10 @@ export function AcademyIntake({
         body: JSON.stringify({ profile: { certs, otherCerts: initial?.otherCerts ?? "", roles, start, background } }),
       });
       const data = (await res.json().catch(() => ({}))) as { profile?: StudentProfile; error?: string };
-      if (!res.ok || !data.profile) throw new Error(data.error || "Could not save. Try again.");
+      if (!res.ok || !data.profile) throw new Error(data.error || "We couldn't save your answers. Please try again.");
       onSaved(data.profile);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not save. Try again.");
+      setError(err instanceof Error ? err.message : "We couldn't save your answers. Please try again.");
       setBusy(false);
     }
   }
@@ -97,8 +97,8 @@ export function AcademyIntake({
 
   if (step === "secplus" || step === "cysa") {
     const goal = certs[step];
-    title = CERTS[step].label;
-    hint = "Where are you with it?";
+    title = CERTS[step].full;
+    hint = "Your current status";
     body = (
       <>
         <div className="axq-list" role="radiogroup" aria-label={CERTS[step].full}>
@@ -110,7 +110,7 @@ export function AcademyIntake({
         </div>
         {goal?.status === "studying" && (
           <label className="axq-field axq-reveal">
-            <span>Exam date (optional)</span>
+            <span>Scheduled exam date · Optional</span>
             <input
               type="date"
               min={todayPlus(0)}
@@ -123,8 +123,8 @@ export function AcademyIntake({
       </>
     );
   } else if (step === "roles") {
-    title = "Your target role";
-    hint = `Pick up to ${MAX_ROLES}`;
+    title = "Your career objective";
+    hint = "Select up to two roles";
     body = (
       <div className="axq-list">
         {ROLES.map((r) => (
@@ -135,7 +135,7 @@ export function AcademyIntake({
       </div>
     );
   } else {
-    title = "Your starting point";
+    title = "Your experience";
     body = (
       <>
         <div className="axq-list" role="radiogroup" aria-label="Starting point">
@@ -146,8 +146,8 @@ export function AcademyIntake({
           ))}
         </div>
         <label className="axq-field">
-          <span>Current job (optional)</span>
-          <input type="text" maxLength={280} placeholder="Retail lead, student, Army signal" value={background} onChange={(e) => setBackground(e.target.value)} />
+          <span>Current role · Optional</span>
+          <input type="text" maxLength={280} placeholder="e.g. Retail manager, student, veteran" value={background} onChange={(e) => setBackground(e.target.value)} />
         </label>
       </>
     );
@@ -198,7 +198,7 @@ export function AcademyIntake({
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <>
-              {last ? (initial ? "Save" : "Start") : "Next"} <ArrowRight className="h-4 w-4" />
+              {last ? (initial ? "Save changes" : "Enter the Academy") : "Continue"} <ArrowRight className="h-4 w-4" />
             </>
           )}
         </button>

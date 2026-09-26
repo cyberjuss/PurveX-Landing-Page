@@ -33,7 +33,7 @@ export async function PUT(request: Request) {
   }
   const profile = sanitizeProfile({ ...(payload as { profile?: object }).profile, updatedAt: new Date().toISOString() });
   if (!profile) {
-    return NextResponse.json({ error: "Answer every question, and pick at least one role." }, { status: 400 });
+    return NextResponse.json({ error: "Please complete every question and select at least one role." }, { status: 400 });
   }
   // A database problem is logged by the store. It never keeps a student out: the browser keeps a copy too.
   const saved = await saveProfile(a.student.id, profile);

@@ -39,6 +39,7 @@ span.axq-icon { cursor: default; }
 .axq-field { display: grid; gap: 8px; margin-top: 20px; font-size: 13px; font-weight: 600; color: var(--rd-ink-3); }
 .axq-field input { width: 100%; height: 50px; padding: 0 16px; border: 1px solid var(--rd-line); border-radius: 14px; background: transparent; font: inherit; font-size: 16px; font-weight: 400; color: var(--rd-ink); }
 .axq-field input:focus { outline: none; border-color: var(--rd-accent); }
+.axq-field input::placeholder { color: var(--rd-ink-3); opacity: 1; }
 .academy-bg[data-academy-theme="dark"] .axq-field input { color-scheme: dark; }
 .axq-reveal { animation: axq-rise 0.35s cubic-bezier(.16, 1, .3, 1) both; }
 
