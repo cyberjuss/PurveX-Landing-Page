@@ -201,8 +201,8 @@ export const START_LEVELS: { id: StartLevel; label: string; blurb: string }[] = 
 
 export const CERT_STATUSES: { id: CertStatus; label: string }[] = [
   { id: "earned", label: "Earned" },
-  { id: "studying", label: "Studying now" },
-  { id: "planning", label: "Planning to" },
+  { id: "studying", label: "Studying" },
+  { id: "planning", label: "Planning" },
   { id: "none", label: "Not yet" },
 ];
 
