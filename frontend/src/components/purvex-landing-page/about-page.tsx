@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Check, Crosshair, Eye, GraduationCap, Linkedin, ShieldCheck, Terminal, Workflow, X, type LucideIcon } from "lucide-react";
+import { ArrowRight, Check, Crosshair, Eye, Linkedin, Terminal, X, type LucideIcon } from "lucide-react";
 import { IconGraduate, IconTune, IconValidate, type BrandIcon } from "./brand-icons";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
@@ -44,11 +44,12 @@ const BELIEFS: { title: string; body: string; from: string; to: string; Icon: Lu
   { title: "Clear over clever.", body: "A finding nobody understands never gets fixed.", from: "Clever", to: "Fixed", Icon: Eye },
 ];
 
-const FACTS: { label: string; value: string; Icon: LucideIcon }[] = [
-  { label: "Federal SOC", value: "Tuned Microsoft Sentinel for a federal agency", Icon: ShieldCheck },
-  { label: "Automation", value: "Automated response in Splunk SOAR", Icon: Workflow },
-  { label: "Teaching", value: "SOC fundamentals at Ellington Cyber Academy", Icon: GraduationCap },
-  { label: "Certified", value: "CySA+ and Security+", Icon: BadgeCheck },
+// Resume-style: action, tool, and the result it bought the team.
+const FACTS: { tool: string; before: string; after: string }[] = [
+  { before: "Tuned ", tool: "Microsoft Sentinel", after: " detections for a federal agency SOC, so real threats stood out from the noise." },
+  { before: "Automated incident response in ", tool: "Splunk SOAR", after: ", cutting manual triage for analysts." },
+  { before: "Taught SOC fundamentals at ", tool: "Ellington Cyber Academy", after: ", preparing new analysts for real tickets." },
+  { before: "Certified in ", tool: "CySA+ and Security+", after: "." },
 ];
 
 // Background coverage grid: f = covered, m = gap. Fills in as the page loads.
@@ -195,13 +196,10 @@ export default function AboutPage() {
               </figcaption>
             </figure>
             <ul className="ab-creds">
-              {FACTS.map(({ label, value, Icon }) => (
-                <li key={label}>
-                  <i><Icon size={18} strokeWidth={1.9} /></i>
-                  <div>
-                    <span>{label}</span>
-                    <strong>{value}</strong>
-                  </div>
+              {FACTS.map((f) => (
+                <li key={f.tool}>
+                  <Check size={16} strokeWidth={2.6} aria-hidden="true" />
+                  <span>{f.before}<b>{f.tool}</b>{f.after}</span>
                 </li>
               ))}
             </ul>
@@ -382,13 +380,10 @@ const AB_CSS = `
 .ab-quote figcaption::before { content: ""; width: 28px; height: 2px; background: var(--accent) }
 .ab-quote figcaption strong { font-size: .95rem; white-space: nowrap; color: var(--ink) }
 .ab-quote figcaption span { font-size: .9rem; color: var(--muted) }
-.ab-creds { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px }
-.ab-creds li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start; padding: 16px; background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 16px 32px -28px rgba(42,34,128,.45); transition: border-color .25s, transform .25s }
-.ab-creds li:hover { border-color: rgba(106,92,255,.4); transform: translateY(-2px) }
-.ab-creds i { display: grid; place-items: center; width: 38px; height: 38px; background: var(--accent-soft); color: var(--accent-deep) }
-.ab-creds i svg { position: static }
-.ab-creds span { display: block; font-size: .76rem; font-weight: 700; color: var(--accent-deep) }
-.ab-creds strong { display: block; margin-top: 3px; font-size: .92rem; font-weight: 600; line-height: 1.4; color: var(--ink) }
+.ab-creds { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 12px; max-width: 60ch }
+.ab-creds li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; font-size: 1rem; line-height: 1.55; color: var(--ink-soft) }
+.ab-creds svg { position: static; margin-top: 4px; color: var(--accent-deep) }
+.ab-creds b { font-weight: 650; color: var(--ink) }
 .ab-founder__links { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 28px }
 .ab-founder__links .sp-btn svg { position: static }
 .ab-link { display: inline-flex; align-items: center; gap: 6px; font-size: .92rem; font-weight: 650; color: var(--accent-deep); text-decoration: none }
@@ -422,6 +417,5 @@ const AB_CSS = `
 }
 @media (max-width: 640px) {
   .ab-change li { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 18px 16px }
-  .ab-creds { grid-template-columns: minmax(0, 1fr) }
 }
 `;
