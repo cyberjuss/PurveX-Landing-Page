@@ -37,7 +37,7 @@ const FEATURES: Item[] = [
   { Icon: IconAlert, title: "Security alerts", body: "Investigate a suspicious login one step at a time." },
   { Icon: IconSchedule, title: "Daily drills", body: "Five quick questions in three minutes, at four levels." },
   { Icon: IconChecks, title: "Weekly challenge", body: "A capture the flag puzzle built from their own lab." },
-  { Icon: IconMic, title: "Mock interviews", body: "Scored practice answers with notes on how to improve." },
+  { Icon: IconMic, title: "Interview and resume prep", body: "Scored mock interviews, plus resume lines built from proven work." },
   { Icon: IconEvidence, title: "Readiness report", body: "Four job skills scored, with what to work on next." },
 ];
 

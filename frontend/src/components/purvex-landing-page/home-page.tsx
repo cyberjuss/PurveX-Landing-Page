@@ -186,7 +186,7 @@ const perks = [
   {
     n: "03",
     title: "Four modes",
-    body: "Need help, Mentor, and Interview. None of them hands over the answer.",
+    body: "Need help, Double-check, Mentor, and Job prep. None of them hands over the answer.",
     Icon: IconHeadset,
   },
   {
@@ -205,7 +205,7 @@ const programPoints = [
 
 const coachPoints = [
   { text: "On every ticket, never the unsolved answer", Icon: IconLifebuoy },
-  { text: "Need help, Mentor, and a spoken interview", Icon: IconHeadset },
+  { text: "Mock interviews and resume help in Job prep", Icon: IconHeadset },
   { text: "The rest waits inside the portal", Icon: IconMic },
 ];
 

@@ -74,8 +74,8 @@ const MODES: Mode[] = [
   },
   {
     key: "interview",
-    name: "Interview",
-    hint: "A scored mock interview with a hire signal",
+    name: "Job prep",
+    hint: "A scored mock interview, plus resume help",
     Icon: IconMic,
     ticket: "Mock interview",
     student: "I would check the log first, contain the account, and then tell the team lead.",
