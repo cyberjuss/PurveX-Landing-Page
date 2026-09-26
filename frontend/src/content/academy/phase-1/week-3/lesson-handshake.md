@@ -1,6 +1,6 @@
 ### The Three-Way Handshake
 
-Before two computers exchange data over TCP they confirm both sides are ready:
+Before two computers exchange data over TCP, they confirm both sides are ready:
 
 <div class="academy-analogy">
 <span class="academy-analogy__tag">Think of it like a phone call</span>
@@ -13,6 +13,8 @@ Before two computers exchange data over TCP they confirm both sides are ready:
 
 Only after these three steps does actual data begin to flow.
 
-This handshake is why TCP is called reliable. Both sides confirm the connection exists before anything important is sent. UDP skips that check and trades reliability for speed.
+This handshake is why TCP is called reliable. Both sides confirm the connection exists before anything important is sent. UDP, the other common transport protocol, skips that check and trades reliability for speed.
 
-In a capture look for the three steps before you trust the conversation. If SYN never gets a SYN-ACK the other side did not agree to talk. If you see data with no handshake in front of it you are not looking at a finished TCP session.
+In a capture, look for all three steps before you trust the conversation. If a SYN never gets a SYN-ACK, the other side did not agree to talk.
+
+If you see data with no handshake in front of it, you are not looking at a completed TCP session.

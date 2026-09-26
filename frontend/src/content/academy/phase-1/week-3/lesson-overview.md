@@ -5,7 +5,7 @@
 
 ### Overview
 
-Every capture you open is the same stack:
+Every network capture you open is built from the same stack:
 
 - An address
 - A reliable connection
@@ -20,8 +20,13 @@ This week teaches those pieces one at a time:
 - common ports and protocols
 - how TLS wraps a connection after TCP is already up
 
-The labs then put you in Wireshark and make you tell ordinary traffic from traffic that does not belong.
+The labs then put you in Wireshark, where you separate ordinary traffic from traffic that does not belong.
 
-Do not try to read the whole stack on day one. Learn what normal looks like at each layer. Then a packet that does not fit has somewhere to stand out.
+Do not try to read the whole stack on day one. Learn what normal looks like at each layer, so a packet that does not fit has somewhere to stand out.
 
-Your job by the end of the week is to look at a conversation and say where it is going, which door it used, whether the handshake finished, and whether anyone watching the wire can read it.
+By the end of the week, you should be able to answer four questions about any conversation:
+
+- Where is it going?
+- Which port did it use?
+- Did the handshake finish?
+- Can anyone watching the wire read it?

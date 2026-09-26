@@ -5,15 +5,21 @@
 
 ### Overview
 
-Open a capture in Wireshark and learn the three panes. Learn what makes traffic look suspicious before you apply a single filter. Then use three basic filters and Follow → HTTP Stream to turn a full conversation into something readable.
+In this lab you open a capture in Wireshark and learn its three panes. You learn what makes traffic look suspicious before you apply a single filter.
+
+Then you use three basic filters and Follow → HTTP Stream to turn a full conversation into something readable.
 
 **[SCREENSHOT: Wireshark start screen, interface list (optional, for first-time users)]**
 
 ### What Wireshark Actually Shows You
 
-Every time a computer talks to another computer, it sends small chunks of data called packets. Wireshark records and displays those packets so you can see what was sent, to where, and when. That is how you answer "what actually happened on the wire."
+Every time one computer talks to another, it sends small chunks of data called packets. Wireshark records and displays those packets, so you can see what was sent, where it went, and when.
 
-Think of it as reading someone's mail log rather than their mail. A sealed envelope hides its contents, but who wrote to whom and how often is still visible. If a letter was never sealed, meaning the traffic was never encrypted, you can sometimes read the contents too.
+That is how you answer "what actually happened on the wire."
+
+Encrypted traffic works like a mail log. A sealed envelope hides its contents, but you can still see who wrote to whom and how often.
+
+If the traffic was never encrypted, the envelope was never sealed. Then you can sometimes read the contents too.
 
 ### The Three Panes
 
@@ -27,10 +33,10 @@ Think of it as reading someone's mail log rather than their mail. A sealed envel
 
 ### What "Suspicious" Looks Like, Before You Even Filter
 
-Normal web browsing produces quick GET requests to a wide variety of sites. Malware traffic tends to look different. A trained eye can often spot the pattern before running a single filter:
+Normal web browsing produces quick GET requests to many different sites. Malware traffic tends to look different, and a trained eye can often spot the pattern before running a single filter:
 
-* Talking to one address repeatedly (Statistics → Conversations makes this visible immediately)
-* Sending data out, not just requesting pages in. Watch for POST requests
+* Talking to one address repeatedly (Statistics → Conversations shows this immediately)
+* Sending data out, not just requesting pages. Watch for POST requests
 * An odd or fabricated-looking browser identity (the User-Agent field)
 * Data that does not resemble normal text. Malware often scrambles or encodes what it steals
 
@@ -40,7 +46,7 @@ Normal web browsing produces quick GET requests to a wide variety of sites. Malw
 
 ### Getting There: Three Filters
 
-Type these one at a time, and observe what changes with each:
+Type these one at a time and watch what changes with each:
 
 | Filter | Shows |
 | ----- | ----- |
@@ -56,7 +62,7 @@ Type these one at a time, and observe what changes with each:
 
 Right-click any packet → Follow → HTTP Stream.
 
-This reassembles the full back-and-forth into something readable. This is the moment you will actually see the malware talking, the address it is sending to, and precisely what it is sending.
+This reassembles the full back-and-forth into something readable. It is where you actually see the malware talking: the address it sends to and exactly what it sends.
 
 **[SCREENSHOT: Follow HTTP Stream window, User-Agent header and POST body visible (crop/blur payload bytes as needed)]**
 

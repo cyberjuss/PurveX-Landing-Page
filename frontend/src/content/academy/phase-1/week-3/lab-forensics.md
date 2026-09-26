@@ -9,7 +9,11 @@
 
 This capture is noisy on purpose. Most of it is ordinary Windows background traffic. Your job is to separate that from the handful of packets that matter in a ransomware case.
 
-You are looking for key-exfiltration. That is the moment the malware sends data out. If you can name the C2 request fast in a live incident, that can be the difference between recoverable and unrecoverable files. Identifying what the malware is stealing from URL parameters alone, without decoding first, is part of that same skill.
+You are looking for key exfiltration, the moment the malware sends data out. It sends that data to its command-and-control (C2) server.
+
+In a live incident, naming the C2 request fast can be the difference between recoverable and unrecoverable files.
+
+Part of that skill is spotting what the malware is stealing from the URL parameters alone, before you decode anything.
 
 Do not start by hunting attacks. Start by filtering out noise. That is the forensic habit.
 
@@ -28,7 +32,7 @@ For **each** external IP/hostname in your list from Step 1:
 4. Apply `http.request` filtered to that host and look at the URI and User-Agent. Is this traffic suspicious? Why or why not?
 5. How many hosts are you left with that still look worth investigating?
 
-> **Note:** Do not rule a host in or out based on a single glance. If something looks unfamiliar, look it up before deciding what to do with it. Search the hostname, the User-Agent string, or the URI pattern.
+> **Note:** Do not rule a host in or out at a single glance. If something looks unfamiliar, look it up before you decide. Search the hostname, the User-Agent string, or the URI pattern.
 
 > **Guiding question:** Real investigations are mostly noise. What is the risk of skipping this triage step and jumping straight to the interesting-looking packets?
 
