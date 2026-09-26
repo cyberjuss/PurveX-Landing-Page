@@ -13,12 +13,12 @@
 | Operations | Keeps day-to-day business running, handling settlements and internal processes that support the other departments. | No |
 | Finance and Accounting | Manages the organization's own internal finances, separate from the client funds Wealth Management handles. | Yes |
 
-Compliance, Wealth Management, and Finance and Accounting are flagged critical because they touch regulated data, client financial records, or the company's own financial systems.
+Compliance, Wealth Management, and Finance and Accounting are marked critical. Each one touches regulated data, client financial records, or the company's own financial systems.
 
-Every department has its own folder in Active Directory and its own group of users. When a ticket names a person check three things:
+In Active Directory, every department gets its own folder and its own group of users. When a ticket names a person, check three things:
 
 - Department on this chart
 - Folder in the directory
 - Group in the directory
 
-If those three disagree stop. The chart is the baseline and the directory is what is true right now.
+If those three disagree, stop before you change anything. The chart is the baseline. The directory shows what is true right now.

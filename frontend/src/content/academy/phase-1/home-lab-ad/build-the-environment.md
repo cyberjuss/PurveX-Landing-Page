@@ -5,7 +5,7 @@
 
 ### Build the environment
 
-After the reboot, sign in as `PURVEXFINANCIAL\Administrator` and run this script. It creates the departments, groups, users, and the workstation.
+After the domain reboot, sign in as `PURVEXFINANCIAL\Administrator` and run this script. It creates the departments, groups, users, and workstation from the baseline tabs.
 
 **What this script does:**
 
@@ -16,13 +16,18 @@ After the reboot, sign in as `PURVEXFINANCIAL\Administrator` and run this script
 * Pre-stages the `IT-WKS01` computer object
 * Prompts once for an initial password. Every account must change it at next logon, so nobody keeps that password long-term
 * Is safe to run more than once. It only creates what is missing and never resets or deletes anything that exists
-* The Academy download plants the ticket-queue challenge objects on the first build and sends your lab straight away. Add `-NoCTF` to skip them
-* The Academy download starts a background Coach sync on the domain controller after the first successful build. A change in the lab folders is sent right away. The Security log still goes out once a minute. The VM only has to stay on. To stop it: `./Build-Environment.ps1 -UninstallSync`.
-* The sync now also sends your security settings (password and lockout policy, auditing, log size) and a 30-day count of Security log events, such as failed sign-ins and accounts created. It never sends passwords or raw log entries. Your drills and the weekly CTF use it, so download the script again and run it once to get it.
+* The Academy download plants the ticket-queue challenge objects on the first build and sends your lab right away. Add `-NoCTF` to skip them
+* The Academy download also starts a background Coach sync on the domain controller after the first successful build. The VM only has to stay on
+
+**How the Coach sync works.** A change in the lab folders is sent right away. The Security log goes out once a minute. To stop the sync, run `./Build-Environment.ps1 -UninstallSync`.
+
+The sync also sends your security settings, such as password and lockout policy, auditing, and log size. It adds a 30-day count of Security log events, such as failed sign-ins and accounts created.
+
+The sync never sends passwords or raw log entries. Your drills and the weekly CTF depend on it. If you built your lab before this feature existed, download the script again and run it once.
 
 [Download Build-Environment.ps1](/lab-scripts/Build-Environment.ps1)
 
-You can also copy the current script from here. A pasted copy is not linked to your Academy account, so Coach and your drills will not see your lab. Use the download above for that.
+You can also copy the script from here. A pasted copy is not linked to your Academy account, so Coach and your drills will not see your lab. Use the download when you want that link.
 
 <details class="ad-code">
 <summary>Show Build-Environment.ps1 (copy/paste)</summary>
@@ -769,13 +774,22 @@ if (-not $IncludeCTF) {
 ./Build-Environment.ps1
 ```
 
-To see exactly what the script is about to do before committing to it, run it with `-WhatIf` first:
+To preview exactly what the script will do before it changes anything, run it with `-WhatIf` first:
 
 ```powershell
 ./Build-Environment.ps1 -WhatIf
 ```
 
-If the script will not run, open Check the Build. That section has the usual causes and the fixes.
+If the script will not run, open Check the Build. That tab lists the usual causes and their fixes.
 
-The Academy download also plants the ticket-queue challenge data on the same run, so the missions work as soon as the lab reports. It adds a service-account OU, a backup service account, a leftover intern account, a firm-wide group with one intentional membership gap, a disabled Operations account, and a few workstation objects. To build the clean baseline without it, run `./Build-Environment.ps1 -NoCTF`.
+The Academy download plants the ticket-queue challenge data on the same run, so the missions work as soon as the lab reports. It adds these objects:
+
+- A service-account OU
+- A backup service account
+- A leftover intern account
+- A firm-wide group with one intentional membership gap
+- A disabled Operations account
+- A few workstation objects
+
+To build the clean baseline without them, run `./Build-Environment.ps1 -NoCTF`.
 

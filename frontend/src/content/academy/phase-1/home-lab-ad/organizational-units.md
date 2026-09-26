@@ -5,9 +5,11 @@
 
 ### Organizational Units (OUs)
 
-An **OU** is the folder an account lives in and the boundary you attach work to. Permissions and Group Policy link to it directly so the folder is not decoration. It is how this domain records a department and how that department is governed.
+An **OU** is the folder an account lives in. It is also a boundary you can attach work to, because permissions and Group Policy link to it directly.
 
-PurveXFinancial's five departments are each their own OU. Each one nests a `Users` sub-OU one level deeper and IT also gets a `Workstations` sub-OU because the one client machine in this lab belongs under IT rather than next to people.
+That makes the folder more than decoration. It is how this domain records a department and how that department is governed.
+
+Each of PurveX Financial's five departments is its own OU, with a `Users` sub-OU one level deeper. IT also has a `Workstations` sub-OU, so the lab's one client machine sits under IT instead of next to people.
 
 <div class="ad-tree" aria-label="purvexfinancial.local directory">
   <div class="ad-tree__root">
@@ -100,10 +102,12 @@ PurveXFinancial's five departments are each their own OU. Each one nests a `User
   </div>
 </div>
 
-Every account lives in exactly one OU and that OU is its department. That is location not access.
+Every account lives in exactly one OU, and that OU is its department. The OU records location, not access.
 
-`AccessLevels` sits outside `Departments` on purpose because `Server Admins` and `Helpdesk` (Level 2/3) grant domain-wide access rather than department membership. Those groups live in their own folder so you do not confuse a privilege list with a department.
+`AccessLevels` sits outside `Departments` on purpose. `Server Admins` (Level 2) and `Helpdesk` (Level 3) grant domain-wide access, not department membership.
 
-You can also delegate control over a single OU so Helpdesk can reset passwords only for accounts inside `OU=Users,OU=IT` and leave the rest of the domain untouched.
+Keeping those groups in their own folder stops you from confusing a privilege list with a department.
 
-When a ticket names a person find the folder first. If Alex is not under IT the chart and the directory already disagree.
+You can also delegate control over a single OU. For example, Helpdesk could reset passwords only for accounts inside `OU=Users,OU=IT` and leave the rest of the domain untouched.
+
+When a ticket names a person, find the folder first. If Alex is not under IT, the org chart and the directory already disagree.

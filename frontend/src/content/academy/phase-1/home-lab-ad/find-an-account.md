@@ -5,22 +5,15 @@
 
 ### Finding Users and Computers
 
-The fastest way to locate an account is the **Find** dialog rather than scrolling through OUs. Right-click the domain or any OU in Active Directory Users and Computers and choose **Find**. Then pick what you are looking for from the dropdown:
+The fastest way to locate an account is the **Find** dialog, not scrolling through OUs. In Active Directory Users and Computers, right-click the domain or any OU and choose **Find**.
+
+Pick what you are looking for from the dropdown:
 
 - Users, Contacts, and Groups for a person
 - Computers for a machine
 
-Search by:
+You can search by first name, last name, or username.
 
-- first name
-- last name
-- username
+Try it with `jordan.ellis`, the Staff Accountant in Finance and Accounting. The account turns up in seconds, whichever OU you started from.
 
-Try it with `jordan.ellis`, the Staff Accountant in Finance and Accounting. The account turns up in seconds no matter which OU you started from so get comfortable with it first because you will use this tool constantly.
-
-Open the account after you find it:
-
-- Read the folder
-- Read Member Of
-
-Finding the object is only the start.
+Get comfortable with Find early, because you will use it constantly. Finding the object is only the start. Once it opens, read the folder, then read Member Of.

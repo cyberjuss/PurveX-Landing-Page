@@ -5,16 +5,20 @@
 
 ### Install the domain
 
-Skip this if `purvexfinancial.local` already exists. The script installs Active Directory Domain Services and promotes the server. It asks for a recovery-mode password and then reboots. Without a domain, the departments and accounts have nowhere to live.
+Without a domain, the departments and accounts have nowhere to live. This script creates it. Skip this tab if `purvexfinancial.local` already exists.
 
-**Before you run it.** Download the script with the link below while you are signed in. That copy is linked to your account, which is how Coach and your drills see your lab. When it asks for the initial password, choose one your domain will accept: at least 8 characters with three of these, lowercase, uppercase, a number, and a symbol. The script checks the password before it creates anything and asks again if it will not work.
+The script installs Active Directory Domain Services and promotes the server, the same job you saw screen by screen on The Domain Controller. It asks for a recovery-mode password and then reboots.
+
+**Before you run it.** Download the script with the link below while you are signed in. That copy is linked to your account, which is how Coach and your drills see your lab.
+
+When the script asks for the initial password, choose one your domain will accept. Use at least 8 characters and three of these: lowercase, uppercase, a number, and a symbol.
+
+The script checks the password before it creates anything. If the password will not work, it asks again.
 
 **What you should see at the end.** Two green lines mean your lab is connected:
 
 * `Lab snapshot sent to PurveX Coach.`
 * `Coach is syncing this DC now. A directory change is sent as soon as it happens.`
-
-The screens for this promotion are on The Domain Controller tab. This script does that job and then reboots.
 
 [Download Install-Forest.ps1](/lab-scripts/Install-Forest.ps1)
 

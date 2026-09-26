@@ -5,11 +5,13 @@
 
 ### Point DNS at the domain controller
 
-A workstation finds `purvexfinancial.local` through DNS. In this lab, set the workstation's preferred DNS server to the IP address of the domain controller. A production network often hands that address out already. A lab does not.
+A workstation finds `purvexfinancial.local` through DNS. A production network usually hands out the right DNS address automatically. In this lab, you set the workstation's preferred DNS server to the domain controller's IP address yourself.
 
-If that address is wrong, the domain controller can be up and the join still fails. The directory is there. The workstation cannot reach the sign-in. That is an availability failure. The password was never checked.
+If that address is wrong, the join fails even when the domain controller is up. The directory exists, but the workstation cannot reach it to sign in.
 
-1. Open Settings, then Network status, then Change adapter options. Right-click the adapter and open Properties.
+That is an availability failure, not a password problem. The password was never checked.
+
+1. Open Settings, then Network status, then Change adapter options. Right-click the adapter and choose Properties.
 
 <figure class="ad-shot">
 <img src="/academy/home-lab-ad/dns-adapter.png" alt="Network connections with the adapter menu open on Properties" />
@@ -23,7 +25,7 @@ If that address is wrong, the domain controller can be up and the join still fai
 <figcaption>IPv4 is the item that holds the DNS address.</figcaption>
 </figure>
 
-3. Select Use the following DNS server addresses. Preferred DNS server is the domain controller's IP.
+3. Select Use the following DNS server addresses. Enter the domain controller's IP as the Preferred DNS server.
 
 <figure class="ad-shot">
 <img src="/academy/home-lab-ad/dns.png" alt="IPv4 properties with a preferred DNS server filled in" />
@@ -58,11 +60,13 @@ If that address is wrong, the domain controller can be up and the join still fai
 
 On the domain controller, open Active Directory Users and Computers. Open the domain, then open Computers.
 
-The workstation you just joined should be listed there. A computer that was created ahead of time lives in the OU you staged it in. `IT-WKS01` is staged under IT Workstations by the build script, so look there for that one.
+A newly joined workstation appears there. A computer created ahead of time appears in the OU where it was staged instead.
+
+The build script staged `IT-WKS01` under IT Workstations, so look there for that one.
 
 <figure class="ad-shot">
 <img src="/academy/home-lab-ad/computers.png" alt="Active Directory Users and Computers with a computer object under Computers" />
 <figcaption>A joined computer shows up as a computer object. This practice domain is cyberjuss.local. Yours is purvexfinancial.local.</figcaption>
 </figure>
 
-If the name is missing, the join did not finish. Check the DNS address first. A wrong DNS server is the usual reason the workstation cannot find the domain.
+If the name is missing, the join did not finish. Check the DNS address first, because a wrong DNS server is the usual reason a workstation cannot find the domain.

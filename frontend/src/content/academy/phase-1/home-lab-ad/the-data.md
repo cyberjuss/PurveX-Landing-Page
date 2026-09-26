@@ -5,7 +5,7 @@
 
 ### Data Categories
 
-Knowing what data lives where changes the ticket. "An account was accessed" becomes "an account was accessed and here is what was at risk."
+Knowing where data lives changes how you read a ticket. "An account was accessed" becomes "an account was accessed, and here is what was at risk."
 
 | Data Category | Examples | Primarily Handled By |
 | :---- | :---- | :---- |
@@ -19,11 +19,11 @@ Knowing what data lives where changes the ticket. "An account was accessed" beco
 | Regulatory and audit material | Compliance filings, audit trails, GLBA and SOX documentation | Compliance |
 | System and access logs | Authentication logs, admin activity, account changes | IT |
 
-Ask which row is in play before you decide how urgent the ticket is. A group change in Wealth Management is not the same problem as the same change in Operations.
+Find the row in play before you decide how urgent a ticket is. A group change in Wealth Management is a bigger problem than the same change in Operations.
 
 ### Who Wealth Management Serves
 
-Wealth Management serves private clients rather than corporate accounts. Its book of business is meant to look like a real advisory client base.
+Wealth Management serves private clients, not corporate accounts. Its client list is built to look like a real advisory firm's.
 
 | Client Type | Description |
 | ----- | ----- |
@@ -32,4 +32,4 @@ Wealth Management serves private clients rather than corporate accounts. Its boo
 | Trust and estate accounts | Accounts tied to trusts, wills, and estate planning |
 | Retirement-focused clients | Clients nearing or already in retirement |
 
-That client base is why Wealth Management sits on the critical list. A login or group change there is not the same problem as the same event in Operations so size it against this table rather than how loud the ticket sounds.
+These clients are why Wealth Management is on the critical list. Size a login or group change there against this table, not against how urgent the ticket sounds.

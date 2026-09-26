@@ -1,8 +1,8 @@
 ### The Environment
 
-This tab is the inventory. Every user account, the one workstation, and the totals.
+This tab is the inventory: every user account, the one workstation, and the totals. The build script creates exactly what is listed here.
 
-Learn this roster well enough to notice who is missing later. Check every lab count against these numbers and if the directory and this page disagree stop and find out why before you close a ticket.
+Learn the roster well enough to notice when someone is missing. If your directory and this page ever disagree, stop and find out why before you close a ticket.
 
 ### Full User Directory
 
@@ -20,13 +20,17 @@ Every user account in the environment with its department, title, username, and 
 | Operations | Riley Kwan | Settlements Coordinator | riley.kwan | Operations Users |
 | Finance and Accounting | Jordan Ellis | Staff Accountant | jordan.ellis | Finance Accounting Users |
 
-Nine users total and each sits in one standard access group except Alex Rivera who also holds IT Admins. That extra group is the thing to remember because unusual activity on Alex is not the same as unusual activity on Jordan.
+There are nine users, and each sits in one standard group. Alex Rivera is the exception because he also holds IT Admins.
 
-A title is not a group. Priya Nair is a Help Desk Technician and sits in IT Users which does not put her in Helpdesk. When a ticket names a person look up the username and read Member Of instead of guessing from the title.
+Remember that extra group. Unusual activity on Alex carries more risk than unusual activity on Jordan.
+
+A title is not a group. Priya Nair is a Help Desk Technician, but she sits in IT Users, not Helpdesk.
+
+When a ticket names a person, look up the username and read the account's group list, called Member Of. Do not guess access from the title.
 
 ### The Client Workstation
 
-There is only one machine so know where it belongs and you will notice when it does not.
+The lab has only one client machine. Know where it belongs, and you will notice when it does not.
 
 | Item | Detail |
 | :---- | :---- |
@@ -34,11 +38,11 @@ There is only one machine so know where it belongs and you will notice when it d
 | Assigned department | IT |
 | Location | Workstations folder under IT |
 
-If a later ticket names a different workstation or this one sits under a different department that is already a finding. Confirm the folder before you treat the name as proof.
+If a ticket names a different workstation, or this one sits under another department, that is already a finding. Confirm the folder before you treat the name as proof.
 
 ### What Is Actually in This Environment
 
-A count of what currently exists.
+These totals are what normal looks like here.
 
 | Item | Count |
 | :---- | :---- |
@@ -49,4 +53,4 @@ A count of what currently exists.
 | User accounts | 9 |
 | Client workstations | 1 |
 
-If your lab shows a different count stop and check the build before you trust a ticket answer. These numbers are what normal looks like here.
+Once you build the lab, compare it to these counts. If anything differs, check the build before you trust a ticket answer.
