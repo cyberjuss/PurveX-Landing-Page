@@ -31,6 +31,34 @@ export function modeFromReport(results: Results): CoachMode {
   return "check";
 }
 
+/** The lab or challenge tab the student has open, if any. */
+export type CoachPlace = { kind: "lab" | "challenge"; title: string };
+
+export function parseCoachPlace(value: unknown): CoachPlace | null {
+  const v = value as Partial<CoachPlace> | null;
+  if (!v || (v.kind !== "lab" && v.kind !== "challenge") || typeof v.title !== "string") return null;
+  const title = v.title.replace(/\s+/g, " ").trim().slice(0, 120);
+  return title ? { kind: v.kind, title } : null;
+}
+
+// On a lab or challenge the Coach teaches like Socrates: the student reasons
+// their way to the next step instead of being handed it. Job prep keeps its
+// interviewer role.
+export function socraticInstructions(place: CoachPlace | null, mode: CoachMode): string {
+  if (!place || mode === "interview") return "";
+  return `Where they are: the ${place.kind} "${place.title}".
+Teaching style on this ${place.kind}: Socratic. Help them reason to the next step instead of handing it over.
+- Open with one question that tests what they assume, or with what they have already seen. Not a definition.
+- Build the idea in small steps, each tied to something they can check in their own lab.
+- Use exactly one plain analogy from everyday work life and keep it for the whole reply. No second metaphor.
+- Still be concrete: name the console, the click path, or the event to open, then ask what they see there.
+- If their belief is wrong, say what is reasonable about it, then ask the question that exposes the gap.
+- If they ask for the answer outright, walk the reasoning step by step, but never state an unsolved mission's answer.
+- If they are still stuck after two tries, return to the analogy and make the next step smaller.
+- Keep it to 3 to 6 short paragraphs. End with one question about what they will check next, not "Does that make sense?".
+- Never mention Socrates or this style to the student.`;
+}
+
 export function coachModeInstructions(mode: CoachMode): string {
   if (mode === "check") {
     return `Mode this turn: Double-check.

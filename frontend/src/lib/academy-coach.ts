@@ -1,6 +1,6 @@
 import "server-only";
 
-import { coachModeInstructions, parseCoachMode, type CoachMode } from "@/lib/academy-coach-mode";
+import { coachModeInstructions, parseCoachMode, socraticInstructions, type CoachMode, type CoachPlace } from "@/lib/academy-coach-mode";
 import { formatLabAge, labEvidence, labStateForTool, type LabSnapshot } from "@/lib/academy-lab";
 import { jobProgress, LEVEL_NAMES, levelFor, missedQuestions, missedThemes, skillAccuracy, weaknessLine, type DrillEntry } from "@/lib/academy-drills";
 import { auditLab } from "@/lib/academy-audit";
@@ -703,6 +703,7 @@ export async function runCoachTurn(params: {
   userMessage: string;
   images?: CoachImage[];
   mode?: CoachMode;
+  place?: CoachPlace | null;
   tools: CoachToolContext;
   drills?: DrillEntry[];
 }): Promise<{ text: string; model: string }> {
@@ -716,7 +717,8 @@ export async function runCoachTurn(params: {
   const profile = tools.profile ?? null;
   const briefs = profile ? (await Promise.all(profile.roles.map((r) => loadRoleBrief(r).catch(() => null)))).filter((b): b is RoleBrief => Boolean(b)) : [];
   const goals = goalsBrief(profile, briefs, params.tools.results, params.drills ?? []);
-  const system = `${COACH_SYSTEM_PROMPT}\n\n${coachModeInstructions(mode)}\n\n${buildStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results, lab) : "", goals)}`;
+  const socratic = socraticInstructions(params.place ?? null, mode);
+  const system = `${COACH_SYSTEM_PROMPT}\n\n${coachModeInstructions(mode)}${socratic ? `\n\n${socratic}` : ""}\n\n${buildStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results, lab) : "", goals)}`;
   const messages: AnthropicMessage[] = [
     ...params.history.slice(-10).map((m) => ({ role: m.role, content: m.content })),
     { role: "user", content: userTurnContent(params.userMessage, images) },

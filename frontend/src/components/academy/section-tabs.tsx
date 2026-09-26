@@ -9,6 +9,7 @@ import { QuizBlock } from "./quiz";
 import { LabCarousel } from "./lab-carousel";
 import { MissionPager } from "./mission-pager";
 import { TrailDock, type TrailLink } from "./trail-dock";
+import { useCoach } from "./coach-context";
 import type { Quiz } from "@/content/academy/quizzes";
 
 type WeekLink = { label: string; href: string };
@@ -96,6 +97,12 @@ export function SectionTabs({
     fold();
   }, []);
   const current = items[active];
+  const { setPlace } = useCoach();
+  useEffect(() => {
+    const kind = current.kind === "lab" || current.kind === "challenge" ? current.kind : null;
+    setPlace(kind ? { kind, title: current.label } : null);
+    return () => setPlace(null);
+  }, [current.kind, current.label, setPlace]);
   const prevItem = active > 0 ? items[active - 1] : null;
   const nextItem = active < items.length - 1 ? items[active + 1] : null;
   function goTo(i: number) {

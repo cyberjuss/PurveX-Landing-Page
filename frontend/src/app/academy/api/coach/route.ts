@@ -1,7 +1,7 @@
 import { after, NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { COACH_DAILY_LIMIT, effectiveCoachBonus, runCoachTurn } from "@/lib/academy-coach";
-import { modeFromReport, parseCoachMode } from "@/lib/academy-coach-mode";
+import { modeFromReport, parseCoachMode, parseCoachPlace } from "@/lib/academy-coach-mode";
 import { COACH_SHOT_ASK, sanitizeCoachImages } from "@/lib/academy-coach-media";
 import { sanitizeProfile } from "@/lib/academy-certs";
 import { ensureRoleBrief } from "@/lib/academy-role-research";
@@ -74,6 +74,7 @@ export async function POST(request: Request) {
     images?: unknown;
     profile?: unknown;
     mode?: unknown;
+    place?: unknown;
     day?: unknown;
   };
   const day = cleanDay(body.day);
@@ -124,6 +125,7 @@ export async function POST(request: Request) {
       userMessage: message,
       images,
       mode: body.mode != null ? parseCoachMode(body.mode) : modeFromReport(results),
+      place: parseCoachPlace(body.place),
       drills,
       tools: { results, userId: student.id, profile, loadLabState: async () => (await loadLabState(student.id))?.snapshot ?? null },
     });
