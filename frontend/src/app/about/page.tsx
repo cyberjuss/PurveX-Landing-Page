@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import AboutPage from "@/components/purvex-landing-page/about-page";
 
-const title = "About / How We Think";
+const title = "About PurveX";
 const description =
-  "Blue team. Red team. One discipline. PurveX helps organizations strengthen their security operations and develop the cybersecurity talent needed to support them.";
+  "No team should need to be enterprise-sized to be secure. PurveX helps security teams prove their defenses work, and trains the people who run them.";
 
 export const metadata: Metadata = {
   title,

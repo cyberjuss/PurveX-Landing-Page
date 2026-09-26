@@ -1,33 +1,68 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { IconEvidence, IconIdentity, IconLog, IconSchedule, IconShield } from "./brand-icons";
+import { ArrowRight, Linkedin } from "lucide-react";
+import { IconGraduate, IconTune, IconValidate, type BrandIcon } from "./brand-icons";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
 
-const notes = [
-  { n: "01", title: "The standard", body: "A detection and a student ticket get the same care.", Icon: IconShield },
-  { n: "02", title: "The person", body: "One person. No account manager in between.", Icon: IconIdentity },
-  { n: "03", title: "What is next", body: "Labs keeps the evidence. It is not public yet.", Icon: IconSchedule },
+/* About. Plain on purpose: why PurveX exists, the problems it takes on,
+   what it offers for each, what it believes, and who is behind it. Facts
+   about the founder match the founder page; the quote is a real review. */
+
+const FIXES: { problem: string; detail: string; name: string; answer: string; href: string; Icon: BrandIcon }[] = [
+  {
+    problem: "Alerts are assumed to work",
+    detail: "Most teams find out a detection is broken during a real attack.",
+    name: "Platform",
+    answer: "Runs real attack tests and shows which alerts fired, which missed, and why.",
+    href: "/platform",
+    Icon: IconValidate,
+  },
+  {
+    problem: "Small teams are stretched thin",
+    detail: "They need strong coverage without the headcount to build and maintain it.",
+    name: "Operations",
+    answer: "We write, test, and tune detections for your SIEM, and you keep every result.",
+    href: "/security-operations",
+    Icon: IconTune,
+  },
+  {
+    problem: "New analysts learn by watching",
+    detail: "Real skill comes from hands-on repetition, and most training skips it.",
+    name: "Training",
+    answer: "Students work real tickets in their own company network, with a coach that never gives the answer.",
+    href: "/cybersecurity-training",
+    Icon: IconGraduate,
+  },
 ];
 
-const workflow = [
-  { n: "01", title: "Book", body: "Thirty minutes to describe your SIEM or your program.", Icon: IconSchedule },
-  { n: "02", title: "Walk through", body: "We review what fires and what does not, or where a cohort should start.", Icon: IconLog },
-  { n: "03", title: "Agree the scope", body: "A short engagement, with one named person on every step.", Icon: IconEvidence },
+const BELIEFS = [
+  { title: "Prove it, don't assume it", body: "Every detection and every student skill is checked, not claimed." },
+  { title: "Judgment over shortcuts", body: "AI can write the query. We build for the person who knows when to trust it." },
+  { title: "No hand-offs", body: "The person doing the work is the person you talk to." },
+];
+
+const FACTS = [
+  "Tuned Microsoft Sentinel for a federal agency",
+  "Automated response in Splunk SOAR",
+  "Teaches SOC fundamentals at Ellington Cyber Academy",
+  "CySA+ and Security+ certified",
 ];
 
 export default function AboutPage() {
   return (
     <SiteChrome active="about">
-      <section className="pg-hero ab-hero">
-        <div className="pg-hero__copy">
+      <section className="abx-hero">
+        <div className="abx-hero__copy">
           <span className="sp-tag">About</span>
-          <h1 className="pg-hero__h1">How you do anything is how you do everything</h1>
-          <p className="pg-hero__sub">The person on your SIEM is the person at the desk. Same standard. No one in between.</p>
-          <div className="pg-hero__actions">
+          <h1>No team should need to be enterprise‑sized to be secure.</h1>
+          <p>
+            PurveX helps security teams prove their defenses work, and trains the people who run them.
+          </p>
+          <div className="abx-hero__actions">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
               Book 30 minutes <ArrowRight size={16} />
             </a>
@@ -36,96 +71,110 @@ export default function AboutPage() {
             </Link>
           </div>
         </div>
-        <div className="ab-hero__rings" aria-hidden="true">
-          <svg viewBox="0 0 460 340">
-            <circle cx="168" cy="170" r="122" className="ab-c ab-c--a" />
-            <circle cx="292" cy="170" r="122" className="ab-c ab-c--b" />
-          </svg>
-          <span>One person</span>
-        </div>
+        <figure className="abx-card">
+          <Image src="/Justin.jpg" alt="Justin Duru" width={120} height={120} className="abx-card__photo" priority />
+          <blockquote>
+            I kept seeing small security teams asked to do enterprise work without enterprise headcount. PurveX exists to
+            close that gap.
+          </blockquote>
+          <figcaption>
+            <strong>Justin Duru</strong>
+            <span>Founder, PurveX</span>
+          </figcaption>
+        </figure>
       </section>
 
-      <section className="pg-section">
-        <div className="ab-split">
-          <div>
-            <div className="pg-head" data-r>
-              <h2>One person. Both jobs.</h2>
-              <p>Short engagements. The person doing the work is the person you talk to.</p>
-            </div>
-            <ol className="ab-rows" data-r>
-              {notes.map((n) => (
-                <li key={n.n}>
-                  <i className="pg-ico"><n.Icon size={22} /></i>
-                  <div>
-                    <h3>{n.title}</h3>
-                    <p>{n.body}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
+      <section className="pg-section" id="problem">
+        <div className="pg-head">
+          <h2>The problems we solve</h2>
+          <p>Three gaps we kept seeing on real security teams, and what PurveX does about each one.</p>
+        </div>
+        <div className="abx-fix" data-r>
+          <div className="abx-fix__labels" aria-hidden="true">
+            <span>The problem</span>
+            <span>What we do</span>
           </div>
-        </div>
-      </section>
-
-      <section className="pg-section">
-        <div className="ab-statement" data-r>
-          <h2>
-            You defend better when you know <mark>how the other side moves</mark>.
-          </h2>
-          <p>
-            Operations tests the way an attacker would. Training teaches the analyst to think the same way.
-          </p>
-        </div>
-      </section>
-
-      <section className="pg-section">
-        <div className="ox-split">
-          <div className="pg-head" data-r>
-            <h2>Book. Walk. Agree.</h2>
-            <p>No hand-off to someone new.</p>
-          </div>
-          <ol className="ox-steps" data-r>
-            {workflow.map((s) => (
-              <li key={s.n}>
-                <span className="ox-steps__n">{s.n}</span>
+          {FIXES.map((f) => (
+            <div key={f.name} className="abx-fix__row">
+              <div className="abx-fix__problem">
+                <strong>{f.problem}</strong>
+                <p>{f.detail}</p>
+              </div>
+              <Link href={f.href} className="abx-fix__answer">
+                <i><f.Icon size={22} /></i>
                 <div>
-                  <h3>{s.title}</h3>
-                  <p>{s.body}</p>
+                  <strong>{f.name}</strong>
+                  <p>{f.answer}</p>
                 </div>
-                <i className="pg-ico"><s.Icon size={24} /></i>
+                <ArrowRight size={18} className="abx-fix__go" />
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="pg-section" id="beliefs">
+        <div className="abx-beliefs">
+          <h2>What we believe</h2>
+          <ol data-r>
+            {BELIEFS.map((b) => (
+              <li key={b.title}>
+                <strong>{b.title}</strong>
+                <p>{b.body}</p>
               </li>
             ))}
           </ol>
         </div>
       </section>
 
-      <section className="pg-section">
-        <div className="ab-links" data-r>
-          <Link href="/about/founder">
-            <span>People</span>
-            <strong>Meet the founder</strong>
-            <p>The person doing the work is the person you talk to.</p>
-            <i><ArrowRight size={20} /></i>
-          </Link>
-          <Link href="/platform">
-            <span>In development</span>
-            <strong>PurveX Platform</strong>
-            <p>A scheduled test that names the broken stage. Still private.</p>
-            <i><ArrowRight size={20} /></i>
-          </Link>
+      <section className="pg-section" id="trust">
+        <div className="pg-head">
+          <h2>Built by someone who has done the work</h2>
+          <p>PurveX comes from years on the SOC floor and in the classroom, not from a slide deck.</p>
+        </div>
+        <div className="abx-trust">
+          <div className="abx-founder">
+            <Image src="/Justin.jpg" alt="" width={72} height={72} className="abx-founder__photo" />
+            <div>
+              <strong>Justin Duru</strong>
+              <span>Founder and Lead Security Consultant</span>
+            </div>
+            <ul>
+              {FACTS.map((f) => <li key={f}>{f}</li>)}
+            </ul>
+            <div className="abx-founder__links">
+              <Link href="/about/founder" className="abx-link">Read the full story <ArrowRight size={14} /></Link>
+              <a href="https://linkedin.com/in/jduru" target="_blank" rel="noreferrer" className="abx-link">
+                <Linkedin size={14} /> LinkedIn
+              </a>
+            </div>
+          </div>
+          <figure className="abx-quote">
+            <blockquote>
+              Hands down one of the best services. Our students now work in tech, running their own SOC projects thanks to
+              real hands-on experience.
+            </blockquote>
+            <figcaption>
+              <Image src="/kenneth.jpg" alt="" width={44} height={44} />
+              <div>
+                <strong>Kenneth Ellington</strong>
+                <span>Coach and instructor, Ellington Cyber Academy</span>
+              </div>
+            </figcaption>
+          </figure>
         </div>
       </section>
 
       <section className="pg-close" data-r>
         <div className="pg-close__copy">
-          <h2>Bring the work</h2>
-          <p className="pg-close__sub">Thirty minutes. Operations, a cohort, or Labs.</p>
+          <h2>Let&apos;s talk about your team</h2>
+          <p className="pg-close__sub">Thirty minutes, with the person who will do the work.</p>
           <div className="pg-close__row">
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="pg-close__book">
               Book 30 minutes <ArrowRight size={16} />
             </a>
-            <Link href="/" className="pg-close__more">
-              Back home <ArrowRight size={14} />
+            <Link href="/platform" className="pg-close__more">
+              Try the Platform free <ArrowRight size={14} />
             </Link>
           </div>
         </div>
@@ -133,40 +182,101 @@ export default function AboutPage() {
       </section>
 
       <style>{PG_CSS}</style>
-      <style>{`
-        .ab-hero { position: relative; align-items: center; overflow: visible }
-        .ab-split { grid-template-columns: minmax(0, 640px) }
-        .ab-hero .pg-hero__copy { position: relative; z-index: 1; max-width: 16ch }
-        .ab-hero .pg-hero__h1 { font-size: clamp(3.4rem, 6.2vw, 6rem); line-height: .92; letter-spacing: -.055em }
-        .ab-hero .pg-hero__sub { max-width: 34ch }
-        .ab-hero__rings { position: relative; align-self: center; z-index: 0 }
-        .ab-hero__rings svg { width: min(100%, 520px); height: auto; display: block }
-        .ab-hero .ab-c--a { fill: rgba(106,92,255,.14); stroke: rgba(106,92,255,.5); stroke-width: 1.5 }
-        .ab-hero .ab-c--b { fill: rgba(16,25,46,.03); stroke: rgba(16,25,46,.28); stroke-width: 1.5 }
-        .ab-hero__rings span {
-          position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-          font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; letter-spacing: -.03em;
-          color: var(--accent-deep);
-        }
-        @media (prefers-reduced-motion: no-preference) {
-          .ab-hero .ab-c--a { animation: ab-meet-a .9s var(--ease) .1s both }
-          .ab-hero .ab-c--b { animation: ab-meet-b .9s var(--ease) .1s both }
-          .ab-statement mark {
-            background-image: linear-gradient(transparent 62%, rgba(106,92,255,.28) 62%);
-            background-repeat: no-repeat;
-            background-size: 0 100%;
-            animation: ab-mark 1s var(--ease) .2s forwards;
-          }
-        }
-        @keyframes ab-meet-a { from { transform: translateX(-28px); opacity: 0 } to { transform: none; opacity: 1 } }
-        @keyframes ab-meet-b { from { transform: translateX(28px); opacity: 0 } to { transform: none; opacity: 1 } }
-        @keyframes ab-mark { to { background-size: 100% 100% } }
-        @media (max-width: 980px) {
-          .ab-hero { min-height: 0; overflow: visible }
-          .ab-hero .pg-hero__copy { max-width: none }
-          .ab-hero .pg-hero__h1 { font-size: clamp(2.6rem, 10vw, 3.6rem) }
-        }
-      `}</style>
+      <style>{ABX_CSS}</style>
     </SiteChrome>
   );
 }
+
+const ABX_CSS = `
+/* hero */
+.abx-hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 40px 64px; align-items: center; padding: clamp(48px, 7vw, 96px) 0 0 }
+.abx-hero h1 {
+  margin: 18px 0 0; max-width: 18ch; font-family: var(--font-display); font-weight: 500;
+  font-size: clamp(2.3rem, 4.6vw, 3.6rem); line-height: 1.06; letter-spacing: -.045em; color: var(--ink); text-wrap: balance;
+}
+.abx-hero__copy > p { margin: 22px 0 0; max-width: 44ch; color: var(--ink-soft); font-size: 1.12rem; line-height: 1.6 }
+.abx-hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px }
+.abx-card { margin: 0; padding: 28px; background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 30px 60px -40px rgba(42,34,128,.4) }
+.abx-card__photo { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; object-position: center 12% }
+.abx-card blockquote { margin: 18px 0 0; font-family: var(--font-display); font-size: 1.2rem; font-weight: 500; line-height: 1.45; letter-spacing: -.015em; color: var(--ink) }
+.abx-card figcaption { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border) }
+.abx-card figcaption strong { display: block; font-size: .95rem; color: var(--ink) }
+.abx-card figcaption span { display: block; margin-top: 2px; font-size: .86rem; color: var(--muted) }
+
+/* problem to solution */
+.abx-fix[data-r] { opacity: 1; transform: none; filter: none }
+.abx-fix { border-top: 1px solid var(--border) }
+.abx-fix__labels { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 32px; padding: 14px 0; border-bottom: 1px solid var(--border) }
+.abx-fix__labels span { font-size: .82rem; font-weight: 650; color: var(--muted) }
+.abx-fix__row {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 32px; align-items: center; padding: 22px 0; border-bottom: 1px solid var(--border);
+  opacity: 0; transform: translateY(12px); transition: opacity .6s var(--ease), transform .6s var(--ease);
+}
+.abx-fix.in .abx-fix__row { opacity: 1; transform: none }
+.abx-fix.in .abx-fix__row:nth-of-type(3) { transition-delay: .1s }
+.abx-fix.in .abx-fix__row:nth-of-type(4) { transition-delay: .2s }
+.abx-fix__problem strong { display: block; font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; color: var(--ink) }
+.abx-fix__problem p { margin: 6px 0 0; max-width: 40ch; font-size: .95rem; line-height: 1.5; color: var(--muted) }
+.abx-fix__answer {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 18px 20px;
+  background: #fff; border: 1px solid var(--border-strong); text-decoration: none; color: inherit;
+  transition: border-color .25s var(--ease), box-shadow .25s var(--ease), transform .25s var(--ease);
+}
+.abx-fix__answer:hover { border-color: rgba(106,92,255,.45); box-shadow: 0 18px 36px -26px rgba(42,34,128,.5); transform: translateY(-2px) }
+.abx-fix__answer:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.abx-fix__answer i { display: grid; place-items: center; width: 44px; height: 44px; background: var(--accent-soft); color: var(--accent-deep) }
+.abx-fix__answer i svg { position: static }
+.abx-fix__answer strong { display: block; font-size: 1rem; font-weight: 700; color: var(--accent-deep) }
+.abx-fix__answer p { margin: 3px 0 0; font-size: .93rem; line-height: 1.5; color: var(--ink-soft) }
+.abx-fix__go { color: var(--accent-deep); transition: transform .25s var(--ease) }
+.abx-fix__answer:hover .abx-fix__go { transform: translateX(4px) }
+
+/* beliefs */
+.abx-beliefs { display: grid; grid-template-columns: minmax(0, 280px) minmax(0, 1fr); gap: 32px 64px; padding: clamp(28px, 4vw, 44px); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.16) }
+.abx-beliefs h2 { margin: 0; font-family: var(--font-display); font-weight: 700; letter-spacing: -.022em; line-height: 1.15; font-size: clamp(1.6rem, 2.6vw, 2.1rem); color: var(--ink) }
+.abx-beliefs ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; counter-reset: belief }
+.abx-beliefs ol[data-r] { opacity: 1; transform: none; filter: none }
+.abx-beliefs li { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; counter-increment: belief }
+.abx-beliefs li::before {
+  content: counter(belief); grid-row: span 2; display: grid; place-items: center; width: 32px; height: 32px;
+  font-size: .86rem; font-weight: 700; color: #fff; background: var(--accent-deep);
+}
+.abx-beliefs strong { font-size: 1.1rem; font-weight: 650; color: var(--ink) }
+.abx-beliefs p { margin: 0; font-size: .96rem; line-height: 1.5; color: var(--ink-soft) }
+
+/* trust */
+.abx-trust { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px }
+.abx-founder, .abx-quote { margin: 0; padding: 28px; background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 22px 44px -36px rgba(42,34,128,.4) }
+.abx-founder { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-content: start; align-items: center }
+.abx-founder__photo { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; object-position: center 12% }
+.abx-founder strong { display: block; font-size: 1.05rem; color: var(--ink) }
+.abx-founder span { display: block; margin-top: 2px; font-size: .88rem; color: var(--muted) }
+.abx-founder ul { grid-column: 1 / -1; list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 10px }
+.abx-founder li { position: relative; padding-left: 20px; font-size: .95rem; line-height: 1.45; color: var(--ink) }
+.abx-founder li::before { content: ""; position: absolute; left: 0; top: .5em; width: 8px; height: 8px; background: var(--accent) }
+.abx-founder__links { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 20px; margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--border) }
+.abx-link { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; font-weight: 650; color: var(--accent-deep); text-decoration: none }
+.abx-link:hover { text-decoration: underline; text-underline-offset: 3px }
+.abx-link svg { position: static }
+.abx-quote { display: flex; flex-direction: column; justify-content: space-between; gap: 24px; border-left: 4px solid var(--accent) }
+.abx-quote blockquote { margin: 0; font-family: var(--font-display); font-size: 1.3rem; font-weight: 500; line-height: 1.45; letter-spacing: -.015em; color: var(--ink) }
+.abx-quote figcaption { display: flex; align-items: center; gap: 12px }
+.abx-quote figcaption img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover }
+.abx-quote figcaption strong { display: block; font-size: .95rem; color: var(--ink) }
+.abx-quote figcaption span { display: block; font-size: .84rem; color: var(--muted) }
+
+@media (prefers-reduced-motion: reduce) {
+  .abx-fix__row { opacity: 1; transform: none; transition: none }
+}
+@media (max-width: 980px) {
+  .abx-hero { grid-template-columns: minmax(0, 1fr) }
+  .abx-card { max-width: 520px }
+  .abx-beliefs { grid-template-columns: minmax(0, 1fr) }
+  .abx-trust { grid-template-columns: minmax(0, 1fr) }
+}
+@media (max-width: 720px) {
+  .abx-fix__labels { display: none }
+  .abx-fix__row { grid-template-columns: minmax(0, 1fr); gap: 14px }
+  .abx-card, .abx-founder, .abx-quote { padding: 22px 18px }
+}
+`;
