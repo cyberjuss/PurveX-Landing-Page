@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Check, GraduationCap, Linkedin, ShieldCheck, Workflow, X, type LucideIcon } from "lucide-react";
+import { ArrowRight, BadgeCheck, Check, Crosshair, Eye, GraduationCap, Linkedin, ShieldCheck, Terminal, Workflow, X, type LucideIcon } from "lucide-react";
 import { IconGraduate, IconTune, IconValidate, type BrandIcon } from "./brand-icons";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
@@ -38,10 +38,10 @@ const LOOP: { verb: string; name: string; body: string; href: string; Icon: Bran
   { verb: "Train", name: "Training", body: "Build analysts who can run those detections and know when to trust them.", href: "/cybersecurity-training", Icon: IconGraduate },
 ];
 
-const BELIEFS = [
-  { title: "Tested, not trusted.", body: "An alert is not coverage until it has fired against a real attack." },
-  { title: "Learn by doing.", body: "Skills come from working real problems, not from watching someone else." },
-  { title: "Clear over clever.", body: "A finding nobody understands never gets fixed." },
+const BELIEFS: { title: string; body: string; from: string; to: string; Icon: LucideIcon }[] = [
+  { title: "Tested, not trusted.", body: "An alert is not coverage until it has fired against a real attack.", from: "Assumed", to: "Proven", Icon: Crosshair },
+  { title: "Learn by doing.", body: "Skills come from working real problems, not from watching someone else.", from: "Watched", to: "Practiced", Icon: Terminal },
+  { title: "Clear over clever.", body: "A finding nobody understands never gets fixed.", from: "Clever", to: "Fixed", Icon: Eye },
 ];
 
 const FACTS: { label: string; value: string; Icon: LucideIcon }[] = [
@@ -140,13 +140,24 @@ export default function AboutPage() {
 
       <section className="pg-section" id="beliefs">
         <div className="ab-beliefs">
-          <h2>What we believe</h2>
+          <div className="pg-head">
+            <h2>What we believe</h2>
+            <p>Three rules behind every test, fix, and lesson.</p>
+          </div>
           <ol data-r>
-            {BELIEFS.map((b, n) => (
-              <li key={b.title}>
-                <span>0{n + 1}</span>
-                <strong>{b.title}</strong>
-                <p>{b.body}</p>
+            {BELIEFS.map(({ title, body, from, to, Icon }, n) => (
+              <li key={title}>
+                <header>
+                  <i><Icon size={22} strokeWidth={1.9} /></i>
+                  <span>0{n + 1}</span>
+                </header>
+                <strong>{title}</strong>
+                <p>{body}</p>
+                <div className="ab-beliefs__shift">
+                  <s>{from}</s>
+                  <ArrowRight size={14} aria-hidden="true" />
+                  <b><Check size={13} strokeWidth={3} aria-hidden="true" />{to}</b>
+                </div>
               </li>
             ))}
           </ol>
@@ -307,20 +318,37 @@ const AB_CSS = `
 .ab-loop__return span { transform: translateY(50%); padding: 4px 14px; background: #fbfcfe; font-size: .88rem; font-weight: 600; color: var(--accent-deep); text-align: center }
 
 /* beliefs */
-.ab-beliefs h2 { margin: 0 0 8px; font-family: var(--font-display); font-weight: 700; letter-spacing: -.022em; line-height: 1.15; font-size: clamp(1.6rem, 2.6vw, 2.1rem); color: var(--ink) }
-.ab-beliefs ol { list-style: none; margin: 0; padding: 0 }
+.ab-beliefs ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px }
 .ab-beliefs ol[data-r] { opacity: 1; transform: none; filter: none }
 .ab-beliefs li {
-  display: grid; grid-template-columns: 64px minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; align-items: baseline; padding: 28px 0; border-bottom: 1px solid var(--border);
-  opacity: 0; transform: translateY(12px); transition: opacity .6s var(--ease), transform .6s var(--ease);
+  position: relative; display: flex; flex-direction: column; padding: 28px 26px 24px; overflow: hidden;
+  background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 22px 44px -36px rgba(42,34,128,.45);
+  opacity: 0; transform: translateY(14px);
+  transition: opacity .6s var(--ease), transform .6s var(--ease), border-color .25s, box-shadow .25s;
 }
-.ab-beliefs li:first-child { border-top: 1px solid var(--border) }
+.ab-beliefs li::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--accent);
+  transform: scaleX(0); transform-origin: left; transition: transform .45s cubic-bezier(.16,1,.3,1);
+}
 .ab-beliefs ol.in li { opacity: 1; transform: none }
-.ab-beliefs ol.in li:nth-child(2) { transition-delay: .1s }
-.ab-beliefs ol.in li:nth-child(3) { transition-delay: .2s }
-.ab-beliefs li span { font-family: var(--font-mono); font-size: .86rem; font-weight: 700; color: var(--accent-deep) }
-.ab-beliefs li strong { font-family: var(--font-display); font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 500; letter-spacing: -.035em; line-height: 1.1; color: var(--ink) }
-.ab-beliefs li p { margin: 0; font-size: 1.02rem; line-height: 1.55; color: var(--ink-soft) }
+.ab-beliefs ol.in li:nth-child(2) { transition-delay: .12s }
+.ab-beliefs ol.in li:nth-child(3) { transition-delay: .24s }
+.ab-beliefs ol.in li:hover { border-color: rgba(106,92,255,.5); box-shadow: 0 30px 56px -34px rgba(85,70,224,.55); transform: translateY(-3px); transition-delay: 0s }
+.ab-beliefs li:hover::before { transform: scaleX(1) }
+.ab-beliefs header { display: flex; align-items: flex-start; justify-content: space-between }
+.ab-beliefs header i { display: grid; place-items: center; width: 48px; height: 48px; background: var(--accent-soft); color: var(--accent-deep); transition: background .25s, color .25s }
+.ab-beliefs li:hover header i { background: var(--accent); color: #fff }
+.ab-beliefs header i svg { position: static }
+.ab-beliefs header span { font-family: var(--font-mono); font-size: 2.6rem; font-weight: 700; line-height: 1; letter-spacing: -.04em; color: rgba(106,92,255,.16) }
+.ab-beliefs li strong { display: block; margin-top: 26px; font-family: var(--font-display); font-size: clamp(1.45rem, 2.2vw, 1.8rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.1; color: var(--ink) }
+.ab-beliefs li p { margin: 12px 0 22px; font-size: .98rem; line-height: 1.6; color: var(--ink-soft) }
+.ab-beliefs__shift {
+  display: flex; align-items: center; gap: 10px; margin-top: auto; padding-top: 18px; border-top: 1px dashed var(--border-strong);
+  font-family: var(--font-mono); font-size: .78rem; font-weight: 700;
+}
+.ab-beliefs__shift s { color: var(--muted); text-decoration-color: #dc2626; text-decoration-thickness: 2px }
+.ab-beliefs__shift svg { position: static; flex: none; color: var(--muted) }
+.ab-beliefs__shift b { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; background: var(--accent-soft); color: var(--accent-deep) }
 
 /* founder */
 .ab-founder { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 40px 72px; align-items: center }
@@ -356,6 +384,7 @@ const AB_CSS = `
   .ab-change li p { animation: none }
   .ab-change__switch i { transition: none }
   .ab-loop li, .ab-beliefs li { opacity: 1; transform: none; transition: none }
+  .ab-beliefs li::before { transition: none }
 }
 @media (max-width: 980px) {
   .ab-hero__grid { width: 70%; opacity: .45 }
@@ -367,8 +396,7 @@ const AB_CSS = `
   .ab-loop__return { height: auto; margin: 24px 0 0; border: 0; place-items: start }
   .ab-loop__return::before { display: none }
   .ab-loop__return span { transform: none; padding: 12px 14px; background: var(--accent-soft); text-align: left }
-  .ab-beliefs li { grid-template-columns: 48px minmax(0, 1fr); gap: 8px 16px }
-  .ab-beliefs li p { grid-column: 2 }
+  .ab-beliefs ol { grid-template-columns: minmax(0, 1fr); gap: 16px }
   .ab-founder { grid-template-columns: minmax(0, 1fr) }
   .ab-founder__photo { max-width: 320px }
 }
