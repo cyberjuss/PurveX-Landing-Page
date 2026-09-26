@@ -7,14 +7,14 @@
 
 By default, Active Directory Users and Computers hides a lot. Go to **View → Advanced Features** to turn on the extra tabs.
 
-The most useful new tab is **Attribute Editor**. It shows every raw attribute on an object, not just the friendly summary fields. These are the attributes that matter most in an investigation:
+The most useful new tab is **Attribute Editor**. It shows every raw attribute on an object, including the ones the friendly tabs leave out. These are the attributes that matter most in an investigation:
 
 - `whenCreated`
 - `lastLogon`
 - `pwdLastSet`
 - `memberOf`
 
-With them, a hunch becomes a time, a group list, or a last logon. Do not guess from the display name when the Attribute Editor can show you the time.
+With them, you can replace a hunch with a time, a group list, or a last logon. Do not guess from the display name when the Attribute Editor can show you the time.
 
 Filter the Attribute Editor to **Show only attributes that have values** so you are not scrolling past blank fields.
 

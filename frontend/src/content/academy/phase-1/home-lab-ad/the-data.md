@@ -5,7 +5,7 @@
 
 ### Data Categories
 
-Knowing where data lives changes how you read a ticket. "An account was accessed" becomes "an account was accessed, and here is what was at risk."
+Knowing where data lives changes how you read a ticket. Instead of "an account was accessed," you can say "an account was accessed, and here is what was at risk."
 
 | Data Category | Examples | Primarily Handled By |
 | :---- | :---- | :---- |
@@ -23,7 +23,7 @@ Find the row in play before you decide how urgent a ticket is. A group change in
 
 ### Who Wealth Management Serves
 
-Wealth Management serves private clients, not corporate accounts. Its client list is built to look like a real advisory firm's.
+Wealth Management serves private clients, not corporate accounts. Its client list mirrors a real advisory firm's.
 
 | Client Type | Description |
 | ----- | ----- |

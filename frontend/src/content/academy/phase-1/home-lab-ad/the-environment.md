@@ -30,7 +30,7 @@ When a ticket names a person, look up the username and read the account's group 
 
 ### The Client Workstation
 
-The lab has only one client machine. Know where it belongs, and you will notice when it does not.
+The lab has only one client machine. Learn where it belongs so you notice if it moves.
 
 | Item | Detail |
 | :---- | :---- |
@@ -40,7 +40,7 @@ The lab has only one client machine. Know where it belongs, and you will notice 
 
 If a ticket names a different workstation, or this one sits under another department, that is already a finding. Confirm the folder before you treat the name as proof.
 
-### What Is Actually in This Environment
+### What Is in This Environment
 
 These totals are what normal looks like here.
 

@@ -7,7 +7,7 @@
 
 An **OU** is the folder an account lives in. It is also a boundary you can attach work to, because permissions and Group Policy link to it directly.
 
-That makes the folder more than decoration. It is how this domain records a department and how that department is governed.
+The domain uses that folder to record a department and to apply the rules that department follows.
 
 Each of PurveX Financial's five departments is its own OU, with a `Users` sub-OU one level deeper. IT also has a `Workstations` sub-OU, so the lab's one client machine sits under IT instead of next to people.
 

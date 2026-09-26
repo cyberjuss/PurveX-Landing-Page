@@ -27,7 +27,7 @@ export const quizzes: Quiz[] = [
         question: "A DDoS attack takes a company's web server offline for six hours. Which leg of the CIA triad did this attack break?",
         options: ["Confidentiality", "Integrity", "Availability", "Accountability"],
         correctIndex: 2,
-        explanation: "Availability is posted hours. Open when customers need the branch. Knocking the server offline does not open the vault or break the seal. It just keeps the doors locked, so nobody can get in when they need to.",
+        explanation: "Availability is posted hours. Open when customers need the branch. Knocking the server offline does not open the vault or break the seal. It keeps the doors locked, so nobody can get in when they need to.",
       },
       {
         question: "An attacker does not steal or change anything, but quietly intercepts unencrypted traffic and reads a customer's SSN as it crosses the network. Which CIA property is broken?",
@@ -99,7 +99,7 @@ export const quizzes: Quiz[] = [
         explanation: "Follow → HTTP Stream reassembles the full conversation into something readable. It is the single most useful move for narrowing in on a suspicious host.",
       },
       {
-        question: "In the Hidden Tear ransomware lab, the stolen data (hostname + encryption key) was sent as a GET request query parameter instead of a POST body. Why is that actually useful for a responder?",
+        question: "In the Hidden Tear ransomware lab, the stolen data (hostname + encryption key) was sent as a GET request query parameter instead of a POST body. Why is that useful for a responder?",
         options: [
           "It is not, since GET-based exfil is harder to detect than POST",
           "GET requests cannot carry stolen data, so this traffic was actually benign",
@@ -124,7 +124,7 @@ export const quizzes: Quiz[] = [
           "The database was exposed directly to the internet",
         ],
         correctIndex: 1,
-        explanation: "The app let the client dictate its own privilege level (`roleid=2`) instead of the server enforcing it. That is a textbook broken access control flaw. Trusting client-supplied state for an authorization decision is exactly what a server should never do.",
+        explanation: "The app let the client dictate its own privilege level (`roleid=2`) instead of the server enforcing it. That is a textbook broken access control flaw. A server should never trust client-supplied state for an authorization decision.",
       },
       {
         question: "Why did editing the \"My Account\" email field, not the login page, reveal the vulnerability?",
@@ -157,7 +157,7 @@ export const quizzes: Quiz[] = [
           "2 is a CSRF token the server requires on every request",
         ],
         correctIndex: 1,
-        explanation: "Your account starts as roleid=1. Admins are roleid=2. The server does not check that you are allowed to be an admin. It just stores the number you sent, so a regular user can promote themselves.",
+        explanation: "Your account starts as roleid=1. Admins are roleid=2. The server does not check that you are allowed to be an admin. It stores the number you sent, so a regular user can promote themselves.",
       },
       {
         question: "What is the actual win condition of the PortSwigger lab, once the role has been changed?",

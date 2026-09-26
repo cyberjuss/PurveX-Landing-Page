@@ -32,7 +32,7 @@ A **Security Group** is a list of accounts. You use it to grant permissions or a
 
 A group can cross departments. A folder cannot.
 
-**A group is not a place an account lives. It is a list an account is added to.** An account has exactly one OU but can sit in any number of groups.
+**A group is a list you add an account to.** An account has exactly one OU but can sit in any number of groups.
 
 Every department has a standard access group:
 

@@ -1,6 +1,6 @@
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
-<p>Before you can recognize what is abnormal in an investigation, what does "normal" actually look like in this environment?</p>
+<p>Before you can recognize what is abnormal in an investigation, what does "normal" look like in this environment?</p>
 </div>
 
 ### Before You Touch a Ticket, Learn the Environment
@@ -21,22 +21,22 @@ The environment is small enough to hold in your head:
 
 A real desk works the same way. You learn who works where, what access they should have, which groups matter, and what normal activity looks like.
 
-### This Is Not a Textbook Directory
+### A Directory Built Like a Real Firm
 
-A textbook gives you `User1` inside `OU=Users` and explains everything. Real environments are not that clean, and this one is built to feel like a real firm.
+A textbook gives you `User1` inside `OU=Users` and explains everything. Real environments are messier, and this lab copies a real firm.
 
 Here you work with departments, access groups, job titles, and tickets that may not tell the whole story.
 
-A job title does not set anyone's access. A person whose title says Helpdesk does not automatically belong in the **Helpdesk** group.
+A job title does not set anyone's access. A person whose title says Helpdesk does not belong in the **Helpdesk** group because of that title.
 
-Callers and tickets can be wrong, and handling that is part of the job. Do not act on whatever appears in front of you. **Verify it.**
+Callers and tickets can be wrong, and handling that is part of the job. Verify what a ticket or caller tells you before you act on it.
 
 ### Your Role
 
 <div class="ad-goals-cue"><button type="button" class="ad-goals-open"><span class="ad-goals-open__tag">Analyst Brief</span><span class="ad-goals-open__text">Written for the role you picked: the five questions to answer, and the red flags to spot.</span><span class="ad-goals-open__cta">Open brief</span></button></div>
 <div class="ad-goals" hidden>
 <div class="ad-goals__head"><span class="ad-goals__kicker">Analyst Brief</span><span class="ad-goals__scope">purvexfinancial.local</span></div>
-<p class="ad-goals__lede">You are the analyst on this environment. Reading the company page is not enough. For any account in front of you, you should be able to answer five questions.</p>
+<p class="ad-goals__lede">You are the analyst on this environment. For any account in front of you, you should be able to answer five questions.</p>
 <ol class="ad-goals__checks">
 <li>Does this account belong in this OU?</li>
 <li>Should this user be a member of this group?</li>
@@ -52,13 +52,13 @@ Callers and tickets can be wrong, and handling that is part of the job. Do not a
 <li>A login that does not fit</li>
 </ul>
 </div>
-<p class="ad-goals__goal"><span class="ad-goals__label">The goal</span>Not to memorize the directory to pass a ticket. To see when something <strong>does not belong</strong>.</p>
+<p class="ad-goals__goal"><span class="ad-goals__label">The goal</span>Learn the directory well enough to see when something <strong>does not belong</strong>.</p>
 </div>
 
 ### Start With the Baseline
 
-The next four tabs lay out the firm: the org chart, the access levels, the data, and the full user directory. Learn them before you build the lab, because every later check is measured against them.
+The next four tabs lay out the firm: the org chart, the access levels, the data, and the full user directory. Learn them before you build the lab, because you will measure every later check against them.
 
-**If you do not know PurveX Financial, you are not investigating. You are guessing.**
+Without that baseline, any answer you give on a ticket is a guess.
 
 ***Domain: purvexfinancial.local***

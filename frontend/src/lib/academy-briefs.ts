@@ -13,16 +13,16 @@ export type RoleBrief = {
 export const ROLE_BRIEFS: Record<RoleId, RoleBrief> = {
   "help-desk": {
     title: "Help Desk Brief",
-    lede: "You work the tickets. Before you change an account, confirm who is asking and what they should have. For any ticket, answer these five questions.",
+    lede: "You work the tickets. Before you change an account, confirm who is asking and what access they should have. For any ticket, answer these five questions.",
     checks: [
       "Is the caller really the person on the account?",
-      "Is the account locked, disabled, or is the password simply wrong?",
+      "Is the account locked or disabled, or is the password wrong?",
       "Does the access they want match their department and job?",
       "Who approved this request, and is that on the ticket?",
       "Did the change work, and did you confirm it with the user?",
     ],
     flags: ["A reset asked for by someone other than the user", "An access request with no approval", "A ticket that does not match the directory"],
-    goal: ["Not to close tickets fast. To close them", "without giving away access"],
+    goal: ["Close every ticket", "without giving away access"],
   },
   sysadmin: {
     title: "Sysadmin Brief",
@@ -35,7 +35,7 @@ export const ROLE_BRIEFS: Record<RoleId, RoleBrief> = {
       "Could you undo this change if it goes wrong?",
     ],
     flags: ["An account nobody owns", "A group nested where it should not be", "A service account with more rights than its job"],
-    goal: ["Not to keep the directory running. To keep it", "clean enough to trust"],
+    goal: ["Keep the directory", "clean enough to trust"],
   },
   "soc-analyst": {
     title: "SOC Analyst Brief",
@@ -48,7 +48,7 @@ export const ROLE_BRIEFS: Record<RoleId, RoleBrief> = {
       "Is this worth escalating, and what evidence backs it?",
     ],
     flags: ["Failed logons across many accounts", "A 2 AM login from an unfamiliar workstation", "A user added to a privileged group with no ticket"],
-    goal: ["Not to close every alert. To know", "which one is real"],
+    goal: ["Learn to tell", "which alert is real"],
   },
   "cyber-analyst": {
     title: "Cybersecurity Analyst Brief",
@@ -61,7 +61,7 @@ export const ROLE_BRIEFS: Record<RoleId, RoleBrief> = {
       "How serious is this, and what is the fix?",
     ],
     flags: ["A policy that never locks an account", "Admin rights on an everyday account", "Auditing turned off for logons or group changes"],
-    goal: ["Not to list every issue. To rank them by", "real risk"],
+    goal: ["Rank every finding by", "the risk it carries"],
   },
   "ir-analyst": {
     title: "Incident Response Brief",
@@ -74,6 +74,6 @@ export const ROLE_BRIEFS: Record<RoleId, RoleBrief> = {
       "What would you write in the report, and in what order?",
     ],
     flags: ["An account used outside its normal hours", "A change with no ticket behind it", "Logs cleared or missing for a window of time"],
-    goal: ["Not to fix it fast. To fix it", "and prove what happened"],
+    goal: ["Fix the incident", "and prove what happened"],
   },
 };

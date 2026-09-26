@@ -5,11 +5,11 @@
 
 ### Point DNS at the domain controller
 
-A workstation finds `purvexfinancial.local` through DNS. A production network usually hands out the right DNS address automatically. In this lab, you set the workstation's preferred DNS server to the domain controller's IP address yourself.
+A workstation finds `purvexfinancial.local` through DNS. A production network usually hands out the right DNS address. In this lab, you set the workstation's preferred DNS server to the domain controller's IP address yourself.
 
 If that address is wrong, the join fails even when the domain controller is up. The directory exists, but the workstation cannot reach it to sign in.
 
-That is an availability failure, not a password problem. The password was never checked.
+That is an availability failure, not a password problem. The domain controller never checked the password.
 
 1. Open Settings, then Network status, then Change adapter options. Right-click the adapter and choose Properties.
 2. Select Internet Protocol Version 4, then Properties.

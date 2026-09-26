@@ -1,4 +1,4 @@
-### SSL/TLS: How "Encrypted" Actually Works
+### SSL/TLS: What "Encrypted" Means
 
 SSL is the older name. **TLS** is the modern standard that replaced it, though people still say "SSL" out of habit.
 
@@ -7,7 +7,7 @@ TLS wraps a connection in encryption. If someone captures the traffic, in Wiresh
 - Without TLS (HTTP): anyone watching the wire can read the data
 - With TLS (HTTPS): the data is encrypted and watchers see only gibberish
 
-TLS performs its own handshake, separate from TCP's. After the TCP three-way handshake sets up the connection, both sides negotiate encryption keys before any real data moves.
+TLS performs its own handshake, separate from TCP's. After the TCP three-way handshake sets up the connection, both sides negotiate encryption keys before any data moves.
 
 TCP's handshake sets up the *connection*. TLS's handshake sets up the *privacy*. They run back to back, and mixing them up is a common mistake on a new desk.
 
