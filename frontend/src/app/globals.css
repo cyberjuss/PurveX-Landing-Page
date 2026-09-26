@@ -3317,7 +3317,11 @@ body:has(.lp) {
 .academy-prose .ad-shot:hover::after { opacity: 1; }
 
 /* Full-size screenshot viewer (opened from academy-shell.tsx). */
-.ad-zoom { max-width: 94vw; max-height: 94vh; padding: 0; border: 0; background: transparent; overflow: visible; cursor: zoom-out; }
+/* Tailwind's reset zeroes the dialog's default auto margin, so re-center it. */
+.ad-zoom {
+  position: fixed; inset: 0; margin: auto; width: fit-content; height: fit-content;
+  max-width: 94vw; max-height: 94vh; padding: 0; border: 0; background: transparent; overflow: visible; cursor: zoom-out;
+}
 .ad-zoom::backdrop { background: rgba(10,14,30,0.8); backdrop-filter: blur(3px); }
 .ad-zoom img { display: block; max-width: 94vw; max-height: 84vh; margin: 0 auto; border-radius: 10px; background: #fff; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6); }
 .ad-zoom__cap { max-width: 70ch; margin: 0.75rem auto 0; font-size: 0.9rem; line-height: 1.5; color: #e7e9f3; text-align: center; }
