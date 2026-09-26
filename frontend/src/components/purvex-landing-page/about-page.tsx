@@ -10,7 +10,7 @@ import { PG_CSS } from "./page-skin";
 
 /* About. Plain on purpose: why PurveX exists, the problems it takes on,
    what it offers for each, what it believes, and who is behind it. Facts
-   about the founder match the founder page; the quote is a real review. */
+   about the founder match the founder page. */
 
 const FIXES: { problem: string; detail: string; name: string; answer: string; href: string; Icon: BrandIcon }[] = [
   {
@@ -149,19 +149,6 @@ export default function AboutPage() {
               </a>
             </div>
           </div>
-          <figure className="abx-quote">
-            <blockquote>
-              Hands down one of the best services. Our students now work in tech, running their own SOC projects thanks to
-              real hands-on experience.
-            </blockquote>
-            <figcaption>
-              <Image src="/kenneth.jpg" alt="" width={44} height={44} />
-              <div>
-                <strong>Kenneth Ellington</strong>
-                <span>Coach and instructor, Ellington Cyber Academy</span>
-              </div>
-            </figcaption>
-          </figure>
         </div>
       </section>
 
@@ -245,25 +232,19 @@ const ABX_CSS = `
 .abx-beliefs p { margin: 0; font-size: .96rem; line-height: 1.5; color: var(--ink-soft) }
 
 /* trust */
-.abx-trust { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px }
-.abx-founder, .abx-quote { margin: 0; padding: 28px; background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 22px 44px -36px rgba(42,34,128,.4) }
+.abx-trust { display: grid; grid-template-columns: minmax(0, 1fr) }
+.abx-founder { margin: 0; padding: 28px; background: #fff; border: 1px solid var(--border-strong); box-shadow: 0 22px 44px -36px rgba(42,34,128,.4) }
 .abx-founder { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-content: start; align-items: center }
 .abx-founder__photo { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; object-position: center 12% }
 .abx-founder strong { display: block; font-size: 1.05rem; color: var(--ink) }
 .abx-founder span { display: block; margin-top: 2px; font-size: .88rem; color: var(--muted) }
-.abx-founder ul { grid-column: 1 / -1; list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 10px }
+.abx-founder ul { grid-column: 1 / -1; list-style: none; margin: 6px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 32px }
 .abx-founder li { position: relative; padding-left: 20px; font-size: .95rem; line-height: 1.45; color: var(--ink) }
 .abx-founder li::before { content: ""; position: absolute; left: 0; top: .5em; width: 8px; height: 8px; background: var(--accent) }
 .abx-founder__links { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 20px; margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--border) }
 .abx-link { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; font-weight: 650; color: var(--accent-deep); text-decoration: none }
 .abx-link:hover { text-decoration: underline; text-underline-offset: 3px }
 .abx-link svg { position: static }
-.abx-quote { display: flex; flex-direction: column; justify-content: space-between; gap: 24px; border-left: 4px solid var(--accent) }
-.abx-quote blockquote { margin: 0; font-family: var(--font-display); font-size: 1.3rem; font-weight: 500; line-height: 1.45; letter-spacing: -.015em; color: var(--ink) }
-.abx-quote figcaption { display: flex; align-items: center; gap: 12px }
-.abx-quote figcaption img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover }
-.abx-quote figcaption strong { display: block; font-size: .95rem; color: var(--ink) }
-.abx-quote figcaption span { display: block; font-size: .84rem; color: var(--muted) }
 
 @media (prefers-reduced-motion: reduce) {
   .abx-fix__row { opacity: 1; transform: none; transition: none }
@@ -277,6 +258,7 @@ const ABX_CSS = `
 @media (max-width: 720px) {
   .abx-fix__labels { display: none }
   .abx-fix__row { grid-template-columns: minmax(0, 1fr); gap: 14px }
-  .abx-card, .abx-founder, .abx-quote { padding: 22px 18px }
+  .abx-card, .abx-founder { padding: 22px 18px }
+  .abx-founder ul { grid-template-columns: minmax(0, 1fr) }
 }
 `;
