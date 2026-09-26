@@ -3,8 +3,9 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight, Headset, LogOut } from "lucide-react";
+import { ArrowRight, Headset, LogOut, Target } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
+import type { StudentProfile } from "@/lib/academy-certs";
 import { READINESS_PATH, useResults } from "@/lib/academy-client";
 import { LEVELS, summarize } from "@/lib/academy-score";
 
@@ -18,6 +19,18 @@ export function AcademyAccountProvider({ student, children }: { student: Academy
 
 export function useAcademyAccount() {
   return useContext(AccountContext);
+}
+
+// The student's intake answers, and a way to reopen the questions.
+type Goals = { profile: StudentProfile | null; editGoals: () => void };
+const GoalsContext = createContext<Goals>({ profile: null, editGoals: () => {} });
+
+export function AcademyGoalsProvider({ value, children }: { value: Goals; children: React.ReactNode }) {
+  return <GoalsContext.Provider value={value}>{children}</GoalsContext.Provider>;
+}
+
+export function useAcademyGoals() {
+  return useContext(GoalsContext);
 }
 
 function firstToken(value: string, skipTiny = false) {
@@ -60,6 +73,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
   const student = useAcademyAccount();
   const readiness = summarize(useResults());
   const { setModalOpen, remaining, limit, enabled } = useCoach();
+  const { editGoals } = useAcademyGoals();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [pos, setPos] = useState({ top: 72, right: 16 });
@@ -185,6 +199,16 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                   )}
                 </div>
               )}
+              <button
+                type="button"
+                className="ax-account__out"
+                onClick={() => {
+                  setOpen(false);
+                  editGoals();
+                }}
+              >
+                <Target className="h-3.5 w-3.5" /> Your goals
+              </button>
               <button type="button" className="ax-account__out" onClick={onSignOut}>
                 <LogOut className="h-3.5 w-3.5" /> Sign out
               </button>

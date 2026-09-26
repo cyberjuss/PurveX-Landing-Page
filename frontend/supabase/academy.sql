@@ -116,3 +116,34 @@ alter table public.academy_lab_state add column if not exists live_until timesta
 alter table public.academy_lab_state add column if not exists challenge_code text;
 alter table public.academy_lab_state add column if not exists challenge_at timestamptz;
 alter table public.academy_lab_state add column if not exists verified_at timestamptz;
+
+-- The intake every student fills in before starting: certifications
+-- (Security+, CySA+), target roles, and where they are starting from. Coach,
+-- the daily drill and the missions read it.
+create table if not exists public.academy_profiles (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  certs jsonb not null,
+  other_certs text not null default '',
+  roles text[] not null,
+  start_level text not null check (start_level in ('new', 'some', 'working')),
+  background text not null default '',
+  updated_at timestamptz not null default now()
+);
+
+alter table public.academy_profiles enable row level security;
+
+drop policy if exists "Students read their own academy profile" on public.academy_profiles;
+create policy "Students read their own academy profile"
+  on public.academy_profiles for select
+  using (auth.uid() = user_id);
+
+-- What each target role involves, researched from current job postings and
+-- public role guides. One row per role, shared by all students, refreshed
+-- every 90 days. Written by the server only.
+create table if not exists public.academy_role_briefs (
+  role text primary key,
+  brief jsonb not null,
+  researched_at timestamptz not null default now()
+);
+
+alter table public.academy_role_briefs enable row level security;

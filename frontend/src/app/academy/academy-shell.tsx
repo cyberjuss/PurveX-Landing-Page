@@ -1,25 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeft, GraduationCap, Home, Loader2, Menu, Moon, Sun, X } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
-import { AcademyAccountProvider, AcademyProfileMenu, type AcademyStudent } from "@/components/academy/academy-account";
+import { AcademyAccountProvider, AcademyGoalsProvider, AcademyProfileMenu, type AcademyStudent } from "@/components/academy/academy-account";
+import { AcademyIntake } from "@/components/academy/academy-intake";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
 import { AcademySignIn } from "@/components/academy/academy-sign-in";
 import { AcademyWelcome, takeAcademyWelcome } from "@/components/academy/academy-welcome";
 import { CoachProvider } from "@/components/academy/coach-context";
 import { PurvexCoach } from "@/components/academy/purvex-coach";
+import { examLinks, sanitizeProfile, type StudentProfile } from "@/lib/academy-certs";
 import {
   academyFetch,
   downloadLinkedBuildScript,
+  loadCachedProfile,
   LINKED_SCRIPT_PATH,
   READINESS_PATH,
   RESULTS_CHANGED_EVENT,
   RESULTS_OWNER_KEY,
   RESULTS_UPDATED_EVENT,
+  saveCachedProfile,
 } from "@/lib/academy-client";
 import { LAB_GATED_MISSIONS } from "@/lib/academy-missions";
 import { clearResults, loadResults, saveResults, scorecardHtml, summarize, type MissionResult, type Results } from "@/lib/academy-score";
@@ -47,6 +51,15 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
   // undefined while the stored Supabase session is still being read.
   const [student, setStudent] = useState<Student | null | undefined>(supabase ? undefined : null);
   const [hello, setHello] = useState(false);
+  // The intake answers. undefined while loading, null until the student has answered.
+  const [profile, setProfileState] = useState<StudentProfile | null | undefined>(undefined);
+  const [editingGoals, setEditingGoals] = useState(false);
+  // The mission handlers below read the profile outside React, so it is kept in a ref too, set at the same moment.
+  const profileRef = useRef<StudentProfile | null>(null);
+  const setProfile = (next: StudentProfile | null | undefined) => {
+    profileRef.current = next ?? null;
+    setProfileState(next);
+  };
 
   useEffect(() => {
     if (!supabase) return;
@@ -110,6 +123,47 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       cancelled = true;
     };
   }, [studentId]);
+
+  // The intake is required. The server copy wins; a local copy covers a slow or
+  // failing server and is pushed back up so Coach and the drills see it too.
+  useEffect(() => {
+    if (!studentId) return;
+    let cancelled = false;
+    const cached = loadCachedProfile(studentId);
+    setProfile(cached ?? undefined);
+    academyFetch("/academy/api/profile")
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((data: { profile?: unknown }) => {
+        if (cancelled) return;
+        const server = sanitizeProfile(data.profile);
+        if (server) {
+          saveCachedProfile(studentId, server);
+          setProfile(server);
+          return;
+        }
+        setProfile(cached);
+        if (cached) {
+          academyFetch("/academy/api/profile", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ profile: cached }),
+          }).catch(() => {});
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setProfile(cached);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [studentId]);
+
+  function goalsSaved(next: StudentProfile) {
+    if (studentId) saveCachedProfile(studentId, next);
+    setProfile(next);
+    setEditingGoals(false);
+    window.scrollTo({ top: 0 });
+  }
 
   async function handleSignOut() {
     clearResults();
@@ -320,6 +374,15 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       feedback.remove();
       wrap.querySelectorAll(".ad-win__copy").forEach((el) => el.remove());
       if (reveal && reveal.parentElement !== box) box.appendChild(reveal);
+      // Which exam areas this ticket just practiced. Shown after the answer, never before.
+      const missionId = wrap.getAttribute("data-id");
+      const links = missionId ? examLinks({ mission: missionId }, profileRef.current) : [];
+      if (links.length && !box.querySelector(".ad-close__exam")) {
+        const exam = document.createElement("p");
+        exam.className = "ad-close__exam";
+        exam.textContent = `Exam practice: ${links.join(", ")}`;
+        box.appendChild(exam);
+      }
       flipGuess(wrap, animate);
     };
 
@@ -833,10 +896,13 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     return <AcademySignIn configured={Boolean(supabase)} />;
   }
 
+  const asking = profile === null || editingGoals;
+
   return (
     <AcademyProgressProvider phases={phases}>
       <AcademyAccountProvider student={student}>
-      <CoachProvider>
+      <AcademyGoalsProvider value={{ profile: profile ?? null, editGoals: () => setEditingGoals(true) }}>
+      <CoachProvider profile={profile ?? null}>
       <div className="academy-bg min-h-dvh" data-academy-theme={theme}>
         <header
           className={`sticky top-0 z-40 overflow-visible border-b bg-white transition-shadow ${
@@ -845,7 +911,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         >
           <div className="flex items-center justify-between px-4 py-4 sm:px-6">
             <div className="flex items-center gap-3">
-              {showSidebar && (
+              {showSidebar && !asking && (
                 <button
                   type="button"
                   onClick={() => setSidebarOpen(true)}
@@ -888,6 +954,20 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           </div>
         </header>
 
+        {profile === undefined ? (
+          <div className="flex min-h-[60vh] items-center justify-center">
+            <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+          </div>
+        ) : asking ? (
+          <main className="px-4 py-8 sm:px-6 sm:py-12">
+            <AcademyIntake
+              key={editingGoals ? "edit" : "first"}
+              initial={profile}
+              onSaved={goalsSaved}
+              onCancel={profile ? () => setEditingGoals(false) : undefined}
+            />
+          </main>
+        ) : (
         <div className="mx-auto flex max-w-7xl">
           {/* Desktop sidebar -- always mounted, width-animated to 0 rather
               than conditionally rendered, so going from the home page (no
@@ -921,6 +1001,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
             </div>
           </main>
         </div>
+        )}
         {/* Mobile drawer */}
         {showSidebar && sidebarOpen && (
           <div className="ax-drawer fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Course menu">
@@ -943,10 +1024,11 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
             </div>
           </div>
         )}
-        <PurvexCoach />
+        {!asking && profile !== undefined && <PurvexCoach />}
         {hello && <AcademyWelcome student={student} onDone={() => setHello(false)} />}
       </div>
       </CoachProvider>
+      </AcademyGoalsProvider>
       </AcademyAccountProvider>
     </AcademyProgressProvider>
   );

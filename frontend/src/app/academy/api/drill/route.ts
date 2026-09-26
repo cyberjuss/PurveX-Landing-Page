@@ -27,10 +27,11 @@ import {
 } from "@/lib/academy-drills";
 import { formatLabAge } from "@/lib/academy-lab";
 import { auditLab } from "@/lib/academy-audit";
+import { CERTS, examFocus, examLinks, jobsForDomain, type StudentProfile } from "@/lib/academy-certs";
 import { createRealCtf } from "@/lib/academy-live";
 import { generateCtf, generateDaily, responseGrader } from "@/lib/academy-scenario";
-import { summarize } from "@/lib/academy-score";
-import { loadDailyDrill, loadDrills, loadLabLive, loadLabState, loadProgress, saveDailyDrill, saveDrill, touchLabLive } from "@/lib/academy-store";
+import { summarize, type Results } from "@/lib/academy-score";
+import { loadDailyDrill, loadDrills, loadLabLive, loadLabState, loadProfile, loadProgress, saveDailyDrill, saveDrill, touchLabLive } from "@/lib/academy-store";
 import { LIVE_MINUTES, isVerified } from "@/lib/academy-verify";
 import { getAcademyStudent } from "@/lib/academy-student";
 
@@ -66,8 +67,23 @@ function ctfOf(entries: DrillEntry[], day: string) {
   return entries.find((e) => e.mode === "ctf" && e.id === `ctf-${weekStart(day)}`) ?? null;
 }
 
+/** The exam area the student's practice should lean on, and the job tasks that practice it. */
+function examAim(profile: StudentProfile | null, results: Results, entries: DrillEntry[]) {
+  const focus = examFocus(profile, results, entries.flatMap((e) => e.detail ?? []));
+  return {
+    focus: focus ? { label: `${CERTS[focus.cert].label} ${focus.name}`, topics: focus.topics } : null,
+    prefer: focus ? new Set(jobsForDomain(focus.id)) : null,
+  };
+}
+
 async function status(userId: string, day: string) {
-  const [entries, labState, results, labLive] = await Promise.all([loadDrills(userId), loadLabState(userId), loadProgress(userId), loadLabLive(userId)]);
+  const [entries, labState, results, labLive, profile] = await Promise.all([
+    loadDrills(userId),
+    loadLabState(userId),
+    loadProgress(userId),
+    loadLabLive(userId),
+    loadProfile(userId),
+  ]);
   const lab = labInfo(labState, isVerified(labLive.verifiedAt));
   const gap = summarize(results).focus[0];
   const level = levelFor(entries);
@@ -86,7 +102,7 @@ async function status(userId: string, day: string) {
     chats: { base: COACH_DAILY_LIMIT, ...chats, bonus: effectiveCoachBonus(chats.bonus) },
     incidentUntil: incidentHold(entries)?.until ?? null,
     jobs: jobProgress(entries, results, labState?.snapshot),
-    nextJob: pickTargetJob(entries, `${userId}:${day}`, labJobs, results, labState?.snapshot)?.id ?? null,
+    nextJob: pickTargetJob(entries, `${userId}:${day}`, labJobs, results, labState?.snapshot, examAim(profile, results, entries).prefer)?.id ?? null,
     findings: findings.slice(0, 12).map((f) => ({ id: f.id, severity: f.severity, title: f.title, facts: f.facts, fixable: Boolean(f.task), job: f.job })),
   };
 }
@@ -110,8 +126,11 @@ function tokenExpired(entry: { mode: string; day: string }) {
   return false;
 }
 
-async function record(userId: string, graded: NonNullable<Awaited<ReturnType<typeof gradeDrill>>>, day: string) {
-  if (tokenExpired(graded.entry)) return null;
+async function record(userId: string, gradedRaw: NonNullable<Awaited<ReturnType<typeof gradeDrill>>>, day: string) {
+  if (tokenExpired(gradedRaw.entry)) return null;
+  // Which exam areas each question practiced, shown on the result only.
+  const profile = await loadProfile(userId);
+  const graded = { ...gradedRaw, review: gradedRaw.review.map(({ job, ...r }) => ({ ...r, exam: examLinks({ job, skill: r.skill }, profile) })) };
   let entry = graded.entry;
   if (entry.mode === "daily" || entry.mode === "ctf") {
     const entries = await loadDrills(userId);
@@ -215,10 +234,13 @@ export async function POST(request: Request) {
       if (real) return NextResponse.json(real);
     }
 
-    const [snapshot, results] = await Promise.all([
+    const [snapshot, results, profile] = await Promise.all([
       loadLabState(userId).then((l) => l?.snapshot ?? null),
       loadProgress(userId),
+      loadProfile(userId),
     ]);
+    // Aim at the least practiced exam area of the cert they are working toward, through a hands-on case.
+    const aim = examAim(profile, results, entries);
     const level = levelFor(entries);
     const recent = recentPrompts(entries);
 
@@ -227,10 +249,10 @@ export async function POST(request: Request) {
       // Aim at the on-the-job task they have shown the least, so the daily drill covers what the job needs.
       const fixable = snapshot ? auditLab(snapshot).filter((f) => f.task) : [];
       const labJobs = snapshot ? new Set(fixable.map((f) => f.job)) : null;
-      const target = pickTargetJob(entries, `${userId}:${day}`, labJobs, results, snapshot);
+      const target = pickTargetJob(entries, `${userId}:${day}`, labJobs, results, snapshot, aim.prefer);
       const format = swap ? "respond" : pickFormat(`${userId}:${day}`, level, fixable.length > 0, Boolean(target?.lab));
       const targetJob = target ? { id: target.id, label: target.label } : null;
-      item = await generateDaily({ apiKey, userId, day, snapshot, results, level, recent, format, targetJob }).catch(() => null);
+      item = await generateDaily({ apiKey, userId, day, snapshot, results, level, recent, format, targetJob, examFocus: aim.focus }).catch(() => null);
     } else if (apiKey && mode === "ctf") {
       item = await generateCtf({ apiKey, userId, week: keyDay, snapshot, results, level, recent }).catch((err) => {
         console.error("ctf: writer failed", err);

@@ -60,7 +60,7 @@ type DrillEntry = { id: string; day: string; mode: string; correct: number; tota
 type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[]; free?: boolean; format?: string; kind?: "decide" | "respond" | "change"; long?: boolean; checklist?: string[]; checkCount?: number; setup?: { note: string; script: string }; job?: string; gated?: boolean };
 type TaskInfo = { setup?: { note: string; script: string }; checklist?: string[]; checkCount?: number };
 type CheckRes = { needsSetup?: boolean; fresh: boolean; results: { label: string; ok: boolean }[]; syncedAgo: string | null; passed: boolean };
-type Review = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string; runbook?: string[] };
+type Review = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string; runbook?: string[]; exam?: string[] };
 type Run = { mode: Mode; token: string; items: Item[]; limit: number; ai: boolean; startedAt: number };
 type Result = { entry: DrillEntry; review: Review[]; late: boolean; counted: boolean; items: Item[] } & DrillStatus;
 
@@ -844,6 +844,7 @@ export function DrillRunner() {
                   : <b>{/flag/i.test(items[i]?.format ?? "") ? `gtf{${r.answer}}` : r.answer}</b>
                 </p>
                 <p>{r.explain}</p>
+                {r.exam && r.exam.length > 0 && <p className="dr-review__exam">Exam practice: {r.exam.join(", ")}</p>}
                 {r.runbook && r.runbook.length > 0 && (
                   <div className="dr-term dr-term--small">
                     <div className="dr-term__bar">

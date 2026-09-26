@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import type { StudentProfile } from "@/lib/academy-certs";
 import { academyFetch, localDay, RESULTS_CHANGED_EVENT, RESULTS_UPDATED_EVENT } from "@/lib/academy-client";
 import { DEFAULT_COACH_MODE, modeFromReport, type CoachMode } from "@/lib/academy-coach-mode";
 import { COACH_SHOT_ASK, type CoachImage } from "@/lib/academy-coach-media";
@@ -37,7 +38,8 @@ export function useCoach() {
   return ctx;
 }
 
-export function CoachProvider({ children }: { children: React.ReactNode }) {
+// profile: the intake answers. Sent along only as a fallback for the saved copy.
+export function CoachProvider({ children, profile = null }: { children: React.ReactNode; profile?: StudentProfile | null }) {
   const [messages, setMessages] = useState<CoachMessage[]>([]);
   const [busy, setBusy] = useState(false);
   const [enabled, setEnabled] = useState(true);
@@ -110,7 +112,7 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
         const res = await academyFetch("/academy/api/coach", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: question, images: shots, history, results: loadResults(), mode, day: localDay() }),
+          body: JSON.stringify({ message: question, images: shots, history, results: loadResults(), profile, mode, day: localDay() }),
           signal: AbortSignal.timeout(58_000),
         });
         const data = await res.json();
@@ -129,7 +131,7 @@ export function CoachProvider({ children }: { children: React.ReactNode }) {
         setBusy(false);
       }
     },
-    [remaining, limit, mode]
+    [remaining, limit, mode, profile]
   );
 
   const ask = useCallback(

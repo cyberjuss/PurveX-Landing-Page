@@ -215,6 +215,14 @@ const BASE_RULES = `- Use the real names, groups, departments and computers from
 
 export type TargetJob = { id: string; label: string } | null;
 
+/** The exam area today's case should practice. The case never names it. */
+export type ExamFocus = { label: string; topics: string[] } | null;
+
+function examBlock(focus: ExamFocus | undefined) {
+  if (!focus) return "";
+  return `\n\nThe trainee is preparing for ${focus.label} (${focus.topics.join("; ")}). Build the situation so the right call depends on understanding that area, as it shows up on the job. Never mention an exam, a certification, CompTIA or an objective anywhere in what you write.`;
+}
+
 const jobList = () => JOBS.map((j) => `${j.id}: ${j.label}`).join("; ");
 
 /** Steers a written scenario toward the on-the-job task the student has not shown yet. */
@@ -232,6 +240,7 @@ export async function generateScenario(params: {
   level: number;
   recent: Recent[];
   targetJob?: TargetJob;
+  examFocus?: ExamFocus;
 }): Promise<Item | null> {
   const seed = `${params.userId}:${params.day}`;
   const skill = params.targetJob ? (JOBS.find((j) => j.id === params.targetJob!.id)?.skill ?? pickSkill(seed, params.results)) : pickSkill(seed, params.results);
@@ -256,7 +265,7 @@ ${BASE_RULES}
 Return only JSON, no other text:
 {"title": "3 to 5 words", "skill": "accounts|directory|troubleshooting|security", "job": "one job id", "story": "...", "evidence": ["..."], "question": "...", "choices": ["...","...","...","..."], "answerIndex": 0, "explain": "two or three sentences: why the answer is right and what the trap was"}`;
 
-  const user = `Lab facts:\n${labFacts(lab)}\n\nTrainee skill scores: ${scores}.\nTrainee level: ${level} (${LEVEL_NAMES[level - 1]}).\nToday's focus skill: ${SKILLS[skill].label}.\nScenario theme: ${theme}.${jobBlock(params.targetJob ?? null)}${avoidBlock(params.recent)}`;
+  const user = `Lab facts:\n${labFacts(lab)}\n\nTrainee skill scores: ${scores}.\nTrainee level: ${level} (${LEVEL_NAMES[level - 1]}).\nToday's focus skill: ${SKILLS[skill].label}.\nScenario theme: ${theme}.${jobBlock(params.targetJob ?? null)}${examBlock(params.examFocus)}${avoidBlock(params.recent)}`;
 
   // One retry if the first draft reads like something they already had.
   const began = Date.now();
@@ -356,6 +365,7 @@ export async function generateRespond(params: {
   level: number;
   recent: Recent[];
   targetJob?: TargetJob;
+  examFocus?: ExamFocus;
 }): Promise<Item | null> {
   const seed = `${params.userId}:${params.day}`;
   const skill = params.targetJob ? (JOBS.find((j) => j.id === params.targetJob!.id)?.skill ?? pickSkill(seed, params.results)) : pickSkill(seed, params.results);
@@ -378,7 +388,7 @@ ${BASE_RULES}
 Return only JSON, no other text:
 {"title": "3 to 5 words", "skill": "accounts|directory|troubleshooting|security", "job": "one job id", "story": "...", "evidence": ["..."], "question": "...", "rubric": ["...","...","...","..."], "modelAnswer": "a strong answer in two to four sentences", "explain": "two or three sentences on the tradeoff and the common mistake"}`;
 
-  const user = `Lab facts:\n${labFacts(lab)}\n\nTrainee skill scores: ${scores}.\nTrainee level: ${level} (${LEVEL_NAMES[level - 1]}).\nFocus skill: ${SKILLS[skill].label}.\nCase theme: ${theme}.${jobBlock(params.targetJob ?? null)}${avoidBlock(params.recent)}`;
+  const user = `Lab facts:\n${labFacts(lab)}\n\nTrainee skill scores: ${scores}.\nTrainee level: ${level} (${LEVEL_NAMES[level - 1]}).\nFocus skill: ${SKILLS[skill].label}.\nCase theme: ${theme}.${jobBlock(params.targetJob ?? null)}${examBlock(params.examFocus)}${avoidBlock(params.recent)}`;
   const raw = await ask(params.apiKey, system, user, 2400, 28_000);
   return raw ? parseRespond(raw, skill, theme) : null;
 }
@@ -469,6 +479,7 @@ export async function generateDaily(params: {
   level: number;
   recent: Recent[];
   targetJob?: TargetJob;
+  examFocus?: ExamFocus;
   format: "decide" | "respond" | "change";
 }): Promise<Item | null> {
   const { format, ...rest } = params;

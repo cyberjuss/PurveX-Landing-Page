@@ -1,10 +1,12 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { COACH_DAILY_LIMIT, effectiveCoachBonus, runCoachTurn } from "@/lib/academy-coach";
 import { modeFromReport, parseCoachMode } from "@/lib/academy-coach-mode";
 import { COACH_SHOT_ASK, sanitizeCoachImages } from "@/lib/academy-coach-media";
+import { sanitizeProfile } from "@/lib/academy-certs";
+import { ensureRoleBrief } from "@/lib/academy-role-research";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
-import { bumpUsage, loadDrills, loadLabState, loadProgress, readUsage, resetUsage } from "@/lib/academy-store";
+import { bumpUsage, loadDrills, loadLabState, loadProfile, loadProgress, readUsage, resetUsage } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { cleanDay, coachBonus } from "@/lib/academy-drills";
 
@@ -70,6 +72,7 @@ export async function POST(request: Request) {
     history?: unknown;
     results?: unknown;
     images?: unknown;
+    profile?: unknown;
     mode?: unknown;
     day?: unknown;
   };
@@ -100,6 +103,11 @@ export async function POST(request: Request) {
   const saved = await loadProgress(student.id);
   const results: Results = Object.keys(saved).length > 0 ? saved : sanitizeResults(body.results);
 
+  // Same for the intake answers: the saved copy wins.
+  const profile = (await loadProfile(student.id)) ?? sanitizeProfile(body.profile);
+  // A role whose research failed or went stale is looked up again, after this reply.
+  if (profile) after(() => Promise.all(profile.roles.map((role) => ensureRoleBrief(apiKey, role))).then(() => undefined));
+
   const used = await readUsage(student.id, day);
   const { drills, bonus, limit } = await allowance(student.id, day);
   if (used >= limit) {
@@ -117,7 +125,7 @@ export async function POST(request: Request) {
       images,
       mode: body.mode != null ? parseCoachMode(body.mode) : modeFromReport(results),
       drills,
-      tools: { results, userId: student.id, loadLabState: async () => (await loadLabState(student.id))?.snapshot ?? null },
+      tools: { results, userId: student.id, profile, loadLabState: async () => (await loadLabState(student.id))?.snapshot ?? null },
     });
     const remaining = Math.max(0, Math.min(limit, limit - (await bumpUsage(student.id, used, day))));
     return NextResponse.json({ reply: text, remaining, limit, model, bonus });

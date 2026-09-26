@@ -99,7 +99,19 @@ export type DrillEntry = {
   detail: DrillDetail[];
 };
 
-export type DrillReview = { title: string; skill: Skill; picked: string | null; answer: string; correct: boolean; explain: string; runbook?: string[] };
+export type DrillReview = {
+  title: string;
+  skill: Skill;
+  picked: string | null;
+  answer: string;
+  correct: boolean;
+  explain: string;
+  runbook?: string[];
+  /** The job task this question practiced, for the exam link on the result. */
+  job?: string;
+  /** Exam areas this question practiced. Added by the route from the student's goals. */
+  exam?: string[];
+};
 
 type Payload = { id: string; u: string; mode: DrillMode; day: string; iat: number; limit: number; source: "lab" | "standard"; ai: boolean; level: number; t0?: number; items: Item[] };
 
@@ -671,7 +683,16 @@ export async function gradeDrill(
       picked = raw !== null && item.choices.includes(raw) ? raw : null;
       right = picked === item.answer;
     }
-    review.push({ title: item.title, skill: item.skill, picked, answer, correct: !late && right, explain, runbook: item.kind === "change" || item.gate ? item.task?.runbook : undefined });
+    review.push({
+      title: item.title,
+      skill: item.skill,
+      picked,
+      answer,
+      correct: !late && right,
+      explain,
+      runbook: item.kind === "change" || item.gate ? item.task?.runbook : undefined,
+      job: isJob(item.job) ? item.job : undefined,
+    });
   }
   const entry: DrillEntry = {
     id: p.id,
@@ -875,9 +896,19 @@ export function jobProgress(entries: DrillEntry[], results?: Results, snapshot?:
 }
 
 /** The job to work on next: never-tried first, then half-done, then the one not seen for longest. */
-export function pickTargetJob(entries: DrillEntry[], seed: string, labJobs: Set<string> | null, results?: Results, snapshot?: LabSnapshot | null): JobRow | null {
+export function pickTargetJob(
+  entries: DrillEntry[],
+  seed: string,
+  labJobs: Set<string> | null,
+  results?: Results,
+  snapshot?: LabSnapshot | null,
+  /** Jobs that practice the student's exam focus area. Used first while any are not proven yet. */
+  prefer?: Set<string> | null
+): JobRow | null {
   // A hands-on job is only offered when the student's real lab has something to do for it.
-  const rows = jobProgress(entries, results, snapshot).filter((j) => (j.lab ? Boolean(labJobs?.has(j.id)) : true));
+  const open = jobProgress(entries, results, snapshot).filter((j) => (j.lab ? Boolean(labJobs?.has(j.id)) : true));
+  const aimed = prefer ? open.filter((j) => prefer.has(j.id) && j.status !== "proven") : [];
+  const rows = aimed.length ? aimed : open;
   if (!rows.length) return null;
   const rank = { new: 0, practiced: 1, proven: 2 } as const;
   const best = Math.min(...rows.map((j) => rank[j.status]));

@@ -1,5 +1,6 @@
 import "server-only";
 import { createHash, randomBytes } from "crypto";
+import { sanitizeProfile, type RoleBrief, type RoleId, type StudentProfile } from "@/lib/academy-certs";
 import type { DrillEntry } from "@/lib/academy-drills";
 import { sanitizeLabSnapshot, type LabSnapshot } from "@/lib/academy-lab";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
@@ -13,6 +14,8 @@ const memoryKeys = new Map<string, { userId: string; createdAt: string; lastUsed
 const memoryDaily = new Map<string, string>();
 const memoryDrills = new Map<string, DrillEntry[]>();
 const memoryLab = new Map<string, { snapshot: LabSnapshot; uploadedAt: string }>();
+const memoryProfiles = new Map<string, StudentProfile>();
+const memoryRoleBriefs = new Map<string, RoleBrief>();
 
 function todayStamp() {
   return new Date().toISOString().slice(0, 10);
@@ -303,4 +306,63 @@ export async function saveDailyDrill(userId: string, day: string, token: string,
     .from("academy_drill_daily")
     .upsert({ user_id: userId, day, kind, token }, { onConflict: "user_id,day,kind", ignoreDuplicates: !overwrite });
   if (error) console.error("academy_drill_daily upsert failed", error.message);
+}
+
+// The student's goals from the intake: certifications, target roles, and
+// where they are starting from.
+export async function loadProfile(userId: string): Promise<StudentProfile | null> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin
+      .from("academy_profiles")
+      .select("certs, other_certs, roles, start_level, background, updated_at")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (!error && data) {
+      return sanitizeProfile({
+        certs: data.certs,
+        otherCerts: data.other_certs,
+        roles: data.roles,
+        start: data.start_level,
+        background: data.background,
+        updatedAt: data.updated_at,
+      });
+    }
+    if (error) console.error("academy_profiles read failed", error.message);
+  }
+  return memoryProfiles.get(userId) ?? null;
+}
+
+export async function saveProfile(userId: string, profile: StudentProfile): Promise<boolean> {
+  memoryProfiles.set(userId, profile);
+  if (!supabaseAdmin) return true;
+  const { error } = await supabaseAdmin.from("academy_profiles").upsert({
+    user_id: userId,
+    certs: profile.certs,
+    other_certs: profile.otherCerts,
+    roles: profile.roles,
+    start_level: profile.start,
+    background: profile.background,
+    updated_at: profile.updatedAt,
+  });
+  if (error) console.error("academy_profiles upsert failed", error.message);
+  return !error;
+}
+
+// One researched summary per target role, shared by every student.
+export async function loadRoleBrief(role: RoleId): Promise<RoleBrief | null> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin.from("academy_role_briefs").select("brief").eq("role", role).maybeSingle();
+    if (!error && data?.brief) return data.brief as RoleBrief;
+    if (error) console.error("academy_role_briefs read failed", error.message);
+  }
+  return memoryRoleBriefs.get(role) ?? null;
+}
+
+export async function saveRoleBrief(brief: RoleBrief) {
+  memoryRoleBriefs.set(brief.role, brief);
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin
+    .from("academy_role_briefs")
+    .upsert({ role: brief.role, brief, researched_at: brief.researchedAt });
+  if (error) console.error("academy_role_briefs upsert failed", error.message);
 }

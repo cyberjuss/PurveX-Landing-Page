@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useSyncExternalStore } from "react";
+import { sanitizeProfile, type StudentProfile } from "@/lib/academy-certs";
 import { RESULTS_STORAGE_KEY, type Results } from "@/lib/academy-score";
 import { supabase } from "@/lib/supabase";
 
@@ -50,6 +51,25 @@ export async function academyFetch(path: string, init: RequestInit = {}) {
   const headers = new Headers(init.headers);
   if (token) headers.set("Authorization", `Bearer ${token}`);
   return fetch(path, { ...init, headers, credentials: "same-origin" });
+}
+
+// A copy of the student's intake answers, so a slow or failing server never
+// sends someone who already answered back through the questions.
+const profileKey = (studentId: string) => `academy-profile:${studentId}`;
+
+export function loadCachedProfile(studentId: string): StudentProfile | null {
+  try {
+    const raw = window.localStorage.getItem(profileKey(studentId));
+    return raw ? sanitizeProfile(JSON.parse(raw)) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveCachedProfile(studentId: string, profile: StudentProfile) {
+  try {
+    window.localStorage.setItem(profileKey(studentId), JSON.stringify(profile));
+  } catch {}
 }
 
 export const LINKED_SCRIPT_PATH = "/lab-scripts/Build-Environment.ps1";
