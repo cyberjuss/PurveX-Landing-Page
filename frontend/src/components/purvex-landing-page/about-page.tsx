@@ -214,14 +214,14 @@ const AB_CSS = `
 .ab-hero__grid i[data-c="m"] { animation: ab-gap .5s cubic-bezier(.16,1,.3,1) both; animation-delay: calc(var(--n) * 28ms + .6s) }
 @keyframes ab-fill { from { background: #fff } to { background: rgba(106,92,255,.55); border-color: transparent } }
 @keyframes ab-gap { from { background: #fff } to { background: rgba(248,113,113,.4); border-color: transparent } }
-.ab-hero__copy { position: relative; z-index: 1; max-width: 760px }
+.ab-hero__copy { position: relative; z-index: 1; max-width: 680px }
 .ab-hero h1 {
   margin: 20px 0 0; font-family: var(--font-display); font-weight: 500;
-  font-size: clamp(2.6rem, 6vw, 5rem); line-height: 1.02; letter-spacing: -.05em; color: var(--ink); text-wrap: balance;
+  font-size: clamp(2.1rem, 4vw, 3.4rem); line-height: 1.08; letter-spacing: -.04em; color: var(--ink); text-wrap: balance;
 }
 .ab-hero s { position: relative; display: inline-block; white-space: nowrap; text-decoration: none; color: var(--muted) }
 .ab-hero s::after {
-  content: ""; position: absolute; left: -2%; right: -2%; top: 55%; height: .09em; background: var(--accent);
+  content: ""; position: absolute; left: 0; right: 0; top: 55%; height: .08em; background: var(--accent);
   transform: scaleX(0); transform-origin: left; animation: ab-strike .7s .5s cubic-bezier(.16,1,.3,1) forwards;
 }
 @keyframes ab-strike { to { transform: scaleX(1) } }
