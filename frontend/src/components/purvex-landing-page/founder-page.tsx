@@ -29,7 +29,7 @@ const story = [
   },
   {
     title: "Why PurveX exists",
-    body: "I kept running into the same gap. Smaller security teams need stronger coverage and do not have the headcount to build and maintain it by hand. AI agents can close that gap when they are paired with someone who understands what is happening underneath them, because no team should need to be enterprise-sized to be secure.",
+    body: "I kept running into two gaps. Smaller security teams need stronger coverage and do not have the headcount to build and maintain it by hand. And new analysts finish their training knowing the terms but not the work, because they never practiced on a real network. PurveX takes on both. AI agents can close the coverage gap when they are paired with someone who understands what is happening underneath, and hands-on training builds the analysts who will be that someone. No team should need to be enterprise-sized to be secure.",
   },
 ];
 
