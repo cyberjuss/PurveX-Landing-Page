@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight, Check, ClipboardList, Flame, Timer, X } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, ClipboardList, Flame, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch, localDay, READINESS_PATH } from "@/lib/academy-client";
 import { SKILLS, type Skill } from "@/lib/academy-score";
@@ -250,6 +250,7 @@ function Scenario({
 
 function LabFindings({ items }: { items: Finding[] }) {
   const tone = { high: "Serious", medium: "Worth fixing", low: "Minor" } as const;
+  const [open, setOpen] = useState(false);
   return (
     <li>
       <div className="ax-path__row">
@@ -263,22 +264,42 @@ function LabFindings({ items }: { items: Finding[] }) {
           </span>
         </span>
         <span className="ax-path__count">
-          <Link href={READINESS_PATH} className="rd-cta">
-            Open report <ArrowRight className="h-4 w-4" />
-          </Link>
+          {items.length === 0 ? (
+            <Link href={READINESS_PATH} className="rd-cta">
+              Open report <ArrowRight className="h-4 w-4" />
+            </Link>
+          ) : (
+            <button
+              type="button"
+              className={`rd-cta dr-findings__toggle${open ? " is-open" : ""}`}
+              aria-expanded={open}
+              aria-controls="dr-findings"
+              onClick={() => setOpen((o) => !o)}
+            >
+              {open ? "Hide findings" : `Show ${items.length} finding${items.length === 1 ? "" : "s"}`}
+              <ChevronDown className="h-4 w-4" />
+            </button>
+          )}
         </span>
       </div>
       {items.length > 0 && (
-        <ul className="dr-findings__list">
-          {items.map((f) => (
-            <li key={f.id} className={`is-${f.severity}`}>
-              <span className="dr-findings__tag">{tone[f.severity]}</span>
-              <strong>{f.title}</strong>
-              <p>{f.facts}</p>
-              {!f.fixable && <em>Needs a decision, not a setting.</em>}
-            </li>
-          ))}
-        </ul>
+        <div id="dr-findings" className={`dr-findings__drop${open ? " is-open" : ""}`} inert={!open}>
+          <div>
+            <ul className="dr-findings__list">
+              {items.map((f) => (
+                <li key={f.id} className={`is-${f.severity}`}>
+                  <span className="dr-findings__tag">{tone[f.severity]}</span>
+                  <strong>{f.title}</strong>
+                  <p>{f.facts}</p>
+                  {!f.fixable && <em>Needs a decision, not a setting.</em>}
+                </li>
+              ))}
+            </ul>
+            <Link href={READINESS_PATH} className="dr-findings__report">
+              Open full report <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
       )}
     </li>
   );
