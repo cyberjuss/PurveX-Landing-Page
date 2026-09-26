@@ -3303,6 +3303,32 @@ body:has(.lp) {
   display: block; width: auto; max-width: 100%; max-height: 310px; margin: 0; object-fit: contain;
   border: 1px solid var(--pvrx-border-light); border-radius: 8px; background: #f6f7fb;
 }
+.academy-prose .ad-shot { position: relative; }
+.academy-prose .ad-shot img, .academy-prose .ad-trouble__img { cursor: zoom-in; transition: border-color 0.2s, filter 0.2s; }
+.academy-prose .ad-shot img:hover { border-color: rgba(85,70,224,0.45); filter: brightness(1.02); }
+.academy-prose .ad-shot img:focus-visible, .academy-prose .ad-trouble__img:focus-visible { outline: 2px solid #5546e0; outline-offset: 2px; }
+/* Expand badge in the corner so the click is discoverable. */
+.academy-prose .ad-shot::after {
+  content: ""; position: absolute; top: 14px; right: 14px; width: 26px; height: 26px; pointer-events: none;
+  border-radius: 7px; background: rgba(16,25,46,0.62) no-repeat center / 14px
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7'/%3E%3C/svg%3E");
+  opacity: 0.75; transition: opacity 0.2s;
+}
+.academy-prose .ad-shot:hover::after { opacity: 1; }
+
+/* Full-size screenshot viewer (opened from academy-shell.tsx). */
+.ad-zoom { max-width: 94vw; max-height: 94vh; padding: 0; border: 0; background: transparent; overflow: visible; cursor: zoom-out; }
+.ad-zoom::backdrop { background: rgba(10,14,30,0.8); backdrop-filter: blur(3px); }
+.ad-zoom img { display: block; max-width: 94vw; max-height: 84vh; margin: 0 auto; border-radius: 10px; background: #fff; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6); }
+.ad-zoom__cap { max-width: 70ch; margin: 0.75rem auto 0; font-size: 0.9rem; line-height: 1.5; color: #e7e9f3; text-align: center; }
+.ad-zoom__close {
+  position: absolute; top: -14px; right: -14px; display: grid; place-items: center; width: 34px; height: 34px;
+  border: 0; border-radius: 50%; background: #fff; color: #10192e; font-size: 1.3rem; line-height: 1; cursor: pointer;
+  box-shadow: 0 6px 18px -6px rgba(0,0,0,0.5);
+}
+.ad-zoom__close:focus-visible { outline: 2px solid #5546e0; outline-offset: 2px; }
+@media (max-width: 640px) { .ad-zoom__close { top: 6px; right: 6px; } }
+
 /* width 0 + min-width 100% lets the image, not the caption, set the card width. */
 .academy-prose .ad-shot figcaption { width: 0; min-width: 100%; box-sizing: border-box; margin: 0; padding: 0.45rem 0.25rem 0.05rem; font-size: 0.8rem; line-height: 1.45; color: var(--pvrx-text-secondary-light); }
 

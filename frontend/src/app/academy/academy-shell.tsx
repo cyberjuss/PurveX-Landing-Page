@@ -598,8 +598,54 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       }, 1500);
     };
 
+    // Screenshots open full size in a modal dialog. The dialog handles
+    // Escape and focus on its own; any click inside it closes it.
+    const ZOOM_IMG = ".academy-prose .ad-shot img, .academy-prose .ad-trouble__img";
+
+    const wireZoom = (root: Element) => {
+      root.querySelectorAll<HTMLImageElement>(".ad-shot img, .ad-trouble__img").forEach((img) => {
+        if (img.dataset.zoom) return;
+        img.dataset.zoom = "1";
+        img.tabIndex = 0;
+        img.setAttribute("role", "button");
+        img.setAttribute("aria-label", `Expand screenshot: ${img.alt}`);
+      });
+    };
+
+    const openZoom = (img: HTMLImageElement) => {
+      const dialog = document.createElement("dialog");
+      dialog.className = "ad-zoom";
+      dialog.setAttribute("aria-label", img.alt || "Screenshot");
+      const close = document.createElement("button");
+      close.type = "button";
+      close.className = "ad-zoom__close";
+      close.setAttribute("aria-label", "Close");
+      close.textContent = "×";
+      const big = document.createElement("img");
+      big.src = img.currentSrc || img.src;
+      big.alt = img.alt;
+      dialog.append(close, big);
+      const caption = img.closest("figure")?.querySelector("figcaption")?.textContent;
+      if (caption) {
+        const cap = document.createElement("p");
+        cap.className = "ad-zoom__cap";
+        cap.textContent = caption;
+        dialog.append(cap);
+      }
+      dialog.addEventListener("click", () => dialog.close());
+      dialog.addEventListener("close", () => {
+        dialog.remove();
+        img.focus();
+      });
+      document.body.append(dialog);
+      dialog.showModal();
+    };
+
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
+      if (target.closest(".ad-zoom")) return;
+      const shot = target.closest<HTMLImageElement>(ZOOM_IMG);
+      if (shot) return openZoom(shot);
       const scriptLink = target.closest<HTMLAnchorElement>("a[href]");
       if (scriptLink && new URL(scriptLink.href).pathname === LINKED_SCRIPT_PATH) {
         e.preventDefault();
@@ -647,6 +693,11 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     // it's caught by the same delegated onClick above.
     const onKeydown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
+      if ((e.key === "Enter" || e.key === " ") && target.matches(ZOOM_IMG)) {
+        e.preventDefault();
+        openZoom(target as HTMLImageElement);
+        return;
+      }
       if (e.key === "Escape" && openHintId) {
         e.preventDefault();
         closeHintCard();
@@ -661,7 +712,10 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     const sync = () => {
       frame = 0;
       document.querySelectorAll<HTMLElement>(".ad-mission[data-id]:not([data-restored])").forEach(restoreMission);
-      document.querySelectorAll(".academy-prose").forEach(wireCommandCopy);
+      document.querySelectorAll(".academy-prose").forEach((root) => {
+        wireCommandCopy(root);
+        wireZoom(root);
+      });
       if (openHintId) {
         const live = missionById(openHintId);
         if (live) labelHintButton(live, true);
@@ -694,6 +748,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       document.removeEventListener("keydown", onKeydown);
       window.removeEventListener(RESULTS_CHANGED_EVENT, onResultsChanged);
       document.querySelector(".ad-hint-card")?.remove();
+      document.querySelector(".ad-zoom")?.remove();
     };
   }, []);
 
