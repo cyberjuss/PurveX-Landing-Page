@@ -1,0 +1,82 @@
+/* Academy screenshots: framed cards, same-step galleries, and the
+   full-size viewer. Kept out of globals.css so a change here always ships
+   as a new CSS file instead of reusing a cached one. */
+
+/* Screenshots: a framed card sized to the image, capped so wide captures
+   do not fill the column and small dialogs are never upscaled. */
+.academy-prose .ad-shot {
+  width: fit-content; max-width: min(100%, 500px); margin: 0.9rem 0 1.2rem; padding: 6px;
+  background: #fff; border: 1px solid var(--pvrx-border-light); border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(16,25,46,0.04), 0 12px 28px -18px rgba(16,25,46,0.28);
+}
+.academy-prose .ad-shot img {
+  display: block; width: auto; max-width: 100%; max-height: 310px; margin: 0; object-fit: contain;
+  border: 1px solid var(--pvrx-border-light); border-radius: 8px; background: #f6f7fb;
+}
+.academy-prose .ad-shot { position: relative; }
+.academy-prose .ad-shot img, .academy-prose .ad-trouble__img { cursor: zoom-in; transition: border-color 0.2s, filter 0.2s; }
+.academy-prose .ad-shot img:hover { border-color: rgba(85,70,224,0.45); filter: brightness(1.02); }
+.academy-prose .ad-shot img:focus-visible, .academy-prose .ad-trouble__img:focus-visible { outline: 2px solid #5546e0; outline-offset: 2px; }
+/* Expand badge in the corner so the click is discoverable. */
+.academy-prose .ad-shot::after {
+  content: ""; position: absolute; top: 14px; right: 14px; width: 26px; height: 26px; pointer-events: none;
+  border-radius: 7px; background: rgba(16,25,46,0.62) no-repeat center / 14px
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7'/%3E%3C/svg%3E");
+  opacity: 0.75; transition: opacity 0.2s;
+}
+.academy-prose .ad-shot:hover::after { opacity: 1; }
+
+/* Screenshots from one step: side by side, swipeable when they overflow.
+   The 14px gap is mirrored in academy-shell.tsx for the arrow buttons. */
+.academy-prose .ad-shots {
+  display: flex; gap: 14px; margin: 0.9rem 0 0.3rem; padding: 2px 2px 10px;
+  overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: thin;
+}
+.academy-prose .ad-shots > .ad-shot {
+  flex: 0 0 auto; width: min(300px, 82%); max-width: none; margin: 0; scroll-snap-align: start;
+}
+.academy-prose .ad-shots .ad-shot img { width: 100%; height: 190px; max-height: none; }
+.academy-prose .ad-shots__nav { display: flex; align-items: center; gap: 10px; margin: 0 0 1.2rem; }
+.academy-prose .ad-shots__nav[hidden] { display: none; }
+.academy-prose .ad-shots__btn {
+  display: grid; place-items: center; width: 30px; height: 30px; padding: 0 0 2px; border-radius: 50%;
+  border: 1px solid var(--pvrx-border-light); background: #fff; color: #10192e; font-size: 1.2rem; line-height: 1; cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.academy-prose .ad-shots__btn:hover:not(:disabled) { border-color: #5546e0; color: #5546e0; }
+.academy-prose .ad-shots__btn:disabled { opacity: 0.35; cursor: default; }
+.academy-prose .ad-shots__btn:focus-visible { outline: 2px solid #5546e0; outline-offset: 2px; }
+.academy-prose .ad-shots__count { min-width: 3.2em; text-align: center; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.75rem; font-weight: 700; color: var(--pvrx-text-secondary-light); }
+
+/* Full-size screenshot viewer (opened from academy-shell.tsx). */
+/* Tailwind's reset zeroes the dialog's default auto margin, so re-center it. */
+.ad-zoom {
+  position: fixed; inset: 0; margin: auto; width: fit-content; height: fit-content;
+  max-width: 94vw; max-height: 94vh; padding: 0; border: 0; background: transparent; overflow: visible; cursor: zoom-out;
+}
+.ad-zoom::backdrop { background: rgba(10,14,30,0.8); backdrop-filter: blur(3px); }
+.ad-zoom img { display: block; max-width: 94vw; max-height: 84vh; margin: 0 auto; border-radius: 10px; background: #fff; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6); }
+.ad-zoom__cap { max-width: 70ch; margin: 0.75rem auto 0; font-size: 0.9rem; line-height: 1.5; color: #e7e9f3; text-align: center; }
+.ad-zoom__close {
+  position: absolute; top: -14px; right: -14px; display: grid; place-items: center; width: 34px; height: 34px;
+  border: 0; border-radius: 50%; background: #fff; color: #10192e; font-size: 1.3rem; line-height: 1; cursor: pointer;
+  box-shadow: 0 6px 18px -6px rgba(0,0,0,0.5);
+}
+.ad-zoom__close:focus-visible { outline: 2px solid #5546e0; outline-offset: 2px; }
+.ad-zoom__arrow {
+  position: fixed; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 44px; height: 44px;
+  padding: 0 0 3px; border: 0; border-radius: 50%; background: rgba(255,255,255,0.92); color: #10192e;
+  font-size: 1.7rem; line-height: 1; cursor: pointer; box-shadow: 0 6px 18px -6px rgba(0,0,0,0.5);
+}
+.ad-zoom__arrow--prev { left: 16px; }
+.ad-zoom__arrow--next { right: 16px; }
+.ad-zoom__arrow:focus-visible { outline: 2px solid #5546e0; outline-offset: 2px; }
+@media (max-width: 640px) {
+  .ad-zoom__close { top: 6px; right: 6px; }
+  .ad-zoom__arrow { width: 36px; height: 36px; font-size: 1.4rem; }
+  .ad-zoom__arrow--prev { left: 6px; }
+  .ad-zoom__arrow--next { right: 6px; }
+}
+
+/* width 0 + min-width 100% lets the image, not the caption, set the card width. */
+.academy-prose .ad-shot figcaption { width: 0; min-width: 100%; box-sizing: border-box; margin: 0; padding: 0.45rem 0.25rem 0.05rem; font-size: 0.8rem; line-height: 1.45; color: var(--pvrx-text-secondary-light); }
