@@ -355,17 +355,17 @@ const HERO_CSS = `
 
 /* tools strip */
 .th-tools {
-  grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 250px) minmax(0, 1fr); align-items: center; gap: 32px;
-  margin: clamp(32px, 4.5vw, 56px) 0 0; padding: 22px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 16px;
+  margin: clamp(32px, 4.5vw, 56px) 0 0; padding: 28px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
 }
-.th-tools__cap { min-height: 86px; display: flex; align-items: center }
+.th-tools__cap { width: 100%; max-width: 560px; min-height: 58px; display: flex; align-items: center; justify-content: center; text-align: center }
 .th-tools__cap p { margin: 0; animation: th-cap .35s cubic-bezier(.16,1,.3,1) both }
 .th-tools__idle { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; letter-spacing: -.015em; line-height: 1.3; color: var(--ink) }
 .th-tools__idle span { display: block; margin-top: 6px; font-family: var(--font-sans, inherit); font-size: .8rem; font-weight: 500; letter-spacing: 0; color: var(--muted) }
 .th-tools__use { font-size: .92rem; line-height: 1.45; color: var(--ink-soft) }
 .th-tools__use strong { display: block; margin-bottom: 3px; font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; letter-spacing: -.015em; color: var(--accent-deep) }
 .th-tools__rails {
-  display: flex; flex-direction: column; gap: 4px; min-width: 0;
+  display: flex; flex-direction: column; gap: 4px; width: 100%; min-width: 0;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
 }
@@ -391,7 +391,7 @@ const HERO_CSS = `
 @media (prefers-reduced-motion: reduce) {
   .th-tools__rails { -webkit-mask-image: none; mask-image: none }
   .th-tools__rail { overflow: visible }
-  .th-tools ul { flex-wrap: wrap; flex: 1; animation: none }
+  .th-tools ul { flex-wrap: wrap; justify-content: center; flex: 1; animation: none }
   .th-tools ul[aria-hidden] { display: none }
   .th-tools__cap p { animation: none }
 }
@@ -419,7 +419,7 @@ const HERO_CSS = `
   .tn-node__name { font-size: .68rem; padding: 1px 4px }
   .tn-zone__label { display: none }
   .tn-detail { padding: 14px }
-  .th-tools { grid-template-columns: minmax(0, 1fr); gap: 14px }
+  .th-tools { gap: 12px }
   .th-tools__cap { min-height: 64px }
   .th-tools__idle span { display: none }
 }
