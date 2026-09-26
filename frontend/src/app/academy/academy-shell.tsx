@@ -612,30 +612,98 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       });
     };
 
+    const makeButton = (className: string, label: string, text: string) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = className;
+      btn.setAttribute("aria-label", label);
+      btn.textContent = text;
+      return btn;
+    };
+
+    // Screenshots from one step sit in an .ad-shots row. The row scrolls
+    // sideways (swipe, trackpad, or the arrow buttons) when it overflows.
+    const wireGallery = (root: Element) => {
+      root.querySelectorAll<HTMLElement>(".ad-shots:not([data-wired])").forEach((row) => {
+        row.dataset.wired = "1";
+        const shots = row.querySelectorAll(".ad-shot");
+        const nav = document.createElement("div");
+        nav.className = "ad-shots__nav";
+        const prev = makeButton("ad-shots__btn", "Previous screenshot", "‹");
+        const next = makeButton("ad-shots__btn", "Next screenshot", "›");
+        const count = document.createElement("span");
+        count.className = "ad-shots__count";
+        nav.append(prev, count, next);
+        row.after(nav);
+        const step = () => (shots[0] as HTMLElement | undefined)?.offsetWidth ?? row.clientWidth;
+        const update = () => {
+          const overflow = row.scrollWidth > row.clientWidth + 4;
+          nav.hidden = !overflow;
+          if (!overflow) return;
+          const i = Math.min(shots.length - 1, Math.round(row.scrollLeft / (step() + 14)));
+          count.textContent = `${i + 1} / ${shots.length}`;
+          prev.disabled = row.scrollLeft <= 2;
+          next.disabled = row.scrollLeft + row.clientWidth >= row.scrollWidth - 2;
+        };
+        prev.addEventListener("click", () => row.scrollBy({ left: -(step() + 14), behavior: "smooth" }));
+        next.addEventListener("click", () => row.scrollBy({ left: step() + 14, behavior: "smooth" }));
+        row.addEventListener("scroll", update, { passive: true });
+        new ResizeObserver(update).observe(row);
+        update();
+      });
+    };
+
+    // Opens the clicked screenshot. Inside a gallery row, arrows, the
+    // arrow keys, and a swipe move through the rest of that step.
     const openZoom = (img: HTMLImageElement) => {
+      const row = img.closest(".ad-shots");
+      const set = row ? [...row.querySelectorAll<HTMLImageElement>(".ad-shot img")] : [img];
+      let index = Math.max(0, set.indexOf(img));
+
       const dialog = document.createElement("dialog");
       dialog.className = "ad-zoom";
-      dialog.setAttribute("aria-label", img.alt || "Screenshot");
-      const close = document.createElement("button");
-      close.type = "button";
-      close.className = "ad-zoom__close";
-      close.setAttribute("aria-label", "Close");
-      close.textContent = "×";
+      const close = makeButton("ad-zoom__close", "Close", "×");
       const big = document.createElement("img");
-      big.src = img.currentSrc || img.src;
-      big.alt = img.alt;
-      dialog.append(close, big);
-      const caption = img.closest("figure")?.querySelector("figcaption")?.textContent;
-      if (caption) {
-        const cap = document.createElement("p");
-        cap.className = "ad-zoom__cap";
-        cap.textContent = caption;
-        dialog.append(cap);
+      const cap = document.createElement("p");
+      cap.className = "ad-zoom__cap";
+      dialog.append(close, big, cap);
+
+      const show = (i: number) => {
+        index = (i + set.length) % set.length;
+        const shot = set[index];
+        big.src = shot.currentSrc || shot.src;
+        big.alt = shot.alt;
+        dialog.setAttribute("aria-label", shot.alt || "Screenshot");
+        const caption = shot.closest("figure")?.querySelector("figcaption")?.textContent ?? "";
+        cap.textContent = set.length > 1 ? `${index + 1} / ${set.length}  ·  ${caption}` : caption;
+        cap.hidden = !cap.textContent;
+      };
+
+      if (set.length > 1) {
+        const prev = makeButton("ad-zoom__arrow ad-zoom__arrow--prev", "Previous screenshot", "‹");
+        const next = makeButton("ad-zoom__arrow ad-zoom__arrow--next", "Next screenshot", "›");
+        prev.addEventListener("click", (e) => { e.stopPropagation(); show(index - 1); });
+        next.addEventListener("click", (e) => { e.stopPropagation(); show(index + 1); });
+        dialog.append(prev, next);
+        dialog.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowLeft") show(index - 1);
+          else if (e.key === "ArrowRight") show(index + 1);
+        });
+        let startX: number | null = null;
+        dialog.addEventListener("touchstart", (e) => { startX = e.touches[0].clientX; }, { passive: true });
+        dialog.addEventListener("touchend", (e) => {
+          if (startX === null) return;
+          const dx = e.changedTouches[0].clientX - startX;
+          startX = null;
+          if (Math.abs(dx) > 40) show(index + (dx < 0 ? 1 : -1));
+        });
       }
+
+      show(index);
       dialog.addEventListener("click", () => dialog.close());
       dialog.addEventListener("close", () => {
         dialog.remove();
-        img.focus();
+        set[index].focus();
       });
       document.body.append(dialog);
       dialog.showModal();
@@ -715,6 +783,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       document.querySelectorAll(".academy-prose").forEach((root) => {
         wireCommandCopy(root);
         wireZoom(root);
+        wireGallery(root);
       });
       if (openHintId) {
         const live = missionById(openHintId);

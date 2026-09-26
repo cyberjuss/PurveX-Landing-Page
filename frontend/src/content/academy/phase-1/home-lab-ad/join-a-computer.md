@@ -12,49 +12,46 @@ If that address is wrong, the join fails even when the domain controller is up. 
 That is an availability failure, not a password problem. The password was never checked.
 
 1. Open Settings, then Network status, then Change adapter options. Right-click the adapter and choose Properties.
-
-<figure class="ad-shot">
-<img src="/academy/home-lab-ad/dns-adapter.png" alt="Network connections with the adapter menu open on Properties" />
-<figcaption>Open Properties on the adapter the workstation uses.</figcaption>
-</figure>
-
 2. Select Internet Protocol Version 4, then Properties.
-
-<figure class="ad-shot">
-<img src="/academy/home-lab-ad/dns-ipv4.png" alt="Adapter properties with Internet Protocol Version 4 selected" />
-<figcaption>IPv4 is the item that holds the DNS address.</figcaption>
-</figure>
-
 3. Select Use the following DNS server addresses. Enter the domain controller's IP as the Preferred DNS server.
 
+<div class="ad-shots">
+<figure class="ad-shot">
+<img src="/academy/home-lab-ad/dns-adapter.png" alt="Network connections with the adapter menu open on Properties" />
+<figcaption>Step 1. Open Properties on the adapter the workstation uses.</figcaption>
+</figure>
+<figure class="ad-shot">
+<img src="/academy/home-lab-ad/dns-ipv4.png" alt="Adapter properties with Internet Protocol Version 4 selected" />
+<figcaption>Step 2. IPv4 is the item that holds the DNS address.</figcaption>
+</figure>
 <figure class="ad-shot">
 <img src="/academy/home-lab-ad/dns.png" alt="IPv4 properties with a preferred DNS server filled in" />
-<figcaption>Preferred DNS is the domain controller. The address in this photo belongs to a practice build. Use the IP of your domain controller.</figcaption>
+<figcaption>Step 3. Preferred DNS is the domain controller. The address in this photo belongs to a practice build. Use the IP of your domain controller.</figcaption>
 </figure>
+</div>
 
 ### Join the domain
 
 1. Open This PC, then Properties.
-
-<figure class="ad-shot">
-<img src="/academy/home-lab-ad/join-this-pc.png" alt="This PC menu with Properties selected" />
-<figcaption>Properties on This PC is the way into the computer name.</figcaption>
-</figure>
-
 2. Open Advanced system settings, then the Computer Name tab, and choose Change.
 3. Select Domain and enter `purvexfinancial.local`.
 4. Sign in as `PURVEXFINANCIAL\Administrator` with the directory password.
 5. Restart the workstation.
 
+<div class="ad-shots">
+<figure class="ad-shot">
+<img src="/academy/home-lab-ad/join-this-pc.png" alt="This PC menu with Properties selected" />
+<figcaption>Step 1. Properties on This PC is the way into the computer name.</figcaption>
+</figure>
 <figure class="ad-shot">
 <img src="/academy/home-lab-ad/join-workgroup.png" alt="System properties showing the computer still in a workgroup, with Change selected" />
-<figcaption>The computer stays in a workgroup until you choose Domain and enter purvexfinancial.local.</figcaption>
+<figcaption>Steps 2 and 3. The computer stays in a workgroup until you choose Domain and enter purvexfinancial.local.</figcaption>
 </figure>
-
 <figure class="ad-shot">
 <img src="/academy/home-lab-ad/join-welcome.png" alt="Dialog that welcomes the computer to a domain" />
-<figcaption>A finished join names the domain. Yours will say purvexfinancial.local.</figcaption>
+<figcaption>Step 4. A finished join names the domain. Yours will say purvexfinancial.local.</figcaption>
 </figure>
+</div>
 
 ### Confirm the computer object
 
