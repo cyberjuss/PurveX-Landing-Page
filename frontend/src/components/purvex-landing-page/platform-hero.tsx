@@ -3,16 +3,17 @@
 import { useEffect, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import Link from "next/link";
 import {
-  ArrowRight, BellRing, Check, Crosshair, FileText, ListFilter, Play, RotateCcw, ScanSearch, Wrench, X,
+  ArrowRight, BellRing, Check, Copy, Crosshair, FastForward, FileText, ListFilter, Play, RotateCcw, ScanSearch, Square, Wrench, X,
   type LucideIcon,
 } from "lucide-react";
 
 /* Platform hero. A working picture of PurveX as a queue of detection tests.
    Pick a test from the queue, run it, and watch it move through the five
    stages the product checks while the log streams in. A miss stops at the
-   stage that broke and says why, and the visitor can apply the fix and
-   rerun it, which is the loop the product sells. Technique IDs are real
-   ATT&CK IDs; hosts, events, and results are examples. */
+   stage that broke and says why. The visitor can explain a miss (the
+   product's AI-assisted analysis, with a fix to copy), apply the fix and
+   rerun it, or run the whole queue at once like a scheduled run.
+   Technique IDs are real ATT&CK IDs; hosts, events, and results are examples. */
 
 const STAGES: { name: string; Icon: LucideIcon }[] = [
   { name: "Attack runs", Icon: Crosshair },
@@ -33,6 +34,8 @@ type Test = {
   why?: string;
   fix?: string;
   fixLog?: Line[];
+  explain?: string;
+  patch?: { label: string; code: string };
 };
 
 const TESTS: Test[] = [
@@ -62,6 +65,21 @@ const TESTS: Test[] = [
     ],
     why: "The log arrived and was read, but no rule matched it.",
     fix: "Add a rule for access to lsass.exe, then run the test again.",
+    explain:
+      "Sysmon recorded a process opening lsass.exe with memory-read access, and your SIEM parsed it cleanly. None of your rules look for that access, so nothing fired. This is how most password theft tools pull credentials out of memory.",
+    patch: {
+      label: "Suggested rule (Sigma)",
+      code: `title: Process access to LSASS memory
+logsource:
+  product: windows
+  category: process_access
+detection:
+  selection:
+    TargetImage|endswith: '\\lsass.exe'
+    GrantedAccess: ['0x1010', '0x1410', '0x1438']
+  condition: selection
+level: critical`,
+    },
     fixLog: [
       ["runner", "Running T1003.001 on WIN-TEST01"],
       ["sysmon", "Event 10: process opened lsass.exe"],
@@ -81,6 +99,12 @@ const TESTS: Test[] = [
     ],
     why: "The computer never sent this log to your SIEM.",
     fix: "Turn on task scheduler logging, then run the test again.",
+    explain:
+      "Windows only records a new scheduled task (event 4698) when object access auditing is on. It is off on WIN-TEST01, so there was nothing to send to your SIEM, and no rule could ever see it.",
+    patch: {
+      label: "Suggested change (run on the endpoint, or set in Group Policy)",
+      code: `auditpol /set /subcategory:"Other Object Access Events" /success:enable`,
+    },
     fixLog: [
       ["runner", "Running T1053.005 on WIN-TEST01"],
       ["winlog", "Event 4698: scheduled task created"],
@@ -101,6 +125,15 @@ const TESTS: Test[] = [
     ],
     why: "The log arrived, but your SIEM did not read its fields, so no rule could use it.",
     fix: "Fix the field mapping for Remote Desktop sign-ins, then run the test again.",
+    explain:
+      "The sign-in event reached your SIEM, but its parser did not map the sign-in type or the source address. Your Remote Desktop rule looks for exactly those fields, so it had nothing to match.",
+    patch: {
+      label: "Suggested field mapping (event 4624)",
+      code: `EventData.LogonType       -> logon.type
+EventData.IpAddress       -> source.ip
+EventData.TargetUserName  -> user.name
+EventData.WorkstationName -> source.host`,
+    },
     fixLog: [
       ["runner", "Running T1021.001 from WIN-TEST01 to WIN-TEST02"],
       ["winlog", "Event 4624: sign-in type 10"],
@@ -123,6 +156,15 @@ const TESTS: Test[] = [
     ],
     why: "The rule matched, but the alert went to a queue nobody watches.",
     fix: "Route this alert to the SOC queue, then run the test again.",
+    explain:
+      "The rule matched and the alert was created, but it was routed to a queue with nobody assigned. The detection worked; the people who should act on it never saw it.",
+    patch: {
+      label: "Suggested routing",
+      code: `alert: Many failed sign-ins for one account
+severity: high
+route_to: soc-tier1
+notify: on-call`,
+    },
     fixLog: [
       ["runner", "Running T1110.001 against WIN-TEST01"],
       ["winlog", "Event 4625: repeated failed sign-ins"],
@@ -147,6 +189,8 @@ const TESTS: Test[] = [
 ];
 
 const STEP_MS = 600;
+// Run all moves faster so six tests finish in about ten seconds.
+const BATCH_MS = 220;
 const QUERY = "(prefers-reduced-motion: reduce)";
 
 function useReducedMotion() {
@@ -191,7 +235,13 @@ function Queue() {
   const [results, setResults] = useState<Record<string, Result>>({});
   const [fixed, setFixed] = useState<Record<string, boolean>>({});
   const [filter, setFilter] = useState<Filter>("all");
+  const [view, setView] = useState<"log" | "why">("log");
+  const [typed, setTyped] = useState(0);
+  const [copied, setCopied] = useState(false);
+  const [batch, setBatch] = useState<{ at: number; total: number } | null>(null);
+  const [summary, setSummary] = useState<{ fired: number; missed: number; first: number } | null>(null);
   const timers = useRef<number[]>([]);
+  const chain = useRef<number[]>([]);
   const rows = useRef<(HTMLButtonElement | null)[]>([]);
   const base = TESTS[pick];
   const t = effective(base, !!fixed[base.id]);
@@ -201,8 +251,14 @@ function Queue() {
     timers.current = [];
   }
 
-  function run(i: number, withFix = !!fixed[TESTS[i].id]) {
+  function clearChain() {
+    chain.current.forEach(window.clearTimeout);
+    chain.current = [];
+  }
+
+  function run(i: number, withFix = !!fixed[TESTS[i].id], ms = STEP_MS) {
     clear();
+    setView("log");
     const test = effective(TESTS[i], withFix);
     const end = test.stop ?? STAGES.length - 1;
     const done = () => {
@@ -217,9 +273,62 @@ function Queue() {
     setPhase("running");
     setStep(-1);
     for (let k = 0; k <= end; k++) {
-      timers.current.push(window.setTimeout(() => setStep(k), STEP_MS * (k + 1)));
+      timers.current.push(window.setTimeout(() => setStep(k), ms * (k + 1)));
     }
-    timers.current.push(window.setTimeout(done, STEP_MS * (end + 1) + 400));
+    timers.current.push(window.setTimeout(done, ms * (end + 1) + (ms === STEP_MS ? 400 : 200)));
+  }
+
+  // Every test, back to back, like a scheduled run.
+  function runAll() {
+    if (batch) {
+      clearChain();
+      clear();
+      setBatch(null);
+      setPhase("idle");
+      setStep(-1);
+      return;
+    }
+    clearChain();
+    setSummary(null);
+    setFilter("all");
+    const outcome = TESTS.map((x) => effective(x, !!fixed[x.id]));
+    const fired = outcome.filter((x) => x.stop === null).length;
+    const first = outcome.findIndex((x) => x.stop !== null);
+    const wrap = () => {
+      setBatch(null);
+      setSummary({ fired, missed: TESTS.length - fired, first });
+    };
+    if (reduced) {
+      setResults(Object.fromEntries(outcome.map((x) => [x.id, x.stop === null ? "fired" : "missed"])));
+      const last = TESTS.length - 1;
+      setPick(last);
+      setStep(outcome[last].stop ?? STAGES.length - 1);
+      setPhase("done");
+      wrap();
+      return;
+    }
+    let at = 0;
+    outcome.forEach((x, i) => {
+      chain.current.push(
+        window.setTimeout(() => {
+          setBatch({ at: i + 1, total: TESTS.length });
+          setPick(i);
+          run(i, !!fixed[x.id], BATCH_MS);
+        }, at),
+      );
+      at += BATCH_MS * ((x.stop ?? STAGES.length - 1) + 1) + 200 + 380;
+    });
+    chain.current.push(window.setTimeout(wrap, at));
+  }
+
+  function explain() {
+    setCopied(false);
+    setTyped(reduced ? 9999 : 0);
+    setView("why");
+  }
+
+  function copyPatch(code: string) {
+    navigator.clipboard?.writeText(code).then(() => setCopied(true), () => setCopied(false));
   }
 
   // Play the first test once so the visitor sees a full run.
@@ -228,13 +337,23 @@ function Queue() {
     return () => {
       window.clearTimeout(id);
       clear();
+      clearChain();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Type the analysis out, the way the product's assistant answers.
+  const whyText = TESTS[pick].explain ?? "";
+  useEffect(() => {
+    if (view !== "why" || typed >= whyText.length) return;
+    const id = window.setTimeout(() => setTyped((n) => n + 3), 14);
+    return () => window.clearTimeout(id);
+  }, [view, typed, whyText]);
+
   function choose(i: number) {
-    if (phase === "running" || i === pick) return;
+    if (batch || phase === "running" || i === pick) return;
     clear();
+    setView("log");
     setPick(i);
     // A test that ran before shows its last result; a new one waits to be run.
     if (results[TESTS[i].id]) {
@@ -254,6 +373,10 @@ function Queue() {
 
   function reset() {
     clear();
+    clearChain();
+    setBatch(null);
+    setSummary(null);
+    setView("log");
     setResults({});
     setFixed({});
     setFilter("all");
@@ -308,6 +431,9 @@ function Queue() {
       <header className="pq__bar">
         <span className="pq__brand"><b />PurveX</span>
         <span className="pq__title">Detection tests</span>
+        <button type="button" className="pq__runall" data-on={batch ? "1" : "0"} onClick={runAll} disabled={!batch && phase === "running"}>
+          {batch ? <><Square size={12} /> Stop · {batch.at} of {batch.total}</> : <><FastForward size={14} /> Run all</>}
+        </button>
         <div className="pq__filters" role="tablist" aria-label="Filter tests">
           {FILTERS.map((f) => (
             <button key={f.key} type="button" role="tab" aria-selected={filter === f.key} onClick={() => setFilter(f.key)}>
@@ -317,6 +443,31 @@ function Queue() {
           ))}
         </div>
       </header>
+
+      {summary && !batch && (
+        <div className="pq__summary" role="status">
+          <b>{summary.missed === 0 ? <Check size={14} strokeWidth={3} /> : <X size={14} strokeWidth={3} />}</b>
+          <p>
+            <strong>Run complete.</strong> {summary.fired} of {TESTS.length} alerts fired.
+            {summary.missed > 0 && ` ${summary.missed} ${summary.missed === 1 ? "miss" : "misses"} to fix.`}
+          </p>
+          {summary.missed > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                setFilter("missed");
+                setSummary(null);
+                if (summary.first >= 0) choose(summary.first);
+              }}
+            >
+              Show misses
+            </button>
+          )}
+          <button type="button" className="pq__summary-x" aria-label="Dismiss" onClick={() => setSummary(null)}>
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       <div className="pq__body">
         <div className="pq__list" role="listbox" aria-label="Test queue" onKeyDown={onKey}>
@@ -380,6 +531,32 @@ function Queue() {
             </ol>
           </div>
 
+          <div className="pq__tabs" role="tablist" aria-label="Test detail">
+            <button type="button" role="tab" aria-selected={view === "log"} onClick={() => setView("log")}>Run log</button>
+            <button type="button" role="tab" aria-selected={view === "why"} onClick={explain} disabled={verdict !== "missed" || !base.explain}>
+              Analysis
+            </button>
+          </div>
+
+          {view === "why" && base.explain ? (
+            <div className="pq__why" key={`why-${base.id}`}>
+              <p>
+                {base.explain.slice(0, typed)}
+                {typed < base.explain.length && <i className="pq__caret" />}
+              </p>
+              {typed >= base.explain.length && base.patch && (
+                <div className="pq__patch">
+                  <header>
+                    <span>{base.patch.label}</span>
+                    <button type="button" onClick={() => copyPatch(base.patch!.code)}>
+                      {copied ? <><Check size={12} strokeWidth={3} /> Copied</> : <><Copy size={12} /> Copy</>}
+                    </button>
+                  </header>
+                  <pre><code>{base.patch.code}</code></pre>
+                </div>
+              )}
+            </div>
+          ) : (
           <div className="pq__log" aria-hidden="true">
             {step < 0 ? (
               <p className="pq__log-idle">{phase === "running" ? "Starting the test runner" : "This test has not run yet"}</p>
@@ -393,6 +570,7 @@ function Queue() {
               ))
             )}
           </div>
+          )}
 
           <div className="pq__verdict">
             <div className="pq__say">
@@ -424,11 +602,16 @@ function Queue() {
             <div className="pq__acts">
               {verdict === "missed" ? (
                 <>
-                  <button type="button" onClick={applyFix}><Wrench size={15} /> Fix and rerun</button>
-                  <button type="button" className="pq__ghost" onClick={() => run(pick)}>Run again</button>
+                  <button type="button" onClick={applyFix} disabled={!!batch}><Wrench size={15} /> Fix and rerun</button>
+                  <div className="pq__minor">
+                    {view !== "why" && base.explain && (
+                      <button type="button" className="pq__ghost" onClick={explain} disabled={!!batch}>Explain the miss</button>
+                    )}
+                    <button type="button" className="pq__ghost" onClick={() => run(pick)} disabled={!!batch}>Run again</button>
+                  </div>
                 </>
               ) : (
-                <button type="button" onClick={() => run(pick)} disabled={phase === "running"}>
+                <button type="button" onClick={() => run(pick)} disabled={phase === "running" || !!batch}>
                   {phase === "done" ? <><RotateCcw size={15} /> Run again</> : <><Play size={15} /> Run test</>}
                 </button>
               )}
@@ -446,7 +629,7 @@ function Queue() {
         </div>
         <div className="pq__foot-end">
           <span>Example results</span>
-          {Object.keys(results).length > 0 && phase !== "running" && (
+          {Object.keys(results).length > 0 && phase !== "running" && !batch && (
             <button type="button" className="pq__reset" onClick={reset}>Reset</button>
           )}
         </div>
@@ -509,7 +692,18 @@ const PXH_CSS = `
 .pq__brand { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-display); font-weight: 600; font-size: .95rem; color: var(--ink) }
 .pq__brand b { width: 10px; height: 10px; background: var(--accent) }
 .pq__title { font-size: .86rem; color: var(--muted) }
-.pq__filters { display: flex; gap: 2px; margin-left: auto; padding: 3px; background: var(--q-soft); border: 1px solid var(--q-line) }
+.pq__runall {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 32px; margin-left: auto; padding: 0 12px; cursor: pointer;
+  font-size: .8rem; font-weight: 650; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.3);
+  transition: background .2s, color .2s, box-shadow .2s;
+}
+.pq__runall svg { position: static }
+.pq__runall[data-on="0"]:hover:not(:disabled) { background: #fff; box-shadow: 0 6px 16px -10px rgba(85,70,224,.8) }
+.pq__runall[data-on="1"]:hover { background: #2a2280 }
+.pq__runall[data-on="1"] { color: #fff; background: var(--accent-deep); border-color: var(--accent-deep) }
+.pq__runall:disabled { opacity: .5; cursor: default }
+.pq__runall:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.pq__filters { display: flex; gap: 2px; padding: 3px; background: var(--q-soft); border: 1px solid var(--q-line) }
 .pq__filters button {
   display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 10px; border: 0; background: none; cursor: pointer;
   font-size: .8rem; font-weight: 600; color: var(--ink-soft); transition: background .2s, color .2s, box-shadow .2s;
@@ -519,6 +713,17 @@ const PXH_CSS = `
 .pq__filters button[aria-selected="true"] span { color: var(--accent-deep); border-color: rgba(106,92,255,.3) }
 .pq__filters button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
 
+.pq__summary {
+  display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--q-line);
+  background: linear-gradient(90deg, rgba(106,92,255,.08), rgba(106,92,255,.02)); animation: pq-in .35s cubic-bezier(.16,1,.3,1) both;
+}
+.pq__summary > b { display: grid; place-items: center; width: 22px; height: 22px; flex: none; color: #fff; background: var(--q-bad) }
+.pq__summary > b svg { position: static }
+.pq__summary p { flex: 1; margin: 0; font-size: .86rem; color: var(--ink) }
+.pq__summary > button { min-height: 30px; padding: 0 12px; border: 1px solid rgba(106,92,255,.35); background: #fff; cursor: pointer; font-size: .8rem; font-weight: 650; color: var(--accent-deep) }
+.pq__summary > button:hover { background: var(--accent-soft) }
+.pq__summary .pq__summary-x { display: grid; place-items: center; width: 30px; padding: 0; border-color: transparent; background: none; color: var(--muted) }
+.pq__summary .pq__summary-x svg { position: static }
 .pq__body { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); min-height: 440px }
 
 /* list */
@@ -583,7 +788,24 @@ const PXH_CSS = `
 .pq__pipe li[data-s="fail"] { color: var(--q-bad) }
 .pq__pipe li[data-s="fail"] i { background: var(--q-bad); border-color: var(--q-bad); color: #fff; box-shadow: 0 10px 22px -12px rgba(220,38,38,.8); animation: pq-shake .45s ease both }
 
-.pq__log { flex: 1; min-height: 132px; margin-top: 20px; padding: 12px 14px; background: var(--q-soft); border: 1px solid var(--q-line); font-family: var(--font-mono); font-size: .76rem; line-height: 1.6 }
+.pq__tabs { display: flex; gap: 18px; margin-top: 18px; border-bottom: 1px solid var(--q-line) }
+.pq__tabs button {
+  position: relative; padding: 6px 0 9px; border: 0; background: none; cursor: pointer; font-size: .8rem; font-weight: 650; color: var(--muted);
+  transition: color .2s;
+}
+.pq__tabs button[aria-selected="true"] { color: var(--accent-deep) }
+.pq__tabs button[aria-selected="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--accent) }
+.pq__tabs button:disabled { opacity: .45; cursor: default }
+.pq__tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.pq__why { flex: 1; min-height: 132px; margin-top: 12px; padding: 14px; background: #fff; border: 1px solid rgba(106,92,255,.25); box-shadow: 0 0 0 4px rgba(106,92,255,.05) }
+.pq__why > p { margin: 0; font-size: .9rem; line-height: 1.55; color: var(--ink) }
+.pq__caret { display: inline-block; width: 7px; height: 1em; margin-left: 2px; vertical-align: -2px; background: var(--accent); animation: pq-blink .8s steps(1) infinite }
+.pq__patch { margin-top: 12px; border: 1px solid var(--q-line); animation: pq-in .35s cubic-bezier(.16,1,.3,1) both }
+.pq__patch header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 10px; background: var(--q-soft); border-bottom: 1px solid var(--q-line); font-size: .74rem; font-weight: 650; color: var(--ink-soft) }
+.pq__patch header button { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border: 1px solid var(--q-line); background: #fff; cursor: pointer; font-size: .72rem; font-weight: 650; color: var(--accent-deep) }
+.pq__patch header button svg { position: static }
+.pq__patch pre { margin: 0; padding: 10px 12px; overflow-x: auto; background: #151a33; color: #e6e8ff; font-family: var(--font-mono); font-size: .74rem; line-height: 1.55 }
+.pq__log { flex: 1; min-height: 132px; margin-top: 12px; padding: 12px 14px; background: var(--q-soft); border: 1px solid var(--q-line); font-family: var(--font-mono); font-size: .76rem; line-height: 1.6 }
 .pq__log p { display: grid; grid-template-columns: auto 54px 1fr; gap: 10px; margin: 0 0 2px; color: var(--ink); animation: pq-type .3s cubic-bezier(.16,1,.3,1) both }
 .pq__log time { color: #a2a4bd }
 .pq__log b { font-weight: 600; color: var(--accent-deep) }
@@ -608,7 +830,8 @@ const PXH_CSS = `
 .pq__acts button:active:not(:disabled) { transform: scale(.97) }
 .pq__acts button:disabled { opacity: .45; cursor: default; box-shadow: none }
 .pq__acts button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
-.pq__acts .pq__ghost { min-height: 30px; background: transparent; color: var(--ink-soft); box-shadow: none; font-size: .8rem; font-weight: 600 }
+.pq__minor { display: flex; justify-content: center; gap: 4px }
+.pq__acts .pq__ghost { min-height: 30px; padding: 0 8px; background: transparent; color: var(--ink-soft); box-shadow: none; font-size: .8rem; font-weight: 600 }
 .pq__acts .pq__ghost:hover:not(:disabled) { color: var(--accent-deep); box-shadow: none }
 
 .pq__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 16px; border-top: 1px solid var(--q-line); background: #fafaff; font-size: .78rem; color: var(--muted) }
@@ -628,6 +851,7 @@ const PXH_CSS = `
 @keyframes pq-pop { from { transform: scale(.6) } to { transform: none } }
 @keyframes pq-shake { 0%, 100% { transform: none } 25% { transform: translateX(-3px) } 75% { transform: translateX(3px) } }
 @keyframes pq-rot { to { transform: rotate(360deg) } }
+@keyframes pq-blink { 50% { opacity: 0 } }
 @media (prefers-reduced-motion: reduce) {
   .pq *, .pq *::after { animation: none !important; transition: none !important }
 }
@@ -643,7 +867,9 @@ const PXH_CSS = `
 @media (max-width: 640px) {
   .pq__bar { flex-wrap: wrap }
   .pq__title { display: none }
+  .pq__runall { margin-left: auto }
   .pq__filters { width: 100%; margin-left: 0 }
+  .pq__summary { flex-wrap: wrap }
   .pq__filters button { flex: 1; justify-content: center; padding: 0 4px; font-size: .74rem }
   .pq__detail { padding: 16px 14px }
   .pq__head h3 { font-size: 1.2rem }
