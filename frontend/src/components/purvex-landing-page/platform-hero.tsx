@@ -2,13 +2,14 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { ArrowRight, BellRing, Check, Crosshair, FileText, ListFilter, Play, RotateCcw, ScanSearch, X, type LucideIcon } from "lucide-react";
+import { ArrowRight, BellRing, Check, Crosshair, FileText, ListFilter, Play, RotateCcw, ScanSearch, Wrench, X, type LucideIcon } from "lucide-react";
 
 /* Platform hero. A working picture of one PurveX test, styled like the
    console a security team would use: pick an attack, run it, and watch it
    move through the five stages the product checks while the log streams
-   in. A miss stops at the stage that broke and says why. Technique IDs are
-   real ATT&CK IDs; hosts, events, and results are examples. */
+   in. A miss stops at the stage that broke and says why, and the visitor
+   can apply the fix and rerun it, which is the loop the product sells.
+   Technique IDs are real ATT&CK IDs; hosts, events, and results are examples. */
 
 const STAGES: { name: string; Icon: LucideIcon }[] = [
   { name: "Attack runs", Icon: Crosshair },
@@ -26,6 +27,7 @@ type Technique = {
   log: [string, string][];
   why?: string;
   fix?: string;
+  fixLog?: [string, string][];
 };
 
 const TECHNIQUES: Technique[] = [
@@ -55,6 +57,13 @@ const TECHNIQUES: Technique[] = [
     ],
     why: "The log arrived and was read, but no rule matched it.",
     fix: "Add a rule for access to lsass.exe, then run the test again.",
+    fixLog: [
+      ["runner", "Running T1003.001 on WIN-TEST01"],
+      ["sysmon", "Event 10: process opened lsass.exe"],
+      ["siem", "Event parsed into process fields"],
+      ["rule", "Matched: Access to lsass.exe (new rule)"],
+      ["alert", "Sent to the SOC queue, severity Critical"],
+    ],
   },
   {
     id: "T1053.005",
@@ -67,6 +76,13 @@ const TECHNIQUES: Technique[] = [
     ],
     why: "The computer never sent this log to your SIEM.",
     fix: "Turn on task scheduler logging, then run the test again.",
+    fixLog: [
+      ["runner", "Running T1053.005 on WIN-TEST01"],
+      ["winlog", "Event 4698: scheduled task created"],
+      ["siem", "Event parsed into task fields"],
+      ["rule", "Matched: New scheduled task by a user"],
+      ["alert", "Sent to the SOC queue, severity Medium"],
+    ],
   },
 ];
 
@@ -88,6 +104,11 @@ function useReducedMotion() {
 type Phase = "idle" | "running" | "done";
 type Result = "fired" | "missed";
 
+// A fixed technique passes every stage and logs its repaired run.
+function effective(tech: Technique, isFixed: boolean): Technique {
+  return isFixed && tech.fixLog ? { ...tech, stop: null, log: tech.fixLog } : tech;
+}
+
 function stamp(k: number) {
   return `09:41:${String(2 + k * 3).padStart(2, "0")}`;
 }
@@ -98,8 +119,10 @@ function Console() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [step, setStep] = useState(-1);
   const [results, setResults] = useState<Record<string, Result>>({});
+  const [fixed, setFixed] = useState<Record<string, boolean>>({});
   const timers = useRef<number[]>([]);
-  const t = TECHNIQUES[pick];
+  const base = TECHNIQUES[pick];
+  const t = effective(base, !!fixed[base.id]);
 
   function clear() {
     timers.current.forEach(window.clearTimeout);
@@ -111,9 +134,9 @@ function Console() {
     setResults((r) => ({ ...r, [tech.id]: tech.stop === null ? "fired" : "missed" }));
   }
 
-  function run(i: number) {
+  function run(i: number, withFix = !!fixed[TECHNIQUES[i].id]) {
     clear();
-    const tech = TECHNIQUES[i];
+    const tech = effective(TECHNIQUES[i], withFix);
     const end = tech.stop ?? STAGES.length - 1;
     if (reduced) {
       setStep(end);
@@ -146,6 +169,20 @@ function Console() {
     setStep(-1);
   }
 
+  function applyFix() {
+    setFixed((f) => ({ ...f, [base.id]: true }));
+    run(pick, true);
+  }
+
+  function reset() {
+    clear();
+    setResults({});
+    setFixed({});
+    setPick(0);
+    setPhase("idle");
+    setStep(-1);
+  }
+
   function stateOf(k: number) {
     if (k > step) return "wait";
     return t.stop === k ? "fail" : "ok";
@@ -157,6 +194,7 @@ function Console() {
   const tested = Object.keys(results).length;
   const fired = Object.values(results).filter((r) => r === "fired").length;
   const status = phase === "running" ? "Running" : verdict === "fired" ? "Fired" : verdict === "missed" ? "Missed" : "Ready";
+  const wasFixed = !!fixed[base.id];
 
   return (
     <div className="pxc" data-verdict={verdict ?? phase}>
@@ -183,7 +221,9 @@ function Console() {
             <strong>{x.name}</strong>
             <code>{x.id}</code>
             {results[x.id] && (
-              <em data-r={results[x.id]}>{results[x.id] === "fired" ? "Fired" : "Missed"}</em>
+              <em data-r={results[x.id]} key={`${results[x.id]}-${!!fixed[x.id]}`}>
+                {results[x.id] === "missed" ? "Missed" : fixed[x.id] ? "Fixed" : "Fired"}
+              </em>
             )}
           </button>
         ))}
@@ -225,7 +265,14 @@ function Console() {
 
       <div className="pxc__verdict" aria-live="polite">
         {verdict === "fired" && (
-          <p key="f"><b><Check size={15} strokeWidth={3} /></b><span><strong>Alert fired.</strong> This detection works.</span></p>
+          <p key={wasFixed ? "fx" : "f"}>
+            <b><Check size={15} strokeWidth={3} /></b>
+            {wasFixed ? (
+              <span><strong>Fixed and proven.</strong> The alert fires now, and the run is kept as evidence.</span>
+            ) : (
+              <span><strong>Alert fired.</strong> This detection works.</span>
+            )}
+          </p>
         )}
         {verdict === "missed" && (
           <p key="m">
@@ -241,14 +288,40 @@ function Console() {
             {phase === "running" ? "Checking your SIEM for the result..." : "Pick an attack and run it."}
           </p>
         )}
-        <button type="button" onClick={() => run(pick)} disabled={phase === "running"}>
-          {phase === "done" ? <><RotateCcw size={15} /> Run again</> : <><Play size={15} /> Run test</>}
-        </button>
+        <div className="pxc__acts">
+          {verdict === "missed" ? (
+            <>
+              <button type="button" onClick={applyFix}>
+                <Wrench size={15} /> Fix and rerun
+              </button>
+              <button type="button" className="pxc__ghost" onClick={() => run(pick)}>
+                Run again
+              </button>
+            </>
+          ) : (
+            <button type="button" onClick={() => run(pick)} disabled={phase === "running"}>
+              {phase === "done" ? <><RotateCcw size={15} /> Run again</> : <><Play size={15} /> Run test</>}
+            </button>
+          )}
+        </div>
       </div>
 
       <footer className="pxc__foot">
-        <span>{tested === 0 ? "No tests run yet" : `${tested} of ${TECHNIQUES.length} tested, ${fired} fired`}</span>
-        <span>Example results</span>
+        <div className="pxc__cov">
+          <ol aria-hidden="true">
+            {TECHNIQUES.map((x) => (
+              <li key={x.id} data-r={results[x.id] ?? "none"} />
+            ))}
+          </ol>
+          <span>
+            {tested === 0 ? "Coverage: nothing tested yet" : `Coverage: ${fired} of ${TECHNIQUES.length} alerts proven`}
+          </span>
+        </div>
+        {tested > 0 && phase !== "running" ? (
+          <button type="button" className="pxc__reset" onClick={reset}>Reset</button>
+        ) : (
+          <span>Example results</span>
+        )}
       </footer>
     </div>
   );
@@ -380,7 +453,8 @@ const PXH_CSS = `
 .pxc__log-idle { display: block !important; color: var(--c-mute) !important }
 .pxc__log-idle::after { content: "_"; margin-left: 4px; animation: pxc-blink 1s steps(1) infinite }
 
-.pxc__verdict { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 14px; margin: 14px 16px 0; min-height: 64px }
+.pxc__verdict { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 14px; margin: 14px 16px 0; min-height: 72px }
+.pxc__acts { display: flex; flex-direction: column; align-items: stretch; gap: 6px }
 .pxc__verdict p { display: flex; align-items: flex-start; gap: 10px; margin: 0; font-size: .88rem; line-height: 1.45; color: var(--c-ink); animation: pxc-in .35s cubic-bezier(.16,1,.3,1) both }
 .pxc__verdict p b { display: grid; place-items: center; width: 24px; height: 24px; flex: none; color: #062e1f; background: var(--c-ok) }
 .pxc__verdict p b svg { position: static }
@@ -388,18 +462,29 @@ const PXH_CSS = `
 .pxc__verdict strong { font-weight: 700 }
 .pxc__verdict small { display: block; margin-top: 3px; font-size: .8rem; color: var(--c-mute) }
 .pxc__verdict-wait { color: var(--c-mute) !important }
-.pxc__verdict button {
+.pxc__acts button {
   display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 18px; border: 0; cursor: pointer; white-space: nowrap;
   background: var(--c-acc); color: #0e1122; font-size: .88rem; font-weight: 700;
   box-shadow: 0 10px 30px -10px rgba(139,125,255,.8); transition: transform .15s, opacity .2s, box-shadow .2s;
 }
-.pxc__verdict button svg { position: static }
-.pxc__verdict button:hover:not(:disabled) { box-shadow: 0 14px 36px -10px rgba(139,125,255,1) }
-.pxc__verdict button:active:not(:disabled) { transform: scale(.97) }
-.pxc__verdict button:disabled { opacity: .45; cursor: default; box-shadow: none }
-.pxc__verdict button:focus-visible { outline: 2px solid #fff; outline-offset: 2px }
+.pxc__acts button { justify-content: center }
+.pxc__acts button svg { position: static }
+.pxc__acts button:hover:not(:disabled) { box-shadow: 0 14px 36px -10px rgba(139,125,255,1) }
+.pxc__acts button:active:not(:disabled) { transform: scale(.97) }
+.pxc__acts button:disabled { opacity: .45; cursor: default; box-shadow: none }
+.pxc__acts button:focus-visible { outline: 2px solid #fff; outline-offset: 2px }
+.pxc__acts .pxc__ghost { min-height: 30px; padding: 0 12px; background: transparent; color: var(--c-mute); box-shadow: none; font-weight: 600; font-size: .8rem }
+.pxc__acts .pxc__ghost:hover:not(:disabled) { color: var(--c-ink); box-shadow: none }
 
-.pxc__foot { display: flex; justify-content: space-between; gap: 12px; margin-top: 14px; padding: 10px 16px; border-top: 1px solid var(--c-line); font-size: .74rem; color: var(--c-mute) }
+.pxc__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; padding: 10px 16px; border-top: 1px solid var(--c-line); font-size: .74rem; color: var(--c-mute) }
+.pxc__cov { display: flex; align-items: center; gap: 10px }
+.pxc__cov ol { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0 }
+.pxc__cov li { width: 22px; height: 8px; background: rgba(230,232,255,.12); transition: background .4s, box-shadow .4s }
+.pxc__cov li[data-r="fired"] { background: var(--c-ok); box-shadow: 0 0 10px rgba(52,211,153,.6) }
+.pxc__cov li[data-r="missed"] { background: var(--c-bad) }
+.pxc__reset { padding: 2px 6px; border: 0; background: none; cursor: pointer; font-size: .74rem; font-weight: 600; color: var(--c-mute); text-decoration: underline; text-underline-offset: 3px }
+.pxc__reset:hover { color: var(--c-ink) }
+.pxc__reset:focus-visible { outline: 2px solid var(--c-acc); outline-offset: 2px }
 
 @keyframes pxc-in { from { opacity: 0; transform: translateY(5px) } to { opacity: 1; transform: none } }
 @keyframes pxc-type { from { opacity: 0; transform: translateX(-6px) } to { opacity: 1; transform: none } }
@@ -429,6 +514,7 @@ const PXH_CSS = `
   .pxc__log p { grid-template-columns: 44px 1fr }
   .pxc__log time { display: none }
   .pxc__verdict { grid-template-columns: 1fr; margin: 12px 12px 0 }
-  .pxc__verdict button { justify-content: center }
+  .pxc__acts { flex-direction: row }
+  .pxc__acts button:first-child { flex: 1 }
 }
 `;
