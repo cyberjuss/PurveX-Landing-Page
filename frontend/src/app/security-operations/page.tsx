@@ -1,7 +1,6 @@
-"use client";
+import { permanentRedirect } from "next/navigation";
 
-import SecurityOperationsPage from "@/components/purvex-landing-page/security-operations-page";
-
+// Operations is now consulting on the founder page. Keep old links working.
 export default function Page() {
-  return <SecurityOperationsPage />;
+  permanentRedirect("/about/founder#consulting");
 }

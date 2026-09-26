@@ -151,7 +151,7 @@ function AlertDock() {
 
 const charges = [
   {
-    href: "/security-operations",
+    href: "/platform",
     title: "Unproven detections",
     body: "The rules are in. Nobody has shown they fire.",
     Icon: IconValidate,
@@ -163,9 +163,9 @@ const charges = [
     Icon: IconBook,
   },
   {
-    href: "/platform",
-    title: "Assumed coverage",
-    body: "If it has not been tested, you do not know what it covers.",
+    href: "/about/founder#consulting",
+    title: "Stretched teams",
+    body: "Small teams need coverage they do not have time to build.",
     Icon: IconCoverage,
   },
 ];
@@ -209,11 +209,6 @@ const coachPoints = [
   { text: "The rest waits inside the portal", Icon: IconMic },
 ];
 
-const opsPoints = [
-  { text: "SIEM and detection engineering", Icon: IconTune },
-  { text: "Optimization and assessments", Icon: IconCoverage },
-  { text: "Detection validation", Icon: IconValidate },
-];
 
 const REVIEWS = [
   {
@@ -233,14 +228,6 @@ const REVIEWS = [
 
 const OFFERS = [
   {
-    label: "Operations",
-    title: "Detections that actually fire",
-    body: "We write detection rules for your logs, test that they trigger, and cut the noise. You keep every result.",
-    who: "For security teams",
-    href: "/security-operations",
-    Icon: IconValidate,
-  },
-  {
     label: "Training",
     title: "Training that builds real skill",
     body: "Learners practice in their own lab with an AI coach and finish with proof of skill employers trust.",
@@ -255,6 +242,14 @@ const OFFERS = [
     who: "Free to start, self-hosted",
     href: "/platform",
     Icon: IconChain,
+  },
+  {
+    label: "Consulting",
+    title: "Hands-on detection help",
+    body: "The founder works with your team to write, test, and tune the detections in your SIEM.",
+    who: "Book 30 minutes",
+    href: "/about/founder#consulting",
+    Icon: IconValidate,
   },
 ];
 

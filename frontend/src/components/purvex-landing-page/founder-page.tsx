@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { Linkedin } from "lucide-react";
-import { SiteChrome } from "./chrome";
+import { ArrowRight, Linkedin } from "lucide-react";
+import { BOOKING_URL, SiteChrome } from "./chrome";
+import { IconAudit, IconTune, IconValidate, IconRule, type BrandIcon } from "./brand-icons";
 
 const bioSections = [
   {
@@ -17,6 +18,20 @@ const bioSections = [
     label: "Why PurveX exists",
     body: "I kept running into the same gap, that smaller security teams need stronger coverage and do not have the headcount to build and maintain it by hand. AI agents can close that gap when they are paired with someone who still understands what is happening underneath them, because no team should need to be enterprise-sized to be secure.",
   },
+];
+
+// Consulting: hands-on SIEM and detection work, booked directly with Justin.
+const services: { title: string; body: string; Icon: BrandIcon }[] = [
+  { title: "Detection engineering", body: "Rules written for your logs and your environment, not a vendor template.", Icon: IconRule },
+  { title: "Noise reduction", body: "Tune out false alarms so a real alert is not buried under them.", Icon: IconTune },
+  { title: "Coverage review", body: "Map what your SIEM can see against MITRE ATT&CK and find the gaps.", Icon: IconAudit },
+  { title: "Detection validation", body: "Test that each alert actually fires, and keep the evidence.", Icon: IconValidate },
+];
+
+const steps = [
+  { title: "Book 30 minutes", body: "Tell me about your SIEM, your team, and what worries you." },
+  { title: "Review together", body: "We look at what fires, what does not, and where the gaps are." },
+  { title: "Agree a scope", body: "A short, focused engagement with a clear result." },
 ];
 
 const quickFacts = [
@@ -35,6 +50,10 @@ export default function FounderPage() {
           <h1 className="sp-hero__h1">Justin Duru</h1>
           <p className="sp-hero__sub">Founder &amp; Lead Security Consultant, PurveX</p>
           <div className="sp-founder-page__links">
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--sm">
+              Book 30 minutes <ArrowRight size={14} />
+            </a>
+            <a href="#consulting" className="sp-btn sp-btn--ghost sp-btn--sm">Consulting</a>
             <a
               href="https://linkedin.com/in/jduru"
               target="_blank"
@@ -79,6 +98,42 @@ export default function FounderPage() {
         </div>
       </section>
 
+      <section className="sp-section fc" id="consulting">
+        <div className="fc__head">
+          <span className="sp-founder-page__section-label">Consulting</span>
+          <h2>Hands-on help with your SIEM and detections</h2>
+          <p>
+            I work with security teams on Microsoft Sentinel, Splunk, and the detections inside them, so the alerts you
+            count on actually fire.
+          </p>
+        </div>
+        <ul className="fc__services" data-r>
+          {services.map(({ title, body, Icon }) => (
+            <li key={title}>
+              <i><Icon size={22} /></i>
+              <strong>{title}</strong>
+              <p>{body}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="fc__how">
+          <ol>
+            {steps.map((s, n) => (
+              <li key={s.title}>
+                <b>{n + 1}</b>
+                <div>
+                  <strong>{s.title}</strong>
+                  <p>{s.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
+            Book 30 minutes <ArrowRight size={16} />
+          </a>
+        </div>
+      </section>
+
       <style>{`
 .sp-hero.sp-hero--split { text-align: left; max-width: 1140px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center }
 .sp-hero--split .sp-hero__badge { margin-bottom: 22px }
@@ -120,6 +175,29 @@ export default function FounderPage() {
 .sp-founder-page__fact span { display: block; font-size: .72rem; color: var(--muted); margin-bottom: 3px }
 .sp-founder-page__fact strong { display: block; font-size: .88rem; font-weight: 620; color: var(--ink); line-height: 1.4 }
 
+/* consulting */
+.fc { max-width: 940px; margin: 0 auto; scroll-margin-top: 90px }
+.fc__head h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.6rem, 2.8vw, 2.2rem); font-weight: 700; letter-spacing: -.025em; line-height: 1.15; color: var(--ink) }
+.fc__head p { margin: 12px 0 0; max-width: 58ch; font-size: 1.03rem; line-height: 1.65; color: var(--ink-soft) }
+.fc__services { list-style: none; margin: 32px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px }
+.fc__services[data-r] { opacity: 1; transform: none; filter: none }
+.fc__services li { padding: 22px; background: #fff; border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 18px 36px -30px rgba(42,34,128,.4) }
+.fc__services i { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-deep) }
+.fc__services i svg { position: static }
+.fc__services strong { display: block; margin-top: 14px; font-size: 1.05rem; font-weight: 650; color: var(--ink) }
+.fc__services p { margin: 6px 0 0; font-size: .95rem; line-height: 1.55; color: var(--muted) }
+.fc__how { display: flex; align-items: center; justify-content: space-between; gap: 24px 40px; margin-top: 18px; padding: 24px; border-radius: 16px; background: var(--accent-soft) }
+.fc__how ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; flex: 1 }
+.fc__how li { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start }
+.fc__how b { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; font-size: .82rem; color: #fff; background: var(--accent-deep) }
+.fc__how strong { display: block; font-size: .96rem; font-weight: 650; color: var(--ink) }
+.fc__how p { margin: 3px 0 0; font-size: .88rem; line-height: 1.45; color: var(--ink-soft) }
+.fc__how .sp-btn { flex: none }
+
+@media (max-width: 900px) {
+  .fc__how { flex-direction: column; align-items: stretch }
+  .fc__how ol { grid-template-columns: 1fr }
+}
 @media (max-width: 780px) {
   .sp-founder-page__grid { grid-template-columns: 1fr; gap: 32px }
   .sp-founder-page__facts { position: static }
@@ -127,6 +205,7 @@ export default function FounderPage() {
 @media (max-width: 640px) {
   .sp-founder-page__photo { width: 200px; height: 200px }
   .sp-founder-page__links { flex-wrap: wrap }
+  .fc__services { grid-template-columns: 1fr }
 }
       `}</style>
     </SiteChrome>

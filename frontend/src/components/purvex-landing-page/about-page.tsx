@@ -24,9 +24,9 @@ const FIXES: { problem: string; detail: string; name: string; answer: string; hr
   {
     problem: "Small teams are stretched thin",
     detail: "They need strong coverage without the headcount to build and maintain it.",
-    name: "Operations",
-    answer: "We write, test, and tune detections for your SIEM, and you keep every result.",
-    href: "/security-operations",
+    name: "Consulting",
+    answer: "Our founder writes, tests, and tunes the detections in your SIEM, working with your team.",
+    href: "/about/founder#consulting",
     Icon: IconTune,
   },
   {
