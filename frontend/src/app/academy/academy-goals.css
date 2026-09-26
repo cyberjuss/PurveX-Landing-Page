@@ -1,207 +1,231 @@
-/* Analyst Brief: the "what you must be able to answer" panel on a lab
-   overview. A dark console card in both themes so it reads as the one
-   thing on the page to commit to memory. */
+/* Analyst Brief: a slim cue in the lesson that slides the full brief in
+   from the right, like the Coach. The brief markup ships hidden inside the
+   lesson; academy-shell.tsx copies it into the panel on click. */
 
-.academy-prose .ad-goals {
-  --goals-ink: #eef1fb;
-  --goals-ink-2: #a3adc6;
-  --goals-line: rgba(180, 196, 255, 0.12);
-  --goals-accent: #9d8cff;
-  --goals-alert: #ff6b70;
-  position: relative;
-  margin: 1.4rem 0 1.6rem;
-  padding: 1.5rem 1.6rem 0;
-  overflow: hidden;
-  color: var(--goals-ink);
-  background:
-    radial-gradient(120% 90% at 100% 0%, rgba(106, 92, 255, 0.28), transparent 55%),
-    radial-gradient(80% 60% at 0% 100%, rgba(229, 72, 77, 0.10), transparent 60%),
-    linear-gradient(180deg, #111830 0%, #0a0f1f 100%);
-  border: 1px solid rgba(157, 140, 255, 0.28);
-  border-radius: 16px;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.06) inset,
-    0 2px 4px rgba(10, 15, 31, 0.08),
-    0 24px 48px -28px rgba(40, 30, 140, 0.55);
+/* The cue, styled like the other flat // TAG callouts. */
+.academy-prose .ad-goals-cue { margin: 1rem 0 1.5rem; }
+.academy-prose .ad-goals { display: none; }
+.academy-prose .ad-goals-open {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.35rem 1.25rem;
+  width: 100%;
+  padding: 1rem 0;
+  border: 0;
+  border-top: 1px solid var(--pvrx-border-light);
+  border-bottom: 1px solid var(--pvrx-border-light);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
-/* Faint grid texture, fading out toward the bottom. */
-.academy-prose .ad-goals::before {
-  content: "";
-  position: absolute;
+.academy-prose .ad-goals-open__tag {
+  grid-column: 1;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pvrx-text-primary-light);
+}
+.academy-prose .ad-goals-open__tag::before { content: "// "; color: #5546e0; }
+.academy-prose .ad-goals-open__text {
+  grid-column: 1;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--pvrx-text-secondary-light);
+}
+.academy-prose .ad-goals-open__cta {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid rgba(138, 148, 168, 0.55);
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--pvrx-text-primary-light);
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
+}
+.academy-prose .ad-goals-open__cta::after { content: "→"; transition: transform 0.15s; }
+.academy-prose .ad-goals-open:hover .ad-goals-open__cta { border-color: #5546e0; color: #5546e0; }
+.academy-prose .ad-goals-open:hover .ad-goals-open__cta::after { transform: translateX(2px); }
+.academy-prose .ad-goals-open:focus-visible { outline: 2px solid #5546e0; outline-offset: 4px; }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-goals-open__tag::before { color: #9eb0ff; }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-goals-open__cta { border-color: rgba(180, 200, 255, 0.28); color: #c5d0ff; }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-goals-open:hover .ad-goals-open__cta { border-color: #9eb0ff; color: #9eb0ff; }
+@media (max-width: 560px) {
+  .academy-prose .ad-goals-open { grid-template-columns: 1fr; }
+  .academy-prose .ad-goals-open__cta { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 0.4rem; }
+}
+
+/* The slide-in panel. Same geometry as the Coach: under the header on
+   desktop, a full-screen sheet from the bottom on phones. */
+.ad-drawer-root {
+  --dr-bg: #ffffff;
+  --dr-ink: #0f172a;
+  --dr-ink-2: #475569;
+  --dr-ink-3: #64748b;
+  --dr-line: #e2e8f0;
+  --dr-accent: #5546e0;
+  --dr-alert: #d93a3f;
+  position: fixed;
   inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 28px 28px;
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 70%);
-  mask-image: linear-gradient(180deg, #000 0%, transparent 70%);
+  z-index: 36;
 }
-.academy-prose .ad-goals > * { position: relative; }
-
-.academy-prose .ad-goals__head {
+.ad-drawer-root[data-academy-theme="dark"] {
+  --dr-bg: #000000;
+  --dr-ink: #e8eef8;
+  --dr-ink-2: #9aa8bc;
+  --dr-ink-3: #6b768a;
+  --dr-line: rgba(180, 200, 255, 0.14);
+  --dr-accent: #9eb0ff;
+  --dr-alert: #fca5a5;
+}
+.ad-drawer__backdrop {
+  position: absolute;
+  inset: var(--dr-top, 0px) 0 0 0;
+  background: rgba(15, 23, 42, 0.28);
+  animation: pc-fade 280ms cubic-bezier(.16,1,.3,1);
+}
+.ad-drawer-root[data-academy-theme="dark"] .ad-drawer__backdrop { background: rgba(0, 0, 0, 0.55); }
+.ad-drawer {
+  position: absolute;
+  top: var(--dr-top, 0px);
+  right: 0;
+  bottom: 0;
+  width: min(420px, 100vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--dr-bg);
+  border-left: 1px solid var(--dr-line);
+  color: var(--dr-ink);
+  animation: pc-slide 280ms cubic-bezier(.16,1,.3,1) both;
+}
+.ad-drawer__head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  padding-bottom: 0.9rem;
-  border-bottom: 1px solid var(--goals-line);
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--dr-line);
 }
-.academy-prose .ad-goals__kicker,
-.academy-prose .ad-goals__scope,
-.academy-prose .ad-goals__label {
+.ad-drawer__title {
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 0.68rem;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-.academy-prose .ad-goals__kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  color: var(--goals-ink);
+.ad-drawer__title::before { content: "// "; color: var(--dr-accent); }
+.ad-drawer__close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--dr-line);
+  background: none;
+  color: var(--dr-ink-2);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
 }
-.academy-prose .ad-goals__kicker::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--goals-accent);
-  box-shadow: 0 0 0 3px rgba(157, 140, 255, 0.18), 0 0 12px rgba(157, 140, 255, 0.8);
-}
-.academy-prose .ad-goals__scope {
-  padding: 0.28rem 0.55rem;
-  border: 1px solid var(--goals-line);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--goals-ink-2);
-  letter-spacing: 0.06em;
-  text-transform: none;
-  font-weight: 600;
-}
+.ad-drawer__close:hover { color: var(--dr-ink); border-color: var(--dr-ink-3); }
+.ad-drawer__body { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 20px 24px; overscroll-behavior: contain; }
 
-.academy-prose .ad-goals__lede {
-  margin: 1.1rem 0 1rem;
-  max-width: 56ch;
+/* The brief inside the panel. */
+.ad-drawer .ad-goals { display: block; }
+.ad-drawer .ad-goals__head { display: flex; justify-content: flex-end; padding: 12px 0 0; }
+.ad-drawer .ad-goals__kicker { display: none; }
+.ad-drawer .ad-goals__scope {
+  padding: 3px 8px;
+  border: 1px solid var(--dr-line);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  color: var(--dr-ink-3);
+}
+.ad-drawer .ad-goals__lede {
+  margin: 12px 0 18px;
   font-family: var(--font-display);
-  font-size: 1.08rem;
+  font-size: 1.05rem;
   font-weight: 500;
-  line-height: 1.55;
-  letter-spacing: -0.005em;
-  color: var(--goals-ink);
+  line-height: 1.5;
+  color: var(--dr-ink);
 }
-
-/* The five checks: numbered rows with mono 01-05 indices. */
-.academy-prose .ad-goals__checks {
+.ad-drawer .ad-goals__checks {
   counter-reset: goals;
   list-style: none;
-  margin: 0 0 1.35rem;
+  margin: 0 0 22px;
   padding: 0;
-  border-top: 1px solid var(--goals-line);
+  border-top: 1px solid var(--dr-line);
 }
-.academy-prose .ad-goals__checks li {
+.ad-drawer .ad-goals__checks li {
   counter-increment: goals;
   display: grid;
-  grid-template-columns: 2.4rem 1fr;
+  grid-template-columns: 2.2rem 1fr;
   align-items: baseline;
-  margin: 0;
-  padding: 0.72rem 0.25rem;
-  border-bottom: 1px solid var(--goals-line);
-  font-size: 0.96rem;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--dr-line);
+  font-size: 0.92rem;
   line-height: 1.5;
-  color: var(--goals-ink);
-  transition: background-color 0.2s, padding-left 0.2s;
 }
-.academy-prose .ad-goals__checks li::before {
+.ad-drawer .ad-goals__checks li::before {
   content: counter(goals, decimal-leading-zero);
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 0.74rem;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--goals-accent);
+  color: var(--dr-accent);
 }
-.academy-prose .ad-goals__checks li:hover {
-  padding-left: 0.6rem;
-  background: linear-gradient(90deg, rgba(157, 140, 255, 0.10), transparent 70%);
-}
-
-/* Red flags: the anomalies the student is training their eye for. */
-.academy-prose .ad-goals__label {
+.ad-drawer .ad-goals__label {
   display: block;
-  margin-bottom: 0.65rem;
-  color: var(--goals-ink-2);
+  margin-bottom: 10px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dr-ink-3);
 }
-.academy-prose .ad-goals__flags ul {
+.ad-drawer .ad-goals__flags ul { list-style: none; margin: 0; padding: 0; }
+.ad-drawer .ad-goals__flags li {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.academy-prose .ad-goals__flags li {
-  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0.42rem 0.8rem 0.42rem 0.65rem;
-  border: 1px solid rgba(255, 107, 112, 0.28);
-  border-radius: 999px;
-  background: rgba(255, 107, 112, 0.08);
-  font-size: 0.86rem;
-  font-weight: 500;
-  color: #ffd9da;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: 0.92rem;
+  color: var(--dr-ink);
 }
-.academy-prose .ad-goals__flags li::before {
+.ad-drawer .ad-goals__flags li::before {
   content: "";
   flex: none;
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--goals-alert);
-  box-shadow: 0 0 8px rgba(255, 107, 112, 0.9);
+  background: var(--dr-alert);
 }
-
-/* The goal: a full-bleed footer band that closes the card. */
-.academy-prose .ad-goals__goal {
-  margin: 1.5rem -1.6rem 0;
-  padding: 1.15rem 1.6rem 1.3rem;
-  border-top: 1px solid var(--goals-line);
-  background: rgba(255, 255, 255, 0.025);
+.ad-drawer .ad-goals__goal {
+  margin: 24px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--dr-line);
   font-family: var(--font-display);
-  font-size: 1.12rem;
+  font-size: 1.02rem;
   font-weight: 500;
   line-height: 1.5;
-  color: var(--goals-ink);
+  color: var(--dr-ink);
 }
-.academy-prose .ad-goals__goal .ad-goals__label { margin-bottom: 0.4rem; color: var(--goals-accent); }
-.academy-prose .ad-goals__goal strong {
-  font-weight: 700;
-  color: #fff;
-  background: linear-gradient(90deg, #ff8a8e, #b8a9ff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+.ad-drawer .ad-goals__goal .ad-goals__label { color: var(--dr-accent); margin-bottom: 6px; }
+.ad-drawer .ad-goals__goal strong { font-weight: 700; color: var(--dr-alert); }
 
-/* Dark theme: sit on true black like the other Academy panels. */
-.academy-bg[data-academy-theme="dark"] .academy-prose .ad-goals {
-  background:
-    radial-gradient(120% 90% at 100% 0%, rgba(106, 92, 255, 0.22), transparent 55%),
-    radial-gradient(80% 60% at 0% 100%, rgba(229, 72, 77, 0.08), transparent 60%),
-    #05060c;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 24px 60px -30px rgba(106, 92, 255, 0.45);
+@media (max-width: 640px) {
+  .ad-drawer { top: 0; width: 100vw; animation-name: pc-rise; border-left: 0; }
+  .ad-drawer__backdrop { inset: 0; }
+  .ad-drawer__head { padding-top: max(14px, env(safe-area-inset-top)); }
+  .ad-drawer__body { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
 }
-
-@media (max-width: 560px) {
-  .academy-prose .ad-goals { padding: 1.2rem 1.1rem 0; }
-  .academy-prose .ad-goals__goal { margin: 1.3rem -1.1rem 0; padding: 1rem 1.1rem 1.15rem; font-size: 1.02rem; }
-  .academy-prose .ad-goals__lede { font-size: 1rem; }
-  .academy-prose .ad-goals__checks li { grid-template-columns: 2rem 1fr; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .academy-prose .ad-goals__checks li { transition: none; }
+  .ad-drawer, .ad-drawer__backdrop { animation: none; }
 }

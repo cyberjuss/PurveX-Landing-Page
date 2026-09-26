@@ -772,9 +772,65 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       dialog.showModal();
     };
 
+    // Slides the lesson's hidden Analyst Brief in from the right, like the Coach.
+    const openBrief = (trigger: HTMLElement) => {
+      const brief = trigger.closest(".academy-prose")?.querySelector(".ad-goals");
+      if (!brief || document.querySelector(".ad-drawer-root")) return;
+      const root = document.querySelector(".academy-bg");
+      const header = root?.querySelector("header");
+      const title = brief.querySelector(".ad-goals__kicker")?.textContent || "Brief";
+
+      const wrap = document.createElement("div");
+      wrap.className = "ad-drawer-root";
+      wrap.dataset.academyTheme = root?.getAttribute("data-academy-theme") === "dark" ? "dark" : "light";
+      wrap.style.setProperty("--dr-top", `${header ? Math.round(header.getBoundingClientRect().bottom) : 0}px`);
+      const backdrop = document.createElement("div");
+      backdrop.className = "ad-drawer__backdrop";
+      const panel = document.createElement("aside");
+      panel.className = "ad-drawer";
+      panel.setAttribute("role", "dialog");
+      panel.setAttribute("aria-modal", "true");
+      panel.setAttribute("aria-label", title);
+      const head = document.createElement("div");
+      head.className = "ad-drawer__head";
+      const heading = document.createElement("span");
+      heading.className = "ad-drawer__title";
+      heading.textContent = title;
+      const close = makeButton("ad-drawer__close", "Close", "×");
+      head.append(heading, close);
+      const body = document.createElement("div");
+      body.className = "ad-drawer__body";
+      const copy = brief.cloneNode(true) as HTMLElement;
+      copy.hidden = false;
+      body.append(copy);
+      panel.append(head, body);
+      wrap.append(backdrop, panel);
+
+      // Lock scrolling on <html> only. Hiding overflow on <body> as well
+      // makes it a scroll box, and the sticky header scrolls out of view.
+      const prevHtml = document.documentElement.style.overflow;
+      const shut = () => {
+        wrap.remove();
+        document.documentElement.style.overflow = prevHtml;
+        document.removeEventListener("keydown", onKey, true);
+        trigger.focus();
+      };
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === "Escape") { e.stopPropagation(); shut(); }
+      };
+      close.addEventListener("click", shut);
+      backdrop.addEventListener("click", shut);
+      document.addEventListener("keydown", onKey, true);
+      document.documentElement.style.overflow = "hidden";
+      document.body.append(wrap);
+      close.focus();
+    };
+
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target.closest(".ad-zoom")) return;
+      const briefBtn = target.closest<HTMLElement>(".ad-goals-open");
+      if (briefBtn) return openBrief(briefBtn);
       const shot = target.closest<HTMLImageElement>(ZOOM_IMG);
       if (shot) return openZoom(shot);
       const scriptLink = target.closest<HTMLAnchorElement>("a[href]");
@@ -881,6 +937,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       window.removeEventListener(RESULTS_CHANGED_EVENT, onResultsChanged);
       document.querySelector(".ad-hint-card")?.remove();
       document.querySelector(".ad-zoom")?.remove();
+      document.querySelector(".ad-drawer-root")?.remove();
     };
   }, []);
 
