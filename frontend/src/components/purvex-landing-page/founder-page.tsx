@@ -34,11 +34,12 @@ const story = [
 ];
 
 // Consulting: hands-on SIEM and detection work, booked directly with Justin.
-const services: { title: string; short: string; body: string; does: string[]; get: string; Icon: BrandIcon }[] = [
+const services: { title: string; short: string; body: string; problem: string; does: string[]; get: string; Icon: BrandIcon }[] = [
   {
     title: "Detection engineering",
     short: "New rules for your logs",
     body: "Rules written for your logs and your environment, not a vendor template.",
+    problem: "Your SIEM runs vendor rules that were never written for your logs, so real attacks slip past without an alert.",
     does: [
       "Review the logs you already collect",
       "Write rules mapped to MITRE ATT&CK techniques",
@@ -51,6 +52,7 @@ const services: { title: string; short: string; body: string; does: string[]; ge
     title: "Noise reduction",
     short: "Fewer false alarms",
     body: "Tune out false alarms so a real alert is not buried under them.",
+    problem: "Your analysts spend the day closing false alarms, and the one real alert gets lost in the pile.",
     does: [
       "Find the rules that fire most without a real threat behind them",
       "Tune the logic, thresholds, and exclusions",
@@ -63,6 +65,7 @@ const services: { title: string; short: string; body: string; does: string[]; ge
     title: "Coverage review",
     short: "Know where the gaps are",
     body: "Map what your SIEM can see against MITRE ATT&CK and find the gaps.",
+    problem: "Nobody can say which attacks your SIEM would catch, so leadership is guessing and the gaps stay hidden.",
     does: [
       "List your data sources and the detections you already have",
       "Map both to MITRE ATT&CK",
@@ -75,6 +78,7 @@ const services: { title: string; short: string; body: string; does: string[]; ge
     title: "Detection validation",
     short: "Proof your alerts fire",
     body: "Test that each alert actually fires, and keep the evidence.",
+    problem: "Your rules look fine on paper, but nobody has checked that they fire when an attack actually happens.",
     does: [
       "Run safe attack simulations with Atomic Red Team",
       "Check which alerts fired and where the rest broke",
@@ -132,6 +136,10 @@ function ServiceExplorer() {
             <h3>{s.title}</h3>
             <p>{s.body}</p>
           </div>
+        </div>
+        <div className="fx__problem">
+          <span>The problem</span>
+          <p>{s.problem}</p>
         </div>
         <div className="fx__does">
           <span>What I do</span>
@@ -219,7 +227,10 @@ export default function FounderPage() {
         <div className="fd-consult__head">
           <span className="fd-label">Consulting</span>
           <h2>Hands-on help with your SIEM and detections</h2>
-          <p>I work with security teams on the detections inside their SIEM, so the alerts they count on actually fire.</p>
+          <p>
+            I work with security teams on the detections inside their SIEM, so the alerts they count on actually fire. It is
+            built for small teams that need senior detection help without hiring for it.
+          </p>
           <p className="fd-works">
             <span>Works in</span>
             Microsoft Sentinel, Splunk, and Splunk SOAR
@@ -335,12 +346,15 @@ const FD_CSS = `
 .fx__arrow { position: static; color: var(--accent-deep); opacity: 0; transform: translateX(-4px); transition: opacity .2s, transform .2s }
 .fx__list button[aria-selected="true"] .fx__arrow { opacity: 1; transform: none }
 
-.fx__panel { display: flex; flex-direction: column; gap: 26px; padding: clamp(24px, 3.5vw, 40px); animation: fx-in .35s cubic-bezier(.16,1,.3,1) both }
+.fx__panel { display: flex; flex-direction: column; gap: 22px; padding: clamp(24px, 3.5vw, 40px); animation: fx-in .35s cubic-bezier(.16,1,.3,1) both }
 .fx__top { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: start }
 .fx__top i { display: grid; place-items: center; width: 56px; height: 56px; background: var(--accent); color: #fff; box-shadow: 0 16px 30px -16px rgba(85,70,224,.8) }
 .fx__top i svg { position: static }
 .fx__top h3 { margin: 4px 0 0; font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; letter-spacing: -.03em; color: var(--ink) }
 .fx__top p { margin: 6px 0 0; max-width: 52ch; font-size: 1.02rem; line-height: 1.55; color: var(--ink-soft) }
+.fx__problem { padding: 14px 16px; background: #fef6f5; border-left: 3px solid #e5484d }
+.fx__problem span { display: block; font-size: .8rem; font-weight: 700; color: #b42318 }
+.fx__problem p { margin: 4px 0 0; max-width: 60ch; font-size: .98rem; line-height: 1.5; color: var(--ink) }
 .fx__does span, .fx__get span { display: block; font-size: .8rem; font-weight: 700; color: var(--muted) }
 .fx__does ul { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 12px }
 .fx__does li { display: flex; align-items: flex-start; gap: 12px; font-size: .98rem; line-height: 1.45; color: var(--ink) }
