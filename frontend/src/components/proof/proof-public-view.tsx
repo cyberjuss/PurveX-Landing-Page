@@ -218,8 +218,7 @@ export function ProofPublicView({
           <span>Issued by PurveX Academy</span>
           {settings.credentialId && (
             <span>
-              Credential ID <code>{settings.credentialId}</code> · Confirm it is genuine at{" "}
-              <a href={`/verify/${settings.credentialId}`}>purvex.io/verify/{settings.credentialId}</a>
+              Credential <code>{settings.credentialId}</code> · <a href={`/verify/${settings.credentialId}`}>Verify at purvex.io/verify</a>
             </span>
           )}
         </footer>
