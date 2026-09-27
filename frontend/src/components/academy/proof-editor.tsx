@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import QRCode from "qrcode";
 import { Loader2, X } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { AVAILABILITY, CERT_STATUS_LABEL, CERT_SUGGESTIONS, certStatusText, openTasks, SHOTS_PER_ITEM, TRACK_LABEL, type ExtraCert, type StarPart, type Track, type WorkItem } from "@/lib/academy-proof";
@@ -157,29 +156,6 @@ export function ProofEditor() {
       setAvatar(null);
     };
   }, [avatarPath]);
-
-  // Built on click as a PNG file, so the download works in every browser.
-  async function downloadQr() {
-    if (!data) return;
-    const url = `https://purvex.io/p/${data.settings.slug}`;
-    try {
-      const canvas = document.createElement("canvas");
-      await QRCode.toCanvas(canvas, url, { width: 600, margin: 2, errorCorrectionLevel: "M", color: { dark: "#111827", light: "#ffffff" } });
-      const blob = await new Promise<Blob | null>((done) => canvas.toBlob(done, "image/png"));
-      if (!blob) throw new Error("no image");
-      const href = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = href;
-      a.download = `purvex-portfolio-${data.settings.slug}.png`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.setTimeout(() => URL.revokeObjectURL(href), 1000);
-      say(data.settings.published ? "QR code downloaded" : "QR code downloaded. It opens your portfolio once you make it public.");
-    } catch {
-      say("Unable to make the QR code. Try again.", true);
-    }
-  }
 
   const resumePath = data?.settings.resumePath ?? null;
   useEffect(() => {
@@ -454,9 +430,15 @@ export function ProofEditor() {
               <button type="button" className="pf-btn pf-btn--primary" disabled={busy} onClick={() => save({}, "Saved")}>
                 Save changes
               </button>
-              <button type="button" className="pf-btn" disabled={busy} onClick={downloadQr} title="A QR code that opens your portfolio from a phone camera">
+              <a
+                className="pf-btn"
+                href={`/p/${settings.slug}/qr`}
+                download={`purvex-portfolio-${settings.slug}.png`}
+                title="A QR code that opens your portfolio from a phone camera"
+                onClick={() => say(settings.published ? "QR code downloaded" : "QR code downloaded. It opens your portfolio once you make it public.")}
+              >
                 Download QR code
-              </button>
+              </a>
               {busy && <Loader2 className="h-4 w-4 animate-spin" />}
             </div>
             {settings.published && (
