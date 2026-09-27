@@ -1,0 +1,91 @@
+import { ProofGallery } from "@/components/proof/proof-gallery";
+import { SHOTS_PER_ITEM } from "@/lib/academy-proof";
+import type { ProofData } from "@/lib/academy-proof-data";
+import type { ProofSettings } from "@/lib/academy-proof-store";
+
+const day = (iso: string) => (iso ? new Date(`${iso.slice(0, 10)}T00:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "");
+
+// The page employers see. Pure display, fed by /p/[slug].
+export function ProofPublicView({ settings, data }: { settings: ProofSettings; data: Pick<ProofData, "items" | "skills" | "roleName" | "lastLabCheck" | "shots"> }) {
+  const first = settings.displayName.split(" ")[0];
+
+  const shotsFor = (job: string) => {
+    if (!settings.shotsOn.includes(job)) return [];
+    const list = data.shots.filter((s) => s.job === job);
+    return list.length >= SHOTS_PER_ITEM ? list.slice(0, SHOTS_PER_ITEM) : [];
+  };
+
+  return (
+    <main className="pp">
+      <div className="pp__wrap">
+        <header className="pp-head">
+          <p className="pp-kicker">PurveX Academy</p>
+          <h1>{settings.displayName}</h1>
+          {data.roleName && <p className="pp-role">{data.roleName} candidate</p>}
+          {data.lastLabCheck && <p className="pp-checked">Lab last checked {new Date(data.lastLabCheck).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>}
+        </header>
+
+        <section className="pp-sec">
+          <h2>Lab work</h2>
+          <p className="pp-note">
+            {first} ran an Active Directory domain for a simulated wealth firm. Each item was checked in {first}&rsquo;s own lab.
+          </p>
+          <ul className="pp-list">
+            {data.items.map((it) => {
+              const shots = shotsFor(it.job);
+              return (
+                <li key={it.job}>
+                  <div>
+                    <b>{it.title}</b>
+                    <div className="pp-act">
+                      <i>{it.actions.length > 1 ? "Actions" : "Action"}</i>
+                      {it.actions.length > 1 ? (
+                        <ul>
+                          {it.actions.map((a) => (
+                            <li key={a}>{a}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <span>{it.actions[0]}</span>
+                      )}
+                    </div>
+                    <ProofGallery
+                      title={it.title}
+                      shots={shots.map((s) => ({ src: `/p/${settings.slug}/shot/${s.id}`, caption: s.caption }))}
+                    />
+                  </div>
+                  <em>✓ {day(it.date)}</em>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+
+        {settings.showSkills && data.skills.length > 0 && (
+          <section className="pp-sec">
+            <h2>Skills</h2>
+            <div className="pp-skills">
+              {data.skills.map((g) => (
+                <div key={g.group}>
+                  <h3>{g.group}</h3>
+                  <ul>
+                    {g.items.map((k) => (
+                      <li key={k}>{k}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <footer className="pp-foot">
+          <span>
+            Credential <code>{settings.credentialId}</code> · <a href={`/verify/${settings.credentialId}`}>Verify</a>
+          </span>
+          <span>Issued by PurveX Academy</span>
+        </footer>
+      </div>
+    </main>
+  );
+}
