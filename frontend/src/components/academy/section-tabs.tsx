@@ -12,6 +12,8 @@ import { TrailDock, type TrailLink } from "./trail-dock";
 import { useCoach } from "./coach-context";
 import type { Quiz } from "@/content/academy/quizzes";
 import type { LabWidget } from "@/lib/academy-content";
+import { HashVerifyLab } from "./labs/hash-verify-lab";
+import { PasswordTableLab } from "./labs/password-table-lab";
 import { RiskTriageLab } from "./labs/risk-triage-lab";
 
 type WeekLink = { label: string; href: string };
@@ -166,10 +168,10 @@ export function SectionTabs({
   const panel =
     current.kind === "quiz" ? (
       <QuizBlock quiz={quiz!} actionHost={quizFoot} prevBeyond={prevTrail} nextBeyond={nextTrail} />
-    ) : current.kind === "lab" && current.widget === "risk-triage" ? (
+    ) : current.kind === "lab" && current.widget ? (
       <div>
         <Markdown content={current.markdown} />
-        <RiskTriageLab />
+        {current.widget === "risk-triage" ? <RiskTriageLab /> : current.widget === "hash-verify" ? <HashVerifyLab /> : <PasswordTableLab />}
       </div>
     ) : current.kind === "lab" ? (
       <div>

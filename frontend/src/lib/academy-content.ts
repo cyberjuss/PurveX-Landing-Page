@@ -13,7 +13,7 @@ export function loadLesson(relativePath: string): string | null {
 }
 
 /** Interactive labs rendered by a React component below the section's markdown. */
-export type LabWidget = "risk-triage";
+export type LabWidget = "risk-triage" | "hash-verify" | "password-table";
 
 export interface ContentSection {
   label: string;
@@ -59,8 +59,11 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-2",
     title: "Week 2 — Encryption & Hashing",
-    summary: "How symmetric encryption, asymmetric encryption, and hashing are used in practice.",
-    sections: [],
+    summary: "Prove a file was not changed, and tell encoding, encryption and hashing apart in a real password breach.",
+    sections: [
+      { label: "Lab: The Update Nobody Can Vouch For", file: "phase-1/week-2/lab-hash-verify.md", widget: "hash-verify" },
+      { label: "Lab: The Leaked Password Table", file: "phase-1/week-2/lab-password-table.md", widget: "password-table" },
+    ],
   },
   {
     slug: "week-3",
