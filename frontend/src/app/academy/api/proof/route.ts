@@ -90,7 +90,7 @@ export async function PUT(request: Request) {
   };
   const saved = await saveProofSettings(a.student.id, next);
   if (saved === "taken") return NextResponse.json({ error: "That link is taken. Try another." }, { status: 409 });
-  if (saved === "error") return NextResponse.json({ error: "Unable to save your profile right now. Try again later." }, { status: 500 });
+  if (saved === "error") return NextResponse.json({ error: "Unable to save your portfolio right now. Try again later." }, { status: 500 });
   return NextResponse.json({ settings: next, blockers: shareBlockers(data.items, shotsOn, data.shots) });
 }
 
@@ -110,7 +110,7 @@ export async function POST(request: Request) {
   if (!TYPES.has(file.type)) return NextResponse.json({ error: "Upload a PNG or JPEG screenshot." }, { status: 400 });
   if (file.size > MAX_BYTES) return NextResponse.json({ error: "Upload an image under 4 MB." }, { status: 400 });
   const data = await loadProofData(a.student.id);
-  if (!data.items.some((i) => i.job === job)) return NextResponse.json({ error: "That lab task is not on your profile yet." }, { status: 400 });
+  if (!data.items.some((i) => i.job === job)) return NextResponse.json({ error: "That lab task is not in your portfolio yet." }, { status: 400 });
   if (data.shots.filter((s) => s.job === job).length >= SHOTS_PER_ITEM) {
     return NextResponse.json({ error: `This task already has ${SHOTS_PER_ITEM} screenshots. Remove one first.` }, { status: 400 });
   }

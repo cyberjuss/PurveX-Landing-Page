@@ -1,4 +1,4 @@
-/* Proof profile: the student's own page in the Academy. */
+/* Portfolio: the student's own page in the Academy. */
 .pf { display: grid; gap: 0; max-width: 780px; margin: 0 auto; padding: 8px 0 48px; }
 .pf .rd-kicker { margin: 0; font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
 .pf-head { padding-bottom: 24px; border-bottom: 1px solid var(--rd-line); }
@@ -75,3 +75,19 @@
   .pf-bullets .pf-btn, .pf-ats .pf-btn { justify-self: start; }
 }
 @media (prefers-reduced-motion: reduce) { .pf-switch::after { transition: none; } }
+
+/* Switch between the student's page and the employer preview. */
+.pf-views { display: inline-flex; width: fit-content; margin-top: 20px; border: 1px solid var(--rd-line); }
+.pf-views button { padding: 8px 14px; border: 0; background: none; font-size: 13px; font-weight: 600; color: var(--rd-ink-3); cursor: pointer; }
+.pf-views button[aria-selected="true"] { background: var(--rd-ink); color: #fff; }
+.academy-bg[data-academy-theme="dark"] .pf-views button[aria-selected="true"] { color: #000; }
+.pf-preview { display: grid; gap: 12px; padding-top: 20px; }
+.pf-preview__note { margin: 0; font-size: 13px; color: var(--rd-ink-3); }
+.pf-preview__note code { font-family: var(--font-mono, ui-monospace, monospace); color: var(--rd-ink); }
+.pf-preview .pp { min-height: 0; padding: 0 24px 20px; border: 1px solid var(--rd-line); }
+.pf-preview .pp-head { padding-top: 32px; }
+
+/* Messages appear where the student can see them, whatever they clicked. */
+.pf-toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 60; transform: translateX(-50%); max-width: calc(100vw - 32px); margin: 0; padding: 10px 16px; border: 1px solid var(--rd-line); background: var(--rd-ink); color: #fff; font-size: 13.5px; font-weight: 600; box-shadow: 0 12px 32px -12px rgba(15, 23, 42, 0.45); }
+.academy-bg[data-academy-theme="dark"] .pf-toast { color: #000; }
+.pf-toast.is-bad { background: var(--rd-bad); border-color: var(--rd-bad); color: #fff; }

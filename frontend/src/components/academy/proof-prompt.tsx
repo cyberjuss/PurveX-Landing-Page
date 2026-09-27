@@ -88,9 +88,9 @@ export function ProofPrompt() {
       {ask && saved === null && (
         <div className="pq__body">
           <span className="pq__ok">✓ Correct · {ask.from}</span>
-          <h2 id="pq-title">Add a screenshot to your profile?</h2>
+          <h2 id="pq-title">Add a screenshot to your portfolio?</h2>
           <p>
-            This counts toward <b>{ask.title}</b> on your proof profile. If the console is still open, a screenshot shows employers the work. It&rsquo;s optional.
+            This counts toward <b>{ask.title}</b> in your portfolio. If the console is still open, a screenshot shows employers the work. It&rsquo;s optional.
           </p>
           <div className="pq__actions">
             <label className="pq__btn pq__btn--primary" htmlFor="pq-file">
@@ -117,7 +117,7 @@ export function ProofPrompt() {
       )}
       {ask && saved !== null && (
         <div className="pq__body">
-          <span className="pq__ok">✓ Saved to your profile</span>
+          <span className="pq__ok">✓ Saved to your portfolio</span>
           <h2 id="pq-title">{ask.title}</h2>
           <p>
             {saved >= SHOTS_PER_ITEM
@@ -128,8 +128,8 @@ export function ProofPrompt() {
             <button type="button" className="pq__btn pq__btn--primary" onClick={close}>
               Continue
             </button>
-            <Link href="/academy/profile" className="pq__btn" onClick={close}>
-              See your profile
+            <Link href="/academy/portfolio" className="pq__btn" onClick={close}>
+              See your portfolio
             </Link>
           </div>
         </div>

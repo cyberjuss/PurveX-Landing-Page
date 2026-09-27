@@ -2,11 +2,23 @@ import { ProofGallery } from "@/components/proof/proof-gallery";
 import { SHOTS_PER_ITEM } from "@/lib/academy-proof";
 import type { ProofData } from "@/lib/academy-proof-data";
 import type { ProofSettings } from "@/lib/academy-proof-store";
+import "./proof-public.css";
 
 const day = (iso: string) => (iso ? new Date(`${iso.slice(0, 10)}T00:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "");
 
-// The page employers see. Pure display, fed by /p/[slug].
-export function ProofPublicView({ settings, data }: { settings: ProofSettings; data: Pick<ProofData, "items" | "skills" | "roleName" | "lastLabCheck" | "shots"> }) {
+// The page employers see. Pure display, fed by /p/[slug] and by the student's own preview.
+type Shot = { id: string; job: string; caption: string };
+
+export function ProofPublicView({
+  settings,
+  data,
+  shotSrc = (id) => `/p/${settings.slug}/shot/${id}`,
+}: {
+  settings: ProofSettings;
+  data: Pick<ProofData, "items" | "skills" | "roleName" | "lastLabCheck"> & { shots: Shot[] };
+  /** Where each screenshot loads from. The student's own preview uses blob URLs. */
+  shotSrc?: (id: string) => string;
+}) {
   const first = settings.displayName.split(" ")[0];
 
   const shotsFor = (job: string) => {
@@ -51,7 +63,7 @@ export function ProofPublicView({ settings, data }: { settings: ProofSettings; d
                     </div>
                     <ProofGallery
                       title={it.title}
-                      shots={shots.map((s) => ({ src: `/p/${settings.slug}/shot/${s.id}`, caption: s.caption }))}
+                      shots={shots.map((s) => ({ src: shotSrc(s.id), caption: s.caption }))}
                     />
                   </div>
                   <em>✓ {day(it.date)}</em>
@@ -80,9 +92,13 @@ export function ProofPublicView({ settings, data }: { settings: ProofSettings; d
         )}
 
         <footer className="pp-foot">
-          <span>
-            Credential <code>{settings.credentialId}</code> · <a href={`/verify/${settings.credentialId}`}>Verify</a>
-          </span>
+          {settings.credentialId ? (
+            <span>
+              Credential <code>{settings.credentialId}</code> · <a href={`/verify/${settings.credentialId}`}>Verify</a>
+            </span>
+          ) : (
+            <span />
+          )}
           <span>Issued by PurveX Academy</span>
         </footer>
       </div>

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { findProofByCredential } from "@/lib/academy-proof-store";
-import "../../p/[slug]/proof.css";
+import "@/components/proof/proof-public.css";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Verify a credential", robots: { index: false, follow: false } };
 
-// An employer checks a Proof Profile credential ID here.
+// An employer checks a portfolio credential ID here.
 export default async function VerifyPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const code = decodeURIComponent(id).toUpperCase().slice(0, 20);
@@ -22,10 +22,10 @@ export default async function VerifyPage({ params }: { params: Promise<{ id: str
           {found && live && (
             <p className="pp-role">
               Valid. Issued by PurveX Academy to <b>{found.settings.displayName}</b>.{" "}
-              <a href={`/p/${found.settings.slug}`}>View the profile</a>
+              <a href={`/p/${found.settings.slug}`}>View the portfolio</a>
             </p>
           )}
-          {found && !live && <p className="pp-role">This credential is not active. {found.settings.displayName} has turned off their profile.</p>}
+          {found && !live && <p className="pp-role">This credential is not active. {found.settings.displayName} has turned off their portfolio.</p>}
         </header>
       </div>
     </main>

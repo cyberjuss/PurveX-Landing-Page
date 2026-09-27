@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Loader2, X } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { SHOTS_PER_ITEM, TRACK_LABEL, type StarPart, type Track, type WorkItem } from "@/lib/academy-proof";
+import { ProofPublicView } from "@/components/proof/proof-public-view";
 // Imported here, not in globals.css, so the styles always arrive with the component.
 import "./proof-editor.css";
 
@@ -14,6 +15,7 @@ type Data = {
   items: WorkItem[];
   skills: { group: string; items: string[] }[];
   roleName: string | null;
+  lastLabCheck: string | null;
   track: Track;
   settings: Settings;
   saved: boolean;
@@ -33,13 +35,20 @@ async function copyText(text: string): Promise<boolean> {
   }
 }
 
-// The student's own side of the Proof Profile: sharing, resume bullets,
-// skills and screenshots. Employers see the public page at /p/<slug>.
+// The student's side of their portfolio: sharing, resume bullets, skills and
+// screenshots, plus a preview of the page employers see at /p/<slug>.
 export function ProofEditor() {
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [note, setNote] = useState<string | null>(null);
+  const [note, setNote] = useState<{ text: string; bad: boolean } | null>(null);
+  const [view, setView] = useState<"edit" | "employer">("edit");
+  const say = (text: string, bad = false) => setNote({ text, bad });
+  useEffect(() => {
+    if (!note) return;
+    const t = window.setTimeout(() => setNote(null), note.bad ? 7000 : 3500);
+    return () => window.clearTimeout(t);
+  }, [note]);
   const [track, setTrack] = useState<Track>("soc");
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -52,7 +61,7 @@ export function ProofEditor() {
   const fetchData = useCallback(async (): Promise<Data | string> => {
     const res = await academyFetch("/academy/api/proof");
     const body = (await res.json().catch(() => null)) as Data | { error?: string } | null;
-    if (!res.ok || !body || !("items" in body)) return (body && "error" in body && body.error) || "Unable to load your profile. Try again later.";
+    if (!res.ok || !body || !("items" in body)) return (body && "error" in body && body.error) || "Unable to load your portfolio. Try again later.";
     return body;
   }, []);
 
@@ -105,11 +114,11 @@ export function ProofEditor() {
     const body = (await res.json().catch(() => ({}))) as { error?: string };
     setBusy(false);
     if (!res.ok) {
-      setNote(body.error || "Unable to save. Try again.");
+      say(body.error || "Unable to save. Try again.", true);
       return;
     }
     await load();
-    if (done) setNote(done);
+    if (done) say(done);
   }
 
   async function upload(job: string, files: FileList | null) {
@@ -124,7 +133,7 @@ export function ProofEditor() {
       const res = await academyFetch("/academy/api/proof", { method: "POST", body: form });
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
-        setNote(body.error || "Unable to upload that screenshot.");
+        say(body.error || "Unable to upload that screenshot.", true);
         break;
       }
     }
@@ -134,8 +143,9 @@ export function ProofEditor() {
 
   async function remove(id: string) {
     setBusy(true);
-    await academyFetch(`/academy/api/proof?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    const res = await academyFetch(`/academy/api/proof?id=${encodeURIComponent(id)}`, { method: "DELETE" });
     setBusy(false);
+    if (!res.ok) say("Unable to remove that screenshot. Try again.", true);
     await load();
   }
 
@@ -155,15 +165,45 @@ export function ProofEditor() {
   return (
     <div className="pf rd">
       <header className="pf-head">
-        <p className="rd-kicker">Proof profile</p>
+        <p className="rd-kicker">Portfolio</p>
         <h1>Show employers your lab work</h1>
         <p className="pf-lede">Every item comes from a fix your lab confirmed. Share the link on applications, your resume and LinkedIn.</p>
       </header>
 
-      {!items.length ? (
+      {items.length > 0 && (
+        <div className="pf-views" role="tablist" aria-label="View">
+          <button type="button" role="tab" aria-selected={view === "edit"} onClick={() => setView("edit")}>
+            Your portfolio
+          </button>
+          <button type="button" role="tab" aria-selected={view === "employer"} onClick={() => setView("employer")}>
+            What employers see
+          </button>
+        </div>
+      )}
+
+      {items.length > 0 && view === "employer" ? (
+        <section className="pf-preview">
+          <p className="pf-preview__note">
+            {settings.published ? (
+              <>
+                Employers see this at <code>{link}</code>.
+              </>
+            ) : (
+              <>
+                Employers will see this at <code>purvex.io/p/{slug || settings.slug}</code> once you share it.
+              </>
+            )}
+          </p>
+          <ProofPublicView
+            settings={{ ...settings, displayName: name || settings.displayName, slug: slug || settings.slug, updatedAt: "" }}
+            data={{ items, skills: data.skills, roleName: data.roleName, lastLabCheck: data.lastLabCheck, shots: data.shots }}
+            shotSrc={(id) => urls[id] ?? ""}
+          />
+        </section>
+      ) : !items.length ? (
         <section className="pf-sec">
           <h2>Nothing to show yet</h2>
-          <p>Your profile fills in as the lab confirms your work. Finish a lab task in the daily drill, or a ticket in the Ticket Queue.</p>
+          <p>Your portfolio fills in as the lab confirms your work. Finish a lab task in the daily drill, or a ticket in the Ticket Queue.</p>
           <Link href="/academy/drill" className="pf-btn pf-btn--primary">
             Go to the daily drill
           </Link>
@@ -172,7 +212,7 @@ export function ProofEditor() {
         <>
           <section className="pf-sec">
             <div className="pf-sec__top">
-              <h2>Share your profile</h2>
+              <h2>Share your portfolio</h2>
               <span className={`pf-status${settings.published ? " is-on" : ""}`}>{settings.published ? "Shared" : "Not shared"}</span>
             </div>
             <div className="pf-fields">
@@ -198,7 +238,7 @@ export function ProofEditor() {
             <div className="pf-row">
               {settings.published ? (
                 <>
-                  <button type="button" className="pf-btn pf-btn--primary" disabled={busy} onClick={async () => setNote((await copyText(`https://${link}`)) ? "Link copied" : "Select the link and copy it")}>
+                  <button type="button" className="pf-btn pf-btn--primary" disabled={busy} onClick={async () => say((await copyText(`https://${link}`)) ? "Link copied" : "Select the link and copy it")}>
                     Copy link
                   </button>
                   <a className="pf-btn" href={`/p/${settings.slug}`} target="_blank" rel="noreferrer">
@@ -212,8 +252,8 @@ export function ProofEditor() {
                   </button>
                 </>
               ) : (
-                <button type="button" className="pf-btn pf-btn--primary" disabled={busy || data.blockers.length > 0} onClick={() => save({ published: true }, "Your profile is shared.")}>
-                  Share my profile
+                <button type="button" className="pf-btn pf-btn--primary" disabled={busy || data.blockers.length > 0} onClick={() => save({ published: true }, "Your portfolio is shared.")}>
+                  Share my portfolio
                 </button>
               )}
               {busy && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -223,7 +263,6 @@ export function ProofEditor() {
                 <code>{link}</code> · Credential <code>{settings.credentialId}</code>
               </p>
             )}
-            {note && <p className="pf-note">{note}</p>}
           </section>
 
           <section className="pf-sec">
@@ -247,7 +286,7 @@ export function ProofEditor() {
                       </span>
                     ))}
                   </p>
-                  <button type="button" className="pf-btn" onClick={async () => setNote((await copyText(plain(it.bullets[track]))) ? "Bullet copied" : "Select the text and copy it")}>
+                  <button type="button" className="pf-btn" onClick={async () => say((await copyText(plain(it.bullets[track]))) ? "Bullet copied" : "Select the text and copy it")}>
                     Copy
                   </button>
                 </li>
@@ -274,7 +313,7 @@ export function ProofEditor() {
                     </span>
                   ))}
                 </p>
-                <button type="button" className="pf-btn" onClick={async () => setNote((await copyText(skillsText)) ? "Skills copied" : "Select the text and copy it")}>
+                <button type="button" className="pf-btn" onClick={async () => say((await copyText(skillsText)) ? "Skills copied" : "Select the text and copy it")}>
                   Copy
                 </button>
               </div>
@@ -335,6 +374,11 @@ export function ProofEditor() {
             </ul>
           </section>
         </>
+      )}
+      {note && (
+        <p className={`pf-toast${note.bad ? " is-bad" : ""}`} role={note.bad ? "alert" : "status"}>
+          {note.text}
+        </p>
       )}
     </div>
   );

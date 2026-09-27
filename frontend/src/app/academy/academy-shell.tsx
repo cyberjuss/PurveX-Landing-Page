@@ -46,7 +46,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
   // second copy of the page you're looking at.
   const isReadiness = pathname === READINESS_PATH;
   const isDrill = pathname === "/academy/drill";
-  const isProof = pathname === "/academy/profile";
+  const isProof = pathname === "/academy/portfolio";
   const isHome = pathname === "/academy";
   const showSidebar = pathname !== "/academy" && !isReadiness && !isDrill && !isProof;
   const [sidebarOpen, setSidebarOpen] = useState(false);

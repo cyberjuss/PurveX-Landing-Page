@@ -88,3 +88,13 @@
   .pp-viewer__stage { padding: 10px; }
   .pp-viewer__nav { top: auto; bottom: 14px; transform: none; }
 }
+
+/* Inside the Academy the preview follows the Academy's own theme switch. */
+.academy-bg[data-academy-theme="light"] .pp {
+  --pp-bg: #ffffff; --pp-bg-2: #f6f7fb; --pp-ink: #0f172a; --pp-ink-2: #475569; --pp-ink-3: #64748b;
+  --pp-line: #e2e8f0; --pp-accent: #5546e0; --pp-good: #0f8a5f; color-scheme: light;
+}
+.academy-bg[data-academy-theme="dark"] .pp {
+  --pp-bg: #000000; --pp-bg-2: #07080d; --pp-ink: #e8eef8; --pp-ink-2: #9aa8bc; --pp-ink-3: #6b768a;
+  --pp-line: rgba(180, 200, 255, 0.14); --pp-accent: #9eb0ff; --pp-good: #6ee7b7; color-scheme: dark;
+}
