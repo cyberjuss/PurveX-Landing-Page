@@ -35,7 +35,7 @@ const FEATURES: Item[] = [
   { Icon: IconShield, title: "Personal lab", body: "Their own company network, built on their own machine." },
   { Icon: IconTicket, title: "Real tickets", body: "Help desk tasks that are checked automatically." },
   { Icon: IconAlert, title: "Security alerts", body: "Investigate a suspicious login one step at a time." },
-  { Icon: IconSchedule, title: "Daily drills", body: "Five quick questions in three minutes, at four levels." },
+  { Icon: IconSchedule, title: "Daily drills", body: "One question a day from their lab, plus a timed round of five." },
   { Icon: IconChecks, title: "Weekly challenge", body: "A capture the flag puzzle built from their own lab." },
   { Icon: IconMic, title: "Interview and resume prep", body: "Scored mock interviews, plus resume lines built from proven work." },
   { Icon: IconEvidence, title: "Readiness report", body: "Four job skills scored, with what to work on next." },
