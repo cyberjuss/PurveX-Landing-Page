@@ -164,7 +164,7 @@ export function ProofPublicView({
         <section className="pp-sec">
           <h2>Hands-on experience</h2>
           <p className="pp-note">
-            {first} completed this work in a live Active Directory environment modeled on a wealth-management firm. Each task was verified automatically in {first}&rsquo;s own lab.
+            {first} completed this work in a live Active Directory environment modeled on a wealth-management firm. Each task was verified automatically in their own lab.
             {data.lastLabCheck && ` Last verified ${day(data.lastLabCheck)}.`}
           </p>
           <ul className="pp-jobs">
