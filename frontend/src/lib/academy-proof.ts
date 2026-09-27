@@ -202,6 +202,23 @@ export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "tq-05": { job: "fix-ou", label: "Service ticket INC-1045" },
 };
 
+export type OpenTask = { job: string; title: string; where: string; href: string };
+
+/** Tasks the portfolio can show that the student has not done yet, and where to do each one. */
+export function openTasks(done: string[]): OpenTask[] {
+  const have = new Set(done);
+  const ticketFor = new Map(Object.entries(PROOF_TICKETS).map(([id, t]) => [t.job, { id, label: t.label }]));
+  return Object.entries(CATALOG)
+    .filter(([job]) => !have.has(job))
+    .map(([job, e]) => {
+      const t = ticketFor.get(job);
+      return t
+        ? { job, title: e.title, where: `Ticket Queue · ${t.label.replace("Service ticket ", "")}`, href: `/academy/phase-1/home-lab-active-directory#${t.id}` }
+        : { job, title: e.title, where: "Daily drill", href: "/academy/drill" };
+    })
+    .sort((a, b) => Number(b.where !== "Daily drill") - Number(a.where !== "Daily drill"));
+}
+
 export type WorkItem = {
   job: string;
   title: string;

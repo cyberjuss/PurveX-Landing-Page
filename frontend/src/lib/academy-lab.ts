@@ -252,6 +252,14 @@ export const BASELINE_GROUPS = [
   "Helpdesk",
 ];
 
+/** Minutes since the last snapshot during which the lab counts as live (the green lab light). */
+export const LAB_LIVE_MINUTES = 5;
+
+export function labIsLive(uploadedAt: string): boolean {
+  const mins = (Date.now() - new Date(uploadedAt).getTime()) / 60_000;
+  return Number.isFinite(mins) && mins < LAB_LIVE_MINUTES;
+}
+
 export function formatLabAge(iso: string): { exact: string; ago: string; hours: number } {
   const t = new Date(iso).getTime();
   const hours = Number.isNaN(t) ? NaN : (Date.now() - t) / 36e5;

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Loader2, X } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
-import { AVAILABILITY, CERT_STATUS_LABEL, CERT_SUGGESTIONS, certStatusText, SHOTS_PER_ITEM, TRACK_LABEL, type ExtraCert, type StarPart, type Track, type WorkItem } from "@/lib/academy-proof";
+import { AVAILABILITY, CERT_STATUS_LABEL, CERT_SUGGESTIONS, certStatusText, openTasks, SHOTS_PER_ITEM, TRACK_LABEL, type ExtraCert, type StarPart, type Track, type WorkItem } from "@/lib/academy-proof";
 import { useAcademyGoals } from "@/components/academy/academy-account";
 import { ProofPublicView } from "@/components/proof/proof-public-view";
 // Imported here, not in globals.css, so the styles always arrive with the component.
@@ -264,6 +264,26 @@ export function ProofEditor() {
   const { settings, items } = data;
   const link = `purvex.io/p/${settings.slug}`;
   const skillsText = data.skills.map((g) => `${g.group}: ${g.items.join(", ")}`).join("\n");
+  const todo = openTasks(items.map((i) => i.job));
+  const todoSection = todo.length > 0 && (
+    <section className="pf-sec">
+      <h2>Tasks you can still add</h2>
+      <p>Each one joins your portfolio once your lab confirms it. Your lab must be connected, with the lab light green.</p>
+      <ul className="pf-todo">
+        {todo.map((t) => (
+          <li key={t.job}>
+            <span>
+              {t.title}
+              <small>{t.where}</small>
+            </span>
+            <Link href={t.href} className="pf-btn">
+              Do it
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
 
   return (
     <div className="pf rd">
@@ -318,13 +338,13 @@ export function ProofEditor() {
           />
         </section>
       ) : !items.length ? (
-        <section className="pf-sec">
-          <h2>Nothing to show yet</h2>
-          <p>Your portfolio fills in as the lab confirms your work. Finish a lab task in the daily drill, or a ticket in the Ticket Queue.</p>
-          <Link href="/academy/drill" className="pf-btn pf-btn--primary">
-            Go to the daily drill
-          </Link>
-        </section>
+        <>
+          <section className="pf-sec">
+            <h2>Nothing to show yet</h2>
+            <p>Your portfolio fills in as the lab confirms your work. Pick a task below. Your lab must be connected, with the lab light green.</p>
+          </section>
+          {todoSection}
+        </>
       ) : (
         <>
           <section className="pf-sec">
@@ -652,6 +672,7 @@ export function ProofEditor() {
               })}
             </ul>
           </section>
+          {todoSection}
         </>
       )}
       {note && (

@@ -29,7 +29,6 @@ import {
   RESULTS_UPDATED_EVENT,
   saveCachedProfile,
 } from "@/lib/academy-client";
-import { LAB_GATED_MISSIONS } from "@/lib/academy-missions";
 import { clearResults, loadResults, saveResults, scorecardHtml, summarize, type MissionResult, type Results } from "@/lib/academy-score";
 import { signOut } from "@/lib/portal-auth";
 import { supabase } from "@/lib/supabase";
@@ -422,14 +421,16 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       }
     };
 
-    // Some tickets need a real change. Ask the server whether the student's lab
-    // shows it. No lab connected, or a failed request, never traps a student.
+    // Every challenge needs the student's lab connected and live, and some
+    // tickets need a real change in it. Ask the server. A failed request
+    // never uses an attempt.
     const labGate = async (
       id: string
     ): Promise<{
       gated: boolean;
       passed?: boolean;
       noLab?: boolean;
+      stale?: boolean;
       noTicketObjects?: boolean;
       results?: { label: string; ok: boolean }[];
       syncedAgo?: string;
@@ -470,18 +471,19 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       }
 
       const missionId = wrap.getAttribute("data-id") || "";
-      if (!wrap.classList.contains("ad-mission--labok") && LAB_GATED_MISSIONS.includes(missionId)) {
-        btn.disabled = true;
-        feedback.textContent = "Checking your lab…";
-        feedback.className = "ad-guess__feedback";
-        let gate: Awaited<ReturnType<typeof labGate>> = null;
-        try {
+      btn.disabled = true;
+      feedback.textContent = "Checking your lab…";
+      feedback.className = "ad-guess__feedback";
+      let gate: Awaited<ReturnType<typeof labGate>> = null;
+      try {
         gate = await labGate(missionId);
-        // Give the lab up to 45 seconds to report the change before asking the student to try again.
+        // Give a lab that is waking up 20 seconds to report, and a live lab 45
+        // seconds to show the change, before asking the student to try again.
         const waitStart = Date.now();
-        while (gate && !gate.noLab && !gate.noTicketObjects && gate.gated !== false && !gate.passed && Date.now() - waitStart < 45000) {
-          feedback.textContent = "Waiting for your lab to show the change…";
-          await new Promise((resolve) => setTimeout(resolve, 400));
+        while (gate && !gate.noLab && !gate.noTicketObjects && !gate.passed && Date.now() - waitStart < (gate.stale ? 20000 : 45000)) {
+          const pause = gate.stale ? 2000 : 400;
+          feedback.textContent = gate.stale ? "Waiting for your lab to connect…" : "Waiting for your lab to show the change…";
+          await new Promise((resolve) => setTimeout(resolve, pause));
           gate = await labGate(missionId);
         }
         if (!gate) {
@@ -492,6 +494,12 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         }
         if (gate.noLab) {
           feedback.textContent = "No lab has reported yet. Download the script from Build the Environment, run it once as Administrator, and look for Lab snapshot sent. This does not use an attempt.";
+          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          placeMiss(wrap);
+          return;
+        }
+        if (gate.stale) {
+          feedback.textContent = `Your lab is not live${gate.syncedAgo ? ` (it last reported ${gate.syncedAgo})` : ""}. Turn on your domain controller and wait for the lab light to turn green. If it stays grey, run Build-Environment.ps1 -SyncOnly as Administrator. This does not use an attempt.`;
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
           placeMiss(wrap);
           return;
@@ -511,10 +519,9 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           placeMiss(wrap);
           return;
         }
-        wrap.classList.add("ad-mission--labok");
-        } finally {
-          btn.disabled = false;
-        }
+        if (gate.gated) wrap.classList.add("ad-mission--labok");
+      } finally {
+        btn.disabled = false;
       }
 
       const accepts = [answer, ...(btn.dataset.accept || "").split("|")].map(normalize).filter(Boolean);
