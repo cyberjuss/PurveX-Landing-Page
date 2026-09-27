@@ -11,7 +11,7 @@
   --pp-accent-2: #16304f;
   --pp-good: #166534;
   min-height: 100dvh;
-  padding: 0 16px 56px;
+  padding: 0 0 56px;
   background: var(--pp-bg);
   color: var(--pp-ink);
   color-scheme: light;
@@ -20,34 +20,38 @@
   line-height: 1.55;
 }
 
-.pp__wrap { max-width: 860px; margin: 0 auto; }
+.pp__wrap { max-width: 860px; margin: 0 auto; padding: 0 20px; }
+
+/* Navy band across the top, like a firm's letterhead. */
+.pp-top { background: var(--pp-accent); color: #dbe4f0; }
+.pp-top__in { display: flex; align-items: center; justify-content: space-between; gap: 16px; max-width: 860px; min-height: 52px; margin: 0 auto; padding: 0 20px; font-size: 13px; }
+.pp-top b { font-weight: 700; letter-spacing: 0.02em; color: #fff; }
+.pp .pp-top .pp-btn--ghost { height: 34px; border-color: rgba(255, 255, 255, 0.35); background: transparent; color: #fff; cursor: pointer; }
+.pp .pp-top .pp-btn--ghost:hover { border-color: #fff; background: rgba(255, 255, 255, 0.08); }
 .pp h1, .pp h2, .pp h3 { font-family: inherit; text-wrap: balance; margin: 0; }
 .pp p { margin: 0; }
 .pp a { color: var(--pp-accent); font-weight: 600; }
 .pp svg { flex: none; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* Header: who they are on the left, how to reach them on the right. */
-.pp-head { display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 44px 0 28px; border-bottom: 2px solid var(--pp-ink); }
+.pp-head { padding: 40px 0 26px; border-bottom: 2px solid var(--pp-ink); }
 .pp-id { display: flex; align-items: center; gap: 22px; min-width: 0; }
-.pp-avatar { flex: none; width: 88px; height: 88px; border-radius: 50%; object-fit: cover; border: 1px solid var(--pp-line); background: var(--pp-bg-2); }
-.pp-kicker { font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pp-ink-3); }
-.pp-head h1 { margin-top: 6px; font-size: clamp(28px, 5.5vw, 36px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
-.pp-role { margin-top: 6px; font-size: 16px; color: var(--pp-ink-2); }
-.pp-open { margin-top: 6px; font-size: 14px; color: var(--pp-ink-3); }
+.pp-avatar { flex: none; width: 92px; height: 92px; border-radius: 50%; object-fit: cover; border: 1px solid var(--pp-line); background: var(--pp-bg-2); }
+.pp-head h1 { font-size: clamp(28px, 5.5vw, 38px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+.pp-role { margin-top: 6px; font-size: 16.5px; font-weight: 500; color: var(--pp-accent); }
+.pp-open { margin-top: 4px; font-size: 14px; color: var(--pp-ink-3); }
 
-.pp-reach { flex: none; display: grid; gap: 8px; width: 210px; }
+/* Contact row under the name. */
+.pp-reach { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 22px; }
 .pp .pp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 38px; padding: 0 16px; border: 1px solid #d1d5db; border-radius: 4px; background: var(--pp-bg); font-size: 13.5px; font-weight: 600; color: var(--pp-ink); text-decoration: none; }
 .pp .pp-btn:hover { border-color: var(--pp-ink-3); background: var(--pp-bg-2); }
 .pp .pp-btn--primary { border-color: var(--pp-accent); background: var(--pp-accent); color: #fff; }
 .pp .pp-btn--primary:hover { border-color: var(--pp-accent-2); background: var(--pp-accent-2); }
-.pp-social { display: flex; justify-content: center; gap: 8px; padding-top: 2px; }
-.pp .pp-social a { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid #d1d5db; border-radius: 4px; background: var(--pp-bg); color: var(--pp-ink-2); }
-.pp .pp-social a:hover { border-color: var(--pp-accent); color: var(--pp-accent); }
-.pp-social svg { width: 16px; height: 16px; }
-.pp-email { overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; color: var(--pp-ink-3); user-select: all; }
+.pp .pp-icon { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid #d1d5db; border-radius: 4px; background: var(--pp-bg); color: var(--pp-ink-2); }
+.pp .pp-icon:hover { border-color: var(--pp-accent); color: var(--pp-accent); }
 
 .pp-sec { padding: 28px 0; border-bottom: 1px solid var(--pp-line); }
-.pp-sec h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pp-ink); }
+.pp-sec h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pp-accent); }
 .pp-note { margin-top: 8px; max-width: 70ch; font-size: 14px; color: var(--pp-ink-2); }
 
 /* Certifications. */
@@ -63,13 +67,9 @@
 .pp-jobs > li.has-shots { display: grid; grid-template-columns: minmax(0, 1fr) 200px; align-items: start; gap: 24px; }
 .pp-job { display: grid; gap: 8px; min-width: 0; }
 .pp-job h3 { font-size: 15.5px; font-weight: 600; line-height: 1.35; }
-.pp-act { font-size: 14px; color: var(--pp-ink-2); }
-.pp-act i { display: block; margin-bottom: 3px; font-style: normal; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--pp-ink-3); }
-.pp-act ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+.pp-act { margin: 0; padding-left: 18px; display: grid; gap: 3px; font-size: 14px; color: var(--pp-ink-2); }
 .pp-act li { list-style: disc; }
 .pp-act li::marker { color: var(--pp-ink-3); }
-.pp-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: var(--pp-ink-3); }
-.pp-meta__ok { font-weight: 600; color: var(--pp-good); }
 
 .pp-cover { position: relative; display: block; width: 100%; aspect-ratio: 16 / 10; padding: 0; border: 1px solid var(--pp-line); border-radius: 4px; background: var(--pp-bg-2); overflow: hidden; cursor: zoom-in; }
 .pp-cover img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: left top; }
@@ -109,10 +109,22 @@
 
 .pp-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; padding-top: 20px; font-size: 12.5px; color: var(--pp-ink-3); }
 .pp-foot code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--pp-ink); }
+.pp .pp-foot a { font-weight: 500; }
+
+/* Save as PDF: a clean one-column document without buttons or screenshots. */
+@media print {
+  @page { margin: 14mm 12mm; }
+  .pp { min-height: 0; padding: 0; font-size: 12.5px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .pp-top, .pp-reach, .pp-cta, .pp-cover, .pp-viewer, nextjs-portal { display: none !important; }
+  .pp__wrap { max-width: none; padding: 0; }
+  .pp-head { padding-top: 0; }
+  .pp-sec { padding: 16px 0; }
+  .pp-jobs > li, .pp-jobs > li.has-shots { display: block; padding: 10px 0; break-inside: avoid; }
+  .pp-certs li, .pp-skills > div { break-inside: avoid; }
+  .pp h2 { break-after: avoid; }
+}
 
 @media (max-width: 720px) {
-  .pp-head { flex-direction: column; align-items: stretch; gap: 22px; }
-  .pp-reach { width: auto; }
   .pp-jobs > li.has-shots { grid-template-columns: 1fr; gap: 14px; }
   .pp-skills > div { grid-template-columns: 1fr; gap: 4px; }
 }
@@ -120,6 +132,8 @@
   .pp-id { flex-direction: column; align-items: flex-start; gap: 16px; }
   .pp-avatar { width: 76px; height: 76px; }
   .pp-cta__btns, .pp-cta__btns .pp-btn { width: 100%; }
+  .pp-reach .pp-btn { flex: 1 1 100%; }
+  .pp-top__in > span { font-size: 12px; }
   .pp-viewer__stage { padding: 10px; }
   .pp-viewer__nav { top: auto; bottom: 14px; transform: none; }
 }

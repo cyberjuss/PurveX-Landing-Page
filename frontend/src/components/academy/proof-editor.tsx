@@ -312,6 +312,7 @@ export function ProofEditor() {
             }}
             data={{ items, skills: data.skills, roleName: data.roleName, roleNames: data.roleNames, certs: data.certs, lastLabCheck: data.lastLabCheck, shots: data.shots }}
             shotSrc={(id) => urls[id] ?? ""}
+            printable={false}
             avatarSrc={avatar}
             resumeHref={resumeUrl}
           />

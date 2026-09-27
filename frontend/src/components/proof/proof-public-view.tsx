@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { ProofGallery } from "@/components/proof/proof-gallery";
+import { ProofPrintButton } from "@/components/proof/proof-print-button";
 import { certStatusText, SHOTS_PER_ITEM } from "@/lib/academy-proof";
 import type { ProofData } from "@/lib/academy-proof-data";
 import type { ProofSettings } from "@/lib/academy-proof-store";
@@ -17,6 +18,14 @@ const MAIL = (
   <Icon>
     <rect x="2" y="4" width="20" height="16" rx="2" />
     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+  </Icon>
+);
+const FILE = (
+  <Icon>
+    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+    <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+    <path d="M12 18v-6" />
+    <path d="m9 15 3 3 3-3" />
   </Icon>
 );
 const DOWNLOAD = (
@@ -58,6 +67,7 @@ export function ProofPublicView({
   shotSrc = (id) => `/p/${settings.slug}/shot/${id}`,
   avatarSrc = null,
   resumeHref = settings.resumePath ? `/p/${settings.slug}/resume` : null,
+  printable = true,
 }: {
   settings: ProofSettings;
   data: Pick<ProofData, "items" | "skills" | "roleName" | "lastLabCheck"> & Partial<Pick<ProofData, "roleNames" | "certs">> & { shots: Shot[] };
@@ -67,11 +77,14 @@ export function ProofPublicView({
   avatarSrc?: string | null;
   /** Where the resume downloads from, when the student added one. */
   resumeHref?: string | null;
+  /** Shows the Save as PDF button. Off in the student's own preview. */
+  printable?: boolean;
 }) {
   const first = settings.displayName.split(" ")[0];
   const roles = data.roleNames ?? [];
   const certs = [...(data.certs ?? []), ...(settings.extraCerts ?? []).map((c) => ({ name: c.name, status: certStatusText(c) }))];
-  const openTo = [roles.length ? `Open to ${list(roles)} roles` : "", settings.location ?? "", settings.availability ?? ""].filter(Boolean).join(" · ");
+  const openTo = roles.length ? `Open to ${list(roles)} roles` : "";
+  const where = [settings.location ?? "", settings.availability ?? ""].filter(Boolean).join(" · ");
   const mailto = settings.contactEmail ? `mailto:${settings.contactEmail}?subject=${encodeURIComponent("Your PurveX portfolio")}` : null;
   const socials = [
     { key: "linkedin", href: settings.linkedinUrl, label: "LinkedIn" },
@@ -105,31 +118,38 @@ export function ProofPublicView({
 
   return (
     <main className="pp">
+      <div className="pp-top">
+        <div className="pp-top__in">
+          <span>
+            <b>PurveX Academy</b> · Candidate portfolio
+          </span>
+          {printable && <ProofPrintButton>{FILE}Save as PDF</ProofPrintButton>}
+        </div>
+      </div>
       <div className="pp__wrap">
         <header className="pp-head">
           <div className="pp-id">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             {avatarSrc && <img className="pp-avatar" src={avatarSrc} alt={settings.displayName} />}
             <div>
-              <p className="pp-kicker">PurveX Academy</p>
               <h1>{settings.displayName}</h1>
               {data.roleName && <p className="pp-role">{data.roleName} candidate</p>}
+              {(where || settings.contactEmail) && (
+                <p className="pp-open">
+                  {[where, settings.contactEmail ?? ""].filter(Boolean).join(" · ")}
+                </p>
+              )}
               {openTo && <p className="pp-open">{openTo}</p>}
             </div>
           </div>
           {canReach && (
             <div className="pp-reach">
               {actions}
-              {socials.length > 0 && (
-                <div className="pp-social">
-                  {socials.map((s) => (
-                    <a key={s.key} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={`${first} on ${s.label}`} title={s.label}>
-                      {SOCIAL[s.key]}
-                    </a>
-                  ))}
-                </div>
-              )}
-              {settings.contactEmail && <p className="pp-email">{settings.contactEmail}</p>}
+              {socials.map((s) => (
+                <a key={s.key} className="pp-icon" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={`${first} on ${s.label}`} title={s.label}>
+                  {SOCIAL[s.key]}
+                </a>
+              ))}
             </div>
           )}
         </header>
@@ -161,22 +181,11 @@ export function ProofPublicView({
                 <li key={it.job} className={shots.length ? "has-shots" : ""}>
                   <div className="pp-job">
                     <h3>{it.title}</h3>
-                    <div className="pp-act">
-                      <i>{it.actions.length > 1 ? "Actions" : "Action"}</i>
-                      {it.actions.length > 1 ? (
-                        <ul>
-                          {it.actions.map((a) => (
-                            <li key={a}>{a}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <span>{it.actions[0]}</span>
-                      )}
-                    </div>
-                    <p className="pp-meta">
-                      <span className="pp-meta__ok">✓ Verified{it.date ? ` ${day(it.date)}` : " in lab"}</span>
-                      {it.from && <span>{it.from}</span>}
-                    </p>
+                    <ul className="pp-act">
+                      {it.actions.map((a) => (
+                        <li key={a}>{a}</li>
+                      ))}
+                    </ul>
                   </div>
                   <ProofGallery title={it.title} shots={shots.map((s) => ({ src: shotSrc(s.id), caption: s.caption }))} />
                 </li>
@@ -213,14 +222,13 @@ export function ProofPublicView({
         )}
 
         <footer className="pp-foot">
-          {settings.credentialId ? (
-            <span>
-              Credential <code>{settings.credentialId}</code> · <a href={`/verify/${settings.credentialId}`}>Verify</a>
-            </span>
-          ) : (
-            <span />
-          )}
           <span>Issued by PurveX Academy</span>
+          {settings.credentialId && (
+            <span>
+              Credential ID <code>{settings.credentialId}</code> · Confirm it is genuine at{" "}
+              <a href={`/verify/${settings.credentialId}`}>purvex.io/verify/{settings.credentialId}</a>
+            </span>
+          )}
         </footer>
       </div>
     </main>
