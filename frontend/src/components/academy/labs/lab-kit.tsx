@@ -412,3 +412,84 @@ export function Hash({ value }: { value?: string }) {
   if (!value) return <code className="lk-hash">computing…</code>;
   return <code className="lk-hash">{value}</code>;
 }
+
+/**
+ * A pasted hash laid over the reference one, character by character, so a
+ * student sees exactly where two fingerprints agree and where they split.
+ */
+export function HashCompare({ label, mine, reference }: { label: string; mine: string; reference?: string }) {
+  if (!reference || !mine) return null;
+  const a = normHash(mine);
+  const same = [...reference].filter((ch, i) => a[i] === ch).length;
+  return (
+    <div className="lk-compare" aria-label={`${label}: ${same} of ${reference.length} characters match`}>
+      <div className="lk-compare__row">
+        <span>IT portal</span>
+        <code>{reference}</code>
+      </div>
+      <div className="lk-compare__row">
+        <span>{label}</span>
+        <code>
+          {[...reference].map((ch, i) => (
+            <b key={i} className={a[i] === ch ? "is-same" : "is-diff"} style={{ animationDelay: `${i * 12}ms` }}>
+              {a[i] ?? "·"}
+            </b>
+          ))}
+        </code>
+      </div>
+      <p className="lk-compare__meter">
+        <i style={{ width: `${(same / reference.length) * 100}%` }} className={same === reference.length ? "is-full" : ""} />
+        <span>
+          {same} of {reference.length} characters line up
+        </span>
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Warm-up: type, and watch the SHA-256 update live. One changed character
+ * flips about half the hash, which is why a matching hash means an
+ * untouched file.
+ */
+export function HashPlayground({ seed }: { seed: string }) {
+  const [text, setText] = useState(seed);
+  const [base, setBase] = useState<string>("");
+  const [now, setNow] = useState<string>("");
+  useEffect(() => {
+    let live = true;
+    sha256Hex(text).then((h) => {
+      if (!live) return;
+      setNow(h);
+      setBase((b) => b || h);
+    });
+    return () => {
+      live = false;
+    };
+  }, [text]);
+  const changed = base && now ? [...now].filter((ch, i) => base[i] !== ch).length : 0;
+  return (
+    <div className="lk-play">
+      <div className="lk-play__head">
+        <b>Warm-up: one character, a whole new fingerprint</b>
+        <small>Change a single letter below, even a capital or a space, and watch the hash.</small>
+      </div>
+      <input type="text" value={text} onChange={(e) => setText(e.target.value)} spellCheck={false} autoComplete="off" aria-label="Text to hash" />
+      <code className="lk-play__hash" aria-live="polite">
+        {[...now].map((ch, i) => (
+          <b key={i} className={base[i] !== ch ? "is-diff" : ""}>
+            {ch}
+          </b>
+        ))}
+      </code>
+      <p className="lk-note">
+        {changed === 0 ? "This is the fingerprint of the text as it started." : `${changed} of 64 characters changed. You cannot tell from the new hash what you edited, or turn it back into the text.`}
+      </p>
+      <div>
+        <button type="button" className="lk-mini" onClick={() => setText(seed)}>
+          Reset the text
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -65,3 +65,69 @@
 .lk-real { display: grid; gap: 10px; padding: 14px 16px; border: 1px solid var(--rd-line); }
 .lk-real b { font-size: 13.5px; color: var(--rd-ink); }
 .lk-real p { font-size: 13.5px; line-height: 1.6; color: var(--rd-ink-2); }
+
+/* Character-by-character hash comparison. */
+.lk-compare { display: grid; gap: 6px; padding: 12px; border: 1px solid var(--rd-line); background: var(--rd-line-2); }
+.lk-compare__row { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 10px; align-items: baseline; }
+.lk-compare__row span { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--rd-ink-3); }
+.lk-compare code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12.5px; line-height: 1.6; color: var(--rd-ink-2); word-break: break-all; }
+.lk-compare b { font-weight: 600; animation: lk-pop 0.35s ease both; }
+.lk-compare b.is-same { color: var(--rd-good); }
+.lk-compare b.is-diff { color: var(--rd-bad); background: color-mix(in srgb, var(--rd-bad) 14%, transparent); }
+.lk-compare__meter { position: relative; display: flex; align-items: center; height: 22px; margin-top: 4px; border: 1px solid var(--rd-line); background: transparent; overflow: hidden; }
+.lk-compare__meter i { position: absolute; inset: 0 auto 0 0; background: color-mix(in srgb, var(--rd-bad) 30%, transparent); transition: width 0.8s cubic-bezier(.16, 1, .3, 1); }
+.lk-compare__meter i.is-full { background: color-mix(in srgb, var(--rd-good) 35%, transparent); }
+.lk-compare__meter span { position: relative; padding: 0 8px; font-size: 12px; font-weight: 600; color: var(--rd-ink); }
+@keyframes lk-pop { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+
+/* Live hashing warm-up. */
+.lk-play { display: grid; gap: 10px; padding: 14px 16px; border: 1px solid var(--rd-line); border-left: 3px solid var(--rd-accent); }
+.lk-play__head { display: grid; gap: 2px; }
+.lk-play__head b { font-size: 14px; color: var(--rd-ink); }
+.lk-play__head small { font-size: 12.5px; color: var(--rd-ink-3); }
+.lk-play input { padding: 10px 12px; border: 1px solid var(--rd-line); background: transparent; font-family: var(--font-mono, ui-monospace, monospace); font-size: 14px; color: var(--rd-ink); }
+.lk-play input:focus { outline: none; border-color: var(--rd-accent); }
+.lk-play__hash { display: block; padding: 10px 12px; background: #0f172a; font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; line-height: 1.6; color: #e2e8f0; word-break: break-all; }
+.lk-play__hash b { font-weight: 500; transition: color 0.3s, background 0.3s; }
+.lk-play__hash b.is-diff { color: #fbbf24; background: rgba(251, 191, 36, 0.12); }
+
+@media (prefers-reduced-motion: reduce) {
+  .lk-compare b { animation: none; }
+  .lk-compare__meter i, .lk-play__hash b { transition: none; }
+}
+
+/* Lab 2 sandbox: encoding, encryption and hashing side by side. */
+.lk-sandbox { display: grid; gap: 12px; }
+.lk-sandbox__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 760px) { .lk-sandbox__grid { grid-template-columns: minmax(0, 1fr); } }
+.lk-panel { display: grid; gap: 8px; align-content: start; padding: 12px; border: 1px solid var(--rd-line); border-top: 3px solid var(--rd-accent); }
+.lk-panel header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+.lk-panel header b { font-size: 14px; color: var(--rd-ink); }
+.lk-panel header small { font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; color: var(--rd-ink-3); }
+.lk-panel code, .lk-note-box > code { display: block; min-height: 40px; padding: 8px 10px; background: #0f172a; font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; line-height: 1.5; color: #e2e8f0; word-break: break-all; }
+.lk-panel .lk-mini { justify-self: start; }
+.lk-panel .lk-mini:disabled { opacity: 0.45; cursor: not-allowed; }
+.lk-panel__key { display: grid; gap: 4px; font-size: 11.5px; font-weight: 700; color: var(--rd-ink-3); }
+.lk-panel__key input, .lk-panel__try input { min-width: 0; padding: 7px 9px; border: 1px solid var(--rd-line); background: transparent; font-family: var(--font-mono, ui-monospace, monospace); font-size: 12.5px; color: var(--rd-ink); }
+.lk-panel__try { display: flex; gap: 6px; }
+.lk-panel__try input { flex: 1; }
+.lk-panel .lk-table td small { color: var(--rd-ink-3); font-family: var(--font-mono, ui-monospace, monospace); }
+.lk-switch { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--rd-ink-2); cursor: pointer; }
+.lk-switch input { width: 34px; height: 18px; appearance: none; border-radius: 999px; background: var(--rd-line); position: relative; cursor: pointer; transition: background 0.2s; }
+.lk-switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
+.lk-switch input:checked { background: var(--rt-primary); }
+.lk-switch input:checked::after { transform: translateX(16px); }
+.lk-note-box { display: grid; gap: 8px; }
+
+/* Attack replay. */
+.lk-replay { display: grid; gap: 10px; padding: 12px; border: 1px solid var(--rd-line); }
+.lk-replay__bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.lk-replay__bar b { font-size: 14px; color: var(--rd-ink); }
+.lk-replay .lk-note code { font-family: var(--font-mono, ui-monospace, monospace); }
+.lk-replay__rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+@media (max-width: 560px) { .lk-replay__rows { grid-template-columns: minmax(0, 1fr); } }
+.lk-replay__rows li { display: flex; justify-content: space-between; gap: 8px; padding: 7px 10px; border: 1px solid var(--rd-line); font-size: 12.5px; color: var(--rd-ink-2); transition: background 0.3s, border-color 0.3s; }
+.lk-replay__rows li b { font-family: var(--font-mono, ui-monospace, monospace); font-weight: 500; color: var(--rd-ink-3); }
+.lk-replay__rows li.is-hit { border-color: var(--rd-bad); background: color-mix(in srgb, var(--rd-bad) 12%, transparent); animation: lk-pop 0.35s ease; }
+.lk-replay__rows li.is-hit b { color: var(--rd-bad); font-weight: 700; }
+.lk-panel .lk-table td code { color: #e2e8f0; }

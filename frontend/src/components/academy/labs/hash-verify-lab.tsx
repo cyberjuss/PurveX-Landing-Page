@@ -6,6 +6,8 @@ import {
   Deck,
   DownloadButton,
   Hash,
+  HashCompare,
+  HashPlayground,
   HashTool,
   normHash,
   Options,
@@ -205,6 +207,7 @@ export function HashVerifyLab() {
             <p>VPN update 2.4.1. SHA-256:</p>
             <Hash value={hashes.official} />
           </div>
+          <HashPlayground seed="PurveX VPN update 2.4.1" />
           <HashTool mode="file" />
           <Deck
             tags={COPIES.map((c) => c.tag)}
@@ -254,7 +257,8 @@ export function HashVerifyLab() {
                   )}
                   {ok && (
                     <>
-                      <p className="lk-note is-good">That is this file&apos;s hash. Now compare it with the one IT published.</p>
+                      <p className="lk-note is-good">That is this file&apos;s hash. Now line it up against the one IT published.</p>
+                      <HashCompare label={`Copy ${c.tag}`} mine={pasted} reference={hashes.official} />
                       <div className="rt-choice" role="radiogroup" aria-label={`Does copy ${c.tag} match?`} style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
                         {(["match", "nomatch"] as const).map((v) => (
                           <button
