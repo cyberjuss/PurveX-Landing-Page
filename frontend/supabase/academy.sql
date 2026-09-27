@@ -17,6 +17,16 @@ create table if not exists public.academy_coach_usage (
   primary key (user_id, day)
 );
 
+-- Coach questions per browser lab per day, so one lab cannot use up the day.
+create table if not exists public.academy_lab_coach_usage (
+  user_id uuid not null references auth.users (id) on delete cascade,
+  day date not null,
+  lab text not null,
+  count integer not null default 0,
+  updated_at timestamptz not null default now(),
+  primary key (user_id, day, lab)
+);
+
 -- One connection key per student, embedded in their downloaded
 -- Build-Environment.ps1. Only the SHA-256 of the key is stored.
 create table if not exists public.academy_mcp_keys (
@@ -44,6 +54,7 @@ create policy "Students read their own lab state"
 
 alter table public.academy_progress enable row level security;
 alter table public.academy_coach_usage enable row level security;
+alter table public.academy_lab_coach_usage enable row level security;
 alter table public.academy_mcp_keys enable row level security;
 
 drop policy if exists "Students read their own academy progress" on public.academy_progress;

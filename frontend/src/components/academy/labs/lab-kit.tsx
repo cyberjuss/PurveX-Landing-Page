@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Check, ChevronLeft, ChevronRight, Copy, Download, X } from "lucide-react";
 import "./risk-triage-lab.css";
 import "./lab-kit.css";
+import { useOptionalCoach } from "../coach-context";
+import { LOST_ASK } from "./lab-brief";
 
 // Shared pieces for the browser-only week labs. They use the Week 1 lab's
 // rt-* styles so every lab looks and behaves the same.
@@ -520,6 +522,7 @@ export interface GuideStep {
  * (in a terminal, in a CyberChef tab already open), so nobody gets stuck waiting for a step to unlock.
  */
 export function Guide({ steps, showAll = false }: { steps: GuideStep[]; showAll?: boolean }) {
+  const coach = useOptionalCoach();
   const now = steps.findIndex((st) => !st.done);
   return (
     <ol className="lk-guide">
@@ -531,6 +534,11 @@ export function Guide({ steps, showAll = false }: { steps: GuideStep[]; showAll?
             <div className="lk-guide__body">
               <b>{st.title}</b>
               {st.body && (showAll || now === -1 || i <= now) && st.body}
+              {i === now && coach?.enabled && (
+                <button type="button" className="lk-guide__ask" onClick={() => coach.ask(LOST_ASK)}>
+                  Lost? Ask Coach
+                </button>
+              )}
             </div>
           </li>
         );

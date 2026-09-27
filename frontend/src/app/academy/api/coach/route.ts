@@ -6,7 +6,8 @@ import { COACH_SHOT_ASK, sanitizeCoachImages } from "@/lib/academy-coach-media";
 import { sanitizeProfile } from "@/lib/academy-certs";
 import { ensureRoleBrief } from "@/lib/academy-role-research";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
-import { bumpUsage, loadDrills, loadLabState, loadProfile, loadProgress, readUsage, resetUsage } from "@/lib/academy-store";
+import { bumpLabCoachUsage, bumpUsage, loadDrills, loadLabState, loadProfile, loadProgress, readLabCoachUsage, readUsage, resetUsage } from "@/lib/academy-store";
+import { LAB_COACH_PER_LAB, LAB_PAUSE_REPLY, runLabCoachTurn } from "@/lib/academy-lab-coach";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { cleanDay, coachBonus } from "@/lib/academy-drills";
 
@@ -118,6 +119,23 @@ export async function POST(request: Request) {
     );
   }
 
+  // Inside a browser lab: a short, focused turn, and a cap per lab so one lab cannot use up the day.
+  const place = parseCoachPlace(body.place);
+  if (place?.lab) {
+    const labUsed = await readLabCoachUsage(student.id, place.lab, day);
+    if (labUsed >= LAB_COACH_PER_LAB) {
+      return NextResponse.json({ reply: LAB_PAUSE_REPLY, remaining: Math.max(0, limit - used), limit, bonus });
+    }
+    try {
+      const { text, model } = await runLabCoachTurn({ apiKey, lab: place.lab, at: place.at, roles: profile?.roles, history, userMessage: message, images });
+      await bumpLabCoachUsage(student.id, place.lab, labUsed, day);
+      const remaining = Math.max(0, Math.min(limit, limit - (await bumpUsage(student.id, used, day))));
+      return NextResponse.json({ reply: text, remaining, limit, model, bonus });
+    } catch {
+      return NextResponse.json({ error: "PurveX Coach is unavailable right now." }, { status: 502 });
+    }
+  }
+
   try {
     const { text, model } = await runCoachTurn({
       apiKey,
@@ -125,7 +143,7 @@ export async function POST(request: Request) {
       userMessage: message,
       images,
       mode: body.mode != null ? parseCoachMode(body.mode) : modeFromReport(results),
-      place: parseCoachPlace(body.place),
+      place,
       drills,
       tools: { results, userId: student.id, profile, loadLabState: async () => (await loadLabState(student.id))?.snapshot ?? null },
     });

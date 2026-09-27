@@ -13,6 +13,7 @@ import { useCoach } from "./coach-context";
 import type { Quiz } from "@/content/academy/quizzes";
 import type { LabWidget } from "@/lib/academy-content";
 import { HashVerifyLab } from "./labs/hash-verify-lab";
+import { LabBrief } from "./labs/lab-brief";
 import { PasswordTableLab } from "./labs/password-table-lab";
 import { RiskTriageLab } from "./labs/risk-triage-lab";
 
@@ -103,11 +104,12 @@ export function SectionTabs({
   }, []);
   const current = items[active];
   const { setPlace } = useCoach();
+  const labWidget = current.kind === "lab" ? current.widget : undefined;
   useEffect(() => {
     const kind = current.kind === "lab" || current.kind === "challenge" ? current.kind : null;
-    setPlace(kind ? { kind, title: current.label } : null);
+    setPlace(kind ? { kind, title: current.label, ...(labWidget ? { lab: labWidget } : {}) } : null);
     return () => setPlace(null);
-  }, [current.kind, current.label, setPlace]);
+  }, [current.kind, current.label, labWidget, setPlace]);
   const prevItem = active > 0 ? items[active - 1] : null;
   const nextItem = active < items.length - 1 ? items[active + 1] : null;
   function goTo(i: number) {
@@ -170,7 +172,7 @@ export function SectionTabs({
       <QuizBlock quiz={quiz!} actionHost={quizFoot} prevBeyond={prevTrail} nextBeyond={nextTrail} />
     ) : current.kind === "lab" && current.widget ? (
       <div>
-        <Markdown content={current.markdown} />
+        <LabBrief lab={current.widget} title={current.label.replace(/^Lab:\s*/, "")} />
         {current.widget === "risk-triage" ? <RiskTriageLab /> : current.widget === "hash-verify" ? <HashVerifyLab /> : <PasswordTableLab />}
       </div>
     ) : current.kind === "lab" ? (

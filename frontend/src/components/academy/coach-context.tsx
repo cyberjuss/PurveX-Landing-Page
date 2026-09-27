@@ -30,9 +30,33 @@ type CoachState = {
   // coach panel when one is on the page, otherwise it opens the pop-up.
   ask: (text: string) => void;
   registerInline: (el: HTMLElement | null) => void;
+  // The intake answers, so a lab can phrase its objective for the student's role.
+  profile: StudentProfile | null;
 };
 
 const CoachContext = createContext<CoachState | null>(null);
+
+/** Where the student is inside a browser lab, read from the lab's own markup: the step, the card, and the task highlighted in the card. */
+function labSpot(): string | undefined {
+  const lab = document.querySelector(".rt");
+  if (!lab) return undefined;
+  const text = (sel: string, attr?: string) => {
+    const el = lab.querySelector(sel);
+    return (attr ? el?.getAttribute(attr) : el?.textContent)?.replace(/\s+/g, " ").trim() || "";
+  };
+  const parts = [
+    text(".rt-step[aria-current='step'] .rt-step__label") && `Step: ${text(".rt-step[aria-current='step'] .rt-step__label")}`,
+    text(".rt-deck__dot.is-on", "aria-label") && `Card ${text(".rt-deck__dot.is-on", "aria-label")}`,
+    text(".lk-guide > li[aria-current='step'] .lk-guide__body > b") && `Doing: ${text(".lk-guide > li[aria-current='step'] .lk-guide__body > b")}`,
+    lab.querySelector(".rt-ticket.is-wrong") ? "Their last check on this card was wrong" : "",
+  ].filter(Boolean);
+  return parts.length ? parts.join(" · ").slice(0, 200) : undefined;
+}
+
+/** For shared lab pieces that also render outside the Academy shell (previews, tests). */
+export function useOptionalCoach() {
+  return useContext(CoachContext);
+}
 
 export function useCoach() {
   const ctx = useContext(CoachContext);
@@ -118,7 +142,16 @@ export function CoachProvider({ children, profile = null }: { children: React.Re
         const res = await academyFetch("/academy/api/coach", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: question, images: shots, history, results: loadResults(), profile, mode, place: placeRef.current, day: localDay() }),
+          body: JSON.stringify({
+            message: question,
+            images: shots,
+            history,
+            results: loadResults(),
+            profile,
+            mode,
+            place: placeRef.current?.lab ? { ...placeRef.current, at: labSpot() } : placeRef.current,
+            day: localDay(),
+          }),
           signal: AbortSignal.timeout(58_000),
         });
         const data = await res.json();
@@ -173,7 +206,7 @@ export function CoachProvider({ children, profile = null }: { children: React.Re
 
   return (
     <CoachContext.Provider
-      value={{ messages, busy, enabled, remaining, limit, bonus, error, modalOpen, setModalOpen, mode, setMode, setPlace, send, clear, resetToday, ask, registerInline }}
+      value={{ messages, busy, enabled, remaining, limit, bonus, error, modalOpen, setModalOpen, mode, setMode, setPlace, send, clear, resetToday, ask, registerInline, profile }}
     >
       {children}
     </CoachContext.Provider>

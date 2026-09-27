@@ -1,5 +1,7 @@
 import { MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
 import { SKILLS, summarize, type Results } from "@/lib/academy-score";
+import type { LabWidget } from "@/lib/academy-content";
+import { isBrowserLab } from "@/lib/academy-lab-briefs";
 
 export const COACH_MODES = ["walkthrough", "check", "mentor", "interview"] as const;
 export type CoachMode = (typeof COACH_MODES)[number];
@@ -31,14 +33,23 @@ export function modeFromReport(results: Results): CoachMode {
   return "check";
 }
 
-/** The lab or challenge tab the student has open, if any. */
-export type CoachPlace = { kind: "lab" | "challenge"; title: string };
+/**
+ * The lab or challenge tab the student has open, if any. A browser lab also
+ * names its widget, and "at" says where in it they are (step, card, task).
+ */
+export type CoachPlace = { kind: "lab" | "challenge"; title: string; lab?: LabWidget; at?: string };
+
+const clean = (v: string, max: number) => v.replace(/\s+/g, " ").trim().slice(0, max);
 
 export function parseCoachPlace(value: unknown): CoachPlace | null {
   const v = value as Partial<CoachPlace> | null;
   if (!v || (v.kind !== "lab" && v.kind !== "challenge") || typeof v.title !== "string") return null;
-  const title = v.title.replace(/\s+/g, " ").trim().slice(0, 120);
-  return title ? { kind: v.kind, title } : null;
+  const title = clean(v.title, 120);
+  if (!title) return null;
+  const place: CoachPlace = { kind: v.kind, title };
+  if (v.kind === "lab" && isBrowserLab(v.lab)) place.lab = v.lab;
+  if (place.lab && typeof v.at === "string" && clean(v.at, 200)) place.at = clean(v.at, 200);
+  return place;
 }
 
 // On a lab or challenge the Coach teaches like Socrates: the student reasons

@@ -10,6 +10,7 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 // otherwise, so local dev works before academy.sql has been run.
 const memoryProgress = new Map<string, Results>();
 const memoryUsage = new Map<string, { day: string; count: number }>();
+const memoryLabCoach = new Map<string, { day: string; count: number }>();
 const memoryKeys = new Map<string, { userId: string; createdAt: string; lastUsedAt: string | null }>();
 const memoryDaily = new Map<string, string>();
 const memoryDrills = new Map<string, DrillEntry[]>();
@@ -78,6 +79,37 @@ export async function bumpUsage(userId: string, current: number, day = todayStam
       updated_at: new Date().toISOString(),
     });
     if (error) console.error("academy_coach_usage upsert failed", error.message);
+  }
+  return next;
+}
+
+/** Coach questions asked inside one browser lab today. */
+export async function readLabCoachUsage(userId: string, lab: string, day = todayStamp()): Promise<number> {
+  const key = `${userId}|${lab}`;
+  const row = memoryLabCoach.get(key);
+  const local = row && row.day === day ? row.count : 0;
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin
+      .from("academy_lab_coach_usage")
+      .select("count")
+      .eq("user_id", userId)
+      .eq("day", day)
+      .eq("lab", lab)
+      .maybeSingle();
+    // Until academy.sql adds the table, the per-process count stands in.
+    if (!error && typeof data?.count === "number") return Math.max(data.count, local);
+  }
+  return local;
+}
+
+export async function bumpLabCoachUsage(userId: string, lab: string, current: number, day = todayStamp()): Promise<number> {
+  const next = current + 1;
+  memoryLabCoach.set(`${userId}|${lab}`, { day, count: next });
+  if (supabaseAdmin) {
+    const { error } = await supabaseAdmin
+      .from("academy_lab_coach_usage")
+      .upsert({ user_id: userId, day, lab, count: next, updated_at: new Date().toISOString() });
+    if (error) console.error("academy_lab_coach_usage upsert failed", error.message);
   }
   return next;
 }
