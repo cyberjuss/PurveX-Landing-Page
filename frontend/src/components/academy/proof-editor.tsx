@@ -345,35 +345,70 @@ export function ProofEditor() {
         <>
           <section className="pf-sec">
             <h2>Share your portfolio</h2>
-            <div className={`pf-vis${settings.published ? " is-on" : ""}`}>
-              <div>
-                <b>{settings.published ? "Public" : "Private"}</b>
-                <small>
-                  {settings.published
-                    ? "Anyone with your link or QR code can see your portfolio, and your credential shows as valid."
-                    : "Only you can see your portfolio. Your link shows nothing and your credential shows as not active."}
-                </small>
+            <div className="pf-share">
+              <div className="pf-vis">
+                <div>
+                  <b>{settings.published ? "Public" : "Private"}</b>
+                  <small>
+                    {settings.published
+                      ? "Anyone with your link or QR code can see your portfolio, and your credential shows as valid."
+                      : "Only you can see your portfolio. Your link shows nothing and your credential shows as not active."}
+                  </small>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={settings.published}
+                  aria-label="Make my portfolio public"
+                  className="pf-switch"
+                  disabled={busy || (!settings.published && data.blockers.length > 0)}
+                  onClick={() => save({ published: !settings.published }, settings.published ? "Your portfolio is private. Your link no longer works." : "Your portfolio is public.")}
+                />
               </div>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={settings.published}
-                aria-label="Make my portfolio public"
-                className="pf-switch"
-                disabled={busy || (!settings.published && data.blockers.length > 0)}
-                onClick={() => save({ published: !settings.published }, settings.published ? "Your portfolio is private. Your link no longer works." : "Your portfolio is public.")}
-              />
+              {!settings.published && data.blockers.length > 0 && (
+                <div className="pf-blockers">
+                  <b>Before you can make it public:</b>
+                  <ul>
+                    {data.blockers.map((b) => (
+                      <li key={b}>{b}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <div className="pf-share__link">
+                <div className="pf-slug">
+                  <em>purvex.io/p/</em>
+                  <input value={slug} maxLength={40} aria-label="Your link" onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))} />
+                  {slug !== settings.slug ? (
+                    <button type="button" className="pf-slug__copy" disabled={busy || !slug} onClick={() => save({}, "Link saved")}>
+                      Save
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="pf-slug__copy"
+                      onClick={async () => say((await copyText(`https://${link}`)) ? (settings.published ? "Link copied" : "Link copied. It works once your portfolio is public.") : "Select the link and copy it")}
+                    >
+                      Copy
+                    </button>
+                  )}
+                </div>
+                <a
+                  className="pf-btn"
+                  href={`/p/${settings.slug}/qr`}
+                  download={`purvex-portfolio-${settings.slug}.png`}
+                  title="A QR code that opens your portfolio from a phone camera"
+                  onClick={() => say(settings.published ? "QR code downloaded" : "QR code downloaded. It opens your portfolio once you make it public.")}
+                >
+                  Download QR code
+                </a>
+              </div>
             </div>
-            {!settings.published && data.blockers.length > 0 && (
-              <div className="pf-blockers">
-                <b>Before you can make it public:</b>
-                <ul>
-                  {data.blockers.map((b) => (
-                    <li key={b}>{b}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+          </section>
+
+          <section className="pf-sec">
+            <h2>Your details</h2>
+            <p>Shown on your portfolio so an employer can reach you. Leave anything blank to hide it.</p>
             <div className="pf-photo">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {avatar ? <img src={avatar} alt="Your profile photo" /> : <span aria-hidden="true">{(name || "?").trim().charAt(0).toUpperCase()}</span>}
@@ -398,49 +433,6 @@ export function ProofEditor() {
                 <span>Name employers see</span>
                 <input value={name} maxLength={60} onChange={(e) => setName(e.target.value)} />
               </label>
-              <label>
-                <span>Your link</span>
-                <div className="pf-slug">
-                  <em>purvex.io/p/</em>
-                  <input value={slug} maxLength={40} onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))} />
-                  <button
-                    type="button"
-                    className="pf-slug__copy"
-                    disabled={slug !== settings.slug}
-                    title={slug !== settings.slug ? "Save your new link first" : undefined}
-                    onClick={async () => say((await copyText(`https://${link}`)) ? (settings.published ? "Link copied" : "Link copied. It works once your portfolio is public.") : "Select the link and copy it")}
-                  >
-                    Copy
-                  </button>
-                </div>
-              </label>
-            </div>
-            <div className="pf-row">
-              <button type="button" className="pf-btn pf-btn--primary" disabled={busy} onClick={() => save({}, "Saved")}>
-                Save changes
-              </button>
-              <a
-                className="pf-btn"
-                href={`/p/${settings.slug}/qr`}
-                download={`purvex-portfolio-${settings.slug}.png`}
-                title="A QR code that opens your portfolio from a phone camera"
-                onClick={() => say(settings.published ? "QR code downloaded" : "QR code downloaded. It opens your portfolio once you make it public.")}
-              >
-                Download QR code
-              </a>
-              {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-            </div>
-            {settings.published && (
-              <p className="pf-hint">
-                <code>{link}</code> · Credential <code>{settings.credentialId}</code>
-              </p>
-            )}
-          </section>
-
-          <section className="pf-sec">
-            <h2>Contact and availability</h2>
-            <p>Shown on your portfolio so an employer can reach you. Leave anything blank to hide it.</p>
-            <div className="pf-fields">
               <label>
                 <span>Email for employers</span>
                 <input type="email" value={contact.contactEmail} maxLength={120} placeholder="name@example.com" onChange={(e) => setContact({ ...contact, contactEmail: e.target.value })} />
@@ -575,8 +567,9 @@ export function ProofEditor() {
             </div>
             <div className="pf-row">
               <button type="button" className="pf-btn pf-btn--primary" disabled={busy} onClick={() => save({}, "Saved")}>
-                Save contact details
+                Save details
               </button>
+              {busy && <Loader2 className="h-4 w-4 animate-spin" />}
             </div>
           </section>
 

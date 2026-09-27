@@ -28,7 +28,7 @@
 .pp svg { flex: none; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* Header: who they are on the left, how to reach them on the right. */
-.pp-head { padding: 40px 0 26px; border-bottom: 2px solid var(--pp-ink); }
+.pp-head { padding: 40px 0 30px; border-bottom: 1px solid var(--pp-line); }
 .pp-id { display: flex; align-items: center; gap: 22px; min-width: 0; }
 .pp-avatar { flex: none; width: 92px; height: 92px; border-radius: 50%; object-fit: cover; border: 1px solid var(--pp-line); background: var(--pp-bg-2); }
 .pp-head h1 { font-size: clamp(28px, 5.5vw, 38px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
