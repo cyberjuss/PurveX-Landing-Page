@@ -12,7 +12,7 @@ const verifier =
     ? createClient(supabaseUrl, supabaseAnonKey, { auth: { persistSession: false, autoRefreshToken: false } })
     : null;
 
-export type AcademyStudent = { id: string; email: string | null };
+export type AcademyStudent = { id: string; email: string | null; name: string | null };
 
 export async function getAcademyStudent(request: Request): Promise<AcademyStudent | null> {
   const header = request.headers.get("authorization") || "";
@@ -20,5 +20,7 @@ export async function getAcademyStudent(request: Request): Promise<AcademyStuden
   if (!token || !verifier) return null;
   const { data, error } = await verifier.auth.getUser(token);
   if (error || !data.user) return null;
-  return { id: data.user.id, email: data.user.email ?? null };
+  const meta = data.user.user_metadata ?? {};
+  const name = [meta.full_name, meta.name, meta.given_name].find((v) => typeof v === "string" && v.trim()) as string | undefined;
+  return { id: data.user.id, email: data.user.email ?? null, name: name?.trim().slice(0, 60) ?? null };
 }

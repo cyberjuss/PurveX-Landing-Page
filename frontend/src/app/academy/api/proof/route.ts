@@ -14,7 +14,7 @@ import {
   validSlug,
   type ProofSettings,
 } from "@/lib/academy-proof-store";
-import { getAcademyStudent } from "@/lib/academy-student";
+import { getAcademyStudent, type AcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
 
@@ -30,22 +30,33 @@ async function auth(request: Request) {
 }
 
 /** An unpublished starting point for a student who has not saved anything yet. */
-function draftSettings(email: string | null, shotsOn: string[]): ProofSettings {
-  const name = draftName(email);
+function draftSettings(student: AcademyStudent, shotsOn: string[]): ProofSettings {
+  const name = draftName(student);
   return { slug: slugify(name), displayName: name, published: false, showSkills: true, shotsOn, credentialId: newCredentialId(), updatedAt: new Date().toISOString() };
 }
 
-function draftName(email: string | null) {
+function emailName(email: string | null) {
   const local = (email ?? "").split("@")[0] ?? "";
   const words = local.split(/[._-]+/).filter(Boolean).slice(0, 3);
   return words.map((w) => w[0].toUpperCase() + w.slice(1)).join(" ") || "Student";
+}
+
+/** The name on the student's account, falling back to one built from their email. */
+function draftName(student: AcademyStudent) {
+  return student.name || emailName(student.email);
 }
 
 export async function GET(request: Request) {
   const a = await auth(request);
   if (a.error) return a.error;
   const data = await loadProofData(a.student.id);
-  const name = data.settings?.displayName ?? draftName(a.student.email);
+  // Portfolios created before account names were read still carry the email
+  // placeholder; swap in the real name while keeping the link unchanged.
+  if (data.settings && a.student.name && data.settings.displayName === emailName(a.student.email) && a.student.name !== data.settings.displayName) {
+    const renamed = { ...data.settings, displayName: a.student.name, updatedAt: new Date().toISOString() };
+    if ((await saveProofSettings(a.student.id, renamed)) === "ok") data.settings = renamed;
+  }
+  const name = data.settings?.displayName ?? draftName(a.student);
   const settings: ProofSettings = data.settings ?? {
     slug: slugify(name),
     displayName: name,
@@ -75,7 +86,7 @@ export async function PUT(request: Request) {
   }
   const data = await loadProofData(a.student.id);
   const prev = data.settings;
-  const displayName = String(body.displayName ?? prev?.displayName ?? draftName(a.student.email)).replace(/\s+/g, " ").trim().slice(0, 60);
+  const displayName = String(body.displayName ?? prev?.displayName ?? draftName(a.student)).replace(/\s+/g, " ").trim().slice(0, 60);
   const slug = String(body.slug ?? prev?.slug ?? slugify(displayName)).toLowerCase().trim();
   if (!displayName) return NextResponse.json({ error: "Add the name employers should see." }, { status: 400 });
   if (!validSlug(slug)) return NextResponse.json({ error: "Use 3 to 40 lowercase letters, numbers or hyphens for your link." }, { status: 400 });
@@ -176,7 +187,7 @@ export async function POST(request: Request) {
     const what = kind === "avatar" ? "photo" : "resume";
     const path = await putFile(a.student.id, kind, Buffer.from(await file.arrayBuffer()), file.type);
     if (!path) return NextResponse.json({ error: `Unable to save your ${what} right now. Try again later.` }, { status: 500 });
-    const settings = (await loadProofSettings(a.student.id)) ?? draftSettings(a.student.email, []);
+    const settings = (await loadProofSettings(a.student.id)) ?? draftSettings(a.student, []);
     const old = kind === "avatar" ? settings.avatarPath : settings.resumePath;
     const patch = kind === "avatar" ? { avatarPath: path } : { resumePath: path };
     const saved = await saveProofSettings(a.student.id, { ...settings, ...patch, updatedAt: new Date().toISOString() });
@@ -201,8 +212,8 @@ export async function POST(request: Request) {
   // has not saved a profile yet gets an unpublished draft to hold it.
   const settings = await loadProofSettings(a.student.id);
   if (!settings) {
-    const name = draftName(a.student.email);
-    const draft = draftSettings(a.student.email, [job]);
+    const name = draftName(a.student);
+    const draft = draftSettings(a.student, [job]);
     if ((await saveProofSettings(a.student.id, draft)) === "taken") {
       await saveProofSettings(a.student.id, { ...draft, slug: slugify(`${name} ${Math.random().toString(36).slice(2, 6)}`) });
     }
