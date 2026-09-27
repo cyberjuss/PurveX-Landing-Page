@@ -17,7 +17,16 @@
 .pf-fields input:focus { outline: none; border-color: var(--rd-accent); }
 .pf-slug { display: flex; align-items: center; border: 1px solid var(--rd-line); }
 .pf-slug em { padding-left: 12px; font-style: normal; font-size: 14px; font-weight: 400; color: var(--rd-ink-3); white-space: nowrap; }
-.pf-slug input { flex: 1; border: 0; padding-left: 2px; }
+.pf-slug input { flex: 1; min-width: 0; border: 0; padding-left: 2px; }
+.pf-slug__copy { flex: none; align-self: stretch; padding: 0 14px; border: 0; border-left: 1px solid var(--rd-line); background: none; font-size: 13px; font-weight: 650; color: var(--rd-accent); cursor: pointer; }
+.pf-slug__copy:hover:not(:disabled) { background: color-mix(in srgb, var(--rd-accent) 10%, transparent); }
+.pf-slug__copy:disabled { color: var(--rd-ink-3); cursor: not-allowed; }
+.pf-qr { display: flex; align-items: center; gap: 16px; }
+.pf-qr > img { flex: none; width: 104px; height: 104px; padding: 4px; border: 1px solid var(--rd-line); background: #fff; image-rendering: pixelated; }
+.pf-qr > div { display: grid; justify-items: start; gap: 4px; }
+.pf-qr b { font-size: 13.5px; color: var(--rd-ink); }
+.pf-qr small { max-width: 52ch; font-size: 12.5px; color: var(--rd-ink-3); }
+.pf-qr .pf-btn { margin-top: 4px; }
 
 .pf-blockers li { list-style: disc; }
 .pf-blockers { margin: 0; padding: 10px 14px 10px 30px; border: 1px solid color-mix(in srgb, var(--rd-warn) 40%, transparent); background: color-mix(in srgb, var(--rd-warn) 8%, transparent); font-size: 13px; color: var(--rd-ink); }

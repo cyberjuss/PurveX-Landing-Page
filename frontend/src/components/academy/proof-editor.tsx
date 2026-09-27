@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import QRCode from "qrcode";
 import { Loader2, X } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { AVAILABILITY, CERT_STATUS_LABEL, CERT_SUGGESTIONS, certStatusText, openTasks, SHOTS_PER_ITEM, TRACK_LABEL, type ExtraCert, type StarPart, type Track, type WorkItem } from "@/lib/academy-proof";
@@ -156,6 +157,20 @@ export function ProofEditor() {
       setAvatar(null);
     };
   }, [avatarPath]);
+
+  const savedSlug = data?.settings.slug ?? null;
+  const [qr, setQr] = useState<string | null>(null);
+  useEffect(() => {
+    let stop = false;
+    if (savedSlug) {
+      QRCode.toDataURL(`https://purvex.io/p/${savedSlug}`, { width: 600, margin: 2, errorCorrectionLevel: "M", color: { dark: "#111827", light: "#ffffff" } })
+        .then((url) => !stop && setQr(url))
+        .catch(() => {});
+    }
+    return () => {
+      stop = true;
+    };
+  }, [savedSlug]);
 
   const resumePath = data?.settings.resumePath ?? null;
   useEffect(() => {
@@ -381,9 +396,31 @@ export function ProofEditor() {
                 <div className="pf-slug">
                   <em>purvex.io/p/</em>
                   <input value={slug} maxLength={40} onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))} />
+                  <button
+                    type="button"
+                    className="pf-slug__copy"
+                    disabled={slug !== settings.slug}
+                    title={slug !== settings.slug ? "Save your new link first" : undefined}
+                    onClick={async () => say((await copyText(`https://${link}`)) ? (settings.published ? "Link copied" : "Link copied. It works once you share your portfolio.") : "Select the link and copy it")}
+                  >
+                    Copy
+                  </button>
                 </div>
               </label>
             </div>
+            {qr && (
+              <div className="pf-qr">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={qr} alt={`QR code for ${link}`} />
+                <div>
+                  <b>QR code</b>
+                  <small>Opens your portfolio on a phone camera. Add it to your resume, a business card or a job fair handout.{!settings.published && " It works once you share your portfolio."}</small>
+                  <a className="pf-btn" href={qr} download={`purvex-portfolio-${settings.slug}.png`}>
+                    Download QR code
+                  </a>
+                </div>
+              </div>
+            )}
             {data.blockers.length > 0 && (
               <ul className="pf-blockers">
                 {data.blockers.map((b) => (
