@@ -131,10 +131,6 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
               height={1412}
               sizes="(max-width: 860px) 100vw, 640px"
             />
-            <figcaption>
-              <strong>The portfolio</strong>
-              Only work the lab confirmed. Target role, certifications and skills in the words job postings use.
-            </figcaption>
           </figure>
           <figure className="tp-proof__shot">
             <Image
