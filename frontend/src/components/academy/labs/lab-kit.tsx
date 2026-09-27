@@ -8,7 +8,7 @@ import "./lab-kit.css";
 // Shared pieces for the browser-only week labs. They use the Week 1 lab's
 // rt-* styles so every lab looks and behaves the same.
 
-/** SHA-256 of a string as lowercase hex, the same value Get-FileHash and shasum print. */
+/** SHA-256 of a string as lowercase hex, the same value sha256sum and Get-FileHash print. */
 export async function sha256Hex(text: string): Promise<string> {
   const bytes = new TextEncoder().encode(text);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
@@ -244,13 +244,14 @@ export function Options({
   );
 }
 
-export function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) {
+export function CopyButton({ text, label = "Copy", onCopied }: { text: string; label?: string; onCopied?: () => void }) {
   const [done, setDone] = useState(false);
   return (
     <button
       type="button"
       className="lk-mini"
       onClick={() => {
+        onCopied?.();
         navigator.clipboard?.writeText(text).then(
           () => {
             setDone(true);
@@ -265,9 +266,16 @@ export function CopyButton({ text, label = "Copy" }: { text: string; label?: str
   );
 }
 
-export function DownloadButton({ name, text }: { name: string; text: string }) {
+export function DownloadButton({ name, text, onDone }: { name: string; text: string; onDone?: () => void }) {
   return (
-    <button type="button" className="lk-mini" onClick={() => downloadText(name, text)}>
+    <button
+      type="button"
+      className="lk-mini"
+      onClick={() => {
+        downloadText(name, text);
+        onDone?.();
+      }}
+    >
       <Download aria-hidden="true" /> Download {name}
     </button>
   );
@@ -279,28 +287,28 @@ export const CHEF_SHA256 = `${CYBERCHEF}#recipe=SHA2('256',64,160)`;
 export const CHEF_FROM_BASE64 = `${CYBERCHEF}#recipe=From_Base64('A-Za-z0-9%2B/%3D',true,false)`;
 
 /**
- * How to take a SHA-256 with the tools analysts use on the job: PowerShell or
- * certutil on Windows, shasum or sha256sum on Mac and Linux, and CyberChef in
- * any browser. The small hasher at the end is only for schools that block
- * CyberChef. It runs in the browser and sends nothing anywhere.
+ * How to take a SHA-256 with the open-source tools analysts use on the job:
+ * CyberChef in any browser, PowerShell 7 on any system, and sha256sum,
+ * shasum or OpenSSL in a terminal. The small hasher at the end is only for
+ * schools that block CyberChef. It runs in the browser and sends nothing anywhere.
  */
 export function HashTool({ mode }: { mode: "file" | "text" }) {
-  const [tab, setTab] = useState<"cyberchef" | "windows" | "mac" | "backup">("cyberchef");
+  const [tab, setTab] = useState<"cyberchef" | "pwsh" | "terminal" | "backup">("cyberchef");
   const [out, setOut] = useState("");
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const tabs = [
     { key: "cyberchef", label: "CyberChef" },
-    { key: "windows", label: "Windows" },
-    { key: "mac", label: "Mac or Linux" },
+    { key: "pwsh", label: "PowerShell 7" },
+    { key: "terminal", label: "Terminal" },
     { key: "backup", label: "CyberChef blocked?" },
   ] as const;
   return (
     <details className="rt-brief lk-tool">
       <summary>
         <span>
-          <b>Tools: how to take a SHA-256 hash</b>
-          <small>CyberChef, PowerShell, certutil, shasum and sha256sum</small>
+          <b>Stuck, or prefer the command line?</b>
+          <small>Step by step for free, open-source tools: CyberChef, PowerShell 7, sha256sum and OpenSSL</small>
         </span>
       </summary>
       <div className="rt-brief__body">
@@ -313,53 +321,58 @@ export function HashTool({ mode }: { mode: "file" | "text" }) {
         </div>
         {tab === "cyberchef" && (
           <div className="lk-howto">
-            <p>
-              CyberChef is the free, open-source toolkit analysts keep open all day for hashing, decoding and converting data. It runs in your browser.
-            </p>
+            <p className="lk-oss">Open source · Apache 2.0 · by GCHQ · runs in your browser</p>
             <p>
               <a className="lk-mini" href={CHEF_SHA256} target="_blank" rel="noreferrer">
                 Open CyberChef with SHA-256 ready
               </a>
             </p>
             {mode === "file" ? (
-              <p>In the Input pane, choose the Open file as input button and pick the file you downloaded. The Output pane shows its SHA-256.</p>
+              <p>Drag the file into the Input box, or use its Open file button. The Output box shows the SHA-256.</p>
             ) : (
-              <p>Type the word into the Input pane exactly, with no space or line break after it. The Output pane shows its SHA-256.</p>
+              <p>Type the word into Input exactly, with no space or line break after it. Output shows the SHA-256.</p>
             )}
           </div>
         )}
-        {tab === "windows" &&
-          (mode === "file" ? (
-            <div className="lk-howto">
-              <p>In PowerShell, from the folder the file downloaded to:</p>
-              <pre>Get-FileHash .\FILE-NAME.txt -Algorithm SHA256</pre>
-              <p>Or in Command Prompt, with certutil, which ships with every Windows machine:</p>
-              <pre>certutil -hashfile FILE-NAME.txt SHA256</pre>
-              <p>Capital or lowercase letters both count.</p>
-            </div>
-          ) : (
-            <div className="lk-howto">
-              <p>In PowerShell, with the word you are testing inside the quotes:</p>
-              <pre>{`$b = [Text.Encoding]::UTF8.GetBytes("Summer2026!")\n[BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash($b)) -replace '-'`}</pre>
-            </div>
-          ))}
-        {tab === "mac" &&
-          (mode === "file" ? (
-            <div className="lk-howto">
-              <p>In Terminal, from your Downloads folder. Mac:</p>
-              <pre>shasum -a 256 FILE-NAME.txt</pre>
-              <p>Linux:</p>
-              <pre>sha256sum FILE-NAME.txt</pre>
-              <p>The hash is the long value before the file name.</p>
-            </div>
-          ) : (
-            <div className="lk-howto">
-              <p>The -n matters. Without it you hash a hidden line break too. Mac:</p>
-              <pre>echo -n &apos;Summer2026!&apos; | shasum -a 256</pre>
-              <p>Linux:</p>
-              <pre>echo -n &apos;Summer2026!&apos; | sha256sum</pre>
-            </div>
-          ))}
+        {tab === "pwsh" && (
+          <div className="lk-howto">
+            <p className="lk-oss">Open source · MIT · Windows, Mac and Linux · run pwsh</p>
+            {mode === "file" ? (
+              <>
+                <p>From the folder the file downloaded to:</p>
+                <pre>Get-FileHash ./FILE-NAME.txt -Algorithm SHA256</pre>
+                <p>Capital or lowercase letters both count.</p>
+              </>
+            ) : (
+              <>
+                <p>With the word inside the quotes:</p>
+                <pre>{`$b = [Text.Encoding]::UTF8.GetBytes("Summer2026!")\n[Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($b))`}</pre>
+              </>
+            )}
+          </div>
+        )}
+        {tab === "terminal" && (
+          <div className="lk-howto">
+            <p className="lk-oss">Open source · GNU coreutils and OpenSSL · Linux, Mac, and Git Bash on Windows</p>
+            {mode === "file" ? (
+              <>
+                <p>From your Downloads folder. Linux:</p>
+                <pre>sha256sum FILE-NAME.txt</pre>
+                <p>Mac:</p>
+                <pre>shasum -a 256 FILE-NAME.txt</pre>
+                <p>Anywhere OpenSSL is installed:</p>
+                <pre>openssl dgst -sha256 FILE-NAME.txt</pre>
+              </>
+            ) : (
+              <>
+                <p>printf adds no hidden line break, so the hash matches. Linux:</p>
+                <pre>printf &apos;%s&apos; &apos;Summer2026!&apos; | sha256sum</pre>
+                <p>Mac, or anywhere with OpenSSL:</p>
+                <pre>printf &apos;%s&apos; &apos;Summer2026!&apos; | openssl dgst -sha256</pre>
+              </>
+            )}
+          </div>
+        )}
         {tab === "backup" && (
           <div className="lk-howto">
             <p>If your school blocks CyberChef, this hasher gives the same answer. It runs in your browser and sends nothing anywhere.</p>
@@ -492,4 +505,42 @@ export function HashPlayground({ seed }: { seed: string }) {
       </div>
     </div>
   );
+}
+
+export interface GuideStep {
+  title: ReactNode;
+  done: boolean;
+  /** Controls for this step. Hidden until the student reaches it, so only one thing is asked at a time. */
+  body?: ReactNode;
+}
+
+/**
+ * A numbered walkthrough inside a card: finished steps get a tick and the current one is highlighted.
+ * By default later steps stay hidden until reached. Pass showAll when a step can be done outside the page
+ * (in a terminal, in a CyberChef tab already open), so nobody gets stuck waiting for a step to unlock.
+ */
+export function Guide({ steps, showAll = false }: { steps: GuideStep[]; showAll?: boolean }) {
+  const now = steps.findIndex((st) => !st.done);
+  return (
+    <ol className="lk-guide">
+      {steps.map((st, i) => {
+        const state = st.done ? "is-done" : i === now ? "is-now" : "is-later";
+        return (
+          <li key={i} className={state} aria-current={i === now ? "step" : undefined}>
+            <span className="lk-guide__n">{st.done ? <Check aria-hidden="true" /> : i + 1}</span>
+            <div className="lk-guide__body">
+              <b>{st.title}</b>
+              {st.body && (showAll || now === -1 || i <= now) && st.body}
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+/** The footer's "what now" line: points at the first unfinished card. */
+export function nextHint(done: boolean[], names: string[]) {
+  const i = done.findIndex((d) => !d);
+  return i === -1 ? "All done. Check your answers." : `Next: ${names[i]}`;
 }

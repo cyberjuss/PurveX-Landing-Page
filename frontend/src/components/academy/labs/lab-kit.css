@@ -151,3 +151,20 @@
 .lk-more[open] > summary::before { content: "−"; }
 .lk-more[open] > summary { border-bottom: 1px solid var(--rd-line); }
 .lk-more > :not(summary) { margin: 12px; }
+
+/* Walkthrough: one numbered step at a time inside a card */
+.lk-guide { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.lk-guide > li { position: relative; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; padding-bottom: 16px; }
+.lk-guide > li:last-child { padding-bottom: 0; }
+.lk-guide > li:not(:last-child)::before { content: ""; position: absolute; left: 12px; top: 28px; bottom: 2px; width: 1.5px; background: var(--rd-line); }
+.lk-guide > li.is-done:not(:last-child)::before { background: var(--rd-good); }
+.lk-guide__n { display: grid; place-items: center; width: 26px; height: 26px; border: 1.5px solid var(--rd-line); border-radius: 50%; font-size: 12px; font-weight: 700; color: var(--rd-ink-3); background: var(--rd-surface, transparent); }
+.lk-guide__n svg { width: 14px; height: 14px; stroke-width: 3; }
+.lk-guide > li.is-now .lk-guide__n { border-color: var(--rt-primary); background: var(--rt-primary); color: #fff; box-shadow: 0 0 0 4px color-mix(in srgb, var(--rt-primary) 18%, transparent); }
+.lk-guide > li.is-done .lk-guide__n { border-color: var(--rd-good); background: var(--rd-good); color: #fff; }
+.lk-guide__body { display: grid; gap: 10px; min-width: 0; padding-top: 3px; }
+.lk-guide__body > b { font-size: 14px; font-weight: 650; line-height: 1.45; color: var(--rd-ink); }
+.lk-guide > li.is-later .lk-guide__body > b { color: var(--rd-ink-3); font-weight: 550; }
+.lk-guide > li.is-done .lk-guide__body > b { color: var(--rd-ink-2); }
+.lk-guide__body .lk-mini { justify-self: start; }
+.lk-oss { font-size: 12px; font-weight: 650; letter-spacing: 0.01em; color: var(--rd-good); }
