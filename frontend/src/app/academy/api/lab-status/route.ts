@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
-import { formatLabAge } from "@/lib/academy-lab";
+import { formatLabAge, labIsLive } from "@/lib/academy-lab";
 import { hasTicketObjects } from "@/lib/academy-mission-lab";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { loadLabState } from "@/lib/academy-store";
@@ -17,14 +17,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ connected: false, syncedAgo: null, stale: false, hasTicketObjects: false });
   }
 
-  const age = formatLabAge(lab.uploadedAt);
-  const mins = Math.round(age.hours * 60);
-  const stale = Boolean(age.ago) && age.ago !== "just now" && (Number.isNaN(mins) || mins >= 5);
-
   return NextResponse.json({
     connected: true,
-    syncedAgo: age.ago,
-    stale,
+    syncedAgo: formatLabAge(lab.uploadedAt).ago,
+    stale: !labIsLive(lab.uploadedAt),
     hasTicketObjects: hasTicketObjects(lab.snapshot),
   });
 }

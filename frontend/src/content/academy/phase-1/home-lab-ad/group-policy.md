@@ -11,11 +11,11 @@ A **GPO** is a bundle of settings. The domain applies it to everything inside th
 - Screen-lock timeout
 - Software restrictions
 
-A GPO links only to a **Site**, a **Domain**, or an **OU**. It never links to a Container or directly to a group. That is why moving accounts out of the default Containers matters.
+A GPO links only to a **Site**, a **Domain**, or an **OU**. It never links to a Container or directly to a group. That is why every account in this lab sits in an OU instead of a default Container.
 
 For example, a GPO linked to `OU=IT` could enforce a shorter password expiration for IT staff and leave other departments untouched.
 
-Groups can narrow who inside that OU the GPO applies to, through security filtering. The link still always starts at the OU.
+Groups can narrow who inside that OU the GPO applies to, through security filtering. The link still starts at the OU.
 
 If a setting is not applying, ask where the object lives before you blame the GPO. An account in a Container never gets an OU-linked policy.
 

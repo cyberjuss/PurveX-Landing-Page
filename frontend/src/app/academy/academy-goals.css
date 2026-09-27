@@ -1,0 +1,333 @@
+/* Analyst Brief: a slim cue in the lesson that slides the full brief in
+   from the right, like the Coach. The brief markup ships hidden inside the
+   lesson; academy-shell.tsx copies it into the panel on click. */
+
+/* The cue, styled like the other flat // TAG callouts. */
+.academy-prose .ad-goals-cue { margin: 1rem 0 1.5rem; }
+.academy-prose .ad-goals { display: none; }
+.academy-prose .ad-goals-open {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.35rem 1.25rem;
+  width: 100%;
+  padding: 1rem 0;
+  border: 0;
+  border-top: 1px solid var(--pvrx-border-light);
+  border-bottom: 1px solid var(--pvrx-border-light);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.academy-prose .ad-goals-open__tag {
+  grid-column: 1;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pvrx-text-primary-light);
+}
+.academy-prose .ad-goals-open__tag::before { content: "// "; color: #5546e0; }
+.academy-prose .ad-goals-open__text {
+  grid-column: 1;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--pvrx-text-secondary-light);
+}
+.academy-prose .ad-goals-open__cta {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid rgba(138, 148, 168, 0.55);
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--pvrx-text-primary-light);
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
+}
+.academy-prose .ad-goals-open__cta::after { content: "→"; transition: transform 0.15s; }
+.academy-prose .ad-goals-open:hover .ad-goals-open__cta { border-color: #5546e0; color: #5546e0; }
+.academy-prose .ad-goals-open:hover .ad-goals-open__cta::after { transform: translateX(2px); }
+.academy-prose .ad-goals-open:focus-visible { outline: 2px solid #5546e0; outline-offset: 4px; }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-goals-open__tag::before { color: #9eb0ff; }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-goals-open__cta { border-color: rgba(180, 200, 255, 0.28); color: #c5d0ff; }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-goals-open:hover .ad-goals-open__cta { border-color: #9eb0ff; color: #9eb0ff; }
+@media (max-width: 560px) {
+  .academy-prose .ad-goals-open { grid-template-columns: 1fr; }
+  .academy-prose .ad-goals-open__cta { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 0.4rem; }
+}
+
+/* The slide-in panel. Same geometry as the Coach: under the header on
+   desktop, a full-screen sheet from the bottom on phones. */
+.ad-drawer-root {
+  --dr-bg: #ffffff;
+  --dr-ink: #0f172a;
+  --dr-ink-2: #475569;
+  --dr-ink-3: #64748b;
+  --dr-line: #e2e8f0;
+  --dr-accent: #5546e0;
+  --dr-alert: #d93a3f;
+  position: fixed;
+  inset: 0;
+  z-index: 36;
+}
+.ad-drawer-root[data-academy-theme="dark"] {
+  --dr-bg: #000000;
+  --dr-ink: #e8eef8;
+  --dr-ink-2: #9aa8bc;
+  --dr-ink-3: #6b768a;
+  --dr-line: rgba(180, 200, 255, 0.14);
+  --dr-accent: #9eb0ff;
+  --dr-alert: #fca5a5;
+}
+.ad-drawer__backdrop {
+  position: absolute;
+  inset: var(--dr-top, 0px) 0 0 0;
+  background: rgba(15, 23, 42, 0.28);
+  animation: pc-fade 280ms cubic-bezier(.16,1,.3,1);
+}
+.ad-drawer-root[data-academy-theme="dark"] .ad-drawer__backdrop { background: rgba(0, 0, 0, 0.55); }
+.ad-drawer {
+  position: absolute;
+  top: var(--dr-top, 0px);
+  right: 0;
+  bottom: 0;
+  width: min(420px, 100vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--dr-bg);
+  border-left: 1px solid var(--dr-line);
+  color: var(--dr-ink);
+  animation: pc-slide 280ms cubic-bezier(.16,1,.3,1) both;
+}
+.ad-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--dr-line);
+}
+.ad-drawer__title {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ad-drawer__title::before { content: "// "; color: var(--dr-accent); }
+.ad-drawer__close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--dr-line);
+  background: none;
+  color: var(--dr-ink-2);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+.ad-drawer__close:hover { color: var(--dr-ink); border-color: var(--dr-ink-3); }
+.ad-drawer__body { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 20px 24px; overscroll-behavior: contain; }
+
+/* The brief inside the panel. */
+.ad-drawer .ad-goals { display: block; }
+.ad-drawer .ad-goals__head { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 12px 0 0; }
+.ad-drawer .ad-goals__kicker { display: none; }
+.ad-drawer .ad-goals__role { margin-right: auto; font-size: 0.8rem; color: var(--dr-ink-2); }
+
+/* Two roles picked at intake: a switch between their briefs. */
+.ad-drawer__roles { display: flex; gap: 4px; margin: 12px 0 0; border-bottom: 1px solid var(--dr-line); }
+.ad-drawer__role {
+  flex: 1;
+  height: 34px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dr-ink-3);
+  cursor: pointer;
+}
+.ad-drawer__role:hover { color: var(--dr-ink); }
+.ad-drawer__role[aria-selected="true"] { color: var(--dr-accent); border-bottom-color: var(--dr-accent); }
+.ad-drawer .ad-goals__scope {
+  padding: 3px 8px;
+  border: 1px solid var(--dr-line);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  color: var(--dr-ink-3);
+}
+.ad-drawer .ad-goals__lede {
+  margin: 12px 0 18px;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--dr-ink);
+}
+.ad-drawer .ad-goals__checks {
+  counter-reset: goals;
+  list-style: none;
+  margin: 0 0 22px;
+  padding: 0;
+  border-top: 1px solid var(--dr-line);
+}
+.ad-drawer .ad-goals__checks li {
+  counter-increment: goals;
+  display: grid;
+  grid-template-columns: 2.2rem 1fr;
+  align-items: baseline;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--dr-line);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.ad-drawer .ad-goals__checks li::before {
+  content: counter(goals, decimal-leading-zero);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dr-accent);
+}
+.ad-drawer .ad-goals__label {
+  display: block;
+  margin-bottom: 10px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dr-ink-3);
+}
+.ad-drawer .ad-goals__goal {
+  margin: 24px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--dr-line);
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--dr-ink);
+}
+.ad-drawer .ad-goals__goal .ad-goals__label { color: var(--dr-accent); margin-bottom: 6px; }
+.ad-drawer .ad-goals__goal strong { font-weight: 700; color: var(--dr-alert); }
+
+@media (max-width: 640px) {
+  .ad-drawer { top: 0; width: 100vw; animation-name: pc-rise; border-left: 0; }
+  .ad-drawer__backdrop { inset: 0; }
+  .ad-drawer__head { padding-top: max(14px, env(safe-area-inset-top)); }
+  .ad-drawer__body { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ad-drawer, .ad-drawer__backdrop { animation: none; }
+}
+
+/* Your goals: every intake answer on one screen, in the same panel. */
+.ad-drawer .gp-sec { padding: 18px 0; border-bottom: 1px solid var(--dr-line); }
+.ad-drawer .gp-sec:last-child { border-bottom: 0; }
+.ad-drawer .gp-sec h3 {
+  margin: 0;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dr-ink-3);
+}
+.ad-drawer .gp-sec__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.ad-drawer .gp-count { font-size: 0.8rem; font-weight: 600; color: var(--dr-ink-2); white-space: nowrap; }
+.ad-drawer .gp-count b { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.03em; color: var(--dr-accent); }
+.ad-drawer .gp-count--done { color: var(--dr-accent); }
+.ad-drawer .gp-hint { margin: 4px 0 0; font-size: 0.8rem; color: var(--dr-ink-3); }
+.ad-drawer .gp-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.ad-drawer .gp-chip {
+  padding: 7px 11px;
+  border: 1px solid var(--dr-line);
+  background: none;
+  font: inherit;
+  font-size: 0.84rem;
+  line-height: 1.3;
+  text-align: left;
+  color: var(--dr-ink);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.ad-drawer .gp-chip:hover { border-color: var(--dr-ink-3); }
+.ad-drawer .gp-chip[aria-checked="true"] {
+  border-color: var(--dr-accent);
+  background: color-mix(in srgb, var(--dr-accent) 10%, transparent);
+  color: var(--dr-accent);
+  font-weight: 600;
+}
+.ad-drawer .gp-chip:focus-visible, .ad-drawer .gp-btn:focus-visible, .ad-drawer .gp-late button:focus-visible { outline: 2px solid var(--dr-accent); outline-offset: 2px; }
+.ad-drawer .gp-field { display: grid; gap: 6px; margin-top: 12px; font-size: 0.78rem; font-weight: 600; color: var(--dr-ink-3); }
+.ad-drawer .gp-field input {
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--dr-line);
+  background: transparent;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--dr-ink);
+  color-scheme: light;
+}
+.ad-drawer-root[data-academy-theme="dark"] .gp-field input { color-scheme: dark; }
+.ad-drawer .gp-field input:focus { outline: none; border-color: var(--dr-accent); }
+
+/* A booked exam date that has passed. */
+.ad-drawer .gp-late {
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--dr-alert) 40%, transparent);
+  background: color-mix(in srgb, var(--dr-alert) 7%, transparent);
+}
+.ad-drawer .gp-late p { margin: 0; font-size: 0.85rem; line-height: 1.45; color: var(--dr-ink); }
+.ad-drawer .gp-late__actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.ad-drawer .gp-late button {
+  padding: 6px 10px;
+  border: 1px solid var(--dr-line);
+  background: var(--dr-bg);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--dr-ink);
+  cursor: pointer;
+}
+.ad-drawer .gp-late button:hover { border-color: var(--dr-ink-3); }
+
+.ad-drawer .gp-foot { padding: 12px 20px calc(14px + env(safe-area-inset-bottom)); border-top: 1px solid var(--dr-line); }
+.ad-drawer .gp-foot__row { display: flex; gap: 8px; }
+.ad-drawer .gp-error { margin: 0 0 10px; font-size: 0.8rem; color: var(--dr-alert); }
+.ad-drawer .gp-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  border: 1px solid var(--dr-line);
+  background: none;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 650;
+  color: var(--dr-ink);
+  cursor: pointer;
+}
+.ad-drawer .gp-btn--primary { border-color: var(--dr-ink); background: var(--dr-ink); color: var(--dr-bg); }
+.ad-drawer .gp-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* Goals row in the account menu. A dot flags an exam date that has passed. */
+[data-ax-account] .ax-account__dot { width: 7px; height: 7px; margin-left: 2px; border-radius: 50%; background: #d93a3f; }
+[data-ax-account][data-theme="dark"] .ax-account__dot { background: #fca5a5; }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Markdown } from "@/lib/markdown";
 import type { MarkdownSlide } from "@/lib/markdown";
@@ -12,11 +12,13 @@ import { TrailDock, type TrailLink } from "./trail-dock";
 // a slide deck behaves rather than a page you scroll down forever.
 export function LabCarousel({
   slides,
+  storageKey,
   actionHost,
   prevBeyond,
   nextBeyond,
 }: {
   slides: MarkdownSlide[];
+  storageKey?: string;
   actionHost?: HTMLElement | null;
   prevBeyond?: TrailLink | null;
   nextBeyond?: TrailLink | null;
@@ -27,12 +29,29 @@ export function LabCarousel({
   const touchStartX = useRef<number | null>(null);
   const total = slides.length;
 
+  // Remember the step for this tab so a refresh lands back on it.
+  const stepKey = () => `academy-lab-step:${window.location.pathname}:${storageKey}`;
+  useEffect(() => {
+    if (!storageKey) return;
+    try {
+      const saved = Number(window.sessionStorage.getItem(stepKey()));
+      if (saved > 0 && saved < total) setIndex(saved);
+    } catch {}
+    // Restore once on mount; the key is fixed for this instance.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function go(next: number) {
     const clamped = Math.max(0, Math.min(total - 1, next));
     if (clamped === index) return;
     skipEnter.current = false;
     setDir(clamped > index ? 1 : -1);
     setIndex(clamped);
+    if (storageKey) {
+      try {
+        window.sessionStorage.setItem(stepKey(), String(clamped));
+      } catch {}
+    }
   }
 
   function onTouchStart(e: React.TouchEvent) {

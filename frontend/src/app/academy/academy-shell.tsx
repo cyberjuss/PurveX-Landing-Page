@@ -12,8 +12,12 @@ import { AcademySidebar } from "@/components/academy/academy-sidebar";
 import { AcademySignIn } from "@/components/academy/academy-sign-in";
 import { AcademyWelcome, takeAcademyWelcome } from "@/components/academy/academy-welcome";
 import { CoachProvider } from "@/components/academy/coach-context";
+import { GoalsPanel } from "@/components/academy/goals-panel";
+import { ProofPrompt } from "@/components/academy/proof-prompt";
 import { PurvexCoach } from "@/components/academy/purvex-coach";
-import { examLinks, sanitizeProfile, type StudentProfile } from "@/lib/academy-certs";
+import { ROLE_BRIEFS } from "@/lib/academy-briefs";
+import { askForProofShot, PROOF_TICKETS } from "@/lib/academy-proof";
+import { examLinks, roleLabel, sanitizeProfile, type RoleId, type StudentProfile } from "@/lib/academy-certs";
 import {
   academyFetch,
   downloadLinkedBuildScript,
@@ -25,7 +29,6 @@ import {
   RESULTS_UPDATED_EVENT,
   saveCachedProfile,
 } from "@/lib/academy-client";
-import { LAB_GATED_MISSIONS } from "@/lib/academy-missions";
 import { clearResults, loadResults, saveResults, scorecardHtml, summarize, type MissionResult, type Results } from "@/lib/academy-score";
 import { signOut } from "@/lib/portal-auth";
 import { supabase } from "@/lib/supabase";
@@ -42,8 +45,9 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
   // second copy of the page you're looking at.
   const isReadiness = pathname === READINESS_PATH;
   const isDrill = pathname === "/academy/drill";
+  const isProof = pathname === "/academy/portfolio";
   const isHome = pathname === "/academy";
-  const showSidebar = pathname !== "/academy" && !isReadiness && !isDrill;
+  const showSidebar = pathname !== "/academy" && !isReadiness && !isDrill && !isProof;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -417,14 +421,16 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       }
     };
 
-    // Some tickets need a real change. Ask the server whether the student's lab
-    // shows it. No lab connected, or a failed request, never traps a student.
+    // Every challenge needs the student's lab connected and live, and some
+    // tickets need a real change in it. Ask the server. A failed request
+    // never uses an attempt.
     const labGate = async (
       id: string
     ): Promise<{
       gated: boolean;
       passed?: boolean;
       noLab?: boolean;
+      stale?: boolean;
       noTicketObjects?: boolean;
       results?: { label: string; ok: boolean }[];
       syncedAgo?: string;
@@ -465,18 +471,19 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       }
 
       const missionId = wrap.getAttribute("data-id") || "";
-      if (!wrap.classList.contains("ad-mission--labok") && LAB_GATED_MISSIONS.includes(missionId)) {
-        btn.disabled = true;
-        feedback.textContent = "Checking your lab…";
-        feedback.className = "ad-guess__feedback";
-        let gate: Awaited<ReturnType<typeof labGate>> = null;
-        try {
+      btn.disabled = true;
+      feedback.textContent = "Checking your lab…";
+      feedback.className = "ad-guess__feedback";
+      let gate: Awaited<ReturnType<typeof labGate>> = null;
+      try {
         gate = await labGate(missionId);
-        // Give the lab up to 45 seconds to report the change before asking the student to try again.
+        // Give a lab that is waking up 20 seconds to report, and a live lab 45
+        // seconds to show the change, before asking the student to try again.
         const waitStart = Date.now();
-        while (gate && !gate.noLab && !gate.noTicketObjects && gate.gated !== false && !gate.passed && Date.now() - waitStart < 45000) {
-          feedback.textContent = "Waiting for your lab to show the change…";
-          await new Promise((resolve) => setTimeout(resolve, 400));
+        while (gate && !gate.noLab && !gate.noTicketObjects && !gate.passed && Date.now() - waitStart < (gate.stale ? 20000 : 45000)) {
+          const pause = gate.stale ? 2000 : 400;
+          feedback.textContent = gate.stale ? "Waiting for your lab to connect…" : "Waiting for your lab to show the change…";
+          await new Promise((resolve) => setTimeout(resolve, pause));
           gate = await labGate(missionId);
         }
         if (!gate) {
@@ -487,6 +494,12 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         }
         if (gate.noLab) {
           feedback.textContent = "No lab has reported yet. Download the script from Build the Environment, run it once as Administrator, and look for Lab snapshot sent. This does not use an attempt.";
+          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          placeMiss(wrap);
+          return;
+        }
+        if (gate.stale) {
+          feedback.textContent = `Your lab is not live${gate.syncedAgo ? ` (it last reported ${gate.syncedAgo})` : ""}. Turn on your domain controller and wait for the lab light to turn green. If it stays grey, run Build-Environment.ps1 -SyncOnly as Administrator. This does not use an attempt.`;
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
           placeMiss(wrap);
           return;
@@ -506,10 +519,9 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           placeMiss(wrap);
           return;
         }
-        wrap.classList.add("ad-mission--labok");
-        } finally {
-          btn.disabled = false;
-        }
+        if (gate.gated) wrap.classList.add("ad-mission--labok");
+      } finally {
+        btn.disabled = false;
       }
 
       const accepts = [answer, ...(btn.dataset.accept || "").split("|")].map(normalize).filter(Boolean);
@@ -520,6 +532,9 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         btn.disabled = true;
         recordResult(wrap, { solved: true, flagged: false, wrong: parseInt(wrap.getAttribute("data-attempts") || "0", 10) });
         updateProgress();
+        // A ticket the lab confirmed can go on the Proof Profile with a screenshot.
+        const ticket = PROOF_TICKETS[missionId];
+        if (ticket && wrap.classList.contains("ad-mission--labok")) askForProofShot(ticket.job, ticket.label);
         return;
       }
 
@@ -772,9 +787,112 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       dialog.showModal();
     };
 
+    // The brief for one intake role, in the same markup as the lesson's own.
+    const roleBrief = (role: RoleId) => {
+      const b = ROLE_BRIEFS[role];
+      const el = (tag: string, className?: string, text?: string) => {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text) node.textContent = text;
+        return node;
+      };
+      const out = el("div", "ad-goals");
+      const head = el("div", "ad-goals__head");
+      head.append(el("span", "ad-goals__role", roleLabel(role)), el("span", "ad-goals__scope", "purvexfinancial.local"));
+      const checks = el("ol", "ad-goals__checks");
+      b.checks.forEach((c) => checks.append(el("li", undefined, c)));
+      const goal = el("p", "ad-goals__goal");
+      goal.append(el("span", "ad-goals__label", "The goal"), `${b.goal[0]} `, el("strong", undefined, b.goal[1]), ".");
+      out.append(head, el("p", "ad-goals__lede", b.lede), checks, goal);
+      return out;
+    };
+
+    // Slides the Analyst Brief in from the right, like the Coach. It is
+    // written for the role the student picked at intake; with no role on
+    // file it falls back to the lesson's own general brief.
+    const openBrief = (trigger: HTMLElement) => {
+      const brief = trigger.closest(".academy-prose")?.querySelector(".ad-goals");
+      if (!brief || document.querySelector(".ad-drawer-root")) return;
+      const root = document.querySelector(".academy-bg");
+      const header = root?.querySelector("header");
+      const roles = profileRef.current?.roles ?? [];
+      const title = roles.length ? ROLE_BRIEFS[roles[0]].title : brief.querySelector(".ad-goals__kicker")?.textContent || "Brief";
+
+      const wrap = document.createElement("div");
+      wrap.className = "ad-drawer-root";
+      wrap.dataset.academyTheme = root?.getAttribute("data-academy-theme") === "dark" ? "dark" : "light";
+      wrap.style.setProperty("--dr-top", `${header ? Math.round(header.getBoundingClientRect().bottom) : 0}px`);
+      const backdrop = document.createElement("div");
+      backdrop.className = "ad-drawer__backdrop";
+      const panel = document.createElement("aside");
+      panel.className = "ad-drawer";
+      panel.setAttribute("role", "dialog");
+      panel.setAttribute("aria-modal", "true");
+      panel.setAttribute("aria-label", title);
+      const head = document.createElement("div");
+      head.className = "ad-drawer__head";
+      const heading = document.createElement("span");
+      heading.className = "ad-drawer__title";
+      heading.textContent = title;
+      const close = makeButton("ad-drawer__close", "Close", "×");
+      head.append(heading, close);
+      const body = document.createElement("div");
+      body.className = "ad-drawer__body";
+      if (roles.length > 1) {
+        // Two roles picked: a switch between their briefs.
+        const tabs = document.createElement("div");
+        tabs.className = "ad-drawer__roles";
+        tabs.setAttribute("role", "tablist");
+        const show = (i: number) => {
+          heading.textContent = ROLE_BRIEFS[roles[i]].title;
+          panel.setAttribute("aria-label", heading.textContent);
+          tabs.querySelectorAll("button").forEach((t, j) => t.setAttribute("aria-selected", String(i === j)));
+          body.querySelector(".ad-goals")?.remove();
+          body.append(roleBrief(roles[i]));
+        };
+        roles.forEach((role, i) => {
+          const tab = makeButton("ad-drawer__role", roleLabel(role), ROLE_BRIEFS[role].title.replace(/ Brief$/, ""));
+          tab.setAttribute("role", "tab");
+          tab.addEventListener("click", () => show(i));
+          tabs.append(tab);
+        });
+        body.append(tabs);
+        show(0);
+      } else if (roles.length === 1) {
+        body.append(roleBrief(roles[0]));
+      } else {
+        const copy = brief.cloneNode(true) as HTMLElement;
+        copy.hidden = false;
+        body.append(copy);
+      }
+      panel.append(head, body);
+      wrap.append(backdrop, panel);
+
+      // Lock scrolling on <html> only. Hiding overflow on <body> as well
+      // makes it a scroll box, and the sticky header scrolls out of view.
+      const prevHtml = document.documentElement.style.overflow;
+      const shut = () => {
+        wrap.remove();
+        document.documentElement.style.overflow = prevHtml;
+        document.removeEventListener("keydown", onKey, true);
+        trigger.focus();
+      };
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === "Escape") { e.stopPropagation(); shut(); }
+      };
+      close.addEventListener("click", shut);
+      backdrop.addEventListener("click", shut);
+      document.addEventListener("keydown", onKey, true);
+      document.documentElement.style.overflow = "hidden";
+      document.body.append(wrap);
+      close.focus();
+    };
+
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target.closest(".ad-zoom")) return;
+      const briefBtn = target.closest<HTMLElement>(".ad-goals-open");
+      if (briefBtn) return openBrief(briefBtn);
       const shot = target.closest<HTMLImageElement>(ZOOM_IMG);
       if (shot) return openZoom(shot);
       const scriptLink = target.closest<HTMLAnchorElement>("a[href]");
@@ -881,6 +999,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       window.removeEventListener(RESULTS_CHANGED_EVENT, onResultsChanged);
       document.querySelector(".ad-hint-card")?.remove();
       document.querySelector(".ad-zoom")?.remove();
+      document.querySelector(".ad-drawer-root")?.remove();
     };
   }, []);
 
@@ -896,7 +1015,8 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     return <AcademySignIn configured={Boolean(supabase)} />;
   }
 
-  const asking = profile === null || editingGoals;
+  // Only a first-time student gets the step-by-step intake. Editing opens the goals panel.
+  const asking = profile === null;
 
   return (
     <AcademyProgressProvider phases={phases}>
@@ -960,12 +1080,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           </div>
         ) : asking ? (
           <main className="px-4 py-8 sm:px-6 sm:py-12">
-            <AcademyIntake
-              key={editingGoals ? "edit" : "first"}
-              initial={profile}
-              onSaved={goalsSaved}
-              onCancel={profile ? () => setEditingGoals(false) : undefined}
-            />
+            <AcademyIntake initial={null} onSaved={goalsSaved} />
           </main>
         ) : (
         <div className="mx-auto flex max-w-7xl">
@@ -1025,6 +1140,18 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           </div>
         )}
         {!asking && profile !== undefined && <PurvexCoach />}
+        {!asking && profile !== undefined && <ProofPrompt />}
+        {editingGoals && profile && (
+          <GoalsPanel
+            profile={profile}
+            onClose={() => setEditingGoals(false)}
+            onSaved={(next) => {
+              if (studentId) saveCachedProfile(studentId, next);
+              setProfile(next);
+              setEditingGoals(false);
+            }}
+          />
+        )}
         {hello && <AcademyWelcome student={student} onDone={() => setHello(false)} />}
       </div>
       </CoachProvider>

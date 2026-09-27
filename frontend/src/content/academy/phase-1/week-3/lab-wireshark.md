@@ -11,15 +11,15 @@ Then you use three basic filters and Follow → HTTP Stream to turn a full conve
 
 **[SCREENSHOT: Wireshark start screen, interface list (optional, for first-time users)]**
 
-### What Wireshark Actually Shows You
+### What Wireshark Shows You
 
 Every time one computer talks to another, it sends small chunks of data called packets. Wireshark records and displays those packets, so you can see what was sent, where it went, and when.
 
-That is how you answer "what actually happened on the wire."
+That record answers the question "what happened on the wire?"
 
 Encrypted traffic works like a mail log. A sealed envelope hides its contents, but you can still see who wrote to whom and how often.
 
-If the traffic was never encrypted, the envelope was never sealed. Then you can sometimes read the contents too.
+Unencrypted traffic is an unsealed envelope, so you can sometimes read the contents too.
 
 ### The Three Panes
 
@@ -29,20 +29,20 @@ If the traffic was never encrypted, the envelope was never sealed. Then you can 
 
 **[SCREENSHOT: Full Wireshark window, label the 3 panes (top / middle / bottom)]**
 
-> **Fundamental #1:** Click through a few packets in the top pane and watch the middle pane change with each one. That is the entire interaction loop this tool is built around.
+> **Fundamental #1:** Click through a few packets in the top pane and watch the middle pane change with each one. You will repeat that loop for most of your time in Wireshark.
 
-### What "Suspicious" Looks Like, Before You Even Filter
+### What "Suspicious" Looks Like Before You Filter
 
-Normal web browsing produces quick GET requests to many different sites. Malware traffic tends to look different, and a trained eye can often spot the pattern before running a single filter:
+Normal web browsing produces quick GET requests to many different sites. Malware traffic tends to look different, and an analyst can often spot the pattern before running a single filter:
 
-* Talking to one address repeatedly (Statistics → Conversations shows this immediately)
-* Sending data out, not just requesting pages. Watch for POST requests
+* Talking to one address again and again (Statistics → Conversations shows this at a glance)
+* Sending data out as well as requesting pages. Watch for POST requests
 * An odd or fabricated-looking browser identity (the User-Agent field)
 * Data that does not resemble normal text. Malware often scrambles or encodes what it steals
 
 **[SCREENSHOT: Statistics → Conversations, sorted by bytes, highlight the heaviest conversation]**
 
-> **Fundamental #2:** Malware traffic is not invisible. It is traffic with a pattern that does not match normal use. Learning that pattern is most of the skill.
+> **Fundamental #2:** Malware traffic follows a pattern that does not match normal use. Learning to see that pattern is most of the skill.
 
 ### Getting There: Three Filters
 
@@ -56,13 +56,13 @@ Type these one at a time and watch what changes with each:
 
 **[SCREENSHOT: Filter bar with http.request.method == "POST" typed in, filtered list below]**
 
-> **Fundamental #3:** A filter does not find anything for you. It narrows what you are looking at so that you can.
+> **Fundamental #3:** A filter narrows what you are looking at. Finding the problem is still your job.
 
-### The One Move That Matters Most
+### Follow the HTTP Stream
 
 Right-click any packet → Follow → HTTP Stream.
 
-This reassembles the full back-and-forth into something readable. It is where you actually see the malware talking: the address it sends to and exactly what it sends.
+This reassembles the full back-and-forth into something readable. In that view you can see the malware talking: the address it sends to and the data it sends.
 
 **[SCREENSHOT: Follow HTTP Stream window, User-Agent header and POST body visible (crop/blur payload bytes as needed)]**
 

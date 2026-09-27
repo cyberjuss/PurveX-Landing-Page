@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import type { StudentProfile } from "@/lib/academy-certs";
 import { academyFetch, localDay, RESULTS_CHANGED_EVENT, RESULTS_UPDATED_EVENT } from "@/lib/academy-client";
-import { DEFAULT_COACH_MODE, modeFromReport, type CoachMode } from "@/lib/academy-coach-mode";
+import { DEFAULT_COACH_MODE, modeFromReport, type CoachMode, type CoachPlace } from "@/lib/academy-coach-mode";
 import { COACH_SHOT_ASK, type CoachImage } from "@/lib/academy-coach-media";
 import { loadResults } from "@/lib/academy-score";
 
@@ -21,6 +21,8 @@ type CoachState = {
   setModalOpen: (open: boolean) => void;
   mode: CoachMode;
   setMode: (mode: CoachMode) => void;
+  // The lab or challenge tab on screen, so Coach can teach it Socratically.
+  setPlace: (place: CoachPlace | null) => void;
   send: (text: string, images?: CoachImage[]) => void;
   clear: () => void;
   resetToday: () => Promise<void>;
@@ -53,6 +55,10 @@ export function CoachProvider({ children, profile = null }: { children: React.Re
   const busyRef = useRef(false);
   const messagesRef = useRef<CoachMessage[]>([]);
   const pickedRef = useRef(false);
+  const placeRef = useRef<CoachPlace | null>(null);
+  const setPlace = useCallback((place: CoachPlace | null) => {
+    placeRef.current = place;
+  }, []);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -112,7 +118,7 @@ export function CoachProvider({ children, profile = null }: { children: React.Re
         const res = await academyFetch("/academy/api/coach", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: question, images: shots, history, results: loadResults(), profile, mode, day: localDay() }),
+          body: JSON.stringify({ message: question, images: shots, history, results: loadResults(), profile, mode, place: placeRef.current, day: localDay() }),
           signal: AbortSignal.timeout(58_000),
         });
         const data = await res.json();
@@ -167,7 +173,7 @@ export function CoachProvider({ children, profile = null }: { children: React.Re
 
   return (
     <CoachContext.Provider
-      value={{ messages, busy, enabled, remaining, limit, bonus, error, modalOpen, setModalOpen, mode, setMode, send, clear, resetToday, ask, registerInline }}
+      value={{ messages, busy, enabled, remaining, limit, bonus, error, modalOpen, setModalOpen, mode, setMode, setPlace, send, clear, resetToday, ask, registerInline }}
     >
       {children}
     </CoachContext.Provider>

@@ -13,7 +13,7 @@ A port is like an apartment number. The IP address gets you to the building, and
 | 443 | HTTPS | Web traffic (encrypted) |
 | 3389 | RDP | Remote desktop |
 
-Traffic on port 22 or 3389 from somewhere unexpected is always worth a second look. Those ports exist to *control* a machine, not just browse it. That is why attackers reach for them once they are inside a network.
+Traffic on port 22 or 3389 from somewhere unexpected deserves a second look. Those ports let someone *control* a machine, which is why attackers reach for them once they are inside a network.
 
 A port tells you which door was used. It does not tell you the conversation was allowed. Verify these:
 

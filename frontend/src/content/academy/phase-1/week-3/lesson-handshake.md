@@ -11,10 +11,10 @@ Before two computers exchange data over TCP, they confirm both sides are ready:
 </ul>
 </div>
 
-Only after these three steps does actual data begin to flow.
+Data starts to flow only after these three steps.
 
-This handshake is why TCP is called reliable. Both sides confirm the connection exists before anything important is sent. UDP, the other common transport protocol, skips that check and trades reliability for speed.
+This handshake is why TCP is called reliable. Both sides confirm the connection exists before either one sends anything important. UDP, the other common transport protocol, skips that check and trades reliability for speed.
 
 In a capture, look for all three steps before you trust the conversation. If a SYN never gets a SYN-ACK, the other side did not agree to talk.
 
-If you see data with no handshake in front of it, you are not looking at a completed TCP session.
+If data appears with no handshake in front of it, the capture does not show a completed TCP session.

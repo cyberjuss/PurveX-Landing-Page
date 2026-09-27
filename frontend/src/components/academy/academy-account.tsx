@@ -3,10 +3,11 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight, Headset, LogOut, Target } from "lucide-react";
+import { ArrowRight, BadgeCheck, Headset, LogOut, Target } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import type { StudentProfile } from "@/lib/academy-certs";
 import { READINESS_PATH, useResults } from "@/lib/academy-client";
+import { passedExamDates } from "@/lib/academy-goals";
 import { LEVELS, summarize } from "@/lib/academy-score";
 
 export type AcademyStudent = { id: string; email: string | null; name: string | null };
@@ -73,7 +74,8 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
   const student = useAcademyAccount();
   const readiness = summarize(useResults());
   const { setModalOpen, remaining, limit, enabled } = useCoach();
-  const { editGoals } = useAcademyGoals();
+  const { profile, editGoals } = useAcademyGoals();
+  const needsUpdate = passedExamDates(profile).length > 0;
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [pos, setPos] = useState({ top: 72, right: 16 });
@@ -207,8 +209,12 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                   editGoals();
                 }}
               >
-                <Target className="h-3.5 w-3.5" /> Your goals
+                <Target className="h-3.5 w-3.5" /> Goals
+                {needsUpdate && <span className="ax-account__dot" aria-label="An exam date has passed" />}
               </button>
+              <Link href="/academy/portfolio" className="ax-account__out" onClick={() => setOpen(false)}>
+                <BadgeCheck className="h-3.5 w-3.5" /> Portfolio
+              </Link>
               <button type="button" className="ax-account__out" onClick={onSignOut}>
                 <LogOut className="h-3.5 w-3.5" /> Sign out
               </button>

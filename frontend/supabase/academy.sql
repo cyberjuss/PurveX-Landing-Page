@@ -147,3 +147,73 @@ create table if not exists public.academy_role_briefs (
 );
 
 alter table public.academy_role_briefs enable row level security;
+
+-- Proof Profile: a student's public page of confirmed lab work, shared with
+-- employers at /p/<slug>. One row per student. Nothing is public until
+-- published is true. avatar_path points at the student's photo in the
+-- proof-screenshots bucket. shots_on lists the lab work items (job ids) whose
+-- screenshots the student switched on; each shows up to 5 screenshots.
+create table if not exists public.academy_public_profiles (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  slug text not null unique check (slug ~ '^[a-z0-9-]{3,40}$'),
+  display_name text not null,
+  published boolean not null default false,
+  show_skills boolean not null default true,
+  shots_on text[] not null default '{}',
+  avatar_path text,
+  resume_path text,
+  contact_email text,
+  linkedin_url text,
+  github_url text,
+  website_url text,
+  location text,
+  availability text,
+  extra_certs jsonb not null default '[]'::jsonb,
+  credential_id text not null unique,
+  updated_at timestamptz not null default now()
+);
+
+-- Added after the first release: the student's profile photo.
+alter table public.academy_public_profiles add column if not exists avatar_path text;
+-- And the contact, availability and resume fields employers asked for.
+alter table public.academy_public_profiles add column if not exists resume_path text;
+alter table public.academy_public_profiles add column if not exists contact_email text;
+alter table public.academy_public_profiles add column if not exists linkedin_url text;
+alter table public.academy_public_profiles add column if not exists github_url text;
+alter table public.academy_public_profiles add column if not exists website_url text;
+alter table public.academy_public_profiles add column if not exists location text;
+alter table public.academy_public_profiles add column if not exists availability text;
+alter table public.academy_public_profiles add column if not exists extra_certs jsonb not null default '[]'::jsonb;
+
+alter table public.academy_public_profiles enable row level security;
+
+drop policy if exists "Students read their own proof profile" on public.academy_public_profiles;
+create policy "Students read their own proof profile"
+  on public.academy_public_profiles for select
+  using (auth.uid() = user_id);
+
+-- Screenshots a student attaches to a lab work item (PNG or JPEG, under 4 MB).
+-- The image lives in the private proof-screenshots bucket; the server streams it to the page.
+create table if not exists public.academy_profile_screenshots (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  job text not null,
+  path text not null,
+  content_type text not null,
+  caption text not null default '',
+  created_at timestamptz not null default now()
+);
+
+create index if not exists academy_profile_screenshots_user_job
+  on public.academy_profile_screenshots (user_id, job);
+
+alter table public.academy_profile_screenshots enable row level security;
+
+drop policy if exists "Students read their own proof screenshots" on public.academy_profile_screenshots;
+create policy "Students read their own proof screenshots"
+  on public.academy_profile_screenshots for select
+  using (auth.uid() = user_id);
+
+insert into storage.buckets (id, name, public)
+values ('proof-screenshots', 'proof-screenshots', false)
+on conflict (id) do nothing;

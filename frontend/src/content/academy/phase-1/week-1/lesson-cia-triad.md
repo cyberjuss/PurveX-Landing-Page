@@ -21,7 +21,7 @@ Ask one question of whatever is in front of you: if this goes wrong, is the dama
 - a patient's chart
 - an unreleased deal
 
-When the vault fails, the file is not gone. The wrong person now has a copy, and you may never know they took it.
+When the vault fails, the file stays where it was, but the wrong person now has a copy. You may never know they took it.
 
 Encryption, logins, and access lists are how you issue badges. An attacker who reads unencrypted traffic walked in without one.
 
@@ -32,7 +32,7 @@ Encryption, logins, and access lists are how you issue badges. An attacker who r
 - a firewall rule
 - a ticket that now says "closed"
 
-The bag can still look full, but you cannot swear the count is the one that left. The harm is that you act on a lie.
+The bag can still look full, but you cannot prove the count matches what left the vault. You end up acting on a lie.
 
 Hashing, signatures, and audit logs are how you notice a torn seal. An edited file or bits flipped in transit is torn tape.
 

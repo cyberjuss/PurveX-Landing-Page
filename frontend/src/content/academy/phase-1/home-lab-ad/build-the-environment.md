@@ -774,7 +774,7 @@ if (-not $IncludeCTF) {
 ./Build-Environment.ps1
 ```
 
-To preview exactly what the script will do before it changes anything, run it with `-WhatIf` first:
+To preview what the script will do before it changes anything, run it with `-WhatIf` first:
 
 ```powershell
 ./Build-Environment.ps1 -WhatIf

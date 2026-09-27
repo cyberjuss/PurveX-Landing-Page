@@ -30,15 +30,13 @@ export function PurvexCoach() {
     const obs = root ? new MutationObserver(sync) : null;
     obs?.observe(root!, { attributes: true, attributeFilter: ["data-academy-theme"] });
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setModalOpen(false);
-    const prevBody = document.body.style.overflow;
+    // Lock <html> only: hiding <body> overflow too unsticks the header.
     const prevHtml = document.documentElement.style.overflow;
-    document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
     window.addEventListener("resize", sync);
     window.addEventListener("scroll", sync, true);
     return () => {
-      document.body.style.overflow = prevBody;
       document.documentElement.style.overflow = prevHtml;
       obs?.disconnect();
       window.removeEventListener("keydown", onKey);

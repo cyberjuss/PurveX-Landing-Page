@@ -11,7 +11,7 @@ Most day-to-day edits happen on the account's **Properties** dialog:
 - A new phone number
 - A new title after a promotion
 
-These small changes keep the profile trustworthy.
+Keeping those fields current lets the next technician trust the profile.
 
 You add someone to a group from the same dialog:
 
@@ -38,4 +38,4 @@ Picture Taylor Osei transferring from Operations into Compliance. Find the accou
 
 A common mistake is updating the job title without moving the AD object. The old department's policies then stay in effect.
 
-An HR notice is not a move, and neither is a new title. The folder is the move, so confirm the folders above the account before you close the ticket.
+The transfer is finished only when the account sits in the new OU. Confirm the folders above the account before you close the ticket.

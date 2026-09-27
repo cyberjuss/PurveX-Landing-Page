@@ -1,5 +1,5 @@
 **Lab:** PortSwigger Web Security Academy, "User role can be modified in user profile"  
-**Goal:** Get admin access and delete the user "Carlos" without ever being given admin credentials.
+**Goal:** Get admin access and delete the user "Carlos" without admin credentials.
 
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
@@ -10,11 +10,11 @@
 
 This lab walks through PortSwigger's "user role can be modified in user profile" challenge from start to finish. You find the request that leaks a role field and tamper with it.
 
-Then you confirm that the real fix is enforcement on the server, not hiding the field.
+Then you confirm the real fix: the server has to enforce the role itself.
 
-The app lets the user's browser state its own role instead of checking it on the server. If an extra field is smuggled into a request, the server simply believes it.
+The app lets the user's browser state its own role instead of checking it on the server. If you smuggle an extra field into a request, the server believes it.
 
-Your job is to prove that. The login page and the missing Admin Panel are not the whole story. Watch the traffic and ask which request reveals more than the user needed to see.
+Your job is to prove that. The login page and the missing Admin Panel tell only part of the story. Watch the traffic and ask which request reveals more than the user needed to see.
 
 ### Step 1. Log In With the Account You Are Given
 
@@ -36,13 +36,13 @@ Notice that this request sends only your session cookie. There is nothing to tam
 
 On the "My Account" page, update your email and submit. Send that request to **Repeater** in Burp so you can inspect and replay it.
 
-### Step 6. Look Closely at the Response
+### Step 6. Read the Response
 
 When you send that request, the server responds with more than you would expect, including a `roleid` field. Yours is set to `1`, a regular user. Admins carry `roleid = 2`.
 
 ### Step 7. Add `roleid=2` to Your Request Yourself
 
-The original request did not include `roleid`. Try adding it manually:
+The original request did not include `roleid`. Add it:
 
 ```
 roleid=2
@@ -52,7 +52,7 @@ Send it.
 
 ### Step 8. Check Whether It Worked
 
-If the response now shows `roleid: 2`, the server just accepted a value it should never trust from the client. That is the vulnerability: the application lets the client assign its own role.
+If the response now shows `roleid: 2`, the server accepted a value it should never trust from the client. That is the vulnerability: the application lets the client assign its own role.
 
 ### Step 9. Reload the App
 

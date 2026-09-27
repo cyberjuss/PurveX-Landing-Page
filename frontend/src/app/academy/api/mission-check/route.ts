@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
-import { formatLabAge } from "@/lib/academy-lab";
+import { formatLabAge, labIsLive } from "@/lib/academy-lab";
 import { checkMission, hasTicketObjects, missionGate } from "@/lib/academy-mission-lab";
 import { loadLabState, loadProgress, saveProgress, touchLabLive } from "@/lib/academy-store";
 import { LIVE_MINUTES } from "@/lib/academy-verify";
@@ -8,8 +8,9 @@ import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
 
-// Does the student's own lab show the change this ticket asks for?
-// Hands-on tickets stay open until the lab shows the change.
+// Can the student answer this challenge? Every challenge is done in the
+// student's own lab, so the lab must be connected and live (the green lab
+// light). Hands-on tickets also stay open until the lab shows the change.
 export async function POST(request: Request) {
   if (!(await isAcademyUnlocked())) return NextResponse.json({ error: "Locked" }, { status: 401 });
   const student = await getAcademyStudent(request);
@@ -21,10 +22,18 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
-  if (!missionGate(id)) return NextResponse.json({ gated: false });
+  const gated = Boolean(missionGate(id));
 
   const lab = await loadLabState(student.id);
-  if (!lab) return NextResponse.json({ gated: true, passed: false, noLab: true, results: [] });
+  if (!lab) return NextResponse.json({ gated, passed: false, noLab: true, results: [] });
+  const syncedAgo = formatLabAge(lab.uploadedAt).ago;
+  if (!labIsLive(lab.uploadedAt)) {
+    // Asks the lab script to sync every minute, so a running lab turns green soon.
+    await touchLabLive(student.id, LIVE_MINUTES).catch(() => {});
+    return NextResponse.json({ gated, passed: false, stale: true, syncedAgo, results: [] });
+  }
+  if (!gated) return NextResponse.json({ gated: false, passed: true, syncedAgo });
+
   // A lab built without -IncludeCTF has none of the ticket objects.
   if (!hasTicketObjects(lab.snapshot)) return NextResponse.json({ gated: true, passed: false, noTicketObjects: true, results: [] });
   const checked = checkMission(id, lab.snapshot);
@@ -37,5 +46,5 @@ export async function POST(request: Request) {
       await saveProgress(student.id, student.email, results);
     }
   }
-  return NextResponse.json({ gated: true, ...checked, syncedAgo: formatLabAge(lab.uploadedAt).ago });
+  return NextResponse.json({ gated: true, ...checked, syncedAgo });
 }

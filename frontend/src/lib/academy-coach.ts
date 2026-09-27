@@ -1,6 +1,6 @@
 import "server-only";
 
-import { coachModeInstructions, parseCoachMode, type CoachMode } from "@/lib/academy-coach-mode";
+import { coachModeInstructions, parseCoachMode, socraticInstructions, type CoachMode, type CoachPlace } from "@/lib/academy-coach-mode";
 import { formatLabAge, labEvidence, labStateForTool, type LabSnapshot } from "@/lib/academy-lab";
 import { jobProgress, LEVEL_NAMES, levelFor, missedQuestions, missedThemes, skillAccuracy, weaknessLine, type DrillEntry } from "@/lib/academy-drills";
 import { auditLab } from "@/lib/academy-audit";
@@ -755,6 +755,7 @@ export async function runCoachTurn(params: {
   userMessage: string;
   images?: CoachImage[];
   mode?: CoachMode;
+  place?: CoachPlace | null;
   tools: CoachToolContext;
   drills?: DrillEntry[];
 }): Promise<{ text: string; model: string }> {
@@ -772,7 +773,8 @@ export async function runCoachTurn(params: {
   // Web search is offered when a role note is missing or stale, or the question is about the job itself.
   let research = Boolean(profile) && process.env.ACADEMY_COACH_WEB_SEARCH !== "off" && (missing.length > 0 || ROLE_QUESTION.test(params.userMessage));
   const goals = goalsBrief(profile, briefs, params.tools.results, params.drills ?? []);
-  const baseSystem = `${COACH_SYSTEM_PROMPT}\n\n${coachModeInstructions(mode)}\n\n${buildStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results, lab) : "", goals)}`;
+  const socratic = socraticInstructions(params.place ?? null, mode);
+  const baseSystem = `${COACH_SYSTEM_PROMPT}\n\n${coachModeInstructions(mode)}${socratic ? `\n\n${socratic}` : ""}\n\n${buildStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results, lab) : "", goals)}`;
   // URLs the search returned this turn. A saved note may only cite these.
   const seen = new Map<string, string>();
   const messages: AnthropicMessage[] = [

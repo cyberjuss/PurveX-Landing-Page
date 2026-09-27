@@ -1,6 +1,6 @@
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
-<p>Before you can recognize what is abnormal in an investigation, what does "normal" actually look like in this environment?</p>
+<p>Before you can recognize what is abnormal in an investigation, what does "normal" look like in this environment?</p>
 </div>
 
 ### Before You Touch a Ticket, Learn the Environment
@@ -21,38 +21,34 @@ The environment is small enough to hold in your head:
 
 A real desk works the same way. You learn who works where, what access they should have, which groups matter, and what normal activity looks like.
 
-### This Is Not a Textbook Directory
+### A Directory Built Like a Real Firm
 
-A textbook gives you `User1` inside `OU=Users` and explains everything. Real environments are not that clean, and this one is built to feel like a real firm.
+A textbook gives you `User1` inside `OU=Users` and explains everything. Real environments are messier, and this lab copies a real firm.
 
 Here you work with departments, access groups, job titles, and tickets that may not tell the whole story.
 
-A job title does not set anyone's access. A person whose title says Helpdesk does not automatically belong in the **Helpdesk** group.
+A job title does not set anyone's access. A person whose title says Helpdesk does not belong in the **Helpdesk** group because of that title.
 
-Callers and tickets can be wrong, and handling that is part of the job. Do not act on whatever appears in front of you. **Verify it.**
+Callers and tickets can be wrong, and handling that is part of the job. Verify what a ticket or caller tells you before you act on it.
 
 ### Your Role
 
-You are the analyst on this environment, and reading the company page is not enough. You should be able to answer these questions:
-
-- Does this account belong in this OU?
-- Should this user be a member of this group?
-- Does this person's department match their account?
-- Is this login consistent with what we know about the user?
-- Does this activity make sense for this environment?
-
-Work the lab until anything out of place starts to stand out:
-
-- A user in the wrong department
-- A group with the wrong member
-- A login that does not fit
-
-The goal is not to memorize the directory to pass a ticket. The goal is to see when something **does not belong**.
+<div class="ad-goals-cue"><button type="button" class="ad-goals-open"><span class="ad-goals-open__tag">Analyst Brief</span><span class="ad-goals-open__text">Three questions to ask, written for the role you picked.</span><span class="ad-goals-open__cta">Open brief</span></button></div>
+<div class="ad-goals" hidden>
+<div class="ad-goals__head"><span class="ad-goals__kicker">Analyst Brief</span><span class="ad-goals__scope">purvexfinancial.local</span></div>
+<p class="ad-goals__lede">You are the analyst here. Ask these about any account.</p>
+<ol class="ad-goals__checks">
+<li>Is it in the right OU?</li>
+<li>Does it belong in this group?</li>
+<li>Does this login fit the user?</li>
+</ol>
+<p class="ad-goals__goal"><span class="ad-goals__label">The goal</span>Spot what <strong>does not belong</strong>.</p>
+</div>
 
 ### Start With the Baseline
 
-The next four tabs lay out the firm: the org chart, the access levels, the data, and the full user directory. Learn them before you build the lab, because every later check is measured against them.
+The next four tabs lay out the firm: the org chart, the access levels, the data, and the full user directory. Learn them before you build the lab, because you will measure every later check against them.
 
-**If you do not know PurveX Financial, you are not investigating. You are guessing.**
+Without that baseline, any answer you give on a ticket is a guess.
 
 ***Domain: purvexfinancial.local***

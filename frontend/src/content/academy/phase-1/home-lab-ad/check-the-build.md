@@ -76,7 +76,7 @@ If you hit the Administrator, blocked-file, and execution-policy errors in one s
 
 ### Start Over
 
-For a completely fresh start, run the cleanup script on the domain controller. It asks you to confirm before it deletes anything.
+For a fresh start, run the cleanup script on the domain controller. It asks you to confirm before it deletes anything.
 
 The script deletes the `Departments`, `AccessLevels`, and `ServiceAccounts` OUs and every user, group, and computer inside them, including the challenge data. The domain, the forest, and the built-in accounts stay untouched.
 
