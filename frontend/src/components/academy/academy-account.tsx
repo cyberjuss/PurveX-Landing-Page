@@ -185,18 +185,14 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               <button
                 type="button"
                 className="ax-account__goals"
+                aria-label="Edit your goals"
                 onClick={() => {
                   setOpen(false);
                   editGoals();
                 }}
               >
                 <span className="ax-account__goals-head">
-                  <span className="rd-kicker">
-                    <Target className="h-3 w-3" /> Your goals
-                  </span>
-                  <b>
-                    Edit <ArrowRight className="h-3.5 w-3.5" />
-                  </b>
+                  <Target className="h-3.5 w-3.5" /> Goals
                 </span>
                 {goals.roles.length ? (
                   <span className="ax-account__roles">

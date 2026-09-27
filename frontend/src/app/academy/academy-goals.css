@@ -348,12 +348,9 @@
   background: none; color: inherit; font: inherit; text-align: left; cursor: pointer;
 }
 [data-ax-account][data-theme="light"] .ax-account__goals { border-color: rgba(15,23,42,0.12); }
-[data-ax-account] .ax-account__goals-head { display: flex; align-items: center; justify-content: space-between; }
-[data-ax-account] .ax-account__goals-head .rd-kicker { display: inline-flex; align-items: center; gap: 6px; }
-[data-ax-account] .ax-account__goals-head b { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; opacity: 0.55; transition: opacity 0.15s; }
-[data-ax-account] .ax-account__goals:hover .ax-account__goals-head b { opacity: 1; }
-[data-ax-account] .ax-account__goals:hover .ax-account__goals-head b svg { transform: translateX(2px); }
-[data-ax-account] .ax-account__goals-head b svg { transition: transform 0.15s; }
+[data-ax-account] .ax-account__goals-head { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; }
+[data-ax-account] .ax-account__goals-head svg { opacity: 0.6; transition: opacity 0.15s; }
+[data-ax-account] .ax-account__goals:hover .ax-account__goals-head svg { opacity: 1; }
 [data-ax-account] .ax-account__roles { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 [data-ax-account] .ax-account__roles i {
   padding: 3px 8px; border: 1px solid rgba(94,78,232,0.35); background: rgba(85,70,224,0.07);
