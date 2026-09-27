@@ -235,7 +235,6 @@
 }
 
 /* Your goals: every intake answer on one screen, in the same panel. */
-.ad-drawer .gp-note { margin: 14px 0 4px; font-size: 0.85rem; line-height: 1.5; color: var(--dr-ink-2); }
 .ad-drawer .gp-sec { padding: 18px 0; border-bottom: 1px solid var(--dr-line); }
 .ad-drawer .gp-sec:last-child { border-bottom: 0; }
 .ad-drawer .gp-sec h3 {

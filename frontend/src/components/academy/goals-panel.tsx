@@ -107,7 +107,6 @@ export function GoalsPanel({
         </div>
 
         <div className="ad-drawer__body gp">
-          <p className="gp-note">Your Analyst Brief, Coach and daily drill follow these goals.</p>
 
           <section className="gp-sec">
             <h3>Target role</h3>
