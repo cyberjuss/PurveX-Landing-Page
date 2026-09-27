@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, Check, RotateCcw, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { ArrowDown, ArrowUp, Check, ChevronLeft, ChevronRight, RotateCcw, X } from "lucide-react";
 import "./risk-triage-lab.css";
 
 type Cia = "c" | "i" | "a";
@@ -13,6 +13,9 @@ interface Ticket {
   title: string;
   from: string;
   report: string;
+  dept: string;
+  critical: boolean;
+  data: string;
   cia: Cia;
   ciaWhy: string;
   likelihood: Level;
@@ -30,6 +33,9 @@ const TICKETS: Ticket[] = [
     title: "Lobby printer drops offline",
     from: "Riley Kwan, Operations",
     report: "The lobby printer goes offline most afternoons. Visitors cannot print their forms, so the front desk walks them to the printer upstairs.",
+    dept: "Operations",
+    critical: false,
+    data: "None. It prints visitor forms.",
     cia: "a",
     ciaWhy: "Nothing leaked and nothing changed. The printer is not there when people need it. That is a lockout.",
     likelihood: 3,
@@ -43,6 +49,9 @@ const TICKETS: Ticket[] = [
     title: "File server backup failing for three weeks",
     from: "Alex Rivera, IT",
     report: "The nightly backup of the file server has failed every night for three weeks. The server itself runs fine. Nobody noticed until this morning.",
+    dept: "Every department",
+    critical: true,
+    data: "All five departments' files, including client records and the firm's ledgers.",
     cia: "a",
     ciaWhy: "No one can see or change anything they should not. If the server fails, the files cannot come back. That is a lockout waiting to happen.",
     likelihood: 2,
@@ -55,7 +64,10 @@ const TICKETS: Ticket[] = [
     tag: "C",
     title: "Client balances folder open to the whole firm",
     from: "Devon Brooks, Compliance",
-    report: "During a review I opened the Wealth Management share from an intern's account. The client balances spreadsheet opened without a prompt. Every account at the firm can read that folder.",
+    report: "During a review I opened the Wealth Management share from my own Compliance account. The client balances spreadsheet opened without a prompt. Every account at the firm can read that folder.",
+    dept: "Wealth Management",
+    critical: true,
+    data: "Account and portfolio data: client account numbers, holdings and balances.",
     cia: "c",
     ciaWhy: "The numbers are still right and the file still opens. The wrong people can see it. That is a leak.",
     likelihood: 3,
@@ -69,6 +81,9 @@ const TICKETS: Ticket[] = [
     title: "Operations can edit the fee schedule",
     from: "Jordan Ellis, Finance",
     report: "The fee schedule that sets what clients are billed can be edited by everyone in Operations. Only Finance should change it. I check invoices against it once a month.",
+    dept: "Finance and Accounting",
+    critical: true,
+    data: "The rates clients are billed. Owned by Finance, open to Operations' two users.",
     cia: "i",
     ciaWhy: "The file is not exposed outside the firm and it stays available. The danger is a silent change to the numbers clients are billed on. That is a lie.",
     likelihood: 2,
@@ -127,11 +142,48 @@ export function RiskTriageLab() {
     localStorage.setItem(STORE, JSON.stringify(s));
   }, [s]);
 
+  // Steps 1 and 2 show one ticket at a time. dir 0 means no slide animation.
+  const [card, setCard] = useState(0);
+  const [dir, setDir] = useState<-1 | 0 | 1>(0);
+  const timer = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+
+  const show = (i: number) => {
+    window.clearTimeout(timer.current);
+    if (i === card || i < 0 || i >= TICKETS.length) return;
+    setDir(i > card ? 1 : -1);
+    setCard(i);
+  };
+  // Once a ticket is answered, slide to the next unanswered one.
+  const queueNext = (answered: (t: Ticket) => boolean) => {
+    if (!answered(TICKETS[card])) return;
+    const next = [...TICKETS.slice(card + 1), ...TICKETS.slice(0, card)].find((t) => !answered(t));
+    if (!next) return;
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => show(TICKETS.indexOf(next)), 450);
+  };
+
   const patch = (p: Partial<State>) => setS((prev) => ({ ...prev, ...p }));
-  const check = (i: 0 | 1 | 2) => setS((prev) => ({ ...prev, checked: prev.checked.map((c, j) => (j === i ? true : c)) as State["checked"] }));
+  const check = (i: 0 | 1 | 2) => {
+    setS((prev) => ({ ...prev, checked: prev.checked.map((c, j) => (j === i ? true : c)) as State["checked"] }));
+    if (i < 2) show(0);
+  };
   const go = (step: number) => {
+    window.clearTimeout(timer.current);
     setS((prev) => ({ ...prev, step }));
+    setCard(0);
+    setDir(0);
     document.querySelector(".rt")?.scrollIntoView({ block: "start", behavior: "smooth" });
+  };
+  const pickCia = (id: string, v: Cia) => {
+    const cia = { ...s.cia, [id]: v };
+    patch({ cia });
+    queueNext((t) => !!cia[t.id]);
+  };
+  const pickLevel = (kind: "likelihood" | "impact", id: string, v: Level) => {
+    const next = { likelihood: s.likelihood, impact: s.impact, [kind]: { ...s[kind], [id]: v } };
+    patch(next);
+    queueNext((t) => !!(next.likelihood[t.id] && next.impact[t.id]));
   };
 
   const score = useMemo(() => {
@@ -171,13 +223,19 @@ export function RiskTriageLab() {
             <h3>Which job broke?</h3>
             <p>Read each report and pick the part of the CIA triad that failed, or is about to.</p>
           </header>
-          <ul className="rt-tickets">
-            {TICKETS.map((t) => {
+          <Deck
+            index={card}
+            dir={dir}
+            onGo={show}
+            status={TICKETS.map((t) => (s.checked[0] ? (s.cia[t.id] === t.cia ? "right" : "wrong") : s.cia[t.id] ? "answered" : "open"))}
+          >
+            {(() => {
+              const t = TICKETS[card];
               const pick = s.cia[t.id];
               const done = s.checked[0];
               const right = pick === t.cia;
               return (
-                <li key={t.id} className={`rt-ticket${done ? (right ? " is-right" : " is-wrong") : ""}`}>
+                <div className={`rt-ticket${done ? (right ? " is-right" : " is-wrong") : ""}`}>
                   <TicketHead t={t} />
                   <div className="rt-choice rt-choice--cia" role="radiogroup" aria-label={`Which job broke: ${t.title}`}>
                     {CIA.map((c) => (
@@ -188,7 +246,7 @@ export function RiskTriageLab() {
                         aria-checked={pick === c.key}
                         disabled={done}
                         className={done && c.key === t.cia ? "is-answer" : ""}
-                        onClick={() => patch({ cia: { ...s.cia, [t.id]: c.key } })}
+                        onClick={() => pickCia(t.id, c.key)}
                       >
                         <b>{c.label}</b>
                         <small>{c.hint}</small>
@@ -196,10 +254,10 @@ export function RiskTriageLab() {
                     ))}
                   </div>
                   {done && <Verdict right={right} text={right ? t.ciaWhy : `It is ${CIA_NAME[t.cia].toLowerCase()}. ${t.ciaWhy}`} />}
-                </li>
+                </div>
               );
-            })}
-          </ul>
+            })()}
+          </Deck>
           <footer className="rt-foot">
             {s.checked[0] ? (
               <>
@@ -226,25 +284,53 @@ export function RiskTriageLab() {
         <div className="rt-body">
           <header className="rt-head">
             <h3>How likely, and how bad?</h3>
-            <p>Rate each ticket. Likelihood is how likely it is to hurt the firm. Impact is how much it costs when it does. Watch where it lands on the matrix.</p>
+            <p>Rate each ticket. Likelihood is how likely it is to hurt the firm. Impact is how much it costs when it does. Size both against the firm below, not against how urgent a ticket sounds.</p>
           </header>
+          <FirmBrief />
           <div className="rt-score">
-            <ul className="rt-tickets">
-              {TICKETS.map((t) => {
+            <Deck
+              index={card}
+              dir={dir}
+              onGo={show}
+              status={TICKETS.map((t) =>
+                s.checked[1]
+                  ? s.likelihood[t.id] === t.likelihood && s.impact[t.id] === t.impact
+                    ? "right"
+                    : "wrong"
+                  : s.likelihood[t.id] && s.impact[t.id]
+                    ? "answered"
+                    : "open",
+              )}
+            >
+              {(() => {
+                const t = TICKETS[card];
                 const done = s.checked[1];
                 const l = s.likelihood[t.id];
                 const im = s.impact[t.id];
                 const lRight = l === t.likelihood;
                 const iRight = im === t.impact;
                 return (
-                  <li key={t.id} className={`rt-ticket${done ? (lRight && iRight ? " is-right" : " is-wrong") : ""}`}>
-                    <TicketHead t={t} compact />
+                  <div className={`rt-ticket${done ? (lRight && iRight ? " is-right" : " is-wrong") : ""}`}>
+                    <TicketHead t={t} />
+                    <dl className="rt-context">
+                      <div>
+                        <dt>Department</dt>
+                        <dd>
+                          {t.dept}
+                          {t.critical && <span className="rt-crit">Critical</span>}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Data at stake</dt>
+                        <dd>{t.data}</dd>
+                      </div>
+                    </dl>
                     <LevelRow
                       label="Likelihood"
                       value={l}
                       answer={done ? t.likelihood : undefined}
                       disabled={done}
-                      onPick={(v) => patch({ likelihood: { ...s.likelihood, [t.id]: v } })}
+                      onPick={(v) => pickLevel("likelihood", t.id, v)}
                       name={t.title}
                     />
                     <LevelRow
@@ -252,7 +338,7 @@ export function RiskTriageLab() {
                       value={im}
                       answer={done ? t.impact : undefined}
                       disabled={done}
-                      onPick={(v) => patch({ impact: { ...s.impact, [t.id]: v } })}
+                      onPick={(v) => pickLevel("impact", t.id, v)}
                       name={t.title}
                     />
                     {l && im && (
@@ -266,10 +352,10 @@ export function RiskTriageLab() {
                         <Verdict right={iRight} text={`Impact ${LEVEL_NAME[t.impact]}. ${t.impactWhy}`} />
                       </div>
                     )}
-                  </li>
+                  </div>
                 );
-              })}
-            </ul>
+              })()}
+            </Deck>
             <Matrix s={s} showAnswer={s.checked[1]} />
           </div>
           <footer className="rt-foot">
@@ -413,16 +499,149 @@ export function RiskTriageLab() {
   );
 }
 
-function TicketHead({ t, compact }: { t: Ticket; compact?: boolean }) {
+type DotStatus = "open" | "answered" | "right" | "wrong";
+
+// Shows one ticket with A to D dots above it. The arrows, the dots, the
+// arrow keys and a sideways swipe all move between tickets.
+function Deck({ index, dir, onGo, status, children }: { index: number; dir: -1 | 0 | 1; onGo: (i: number) => void; status: DotStatus[]; children: ReactNode }) {
+  const touch = useRef<{ x: number; y: number } | null>(null);
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (!touch.current) return;
+    const dx = e.changedTouches[0].clientX - touch.current.x;
+    const dy = e.changedTouches[0].clientY - touch.current.y;
+    touch.current = null;
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+    onGo(dx < 0 ? index + 1 : index - 1);
+  };
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowRight") onGo(index + 1);
+    if (e.key === "ArrowLeft") onGo(index - 1);
+  };
+  return (
+    <div className="rt-deck" onKeyDown={onKeyDown}>
+      <div className="rt-deck__bar">
+        <button type="button" className="rt-deck__nav" aria-label="Previous ticket" disabled={index === 0} onClick={() => onGo(index - 1)}>
+          <ChevronLeft aria-hidden="true" />
+        </button>
+        <ol className="rt-deck__dots">
+          {TICKETS.map((t, i) => (
+            <li key={t.id}>
+              <button
+                type="button"
+                className={`rt-deck__dot is-${status[i]}${i === index ? " is-on" : ""}`}
+                aria-label={`Ticket ${t.tag}: ${t.title}`}
+                aria-current={i === index ? "step" : undefined}
+                onClick={() => onGo(i)}
+              >
+                {t.tag}
+              </button>
+            </li>
+          ))}
+        </ol>
+        <button type="button" className="rt-deck__nav" aria-label="Next ticket" disabled={index === TICKETS.length - 1} onClick={() => onGo(index + 1)}>
+          <ChevronRight aria-hidden="true" />
+        </button>
+      </div>
+      <div
+        className="rt-deck__stage"
+        role="group"
+        aria-roledescription="carousel"
+        aria-label={`Ticket ${index + 1} of ${TICKETS.length}`}
+        onTouchStart={(e) => (touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY })}
+        onTouchEnd={onTouchEnd}
+      >
+        <div key={index} className={dir === 1 ? "academy-slide-in-right" : dir === -1 ? "academy-slide-in-left" : undefined}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TicketHead({ t }: { t: Ticket }) {
   return (
     <div className="rt-ticket__head">
       <span className="rt-tag">{t.tag}</span>
       <div>
         <b>{t.title}</b>
         <small>From {t.from}</small>
-        {!compact && <p>{t.report}</p>}
+        <p>{t.report}</p>
       </div>
     </div>
+  );
+}
+
+const DEPTS: { name: string; critical: boolean; data: string; people: string }[] = [
+  { name: "Wealth Management", critical: true, data: "Client identity, account numbers, holdings, balances, estate and retirement records", people: "Sam Whitfield, Jamie Torres" },
+  { name: "Compliance", critical: true, data: "Regulatory filings, audit trails, GLBA and SOX records", people: "Devon Brooks, Morgan Lee" },
+  { name: "Finance and Accounting", critical: true, data: "The firm's own ledgers, payroll and budgets", people: "Jordan Ellis" },
+  { name: "Operations", critical: false, data: "Settlements and the internal processes that support other teams", people: "Taylor Osei, Riley Kwan" },
+  { name: "IT", critical: false, data: "Sign-in logs, admin activity and account changes", people: "Alex Rivera (admin), Priya Nair" },
+];
+
+// The facts a rating depends on, taken from the Home Lab's environment,
+// org chart and data pages so the week and the lab tell the same story.
+function FirmBrief() {
+  return (
+    <details className="rt-brief" open>
+      <summary>
+        <span>
+          <b>PurveX Financial at a glance</b>
+          <small>Who works here, what is critical and what each rating means</small>
+        </span>
+      </summary>
+      <div className="rt-brief__body">
+        <p className="rt-brief__lede">
+          A wealth management firm with nine staff in five departments. Wealth Management serves private investors, high net worth individuals, trust and estate accounts and retirement clients. Their records are regulated
+          under GLBA, and the firm&rsquo;s own books fall under SOX.
+        </p>
+        <table className="rt-depts">
+          <thead>
+            <tr>
+              <th>Department</th>
+              <th>Holds</th>
+              <th>Staff</th>
+            </tr>
+          </thead>
+          <tbody>
+            {DEPTS.map((d) => (
+              <tr key={d.name}>
+                <td>
+                  <b>{d.name}</b>
+                  {d.critical && <span className="rt-crit">Critical</span>}
+                </td>
+                <td>{d.data}</td>
+                <td>{d.people}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="rt-guide">
+          <div>
+            <b>Likelihood</b>
+            <dl>
+              <dt>Low</dt>
+              <dd>Needs an unusual chain of events to happen.</dd>
+              <dt>Medium</dt>
+              <dd>Plausible, but it needs a trigger: a mistake, a hardware failure or someone with access acting badly.</dd>
+              <dt>High</dt>
+              <dd>Already happening, or anyone at the firm could do it today.</dd>
+            </dl>
+          </div>
+          <div>
+            <b>Impact</b>
+            <dl>
+              <dt>Low</dt>
+              <dd>An inconvenience with a workaround. No client data or money involved.</dd>
+              <dt>Medium</dt>
+              <dd>Money or records are affected, but an existing check limits the damage and it can be corrected.</dd>
+              <dt>High</dt>
+              <dd>A critical department&rsquo;s data or regulated client data is exposed or lost, or the damage cannot be undone.</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </details>
   );
 }
 
