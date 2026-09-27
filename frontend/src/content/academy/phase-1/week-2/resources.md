@@ -1,0 +1,5 @@
+1. [CyberChef, the open-source toolkit used in both labs](https://gchq.github.io/CyberChef/)
+2. [OWASP: Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
+3. [NIST SP 800-63B, revision 4: Authentication and Authenticator Management](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-63B-4.pdf)
+4. [Hashcat documentation: how password cracking works in practice](https://hashcat.net/wiki/)
+5. [Microsoft: BitLocker recovery overview](https://learn.microsoft.com/en-us/windows/security/operating-system-security/data-protection/bitlocker/recovery-overview)

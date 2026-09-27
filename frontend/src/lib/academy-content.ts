@@ -39,9 +39,8 @@ export interface PhaseDef {
 }
 
 // Phase 1 -- Fundamentals. Weeks 1, 3, 4 have real lesson content migrated
-// from the instructor's Google Docs; Week 2's folder in the source Drive is
-// still an empty placeholder, so it stays "coming soon" here too rather
-// than getting invented content.
+// from the instructor's Google Docs. Week 2's lessons were written in the
+// repo to feed its two browser labs.
 const phase1Weeks: WeekDef[] = [
   {
     slug: "week-1",
@@ -61,6 +60,12 @@ const phase1Weeks: WeekDef[] = [
     title: "Week 2 — Encryption & Hashing",
     summary: "Prove a file was not changed, and tell encoding, encryption and hashing apart in a real password breach.",
     sections: [
+      { label: "Overview", file: "phase-1/week-2/lesson-overview.md" },
+      { label: "Encoding, Encryption or Hashing?", file: "phase-1/week-2/lesson-three-ways.md" },
+      { label: "Hashing and Integrity", file: "phase-1/week-2/lesson-hashing.md" },
+      { label: "Encryption and Keys", file: "phase-1/week-2/lesson-encryption.md" },
+      { label: "Storing Passwords", file: "phase-1/week-2/lesson-passwords.md" },
+      { label: "Resources", file: "phase-1/week-2/resources.md" },
       { label: "Lab: The Update Nobody Can Vouch For", file: "phase-1/week-2/lab-hash-verify.md", widget: "hash-verify" },
       { label: "Lab: The Leaked Password Table", file: "phase-1/week-2/lab-password-table.md", widget: "password-table" },
     ],
@@ -84,8 +89,12 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-4",
     title: "Week 4 — Authentication, Authorization, Access Control",
-    summary: "See what happens when an application trusts the client to say who it is, and then use that flaw to delete a user.",
+    summary: "Prove who someone is, give them only what their job needs, and check it on every request. Then break an app that forgot to.",
     sections: [
+      { label: "Overview", file: "phase-1/week-4/lesson-overview.md" },
+      { label: "Authentication", file: "phase-1/week-4/lesson-authentication.md" },
+      { label: "Authorization", file: "phase-1/week-4/lesson-authorization.md" },
+      { label: "Broken Access Control", file: "phase-1/week-4/lesson-access-control.md" },
       { label: "Lab: Broken Access Control (PortSwigger)", file: "phase-1/week-4/lab-triple-a.md" },
       { label: "Resources", file: "phase-1/week-4/resources.md" },
     ],
