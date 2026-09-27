@@ -67,33 +67,33 @@ const COPIES: Copy[] = [
     tag: "A",
     title: "Email attachment",
     from: "Alex Rivera, IT",
-    story: "Alex emailed the update to all staff at 8:02 this morning with the subject VPN update 2.4.1, please install today.",
+    story: "Sent to all staff at 8:02 this morning.",
     file: "vpn-update-email.txt",
     body: text(GENUINE),
     genuine: true,
-    why: "Its hash matches the one IT published, character for character. This copy is exactly what IT released.",
+    why: "Matches IT's hash exactly. This is the real update.",
   },
   {
     id: "share",
     tag: "B",
     title: "Shared drive",
     from: "\\\\fs01\\IT\\Updates",
-    story: "Most staff grab updates from the IT share. The file there was last modified at 2:47 this morning, five hours before Alex sent the email.",
+    story: "Last modified at 2:47 this morning, five hours before IT sent it.",
     file: "vpn-update-share.txt",
     body: text(TAMPERED),
     genuine: false,
-    why: "One changed character anywhere in a file gives a completely different hash. This copy is not what IT released, and the timestamp says someone replaced it overnight.",
+    why: "Different hash, so the file was changed. Someone replaced it overnight.",
   },
   {
     id: "teams",
     tag: "C",
     title: "Teams message",
     from: "PurveX IT Support (external account)",
-    story: "A Teams chat from an account outside the company, named PurveX IT Support, sent a download link and wrote: install ASAP, VPN changes tonight.",
+    story: "An outside account says: install ASAP, VPN changes tonight.",
     file: "vpn-update-teams.txt",
     body: text(GENUINE),
     genuine: true,
-    why: "Its hash matches, so the file itself is untouched. The message is still a red flag: IT does not send updates from outside accounts.",
+    why: "The file matches. The sender is still a red flag. IT never uses outside accounts.",
   },
 ];
 const BY_ID = Object.fromEntries(COPIES.map((c) => [c.id, c])) as Record<string, Copy>;
@@ -109,41 +109,41 @@ const QUESTIONS: { id: string; tag: string; title: string; prompt: string; optio
     id: "first",
     tag: "1",
     title: "Copy B",
-    prompt: "Copy B is on the share every department uses. What do you do first?",
+    prompt: "Copy B is on the shared drive. What do you do first?",
     options: [
-      { key: "delete", text: "Delete it from the share and replace it with the good copy. Problem solved." },
-      { key: "test", text: "Run it on a spare laptop to see what it actually does." },
-      { key: "contain", text: "Pull it from the share, keep a copy as evidence, warn staff not to run it, and escalate to security with the hashes." },
-      { key: "rehash", text: "Hash it again. The first hash was probably wrong." },
+      { key: "delete", text: "Delete it and put the good copy back." },
+      { key: "test", text: "Run it on a spare laptop to see what it does." },
+      { key: "contain", text: "Pull it, keep it as evidence, warn staff and escalate with the hashes." },
+      { key: "rehash", text: "Hash it again. The first one was probably wrong." },
     ],
     answer: "contain",
-    why: "Someone with write access to the IT share replaced an update at 2:47 in the morning. That is an incident, not a file cleanup. Deleting it destroys the evidence, and running it does the attacker's job for them. Keep the file and its hash, stop anyone installing it, and hand it to security, who will also want to know who has already run it.",
+    why: "This is an incident, not a cleanup. Deleting destroys evidence and running it helps the attacker. Contain it and escalate.",
   },
   {
     id: "teams",
     tag: "2",
     title: "Copy C",
-    prompt: "Copy C matched IT's hash, but it came from an outside Teams account. Can staff use it?",
+    prompt: "Copy C matched, but came from an outside account. Can staff use it?",
     options: [
-      { key: "use", text: "Yes. The hash matched, so it is safe." },
-      { key: "report", text: "Report the message as phishing and tell staff to get updates only from the IT portal." },
+      { key: "use", text: "Yes. The hash matched." },
+      { key: "report", text: "Report it as phishing. Updates only come from the IT portal." },
       { key: "ignore", text: "Ignore it. It matched, so no harm done." },
     ],
     answer: "report",
-    why: "A matching hash proves this file is untouched. It says nothing about the sender. An outside account posing as IT is a classic pretext, and the next link it sends may not match. Report it, and point staff back to the one source IT controls.",
+    why: "A hash checks the file, not the sender. The next link may not match.",
   },
   {
     id: "limits",
     tag: "3",
     title: "The limit",
-    prompt: "In 2017, attackers slipped malware into CCleaner, and the poisoned installer was still signed by the vendor. Why would checking the hash not have caught it?",
+    prompt: "In 2017, CCleaner shipped malware from its own build. Why would a hash check miss it?",
     options: [
       { key: "type", text: "Hashes do not work on installers." },
-      { key: "source", text: "The vendor's own build was poisoned, so the hash and signature it published belonged to the bad file." },
+      { key: "source", text: "The vendor published the hash of the bad file." },
       { key: "users", text: "Nobody knew how to hash a file." },
     ],
     answer: "source",
-    why: "A hash only proves a file matches the reference you compare it to. If the attacker gets inside the place the reference comes from, the bad file and the published hash match perfectly. The same happened with SolarWinds in 2020. Hashing checks integrity. Trusting the source is a separate question.",
+    why: "A hash proves a file matches its source, not that the source is safe. SolarWinds (2020) was the same.",
   },
 ];
 
@@ -198,16 +198,16 @@ export function HashVerifyLab() {
         <div className="rt-body">
           <header className="rt-head">
             <h3>Which copies are real?</h3>
-            <p>
-              IT published one hash for this update on the IT portal. Download each copy, hash it yourself, paste the hash you get, then say whether it matches. Do not trust how the file looks. Trust the hash.
-            </p>
+            <p>Hash each copy and compare it to IT&apos;s. Trust the hash, not how the file looks.</p>
           </header>
           <div className="lk-real">
-            <b>Published on the IT portal by Alex Rivera</b>
-            <p>VPN update 2.4.1. SHA-256:</p>
+            <b>IT portal · VPN update 2.4.1 · SHA-256</b>
             <Hash value={hashes.official} />
           </div>
-          <HashPlayground seed="PurveX VPN update 2.4.1" />
+          <details className="lk-more">
+            <summary>New to hashes? Try one first</summary>
+            <HashPlayground seed="PurveX VPN update 2.4.1" />
+          </details>
           <HashTool mode="file" />
           <Deck
             tags={COPIES.map((c) => c.tag)}
@@ -237,7 +237,7 @@ export function HashVerifyLab() {
                     <DownloadButton name={c.file} text={c.body} />
                   </div>
                   <label className="lk-field">
-                    Paste the SHA-256 you got for {c.file}
+                    Your SHA-256
                     <div>
                       <input
                         type="text"
@@ -252,12 +252,11 @@ export function HashVerifyLab() {
                   </label>
                   {pasted && !ok && (
                     <p className="lk-note is-bad">
-                      {normHash(pasted).length !== 64 ? "A SHA-256 is 64 characters long. Copy the whole value." : "That is not this file's hash. Hash the file you downloaded for this copy."}
+                      {normHash(pasted).length !== 64 ? "A SHA-256 is 64 characters." : "Not this file's hash. Hash the file for this copy."}
                     </p>
                   )}
                   {ok && (
                     <>
-                      <p className="lk-note is-good">That is this file&apos;s hash. Now line it up against the one IT published.</p>
                       <HashCompare label={`Copy ${c.tag}`} mine={pasted} reference={hashes.official} />
                       <div className="rt-choice" role="radiogroup" aria-label={`Does copy ${c.tag} match?`} style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
                         {(["match", "nomatch"] as const).map((v) => (
@@ -311,9 +310,7 @@ export function HashVerifyLab() {
         <div className="rt-body">
           <header className="rt-head">
             <h3>What did they change?</h3>
-            <p>
-              The hash told you copy B is different. It cannot tell you how. Read copy B and click every line that is not in the update IT released. Look closely. Attackers change as little as they can.
-            </p>
+            <p>The hash says copy B changed. Click every line that differs from IT&apos;s update.</p>
           </header>
           <FileView
             name={BY_ID.share.file}
@@ -323,13 +320,13 @@ export function HashVerifyLab() {
             onToggle={(n) => patch({ lines: s.lines.includes(n) ? s.lines.filter((x) => x !== n) : [...s.lines, n] })}
           />
           <div className="lk-q">
-            <b>If a user had run copy B, what would it have done?</b>
+            <b>What would copy B do?</b>
             <Options label="What copy B does" options={EFFECT} value={s.effect} answer={s.checked[1] ? "redirect" : undefined} disabled={s.checked[1]} onPick={(effect) => patch({ effect })} />
           </div>
           {s.checked[1] && (
             <div className="rt-why">
               <Verdict right={score.find === 2}>
-                Line 5 swaps the lowercase l in purvexfinancial for the digit 1, so the VPN would connect to a server the attacker owns. Line 7 is new and downloads a program to the laptop. The file looks almost identical, which is why you check the hash instead of eyeballing it.
+                Line 5 swaps the letter l for the digit 1, pointing the VPN at the attacker. Line 7 downloads a program. Easy to miss by eye, impossible to miss by hash.
               </Verdict>
             </div>
           )}
@@ -359,7 +356,7 @@ export function HashVerifyLab() {
         <div className="rt-body">
           <header className="rt-head">
             <h3>What happens next?</h3>
-            <p>You found a tampered update on the share every department uses. Three calls to make.</p>
+            <p>Three quick calls.</p>
           </header>
           <Deck
             tags={QUESTIONS.map((q) => q.tag)}
@@ -431,26 +428,13 @@ export function HashVerifyLab() {
               </p>
             </div>
           </header>
-          <p className="rt-lesson">
-            A hash is a fingerprint. Change one character and the whole fingerprint changes, and you cannot turn a fingerprint back into the file. That is why a hash proves a file was not changed, but keeps nothing secret. Keeping a
-            file secret is encryption, which is reversible with the right key.
-          </p>
+          <p className="rt-lesson">A hash is a one-way fingerprint. It proves a file was not changed, but keeps nothing secret.</p>
           <div className="lk-real">
             <b>On the job</b>
-            <p>
-              Analysts hash suspicious files with Get-FileHash, certutil, sha256sum or CyberChef, then search the hash in threat intelligence tools such as VirusTotal to see if anyone has seen that exact file before. The hash goes in the
-              ticket, so everyone talks about the same file.
-            </p>
-          </div>
-          <div className="lk-real">
-            <b>It happened for real</b>
-            <p>
-              CCleaner (2017) and SolarWinds (2020) shipped poisoned updates from the vendor&apos;s own build systems, signed and published as genuine. Hashes still matter. They just prove a file matches its source, not that the source is
-              safe.
-            </p>
+            <p>Analysts hash suspicious files and search the hash on VirusTotal. The hash goes in the ticket.</p>
           </div>
           <footer className="rt-foot">
-            <p className="rt-tally">Trust the hash from the source IT controls, and treat a changed file on a shared drive as an incident.</p>
+            <p className="rt-tally">Check the hash. Then check the source.</p>
             <button type="button" className="rt-btn" onClick={() => setS(START)}>
               <RotateCcw aria-hidden="true" /> Try again
             </button>
