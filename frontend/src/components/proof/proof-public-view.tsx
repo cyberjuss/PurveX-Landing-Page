@@ -118,14 +118,6 @@ export function ProofPublicView({
 
   return (
     <main className="pp">
-      <div className="pp-top">
-        <div className="pp-top__in">
-          <span>
-            <b>PurveX Academy</b> · Candidate portfolio
-          </span>
-          {printable && <ProofPrintButton>{FILE}Save as PDF</ProofPrintButton>}
-        </div>
-      </div>
       <div className="pp__wrap">
         <header className="pp-head">
           <div className="pp-id">
@@ -142,9 +134,10 @@ export function ProofPublicView({
               {openTo && <p className="pp-open">{openTo}</p>}
             </div>
           </div>
-          {canReach && (
+          {(canReach || printable) && (
             <div className="pp-reach">
               {actions}
+              {printable && <ProofPrintButton>{FILE}Save as PDF</ProofPrintButton>}
               {socials.map((s) => (
                 <a key={s.key} className="pp-icon" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={`${first} on ${s.label}`} title={s.label}>
                   {SOCIAL[s.key]}

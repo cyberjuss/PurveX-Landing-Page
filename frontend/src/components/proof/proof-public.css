@@ -12,6 +12,7 @@
   --pp-good: #166534;
   min-height: 100dvh;
   padding: 0 0 56px;
+  border-top: 4px solid var(--pp-accent);
   background: var(--pp-bg);
   color: var(--pp-ink);
   color-scheme: light;
@@ -21,13 +22,6 @@
 }
 
 .pp__wrap { max-width: 860px; margin: 0 auto; padding: 0 20px; }
-
-/* Navy band across the top, like a firm's letterhead. */
-.pp-top { background: var(--pp-accent); color: #dbe4f0; }
-.pp-top__in { display: flex; align-items: center; justify-content: space-between; gap: 16px; max-width: 860px; min-height: 52px; margin: 0 auto; padding: 0 20px; font-size: 13px; }
-.pp-top b { font-weight: 700; letter-spacing: 0.02em; color: #fff; }
-.pp .pp-top .pp-btn--ghost { height: 34px; border-color: rgba(255, 255, 255, 0.35); background: transparent; color: #fff; cursor: pointer; }
-.pp .pp-top .pp-btn--ghost:hover { border-color: #fff; background: rgba(255, 255, 255, 0.08); }
 .pp h1, .pp h2, .pp h3 { font-family: inherit; text-wrap: balance; margin: 0; }
 .pp p { margin: 0; }
 .pp a { color: var(--pp-accent); font-weight: 600; }
@@ -43,7 +37,7 @@
 
 /* Contact row under the name. */
 .pp-reach { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 22px; }
-.pp .pp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 38px; padding: 0 16px; border: 1px solid #d1d5db; border-radius: 4px; background: var(--pp-bg); font-size: 13.5px; font-weight: 600; color: var(--pp-ink); text-decoration: none; }
+.pp .pp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 38px; padding: 0 16px; border: 1px solid #d1d5db; border-radius: 4px; background: var(--pp-bg); font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--pp-ink); text-decoration: none; cursor: pointer; }
 .pp .pp-btn:hover { border-color: var(--pp-ink-3); background: var(--pp-bg-2); }
 .pp .pp-btn--primary { border-color: var(--pp-accent); background: var(--pp-accent); color: #fff; }
 .pp .pp-btn--primary:hover { border-color: var(--pp-accent-2); background: var(--pp-accent-2); }
@@ -115,7 +109,7 @@
 @media print {
   @page { margin: 14mm 12mm; }
   .pp { min-height: 0; padding: 0; font-size: 12.5px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-  .pp-top, .pp-reach, .pp-cta, .pp-cover, .pp-viewer, nextjs-portal { display: none !important; }
+  .pp-reach, .pp-cta, .pp-cover, .pp-viewer, nextjs-portal { display: none !important; }
   .pp__wrap { max-width: none; padding: 0; }
   .pp-head { padding-top: 0; }
   .pp-sec { padding: 16px 0; }
@@ -132,9 +126,7 @@
   .pp-id { flex-direction: column; align-items: flex-start; gap: 16px; }
   .pp-avatar { width: 76px; height: 76px; }
   .pp-cta__btns, .pp-cta__btns .pp-btn { width: 100%; }
-  .pp-reach .pp-btn { flex: 1 1 100%; }
-  .pp-top__in > span { font-size: 12px; }
-  .pp-viewer__stage { padding: 10px; }
+  .pp-reach .pp-btn { flex: 1 1 100%; }  .pp-viewer__stage { padding: 10px; }
   .pp-viewer__nav { top: auto; bottom: 14px; transform: none; }
 }
 

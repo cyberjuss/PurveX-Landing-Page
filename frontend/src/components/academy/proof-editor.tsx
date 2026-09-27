@@ -328,7 +328,7 @@ export function ProofEditor() {
               </>
             ) : (
               <>
-                Employers will see this at <code>purvex.io/p/{slug || settings.slug}</code> once you share it.
+                Employers will see this at <code>purvex.io/p/{slug || settings.slug}</code> once you make it public.
               </>
             )}
           </p>
@@ -363,10 +363,36 @@ export function ProofEditor() {
       ) : (
         <>
           <section className="pf-sec">
-            <div className="pf-sec__top">
-              <h2>Share your portfolio</h2>
-              <span className={`pf-status${settings.published ? " is-on" : ""}`}>{settings.published ? "Shared" : "Not shared"}</span>
+            <h2>Share your portfolio</h2>
+            <div className={`pf-vis${settings.published ? " is-on" : ""}`}>
+              <div>
+                <b>{settings.published ? "Public" : "Private"}</b>
+                <small>
+                  {settings.published
+                    ? "Anyone with your link or QR code can see your portfolio, and your credential shows as valid."
+                    : "Only you can see your portfolio. Your link shows nothing and your credential shows as not active."}
+                </small>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={settings.published}
+                aria-label="Make my portfolio public"
+                className="pf-switch"
+                disabled={busy || (!settings.published && data.blockers.length > 0)}
+                onClick={() => save({ published: !settings.published }, settings.published ? "Your portfolio is private. Your link no longer works." : "Your portfolio is public.")}
+              />
             </div>
+            {!settings.published && data.blockers.length > 0 && (
+              <div className="pf-blockers">
+                <b>Before you can make it public:</b>
+                <ul>
+                  {data.blockers.map((b) => (
+                    <li key={b}>{b}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div className="pf-photo">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {avatar ? <img src={avatar} alt="Your profile photo" /> : <span aria-hidden="true">{(name || "?").trim().charAt(0).toUpperCase()}</span>}
@@ -401,7 +427,7 @@ export function ProofEditor() {
                     className="pf-slug__copy"
                     disabled={slug !== settings.slug}
                     title={slug !== settings.slug ? "Save your new link first" : undefined}
-                    onClick={async () => say((await copyText(`https://${link}`)) ? (settings.published ? "Link copied" : "Link copied. It works once you share your portfolio.") : "Select the link and copy it")}
+                    onClick={async () => say((await copyText(`https://${link}`)) ? (settings.published ? "Link copied" : "Link copied. It works once your portfolio is public.") : "Select the link and copy it")}
                   >
                     Copy
                   </button>
@@ -414,40 +440,21 @@ export function ProofEditor() {
                 <img src={qr} alt={`QR code for ${link}`} />
                 <div>
                   <b>QR code</b>
-                  <small>Opens your portfolio on a phone camera. Add it to your resume, a business card or a job fair handout.{!settings.published && " It works once you share your portfolio."}</small>
+                  <small>Opens your portfolio on a phone camera. Add it to your resume, a business card or a job fair handout.{!settings.published && " It works once your portfolio is public."}</small>
                   <a className="pf-btn" href={qr} download={`purvex-portfolio-${settings.slug}.png`}>
                     Download QR code
                   </a>
                 </div>
               </div>
             )}
-            {data.blockers.length > 0 && (
-              <ul className="pf-blockers">
-                {data.blockers.map((b) => (
-                  <li key={b}>{b}</li>
-                ))}
-              </ul>
-            )}
             <div className="pf-row">
-              {settings.published ? (
-                <>
-                  <button type="button" className="pf-btn pf-btn--primary" disabled={busy} onClick={async () => say((await copyText(`https://${link}`)) ? "Link copied" : "Select the link and copy it")}>
-                    Copy link
-                  </button>
-                  <a className="pf-btn" href={`/p/${settings.slug}`} target="_blank" rel="noreferrer">
-                    View as an employer
-                  </a>
-                  <button type="button" className="pf-btn" disabled={busy} onClick={() => save({}, "Saved")}>
-                    Save changes
-                  </button>
-                  <button type="button" className="pf-btn pf-btn--danger" disabled={busy} onClick={() => save({ published: false }, "Sharing turned off. Your link no longer works.")}>
-                    Turn off sharing
-                  </button>
-                </>
-              ) : (
-                <button type="button" className="pf-btn pf-btn--primary" disabled={busy || data.blockers.length > 0} onClick={() => save({ published: true }, "Your portfolio is shared.")}>
-                  Share my portfolio
-                </button>
+              <button type="button" className="pf-btn pf-btn--primary" disabled={busy} onClick={() => save({}, "Saved")}>
+                Save changes
+              </button>
+              {settings.published && (
+                <a className="pf-btn" href={`/p/${settings.slug}`} target="_blank" rel="noreferrer">
+                  View as an employer
+                </a>
               )}
               {busy && <Loader2 className="h-4 w-4 animate-spin" />}
             </div>
