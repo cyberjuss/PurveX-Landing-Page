@@ -9,8 +9,8 @@
 .pq p b { color: var(--rd-ink); font-weight: 600; }
 .pq__actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .pq__btn { display: inline-flex; align-items: center; justify-content: center; min-width: 96px; height: 38px; padding: 0 14px; border: 1px solid var(--rd-line); background: none; font-size: 13px; font-weight: 650; color: var(--rd-ink); text-decoration: none; cursor: pointer; }
-.pq__btn--primary { border-color: var(--rd-ink); background: var(--rd-ink); color: #fff; }
-.academy-bg[data-academy-theme="dark"] .pq__btn--primary { color: #000; }
+.pq__btn--primary { border-color: #5546e0; background: #5546e0; color: #fff; }
+.pq__btn--primary:hover { border-color: #4538c9; background: #4538c9; }
 .pq__btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .pq p.pq__tip { font-size: 12.5px; color: var(--rd-ink-3); }
 .pq kbd { padding: 1px 6px; border: 1px solid var(--rd-line); font-family: var(--font-mono, ui-monospace, monospace); font-size: 11.5px; color: var(--rd-ink); }
