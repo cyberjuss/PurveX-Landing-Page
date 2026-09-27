@@ -434,23 +434,15 @@ export function ProofEditor() {
                 </div>
               </label>
             </div>
-            {qr && (
-              <div className="pf-qr">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={qr} alt={`QR code for ${link}`} />
-                <div>
-                  <b>QR code</b>
-                  <small>Opens your portfolio on a phone camera. Add it to your resume, a business card or a job fair handout.{!settings.published && " It works once your portfolio is public."}</small>
-                  <a className="pf-btn" href={qr} download={`purvex-portfolio-${settings.slug}.png`}>
-                    Download QR code
-                  </a>
-                </div>
-              </div>
-            )}
             <div className="pf-row">
               <button type="button" className="pf-btn pf-btn--primary" disabled={busy} onClick={() => save({}, "Saved")}>
                 Save changes
               </button>
+              {qr && (
+                <a className="pf-btn" href={qr} download={`purvex-portfolio-${settings.slug}.png`} title="A QR code that opens your portfolio from a phone camera">
+                  Download QR code
+                </a>
+              )}
               {settings.published && (
                 <a className="pf-btn" href={`/p/${settings.slug}`} target="_blank" rel="noreferrer">
                   View as an employer

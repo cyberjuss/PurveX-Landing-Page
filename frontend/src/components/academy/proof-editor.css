@@ -18,13 +18,6 @@
 .pf-slug__copy { flex: none; align-self: stretch; padding: 0 14px; border: 0; border-left: 1px solid var(--rd-line); background: none; font-size: 13px; font-weight: 650; color: var(--rd-accent); cursor: pointer; }
 .pf-slug__copy:hover:not(:disabled) { background: color-mix(in srgb, var(--rd-accent) 10%, transparent); }
 .pf-slug__copy:disabled { color: var(--rd-ink-3); cursor: not-allowed; }
-.pf-qr { display: flex; align-items: center; gap: 16px; }
-.pf-qr > img { flex: none; width: 104px; height: 104px; padding: 4px; border: 1px solid var(--rd-line); background: #fff; image-rendering: pixelated; }
-.pf-qr > div { display: grid; justify-items: start; gap: 4px; }
-.pf-qr b { font-size: 13.5px; color: var(--rd-ink); }
-.pf-qr small { max-width: 52ch; font-size: 12.5px; color: var(--rd-ink-3); }
-.pf-qr .pf-btn { margin-top: 4px; }
-
 .pf-vis { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; border: 1px solid var(--rd-line); }
 .pf-vis.is-on { border-color: color-mix(in srgb, var(--rd-good) 45%, transparent); background: color-mix(in srgb, var(--rd-good) 7%, transparent); }
 .pf-vis > div { display: grid; gap: 2px; }
