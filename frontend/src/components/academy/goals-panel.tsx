@@ -17,7 +17,7 @@ import {
   type StudentProfile,
 } from "@/lib/academy-certs";
 import { academyFetch } from "@/lib/academy-client";
-import { passedExamDates, todayLocal } from "@/lib/academy-goals";
+import { daysUntil, passedExamDates, todayLocal } from "@/lib/academy-goals";
 
 // Every intake answer on one screen, so changing an exam date is one edit,
 // not a walk through all four intake questions. The first-time intake stays
@@ -98,9 +98,9 @@ export function GoalsPanel({
   return createPortal(
     <div className="ad-drawer-root" data-academy-theme={chrome.theme} style={{ ["--dr-top"]: `${chrome.top}px` } as CSSProperties}>
       <div className="ad-drawer__backdrop" onClick={onClose} />
-      <aside className="ad-drawer" role="dialog" aria-modal="true" aria-label="Your goals">
+      <aside className="ad-drawer" role="dialog" aria-modal="true" aria-label="Goals">
         <div className="ad-drawer__head">
-          <span className="ad-drawer__title">Your goals</span>
+          <span className="ad-drawer__title">Goals</span>
           <button ref={closeRef} type="button" className="ad-drawer__close" aria-label="Close" onClick={onClose}>
             <X className="h-4 w-4" />
           </button>
@@ -126,7 +126,15 @@ export function GoalsPanel({
             const late = overdue.includes(id);
             return (
               <section key={id} className="gp-sec">
-                <h3>{CERTS[id].full}</h3>
+                <div className="gp-sec__head">
+                  <h3>{CERTS[id].full}</h3>
+                  {goal.status === "studying" && goal.examDate && goal.examDate >= today && (
+                    <span className="gp-count">
+                      <b>{daysUntil(goal.examDate, today)}</b> {daysUntil(goal.examDate, today) === 1 ? "day left" : "days left"}
+                    </span>
+                  )}
+                  {goal.status === "earned" && <span className="gp-count gp-count--done">Certified</span>}
+                </div>
                 {late && (
                   <div className="gp-late" role="status">
                     <p>

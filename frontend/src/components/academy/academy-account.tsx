@@ -7,7 +7,7 @@ import { ArrowRight, Headset, LogOut, Target } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import type { StudentProfile } from "@/lib/academy-certs";
 import { READINESS_PATH, useResults } from "@/lib/academy-client";
-import { goalsSummary } from "@/lib/academy-goals";
+import { passedExamDates } from "@/lib/academy-goals";
 import { LEVELS, summarize } from "@/lib/academy-score";
 
 export type AcademyStudent = { id: string; email: string | null; name: string | null };
@@ -75,7 +75,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
   const readiness = summarize(useResults());
   const { setModalOpen, remaining, limit, enabled } = useCoach();
   const { profile, editGoals } = useAcademyGoals();
-  const goals = goalsSummary(profile);
+  const needsUpdate = passedExamDates(profile).length > 0;
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [pos, setPos] = useState({ top: 72, right: 16 });
@@ -182,37 +182,6 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                   Open report <ArrowRight className="h-3.5 w-3.5" />
                 </b>
               </Link>
-              <button
-                type="button"
-                className="ax-account__goals"
-                aria-label="Edit your goals"
-                onClick={() => {
-                  setOpen(false);
-                  editGoals();
-                }}
-              >
-                <span className="ax-account__goals-head">
-                  <Target className="h-3.5 w-3.5" /> Goals
-                </span>
-                {goals.roles.length ? (
-                  <span className="ax-account__roles">
-                    {goals.roles.map((r) => (
-                      <i key={r}>{r}</i>
-                    ))}
-                  </span>
-                ) : (
-                  <span className="ax-account__none">Pick a target role</span>
-                )}
-                {goals.exam && (
-                  <span className={`ax-account__exam${goals.exam.attention ? " is-late" : ""}`}>
-                    <small>{goals.exam.cert} exam</small>
-                    <span>
-                      <em className={/^\d+$/.test(goals.exam.value) ? "is-num" : ""}>{goals.exam.value}</em>
-                      <small>{goals.exam.unit}</small>
-                    </span>
-                  </span>
-                )}
-              </button>
               {enabled && (
                 <div className="ax-account__ask">
                   <button
@@ -232,6 +201,17 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                   )}
                 </div>
               )}
+              <button
+                type="button"
+                className="ax-account__out"
+                onClick={() => {
+                  setOpen(false);
+                  editGoals();
+                }}
+              >
+                <Target className="h-3.5 w-3.5" /> Goals
+                {needsUpdate && <span className="ax-account__dot" aria-label="An exam date has passed" />}
+              </button>
               <button type="button" className="ax-account__out" onClick={onSignOut}>
                 <LogOut className="h-3.5 w-3.5" /> Sign out
               </button>
