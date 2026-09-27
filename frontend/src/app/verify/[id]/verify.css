@@ -4,7 +4,7 @@
   --vf-ink-2: #4b5563;
   --vf-ink-3: #9ca3af;
   --vf-line: #eceef1;
-  --vf-navy: #1e3a5f;
+  --vf-navy: #5546e0;
   --vf-good: #15803d;
   --vf-warn: #b45309;
   --vf-bad: #b91c1c;
@@ -45,7 +45,7 @@
 .vf-details code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13.5px; letter-spacing: 0.03em; }
 
 .vf-btn { display: flex; align-items: center; justify-content: center; height: 42px; margin: 24px 24px 0; border-radius: 8px; background: var(--vf-navy); font-size: 14px; font-weight: 600; color: #fff; text-decoration: none; }
-.vf-btn:hover { background: #16304f; }
+.vf-btn:hover { background: #4536c8; }
 .vf-btn:focus-visible { outline: 2px solid var(--vf-navy); outline-offset: 2px; }
 
 .vf-foot { padding: 20px 24px 22px; font-size: 12px; text-align: center; color: var(--vf-ink-3); }
