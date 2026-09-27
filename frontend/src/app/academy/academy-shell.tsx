@@ -13,8 +13,10 @@ import { AcademySignIn } from "@/components/academy/academy-sign-in";
 import { AcademyWelcome, takeAcademyWelcome } from "@/components/academy/academy-welcome";
 import { CoachProvider } from "@/components/academy/coach-context";
 import { GoalsPanel } from "@/components/academy/goals-panel";
+import { ProofPrompt } from "@/components/academy/proof-prompt";
 import { PurvexCoach } from "@/components/academy/purvex-coach";
 import { ROLE_BRIEFS } from "@/lib/academy-briefs";
+import { askForProofShot, PROOF_TICKETS } from "@/lib/academy-proof";
 import { examLinks, roleLabel, sanitizeProfile, type RoleId, type StudentProfile } from "@/lib/academy-certs";
 import {
   academyFetch,
@@ -523,6 +525,9 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         btn.disabled = true;
         recordResult(wrap, { solved: true, flagged: false, wrong: parseInt(wrap.getAttribute("data-attempts") || "0", 10) });
         updateProgress();
+        // A ticket the lab confirmed can go on the Proof Profile with a screenshot.
+        const ticket = PROOF_TICKETS[missionId];
+        if (ticket && wrap.classList.contains("ad-mission--labok")) askForProofShot(ticket.job, ticket.label);
         return;
       }
 
@@ -1128,6 +1133,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           </div>
         )}
         {!asking && profile !== undefined && <PurvexCoach />}
+        {!asking && profile !== undefined && <ProofPrompt />}
         {editingGoals && profile && (
           <GoalsPanel
             profile={profile}

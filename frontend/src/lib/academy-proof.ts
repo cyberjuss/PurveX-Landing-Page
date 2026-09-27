@@ -194,7 +194,7 @@ const CATALOG: Record<string, Entry> = {
 };
 
 /** Ticket Queue tickets whose change the lab confirms, and the job each proves. */
-const TICKETS: Record<string, { job: string; label: string }> = {
+export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "tq-01": { job: "group-access", label: "Ticket Queue · INC-1041" },
   "tq-02": { job: "enable-account", label: "Ticket Queue · INC-1042" },
   "tq-03": { job: "create-user", label: "Ticket Queue · INC-1043" },
@@ -222,7 +222,7 @@ export function buildWorkItems(results: Results, drills: DrillEntry[]): WorkItem
     const had = found.get(job);
     if (!had || date > had.date) found.set(job, { date, from });
   };
-  for (const [id, t] of Object.entries(TICKETS)) {
+  for (const [id, t] of Object.entries(PROOF_TICKETS)) {
     const r = results[id];
     if (r?.labOk) note(t.job, (r.at ?? "").slice(0, 10), t.label);
   }
@@ -260,3 +260,13 @@ export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean)
 }
 
 export const SHOTS_PER_ITEM = 5;
+
+/** A job the Proof Profile can show. */
+export const isProofJob = (job: unknown): job is string => typeof job === "string" && job in CATALOG;
+
+/** Asks the Academy to offer an optional screenshot for a task the lab just confirmed. */
+export const PROOF_PROMPT_EVENT = "academy:proof-prompt";
+export function askForProofShot(job: string, from: string) {
+  if (typeof window === "undefined" || !isProofJob(job)) return;
+  window.dispatchEvent(new CustomEvent(PROOF_PROMPT_EVENT, { detail: { job, from } }));
+}

@@ -6,7 +6,14 @@ import Link from "next/link";
 import { ArrowRight, Check, ChevronDown, ClipboardList, Flame, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch, localDay, READINESS_PATH } from "@/lib/academy-client";
+import { askForProofShot } from "@/lib/academy-proof";
 import { SKILLS, type Skill } from "@/lib/academy-score";
+
+// A lab fix the check just confirmed can go on the Proof Profile with a screenshot.
+function offerProofShot(entry: DrillEntry) {
+  const fix = (entry.detail ?? []).find((d) => d.k === "change" && d.c === 1 && d.j);
+  if (fix?.j) askForProofShot(fix.j, entry.mode === "ctf" ? "Weekly CTF" : "Daily drill");
+}
 
 export type DrillStatus = {
   stats: {
@@ -56,7 +63,7 @@ type Report = {
 type Mode = "daily" | "timed" | "ctf";
 const MODE_LABEL: Record<string, string> = { daily: "Daily scenario", timed: "Incident drill", ctf: "Weekly CTF", coach: "Practice" };
 
-type DrillEntry = { id: string; day: string; mode: string; correct: number; total: number; seconds: number; detail?: { t: string }[] };
+type DrillEntry = { id: string; day: string; mode: string; correct: number; total: number; seconds: number; detail?: { t: string; k?: string; c?: number; j?: string }[] };
 type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[]; free?: boolean; format?: string; kind?: "decide" | "respond" | "change"; long?: boolean; checklist?: string[]; checkCount?: number; setup?: { note: string; script: string }; job?: string; gated?: boolean };
 type TaskInfo = { setup?: { note: string; script: string }; checklist?: string[]; checkCount?: number };
 type CheckRes = { needsSetup?: boolean; fresh: boolean; results: { label: string; ok: boolean }[]; syncedAgo: string | null; passed: boolean };
@@ -582,6 +589,7 @@ export function DrillRunner() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not check your lab.");
       if (data.passed && data.entry) {
+        offerProofShot(data.entry);
         setResult({ ...data, items: current.items });
         setStatus(data);
         setRun(null);
@@ -670,6 +678,7 @@ export function DrillRunner() {
         setError("That is not right. Read the evidence again, or ask for the hint.");
         return;
       }
+      if (data.entry) offerProofShot(data.entry);
       setResult({ ...data, items: current.items });
       setStatus(data);
       setRun(null);
