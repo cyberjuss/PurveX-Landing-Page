@@ -21,44 +21,35 @@ export default async function VerifyPage({ params }: { params: Promise<{ id: str
   const state = !found ? "missing" : found.settings.published ? "valid" : "inactive";
   const checkedAt = stamp(new Date());
 
+  const title = state === "valid" ? "Credential verified" : state === "inactive" ? "Credential not active" : "Credential not found";
+  const detail =
+    state === "valid"
+      ? "This is a genuine, current credential issued by PurveX Academy."
+      : state === "inactive"
+        ? "This credential exists, but its holder has made their portfolio private."
+        : wellFormed
+          ? "No PurveX credential matches this ID."
+          : "This is not a valid PurveX credential ID. IDs look like PX-A4YT-Q5.";
+
   return (
     <main className="vf">
       <div className="vf-card">
         <header className="vf-brand">
           <Link href="/" aria-label="PurveX home">
-            <Image src="/logo.png" alt="" width={30} height={30} priority />
+            <Image src="/logo.png" alt="" width={26} height={26} priority />
             <span>PurveX</span>
           </Link>
           <small>Credential verification</small>
         </header>
 
-        <section className={`vf-status vf-status--${state}`} role="status">
-          <span className="vf-status__icon" aria-hidden="true">
-            {state === "valid" ? (
-              <svg viewBox="0 0 24 24">
-                <path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Z" />
-                <path d="m8.5 12 2.5 2.5 4.5-5" />
-              </svg>
-            ) : state === "inactive" ? (
-              <svg viewBox="0 0 24 24">
-                <rect x="4" y="11" width="16" height="10" rx="2" />
-                <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-                <path d="m15 9-6 6M9 9l6 6" />
-              </svg>
-            )}
+        <section className={`vf-result vf-result--${state}`} role="status">
+          <span className="vf-result__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              {state === "valid" ? <path d="m6 12.5 4 4 8-9" /> : state === "inactive" ? <path d="M12 7v6m0 4h.01" /> : <path d="m7 7 10 10M17 7 7 17" />}
+            </svg>
           </span>
-          <div>
-            <h1>{state === "valid" ? "Verified credential" : state === "inactive" ? "Credential not active" : "Credential not found"}</h1>
-            <p>
-              {state === "valid" && "This credential is genuine and current. It was issued by PurveX Academy for lab work confirmed in the holder's own lab."}
-              {state === "inactive" && "This credential exists, but its holder has made their portfolio private. Ask them to make it public, then check again."}
-              {state === "missing" && (wellFormed ? "No PurveX credential has this ID. Check it against the portfolio or PDF you were given." : "This is not a valid PurveX credential ID. IDs look like PX-A4YT-Q5.")}
-            </p>
-          </div>
+          <h1>{title}</h1>
+          <p>{detail}</p>
         </section>
 
         <dl className="vf-details">
@@ -86,31 +77,15 @@ export default async function VerifyPage({ params }: { params: Promise<{ id: str
               )}
             </>
           )}
-          <div>
-            <dt>Status</dt>
-            <dd className={`vf-pill vf-pill--${state}`}>{state === "valid" ? "Active" : state === "inactive" ? "Not active" : "Not found"}</dd>
-          </div>
-          <div>
-            <dt>Checked</dt>
-            <dd>{checkedAt}</dd>
-          </div>
         </dl>
 
         {state === "valid" && found && (
           <Link className="vf-btn" href={`/p/${found.settings.slug}`}>
-            View {found.settings.displayName.split(" ")[0]}&rsquo;s portfolio
+            View portfolio
           </Link>
         )}
 
-        <footer className="vf-foot">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="4" y="11" width="16" height="10" rx="2" />
-            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-          </svg>
-          <p>
-            This result is read live from PurveX records each time the page loads. Only a page at <b>purvex.io/verify</b> can confirm a PurveX credential. A screenshot or PDF of this page is not proof.
-          </p>
-        </footer>
+        <footer className="vf-foot">Checked live on purvex.io · {checkedAt}</footer>
       </div>
     </main>
   );
