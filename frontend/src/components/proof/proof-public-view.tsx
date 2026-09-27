@@ -96,7 +96,7 @@ export function ProofPublicView({
   const shotsFor = (job: string) => {
     if (!settings.shotsOn.includes(job)) return [];
     const mine = data.shots.filter((s) => s.job === job);
-    return mine.length >= SHOTS_PER_ITEM ? mine.slice(0, SHOTS_PER_ITEM) : [];
+    return mine.slice(0, SHOTS_PER_ITEM);
   };
 
   const actions = (

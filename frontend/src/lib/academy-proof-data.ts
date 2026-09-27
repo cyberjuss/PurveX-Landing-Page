@@ -1,6 +1,6 @@
 import "server-only";
 import { CERT_IDS, CERTS, roleLabel, type RoleId, type StudentProfile } from "@/lib/academy-certs";
-import { buildSkills, buildWorkItems, SHOTS_PER_ITEM, TRACK_FOR_ROLE, type Track, type WorkItem } from "@/lib/academy-proof";
+import { buildSkills, buildWorkItems, TRACK_FOR_ROLE, type Track, type WorkItem } from "@/lib/academy-proof";
 import { listShots, loadProofSettings, type ProofSettings, type ProofShot } from "@/lib/academy-proof-store";
 import { loadDrills, loadLabState, loadProfile, loadProgress } from "@/lib/academy-store";
 
@@ -46,14 +46,9 @@ export async function loadProofData(userId: string): Promise<ProofData> {
 }
 
 /** Why the profile cannot be shared yet. Empty means it can. */
-export function shareBlockers(items: WorkItem[], shotsOn: string[], shots: ProofShot[]): string[] {
+export function shareBlockers(items: WorkItem[]): string[] {
   const out: string[] = [];
   if (!items.length) out.push("Finish a lab task or Ticket Queue ticket first. Your portfolio shows confirmed lab work.");
-  for (const it of items) {
-    if (!shotsOn.includes(it.job)) continue;
-    const n = shots.filter((s) => s.job === it.job).length;
-    if (n < SHOTS_PER_ITEM) out.push(`Add ${SHOTS_PER_ITEM - n} more screenshot${SHOTS_PER_ITEM - n === 1 ? "" : "s"} to “${it.title}”, or turn its screenshots off.`);
-  }
   return out;
 }
 

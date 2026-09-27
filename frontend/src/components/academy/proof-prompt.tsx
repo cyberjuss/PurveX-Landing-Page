@@ -121,8 +121,8 @@ export function ProofPrompt() {
           <h2 id="pq-title">{ask.title}</h2>
           <p>
             {saved >= SHOTS_PER_ITEM
-              ? `${SHOTS_PER_ITEM} of ${SHOTS_PER_ITEM} screenshots. This task is ready to share.`
-              : `${saved} of ${SHOTS_PER_ITEM} screenshots on this task. Add ${SHOTS_PER_ITEM - saved} more before you make your portfolio public, or turn its screenshots off.`}
+              ? `${SHOTS_PER_ITEM} of ${SHOTS_PER_ITEM} screenshots. That is the most a task can have.`
+              : `${saved} of ${SHOTS_PER_ITEM} screenshots on this task. Employers see them on your portfolio.`}
           </p>
           <div className="pq__actions">
             <button type="button" className="pq__btn pq__btn--primary" onClick={close}>

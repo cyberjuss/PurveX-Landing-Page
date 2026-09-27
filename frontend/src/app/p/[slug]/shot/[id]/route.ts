@@ -13,7 +13,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   const shots = await listShots(found.userId);
   const shot = shots.find((s) => s.id === id);
   if (!shot || !found.settings.shotsOn.includes(shot.job)) return new NextResponse(null, { status: 404 });
-  if (shots.filter((s) => s.job === shot.job).length < SHOTS_PER_ITEM) return new NextResponse(null, { status: 404 });
+  if (shots.filter((s) => s.job === shot.job).indexOf(shot) >= SHOTS_PER_ITEM) return new NextResponse(null, { status: 404 });
   const bytes = await readShotBytes(shot);
   if (!bytes) return new NextResponse(null, { status: 404 });
   return new NextResponse(new Uint8Array(bytes), {

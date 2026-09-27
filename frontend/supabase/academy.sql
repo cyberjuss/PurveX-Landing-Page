@@ -152,7 +152,7 @@ alter table public.academy_role_briefs enable row level security;
 -- employers at /p/<slug>. One row per student. Nothing is public until
 -- published is true. avatar_path points at the student's photo in the
 -- proof-screenshots bucket. shots_on lists the lab work items (job ids) whose
--- screenshots the student switched on; each of those needs 5 screenshots.
+-- screenshots the student switched on; each shows up to 5 screenshots.
 create table if not exists public.academy_public_profiles (
   user_id uuid primary key references auth.users (id) on delete cascade,
   slug text not null unique check (slug ~ '^[a-z0-9-]{3,40}$'),

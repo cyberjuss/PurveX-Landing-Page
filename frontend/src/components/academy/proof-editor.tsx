@@ -665,7 +665,7 @@ export function ProofEditor() {
 
           <section className="pf-sec">
             <h2>Screenshots</h2>
-            <p>Optional. Turn them on for any lab task, then add {SHOTS_PER_ITEM}. Employers swipe through them on that task.</p>
+            <p>Optional. Turn them on for any lab task and add up to {SHOTS_PER_ITEM}. Employers click through them on that task.</p>
             <ul className="pf-shots">
               {items.map((it) => {
                 const on = settings.shotsOn.includes(it.job);
@@ -676,8 +676,8 @@ export function ProofEditor() {
                     <div className="pf-shots__head">
                       <span>
                         {it.title}
-                        <small className={on ? (mine.length >= SHOTS_PER_ITEM ? "is-done" : "is-short") : ""}>
-                          {on ? (mine.length >= SHOTS_PER_ITEM ? `${SHOTS_PER_ITEM} of ${SHOTS_PER_ITEM} · complete` : `${mine.length} of ${SHOTS_PER_ITEM}`) : "Off"}
+                        <small className={on && mine.length ? "is-done" : ""}>
+                          {on ? (mine.length ? `${mine.length} of ${SHOTS_PER_ITEM} screenshot${mine.length === 1 ? "" : "s"}` : "On · add a screenshot") : "Off"}
                         </small>
                       </span>
                       <button
@@ -704,7 +704,7 @@ export function ProofEditor() {
                         {mine.length < SHOTS_PER_ITEM && (
                           <>
                             <label className="pf-add" htmlFor={inputId}>
-                              + Add {SHOTS_PER_ITEM - mine.length}
+                              + Add
                             </label>
                             <input id={inputId} type="file" accept="image/png,image/jpeg" multiple hidden onChange={(e) => upload(it.job, e.target.files).then(() => (e.target.value = ""))} />
                           </>
