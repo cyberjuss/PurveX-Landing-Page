@@ -180,13 +180,13 @@ export function domainsFor(ref: { job?: string; skill?: Skill; mission?: string 
 
 export type RoleId = "help-desk" | "sysadmin" | "soc-analyst" | "cyber-analyst" | "ir-analyst";
 
-/** Entry-level roles the Academy phases prepare for. */
-export const ROLES: { id: RoleId; label: string; phases: string; blurb: string }[] = [
-  { id: "help-desk", label: "IT Support / Help Desk Technician", phases: "Phase 1 and the Active Directory lab", blurb: "Accounts, access and sign-in problems, worked from tickets." },
-  { id: "sysadmin", label: "Junior Systems Administrator", phases: "Phase 1 and the Active Directory lab", blurb: "Runs the directory, group policy and the servers behind it." },
-  { id: "soc-analyst", label: "SOC Analyst (Tier 1)", phases: "Phase 2", blurb: "Watches alerts, reads the logs and escalates what is real." },
-  { id: "cyber-analyst", label: "Cybersecurity Analyst", phases: "Phases 2 and 3", blurb: "Finds weaknesses, tunes detections and reports risk." },
-  { id: "ir-analyst", label: "Incident Response Analyst (Junior)", phases: "Phase 3", blurb: "Contains an incident, keeps the evidence and writes it up." },
+/** Entry-level roles the Academy phases prepare for. `short` is the chip label on the marketing site. */
+export const ROLES: { id: RoleId; label: string; short: string; phases: string; blurb: string }[] = [
+  { id: "help-desk", label: "IT Support / Help Desk Technician", short: "IT support and help desk", phases: "Phase 1 and the Active Directory lab", blurb: "Accounts, access and sign-in problems, worked from tickets." },
+  { id: "sysadmin", label: "Junior Systems Administrator", short: "Junior systems administrator", phases: "Phase 1 and the Active Directory lab", blurb: "Runs the directory, group policy and the servers behind it." },
+  { id: "soc-analyst", label: "SOC Analyst (Tier 1)", short: "SOC analyst (Tier 1)", phases: "Phase 2", blurb: "Watches alerts, reads the logs and escalates what is real." },
+  { id: "cyber-analyst", label: "Cybersecurity Analyst", short: "Cybersecurity analyst", phases: "Phases 2 and 3", blurb: "Finds weaknesses, tunes detections and reports risk." },
+  { id: "ir-analyst", label: "Incident Response Analyst (Junior)", short: "Incident response analyst", phases: "Phase 3", blurb: "Contains an incident, keeps the evidence and writes it up." },
 ];
 const ROLE_IDS = new Set<string>(ROLES.map((r) => r.id));
 export const roleLabel = (id: RoleId) => ROLES.find((r) => r.id === id)?.label ?? id;

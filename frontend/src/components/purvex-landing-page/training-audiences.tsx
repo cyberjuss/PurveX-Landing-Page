@@ -2,7 +2,11 @@
 
 import { useRef, useState, type KeyboardEvent } from "react";
 import { ArrowRight } from "lucide-react";
+import { ROLES } from "@/lib/academy-certs";
 import { IconCampus, IconCivic, IconGraduate, type BrandIcon } from "./brand-icons";
+
+// The same roles students pick at intake, so the site and the Academy never disagree.
+const ROLE_CHIPS = ROLES.map((r) => r.short);
 
 /* Who the training is for. The visitor picks who they are; the panel then
    shows how getting started works for them in four short steps. */
@@ -38,7 +42,7 @@ const AUDIENCES: Audience[] = [
       "Earn a score employers can read",
     ],
     footLabel: "Prepares you for",
-    foot: ["IT help desk", "IT support", "Junior security analyst", "SOC analyst", "Incident responder", "Identity and access analyst"],
+    foot: ROLE_CHIPS,
   },
   {
     key: "schools",
@@ -72,7 +76,7 @@ const AUDIENCES: Audience[] = [
       "Review each report",
     ],
     footLabel: "Built for roles like",
-    foot: ["Help desk", "IT support", "SOC analyst", "Incident response", "Identity and access"],
+    foot: ROLE_CHIPS,
   },
 ];
 

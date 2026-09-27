@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight, BookOpen, Bug, FileSearch, Fingerprint, KeyRound, MonitorDot, Network, Radar, ScanSearch,
@@ -114,6 +115,42 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           <p>Real practice, help when they need it, and proof they can show an employer.</p>
         </div>
         <TrainingBenefits />
+      </section>
+
+      <section className="pg-section tp-proof" id="proof">
+        <div className="pg-head">
+          <h2>Proof employers can check</h2>
+          <p>Every student gets a shareable portfolio of work confirmed in their own lab, and a credential ID any employer can verify.</p>
+        </div>
+        <div className="tp-proof__grid" data-r>
+          <figure className="tp-proof__shot tp-proof__shot--wide">
+            <Image
+              src="/marketing/portfolio-example.png"
+              alt="Example PurveX portfolio: a SOC Analyst candidate, Security+ exam booked, and hands-on work verified in their lab"
+              width={1912}
+              height={1412}
+              sizes="(max-width: 860px) 100vw, 640px"
+            />
+            <figcaption>
+              <strong>The portfolio</strong>
+              Only work the lab confirmed. Target role, certifications and skills in the words job postings use.
+            </figcaption>
+          </figure>
+          <figure className="tp-proof__shot">
+            <Image
+              src="/marketing/credential-example.png"
+              alt="PurveX credential verification page showing Credential verified for an example student"
+              width={976}
+              height={1256}
+              sizes="(max-width: 860px) 100vw, 320px"
+            />
+            <figcaption>
+              <strong>The credential check</strong>
+              Employers enter the ID at purvex.io/verify and see if it is genuine and current.
+            </figcaption>
+          </figure>
+        </div>
+        <p className="tp-proof__note">Example portfolio. The student is fictional.</p>
       </section>
 
       <section className="pg-section tp-features" id="features">
@@ -242,12 +279,22 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         .tp-feature-list > li:nth-child(6) { --n: 5 }
         .tp-feature-list > li:nth-child(7) { --n: 6 }
         .tp-feature-list > li:nth-child(8) { --n: 7 }
+        .tp-proof__grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 24px; align-items: start }
+        .tp-proof__shot { margin: 0 }
+        .tp-proof__shot img {
+          display: block; width: 100%; height: auto; background: #fff;
+          border: 1px solid var(--border-strong); box-shadow: 0 22px 44px -32px rgba(42,34,128,.35);
+        }
+        .tp-proof__shot figcaption { margin-top: 14px; color: var(--muted); font-size: .92rem; line-height: 1.5; max-width: 48ch }
+        .tp-proof__shot figcaption strong { display: block; margin-bottom: 2px; font-size: 1rem; font-weight: 650; color: var(--ink) }
+        .tp-proof__note { margin: 18px 0 0; font-size: .8rem; color: var(--muted) }
         @media (prefers-reduced-motion: reduce) {
         }
 
         @media (max-width: 860px) {
           .tp-features { grid-template-columns: minmax(0, 1fr) }
           .tp-features__head { position: static }
+          .tp-proof__grid { grid-template-columns: minmax(0, 1fr) }
           .tp-course { grid-template-columns: 1fr; gap: 32px }
           .tp-course::before { left: 27px; right: auto; top: 28px; bottom: 28px; width: 2px; height: auto; background: rgba(106,92,255,.25) }
           .tp-course > li, .tp-course > li + li { padding: 0 0 0 80px }
