@@ -250,3 +250,99 @@
 @media (prefers-reduced-motion: reduce) {
   .ad-drawer, .ad-drawer__backdrop { animation: none; }
 }
+
+/* Your goals: every intake answer on one screen, in the same panel. */
+.ad-drawer .gp-note { margin: 14px 0 4px; font-size: 0.85rem; line-height: 1.5; color: var(--dr-ink-2); }
+.ad-drawer .gp-sec { padding: 18px 0; border-bottom: 1px solid var(--dr-line); }
+.ad-drawer .gp-sec:last-child { border-bottom: 0; }
+.ad-drawer .gp-sec h3 {
+  margin: 0;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dr-ink-3);
+}
+.ad-drawer .gp-hint { margin: 4px 0 0; font-size: 0.8rem; color: var(--dr-ink-3); }
+.ad-drawer .gp-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.ad-drawer .gp-chip {
+  padding: 7px 11px;
+  border: 1px solid var(--dr-line);
+  background: none;
+  font: inherit;
+  font-size: 0.84rem;
+  line-height: 1.3;
+  text-align: left;
+  color: var(--dr-ink);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.ad-drawer .gp-chip:hover { border-color: var(--dr-ink-3); }
+.ad-drawer .gp-chip[aria-checked="true"] {
+  border-color: var(--dr-accent);
+  background: color-mix(in srgb, var(--dr-accent) 10%, transparent);
+  color: var(--dr-accent);
+  font-weight: 600;
+}
+.ad-drawer .gp-chip:focus-visible, .ad-drawer .gp-btn:focus-visible, .ad-drawer .gp-late button:focus-visible { outline: 2px solid var(--dr-accent); outline-offset: 2px; }
+.ad-drawer .gp-field { display: grid; gap: 6px; margin-top: 12px; font-size: 0.78rem; font-weight: 600; color: var(--dr-ink-3); }
+.ad-drawer .gp-field input {
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--dr-line);
+  background: transparent;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--dr-ink);
+  color-scheme: light;
+}
+.ad-drawer-root[data-academy-theme="dark"] .gp-field input { color-scheme: dark; }
+.ad-drawer .gp-field input:focus { outline: none; border-color: var(--dr-accent); }
+
+/* A booked exam date that has passed. */
+.ad-drawer .gp-late {
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--dr-alert) 40%, transparent);
+  background: color-mix(in srgb, var(--dr-alert) 7%, transparent);
+}
+.ad-drawer .gp-late p { margin: 0; font-size: 0.85rem; line-height: 1.45; color: var(--dr-ink); }
+.ad-drawer .gp-late__actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.ad-drawer .gp-late button {
+  padding: 6px 10px;
+  border: 1px solid var(--dr-line);
+  background: var(--dr-bg);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--dr-ink);
+  cursor: pointer;
+}
+.ad-drawer .gp-late button:hover { border-color: var(--dr-ink-3); }
+
+.ad-drawer .gp-foot { padding: 12px 20px calc(14px + env(safe-area-inset-bottom)); border-top: 1px solid var(--dr-line); }
+.ad-drawer .gp-foot__row { display: flex; gap: 8px; }
+.ad-drawer .gp-error { margin: 0 0 10px; font-size: 0.8rem; color: var(--dr-alert); }
+.ad-drawer .gp-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  border: 1px solid var(--dr-line);
+  background: none;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 650;
+  color: var(--dr-ink);
+  cursor: pointer;
+}
+.ad-drawer .gp-btn--primary { border-color: var(--dr-ink); background: var(--dr-ink); color: var(--dr-bg); }
+.ad-drawer .gp-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* The goals line under "Your goals" in the account menu. */
+[data-ax-account] .ax-account__goals { display: block; margin: 3px 0 0 20px; font-size: 12px; font-weight: 500; line-height: 1.4; opacity: 0.65; }
+[data-ax-account] .ax-account__goals--attention { opacity: 1; color: #d93a3f; }
+[data-ax-account][data-theme="dark"] .ax-account__goals--attention { color: #fca5a5; }

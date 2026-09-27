@@ -12,6 +12,7 @@ import { AcademySidebar } from "@/components/academy/academy-sidebar";
 import { AcademySignIn } from "@/components/academy/academy-sign-in";
 import { AcademyWelcome, takeAcademyWelcome } from "@/components/academy/academy-welcome";
 import { CoachProvider } from "@/components/academy/coach-context";
+import { GoalsPanel } from "@/components/academy/goals-panel";
 import { PurvexCoach } from "@/components/academy/purvex-coach";
 import { ROLE_BRIEFS } from "@/lib/academy-briefs";
 import { examLinks, roleLabel, sanitizeProfile, type RoleId, type StudentProfile } from "@/lib/academy-certs";
@@ -1005,7 +1006,8 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     return <AcademySignIn configured={Boolean(supabase)} />;
   }
 
-  const asking = profile === null || editingGoals;
+  // Only a first-time student gets the step-by-step intake. Editing opens the goals panel.
+  const asking = profile === null;
 
   return (
     <AcademyProgressProvider phases={phases}>
@@ -1069,12 +1071,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           </div>
         ) : asking ? (
           <main className="px-4 py-8 sm:px-6 sm:py-12">
-            <AcademyIntake
-              key={editingGoals ? "edit" : "first"}
-              initial={profile}
-              onSaved={goalsSaved}
-              onCancel={profile ? () => setEditingGoals(false) : undefined}
-            />
+            <AcademyIntake initial={null} onSaved={goalsSaved} />
           </main>
         ) : (
         <div className="mx-auto flex max-w-7xl">
@@ -1134,6 +1131,17 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           </div>
         )}
         {!asking && profile !== undefined && <PurvexCoach />}
+        {editingGoals && profile && (
+          <GoalsPanel
+            profile={profile}
+            onClose={() => setEditingGoals(false)}
+            onSaved={(next) => {
+              if (studentId) saveCachedProfile(studentId, next);
+              setProfile(next);
+              setEditingGoals(false);
+            }}
+          />
+        )}
         {hello && <AcademyWelcome student={student} onDone={() => setHello(false)} />}
       </div>
       </CoachProvider>
