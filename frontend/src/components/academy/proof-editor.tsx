@@ -158,19 +158,28 @@ export function ProofEditor() {
     };
   }, [avatarPath]);
 
-  const savedSlug = data?.settings.slug ?? null;
-  const [qr, setQr] = useState<string | null>(null);
-  useEffect(() => {
-    let stop = false;
-    if (savedSlug) {
-      QRCode.toDataURL(`https://purvex.io/p/${savedSlug}`, { width: 600, margin: 2, errorCorrectionLevel: "M", color: { dark: "#111827", light: "#ffffff" } })
-        .then((url) => !stop && setQr(url))
-        .catch(() => {});
+  // Built on click as a PNG file, so the download works in every browser.
+  async function downloadQr() {
+    if (!data) return;
+    const url = `https://purvex.io/p/${data.settings.slug}`;
+    try {
+      const canvas = document.createElement("canvas");
+      await QRCode.toCanvas(canvas, url, { width: 600, margin: 2, errorCorrectionLevel: "M", color: { dark: "#111827", light: "#ffffff" } });
+      const blob = await new Promise<Blob | null>((done) => canvas.toBlob(done, "image/png"));
+      if (!blob) throw new Error("no image");
+      const href = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = href;
+      a.download = `purvex-portfolio-${data.settings.slug}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.setTimeout(() => URL.revokeObjectURL(href), 1000);
+      say(data.settings.published ? "QR code downloaded" : "QR code downloaded. It opens your portfolio once you make it public.");
+    } catch {
+      say("Unable to make the QR code. Try again.", true);
     }
-    return () => {
-      stop = true;
-    };
-  }, [savedSlug]);
+  }
 
   const resumePath = data?.settings.resumePath ?? null;
   useEffect(() => {
@@ -311,27 +320,34 @@ export function ProofEditor() {
       {items.length > 0 && (
         <div className="pf-views" role="tablist" aria-label="View">
           <button type="button" role="tab" aria-selected={view === "edit"} onClick={() => setView("edit")}>
-            Your portfolio
+            Portfolio
           </button>
           <button type="button" role="tab" aria-selected={view === "employer"} onClick={() => setView("employer")}>
-            What employers see
+            Employer
           </button>
         </div>
       )}
 
       {items.length > 0 && view === "employer" ? (
         <section className="pf-preview">
-          <p className="pf-preview__note">
-            {settings.published ? (
-              <>
-                Employers see this at <code>{link}</code>.
-              </>
-            ) : (
-              <>
-                Employers will see this at <code>purvex.io/p/{slug || settings.slug}</code> once you make it public.
-              </>
+          <div className="pf-preview__bar">
+            <p className="pf-preview__note">
+              {settings.published ? (
+                <>
+                  Employers see this at <code>{link}</code>.
+                </>
+              ) : (
+                <>
+                  Employers will see this at <code>purvex.io/p/{slug || settings.slug}</code> once you make it public.
+                </>
+              )}
+            </p>
+            {settings.published && (
+              <a className="pf-btn" href={`/p/${settings.slug}`} target="_blank" rel="noreferrer">
+                View as an employer
+              </a>
             )}
-          </p>
+          </div>
           <ProofPublicView
             settings={{
               ...settings,
@@ -438,16 +454,9 @@ export function ProofEditor() {
               <button type="button" className="pf-btn pf-btn--primary" disabled={busy} onClick={() => save({}, "Saved")}>
                 Save changes
               </button>
-              {qr && (
-                <a className="pf-btn" href={qr} download={`purvex-portfolio-${settings.slug}.png`} title="A QR code that opens your portfolio from a phone camera">
-                  Download QR code
-                </a>
-              )}
-              {settings.published && (
-                <a className="pf-btn" href={`/p/${settings.slug}`} target="_blank" rel="noreferrer">
-                  View as an employer
-                </a>
-              )}
+              <button type="button" className="pf-btn" disabled={busy} onClick={downloadQr} title="A QR code that opens your portfolio from a phone camera">
+                Download QR code
+              </button>
               {busy && <Loader2 className="h-4 w-4 animate-spin" />}
             </div>
             {settings.published && (
