@@ -211,23 +211,6 @@
   text-transform: uppercase;
   color: var(--dr-ink-3);
 }
-.ad-drawer .ad-goals__flags ul { list-style: none; margin: 0; padding: 0; }
-.ad-drawer .ad-goals__flags li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 0;
-  font-size: 0.92rem;
-  color: var(--dr-ink);
-}
-.ad-drawer .ad-goals__flags li::before {
-  content: "";
-  flex: none;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--dr-alert);
-}
 .ad-drawer .ad-goals__goal {
   margin: 24px 0 0;
   padding: 16px 0 0;

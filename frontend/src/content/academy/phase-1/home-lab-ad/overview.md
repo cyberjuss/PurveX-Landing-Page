@@ -33,7 +33,7 @@ Callers and tickets can be wrong, and handling that is part of the job. Verify w
 
 ### Your Role
 
-<div class="ad-goals-cue"><button type="button" class="ad-goals-open"><span class="ad-goals-open__tag">Analyst Brief</span><span class="ad-goals-open__text">Three questions and three red flags for the role you picked.</span><span class="ad-goals-open__cta">Open brief</span></button></div>
+<div class="ad-goals-cue"><button type="button" class="ad-goals-open"><span class="ad-goals-open__tag">Analyst Brief</span><span class="ad-goals-open__text">Three questions to ask, written for the role you picked.</span><span class="ad-goals-open__cta">Open brief</span></button></div>
 <div class="ad-goals" hidden>
 <div class="ad-goals__head"><span class="ad-goals__kicker">Analyst Brief</span><span class="ad-goals__scope">purvexfinancial.local</span></div>
 <p class="ad-goals__lede">You are the analyst here. Ask these about any account.</p>
@@ -42,14 +42,6 @@ Callers and tickets can be wrong, and handling that is part of the job. Verify w
 <li>Does it belong in this group?</li>
 <li>Does this login fit the user?</li>
 </ol>
-<div class="ad-goals__flags">
-<span class="ad-goals__label">Work the lab until these stand out</span>
-<ul>
-<li>A user in the wrong department</li>
-<li>A group with the wrong member</li>
-<li>A login that does not fit</li>
-</ul>
-</div>
 <p class="ad-goals__goal"><span class="ad-goals__label">The goal</span>Spot what <strong>does not belong</strong>.</p>
 </div>
 

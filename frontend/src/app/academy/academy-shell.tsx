@@ -788,13 +788,9 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       head.append(el("span", "ad-goals__role", roleLabel(role)), el("span", "ad-goals__scope", "purvexfinancial.local"));
       const checks = el("ol", "ad-goals__checks");
       b.checks.forEach((c) => checks.append(el("li", undefined, c)));
-      const flags = el("div", "ad-goals__flags");
-      const flagList = el("ul");
-      b.flags.forEach((f) => flagList.append(el("li", undefined, f)));
-      flags.append(el("span", "ad-goals__label", "Work the lab until these stand out"), flagList);
       const goal = el("p", "ad-goals__goal");
       goal.append(el("span", "ad-goals__label", "The goal"), `${b.goal[0]} `, el("strong", undefined, b.goal[1]), ".");
-      out.append(head, el("p", "ad-goals__lede", b.lede), checks, flags, goal);
+      out.append(head, el("p", "ad-goals__lede", b.lede), checks, goal);
       return out;
     };
 
