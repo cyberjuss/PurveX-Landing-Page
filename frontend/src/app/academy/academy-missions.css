@@ -1,0 +1,5 @@
+/* Ticket reveal (Answer, Problem, Solution): room below the answer box.
+   Kept out of globals.css so a change here ships as a new CSS file. */
+.academy-prose .ad-mission .ad-flag--shown,
+.academy-prose .ad-mission .ad-guess__feedback + .ad-flag,
+.academy-prose .ad-mission .ad-guess__feedback + .ad-flag--shown { margin-top: 1.25rem; }
