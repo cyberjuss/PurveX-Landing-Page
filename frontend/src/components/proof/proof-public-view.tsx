@@ -192,13 +192,7 @@ export function ProofPublicView({
               {data.skills.map((g) => (
                 <div key={g.group}>
                   <dt>{g.group}</dt>
-                  <dd>
-                    <ul>
-                      {g.items.map((k) => (
-                        <li key={k}>{k}</li>
-                      ))}
-                    </ul>
-                  </dd>
+                  <dd>{g.items.join(", ")}</dd>
                 </div>
               ))}
             </dl>
