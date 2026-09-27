@@ -150,7 +150,8 @@ alter table public.academy_role_briefs enable row level security;
 
 -- Proof Profile: a student's public page of confirmed lab work, shared with
 -- employers at /p/<slug>. One row per student. Nothing is public until
--- published is true. shots_on lists the lab work items (job ids) whose
+-- published is true. avatar_path points at the student's photo in the
+-- proof-screenshots bucket. shots_on lists the lab work items (job ids) whose
 -- screenshots the student switched on; each of those needs 5 screenshots.
 create table if not exists public.academy_public_profiles (
   user_id uuid primary key references auth.users (id) on delete cascade,
@@ -159,9 +160,13 @@ create table if not exists public.academy_public_profiles (
   published boolean not null default false,
   show_skills boolean not null default true,
   shots_on text[] not null default '{}',
+  avatar_path text,
   credential_id text not null unique,
   updated_at timestamptz not null default now()
 );
+
+-- Added after the first release: the student's profile photo.
+alter table public.academy_public_profiles add column if not exists avatar_path text;
 
 alter table public.academy_public_profiles enable row level security;
 

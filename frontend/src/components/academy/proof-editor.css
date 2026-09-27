@@ -92,3 +92,12 @@
 .pf-toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 60; transform: translateX(-50%); max-width: calc(100vw - 32px); margin: 0; padding: 10px 16px; border: 1px solid var(--rd-line); background: var(--rd-ink); color: #fff; font-size: 13.5px; font-weight: 600; box-shadow: 0 12px 32px -12px rgba(15, 23, 42, 0.45); }
 .academy-bg[data-academy-theme="dark"] .pf-toast { color: #000; }
 .pf-toast.is-bad { background: var(--rd-bad); border-color: var(--rd-bad); color: #fff; }
+
+/* Profile photo field. */
+.pf-photo { display: flex; align-items: center; gap: 16px; }
+.pf-photo > img, .pf-photo > span { flex: none; width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 1px solid var(--rd-line); }
+.pf-photo > span { display: grid; place-items: center; background: color-mix(in srgb, var(--rd-accent) 12%, transparent); font-family: var(--font-display); font-size: 26px; font-weight: 600; color: var(--rd-accent); }
+.pf-photo > div { display: grid; gap: 4px; }
+.pf-photo b { font-size: 13.5px; color: var(--rd-ink); }
+.pf-photo small { font-size: 12.5px; color: var(--rd-ink-3); }
+.pf-photo__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }

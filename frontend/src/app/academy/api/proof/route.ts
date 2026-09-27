@@ -8,6 +8,8 @@ import {
   listShots,
   loadProofSettings,
   newCredentialId,
+  putAvatar,
+  removeFile,
   saveProofSettings,
   slugify,
   validSlug,
@@ -26,6 +28,12 @@ async function auth(request: Request) {
   const student = await getAcademyStudent(request);
   if (!student) return { error: NextResponse.json({ error: "Sign in first." }, { status: 401 }) } as const;
   return { student } as const;
+}
+
+/** An unpublished starting point for a student who has not saved anything yet. */
+function draftSettings(email: string | null, shotsOn: string[]): ProofSettings {
+  const name = draftName(email);
+  return { slug: slugify(name), displayName: name, published: false, showSkills: true, shotsOn, avatarPath: null, credentialId: newCredentialId(), updatedAt: new Date().toISOString() };
 }
 
 function draftName(email: string | null) {
@@ -85,6 +93,7 @@ export async function PUT(request: Request) {
     published,
     showSkills: body.showSkills ?? prev?.showSkills ?? true,
     shotsOn,
+    avatarPath: prev?.avatarPath ?? null,
     credentialId: prev?.credentialId || newCredentialId(),
     updatedAt: new Date().toISOString(),
   };
@@ -107,8 +116,22 @@ export async function POST(request: Request) {
   const job = String(form.get("job") ?? "");
   const file = form.get("file");
   if (!(file instanceof File)) return NextResponse.json({ error: "Choose an image to upload." }, { status: 400 });
-  if (!TYPES.has(file.type)) return NextResponse.json({ error: "Upload a PNG or JPEG screenshot." }, { status: 400 });
+  if (!TYPES.has(file.type)) return NextResponse.json({ error: "Upload a PNG or JPEG image." }, { status: 400 });
   if (file.size > MAX_BYTES) return NextResponse.json({ error: "Upload an image under 4 MB." }, { status: 400 });
+
+  // A profile photo replaces the last one.
+  if (form.get("kind") === "avatar") {
+    const path = await putAvatar(a.student.id, Buffer.from(await file.arrayBuffer()), file.type);
+    if (!path) return NextResponse.json({ error: "Unable to save your photo right now. Try again later." }, { status: 500 });
+    const settings = (await loadProofSettings(a.student.id)) ?? draftSettings(a.student.email, []);
+    const saved = await saveProofSettings(a.student.id, { ...settings, avatarPath: path, updatedAt: new Date().toISOString() });
+    if (saved !== "ok") {
+      await removeFile(path);
+      return NextResponse.json({ error: "Unable to save your photo right now. Try again later." }, { status: 500 });
+    }
+    if (settings.avatarPath) await removeFile(settings.avatarPath);
+    return NextResponse.json({ avatarPath: path });
+  }
   const data = await loadProofData(a.student.id);
   if (!data.items.some((i) => i.job === job)) return NextResponse.json({ error: "That lab task is not in your portfolio yet." }, { status: 400 });
   if (data.shots.filter((s) => s.job === job).length >= SHOTS_PER_ITEM) {
@@ -123,15 +146,7 @@ export async function POST(request: Request) {
   const settings = await loadProofSettings(a.student.id);
   if (!settings) {
     const name = draftName(a.student.email);
-    const draft: ProofSettings = {
-      slug: slugify(name),
-      displayName: name,
-      published: false,
-      showSkills: true,
-      shotsOn: [job],
-      credentialId: newCredentialId(),
-      updatedAt: new Date().toISOString(),
-    };
+    const draft = draftSettings(a.student.email, [job]);
     if ((await saveProofSettings(a.student.id, draft)) === "taken") {
       await saveProofSettings(a.student.id, { ...draft, slug: slugify(`${name} ${Math.random().toString(36).slice(2, 6)}`) });
     }
@@ -144,6 +159,14 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   const a = await auth(request);
   if (a.error) return a.error;
+  if (new URL(request.url).searchParams.get("avatar") === "1") {
+    const settings = await loadProofSettings(a.student.id);
+    if (settings?.avatarPath) {
+      await saveProofSettings(a.student.id, { ...settings, avatarPath: null, updatedAt: new Date().toISOString() });
+      await removeFile(settings.avatarPath);
+    }
+    return NextResponse.json({ ok: true });
+  }
   const id = new URL(request.url).searchParams.get("id") ?? "";
   const ok = await deleteShot(a.student.id, id);
   if (!ok) return NextResponse.json({ error: "Screenshot not found." }, { status: 404 });

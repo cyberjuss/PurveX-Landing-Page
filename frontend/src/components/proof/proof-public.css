@@ -98,3 +98,11 @@
   --pp-bg: #000000; --pp-bg-2: #07080d; --pp-ink: #e8eef8; --pp-ink-2: #9aa8bc; --pp-ink-3: #6b768a;
   --pp-line: rgba(180, 200, 255, 0.14); --pp-accent: #9eb0ff; --pp-good: #6ee7b7; color-scheme: dark;
 }
+
+/* Profile photo beside the name. */
+.pp-head--photo { display: flex; align-items: center; gap: 24px; }
+.pp-avatar { flex: none; width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 1px solid var(--pp-line); background: var(--pp-bg-2); }
+@media (max-width: 560px) {
+  .pp-head--photo { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .pp-avatar { width: 80px; height: 80px; }
+}

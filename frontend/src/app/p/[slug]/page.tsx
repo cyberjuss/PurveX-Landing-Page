@@ -24,5 +24,7 @@ export default async function ProofProfilePage({ params }: { params: Promise<{ s
   const found = await findProofBySlug(slug);
   if (!found?.settings.published) notFound();
   const data = await loadProofData(found.userId);
-  return <ProofPublicView settings={found.settings} data={data} />;
+  const { settings } = found;
+  const avatarSrc = settings.avatarPath ? `/p/${settings.slug}/avatar?v=${encodeURIComponent(settings.updatedAt)}` : null;
+  return <ProofPublicView settings={settings} data={data} avatarSrc={avatarSrc} />;
 }

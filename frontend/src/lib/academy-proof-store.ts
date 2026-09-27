@@ -12,6 +12,8 @@ export type ProofSettings = {
   showSkills: boolean;
   /** Lab work items (job ids) with screenshots switched on. */
   shotsOn: string[];
+  /** Storage path of the student's profile photo, if they added one. */
+  avatarPath?: string | null;
   credentialId: string;
   updatedAt: string;
 };
@@ -32,6 +34,7 @@ function fromRow(r: Record<string, unknown>): ProofSettings {
     published: r.published === true,
     showSkills: r.show_skills !== false,
     shotsOn: Array.isArray(r.shots_on) ? r.shots_on.filter((x): x is string => typeof x === "string") : [],
+    avatarPath: typeof r.avatar_path === "string" ? r.avatar_path : null,
     credentialId: String(r.credential_id),
     updatedAt: String(r.updated_at ?? ""),
   };
@@ -72,6 +75,7 @@ export async function saveProofSettings(userId: string, s: ProofSettings): Promi
       published: s.published,
       show_skills: s.showSkills,
       shots_on: s.shotsOn,
+      avatar_path: s.avatarPath ?? null,
       credential_id: s.credentialId,
       updated_at: s.updatedAt,
     });
@@ -183,3 +187,34 @@ export async function readShotBytes(shot: ProofShot): Promise<Buffer | null> {
   }
   return memoryBytes.get(shot.path) ?? null;
 }
+
+/** Stores a profile photo and returns its storage path. */
+export async function putAvatar(userId: string, bytes: Buffer, contentType: string): Promise<string | null> {
+  const path = `${userId}/avatar-${randomUUID()}.${contentType === "image/png" ? "png" : "jpg"}`;
+  if (supabaseAdmin) {
+    const up = await supabaseAdmin.storage.from(BUCKET).upload(path, bytes, { contentType, upsert: false });
+    if (up.error) {
+      console.error("proof avatar upload failed", up.error.message);
+      return null;
+    }
+    return path;
+  }
+  memoryBytes.set(path, bytes);
+  return path;
+}
+
+export async function removeFile(path: string) {
+  if (supabaseAdmin) await supabaseAdmin.storage.from(BUCKET).remove([path]);
+  else memoryBytes.delete(path);
+}
+
+export async function readFile(path: string): Promise<Buffer | null> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin.storage.from(BUCKET).download(path);
+    if (error || !data) return null;
+    return Buffer.from(await data.arrayBuffer());
+  }
+  return memoryBytes.get(path) ?? null;
+}
+
+export const fileType = (path: string) => (path.endsWith(".png") ? "image/png" : "image/jpeg");

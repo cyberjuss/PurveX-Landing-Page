@@ -13,11 +13,14 @@ export function ProofPublicView({
   settings,
   data,
   shotSrc = (id) => `/p/${settings.slug}/shot/${id}`,
+  avatarSrc = null,
 }: {
   settings: ProofSettings;
   data: Pick<ProofData, "items" | "skills" | "roleName" | "lastLabCheck"> & { shots: Shot[] };
   /** Where each screenshot loads from. The student's own preview uses blob URLs. */
   shotSrc?: (id: string) => string;
+  /** The student's profile photo, when they added one. */
+  avatarSrc?: string | null;
 }) {
   const first = settings.displayName.split(" ")[0];
 
@@ -30,11 +33,15 @@ export function ProofPublicView({
   return (
     <main className="pp">
       <div className="pp__wrap">
-        <header className="pp-head">
-          <p className="pp-kicker">PurveX Academy</p>
-          <h1>{settings.displayName}</h1>
-          {data.roleName && <p className="pp-role">{data.roleName} candidate</p>}
-          {data.lastLabCheck && <p className="pp-checked">Lab last checked {new Date(data.lastLabCheck).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>}
+        <header className={`pp-head${avatarSrc ? " pp-head--photo" : ""}`}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {avatarSrc && <img className="pp-avatar" src={avatarSrc} alt={settings.displayName} />}
+          <div>
+            <p className="pp-kicker">PurveX Academy</p>
+            <h1>{settings.displayName}</h1>
+            {data.roleName && <p className="pp-role">{data.roleName} candidate</p>}
+            {data.lastLabCheck && <p className="pp-checked">Lab last checked {new Date(data.lastLabCheck).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>}
+          </div>
         </header>
 
         <section className="pp-sec">

@@ -9,7 +9,7 @@ import { ProofPublicView } from "@/components/proof/proof-public-view";
 // Imported here, not in globals.css, so the styles always arrive with the component.
 import "./proof-editor.css";
 
-type Settings = { slug: string; displayName: string; published: boolean; showSkills: boolean; shotsOn: string[]; credentialId: string };
+type Settings = { slug: string; displayName: string; published: boolean; showSkills: boolean; shotsOn: string[]; avatarPath?: string | null; credentialId: string };
 type Shot = { id: string; job: string; caption: string };
 type Data = {
   items: WorkItem[];
@@ -53,6 +53,7 @@ export function ProofEditor() {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [urls, setUrls] = useState<Record<string, string>>({});
+  const [avatar, setAvatar] = useState<string | null>(null);
   const urlsRef = useRef(urls);
   useEffect(() => {
     urlsRef.current = urls;
@@ -102,6 +103,27 @@ export function ProofEditor() {
 
   useEffect(() => () => Object.values(urlsRef.current).forEach((u) => URL.revokeObjectURL(u)), []);
 
+  const avatarPath = data?.settings.avatarPath ?? null;
+  useEffect(() => {
+    let url: string | null = null;
+    let stop = false;
+    if (avatarPath) {
+      academyFetch("/academy/api/proof/shot?avatar=1")
+        .then((r) => (r.ok ? r.blob() : null))
+        .then((b) => {
+          if (!b || stop) return;
+          url = URL.createObjectURL(b);
+          setAvatar(url);
+        })
+        .catch(() => {});
+    }
+    return () => {
+      stop = true;
+      if (url) URL.revokeObjectURL(url);
+      setAvatar(null);
+    };
+  }, [avatarPath]);
+
   async function save(patch: Partial<Settings>, done?: string) {
     if (!data) return;
     setBusy(true);
@@ -138,6 +160,32 @@ export function ProofEditor() {
       }
     }
     setBusy(false);
+    await load();
+  }
+
+  async function uploadPhoto(files: FileList | null) {
+    const file = files?.[0];
+    if (!file) return;
+    setBusy(true);
+    const form = new FormData();
+    form.append("kind", "avatar");
+    form.append("file", file);
+    const res = await academyFetch("/academy/api/proof", { method: "POST", body: form });
+    setBusy(false);
+    if (!res.ok) {
+      const body = (await res.json().catch(() => ({}))) as { error?: string };
+      say(body.error || "Unable to save your photo.", true);
+      return;
+    }
+    await load();
+    say("Photo saved");
+  }
+
+  async function removePhoto() {
+    setBusy(true);
+    const res = await academyFetch("/academy/api/proof?avatar=1", { method: "DELETE" });
+    setBusy(false);
+    if (!res.ok) say("Unable to remove your photo. Try again.", true);
     await load();
   }
 
@@ -198,6 +246,7 @@ export function ProofEditor() {
             settings={{ ...settings, displayName: name || settings.displayName, slug: slug || settings.slug, updatedAt: "" }}
             data={{ items, skills: data.skills, roleName: data.roleName, lastLabCheck: data.lastLabCheck, shots: data.shots }}
             shotSrc={(id) => urls[id] ?? ""}
+            avatarSrc={avatar}
           />
         </section>
       ) : !items.length ? (
@@ -214,6 +263,25 @@ export function ProofEditor() {
             <div className="pf-sec__top">
               <h2>Share your portfolio</h2>
               <span className={`pf-status${settings.published ? " is-on" : ""}`}>{settings.published ? "Shared" : "Not shared"}</span>
+            </div>
+            <div className="pf-photo">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {avatar ? <img src={avatar} alt="Your profile photo" /> : <span aria-hidden="true">{(name || "?").trim().charAt(0).toUpperCase()}</span>}
+              <div>
+                <b>Profile photo</b>
+                <small>Optional. A clear headshot, PNG or JPEG under 4 MB.</small>
+                <div className="pf-photo__actions">
+                  <label className="pf-btn" htmlFor="pf-photo-file">
+                    {settings.avatarPath ? "Change photo" : "Upload photo"}
+                  </label>
+                  <input id="pf-photo-file" type="file" accept="image/png,image/jpeg" hidden disabled={busy} onChange={(e) => uploadPhoto(e.target.files).then(() => (e.target.value = ""))} />
+                  {settings.avatarPath && (
+                    <button type="button" className="pf-btn" disabled={busy} onClick={removePhoto}>
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
             <div className="pf-fields">
               <label>
