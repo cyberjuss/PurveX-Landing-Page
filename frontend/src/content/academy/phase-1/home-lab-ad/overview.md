@@ -33,16 +33,14 @@ Callers and tickets can be wrong, and handling that is part of the job. Verify w
 
 ### Your Role
 
-<div class="ad-goals-cue"><button type="button" class="ad-goals-open"><span class="ad-goals-open__tag">Analyst Brief</span><span class="ad-goals-open__text">Written for the role you picked: the five questions to answer, and the red flags to spot.</span><span class="ad-goals-open__cta">Open brief</span></button></div>
+<div class="ad-goals-cue"><button type="button" class="ad-goals-open"><span class="ad-goals-open__tag">Analyst Brief</span><span class="ad-goals-open__text">Three questions and three red flags for the role you picked.</span><span class="ad-goals-open__cta">Open brief</span></button></div>
 <div class="ad-goals" hidden>
 <div class="ad-goals__head"><span class="ad-goals__kicker">Analyst Brief</span><span class="ad-goals__scope">purvexfinancial.local</span></div>
-<p class="ad-goals__lede">You are the analyst on this environment. For any account in front of you, you should be able to answer five questions.</p>
+<p class="ad-goals__lede">You are the analyst here. Ask these about any account.</p>
 <ol class="ad-goals__checks">
-<li>Does this account belong in this OU?</li>
-<li>Should this user be a member of this group?</li>
-<li>Does this person's department match their account?</li>
-<li>Is this login consistent with what we know about the user?</li>
-<li>Does this activity make sense for this environment?</li>
+<li>Is it in the right OU?</li>
+<li>Does it belong in this group?</li>
+<li>Does this login fit the user?</li>
 </ol>
 <div class="ad-goals__flags">
 <span class="ad-goals__label">Work the lab until these stand out</span>
@@ -52,7 +50,7 @@ Callers and tickets can be wrong, and handling that is part of the job. Verify w
 <li>A login that does not fit</li>
 </ul>
 </div>
-<p class="ad-goals__goal"><span class="ad-goals__label">The goal</span>Learn the directory well enough to see when something <strong>does not belong</strong>.</p>
+<p class="ad-goals__goal"><span class="ad-goals__label">The goal</span>Spot what <strong>does not belong</strong>.</p>
 </div>
 
 ### Start With the Baseline
