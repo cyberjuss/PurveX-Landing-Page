@@ -14,11 +14,14 @@ import {
   START_LEVELS,
   targetCerts,
   type RoleBrief,
+  type RoleId,
   type StudentProfile,
 } from "@/lib/academy-certs";
 import { checkRealCtf, createRealCtf, ctfStatus } from "@/lib/academy-live";
-import { loadDrills, loadProfile, loadRoleBrief, saveDrill } from "@/lib/academy-store";
+import { loadDrills, loadProfile, loadRoleBrief, saveDrill, saveRoleBrief } from "@/lib/academy-store";
 import { type CoachImage } from "@/lib/academy-coach-media";
+import { ANTHROPIC_MESSAGES_URL, COACH_HAIKU_MODEL, COACH_SONNET_MODEL, webSearchTool } from "@/lib/academy-models";
+import { isStale, ROLE_NOTE_RULES, roleBriefFrom, searchedUrls } from "@/lib/academy-role-research";
 import { findMissionsByQuery, MISSION_CATALOG } from "@/lib/academy-missions";
 import {
   LEVELS,
@@ -36,8 +39,7 @@ export const COACH_DAILY_MAX = 25;
 export const COACH_DAILY_LIMIT = Math.min(COACH_DAILY_MAX, Number(process.env.ACADEMY_COACH_DAILY_LIMIT || 20));
 /** What a day of drills adds, after the cap. */
 export const effectiveCoachBonus = (earned: number) => Math.max(0, Math.min(earned, COACH_DAILY_MAX - COACH_DAILY_LIMIT));
-export const COACH_SONNET_MODEL = process.env.ACADEMY_COACH_MODEL || "claude-sonnet-5";
-export const COACH_HAIKU_MODEL = process.env.ACADEMY_COACH_FAST_MODEL || "claude-haiku-4-5";
+export { COACH_HAIKU_MODEL, COACH_SONNET_MODEL } from "@/lib/academy-models";
 
 export const COACH_SYSTEM_PROMPT = `You are PurveX Coach: the SME on this desk. Years as a Windows/AD sysadmin, Tier 2/3 help desk, and junior SOC analyst. You know this exact lab cold. You are training a new hire to think like a systems administrator and a security analyst — not to click buttons blindly. The student works in their own copy of PurveX Financial (domain purvexfinancial.local, built by Build-Environment.ps1 on a Windows Server domain controller). Talk like a person on the desk. Full sentences. Plain and specific. No pep talk, no slogans, no report voice, no clipped orders. You know lockout vs bad password, nested groups vs job title, service-account flags, Event IDs 4624/4625/4740/4728, least privilege, and when to escalate. Use that depth only when it changes the next action.
 
@@ -259,6 +261,45 @@ type AnthropicContent =
   | { type: "tool_result"; tool_use_id: string; content: string };
 
 type AnthropicMessage = { role: "user" | "assistant"; content: string | AnthropicContent[] };
+
+// ---- live role research -----------------------------------------------------
+// Coach can search the web for what a student's target role involves, when the
+// saved note is missing or stale or the student asks about the job itself.
+// What it finds is saved for every student who picks that role.
+
+const ROLE_QUESTION = /\b(job|jobs|role|roles|position|posting|postings|hiring|hire|employer|employers|career|salary|pay|market|responsibilit|day to day|day-to-day|resume|interview|requirement|qualif)/i;
+
+const SAVE_ROLE_NOTES_TOOL = {
+  name: "save_role_notes",
+  description:
+    "Save what you found about one of the student's target roles, so Coach and every student with that role can use it. Call it once per role after you have searched. Sources must be pages your web search returned.",
+  input_schema: {
+    type: "object",
+    properties: {
+      role: { type: "string", description: "The role id from the brief, for example soc-analyst." },
+      summary: { type: "string", description: "Two sentences on what the job is." },
+      tasks: { type: "array", items: { type: "string" }, description: "5 to 8 day-to-day tasks." },
+      tools: { type: "array", items: { type: "string" }, description: "Up to 8 tools or technologies postings name." },
+      requirements: { type: "array", items: { type: "string" }, description: "Up to 5 common requirements." },
+      certs: { type: "array", items: { type: "string" }, description: "Certifications postings ask for, most common first." },
+      sources: {
+        type: "array",
+        items: { type: "object", properties: { title: { type: "string" }, url: { type: "string" } }, required: ["url"] },
+      },
+    },
+    required: ["role", "summary", "tasks", "sources"],
+    additionalProperties: false,
+  },
+};
+
+function researchInstructions(missing: RoleId[]) {
+  return `Role research
+You have web_search and save_role_notes this turn. Use them only when the question is about their target role, the job market, hiring, or what to study for the job${
+    missing.length ? `, or when the answer depends on role notes that are missing or out of date: ${missing.map((r) => `${roleLabel(r)} (${r})`).join(", ")}` : ""
+  }. Otherwise answer without searching.
+When you research: search current US entry-level postings and public role guides (O*NET, the NICE Workforce Framework, CISA, BLS, employer postings), at most three searches. Then call save_role_notes once per researched role before you answer. Then answer the student from what you found, in the usual voice. Do not paste links or list sources unless they ask.
+${ROLE_NOTE_RULES}`;
+}
 
 export const COACH_TOOLS: { name: string; description: string; input_schema: Record<string, unknown> }[] = [
   {
@@ -697,6 +738,17 @@ function isImageModelError(message: string) {
   return /image|vision|media_type|not supported|does not support/i.test(message);
 }
 
+/** Saves a role note Coach researched this turn. Only for the student's own roles, and only with sources the search returned. */
+async function saveRoleNotes(input: Record<string, unknown>, profile: StudentProfile | null, seen: Map<string, string>): Promise<string> {
+  const role = String(input.role || "") as RoleId;
+  if (!profile?.roles.includes(role)) return JSON.stringify({ saved: false, error: `Only the student's target roles can be saved: ${profile?.roles.join(", ") || "none"}.` });
+  if (!seen.size) return JSON.stringify({ saved: false, error: "Search first. A note needs sources your web search returned this turn." });
+  const brief = roleBriefFrom(role, input, seen);
+  if (!brief) return JSON.stringify({ saved: false, error: "Need a summary, at least three tasks, and sources from this search." });
+  await saveRoleBrief(brief);
+  return JSON.stringify({ saved: true, role, sources: brief.sources.length });
+}
+
 export async function runCoachTurn(params: {
   apiKey: string;
   history: { role: "user" | "assistant"; content: string }[];
@@ -714,21 +766,31 @@ export async function runCoachTurn(params: {
   tools.profile = await profileFor(params.tools).catch(() => null);
   const mode = parseCoachMode(params.mode);
   const profile = tools.profile ?? null;
-  const briefs = profile ? (await Promise.all(profile.roles.map((r) => loadRoleBrief(r).catch(() => null)))).filter((b): b is RoleBrief => Boolean(b)) : [];
+  const saved = profile ? await Promise.all(profile.roles.map((r) => loadRoleBrief(r).catch(() => null))) : [];
+  const briefs = saved.filter((b): b is RoleBrief => Boolean(b));
+  const missing = profile ? profile.roles.filter((_, n) => isStale(saved[n] ?? null)) : [];
+  // Web search is offered when a role note is missing or stale, or the question is about the job itself.
+  let research = Boolean(profile) && process.env.ACADEMY_COACH_WEB_SEARCH !== "off" && (missing.length > 0 || ROLE_QUESTION.test(params.userMessage));
   const goals = goalsBrief(profile, briefs, params.tools.results, params.drills ?? []);
-  const system = `${COACH_SYSTEM_PROMPT}\n\n${coachModeInstructions(mode)}\n\n${buildStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results, lab) : "", goals)}`;
+  const baseSystem = `${COACH_SYSTEM_PROMPT}\n\n${coachModeInstructions(mode)}\n\n${buildStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results, lab) : "", goals)}`;
+  // URLs the search returned this turn. A saved note may only cite these.
+  const seen = new Map<string, string>();
   const messages: AnthropicMessage[] = [
     ...params.history.slice(-10).map((m) => ({ role: m.role, content: m.content })),
     { role: "user", content: userTurnContent(params.userMessage, images) },
   ];
 
   const deadline = Date.now() + 50_000;
-  for (let step = 0; step < 4; step++) {
+  // A search round can pause and needs extra round trips, so allow a few more steps.
+  for (let step = 0; step < 7; step++) {
     const left = deadline - Date.now();
     if (left < 3_000) throw new Error("Coach model timed out");
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const system = research && profile ? `${baseSystem}\n\n${researchInstructions(missing)}` : baseSystem;
+    const tools_ = research ? [...COACH_TOOLS, webSearchTool(model, 3), SAVE_ROLE_NOTES_TOOL] : COACH_TOOLS;
+    const res = await fetch(ANTHROPIC_MESSAGES_URL, {
       method: "POST",
-      signal: AbortSignal.timeout(Math.min(left, 30_000)),
+      // A turn with web search runs longer, so it may use the rest of the budget.
+      signal: AbortSignal.timeout(Math.min(left, research ? 48_000 : 30_000)),
       headers: {
         "content-type": "application/json",
         "x-api-key": params.apiKey,
@@ -738,7 +800,7 @@ export async function runCoachTurn(params: {
         model,
         max_tokens: 4096,
         system,
-        tools: COACH_TOOLS,
+        tools: tools_,
         messages,
       }),
     });
@@ -751,6 +813,13 @@ export async function runCoachTurn(params: {
 
     if (!res.ok) {
       const err = body.error?.message || `Coach model request failed (${res.status})`;
+      // A model or account that cannot use web search still gets an answer, just without research.
+      if (research && /web_search|server tool|tool type|tools\.\d+/i.test(err)) {
+        console.error("coach: web search unavailable, answering without it", err);
+        research = false;
+        step -= 1;
+        continue;
+      }
       const fallback = images.length && isImageModelError(err) ? visionFallback(model) : null;
       if (fallback && !tried.has(fallback)) {
         tried.add(fallback);
@@ -762,6 +831,12 @@ export async function runCoachTurn(params: {
     }
 
     const content = body.content || [];
+    searchedUrls(content, seen);
+    // A long web search pauses mid-turn. Send the turn back unchanged and the server resumes it.
+    if (body.stop_reason === "pause_turn") {
+      messages.push({ role: "assistant", content });
+      continue;
+    }
     if (body.stop_reason !== "tool_use") {
       const text = content
         .filter((b): b is { type: "text"; text: string } => b.type === "text")
@@ -778,7 +853,7 @@ export async function runCoachTurn(params: {
         .map(async (b) => ({
           type: "tool_result" as const,
           tool_use_id: b.id,
-          content: await runCoachTool(b.name, b.input || {}, tools),
+          content: b.name === SAVE_ROLE_NOTES_TOOL.name ? await saveRoleNotes(b.input || {}, profile, seen) : await runCoachTool(b.name, b.input || {}, tools),
         }))
     );
     messages.push({ role: "user", content: resultsBlocks });
