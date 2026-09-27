@@ -20,6 +20,8 @@ export type ProofSettings = {
   /** How employers reach the student. Both optional, both public once shared. */
   contactEmail?: string | null;
   linkedinUrl?: string | null;
+  githubUrl?: string | null;
+  websiteUrl?: string | null;
   location?: string | null;
   /** One of AVAILABILITY. */
   availability?: string | null;
@@ -49,6 +51,8 @@ function fromRow(r: Record<string, unknown>): ProofSettings {
     resumePath: typeof r.resume_path === "string" ? r.resume_path : null,
     contactEmail: typeof r.contact_email === "string" ? r.contact_email : null,
     linkedinUrl: typeof r.linkedin_url === "string" ? r.linkedin_url : null,
+    githubUrl: typeof r.github_url === "string" ? r.github_url : null,
+    websiteUrl: typeof r.website_url === "string" ? r.website_url : null,
     location: typeof r.location === "string" ? r.location : null,
     availability: typeof r.availability === "string" ? r.availability : null,
     extraCerts: Array.isArray(r.extra_certs) ? (r.extra_certs as ExtraCert[]) : [],
@@ -96,6 +100,8 @@ export async function saveProofSettings(userId: string, s: ProofSettings): Promi
       resume_path: s.resumePath ?? null,
       contact_email: s.contactEmail ?? null,
       linkedin_url: s.linkedinUrl ?? null,
+      github_url: s.githubUrl ?? null,
+      website_url: s.websiteUrl ?? null,
       location: s.location ?? null,
       availability: s.availability ?? null,
       extra_certs: s.extraCerts ?? [],

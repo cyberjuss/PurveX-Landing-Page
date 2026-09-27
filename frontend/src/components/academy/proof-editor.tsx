@@ -10,6 +10,8 @@ import { ProofPublicView } from "@/components/proof/proof-public-view";
 // Imported here, not in globals.css, so the styles always arrive with the component.
 import "./proof-editor.css";
 
+const withScheme = (url: string) => (url ? (/^https?:\/\//i.test(url) ? url : `https://${url}`) : null);
+
 type Settings = {
   slug: string;
   displayName: string;
@@ -20,6 +22,8 @@ type Settings = {
   resumePath?: string | null;
   contactEmail?: string | null;
   linkedinUrl?: string | null;
+  githubUrl?: string | null;
+  websiteUrl?: string | null;
   location?: string | null;
   availability?: string | null;
   extraCerts?: ExtraCert[];
@@ -72,7 +76,7 @@ export function ProofEditor() {
   const [urls, setUrls] = useState<Record<string, string>>({});
   const [avatar, setAvatar] = useState<string | null>(null);
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
-  const [contact, setContact] = useState({ contactEmail: "", linkedinUrl: "", location: "", availability: "" });
+  const [contact, setContact] = useState({ contactEmail: "", linkedinUrl: "", githubUrl: "", websiteUrl: "", location: "", availability: "" });
   const { editGoals } = useAcademyGoals();
   const [certDraft, setCertDraft] = useState<ExtraCert>({ name: "", status: "earned", date: "" });
   const urlsRef = useRef(urls);
@@ -98,6 +102,8 @@ export function ProofEditor() {
     setContact({
       contactEmail: body.settings.contactEmail ?? "",
       linkedinUrl: body.settings.linkedinUrl ?? "",
+      githubUrl: body.settings.githubUrl ?? "",
+      websiteUrl: body.settings.websiteUrl ?? "",
       location: body.settings.location ?? "",
       availability: body.settings.availability ?? "",
     });
@@ -297,7 +303,9 @@ export function ProofEditor() {
               displayName: name || settings.displayName,
               slug: slug || settings.slug,
               contactEmail: contact.contactEmail || null,
-              linkedinUrl: contact.linkedinUrl ? (/^https?:\/\//i.test(contact.linkedinUrl) ? contact.linkedinUrl : `https://${contact.linkedinUrl}`) : null,
+              linkedinUrl: withScheme(contact.linkedinUrl),
+              githubUrl: withScheme(contact.githubUrl),
+              websiteUrl: withScheme(contact.websiteUrl),
               location: contact.location || null,
               availability: contact.availability || null,
               updatedAt: "",
@@ -403,6 +411,14 @@ export function ProofEditor() {
               <label>
                 <span>LinkedIn profile</span>
                 <input value={contact.linkedinUrl} maxLength={200} placeholder="linkedin.com/in/your-name" onChange={(e) => setContact({ ...contact, linkedinUrl: e.target.value })} />
+              </label>
+              <label>
+                <span>GitHub profile</span>
+                <input value={contact.githubUrl} maxLength={200} placeholder="github.com/your-name" onChange={(e) => setContact({ ...contact, githubUrl: e.target.value })} />
+              </label>
+              <label>
+                <span>Website or blog</span>
+                <input value={contact.websiteUrl} maxLength={200} placeholder="yourname.com" onChange={(e) => setContact({ ...contact, websiteUrl: e.target.value })} />
               </label>
               <label>
                 <span>Where you can work</span>

@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 
 export type GalleryShot = { src: string; caption: string };
 
-// Thumbnails for one lab work item. Clicking opens a full-size viewer with
-// arrows, arrow keys and swipe.
+// One cover image for a work item, with a count. Clicking opens a full-size
+// viewer with arrows, arrow keys and swipe.
 export function ProofGallery({ title, shots }: { title: string; shots: GalleryShot[] }) {
   const [at, setAt] = useState<number | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -24,14 +24,18 @@ export function ProofGallery({ title, shots }: { title: string; shots: GallerySh
 
   return (
     <>
-      <div className="pp-gal">
-        {shots.map((s, j) => (
-          <button key={s.src} type="button" className="pp-gal__thumb" onClick={() => setAt(j)} aria-label={`Open screenshot ${j + 1} of ${shots.length}${s.caption ? `: ${s.caption}` : ""}`}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={s.src} alt="" loading="lazy" />
-          </button>
-        ))}
-      </div>
+      <button type="button" className="pp-cover" onClick={() => setAt(0)} aria-label={`View ${shots.length} screenshots: ${title}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {shots[0].src && <img src={shots[0].src} alt="" loading="lazy" />}
+        <span className="pp-cover__count">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="5" width="14" height="12" rx="1.5" />
+            <path d="M7 19h12a2 2 0 0 0 2-2V9" />
+            <path d="m6 14 3-3 3 3 2-2 3 3" />
+          </svg>
+          {shots.length}
+        </span>
+      </button>
       <dialog
         ref={dialog}
         className="pp-viewer"
@@ -71,12 +75,22 @@ export function ProofGallery({ title, shots }: { title: string; shots: GallerySh
             </button>
           )}
         </div>
-        <p className="pp-viewer__cap">
+        <div className="pp-viewer__cap">
           <span>
             {at === null ? 0 : at + 1} / {shots.length}
           </span>
           {shot?.caption && <span>{shot.caption}</span>}
-        </p>
+        </div>
+        {shots.length > 1 && (
+          <div className="pp-viewer__strip">
+            {shots.map((s, j) => (
+              <button key={s.src || j} type="button" className={j === at ? "is-on" : ""} onClick={() => setAt(j)} aria-label={`Screenshot ${j + 1}`}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {s.src && <img src={s.src} alt="" />}
+              </button>
+            ))}
+          </div>
+        )}
       </dialog>
     </>
   );

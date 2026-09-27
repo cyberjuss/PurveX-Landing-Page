@@ -91,6 +91,22 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "Use your LinkedIn profile link, like linkedin.com/in/your-name." }, { status: 400 });
   }
   if (linkedinUrl) linkedinUrl = linkedinUrl.replace(/^http:/i, "https:");
+  let githubUrl = text(body.githubUrl, prev?.githubUrl, 200);
+  if (githubUrl && !/^https?:\/\//i.test(githubUrl)) githubUrl = `https://${githubUrl}`;
+  if (githubUrl && !/^https?:\/\/(www\.)?github\.com\/[A-Za-z0-9-]+\/?$/i.test(githubUrl)) {
+    return NextResponse.json({ error: "Use your GitHub profile link, like github.com/your-name." }, { status: 400 });
+  }
+  if (githubUrl) githubUrl = githubUrl.replace(/^http:/i, "https:");
+  let websiteUrl = text(body.websiteUrl, prev?.websiteUrl, 200);
+  if (websiteUrl && !/^https?:\/\//i.test(websiteUrl)) websiteUrl = `https://${websiteUrl}`;
+  if (websiteUrl) {
+    try {
+      const u = new URL(websiteUrl);
+      if (!/^https?:$/.test(u.protocol) || !u.hostname.includes(".")) throw new Error("bad");
+    } catch {
+      return NextResponse.json({ error: "Enter your website address, like yourname.com." }, { status: 400 });
+    }
+  }
   const location = text(body.location, prev?.location, 60);
   const availability = text(body.availability, prev?.availability, 40);
   if (availability && !(AVAILABILITY as readonly string[]).includes(availability)) return NextResponse.json({ error: "Pick when you can start from the list." }, { status: 400 });
@@ -124,6 +140,8 @@ export async function PUT(request: Request) {
     resumePath: prev?.resumePath ?? null,
     contactEmail,
     linkedinUrl,
+    githubUrl,
+    websiteUrl,
     location,
     availability,
     extraCerts,

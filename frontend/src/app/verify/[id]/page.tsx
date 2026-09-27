@@ -15,7 +15,7 @@ export default async function VerifyPage({ params }: { params: Promise<{ id: str
   return (
     <main className="pp">
       <div className="pp__wrap">
-        <header className="pp-head">
+        <header className="pp-head pp-head--plain">
           <p className="pp-kicker">PurveX Academy · Credential check</p>
           <h1>{code}</h1>
           {!found && <p className="pp-role">No credential with this ID exists. Check the ID and try again.</p>}
