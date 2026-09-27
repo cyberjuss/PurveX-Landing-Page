@@ -1,5 +1,5 @@
 import { ProofGallery } from "@/components/proof/proof-gallery";
-import { SHOTS_PER_ITEM } from "@/lib/academy-proof";
+import { certStatusText, SHOTS_PER_ITEM } from "@/lib/academy-proof";
 import type { ProofData } from "@/lib/academy-proof-data";
 import type { ProofSettings } from "@/lib/academy-proof-store";
 import "./proof-public.css";
@@ -27,6 +27,7 @@ export function ProofPublicView({
 }) {
   const first = settings.displayName.split(" ")[0];
   const roles = data.roleNames ?? [];
+  const certs = [...(data.certs ?? []), ...(settings.extraCerts ?? []).map((c) => ({ name: c.name, status: certStatusText(c) }))];
   const openTo = [
     roles.length ? `Open to ${roles.length > 1 ? `${roles.slice(0, -1).join(", ")} and ${roles.at(-1)}` : roles[0]} roles` : "",
     settings.location ?? "",
@@ -73,14 +74,14 @@ export function ProofPublicView({
           </div>
         </header>
 
-        {data.certs && data.certs.length > 0 && (
+        {certs.length > 0 && (
           <section className="pp-sec">
             <h2>Certifications</h2>
             <ul className="pp-certs">
-              {data.certs.map((c) => (
+              {certs.map((c) => (
                 <li key={c.name}>
                   <b>{c.name}</b>
-                  <span className={c.status === "Certified" ? "is-done" : ""}>{c.status}</span>
+                  <span className={c.status.startsWith("Certified") ? "is-done" : ""}>{c.status}</span>
                 </li>
               ))}
             </ul>

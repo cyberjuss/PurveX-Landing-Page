@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
-import { AVAILABILITY, SHOTS_PER_ITEM } from "@/lib/academy-proof";
+import { AVAILABILITY, SHOTS_PER_ITEM, type ExtraCert } from "@/lib/academy-proof";
 import { loadProofData, shareBlockers } from "@/lib/academy-proof-data";
 import {
   addShot,
@@ -94,6 +94,20 @@ export async function PUT(request: Request) {
   const location = text(body.location, prev?.location, 60);
   const availability = text(body.availability, prev?.availability, 40);
   if (availability && !(AVAILABILITY as readonly string[]).includes(availability)) return NextResponse.json({ error: "Pick when you can start from the list." }, { status: 400 });
+  let extraCerts: ExtraCert[] = prev?.extraCerts ?? [];
+  if (Array.isArray(body.extraCerts)) {
+    extraCerts = [];
+    for (const raw of body.extraCerts.slice(0, 12)) {
+      const c = raw as Partial<ExtraCert>;
+      const certName = String(c.name ?? "").replace(/\s+/g, " ").trim().slice(0, 80);
+      if (!certName) continue;
+      if (c.status !== "earned" && c.status !== "booked" && c.status !== "studying") {
+        return NextResponse.json({ error: `Pick a status for ${certName}.` }, { status: 400 });
+      }
+      const date = typeof c.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(c.date) ? c.date : undefined;
+      extraCerts.push({ name: certName, status: c.status, ...(date && c.status !== "studying" ? { date } : {}) });
+    }
+  }
   const shotsOn = (Array.isArray(body.shotsOn) ? body.shotsOn : prev?.shotsOn ?? []).filter((j): j is string => typeof j === "string" && jobs.has(j));
   const published = body.published ?? prev?.published ?? false;
   if (published) {
@@ -112,6 +126,7 @@ export async function PUT(request: Request) {
     linkedinUrl,
     location,
     availability,
+    extraCerts,
     credentialId: prev?.credentialId || newCredentialId(),
     updatedAt: new Date().toISOString(),
   };

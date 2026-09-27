@@ -166,6 +166,7 @@ create table if not exists public.academy_public_profiles (
   linkedin_url text,
   location text,
   availability text,
+  extra_certs jsonb not null default '[]'::jsonb,
   credential_id text not null unique,
   updated_at timestamptz not null default now()
 );
@@ -178,6 +179,7 @@ alter table public.academy_public_profiles add column if not exists contact_emai
 alter table public.academy_public_profiles add column if not exists linkedin_url text;
 alter table public.academy_public_profiles add column if not exists location text;
 alter table public.academy_public_profiles add column if not exists availability text;
+alter table public.academy_public_profiles add column if not exists extra_certs jsonb not null default '[]'::jsonb;
 
 alter table public.academy_public_profiles enable row level security;
 

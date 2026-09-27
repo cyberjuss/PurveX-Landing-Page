@@ -1,5 +1,6 @@
 import "server-only";
 import { randomBytes, randomUUID } from "crypto";
+import type { ExtraCert } from "@/lib/academy-proof";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
 // Proof Profile storage. Supabase when the service role is configured;
@@ -22,6 +23,8 @@ export type ProofSettings = {
   location?: string | null;
   /** One of AVAILABILITY. */
   availability?: string | null;
+  /** Certifications added on the portfolio, beyond the ones in Goals. */
+  extraCerts?: ExtraCert[];
   credentialId: string;
   updatedAt: string;
 };
@@ -48,6 +51,7 @@ function fromRow(r: Record<string, unknown>): ProofSettings {
     linkedinUrl: typeof r.linkedin_url === "string" ? r.linkedin_url : null,
     location: typeof r.location === "string" ? r.location : null,
     availability: typeof r.availability === "string" ? r.availability : null,
+    extraCerts: Array.isArray(r.extra_certs) ? (r.extra_certs as ExtraCert[]) : [],
     credentialId: String(r.credential_id),
     updatedAt: String(r.updated_at ?? ""),
   };
@@ -94,6 +98,7 @@ export async function saveProofSettings(userId: string, s: ProofSettings): Promi
       linkedin_url: s.linkedinUrl ?? null,
       location: s.location ?? null,
       availability: s.availability ?? null,
+      extra_certs: s.extraCerts ?? [],
       credential_id: s.credentialId,
       updated_at: s.updatedAt,
     });

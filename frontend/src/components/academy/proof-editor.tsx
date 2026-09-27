@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Loader2, X } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
-import { AVAILABILITY, SHOTS_PER_ITEM, TRACK_LABEL, type StarPart, type Track, type WorkItem } from "@/lib/academy-proof";
+import { AVAILABILITY, CERT_STATUS_LABEL, CERT_SUGGESTIONS, certStatusText, SHOTS_PER_ITEM, TRACK_LABEL, type ExtraCert, type StarPart, type Track, type WorkItem } from "@/lib/academy-proof";
 import { useAcademyGoals } from "@/components/academy/academy-account";
 import { ProofPublicView } from "@/components/proof/proof-public-view";
 // Imported here, not in globals.css, so the styles always arrive with the component.
@@ -22,6 +22,7 @@ type Settings = {
   linkedinUrl?: string | null;
   location?: string | null;
   availability?: string | null;
+  extraCerts?: ExtraCert[];
   credentialId: string;
 };
 type Shot = { id: string; job: string; caption: string };
@@ -73,6 +74,7 @@ export function ProofEditor() {
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
   const [contact, setContact] = useState({ contactEmail: "", linkedinUrl: "", location: "", availability: "" });
   const { editGoals } = useAcademyGoals();
+  const [certDraft, setCertDraft] = useState<ExtraCert>({ name: "", status: "earned", date: "" });
   const urlsRef = useRef(urls);
   useEffect(() => {
     urlsRef.current = urls;
@@ -440,14 +442,83 @@ export function ProofEditor() {
                 )}
               </div>
             </div>
-            <div className="pf-file">
-              <div>
-                <b>Certifications</b>
-                <small>{data.certs.length ? data.certs.map((c) => `${c.name} · ${c.status}`).join("\n") : "None to show. Employers see certifications you earned or are studying for."}</small>
+            <div className="pf-certs">
+              <div className="pf-certs__head">
+                <div>
+                  <b>Certifications</b>
+                  <small>Security+ and CySA+ come from your Goals. Add any others here.</small>
+                </div>
+                <button type="button" className="pf-btn" onClick={editGoals}>
+                  Update in Goals
+                </button>
               </div>
-              <button type="button" className="pf-btn" onClick={editGoals}>
-                Update in Goals
-              </button>
+              {(data.certs.length > 0 || (settings.extraCerts ?? []).length > 0) && (
+                <ul>
+                  {data.certs.map((c) => (
+                    <li key={c.name}>
+                      <span>{c.name}</span>
+                      <em>{c.status}</em>
+                      <small>From Goals</small>
+                    </li>
+                  ))}
+                  {(settings.extraCerts ?? []).map((c, i) => (
+                    <li key={`${c.name}-${i}`}>
+                      <span>{c.name}</span>
+                      <em>{certStatusText(c)}</em>
+                      <button
+                        type="button"
+                        className="pf-link"
+                        disabled={busy}
+                        onClick={() => save({ extraCerts: (settings.extraCerts ?? []).filter((_, j) => j !== i) }, "Certification removed")}
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="pf-certs__add">
+                <input
+                  list="pf-cert-suggestions"
+                  value={certDraft.name}
+                  maxLength={80}
+                  placeholder="Add a certification, e.g. CompTIA A+"
+                  aria-label="Certification name"
+                  onChange={(e) => setCertDraft({ ...certDraft, name: e.target.value })}
+                />
+                <datalist id="pf-cert-suggestions">
+                  {CERT_SUGGESTIONS.map((c) => (
+                    <option key={c} value={c} />
+                  ))}
+                </datalist>
+                <select aria-label="Status" value={certDraft.status} onChange={(e) => setCertDraft({ ...certDraft, status: e.target.value as ExtraCert["status"] })}>
+                  {(Object.keys(CERT_STATUS_LABEL) as ExtraCert["status"][]).map((k) => (
+                    <option key={k} value={k}>
+                      {CERT_STATUS_LABEL[k]}
+                    </option>
+                  ))}
+                </select>
+                {certDraft.status !== "studying" && (
+                  <input
+                    type="date"
+                    aria-label={certDraft.status === "earned" ? "Date earned" : "Exam date"}
+                    value={certDraft.date ?? ""}
+                    onChange={(e) => setCertDraft({ ...certDraft, date: e.target.value })}
+                  />
+                )}
+                <button
+                  type="button"
+                  className="pf-btn"
+                  disabled={busy || !certDraft.name.trim() || (settings.extraCerts ?? []).length >= 12}
+                  onClick={async () => {
+                    const next: ExtraCert = { name: certDraft.name.trim(), status: certDraft.status, ...(certDraft.date && certDraft.status !== "studying" ? { date: certDraft.date } : {}) };
+                    await save({ extraCerts: [...(settings.extraCerts ?? []), next] }, "Certification added");
+                    setCertDraft({ name: "", status: "earned", date: "" });
+                  }}
+                >
+                  Add
+                </button>
+              </div>
             </div>
             <div className="pf-row">
               <button type="button" className="pf-btn pf-btn--primary" disabled={busy} onClick={() => save({}, "Saved")}>

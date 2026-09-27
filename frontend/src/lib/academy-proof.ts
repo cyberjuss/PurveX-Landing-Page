@@ -261,6 +261,38 @@ export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean)
 
 export const SHOTS_PER_ITEM = 5;
 
+/** A certification the student adds beyond the ones Goals tracks. */
+export type ExtraCert = { name: string; status: "earned" | "booked" | "studying"; date?: string };
+
+export const CERT_STATUS_LABEL: Record<ExtraCert["status"], string> = { earned: "Certified", booked: "Exam booked", studying: "Studying now" };
+
+/** Common entry-level certifications, offered as suggestions. */
+export const CERT_SUGGESTIONS = [
+  "CompTIA A+",
+  "CompTIA Network+",
+  "CompTIA Linux+",
+  "CompTIA PenTest+",
+  "ISC2 Certified in Cybersecurity (CC)",
+  "Google Cybersecurity Certificate",
+  "Cisco CCNA",
+  "Cisco CyberOps Associate",
+  "Microsoft SC-900",
+  "Microsoft AZ-900",
+  "Microsoft SC-200",
+  "Splunk Core Certified User",
+  "ITIL 4 Foundation",
+];
+
+/** "Certified · Mar 2026", "Exam booked Nov 18" or "Studying now". */
+export function certStatusText(c: ExtraCert): string {
+  if (!c.date) return CERT_STATUS_LABEL[c.status];
+  const d = new Date(`${c.date}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return CERT_STATUS_LABEL[c.status];
+  if (c.status === "earned") return `Certified · ${d.toLocaleDateString("en-US", { month: "short", year: "numeric" })}`;
+  if (c.status === "booked") return `Exam booked ${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
+  return CERT_STATUS_LABEL[c.status];
+}
+
 /** When the student can start, as employers see it. */
 export const AVAILABILITY = ["Available now", "Available in 2 weeks", "Available in a month", "Available after graduation"] as const;
 

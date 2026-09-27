@@ -110,3 +110,21 @@
 .pf-file b { font-size: 13.5px; color: var(--rd-ink); }
 .pf-file small { font-size: 12.5px; color: var(--rd-ink-3); white-space: pre-line; }
 .pf-fields input, .pf-fields select { border-radius: 0; box-shadow: none; }
+
+/* Certifications: Goals ones read-only, added ones removable. */
+.pf-certs { display: grid; gap: 10px; padding: 12px 14px; border: 1px solid var(--rd-line); }
+.pf-certs__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.pf-certs__head > div { display: grid; gap: 2px; }
+.pf-certs__head b { font-size: 13.5px; color: var(--rd-ink); }
+.pf-certs__head small { font-size: 12.5px; color: var(--rd-ink-3); }
+.pf-certs ul { list-style: none; margin: 0; padding: 0; }
+.pf-certs li { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--rd-line); font-size: 13.5px; color: var(--rd-ink); }
+.pf-certs li em { font-style: normal; font-weight: 600; color: var(--rd-ink-2); white-space: nowrap; }
+.pf-certs li small { font-size: 12px; color: var(--rd-ink-3); }
+.pf-link { padding: 0; border: 0; background: none; font-size: 12.5px; font-weight: 600; color: var(--rd-bad); cursor: pointer; }
+.pf-link:disabled { opacity: 0.45; }
+.pf-certs__add { display: flex; flex-wrap: wrap; gap: 8px; }
+.pf-certs__add input, .pf-certs__add select { height: 38px; padding: 0 10px; border: 1px solid var(--rd-line); border-radius: 0; background: transparent; font: inherit; font-size: 13.5px; color: var(--rd-ink); }
+.pf-certs__add input[list] { flex: 1 1 220px; min-width: 0; }
+.pf-certs__add select option { color: #0f172a; }
+@media (max-width: 560px) { .pf-certs li { grid-template-columns: 1fr auto; } .pf-certs li em { grid-column: 1; } }
