@@ -28,26 +28,26 @@ export function passedExamDates(p: StudentProfile | null, today = todayLocal()):
   });
 }
 
-/** One line for the account menu, such as "SOC Analyst · Security+ in 23 days". */
-export function goalsSummary(p: StudentProfile | null, today = todayLocal()): { text: string; attention: boolean } {
-  if (!p) return { text: "Not set yet", attention: true };
-  const roles = p.roles.map((r) => SHORT_ROLE[r]).join(" and ");
+/** The next exam, for the account menu: the cert, a big value, and a small unit. */
+export type ExamLine = { cert: string; value: string; unit: string; attention: boolean };
+
+/** Goals as parts for the account menu: short role names and the next exam. */
+export function goalsSummary(p: StudentProfile | null, today = todayLocal()): { roles: string[]; exam: ExamLine | null } {
+  if (!p) return { roles: [], exam: null };
+  const roles = p.roles.map((r) => SHORT_ROLE[r]);
   const overdue = passedExamDates(p, today);
-  let exam = "";
   if (overdue.length) {
-    exam = `${CERTS[overdue[0]].label} date passed`;
-  } else {
-    const studying = CERT_IDS.filter((id) => p.certs[id].status === "studying");
-    const dated = studying.filter((id) => p.certs[id].examDate).sort((a, b) => p.certs[a].examDate!.localeCompare(p.certs[b].examDate!));
-    if (dated.length) {
-      const days = daysUntil(p.certs[dated[0]].examDate!, today);
-      exam = `${CERTS[dated[0]].label} ${days === 0 ? "today" : days === 1 ? "tomorrow" : `in ${days} days`}`;
-    } else if (studying.length) {
-      exam = `Studying ${CERTS[studying[0]].label}`;
-    } else {
-      const planned = CERT_IDS.find((id) => p.certs[id].status === "planning");
-      if (planned) exam = `${CERTS[planned].label} planned`;
-    }
+    return { roles, exam: { cert: CERTS[overdue[0]].label, value: "Date passed", unit: "Update it", attention: true } };
   }
-  return { text: [roles, exam].filter(Boolean).join(" · "), attention: overdue.length > 0 };
+  const studying = CERT_IDS.filter((id) => p.certs[id].status === "studying");
+  const dated = studying.filter((id) => p.certs[id].examDate).sort((a, b) => p.certs[a].examDate!.localeCompare(p.certs[b].examDate!));
+  if (dated.length) {
+    const days = daysUntil(p.certs[dated[0]].examDate!, today);
+    const [value, unit] = days === 0 ? ["Today", "exam day"] : days === 1 ? ["1", "day left"] : [String(days), "days left"];
+    return { roles, exam: { cert: CERTS[dated[0]].label, value, unit, attention: false } };
+  }
+  if (studying.length) return { roles, exam: { cert: CERTS[studying[0]].label, value: "Studying", unit: "No date set", attention: false } };
+  const planned = CERT_IDS.find((id) => p.certs[id].status === "planning");
+  if (planned) return { roles, exam: { cert: CERTS[planned].label, value: "Planned", unit: "Not booked", attention: false } };
+  return { roles, exam: null };
 }

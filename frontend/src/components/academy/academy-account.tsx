@@ -182,6 +182,41 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                   Open report <ArrowRight className="h-3.5 w-3.5" />
                 </b>
               </Link>
+              <button
+                type="button"
+                className="ax-account__goals"
+                onClick={() => {
+                  setOpen(false);
+                  editGoals();
+                }}
+              >
+                <span className="ax-account__goals-head">
+                  <span className="rd-kicker">
+                    <Target className="h-3 w-3" /> Your goals
+                  </span>
+                  <b>
+                    Edit <ArrowRight className="h-3.5 w-3.5" />
+                  </b>
+                </span>
+                {goals.roles.length ? (
+                  <span className="ax-account__roles">
+                    {goals.roles.map((r) => (
+                      <i key={r}>{r}</i>
+                    ))}
+                  </span>
+                ) : (
+                  <span className="ax-account__none">Pick a target role</span>
+                )}
+                {goals.exam && (
+                  <span className={`ax-account__exam${goals.exam.attention ? " is-late" : ""}`}>
+                    <small>{goals.exam.cert} exam</small>
+                    <span>
+                      <em className={/^\d+$/.test(goals.exam.value) ? "is-num" : ""}>{goals.exam.value}</em>
+                      <small>{goals.exam.unit}</small>
+                    </span>
+                  </span>
+                )}
+              </button>
               {enabled && (
                 <div className="ax-account__ask">
                   <button
@@ -201,17 +236,6 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                   )}
                 </div>
               )}
-              <button
-                type="button"
-                className="ax-account__out"
-                onClick={() => {
-                  setOpen(false);
-                  editGoals();
-                }}
-              >
-                <Target className="h-3.5 w-3.5" /> Your goals
-              </button>
-              <span className={`ax-account__goals${goals.attention ? " ax-account__goals--attention" : ""}`}>{goals.text}</span>
               <button type="button" className="ax-account__out" onClick={onSignOut}>
                 <LogOut className="h-3.5 w-3.5" /> Sign out
               </button>
