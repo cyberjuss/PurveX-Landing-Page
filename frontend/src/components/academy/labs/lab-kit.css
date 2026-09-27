@@ -190,3 +190,4 @@
 
 .lk-guide__ask { justify-self: start; padding: 0; border: 0; background: none; font-size: 12px; font-weight: 600; color: var(--rd-accent); cursor: pointer; }
 .lk-guide__ask:hover { text-decoration: underline; text-underline-offset: 3px; }
+.lk-input::placeholder, .lk-field input::placeholder, .lk-panel__try input::placeholder, .lk-hashtext input::placeholder { color: var(--rd-ink-3); opacity: 0.85; }

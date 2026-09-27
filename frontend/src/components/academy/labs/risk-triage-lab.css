@@ -108,6 +108,11 @@
 .rt-level { display: grid; grid-template-columns: 84px minmax(0, 1fr); align-items: center; gap: 12px; }
 .rt-level > span { font-size: 12.5px; font-weight: 650; color: var(--rd-ink-3); }
 .rt-level .rt-choice button { padding: 7px 8px; }
+/* Beside the risk matrix the card can be narrow: put the label above the buttons so Medium never clips. */
+.rt-score > :first-child { container-type: inline-size; }
+@container (max-width: 420px) {
+  .rt-level { grid-template-columns: 1fr; gap: 6px; }
+}
 .rt-risk { justify-self: start; display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; font-size: 12.5px; font-weight: 600; }
 .rt-risk b { font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; }
 .rt-risk--high { background: color-mix(in srgb, var(--rd-bad) 14%, transparent); color: var(--rd-bad); }
