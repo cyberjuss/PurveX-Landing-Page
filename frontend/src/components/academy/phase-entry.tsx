@@ -110,7 +110,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
               <SectionTabs
                 sections={otherSections.map((s) => ({ label: s.label, markdown: s.markdown! }))}
                 quiz={quiz}
-                labs={labSections.map((s) => ({ label: s.label.replace(/^Lab:\s*/, ""), markdown: s.markdown! }))}
+                labs={labSections.map((s) => ({ label: s.label.replace(/^Lab:\s*/, ""), markdown: s.markdown!, widget: s.widget }))}
                 challenges={challengeSections.map((s) => ({ label: s.label.replace(/^Challenge:\s*/, ""), markdown: s.markdown! }))}
                 troubleshooting={troubleshootingSections.map((s) => ({ label: s.label.replace(/^Troubleshooting:\s*/, ""), markdown: s.markdown! }))}
                 prevWeek={prevEntry ? { label: prevEntry.title, href: `/academy/${phase.slug}/${prevEntry.slug}` } : null}

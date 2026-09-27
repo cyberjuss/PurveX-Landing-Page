@@ -11,18 +11,21 @@ import { MissionPager } from "./mission-pager";
 import { TrailDock, type TrailLink } from "./trail-dock";
 import { useCoach } from "./coach-context";
 import type { Quiz } from "@/content/academy/quizzes";
+import type { LabWidget } from "@/lib/academy-content";
+import { RiskTriageLab } from "./labs/risk-triage-lab";
 
 type WeekLink = { label: string; href: string };
 
 interface TabSection {
   label: string;
   markdown: string;
+  widget?: LabWidget;
 }
 
 type Item =
   | { kind: "section"; label: string; markdown: string }
   | { kind: "quiz"; label: string }
-  | { kind: "lab"; label: string; markdown: string }
+  | { kind: "lab"; label: string; markdown: string; widget?: LabWidget }
   | { kind: "challenge"; label: string; markdown: string }
   | { kind: "troubleshooting"; label: string; markdown: string };
 
@@ -71,7 +74,7 @@ export function SectionTabs({
     ...sections.map((s): Item => ({ kind: "section", label: s.label, markdown: s.markdown })),
     ...(quiz ? [{ kind: "quiz", label: "Quiz" } as Item] : []),
   ];
-  const labItems: Item[] = (labs ?? []).map((l) => ({ kind: "lab", label: l.label, markdown: l.markdown }));
+  const labItems: Item[] = (labs ?? []).map((l) => ({ kind: "lab", label: l.label, markdown: l.markdown, widget: l.widget }));
   const challengeItems: Item[] = (challenges ?? []).map((c) => ({ kind: "challenge", label: c.label, markdown: c.markdown }));
   const troubleshootingItems: Item[] = (troubleshooting ?? []).map((t) => ({ kind: "troubleshooting", label: t.label, markdown: t.markdown }));
   const items = [...numberedItems, ...labItems, ...challengeItems, ...troubleshootingItems];
@@ -163,6 +166,11 @@ export function SectionTabs({
   const panel =
     current.kind === "quiz" ? (
       <QuizBlock quiz={quiz!} actionHost={quizFoot} prevBeyond={prevTrail} nextBeyond={nextTrail} />
+    ) : current.kind === "lab" && current.widget === "risk-triage" ? (
+      <div>
+        <Markdown content={current.markdown} />
+        <RiskTriageLab />
+      </div>
     ) : current.kind === "lab" ? (
       <div>
         {/* Keyed on the label so switching labs remounts this instead of
@@ -330,7 +338,7 @@ export function SectionTabs({
             a sidebar link. */}
         {current.kind === "quiz" ? (
           <div ref={setQuizFoot} />
-        ) : current.kind === "lab" ? (
+        ) : current.kind === "lab" && !current.widget ? (
           <div ref={setLabFoot} />
         ) : current.kind === "challenge" ? (
           <div ref={setChallengeFoot} />
