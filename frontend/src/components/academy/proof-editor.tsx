@@ -306,24 +306,13 @@ export function ProofEditor() {
 
       {items.length > 0 && view === "employer" ? (
         <section className="pf-preview">
-          <div className="pf-preview__bar">
-            <p className="pf-preview__note">
-              {settings.published ? (
-                <>
-                  Employers see this at <code>{link}</code>.
-                </>
-              ) : (
-                <>
-                  Employers will see this at <code>purvex.io/p/{slug || settings.slug}</code> once you make it public.
-                </>
-              )}
-            </p>
-            {settings.published && (
+          {settings.published && (
+            <div className="pf-preview__bar">
               <a className="pf-btn" href={`/p/${settings.slug}`} target="_blank" rel="noreferrer">
                 View as an employer
               </a>
-            )}
-          </div>
+            </div>
+          )}
           <ProofPublicView
             settings={{
               ...settings,
