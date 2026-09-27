@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
-import { SHOTS_PER_ITEM } from "@/lib/academy-proof";
+import { AVAILABILITY, SHOTS_PER_ITEM } from "@/lib/academy-proof";
 import { loadProofData, shareBlockers } from "@/lib/academy-proof-data";
 import {
   addShot,
@@ -8,7 +8,7 @@ import {
   listShots,
   loadProofSettings,
   newCredentialId,
-  putAvatar,
+  putFile,
   removeFile,
   saveProofSettings,
   slugify,
@@ -33,7 +33,7 @@ async function auth(request: Request) {
 /** An unpublished starting point for a student who has not saved anything yet. */
 function draftSettings(email: string | null, shotsOn: string[]): ProofSettings {
   const name = draftName(email);
-  return { slug: slugify(name), displayName: name, published: false, showSkills: true, shotsOn, avatarPath: null, credentialId: newCredentialId(), updatedAt: new Date().toISOString() };
+  return { slug: slugify(name), displayName: name, published: false, showSkills: true, shotsOn, credentialId: newCredentialId(), updatedAt: new Date().toISOString() };
 }
 
 function draftName(email: string | null) {
@@ -81,6 +81,19 @@ export async function PUT(request: Request) {
   if (!displayName) return NextResponse.json({ error: "Add the name employers should see." }, { status: 400 });
   if (!validSlug(slug)) return NextResponse.json({ error: "Use 3 to 40 lowercase letters, numbers or hyphens for your link." }, { status: 400 });
   const jobs = new Set(data.items.map((i) => i.job));
+  // Contact and availability: optional, checked here because they go public.
+  const text = (v: unknown, prevV: string | null | undefined, max: number) => (v === undefined ? prevV ?? null : String(v ?? "").replace(/\s+/g, " ").trim().slice(0, max) || null);
+  const contactEmail = text(body.contactEmail, prev?.contactEmail, 120);
+  if (contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) return NextResponse.json({ error: "Enter an email address like name@example.com." }, { status: 400 });
+  let linkedinUrl = text(body.linkedinUrl, prev?.linkedinUrl, 200);
+  if (linkedinUrl && !/^https?:\/\//i.test(linkedinUrl)) linkedinUrl = `https://${linkedinUrl}`;
+  if (linkedinUrl && !/^https:\/\/([a-z]{2,3}\.)?(www\.)?linkedin\.com\/in\/[A-Za-z0-9\-_%]+\/?$/i.test(linkedinUrl.replace(/^http:/i, "https:"))) {
+    return NextResponse.json({ error: "Use your LinkedIn profile link, like linkedin.com/in/your-name." }, { status: 400 });
+  }
+  if (linkedinUrl) linkedinUrl = linkedinUrl.replace(/^http:/i, "https:");
+  const location = text(body.location, prev?.location, 60);
+  const availability = text(body.availability, prev?.availability, 40);
+  if (availability && !(AVAILABILITY as readonly string[]).includes(availability)) return NextResponse.json({ error: "Pick when you can start from the list." }, { status: 400 });
   const shotsOn = (Array.isArray(body.shotsOn) ? body.shotsOn : prev?.shotsOn ?? []).filter((j): j is string => typeof j === "string" && jobs.has(j));
   const published = body.published ?? prev?.published ?? false;
   if (published) {
@@ -94,6 +107,11 @@ export async function PUT(request: Request) {
     showSkills: body.showSkills ?? prev?.showSkills ?? true,
     shotsOn,
     avatarPath: prev?.avatarPath ?? null,
+    resumePath: prev?.resumePath ?? null,
+    contactEmail,
+    linkedinUrl,
+    location,
+    availability,
     credentialId: prev?.credentialId || newCredentialId(),
     updatedAt: new Date().toISOString(),
   };
@@ -116,22 +134,28 @@ export async function POST(request: Request) {
   const job = String(form.get("job") ?? "");
   const file = form.get("file");
   if (!(file instanceof File)) return NextResponse.json({ error: "Choose an image to upload." }, { status: 400 });
-  if (!TYPES.has(file.type)) return NextResponse.json({ error: "Upload a PNG or JPEG image." }, { status: 400 });
-  if (file.size > MAX_BYTES) return NextResponse.json({ error: "Upload an image under 4 MB." }, { status: 400 });
+  if (file.size > MAX_BYTES) return NextResponse.json({ error: "Upload a file under 4 MB." }, { status: 400 });
 
-  // A profile photo replaces the last one.
-  if (form.get("kind") === "avatar") {
-    const path = await putAvatar(a.student.id, Buffer.from(await file.arrayBuffer()), file.type);
-    if (!path) return NextResponse.json({ error: "Unable to save your photo right now. Try again later." }, { status: 500 });
+  // A profile photo or resume replaces the last one.
+  const kind = form.get("kind");
+  if (kind === "avatar" || kind === "resume") {
+    if (kind === "avatar" && !TYPES.has(file.type)) return NextResponse.json({ error: "Upload a PNG or JPEG photo." }, { status: 400 });
+    if (kind === "resume" && file.type !== "application/pdf") return NextResponse.json({ error: "Upload your resume as a PDF." }, { status: 400 });
+    const what = kind === "avatar" ? "photo" : "resume";
+    const path = await putFile(a.student.id, kind, Buffer.from(await file.arrayBuffer()), file.type);
+    if (!path) return NextResponse.json({ error: `Unable to save your ${what} right now. Try again later.` }, { status: 500 });
     const settings = (await loadProofSettings(a.student.id)) ?? draftSettings(a.student.email, []);
-    const saved = await saveProofSettings(a.student.id, { ...settings, avatarPath: path, updatedAt: new Date().toISOString() });
+    const old = kind === "avatar" ? settings.avatarPath : settings.resumePath;
+    const patch = kind === "avatar" ? { avatarPath: path } : { resumePath: path };
+    const saved = await saveProofSettings(a.student.id, { ...settings, ...patch, updatedAt: new Date().toISOString() });
     if (saved !== "ok") {
       await removeFile(path);
-      return NextResponse.json({ error: "Unable to save your photo right now. Try again later." }, { status: 500 });
+      return NextResponse.json({ error: `Unable to save your ${what} right now. Try again later.` }, { status: 500 });
     }
-    if (settings.avatarPath) await removeFile(settings.avatarPath);
-    return NextResponse.json({ avatarPath: path });
+    if (old) await removeFile(old);
+    return NextResponse.json(patch);
   }
+  if (!TYPES.has(file.type)) return NextResponse.json({ error: "Upload a PNG or JPEG screenshot." }, { status: 400 });
   const data = await loadProofData(a.student.id);
   if (!data.items.some((i) => i.job === job)) return NextResponse.json({ error: "That lab task is not in your portfolio yet." }, { status: 400 });
   if (data.shots.filter((s) => s.job === job).length >= SHOTS_PER_ITEM) {
@@ -159,11 +183,14 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   const a = await auth(request);
   if (a.error) return a.error;
-  if (new URL(request.url).searchParams.get("avatar") === "1") {
+  const query = new URL(request.url).searchParams;
+  if (query.get("avatar") === "1" || query.get("resume") === "1") {
     const settings = await loadProofSettings(a.student.id);
-    if (settings?.avatarPath) {
-      await saveProofSettings(a.student.id, { ...settings, avatarPath: null, updatedAt: new Date().toISOString() });
-      await removeFile(settings.avatarPath);
+    const path = query.get("avatar") === "1" ? settings?.avatarPath : settings?.resumePath;
+    if (settings && path) {
+      const patch = query.get("avatar") === "1" ? { avatarPath: null } : { resumePath: null };
+      await saveProofSettings(a.student.id, { ...settings, ...patch, updatedAt: new Date().toISOString() });
+      await removeFile(path);
     }
     return NextResponse.json({ ok: true });
   }

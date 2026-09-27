@@ -161,12 +161,23 @@ create table if not exists public.academy_public_profiles (
   show_skills boolean not null default true,
   shots_on text[] not null default '{}',
   avatar_path text,
+  resume_path text,
+  contact_email text,
+  linkedin_url text,
+  location text,
+  availability text,
   credential_id text not null unique,
   updated_at timestamptz not null default now()
 );
 
 -- Added after the first release: the student's profile photo.
 alter table public.academy_public_profiles add column if not exists avatar_path text;
+-- And the contact, availability and resume fields employers asked for.
+alter table public.academy_public_profiles add column if not exists resume_path text;
+alter table public.academy_public_profiles add column if not exists contact_email text;
+alter table public.academy_public_profiles add column if not exists linkedin_url text;
+alter table public.academy_public_profiles add column if not exists location text;
+alter table public.academy_public_profiles add column if not exists availability text;
 
 alter table public.academy_public_profiles enable row level security;
 

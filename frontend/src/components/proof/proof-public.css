@@ -106,3 +106,18 @@
   .pp-head--photo { flex-direction: column; align-items: flex-start; gap: 16px; }
   .pp-avatar { width: 80px; height: 80px; }
 }
+
+/* Who they are open to, and how to reach them. */
+.pp-open { margin-top: 10px; font-size: 14px; color: var(--pp-ink); }
+.pp-contact { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.pp .pp-btn { display: inline-flex; align-items: center; height: 38px; padding: 0 16px; border: 1px solid var(--pp-line); font-size: 13.5px; font-weight: 650; color: var(--pp-ink); text-decoration: none; }
+.pp .pp-btn:hover { border-color: var(--pp-ink-3); }
+.pp .pp-btn--primary { border-color: #5546e0; background: #5546e0; color: #fff; }
+.pp .pp-btn--primary:hover { border-color: #4538c9; background: #4538c9; }
+
+/* Certifications. */
+.pp-certs { list-style: none; margin: 14px 0 0; padding: 0; }
+.pp-certs li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-top: 1px solid var(--pp-line); font-size: 14.5px; }
+.pp-certs b { font-weight: 600; }
+.pp-certs span { font-size: 13.5px; font-weight: 600; color: var(--pp-ink-2); white-space: nowrap; }
+.pp-certs span.is-done { color: var(--pp-good); }

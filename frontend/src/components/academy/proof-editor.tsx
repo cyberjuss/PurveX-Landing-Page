@@ -4,17 +4,33 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Loader2, X } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
-import { SHOTS_PER_ITEM, TRACK_LABEL, type StarPart, type Track, type WorkItem } from "@/lib/academy-proof";
+import { AVAILABILITY, SHOTS_PER_ITEM, TRACK_LABEL, type StarPart, type Track, type WorkItem } from "@/lib/academy-proof";
+import { useAcademyGoals } from "@/components/academy/academy-account";
 import { ProofPublicView } from "@/components/proof/proof-public-view";
 // Imported here, not in globals.css, so the styles always arrive with the component.
 import "./proof-editor.css";
 
-type Settings = { slug: string; displayName: string; published: boolean; showSkills: boolean; shotsOn: string[]; avatarPath?: string | null; credentialId: string };
+type Settings = {
+  slug: string;
+  displayName: string;
+  published: boolean;
+  showSkills: boolean;
+  shotsOn: string[];
+  avatarPath?: string | null;
+  resumePath?: string | null;
+  contactEmail?: string | null;
+  linkedinUrl?: string | null;
+  location?: string | null;
+  availability?: string | null;
+  credentialId: string;
+};
 type Shot = { id: string; job: string; caption: string };
 type Data = {
   items: WorkItem[];
   skills: { group: string; items: string[] }[];
   roleName: string | null;
+  roleNames: string[];
+  certs: { name: string; status: string }[];
   lastLabCheck: string | null;
   track: Track;
   settings: Settings;
@@ -54,6 +70,9 @@ export function ProofEditor() {
   const [slug, setSlug] = useState("");
   const [urls, setUrls] = useState<Record<string, string>>({});
   const [avatar, setAvatar] = useState<string | null>(null);
+  const [resumeUrl, setResumeUrl] = useState<string | null>(null);
+  const [contact, setContact] = useState({ contactEmail: "", linkedinUrl: "", location: "", availability: "" });
+  const { editGoals } = useAcademyGoals();
   const urlsRef = useRef(urls);
   useEffect(() => {
     urlsRef.current = urls;
@@ -74,6 +93,12 @@ export function ProofEditor() {
     setData(body);
     setName(body.settings.displayName);
     setSlug(body.settings.slug);
+    setContact({
+      contactEmail: body.settings.contactEmail ?? "",
+      linkedinUrl: body.settings.linkedinUrl ?? "",
+      location: body.settings.location ?? "",
+      availability: body.settings.availability ?? "",
+    });
     if (first) setTrack(body.track);
   }, []);
 
@@ -124,6 +149,27 @@ export function ProofEditor() {
     };
   }, [avatarPath]);
 
+  const resumePath = data?.settings.resumePath ?? null;
+  useEffect(() => {
+    let url: string | null = null;
+    let stop = false;
+    if (resumePath) {
+      academyFetch("/academy/api/proof/shot?resume=1")
+        .then((r) => (r.ok ? r.blob() : null))
+        .then((b) => {
+          if (!b || stop) return;
+          url = URL.createObjectURL(b);
+          setResumeUrl(url);
+        })
+        .catch(() => {});
+    }
+    return () => {
+      stop = true;
+      if (url) URL.revokeObjectURL(url);
+      setResumeUrl(null);
+    };
+  }, [resumePath]);
+
   async function save(patch: Partial<Settings>, done?: string) {
     if (!data) return;
     setBusy(true);
@@ -131,7 +177,7 @@ export function ProofEditor() {
     const res = await academyFetch("/academy/api/proof", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...data.settings, displayName: name, slug, ...patch }),
+      body: JSON.stringify({ ...data.settings, displayName: name, slug, ...contact, ...patch }),
     });
     const body = (await res.json().catch(() => ({}))) as { error?: string };
     setBusy(false);
@@ -163,29 +209,30 @@ export function ProofEditor() {
     await load();
   }
 
-  async function uploadPhoto(files: FileList | null) {
+  async function uploadFile(kind: "avatar" | "resume", files: FileList | null) {
     const file = files?.[0];
     if (!file) return;
+    const what = kind === "avatar" ? "photo" : "resume";
     setBusy(true);
     const form = new FormData();
-    form.append("kind", "avatar");
+    form.append("kind", kind);
     form.append("file", file);
     const res = await academyFetch("/academy/api/proof", { method: "POST", body: form });
     setBusy(false);
     if (!res.ok) {
       const body = (await res.json().catch(() => ({}))) as { error?: string };
-      say(body.error || "Unable to save your photo.", true);
+      say(body.error || `Unable to save your ${what}.`, true);
       return;
     }
     await load();
-    say("Photo saved");
+    say(kind === "avatar" ? "Photo saved" : "Resume saved");
   }
 
-  async function removePhoto() {
+  async function removeFile(kind: "avatar" | "resume") {
     setBusy(true);
-    const res = await academyFetch("/academy/api/proof?avatar=1", { method: "DELETE" });
+    const res = await academyFetch(`/academy/api/proof?${kind}=1`, { method: "DELETE" });
     setBusy(false);
-    if (!res.ok) say("Unable to remove your photo. Try again.", true);
+    if (!res.ok) say(`Unable to remove your ${kind === "avatar" ? "photo" : "resume"}. Try again.`, true);
     await load();
   }
 
@@ -243,10 +290,20 @@ export function ProofEditor() {
             )}
           </p>
           <ProofPublicView
-            settings={{ ...settings, displayName: name || settings.displayName, slug: slug || settings.slug, updatedAt: "" }}
-            data={{ items, skills: data.skills, roleName: data.roleName, lastLabCheck: data.lastLabCheck, shots: data.shots }}
+            settings={{
+              ...settings,
+              displayName: name || settings.displayName,
+              slug: slug || settings.slug,
+              contactEmail: contact.contactEmail || null,
+              linkedinUrl: contact.linkedinUrl ? (/^https?:\/\//i.test(contact.linkedinUrl) ? contact.linkedinUrl : `https://${contact.linkedinUrl}`) : null,
+              location: contact.location || null,
+              availability: contact.availability || null,
+              updatedAt: "",
+            }}
+            data={{ items, skills: data.skills, roleName: data.roleName, roleNames: data.roleNames, certs: data.certs, lastLabCheck: data.lastLabCheck, shots: data.shots }}
             shotSrc={(id) => urls[id] ?? ""}
             avatarSrc={avatar}
+            resumeHref={resumeUrl}
           />
         </section>
       ) : !items.length ? (
@@ -274,9 +331,9 @@ export function ProofEditor() {
                   <label className="pf-btn" htmlFor="pf-photo-file">
                     {settings.avatarPath ? "Change photo" : "Upload photo"}
                   </label>
-                  <input id="pf-photo-file" type="file" accept="image/png,image/jpeg" hidden disabled={busy} onChange={(e) => uploadPhoto(e.target.files).then(() => (e.target.value = ""))} />
+                  <input id="pf-photo-file" type="file" accept="image/png,image/jpeg" hidden disabled={busy} onChange={(e) => uploadFile("avatar", e.target.files).then(() => (e.target.value = ""))} />
                   {settings.avatarPath && (
-                    <button type="button" className="pf-btn" disabled={busy} onClick={removePhoto}>
+                    <button type="button" className="pf-btn" disabled={busy} onClick={() => removeFile("avatar")}>
                       Remove
                     </button>
                   )}
@@ -331,6 +388,72 @@ export function ProofEditor() {
                 <code>{link}</code> · Credential <code>{settings.credentialId}</code>
               </p>
             )}
+          </section>
+
+          <section className="pf-sec">
+            <h2>Contact and availability</h2>
+            <p>Shown on your portfolio so an employer can reach you. Leave anything blank to hide it.</p>
+            <div className="pf-fields">
+              <label>
+                <span>Email for employers</span>
+                <input type="email" value={contact.contactEmail} maxLength={120} placeholder="name@example.com" onChange={(e) => setContact({ ...contact, contactEmail: e.target.value })} />
+              </label>
+              <label>
+                <span>LinkedIn profile</span>
+                <input value={contact.linkedinUrl} maxLength={200} placeholder="linkedin.com/in/your-name" onChange={(e) => setContact({ ...contact, linkedinUrl: e.target.value })} />
+              </label>
+              <label>
+                <span>Where you can work</span>
+                <input value={contact.location} maxLength={60} placeholder="Remote or Dallas, TX" onChange={(e) => setContact({ ...contact, location: e.target.value })} />
+              </label>
+              <label>
+                <span>When you can start</span>
+                <select value={contact.availability} onChange={(e) => setContact({ ...contact, availability: e.target.value })}>
+                  <option value="">Do not show</option>
+                  {AVAILABILITY.map((a) => (
+                    <option key={a} value={a}>
+                      {a}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className="pf-file">
+              <div>
+                <b>Resume</b>
+                <small>{settings.resumePath ? "Employers can download it from your portfolio." : "Optional. A PDF under 4 MB."}</small>
+              </div>
+              <div className="pf-row">
+                {resumeUrl && (
+                  <a className="pf-btn" href={resumeUrl} target="_blank" rel="noreferrer">
+                    View
+                  </a>
+                )}
+                <label className="pf-btn" htmlFor="pf-resume-file">
+                  {settings.resumePath ? "Replace PDF" : "Upload PDF"}
+                </label>
+                <input id="pf-resume-file" type="file" accept="application/pdf" hidden disabled={busy} onChange={(e) => uploadFile("resume", e.target.files).then(() => (e.target.value = ""))} />
+                {settings.resumePath && (
+                  <button type="button" className="pf-btn" disabled={busy} onClick={() => removeFile("resume")}>
+                    Remove
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="pf-file">
+              <div>
+                <b>Certifications</b>
+                <small>{data.certs.length ? data.certs.map((c) => `${c.name} · ${c.status}`).join("\n") : "None to show. Employers see certifications you earned or are studying for."}</small>
+              </div>
+              <button type="button" className="pf-btn" onClick={editGoals}>
+                Update in Goals
+              </button>
+            </div>
+            <div className="pf-row">
+              <button type="button" className="pf-btn pf-btn--primary" disabled={busy} onClick={() => save({}, "Saved")}>
+                Save contact details
+              </button>
+            </div>
           </section>
 
           <section className="pf-sec">

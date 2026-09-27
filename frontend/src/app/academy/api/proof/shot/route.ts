@@ -12,8 +12,9 @@ export async function GET(request: Request) {
   const student = await getAcademyStudent(request);
   if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
   const params = new URL(request.url).searchParams;
-  if (params.get("avatar") === "1") {
-    const path = (await loadProofSettings(student.id))?.avatarPath;
+  if (params.get("avatar") === "1" || params.get("resume") === "1") {
+    const settings = await loadProofSettings(student.id);
+    const path = params.get("avatar") === "1" ? settings?.avatarPath : settings?.resumePath;
     const bytes = path ? await readFile(path) : null;
     if (!path || !bytes) return NextResponse.json({ error: "Not found." }, { status: 404 });
     return new NextResponse(new Uint8Array(bytes), { headers: { "Content-Type": fileType(path), "Cache-Control": "private, max-age=300" } });

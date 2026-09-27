@@ -14,6 +14,14 @@ export type ProofSettings = {
   shotsOn: string[];
   /** Storage path of the student's profile photo, if they added one. */
   avatarPath?: string | null;
+  /** Storage path of the student's resume PDF. */
+  resumePath?: string | null;
+  /** How employers reach the student. Both optional, both public once shared. */
+  contactEmail?: string | null;
+  linkedinUrl?: string | null;
+  location?: string | null;
+  /** One of AVAILABILITY. */
+  availability?: string | null;
   credentialId: string;
   updatedAt: string;
 };
@@ -35,6 +43,11 @@ function fromRow(r: Record<string, unknown>): ProofSettings {
     showSkills: r.show_skills !== false,
     shotsOn: Array.isArray(r.shots_on) ? r.shots_on.filter((x): x is string => typeof x === "string") : [],
     avatarPath: typeof r.avatar_path === "string" ? r.avatar_path : null,
+    resumePath: typeof r.resume_path === "string" ? r.resume_path : null,
+    contactEmail: typeof r.contact_email === "string" ? r.contact_email : null,
+    linkedinUrl: typeof r.linkedin_url === "string" ? r.linkedin_url : null,
+    location: typeof r.location === "string" ? r.location : null,
+    availability: typeof r.availability === "string" ? r.availability : null,
     credentialId: String(r.credential_id),
     updatedAt: String(r.updated_at ?? ""),
   };
@@ -76,6 +89,11 @@ export async function saveProofSettings(userId: string, s: ProofSettings): Promi
       show_skills: s.showSkills,
       shots_on: s.shotsOn,
       avatar_path: s.avatarPath ?? null,
+      resume_path: s.resumePath ?? null,
+      contact_email: s.contactEmail ?? null,
+      linkedin_url: s.linkedinUrl ?? null,
+      location: s.location ?? null,
+      availability: s.availability ?? null,
       credential_id: s.credentialId,
       updated_at: s.updatedAt,
     });
@@ -188,13 +206,15 @@ export async function readShotBytes(shot: ProofShot): Promise<Buffer | null> {
   return memoryBytes.get(shot.path) ?? null;
 }
 
-/** Stores a profile photo and returns its storage path. */
-export async function putAvatar(userId: string, bytes: Buffer, contentType: string): Promise<string | null> {
-  const path = `${userId}/avatar-${randomUUID()}.${contentType === "image/png" ? "png" : "jpg"}`;
+const EXT: Record<string, string> = { "image/png": "png", "image/jpeg": "jpg", "application/pdf": "pdf" };
+
+/** Stores a profile photo or resume and returns its storage path. */
+export async function putFile(userId: string, kind: "avatar" | "resume", bytes: Buffer, contentType: string): Promise<string | null> {
+  const path = `${userId}/${kind}-${randomUUID()}.${EXT[contentType] ?? "bin"}`;
   if (supabaseAdmin) {
     const up = await supabaseAdmin.storage.from(BUCKET).upload(path, bytes, { contentType, upsert: false });
     if (up.error) {
-      console.error("proof avatar upload failed", up.error.message);
+      console.error(`proof ${kind} upload failed`, up.error.message);
       return null;
     }
     return path;
@@ -217,4 +237,4 @@ export async function readFile(path: string): Promise<Buffer | null> {
   return memoryBytes.get(path) ?? null;
 }
 
-export const fileType = (path: string) => (path.endsWith(".png") ? "image/png" : "image/jpeg");
+export const fileType = (path: string) => (path.endsWith(".png") ? "image/png" : path.endsWith(".pdf") ? "application/pdf" : "image/jpeg");

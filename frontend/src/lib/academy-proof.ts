@@ -261,6 +261,9 @@ export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean)
 
 export const SHOTS_PER_ITEM = 5;
 
+/** When the student can start, as employers see it. */
+export const AVAILABILITY = ["Available now", "Available in 2 weeks", "Available in a month", "Available after graduation"] as const;
+
 /** A job the Proof Profile can show. */
 export const isProofJob = (job: unknown): job is string => typeof job === "string" && job in CATALOG;
 

@@ -14,15 +14,24 @@ export function ProofPublicView({
   data,
   shotSrc = (id) => `/p/${settings.slug}/shot/${id}`,
   avatarSrc = null,
+  resumeHref = settings.resumePath ? `/p/${settings.slug}/resume` : null,
 }: {
   settings: ProofSettings;
-  data: Pick<ProofData, "items" | "skills" | "roleName" | "lastLabCheck"> & { shots: Shot[] };
+  data: Pick<ProofData, "items" | "skills" | "roleName" | "lastLabCheck"> & Partial<Pick<ProofData, "roleNames" | "certs">> & { shots: Shot[] };
   /** Where each screenshot loads from. The student's own preview uses blob URLs. */
   shotSrc?: (id: string) => string;
   /** The student's profile photo, when they added one. */
   avatarSrc?: string | null;
+  /** Where the resume downloads from, when the student added one. */
+  resumeHref?: string | null;
 }) {
   const first = settings.displayName.split(" ")[0];
+  const roles = data.roleNames ?? [];
+  const openTo = [
+    roles.length ? `Open to ${roles.length > 1 ? `${roles.slice(0, -1).join(", ")} and ${roles.at(-1)}` : roles[0]} roles` : "",
+    settings.location ?? "",
+    settings.availability ?? "",
+  ].filter(Boolean).join(" · ");
 
   const shotsFor = (job: string) => {
     if (!settings.shotsOn.includes(job)) return [];
@@ -40,9 +49,43 @@ export function ProofPublicView({
             <p className="pp-kicker">PurveX Academy</p>
             <h1>{settings.displayName}</h1>
             {data.roleName && <p className="pp-role">{data.roleName} candidate</p>}
+            {openTo && <p className="pp-open">{openTo}</p>}
+            {(settings.contactEmail || settings.linkedinUrl || resumeHref) && (
+              <div className="pp-contact">
+                {settings.contactEmail && (
+                  <a className="pp-btn pp-btn--primary" href={`mailto:${settings.contactEmail}?subject=${encodeURIComponent(`Your PurveX portfolio`)}`}>
+                    Contact {first}
+                  </a>
+                )}
+                {settings.linkedinUrl && (
+                  <a className="pp-btn" href={settings.linkedinUrl} target="_blank" rel="noopener noreferrer">
+                    LinkedIn
+                  </a>
+                )}
+                {resumeHref && (
+                  <a className="pp-btn" href={resumeHref} download>
+                    Download resume
+                  </a>
+                )}
+              </div>
+            )}
             {data.lastLabCheck && <p className="pp-checked">Lab last checked {new Date(data.lastLabCheck).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>}
           </div>
         </header>
+
+        {data.certs && data.certs.length > 0 && (
+          <section className="pp-sec">
+            <h2>Certifications</h2>
+            <ul className="pp-certs">
+              {data.certs.map((c) => (
+                <li key={c.name}>
+                  <b>{c.name}</b>
+                  <span className={c.status === "Certified" ? "is-done" : ""}>{c.status}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <section className="pp-sec">
           <h2>Lab work</h2>

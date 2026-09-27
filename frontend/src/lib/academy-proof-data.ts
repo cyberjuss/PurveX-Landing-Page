@@ -1,5 +1,5 @@
 import "server-only";
-import { roleLabel, type RoleId } from "@/lib/academy-certs";
+import { CERT_IDS, CERTS, roleLabel, type RoleId, type StudentProfile } from "@/lib/academy-certs";
 import { buildSkills, buildWorkItems, SHOTS_PER_ITEM, TRACK_FOR_ROLE, type Track, type WorkItem } from "@/lib/academy-proof";
 import { listShots, loadProofSettings, type ProofSettings, type ProofShot } from "@/lib/academy-proof-store";
 import { loadDrills, loadLabState, loadProfile, loadProgress } from "@/lib/academy-store";
@@ -9,6 +9,10 @@ export type ProofData = {
   skills: { group: string; items: string[] }[];
   role: RoleId | null;
   roleName: string | null;
+  /** Every target role the student picked in Goals. */
+  roleNames: string[];
+  /** Certifications worth showing an employer: earned, or being studied for. */
+  certs: { name: string; status: string }[];
   track: Track;
   lastLabCheck: string | null;
   settings: ProofSettings | null;
@@ -32,6 +36,8 @@ export async function loadProofData(userId: string): Promise<ProofData> {
     skills: buildSkills(items, Boolean(lab), drills.some((d) => d.mode === "ctf")),
     role,
     roleName: role ? roleLabel(role) : null,
+    roleNames: (profile?.roles ?? []).map(roleLabel),
+    certs: certLines(profile),
     track: role ? TRACK_FOR_ROLE[role] : "soc",
     lastLabCheck: lab?.uploadedAt ?? null,
     settings,
@@ -47,6 +53,21 @@ export function shareBlockers(items: WorkItem[], shotsOn: string[], shots: Proof
     if (!shotsOn.includes(it.job)) continue;
     const n = shots.filter((s) => s.job === it.job).length;
     if (n < SHOTS_PER_ITEM) out.push(`Add ${SHOTS_PER_ITEM - n} more screenshot${SHOTS_PER_ITEM - n === 1 ? "" : "s"} to “${it.title}”, or turn its screenshots off.`);
+  }
+  return out;
+}
+
+/** "Certified", "Exam booked Nov 18" or "Studying now", from the student's Goals. */
+function certLines(profile: StudentProfile | null): { name: string; status: string }[] {
+  if (!profile) return [];
+  const out: { name: string; status: string }[] = [];
+  for (const id of CERT_IDS) {
+    const g = profile.certs[id];
+    if (g.status === "earned") out.push({ name: CERTS[id].full, status: "Certified" });
+    else if (g.status === "studying") {
+      const booked = g.examDate ? new Date(`${g.examDate}T00:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : null;
+      out.push({ name: CERTS[id].full, status: booked ? `Exam booked ${booked}` : "Studying now" });
+    }
   }
   return out;
 }
