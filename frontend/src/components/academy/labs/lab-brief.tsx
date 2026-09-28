@@ -1,7 +1,6 @@
 "use client";
 
 import { Clock, MessageCircle } from "lucide-react";
-import { ROLES } from "@/lib/academy-certs";
 import type { LabWidget } from "@/lib/academy-content";
 import { LAB_BRIEFS, labObjective } from "@/lib/academy-lab-briefs";
 import { useOptionalCoach } from "../coach-context";
@@ -14,7 +13,6 @@ export function LabBrief({ lab, title, ask = true }: { lab: LabWidget; title: st
   const coach = useOptionalCoach();
   const brief = LAB_BRIEFS[lab];
   const goal = labObjective(lab, coach?.profile?.roles);
-  const role = goal.role ? ROLES.find((r) => r.id === goal.role)?.short : null;
   return (
     <header className="lb">
       <h3>{title}</h3>
@@ -27,11 +25,8 @@ export function LabBrief({ lab, title, ask = true }: { lab: LabWidget; title: st
           <dt>Today at PurveX</dt>
           <dd>{brief.today}</dd>
         </div>
-        <div className="lb__goal">
-          <dt>Your objective{role ? ` · ${role}` : ""}</dt>
-          <dd>{goal.text}</dd>
-        </div>
       </dl>
+      <p className="lb__goal">{goal.text}</p>
       <div className="lb__foot">
         <span>
           <Clock aria-hidden="true" /> About {brief.minutes} min{brief.tools.length ? ` · ${brief.tools.join(", ")}` : ""}
