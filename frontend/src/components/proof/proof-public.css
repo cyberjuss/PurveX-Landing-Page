@@ -34,7 +34,6 @@
 .pp-head h1 { font-size: clamp(28px, 5.5vw, 38px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
 .pp-role { margin-top: 6px; font-size: 16.5px; font-weight: 500; color: var(--pp-accent); }
 .pp-open { margin-top: 4px; font-size: 14px; color: var(--pp-ink-3); }
-.pp-self { font-size: 12px; font-style: italic; }
 
 /* Contact row under the name. */
 .pp-reach { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 22px; }
