@@ -99,7 +99,6 @@ const phase1Weeks: WeekDef[] = [
       { label: "Authentication", file: "phase-1/week-4/lesson-authentication.md" },
       { label: "Authorization", file: "phase-1/week-4/lesson-authorization.md" },
       { label: "Broken Access Control", file: "phase-1/week-4/lesson-access-control.md" },
-      { label: "Lab: Read the Sign-In Log", file: "phase-1/week-4/lab-signin-log.md", widget: "signin-log" },
       { label: "Lab: Who Can Open This?", file: "phase-1/week-4/lab-effective-access.md", widget: "effective-access" },
       { label: "Lab: Broken Access Control (PortSwigger)", file: "phase-1/week-4/lab-triple-a.md" },
       { label: "Resources", file: "phase-1/week-4/resources.md" },
@@ -152,6 +151,7 @@ const phase2Weeks: WeekDef[] = [
     summary: "Read the host, the account, and the log before deciding what happened.",
     sections: [
       { label: "Overview", file: "phase-2/week-2/overview.md" },
+      { label: "Lab: Read the Sign-In Log", file: "phase-2/week-2/lab-signin-log.md", widget: "signin-log" },
       { label: "Challenge: The 2 AM Login", file: "phase-2/week-2/alert-inc-1046.md" },
     ],
   },
