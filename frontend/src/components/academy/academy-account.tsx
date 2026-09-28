@@ -3,10 +3,10 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Headset, LogOut, Target } from "lucide-react";
+import { ArrowRight, BadgeCheck, Headset, LogOut, Target, Users } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import type { StudentProfile } from "@/lib/academy-certs";
-import { READINESS_PATH, useResults } from "@/lib/academy-client";
+import { academyFetch, READINESS_PATH, useResults } from "@/lib/academy-client";
 import { passedExamDates } from "@/lib/academy-goals";
 import { LEVELS, summarize } from "@/lib/academy-score";
 
@@ -85,6 +85,18 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
   const initials = accountInitials(student);
 
   useEffect(() => setMounted(true), []);
+
+  // Instructors and admins get a link to their classes. Asked once, the first time the menu opens.
+  const [teaches, setTeaches] = useState(false);
+  const askedTeaches = useRef(false);
+  useEffect(() => {
+    if (!open || askedTeaches.current) return;
+    askedTeaches.current = true;
+    academyFetch("/academy/api/instructor?check=1")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { instructor?: boolean } | null) => setTeaches(Boolean(d?.instructor)))
+      .catch(() => {});
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -215,6 +227,11 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               <Link href="/academy/portfolio" className="ax-account__out" onClick={() => setOpen(false)}>
                 <BadgeCheck className="h-3.5 w-3.5" /> Portfolio
               </Link>
+              {teaches && (
+                <Link href="/academy/instructor" className="ax-account__out" onClick={() => setOpen(false)}>
+                  <Users className="h-3.5 w-3.5" /> Instructor view
+                </Link>
+              )}
               <button type="button" className="ax-account__out" onClick={onSignOut}>
                 <LogOut className="h-3.5 w-3.5" /> Sign out
               </button>

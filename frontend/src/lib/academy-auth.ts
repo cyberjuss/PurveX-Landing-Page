@@ -44,3 +44,21 @@ export async function setAcademyCookie() {
   const store = await cookies();
   store.set(ACADEMY_COOKIE, expected, cookieOptions());
 }
+
+// A class code unlocks the course like the shared passcode, and remembers the
+// class until the student signs in and joins it.
+export const ACADEMY_CLASS_COOKIE = "academy_class";
+
+export async function setClassCookie(code: string) {
+  const store = await cookies();
+  store.set(ACADEMY_CLASS_COOKIE, code, { ...cookieOptions(), maxAge: 60 * 60 * 24 * 30 });
+}
+
+export async function readClassCookie(): Promise<string | null> {
+  return (await cookies()).get(ACADEMY_CLASS_COOKIE)?.value ?? null;
+}
+
+export async function clearClassCookie() {
+  const store = await cookies();
+  store.set(ACADEMY_CLASS_COOKIE, "", { ...cookieOptions(), maxAge: 0 });
+}

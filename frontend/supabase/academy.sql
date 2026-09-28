@@ -243,3 +243,28 @@ create table if not exists public.academy_activity (
 );
 
 alter table public.academy_activity enable row level security;
+
+-- Classes: each has its own passcode and an instructor, who sees the class's
+-- progress at /academy/instructor. A student joins by unlocking with the
+-- class code, then signing in. Written by the server only.
+create table if not exists public.academy_classes (
+  id uuid primary key default gen_random_uuid(),
+  code text not null unique check (code ~ '^[A-Z0-9-]{6,40}$'),
+  name text not null,
+  instructor_email text not null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists academy_classes_instructor on public.academy_classes (instructor_email);
+
+create table if not exists public.academy_class_members (
+  class_id uuid not null references public.academy_classes (id) on delete cascade,
+  user_id uuid not null references auth.users (id) on delete cascade,
+  email text,
+  name text,
+  joined_at timestamptz not null default now(),
+  primary key (class_id, user_id)
+);
+
+alter table public.academy_classes enable row level security;
+alter table public.academy_class_members enable row level security;

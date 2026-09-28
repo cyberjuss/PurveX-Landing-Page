@@ -1,7 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { checkPasscode, setAcademyCookie } from "@/lib/academy-auth";
+import { checkPasscode, setAcademyCookie, setClassCookie } from "@/lib/academy-auth";
+import { findClassByCode } from "@/lib/academy-classes";
 
 export async function unlockAcademy(
   _prevState: { error: string } | null,
@@ -9,8 +10,11 @@ export async function unlockAcademy(
 ): Promise<{ error: string } | null> {
   const passcode = String(formData.get("passcode") ?? "");
 
+  // The shared passcode, or a class code that also puts the student in that class once they sign in.
   if (!checkPasscode(passcode)) {
-    return { error: "That passcode did not work. Check with your instructor and try again." };
+    const cls = await findClassByCode(passcode);
+    if (!cls) return { error: "That passcode did not work. Check with your instructor and try again." };
+    await setClassCookie(cls.code);
   }
 
   await setAcademyCookie();

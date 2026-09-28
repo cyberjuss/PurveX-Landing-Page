@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { isAcademyUnlocked } from "@/lib/academy-auth";
+import { clearClassCookie, isAcademyUnlocked, readClassCookie } from "@/lib/academy-auth";
+import { findClassByCode, joinClass } from "@/lib/academy-classes";
 import { MISSION_SKILLS, sanitizeResults, type Results } from "@/lib/academy-score";
 import { loadProgress, saveProgress } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
@@ -13,6 +14,13 @@ export async function GET(request: Request) {
   const student = await getAcademyStudent(request);
   if (!student) {
     return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  }
+  // Unlocked with a class code: join that class now that we know who this is.
+  const code = await readClassCookie();
+  if (code) {
+    const cls = await findClassByCode(code);
+    if (cls) await joinClass(cls.id, student);
+    await clearClassCookie();
   }
   return NextResponse.json({ results: await loadProgress(student.id) });
 }
