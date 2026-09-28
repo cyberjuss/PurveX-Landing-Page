@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ExternalLink, Fingerprint, RotateCcw } from "lucide-react";
+import { ExternalLink, RotateCcw } from "lucide-react";
 import {
   Avatar,
   CHEF_SHA256,
@@ -12,7 +12,6 @@ import {
   HashCompare,
   HashPlayground,
   HashTool,
-  LabHud,
   Narrator,
   nextHint,
   normHash,
@@ -201,7 +200,6 @@ export function HashVerifyLab({ onDone }: { onDone?: () => void }) {
 
   return (
     <section className="rt" aria-label="The Update Nobody Can Vouch For lab">
-      <LabHud label="Integrity check" icon={Fingerprint} step={s.step} total={STEPS.length} />
       <Stepper steps={STEPS} step={s.step} done={[...s.checked, false]} reached={reached} onGo={go} />
 
       {s.step === 0 && (

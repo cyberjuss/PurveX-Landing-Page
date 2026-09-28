@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ArrowRight, Ban, ExternalLink, KeyRound, Lock, LockOpen, Play, RotateCcw } from "lucide-react";
+import { ArrowRight, Ban, ExternalLink, Lock, LockOpen, Play, RotateCcw } from "lucide-react";
 import {
   CHEF_FROM_BASE64,
   CHEF_SHA256,
@@ -9,7 +9,6 @@ import {
   Deck,
   Guide,
   HashTool,
-  LabHud,
   Narrator,
   Morph,
   Takeaway,
@@ -259,7 +258,6 @@ export function PasswordTableLab({ onDone }: { onDone?: () => void }) {
 
   return (
     <section className="rt" aria-label="The Leaked Password Table lab">
-      <LabHud label="Breach review" icon={KeyRound} step={s.step} total={STEPS.length} />
       <Stepper steps={STEPS} step={s.step} done={[...s.checked, false]} reached={reached} onGo={go} />
 
       {s.step === 0 && (

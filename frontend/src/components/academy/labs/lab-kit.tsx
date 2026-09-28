@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Check, ChevronLeft, ChevronRight, Copy, Download, Server, X, type LucideIcon } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Copy, Download, Server, X } from "lucide-react";
 import "./risk-triage-lab.css";
 import "./lab-kit.css";
 import { useOptionalCoach } from "../coach-context";
@@ -97,21 +97,6 @@ export function Narrator({ name = "Alex Rivera", role = "IT", children }: { name
         </small>
         <p>{children}</p>
       </div>
-    </div>
-  );
-}
-
-/** A thin terminal-style status bar across the top of a lab. Decorative only. */
-export function LabHud({ label, icon: Icon, step, total }: { label: string; icon: LucideIcon; step: number; total: number }) {
-  return (
-    <div className="lk-hud" aria-hidden="true">
-      <span className="lk-hud__live" />
-      <Icon className="lk-hud__icon" />
-      <b>PX-SOC</b>
-      <span className="lk-hud__label">{label}</span>
-      <span className="lk-hud__step">
-        Step {step + 1}/{total}
-      </span>
     </div>
   );
 }

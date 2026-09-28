@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ArrowDown, ArrowUp, Check, ChevronLeft, ChevronRight, MessageCircle, Radar, RotateCcw, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, ChevronLeft, ChevronRight, MessageCircle, RotateCcw, X } from "lucide-react";
 import { useOptionalCoach } from "../coach-context";
 import { LOST_ASK } from "./lab-brief";
-import { Avatar, LabHud, Narrator, useLabDone } from "./lab-kit";
+import { Avatar, Narrator, useLabDone } from "./lab-kit";
 import "./lab-kit.css";
 import "./risk-triage-lab.css";
 
@@ -205,7 +205,6 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
 
   return (
     <section className="rt" aria-label="Monday Morning Risk Triage lab">
-      <LabHud label="Ticket queue" icon={Radar} step={s.step} total={STEPS.length} />
       <ol className="rt-steps">
         {STEPS.map((label, i) => (
           <li key={label}>

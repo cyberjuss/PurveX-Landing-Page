@@ -234,16 +234,6 @@
 .lk-field > div input,
 .lk-hashtext input { width: 0; flex: 1 1 0; }
 
-/* Lab status bar: a thin terminal strip with a live dot. */
-.lk-hud { position: relative; display: flex; align-items: center; gap: 8px; padding: 7px 14px; overflow: hidden; border-bottom: 1px solid var(--rd-line); background: #0b1220; font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #94a3b8; }
-.lk-hud b { font-weight: 700; color: #e2e8f0; }
-.lk-hud__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.lk-hud__label::before { content: "// "; color: #475569; }
-.lk-hud__icon { width: 13px; height: 13px; flex: none; color: #7dd3fc; }
-.lk-hud__live { width: 7px; height: 7px; flex: none; border-radius: 50%; background: #34d399; animation: lk-live 2s ease-out infinite; }
-.lk-hud__step { display: flex; align-items: center; gap: 5px; margin-left: auto; white-space: nowrap; color: #cbd5e1; }
-@keyframes lk-live { 0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55); } 70%, 100% { box-shadow: 0 0 0 7px rgba(52, 211, 153, 0); } }
-
 /* Characters: a small bust per person, a server for the file share, grey for strangers. */
 .lk-av { position: relative; display: inline-grid; place-items: center; flex: none; overflow: hidden; border-radius: 50%; vertical-align: middle; }
 .rt .lk-av svg, .lk-av svg { display: block; width: 100%; height: 100%; }
@@ -266,5 +256,5 @@
 @keyframes lk-shake { 20%, 60% { transform: translateX(-3px); } 40%, 80% { transform: translateX(3px); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .lk-hud__live, .lk-nar__bubble, .rt-verdict svg, .rt-step__n svg, .lk-guide__n svg { animation: none !important; }
+  .lk-nar__bubble, .rt-verdict svg, .rt-step__n svg, .lk-guide__n svg { animation: none !important; }
 }
