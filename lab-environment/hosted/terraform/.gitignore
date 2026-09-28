@@ -1,0 +1,6 @@
+# State holds the CaseFile AWS key and the gateway key. Keep it off GitHub.
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+crash.log

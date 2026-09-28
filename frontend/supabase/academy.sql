@@ -268,3 +268,26 @@ create table if not exists public.academy_class_members (
 
 alter table public.academy_classes enable row level security;
 alter table public.academy_class_members enable row level security;
+
+-- Hosted labs: each student's own domain controller in AWS. The lab key is
+-- separate from the MCP key, so starting a lab never disconnects Claude. It
+-- can only upload lab snapshots. Only its hash is stored. The remote-desktop
+-- password is encrypted with HOSTED_LAB_SECRET. Written by the server only.
+create table if not exists public.academy_lab_keys (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  key_hash text not null unique,
+  created_at timestamptz not null default now(),
+  last_used_at timestamptz
+);
+
+create table if not exists public.academy_hosted_labs (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  instance_id text not null,
+  password_enc text not null,
+  stop_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.academy_lab_keys enable row level security;
+alter table public.academy_hosted_labs enable row level security;

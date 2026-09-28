@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { ChevronLeft, GraduationCap, Home, Loader2, Menu, Moon, Sun, X } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
 import { AcademyAccountProvider, AcademyGoalsProvider, AcademyProfileMenu, type AcademyStudent } from "@/components/academy/academy-account";
+import { HostedLabButton } from "@/components/academy/hosted-lab-button";
 import { AcademyIntake } from "@/components/academy/academy-intake";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
@@ -1123,6 +1124,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
               </Link>
             </div>
             <div className="flex items-center gap-2">
+              <HostedLabButton />
               <button
                 type="button"
                 onClick={toggleTheme}

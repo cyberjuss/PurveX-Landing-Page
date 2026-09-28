@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server";
 import { compareToBaseline, sanitizeLabSnapshot } from "@/lib/academy-lab";
-import { loadLabLive, resolveMcpKey, saveLabState } from "@/lib/academy-store";
+import { loadLabLive, resolveLabKey, saveLabState } from "@/lib/academy-store";
 
 export const runtime = "nodejs";
 
 // Upload target for public/lab-scripts/Build-Environment.ps1, authenticated
-// with the pvx_ key embedded in the student's downloaded copy.
+// with the pvx_ key embedded in the student's downloaded copy, or the pvl_
+// key a hosted lab gets on first boot.
 const MAX_BYTES = 512 * 1024;
 
 async function keyUser(request: Request) {
   const auth = request.headers.get("authorization") || "";
   const key = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
-  return key ? resolveMcpKey(key) : null;
+  return key ? resolveLabKey(key) : null;
 }
 
 async function isLive(userId: string) {
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const auth = request.headers.get("authorization") || "";
   const key = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
-  const userId = key ? await resolveMcpKey(key) : null;
+  const userId = key ? await resolveLabKey(key) : null;
   if (!userId) {
     return NextResponse.json({ error: "Invalid or missing CaseFile key." }, { status: 401 });
   }

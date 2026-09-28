@@ -247,6 +247,83 @@ export async function resolveMcpKey(key: string): Promise<string | null> {
   return row.userId;
 }
 
+// Hosted-lab keys. Separate from the MCP key so a hosted lab never revokes the
+// student's Claude connection. A lab key can only upload lab snapshots.
+const LAB_KEY_PREFIX = "pvl_";
+const memoryLabKeys = new Map<string, string>();
+
+export async function createLabKey(userId: string): Promise<string> {
+  const key = LAB_KEY_PREFIX + randomBytes(32).toString("base64url");
+  for (const [hash, id] of memoryLabKeys) if (id === userId) memoryLabKeys.delete(hash);
+  memoryLabKeys.set(hashKey(key), userId);
+  if (supabaseAdmin) {
+    const { error } = await supabaseAdmin
+      .from("academy_lab_keys")
+      .upsert({ user_id: userId, key_hash: hashKey(key), created_at: new Date().toISOString(), last_used_at: null });
+    if (error) throw new Error(error.message);
+  }
+  return key;
+}
+
+/** The student a lab-sync key belongs to: a hosted-lab key, or the MCP key a self-hosted lab uses. */
+export async function resolveLabKey(key: string): Promise<string | null> {
+  if (!key.startsWith(LAB_KEY_PREFIX)) return resolveMcpKey(key);
+  const hash = hashKey(key);
+  if (supabaseAdmin) {
+    const { data } = await supabaseAdmin.from("academy_lab_keys").select("user_id").eq("key_hash", hash).maybeSingle();
+    if (data) {
+      await supabaseAdmin.from("academy_lab_keys").update({ last_used_at: new Date().toISOString() }).eq("key_hash", hash);
+      return data.user_id as string;
+    }
+  }
+  return memoryLabKeys.get(hash) ?? null;
+}
+
+// Each student's hosted lab: the EC2 instance, its encrypted remote-desktop
+// password, and when it stops on its own.
+export type HostedLabRow = { instanceId: string; passwordEnc: string; stopAt: string | null; createdAt: string };
+const memoryHosted = new Map<string, HostedLabRow>();
+
+export async function loadHostedLab(userId: string): Promise<HostedLabRow | null> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin.from("academy_hosted_labs").select("*").eq("user_id", userId).maybeSingle();
+    if (!error && data) return { instanceId: data.instance_id, passwordEnc: data.password_enc, stopAt: data.stop_at, createdAt: data.created_at };
+    if (error) console.error("academy_hosted_labs read failed", error.message);
+  }
+  return memoryHosted.get(userId) ?? null;
+}
+
+export async function saveHostedLab(userId: string, row: HostedLabRow) {
+  memoryHosted.set(userId, row);
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin.from("academy_hosted_labs").upsert({
+    user_id: userId,
+    instance_id: row.instanceId,
+    password_enc: row.passwordEnc,
+    stop_at: row.stopAt,
+    created_at: row.createdAt,
+    updated_at: new Date().toISOString(),
+  });
+  if (error) throw new Error(error.message);
+}
+
+export async function deleteHostedLab(userId: string) {
+  memoryHosted.delete(userId);
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin.from("academy_hosted_labs").delete().eq("user_id", userId);
+  if (error) throw new Error(error.message);
+}
+
+/** Labs whose stop time has passed, for the auto-stop job. */
+export async function hostedLabsDueToStop(now = new Date()): Promise<{ userId: string; row: HostedLabRow }[]> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin.from("academy_hosted_labs").select("*").lte("stop_at", now.toISOString());
+    if (!error && data) return data.map((d) => ({ userId: d.user_id, row: { instanceId: d.instance_id, passwordEnc: d.password_enc, stopAt: d.stop_at, createdAt: d.created_at } }));
+    if (error) console.error("academy_hosted_labs due read failed", error.message);
+  }
+  return [...memoryHosted.entries()].filter(([, r]) => r.stopAt && Date.parse(r.stopAt) <= now.getTime()).map(([userId, row]) => ({ userId, row }));
+}
+
 // Drill history: one row per finished drill, newest last. The daily drill
 // keeps its first result for the day; a timed run is always its own row.
 const MODES = ["daily", "timed", "ctf", "coach"] as const;
