@@ -552,3 +552,46 @@ export function nextHint(done: boolean[], names: string[]) {
   const i = done.findIndex((d) => !d);
   return i === -1 ? "All done. Check your answers." : `Next: ${names[i]}`;
 }
+
+const SCRAMBLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+
+/**
+ * Shows `to`, and when `play` changes, animates from `from` into `to` one
+ * character at a time so the student sees the value turn back into the
+ * original. Skips the animation for people who ask for reduced motion.
+ */
+export function Morph({ from, to, play, className }: { from: string; to: string; play: number; className?: string }) {
+  const [shown, setShown] = useState(to);
+  useEffect(() => {
+    if (!play) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const id = requestAnimationFrame(() => setShown(to));
+      return () => cancelAnimationFrame(id);
+    }
+    const start = performance.now();
+    const ms = 1100;
+    let raf = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / ms);
+      const len = Math.round(from.length + (to.length - from.length) * t);
+      const fixed = Math.floor(to.length * t);
+      let out = to.slice(0, fixed);
+      for (let i = fixed; i < len; i++) out += t < 0.15 && from[i] ? from[i] : SCRAMBLE[Math.floor(Math.random() * SCRAMBLE.length)];
+      setShown(out);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [play, from, to]);
+  return <span className={className}>{play ? shown : to}</span>;
+}
+
+/** The one idea a card should leave behind, shown once the student has done it. */
+export function Takeaway({ children, afterMorph = false }: { children: ReactNode; afterMorph?: boolean }) {
+  return (
+    <div className={`lk-takeaway${afterMorph ? " lk-takeaway--late" : ""}`} role="note">
+      <b>Walk away knowing</b>
+      <p>{children}</p>
+    </div>
+  );
+}

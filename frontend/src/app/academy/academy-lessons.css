@@ -1,0 +1,10 @@
+/* "Go deeper" foldouts in lessons: the core stays short, detail is one click away. */
+.academy-prose details.academy-deeper { margin: 1.25rem 0 0; border: 1px solid var(--rd-line); }
+.academy-prose details.academy-deeper > summary { display: flex; align-items: center; gap: 8px; padding: 0.7rem 0.9rem; font-size: 0.9rem; font-weight: 650; color: var(--rd-ink-2); cursor: pointer; list-style: none; }
+.academy-prose details.academy-deeper > summary::-webkit-details-marker { display: none; }
+.academy-prose details.academy-deeper > summary::before { content: "+"; width: 1rem; font-weight: 700; color: var(--rd-accent); }
+.academy-prose details.academy-deeper[open] > summary::before { content: "\2212"; }
+.academy-prose details.academy-deeper[open] > summary { border-bottom: 1px solid var(--rd-line); }
+.academy-prose details.academy-deeper > :not(summary) { margin-left: 0.9rem; margin-right: 0.9rem; }
+.academy-prose details.academy-deeper > :last-child { margin-bottom: 0.9rem; }
+.academy-prose details.academy-deeper h4 { margin: 1rem 0 0.35rem; font-size: 0.95rem; font-weight: 650; color: var(--rd-ink); }

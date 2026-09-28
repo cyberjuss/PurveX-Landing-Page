@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ExternalLink, Lock, LockOpen, Play, RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { ArrowRight, Ban, ExternalLink, Lock, LockOpen, Play, RotateCcw } from "lucide-react";
 import {
   CHEF_FROM_BASE64,
   CHEF_SHA256,
@@ -9,6 +9,8 @@ import {
   Deck,
   Guide,
   HashTool,
+  Morph,
+  Takeaway,
   nextHint,
   Options,
   sha256Hex,
@@ -259,7 +261,7 @@ export function PasswordTableLab() {
         <div className="rt-body">
           <header className="rt-head">
             <h3>Three ways to hide a password</h3>
-            <p>One test tells them apart: can you get the password back?</p>
+            <p>Try each one before you meet all four in the leaked table. The test: can you get the password back?</p>
           </header>
           <Deck
             tags={TRY_CARDS.map((c) => c.tag)}
@@ -642,45 +644,87 @@ function CardHead({ title, sub }: { title: string; sub?: string }) {
   );
 }
 
+/** Before and after, side by side, with the step between them. */
+function Flow({
+  left,
+  leftLabel,
+  step,
+  blocked = false,
+  right,
+  rightLabel,
+  rightClass = "is-dark",
+}: {
+  left: ReactNode;
+  leftLabel: string;
+  step: string;
+  blocked?: boolean;
+  right: ReactNode;
+  rightLabel: string;
+  rightClass?: string;
+}) {
+  return (
+    <div className="lk-flow">
+      <div className="lk-flow__box">
+        <small>{leftLabel}</small>
+        <code className={leftLabel === "Your password" ? "" : "is-dark"}>{left}</code>
+      </div>
+      <div className={`lk-flow__arrow${blocked ? " is-no" : ""}`} aria-hidden="true">
+        {blocked ? <Ban /> : <ArrowRight />}
+        {step}
+      </div>
+      <div className="lk-flow__box">
+        <small>{rightLabel}</small>
+        <code className={rightClass} aria-live="polite">
+          {right}
+        </code>
+      </div>
+    </div>
+  );
+}
+
 function EncodeCard({ onDone }: { onDone: () => void }) {
   const [pw, setPw] = useState("");
-  const [open, setOpen] = useState(false);
+  const [play, setPlay] = useState(0);
+  const encoded = b64(pw);
   return (
     <div className="rt-ticket">
       <CardHead title="Encoding (Base64)" />
       <Guide
         steps={[
           {
-            title: "Type any password",
+            title: "Make up a password",
             done: Boolean(pw),
             body: (
               <>
-                <input className="lk-input" type="text" value={pw} placeholder="Summer2026!" onChange={(e) => (setPw(e.target.value), setOpen(false))} spellCheck={false} autoComplete="off" aria-label="Password" />
-                <code className="lk-out">{b64(pw)}</code>
+                <input className="lk-input" type="text" value={pw} placeholder="Make one up, like Summer2026!" onChange={(e) => (setPw(e.target.value), setPlay(0))} spellCheck={false} autoComplete="off" aria-label="Password" />
+                {pw && <Flow left={pw} leftLabel="Your password" step="Encode" right={encoded} rightLabel="Base64" />}
               </>
             ),
           },
           {
             title: "Click Decode. Can you get it back?",
-            done: open,
+            done: play > 0,
             body: (
               <>
                 <button
                   type="button"
                   className="lk-mini"
                   onClick={() => {
-                    setOpen(true);
+                    setPlay((n) => n + 1);
                     onDone();
                   }}
                 >
                   <LockOpen aria-hidden="true" /> Decode it
                 </button>
-                {open && <p className="lk-note is-bad">Back to {pw}. No key needed. Anyone can do this.</p>}
+                {play > 0 && (
+                  <Flow left={encoded} leftLabel="Base64" step="Decode, no key" right={<Morph from={encoded} to={pw} play={play} />} rightLabel="Back to" rightClass="is-back" />
+                )}
               </>
             ),
           },
         ]}
       />
+      {play > 0 && <Takeaway afterMorph>Encoding is not protection. Anyone can reverse it, with no key. A Base64 password in a script or a leaked table is a leaked password.</Takeaway>}
     </div>
   );
 }
@@ -690,6 +734,7 @@ function NoteCard({ word, locked, right, onWord }: { word: string; locked: boole
   const [key, setKey] = useState("");
   const [out, setOut] = useState<string | null | undefined>(undefined);
   const [triedWrong, setTriedWrong] = useState(false);
+  const [play, setPlay] = useState(0);
   const opened = typeof out === "string";
   useEffect(() => {
     let live = true;
@@ -701,6 +746,7 @@ function NoteCard({ word, locked, right, onWord }: { word: string; locked: boole
   const decrypt = async () => {
     const r = await aesDecrypt(key, packed);
     if (r === null) setTriedWrong(true);
+    else setPlay((n) => n + 1);
     setOut(r);
   };
   return (
@@ -720,11 +766,15 @@ function NoteCard({ word, locked, right, onWord }: { word: string; locked: boole
                     <Lock aria-hidden="true" /> Decrypt
                   </button>
                 </div>
-                {out === null && <p className="lk-note is-bad">Wrong key. AES refuses to open it.</p>}
+                {out === null && <Flow left={`${packed.slice(0, 18)}…`} leftLabel="Encrypted" step="Wrong key" blocked right="Refused. Nothing comes out." rightLabel="Result" rightClass="is-blocked" />}
               </>
             ),
           },
-          { title: `Now use the key from your ticket: ${NOTE_KEY}`, done: opened || Boolean(word), body: opened && <p className="lk-note is-good">{out}</p> },
+          {
+            title: `Now use the key from your ticket: ${NOTE_KEY}`,
+            done: opened || Boolean(word),
+            body: opened && <Flow left={`${packed.slice(0, 18)}…`} leftLabel="Encrypted" step="Right key" right={<Morph from={packed} to={out} play={play} />} rightLabel="The note" rightClass="is-open" />,
+          },
           {
             title: "Type the code word from the note",
             done: Boolean(word.trim()),
@@ -739,7 +789,8 @@ function NoteCard({ word, locked, right, onWord }: { word: string; locked: boole
           },
         ]}
       />
-      {locked && <Verdict right={right}>Right key, exact message. Any other key, nothing. Protect the key.</Verdict>}
+      {opened && <Takeaway afterMorph>Encryption comes back only with the key. It is only as safe as where the key is kept. A key stored next to the data protects nothing.</Takeaway>}
+      {locked && <Verdict right={right}>Right key, exact message. Any other key, nothing.</Verdict>}
     </div>
   );
 }
@@ -761,12 +812,12 @@ function HashCard({ onSeen }: { onSeen: () => void }) {
       <Guide
         steps={[
           {
-            title: "Type any password",
+            title: "Make up a password",
             done: Boolean(pw),
             body: (
               <>
-                <input className="lk-input" type="text" value={pw} placeholder="Summer2026!" onChange={(e) => setPw(e.target.value)} spellCheck={false} autoComplete="off" aria-label="Password" />
-                <code className="lk-out">{pw ? hash : ""}</code>
+                <input className="lk-input" type="text" value={pw} placeholder="Make one up, like Summer2026!" onChange={(e) => (setPw(e.target.value), setTried(false))} spellCheck={false} autoComplete="off" aria-label="Password" />
+                {pw && <Flow left={pw} leftLabel="Your password" step="SHA-256" right={hash} rightLabel="Hash" />}
               </>
             ),
           },
@@ -785,12 +836,13 @@ function HashCard({ onSeen }: { onSeen: () => void }) {
                 >
                   <LockOpen aria-hidden="true" /> Reverse it
                 </button>
-                {tried && <p className="lk-note is-bad">No way back. Attackers can only guess, hash the guess and compare.</p>}
+                {tried && <Flow left={`${hash.slice(0, 18)}…`} leftLabel="Hash" step="Reverse" blocked right="No way back. There is no key." rightLabel="Result" rightClass="is-blocked" />}
               </>
             ),
           },
         ]}
       />
+      {tried && <Takeaway>A hash has no way back. Attackers can only guess, hash each guess and compare, so weak passwords still fall.</Takeaway>}
     </div>
   );
 }
@@ -848,6 +900,7 @@ function SaltCard({ value, locked, onPick }: { value?: string; locked: boolean; 
           },
         ]}
       />
+      {value && <Takeaway>A salt makes the same password hash differently for every user. It hides reuse and forces attackers to crack each person separately.</Takeaway>}
     </div>
   );
 }
