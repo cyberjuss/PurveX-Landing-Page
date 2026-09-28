@@ -1,15 +1,13 @@
 ### Confidentiality
 
-**Confidentiality is the vault door. Only badge holders get in.** It keeps information away from anyone who should not see it, the same job the lock on your phone does.
+Confidentiality means only authorized people can see information. When it fails, the data stays where it was and unchanged, but someone who should not have it now has a copy. That failure is a **leak**.
 
-A thing needs confidentiality when *seeing it* is the harm:
+It matters most when seeing the data is the harm:
 
-- a password
-- a salary
-- a Social Security number
-- a patient's chart
-- an unreleased deal
+- passwords
+- salaries
+- Social Security numbers
+- medical records
+- unreleased deals
 
-When confidentiality fails, the file stays where it was, but the wrong person now has a copy. You may never know they took it. That failure is a **leak**.
-
-Encryption, logins and access lists are how you issue badges. An attacker who reads unencrypted traffic walked in without one.
+**Controls:** encryption, authentication and access control. Data sent without encryption can be read by anyone on the network path.

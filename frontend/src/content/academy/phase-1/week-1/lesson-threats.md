@@ -1,11 +1,11 @@
 ### Threats
 
-**A threat is something or someone that could use a weakness.** A burglar on the block is a threat, whether or not your door is open:
+A threat is something or someone that could exploit a vulnerability.
 
-- a hacker
+- attackers
 - malware
-- an insider
-- a natural disaster
-- a nation-state actor
+- insiders
+- natural disasters
+- nation-state groups
 
-You can seldom remove a threat. Attackers, storms and careless insiders exist whatever you do. What you control is the weakness they would use and what it would cost if they succeeded.
+Most threats are outside your control. What you can control is the vulnerability they would use and the impact if they succeed.

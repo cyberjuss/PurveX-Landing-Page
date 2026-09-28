@@ -1,15 +1,15 @@
 ### Risk
 
-**Risk is the likelihood and impact of a threat using a vulnerability.** It is the chance the burglar finds the unlocked door, and what it costs you if they do. Analysts write it as **Risk = Threat × Vulnerability × Impact**.
+Risk is the likelihood that a threat exploits a vulnerability, combined with the impact if it does.
 
-If any part is zero, the risk is zero. No vulnerability means no risk even when a threat exists. No threat means no risk even when a vulnerability exists.
+**Risk = Threat × Vulnerability × Impact**
 
-A security program manages risk. It closes weaknesses and lowers what a hit would cost.
+If any factor is zero, the risk is zero. No threat means no risk even when a vulnerability exists, and the reverse is also true.
 
-When a ticket or an alert sounds urgent, name all three parts before you escalate:
+A security program manages risk. Threats are seldom removable, so it closes vulnerabilities and reduces impact.
 
-- What is weak
-- Who or what could use it
-- What it would cost if they did
+Before you escalate, name all three:
 
-If one of those is missing, keep asking questions before you escalate.
+- the vulnerability
+- the threat
+- the impact

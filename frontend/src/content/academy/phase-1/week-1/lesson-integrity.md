@@ -1,14 +1,12 @@
 ### Integrity
 
-**Integrity is the cash-bag seal. Break it and everyone knows.** It keeps information accurate and unchanged, the same job tape does on a shipped box.
+Integrity means information stays accurate and unchanged unless an authorized person changes it. When it fails, the data can look normal, but you can no longer trust it. That failure is a **lie**.
 
-A thing needs integrity when *a silent change* is the harm:
+It matters most when a silent change is the harm:
 
-- a payroll amount
-- a medication dose
-- a firewall rule
-- a ticket that now says "closed"
+- payroll amounts
+- medication doses
+- firewall rules
+- ticket status
 
-When integrity fails, the bag can still look full, but you cannot prove the count matches what left the vault. You end up acting on a **lie**.
-
-Hashing, signatures and audit logs are how you notice a torn seal. An edited file, or data changed in transit, is torn tape.
+**Controls:** hashing, digital signatures and audit logs. They do not stop a change, but they show that one happened.
