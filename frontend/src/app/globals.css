@@ -5235,3 +5235,14 @@ textarea.pc-dock__field {
 .academy-prose .ad-close .ad-close__exam { margin: 6px 0 0; font-size: 0.78rem; line-height: 1.4; color: #0b7a52; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-close .ad-close__exam { color: #6ee7b7; }
 .dr-review .dr-review__exam { font-family: var(--font-mono, ui-monospace, monospace); font-size: 11.5px; letter-spacing: 0.02em; color: var(--rd-ink-3); }
+
+/* iPhone and iPad Safari zoom into any field with text under 16px when it is
+   tapped, and stay zoomed, which cuts the page off on the right. On touch
+   screens every text field gets at least 16px so the page never jumps. */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  textarea,
+  select {
+    font-size: max(16px, 1em) !important;
+  }
+}

@@ -756,12 +756,12 @@ function NoteCard({ word, locked, right, onWord }: { word: string; locked: boole
       <Guide
         steps={[
           {
-            title: "Try any wrong key",
+            title: "Try a made-up key first",
             done: triedWrong || opened || Boolean(word),
             body: (
               <>
                 <div className="lk-panel__try">
-                  <input type="text" value={key} placeholder="Key" onChange={(e) => setKey(e.target.value)} spellCheck={false} autoComplete="off" aria-label="Key" />
+                  <input type="text" value={key} placeholder="Make one up, like Blue-Door-7" onChange={(e) => setKey(e.target.value)} spellCheck={false} autoComplete="off" aria-label="Key" />
                   <button type="button" className="lk-mini" disabled={!key || !packed} onClick={() => void decrypt()}>
                     <Lock aria-hidden="true" /> Decrypt
                   </button>

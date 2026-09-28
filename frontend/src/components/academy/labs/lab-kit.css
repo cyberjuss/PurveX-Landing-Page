@@ -215,3 +215,16 @@
 @keyframes lk-rise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .lk-takeaway { animation: none; } }
 .lk-takeaway--late { animation-delay: 1.1s; }
+
+/* Never let a field's natural width push a card wider than the screen.
+   Grid columns stop at the space they have, and text fields shrink to fit. */
+.lk-guide__body,
+.lk-flow__box,
+.lk-q,
+.lk-field { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 520px) {
+  .lk-flow { grid-template-columns: minmax(0, 1fr); }
+}
+.lk-panel__try input,
+.lk-field > div input,
+.lk-hashtext input { width: 0; flex: 1 1 0; }
