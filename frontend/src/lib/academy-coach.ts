@@ -29,6 +29,7 @@ import {
   LEVELS,
   MISSION_SKILLS,
   missionPoints,
+  missionResults,
   SKILLS,
   summarize,
   type Results,
@@ -136,7 +137,7 @@ function missionLine(results: Results, id: string): string {
 }
 
 function lastMissionAt(results: Results): string | null {
-  const times = Object.values(results)
+  const times = Object.values(missionResults(results))
     .map((r) => r.at)
     .filter((at): at is string => Boolean(at))
     .map((at) => new Date(at).getTime())
@@ -145,7 +146,8 @@ function lastMissionAt(results: Results): string | null {
   return new Date(Math.max(...times)).toISOString();
 }
 
-function handsOnLine(results: Results, lab: LabSnapshot | null): string {
+function handsOnLine(all: Results, lab: LabSnapshot | null): string {
+  const results = missionResults(all);
   const attempted = Object.keys(results).length;
   const finished = Object.values(results).filter((r) => r.solved).length;
   const ticketsTouched = Object.keys(results).some((id) => id.startsWith("tq-"));

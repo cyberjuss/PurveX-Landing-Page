@@ -33,7 +33,7 @@ export async function loadProofData(userId: string): Promise<ProofData> {
   const role = profile?.roles[0] ?? null;
   return {
     items,
-    skills: buildSkills(items, Boolean(lab), drills.some((d) => d.mode === "ctf")),
+    skills: buildSkills(items, Boolean(lab), drills.some((d) => d.mode === "ctf"), results),
     role,
     roleName: role ? roleLabel(role) : null,
     roleNames: (profile?.roles ?? []).map(roleLabel),

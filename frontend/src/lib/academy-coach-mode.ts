@@ -1,5 +1,5 @@
 import { MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
-import { SKILLS, summarize, type Results } from "@/lib/academy-score";
+import { missionResults, SKILLS, summarize, type Results } from "@/lib/academy-score";
 import type { LabWidget } from "@/lib/academy-content";
 import { isBrowserLab } from "@/lib/academy-lab-briefs";
 
@@ -26,7 +26,7 @@ export function modeFromReport(results: Results): CoachMode {
   if (s.level === "none" || s.finished === 0) return "walkthrough";
   if (s.level === "almost") return "check";
 
-  const rows = Object.values(results);
+  const rows = Object.values(missionResults(results));
   const messy = rows.filter((r) => r.hint || r.wrong >= 2).length;
   const struggling = rows.length > 0 && messy / rows.length >= 0.5;
   if (s.level === "practice" || struggling) return "walkthrough";

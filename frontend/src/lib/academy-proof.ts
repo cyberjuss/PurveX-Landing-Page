@@ -1,6 +1,6 @@
 import type { RoleId } from "@/lib/academy-certs";
 import type { DrillEntry } from "@/lib/academy-drills";
-import type { Results } from "@/lib/academy-score";
+import type { LabPassId, Results } from "@/lib/academy-score";
 
 // The Proof Profile: confirmed lab work, written for employers and for the
 // student's resume. Every item comes from a change the lab itself confirmed,
@@ -273,7 +273,14 @@ export function buildWorkItems(results: Results, drills: DrillEntry[]): WorkItem
 }
 
 /** Skills as the keywords job postings use, grouped like a resume Skills section. */
-export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean): { group: string; items: string[] }[] {
+/** Skills a passed browser lab shows. Each lab confirms the work: the hash must match, the decode must be right. */
+const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
+  "lab-risk-triage": ["Risk assessment", "CIA triad analysis"],
+  "lab-hash-verify": ["File integrity verification (SHA-256)", "Tampered file analysis"],
+  "lab-password-table": ["Password storage assessment", "Base64 decoding", "Dictionary attack analysis"],
+};
+
+export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean, results: Results = {}): { group: string; items: string[] }[] {
   const identity = new Set<string>();
   const monitoring = new Set<string>();
   if (hasLab || items.length) identity.add("Active Directory");
@@ -290,6 +297,7 @@ export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean)
   const groups = [
     { group: "Identity and access", items: [...identity] },
     { group: "Security monitoring", items: [...monitoring] },
+    { group: "Security analysis", items: (Object.keys(LAB_PASS_SKILLS) as LabPassId[]).filter((id) => results[id]?.solved).flatMap((id) => LAB_PASS_SKILLS[id]) },
     { group: "Scripting", items: hasLab ? ["PowerShell"] : [] },
   ];
   return groups.filter((g) => g.items.length);
