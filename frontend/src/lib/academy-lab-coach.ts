@@ -52,7 +52,7 @@ Order: C, B, D, A.`,
 4 Debrief.`,
     answers: `A matches. B does not match. C matches (file untouched, but the sender is suspicious).
 Changed lines in B: line 5 (server vpn.purvexfinancia1.com, digit 1 in place of the letter l) and line 7 (new Invoke-WebRequest that downloads helper.exe). Effect: sends VPN traffic to an outside server and downloads a program.
-Calls: pull B, keep it as evidence, warn staff, escalate with the hashes. C: report the message as phishing, updates only come from the IT portal. CCleaner: the vendor's own build was poisoned, so it published the hash of the bad file.`,
+Calls: pull B, keep it as evidence, warn staff, escalate with the hashes. C: report the message as phishing, updates only come from the IT portal. CCleaner: the malware was built into the vendor's own signed release, so the file matched what the vendor shipped.`,
     mistakes: `Copying the file's text into CyberChef instead of loading the file itself, which can change line endings and the hash. Comparing only the first few characters. Pasting IT's hash instead of their own. Thinking a matching hash makes a sender trustworthy. Deleting the bad copy, which destroys evidence.
 Tool mechanics, fine to explain in full: CyberChef SHA2 with size 256; drag the file into the Input pane or use its open-file button; PowerShell 7: Get-FileHash ./FILE -Algorithm SHA256; Linux: sha256sum FILE; Mac: shasum -a 256 FILE; letter case does not matter.`,
     ladder: `1 Ask what a single changed character does to a hash, or what they can see on screen that tells them.

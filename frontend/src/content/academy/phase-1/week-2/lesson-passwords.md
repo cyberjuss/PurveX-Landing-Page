@@ -16,7 +16,7 @@
 A system should store a **salted, slow hash** of each password, never the password. At sign-in it hashes what you typed and compares.
 
 - **Salt:** a random value added per user. Two people with the same password get different hashes, so reuse is hidden.
-- **Slow hash:** Argon2id or bcrypt. On one ordinary processor core, SHA-256 ran about 1.2 million guesses a second. bcrypt managed about 3 or 4.
+- **Slow hash:** Argon2id or bcrypt. Crackers on graphics cards try billions of SHA-256 guesses a second. bcrypt at a normal cost setting allows only a few per second on one processor core.
 
 **Without a salt and a slow hash,** the same passwords show the same value, and tools like Hashcat and John the Ripper guess weak passwords fast. That is what happened to LinkedIn in 2012.
 
@@ -26,7 +26,7 @@ People reuse passwords. Attackers try leaked email and password pairs on other s
 
 ### What to do first after a vendor breach
 
-1. Find out how the passwords were stored. Encoded or encrypted means every one is exposed.
+1. Find out how the passwords were stored. Encoded means every one is exposed. Encrypted means every one is exposed if the key was taken too, so treat them as exposed.
 2. Force resets for affected staff, starting with any confirmed exposed.
 3. Turn on MFA for those accounts, and watch their sign-ins.
 

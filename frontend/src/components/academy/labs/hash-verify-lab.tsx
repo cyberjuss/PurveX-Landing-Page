@@ -145,11 +145,11 @@ const QUESTIONS: { id: string; tag: string; title: string; prompt: string; optio
     prompt: "In 2017, CCleaner shipped malware from its own build. Why would a hash check miss it?",
     options: [
       { key: "type", text: "Hashes do not work on installers." },
-      { key: "source", text: "The vendor published the hash of the bad file." },
+      { key: "source", text: "The malware was built into the vendor's own release, so the file matched what the vendor shipped." },
       { key: "users", text: "Nobody knew how to hash a file." },
     ],
     answer: "source",
-    why: "A hash proves a file matches its source, not that the source is safe. SolarWinds (2020) was the same.",
+    why: "A hash proves a file matches its source, not that the source is safe. The file was even signed by the vendor. SolarWinds (2020) was the same.",
   },
 ];
 

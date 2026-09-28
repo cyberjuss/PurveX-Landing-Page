@@ -100,7 +100,7 @@ const GENS: Gen[] = [
     column: "pwd_enc",
     clue: "AES, with the key in a config file on the same server. Note the hints.",
     kind: "encryption",
-    why: "Encryption, and the key was stolen with the data. Same password, same output, plus readable hints. Adobe, 2013.",
+    why: "Encryption, but the key sat on the same server and was stolen with the data. Equal passwords also gave equal output, and the hints were readable, the two mistakes behind Adobe's 2013 breach.",
   },
   {
     id: "v3",
@@ -118,7 +118,7 @@ const GENS: Gen[] = [
     column: "salt + pwd_hash",
     clue: "A different salt per user, hashed together with the password.",
     kind: "salted",
-    why: "Every hash is unique, so reuse is hidden and guess lists fail. The standard today, ideally with a slow hash such as bcrypt.",
+    why: "Every hash is unique, so reuse is hidden and precomputed tables fail. Weak passwords can still be guessed one user at a time, which is why the standard is a slow salted hash such as bcrypt or Argon2.",
   },
 ];
 

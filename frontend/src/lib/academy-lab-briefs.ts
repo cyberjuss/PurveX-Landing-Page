@@ -22,7 +22,7 @@ export interface LabBrief {
 export const LAB_BRIEFS: Record<LabWidget, LabBrief> = {
   "risk-triage": {
     problem:
-      "In 2017 Equifax left a published security patch unapplied for two months while other work came first. Attackers used that gap to take the records of 147 million people.",
+      "In 2017 Equifax left a published Apache Struts patch unapplied for months after its release. Attackers used that gap to take the records of about 147 million people.",
     today: "Four problems came in over the weekend. IT can start one fix this morning.",
     objective: {
       "help-desk": "Sort four tickets so the one that can hurt clients gets worked first, and explain the order to your lead.",

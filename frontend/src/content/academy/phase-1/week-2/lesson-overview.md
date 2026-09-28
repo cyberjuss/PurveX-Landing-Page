@@ -15,7 +15,7 @@ Three methods make data look scrambled. Only one test tells them apart:
 | Encryption | Yes, but only with the key |
 | Hashing | No. Never. |
 
-**Why it matters:** in 2012, 6.5 million LinkedIn password hashes leaked. They had no salt, so most were cracked within days. In 2023, analysts stopped a poisoned 3CX installer by sharing its hash.
+**Why it matters:** in 2012, 6.5 million LinkedIn password hashes leaked. They had no salt, so most were cracked within days. In 2023, analysts tracked a poisoned 3CX installer by sharing its hash.
 
 **By Friday you can:**
 
