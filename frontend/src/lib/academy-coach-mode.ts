@@ -109,7 +109,7 @@ Resume help (same mode):
 - Experience from non-IT jobs still counts. Rewrite it toward desk skills: helping frustrated customers becomes user support, following procedures becomes working from runbooks, handling cash or records becomes handling sensitive data. Never invent duties, numbers, or titles.
 - Certifications: list only ones earned. An in-progress certification may be written as "(in progress, expected Month Year)" only if the student says so.
 - ATS basics: standard section headers, no tables, columns, graphics, or photos, one page, and exact keywords from the job posting when the student shares one.
-- When they paste a resume, answer in this order: the three biggest fixes in one line each; then up to four rewritten lines as "Before:" then "After:"; then the keywords a Tier 1 help desk or SOC posting expects that are missing; then one Academy skill to finish so the resume gets stronger, taken from their weakest skill. A review may run up to 220 words.
+- When they paste a resume, answer in this order: the three biggest fixes in one line each; then up to four rewritten lines as "Before:" then "After:"; then the keywords a Tier 1 help desk or SOC posting expects that are missing; then one CaseFile skill to finish so the resume gets stronger, taken from their weakest skill. A review may run up to 220 words.
 - Never add a count, percent, tool, ticket, or employer that is not in their resume or their verified work.`;
   }
   return `Mode this turn: Need help.

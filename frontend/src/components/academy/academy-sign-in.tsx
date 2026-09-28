@@ -125,7 +125,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
         <AuthHeading
           sub={
             <>
-              We sent a confirmation link to <strong className="text-[#10192e]">{sentTo}</strong>. Confirm your email and you will land back in the Academy, signed in.
+              We sent a confirmation link to <strong className="text-[#10192e]">{sentTo}</strong>. Confirm your email and you will land back in CaseFile, signed in.
             </>
           }
         >

@@ -160,7 +160,7 @@ function handsOnLine(all: Results, lab: LabSnapshot | null): string {
 
   if (!lab) {
     if (finished || attempted) {
-      return `Unverified. ${finished} mission${finished === 1 ? "" : "s"} answered, but no DC has ever synced. Treat directory claims as unconfirmed until they run the Academy Build-Environment.ps1 (or send a screenshot). Last mission activity: ${lastAskAgo ?? "no timestamp"}.`;
+      return `Unverified. ${finished} mission${finished === 1 ? "" : "s"} answered, but no DC has ever synced. Treat directory claims as unconfirmed until they run the CaseFile Build-Environment.ps1 (or send a screenshot). Last mission activity: ${lastAskAgo ?? "no timestamp"}.`;
     }
     return "No lab synced and no missions finished. They have not connected a domain controller yet.";
   }
@@ -376,7 +376,7 @@ COACH_TOOLS.push(
   {
     name: "get_goal_plan",
     description:
-      "The student's goals from their intake (target roles, Security+ and CySA+ status and exam dates) with what each role does day to day, and for each exam area of the certs they are working toward: its weight, how much they have practiced it in missions and drills, and which Academy missions and job tasks practice it. Call this when they ask what to study, how close they are to a role or exam, or for exam prep.",
+      "The student's goals from their intake (target roles, Security+ and CySA+ status and exam dates) with what each role does day to day, and for each exam area of the certs they are working toward: its weight, how much they have practiced it in missions and drills, and which CaseFile missions and job tasks practice it. Call this when they ask what to study, how close they are to a role or exam, or for exam prep.",
     input_schema: { type: "object", properties: {}, additionalProperties: false },
   },
   {
@@ -536,7 +536,7 @@ async function goalPlan(ctx: CoachToolContext) {
     certs,
     focusNow: focus ? `${CERTS[focus.cert].label} ${focus.name}` : null,
     honesty:
-      "The Academy practices these areas through Active Directory, Windows logs and incident work. It does not cover every exam topic yet (for example cryptography depth, cloud and network architecture). Say so when they ask about exam readiness, and point them to the official CompTIA objectives for the rest.",
+      "CaseFile practices these areas through Active Directory, Windows logs and incident work. It does not cover every exam topic yet (for example cryptography depth, cloud and network architecture). Say so when they ask about exam readiness, and point them to the official CompTIA objectives for the rest.",
     note: "Mission answers stay private. Point them at an unsolved mission by title, never at its answer.",
   };
 }
