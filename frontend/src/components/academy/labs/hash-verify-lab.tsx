@@ -334,21 +334,25 @@ export function HashVerifyLab() {
         <div className="rt-body">
           <header className="rt-head">
             <h3>What did they change?</h3>
-            <p>The hash says copy B changed. Now find how.</p>
+            <p>Copy B&apos;s hash did not match, so someone edited it. Compare it with IT&apos;s real copy to find the edits.</p>
           </header>
           <Guide
             steps={[
               {
-                title: "Click every line in copy B that is not in IT's update",
+                title: "Find the 2 lines in copy B that differ from IT's copy, and click them",
                 done: s.lines.length > 0,
                 body: (
-                  <FileView
-                    name={BY_ID.share.file}
-                    lines={TAMPERED}
-                    picked={s.lines}
-                    reveal={s.checked[1]}
-                    onToggle={(n) => patch({ lines: s.lines.includes(n) ? s.lines.filter((x) => x !== n) : [...s.lines, n] })}
-                  />
+                  <div className="lk-files">
+                    <FileView label="IT's real copy" name={BY_ID.email.file} note="Matches IT's hash" lines={GENUINE} />
+                    <FileView
+                      label="Copy B"
+                      name={BY_ID.share.file}
+                      lines={TAMPERED}
+                      picked={s.lines}
+                      reveal={s.checked[1]}
+                      onToggle={(n) => patch({ lines: s.lines.includes(n) ? s.lines.filter((x) => x !== n) : [...s.lines, n] })}
+                    />
+                  </div>
                 ),
               },
               {
@@ -377,7 +381,7 @@ export function HashVerifyLab() {
               </>
             ) : (
               <>
-                <p className="rt-tally">{nextHint([s.lines.length > 0, Boolean(s.effect)], ["click the changed lines", "say what copy B does"])}</p>
+                <p className="rt-tally">{nextHint([s.lines.length > 0, Boolean(s.effect)], ["click the 2 changed lines", "say what copy B does"])}</p>
                 <button type="button" className="rt-btn rt-btn--primary" disabled={!s.lines.length || !s.effect} onClick={() => check(1)}>
                   Check answers
                 </button>
@@ -480,15 +484,43 @@ export function HashVerifyLab() {
   );
 }
 
-function FileView({ name, lines, picked, reveal, onToggle }: { name: string; lines: string[]; picked: number[]; reveal: boolean; onToggle: (n: number) => void }) {
+// Without onToggle the file is read-only, for showing IT's copy to compare against.
+function FileView({
+  label,
+  name,
+  note,
+  lines,
+  picked = [],
+  reveal = false,
+  onToggle,
+}: {
+  label: string;
+  name: string;
+  note?: string;
+  lines: string[];
+  picked?: number[];
+  reveal?: boolean;
+  onToggle?: (n: number) => void;
+}) {
   return (
-    <div className="lk-file">
+    <div className={`lk-file${onToggle ? "" : " is-ref"}`}>
       <div className="lk-file__bar">
-        <span>{name}</span>
-        <span>{reveal ? "Green: changed. Red: you picked it, but it matches IT's copy." : "Click a line to pick it"}</span>
+        <span>
+          <b>{label}</b> · {name}
+        </span>
+        <span>{note ?? (reveal ? "Green: changed. Red: you picked it, but it matches IT's copy." : "Click a line to pick it")}</span>
       </div>
       <ol>
         {lines.map((line, n) => {
+          if (!onToggle)
+            return (
+              <li key={n}>
+                <span>
+                  <i>{n + 1}</i>
+                  <span>{line}</span>
+                </span>
+              </li>
+            );
           const isPicked = picked.includes(n);
           const changed = CHANGED_LINES.includes(n);
           const cls = reveal ? (changed ? "is-changed" : isPicked ? "is-miss" : "") : isPicked ? "is-picked" : "";

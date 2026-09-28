@@ -51,6 +51,11 @@
 .lk-file li .is-picked { background: rgba(85, 70, 224, 0.35); }
 .lk-file li .is-changed { box-shadow: inset 3px 0 0 #34d399; }
 .lk-file li .is-miss { box-shadow: inset 3px 0 0 #f87171; }
+.lk-file__bar b { font-weight: 700; color: var(--rd-ink); }
+.lk-file.is-ref ol { background: #0b1220; }
+.lk-file.is-ref li > span { color: #94a3b8; }
+.lk-files { display: grid; gap: 12px; }
+.lk-file.is-ref li span, .lk-file.is-ref li i { font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace); }
 
 /* Tables of leaked rows. */
 .lk-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
