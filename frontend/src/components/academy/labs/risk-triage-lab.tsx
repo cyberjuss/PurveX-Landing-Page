@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ArrowDown, ArrowUp, Check, ChevronLeft, ChevronRight, MessageCircle, RotateCcw, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, ChevronLeft, ChevronRight, MessageCircle, Radar, RotateCcw, X } from "lucide-react";
 import { useOptionalCoach } from "../coach-context";
 import { LOST_ASK } from "./lab-brief";
-import { useLabDone } from "./lab-kit";
+import { Avatar, LabHud, Narrator, useLabDone } from "./lab-kit";
 import "./lab-kit.css";
 import "./risk-triage-lab.css";
 
@@ -205,6 +205,7 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
 
   return (
     <section className="rt" aria-label="Monday Morning Risk Triage lab">
+      <LabHud label="Ticket queue" icon={Radar} step={s.step} total={STEPS.length} />
       <ol className="rt-steps">
         {STEPS.map((label, i) => (
           <li key={label}>
@@ -561,7 +562,7 @@ function Head({ title, children }: { title: string; children: ReactNode }) {
     <header className="rt-head rt-head--ask">
       <div>
         <h3>{title}</h3>
-        <p>{children}</p>
+        <Narrator>{children}</Narrator>
       </div>
       {coach?.enabled && (
         <button type="button" className="lk-mini" onClick={() => coach.ask(LOST_ASK)}>
@@ -578,7 +579,9 @@ function TicketHead({ t }: { t: Ticket }) {
       <span className="rt-tag">{t.tag}</span>
       <div>
         <b>{t.title}</b>
-        <small>From {t.from}</small>
+        <small className="lk-from">
+          <Avatar name={t.from.split(",")[0]} size={18} /> From {t.from}
+        </small>
         <p>{t.report}</p>
       </div>
     </div>

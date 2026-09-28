@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Check, ChevronLeft, ChevronRight, Copy, Download, X } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Copy, Download, Server, X, type LucideIcon } from "lucide-react";
 import "./risk-triage-lab.css";
 import "./lab-kit.css";
 import { useOptionalCoach } from "../coach-context";
@@ -49,6 +49,85 @@ export function downloadText(name: string, text: string) {
   a.download = name;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+const AV_COLORS = [
+  ["#dbeafe", "#3b82f6"],
+  ["#dcfce7", "#16a34a"],
+  ["#fef3c7", "#d97706"],
+  ["#fce7f3", "#db2777"],
+  ["#ede9fe", "#7c3aed"],
+  ["#cffafe", "#0891b2"],
+];
+
+/** A person in the lab's story, drawn as a simple bust in their own color. */
+export function Avatar({ name, kind = "person", size = 32 }: { name: string; kind?: "person" | "server" | "unknown"; size?: number }) {
+  if (kind === "server") {
+    return (
+      <span className="lk-av lk-av--server" style={{ width: size, height: size }} title={name}>
+        <Server aria-hidden="true" />
+      </span>
+    );
+  }
+  const [bg, fg] = kind === "unknown" ? ["#e5e7eb", "#9ca3af"] : AV_COLORS[[...name].reduce((n, ch) => n + ch.charCodeAt(0), 0) % AV_COLORS.length];
+  return (
+    <span className="lk-av" style={{ width: size, height: size }} title={name}>
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="20" fill={bg} />
+        <circle cx="20" cy="16" r="7" fill={fg} />
+        <path d="M7 38c1.6-7.5 6.8-11 13-11s11.4 3.5 13 11" fill={fg} />
+        {kind === "unknown" && (
+          <text x="20" y="19.5" textAnchor="middle" fontSize="9" fontWeight="700" fill="#fff">
+            ?
+          </text>
+        )}
+      </svg>
+    </span>
+  );
+}
+
+/** The lab's guide gives each step's instruction as a chat message, after a short typing pause. */
+export function Narrator({ name = "Alex Rivera", role = "IT", children }: { name?: string; role?: string; children: ReactNode }) {
+  const [typing, setTyping] = useState(true);
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const t = window.setTimeout(() => setTyping(false), reduce ? 0 : 650);
+    return () => window.clearTimeout(t);
+  }, []);
+  return (
+    <div className={`lk-nar${typing ? " is-typing" : ""}`}>
+      <Avatar name={name} size={36} />
+      <div className="lk-nar__bubble">
+        <small>
+          {name} · {role}
+        </small>
+        {typing && (
+          <span className="lk-nar__dots" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
+        )}
+        <p>{children}</p>
+      </div>
+    </div>
+  );
+}
+
+/** A thin terminal-style status bar across the top of a lab. Decorative only. */
+export function LabHud({ label, icon: Icon, step, total }: { label: string; icon: LucideIcon; step: number; total: number }) {
+  return (
+    <div className="lk-hud" aria-hidden="true">
+      <span className="lk-hud__live" />
+      <Icon className="lk-hud__icon" />
+      <b>PX-SOC</b>
+      <span className="lk-hud__label">{label}</span>
+      <span className="lk-hud__step">
+        Step {step + 1}/{total}
+        <i className="lk-hud__cursor" />
+      </span>
+    </div>
+  );
 }
 
 /** Tells the week this lab is finished once the student reaches its debrief. */

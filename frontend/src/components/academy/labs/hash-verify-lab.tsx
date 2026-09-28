@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ExternalLink, RotateCcw } from "lucide-react";
+import { ExternalLink, Fingerprint, RotateCcw } from "lucide-react";
 import {
+  Avatar,
   CHEF_SHA256,
   Deck,
   DownloadButton,
@@ -11,6 +12,8 @@ import {
   HashCompare,
   HashPlayground,
   HashTool,
+  LabHud,
+  Narrator,
   nextHint,
   normHash,
   Options,
@@ -198,13 +201,14 @@ export function HashVerifyLab({ onDone }: { onDone?: () => void }) {
 
   return (
     <section className="rt" aria-label="The Update Nobody Can Vouch For lab">
+      <LabHud label="Integrity check" icon={Fingerprint} step={s.step} total={STEPS.length} />
       <Stepper steps={STEPS} step={s.step} done={[...s.checked, false]} reached={reached} onGo={go} />
 
       {s.step === 0 && (
         <div className="rt-body">
           <header className="rt-head">
             <h3>Which copies are real?</h3>
-            <p>Hash each copy and compare it to IT&apos;s. Trust the hash, not how the file looks.</p>
+            <Narrator>Hash each copy and compare it to mine. Trust the hash, not how the file looks.</Narrator>
           </header>
           <div className="lk-real">
             <b>IT portal · VPN update 2.4.1 · SHA-256</b>
@@ -234,7 +238,9 @@ export function HashVerifyLab({ onDone }: { onDone?: () => void }) {
                     <span className="rt-tag">{c.tag}</span>
                     <div>
                       <b>{c.title}</b>
-                      <small>From {c.from}</small>
+                      <small className="lk-from">
+                        <Avatar name={c.from} kind={c.id === "share" ? "server" : c.id === "teams" ? "unknown" : "person"} size={18} /> From {c.from}
+                      </small>
                       <p>{c.story}</p>
                     </div>
                   </div>
@@ -336,7 +342,7 @@ export function HashVerifyLab({ onDone }: { onDone?: () => void }) {
         <div className="rt-body">
           <header className="rt-head">
             <h3>What did they change?</h3>
-            <p>Copy B&apos;s hash did not match, so someone edited it. Compare it with IT&apos;s real copy to find the edits.</p>
+            <Narrator>Copy B&apos;s hash did not match, so someone edited it. Compare it with my real copy to find the edits.</Narrator>
           </header>
           <Guide
             steps={[
@@ -397,7 +403,7 @@ export function HashVerifyLab({ onDone }: { onDone?: () => void }) {
         <div className="rt-body">
           <header className="rt-head">
             <h3>What happens next?</h3>
-            <p>Three quick calls.</p>
+            <Narrator>Three quick calls before this goes any further.</Narrator>
           </header>
           <Deck
             tags={QUESTIONS.map((q) => q.tag)}

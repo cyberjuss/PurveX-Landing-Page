@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ArrowRight, Ban, ExternalLink, Lock, LockOpen, Play, RotateCcw } from "lucide-react";
+import { ArrowRight, Ban, ExternalLink, KeyRound, Lock, LockOpen, Play, RotateCcw } from "lucide-react";
 import {
   CHEF_FROM_BASE64,
   CHEF_SHA256,
@@ -9,6 +9,8 @@ import {
   Deck,
   Guide,
   HashTool,
+  LabHud,
+  Narrator,
   Morph,
   Takeaway,
   nextHint,
@@ -257,13 +259,14 @@ export function PasswordTableLab({ onDone }: { onDone?: () => void }) {
 
   return (
     <section className="rt" aria-label="The Leaked Password Table lab">
+      <LabHud label="Breach review" icon={KeyRound} step={s.step} total={STEPS.length} />
       <Stepper steps={STEPS} step={s.step} done={[...s.checked, false]} reached={reached} onGo={go} />
 
       {s.step === 0 && (
         <div className="rt-body">
           <header className="rt-head">
             <h3>Three ways to hide a password</h3>
-            <p>Try each one before you meet all four in the leaked table. The test: can you get the password back?</p>
+            <Narrator>Try each one before you meet all four in the leaked table. The test: can you get the password back?</Narrator>
           </header>
           <Deck
             tags={TRY_CARDS.map((c) => c.tag)}
@@ -313,7 +316,7 @@ export function PasswordTableLab({ onDone }: { onDone?: () => void }) {
         <div className="rt-body">
           <header className="rt-head">
             <h3>How did {VENDOR} store it?</h3>
-            <p>The dump holds four generations. Name each one.</p>
+            <Narrator>The dump holds four generations. Name each one.</Narrator>
           </header>
           <Deck
             tags={GENS.map((g) => g.tag)}
@@ -399,7 +402,7 @@ export function PasswordTableLab({ onDone }: { onDone?: () => void }) {
         <div className="rt-body">
           <header className="rt-head">
             <h3>What does the dump give away?</h3>
-            <p>Four short jobs with free tools. You never log in to anything.</p>
+            <Narrator>Four short jobs with free tools. You never log in to anything.</Narrator>
           </header>
           <Deck
             tags={WORK_CARDS.map((c) => c.tag)}
