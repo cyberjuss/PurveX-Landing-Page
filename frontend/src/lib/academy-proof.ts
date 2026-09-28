@@ -37,7 +37,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Enforced an account lockout policy against password guessing",
     actions: ["Configured a domain lockout threshold for repeated failed sign-ins", "Set lockout duration and counter reset to balance security with usability", "Validated the policy on the domain controller"],
     impact: "Caps how many passwords an attacker can try on any one account, which slows guessing and password-spray attacks.",
-    keywords: ["Account lockout policy", "Group Policy (GPO)"],
+    keywords: ["Account Lockout Policy", "Group Policy (GPO)"],
     bullets: {
       soc: [["a", "Hardened"], ["s", "an Active Directory domain"], ["t", "against password guessing"], ["a", "by enforcing account lockout after repeated failed sign-ins,"], ["r", "a fix confirmed by an automated lab check."]],
       help: [["a", "Strengthened"], ["s", "domain sign-in security"], ["t", "against guessed passwords"], ["a", "by setting an account lockout policy."]],
@@ -48,7 +48,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Strengthened the domain password policy",
     actions: ["Raised the minimum password length to current guidance", "Enforced complexity requirements through Group Policy", "Validated the new policy on the domain controller"],
     impact: "Longer passwords take far longer to crack, so a stolen password hash is less likely to become a working sign-in.",
-    keywords: ["Password policy", "Group Policy (GPO)"],
+    keywords: ["Password Policy", "Group Policy (GPO)"],
     bullets: {
       soc: [["a", "Raised"], ["s", "the domain password standard"], ["a", "to a 12-character minimum with complexity,"], ["r", "cutting the risk of cracked passwords."]],
       help: [["a", "Tightened"], ["s", "password rules for all users"], ["a", "with a longer minimum and complexity,"], ["r", "reducing reset-prone weak passwords."]],
@@ -59,7 +59,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Closed a security auditing gap for incident investigation",
     actions: ["Identified a missing category in the domain's advanced audit policy", "Enabled success and failure auditing through Group Policy"],
     impact: "Records who signed in and what changed, so a future incident can be traced instead of guessed at.",
-    keywords: ["Windows Security auditing", "Advanced Audit Policy", "Event Viewer"],
+    keywords: ["Security Auditing", "Advanced Audit Policy", "Windows Event Logs"],
     bullets: {
       soc: [["a", "Enabled"], ["s", "missing Windows security auditing on a domain controller"], ["t", "to support incident investigations,"], ["r", "so key events are logged."]],
       help: [["a", "Turned on"], ["s", "Windows security auditing"], ["r", "so account and sign-in events are recorded for review."]],
@@ -70,7 +70,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Extended Security log retention for forensic readiness",
     actions: ["Assessed Security log capacity against investigation needs", "Increased the maximum log size so events are retained longer"],
     impact: "Keeps sign-in evidence long enough to investigate, since intrusions are often found weeks after they start.",
-    keywords: ["Event log management", "Event Viewer"],
+    keywords: ["Log Management", "Windows Event Logs"],
     bullets: {
       soc: [["a", "Extended"], ["s", "Security log retention on a domain controller"], ["t", "so evidence survives an investigation window."]],
       help: [["a", "Increased"], ["s", "the Security log size"], ["r", "so older sign-in events stay available."]],
@@ -81,7 +81,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Applied a stricter password policy to privileged accounts",
     actions: ["Created a fine-grained password policy (PSO)", "Scoped it to administrative accounts", "Required longer passwords and tighter lockout for admins"],
     impact: "Admin accounts can change the whole domain, so a stronger policy protects the accounts attackers want most.",
-    keywords: ["Fine-grained password policy", "Privileged access"],
+    keywords: ["Fine-Grained Password Policies (FGPP)", "Privileged Account Security"],
     bullets: {
       soc: [["a", "Hardened"], ["s", "privileged accounts"], ["a", "with a fine-grained password policy and strict lockout."]],
       help: [["a", "Applied"], ["s", "a stricter password policy to admin accounts."]],
@@ -92,7 +92,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Remediated a Kerberos pre-authentication weakness",
     actions: ["Identified an account exposed to offline password cracking", "Required Kerberos pre-authentication and a password on the account"],
     impact: "Stops anyone on the network from requesting data that can be cracked offline to reveal the account's password.",
-    keywords: ["Kerberos", "Account hardening"],
+    keywords: ["Kerberos", "Security Hardening"],
     bullets: {
       soc: [["a", "Remediated"], ["s", "an account open to offline password cracking"], ["a", "by requiring Kerberos pre-authentication and a password."]],
       help: [["a", "Secured"], ["s", "a weakly configured account"], ["a", "by requiring a password and Kerberos pre-authentication."]],
@@ -103,7 +103,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Provisioned access through role-based group membership",
     actions: ["Identified the security group mapped to the requested resource", "Granted access through group membership instead of elevated rights", "Verified the user's effective access"],
     impact: "The user gets exactly the access the role needs, with no extra rights an attacker could later misuse.",
-    keywords: ["Security groups", "Least privilege"],
+    keywords: ["Role-Based Access Control (RBAC)", "Least Privilege"],
     bullets: {
       soc: [["a", "Granted"], ["s", "a user's missing access"], ["a", "through the correct security group instead of admin rights,"], ["r", "keeping least privilege intact."]],
       help: [["a", "Resolved"], ["s", "a missing-access ticket"], ["a", "by adding the user to the right security group,"], ["r", "restoring access without over-granting."]],
@@ -114,7 +114,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Diagnosed and resolved a user sign-in failure",
     actions: ["Distinguished a disabled account from a lockout before acting", "Restored the account without an unnecessary password reset", "Confirmed the user could sign in"],
     impact: "Gets the user working again, and checking the account first avoids a needless password reset and the downtime it causes.",
-    keywords: ["Account troubleshooting"],
+    keywords: ["Account Management", "Troubleshooting"],
     bullets: {
       soc: [["a", "Investigated"], ["s", "a user sign-in failure"], ["a", "by checking account state before acting,"], ["r", "telling a disabled account from a lockout."]],
       help: [["a", "Resolved"], ["s", "a locked-out user ticket"], ["a", "by inspecting the account first and re-enabling it,"], ["r", "restoring sign-in without an unneeded password reset."]],
@@ -125,7 +125,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Onboarded a new hire to naming and access standards",
     actions: ["Created the account in the correct department OU", "Assigned only the role-required security group", "Removed a stale account that still held access"],
     impact: "The new hire starts with only the access the role needs, and a leftover account that still had access is closed.",
-    keywords: ["User provisioning", "OU and group management"],
+    keywords: ["User Provisioning", "Organizational Units (OUs)"],
     bullets: {
       soc: [["a", "Provisioned"], ["s", "a new hire account"], ["a", "with only the required group,"], ["r", "and removed a leftover account with stale access."]],
       help: [["a", "Onboarded"], ["s", "a new employee in Active Directory,"], ["a", "creating the account to the naming standard with the right group."]],
@@ -136,7 +136,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Processed a department transfer and removed legacy access",
     actions: ["Moved the account to the new department's OU", "Replaced the previous department group with the new one", "Confirmed no access to the former department remained"],
     impact: "The transferred employee loses the old department's access, closing a gap that grows each time someone changes roles.",
-    keywords: ["OU and group management", "Least privilege"],
+    keywords: ["Organizational Units (OUs)", "Least Privilege"],
     bullets: {
       soc: [["a", "Remediated"], ["s", "leftover access for a transferred employee"], ["a", "by moving the account to the correct OU and department group,"], ["r", "enforcing least privilege."]],
       help: [["a", "Processed"], ["s", "a department transfer in Active Directory,"], ["a", "moving the user to the correct OU and group,"], ["r", "so access matched the org chart."]],
@@ -147,7 +147,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Revoked unnecessary privileges in an access review",
     actions: ["Reviewed group membership against the user's role", "Removed access the role did not require"],
     impact: "A compromised account can reach less, which limits how much damage a single stolen sign-in can do.",
-    keywords: ["Least privilege", "Access review"],
+    keywords: ["Least Privilege", "Access Reviews"],
     bullets: {
       soc: [["a", "Reduced"], ["s", "excess privileges on an account"], ["a", "by reviewing group membership and removing unneeded access,"], ["r", "shrinking the attack surface."]],
       help: [["a", "Cleaned up"], ["s", "a user's access"], ["a", "by removing a group their role did not need."]],
@@ -158,7 +158,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Offboarded a departing user while preserving audit history",
     actions: ["Disabled the account instead of deleting it", "Removed every group membership"],
     impact: "A former employee can no longer sign in, and the disabled account keeps the history auditors and investigators need.",
-    keywords: ["User offboarding"],
+    keywords: ["User Deprovisioning"],
     bullets: {
       soc: [["a", "Contained"], ["s", "a departed user's access"], ["a", "by disabling the account and removing every group,"], ["r", "while keeping it for audit."]],
       help: [["a", "Offboarded"], ["s", "a departed employee"], ["a", "by disabling the account and removing group access."]],
@@ -169,7 +169,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Documented a service account's approved operating window",
     actions: ["Located the approved run hours for the account", "Recorded them on the account for audit and monitoring"],
     impact: "Gives the SOC a baseline, so the account signing in outside its approved hours stands out as a possible compromise.",
-    keywords: ["Service accounts"],
+    keywords: ["Service Account Management"],
     bullets: {
       soc: [["a", "Documented"], ["s", "a service account's approved run window"], ["t", "for auditors,"], ["r", "so off-hours logons stand out."]],
       help: [["a", "Updated"], ["s", "a service account record"], ["a", "with its approved run window for an audit request."]],
@@ -180,7 +180,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Retired an inactive directory object",
     actions: ["Confirmed the object had been inactive for more than 90 days", "Disabled it to reduce the attack surface"],
     impact: "Unused accounts are easy targets because nobody notices when they are used. Disabling one removes that hiding place.",
-    keywords: ["Account lifecycle"],
+    keywords: ["Account Lifecycle Management"],
     bullets: {
       soc: [["a", "Disabled"], ["s", "an inactive account"], ["t", "to reduce the attack surface,"], ["r", "after confirming 90 days without a sign-in."]],
       help: [["a", "Retired"], ["s", "an unused account"], ["a", "after confirming 90 days of inactivity."]],
@@ -191,7 +191,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Restored password expiration on a user account",
     actions: ["Identified a user account exempt from password expiration", "Removed the exemption so the password ages normally"],
     impact: "Brings the account back under the domain's password policy, so it follows the same rules as every other account.",
-    keywords: ["Password policy"],
+    keywords: ["Password Policy"],
     bullets: {
       soc: [["a", "Closed"], ["s", "a password exposure risk"], ["a", "by removing a non-expiring password from a user account."]],
       help: [["a", "Corrected"], ["s", "a user account set to never expire its password."]],
@@ -202,7 +202,7 @@ const CATALOG: Record<string, Entry> = {
     title: "Corrected a group that could not grant permissions",
     actions: ["Diagnosed a distribution group being used for access control", "Converted it to a security group"],
     impact: "A distribution group cannot grant permissions, so access set through one silently fails. Converting it makes the access apply.",
-    keywords: ["Security groups"],
+    keywords: ["Security Groups"],
     bullets: {
       soc: [["a", "Fixed"], ["s", "an access gap"], ["a", "by converting a distribution group to a security group."]],
       help: [["a", "Resolved"], ["s", "an access issue"], ["a", "by converting a distribution group to a security group."]],
@@ -275,9 +275,9 @@ export function buildWorkItems(results: Results, drills: DrillEntry[]): WorkItem
 /** Skills as the keywords job postings use, grouped like a resume Skills section. */
 /** Skills a passed browser lab shows. Each lab confirms the work: the hash must match, the decode must be right. */
 const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
-  "lab-risk-triage": ["Risk assessment", "CIA triad analysis"],
-  "lab-hash-verify": ["File integrity verification (SHA-256)", "Tampered file analysis"],
-  "lab-password-table": ["Password storage assessment", "Base64 decoding", "Dictionary attack analysis"],
+  "lab-risk-triage": ["Risk Assessment", "CIA Triad"],
+  "lab-hash-verify": ["Cryptographic Hashing (SHA-256)", "Indicators of Compromise (IOCs)"],
+  "lab-password-table": ["Password Hashing and Salting", "Encryption (AES)", "Base64 Encoding"],
 };
 
 export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean, results: Results = {}): { group: string; items: string[] }[] {
@@ -291,13 +291,14 @@ export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean,
     }
   }
   if (didCtf) {
+    monitoring.add("Windows Event Logs");
     monitoring.add("Event Viewer");
-    monitoring.add("Windows Security log analysis");
+    monitoring.add("Log Analysis");
   }
   const groups = [
-    { group: "Identity and access", items: [...identity] },
-    { group: "Security monitoring", items: [...monitoring] },
-    { group: "Security analysis", items: (Object.keys(LAB_PASS_SKILLS) as LabPassId[]).filter((id) => results[id]?.solved).flatMap((id) => LAB_PASS_SKILLS[id]) },
+    { group: "Identity and Access Management (IAM)", items: [...identity] },
+    { group: "Security Monitoring", items: [...monitoring] },
+    { group: "Security Analysis", items: (Object.keys(LAB_PASS_SKILLS) as LabPassId[]).filter((id) => results[id]?.solved).flatMap((id) => LAB_PASS_SKILLS[id]) },
     { group: "Scripting", items: hasLab ? ["PowerShell"] : [] },
   ];
   return groups.filter((g) => g.items.length);
