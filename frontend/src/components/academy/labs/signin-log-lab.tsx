@@ -189,6 +189,8 @@ interface State {
   proof: Record<string, number>;
   q: { fails?: string; accounts?: string };
   ran: boolean;
+  /** Incidents whose log the student has marked as read. */
+  read?: string[];
   response: Record<string, string>;
   checked: [boolean, boolean, boolean];
 }
@@ -218,6 +220,7 @@ export function SigninLogLab({ onDone }: { onDone?: () => void }) {
   useLabDone(done, onDone);
   useLabPass("lab-signin-log", labPassed(done, score.total, 14));
 
+  const read = (id: string) => (s.read ?? []).includes(id);
   const card1Done = (i: Incident) => Boolean(s.pattern[i.id]) && s.proof[i.id] !== undefined;
   const reached = [true, s.checked[0], s.checked[1], s.checked[2]];
 
@@ -229,7 +232,7 @@ export function SigninLogLab({ onDone }: { onDone?: () => void }) {
         <div className="rt-body">
           <header className="rt-head">
             <h3>What happened overnight?</h3>
-            <Narrator>Four things in last night&apos;s log need a look. For each one, name the pattern, then click the row that proves it.</Narrator>
+            <Narrator>Four things in last night&apos;s log need a look. Read each log first, then tell me what is happening and click the row that proves it.</Narrator>
           </header>
           <Deck
             tags={INCIDENTS.map((i) => i.tag)}
@@ -249,24 +252,36 @@ export function SigninLogLab({ onDone }: { onDone?: () => void }) {
                     <b>{inc.title}</b>
                     <small>Security log from DC01 and the MFA service. Read it top to bottom.</small>
                   </div>
-                  <EventKey rows={inc.rows} />
-                  <LogTable
-                    rows={inc.rows}
-                    picked={s.proof[inc.id]}
-                    answer={checked ? inc.proof : undefined}
-                    onPick={
-                      checked
-                        ? undefined
-                        : (n) => {
-                            const proof = { ...s.proof, [inc.id]: n };
-                            patch({ proof });
-                            deck1.next((k) => Boolean(s.pattern[INCIDENTS[k].id]) && proof[INCIDENTS[k].id] !== undefined);
-                          }
-                    }
-                  />
                   <Guide
-                    showAll
                     steps={[
+                      {
+                        title: "Read the log top to bottom",
+                        done: read(inc.id) || checked,
+                        body: (
+                          <>
+                            <EventKey rows={inc.rows} />
+                            <LogTable
+                              rows={inc.rows}
+                              picked={s.proof[inc.id]}
+                              answer={checked ? inc.proof : undefined}
+                              onPick={
+                                checked || !read(inc.id)
+                                  ? undefined
+                                  : (n) => {
+                                      const proof = { ...s.proof, [inc.id]: n };
+                                      patch({ proof });
+                                      deck1.next((k) => Boolean(s.pattern[INCIDENTS[k].id]) && proof[INCIDENTS[k].id] !== undefined);
+                                    }
+                              }
+                            />
+                            {!read(inc.id) && !checked && (
+                              <button type="button" className="lk-mini lk-mini--go" onClick={() => patch({ read: [...(s.read ?? []), inc.id] })}>
+                                I&apos;ve read the log
+                              </button>
+                            )}
+                          </>
+                        ),
+                      },
                       {
                         title: "What is happening?",
                         done: Boolean(s.pattern[inc.id]),
@@ -338,7 +353,6 @@ export function SigninLogLab({ onDone }: { onDone?: () => void }) {
             <Narrator>Count the whole night with Python. Run the script as it is, then answer from what it prints.</Narrator>
           </header>
           <Guide
-            showAll
             steps={[
               {
                 title: "Run the script over signin.csv",
@@ -349,6 +363,11 @@ export function SigninLogLab({ onDone }: { onDone?: () => void }) {
                     <details className="lk-more">
                       <summary>Python blocked on this computer? See the whole log</summary>
                       <LogTable rows={LOG} tall />
+                      {!s.ran && (
+                        <button type="button" className="lk-mini" onClick={() => patch({ ran: true })}>
+                          Continue without Python
+                        </button>
+                      )}
                     </details>
                   </>
                 ),
