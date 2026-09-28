@@ -494,27 +494,41 @@ export function HashCompare({ label, mine, reference }: { label: string; mine: s
   if (!reference || !mine) return null;
   const a = normHash(mine);
   const same = [...reference].filter((ch, i) => a[i] === ch).length;
+  const match = same === reference.length && a.length === reference.length;
+  // Groups of eight, the way analysts read a hash aloud, so the two rows line up by eye.
+  const chunks = reference.match(/.{1,8}/g) ?? [];
   return (
     <div className="lk-compare" aria-label={`${label}: ${same} of ${reference.length} characters match`}>
       <div className="lk-compare__row">
         <span>IT portal</span>
-        <code>{reference}</code>
+        <code>
+          {chunks.map((c, g) => (
+            <span key={g} className="lk-compare__chunk">
+              {c}
+            </span>
+          ))}
+        </code>
       </div>
       <div className="lk-compare__row">
         <span>{label}</span>
         <code>
-          {[...reference].map((ch, i) => (
-            <b key={i} className={a[i] === ch ? "is-same" : "is-diff"} style={{ animationDelay: `${i * 12}ms` }}>
-              {a[i] ?? "·"}
-            </b>
+          {chunks.map((c, g) => (
+            <span key={g} className="lk-compare__chunk">
+              {[...c].map((ch, k) => {
+                const got = a[g * 8 + k];
+                return (
+                  <b key={k} className={got === ch ? undefined : "is-diff"}>
+                    {got ?? "·"}
+                  </b>
+                );
+              })}
+            </span>
           ))}
         </code>
       </div>
-      <p className="lk-compare__meter">
-        <i style={{ width: `${(same / reference.length) * 100}%` }} className={same === reference.length ? "is-full" : ""} />
-        <span>
-          {same} of {reference.length} characters line up
-        </span>
+      <p className={`lk-compare__status ${match ? "is-match" : "is-diff"}`}>
+        {match ? <Check aria-hidden="true" /> : <X aria-hidden="true" />}
+        {same} of {reference.length} characters match
       </p>
     </div>
   );
