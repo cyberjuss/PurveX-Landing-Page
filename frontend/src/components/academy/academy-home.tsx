@@ -9,6 +9,7 @@ import { LEVELS, summarize } from "@/lib/academy-score";
 import { DrillCard } from "./drill-card";
 import { accountFirstName, useAcademyAccount } from "./academy-account";
 import { useAcademyProgress } from "./academy-progress";
+import { isLockedHref, isPhaseLocked } from "@/lib/academy-locks";
 
 const PHASE_COPY: { slug: string; href: string; title: string; body: string }[] = [
   {
@@ -47,11 +48,13 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
   const firstName = accountFirstName(useAcademyAccount());
   const returning = Boolean(lastStop || completedCount > 0 || readiness.finished > 0);
   const greeting = returning ? "Welcome back" : "Welcome";
-  const lastMission = lastTouchedMission(results);
+  const touched = lastTouchedMission(results);
+  const lastMission = touched && !isLockedHref(challengeHref(touched.challenge, results)) ? touched : null;
 
   let firstOpen: { href: string; title: string; phaseSlug: string; entrySlug: string } | null = null;
   for (const copy of PHASE_COPY) {
     const phase = phases.find((p) => p.slug === copy.slug);
+    if (isPhaseLocked(copy.slug)) continue;
     for (const entry of entriesOf(phase)) {
       if (entry.sections.length > 0 && phase && !isComplete(phase.slug, entry.slug)) {
         firstOpen = { href: `/academy/${phase.slug}/${entry.slug}`, title: entry.title, phaseSlug: phase.slug, entrySlug: entry.slug };
@@ -61,7 +64,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
     if (firstOpen) break;
   }
 
-  const lastPhase = lastStop ? phases.find((p) => p.slug === lastStop.phaseSlug) : undefined;
+  const lastPhase = lastStop && !isPhaseLocked(lastStop.phaseSlug) ? phases.find((p) => p.slug === lastStop.phaseSlug) : undefined;
   const lastEntry = lastPhase ? entriesOf(lastPhase).find((e) => e.slug === lastStop?.entrySlug && e.sections.length > 0) : undefined;
   const pin = lastEntry && lastPhase
     ? { href: `/academy/${lastPhase.slug}/${lastEntry.slug}`, title: lastEntry.title, phaseSlug: lastPhase.slug, entrySlug: lastEntry.slug, kind: "last" as const }
@@ -114,7 +117,8 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
           const entries = entriesOf(phase);
           const live = entries.filter((e) => e.sections.length > 0);
           const done = phase ? live.filter((e) => isComplete(phase.slug, e.slug)).length : 0;
-          const soon = live.length === 0;
+          const locked = isPhaseLocked(copy.slug);
+          const soon = live.length === 0 || locked;
           const here = Boolean(pin && phase && pin.phaseSlug === phase.slug);
           const href = here && go ? go : here ? pin!.href : copy.href;
           const row = (
@@ -123,7 +127,9 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
               <span className="ax-path__main">
                 <span className="ax-path__title">
                   {copy.title}
-                  {soon ? (
+                  {locked ? (
+                    <em className="ax-tag">Locked</em>
+                  ) : soon ? (
                     <em className="ax-tag">In preparation</em>
                   ) : phase && isPhaseComplete(phase.slug) ? (
                     <em className="ax-tag ax-tag--good">Complete</em>

@@ -6,6 +6,7 @@ import { findQuiz } from "@/content/academy/quizzes";
 import { useResults } from "@/lib/academy-client";
 import { CHALLENGE_PATHS, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
 import type { Results } from "@/lib/academy-score";
+import { isPhaseLocked } from "@/lib/academy-locks";
 
 const STORAGE_KEY = "academy-progress-v1";
 const QUIZ_PASS_KEY = "academy-quiz-pass-v1";
@@ -62,8 +63,9 @@ function parseLastStop(raw: string | null): LastStop | null {
   return phaseSlug && entrySlug ? { phaseSlug, entrySlug } : null;
 }
 
+// Locked phases stay out of course progress until they open.
 function countEntries(phases: PhaseDef[]) {
-  return phases.reduce((total, phase) => total + phase.weeks.length + (phase.homeLab ? 1 : 0), 0);
+  return phases.filter((p) => !isPhaseLocked(p.slug)).reduce((total, phase) => total + phase.weeks.length + (phase.homeLab ? 1 : 0), 0);
 }
 
 interface AcademyProgressContextValue {
@@ -235,7 +237,7 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
           prev?.phaseSlug === phaseSlug && prev.entrySlug === entrySlug ? prev : { phaseSlug, entrySlug }
         );
       },
-      completedCount: completed.size,
+      completedCount: [...completed].filter((key) => !isPhaseLocked(key.split(":")[0])).length,
       totalCount,
     }),
     [completed, quizPasses, reqs, phaseDone, lastStop, totalCount]
