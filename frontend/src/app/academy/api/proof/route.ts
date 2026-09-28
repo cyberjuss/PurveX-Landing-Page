@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
-import { AVAILABILITY, SHOTS_PER_ITEM, type ExtraCert } from "@/lib/academy-proof";
+import { AVAILABILITY, CLEARANCE, SHOTS_PER_ITEM, WORK_AUTH, type ExtraCert } from "@/lib/academy-proof";
 import { loadProofData, shareBlockers } from "@/lib/academy-proof-data";
 import {
   addShot,
@@ -120,6 +120,10 @@ export async function PUT(request: Request) {
   const location = text(body.location, prev?.location, 60);
   const availability = text(body.availability, prev?.availability, 40);
   if (availability && !(AVAILABILITY as readonly string[]).includes(availability)) return NextResponse.json({ error: "Pick when you can start from the list." }, { status: 400 });
+  const workAuth = text(body.workAuth, prev?.workAuth, 60);
+  if (workAuth && !(WORK_AUTH as readonly string[]).includes(workAuth)) return NextResponse.json({ error: "Pick your work authorization from the list." }, { status: 400 });
+  const clearance = text(body.clearance, prev?.clearance, 60);
+  if (clearance && !(CLEARANCE as readonly string[]).includes(clearance)) return NextResponse.json({ error: "Pick your clearance from the list." }, { status: 400 });
   let extraCerts: ExtraCert[] = prev?.extraCerts ?? [];
   if (Array.isArray(body.extraCerts)) {
     extraCerts = [];
@@ -154,6 +158,8 @@ export async function PUT(request: Request) {
     websiteUrl,
     location,
     availability,
+    workAuth,
+    clearance,
     extraCerts,
     credentialId: prev?.credentialId || newCredentialId(),
     updatedAt: new Date().toISOString(),

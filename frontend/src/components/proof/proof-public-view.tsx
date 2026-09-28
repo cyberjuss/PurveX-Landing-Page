@@ -85,6 +85,8 @@ export function ProofPublicView({
   const certs = [...(data.certs ?? []), ...(settings.extraCerts ?? []).map((c) => ({ name: c.name, status: certStatusText(c) }))];
   const openTo = roles.length ? `Open to ${list(roles)} roles` : "";
   const where = [settings.location ?? "", settings.availability ?? ""].filter(Boolean).join(" · ");
+  // Work eligibility is the student's own statement, so it says so.
+  const eligible = [settings.workAuth ?? "", settings.clearance ?? ""].filter(Boolean).join(" · ");
   const mailto = settings.contactEmail ? `mailto:${settings.contactEmail}?subject=${encodeURIComponent("Your PurveX portfolio")}` : null;
   const socials = [
     { key: "linkedin", href: settings.linkedinUrl, label: "LinkedIn" },
@@ -132,6 +134,11 @@ export function ProofPublicView({
                 </p>
               )}
               {openTo && <p className="pp-open">{openTo}</p>}
+              {eligible && (
+                <p className="pp-open">
+                  {eligible} <span className="pp-self">(self-reported)</span>
+                </p>
+              )}
             </div>
           </div>
           {(canReach || printable) && (

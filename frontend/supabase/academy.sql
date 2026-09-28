@@ -228,3 +228,7 @@ create policy "Students read their own proof screenshots"
 insert into storage.buckets (id, name, public)
 values ('proof-screenshots', 'proof-screenshots', false)
 on conflict (id) do nothing;
+
+-- Optional, self-reported work eligibility shown to employers.
+alter table public.academy_public_profiles add column if not exists work_auth text;
+alter table public.academy_public_profiles add column if not exists clearance text;

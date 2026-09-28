@@ -312,6 +312,9 @@ export function certStatusText(c: ExtraCert): string {
 
 /** When the student can start, as employers see it. */
 export const AVAILABILITY = ["Available now", "Available in 2 weeks", "Available in a month", "Available after graduation"] as const;
+/** Self-reported work eligibility. Hidden unless the student picks one. */
+export const WORK_AUTH = ["US citizen", "Authorized to work in the US", "Will need visa sponsorship"] as const;
+export const CLEARANCE = ["Willing to obtain a clearance", "Active Public Trust", "Active Secret clearance", "Active Top Secret clearance"] as const;
 
 /** A job the Proof Profile can show. */
 export const isProofJob = (job: unknown): job is string => typeof job === "string" && job in CATALOG;

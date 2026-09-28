@@ -25,6 +25,9 @@ export type ProofSettings = {
   location?: string | null;
   /** One of AVAILABILITY. */
   availability?: string | null;
+  /** Self-reported. One of WORK_AUTH and one of CLEARANCE. */
+  workAuth?: string | null;
+  clearance?: string | null;
   /** Certifications added on the portfolio, beyond the ones in Goals. */
   extraCerts?: ExtraCert[];
   credentialId: string;
@@ -55,6 +58,8 @@ function fromRow(r: Record<string, unknown>): ProofSettings {
     websiteUrl: typeof r.website_url === "string" ? r.website_url : null,
     location: typeof r.location === "string" ? r.location : null,
     availability: typeof r.availability === "string" ? r.availability : null,
+    workAuth: typeof r.work_auth === "string" ? r.work_auth : null,
+    clearance: typeof r.clearance === "string" ? r.clearance : null,
     extraCerts: Array.isArray(r.extra_certs) ? (r.extra_certs as ExtraCert[]) : [],
     credentialId: String(r.credential_id),
     updatedAt: String(r.updated_at ?? ""),
@@ -89,7 +94,7 @@ export async function loadProofSettings(userId: string): Promise<ProofSettings |
 /** Saves settings. Returns "taken" when another student already has the slug. */
 export async function saveProofSettings(userId: string, s: ProofSettings): Promise<"ok" | "taken" | "error"> {
   if (supabaseAdmin) {
-    const { error } = await supabaseAdmin.from("academy_public_profiles").upsert({
+    const row: Record<string, unknown> = {
       user_id: userId,
       slug: s.slug,
       display_name: s.displayName,
@@ -104,10 +109,19 @@ export async function saveProofSettings(userId: string, s: ProofSettings): Promi
       website_url: s.websiteUrl ?? null,
       location: s.location ?? null,
       availability: s.availability ?? null,
+      work_auth: s.workAuth ?? null,
+      clearance: s.clearance ?? null,
       extra_certs: s.extraCerts ?? [],
       credential_id: s.credentialId,
       updated_at: s.updatedAt,
-    });
+    };
+    let { error } = await supabaseAdmin.from("academy_public_profiles").upsert(row);
+    // Until academy.sql adds the eligibility columns, save everything else.
+    if (error && /work_auth|clearance/.test(error.message)) {
+      delete row.work_auth;
+      delete row.clearance;
+      ({ error } = await supabaseAdmin.from("academy_public_profiles").upsert(row));
+    }
     if (!error) return "ok";
     if (error.code === "23505") return "taken";
     console.error("academy_public_profiles upsert failed", error.message);
