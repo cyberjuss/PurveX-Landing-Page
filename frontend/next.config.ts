@@ -3,6 +3,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactCompiler: true,
   allowedDevOrigins: ["192.168.75.1"],
+  // Coach and the MCP server search the lesson files at runtime.
+  outputFileTracingIncludes: {
+    "/api/academy/mcp": ["./src/content/academy/**/*.md"],
+    "/academy/api/coach": ["./src/content/academy/**/*.md"],
+  },
   // Optimize compilation performance
   experimental: {
     // Tree-shake large icon libraries and chart components

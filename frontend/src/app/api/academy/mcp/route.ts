@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { COACH_TOOLS, MCP_INSTRUCTIONS, runCoachTool } from "@/lib/academy-coach";
+import { getMcpPrompt, MCP_PROMPTS } from "@/lib/academy-mcp-prompts";
 import { loadLabState, loadProgress, resolveMcpKey } from "@/lib/academy-store";
 
 export const runtime = "nodejs";
@@ -8,10 +9,11 @@ export const runtime = "nodejs";
 // Students connect their own MCP client with a personal pvx_ key created in
 // the Academy. Every tool is scoped to the key's student and none returns
 // mission flags or explanations. Tools only read, except record_practice_result,
-// which logs a practice question the student answered with their assistant.
+// which logs a practice question the student answered with their assistant,
+// and the CTF tools. Prompts carry the web Coach's modes to the client.
 
 const SUPPORTED_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26"];
-const SERVER_INFO = { name: "purvex-academy", title: "CaseFile", version: "1.0.0" };
+const SERVER_INFO = { name: "purvex-academy", title: "CaseFile", version: "1.1.0" };
 
 type JsonRpcId = string | number | null;
 type JsonRpcMessage = { jsonrpc?: string; id?: JsonRpcId; method?: string; params?: Record<string, unknown> };
@@ -71,7 +73,7 @@ export async function POST(request: Request) {
       const requested = String(params.protocolVersion || "");
       return rpcResult(id, {
         protocolVersion: SUPPORTED_VERSIONS.includes(requested) ? requested : SUPPORTED_VERSIONS[0],
-        capabilities: { tools: { listChanged: false } },
+        capabilities: { tools: { listChanged: false }, prompts: { listChanged: false } },
         serverInfo: SERVER_INFO,
         instructions: MCP_INSTRUCTIONS,
       });
@@ -100,6 +102,15 @@ export async function POST(request: Request) {
         userId,
       });
       return rpcResult(id, { content: [{ type: "text", text }], isError: text.startsWith('{"error"') });
+    }
+    case "prompts/list":
+      return rpcResult(id, { prompts: MCP_PROMPTS });
+    case "prompts/get": {
+      const raw = params.arguments && typeof params.arguments === "object" ? (params.arguments as Record<string, unknown>) : {};
+      const args = Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, typeof v === "string" ? v : ""]));
+      const prompt = getMcpPrompt(String(params.name || ""), args, await loadProgress(userId));
+      if (!prompt) return rpcError(id, -32602, `Unknown prompt: ${String(params.name || "")}`);
+      return rpcResult(id, prompt);
     }
     default:
       return rpcError(id, -32601, `Method not found: ${msg.method}`);

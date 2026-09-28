@@ -1,5 +1,6 @@
 import "server-only";
 import { createHash, randomBytes } from "crypto";
+import { sanitizeActivityPlace, type ActivityPlace, type StudentActivity } from "@/lib/academy-activity";
 import { sanitizeProfile, type RoleBrief, type RoleId, type StudentProfile } from "@/lib/academy-certs";
 import type { DrillEntry } from "@/lib/academy-drills";
 import { sanitizeLabSnapshot, type LabSnapshot } from "@/lib/academy-lab";
@@ -17,6 +18,7 @@ const memoryDrills = new Map<string, DrillEntry[]>();
 const memoryLab = new Map<string, { snapshot: LabSnapshot; uploadedAt: string }>();
 const memoryProfiles = new Map<string, StudentProfile>();
 const memoryRoleBriefs = new Map<string, RoleBrief>();
+const memoryActivity = new Map<string, StudentActivity>();
 
 function todayStamp() {
   return new Date().toISOString().slice(0, 10);
@@ -378,6 +380,25 @@ export async function saveProfile(userId: string, profile: StudentProfile): Prom
   });
   if (error) console.error("academy_profiles upsert failed", error.message);
   return !error;
+}
+
+// Where the student is in the Academy right now. One row per student, overwritten on each report.
+export async function loadActivity(userId: string): Promise<StudentActivity | null> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin.from("academy_activity").select("place, updated_at").eq("user_id", userId).maybeSingle();
+    const place = sanitizeActivityPlace(data?.place);
+    if (!error && data && place) return { place, updatedAt: data.updated_at };
+    // Until academy.sql adds the table, what this server instance saw stands in.
+  }
+  return memoryActivity.get(userId) ?? null;
+}
+
+export async function saveActivity(userId: string, place: ActivityPlace) {
+  const updatedAt = new Date().toISOString();
+  memoryActivity.set(userId, { place, updatedAt });
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin.from("academy_activity").upsert({ user_id: userId, place, updated_at: updatedAt });
+  if (error) console.error("academy_activity upsert failed", error.message);
 }
 
 // One researched summary per target role, shared by every student.

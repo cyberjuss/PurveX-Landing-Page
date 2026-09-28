@@ -232,3 +232,14 @@ on conflict (id) do nothing;
 -- Optional, self-reported work eligibility shown to employers.
 alter table public.academy_public_profiles add column if not exists work_auth text;
 alter table public.academy_public_profiles add column if not exists clearance text;
+
+-- Where each student is in the Academy: the page, the tab, and the step inside
+-- a browser lab. Reported by the page, read by Coach and the MCP server.
+-- Written by the server only.
+create table if not exists public.academy_activity (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  place jsonb not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.academy_activity enable row level security;

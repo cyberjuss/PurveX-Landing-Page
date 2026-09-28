@@ -18,7 +18,9 @@ import {
   type StudentProfile,
 } from "@/lib/academy-certs";
 import { checkRealCtf, createRealCtf, ctfStatus } from "@/lib/academy-live";
-import { loadDrills, loadProfile, loadRoleBrief, saveDrill, saveRoleBrief } from "@/lib/academy-store";
+import { loadActivity, loadDrills, loadProfile, loadRoleBrief, saveDrill, saveRoleBrief } from "@/lib/academy-store";
+import { findEntry } from "@/lib/academy-content";
+import { searchLessons } from "@/lib/academy-lessons";
 import { type CoachImage } from "@/lib/academy-coach-media";
 import { ANTHROPIC_MESSAGES_URL, COACH_HAIKU_MODEL, COACH_SONNET_MODEL, webSearchTool } from "@/lib/academy-models";
 import { isStale, ROLE_NOTE_RULES, roleBriefFrom, searchedUrls } from "@/lib/academy-role-research";
@@ -26,6 +28,7 @@ import { findMissionsByQuery, MISSION_CATALOG } from "@/lib/academy-missions";
 import { labCoachingForMcp } from "@/lib/academy-lab-coach";
 import { isBrowserLab } from "@/lib/academy-lab-briefs";
 import {
+  LAB_PASS_IDS,
   LEVELS,
   MISSION_SKILLS,
   missionPoints,
@@ -72,6 +75,7 @@ How you answer
 - Teach the GUI first. A student who never opens PowerShell must still be able to finish. Name the console (Active Directory Users and Computers, Event Viewer, ADAC) and the exact path to open it (Start → Windows Administrative Tools, or Win+R then dsa.msc / eventvwr.msc), then Find or the tree path, then the clicks, tabs, and fields. PowerShell is optional after the UI steps, or when they ask for a command. Never answer a how-to with only a script.
 - Be concrete every time. Give the exact click path with real names from this lab, then what the student should see if it worked. Generic advice like "check the group membership" is a failure; say which object, where, and how.
 - How-to knowledge is fair game: opening a console, running a cmdlet, reading a field, how a ticket should be worked, why something matters. Explain it fully and precisely.
+- Before you explain a concept, call search_lessons and teach it the way the lesson does, with its terms and examples. When it helps, name the tab to reread. If the lessons do not cover it, say so in a few words.
 - Mission answers are not. Never state the value an unsolved mission asks for (a group name, a count, a person, a computer name, a yes or no, a multiple-choice letter). Give the exact command or place that reveals it and have the student report back what they found. For solved missions you may discuss the answer freely.
 - Use the student brief below. Name the mission and ticket, what went wrong (wrong tries, hint used), last lab sync, and what to do about it. If their lab snapshot differs from the standard build in a way that matters, name the object.
 - A flagged mission means they moved on without solving it. Bring them back to that ticket before new material. Do not give the answer.
@@ -245,9 +249,13 @@ Lab: ${labLine}${goals ? `\n\n${goals}` : ""}`;
 
 // Sent to students' own MCP clients (Claude, Claude Code, Cursor) so they
 // coach the same way PurveX Coach does.
-export const MCP_INSTRUCTIONS = `CaseFile tools for one signed-in student: their Readiness score, skill gaps, mission history, and mission questions for the labs they have on file.
+export const MCP_INSTRUCTIONS = `CaseFile tools for one signed-in student: where they are in CaseFile right now, the course lessons, their Readiness score and weak spots, their goals and exam plan, mission and drill history, their real Active Directory lab and Security log, and the weekly CTF. The prompts (coach_me, explain_topic, practice_quiz, exam_prep, weekly_ctf, mock_interview, review_resume) start each kind of session the way PurveX Coach runs it.
 
 When helping this student:
+- Start with get_current_activity so you know where they are. If they say "this" or "here", it is what that tool returns. If it was last seen hours ago, ask before assuming.
+- Teach from the course. Call search_lessons before you explain a concept, use the lesson's terms and examples, and name the tab to reread. If the lessons do not cover it, say so.
+- Teach Socratically on labs and challenges: open with one question about what they assume or have seen, build in small steps they can check in their own lab, and end with one specific question about what they will check next.
+- Use get_goal_plan for their target role and exam. Tie the answer to their target role once, in a few words, where it fits. Do not read their goals back to them.
 - You are the SME. Train them to think like a sysadmin and a junior security analyst. Break every finding down: answer the question they asked, define any desk word in plain language, say why it matters for this ticket, stop. Do not add extra people or extra jargon. Do not hand them a click recipe with no judgment.
 - Use their last lab sync and mission history. If there is no snapshot, you cannot confirm hands-on work — send them to Build the Environment or ask for a screenshot.
 - If they attach a screenshot, read the console and ask what the finding means. Never confirm a mission answer from the image.
@@ -427,6 +435,26 @@ COACH_TOOLS.push(
     },
   },
   {
+    name: "search_lessons",
+    description:
+      "Search CaseFile's own lessons and return the matching passages, each with the tab it sits in and a link. Covers Phase 1 (CIA and risk, hashing and encryption, networking, authentication and access control, the Active Directory home lab) and Phase 2 log analysis. Call it before you explain a concept, so you teach it the way the course does, with its terms and examples. Pass section to get one whole tab, for example the tab get_current_activity returns. Challenge tabs are not included.",
+    input_schema: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "The topic or question, for example least privilege, 4625, salted hash, NTFS vs share permissions." },
+        section: { type: "string", description: "Optional: one tab by its label, for example Authorization or Read the Sign-In Log." },
+        limit: { type: "number", description: "Passages to return, 1 to 6. Default 4." },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "get_current_activity",
+    description:
+      "Where the student is in CaseFile: the page and tab they have open (and the step inside a browser lab), when it was last seen, their last mission and the next open one, labs passed, their last drill and their last lab sync. Call it at the start of a conversation, and whenever they say this, here or I am stuck without naming what.",
+    input_schema: { type: "object", properties: {}, additionalProperties: false },
+  },
+  {
     name: "record_practice_result",
     description:
       "Record how the student did on a practice question you asked them. This feeds their weakness profile and the difficulty of their drills. Only record a question the student actually answered.",
@@ -590,6 +618,61 @@ async function weaknessProfile(ctx: CoachToolContext) {
   };
 }
 
+const tabSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+/** The first unsolved mission in the same challenge, starting at the one they touched last. */
+function nextOpenMission(results: Results, fromId: string) {
+  const from = MISSION_CATALOG[fromId];
+  const ids = Object.keys(MISSION_CATALOG).filter((id) => MISSION_CATALOG[id].challenge === from.challenge);
+  const start = ids.indexOf(fromId);
+  const open = [...ids.slice(start), ...ids.slice(0, start)].find((id) => !results[id]?.solved);
+  return open ? MISSION_CATALOG[open] : null;
+}
+
+/** Where the student is now and what they touched last. */
+async function currentActivity(ctx: CoachToolContext) {
+  const [activity, entries, lab] = await Promise.all([
+    ctx.userId ? loadActivity(ctx.userId) : null,
+    ctx.userId ? loadDrills(ctx.userId) : ([] as DrillEntry[]),
+    ctx.loadLabState(),
+  ]);
+  const place = activity?.place;
+  const entry = place ? findEntry(place.phase, place.entry) : undefined;
+  const seen = activity ? formatLabAge(activity.updatedAt) : null;
+  const touched = Object.entries(ctx.results)
+    .filter(([, r]) => r.at && !Number.isNaN(Date.parse(r.at)))
+    .sort((a, b) => Date.parse(b[1].at!) - Date.parse(a[1].at!));
+  const lastId = touched.find(([id]) => MISSION_CATALOG[id])?.[0];
+  const next = lastId ? nextOpenMission(ctx.results, lastId) : null;
+  const lastDrill = [...entries].sort((a, b) => b.at.localeCompare(a.at))[0];
+  return {
+    now:
+      place && entry && seen
+        ? {
+            page: entry.title,
+            tab: place.tab,
+            kind: place.kind,
+            lab: place.lab ?? null,
+            step: place.at ?? null,
+            lastSeen: seen.ago,
+            likelyStillThere: seen.hours < 2,
+            url: `/academy/${place.phase}/${place.entry}#${tabSlug(place.tab)}`,
+          }
+        : null,
+    lastMission: lastId
+      ? { title: MISSION_CATALOG[lastId].title, asks: MISSION_CATALOG[lastId].prompt, when: formatLabAge(ctx.results[lastId].at!).ago, ...statusOf(ctx.results, lastId) }
+      : null,
+    nextOpenMission: next ? { title: next.title, asks: next.prompt } : null,
+    labsPassed: touched
+      .filter(([id]) => (LAB_PASS_IDS as readonly string[]).includes(id))
+      .map(([id, r]) => ({ lab: id.replace(/^lab-/, ""), when: formatLabAge(r.at!).ago })),
+    lastDrill: lastDrill ? { mode: lastDrill.mode, correct: lastDrill.correct, total: lastDrill.total, when: formatLabAge(lastDrill.at).ago } : null,
+    labSynced: lab ? formatLabAge(lab.capturedAt).ago : null,
+    howToUse:
+      "Open by naming where they are in a few words. On a lesson tab, call search_lessons with section set to the tab and teach from it. In a browser lab, call get_lab_coaching for that lab and start at the step. On a challenge, work the next open mission without giving its answer. If likelyStillThere is false, ask what they are on before assuming.",
+  };
+}
+
 export async function runCoachTool(name: string, input: Record<string, unknown>, ctx: CoachToolContext): Promise<string> {
   const { results } = ctx;
   if (name === "get_lab_coaching") return labCoachingForMcp(isBrowserLab(input.lab) ? input.lab : null);
@@ -722,6 +805,13 @@ export async function runCoachTool(name: string, input: Record<string, unknown>,
     if (!answer.trim()) return JSON.stringify({ error: "answer is required" });
     return JSON.stringify(await checkRealCtf(ctx.userId, DAY(), answer));
   }
+  if (name === "search_lessons") {
+    const query = String(input.query || "").slice(0, 200);
+    const section = String(input.section || "").slice(0, 120);
+    if (!query.trim() && !section.trim()) return JSON.stringify({ error: "query or section is required" });
+    return JSON.stringify(searchLessons(query, section, Number(input.limit) || 4));
+  }
+  if (name === "get_current_activity") return JSON.stringify(await currentActivity(ctx));
   if (name === "explain_concept") {
     const skill = input.skill as Skill;
     if (!SKILLS[skill]) return JSON.stringify({ error: "unknown skill" });

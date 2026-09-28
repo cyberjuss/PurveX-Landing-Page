@@ -37,7 +37,7 @@ type CoachState = {
 const CoachContext = createContext<CoachState | null>(null);
 
 /** Where the student is inside a browser lab, read from the lab's own markup: the step, the card, and the task highlighted in the card. */
-function labSpot(): string | undefined {
+export function labSpot(): string | undefined {
   const lab = document.querySelector(".rt");
   if (!lab) return undefined;
   const text = (sel: string, attr?: string) => {

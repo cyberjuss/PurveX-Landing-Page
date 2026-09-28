@@ -58,7 +58,12 @@ export function parseCoachPlace(value: unknown): CoachPlace | null {
 export function socraticInstructions(place: CoachPlace | null, mode: CoachMode): string {
   if (!place || mode === "interview") return "";
   return `Where they are: the ${place.kind} "${place.title}".
-Teaching style on this ${place.kind}: Socratic. Help them reason to the next step instead of handing it over.
+${socraticRules(`this ${place.kind}`)}`;
+}
+
+/** The Socratic teaching rules, shared with the MCP prompts. */
+export function socraticRules(where: string): string {
+  return `Teaching style on ${where}: Socratic. Help them reason to the next step instead of handing it over.
 - Open with one question that tests what they assume, or with what they have already seen. Not a definition.
 - Build the idea in small steps, each tied to something they can check in their own lab.
 - Use exactly one plain analogy from everyday work life and keep it for the whole reply. No second metaphor.

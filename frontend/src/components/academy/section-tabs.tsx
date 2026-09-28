@@ -9,7 +9,8 @@ import { QuizBlock } from "./quiz";
 import { LabCarousel } from "./lab-carousel";
 import { MissionPager } from "./mission-pager";
 import { TrailDock, type TrailLink } from "./trail-dock";
-import { useCoach } from "./coach-context";
+import { labSpot, useCoach } from "./coach-context";
+import { academyFetch } from "@/lib/academy-client";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import type { Quiz } from "@/content/academy/quizzes";
 import type { LabWidget } from "@/lib/academy-content";
@@ -118,6 +119,37 @@ export function SectionTabs({
     setPlace(kind ? { kind, title: current.label, ...(labWidget ? { lab: labWidget } : {}) } : null);
     return () => setPlace(null);
   }, [current.kind, current.label, labWidget, setPlace]);
+  // Report the open tab, and the lab step when they switch away (often to
+  // their own AI assistant), so Coach and MCP clients know where they are.
+  useEffect(() => {
+    const report = (keepalive: boolean) => {
+      const place = { phase: phaseSlug, entry: entrySlug, tab: current.label, kind: current.kind, lab: labWidget, at: labWidget ? labSpot() : undefined };
+      academyFetch("/academy/api/activity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ place }),
+        keepalive,
+      }).catch(() => {});
+    };
+    const settle = window.setTimeout(() => report(false), 1500);
+    // Blur and hide often fire together. One report is enough.
+    let last = 0;
+    const leave = () => {
+      if (Date.now() - last < 1000) return;
+      last = Date.now();
+      report(true);
+    };
+    const onHide = () => {
+      if (document.visibilityState === "hidden") leave();
+    };
+    window.addEventListener("blur", leave);
+    document.addEventListener("visibilitychange", onHide);
+    return () => {
+      window.clearTimeout(settle);
+      window.removeEventListener("blur", leave);
+      document.removeEventListener("visibilitychange", onHide);
+    };
+  }, [phaseSlug, entrySlug, current.kind, current.label, labWidget]);
   const prevItem = active > 0 ? items[active - 1] : null;
   const nextItem = active < items.length - 1 ? items[active + 1] : null;
   function goTo(i: number) {
