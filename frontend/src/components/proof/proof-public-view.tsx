@@ -217,7 +217,7 @@ export function ProofPublicView({
         )}
 
         <footer className="pp-foot">
-          <span>Issued by PurveX Range</span>
+          <span>Issued by CaseFile</span>
           {settings.credentialId && (
             <span>
               Credential <code>{settings.credentialId}</code> · <a href={`/verify/${settings.credentialId}`}>Verify at purvex.io/verify</a>

@@ -33,7 +33,7 @@ import {
 // text and the planted download address is defanged, so nothing here runs.
 
 const HEADER = [
-  "# PurveX Range training file. This is not a real update. Do not run it.",
+  "# CaseFile training file. This is not a real update. Do not run it.",
   "# PurveX Financial VPN profile update 2.4.1",
   "# Published by IT (Alex Rivera) on the IT portal. Staff laptops only.",
 ];

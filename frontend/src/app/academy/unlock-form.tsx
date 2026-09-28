@@ -9,7 +9,7 @@ export function UnlockForm() {
   const [state, formAction, isPending] = useActionState(unlockAcademy, null);
 
   return (
-    <AuthMinimal product="Range">
+    <AuthMinimal product="CaseFile">
       <AuthHeading sub="Your instructor gave you this code to open Think Like a SOC Analyst.">
         Enter your class passcode
       </AuthHeading>

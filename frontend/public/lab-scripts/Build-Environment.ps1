@@ -9,8 +9,8 @@
     Run on the domain controller after Install-Forest.ps1. It is safe to
     re-run. Anything that already exists is skipped.
 
-    When downloaded from PurveX Range, it also syncs a read-only summary
-    of the lab OUs (never passwords) to your PurveX Range account so PurveX Coach
+    When downloaded from CaseFile, it also syncs a read-only summary
+    of the lab OUs (never passwords) to your CaseFile account so PurveX Coach
     can see your lab.
 
 .PARAMETER InitialPassword
@@ -18,10 +18,10 @@
     Every account must change it at next logon.
 
 .PARAMETER IncludeCTF
-    Adds the ticket-queue challenge objects. The PurveX Range download does this automatically.
+    Adds the ticket-queue challenge objects. The CaseFile download does this automatically.
 
 .PARAMETER NoCTF
-    Skips the ticket-queue challenge objects in the PurveX Range download.
+    Skips the ticket-queue challenge objects in the CaseFile download.
 
 .PARAMETER SyncLoop
     Used by the sync task. A lab-folder change is sent right away, without the Security log.
@@ -32,7 +32,7 @@
 
 .PARAMETER InstallSync
     Install a scheduled task that sends a snapshot about every minute.
-    The PurveX Range download does this automatically after a successful build.
+    The CaseFile download does this automatically after a successful build.
 
 .PARAMETER UninstallSync
     Remove the PurveX Coach sync task.
@@ -59,7 +59,7 @@ Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
 
-# The PurveX Range download plants the ticket objects on the first build so the missions work at once.
+# The CaseFile download plants the ticket objects on the first build so the missions work at once.
 if ($PurvexKey -and -not $NoCTF) { $IncludeCTF = $true }
 
 $domain   = Get-ADDomain
@@ -527,7 +527,7 @@ function Start-PurvexSyncLoop {
 
 function Install-PurvexLabSync {
     if (-not $PurvexKey -or -not $PurvexUrl) {
-        Write-Host "This copy is not linked to PurveX Range. Download Build-Environment.ps1 from Build the Environment first." -ForegroundColor Yellow
+        Write-Host "This copy is not linked to CaseFile. Download Build-Environment.ps1 from Build the Environment first." -ForegroundColor Yellow
         return $false
     }
     $source = $PSCommandPath
@@ -582,7 +582,7 @@ if ($InstallSync) {
 
 if ($SyncLoop) {
     if (-not $PurvexKey -or -not $PurvexUrl) {
-        Write-Host "This copy is not linked to PurveX Range. Download Build-Environment.ps1 from Build the Environment and run it once." -ForegroundColor Yellow
+        Write-Host "This copy is not linked to CaseFile. Download Build-Environment.ps1 from Build the Environment and run it once." -ForegroundColor Yellow
         return
     }
     Start-PurvexSyncLoop -Key $PurvexKey -Url $PurvexUrl
@@ -591,7 +591,7 @@ if ($SyncLoop) {
 
 if ($SyncOnly) {
     if (-not $PurvexKey -or -not $PurvexUrl) {
-        Write-Host "This copy is not linked to PurveX Range. Download Build-Environment.ps1 from Build the Environment and run it once." -ForegroundColor Yellow
+        Write-Host "This copy is not linked to CaseFile. Download Build-Environment.ps1 from Build the Environment and run it once." -ForegroundColor Yellow
         return
     }
     if ($Scheduled -and -not (Test-PurvexSyncDue -Key $PurvexKey -Url $PurvexUrl)) { return }
@@ -706,7 +706,7 @@ if ($IncludeCTF) {
 
 if (-not $WhatIfPreference) {
     if (-not $PurvexKey -or -not $PurvexUrl) {
-        Write-Host "`nThis copy is not linked to PurveX Range, so your lab was not sent. Download Build-Environment.ps1 from Build the Environment and run it again." -ForegroundColor Yellow
+        Write-Host "`nThis copy is not linked to CaseFile, so your lab was not sent. Download Build-Environment.ps1 from Build the Environment and run it again." -ForegroundColor Yellow
     }
     else {
         try {

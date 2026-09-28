@@ -113,15 +113,15 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
 
   if (!configured) {
     return (
-      <AuthMinimal product="Range">
-        <AuthHeading sub="Ask your instructor to finish setting up PurveX Range.">Student accounts are not set up yet</AuthHeading>
+      <AuthMinimal product="CaseFile">
+        <AuthHeading sub="Ask your instructor to finish setting up CaseFile.">Student accounts are not set up yet</AuthHeading>
       </AuthMinimal>
     );
   }
 
   if (sentTo) {
     return (
-      <AuthMinimal product="Range">
+      <AuthMinimal product="CaseFile">
         <AuthHeading
           sub={
             <>
@@ -148,13 +148,13 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
 
   if (step === "email") {
     return (
-      <AuthMinimal product="Range">
+      <AuthMinimal product="CaseFile">
         <div key="email" className="am-step">
           <AuthHeading
             sub={
               mode === "signup"
                 ? "One account for your course, your labs, and your progress."
-                : "Sign in with the email you use for PurveX Range."
+                : "Sign in with the email you use for CaseFile."
             }
           >
             {mode === "signin" ? "Welcome back" : "Create your account"}
@@ -197,7 +197,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
           </button>
 
           <p className="mt-8 text-center text-sm text-slate-600">
-            {mode === "signin" ? "New to PurveX Range? " : "Already have an account? "}
+            {mode === "signin" ? "New to CaseFile? " : "Already have an account? "}
             <button type="button" onClick={switchMode} className="am-link">
               {mode === "signin" ? "Create an account" : "Sign in"}
             </button>
@@ -208,7 +208,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
   }
 
   return (
-    <AuthMinimal product="Range">
+    <AuthMinimal product="CaseFile">
       <div key="password" className="am-step">
         <BackButton onClick={back} />
         <AuthHeading

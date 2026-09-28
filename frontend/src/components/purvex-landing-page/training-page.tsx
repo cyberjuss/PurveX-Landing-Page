@@ -138,7 +138,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
 
       <section className="pg-section tp-features" id="features">
         <div className="tp-features__head">
-          <h2>Everything in PurveX Range</h2>
+          <h2>Everything in CaseFile</h2>
           <p>One portal for learning, practice, and proof. Students sign in and everything is there.</p>
           <Link href="/academy" className="tp-link">
             Open the portal <ArrowRight size={14} />

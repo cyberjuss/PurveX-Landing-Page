@@ -60,4 +60,4 @@ When the server comes back, Server Manager shows Active Directory Domain Service
 <figcaption>After promotion the sign-in is the domain, then the account. This practice screen says CYBERJUSS\Administrator. Yours will say PURVEXFINANCIAL\Administrator.</figcaption>
 </figure>
 
-The next tab, Install the Domain, runs this same promotion with `Install-Forest.ps1` and links the lab to your PurveX Range account. Use the script when you want that link. Use these screens when you want to see each step.
+The next tab, Install the Domain, runs this same promotion with `Install-Forest.ps1` and links the lab to your CaseFile account. Use the script when you want that link. Use these screens when you want to see each step.

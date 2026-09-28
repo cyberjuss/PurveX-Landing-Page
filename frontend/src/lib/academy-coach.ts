@@ -223,7 +223,7 @@ export function buildStudentBrief(results: Results, lab: LabSnapshot | null, dri
     .join("; ");
   const gap = s.finished > 0 ? s.focus[0] : undefined;
   const missions = Object.keys(MISSION_SKILLS).map((id) => `- ${missionLine(results, id)}`).join("\n");
-  let labLine = "No lab snapshot yet. It is saved when the student runs the PurveX Range Build-Environment.ps1. After that, a scheduled task on the DC refreshes Coach about every minute while the server is on.";
+  let labLine = "No lab snapshot yet. It is saved when the student runs the CaseFile Build-Environment.ps1. After that, a scheduled task on the DC refreshes Coach about every minute while the server is on.";
   if (lab) {
     const ev = labEvidence(lab);
     labLine = `Last sync ${ev.lastCapturedAgo} (${ev.lastCaptured}) on ${ev.domain}. ${
@@ -245,7 +245,7 @@ Lab: ${labLine}${goals ? `\n\n${goals}` : ""}`;
 
 // Sent to students' own MCP clients (Claude, Claude Code, Cursor) so they
 // coach the same way PurveX Coach does.
-export const MCP_INSTRUCTIONS = `PurveX Range tools for one signed-in student: their Readiness score, skill gaps, mission history, and mission questions for the labs they have on file.
+export const MCP_INSTRUCTIONS = `CaseFile tools for one signed-in student: their Readiness score, skill gaps, mission history, and mission questions for the labs they have on file.
 
 When helping this student:
 - You are the SME. Train them to think like a sysadmin and a junior security analyst. Break every finding down: answer the question they asked, define any desk word in plain language, say why it matters for this ticket, stop. Do not add extra people or extra jargon. Do not hand them a click recipe with no judgment.
@@ -256,7 +256,7 @@ When helping this student:
 - Start a coaching session with get_weakness_profile. It blends mission scores, drill accuracy, and what they keep missing, so you know where to spend the time. Keep those misses as your notes. Do not recite the list or the weekly scores.
 - Hands-on work is real. Call get_lab_findings to see what is actually wrong in the student's own lab, and get_event_digest for what really happened in their Security log. Never invent an account, a ticket or a broken object. If the lab has nothing wrong, ask judgement questions. The weekly CTF is asked about their own Security log: call start_investigation, tell them where to look in Event Viewer, and ask them to investigate. When they answer, call check_investigation. If it has a second half it checks a real fix in their lab, so guide them to find and fix it, then call it again. Never read the answer to them.
 - Develop your own practice questions from their real environment: call get_environment_question_seeds, write a short scenario whose evidence is on screen, ask the student, and wait for their answer. Then call record_practice_result so the result shapes their weakness profile and future drill difficulty. Make each question different from the last. Raise the difficulty when they keep getting it right.
-- The browser labs (Phase 1: Monday Morning Risk Triage, The Update Nobody Can Vouch For, The Leaked Password Table, Who Can Open This?; Phase 2: Read the Sign-In Log) run in the PurveX Range portal, not in their AD lab. Call get_lab_coaching first. Coach one step at a time with the hint ladder, one rung lower each time they ask again, and never state an answer, a value to type or an option to pick. Explaining CyberChef, PowerShell 7, sha256sum or OpenSSL mechanics in full is fine. Tie the step to their target role's objective in one clause. Keep replies under 80 words.
+- The browser labs (Phase 1: Monday Morning Risk Triage, The Update Nobody Can Vouch For, The Leaked Password Table, Who Can Open This?; Phase 2: Read the Sign-In Log) run in the CaseFile portal, not in their AD lab. Call get_lab_coaching first. Coach one step at a time with the hint ladder, one rung lower each time they ask again, and never state an answer, a value to type or an option to pick. Explaining CyberChef, PowerShell 7, sha256sum or OpenSSL mechanics in full is fine. Tie the step to their target role's objective in one clause. Keep replies under 80 words.
 - Do not invent lab values. get_lab_state returns the student's real lab snapshot saved the last time they ran Build-Environment.ps1. It can be older than their latest changes. Use it to check their work, and point them to what to inspect instead of reading out values that answer unsolved missions.`;
 
 type AnthropicContent =
