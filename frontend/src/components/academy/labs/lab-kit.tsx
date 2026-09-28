@@ -86,28 +86,15 @@ export function Avatar({ name, kind = "person", size = 32 }: { name: string; kin
   );
 }
 
-/** The lab's guide gives each step's instruction as a chat message, after a short typing pause. */
+/** The lab's guide gives each step's instruction as a message. */
 export function Narrator({ name = "Alex Rivera", role = "IT", children }: { name?: string; role?: string; children: ReactNode }) {
-  const [typing, setTyping] = useState(true);
-  useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const t = window.setTimeout(() => setTyping(false), reduce ? 0 : 650);
-    return () => window.clearTimeout(t);
-  }, []);
   return (
-    <div className={`lk-nar${typing ? " is-typing" : ""}`}>
+    <div className="lk-nar">
       <Avatar name={name} size={36} />
       <div className="lk-nar__bubble">
         <small>
           {name} · {role}
         </small>
-        {typing && (
-          <span className="lk-nar__dots" aria-hidden="true">
-            <i />
-            <i />
-            <i />
-          </span>
-        )}
         <p>{children}</p>
       </div>
     </div>
@@ -124,7 +111,6 @@ export function LabHud({ label, icon: Icon, step, total }: { label: string; icon
       <span className="lk-hud__label">{label}</span>
       <span className="lk-hud__step">
         Step {step + 1}/{total}
-        <i className="lk-hud__cursor" />
       </span>
     </div>
   );

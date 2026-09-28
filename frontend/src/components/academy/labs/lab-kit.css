@@ -234,20 +234,15 @@
 .lk-field > div input,
 .lk-hashtext input { width: 0; flex: 1 1 0; }
 
-/* Lab status bar: a thin terminal strip with a live dot, a slow scan sweep and a blinking cursor. */
+/* Lab status bar: a thin terminal strip with a live dot. */
 .lk-hud { position: relative; display: flex; align-items: center; gap: 8px; padding: 7px 14px; overflow: hidden; border-bottom: 1px solid var(--rd-line); background: #0b1220; font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #94a3b8; }
 .lk-hud b { font-weight: 700; color: #e2e8f0; }
 .lk-hud__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lk-hud__label::before { content: "// "; color: #475569; }
-.lk-hud__icon { width: 13px; height: 13px; flex: none; color: #7dd3fc; animation: lk-breathe 2.8s ease-in-out infinite; }
+.lk-hud__icon { width: 13px; height: 13px; flex: none; color: #7dd3fc; }
 .lk-hud__live { width: 7px; height: 7px; flex: none; border-radius: 50%; background: #34d399; animation: lk-live 2s ease-out infinite; }
 .lk-hud__step { display: flex; align-items: center; gap: 5px; margin-left: auto; white-space: nowrap; color: #cbd5e1; }
-.lk-hud__cursor { display: inline-block; width: 6px; height: 11px; background: #7dd3fc; animation: lk-blink 1.1s steps(1) infinite; }
-.lk-hud::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 30%; background: linear-gradient(90deg, transparent, rgba(125, 211, 252, 0.14), transparent); transform: translateX(-120%); animation: lk-sweep 7s ease-in-out infinite; pointer-events: none; }
 @keyframes lk-live { 0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55); } 70%, 100% { box-shadow: 0 0 0 7px rgba(52, 211, 153, 0); } }
-@keyframes lk-blink { 50% { opacity: 0; } }
-@keyframes lk-breathe { 50% { opacity: 0.45; } }
-@keyframes lk-sweep { 0%, 55% { transform: translateX(-120%); } 100% { transform: translateX(440%); } }
 
 /* Characters: a small bust per person, a server for the file share, grey for strangers. */
 .lk-av { position: relative; display: inline-grid; place-items: center; flex: none; overflow: hidden; border-radius: 50%; vertical-align: middle; }
@@ -256,33 +251,20 @@
 .rt .lk-av--server svg, .lk-av--server svg { width: 58%; height: 58%; }
 .lk-from { display: inline-flex; align-items: center; gap: 6px; }
 
-/* Guide: the step's instruction as a chat message from Alex. */
+/* Guide: the step's instruction as a message from Alex. */
 .lk-nar { display: flex; align-items: flex-start; gap: 12px; margin-top: 4px; }
-.lk-nar > .lk-av { margin-top: 2px; box-shadow: 0 0 0 2px var(--rd-line); animation: lk-float 4s ease-in-out infinite; }
+.lk-nar > .lk-av { margin-top: 2px; box-shadow: 0 0 0 2px var(--rd-line); }
 .lk-nar__bubble { position: relative; flex: 1; min-width: 0; padding: 9px 14px 10px; border: 1px solid var(--rd-line); border-left: 2px solid var(--rt-primary, #5546e0); background: var(--rd-line-2); animation: lk-rise 0.35s ease-out both; }
 .lk-nar__bubble small { font-size: 11.5px; font-weight: 700; color: var(--rd-ink-3); }
-.rt-head .lk-nar__bubble p, .lk-nar__bubble p { margin: 2px 0 0; max-width: 64ch; font-size: 14px; line-height: 1.6; color: var(--rd-ink-2); transition: opacity 0.25s ease; }
-.lk-nar.is-typing .lk-nar__bubble p { opacity: 0; }
-.lk-nar__dots { position: absolute; left: 14px; top: 32px; display: flex; gap: 4px; }
-.lk-nar__dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--rd-ink-3); animation: lk-dot 0.9s ease-in-out infinite; }
-.lk-nar__dots i:nth-child(2) { animation-delay: 0.15s; }
-.lk-nar__dots i:nth-child(3) { animation-delay: 0.3s; }
-@keyframes lk-float { 50% { transform: translateY(-2px); } }
-@keyframes lk-dot { 0%, 100% { opacity: 0.3; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
+.rt-head .lk-nar__bubble p, .lk-nar__bubble p { margin: 2px 0 0; max-width: 64ch; font-size: 14px; line-height: 1.6; color: var(--rd-ink-2); }
 
-/* Animated marks: right answers pop, wrong ones shake, finished steps pop their check. */
+/* Right answers pop, wrong ones shake, finished steps pop their check. */
 .rt-verdict.is-right svg { animation: lk-pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 .rt-verdict.is-wrong svg { animation: lk-shake 0.4s ease both; }
 .rt-step.is-done .rt-step__n svg, .lk-guide > li.is-done .lk-guide__n svg { animation: lk-pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
-.rt-deck__dot.is-answered, .rt-deck__dot.is-right, .rt-deck__dot.is-wrong { animation: lk-pop-in 0.3s ease-out both; }
-.rt-grade { animation: lk-pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
-.lk-file li .is-changed { animation: lk-glitch 0.6s steps(2, end) both; }
 @keyframes lk-pop-in { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes lk-shake { 20%, 60% { transform: translateX(-3px); } 40%, 80% { transform: translateX(3px); } }
-@keyframes lk-glitch { 0% { transform: translateX(-4px); background: rgba(52, 211, 153, 0.25); } 30% { transform: translateX(3px); } 60% { transform: translateX(-1px); } 100% { transform: none; background: rgba(52, 211, 153, 0.08); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .lk-hud__icon, .lk-hud__live, .lk-hud__cursor, .lk-hud::after, .lk-nar > .lk-av, .lk-nar__bubble, .lk-nar__dots i,
-  .rt-verdict svg, .rt-step__n svg, .lk-guide__n svg, .rt-deck__dot, .rt-grade, .lk-file li .is-changed { animation: none !important; }
-  .lk-nar__bubble p { transition: none; }
+  .lk-hud__live, .lk-nar__bubble, .rt-verdict svg, .rt-step__n svg, .lk-guide__n svg { animation: none !important; }
 }
