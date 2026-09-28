@@ -34,6 +34,8 @@ import { signOut } from "@/lib/portal-auth";
 import { supabase } from "@/lib/supabase";
 
 type Student = AcademyStudent;
+/** What the server says about a submitted answer. blocked: the lab does not show the change yet. */
+type AnswerReply = { correct?: boolean; blocked?: boolean; result?: MissionResult; reveal?: string | null };
 
 export function AcademyShell({ phases, children }: { phases: PhaseDef[]; children: React.ReactNode }) {
   const pathname = usePathname();
@@ -292,6 +294,48 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       window.dispatchEvent(new Event(RESULTS_UPDATED_EVENT));
     };
 
+    // A result the server already recorded. Kept locally so the page and the
+    // score update without saving it again.
+    const storeResult = (id: string, row: MissionResult) => {
+      const all = loadResults();
+      all[id] = row;
+      saveResults(all);
+      renderScore();
+      window.dispatchEvent(new Event(RESULTS_UPDATED_EVENT));
+    };
+
+    // The Answer/Problem/Solution box arrives from the server once earned.
+    // Missions restored on load ask for theirs in one request.
+    const revealCache = new Map<string, string>();
+    const wantReveal = new Set<string>();
+    let revealTimer = 0;
+    const fillReveal = (wrap: Element, html: string | null | undefined) => {
+      const box = wrap.querySelector<HTMLElement>(".ad-flag");
+      if (box && html && !box.innerHTML.trim()) box.innerHTML = html;
+    };
+    const showReveal = (wrap: Element, id: string) => {
+      const cached = revealCache.get(id);
+      if (cached) return fillReveal(wrap, cached);
+      wantReveal.add(id);
+      if (revealTimer) return;
+      revealTimer = window.setTimeout(() => {
+        revealTimer = 0;
+        const ids = [...wantReveal];
+        wantReveal.clear();
+        academyFetch(`/academy/api/mission-answer?ids=${encodeURIComponent(ids.join(","))}`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((data: { reveals?: Record<string, string | null> } | null) => {
+            for (const [rid, html] of Object.entries(data?.reveals ?? {})) {
+              if (!html) continue;
+              revealCache.set(rid, html);
+              const w = document.querySelector(`.ad-mission[data-id="${CSS.escape(rid)}"]`);
+              if (w) fillReveal(w, html);
+            }
+          })
+          .catch(() => {});
+      }, 50);
+    };
+
     // Lesson content is re-rendered when you switch tabs, so a mission comes
     // back blank. Put back what was stored for it.
     const hideLine = (feedback: HTMLElement) => {
@@ -409,6 +453,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       const submit = wrap.querySelector<HTMLButtonElement>(".ad-guess__submit");
       const reveal = wrap.querySelector<HTMLElement>(".ad-flag");
       labelHintButton(wrap, false);
+      if (id && (r.solved || r.wrong >= 3)) showReveal(wrap, id);
       if (r.solved) {
         if (input) input.disabled = true;
         if (submit) submit.disabled = true;
@@ -448,19 +493,30 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       }
     };
 
+    // The server checks the answer and records the result. Format does not
+    // matter: case, spaces, dots and the gtf{} wrapper are all ignored there.
+    const sendAnswer = async (id: string, guess: string): Promise<AnswerReply | null> => {
+      try {
+        const res = await academyFetch("/academy/api/mission-answer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, guess }),
+          signal: AbortSignal.timeout(10000),
+        });
+        return res.ok ? await res.json() : null;
+      } catch {
+        return null;
+      }
+    };
+
     const checkFlag = async (btn: HTMLButtonElement) => {
-      const answer = btn.dataset.answer;
       const wrap = btn.closest(".ad-mission");
-      if (!answer || !wrap) return;
+      if (!wrap) return;
       const input = wrap.querySelector<HTMLInputElement>(".ad-guess__input");
       const feedback = wrap.querySelector<HTMLElement>(".ad-guess__feedback");
       const reveal = wrap.querySelector<HTMLElement>(".ad-flag");
       if (!input || !feedback || !reveal) return;
-      // Accepts the answer with or without its "gtf{...}" wrapper, and
-      // treats spaces the same as dashes -- a correct answer shouldn't fail
-      // over formatting when the question never asked for exact syntax.
-      const normalize = (s: string) => s.trim().toLowerCase().replace(/^gtf\{|\}$/g, "").replace(/[\s.]+/g, "-");
-      const guess = normalize(input.value);
+      const guess = input.value.trim();
 
       if (!guess) {
         const row = wrap.querySelector<HTMLElement>(".ad-guess");
@@ -475,6 +531,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       feedback.textContent = "Checking your lab…";
       feedback.className = "ad-guess__feedback";
       let gate: Awaited<ReturnType<typeof labGate>> = null;
+      let reply: AnswerReply | null = null;
       try {
         gate = await labGate(missionId);
         // Give a lab that is waking up 20 seconds to report, and a live lab 45
@@ -520,27 +577,39 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           return;
         }
         if (gate.gated) wrap.classList.add("ad-mission--labok");
+        feedback.textContent = "Checking your answer…";
+        reply = await sendAnswer(missionId, guess);
+        if (!reply || reply.blocked) {
+          feedback.textContent = reply?.blocked
+            ? "Your lab does not show this change yet. Make it, then submit again. This does not use an attempt."
+            : "Could not check your answer. Try submit again. This does not use an attempt.";
+          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          placeMiss(wrap);
+          return;
+        }
       } finally {
         btn.disabled = false;
       }
 
-      const accepts = [answer, ...(btn.dataset.accept || "").split("|")].map(normalize).filter(Boolean);
-      if (accepts.includes(guess)) {
+      if (reply.result) storeResult(missionId, reply.result);
+      if (reply.reveal) {
+        revealCache.set(missionId, reply.reveal);
+        fillReveal(wrap, reply.reveal);
+      }
+      if (reply.correct) {
         reveal.classList.add("ad-flag--shown");
         markClosed(wrap, feedback, true);
         input.disabled = true;
         btn.disabled = true;
-        recordResult(wrap, { solved: true, flagged: false, wrong: parseInt(wrap.getAttribute("data-attempts") || "0", 10) });
         updateProgress();
         // A ticket the lab confirmed can go on the Proof Profile with a screenshot.
         const ticket = PROOF_TICKETS[missionId];
-        if (ticket && wrap.classList.contains("ad-mission--labok")) askForProofShot(ticket.job, ticket.label);
+        if (ticket && (reply.result?.labOk || wrap.classList.contains("ad-mission--labok"))) askForProofShot(ticket.job, ticket.label);
         return;
       }
 
-      const attempts = parseInt(wrap.getAttribute("data-attempts") || "0", 10) + 1;
+      const attempts = reply.result?.wrong ?? parseInt(wrap.getAttribute("data-attempts") || "0", 10) + 1;
       wrap.setAttribute("data-attempts", String(attempts));
-      recordResult(wrap, { wrong: attempts });
       labelHintButton(wrap, wrap.querySelector(".ad-hint__text")?.classList.contains("ad-hint__text--shown") ?? false);
       const row = wrap.querySelector<HTMLElement>(".ad-guess");
       if (row) flashMiss(row, input, feedback);
@@ -922,7 +991,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         academyFetch("/academy/api/progress", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ results: {} }),
+          body: JSON.stringify({ results: {}, reset: "all" }),
         })
           .catch(() => {})
           .finally(() => window.location.reload());
@@ -994,6 +1063,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
     return () => {
       observer.disconnect();
       if (frame) window.cancelAnimationFrame(frame);
+      window.clearTimeout(revealTimer);
       document.removeEventListener("click", onClick);
       document.removeEventListener("keydown", onKeydown);
       window.removeEventListener(RESULTS_CHANGED_EVENT, onResultsChanged);

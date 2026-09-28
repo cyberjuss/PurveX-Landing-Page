@@ -3,10 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactCompiler: true,
   allowedDevOrigins: ["192.168.75.1"],
-  // Coach and the MCP server search the lesson files at runtime.
+  // Coach and the MCP server search the lesson files at runtime, and the
+  // answer check reads the challenge files.
   outputFileTracingIncludes: {
     "/api/academy/mcp": ["./src/content/academy/**/*.md"],
     "/academy/api/coach": ["./src/content/academy/**/*.md"],
+    "/academy/api/mission-answer": ["./src/content/academy/**/*.md"],
   },
   // Optimize compilation performance
   experimental: {

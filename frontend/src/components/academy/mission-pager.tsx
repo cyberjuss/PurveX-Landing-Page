@@ -184,7 +184,7 @@ export function MissionPager({
     academyFetch("/academy/api/progress", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ results: all }),
+      body: JSON.stringify({ results: all, reset: ids }),
     })
       .catch(() => {})
       .finally(() => window.location.reload());

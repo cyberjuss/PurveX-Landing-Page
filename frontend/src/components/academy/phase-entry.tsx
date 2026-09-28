@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { stripAnswers } from "@/lib/academy-answers";
 import { loadLesson, type ContentSection, type WeekDef, type PhaseDef } from "@/lib/academy-content";
 import { findQuiz } from "@/content/academy/quizzes";
 import { extractEssentialQuestion } from "@/lib/markdown";
@@ -17,9 +18,10 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
       const raw = loadLesson(section.file);
       if (!raw) return { section: { ...section, markdown: raw }, question: null };
       // Challenges keep their own briefing and title. Do not lift their
-      // question to the page or strip it from the tab.
+      // question to the page or strip it from the tab. Their answers stay on
+      // the server.
       if (section.label.startsWith("Challenge:")) {
-        return { section: { ...section, markdown: raw }, question: null };
+        return { section: { ...section, markdown: stripAnswers(raw) }, question: null };
       }
       const { question, rest } = extractEssentialQuestion(raw);
       return { section: { ...section, markdown: rest }, question };

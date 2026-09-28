@@ -132,7 +132,7 @@ export function ReadinessDashboard() {
     academyFetch("/academy/api/progress", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ results: {} }),
+      body: JSON.stringify({ results: {}, reset: "all" }),
     }).catch(() => {});
   }
 
