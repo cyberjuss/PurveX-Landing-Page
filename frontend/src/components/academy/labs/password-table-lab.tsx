@@ -17,6 +17,7 @@ import {
   Stepper,
   useDeck,
   useHashes,
+  useLabDone,
   useSaved,
   Verdict,
   type DotStatus,
@@ -206,8 +207,9 @@ interface State {
 const START: State = { step: 0, seen: [], noteWord: "", kinds: {}, reused: [], recovered: {}, decoded: "", checked: [false, false, false] };
 const STORE = "academy-lab-password-table-v4";
 
-export function PasswordTableLab() {
+export function PasswordTableLab({ onDone }: { onDone?: () => void }) {
   const [s, setS] = useSaved<State>(STORE, START, (v) => Array.isArray(v.checked) && v.checked.length === 3 && Array.isArray(v.seen));
+  useLabDone(s.checked.every(Boolean), onDone);
   const plain = useHashes(Object.fromEntries(USERS.map((u) => [u, PW[u]])));
   // Deterministic like the ECB mode Adobe used: the same password always gives the same output.
   const enc = useHashes(Object.fromEntries(SAMPLE.map((u) => [u, `ledgerline-app-key|${PW[u]}`])));

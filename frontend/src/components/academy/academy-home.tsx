@@ -41,7 +41,7 @@ function pad(n: number) {
 }
 
 export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
-  const { isComplete, completedCount, lastStop } = useAcademyProgress();
+  const { isComplete, isPhaseComplete, completedCount, lastStop } = useAcademyProgress();
   const results = useResults();
   const readiness = summarize(results);
   const firstName = accountFirstName(useAcademyAccount());
@@ -125,7 +125,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
                   {copy.title}
                   {soon ? (
                     <em className="ax-tag">In preparation</em>
-                  ) : done === live.length ? (
+                  ) : phase && isPhaseComplete(phase.slug) ? (
                     <em className="ax-tag ax-tag--good">Complete</em>
                   ) : here ? (
                     <em className="ax-tag ax-tag--here">Here</em>

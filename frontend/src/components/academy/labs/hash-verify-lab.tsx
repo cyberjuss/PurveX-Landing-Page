@@ -17,6 +17,7 @@ import {
   Stepper,
   useDeck,
   useHashes,
+  useLabDone,
   useSaved,
   Verdict,
   type DotStatus,
@@ -164,8 +165,9 @@ interface State {
 const START: State = { step: 0, pasted: {}, verdict: {}, lines: [], answers: {}, checked: [false, false, false] };
 const STORE = "academy-lab-hash-verify-v1";
 
-export function HashVerifyLab() {
+export function HashVerifyLab({ onDone }: { onDone?: () => void }) {
   const [s, setS] = useSaved<State>(STORE, START, (v) => Array.isArray(v.lines) && Array.isArray(v.checked));
+  useLabDone(s.checked.every(Boolean), onDone);
   const hashes = useHashes({ official: text(GENUINE), ...Object.fromEntries(COPIES.map((c) => [c.id, c.body])) });
   const deck1 = useDeck(COPIES.length);
   const deck3 = useDeck(QUESTIONS.length);

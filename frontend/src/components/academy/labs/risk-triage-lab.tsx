@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowDown, ArrowUp, Check, ChevronLeft, ChevronRight, MessageCircle, RotateCcw, X } from "lucide-react";
 import { useOptionalCoach } from "../coach-context";
 import { LOST_ASK } from "./lab-brief";
+import { useLabDone } from "./lab-kit";
 import "./lab-kit.css";
 import "./risk-triage-lab.css";
 
@@ -138,8 +139,9 @@ function loadSaved(): State {
 
 // Mounted only once the student opens the lab tab, never in the server
 // render, so reading saved progress while initialising state is safe.
-export function RiskTriageLab() {
+export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
   const [s, setS] = useState<State>(loadSaved);
+  useLabDone(s.checked.every(Boolean), onDone);
 
   useEffect(() => {
     localStorage.setItem(STORE, JSON.stringify(s));

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Flag, FlaskConical, Wrench } from "lucide-react";
 import { Markdown, splitMarkdownIntoSlides } from "@/lib/markdown";
@@ -10,6 +10,7 @@ import { LabCarousel } from "./lab-carousel";
 import { MissionPager } from "./mission-pager";
 import { TrailDock, type TrailLink } from "./trail-dock";
 import { useCoach } from "./coach-context";
+import { slugify, useAcademyProgress } from "./academy-progress";
 import type { Quiz } from "@/content/academy/quizzes";
 import type { LabWidget } from "@/lib/academy-content";
 import { HashVerifyLab } from "./labs/hash-verify-lab";
@@ -36,10 +37,6 @@ function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
-function slugify(label: string) {
-  return label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-}
-
 function indexForHash(hash: string, items: Item[]): number {
   const raw = decodeURIComponent(hash.replace(/^#/, "")).toLowerCase();
   if (!raw) return 0;
@@ -57,6 +54,8 @@ function indexForHash(hash: string, items: Item[]): number {
 // icon-marked instead of numbered, since picking up a lab isn't the same
 // kind of step as reading the next section.
 export function SectionTabs({
+  phaseSlug,
+  entrySlug,
   sections,
   quiz,
   labs,
@@ -65,6 +64,8 @@ export function SectionTabs({
   prevWeek,
   nextWeek,
 }: {
+  phaseSlug: string;
+  entrySlug: string;
   sections: TabSection[];
   quiz?: Quiz;
   labs?: TabSection[];
@@ -104,6 +105,11 @@ export function SectionTabs({
   }, []);
   const current = items[active];
   const { setPlace } = useCoach();
+  const { recordLabDone } = useAcademyProgress();
+  const labSlug = current.kind === "lab" ? slugify(current.label) : "";
+  const labDone = useCallback(() => {
+    if (labSlug) recordLabDone(phaseSlug, entrySlug, labSlug);
+  }, [recordLabDone, phaseSlug, entrySlug, labSlug]);
   const labWidget = current.kind === "lab" ? current.widget : undefined;
   useEffect(() => {
     const kind = current.kind === "lab" || current.kind === "challenge" ? current.kind : null;
@@ -173,7 +179,13 @@ export function SectionTabs({
     ) : current.kind === "lab" && current.widget ? (
       <div>
         <LabBrief lab={current.widget} title={current.label.replace(/^Lab:\s*/, "")} ask={current.widget !== "risk-triage"} />
-        {current.widget === "risk-triage" ? <RiskTriageLab /> : current.widget === "hash-verify" ? <HashVerifyLab /> : <PasswordTableLab />}
+        {current.widget === "risk-triage" ? (
+          <RiskTriageLab onDone={labDone} />
+        ) : current.widget === "hash-verify" ? (
+          <HashVerifyLab onDone={labDone} />
+        ) : (
+          <PasswordTableLab onDone={labDone} />
+        )}
       </div>
     ) : current.kind === "lab" ? (
       <div>
@@ -188,6 +200,7 @@ export function SectionTabs({
           actionHost={labFoot}
           prevBeyond={prevTrail}
           nextBeyond={nextTrail}
+          onDone={labDone}
         />
       </div>
     ) : (

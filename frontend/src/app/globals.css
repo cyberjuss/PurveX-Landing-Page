@@ -4504,6 +4504,8 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 .ax-complete--done { color: var(--rd-good); }
 .ax-complete--locked { opacity: 0.55; cursor: not-allowed; }
 .ax-complete--locked:hover { color: var(--rd-ink-3); }
+.ax-complete--auto { cursor: default; }
+.ax-complete--auto:not(.ax-complete--done):hover { color: var(--rd-ink-3); }
 .ax-complete__box { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border: 1.5px solid currentColor; border-radius: 2px; }
 
 .ax-question { margin: 28px 0 24px; padding: 0; }

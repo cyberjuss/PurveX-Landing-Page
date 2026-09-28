@@ -51,6 +51,13 @@ export function downloadText(name: string, text: string) {
   URL.revokeObjectURL(url);
 }
 
+/** Tells the week this lab is finished once the student reaches its debrief. */
+export function useLabDone(done: boolean, onDone?: () => void) {
+  useEffect(() => {
+    if (done) onDone?.();
+  }, [done, onDone]);
+}
+
 /** Progress kept in the browser, like the Week 1 lab. */
 export function useSaved<T>(key: string, start: T, valid: (v: T) => boolean): [T, (next: T | ((prev: T) => T)) => void] {
   const [s, setS] = useState<T>(() => {
