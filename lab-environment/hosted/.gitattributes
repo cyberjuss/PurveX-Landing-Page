@@ -1,0 +1,3 @@
+# The gateway's startup script runs on Linux. Windows line endings would break it.
+*.tftpl text eol=lf
+*.sh text eol=lf
