@@ -2,7 +2,7 @@ import "server-only";
 
 import { coachModeInstructions, parseCoachMode, socraticInstructions, type CoachMode, type CoachPlace } from "@/lib/academy-coach-mode";
 import { formatLabAge, labEvidence, labStateForTool, type LabSnapshot } from "@/lib/academy-lab";
-import { jobProgress, LEVEL_NAMES, levelFor, missedQuestions, missedThemes, skillAccuracy, weaknessLine, type DrillEntry } from "@/lib/academy-drills";
+import { jobProgress, LEVEL_NAMES, levelFor, missedQuestions, missedThemes, reviewQueue, skillAccuracy, weaknessLine, type DrillEntry } from "@/lib/academy-drills";
 import { auditLab } from "@/lib/academy-audit";
 import {
   CERTS,
@@ -249,10 +249,11 @@ Lab: ${labLine}${goals ? `\n\n${goals}` : ""}`;
 
 // Sent to students' own MCP clients (Claude, Claude Code, Cursor) so they
 // coach the same way PurveX Coach does.
-export const MCP_INSTRUCTIONS = `CaseFile tools for one signed-in student: where they are in CaseFile right now, the course lessons, their Readiness score and weak spots, their goals and exam plan, mission and drill history, their real Active Directory lab and Security log, and the weekly CTF. The prompts (coach_me, explain_topic, practice_quiz, exam_prep, weekly_ctf, mock_interview, review_resume) start each kind of session the way PurveX Coach runs it.
+export const MCP_INSTRUCTIONS = `CaseFile tools for one signed-in student: where they are in CaseFile right now, the course lessons, their Readiness score and weak spots, their goals and exam plan, mission and drill history, their real Active Directory lab and Security log, and the weekly CTF. The prompts (coach_me, explain_topic, practice_quiz, exam_prep, weekly_ctf, mock_interview, review_resume) start each kind of session the way PurveX Coach runs it. get_review_queue brings back missed topics on a 1, 3 and 7 day schedule.
 
 When helping this student:
 - Start with get_current_activity so you know where they are. If they say "this" or "here", it is what that tool returns. If it was last seen hours ago, ask before assuming.
+- Call get_review_queue early. Topics that are due come back as fresh questions on the same idea, and each answer goes to record_practice_result with the topic exactly as given.
 - Teach from the course. Call search_lessons before you explain a concept, use the lesson's terms and examples, and name the tab to reread. If the lessons do not cover it, say so.
 - Teach Socratically on labs and challenges: open with one question about what they assume or have seen, build in small steps they can check in their own lab, and end with one specific question about what they will check next.
 - Use get_goal_plan for their target role and exam. Tie the answer to their target role once, in a few words, where it fits. Do not read their goals back to them.
@@ -342,6 +343,7 @@ export const COACH_TOOLS: { name: string; description: string; input_schema: Rec
       type: "object",
       properties: { query: { type: "string", description: "Mission id (tq-02), name, or keyword." } },
       required: ["query"],
+      additionalProperties: false,
     },
   },
   {
@@ -357,18 +359,10 @@ export const COACH_TOOLS: { name: string; description: string; input_schema: Rec
     },
   },
   {
-    name: "explain_concept",
-    description: "Return a short teaching note for a skill area without revealing mission flags.",
-    input_schema: {
-      type: "object",
-      properties: {
-        skill: {
-          type: "string",
-          enum: ["accounts", "directory", "troubleshooting", "security"],
-        },
-      },
-      required: ["skill"],
-    },
+    name: "get_review_queue",
+    description:
+      "Spaced review: topics the student missed that are due for another look (1, 3 and 7 days after a miss), what they got wrong, and challenge missions they left unsolved after two or more tries. Call it at the start of a session and when they ask what to practice.",
+    input_schema: { type: "object", properties: {}, additionalProperties: false },
   },
 ];
 
@@ -812,13 +806,55 @@ export async function runCoachTool(name: string, input: Record<string, unknown>,
     return JSON.stringify(searchLessons(query, section, Number(input.limit) || 4));
   }
   if (name === "get_current_activity") return JSON.stringify(await currentActivity(ctx));
-  if (name === "explain_concept") {
-    const skill = input.skill as Skill;
-    if (!SKILLS[skill]) return JSON.stringify({ error: "unknown skill" });
-    return JSON.stringify({ skill, label: SKILLS[skill].label, advice: SKILLS[skill].advice });
+  if (name === "get_review_queue") {
+    const queue = reviewQueue(ctx.userId ? await loadDrills(ctx.userId) : []);
+    const now = Date.now();
+    const missions = Object.entries(missionResults(results))
+      .filter(([, r]) => !r.solved && (r.wrong >= 2 || r.flagged))
+      .map(([id, r]) => ({ title: MISSION_CATALOG[id]?.title ?? id, asks: MISSION_CATALOG[id]?.prompt ?? "", wrongTries: r.wrong, skipped: Boolean(r.flagged) }));
+    return JSON.stringify({
+      due: queue.filter((q) => q.due).slice(0, 5).map((q) => ({ topic: q.topic, skill: q.skill, round: q.round, missed: q.missed })),
+      upcoming: queue.filter((q) => !q.due).slice(0, 5).map((q) => ({ topic: q.topic, skill: q.skill, inDays: Math.max(1, Math.ceil((q.dueAt - now) / 864e5)) })),
+      unsolvedMissions: missions,
+      howTo:
+        "Work the due topics first. Write a fresh question on the same idea, never the one they missed, and do not show the old answer before they try. Then call record_practice_result with topic set to the topic exactly as given, so the review moves on. For an unsolved mission, coach toward it without giving its answer.",
+    });
   }
   return JSON.stringify({ error: "unknown tool" });
 }
+
+/** A tool's reply, and whether it is an error the client should show as one. */
+export async function runCoachToolResult(name: string, input: Record<string, unknown>, ctx: CoachToolContext): Promise<{ text: string; isError: boolean }> {
+  const text = await runCoachTool(name, input, ctx);
+  let isError = false;
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    isError = Boolean(parsed && typeof parsed === "object" && !Array.isArray(parsed) && "error" in parsed);
+  } catch {}
+  return { text, isError };
+}
+
+/** Human names for clients that show a tool list. */
+export const COACH_TOOL_TITLES: Record<string, string> = {
+  get_lab_coaching: "Lab coaching notes",
+  get_skill_gaps: "Readiness and skill gaps",
+  get_mission_history: "Mission history",
+  get_mission_details: "Look up a mission",
+  get_lab_state: "Read my AD lab",
+  get_review_queue: "Spaced review queue",
+  get_weakness_profile: "Weak spots",
+  get_goal_plan: "Goals and exam plan",
+  get_drill_history: "Drill history",
+  get_environment_question_seeds: "Question ideas from my lab",
+  get_lab_findings: "What is wrong in my lab",
+  get_event_digest: "My Security log digest",
+  start_investigation: "Start this week's CTF",
+  investigation_status: "CTF status",
+  check_investigation: "Check my CTF answer",
+  search_lessons: "Search the lessons",
+  get_current_activity: "Where I am in CaseFile",
+  record_practice_result: "Record a practice answer",
+};
 
 function userTurnContent(text: string, images: CoachImage[]): string | AnthropicContent[] {
   if (!images.length) return text;

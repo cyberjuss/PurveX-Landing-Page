@@ -84,7 +84,7 @@ ${coachModeInstructions(mode)}
 
 ${socraticRules("labs and challenges")}
 
-Start: call get_current_activity, then get_weakness_profile. Name where I am in a few words and coach my next step from there.`;
+Start: call get_current_activity, get_weakness_profile and get_review_queue. Name where I am in a few words and coach my next step from there. If a review topic is due, offer one question on it before new material.`;
   } else if (name === "explain_topic") {
     body = `${CORE}
 
@@ -98,7 +98,7 @@ Explain "${arg("topic") || "the topic I name next"}" to me.
     body = `${CORE}
 
 Quiz me.
-1. Call get_weakness_profile, then get_environment_question_seeds${skill ? ` with skill "${skill}"` : " for my weakest skill"}.
+1. Call get_review_queue. Ask the due topics first, as fresh questions on the same idea, and record each with the topic exactly as given. Then call get_weakness_profile and get_environment_question_seeds${skill ? ` with skill "${skill}"` : " for my weakest skill"}.
 2. Write one question at a time from a seed: two or three sentences with the evidence on screen, then four choices where the wrong ones are real new-hire mistakes, or an open question.
 3. Wait for my answer. Then say if I was right, explain why in two lines using search_lessons where it helps, and call record_practice_result.
 4. Make each question different. Raise the difficulty after two right in a row. Stop after five and name the one habit to work on.`;

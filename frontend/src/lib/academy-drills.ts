@@ -1093,6 +1093,46 @@ export function missedQuestions(entries: DrillEntry[], limit = 10): MissedQuesti
   return out;
 }
 
+const REVIEW_DAYS = [1, 3, 7];
+const REVIEW_DAY_MS = 24 * 60 * 60 * 1000;
+
+export type ReviewItem = { topic: string; skill: Skill; round: number; dueAt: number; due: boolean; missed: { question: string; picked: string; answer: string } };
+
+/**
+ * Missed topics due for another look: 1, 3 and 7 days after a miss. Only a
+ * right answer given once the topic is due moves it on; three clears it, and
+ * a new miss starts it over.
+ */
+export function reviewQueue(entries: DrillEntry[], now = Date.now()): ReviewItem[] {
+  const map = new Map<string, { skill: Skill; lastAt: number; round: number; example: DrillDetail }>();
+  for (const e of [...entries].sort((a, b) => a.at.localeCompare(b.at))) {
+    const t = Date.parse(e.at);
+    if (Number.isNaN(t)) continue;
+    for (const d of e.detail ?? []) {
+      const key = d.th ?? d.t;
+      const cur = map.get(key);
+      if (!d.c) map.set(key, { skill: d.s, lastAt: t, round: 0, example: d });
+      else if (cur && cur.round < REVIEW_DAYS.length && t >= cur.lastAt + REVIEW_DAYS[cur.round] * REVIEW_DAY_MS) {
+        map.set(key, { ...cur, lastAt: t, round: cur.round + 1 });
+      }
+    }
+  }
+  return [...map.entries()]
+    .filter(([, r]) => r.round < REVIEW_DAYS.length)
+    .map(([topic, r]) => {
+      const dueAt = r.lastAt + REVIEW_DAYS[r.round] * REVIEW_DAY_MS;
+      return {
+        topic,
+        skill: r.skill,
+        round: r.round + 1,
+        dueAt,
+        due: dueAt <= now,
+        missed: { question: r.example.p || r.example.t, picked: r.example.x ?? "", answer: r.example.a ?? "" },
+      };
+    })
+    .sort((a, b) => a.dueAt - b.dueAt);
+}
+
 /** What was asked lately, so a new drill can steer away from it. */
 export function recentPrompts(entries: DrillEntry[], limit = 24): { t: string; p: string; th: string }[] {
   return recentQuestions(entries, limit).map((q) => ({ t: q.t, p: q.p ?? "", th: q.th ?? q.t }));

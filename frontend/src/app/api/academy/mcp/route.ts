@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { COACH_TOOLS, MCP_INSTRUCTIONS, runCoachTool } from "@/lib/academy-coach";
+import { COACH_TOOL_TITLES, COACH_TOOLS, MCP_INSTRUCTIONS, runCoachToolResult } from "@/lib/academy-coach";
 import { getMcpPrompt, MCP_PROMPTS } from "@/lib/academy-mcp-prompts";
 import { loadLabState, loadProgress, resolveMcpKey } from "@/lib/academy-store";
 
@@ -84,6 +84,7 @@ export async function POST(request: Request) {
       return rpcResult(id, {
         tools: COACH_TOOLS.map((t) => ({
           name: t.name,
+          title: COACH_TOOL_TITLES[t.name],
           description: t.description,
           inputSchema: t.input_schema,
           annotations: { readOnlyHint: !["record_practice_result", "start_investigation", "check_investigation"].includes(t.name), openWorldHint: false },
@@ -96,12 +97,12 @@ export async function POST(request: Request) {
       }
       const args = params.arguments && typeof params.arguments === "object" ? (params.arguments as Record<string, unknown>) : {};
       const results = await loadProgress(userId);
-      const text = await runCoachTool(name, args, {
+      const { text, isError } = await runCoachToolResult(name, args, {
         results,
         loadLabState: async () => (await loadLabState(userId))?.snapshot ?? null,
         userId,
       });
-      return rpcResult(id, { content: [{ type: "text", text }], isError: text.startsWith('{"error"') });
+      return rpcResult(id, { content: [{ type: "text", text }], isError });
     }
     case "prompts/list":
       return rpcResult(id, { prompts: MCP_PROMPTS });

@@ -10,7 +10,8 @@
     "prebuild": "node scripts/copy-pyodide.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "eval:coach": "npx -y tsx --tsconfig scripts/coach-eval/tsconfig.json scripts/coach-eval/eval.ts"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
