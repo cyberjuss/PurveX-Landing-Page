@@ -731,9 +731,11 @@ function EncodeCard({ onDone }: { onDone: () => void }) {
 
 function NoteCard({ word, locked, right, onWord }: { word: string; locked: boolean; right: boolean; onWord: (v: string) => void }) {
   const [packed, setPacked] = useState("");
+  // Step 1 tries a made-up key, step 2 the real one. Each has its own box.
+  const [guess, setGuess] = useState("");
+  const [guessOut, setGuessOut] = useState<string | null | undefined>(undefined);
   const [key, setKey] = useState("");
   const [out, setOut] = useState<string | null | undefined>(undefined);
-  const [triedWrong, setTriedWrong] = useState(false);
   const [play, setPlay] = useState(0);
   const opened = typeof out === "string";
   useEffect(() => {
@@ -744,9 +746,8 @@ function NoteCard({ word, locked, right, onWord }: { word: string; locked: boole
     };
   }, []);
   const decrypt = async () => {
-    const r = await aesDecrypt(key, packed);
-    if (r === null) setTriedWrong(true);
-    else setPlay((n) => n + 1);
+    const r = await aesDecrypt(key.trim(), packed);
+    if (r !== null) setPlay((n) => n + 1);
     setOut(r);
   };
   return (
@@ -757,23 +758,30 @@ function NoteCard({ word, locked, right, onWord }: { word: string; locked: boole
         steps={[
           {
             title: "Try a made-up key first",
-            done: triedWrong || opened || Boolean(word),
+            done: guessOut !== undefined || opened || Boolean(word),
             body: (
               <>
-                <div className="lk-panel__try">
-                  <input type="text" value={key} placeholder="Make one up, like Blue-Door-7" onChange={(e) => setKey(e.target.value)} spellCheck={false} autoComplete="off" aria-label="Key" />
-                  <button type="button" className="lk-mini" disabled={!key || !packed} onClick={() => void decrypt()}>
-                    <Lock aria-hidden="true" /> Decrypt
-                  </button>
-                </div>
-                {out === null && <Flow left={`${packed.slice(0, 18)}…`} leftLabel="Encrypted" step="Wrong key" blocked right="Refused. Nothing comes out." rightLabel="Result" rightClass="is-blocked" />}
+                <KeyTry
+                  value={guess}
+                  placeholder="Make one up, like Blue-Door-7"
+                  disabled={!packed}
+                  onChange={setGuess}
+                  onTry={async () => setGuessOut(await aesDecrypt(guess.trim(), packed))}
+                />
+                {guessOut === null && <Flow left={`${packed.slice(0, 18)}…`} leftLabel="Encrypted" step="Wrong key" blocked right="Refused. Nothing comes out." rightLabel="Result" rightClass="is-blocked" />}
               </>
             ),
           },
           {
-            title: `Now use the key from your ticket: ${NOTE_KEY}`,
+            title: `Now type the key from your ticket, ${NOTE_KEY}, and decrypt`,
             done: opened || Boolean(word),
-            body: opened && <Flow left={`${packed.slice(0, 18)}…`} leftLabel="Encrypted" step="Right key" right={<Morph from={packed} to={out} play={play} />} rightLabel="The note" rightClass="is-open" />,
+            body: (
+              <>
+                <KeyTry value={key} placeholder={NOTE_KEY} disabled={!packed || opened} onChange={setKey} onTry={() => void decrypt()} />
+                {out === null && <p className="lk-note is-bad">Not the key. Type {NOTE_KEY} exactly. Capitals and dashes count.</p>}
+                {opened && <Flow left={`${packed.slice(0, 18)}…`} leftLabel="Encrypted" step="Right key" right={<Morph from={packed} to={out} play={play} />} rightLabel="The note" rightClass="is-open" />}
+              </>
+            ),
           },
           {
             title: "Type the code word from the note",
@@ -791,6 +799,29 @@ function NoteCard({ word, locked, right, onWord }: { word: string; locked: boole
       />
       {opened && <Takeaway afterMorph>Encryption comes back only with the key. It is only as safe as where the key is kept. A key stored next to the data protects nothing.</Takeaway>}
       {locked && <Verdict right={right}>Right key, exact message. Any other key, nothing.</Verdict>}
+    </div>
+  );
+}
+
+// A key box with a Decrypt button. Enter also decrypts.
+function KeyTry({ value, placeholder, disabled, onChange, onTry }: { value: string; placeholder: string; disabled: boolean; onChange: (v: string) => void; onTry: () => void }) {
+  const ready = Boolean(value.trim()) && !disabled;
+  return (
+    <div className="lk-panel__try">
+      <input
+        type="text"
+        value={value}
+        placeholder={placeholder}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && ready && onTry()}
+        spellCheck={false}
+        autoComplete="off"
+        aria-label="Key"
+      />
+      <button type="button" className="lk-mini" disabled={!ready} onClick={onTry}>
+        <Lock aria-hidden="true" /> Decrypt
+      </button>
     </div>
   );
 }
