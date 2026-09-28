@@ -242,11 +242,12 @@
 .lk-from { display: inline-flex; align-items: center; gap: 6px; }
 
 /* Guide: the step's instruction as a message from Alex. */
-.lk-nar { display: flex; align-items: flex-start; gap: 12px; margin-top: 4px; }
-.lk-nar > .lk-av { margin-top: 2px; box-shadow: 0 0 0 2px var(--rd-line); }
-.lk-nar__bubble { position: relative; flex: 1; min-width: 0; padding: 9px 14px 10px; border: 1px solid var(--rd-line); border-left: 2px solid var(--rt-primary, #5546e0); background: var(--rd-line-2); animation: lk-rise 0.35s ease-out both; }
-.lk-nar__bubble small { font-size: 11.5px; font-weight: 700; color: var(--rd-ink-3); }
-.rt-head .lk-nar__bubble p, .lk-nar__bubble p { margin: 2px 0 0; max-width: 64ch; font-size: 14px; line-height: 1.6; color: var(--rd-ink-2); }
+.lk-nar { display: flex; align-items: flex-start; gap: 10px; margin-top: 6px; animation: lk-rise 0.3s ease-out both; }
+.lk-nar__msg { display: grid; gap: 1px; min-width: 0; }
+.lk-nar__who { display: flex; align-items: baseline; gap: 8px; }
+.lk-nar__who b { font-size: 13.5px; font-weight: 650; color: var(--rd-ink); }
+.lk-nar__who span { font-size: 12px; color: var(--rd-ink-3); }
+.rt-head .lk-nar__msg p, .lk-nar__msg p { margin: 0; max-width: 64ch; font-size: 14px; line-height: 1.55; color: var(--rd-ink-2); }
 
 /* Right answers pop, wrong ones shake, finished steps pop their check. */
 .rt-verdict.is-right svg { animation: lk-pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
@@ -256,5 +257,5 @@
 @keyframes lk-shake { 20%, 60% { transform: translateX(-3px); } 40%, 80% { transform: translateX(3px); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .lk-nar__bubble, .rt-verdict svg, .rt-step__n svg, .lk-guide__n svg { animation: none !important; }
+  .lk-nar, .rt-verdict svg, .rt-step__n svg, .lk-guide__n svg { animation: none !important; }
 }

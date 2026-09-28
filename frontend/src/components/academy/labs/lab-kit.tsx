@@ -87,14 +87,15 @@ export function Avatar({ name, kind = "person", size = 32 }: { name: string; kin
 }
 
 /** The lab's guide gives each step's instruction as a message. */
-export function Narrator({ name = "Alex Rivera", role = "IT", children }: { name?: string; role?: string; children: ReactNode }) {
+export function Narrator({ name = "Alex Rivera", role = "IT admin", children }: { name?: string; role?: string; children: ReactNode }) {
   return (
     <div className="lk-nar">
-      <Avatar name={name} size={36} />
-      <div className="lk-nar__bubble">
-        <small>
-          {name} · {role}
-        </small>
+      <Avatar name={name} size={32} />
+      <div className="lk-nar__msg">
+        <div className="lk-nar__who">
+          <b>{name}</b>
+          <span>{role}</span>
+        </div>
         <p>{children}</p>
       </div>
     </div>
