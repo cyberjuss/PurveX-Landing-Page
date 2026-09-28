@@ -17,6 +17,8 @@ import { HashVerifyLab } from "./labs/hash-verify-lab";
 import { LabBrief } from "./labs/lab-brief";
 import { PasswordTableLab } from "./labs/password-table-lab";
 import { RiskTriageLab } from "./labs/risk-triage-lab";
+import { SigninLogLab } from "./labs/signin-log-lab";
+import { EffectiveAccessLab } from "./labs/effective-access-lab";
 
 type WeekLink = { label: string; href: string };
 
@@ -183,6 +185,10 @@ export function SectionTabs({
           <RiskTriageLab onDone={labDone} />
         ) : current.widget === "hash-verify" ? (
           <HashVerifyLab onDone={labDone} />
+        ) : current.widget === "signin-log" ? (
+          <SigninLogLab onDone={labDone} />
+        ) : current.widget === "effective-access" ? (
+          <EffectiveAccessLab onDone={labDone} />
         ) : (
           <PasswordTableLab onDone={labDone} />
         )}

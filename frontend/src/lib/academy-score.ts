@@ -47,7 +47,7 @@ export const MISSION_SKILLS: Record<string, Skill> = {
 };
 
 /** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */
-export const LAB_PASS_IDS = ["lab-risk-triage", "lab-hash-verify", "lab-password-table"] as const;
+export const LAB_PASS_IDS = ["lab-risk-triage", "lab-hash-verify", "lab-password-table", "lab-signin-log", "lab-effective-access"] as const;
 export type LabPassId = (typeof LAB_PASS_IDS)[number];
 const isLabPass = (id: string) => (LAB_PASS_IDS as readonly string[]).includes(id);
 

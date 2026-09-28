@@ -259,6 +259,8 @@ const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
   "lab-risk-triage": ["Risk Assessment", "CIA Triad"],
   "lab-hash-verify": ["Cryptographic Hashing (SHA-256)", "Indicators of Compromise (IOCs)"],
   "lab-password-table": ["Password Hashing and Salting", "Encryption (AES)", "Base64 Encoding"],
+  "lab-signin-log": ["Log Analysis", "Windows Event Logs", "Incident Triage"],
+  "lab-effective-access": ["NTFS Permissions", "Share Permissions", "Access Control"],
 };
 
 export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean, results: Results = {}): { group: string; items: string[] }[] {

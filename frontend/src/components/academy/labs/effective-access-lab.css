@@ -1,0 +1,38 @@
+/* Week 4 lab: a person and their groups beside a folder and its permissions. */
+.ea { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.ea-panel { display: grid; align-content: start; gap: 10px; min-width: 0; padding: 14px; border: 1px solid var(--rd-line); }
+.ea-who { display: flex; align-items: center; gap: 10px; }
+.ea-who > div { display: grid; gap: 1px; min-width: 0; }
+.ea-who b { font-size: 14.5px; color: var(--rd-ink); }
+.ea-who small { font-size: 12px; color: var(--rd-ink-3); }
+.ea-label, .ea-acl > small { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rd-ink-3); }
+.ea-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.ea-chip { display: inline-block; padding: 5px 10px; border: 1px solid var(--rd-line); border-radius: 999px; background: none; font-size: 12.5px; font-weight: 600; color: var(--rd-ink); }
+button.ea-chip { cursor: pointer; transition: border-color 0.15s, opacity 0.15s; }
+button.ea-chip:hover { border-color: var(--rd-bad); }
+.ea-chip.is-auto { border-style: dashed; color: var(--rd-ink-3); }
+.ea-chip.is-gone { opacity: 0.45; text-decoration: line-through; border-color: var(--rd-bad); }
+.ea-path { display: flex; align-items: center; gap: 8px; }
+.ea-path svg { width: 16px; height: 16px; color: var(--rd-accent); }
+.ea-path code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; font-weight: 600; color: var(--rd-ink); word-break: break-all; }
+.ea-acl { display: grid; gap: 6px; }
+.ea-acl ul { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.ea-ace { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 10px; width: 100%; padding: 7px 10px; border: 1px solid var(--rd-line); background: none; text-align: left; font-size: 13px; color: var(--rd-ink); transition: border-color 0.15s, opacity 0.15s; }
+.ea-ace > span:first-child { font-weight: 600; }
+.ea-ace > span:nth-child(2) { color: var(--rd-ink-2); }
+.ea-ace em { padding: 1px 7px; border-radius: 999px; font-style: normal; font-size: 11px; font-weight: 700; background: color-mix(in srgb, var(--rd-good) 14%, transparent); color: var(--rd-good); }
+.ea-ace.is-deny em { background: color-mix(in srgb, var(--rd-bad) 14%, transparent); color: var(--rd-bad); }
+button.ea-ace { cursor: pointer; }
+button.ea-ace:hover { border-color: var(--rd-bad); }
+.ea-ace.is-gone { opacity: 0.45; text-decoration: line-through; border-color: var(--rd-bad); }
+.ea-ace.is-key { border-color: var(--rd-accent); box-shadow: inset 3px 0 0 var(--rd-accent); }
+.ea-ace.is-dim { opacity: 0.45; }
+.ea-result { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.ea-result li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border: 1px solid var(--rd-line); }
+.ea-result li > span { display: grid; gap: 1px; min-width: 0; }
+.ea-result b { font-size: 13px; color: var(--rd-ink); }
+.ea-result small { font-size: 11.5px; color: var(--rd-ink-3); }
+.ea-result em { flex: none; font-style: normal; font-size: 12.5px; font-weight: 700; transition: color 0.2s; }
+.ea-result em.is-change { color: var(--rd-ink); }
+.ea-result em.is-read { color: var(--rd-ink-2); }
+.ea-result em.is-none { color: var(--rd-ink-3); }

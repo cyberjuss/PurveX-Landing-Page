@@ -65,6 +65,36 @@ export const LAB_BRIEFS: Record<LabWidget, LabBrief> = {
     tools: ["CyberChef", "Hashcat and John the Ripper (shown)"],
     minutes: 20,
   },
+  "signin-log": {
+    problem:
+      "In late 2023, attackers used a password spray to break into an old Microsoft test account that had no MFA. From there they reached email belonging to Microsoft's senior leadership and security staff.",
+    today: "Last night's sign-in log from PurveX's domain controller and MFA service has four things in it that need a look.",
+    objective: {
+      "help-desk": "Tell a user's own locked-out phone apart from an attack, and know which calls to escalate.",
+      sysadmin: "Read the sign-in events that show an account being attacked or misused, and choose the fix.",
+      "soc-analyst": "Triage a night of sign-ins, find the spray and the compromised accounts, and pick the first containment step.",
+      "cyber-analyst": "Separate attacks from noise in a sign-in log, and show it with a count you can repeat.",
+      "ir-analyst": "Find which accounts an attacker now holds, and contain them before tidying up.",
+    },
+    objectiveDefault: "Find the attacks in a night of sign-ins, and decide what to do first.",
+    tools: ["Python (Pyodide)"],
+    minutes: 20,
+  },
+  "effective-access": {
+    problem:
+      "Folders open to every account in the domain are a common finding in security audits. One stolen password is then enough to read data meant for a single department.",
+    today: "An audit flagged four folders on PurveX's file server. Work out who can really open each one.",
+    objective: {
+      "help-desk": "Explain why a user can or cannot open a folder, and fix it through groups, not one-off rights.",
+      sysadmin: "Work out effective access from share and NTFS permissions, and remove what grants too much.",
+      "soc-analyst": "Spot folder permissions that expose client data to the whole firm.",
+      "cyber-analyst": "Audit who can reach sensitive data, and name the evidence you would pull from the server.",
+      "ir-analyst": "Size what one stolen account could have read on the file server.",
+    },
+    objectiveDefault: "Work out who can open each folder, and remove the access that should not be there.",
+    tools: [],
+    minutes: 15,
+  },
 };
 
 export const BROWSER_LABS = Object.keys(LAB_BRIEFS) as LabWidget[];
