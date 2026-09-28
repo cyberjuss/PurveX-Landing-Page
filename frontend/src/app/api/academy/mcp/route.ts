@@ -4,14 +4,14 @@ import { loadLabState, loadProgress, resolveMcpKey } from "@/lib/academy-store";
 
 export const runtime = "nodejs";
 
-// PurveX Academy MCP server (Streamable HTTP, stateless, JSON responses).
+// PurveX Range MCP server (Streamable HTTP, stateless, JSON responses).
 // Students connect their own MCP client with a personal pvx_ key created in
 // the Academy. Every tool is scoped to the key's student and none returns
 // mission flags or explanations. Tools only read, except record_practice_result,
 // which logs a practice question the student answered with their assistant.
 
 const SUPPORTED_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26"];
-const SERVER_INFO = { name: "purvex-academy", title: "PurveX Academy", version: "1.0.0" };
+const SERVER_INFO = { name: "purvex-academy", title: "PurveX Range", version: "1.0.0" };
 
 type JsonRpcId = string | number | null;
 type JsonRpcMessage = { jsonrpc?: string; id?: JsonRpcId; method?: string; params?: Record<string, unknown> };
@@ -44,9 +44,9 @@ export async function POST(request: Request) {
 
   const auth = request.headers.get("authorization") || "";
   const key = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
-  if (!key) return unauthorized("Missing PurveX Academy key. Create one in the Academy under Coach, Connect to Claude.");
+  if (!key) return unauthorized("Missing PurveX Range key. Create one in PurveX Range under Coach, Connect to Claude.");
   const userId = await resolveMcpKey(key);
-  if (!userId) return unauthorized("This PurveX Academy key is not valid. Create a new one in the Academy.");
+  if (!userId) return unauthorized("This PurveX Range key is not valid. Create a new one in PurveX Range.");
 
   let msg: JsonRpcMessage;
   try {

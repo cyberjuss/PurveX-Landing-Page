@@ -13,6 +13,6 @@ Phase 1 taught you to check Active Directory before you work a help desk ticket.
 
 Then you decide whether the activity fits this environment.
 
-Finish the Phase 1 Home Lab first, including the Academy download of `Build-Environment.ps1`. The alert names objects in that same directory.
+Finish the Phase 1 Home Lab first, including the PurveX Range download of `Build-Environment.ps1`. The alert names objects in that same directory.
 
 If you do not already know where `alex.rivera` belongs, go back and learn it before you work the queue.

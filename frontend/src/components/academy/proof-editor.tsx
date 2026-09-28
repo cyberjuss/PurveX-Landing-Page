@@ -611,7 +611,7 @@ export function ProofEditor() {
                   Show on profile
                 </label>
               </div>
-              <p>Keywords applicant tracking systems scan for, from work you did in the Academy.</p>
+              <p>Keywords applicant tracking systems scan for, from work you did in PurveX Range.</p>
               <div className="pf-ats">
                 <p>
                   {data.skills.map((g) => (

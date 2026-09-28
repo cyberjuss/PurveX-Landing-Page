@@ -50,7 +50,7 @@ A few errors account for almost every "it will not run" report. Each one is easy
 </div>
 
 <div class="ad-trouble__item">
-<span class="ad-trouble__label">The script says it is not linked to PurveX Academy</span>
+<span class="ad-trouble__label">The script says it is not linked to PurveX Range</span>
 <p>You ran a copy without your account key, such as a saved or pasted copy. Sign in, open Build the Environment, and click <strong>Download Build-Environment.ps1</strong> once. Do not right-click and save. If a red message appears under the link, read it, sign in again, and click the link once more. Then run the new file. It only adds what is missing.</p>
 </div>
 

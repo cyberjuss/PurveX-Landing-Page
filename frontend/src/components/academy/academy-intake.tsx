@@ -198,7 +198,7 @@ export function AcademyIntake({
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <>
-              {last ? (initial ? "Save changes" : "Enter the Academy") : "Continue"} <ArrowRight className="h-4 w-4" />
+              {last ? (initial ? "Save changes" : "Enter PurveX Range") : "Continue"} <ArrowRight className="h-4 w-4" />
             </>
           )}
         </button>

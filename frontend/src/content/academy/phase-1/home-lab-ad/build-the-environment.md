@@ -16,8 +16,8 @@ After the domain reboot, sign in as `PURVEXFINANCIAL\Administrator` and run this
 * Pre-stages the `IT-WKS01` computer object
 * Prompts once for an initial password. Every account must change it at next logon, so nobody keeps that password long-term
 * Is safe to run more than once. It only creates what is missing and never resets or deletes anything that exists
-* The Academy download plants the ticket-queue challenge objects on the first build and sends your lab right away. Add `-NoCTF` to skip them
-* The Academy download also starts a background Coach sync on the domain controller after the first successful build. The VM only has to stay on
+* The PurveX Range download plants the ticket-queue challenge objects on the first build and sends your lab right away. Add `-NoCTF` to skip them
+* The PurveX Range download also starts a background Coach sync on the domain controller after the first successful build. The VM only has to stay on
 
 **How the Coach sync works.** A change in the lab folders is sent right away. The Security log goes out once a minute. To stop the sync, run `./Build-Environment.ps1 -UninstallSync`.
 
@@ -27,7 +27,7 @@ The sync never sends passwords or raw log entries. Your drills and the weekly CT
 
 [Download Build-Environment.ps1](/lab-scripts/Build-Environment.ps1)
 
-You can also copy the script from here. A pasted copy is not linked to your Academy account, so Coach and your drills will not see your lab. Use the download when you want that link.
+You can also copy the script from here. A pasted copy is not linked to your PurveX Range account, so Coach and your drills will not see your lab. Use the download when you want that link.
 
 <details class="ad-code">
 <summary>Show Build-Environment.ps1 (copy/paste)</summary>
@@ -47,8 +47,8 @@ You can also copy the script from here. A pasted copy is not linked to your Acad
     Run on the domain controller after Install-Forest.ps1. It is safe to
     re-run. Anything that already exists is skipped.
 
-    When downloaded from PurveX Academy, it also syncs a read-only summary
-    of the lab OUs (never passwords) to your Academy account so PurveX Coach
+    When downloaded from PurveX Range, it also syncs a read-only summary
+    of the lab OUs (never passwords) to your PurveX Range account so PurveX Coach
     can see your lab.
 
 .PARAMETER InitialPassword
@@ -56,10 +56,10 @@ You can also copy the script from here. A pasted copy is not linked to your Acad
     Every account must change it at next logon.
 
 .PARAMETER IncludeCTF
-    Adds the ticket-queue challenge objects. The Academy download does this automatically.
+    Adds the ticket-queue challenge objects. The PurveX Range download does this automatically.
 
 .PARAMETER NoCTF
-    Skips the ticket-queue challenge objects in the Academy download.
+    Skips the ticket-queue challenge objects in the PurveX Range download.
 
 .PARAMETER SyncLoop
     Used by the sync task. A lab-folder change is sent right away, without the Security log.
@@ -70,7 +70,7 @@ You can also copy the script from here. A pasted copy is not linked to your Acad
 
 .PARAMETER InstallSync
     Install a scheduled task that sends a snapshot about every minute.
-    The Academy download does this automatically after a successful build.
+    The PurveX Range download does this automatically after a successful build.
 
 .PARAMETER UninstallSync
     Remove the PurveX Coach sync task.
@@ -97,7 +97,7 @@ Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
 
-# The Academy download plants the ticket objects on the first build so the missions work at once.
+# The PurveX Range download plants the ticket objects on the first build so the missions work at once.
 if ($PurvexKey -and -not $NoCTF) { $IncludeCTF = $true }
 
 $domain   = Get-ADDomain
@@ -565,7 +565,7 @@ function Start-PurvexSyncLoop {
 
 function Install-PurvexLabSync {
     if (-not $PurvexKey -or -not $PurvexUrl) {
-        Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build the Environment first." -ForegroundColor Yellow
+        Write-Host "This copy is not linked to PurveX Range. Download Build-Environment.ps1 from Build the Environment first." -ForegroundColor Yellow
         return $false
     }
     $source = $PSCommandPath
@@ -620,7 +620,7 @@ if ($InstallSync) {
 
 if ($SyncLoop) {
     if (-not $PurvexKey -or -not $PurvexUrl) {
-        Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build the Environment and run it once." -ForegroundColor Yellow
+        Write-Host "This copy is not linked to PurveX Range. Download Build-Environment.ps1 from Build the Environment and run it once." -ForegroundColor Yellow
         return
     }
     Start-PurvexSyncLoop -Key $PurvexKey -Url $PurvexUrl
@@ -629,7 +629,7 @@ if ($SyncLoop) {
 
 if ($SyncOnly) {
     if (-not $PurvexKey -or -not $PurvexUrl) {
-        Write-Host "This copy is not linked to PurveX Academy. Download Build-Environment.ps1 from Build the Environment and run it once." -ForegroundColor Yellow
+        Write-Host "This copy is not linked to PurveX Range. Download Build-Environment.ps1 from Build the Environment and run it once." -ForegroundColor Yellow
         return
     }
     if ($Scheduled -and -not (Test-PurvexSyncDue -Key $PurvexKey -Url $PurvexUrl)) { return }
@@ -744,7 +744,7 @@ if ($IncludeCTF) {
 
 if (-not $WhatIfPreference) {
     if (-not $PurvexKey -or -not $PurvexUrl) {
-        Write-Host "`nThis copy is not linked to PurveX Academy, so your lab was not sent. Download Build-Environment.ps1 from Build the Environment and run it again." -ForegroundColor Yellow
+        Write-Host "`nThis copy is not linked to PurveX Range, so your lab was not sent. Download Build-Environment.ps1 from Build the Environment and run it again." -ForegroundColor Yellow
     }
     else {
         try {
@@ -782,7 +782,7 @@ To preview what the script will do before it changes anything, run it with `-Wha
 
 If the script will not run, open Check the Build. That tab lists the usual causes and their fixes.
 
-The Academy download plants the ticket-queue challenge data on the same run, so the missions work as soon as the lab reports. It adds these objects:
+The PurveX Range download plants the ticket-queue challenge data on the same run, so the missions work as soon as the lab reports. It adds these objects:
 
 - A service-account OU
 - A backup service account

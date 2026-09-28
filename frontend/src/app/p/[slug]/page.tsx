@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!found?.settings.published) return { title: "Portfolio not found", robots: { index: false } };
   return {
     title: `${found.settings.displayName} · Portfolio`,
-    description: `Lab work ${found.settings.displayName} completed and confirmed in PurveX Academy.`,
+    description: `Lab work ${found.settings.displayName} completed and confirmed in PurveX Range.`,
     robots: { index: false, follow: false },
   };
 }

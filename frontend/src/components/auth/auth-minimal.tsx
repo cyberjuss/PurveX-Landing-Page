@@ -11,7 +11,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 export function AuthMinimal({ children, product = "" }: { children: ReactNode; product?: string }) {
   return (
-    <div className={`am-page flex min-h-screen flex-col bg-white text-[#10192e]${product === "Academy" ? " am-page--academy" : ""}`}>
+    <div className={`am-page flex min-h-screen flex-col bg-white text-[#10192e]${product === "Range" ? " am-page--academy" : ""}`}>
       <header className="flex h-16 items-center px-5 sm:px-8">
         <Link href="/" className="flex items-center gap-2.5" aria-label="PurveX home">
           <Image src="/logo.png" alt="" width={28} height={28} priority />
