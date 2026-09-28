@@ -72,7 +72,7 @@
 .lk-real p { font-size: 13.5px; line-height: 1.6; color: var(--rd-ink-2); }
 
 /* Hash comparison: the two hashes in groups of eight, with only the differing characters marked. */
-.lk-compare { border: 1px solid var(--rd-line); background: var(--rd-line-2); }
+.lk-compare { border: 1px solid var(--rd-line); }
 .lk-compare__row { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 12px; align-items: baseline; padding: 10px 12px; }
 .lk-compare__row + .lk-compare__row { border-top: 1px dashed var(--rd-line); }
 .lk-compare__row > span { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--rd-ink-3); }
