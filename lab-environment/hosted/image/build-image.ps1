@@ -33,28 +33,44 @@ function New-Secret {
     "Dsrm-" + [Convert]::ToBase64String($bytes).Replace("+", "x").Replace("/", "y").Replace("=", "") + "-7q"
 }
 
-$base = aws ssm get-parameter --name /aws/service/ami-windows-latest/Windows_Server-2022-English-Full-Base --query Parameter.Value @aws
+# Runs the AWS CLI and stops the script if it fails. Windows PowerShell 5.1 does not stop on a
+# failed native command by itself, and it strips double quotes from JSON arguments, so JSON goes
+# through files.
+function Invoke-Aws {
+    $ErrorActionPreference = "Continue"
+    $out = & aws @args @aws 2>&1
+    if ($LASTEXITCODE -ne 0) { throw "aws $($args[0]) $($args[1]) failed: $($out | Out-String)" }
+    return ($out | Out-String).Trim()
+}
+
+$tmp = [IO.Path]::GetTempPath()
+$base = Invoke-Aws ssm get-parameter --name /aws/service/ami-windows-latest/Windows_Server-2022-English-Full-Base --query Parameter.Value
 Write-Host "Base image: $base"
 
 $setup = Get-Content -LiteralPath (Join-Path $PSScriptRoot "setup.ps1") -Raw
 $setup = $setup.Replace("__DSRM_PASSWORD__", (New-Secret)).Replace("__INITIAL_PASSWORD__", $InitialPassword.Replace("'", "''")).Replace("__SCRIPT_URL__", $ScriptUrl)
-$userData = Join-Path ([IO.Path]::GetTempPath()) "casefile-image-userdata.txt"
+$userData = Join-Path $tmp "casefile-image-userdata.txt"
 # persist=true: user data runs again after the forest restart.
 Set-Content -LiteralPath $userData -Value "<powershell>`r`n$setup`r`n</powershell>`r`n<persist>true</persist>" -Encoding ASCII
+$disk = Join-Path $tmp "casefile-image-disk.json"
+Set-Content -LiteralPath $disk -Encoding ASCII -Value '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":50,"VolumeType":"gp3","Encrypted":true,"DeleteOnTermination":true}}]'
 
 $stamp = Get-Date -Format "yyyyMMdd-HHmm"
-$disk = '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":50,"VolumeType":"gp3","Encrypted":true,"DeleteOnTermination":true}}]'
 $tags = "ResourceType=instance,Tags=[{Key=Name,Value=casefile-image-builder-$stamp},{Key=casefile-image-builder,Value=true}]"
-$id = aws ec2 run-instances --image-id $base --instance-type t3.medium --subnet-id $SubnetId --security-group-ids $SecurityGroupId `
-    --user-data "file://$userData" --block-device-mappings $disk --metadata-options "HttpTokens=required" `
-    --credit-specification "CpuCredits=unlimited" --tag-specifications $tags --query "Instances[0].InstanceId" @aws
-Remove-Item -LiteralPath $userData -Force
+try {
+    $id = Invoke-Aws ec2 run-instances --image-id $base --instance-type t3.medium --subnet-id $SubnetId --security-group-ids $SecurityGroupId `
+        --user-data "file://$userData" --block-device-mappings "file://$disk" --metadata-options "HttpTokens=required" `
+        --credit-specification "CpuCredits=unlimited" --tag-specifications $tags --query "Instances[0].InstanceId"
+}
+finally {
+    Remove-Item -LiteralPath $userData, $disk -Force -ErrorAction SilentlyContinue
+}
 Write-Host "Builder $id is running setup. This takes about 30 to 45 minutes."
 
 $deadline = (Get-Date).AddMinutes(75)
 do {
     Start-Sleep -Seconds 60
-    $state = aws ec2 describe-instances --instance-ids $id --query "Reservations[0].Instances[0].State.Name" @aws
+    $state = Invoke-Aws ec2 describe-instances --instance-ids $id --query "Reservations[0].Instances[0].State.Name"
     Write-Host ("  {0:HH:mm}  {1}" -f (Get-Date), $state)
     if ((Get-Date) -gt $deadline) {
         throw "The builder did not finish in 75 minutes. See its boot log with: aws ec2 get-console-output --instance-id $id --latest. Setup writes C:\ProgramData\PurveX\image-setup.log on the builder."
@@ -62,11 +78,16 @@ do {
 } while ($state -ne "stopped")
 
 $name = "casefile-dc-$stamp"
-$ami = aws ec2 create-image --instance-id $id --name $name --description "CaseFile lab: PurveX Financial domain controller" `
-    --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$name},{Key=casefile-lab-image,Value=true}]" --query ImageId @aws
-Write-Host "Saving image $ami ..."
-aws ec2 wait image-available --image-ids $ami @aws
-aws ec2 terminate-instances --instance-ids $id @aws | Out-Null
+$ami = Invoke-Aws ec2 create-image --instance-id $id --name $name --description "CaseFile lab: PurveX Financial domain controller" `
+    --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$name},{Key=casefile-lab-image,Value=true}]" --query ImageId
+Write-Host "Saving image $ami (about 10 to 20 minutes) ..."
+# The CLI waiter gives up after 10 minutes, and a 50 GB Windows image can take longer.
+do {
+    Start-Sleep -Seconds 30
+    $imageState = Invoke-Aws ec2 describe-images --image-ids $ami --query "Images[0].State"
+    if ($imageState -eq "failed") { throw "AWS could not save the image. The builder $id is still there to try again." }
+} while ($imageState -ne "available")
+Invoke-Aws ec2 terminate-instances --instance-ids $id | Out-Null
 Write-Host ""
 Write-Host "Image ready: $ami" -ForegroundColor Green
 Write-Host "Set HOSTED_LAB_AMI=$ami in Vercel, then redeploy."
