@@ -247,9 +247,25 @@ export function SigninLogLab({ onDone }: { onDone?: () => void }) {
                 <div className={`rt-ticket${checked ? (right ? " is-right" : " is-wrong") : ""}`}>
                   <div className="lk-card-head">
                     <b>{inc.title}</b>
-                    <small>Security log, DC01 and the MFA service</small>
+                    <small>Security log from DC01 and the MFA service. Read it top to bottom.</small>
                   </div>
+                  <EventKey rows={inc.rows} />
+                  <LogTable
+                    rows={inc.rows}
+                    picked={s.proof[inc.id]}
+                    answer={checked ? inc.proof : undefined}
+                    onPick={
+                      checked
+                        ? undefined
+                        : (n) => {
+                            const proof = { ...s.proof, [inc.id]: n };
+                            patch({ proof });
+                            deck1.next((k) => Boolean(s.pattern[INCIDENTS[k].id]) && proof[INCIDENTS[k].id] !== undefined);
+                          }
+                    }
+                  />
                   <Guide
+                    showAll
                     steps={[
                       {
                         title: "What is happening?",
@@ -270,27 +286,18 @@ export function SigninLogLab({ onDone }: { onDone?: () => void }) {
                         ),
                       },
                       {
-                        title: "Click the row that proves it",
+                        title: "Which row proves it? Click it in the log above.",
                         done: s.proof[inc.id] !== undefined,
-                        body: (
-                          <LogTable
-                            rows={inc.rows}
-                            picked={s.proof[inc.id]}
-                            answer={checked ? inc.proof : undefined}
-                            onPick={
-                              checked
-                                ? undefined
-                                : (n) => {
-                                    const proof = { ...s.proof, [inc.id]: n };
-                                    patch({ proof });
-                                    deck1.next((k) => Boolean(s.pattern[INCIDENTS[k].id]) && proof[INCIDENTS[k].id] !== undefined);
-                                  }
-                            }
-                          />
-                        ),
+                        body:
+                          s.proof[inc.id] !== undefined ? (
+                            <p className="lk-note">
+                              You picked {inc.rows[s.proof[inc.id]].time}, event {inc.rows[s.proof[inc.id]].event}, {inc.rows[s.proof[inc.id]].account}.
+                            </p>
+                          ) : (
+                            <p className="lk-note">Look for the moment the story turns: where the attack worked, or where the trouble started.</p>
+                          ),
                       },
                     ]}
-                    showAll
                   />
                   {checked && (
                     <div className="rt-why">
@@ -341,7 +348,7 @@ export function SigninLogLab({ onDone }: { onDone?: () => void }) {
                     <PythonCell initial={STARTER} files={{ "signin.csv": CSV }} onRun={(_, ok) => ok && !s.ran && patch({ ran: true })} />
                     <details className="lk-more">
                       <summary>Python blocked on this computer? See the whole log</summary>
-                      <LogTable rows={LOG} />
+                      <LogTable rows={LOG} tall />
                     </details>
                   </>
                 ),
@@ -540,44 +547,59 @@ export function SigninLogLab({ onDone }: { onDone?: () => void }) {
 
 const TONE: Record<string, string> = { "4624": "ok", "4625": "bad", "4740": "warn", "4723": "info", "4672": "warn", MFA: "mfa" };
 
-/** Sign-in events as a table. With onPick, each row is a button. */
-function LogTable({ rows, picked, answer, onPick }: { rows: Row[]; picked?: number; answer?: number; onPick?: (n: number) => void }) {
+const MEANING: Record<string, string> = {
+  "4624": "signed in",
+  "4625": "failed sign-in",
+  "4740": "account locked out",
+  "4723": "password changed by the user",
+  "4672": "signed in with admin rights",
+  MFA: "MFA push prompt",
+};
+
+/** What each event number in these rows means. */
+function EventKey({ rows }: { rows: Row[] }) {
+  const events = [...new Set(rows.map((r) => r.event))];
   return (
-    <div className="lk-log">
-      <div className="lk-log__head" aria-hidden="true">
-        <span>Time</span>
-        <span>Event</span>
-        <span>Account</span>
-        <span>Source</span>
-        <span>Detail</span>
-      </div>
-      <ol>
-        {rows.map((r, n) => {
-          const cls = answer !== undefined ? (n === answer ? "is-answer" : n === picked ? "is-miss" : "") : n === picked ? "is-picked" : "";
-          const cells = (
-            <>
-              <span>{r.time}</span>
-              <span>
-                <i className={`lk-ev lk-ev--${TONE[r.event] ?? "info"}`}>{r.event}</i>
-              </span>
-              <span>{r.account}</span>
-              <span>{r.source}</span>
-              <span>{r.detail}</span>
-            </>
-          );
-          return (
-            <li key={n}>
-              {onPick ? (
-                <button type="button" className={cls} aria-pressed={n === picked} onClick={() => onPick(n)}>
-                  {cells}
-                </button>
-              ) : (
-                <div className={cls}>{cells}</div>
-              )}
-            </li>
-          );
-        })}
-      </ol>
-    </div>
+    <ul className="lk-evkey" aria-label="What the event numbers mean">
+      {events.map((e) => (
+        <li key={e}>
+          <i className={`lk-ev lk-ev--${TONE[e] ?? "info"}`}>{e}</i> {MEANING[e] ?? ""}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Sign-in events, two lines each. With onPick, each row is a button. */
+function LogTable({ rows, picked, answer, onPick, tall = false }: { rows: Row[]; picked?: number; answer?: number; onPick?: (n: number) => void; tall?: boolean }) {
+  return (
+    <ol className={`lk-log${tall ? " is-tall" : ""}`}>
+      {rows.map((r, n) => {
+        const cls = answer !== undefined ? (n === answer ? "is-answer" : n === picked ? "is-miss" : "") : n === picked ? "is-picked" : "";
+        const cells = (
+          <>
+            <span className="lk-log__time">{r.time}</span>
+            <i className={`lk-ev lk-ev--${TONE[r.event] ?? "info"}`}>{r.event}</i>
+            <span className="lk-log__main">
+              <b>{r.account}</b>
+              <small>
+                from {r.source} · {r.detail}
+              </small>
+            </span>
+          </>
+        );
+        return (
+          <li key={n}>
+            {onPick ? (
+              <button type="button" className={cls} aria-pressed={n === picked} onClick={() => onPick(n)}>
+                {cells}
+              </button>
+            ) : (
+              <div className={cls}>{cells}</div>
+            )}
+          </li>
+        );
+      })}
+    </ol>
   );
 }

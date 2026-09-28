@@ -273,19 +273,22 @@
 .lk-py__out { margin: 0; padding: 10px 14px; max-height: 260px; overflow: auto; border-top: 1px solid var(--rd-line); background: #0b1220; font-family: var(--font-mono, ui-monospace, monospace); font-size: 12.5px; line-height: 1.55; color: #a7f3d0; white-space: pre-wrap; word-break: break-word; }
 .lk-py__out.is-error { color: #fca5a5; }
 
-/* Sign-in events, one row per event. Rows can be buttons. */
-.lk-log { border: 1px solid var(--rd-line); overflow-x: auto; }
-.lk-log__head, .lk-log li > button, .lk-log li > div { display: grid; grid-template-columns: 72px 58px 118px 112px minmax(200px, 1fr); gap: 10px; align-items: center; min-width: 600px; padding: 6px 10px; }
-.lk-log__head { border-bottom: 1px solid var(--rd-line); font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rd-ink-3); }
-.lk-log ol { margin: 0; padding: 0; list-style: none; max-height: 340px; overflow-y: auto; }
-.lk-log li > button, .lk-log li > div { width: 100%; border: 0; border-bottom: 1px solid var(--rd-line-2); background: none; text-align: left; font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; color: var(--rd-ink); }
-.lk-log li > button span, .lk-log li > div span { font-family: var(--font-mono, ui-monospace, monospace); min-width: 0; overflow-wrap: anywhere; }
+/* Sign-in events, two lines each. Rows can be buttons. */
+.lk-log { margin: 0; padding: 0; list-style: none; border: 1px solid var(--rd-line); }
+.lk-log.is-tall { max-height: 420px; overflow-y: auto; }
+.lk-log li + li { border-top: 1px solid var(--rd-line-2); }
+.lk-log li > button, .lk-log li > div { display: grid; grid-template-columns: 64px 50px minmax(0, 1fr); gap: 10px; align-items: start; width: 100%; padding: 8px 12px; border: 0; background: none; text-align: left; color: var(--rd-ink); }
 .lk-log li > button { cursor: pointer; }
 .lk-log li > button:hover { background: var(--rd-line-2); }
-.lk-log .is-picked { background: color-mix(in srgb, var(--rt-primary, #5546e0) 14%, transparent); box-shadow: inset 3px 0 0 var(--rt-primary, #5546e0); }
+.lk-log__time { padding-top: 1px; font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; color: var(--rd-ink-2); }
+.lk-log__main { display: grid; gap: 1px; min-width: 0; }
+.lk-log__main b { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12.5px; font-weight: 600; color: var(--rd-ink); }
+.lk-log__main small { font-size: 12.5px; line-height: 1.45; color: var(--rd-ink-2); overflow-wrap: anywhere; }
+.lk-log .is-picked { background: color-mix(in srgb, var(--rt-primary, #5546e0) 12%, transparent); box-shadow: inset 3px 0 0 var(--rt-primary, #5546e0); }
 .lk-log .is-answer { box-shadow: inset 3px 0 0 var(--rd-good); background: color-mix(in srgb, var(--rd-good) 10%, transparent); }
 .lk-log .is-miss { box-shadow: inset 3px 0 0 var(--rd-bad); }
-.lk-ev { display: inline-block; padding: 1px 6px; border-radius: 4px; font-style: normal; font-size: 11px; font-weight: 700; }
+.lk-evkey { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; padding: 0; list-style: none; font-size: 12.5px; color: var(--rd-ink-2); }
+.lk-ev { display: inline-block; justify-self: start; padding: 1px 6px; border-radius: 4px; font-style: normal; font-size: 11px; font-weight: 700; }
 .lk-ev--ok { background: color-mix(in srgb, var(--rd-good) 16%, transparent); color: var(--rd-good); }
 .lk-ev--bad { background: color-mix(in srgb, var(--rd-bad) 16%, transparent); color: var(--rd-bad); }
 .lk-ev--warn { background: color-mix(in srgb, var(--rd-warn) 18%, transparent); color: var(--rd-warn); }

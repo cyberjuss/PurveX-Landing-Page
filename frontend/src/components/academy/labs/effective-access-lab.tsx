@@ -118,6 +118,23 @@ const CASES: Case[] = [
 ];
 const answerOf = (c: Case) => toAccess(effective(c.share, c.ntfs, c.groups));
 
+/** The working for one list: which entry decides it for this person, and what it allows. */
+function side(list: Ace[], groups: string[]) {
+  const ids = identities(groups);
+  const applies = list.filter((a) => ids.has(a.who));
+  const deny = applies.find((a) => a.deny && a.perm === "full");
+  if (deny) return { text: `${deny.who} is denied, which overrides any Allow`, n: 0 };
+  const top = applies.filter((a) => !a.deny).sort((a, b) => RANK[b.perm] - RANK[a.perm])[0];
+  return top ? { text: `${top.who} allows ${PERM_NAME[top.perm]}`, n: RANK[top.perm] } : { text: "No entry covers them", n: 0 };
+}
+
+const RULES = [
+  ["Groups add up", "A person gets every Allow from every group they are in."],
+  ["Deny beats Allow", "One Deny from any of their groups overrides the Allows."],
+  ["The stricter one wins", "Over the network, access is the lower of the share and NTFS permissions."],
+  ["Domain Users is everyone", "Every account is in Domain Users, so an entry for it covers the whole firm."],
+];
+
 // Fix 1: the entry that opens Client-Balances to the whole firm. Fix 2: Taylor's leftover group.
 const FIX_ACE = "Domain Users";
 const FIX_GROUP = "Operations Users";
@@ -229,6 +246,16 @@ export function EffectiveAccessLab({ onDone }: { onDone?: () => void }) {
             <h3>Who can open this?</h3>
             <Narrator>Read the person&apos;s groups and the folder&apos;s permissions, then say what they can do with it over the network.</Narrator>
           </header>
+          <details className="lk-more" open>
+            <summary>How access adds up</summary>
+            <ol className="ea-rules">
+              {RULES.map(([rule, text]) => (
+                <li key={rule}>
+                  <b>{rule}.</b> {text}
+                </li>
+              ))}
+            </ol>
+          </details>
           <Deck
             tags={CASES.map((c) => c.tag)}
             titles={CASES.map((c) => `${c.name}, ${c.path}`)}
@@ -262,9 +289,12 @@ export function EffectiveAccessLab({ onDone }: { onDone?: () => void }) {
                     />
                   </div>
                   {checked && (
-                    <Verdict right={right}>
-                      <b>{c.rule}.</b> {c.why}
-                    </Verdict>
+                    <>
+                      <Working c={c} />
+                      <Verdict right={right}>
+                        <b>{c.rule}.</b> {c.why}
+                      </Verdict>
+                    </>
                   )}
                 </div>
               );
@@ -608,6 +638,31 @@ function AccessView({
         </div>
       )}
     </div>
+  );
+}
+
+/** The answer worked out: the share, then NTFS, then the stricter of the two. */
+function Working({ c }: { c: Case }) {
+  const share = side(c.share, c.groups);
+  const ntfs = side(c.ntfs, c.groups);
+  const result = ACCESS.find((a) => a.key === toAccess(Math.min(share.n, ntfs.n)))?.text;
+  return (
+    <ol className="ea-work" aria-label="How the answer is worked out">
+      <li>
+        <span>1. Share</span>
+        {share.text}
+      </li>
+      <li>
+        <span>2. NTFS</span>
+        {ntfs.text}
+      </li>
+      <li>
+        <span>3. Result</span>
+        <span className="ea-work__val">
+          The stricter of the two: <b>{result}</b>
+        </span>
+      </li>
+    </ol>
   );
 }
 
