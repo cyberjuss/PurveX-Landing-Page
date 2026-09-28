@@ -9,8 +9,8 @@ import "./lab-kit.css";
 
 export const LOST_ASK = "I'm lost on this step. Give me a hint, not the answer.";
 
-/** Above each browser lab: the real problem, today's situation, and the student's objective for their role. */
-export function LabBrief({ lab, title }: { lab: LabWidget; title: string }) {
+/** Above each browser lab: the real problem, today's situation, and the student's objective for their role. ask: false when the lab shows its own Coach button. */
+export function LabBrief({ lab, title, ask = true }: { lab: LabWidget; title: string; ask?: boolean }) {
   const coach = useOptionalCoach();
   const brief = LAB_BRIEFS[lab];
   const goal = labObjective(lab, coach?.profile?.roles);
@@ -36,7 +36,7 @@ export function LabBrief({ lab, title }: { lab: LabWidget; title: string }) {
         <span>
           <Clock aria-hidden="true" /> About {brief.minutes} min{brief.tools.length ? ` · ${brief.tools.join(", ")}` : ""}
         </span>
-        {coach?.enabled && (
+        {ask && coach?.enabled && (
           <button type="button" className="lk-mini" onClick={() => coach.ask(LOST_ASK)}>
             <MessageCircle aria-hidden="true" /> Lost? Ask Coach
           </button>

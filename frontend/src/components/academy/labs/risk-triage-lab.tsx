@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ArrowDown, ArrowUp, Check, ChevronLeft, ChevronRight, RotateCcw, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, ChevronLeft, ChevronRight, MessageCircle, RotateCcw, X } from "lucide-react";
+import { useOptionalCoach } from "../coach-context";
+import { LOST_ASK } from "./lab-brief";
+import "./lab-kit.css";
 import "./risk-triage-lab.css";
 
 type Cia = "c" | "i" | "a";
@@ -219,10 +222,7 @@ export function RiskTriageLab() {
 
       {s.step === 0 && (
         <div className="rt-body">
-          <header className="rt-head">
-            <h3>Which job broke?</h3>
-            <p>Read each report and pick the part of the CIA triad that failed, or is about to.</p>
-          </header>
+          <Head title="Which job broke?">Read each report and pick the part of the CIA triad that failed, or is about to.</Head>
           <Deck
             index={card}
             dir={dir}
@@ -282,10 +282,7 @@ export function RiskTriageLab() {
 
       {s.step === 1 && (
         <div className="rt-body">
-          <header className="rt-head">
-            <h3>How likely, and how bad?</h3>
-            <p>Rate each ticket. Likelihood is how likely it is to hurt the firm. Impact is how much it costs when it does. Size both against the firm below, not against how urgent a ticket sounds.</p>
-          </header>
+          <Head title="How likely, and how bad?">Rate each ticket. Likelihood is how likely it is to hurt the firm. Impact is how much it costs when it does. Size both against the firm below, not against how urgent a ticket sounds.</Head>
           <FirmBrief />
           <div className="rt-score">
             <Deck
@@ -382,10 +379,7 @@ export function RiskTriageLab() {
 
       {s.step === 2 && (
         <div className="rt-body">
-          <header className="rt-head">
-            <h3>What do you fix first?</h3>
-            <p>Put the tickets in the order you would work them, first at the top. Your own risk scores are shown to help.</p>
-          </header>
+          <Head title="What do you fix first?">Put the tickets in the order you would work them, first at the top. Your own risk scores are shown to help.</Head>
           <ol className="rt-rank">
             {s.order.map((id, i) => {
               const t = BY_ID[id];
@@ -555,6 +549,24 @@ function Deck({ index, dir, onGo, status, children }: { index: number; dir: -1 |
         </div>
       </div>
     </div>
+  );
+}
+
+// Step heading with the Coach button inside the card.
+function Head({ title, children }: { title: string; children: ReactNode }) {
+  const coach = useOptionalCoach();
+  return (
+    <header className="rt-head rt-head--ask">
+      <div>
+        <h3>{title}</h3>
+        <p>{children}</p>
+      </div>
+      {coach?.enabled && (
+        <button type="button" className="lk-mini" onClick={() => coach.ask(LOST_ASK)}>
+          <MessageCircle aria-hidden="true" /> Lost? Ask Coach
+        </button>
+      )}
+    </header>
   );
 }
 
