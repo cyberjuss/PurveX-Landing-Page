@@ -14,3 +14,9 @@ Your job is to see the chain in this order:
 - How bad that would be
 
 If you skip straight to the incident, you arrive late to a problem that was already sitting in the environment.
+
+### When the jobs pull apart
+
+The three CIA jobs pull against each other. More vault, such as an air gap or extra MFA, can shorten the hours. More hours, such as an open share so nobody gets stuck, can leave the vault door open.
+
+Name the job first, then pick the control. Ask whether the damage would be a leak, a lie or a lockout.
