@@ -46,6 +46,16 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "tq-10": "security",
 };
 
+/** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */
+export const LAB_PASS_IDS = ["lab-risk-triage", "lab-hash-verify", "lab-password-table", "lab-signin-log", "lab-effective-access"] as const;
+export type LabPassId = (typeof LAB_PASS_IDS)[number];
+const isLabPass = (id: string) => (LAB_PASS_IDS as readonly string[]).includes(id);
+
+/** Mission results only, without passed labs. */
+export function missionResults(results: Results): Results {
+  return Object.fromEntries(Object.entries(results).filter(([id]) => id in MISSION_SKILLS));
+}
+
 export type MissionResult = { solved: boolean; wrong: number; hint: boolean; flagged?: boolean; /** The change this ticket needs was seen in the student's lab. */ labOk?: boolean; at?: string };
 export type Results = Record<string, MissionResult>;
 
@@ -164,7 +174,7 @@ export function sanitizeResults(raw: unknown, trustLabOk = false): Results {
   if (!raw || typeof raw !== "object") return {};
   const out: Results = {};
   for (const [id, value] of Object.entries(raw as Record<string, unknown>)) {
-    if (!(id in MISSION_SKILLS) || !value || typeof value !== "object") continue;
+    if (!(id in MISSION_SKILLS || isLabPass(id)) || !value || typeof value !== "object") continue;
     const v = value as Record<string, unknown>;
     const at = typeof v.at === "string" && !Number.isNaN(new Date(v.at).getTime()) ? new Date(v.at).toISOString() : undefined;
     const flagged = v.flagged === true && v.solved !== true;

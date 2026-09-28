@@ -12,7 +12,11 @@
       "status": "migrated",
       "mappedFiles": [
         "phase-1/week-1/lesson-overview.md",
-        "phase-1/week-1/lesson-cia-triad.md",
+        "phase-1/week-1/lesson-confidentiality.md",
+        "phase-1/week-1/lesson-integrity.md",
+        "phase-1/week-1/lesson-availability.md",
+        "phase-1/week-1/lesson-vulnerabilities.md",
+        "phase-1/week-1/lesson-threats.md",
         "phase-1/week-1/lesson-risk.md",
         "phase-1/week-1/lesson-connects.md"
       ]

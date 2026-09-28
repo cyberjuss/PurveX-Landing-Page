@@ -9,7 +9,6 @@ In this lab you open a capture in Wireshark and learn its three panes. You learn
 
 Then you use three basic filters and Follow → HTTP Stream to turn a full conversation into something readable.
 
-**[SCREENSHOT: Wireshark start screen, interface list (optional, for first-time users)]**
 
 ### What Wireshark Shows You
 
@@ -27,7 +26,6 @@ Unencrypted traffic is an unsealed envelope, so you can sometimes read the conte
 * **Middle (Packet Details):** click a packet, see what is inside it, layer by layer.
 * **Bottom (Bytes):** the raw data, for when you need to go deeper than the parsed view.
 
-**[SCREENSHOT: Full Wireshark window, label the 3 panes (top / middle / bottom)]**
 
 > **Fundamental #1:** Click through a few packets in the top pane and watch the middle pane change with each one. You will repeat that loop for most of your time in Wireshark.
 
@@ -40,7 +38,6 @@ Normal web browsing produces quick GET requests to many different sites. Malware
 * An odd or fabricated-looking browser identity (the User-Agent field)
 * Data that does not resemble normal text. Malware often scrambles or encodes what it steals
 
-**[SCREENSHOT: Statistics → Conversations, sorted by bytes, highlight the heaviest conversation]**
 
 > **Fundamental #2:** Malware traffic follows a pattern that does not match normal use. Learning to see that pattern is most of the skill.
 
@@ -54,7 +51,6 @@ Type these one at a time and watch what changes with each:
 | `http.request.method == "POST"` | Just data being sent out |
 | `ip.addr == <IP>` | Just one computer's traffic |
 
-**[SCREENSHOT: Filter bar with http.request.method == "POST" typed in, filtered list below]**
 
 > **Fundamental #3:** A filter narrows what you are looking at. Finding the problem is still your job.
 
@@ -64,7 +60,6 @@ Right-click any packet → Follow → HTTP Stream.
 
 This reassembles the full back-and-forth into something readable. In that view you can see the malware talking: the address it sends to and the data it sends.
 
-**[SCREENSHOT: Follow HTTP Stream window, User-Agent header and POST body visible (crop/blur payload bytes as needed)]**
 
 ### Write Down What You See
 

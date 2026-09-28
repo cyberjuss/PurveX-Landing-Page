@@ -18,7 +18,7 @@ Your job is to prove that. The login page and the missing Admin Panel tell only 
 
 ### Step 1. Log In With the Account You Are Given
 
-Use the username and password the lab provides. The account is a regular, non-admin user on purpose.
+Sign in as `wiener` with the password `peter`, the account the lab provides. It is a regular, non-admin user on purpose.
 
 ### Step 2. Turn On Burp Suite and Watch Your Traffic
 
@@ -42,10 +42,10 @@ When you send that request, the server responds with more than you would expect,
 
 ### Step 7. Add `roleid=2` to Your Request Yourself
 
-The original request did not include `roleid`. Add it:
+The original request did not include `roleid`. The request body is JSON, so add the field inside it, keeping your email:
 
 ```
-roleid=2
+{"email":"wiener@normal-user.net","roleid":2}
 ```
 
 Send it.

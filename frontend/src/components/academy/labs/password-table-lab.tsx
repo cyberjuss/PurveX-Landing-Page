@@ -9,6 +9,7 @@ import {
   Deck,
   Guide,
   HashTool,
+  Narrator,
   Morph,
   Takeaway,
   nextHint,
@@ -17,6 +18,9 @@ import {
   Stepper,
   useDeck,
   useHashes,
+  labPassed,
+  useLabDone,
+  useLabPass,
   useSaved,
   Verdict,
   type DotStatus,
@@ -98,7 +102,7 @@ const GENS: Gen[] = [
     column: "pwd_enc",
     clue: "AES, with the key in a config file on the same server. Note the hints.",
     kind: "encryption",
-    why: "Encryption, and the key was stolen with the data. Same password, same output, plus readable hints. Adobe, 2013.",
+    why: "Encryption, but the key sat on the same server and was stolen with the data. Equal passwords also gave equal output, and the hints were readable, the two mistakes behind Adobe's 2013 breach.",
   },
   {
     id: "v3",
@@ -116,7 +120,7 @@ const GENS: Gen[] = [
     column: "salt + pwd_hash",
     clue: "A different salt per user, hashed together with the password.",
     kind: "salted",
-    why: "Every hash is unique, so reuse is hidden and guess lists fail. The standard today, ideally with a slow hash such as bcrypt.",
+    why: "Every hash is unique, so reuse is hidden and precomputed tables fail. Weak passwords can still be guessed one user at a time, which is why the standard is a slow salted hash such as bcrypt or Argon2.",
   },
 ];
 
@@ -206,8 +210,9 @@ interface State {
 const START: State = { step: 0, seen: [], noteWord: "", kinds: {}, reused: [], recovered: {}, decoded: "", checked: [false, false, false] };
 const STORE = "academy-lab-password-table-v4";
 
-export function PasswordTableLab() {
+export function PasswordTableLab({ onDone }: { onDone?: () => void }) {
   const [s, setS] = useSaved<State>(STORE, START, (v) => Array.isArray(v.checked) && v.checked.length === 3 && Array.isArray(v.seen));
+  useLabDone(s.checked.every(Boolean), onDone);
   const plain = useHashes(Object.fromEntries(USERS.map((u) => [u, PW[u]])));
   // Deterministic like the ECB mode Adobe used: the same password always gives the same output.
   const enc = useHashes(Object.fromEntries(SAMPLE.map((u) => [u, `ledgerline-app-key|${PW[u]}`])));
@@ -246,6 +251,7 @@ export function PasswordTableLab() {
     const work = (reuseRight ? 1 : 0) + RECOVER.filter((u) => s.recovered[u] === PW[u]).length + (decodeRight ? 1 : 0) + (s.response === "reset" ? 1 : 0);
     return { tryIt, kinds, work, total: tryIt + kinds + work };
   }, [s, noteRight, reuseRight, decodeRight]);
+  useLabPass("lab-password-table", labPassed(s.checked.every(Boolean), score.total, 11));
 
   const tryDone = [s.seen.includes("encode"), Boolean(s.noteWord.trim()), s.seen.includes("hash"), Boolean(s.saltWhy)];
   const anyRecovered = RECOVER.some((u) => s.recovered[u]);
@@ -261,7 +267,7 @@ export function PasswordTableLab() {
         <div className="rt-body">
           <header className="rt-head">
             <h3>Three ways to hide a password</h3>
-            <p>Try each one before you meet all four in the leaked table. The test: can you get the password back?</p>
+            <Narrator>Try each one before you meet all four in the leaked table. The test: can you get the password back?</Narrator>
           </header>
           <Deck
             tags={TRY_CARDS.map((c) => c.tag)}
@@ -311,7 +317,7 @@ export function PasswordTableLab() {
         <div className="rt-body">
           <header className="rt-head">
             <h3>How did {VENDOR} store it?</h3>
-            <p>The dump holds four generations. Name each one.</p>
+            <Narrator>The dump holds four generations. Name each one.</Narrator>
           </header>
           <Deck
             tags={GENS.map((g) => g.tag)}
@@ -397,7 +403,7 @@ export function PasswordTableLab() {
         <div className="rt-body">
           <header className="rt-head">
             <h3>What does the dump give away?</h3>
-            <p>Four short jobs with free tools. You never log in to anything.</p>
+            <Narrator>Four short jobs with free tools. You never log in to anything.</Narrator>
           </header>
           <Deck
             tags={WORK_CARDS.map((c) => c.tag)}
@@ -731,9 +737,11 @@ function EncodeCard({ onDone }: { onDone: () => void }) {
 
 function NoteCard({ word, locked, right, onWord }: { word: string; locked: boolean; right: boolean; onWord: (v: string) => void }) {
   const [packed, setPacked] = useState("");
+  // Step 1 tries a made-up key, step 2 the real one. Each has its own box.
+  const [guess, setGuess] = useState("");
+  const [guessOut, setGuessOut] = useState<string | null | undefined>(undefined);
   const [key, setKey] = useState("");
   const [out, setOut] = useState<string | null | undefined>(undefined);
-  const [triedWrong, setTriedWrong] = useState(false);
   const [play, setPlay] = useState(0);
   const opened = typeof out === "string";
   useEffect(() => {
@@ -744,9 +752,8 @@ function NoteCard({ word, locked, right, onWord }: { word: string; locked: boole
     };
   }, []);
   const decrypt = async () => {
-    const r = await aesDecrypt(key, packed);
-    if (r === null) setTriedWrong(true);
-    else setPlay((n) => n + 1);
+    const r = await aesDecrypt(key.trim(), packed);
+    if (r !== null) setPlay((n) => n + 1);
     setOut(r);
   };
   return (
@@ -757,23 +764,30 @@ function NoteCard({ word, locked, right, onWord }: { word: string; locked: boole
         steps={[
           {
             title: "Try a made-up key first",
-            done: triedWrong || opened || Boolean(word),
+            done: guessOut !== undefined || opened || Boolean(word),
             body: (
               <>
-                <div className="lk-panel__try">
-                  <input type="text" value={key} placeholder="Make one up, like Blue-Door-7" onChange={(e) => setKey(e.target.value)} spellCheck={false} autoComplete="off" aria-label="Key" />
-                  <button type="button" className="lk-mini" disabled={!key || !packed} onClick={() => void decrypt()}>
-                    <Lock aria-hidden="true" /> Decrypt
-                  </button>
-                </div>
-                {out === null && <Flow left={`${packed.slice(0, 18)}…`} leftLabel="Encrypted" step="Wrong key" blocked right="Refused. Nothing comes out." rightLabel="Result" rightClass="is-blocked" />}
+                <KeyTry
+                  value={guess}
+                  placeholder="Make one up, like Blue-Door-7"
+                  disabled={!packed}
+                  onChange={setGuess}
+                  onTry={async () => setGuessOut(await aesDecrypt(guess.trim(), packed))}
+                />
+                {guessOut === null && <Flow left={`${packed.slice(0, 18)}…`} leftLabel="Encrypted" step="Wrong key" blocked right="Refused. Nothing comes out." rightLabel="Result" rightClass="is-blocked" />}
               </>
             ),
           },
           {
-            title: `Now use the key from your ticket: ${NOTE_KEY}`,
+            title: `Now type the key from your ticket, ${NOTE_KEY}, and decrypt`,
             done: opened || Boolean(word),
-            body: opened && <Flow left={`${packed.slice(0, 18)}…`} leftLabel="Encrypted" step="Right key" right={<Morph from={packed} to={out} play={play} />} rightLabel="The note" rightClass="is-open" />,
+            body: (
+              <>
+                <KeyTry value={key} placeholder={NOTE_KEY} disabled={!packed || opened} onChange={setKey} onTry={() => void decrypt()} />
+                {out === null && <p className="lk-note is-bad">Not the key. Type {NOTE_KEY} exactly. Capitals and dashes count.</p>}
+                {opened && <Flow left={`${packed.slice(0, 18)}…`} leftLabel="Encrypted" step="Right key" right={<Morph from={packed} to={out} play={play} />} rightLabel="The note" rightClass="is-open" />}
+              </>
+            ),
           },
           {
             title: "Type the code word from the note",
@@ -791,6 +805,29 @@ function NoteCard({ word, locked, right, onWord }: { word: string; locked: boole
       />
       {opened && <Takeaway afterMorph>Encryption comes back only with the key. It is only as safe as where the key is kept. A key stored next to the data protects nothing.</Takeaway>}
       {locked && <Verdict right={right}>Right key, exact message. Any other key, nothing.</Verdict>}
+    </div>
+  );
+}
+
+// A key box with a Decrypt button. Enter also decrypts.
+function KeyTry({ value, placeholder, disabled, onChange, onTry }: { value: string; placeholder: string; disabled: boolean; onChange: (v: string) => void; onTry: () => void }) {
+  const ready = Boolean(value.trim()) && !disabled;
+  return (
+    <div className="lk-panel__try">
+      <input
+        type="text"
+        value={value}
+        placeholder={placeholder}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && ready && onTry()}
+        spellCheck={false}
+        autoComplete="off"
+        aria-label="Key"
+      />
+      <button type="button" className="lk-mini" disabled={!ready} onClick={onTry}>
+        <Lock aria-hidden="true" /> Decrypt
+      </button>
     </div>
   );
 }

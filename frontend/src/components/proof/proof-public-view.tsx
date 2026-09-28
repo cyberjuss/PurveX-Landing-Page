@@ -85,6 +85,7 @@ export function ProofPublicView({
   const certs = [...(data.certs ?? []), ...(settings.extraCerts ?? []).map((c) => ({ name: c.name, status: certStatusText(c) }))];
   const openTo = roles.length ? `Open to ${list(roles)} roles` : "";
   const where = [settings.location ?? "", settings.availability ?? ""].filter(Boolean).join(" · ");
+  const eligible = [settings.workAuth ?? "", settings.clearance ?? ""].filter(Boolean).join(" · ");
   const mailto = settings.contactEmail ? `mailto:${settings.contactEmail}?subject=${encodeURIComponent("Your PurveX portfolio")}` : null;
   const socials = [
     { key: "linkedin", href: settings.linkedinUrl, label: "LinkedIn" },
@@ -132,6 +133,7 @@ export function ProofPublicView({
                 </p>
               )}
               {openTo && <p className="pp-open">{openTo}</p>}
+              {eligible && <p className="pp-open">{eligible}</p>}
             </div>
           </div>
           {(canReach || printable) && (

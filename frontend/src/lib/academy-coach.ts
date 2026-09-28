@@ -29,6 +29,7 @@ import {
   LEVELS,
   MISSION_SKILLS,
   missionPoints,
+  missionResults,
   SKILLS,
   summarize,
   type Results,
@@ -136,7 +137,7 @@ function missionLine(results: Results, id: string): string {
 }
 
 function lastMissionAt(results: Results): string | null {
-  const times = Object.values(results)
+  const times = Object.values(missionResults(results))
     .map((r) => r.at)
     .filter((at): at is string => Boolean(at))
     .map((at) => new Date(at).getTime())
@@ -145,7 +146,8 @@ function lastMissionAt(results: Results): string | null {
   return new Date(Math.max(...times)).toISOString();
 }
 
-function handsOnLine(results: Results, lab: LabSnapshot | null): string {
+function handsOnLine(all: Results, lab: LabSnapshot | null): string {
+  const results = missionResults(all);
   const attempted = Object.keys(results).length;
   const finished = Object.values(results).filter((r) => r.solved).length;
   const ticketsTouched = Object.keys(results).some((id) => id.startsWith("tq-"));
@@ -254,7 +256,7 @@ When helping this student:
 - Start a coaching session with get_weakness_profile. It blends mission scores, drill accuracy, and what they keep missing, so you know where to spend the time. Keep those misses as your notes. Do not recite the list or the weekly scores.
 - Hands-on work is real. Call get_lab_findings to see what is actually wrong in the student's own lab, and get_event_digest for what really happened in their Security log. Never invent an account, a ticket or a broken object. If the lab has nothing wrong, ask judgement questions. The weekly CTF is asked about their own Security log: call start_investigation, tell them where to look in Event Viewer, and ask them to investigate. When they answer, call check_investigation. If it has a second half it checks a real fix in their lab, so guide them to find and fix it, then call it again. Never read the answer to them.
 - Develop your own practice questions from their real environment: call get_environment_question_seeds, write a short scenario whose evidence is on screen, ask the student, and wait for their answer. Then call record_practice_result so the result shapes their weakness profile and future drill difficulty. Make each question different from the last. Raise the difficulty when they keep getting it right.
-- Phase 1 browser labs (Monday Morning Risk Triage, The Update Nobody Can Vouch For, The Leaked Password Table) run in the PurveX Range portal, not in their AD lab. Call get_lab_coaching first. Coach one step at a time with the hint ladder, one rung lower each time they ask again, and never state an answer, a value to type or an option to pick. Explaining CyberChef, PowerShell 7, sha256sum or OpenSSL mechanics in full is fine. Tie the step to their target role's objective in one clause. Keep replies under 80 words.
+- The browser labs (Phase 1: Monday Morning Risk Triage, The Update Nobody Can Vouch For, The Leaked Password Table, Who Can Open This?; Phase 2: Read the Sign-In Log) run in the PurveX Range portal, not in their AD lab. Call get_lab_coaching first. Coach one step at a time with the hint ladder, one rung lower each time they ask again, and never state an answer, a value to type or an option to pick. Explaining CyberChef, PowerShell 7, sha256sum or OpenSSL mechanics in full is fine. Tie the step to their target role's objective in one clause. Keep replies under 80 words.
 - Do not invent lab values. get_lab_state returns the student's real lab snapshot saved the last time they ran Build-Environment.ps1. It can be older than their latest changes. Use it to check their work, and point them to what to inspect instead of reading out values that answer unsolved missions.`;
 
 type AnthropicContent =
@@ -308,10 +310,10 @@ export const COACH_TOOLS: { name: string; description: string; input_schema: Rec
   {
     name: "get_lab_coaching",
     description:
-      "Coaching notes for the Phase 1 browser labs (risk-triage, hash-verify, password-table): the real-world problem, the PurveX scenario, the objective for each target role, the steps, common mistakes, open-source tool mechanics and a hint ladder. Does not include answers. Call it before helping with one of these labs.",
+      "Coaching notes for the browser labs (risk-triage, hash-verify, password-table, effective-access in Phase 1; signin-log in Phase 2): the real-world problem, the PurveX scenario, the objective for each target role, the steps, common mistakes, open-source tool mechanics and a hint ladder. Does not include answers. Call it before helping with one of these labs.",
     input_schema: {
       type: "object",
-      properties: { lab: { type: "string", enum: ["risk-triage", "hash-verify", "password-table"], description: "Which lab. Omit for all three." } },
+      properties: { lab: { type: "string", enum: ["risk-triage", "hash-verify", "password-table", "signin-log", "effective-access"], description: "Which lab. Omit for all of them." } },
       additionalProperties: false,
     },
   },

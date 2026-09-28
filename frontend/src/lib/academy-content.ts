@@ -13,7 +13,7 @@ export function loadLesson(relativePath: string): string | null {
 }
 
 /** Interactive labs rendered by a React component below the section's markdown. */
-export type LabWidget = "risk-triage" | "hash-verify" | "password-table";
+export type LabWidget = "risk-triage" | "hash-verify" | "password-table" | "signin-log" | "effective-access";
 
 export interface ContentSection {
   label: string;
@@ -48,8 +48,12 @@ const phase1Weeks: WeekDef[] = [
     summary: "Name what failed, then separate a threat from a vulnerability before ranking the risk.",
     sections: [
       { label: "Overview", file: "phase-1/week-1/lesson-overview.md" },
-      { label: "The CIA Triad", file: "phase-1/week-1/lesson-cia-triad.md" },
-      { label: "Risk, Threats & Vulnerabilities", file: "phase-1/week-1/lesson-risk.md" },
+      { label: "Confidentiality", file: "phase-1/week-1/lesson-confidentiality.md" },
+      { label: "Integrity", file: "phase-1/week-1/lesson-integrity.md" },
+      { label: "Availability", file: "phase-1/week-1/lesson-availability.md" },
+      { label: "Vulnerabilities", file: "phase-1/week-1/lesson-vulnerabilities.md" },
+      { label: "Threats", file: "phase-1/week-1/lesson-threats.md" },
+      { label: "Risk", file: "phase-1/week-1/lesson-risk.md" },
       { label: "How It All Connects", file: "phase-1/week-1/lesson-connects.md" },
       { label: "Resources", file: "phase-1/week-1/resources.md" },
       { label: "Lab: Monday Morning Risk Triage", file: "phase-1/week-1/lab-risk-triage.md", widget: "risk-triage" },
@@ -95,6 +99,7 @@ const phase1Weeks: WeekDef[] = [
       { label: "Authentication", file: "phase-1/week-4/lesson-authentication.md" },
       { label: "Authorization", file: "phase-1/week-4/lesson-authorization.md" },
       { label: "Broken Access Control", file: "phase-1/week-4/lesson-access-control.md" },
+      { label: "Lab: Who Can Open This?", file: "phase-1/week-4/lab-effective-access.md", widget: "effective-access" },
       { label: "Lab: Broken Access Control (PortSwigger)", file: "phase-1/week-4/lab-triple-a.md" },
       { label: "Resources", file: "phase-1/week-4/resources.md" },
     ],
@@ -146,6 +151,7 @@ const phase2Weeks: WeekDef[] = [
     summary: "Read the host, the account, and the log before deciding what happened.",
     sections: [
       { label: "Overview", file: "phase-2/week-2/overview.md" },
+      { label: "Lab: Read the Sign-In Log", file: "phase-2/week-2/lab-signin-log.md", widget: "signin-log" },
       { label: "Challenge: The 2 AM Login", file: "phase-2/week-2/alert-inc-1046.md" },
     ],
   },

@@ -20,6 +20,9 @@
 .rt-body { display: grid; gap: 20px; padding: 24px; }
 .rt-head { display: grid; gap: 6px; }
 .rt-head p { max-width: 64ch; font-size: 14px; line-height: 1.6; color: var(--rd-ink-2); }
+.rt-head--ask { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.rt-head--ask > div { display: grid; gap: 6px; min-width: 0; }
+.rt-head--ask .lk-mini { flex: none; }
 
 /* Tickets. */
 .rt-ticket { display: grid; gap: 14px; padding: 16px; border: 1px solid var(--rd-line); border-left-width: 3px; transition: border-color 0.2s; }
@@ -197,10 +200,12 @@
 }
 @media (max-width: 640px) {
   .rt-body { padding: 16px; }
+  .rt-head--ask { flex-direction: column; gap: 10px; }
   .rt-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .rt-step { flex-direction: column; gap: 6px; padding: 10px 6px; text-align: center; }
   .rt-step__label { font-size: 11.5px; }
-  .rt-choice--cia small { display: none; }
+  .rt-choice--cia { grid-template-columns: 1fr; }
+  .rt-choice--cia button + button { border-left: 0; border-top: 1px solid var(--rd-line); }
   .rt-level { grid-template-columns: 1fr; gap: 6px; }
   .rt-guide, .rt-context { grid-template-columns: 1fr; }
   .rt-context > div + div { border-left: 0; border-top: 1px solid var(--rd-line); }

@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { ExternalLink, RotateCcw } from "lucide-react";
 import {
+  Avatar,
   CHEF_SHA256,
   Deck,
   DownloadButton,
@@ -11,12 +12,16 @@ import {
   HashCompare,
   HashPlayground,
   HashTool,
+  Narrator,
   nextHint,
   normHash,
   Options,
   Stepper,
   useDeck,
   useHashes,
+  labPassed,
+  useLabDone,
+  useLabPass,
   useSaved,
   Verdict,
   type DotStatus,
@@ -142,11 +147,11 @@ const QUESTIONS: { id: string; tag: string; title: string; prompt: string; optio
     prompt: "In 2017, CCleaner shipped malware from its own build. Why would a hash check miss it?",
     options: [
       { key: "type", text: "Hashes do not work on installers." },
-      { key: "source", text: "The vendor published the hash of the bad file." },
+      { key: "source", text: "The malware was built into the vendor's own release, so the file matched what the vendor shipped." },
       { key: "users", text: "Nobody knew how to hash a file." },
     ],
     answer: "source",
-    why: "A hash proves a file matches its source, not that the source is safe. SolarWinds (2020) was the same.",
+    why: "A hash proves a file matches its source, not that the source is safe. The file was even signed by the vendor. SolarWinds (2020) was the same.",
   },
 ];
 
@@ -164,8 +169,9 @@ interface State {
 const START: State = { step: 0, pasted: {}, verdict: {}, lines: [], answers: {}, checked: [false, false, false] };
 const STORE = "academy-lab-hash-verify-v1";
 
-export function HashVerifyLab() {
+export function HashVerifyLab({ onDone }: { onDone?: () => void }) {
   const [s, setS] = useSaved<State>(STORE, START, (v) => Array.isArray(v.lines) && Array.isArray(v.checked));
+  useLabDone(s.checked.every(Boolean), onDone);
   const hashes = useHashes({ official: text(GENUINE), ...Object.fromEntries(COPIES.map((c) => [c.id, c.body])) });
   const deck1 = useDeck(COPIES.length);
   const deck3 = useDeck(QUESTIONS.length);
@@ -190,6 +196,7 @@ export function HashVerifyLab() {
     const calls = QUESTIONS.filter((q) => s.answers[q.id] === q.answer).length;
     return { matched, find: linesRight + effect, calls, total: matched + linesRight + effect + calls };
   }, [s]);
+  useLabPass("lab-hash-verify", labPassed(s.checked.every(Boolean), score.total, 8));
 
   const allHashed = COPIES.every((c) => hashOk(c.id) && s.verdict[c.id]);
   const reached = [true, s.checked[0], s.checked[1], s.checked[2]];
@@ -202,7 +209,7 @@ export function HashVerifyLab() {
         <div className="rt-body">
           <header className="rt-head">
             <h3>Which copies are real?</h3>
-            <p>Hash each copy and compare it to IT&apos;s. Trust the hash, not how the file looks.</p>
+            <Narrator>Hash each copy and compare it to mine. Trust the hash, not how the file looks.</Narrator>
           </header>
           <div className="lk-real">
             <b>IT portal · VPN update 2.4.1 · SHA-256</b>
@@ -232,7 +239,9 @@ export function HashVerifyLab() {
                     <span className="rt-tag">{c.tag}</span>
                     <div>
                       <b>{c.title}</b>
-                      <small>From {c.from}</small>
+                      <small className="lk-from">
+                        <Avatar name={c.from} kind={c.id === "share" ? "server" : c.id === "teams" ? "unknown" : "person"} size={18} /> From {c.from}
+                      </small>
                       <p>{c.story}</p>
                     </div>
                   </div>
@@ -334,21 +343,25 @@ export function HashVerifyLab() {
         <div className="rt-body">
           <header className="rt-head">
             <h3>What did they change?</h3>
-            <p>The hash says copy B changed. Now find how.</p>
+            <Narrator>Copy B&apos;s hash did not match, so someone edited it. Compare it with my real copy to find the edits.</Narrator>
           </header>
           <Guide
             steps={[
               {
-                title: "Click every line in copy B that is not in IT's update",
+                title: "Find the 2 lines in copy B that differ from IT's copy, and click them",
                 done: s.lines.length > 0,
                 body: (
-                  <FileView
-                    name={BY_ID.share.file}
-                    lines={TAMPERED}
-                    picked={s.lines}
-                    reveal={s.checked[1]}
-                    onToggle={(n) => patch({ lines: s.lines.includes(n) ? s.lines.filter((x) => x !== n) : [...s.lines, n] })}
-                  />
+                  <div className="lk-files">
+                    <FileView label="IT's real copy" name={BY_ID.email.file} note="Matches IT's hash" lines={GENUINE} />
+                    <FileView
+                      label="Copy B"
+                      name={BY_ID.share.file}
+                      lines={TAMPERED}
+                      picked={s.lines}
+                      reveal={s.checked[1]}
+                      onToggle={(n) => patch({ lines: s.lines.includes(n) ? s.lines.filter((x) => x !== n) : [...s.lines, n] })}
+                    />
+                  </div>
                 ),
               },
               {
@@ -377,7 +390,7 @@ export function HashVerifyLab() {
               </>
             ) : (
               <>
-                <p className="rt-tally">{nextHint([s.lines.length > 0, Boolean(s.effect)], ["click the changed lines", "say what copy B does"])}</p>
+                <p className="rt-tally">{nextHint([s.lines.length > 0, Boolean(s.effect)], ["click the 2 changed lines", "say what copy B does"])}</p>
                 <button type="button" className="rt-btn rt-btn--primary" disabled={!s.lines.length || !s.effect} onClick={() => check(1)}>
                   Check answers
                 </button>
@@ -391,7 +404,7 @@ export function HashVerifyLab() {
         <div className="rt-body">
           <header className="rt-head">
             <h3>What happens next?</h3>
-            <p>Three quick calls.</p>
+            <Narrator>Three quick calls before this goes any further.</Narrator>
           </header>
           <Deck
             tags={QUESTIONS.map((q) => q.tag)}
@@ -480,15 +493,43 @@ export function HashVerifyLab() {
   );
 }
 
-function FileView({ name, lines, picked, reveal, onToggle }: { name: string; lines: string[]; picked: number[]; reveal: boolean; onToggle: (n: number) => void }) {
+// Without onToggle the file is read-only, for showing IT's copy to compare against.
+function FileView({
+  label,
+  name,
+  note,
+  lines,
+  picked = [],
+  reveal = false,
+  onToggle,
+}: {
+  label: string;
+  name: string;
+  note?: string;
+  lines: string[];
+  picked?: number[];
+  reveal?: boolean;
+  onToggle?: (n: number) => void;
+}) {
   return (
-    <div className="lk-file">
+    <div className={`lk-file${onToggle ? "" : " is-ref"}`}>
       <div className="lk-file__bar">
-        <span>{name}</span>
-        <span>{reveal ? "Green: changed. Red: you picked it, but it matches IT's copy." : "Click a line to pick it"}</span>
+        <span>
+          <b>{label}</b> · {name}
+        </span>
+        <span>{note ?? (reveal ? "Green: changed. Red: you picked it, but it matches IT's copy." : "Click a line to pick it")}</span>
       </div>
       <ol>
         {lines.map((line, n) => {
+          if (!onToggle)
+            return (
+              <li key={n}>
+                <span>
+                  <i>{n + 1}</i>
+                  <span>{line}</span>
+                </span>
+              </li>
+            );
           const isPicked = picked.includes(n);
           const changed = CHANGED_LINES.includes(n);
           const cls = reveal ? (changed ? "is-changed" : isPicked ? "is-miss" : "") : isPicked ? "is-picked" : "";

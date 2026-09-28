@@ -2,7 +2,7 @@
 
 import { useMemo, useSyncExternalStore } from "react";
 import { sanitizeProfile, type StudentProfile } from "@/lib/academy-certs";
-import { RESULTS_STORAGE_KEY, type Results } from "@/lib/academy-score";
+import { loadResults, RESULTS_STORAGE_KEY, saveResults, type LabPassId, type Results } from "@/lib/academy-score";
 import { supabase } from "@/lib/supabase";
 
 // Which account the results in localStorage belong to, so a second student
@@ -44,6 +44,20 @@ export function useResults(): Results {
       return {};
     }
   }, [raw]);
+}
+
+/** Records a passed browser lab on the student's account, once. */
+export function recordLabPass(id: LabPassId) {
+  const all = loadResults();
+  if (all[id]?.solved) return;
+  all[id] = { solved: true, wrong: 0, hint: false, at: new Date().toISOString() };
+  saveResults(all);
+  window.dispatchEvent(new Event(RESULTS_UPDATED_EVENT));
+  void academyFetch("/academy/api/progress", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ results: all }),
+  }).catch(() => {});
 }
 
 export async function academyFetch(path: string, init: RequestInit = {}) {

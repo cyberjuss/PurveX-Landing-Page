@@ -57,6 +57,7 @@ export default function proxy(request: NextRequest) {
         "img-src 'self' data: blob:",
         "font-src 'self' data:",
         "connect-src 'self' https://*.supabase.co http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:*",
+        "worker-src 'self'",
         "object-src 'none'",
         "frame-ancestors 'none'",
         "base-uri 'self'",
@@ -71,13 +72,17 @@ export default function proxy(request: NextRequest) {
         "img-src 'self' data: blob:",
         "font-src 'self' data:",
         "connect-src 'self' https://*.supabase.co http://localhost:* http://127.0.0.1:*",
+        "worker-src 'self'",
         "object-src 'none'",
         "frame-ancestors 'none'",
         "base-uri 'self'",
         "form-action 'self'",
       ].join("; ");
 
-  res.headers.set("Content-Security-Policy", csp);
+  // The labs' Python worker gets its own, tighter policy: it may load the
+  // self-hosted Pyodide files and compile WebAssembly, and nothing else.
+  const workerCsp = "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'";
+  res.headers.set("Content-Security-Policy", request.nextUrl.pathname === "/lab-python-worker.js" ? workerCsp : csp);
   res.headers.set("X-CSP-Nonce", nonce);
   res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   res.headers.set("X-Content-Type-Options", "nosniff");

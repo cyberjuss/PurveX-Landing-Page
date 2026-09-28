@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { findPhase, findEntry } from "@/lib/academy-content";
 import { PhaseEntry } from "@/components/academy/phase-entry";
+import { PhaseLocked } from "@/components/academy/coming-soon";
+import { isPhaseLocked } from "@/lib/academy-locks";
 
 export function generateStaticParams() {
   const phase = findPhase("phase-2")!;
@@ -12,5 +14,6 @@ export default async function Phase2EntryPage({ params }: { params: Promise<{ sl
   const phase = findPhase("phase-2")!;
   const entry = findEntry("phase-2", slug);
   if (!entry) notFound();
+  if (isPhaseLocked(phase.slug)) return <PhaseLocked title={entry.title} summary={entry.summary} />;
   return <PhaseEntry phase={phase} entry={entry} />;
 }

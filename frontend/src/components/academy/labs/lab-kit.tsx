@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Check, ChevronLeft, ChevronRight, Copy, Download, X } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Copy, Download, Server, X } from "lucide-react";
 import "./risk-triage-lab.css";
 import "./lab-kit.css";
 import { useOptionalCoach } from "../coach-context";
 import { LOST_ASK } from "./lab-brief";
+import { recordLabPass } from "@/lib/academy-client";
+import type { LabPassId } from "@/lib/academy-score";
 
 // Shared pieces for the browser-only week labs. They use the Week 1 lab's
 // rt-* styles so every lab looks and behaves the same.
@@ -49,6 +51,74 @@ export function downloadText(name: string, text: string) {
   a.download = name;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+const AV_COLORS = [
+  ["#dbeafe", "#3b82f6"],
+  ["#dcfce7", "#16a34a"],
+  ["#fef3c7", "#d97706"],
+  ["#fce7f3", "#db2777"],
+  ["#ede9fe", "#7c3aed"],
+  ["#cffafe", "#0891b2"],
+];
+
+/** A person in the lab's story, drawn as a simple bust in their own color. */
+export function Avatar({ name, kind = "person", size = 32 }: { name: string; kind?: "person" | "server" | "unknown"; size?: number }) {
+  if (kind === "server") {
+    return (
+      <span className="lk-av lk-av--server" style={{ width: size, height: size }} title={name}>
+        <Server aria-hidden="true" />
+      </span>
+    );
+  }
+  const [bg, fg] = kind === "unknown" ? ["#e5e7eb", "#9ca3af"] : AV_COLORS[[...name].reduce((n, ch) => n + ch.charCodeAt(0), 0) % AV_COLORS.length];
+  return (
+    <span className="lk-av" style={{ width: size, height: size }} title={name}>
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="20" fill={bg} />
+        <circle cx="20" cy="16" r="7" fill={fg} />
+        <path d="M7 38c1.6-7.5 6.8-11 13-11s11.4 3.5 13 11" fill={fg} />
+        {kind === "unknown" && (
+          <text x="20" y="19.5" textAnchor="middle" fontSize="9" fontWeight="700" fill="#fff">
+            ?
+          </text>
+        )}
+      </svg>
+    </span>
+  );
+}
+
+/** The lab's guide gives each step's instruction as a message. */
+export function Narrator({ name = "Alex Rivera", role = "IT admin", children }: { name?: string; role?: string; children: ReactNode }) {
+  return (
+    <div className="lk-nar">
+      <Avatar name={name} size={32} />
+      <div className="lk-nar__msg">
+        <div className="lk-nar__who">
+          <b>{name}</b>
+          <span>{role}</span>
+        </div>
+        <p>{children}</p>
+      </div>
+    </div>
+  );
+}
+
+/** Passing is 70% of the lab's points at the debrief, the same bar as the quizzes. */
+export const labPassed = (done: boolean, score: number, max: number) => done && score >= Math.ceil(max * 0.7);
+
+/** Records the pass on the student's account, so the portfolio lists the skills the lab used. */
+export function useLabPass(id: LabPassId, passed: boolean) {
+  useEffect(() => {
+    if (passed) recordLabPass(id);
+  }, [id, passed]);
+}
+
+/** Tells the week this lab is finished once the student reaches its debrief. */
+export function useLabDone(done: boolean, onDone?: () => void) {
+  useEffect(() => {
+    if (done) onDone?.();
+  }, [done, onDone]);
 }
 
 /** Progress kept in the browser, like the Week 1 lab. */
@@ -436,27 +506,41 @@ export function HashCompare({ label, mine, reference }: { label: string; mine: s
   if (!reference || !mine) return null;
   const a = normHash(mine);
   const same = [...reference].filter((ch, i) => a[i] === ch).length;
+  const match = same === reference.length && a.length === reference.length;
+  // Groups of eight, the way analysts read a hash aloud, so the two rows line up by eye.
+  const chunks = reference.match(/.{1,8}/g) ?? [];
   return (
     <div className="lk-compare" aria-label={`${label}: ${same} of ${reference.length} characters match`}>
       <div className="lk-compare__row">
         <span>IT portal</span>
-        <code>{reference}</code>
+        <code>
+          {chunks.map((c, g) => (
+            <span key={g} className="lk-compare__chunk">
+              {c}
+            </span>
+          ))}
+        </code>
       </div>
       <div className="lk-compare__row">
         <span>{label}</span>
         <code>
-          {[...reference].map((ch, i) => (
-            <b key={i} className={a[i] === ch ? "is-same" : "is-diff"} style={{ animationDelay: `${i * 12}ms` }}>
-              {a[i] ?? "·"}
-            </b>
+          {chunks.map((c, g) => (
+            <span key={g} className="lk-compare__chunk">
+              {[...c].map((ch, k) => {
+                const got = a[g * 8 + k];
+                return (
+                  <b key={k} className={got === ch ? undefined : "is-diff"}>
+                    {got ?? "·"}
+                  </b>
+                );
+              })}
+            </span>
           ))}
         </code>
       </div>
-      <p className="lk-compare__meter">
-        <i style={{ width: `${(same / reference.length) * 100}%` }} className={same === reference.length ? "is-full" : ""} />
-        <span>
-          {same} of {reference.length} characters line up
-        </span>
+      <p className={`lk-compare__status ${match ? "is-match" : "is-diff"}`}>
+        {match ? <Check aria-hidden="true" /> : <X aria-hidden="true" />}
+        {same} of {reference.length} characters match
       </p>
     </div>
   );

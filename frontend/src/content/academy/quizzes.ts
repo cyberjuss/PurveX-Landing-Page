@@ -27,13 +27,13 @@ export const quizzes: Quiz[] = [
         question: "A DDoS attack takes a company's web server offline for six hours. Which leg of the CIA triad did this attack break?",
         options: ["Confidentiality", "Integrity", "Availability", "Accountability"],
         correctIndex: 2,
-        explanation: "Availability is posted hours. Open when customers need the branch. Knocking the server offline does not open the vault or break the seal. It keeps the doors locked, so nobody can get in when they need to.",
+        explanation: "Nothing was read or changed, so confidentiality and integrity held. The server was not there when people needed it. That is an availability failure, a lockout.",
       },
       {
         question: "An attacker does not steal or change anything, but quietly intercepts unencrypted traffic and reads a customer's SSN as it crosses the network. Which CIA property is broken?",
         options: ["Confidentiality", "Integrity", "Availability", "None, because nothing was changed"],
         correctIndex: 0,
-        explanation: "Confidentiality is the vault door. Only badge holders get in. The attacker did not change the cash and did not close the branch. They walked in without a badge and read what they were not supposed to see.",
+        explanation: "Nothing was changed and the service stayed up, so integrity and availability held. Someone who should not see the SSN read it. That is a confidentiality failure, a leak.",
       },
       {
         question: "What is the real difference between a threat and a vulnerability?",
@@ -44,7 +44,7 @@ export const quizzes: Quiz[] = [
           "A vulnerability only applies to software, a threat only applies to people",
         ],
         correctIndex: 1,
-        explanation: "Vulnerability = the unlocked door. Threat = the burglar who might use it. Both are needed for there to be real risk.",
+        explanation: "A vulnerability is the weakness. A threat is what could exploit it. Risk exists only when both are present.",
       },
       {
         question: "The formula is Risk = Threat × Vulnerability × Impact. A server has a known critical vulnerability but is completely air-gapped, with no possible attacker access. There is no threat. What is the risk?",
@@ -56,7 +56,7 @@ export const quizzes: Quiz[] = [
         question: "Which of these is a control for integrity rather than confidentiality?",
         options: ["Access control lists", "Encryption", "Digital signatures / checksums", "Need-to-know policies"],
         correctIndex: 2,
-        explanation: "Integrity is the cash-bag seal. Break it and everyone knows. Signatures and checksums are how you notice a torn seal. Encryption and access lists are the vault door (confidentiality), not the seal.",
+        explanation: "Signatures and checksums show whether data was changed, which is integrity. Encryption, access lists and need-to-know policies control who can see data, which is confidentiality.",
       },
     ],
   },

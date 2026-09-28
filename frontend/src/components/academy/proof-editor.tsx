@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Loader2, X } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
-import { AVAILABILITY, CERT_STATUS_LABEL, CERT_SUGGESTIONS, certStatusText, openTasks, SHOTS_PER_ITEM, TRACK_LABEL, type ExtraCert, type StarPart, type Track, type WorkItem } from "@/lib/academy-proof";
+import { AVAILABILITY, CERT_STATUS_LABEL, CLEARANCE, WORK_AUTH, CERT_SUGGESTIONS, certStatusText, openTasks, SHOTS_PER_ITEM, TRACK_LABEL, type ExtraCert, type StarPart, type Track, type WorkItem } from "@/lib/academy-proof";
 import { useAcademyGoals } from "@/components/academy/academy-account";
 import { ProofPublicView } from "@/components/proof/proof-public-view";
 // Imported here, not in globals.css, so the styles always arrive with the component.
@@ -26,6 +26,8 @@ type Settings = {
   websiteUrl?: string | null;
   location?: string | null;
   availability?: string | null;
+  workAuth?: string | null;
+  clearance?: string | null;
   extraCerts?: ExtraCert[];
   credentialId: string;
 };
@@ -76,7 +78,7 @@ export function ProofEditor() {
   const [urls, setUrls] = useState<Record<string, string>>({});
   const [avatar, setAvatar] = useState<string | null>(null);
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
-  const [contact, setContact] = useState({ contactEmail: "", linkedinUrl: "", githubUrl: "", websiteUrl: "", location: "", availability: "" });
+  const [contact, setContact] = useState({ contactEmail: "", linkedinUrl: "", githubUrl: "", websiteUrl: "", location: "", availability: "", workAuth: "", clearance: "" });
   const { editGoals } = useAcademyGoals();
   const [certDraft, setCertDraft] = useState<ExtraCert>({ name: "", status: "earned", date: "" });
   const urlsRef = useRef(urls);
@@ -106,6 +108,8 @@ export function ProofEditor() {
       websiteUrl: body.settings.websiteUrl ?? "",
       location: body.settings.location ?? "",
       availability: body.settings.availability ?? "",
+      workAuth: body.settings.workAuth ?? "",
+      clearance: body.settings.clearance ?? "",
     });
     if (first) setTrack(body.track);
   }, []);
@@ -324,6 +328,8 @@ export function ProofEditor() {
               websiteUrl: withScheme(contact.websiteUrl),
               location: contact.location || null,
               availability: contact.availability || null,
+              workAuth: contact.workAuth || null,
+              clearance: contact.clearance || null,
               updatedAt: "",
             }}
             data={{ items, skills: data.skills, roleName: data.roleName, roleNames: data.roleNames, certs: data.certs, lastLabCheck: data.lastLabCheck, shots: data.shots }}
@@ -458,6 +464,28 @@ export function ProofEditor() {
                 <select value={contact.availability} onChange={(e) => setContact({ ...contact, availability: e.target.value })}>
                   <option value="">Do not show</option>
                   {AVAILABILITY.map((a) => (
+                    <option key={a} value={a}>
+                      {a}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>Work authorization</span>
+                <select value={contact.workAuth} onChange={(e) => setContact({ ...contact, workAuth: e.target.value })}>
+                  <option value="">Do not show</option>
+                  {WORK_AUTH.map((a) => (
+                    <option key={a} value={a}>
+                      {a}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>Security clearance</span>
+                <select value={contact.clearance} onChange={(e) => setContact({ ...contact, clearance: e.target.value })}>
+                  <option value="">Do not show</option>
+                  {CLEARANCE.map((a) => (
                     <option key={a} value={a}>
                       {a}
                     </option>

@@ -52,7 +52,7 @@ Order: C, B, D, A.`,
 4 Debrief.`,
     answers: `A matches. B does not match. C matches (file untouched, but the sender is suspicious).
 Changed lines in B: line 5 (server vpn.purvexfinancia1.com, digit 1 in place of the letter l) and line 7 (new Invoke-WebRequest that downloads helper.exe). Effect: sends VPN traffic to an outside server and downloads a program.
-Calls: pull B, keep it as evidence, warn staff, escalate with the hashes. C: report the message as phishing, updates only come from the IT portal. CCleaner: the vendor's own build was poisoned, so it published the hash of the bad file.`,
+Calls: pull B, keep it as evidence, warn staff, escalate with the hashes. C: report the message as phishing, updates only come from the IT portal. CCleaner: the malware was built into the vendor's own signed release, so the file matched what the vendor shipped.`,
     mistakes: `Copying the file's text into CyberChef instead of loading the file itself, which can change line endings and the hash. Comparing only the first few characters. Pasting IT's hash instead of their own. Thinking a matching hash makes a sender trustworthy. Deleting the bad copy, which destroys evidence.
 Tool mechanics, fine to explain in full: CyberChef SHA2 with size 256; drag the file into the Input pane or use its open-file button; PowerShell 7: Get-FileHash ./FILE -Algorithm SHA256; Linux: sha256sum FILE; Mac: shasum -a 256 FILE; letter case does not matter.`,
     ladder: `1 Ask what a single changed character does to a hash, or what they can see on screen that tells them.
@@ -73,6 +73,37 @@ Tool mechanics, fine to explain in full: CyberChef SHA2 size 256, one word in In
     ladder: `1 Ask the one test that tells the methods apart: can you get the password back, and do you need a key?
 2 Shrink it: for reuse, look for two rows with the same value; for weak passwords, hash one word from the list and search the table for it; for Base64, look at the characters and the = at the end.
 3 Point at the exact spot: which column, which user, or which CyberChef operation to add.`,
+  },
+  "signin-log": {
+    steps: `A night of sign-in events from DC01 and the MFA service.
+1 Name the pattern: four incidents (A failures from 203.0.113.45 at 01:52, B riley.kwan locked out at 08:36, C push prompts for jamie.torres at 02:03, D svc-backup-job signs in twice). For each, pick the pattern and click the log row that proves it.
+2 Count it in Python: run a given script over signin.csv that counts failed sign-ins (4625) per source and different accounts per source, then answer which source has the most failures and which tried the most accounts.
+3 Make the call: the first response for each incident.
+4 Debrief.`,
+    answers: `Patterns: A password spray, B device still using an old password, C MFA fatigue, D service account used by a person.
+Proof rows: A the 4624 success for taylor.osei from 203.0.113.45 at 01:52:44; B the 4723 password change at 07:58; C the approved push at 02:13:30; D the 4624 logon type 10 at 03:07.
+Python: most failures 10.20.4.33 (Riley's phone, 12); most accounts 203.0.113.45 (7).
+Calls: A treat taylor.osei as compromised and contain it; B verify Riley, unlock and update the phone's saved password; C reset Jamie's password, revoke sessions, review and escalate; D escalate, find who was at 10.20.1.57, reset the password and block interactive sign-in.`,
+    mistakes: `Calling the spray brute force (brute force is many passwords on one account). Treating Riley's lockout as an attack because it has the most failures. Thinking a reminder to deny prompts fixes an approval that already happened. Seeing a service account sign in and assuming it is the nightly job without checking the logon type.
+Tool mechanics, fine to explain in full: event 4624 success, 4625 failure, 4740 lockout, 4723 user changed own password, 4672 special privileges; logon type 2 keyboard, 3 network, 5 service, 10 Remote Desktop; 0xC000006A wrong password, 0xC0000234 account locked. Python: csv.DictReader reads rows as dictionaries, Counter counts, a set keeps each account once. Pyodide runs Python in the browser; the first run downloads it.`,
+    ladder: `1 Ask what is the same and what changes across the rows: the account, the source, or the time.
+2 Shrink it: for the pattern, count accounts and sources in the rows; for the proof, find the row where the attack succeeded or where the story starts; for Python, compare the two printed lists.
+3 Point at the exact column to read: the account, the source, the event number or the logon type in Detail.`,
+  },
+  "effective-access": {
+    steps: `Four people and four folders on FS01.
+1 Predict access: for Priya on IT-Tools, Jordan on Finance, Taylor on Payroll and Devon on Client-Balances, pick Can open and change, Read only or No access from their groups and the share and NTFS permissions.
+2 Fix it: remove the NTFS entry that opens Client-Balances to everyone outside Wealth Management, and remove the group Taylor should no longer have.
+3 Check it: pick the command or screen for groups, NTFS permissions, share permissions and effective access.
+4 Debrief.`,
+    answers: `Predict: Priya change, Jordan read only (share is Read), Taylor no access (Deny on Operations Users), Devon read only (Domain Users can read).
+Fix: remove Domain Users from Client-Balances; remove Operations Users from Taylor.
+Check: Get-ADPrincipalGroupMembership taylor.osei; icacls "D:\\Shares\\Payroll"; Get-SmbShareAccess -Name Payroll; Properties, Security, Advanced, Effective Access.`,
+    mistakes: `Taking the NTFS permission alone and forgetting the share. Thinking an Allow from one group beats a Deny from another. Forgetting every account is in Domain Users. Mixing up Get-ADGroupMember (members of a group) and Get-ADPrincipalGroupMembership (groups of an account), or icacls (NTFS) and Get-SmbShareAccess (share).
+Tool mechanics, fine to explain in full: over the network the stricter of share and NTFS wins; groups add up; an explicit Deny overrides an Allow; Domain Users contains every account.`,
+    ladder: `1 Ask which of the person's groups appear in each permission list, including the ones every account has.
+2 Shrink it: work out the share result, then the NTFS result, then take the lower one; check for any Deny first.
+3 Point at the exact entry or group that decides it.`,
   },
 };
 

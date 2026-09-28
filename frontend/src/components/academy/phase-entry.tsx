@@ -108,6 +108,8 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
           {(otherSections.length > 0 || labSections.length > 0 || challengeSections.length > 0 || troubleshootingSections.length > 0) && (
             <div className="mt-8">
               <SectionTabs
+                phaseSlug={phase.slug}
+                entrySlug={entry.slug}
                 sections={otherSections.map((s) => ({ label: s.label, markdown: s.markdown! }))}
                 quiz={quiz}
                 labs={labSections.map((s) => ({ label: s.label.replace(/^Lab:\s*/, ""), markdown: s.markdown!, widget: s.widget }))}

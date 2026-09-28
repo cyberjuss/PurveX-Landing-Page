@@ -32,7 +32,9 @@ So if your file's hash matches the vendor's, character for character, it is the 
 
 ### What a hash cannot prove
 
-A match proves the file is identical to the reference. It does not prove the reference is safe. CCleaner (2017), SolarWinds (2020) and 3CX (2023) all shipped malware from the vendor's own build, and every download matched the published hash.
+A match proves the file is identical to the reference. It does not prove the reference is safe.
+
+CCleaner (2017), SolarWinds (2020) and 3CX (2023) all shipped malware from the vendor's own build. Every download matched what the vendor shipped, and carried its valid signature.
 
 <details class="academy-deeper">
 <summary>Go deeper: more tools, the line-break trap, signatures, and how the SOC uses hashes</summary>

@@ -1,41 +1,17 @@
-### Risk, Threats, and Vulnerabilities
+### Risk
 
-People mix up these three words. An analyst keeps them apart, because the split is what lets you rank a queue instead of treating every scary word as the same problem.
+Risk is the likelihood that a threat exploits a vulnerability, combined with the impact if it does.
 
-**Vulnerability** is a weakness that could be exploited. An unlocked door is a vulnerability, but it is not the same as someone walking through it:
+**Risk = Threat × Vulnerability × Impact**
 
-- unpatched software
-- a misconfigured firewall
-- weak passwords
-- an open port
+If any factor is zero, the risk is zero. No threat means no risk even when a vulnerability exists, and the reverse is also true.
 
-**Threat** is something or someone that could use that weakness. A burglar on the block is a threat, but it is not the same as your door being open:
+In practice, threat and vulnerability together set the likelihood, so teams usually score risk as **likelihood × impact**. The Week 1 lab scores it that way.
 
-- a hacker
-- malware
-- an insider
-- a natural disaster
-- a nation-state actor
+A security program manages risk. Threats are seldom removable, so it closes vulnerabilities and reduces impact.
 
-**Risk** is the likelihood and impact of a threat using a vulnerability. Analysts write it as **Risk = Threat × Vulnerability × Impact**.
+Before you escalate, name all three:
 
-If any part is zero, the risk is zero. No vulnerability means no risk even when a threat exists. No threat means no risk even when a vulnerability exists.
-
-A security program manages risk. You can seldom remove a threat, so you close weaknesses and lower what a hit would cost.
-
-<div class="academy-analogy">
-<span class="academy-analogy__tag">Think of it like a house on the block</span>
-<ul>
-<li>A <strong>vulnerability</strong> is an unlocked door.</li>
-<li>A <strong>threat</strong> is a burglar in the neighborhood.</li>
-<li><strong>Risk</strong> is the chance the burglar finds and uses that unlocked door, and what it costs you if they do.</li>
-</ul>
-</div>
-
-When a ticket or an alert sounds urgent, name all three parts before you escalate:
-
-- What is weak
-- Who or what could use it
-- What it would cost if they did
-
-If one of those is missing, keep asking questions before you escalate.
+- the vulnerability
+- the threat
+- the impact

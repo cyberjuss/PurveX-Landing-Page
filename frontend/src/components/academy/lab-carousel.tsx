@@ -16,12 +16,15 @@ export function LabCarousel({
   actionHost,
   prevBeyond,
   nextBeyond,
+  onDone,
 }: {
   slides: MarkdownSlide[];
   storageKey?: string;
   actionHost?: HTMLElement | null;
   prevBeyond?: TrailLink | null;
   nextBeyond?: TrailLink | null;
+  /** Called once the student reaches the last step. */
+  onDone?: () => void;
 }) {
   const [index, setIndex] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
@@ -40,6 +43,10 @@ export function LabCarousel({
     // Restore once on mount; the key is fixed for this instance.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (total > 0 && index === total - 1) onDone?.();
+  }, [index, total, onDone]);
 
   function go(next: number) {
     const clamped = Math.max(0, Math.min(total - 1, next));

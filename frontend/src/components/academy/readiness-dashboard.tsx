@@ -4,7 +4,8 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch, RESULTS_CHANGED_EVENT, useResults } from "@/lib/academy-client";
-import { challengeHref, missionHref, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
+import { challengeHref, challengeTabHref, missionHref, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
+import { isLockedHref } from "@/lib/academy-locks";
 import {
   clearResults,
   LEVELS,
@@ -244,6 +245,7 @@ export function ReadinessDashboard() {
         {CHALLENGES.map((ch) => {
           const list = Object.values(MISSION_CATALOG).filter((m) => m.challenge === ch.key);
           const done = list.filter((m) => missionPoints(results[m.id]) !== null).length;
+          const locked = isLockedHref(challengeTabHref(ch.key));
           return (
             <div key={ch.key} className="rd-log">
               <div className="rd-log__head">
@@ -254,9 +256,13 @@ export function ReadinessDashboard() {
                 <span className="rd-log__count">
                   {done}/{list.length}
                 </span>
-                <Link href={challengeHref(ch.key, results)} className="rd-link">
-                  {done === 0 ? "Start" : done === list.length ? "Review" : "Continue"} <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
+                {locked ? (
+                  <span className="rd-link">Locked</span>
+                ) : (
+                  <Link href={challengeHref(ch.key, results)} className="rd-link">
+                    {done === 0 ? "Start" : done === list.length ? "Review" : "Continue"} <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                )}
               </div>
               <ol>
                 {list.map((m, i) => {
@@ -266,10 +272,17 @@ export function ReadinessDashboard() {
                     <li key={m.id} className="rd-log__row">
                       <span className="rd-log__i">{String(i + 1).padStart(2, "0")}</span>
                       <span className={`rd-dot rd-tone-${st.tone}`} />
-                      <Link href={missionHref(m.id)} className="rd-log__title">
-                        {name}
-                        {ticket && <code>{ticket}</code>}
-                      </Link>
+                      {locked ? (
+                        <span className="rd-log__title">
+                          {name}
+                          {ticket && <code>{ticket}</code>}
+                        </span>
+                      ) : (
+                        <Link href={missionHref(m.id)} className="rd-log__title">
+                          {name}
+                          {ticket && <code>{ticket}</code>}
+                        </Link>
+                      )}
                       <span className="rd-log__skill">{SKILLS[m.skill].label}</span>
                       <span className={`rd-log__result rd-text-${st.tone}`}>{st.label}</span>
                       <span className="rd-log__pts">{st.points === null ? "" : st.points}</span>

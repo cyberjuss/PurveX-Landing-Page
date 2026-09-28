@@ -3,13 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookMarked, Check, ChevronDown } from "lucide-react";
+import { BookMarked, Check, ChevronDown, Lock } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
 import { useAcademyProgress } from "./academy-progress";
+import { isPhaseLocked } from "@/lib/academy-locks";
 
 export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onNavigate?: () => void }) {
   const pathname = usePathname();
-  const { isComplete, completedCount, totalCount } = useAcademyProgress();
+  const { isComplete, isPhaseComplete, completedCount, totalCount } = useAcademyProgress();
   const progressPct = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
   // A phase with no destination page (see hasDestination below) has no
   // route to open it via, so its expanded state has to live here instead
@@ -60,12 +61,32 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         // (no destination to navigate to and auto-open it) could never be
         // previewed at all.
         const phaseOpen = phaseActive || manualOpen.has(phase.slug);
+        const phaseDone = isPhaseComplete(phase.slug);
         const headerContent = (
           <>
-            <span className="truncate">{phase.label} — {phase.title}</span>
+            <span className="flex min-w-0 items-center gap-1.5">
+              {phaseDone && (
+                <span className="ax-check ax-check--done" title={`${phase.label} complete`}>
+                  <Check className="h-2.5 w-2.5" strokeWidth={3} />
+                </span>
+              )}
+              <span className="truncate">{phase.label} — {phase.title}</span>
+            </span>
             <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${phaseOpen ? "" : "-rotate-90"}`} />
           </>
         );
+        if (isPhaseLocked(phase.slug)) {
+          return (
+            <div
+              key={phase.slug}
+              className="flex items-center justify-between gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-slate-400 opacity-70"
+              title="Locked for now"
+            >
+              <span className="truncate">{phase.label} — {phase.title}</span>
+              <Lock className="h-3 w-3 shrink-0" aria-label="Locked" />
+            </div>
+          );
+        }
         return (
           <div key={phase.slug}>
             {hasDestination ? (

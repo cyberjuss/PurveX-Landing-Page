@@ -29,7 +29,7 @@ Filter out the noise first, then hunt for the attack. That order is the forensic
 
 For **each** external IP/hostname in your list from Step 1:
 
-4. Apply `http.request` filtered to that host and look at the URI and User-Agent. Is this traffic suspicious? Why or why not?
+4. Filter to that host's web requests, for example `http.request && ip.addr == HOST-IP`, and look at the URI and User-Agent. Is this traffic suspicious? Why or why not?
 5. How many hosts are you left with that still look worth investigating?
 
 > **Note:** Do not rule a host in or out at a single glance. If something looks unfamiliar, look it up before you decide. Search the hostname, the User-Agent string, or the URI pattern.
