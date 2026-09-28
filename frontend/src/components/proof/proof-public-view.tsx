@@ -181,6 +181,11 @@ export function ProofPublicView({
                         <li key={a}>{a}</li>
                       ))}
                     </ul>
+                    {it.impact && (
+                      <p className="pp-impact">
+                        <b>Impact</b> {it.impact}
+                      </p>
+                    )}
                   </div>
                   <ProofGallery title={it.title} shots={shots.map((s) => ({ src: shotSrc(s.id), caption: s.caption }))} />
                 </li>

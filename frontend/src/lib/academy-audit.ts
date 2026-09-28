@@ -247,7 +247,7 @@ export function auditLab(s: LabSnapshot): Finding[] {
       skill: "security",
       severity: "high",
       title: pp.lockoutThreshold === 0 ? "The domain never locks an account" : "The lockout policy is too loose",
-      facts: `The domain's account lockout threshold is ${pp.lockoutThreshold === 0 ? "0, meaning accounts are never locked" : pp.lockoutThreshold}, with a lock time of ${pp.lockoutDurationMin} minutes. An attacker can keep guessing passwords, which is how password spraying works. The usual standard is a lock of at least 15 minutes after 10 or fewer failed attempts.`,
+      facts: `The domain's account lockout threshold is ${pp.lockoutThreshold === 0 ? "0, meaning accounts are never locked" : pp.lockoutThreshold}, with a lock time of ${pp.lockoutDurationMin} minutes. An attacker can keep guessing passwords on an account without ever locking it. The usual standard is a lock of at least 15 minutes after 10 or fewer failed attempts.`,
       task: {
         // Only check what is actually wrong, so a stricter choice (such as an admin-only unlock) is never marked down.
         checks: [
