@@ -108,9 +108,6 @@ html[data-academy-theme="dark"] .hl-note,
 .hl .hl__ghost:disabled { cursor: default; opacity: 0.6; }
 .hl button:focus-visible { outline: 2px solid var(--hl-accent); outline-offset: 2px; }
 .hl .hl__error { margin: 0; padding: 10px 12px; font-size: 13px; color: var(--hl-bad); border: 1px solid color-mix(in srgb, var(--hl-bad) 40%, transparent); }
-.hl .hl__link { margin: 0; padding: 0; border: 0; background: none; font: inherit; font-weight: 600; color: var(--hl-accent); cursor: pointer; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px; transition: text-decoration-color 0.15s; }
-.hl .hl__link:hover:not(:disabled) { text-decoration-color: currentColor; }
-html[data-academy-theme="dark"] .hl .hl__link { color: #9eb0ff; }
 .hl .hl__reset { justify-self: start; margin: -4px 0 0; padding: 0; border: 0; background: none; font: inherit; font-size: 12.5px; font-weight: 500; color: var(--hl-ink-3); cursor: pointer; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px; transition: color 0.15s, text-decoration-color 0.15s; }
 .hl .hl__reset:hover:not(:disabled) { color: var(--hl-bad); text-decoration-color: currentColor; }
 

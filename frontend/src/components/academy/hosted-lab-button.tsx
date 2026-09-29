@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
@@ -247,7 +247,7 @@ const RESUME = [
   { label: "Reconnecting to Range", until: 80 },
 ];
 
-const SPECS: Record<string, string> = { "t3.medium": "2 vCPU · 4 GB", "t3.large": "2 vCPU · 8 GB", "t3.xlarge": "4 vCPU · 16 GB" };
+const SPECS: Record<string, string> = { "t3.medium": "2 vCPU Â· 4 GB", "t3.large": "2 vCPU Â· 8 GB", "t3.xlarge": "4 vCPU Â· 16 GB" };
 
 
 const PRIMARY: Record<State, string> = { none: "Start my lab", starting: "Starting", ready: "Open", stopping: "Stopping", stopped: "Resume lab" };
@@ -292,7 +292,7 @@ function StartTracker({ status }: { status: Status }) {
   );
 }
 
-/** The lab menu the lab icon opens on each mission: status, open, stop, extend, start. */
+/** The lab menu the lab icon opens on each mission: status, open, stop, start. */
 export function HostedLabMenu() {
   const { status, state, waiting, busy, error, primary } = useHostedLab();
   if (!status?.available) return null;
@@ -321,7 +321,7 @@ export function HostedLabMenu() {
           <p className="hl__title">PurveX Financial</p>
           <p className="hl__spec">
             <span>purvexfinancial.local</span>
-            <span>Windows Server 2022{spec ? ` · ${spec}` : ""}</span>
+            <span>Windows Server 2022{spec ? ` Â· ${spec}` : ""}</span>
           </p>
         </div>
       </div>
@@ -329,19 +329,7 @@ export function HostedLabMenu() {
       {state === "starting" && <StartTracker status={status} />}
 
       <div className="hl__foot">
-        {note && (
-          <p className="hl__note">
-            {note}
-            {state === "ready" && (
-              <>
-                {" · "}
-                <button type="button" className="hl__link" onClick={() => void act("extend")} disabled={waiting}>
-                  Add 3 hours
-                </button>
-              </>
-            )}
-          </p>
-        )}
+        {note && <p className="hl__note">{note}</p>}
         <div className="hl__actions">
           <button type="button" className="hl__go" onClick={primary} disabled={waiting}>
             {busy || state === "starting" || state === "stopping" ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
