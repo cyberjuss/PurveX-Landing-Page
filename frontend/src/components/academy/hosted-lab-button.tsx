@@ -319,7 +319,8 @@ export function HostedLabMenu() {
           <p className="hl__kicker">Your lab</p>
           <p className="hl__title">PurveX Financial</p>
           <p className="hl__spec">
-            purvexfinancial.local · Windows Server 2022{spec ? ` · ${spec}` : ""}
+            <span>purvexfinancial.local</span>
+            <span>Windows Server 2022{spec ? ` · ${spec}` : ""}</span>
           </p>
         </div>
         <span className={`hl__pill hl__pill--${state}`}>
