@@ -263,8 +263,13 @@ function StartTracker({ status }: { status: Status }) {
   );
 }
 
-/** Shown at the top of every challenge, where the student needs the lab. */
-export function HostedLabCard() {
+/** Whether this student has a hosted lab, for the lab icon on each mission. */
+export function useHostedLabAvailable(): boolean {
+  return Boolean(useHostedLab().status?.available);
+}
+
+/** The lab menu the lab icon opens on each mission: status, open, stop, extend, start. */
+export function HostedLabMenu() {
   const { status, state, waiting, busy, error, primary } = useHostedLab();
   if (!status?.available) return null;
   const spec = SPECS[status.instanceType ?? ""] ?? status.instanceType;
@@ -280,14 +285,14 @@ export function HostedLabCard() {
             : null;
 
   return (
-    <section className={`hl hl--${state}`} aria-label="Your lab">
+    <section className={`hl hl--menu hl--${state}`} aria-label="Your lab">
       <div className="hl__top">
         <span className="hl__mark" aria-hidden="true">
           <Server className="h-5 w-5" />
         </span>
         <div className="hl__id">
           <p className="hl__kicker">Your lab</p>
-          <h3 className="hl__title">PurveX Financial</h3>
+          <p className="hl__title">PurveX Financial</p>
           <p className="hl__spec">
             purvexfinancial.local · Windows Server 2022{spec ? ` · ${spec}` : ""}
           </p>

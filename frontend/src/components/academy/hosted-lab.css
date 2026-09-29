@@ -158,6 +158,26 @@
 .hl button:focus-visible { outline: 2px solid #c9c2ff; outline-offset: 2px; }
 .hl__error { margin: 0; padding: 10px 12px; border-radius: 10px; font-size: 13px; color: #ffd4d0; background: rgba(239, 68, 68, 0.14); border: 1px solid rgba(239, 68, 68, 0.3); }
 
+/* The menu the lab icon opens on each mission. Rendered at page level, anchored under the icon. */
+.hl-pop { position: fixed; z-index: 90; animation: hl-pop-in 0.16s ease-out both; }
+@keyframes hl-pop-in { from { opacity: 0; transform: translateY(-4px) scale(0.98); } }
+.hl--menu { width: min(360px, calc(100vw - 32px)); margin: 0; padding: 16px; gap: 14px; border-radius: 16px; font-family: var(--font-sans, inherit); }
+.hl--menu .hl__mark { width: 40px; height: 40px; border-radius: 11px; }
+.hl--menu .hl__title { font-size: 16.5px; }
+.hl--menu .hl__steps { grid-template-columns: 1fr; gap: 7px; }
+.hl--menu .hl__foot { flex-direction: column; align-items: stretch; gap: 12px; padding-top: 14px; }
+.hl--menu .hl__actions { width: 100%; margin-left: 0; gap: 8px; }
+.hl--menu .hl__go { order: -1; flex: 1 1 100%; }
+.hl--menu .hl__ghost { flex: 1; height: 38px; }
+
+/* The lab icon on each mission becomes a button when the student has a hosted lab. */
+button.ad-lab { padding: 0; border: 0; border-radius: 10px; background: none; cursor: pointer; transition: background 0.15s ease; }
+button.ad-lab:hover, button.ad-lab[aria-expanded="true"] { background: rgba(124, 109, 255, 0.12); }
+button.ad-lab:focus-visible { outline: 2px solid #7c6dff; outline-offset: 2px; }
+button.ad-lab[aria-expanded="true"] .ad-lab__tip { display: none; }
+
+@media (prefers-reduced-motion: reduce) { .hl-pop { animation: none; } }
+
 @media (max-width: 600px) {
   .hl { padding: 18px; }
   .hl__top { grid-template-columns: auto 1fr; }
