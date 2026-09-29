@@ -291,3 +291,19 @@ create table if not exists public.academy_hosted_labs (
 
 alter table public.academy_lab_keys enable row level security;
 alter table public.academy_hosted_labs enable row level security;
+
+-- The student's running Shift: a 15-minute incident-response tour in their own
+-- lab. One row per student while it is on, replaced each shift and deleted when
+-- graded (the result lands in academy_drill_log with mode 'shift'). Written by
+-- the server only.
+create table if not exists public.academy_shift (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  run jsonb not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.academy_shift enable row level security;
+
+-- Shifts record their result in the drill log alongside the other modes.
+alter table public.academy_drill_log drop constraint if exists academy_drill_log_mode_check;
+alter table public.academy_drill_log add constraint academy_drill_log_mode_check check (mode in ('daily', 'timed', 'ctf', 'coach', 'shift'));

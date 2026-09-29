@@ -1,6 +1,7 @@
 import "server-only";
 import { createHash, randomBytes } from "crypto";
 import { sanitizeActivityPlace, type ActivityPlace, type StudentActivity } from "@/lib/academy-activity";
+import type { ShiftRun } from "@/lib/academy-shift";
 import { sanitizeProfile, type RoleBrief, type RoleId, type StudentProfile } from "@/lib/academy-certs";
 import type { DrillEntry } from "@/lib/academy-drills";
 import { sanitizeLabSnapshot, type LabSnapshot } from "@/lib/academy-lab";
@@ -322,6 +323,33 @@ export async function hostedLabsDueToStop(now = new Date()): Promise<{ userId: s
     if (error) console.error("academy_hosted_labs due read failed", error.message);
   }
   return [...memoryHosted.entries()].filter(([, r]) => r.stopAt && Date.parse(r.stopAt) <= now.getTime()).map(([userId, row]) => ({ userId, row }));
+}
+
+// The student's running Shift, while it is on. One row per student, replaced
+// each shift. Cleared when the shift is graded (the result lands in the drill log).
+const memoryShift = new Map<string, ShiftRun>();
+
+export async function loadShift(userId: string): Promise<ShiftRun | null> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin.from("academy_shift").select("run").eq("user_id", userId).maybeSingle();
+    if (!error && data?.run) return data.run as ShiftRun;
+    if (error) console.error("academy_shift read failed", error.message);
+  }
+  return memoryShift.get(userId) ?? null;
+}
+
+export async function saveShift(userId: string, run: ShiftRun) {
+  memoryShift.set(userId, run);
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin.from("academy_shift").upsert({ user_id: userId, run, updated_at: new Date().toISOString() });
+  if (error) console.error("academy_shift upsert failed", error.message);
+}
+
+export async function clearShift(userId: string) {
+  memoryShift.delete(userId);
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin.from("academy_shift").delete().eq("user_id", userId);
+  if (error) console.error("academy_shift delete failed", error.message);
 }
 
 // Drill history: one row per finished drill, newest last. The daily drill

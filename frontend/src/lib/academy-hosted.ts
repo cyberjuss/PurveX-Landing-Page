@@ -8,6 +8,7 @@ import {
   StopInstancesCommand,
   TerminateInstancesCommand,
 } from "@aws-sdk/client-ec2";
+import { SendCommandCommand, SSMClient } from "@aws-sdk/client-ssm";
 import {
   createLabKey,
   deleteHostedLab,
@@ -268,6 +269,66 @@ export async function hostedLabLink(userId: string): Promise<string | null> {
   const cipher = createCipheriv("aes-128-cbc", key, Buffer.alloc(16, 0));
   const data = Buffer.concat([cipher.update(Buffer.concat([signature, Buffer.from(payload, "utf8")])), cipher.final()]).toString("base64");
   return `${c.gatewayUrl}/?data=${encodeURIComponent(data)}`;
+}
+
+// ---- Shift incident injection ---------------------------------------------
+// Fires one of the fixed Incident-*.ps1 scripts baked into the lab image, so a
+// real incident happens in the student's own lab. The script name comes only
+// from the server-side incident library and is checked against a strict pattern;
+// no student input reaches here.
+
+let ssmClient: SSMClient | null = null;
+function ssm() {
+  const c = cfg();
+  ssmClient ??= new SSMClient({ region: c.region, credentials: { accessKeyId: c.accessKeyId, secretAccessKey: c.secretAccessKey } });
+  return ssmClient;
+}
+
+const INCIDENT_DIR = "C:\\ProgramData\\PurveX\\incidents";
+const INCIDENT_SCRIPT = /^Incident-[A-Za-z]+\.ps1$/;
+
+async function runningInstance(userId: string): Promise<string | null> {
+  const row = await loadHostedLab(userId);
+  if (!row) return null;
+  const inst = await describe(row.instanceId).catch(() => null);
+  return inst?.state === "running" ? row.instanceId : null;
+}
+
+/** Fire an incident into the student's lab. Returns false if the lab is not running or SSM is not set up. */
+export async function injectIncident(userId: string, script: string): Promise<boolean> {
+  if (!INCIDENT_SCRIPT.test(script)) return false;
+  const id = await runningInstance(userId);
+  if (!id) return false;
+  try {
+    await ssm().send(
+      new SendCommandCommand({
+        InstanceIds: [id],
+        DocumentName: "AWS-RunPowerShellScript",
+        Comment: "Range Shift incident",
+        TimeoutSeconds: 120,
+        Parameters: { commands: [`& '${INCIDENT_DIR}\\${script}'`] },
+      })
+    );
+    return true;
+  } catch (err) {
+    console.error("injectIncident failed", script, err instanceof Error ? err.message : err);
+    return false;
+  }
+}
+
+/** Undo the shift's incidents so the lab returns to baseline for missions. Best effort. */
+export async function cleanupShiftLab(userId: string, scripts: string[]): Promise<void> {
+  const id = await runningInstance(userId);
+  if (!id) return;
+  const commands = scripts.filter((s) => INCIDENT_SCRIPT.test(s)).map((s) => `& '${INCIDENT_DIR}\\${s}' -Undo`);
+  if (!commands.length) return;
+  try {
+    await ssm().send(
+      new SendCommandCommand({ InstanceIds: [id], DocumentName: "AWS-RunPowerShellScript", Comment: "Range Shift cleanup", TimeoutSeconds: 120, Parameters: { commands } })
+    );
+  } catch (err) {
+    console.error("cleanupShiftLab failed", err instanceof Error ? err.message : err);
+  }
 }
 
 // ---- auto-stop ------------------------------------------------------------

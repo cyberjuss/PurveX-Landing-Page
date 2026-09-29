@@ -10,8 +10,8 @@ import { SKILLS, summarize, type Results, type Skill } from "@/lib/academy-score
 // them encrypted, so grading needs no database row.
 
 export type DrillMode = "daily" | "timed" | "ctf";
-/** Modes that can sit in the log: also results recorded by Coach or an MCP client. */
-export type EntryMode = DrillMode | "coach";
+/** Modes that can sit in the log: also results recorded by Coach or an MCP client, and Shift. */
+export type EntryMode = DrillMode | "coach" | "shift";
 
 export const TIMED_SIZE = 5;
 export const TIMED_LIMIT_SECONDS = 180;
