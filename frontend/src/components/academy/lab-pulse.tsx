@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { academyFetch } from "@/lib/academy-client";
-import { useHostedLab, useLabMenu } from "./hosted-lab-button";
+import { LabMonitorIcon as Monitor, useHostedLab, useLabMenu } from "./hosted-lab-button";
 
 type LabStatus = {
   connected: boolean;
@@ -18,13 +18,6 @@ function tipFor(s: LabStatus | null) {
   if (s.stale) return `${when} If that time does not move, run Build-Environment.ps1 -SyncOnly on the domain controller.`;
   return when;
 }
-
-const Monitor = () => (
-  <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true">
-    <rect x="3" y="4" width="18" height="12" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1.75" />
-    <path d="M8 20h8M12 16v4" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-  </svg>
-);
 
 // The lab light on each mission: green when the lab is reporting, so the
 // student knows the lab check will work. With a hosted lab it also opens the

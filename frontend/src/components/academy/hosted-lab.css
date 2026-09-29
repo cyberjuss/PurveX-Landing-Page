@@ -132,18 +132,33 @@ html[data-academy-theme="dark"] .hl-note,
 .hl-dot--ready::after { color: #16a34a; }
 .hl-dot--starting::after { color: #6d5dfc; }
 
-/* ---- question strip: chips on the left, the lab on the right ---- */
-.ad-steps:has(.hl-chip) { justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px 16px; }
-.hl-chip { display: inline-flex; align-items: stretch; height: 32px; border: 1px solid var(--rd-line, #dcdce8); font-size: 13px; font-weight: 600; }
-.hl-chip .hl-chip__status,
-.hl-chip .hl-chip__go { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 0 12px; border: 0; border-radius: 0; font: inherit; cursor: pointer; transition: background 0.15s, color 0.15s; }
-.hl-chip .hl-chip__status { background: none; color: var(--rd-ink-2, #44465f); }
-.hl-chip .hl-chip__status:hover,
-.hl-chip .hl-chip__status[aria-expanded="true"] { background: var(--rd-line-2, #eeeef6); color: var(--rd-ink, #16172b); }
-.hl-chip .hl-chip__go { gap: 4px; padding: 0 13px 0 12px; color: #fff; background: #5546e0; }
-.hl-chip .hl-chip__go:hover:not(:disabled) { background: #4636c9; }
-.hl-chip .hl-chip__go:disabled { opacity: 0.7; cursor: default; }
-.hl-chip button:focus-visible { outline: 2px solid #7c6dff; outline-offset: -2px; }
+/* ---- question strip: question chips on the left, the lab on the right ---- */
+.ad-steps:has(.hl-lab) { justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px 16px; }
+.hl-lab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  margin: 0;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.hl-lab:hover, .hl-lab[aria-expanded="true"] { background: rgba(85, 70, 224, 0.1); }
+.hl-lab:focus-visible { outline: 2px solid #7c6dff; outline-offset: 2px; }
+/* Same colors as the lab light on each question. */
+.hl-lab--on { color: #16a34a; }
+.hl-lab--wait { color: #e8a13a; }
+.hl-lab--off { color: #e5484d; }
+.hl-lab--wait svg { animation: ad-lab-flash 1.6s ease-in-out infinite; }
+html[data-academy-theme="dark"] .hl-lab--on { color: #34d399; }
+html[data-academy-theme="dark"] .hl-lab--off { color: #f87171; }
 
 /* ---- Home Lab setup tabs: your lab is hosted ---- */
 .hl-note {
@@ -183,5 +198,5 @@ button.ad-lab[aria-expanded="true"] .ad-lab__tip { display: none; }
 .ad-brief-start .ad-brief-start__note { margin: 0; font-size: 13px; color: var(--rd-ink-3, #6f7189); }
 
 @media (prefers-reduced-motion: reduce) {
-  .hl-pop, .hl-dot::after, .hl .hl__steps li.is-now i { animation: none; }
+  .hl-pop, .hl-dot::after, .hl-lab--wait svg, .hl .hl__steps li.is-now i { animation: none; }
 }

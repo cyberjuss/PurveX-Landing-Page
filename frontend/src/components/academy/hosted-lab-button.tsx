@@ -156,7 +156,7 @@ export function useLabMenu<T extends HTMLElement>() {
   return { anchor, isOpen, toggle: () => setOpen((v) => !v), popover };
 }
 
-const CHIP: Record<State, string> = { none: "Start lab", starting: "Starting", ready: "Lab running", stopping: "Stopping", stopped: "Lab stopped" };
+const CHIP: Record<State, string> = { none: "Offline", starting: "Starting", ready: "Online", stopping: "Stopping", stopped: "Offline" };
 
 // ---- header chip ----------------------------------------------------------
 
@@ -177,7 +177,7 @@ export function HostedLabButton() {
         className="flex h-9 items-center gap-2 rounded-md border border-[var(--pvrx-border-light)] bg-white px-3 text-sm font-semibold text-slate-600 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
       >
         {waiting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <span className={`hl-dot hl-dot--${state}`} aria-hidden="true" />}
-        <span className="hidden sm:inline">{state === "ready" ? "Lab" : CHIP[state]}</span>
+        <span className="hidden sm:inline">{CHIP[state]}</span>
       </button>
       {popover}
     </>
@@ -186,26 +186,36 @@ export function HostedLabButton() {
 
 // ---- question strip chip --------------------------------------------------
 
-/** The lab at the right end of a challenge's question strip: status opens the menu, the side button acts. */
+/** The computer icon the lab light uses. */
+export const LabMonitorIcon = ({ size = 30 }: { size?: number }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true">
+    <rect x="3" y="4" width="18" height="12" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1.75" />
+    <path d="M8 20h8M12 16v4" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+  </svg>
+);
+
+/** The lab at the right end of a challenge's question strip: the computer icon and Online or Offline. Opens the lab menu. */
 export function LabChip() {
-  const { available, state, waiting, busy, primary } = useHostedLab();
+  const { available, state } = useHostedLab();
   const { anchor, isOpen, toggle, popover } = useLabMenu<HTMLButtonElement>();
   if (!available) return null;
-  const quick = state === "ready" ? "Open" : state === "none" || state === "stopped" ? (state === "none" ? "Start" : "Resume") : null;
+  const tone = state === "ready" ? "on" : state === "starting" || state === "stopping" ? "wait" : "off";
   return (
-    <span className={`hl-chip hl-chip--${state}`}>
-      <button ref={anchor} type="button" className="hl-chip__status" onClick={toggle} aria-haspopup="dialog" aria-expanded={isOpen}>
-        {waiting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <span className={`hl-dot hl-dot--${state}`} aria-hidden="true" />}
-        {CHIP[state]}
+    <>
+      <button
+        ref={anchor}
+        type="button"
+        className={`hl-lab hl-lab--${tone}`}
+        onClick={toggle}
+        aria-haspopup="dialog"
+        aria-expanded={isOpen}
+        aria-label={`Your lab is ${CHIP[state].toLowerCase()}. Open the lab menu.`}
+      >
+        <LabMonitorIcon size={24} />
+        <span>{CHIP[state]}</span>
       </button>
-      {quick && (
-        <button type="button" className="hl-chip__go" onClick={primary} disabled={busy}>
-          {quick}
-          {state === "ready" && <ArrowUpRight className="h-3.5 w-3.5" />}
-        </button>
-      )}
       {popover}
-    </span>
+    </>
   );
 }
 

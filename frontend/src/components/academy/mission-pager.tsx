@@ -276,7 +276,8 @@ export function MissionPager({
           ) : null}
         </div>
       ) : null}
-      {labHost ? createPortal(<LabPulse />, labHost) : null}
+      {/* A hosted lab shows once, on the question strip. Otherwise each question shows the lab light. */}
+      {labHost && !(lab.available && strip) ? createPortal(<LabPulse />, labHost) : null}
       {nav && actionHost ? createPortal(nav, actionHost) : nav}
       {started && !onBrief ? (
         <button type="button" className="ad-challenge-reset" onClick={resetChallenge}>
