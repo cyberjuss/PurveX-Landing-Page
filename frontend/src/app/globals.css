@@ -5248,3 +5248,12 @@ textarea.pc-dock__field {
     font-size: max(16px, 1em) !important;
   }
 }
+
+/* Shift launch banner on the Drills page (hosted-lab students). */
+.dr-shift { display: flex; align-items: center; gap: 16px; margin: 0 0 20px; padding: 18px 20px; border: 1px solid var(--rd-line); border-left: 3px solid var(--rd-accent); background: var(--rd-line-2); text-decoration: none; transition: border-color 0.15s; }
+.dr-shift:hover { border-color: var(--rd-accent); }
+.dr-shift__body { display: grid; gap: 4px; }
+.dr-shift__title { font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }
+.dr-shift__sub { font-size: 14px; color: var(--rd-ink-2); max-width: 60ch; }
+.dr-shift__go { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px; background: var(--rd-accent); color: #fff; font-size: 14px; font-weight: 650; white-space: nowrap; }
+@media (max-width: 560px) { .dr-shift { flex-direction: column; align-items: stretch; } .dr-shift__go { margin-left: 0; justify-content: center; } }

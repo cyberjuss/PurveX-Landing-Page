@@ -62,7 +62,7 @@ type Report = {
 };
 
 type Mode = "daily" | "timed" | "ctf";
-const MODE_LABEL: Record<string, string> = { daily: "Daily scenario", timed: "Incident drill", ctf: "Weekly CTF", coach: "Practice" };
+const MODE_LABEL: Record<string, string> = { daily: "Daily scenario", timed: "Quick drill", ctf: "Weekly CTF", coach: "Practice", shift: "Shift" };
 
 type DrillEntry = { id: string; day: string; mode: string; correct: number; total: number; seconds: number; detail?: { t: string; k?: string; c?: number; j?: string }[] };
 type Item = { skill: Skill; title: string; story?: string; prompt: string; evidence?: string[]; choices: string[]; free?: boolean; format?: string; kind?: "decide" | "respond" | "change"; long?: boolean; checklist?: string[]; checkCount?: number; setup?: { note: string; script: string }; job?: string; gated?: boolean };
@@ -717,7 +717,7 @@ export function DrillRunner() {
         <div className="dr-bar">
           <span className="rd-kicker">
             {run.mode === "timed"
-              ? `Incident drill · ${idx + 1} of ${run.items.length}`
+              ? `Quick drill · ${idx + 1} of ${run.items.length}`
               : run.mode === "ctf"
                 ? run.items[0]?.gated
                   ? "Weekly CTF · find it, then contain it"
@@ -964,6 +964,18 @@ export function DrillRunner() {
             </span>
           </div>
 
+          {hostedLab && (
+            <a className="dr-shift" href="/academy/shift">
+              <span className="dr-shift__body">
+                <span className="dr-shift__title">Start a Shift</span>
+                <span className="dr-shift__sub">15 minutes on the desk. Real incidents hit your own lab and you respond against the clock.</span>
+              </span>
+              <span className="dr-shift__go">
+                Go on shift <ArrowRight className="h-4 w-4" />
+              </span>
+            </a>
+          )}
+
           <ol className="ax-path dr-rows">
             <li>
               <div className="ax-path__row">
@@ -993,7 +1005,7 @@ export function DrillRunner() {
                 <span className="ax-path__n">02</span>
                 <span className="ax-path__main">
                   <span className="ax-path__title">
-                    Incident drill
+                    Quick drill
                     {status.incidentUntil && s.lastTimed && (
                       <em className={`ax-tag ${drillPassed(s.lastTimed) ? "ax-tag--good" : "ax-tag--bad"}`}>
                         {drillPassed(s.lastTimed) ? "Passed" : "Failed"}
