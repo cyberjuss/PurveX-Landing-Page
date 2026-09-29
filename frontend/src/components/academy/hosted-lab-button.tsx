@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { ChevronDown, Loader2, Server } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Loader2, Server } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import "./hosted-lab.css";
 
@@ -10,7 +10,7 @@ import "./hosted-lab.css";
 // from either updates both.
 
 type State = "none" | "starting" | "ready" | "stopping" | "stopped";
-type Status = { available: boolean; state?: State; stopAt?: string | null; firstBoot?: boolean };
+type Status = { available: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string };
 type Snapshot = { status: Status | null; busy: boolean; error: string | null };
 
 const LABEL: Record<State, string> = {
@@ -204,31 +204,127 @@ export function HostedLabButton() {
 
 // ---- challenge panel ------------------------------------------------------
 
+// What a start goes through, with rough seconds from the click to the end of each step.
+const FIRST_BOOT = [
+  { label: "Starting the server", until: 45 },
+  { label: "Booting Windows", until: 110 },
+  { label: "Starting Active Directory", until: 160 },
+  { label: "Linking to Range", until: 200 },
+];
+const RESUME = [
+  { label: "Waking the server", until: 20 },
+  { label: "Resuming Windows", until: 50 },
+  { label: "Reconnecting to Range", until: 80 },
+];
+
+const SPECS: Record<string, string> = { "t3.medium": "2 vCPU · 4 GB", "t3.large": "2 vCPU · 8 GB", "t3.xlarge": "4 vCPU · 16 GB" };
+
+const PILL: Record<State, string> = { none: "Not started", starting: "Starting", ready: "Running", stopping: "Stopping", stopped: "Stopped" };
+
+const PRIMARY: Record<State, string> = { none: "Start my lab", starting: "Starting", ready: "Open lab", stopping: "Stopping", stopped: "Resume lab" };
+
+/** Seconds since this start, ticking once a second while the lab starts. */
+function useElapsed(startedAt: string | null | undefined, on: boolean): number {
+  const [now, setNow] = useState(() => Date.now());
+  const [seenAt] = useState(() => Date.now());
+  useEffect(() => {
+    if (!on) return;
+    const t = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(t);
+  }, [on]);
+  const from = startedAt ? Math.min(Date.parse(startedAt), seenAt) : seenAt;
+  return Math.max(0, (now - from) / 1000);
+}
+
+function StartTracker({ status }: { status: Status }) {
+  const steps = status.firstBoot ? FIRST_BOOT : RESUME;
+  const elapsed = useElapsed(status.startedAt, true);
+  const total = steps[steps.length - 1].until;
+  const next = steps.findIndex((s) => s.until > elapsed);
+  const current = next === -1 ? steps.length - 1 : next;
+  // Never shows done before the lab says so.
+  const pct = Math.min(94, (elapsed / total) * 100);
+  const left = Math.max(0, Math.ceil((total - elapsed) / 60));
+  return (
+    <div className="hl__track" aria-live="polite">
+      <div className="hl__bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct)} aria-label="Lab start progress">
+        <span style={{ width: `${pct}%` }} />
+      </div>
+      <ol className="hl__steps">
+        {steps.map((s, i) => (
+          <li key={s.label} className={i < current ? "is-done" : i === current ? "is-now" : ""}>
+            <i aria-hidden="true" />
+            {s.label}
+          </li>
+        ))}
+      </ol>
+      <p className="hl__eta">{elapsed > total ? "Almost there. Finishing the last checks." : `About ${left} min left`}</p>
+    </div>
+  );
+}
+
 /** Shown at the top of every challenge, where the student needs the lab. */
 export function HostedLabCard() {
-  const { status, state, waiting, error, primary } = useHostedLab();
+  const { status, state, waiting, busy, error, primary } = useHostedLab();
   if (!status?.available) return null;
+  const spec = SPECS[status.instanceType ?? ""] ?? status.instanceType;
+  const note =
+    state === "ready"
+      ? status.stopAt ? `Stops on its own at ${clock(status.stopAt)}.` : "Running."
+      : state === "stopped"
+        ? "Stopped. Everything you changed is saved."
+        : state === "stopping"
+          ? "Saving your session."
+          : state === "none"
+            ? "Your own domain controller, ready in about 3 minutes. It opens in a browser tab, nothing to install."
+            : null;
+
   return (
-    <section className="hl-card" aria-label="Your lab">
-      <span className={`hl-card__icon hl-card__icon--${state}`} aria-hidden="true">
-        {waiting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Server className="h-5 w-5" />}
-      </span>
-      <div className="hl-card__text">
-        <p className="hl-card__kicker">Your lab</p>
-        <p className="hl-card__title">PurveX Financial domain controller</p>
-        <p className="hl-card__status">{statusLine(state, status)}</p>
-        {error && <p className="hl-card__error" role="alert">{error}</p>}
+    <section className={`hl hl--${state}`} aria-label="Your lab">
+      <div className="hl__top">
+        <span className="hl__mark" aria-hidden="true">
+          <Server className="h-5 w-5" />
+        </span>
+        <div className="hl__id">
+          <p className="hl__kicker">Your lab</p>
+          <h3 className="hl__title">PurveX Financial</h3>
+          <p className="hl__spec">
+            purvexfinancial.local · Windows Server 2022{spec ? ` · ${spec}` : ""}
+          </p>
+        </div>
+        <span className={`hl__pill hl__pill--${state}`}>
+          <i aria-hidden="true" />
+          {PILL[state]}
+        </span>
       </div>
-      <div className="hl-card__actions">
-        <button type="button" className="hl-card__primary" onClick={primary} disabled={waiting}>
-          {LABEL[state]}
-        </button>
-        {state === "ready" && (
-          <button type="button" className="hl-card__secondary" onClick={() => void act("extend")} disabled={waiting}>
-            3 more hours
+
+      {state === "starting" && <StartTracker status={status} />}
+
+      <div className="hl__foot">
+        {note && <p className="hl__note">{note}</p>}
+        <div className="hl__actions">
+          {state === "ready" && (
+            <>
+              <button type="button" className="hl__ghost" onClick={() => void act("stop")} disabled={waiting}>
+                Stop
+              </button>
+              <button type="button" className="hl__ghost" onClick={() => void act("extend")} disabled={waiting}>
+                3 more hours
+              </button>
+            </>
+          )}
+          <button type="button" className="hl__go" onClick={primary} disabled={waiting}>
+            {busy || state === "starting" || state === "stopping" ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            {PRIMARY[state]}
+            {state === "ready" && !busy && <ArrowUpRight className="h-4 w-4" />}
           </button>
-        )}
+        </div>
       </div>
+      {error && (
+        <p className="hl__error" role="alert">
+          {error}
+        </p>
+      )}
     </section>
   );
 }

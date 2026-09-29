@@ -26,7 +26,7 @@ import {
 // gateway with a signed link that expires in five minutes.
 
 export type HostedLabState = "none" | "starting" | "ready" | "stopping" | "stopped";
-export type HostedLabStatus = { state: HostedLabState; stopAt: string | null; firstBoot: boolean };
+export type HostedLabStatus = { state: HostedLabState; stopAt: string | null; startedAt: string | null; firstBoot: boolean; instanceType: string };
 
 function cfg() {
   // Trimmed: a value pasted or piped into Vercel can carry a stray line break.
@@ -159,15 +159,19 @@ async function launch(userId: string): Promise<HostedLabRow> {
 }
 
 export async function hostedLabStatus(userId: string): Promise<HostedLabStatus> {
+  const c = cfg();
+  const none: HostedLabStatus = { state: "none", stopAt: null, startedAt: null, firstBoot: false, instanceType: c.instanceType };
   const row = await loadHostedLab(userId);
-  if (!row) return { state: "none", stopAt: null, firstBoot: false };
+  if (!row) return none;
   const inst = await describe(row.instanceId).catch(() => null);
-  if (!inst || inst.state === "terminated" || inst.state === "shutting-down") return { state: "none", stopAt: null, firstBoot: false };
+  if (!inst || inst.state === "terminated" || inst.state === "shutting-down") return none;
   // Ready once the lab has sent a snapshot since it was created: first boot has finished linking it.
   const lab = await loadLabState(userId).catch(() => null);
   const linked = Boolean(lab && Date.parse(lab.uploadedAt) >= Date.parse(row.createdAt));
   const map: Record<string, HostedLabState> = { pending: "starting", running: linked ? "ready" : "starting", stopping: "stopping", stopped: "stopped" };
-  return { state: map[inst.state] ?? "starting", stopAt: row.stopAt, firstBoot: !linked };
+  // Each start sets the stop time a session ahead, so the start time is one session before it.
+  const startedAt = row.stopAt ? new Date(Date.parse(row.stopAt) - c.sessionHours * 3600_000).toISOString() : null;
+  return { state: map[inst.state] ?? "starting", stopAt: row.stopAt, startedAt, firstBoot: !linked, instanceType: c.instanceType };
 }
 
 export async function startHostedLab(userId: string): Promise<void> {
