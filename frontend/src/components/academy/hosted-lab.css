@@ -29,8 +29,9 @@ html[data-academy-theme="dark"] .hl-note,
   --hl-ink-2: #b9c2d6;
   --hl-ink-3: #7f889c;
   --hl-line: rgba(180, 200, 255, 0.18);
-  --hl-accent: #7c6dff;
-  --hl-accent-hi: #8f82ff;
+  /* The portal's purple in both themes. */
+  --hl-accent: #5546e0;
+  --hl-accent-hi: #4636c9;
   --hl-run: #22c55e;
   --hl-run-hi: #16a34a;
   --hl-wait: #9d93ff;
@@ -55,7 +56,6 @@ html[data-academy-theme="dark"] .hl-note,
 
 .hl__top { display: grid; grid-template-columns: auto 1fr auto; align-items: start; gap: 12px 14px; }
 .hl__mark { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 0; color: #fff; background: var(--hl-accent); }
-.hl--ready .hl__mark { background: var(--hl-run); }
 .hl__id { display: grid; gap: 3px; min-width: 0; }
 .hl .hl__kicker { margin: 0; font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--hl-ink-3); }
 .hl .hl__title { margin: 0; font-size: 16.5px; font-weight: 650; letter-spacing: -0.015em; line-height: 1.2; color: var(--hl-ink); }
@@ -132,8 +132,6 @@ html[data-academy-theme="dark"] .hl-note,
 }
 .hl .hl__go { order: -1; flex: 1 1 100%; border: 0; color: #fff; background: var(--hl-accent); }
 .hl .hl__go:hover:not(:disabled) { background: var(--hl-accent-hi); }
-.hl--ready .hl__go { background: var(--hl-run); }
-.hl--ready .hl__go:hover:not(:disabled) { background: var(--hl-run-hi); }
 .hl .hl__ghost { flex: 1; border: 1px solid var(--hl-line); background: none; color: var(--hl-ink-2); }
 .hl .hl__ghost:hover:not(:disabled) { border-color: var(--hl-ink-3); color: var(--hl-ink); background: var(--hl-soft); }
 .hl .hl__go:disabled,
@@ -174,8 +172,6 @@ html[data-academy-theme="dark"] .hl-note,
 .hl-chip .hl-chip__status[aria-expanded="true"] { background: var(--rd-line-2, #eeeef6); color: var(--rd-ink, #16172b); }
 .hl-chip .hl-chip__go { gap: 4px; padding: 0 13px 0 12px; color: #fff; background: #5546e0; }
 .hl-chip .hl-chip__go:hover:not(:disabled) { background: #4636c9; }
-.hl-chip--ready .hl-chip__go { background: #16a34a; }
-.hl-chip--ready .hl-chip__go:hover:not(:disabled) { background: #15803d; }
 .hl-chip .hl-chip__go:disabled { opacity: 0.7; cursor: default; }
 .hl-chip button:focus-visible { outline: 2px solid #7c6dff; outline-offset: -2px; }
 

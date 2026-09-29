@@ -225,7 +225,7 @@ export function HostedLabSetupNote() {
         <p className="hl-note__body">Range already built PurveX Financial on your own server, with the ticket objects and the Coach sync in place. Read this tab to learn what the setup does, then work in your hosted lab.</p>
       </div>
       <button type="button" className="hl-note__go" onClick={primary} disabled={busy || state === "starting" || state === "stopping"}>
-        {state === "ready" ? "Open lab" : state === "starting" ? "Starting" : state === "stopping" ? "Stopping" : state === "stopped" ? "Resume lab" : "Start my lab"}
+        {state === "ready" ? "Open" : state === "starting" ? "Starting" : state === "stopping" ? "Stopping" : state === "stopped" ? "Resume lab" : "Start my lab"}
         {state === "ready" && <ArrowUpRight className="h-4 w-4" />}
       </button>
     </aside>
@@ -251,7 +251,7 @@ const SPECS: Record<string, string> = { "t3.medium": "2 vCPU · 4 GB", "t3.large
 
 const PILL: Record<State, string> = { none: "Not started", starting: "Starting", ready: "Running", stopping: "Stopping", stopped: "Stopped" };
 
-const PRIMARY: Record<State, string> = { none: "Start my lab", starting: "Starting", ready: "Open lab", stopping: "Stopping", stopped: "Resume lab" };
+const PRIMARY: Record<State, string> = { none: "Start my lab", starting: "Starting", ready: "Open", stopping: "Stopping", stopped: "Resume lab" };
 
 /** Seconds since this start, ticking once a second while the lab starts. */
 function useElapsed(startedAt: string | null | undefined, on: boolean): number {
