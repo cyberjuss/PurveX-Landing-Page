@@ -190,40 +190,13 @@ export function HostedLabButton() {
   );
 }
 
-// ---- question strip chip --------------------------------------------------
-
-/** The computer icon the lab light uses. */
+/** The computer icon the lab light and the top-bar chip use. */
 export const LabMonitorIcon = ({ size = 30 }: { size?: number }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true">
     <rect x="3" y="4" width="18" height="12" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1.75" />
     <path d="M8 20h8M12 16v4" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
   </svg>
 );
-
-/** The lab at the right end of a challenge's question strip: the computer icon and Online or Offline. Opens the lab menu. */
-export function LabChip() {
-  const { available, state } = useHostedLab();
-  const { anchor, isOpen, toggle, popover } = useLabMenu<HTMLButtonElement>();
-  if (!available) return null;
-  const tone = labTone(state);
-  return (
-    <>
-      <button
-        ref={anchor}
-        type="button"
-        className={`hl-lab hl-lab--${tone}`}
-        onClick={toggle}
-        aria-haspopup="dialog"
-        aria-expanded={isOpen}
-        aria-label={`Your lab is ${CHIP[state].toLowerCase()}. Open the lab menu.`}
-      >
-        <LabMonitorIcon size={24} />
-        <span>{CHIP[state]}</span>
-      </button>
-      {popover}
-    </>
-  );
-}
 
 // ---- setup tabs -----------------------------------------------------------
 

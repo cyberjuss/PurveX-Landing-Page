@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Check } from "lucide-react";
 import { academyFetch, READINESS_PATH, RESULTS_CHANGED_EVENT, RESULTS_UPDATED_EVENT } from "@/lib/academy-client";
 import { loadResults, saveResults, type MissionResult } from "@/lib/academy-score";
-import { LabChip, useHostedLab } from "./hosted-lab-button";
+import { useHostedLab } from "./hosted-lab-button";
 import { LabPulse } from "./lab-pulse";
 import { TrailDock } from "./trail-dock";
 
@@ -244,7 +244,6 @@ export function MissionPager({
                 </button>
               ))}
             </span>
-            <LabChip />
           </div>,
           strip
         )}
@@ -276,8 +275,7 @@ export function MissionPager({
           ) : null}
         </div>
       ) : null}
-      {/* A hosted lab shows once, on the question strip. Otherwise each question shows the lab light. */}
-      {labHost && !(lab.available && strip) ? createPortal(<LabPulse />, labHost) : null}
+      {labHost ? createPortal(<LabPulse />, labHost) : null}
       {nav && actionHost ? createPortal(nav, actionHost) : nav}
       {started && !onBrief ? (
         <button type="button" className="ad-challenge-reset" onClick={resetChallenge}>

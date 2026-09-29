@@ -115,27 +115,7 @@ html[data-academy-theme="dark"] .hl-note,
 .hl-pop { position: fixed; z-index: 90; animation: hl-pop-in 0.14s ease-out both; }
 @keyframes hl-pop-in { from { opacity: 0; transform: translateY(-4px); } }
 
-/* ---- question strip: question chips on the left, the lab on the right ---- */
-.ad-steps:has(.hl-lab) { justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px 16px; }
-.hl-lab {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 34px;
-  margin: 0;
-  padding: 0 8px;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 650;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-.hl-lab:hover, .hl-lab[aria-expanded="true"] { background: rgba(85, 70, 224, 0.1); }
-.hl-lab:focus-visible { outline: 2px solid #7c6dff; outline-offset: 2px; }
-/* Same colors as the lab light on each question. */
+/* ---- lab status colors for the top-bar chip: the lab light's colors ---- */
 .hl-lab--on { color: #16a34a; }
 .hl-lab--wait { color: #e8a13a; }
 .hl-lab--off { color: #e5484d; }
