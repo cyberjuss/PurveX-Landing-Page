@@ -224,7 +224,10 @@ export async function resetHostedLab(userId: string): Promise<void> {
 
 /**
  * A Guacamole encrypted-JSON link (guacamole-auth-json): HMAC-SHA256 signature
- * plus the JSON, AES-128-CBC with a zero IV, base64. Valid for five minutes.
+ * plus the JSON, AES-128-CBC with a zero IV, base64. Valid until the lab's stop
+ * time (at most 8 hours): Guacamole drops the connection from the session once
+ * the link expires, so a refresh or reconnect during a session needs it alive.
+ * Guacamole refuses a link that was already used, so it cannot be replayed.
  */
 export async function hostedLabLink(userId: string): Promise<string | null> {
   const row = await loadHostedLab(userId);
@@ -232,9 +235,11 @@ export async function hostedLabLink(userId: string): Promise<string | null> {
   const inst = await describe(row.instanceId);
   if (inst?.state !== "running" || !inst.privateIp) return null;
   const c = cfg();
+  const now = Date.now();
+  const stopAt = row.stopAt ? Date.parse(row.stopAt) : now + c.sessionHours * 3600_000;
   const payload = JSON.stringify({
     username: `lab-${userId.slice(0, 8)}`,
-    expires: Date.now() + 5 * 60_000,
+    expires: Math.min(now + 8 * 3600_000, Math.max(now + 15 * 60_000, stopAt)),
     connections: {
       "PurveX Financial DC": {
         protocol: "rdp",

@@ -249,7 +249,6 @@ const RESUME = [
 
 const SPECS: Record<string, string> = { "t3.medium": "2 vCPU · 4 GB", "t3.large": "2 vCPU · 8 GB", "t3.xlarge": "4 vCPU · 16 GB" };
 
-const PILL: Record<State, string> = { none: "Not started", starting: "Starting", ready: "Running", stopping: "Stopping", stopped: "Stopped" };
 
 const PRIMARY: Record<State, string> = { none: "Start my lab", starting: "Starting", ready: "Open", stopping: "Stopping", stopped: "Resume lab" };
 
@@ -301,7 +300,9 @@ export function HostedLabMenu() {
   const note =
     state === "ready"
       ? status.stopAt ? `Stops on its own at ${clock(status.stopAt)}.` : "Running."
-      : state === "stopped"
+      : state === "starting"
+        ? null
+        : state === "stopped"
         ? "Stopped. Everything you changed is saved."
         : state === "stopping"
           ? "Saving your session."
@@ -323,32 +324,35 @@ export function HostedLabMenu() {
             <span>Windows Server 2022{spec ? ` · ${spec}` : ""}</span>
           </p>
         </div>
-        <span className={`hl__pill hl__pill--${state}`}>
-          <i aria-hidden="true" />
-          {PILL[state]}
-        </span>
       </div>
 
       {state === "starting" && <StartTracker status={status} />}
 
       <div className="hl__foot">
-        {note && <p className="hl__note">{note}</p>}
+        {note && (
+          <p className="hl__note">
+            {note}
+            {state === "ready" && (
+              <>
+                {" · "}
+                <button type="button" className="hl__link" onClick={() => void act("extend")} disabled={waiting}>
+                  Add 3 hours
+                </button>
+              </>
+            )}
+          </p>
+        )}
         <div className="hl__actions">
-          {state === "ready" && (
-            <>
-              <button type="button" className="hl__ghost" onClick={() => void act("stop")} disabled={waiting}>
-                Stop
-              </button>
-              <button type="button" className="hl__ghost" onClick={() => void act("extend")} disabled={waiting}>
-                3 more hours
-              </button>
-            </>
-          )}
           <button type="button" className="hl__go" onClick={primary} disabled={waiting}>
             {busy || state === "starting" || state === "stopping" ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             {PRIMARY[state]}
             {state === "ready" && !busy && <ArrowUpRight className="h-4 w-4" />}
           </button>
+          {state === "ready" && (
+            <button type="button" className="hl__ghost" onClick={() => void act("stop")} disabled={waiting}>
+              Stop
+            </button>
+          )}
         </div>
       </div>
       {error && (
