@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { ArrowRight, Check, ChevronDown, ClipboardList, Flame, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
+import { useHostedLab } from "@/components/academy/hosted-lab-button";
 import { academyFetch, localDay, READINESS_PATH } from "@/lib/academy-client";
 import { askForProofShot } from "@/lib/academy-proof";
 import { SKILLS, type Skill } from "@/lib/academy-score";
@@ -515,6 +516,7 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
 
 export function DrillRunner() {
   const { ask } = useCoach();
+  const { available: hostedLab } = useHostedLab();
   const [status, setStatus] = useState<DrillStatus | null>(null);
   const [run, setRun] = useState<Run | null>(null);
   const [answers, setAnswers] = useState<(string | null)[]>([]);
@@ -1051,7 +1053,8 @@ export function DrillRunner() {
             <LabFindings items={status.findings} />
           </ol>
           {error && <p className="dr-error">{error}</p>}
-          {status.lab.synced && (
+          {/* A hosted lab is verified by Range itself, so there is no code to plant. */}
+          {status.lab.synced && !hostedLab && (
             <VerifyLab
               verified={Boolean(status.lab.verified)}
               onVerified={() => setStatus((s) => (s ? { ...s, lab: { ...s.lab, verified: true } } : s))}

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { compareToBaseline, sanitizeLabSnapshot } from "@/lib/academy-lab";
-import { loadLabLive, resolveLabKey, saveLabState } from "@/lib/academy-store";
+import { loadLabLive, resolveLabKey, saveLabLive, saveLabState } from "@/lib/academy-store";
+import { isVerified } from "@/lib/academy-verify";
 
 export const runtime = "nodejs";
 
@@ -62,6 +63,14 @@ export async function POST(request: Request) {
   } catch (err) {
     console.error("academy_lab_state save failed", err);
     return NextResponse.json({ error: "Could not save the snapshot." }, { status: 500 });
+  }
+
+  // A hosted-lab key only exists inside a machine Range built for this student, so its
+  // snapshots already prove the lab is theirs and live. No code to plant. Refreshed hourly.
+  if (key.startsWith("pvl_")) {
+    const live = await loadLabLive(userId).catch(() => null);
+    const fresh = live?.verifiedAt && isVerified(live.verifiedAt) && Date.now() - Date.parse(live.verifiedAt) < 3600_000;
+    if (!fresh) await saveLabLive(userId, { verifiedAt: new Date().toISOString() }).catch(() => {});
   }
 
   return NextResponse.json({
