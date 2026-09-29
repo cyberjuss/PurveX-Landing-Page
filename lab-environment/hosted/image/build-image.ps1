@@ -19,7 +19,9 @@ param(
     [string]$Region = "us-east-1",
     [string]$ScriptUrl = "https://purvex.io/lab-scripts/Build-Environment.ps1",
     [string]$InitialPassword = "PurveX-Lab-2026!",
-    [string]$AwsProfile = ""
+    [string]$AwsProfile = "",
+    # Lets you open a shell on the builder through Session Manager if setup fails. Not kept in the image.
+    [string]$SessionProfile = "casefile-lab-gateway"
 )
 
 $ErrorActionPreference = "Stop"
@@ -60,20 +62,28 @@ $tags = "ResourceType=instance,Tags=[{Key=Name,Value=casefile-image-builder-$sta
 try {
     $id = Invoke-Aws ec2 run-instances --image-id $base --instance-type t3.medium --subnet-id $SubnetId --security-group-ids $SecurityGroupId `
         --user-data "file://$userData" --block-device-mappings "file://$disk" --metadata-options "HttpTokens=required" `
-        --credit-specification "CpuCredits=unlimited" --tag-specifications $tags --query "Instances[0].InstanceId"
+        --credit-specification "CpuCredits=unlimited" --tag-specifications $tags --query "Instances[0].InstanceId" `
+        --iam-instance-profile "Name=$SessionProfile"
 }
 finally {
     Remove-Item -LiteralPath $userData, $disk -Force -ErrorAction SilentlyContinue
 }
 Write-Host "Builder $id is running setup. This takes about 30 to 45 minutes."
 
+# setup.ps1 writes RANGE: lines to the serial console. Show new ones as they arrive.
+$seen = @{}
 $deadline = (Get-Date).AddMinutes(75)
 do {
     Start-Sleep -Seconds 60
     $state = Invoke-Aws ec2 describe-instances --instance-ids $id --query "Reservations[0].Instances[0].State.Name"
-    Write-Host ("  {0:HH:mm}  {1}" -f (Get-Date), $state)
+    $console = try { Invoke-Aws ec2 get-console-output --instance-id $id --latest --query Output } catch { "" }
+    foreach ($line in ($console -split "`r?`n" | Where-Object { $_ -match "RANGE:" })) {
+        $text = $line.Substring($line.IndexOf("RANGE:"))
+        if (-not $seen[$text]) { $seen[$text] = $true; Write-Host "  $text" }
+        if ($text -match "FAILED") { throw "The builder reported a failure. It is still running as $id so you can read C:\ProgramData\PurveX\image-setup.log through Session Manager." }
+    }
     if ((Get-Date) -gt $deadline) {
-        throw "The builder did not finish in 75 minutes. See its boot log with: aws ec2 get-console-output --instance-id $id --latest. Setup writes C:\ProgramData\PurveX\image-setup.log on the builder."
+        throw "The builder did not finish in 75 minutes. It is still running as $id. Read C:\ProgramData\PurveX\image-setup.log through Session Manager."
     }
 } while ($state -ne "stopped")
 
