@@ -10,6 +10,10 @@ import { LabCarousel } from "./lab-carousel";
 import { MissionPager } from "./mission-pager";
 import { TrailDock, type TrailLink } from "./trail-dock";
 import { labSpot, useCoach } from "./coach-context";
+import { HostedLabSetupNote } from "./hosted-lab-button";
+
+// Home Lab tabs about building your own server. A hosted student skips them.
+const HOSTED_SETUP_TABS = new Set(["Set Up the Lab", "Install the Domain", "Build the Environment", "Check the Build"]);
 import { academyFetch } from "@/lib/academy-client";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import type { Quiz } from "@/content/academy/quizzes";
@@ -242,14 +246,17 @@ export function SectionTabs({
         />
       </div>
     ) : (
-      <MissionPager
-        key={current.label}
-        prevSection={prevTrail}
-        nextSection={nextTrail}
-        actionHost={current.kind === "challenge" ? challengeFoot : undefined}
-      >
-        <Markdown content={current.markdown} />
-      </MissionPager>
+      <>
+        {current.kind === "section" && HOSTED_SETUP_TABS.has(current.label) && <HostedLabSetupNote />}
+        <MissionPager
+          key={current.label}
+          prevSection={prevTrail}
+          nextSection={nextTrail}
+          actionHost={current.kind === "challenge" ? challengeFoot : undefined}
+        >
+          <Markdown content={current.markdown} />
+        </MissionPager>
+      </>
     );
 
   return (

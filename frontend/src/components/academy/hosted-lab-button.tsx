@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { ArrowUpRight, ChevronDown, Loader2, Server } from "lucide-react";
+import { createPortal } from "react-dom";
+import { ArrowUpRight, Loader2, Server } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import "./hosted-lab.css";
 
@@ -12,14 +13,6 @@ import "./hosted-lab.css";
 type State = "none" | "starting" | "ready" | "stopping" | "stopped";
 type Status = { available: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string };
 type Snapshot = { status: Status | null; busy: boolean; error: string | null };
-
-const LABEL: Record<State, string> = {
-  none: "Start my lab",
-  starting: "Starting lab",
-  ready: "Open lab",
-  stopping: "Stopping lab",
-  stopped: "Start lab",
-};
 
 const clock = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
@@ -101,7 +94,7 @@ const subscribe = (l: () => void) => {
 };
 const SERVER_SNAP: Snapshot = { status: null, busy: false, error: null };
 
-function useHostedLab() {
+export function useHostedLab() {
   const s = useSyncExternalStore(subscribe, () => snap, () => SERVER_SNAP);
   useEffect(() => {
     if (!snap.status) void load();
@@ -109,96 +102,133 @@ function useHostedLab() {
   const state: State = s.status?.state ?? "none";
   const moving = state === "starting" || state === "stopping";
   const primary = () => (state === "ready" ? open() : state === "none" || state === "stopped" ? act("start") : undefined);
-  return { ...s, state, waiting: s.busy || moving, primary };
+  return { ...s, state, waiting: s.busy || moving, primary, available: Boolean(s.status?.available) };
 }
 
-function statusLine(state: State, s: Status | null): string {
-  if (state === "ready") return s?.stopAt ? `Running. Stops on its own at ${clock(s.stopAt)}.` : "Running.";
-  if (state === "starting") return s?.firstBoot ? "Setting up your lab. The first start takes about 3 minutes." : "Starting. About a minute.";
-  if (state === "stopped") return "Stopped. Your work is saved.";
-  if (state === "stopping") return "Stopping.";
-  return "Your own PurveX Financial domain controller, in the browser.";
-}
+/** For code outside React (the answer check): does this student have a hosted lab, and start it. */
+export const hasHostedLab = () => Boolean(snap.status?.available);
+export const startHostedLabNow = () => act("start");
 
-// ---- header button --------------------------------------------------------
+// ---- one anchored menu, opened from the header, the question strip, or a mission's lab light ----
 
-export function HostedLabButton() {
-  const { status, state, waiting, error, primary } = useHostedLab();
-  const [menu, setMenu] = useState(false);
-  const root = useRef<HTMLDivElement>(null);
+export function useLabMenu<T extends HTMLElement>() {
+  const anchor = useRef<T>(null);
+  const menu = useRef<HTMLDivElement>(null);
+  const [isOpen, setOpen] = useState(false);
+  const [pos, setPos] = useState({ top: 0, right: 16 });
 
   useEffect(() => {
-    if (!menu) return;
-    const close = (e: MouseEvent) => {
-      if (!root.current?.contains(e.target as Node)) setMenu(false);
+    if (!isOpen) return;
+    const place = () => {
+      const r = anchor.current?.getBoundingClientRect();
+      if (r) setPos({ top: r.bottom + 8, right: Math.max(16, window.innerWidth - r.right) });
     };
-    window.addEventListener("mousedown", close);
-    return () => window.removeEventListener("mousedown", close);
-  }, [menu]);
+    place();
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (!anchor.current?.contains(t) && !menu.current?.contains(t)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setOpen(false);
+      anchor.current?.focus();
+    };
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    window.addEventListener("mousedown", onDown);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+      window.removeEventListener("mousedown", onDown);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [isOpen]);
 
-  if (!status?.available) return null;
-  const run = (a: "stop" | "extend" | "reset") => {
-    setMenu(false);
-    void act(a);
-  };
+  const popover = isOpen
+    ? createPortal(
+        <div ref={menu} className="hl-pop" style={{ top: pos.top, right: pos.right }} role="dialog" aria-label="Your lab">
+          <HostedLabMenu />
+        </div>,
+        document.body
+      )
+    : null;
+  return { anchor, isOpen, toggle: () => setOpen((v) => !v), popover };
+}
 
+const CHIP: Record<State, string> = { none: "Start lab", starting: "Starting", ready: "Lab running", stopping: "Stopping", stopped: "Lab stopped" };
+
+// ---- header chip ----------------------------------------------------------
+
+/** A small status chip in the top bar, on every page. Opens the lab menu. */
+export function HostedLabButton() {
+  const { available, state, waiting } = useHostedLab();
+  const { anchor, isOpen, toggle, popover } = useLabMenu<HTMLButtonElement>();
+  if (!available) return null;
   return (
-    <div ref={root} className="relative flex items-center">
+    <>
       <button
+        ref={anchor}
         type="button"
-        onClick={primary}
-        disabled={waiting}
-        title={statusLine(state, status)}
-        className="flex h-9 items-center gap-2 rounded-l-md border border-[var(--pvrx-border-light)] bg-white px-2.5 text-sm font-semibold text-slate-600 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0] disabled:cursor-wait"
+        onClick={toggle}
+        aria-haspopup="dialog"
+        aria-expanded={isOpen}
+        title="Your lab"
+        className="flex h-9 items-center gap-2 rounded-md border border-[var(--pvrx-border-light)] bg-white px-3 text-sm font-semibold text-slate-600 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
       >
-        {waiting ? <Loader2 className="h-[18px] w-[18px] animate-spin" /> : <Server className={`h-[18px] w-[18px] ${state === "ready" ? "text-emerald-600" : ""}`} />}
-        <span className="hidden sm:inline">{LABEL[state]}</span>
+        {waiting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <span className={`hl-dot hl-dot--${state}`} aria-hidden="true" />}
+        <span className="hidden sm:inline">{state === "ready" ? "Lab" : CHIP[state]}</span>
       </button>
-      <button
-        type="button"
-        aria-label="Lab options"
-        aria-expanded={menu}
-        onClick={() => setMenu((v) => !v)}
-        className="flex h-9 w-7 items-center justify-center rounded-r-md border border-l-0 border-[var(--pvrx-border-light)] bg-white text-slate-500 transition hover:text-[#5546e0]"
-      >
-        <ChevronDown className="h-4 w-4" />
-      </button>
+      {popover}
+    </>
+  );
+}
 
-      {menu && (
-        <div role="menu" className="absolute right-0 top-11 z-50 w-64 rounded-md border border-[var(--pvrx-border-light)] bg-white p-3 text-sm text-slate-700 shadow-lg">
-          <p className="mb-2 text-xs text-slate-500">{statusLine(state, status)}</p>
-          <div className="grid gap-1">
-            {state === "ready" && (
-              <button type="button" role="menuitem" className="rounded px-2 py-1.5 text-left hover:bg-slate-100" onClick={() => run("extend")}>
-                Keep it running 3 more hours
-              </button>
-            )}
-            {(state === "ready" || state === "starting") && (
-              <button type="button" role="menuitem" className="rounded px-2 py-1.5 text-left hover:bg-slate-100" onClick={() => run("stop")}>
-                Stop lab (work is saved)
-              </button>
-            )}
-            {state !== "none" && (
-              <button
-                type="button"
-                role="menuitem"
-                className="rounded px-2 py-1.5 text-left text-red-700 hover:bg-red-50"
-                onClick={() => {
-                  if (window.confirm("Reset your lab? You get a fresh copy of PurveX Financial and every change you made in the lab is gone. Your Range progress stays.")) run("reset");
-                }}
-              >
-                Reset to a fresh lab
-              </button>
-            )}
-          </div>
-        </div>
+// ---- question strip chip --------------------------------------------------
+
+/** The lab at the right end of a challenge's question strip: status opens the menu, the side button acts. */
+export function LabChip() {
+  const { available, state, waiting, busy, primary } = useHostedLab();
+  const { anchor, isOpen, toggle, popover } = useLabMenu<HTMLButtonElement>();
+  if (!available) return null;
+  const quick = state === "ready" ? "Open" : state === "none" || state === "stopped" ? (state === "none" ? "Start" : "Resume") : null;
+  return (
+    <span className={`hl-chip hl-chip--${state}`}>
+      <button ref={anchor} type="button" className="hl-chip__status" onClick={toggle} aria-haspopup="dialog" aria-expanded={isOpen}>
+        {waiting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <span className={`hl-dot hl-dot--${state}`} aria-hidden="true" />}
+        {CHIP[state]}
+      </button>
+      {quick && (
+        <button type="button" className="hl-chip__go" onClick={primary} disabled={busy}>
+          {quick}
+          {state === "ready" && <ArrowUpRight className="h-3.5 w-3.5" />}
+        </button>
       )}
-      {error && !menu && (
-        <p role="alert" className="absolute right-0 top-11 z-40 w-64 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700">
-          {error}
-        </p>
-      )}
-    </div>
+      {popover}
+    </span>
+  );
+}
+
+// ---- setup tabs -----------------------------------------------------------
+
+/** On the Home Lab setup tabs: hosted students skip building their own server. */
+export function HostedLabSetupNote() {
+  const { available, state, busy, primary } = useHostedLab();
+  if (!available) return null;
+  return (
+    <aside className="hl-note" aria-label="Your lab is hosted">
+      <span className="hl-note__mark" aria-hidden="true">
+        <Server className="h-5 w-5" />
+      </span>
+      <div className="hl-note__text">
+        <p className="hl-note__title">Your lab is hosted. Skip this setup.</p>
+        <p className="hl-note__body">Range already built PurveX Financial on your own server, with the ticket objects and the Coach sync in place. Read this tab to learn what the setup does, then work in your hosted lab.</p>
+      </div>
+      <button type="button" className="hl-note__go" onClick={primary} disabled={busy || state === "starting" || state === "stopping"}>
+        {state === "ready" ? "Open lab" : state === "starting" ? "Starting" : state === "stopping" ? "Stopping" : state === "stopped" ? "Resume lab" : "Start my lab"}
+        {state === "ready" && <ArrowUpRight className="h-4 w-4" />}
+      </button>
+    </aside>
   );
 }
 
@@ -263,11 +293,6 @@ function StartTracker({ status }: { status: Status }) {
   );
 }
 
-/** Whether this student has a hosted lab, for the lab icon on each mission. */
-export function useHostedLabAvailable(): boolean {
-  return Boolean(useHostedLab().status?.available);
-}
-
 /** The lab menu the lab icon opens on each mission: status, open, stop, extend, start. */
 export function HostedLabMenu() {
   const { status, state, waiting, busy, error, primary } = useHostedLab();
@@ -329,6 +354,18 @@ export function HostedLabMenu() {
         <p className="hl__error" role="alert">
           {error}
         </p>
+      )}
+      {state !== "none" && (
+        <button
+          type="button"
+          className="hl__reset"
+          disabled={waiting}
+          onClick={() => {
+            if (window.confirm("Reset your lab? You get a fresh copy of PurveX Financial and every change you made in the lab is gone. Your Range progress stays.")) void act("reset");
+          }}
+        >
+          Reset to a fresh lab
+        </button>
       )}
     </section>
   );

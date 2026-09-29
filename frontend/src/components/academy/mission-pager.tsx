@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Check } from "lucide-react";
 import { academyFetch, READINESS_PATH, RESULTS_CHANGED_EVENT, RESULTS_UPDATED_EVENT } from "@/lib/academy-client";
 import { loadResults, saveResults, type MissionResult } from "@/lib/academy-score";
+import { LabChip, useHostedLab } from "./hosted-lab-button";
 import { LabPulse } from "./lab-pulse";
 import { TrailDock } from "./trail-dock";
 
@@ -38,6 +39,8 @@ export function MissionPager({
   const [strip, setStrip] = useState<HTMLElement | null>(null);
   const [labHost, setLabHost] = useState<HTMLElement | null>(null);
   const [started, setStarted] = useState(false);
+  // A hosted lab starts from the brief, so it boots while the student reads question 1.
+  const lab = useHostedLab();
 
   const missions = useCallback(() => Array.from(root.current?.querySelectorAll<HTMLElement>(".ad-mission") ?? []), []);
   const brief = useCallback(() => root.current?.querySelector<HTMLElement>(".ad-brief") ?? null, []);
@@ -241,14 +244,31 @@ export function MissionPager({
                 </button>
               ))}
             </span>
+            <LabChip />
           </div>,
           strip
         )}
       {paging && onBrief ? (
         <div className="ad-brief-start">
-          <button type="button" className="rd-cta" onClick={() => setOnBrief(false)}>
-            Get Started <ArrowRight className="h-4 w-4" />
-          </button>
+          {lab.available && (lab.state === "none" || lab.state === "stopped") ? (
+            <>
+              <button
+                type="button"
+                className="rd-cta"
+                onClick={() => {
+                  lab.primary();
+                  setOnBrief(false);
+                }}
+              >
+                {lab.state === "stopped" ? "Resume lab & begin" : "Start lab & begin"} <ArrowRight className="h-4 w-4" />
+              </button>
+              <p className="ad-brief-start__note">Your lab boots while you read question 1.</p>
+            </>
+          ) : (
+            <button type="button" className="rd-cta" onClick={() => setOnBrief(false)}>
+              Get Started <ArrowRight className="h-4 w-4" />
+            </button>
+          )}
           {started ? (
             <button type="button" className="ad-challenge-reset" onClick={resetChallenge}>
               Reset challenge

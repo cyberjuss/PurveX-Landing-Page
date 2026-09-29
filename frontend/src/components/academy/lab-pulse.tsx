@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useState } from "react";
 import { academyFetch } from "@/lib/academy-client";
-import { HostedLabMenu, useHostedLabAvailable } from "./hosted-lab-button";
+import { useHostedLab, useLabMenu } from "./hosted-lab-button";
 
 type LabStatus = {
   connected: boolean;
@@ -27,15 +26,13 @@ const Monitor = () => (
   </svg>
 );
 
-// The lab light on each mission: green when the lab is reporting. With a hosted
-// lab it is also a button that opens the lab menu (open, stop, extend, start).
+// The lab light on each mission: green when the lab is reporting, so the
+// student knows the lab check will work. With a hosted lab it also opens the
+// same lab menu as the question strip.
 export function LabPulse() {
   const [state, setState] = useState<LabStatus | null>(null);
-  const hosted = useHostedLabAvailable();
-  const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState({ top: 0, right: 16 });
-  const button = useRef<HTMLButtonElement>(null);
-  const menu = useRef<HTMLDivElement>(null);
+  const { available } = useHostedLab();
+  const { anchor, isOpen, toggle, popover } = useLabMenu<HTMLButtonElement>();
 
   useEffect(() => {
     let cancelled = false;
@@ -54,42 +51,12 @@ export function LabPulse() {
     };
   }, []);
 
-  // Keep the menu under the icon, and close it on an outside click or Escape.
-  useEffect(() => {
-    if (!open) return;
-    const place = () => {
-      const r = button.current?.getBoundingClientRect();
-      if (r) setPos({ top: r.bottom + 8, right: Math.max(16, window.innerWidth - r.right) });
-    };
-    place();
-    const onDown = (e: MouseEvent) => {
-      const t = e.target as Node;
-      if (!button.current?.contains(t) && !menu.current?.contains(t)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setOpen(false);
-        button.current?.focus();
-      }
-    };
-    window.addEventListener("resize", place);
-    window.addEventListener("scroll", place, true);
-    window.addEventListener("mousedown", onDown);
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("resize", place);
-      window.removeEventListener("scroll", place, true);
-      window.removeEventListener("mousedown", onDown);
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
-
   const connected = Boolean(state?.connected);
   const warn = Boolean(state?.stale || (state?.connected && !state.hasTicketObjects));
   const tone = !connected ? "off" : warn ? "stale" : "on";
   const tip = tipFor(state);
 
-  if (!hosted) {
+  if (!available) {
     return (
       <span className={`ad-lab ad-lab--${tone}`} tabIndex={0} aria-label={tip}>
         <Monitor />
@@ -103,26 +70,20 @@ export function LabPulse() {
   return (
     <>
       <button
-        ref={button}
+        ref={anchor}
         type="button"
         className={`ad-lab ad-lab--${tone}`}
         aria-label={`Your lab. ${tip}`}
         aria-haspopup="dialog"
-        aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
+        aria-expanded={isOpen}
+        onClick={toggle}
       >
         <Monitor />
         <span className="ad-lab__tip" role="tooltip">
-          {tip} Click to open your lab.
+          {tip} Click for your lab.
         </span>
       </button>
-      {open &&
-        createPortal(
-          <div ref={menu} className="hl-pop" style={{ top: pos.top, right: pos.right }} role="dialog" aria-label="Your lab">
-            <HostedLabMenu />
-          </div>,
-          document.body
-        )}
+      {popover}
     </>
   );
 }

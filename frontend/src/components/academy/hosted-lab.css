@@ -176,7 +176,100 @@ button.ad-lab:hover, button.ad-lab[aria-expanded="true"] { background: rgba(124,
 button.ad-lab:focus-visible { outline: 2px solid #7c6dff; outline-offset: 2px; }
 button.ad-lab[aria-expanded="true"] .ad-lab__tip { display: none; }
 
-@media (prefers-reduced-motion: reduce) { .hl-pop { animation: none; } }
+.hl .hl__reset { justify-self: start; margin: -4px 0 0; padding: 0; border: 0; background: none; font-size: 12.5px; font-weight: 500; color: var(--hl-ink-3); cursor: pointer; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px; transition: color 0.15s, text-decoration-color 0.15s; }
+.hl .hl__reset:hover:not(:disabled) { color: #ffb4ad; text-decoration-color: currentColor; }
+
+/* Status dot, shared by the header chip and the question-strip chip. */
+.hl-dot { position: relative; flex: none; width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+.hl-dot--none { background: none; box-shadow: inset 0 0 0 1.5px #94a3b8; }
+.hl-dot--ready { background: #10b981; }
+.hl-dot--starting, .hl-dot--stopping { background: #8b7dff; }
+.hl-dot--ready::after, .hl-dot--starting::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  opacity: 0;
+  animation: hl-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.hl-dot--ready::after { color: #10b981; }
+.hl-dot--starting::after { color: #8b7dff; }
+
+/* The question strip: chips on the left, the lab on the right. */
+.ad-steps:has(.hl-chip) { justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px 16px; }
+.hl-chip {
+  display: inline-flex;
+  align-items: stretch;
+  height: 32px;
+  overflow: hidden;
+  border: 1px solid var(--rd-line, #dcdce8);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+.hl-chip .hl-chip__status,
+.hl-chip .hl-chip__go { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 0 13px; border: 0; font: inherit; cursor: pointer; transition: background 0.15s, color 0.15s; }
+.hl-chip .hl-chip__status { background: none; color: var(--rd-ink-2, #44465f); }
+.hl-chip .hl-chip__status:hover,
+.hl-chip .hl-chip__status[aria-expanded="true"] { background: var(--rd-line-2, #eeeef6); color: var(--rd-ink, #16172b); }
+.hl-chip .hl-chip__go { gap: 4px; padding: 0 14px 0 12px; color: #fff; background: #5546e0; }
+.hl-chip .hl-chip__go:hover:not(:disabled) { background: #4636c9; }
+.hl-chip--ready .hl-chip__go { background: #10a36f; }
+.hl-chip--ready .hl-chip__go:hover:not(:disabled) { background: #0c8a5d; }
+.hl-chip .hl-chip__go:disabled { opacity: 0.7; cursor: default; }
+.hl-chip button:focus-visible { outline: 2px solid #7c6dff; outline-offset: -2px; }
+
+/* On the Home Lab setup tabs: the same indigo as the lab menu, so the lab always looks like the lab. */
+.hl-note {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px 16px;
+  margin: 0 0 24px;
+  padding: 16px 18px;
+  border: 1px solid rgba(167, 156, 255, 0.18);
+  border-radius: 16px;
+  color: #f3f2ff;
+  background:
+    radial-gradient(120% 160% at 100% 0%, rgba(124, 109, 255, 0.26) 0%, rgba(124, 109, 255, 0) 55%),
+    linear-gradient(140deg, #0f1230 0%, #171b43 58%, #1d1846 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 18px 36px -24px rgba(38, 26, 120, 0.7);
+}
+.hl-note .hl-note__mark { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 11px; color: #fff; background: linear-gradient(145deg, #8b7dff 0%, #5a49e6 100%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+.hl-note .hl-note__text { display: grid; gap: 3px; min-width: 0; }
+.hl-note .hl-note__title { margin: 0; font-size: 15px; font-weight: 650; color: #f3f2ff; }
+.hl-note .hl-note__body { margin: 0; max-width: 62ch; font-size: 13.5px; line-height: 1.5; color: #c3c0ec; }
+.hl-note .hl-note__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 650;
+  white-space: nowrap;
+  color: #fff;
+  background: linear-gradient(180deg, #8f82ff 0%, #7c6dff 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 10px 22px -10px rgba(124, 109, 255, 0.95);
+  cursor: pointer;
+}
+.hl-note .hl-note__go:disabled { opacity: 0.7; cursor: default; }
+@media (max-width: 600px) {
+  .hl-note { grid-template-columns: auto 1fr; }
+  .hl-note .hl-note__go { grid-column: 1 / -1; justify-content: center; }
+}
+
+/* "Start my lab" inside the message when an answer cannot be checked. */
+.ad-guess__feedback .ad-labstart { margin-left: 6px; height: 26px; padding: 0 10px; border: 0; border-radius: 7px; font-size: 0.72rem; font-weight: 700; color: #fff; background: #5546e0; cursor: pointer; vertical-align: middle; }
+.ad-guess__feedback .ad-labstart:disabled { opacity: 0.7; cursor: default; }
+
+.ad-brief-start .ad-brief-start__note { margin: 0; font-size: 13px; color: var(--rd-ink-3, #6f7189); }
+
+@media (prefers-reduced-motion: reduce) { .hl-pop, .hl-dot::after { animation: none; } }
 
 @media (max-width: 600px) {
   .hl { padding: 18px; }

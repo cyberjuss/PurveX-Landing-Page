@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { ChevronLeft, GraduationCap, Home, Loader2, Menu, Moon, Sun, X } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
 import { AcademyAccountProvider, AcademyGoalsProvider, AcademyProfileMenu, type AcademyStudent } from "@/components/academy/academy-account";
-import { HostedLabButton } from "@/components/academy/hosted-lab-button";
+import { hasHostedLab, HostedLabButton, startHostedLabNow } from "@/components/academy/hosted-lab-button";
 import { AcademyIntake } from "@/components/academy/academy-intake";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
@@ -494,6 +494,22 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       }
     };
 
+    // A hosted student's lab is off: say so, with a button that starts it.
+    const labOffNote = (feedback: HTMLElement, text: string) => {
+      feedback.textContent = `${text} `;
+      feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+      const start = document.createElement("button");
+      start.type = "button";
+      start.className = "ad-labstart";
+      start.textContent = "Start my lab";
+      start.addEventListener("click", () => {
+        start.disabled = true;
+        start.textContent = "Starting";
+        void startHostedLabNow();
+      });
+      feedback.appendChild(start);
+    };
+
     // The server checks the answer and records the result. Format does not
     // matter: case, spaces, dots and the gtf{} wrapper are all ignored there.
     const sendAnswer = async (id: string, guess: string): Promise<AnswerReply | null> => {
@@ -547,6 +563,11 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         if (!gate) {
           feedback.textContent = "Could not check your lab. Try submit again. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          placeMiss(wrap);
+          return;
+        }
+        if ((gate.noLab || gate.stale) && hasHostedLab()) {
+          labOffNote(feedback, "Your lab is not running. Start it, wait for the lab light to turn green, then submit again. This does not use an attempt.");
           placeMiss(wrap);
           return;
         }
