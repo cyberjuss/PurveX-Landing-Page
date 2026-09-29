@@ -215,15 +215,21 @@ export type ShiftIncident = {
   deadlineSec: number;
 };
 
-/** When incidents arrive across the 15 minutes, by how many there are. */
+/** When incidents arrive across the 15 minutes, spread so the queue keeps
+ *  filling the whole shift instead of front-loading. Keyed by how many there are. */
 const ARRIVALS: Record<number, number[]> = {
-  2: [0, 300],
-  3: [0, 300, 540],
+  2: [20, 330],
+  3: [20, 240, 510],
+  4: [15, 195, 405, 630],
+  5: [10, 165, 330, 510, 690],
+  6: [0, 150, 300, 450, 600, 720],
 };
 
-/** How many incidents a shift has, from phase and level. */
+/** How many incidents a shift has, from phase and level. More senior shifts run
+ *  a busier queue. Capped by how many incidents are actually eligible. */
 export function shiftSize(phase: number, level: number): number {
-  return phase >= 2 || level >= 3 ? 3 : 2;
+  const base = 2 + Math.max(0, level - 1) + (phase >= 2 ? 1 : 0);
+  return Math.min(6, base);
 }
 
 /**
