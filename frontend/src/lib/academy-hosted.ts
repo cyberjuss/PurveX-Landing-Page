@@ -288,7 +288,6 @@ function ssm() {
   return ssmClient;
 }
 
-const INCIDENT_DIR = "C:\\ProgramData\\PurveX\\incidents";
 const INCIDENT_SCRIPT = /^Incident-[A-Za-z]+\.ps1$/;
 
 async function runningInstance(userId: string): Promise<string | null> {
@@ -298,8 +297,26 @@ async function runningInstance(userId: string): Promise<string | null> {
   return inst?.state === "running" ? row.instanceId : null;
 }
 
-/** Fire an incident into the student's lab. Returns false if the lab is not running or SSM is not set up. */
-export async function injectIncident(userId: string, script: string): Promise<boolean> {
+/**
+ * PowerShell that downloads an incident script (and its shared helper) from the
+ * site and runs it. Fetching at run time means an incident fix ships by
+ * deploying, with no lab image rebuild. The script name is fixed, server-side.
+ */
+function incidentCommand(script: string, undo: boolean): string {
+  const base = `${cfg().syncUrl}/lab-scripts/incidents`;
+  const dir = "$env:TEMP\\range-inc";
+  const arg = undo ? " -Undo" : "";
+  return [
+    `$d='${dir}'`,
+    "New-Item -ItemType Directory -Path $d -Force | Out-Null",
+    "[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12",
+    `Invoke-WebRequest -Uri '${base}/Incident-Common.ps1' -OutFile "$d\\Incident-Common.ps1" -UseBasicParsing`,
+    `Invoke-WebRequest -Uri '${base}/${script}' -OutFile "$d\\${script}" -UseBasicParsing`,
+    `& "$d\\${script}"${arg}`,
+  ].join("; ");
+}
+
+async function sendIncident(userId: string, script: string, undo: boolean): Promise<boolean> {
   if (!INCIDENT_SCRIPT.test(script)) return false;
   const id = await runningInstance(userId);
   if (!id) return false;
@@ -308,30 +325,27 @@ export async function injectIncident(userId: string, script: string): Promise<bo
       new SendCommandCommand({
         InstanceIds: [id],
         DocumentName: "AWS-RunPowerShellScript",
-        Comment: "Range Shift incident",
-        TimeoutSeconds: 120,
-        Parameters: { commands: [`& '${INCIDENT_DIR}\\${script}'`] },
+        Comment: undo ? "Range Shift cleanup" : "Range Shift incident",
+        TimeoutSeconds: 180,
+        Parameters: { commands: [incidentCommand(script, undo)] },
       })
     );
     return true;
   } catch (err) {
-    console.error("injectIncident failed", script, err instanceof Error ? err.message : err);
+    console.error("sendIncident failed", script, err instanceof Error ? err.message : err);
     return false;
   }
 }
 
+/** Fire an incident into the student's lab. False if the lab is not running or SSM is not set up. */
+export function injectIncident(userId: string, script: string): Promise<boolean> {
+  return sendIncident(userId, script, false);
+}
+
 /** Undo the shift's incidents so the lab returns to baseline for missions. Best effort. */
 export async function cleanupShiftLab(userId: string, scripts: string[]): Promise<void> {
-  const id = await runningInstance(userId);
-  if (!id) return;
-  const commands = scripts.filter((s) => INCIDENT_SCRIPT.test(s)).map((s) => `& '${INCIDENT_DIR}\\${s}' -Undo`);
-  if (!commands.length) return;
-  try {
-    await ssm().send(
-      new SendCommandCommand({ InstanceIds: [id], DocumentName: "AWS-RunPowerShellScript", Comment: "Range Shift cleanup", TimeoutSeconds: 120, Parameters: { commands } })
-    );
-  } catch (err) {
-    console.error("cleanupShiftLab failed", err instanceof Error ? err.message : err);
+  for (const s of scripts) {
+    if (INCIDENT_SCRIPT.test(s)) await sendIncident(userId, s, true).catch(() => false);
   }
 }
 
