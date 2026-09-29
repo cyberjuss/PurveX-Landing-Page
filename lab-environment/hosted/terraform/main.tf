@@ -173,6 +173,12 @@ resource "aws_instance" "gateway" {
     encrypted   = true
   }
   tags = { Name = "casefile-lab-gateway" }
+
+  # The base Amazon Linux image drifts to newer versions over time. Ignore that
+  # so a routine apply never tears down the running gateway; rebuild it on purpose.
+  lifecycle {
+    ignore_changes = [ami]
+  }
 }
 
 resource "aws_eip" "gateway" {
