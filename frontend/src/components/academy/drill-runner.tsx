@@ -964,18 +964,6 @@ export function DrillRunner() {
             </span>
           </div>
 
-          {hostedLab && (
-            <a className="dr-shift" href="/academy/shift">
-              <span className="dr-shift__body">
-                <span className="dr-shift__title">Start a Shift</span>
-                <span className="dr-shift__sub">15 minutes on the desk. Real incidents hit your own lab and you respond against the clock.</span>
-              </span>
-              <span className="dr-shift__go">
-                Go on shift <ArrowRight className="h-4 w-4" />
-              </span>
-            </a>
-          )}
-
           <ol className="ax-path dr-rows">
             <li>
               <div className="ax-path__row">
@@ -1004,34 +992,18 @@ export function DrillRunner() {
               <div className="ax-path__row">
                 <span className="ax-path__n">02</span>
                 <span className="ax-path__main">
-                  <span className="ax-path__title">
-                    Quick drill
-                    {status.incidentUntil && s.lastTimed && (
-                      <em className={`ax-tag ${drillPassed(s.lastTimed) ? "ax-tag--good" : "ax-tag--bad"}`}>
-                        {drillPassed(s.lastTimed) ? "Passed" : "Failed"}
-                      </em>
-                    )}
-                  </span>
+                  <span className="ax-path__title">Shift</span>
                   <span className="ax-path__body">
-                    {status.incidentUntil && s.lastTimed
-                      ? `${scoreLabel(s.lastTimed)}. The next one opens 24 hours after the one you just finished.`
-                      : status.incidentUntil
-                        ? "Done for today. The next one opens 24 hours after the one you just finished."
-                      : `Five alerts and tickets against a clock. One a day. ${s.bestTimed ? `Best ${s.bestTimed.correct}/${s.bestTimed.total}.` : ""}`}
+                    15 minutes on the desk. Real incidents hit your own lab and you respond against the clock.
+                    {!hostedLab ? " Needs a hosted lab." : ""}
                   </span>
                 </span>
                 <span className="ax-path__count">
-                  {status.incidentUntil && s.lastTimed ? (
-                    drillPassed(s.lastTimed) ? (
-                      <Check className="h-5 w-5 text-[var(--rd-good)]" aria-label="Passed" />
-                    ) : (
-                      <X className="h-5 w-5 text-[var(--rd-bad)]" aria-label="Failed" />
-                    )
-                  ) : !status.incidentUntil ? (
-                    <button type="button" className="dr-outline" disabled={busy} onClick={() => void start("timed")}>
-                      Start <ArrowRight className="h-4 w-4" />
-                    </button>
-                  ) : null}
+                  {hostedLab && (
+                    <a className="rd-cta" href="/academy/shift">
+                      Start shift <ArrowRight className="h-4 w-4" />
+                    </a>
+                  )}
                 </span>
               </div>
             </li>
