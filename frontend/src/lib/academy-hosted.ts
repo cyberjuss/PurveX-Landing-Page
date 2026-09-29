@@ -307,7 +307,7 @@ function incidentCommand(script: string, undo: boolean): string {
   const dir = "$env:TEMP\\range-inc";
   const arg = undo ? " -Undo" : "";
   return [
-    `$d='${dir}'`,
+    `$d="${dir}"`,
     "New-Item -ItemType Directory -Path $d -Force | Out-Null",
     "[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12",
     `Invoke-WebRequest -Uri '${base}/Incident-Common.ps1' -OutFile "$d\\Incident-Common.ps1" -UseBasicParsing`,
