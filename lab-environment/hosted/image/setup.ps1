@@ -67,6 +67,15 @@ if ($stage -eq "1") {
         Invoke-WebRequest -Uri '__SCRIPT_URL__' -OutFile "$dir\image\Build-Environment.ps1" -UseBasicParsing
         Say "downloaded Build-Environment.ps1"
 
+        # Shift incident scripts, fired later by Range through SSM. Baked into the image.
+        $incidentBase = '__SCRIPT_URL__'.Replace("Build-Environment.ps1", "incidents")
+        $incidentDir = "$dir\incidents"
+        New-Item -ItemType Directory -Path $incidentDir -Force | Out-Null
+        foreach ($f in @("Incident-Common.ps1", "Incident-Lockout.ps1", "Incident-Spray.ps1", "Incident-RogueAdmin.ps1", "Incident-ApprovedChange.ps1", "Incident-Compromise.ps1", "Incident-WeakPolicy.ps1")) {
+            try { Invoke-WebRequest -Uri "$incidentBase/$f" -OutFile "$incidentDir\$f" -UseBasicParsing } catch { Say "could not download $f" }
+        }
+        Say "downloaded incident scripts"
+
         $initial = ConvertTo-SecureString '__INITIAL_PASSWORD__' -AsPlainText -Force
         # The build script handles its own errors and reports what it skipped.
         $ErrorActionPreference = "Continue"

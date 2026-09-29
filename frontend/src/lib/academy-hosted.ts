@@ -40,6 +40,8 @@ function cfg() {
     subnet: e.HOSTED_LAB_SUBNET || "",
     securityGroup: e.HOSTED_LAB_SECURITY_GROUP || "",
     instanceType: e.HOSTED_LAB_INSTANCE_TYPE || "t3.medium",
+    /** Gives each lab the SSM agent role, so Range can fire Shift incidents into it. */
+    instanceProfile: e.HOSTED_LAB_INSTANCE_PROFILE || "",
     gatewayUrl: (e.HOSTED_LAB_GATEWAY_URL || "").replace(/\/+$/, ""),
     gatewayKey: e.HOSTED_LAB_GATEWAY_KEY || "",
     secret: e.HOSTED_LAB_SECRET || "",
@@ -146,6 +148,8 @@ async function launch(userId: string): Promise<HostedLabRow> {
       HibernationOptions: { Configured: true },
       MetadataOptions: { HttpTokens: "required", HttpPutResponseHopLimit: 1 },
       InstanceInitiatedShutdownBehavior: "stop",
+      // The SSM agent role, so Shift incidents can be fired into the lab. Omitted when not set up.
+      ...(c.instanceProfile ? { IamInstanceProfile: { Name: c.instanceProfile } } : {}),
       TagSpecifications: [
         { ResourceType: "instance", Tags: tags },
         { ResourceType: "volume", Tags: tags },

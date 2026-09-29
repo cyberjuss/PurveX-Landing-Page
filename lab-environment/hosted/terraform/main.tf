@@ -181,6 +181,28 @@ resource "aws_eip" "gateway" {
   tags     = { Name = "casefile-lab-gateway" }
 }
 
+# ---- lab instance role (SSM agent) ----------------------------------------
+# Each lab runs with this role so the SSM agent can register. That lets Range
+# fire Shift incidents into the lab. The role can do nothing else.
+
+resource "aws_iam_role" "lab" {
+  name = "casefile-lab"
+  assume_role_policy = jsonencode({
+    Version   = "2012-10-17"
+    Statement = [{ Effect = "Allow", Principal = { Service = "ec2.amazonaws.com" }, Action = "sts:AssumeRole" }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lab_ssm" {
+  role       = aws_iam_role.lab.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_instance_profile" "lab" {
+  name = "casefile-lab"
+  role = aws_iam_role.lab.name
+}
+
 # ---- Range's AWS login -------------------------------------------------
 # It can create lab machines only with the casefile-lab tag, only in this
 # subnet and security group, and can only start, stop or end tagged machines.
@@ -241,6 +263,36 @@ resource "aws_iam_user_policy" "casefile" {
         Sid      = "SeeLabs"
         Effect   = "Allow"
         Action   = "ec2:DescribeInstances"
+        Resource = "*"
+      },
+      {
+        Sid      = "GiveLabsTheAgentRole"
+        Effect   = "Allow"
+        Action   = "iam:PassRole"
+        Resource = aws_iam_role.lab.arn
+        Condition = {
+          StringEquals = { "iam:PassedToService" = "ec2.amazonaws.com" }
+        }
+      },
+      {
+        Sid      = "FireShiftIncidents"
+        Effect   = "Allow"
+        Action   = "ssm:SendCommand"
+        Resource = "${local.arn_prefix}:instance/*"
+        Condition = {
+          StringEquals = { "ssm:resourceTag/casefile-lab" = "true" }
+        }
+      },
+      {
+        Sid      = "RunPowerShellDocument"
+        Effect   = "Allow"
+        Action   = "ssm:SendCommand"
+        Resource = "arn:aws:ssm:${var.region}::document/AWS-RunPowerShellScript"
+      },
+      {
+        Sid      = "SeeCommandResults"
+        Effect   = "Allow"
+        Action   = ["ssm:GetCommandInvocation", "ssm:ListCommandInvocations"]
         Resource = "*"
       },
     ]
