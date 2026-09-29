@@ -201,8 +201,10 @@ function status(inc: Incident): { label: string; cls: string } {
 }
 
 function ActiveShift({ shift, now, busy, error, post }: { shift: Shift; now: number; busy: boolean; error: string | null; post: (p: Record<string, unknown>) => Promise<Record<string, unknown> | null> }) {
-  const left = Math.max(0, Math.round((Date.parse(shift.endsAt) - now) / 1000));
   const start = Date.parse(shift.startedAt);
+  const end = Date.parse(shift.endsAt);
+  const left = Math.max(0, Math.round((end - now) / 1000));
+  const elapsedPct = Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
   const open = shift.incidents.filter((i) => !i.resolved).length;
   const resolved = shift.incidents.filter((i) => i.resolved).length;
 
@@ -227,6 +229,9 @@ function ActiveShift({ shift, now, busy, error, post }: { shift: Shift; now: num
         <button type="button" className="sh-end" disabled={busy} onClick={() => post({ action: "finish" })}>
           End shift
         </button>
+        <div className="sh-prog" aria-hidden="true">
+          <div className={`sh-prog__fill ${left <= 60 ? "sh-prog__fill--low" : ""}`} style={{ width: `${elapsedPct}%` }} />
+        </div>
       </header>
       {error && <p className="sh-error">{error}</p>}
 
@@ -240,9 +245,11 @@ function ActiveShift({ shift, now, busy, error, post }: { shift: Shift; now: num
               const deadlineAt = start + (inc.arriveSec + inc.deadlineSec) * 1000;
               const secs = inc.resolved ? null : Math.max(0, Math.round((deadlineAt - now) / 1000));
               const isSel = selected?.defId === inc.defId;
+              const urgent = !inc.resolved && !inc.acknowledged && inc.severity === "P1";
+              const cls = ["sh-li", `sh-li--sev-${inc.severity.toLowerCase()}`, isSel && "sh-li--on", inc.resolved && "sh-li--done", urgent && "sh-li--urgent"].filter(Boolean).join(" ");
               return (
                 <li key={inc.defId}>
-                  <button type="button" role="tab" aria-selected={isSel} className={`sh-li ${isSel ? "sh-li--on" : ""} ${inc.resolved ? "sh-li--done" : ""}`} onClick={() => setSelectedId(inc.defId)}>
+                  <button type="button" role="tab" aria-selected={isSel} className={cls} onClick={() => setSelectedId(inc.defId)}>
                     <span className="sh-li__top">
                       <span className={`sh-sev ${SEV_CLASS[inc.severity]}`}>{inc.severity}</span>
                       <span className={`sh-status sh-status--${st.cls}`}>{st.label}</span>
@@ -351,17 +358,26 @@ function IncidentDetail({ inc, start, now, busy, post }: { inc: Incident; start:
 
 function ShiftReport({ report, onAgain, busy }: { report: Report; onAgain: () => void; busy: boolean }) {
   const pct = report.maxScore ? Math.round((report.totalScore / report.maxScore) * 100) : 0;
+  const R = 56;
+  const C = 2 * Math.PI * R;
+  const ringCls = pct >= 85 ? "sh-gauge__fg--good" : pct < 50 ? "sh-gauge__fg--low" : "";
   return (
     <div className="sh">
       <div className="sh-report">
         <header className="sh-report__head">
-          <p className="sh-kicker">Shift report</p>
-          <p className="sh-report__score">
-            {report.totalScore}
-            <span>/ {report.maxScore}</span>
-          </p>
-          <p className="sh-report__headline">{report.headline}</p>
-          <p className="sh-report__sub">{report.resolvedCount} of {report.incidents.length} resolved · {report.onTimeCount} within the deadline · {pct}%</p>
+          <div className="sh-gauge">
+            <svg viewBox="0 0 128 128" aria-hidden="true">
+              <circle className="sh-gauge__bg" cx="64" cy="64" r={R} />
+              <circle className={`sh-gauge__fg ${ringCls}`} cx="64" cy="64" r={R} style={{ strokeDasharray: C, strokeDashoffset: C * (1 - pct / 100) }} />
+            </svg>
+            <span className="sh-gauge__num">{pct}%</span>
+          </div>
+          <div>
+            <p className="sh-kicker">Shift report</p>
+            <p className="sh-report__headline">{report.headline}</p>
+            <p className="sh-report__score"><b>{report.totalScore}</b> of {report.maxScore} points</p>
+            <p className="sh-report__sub">{report.resolvedCount} of {report.incidents.length} resolved · {report.onTimeCount} within the deadline</p>
+          </div>
         </header>
 
         <div className="sh-report__rows">
