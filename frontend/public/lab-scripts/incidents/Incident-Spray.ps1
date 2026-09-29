@@ -1,11 +1,17 @@
 # Password spray: failed sign-ins across many staff in a burst, locking two of them.
 # Emits 4625 across accounts and 4740 on the locked ones. Undo unlocks them.
-param([switch]$Undo)
+# -Targets are the accounts pushed over the lockout threshold; -Sprayed get a light
+# spray. Both default to the original set so the script still runs on its own.
+param(
+    [switch]$Undo,
+    [string[]]$Targets = @("priya.nair", "jordan.ellis"),
+    [string[]]$Sprayed = @("alex.rivera", "devon.brooks", "morgan.lee", "sam.whitfield", "taylor.osei", "riley.kwan", "priya.nair", "jordan.ellis")
+)
 $ErrorActionPreference = "Continue"
 . "$PSScriptRoot\Incident-Common.ps1"
 
-$targets = @("priya.nair", "jordan.ellis")
-$sprayed = @("alex.rivera", "devon.brooks", "morgan.lee", "sam.whitfield", "taylor.osei", "riley.kwan", "priya.nair", "jordan.ellis")
+$targets = $Targets
+$sprayed = $Sprayed
 
 if ($Undo) {
     foreach ($s in $targets) { Unlock-ADAccount -Identity $s -ErrorAction SilentlyContinue }

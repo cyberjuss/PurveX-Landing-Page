@@ -302,10 +302,21 @@ async function runningInstance(userId: string): Promise<string | null> {
  * site and runs it. Fetching at run time means an incident fix ships by
  * deploying, with no lab image rebuild. The script name is fixed, server-side.
  */
-function incidentCommand(script: string, undo: boolean): string {
+/** Render script args as safe PowerShell flags. Values come from our own roster,
+ *  so we still allow only account-name characters and commas (for list args). */
+function argFlags(args?: Record<string, string>): string {
+  if (!args) return "";
+  const ok = /^[A-Za-z0-9._,-]+$/;
+  return Object.entries(args)
+    .filter(([k, v]) => /^[A-Za-z]+$/.test(k) && ok.test(v))
+    .map(([k, v]) => ` -${k} ${v}`)
+    .join("");
+}
+
+function incidentCommand(script: string, undo: boolean, args?: Record<string, string>): string {
   const base = `${cfg().syncUrl}/lab-scripts/incidents`;
   const dir = "$env:TEMP\\range-inc";
-  const arg = undo ? " -Undo" : "";
+  const arg = `${undo ? " -Undo" : ""}${argFlags(args)}`;
   return [
     `$d="${dir}"`,
     "New-Item -ItemType Directory -Path $d -Force | Out-Null",
@@ -316,7 +327,7 @@ function incidentCommand(script: string, undo: boolean): string {
   ].join("; ");
 }
 
-async function sendIncident(userId: string, script: string, undo: boolean): Promise<boolean> {
+async function sendIncident(userId: string, script: string, undo: boolean, args?: Record<string, string>): Promise<boolean> {
   if (!INCIDENT_SCRIPT.test(script)) return false;
   const id = await runningInstance(userId);
   if (!id) return false;
@@ -327,7 +338,7 @@ async function sendIncident(userId: string, script: string, undo: boolean): Prom
         DocumentName: "AWS-RunPowerShellScript",
         Comment: undo ? "Range Shift cleanup" : "Range Shift incident",
         TimeoutSeconds: 180,
-        Parameters: { commands: [incidentCommand(script, undo)] },
+        Parameters: { commands: [incidentCommand(script, undo, args)] },
       })
     );
     return true;
@@ -338,14 +349,15 @@ async function sendIncident(userId: string, script: string, undo: boolean): Prom
 }
 
 /** Fire an incident into the student's lab. False if the lab is not running or SSM is not set up. */
-export function injectIncident(userId: string, script: string): Promise<boolean> {
-  return sendIncident(userId, script, false);
+export function injectIncident(userId: string, script: string, args?: Record<string, string>): Promise<boolean> {
+  return sendIncident(userId, script, false, args);
 }
 
-/** Undo the shift's incidents so the lab returns to baseline for missions. Best effort. */
-export async function cleanupShiftLab(userId: string, scripts: string[]): Promise<void> {
-  for (const s of scripts) {
-    if (INCIDENT_SCRIPT.test(s)) await sendIncident(userId, s, true).catch(() => false);
+/** Undo the shift's incidents so the lab returns to baseline for missions, using
+ *  the same args they were fired with so the right victims are restored. Best effort. */
+export async function cleanupShiftLab(userId: string, items: { script: string; args?: Record<string, string> }[]): Promise<void> {
+  for (const { script, args } of items) {
+    if (INCIDENT_SCRIPT.test(script)) await sendIncident(userId, script, true, args).catch(() => false);
   }
 }
 

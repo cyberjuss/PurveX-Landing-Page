@@ -14,13 +14,20 @@ sign-ins emit 4625, a real lockout emits 4740. The student investigates in
 Event Viewer and Active Directory Users and Computers, exactly as on the job.
 The lab's minute-by-minute sync then reports the end state, and Range grades it.
 
+Most incidents rotate their victim each shift: Range picks an account from the
+roster and passes it as `-Sam` (or `-Targets`/`-Sprayed` for the spray), so no
+two shifts hit the same person. The defaults below are what each script does when
+run on its own with no args.
+
 | Script | Plants | Resolved when the student… | Undo |
 |---|---|---|---|
-| Incident-Lockout.ps1 | riley.kwan locked out | unlocks riley.kwan | unlock + clear |
-| Incident-Spray.ps1 | many 4625, priya.nair and jordan.ellis locked | unlocks both, keeps lockout policy | unlock both |
+| Incident-Lockout.ps1 | `-Sam` locked out (default riley.kwan) | unlocks the account | unlock + clear |
+| Incident-Spray.ps1 | many 4625, `-Targets` locked (default priya.nair, jordan.ellis) | unlocks the targets, keeps lockout policy | unlock the targets |
+| Incident-Disable.ps1 | `-Sam` disabled (default taylor.osei) | re-enables the account | enable the account |
+| Incident-PreAuth.ps1 | `-Sam` set to not require Kerberos pre-auth (default priya.nair) | re-requires pre-auth | restore pre-auth |
 | Incident-RogueAdmin.ps1 | svc.helpdesk added to IT Admins | removes it from IT Admins | remove from IT Admins |
 | Incident-ApprovedChange.ps1 | morgan.lee added to Compliance Users (approved) | leaves it in place | remove morgan.lee |
-| Incident-Compromise.ps1 | 4625 then a 4624 on jamie.torres | disables jamie.torres | enable jamie.torres |
+| Incident-Compromise.ps1 | 4625 then a 4624 on `-Sam` (default jamie.torres) | disables the account | enable the account |
 | Incident-WeakPolicy.ps1 | domain password policy weakened | restores length ≥ 12 and lockout | restore baseline |
 
 Notes:

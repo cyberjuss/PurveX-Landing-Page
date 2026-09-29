@@ -1,9 +1,10 @@
-# Jamie Torres is compromised: failed sign-ins then a success (4625s then a 4624).
+# A staff account is compromised: failed sign-ins then a success (4625s then a 4624).
 # The student should disable the account to contain it. Undo re-enables it.
-param([switch]$Undo, [string]$Password = "PurveX-Lab-2026!")
+# -Sam picks who this shift targets (defaults to jamie.torres).
+param([switch]$Undo, [string]$Sam = "jamie.torres", [string]$Password = "PurveX-Lab-2026!")
 $ErrorActionPreference = "Continue"
 . "$PSScriptRoot\Incident-Common.ps1"
-$sam = "jamie.torres"
+$sam = $Sam
 if (-not (Confirm-User $sam)) { return }
 
 if ($Undo) {

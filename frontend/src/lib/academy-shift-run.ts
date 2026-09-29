@@ -6,6 +6,7 @@ import { levelFor, type DrillEntry, type Item } from "@/lib/academy-drills";
 import type { Results, Skill } from "@/lib/academy-score";
 import { loadDrills, loadLabState, loadProfile, loadProgress, loadShift, saveDrill, saveShift } from "@/lib/academy-store";
 import {
+  effectiveIncident,
   gradeIncidentLab,
   HINT_COST,
   incidentArrived,
@@ -98,10 +99,11 @@ function toPublic(run: ShiftRun, inc: IncidentRun, elapsed: number): PublicIncid
   if (!def || !incidentArrived(inc, elapsed)) return null;
   const deadlineAt = inc.arriveSec + inc.deadlineSec;
   const secondsLeft = inc.resolvedAtSec !== null ? null : Math.max(0, deadlineAt - elapsed);
-  // Claude's fresh wording for this shift, when it wrote some; otherwise the template.
+  const eff = effectiveIncident(def, inc);
+  // Claude's fresh wording for this shift, when it wrote some; otherwise the bound template.
   const from = inc.text?.from ?? def.from;
   const title = inc.text?.title ?? def.title;
-  const brief = inc.text?.brief ?? def.brief;
+  const brief = inc.text?.brief ?? eff.brief;
   return {
     defId: def.id,
     kind: def.kind,
@@ -109,7 +111,7 @@ function toPublic(run: ShiftRun, inc: IncidentRun, elapsed: number): PublicIncid
     from,
     title,
     brief,
-    diagnosisPrompt: def.diagnosis.prompt,
+    diagnosisPrompt: eff.diagnosis.prompt,
     arriveSec: inc.arriveSec,
     deadlineSec: inc.deadlineSec,
     acknowledged: inc.ackedAtSec !== null,
@@ -148,7 +150,7 @@ async function injectArrived(userId: string, run: ShiftRun, elapsed: number): Pr
     if (inc.injected || !incidentArrived(inc, elapsed)) continue;
     const def = incidentDef(inc.defId);
     if (!def) continue;
-    const ok = await injectIncident(userId, def.script);
+    const ok = await injectIncident(userId, def.script, inc.bind?.args);
     if (ok) {
       inc.injected = true;
       changed = true;
@@ -180,13 +182,20 @@ export async function getShift(userId: string): Promise<PublicShift | null> {
 async function narrateShift(run: ShiftRun, roles: import("@/lib/academy-certs").RoleId[]): Promise<void> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return;
-  const defs = run.incidents.map((inc) => incidentDef(inc.defId)).filter((d): d is IncidentDef => Boolean(d));
-  if (defs.length !== run.incidents.length) return;
+  // Feed the narrator the bound brief (with this shift's real victim), so the
+  // wording it writes keeps the right person.
+  const items = run.incidents.map((inc) => {
+    const def = incidentDef(inc.defId);
+    if (!def) return null;
+    const eff = effectiveIncident(def, inc);
+    return { id: def.id, kind: def.kind, severity: def.severity, from: def.from, title: def.title, brief: eff.brief };
+  });
+  if (items.some((x) => x === null)) return;
   const labels = roles.map((r) => roleLabel(r));
   const written = await shiftNarrator(
     apiKey,
     labels,
-    defs.map((d) => ({ id: d.id, kind: d.kind, severity: d.severity, from: d.from, title: d.title, brief: d.brief }))
+    items as { id: string; kind: "alert" | "ticket"; severity: string; from: string; title: string; brief: string }[]
   ).catch(() => null);
   if (!written) return;
   run.incidents.forEach((inc, n) => {
@@ -264,7 +273,7 @@ export async function submitIncident(
   inc.response = response.slice(0, 4000);
 
   const lab = await loadLabState(userId);
-  const graded = gradeIncidentLab(def, lab?.snapshot ?? null, inc.diagnosis);
+  const graded = gradeIncidentLab(effectiveIncident(def, inc), lab?.snapshot ?? null, inc.diagnosis);
   const fresh = Boolean(lab && Date.parse(lab.uploadedAt) >= Date.parse(run.startedAt));
   if (graded.resolved && inc.resolvedAtSec === null) inc.resolvedAtSec = elapsed;
   await saveShift(userId, run);
@@ -288,13 +297,14 @@ async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
   for (const inc of run.incidents) {
     const def = incidentDef(inc.defId);
     if (!def) continue;
-    const lg = gradeIncidentLab(def, snapshot, inc.diagnosis);
+    const eff = effectiveIncident(def, inc);
+    const lg = gradeIncidentLab(eff, snapshot, inc.diagnosis);
     if (lg.resolved && inc.resolvedAtSec === null) inc.resolvedAtSec = shiftElapsed(run, Date.parse(run.endsAt));
     const onTime = inc.resolvedAtSec !== null && resolvedOnTime(inc);
 
     let writeUp: number | null = null;
     if (grade && inc.response.trim()) {
-      const item = { title: def.title, story: def.brief, prompt: def.diagnosis.prompt, rubric: def.rubric } as unknown as Item;
+      const item = { title: def.title, story: eff.brief, prompt: eff.diagnosis.prompt, rubric: def.rubric } as unknown as Item;
       const marked = await grade(item, inc.response).catch(() => null);
       if (marked) writeUp = marked.total ? marked.hits / marked.total : null;
     }
@@ -366,8 +376,12 @@ async function recordAndClose(userId: string, run: ShiftRun) {
   if (!(await loadDrills(userId)).some((e) => e.id === entry.id)) await saveDrill(userId, entry);
   // Keep the finished run so the report survives a refresh; the next Start replaces it.
   await saveShift(userId, run);
-  // Undo the planted incidents so the lab is clean for missions. Best effort.
-  await cleanupShiftLab(userId, run.incidents.map((i) => incidentDef(i.defId)?.script ?? "")).catch(() => {});
+  // Undo the planted incidents so the lab is clean for missions, targeting the
+  // same rotated victims they hit. Best effort.
+  await cleanupShiftLab(
+    userId,
+    run.incidents.map((i) => ({ script: incidentDef(i.defId)?.script ?? "", args: i.bind?.args }))
+  ).catch(() => {});
 }
 
 async function finishAndReturn(userId: string, run: ShiftRun): Promise<PublicShift> {

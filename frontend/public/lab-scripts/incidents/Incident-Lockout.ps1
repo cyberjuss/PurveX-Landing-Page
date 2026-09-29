@@ -1,8 +1,9 @@
-# Riley Kwan is locked out. Plants a real lockout (4625s then 4740); undo unlocks.
-param([switch]$Undo, [string]$Password = "PurveX-Lab-2026!")
+# A staff member is locked out. Plants a real lockout (4625s then 4740); undo unlocks.
+# -Sam picks who this shift targets (defaults to riley.kwan).
+param([switch]$Undo, [string]$Sam = "riley.kwan", [string]$Password = "PurveX-Lab-2026!")
 $ErrorActionPreference = "Continue"
 . "$PSScriptRoot\Incident-Common.ps1"
-$sam = "riley.kwan"
+$sam = $Sam
 if (-not (Confirm-User $sam)) { return }
 
 if ($Undo) {
