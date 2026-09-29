@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AlertTriangle, ArrowRight, Check, Clock, Loader2, LifeBuoy, ShieldAlert, Ticket } from "lucide-react";
+import { AlertTriangle, ArrowRight, Check, Clock, Loader2, LifeBuoy, RefreshCw, ShieldAlert, Ticket } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import "./shift.css";
 
@@ -45,6 +45,7 @@ type Shift = {
   incidents: Incident[];
   report: Report | null;
 };
+type LabState = "none" | "starting" | "ready" | "stopping" | "stopped";
 
 const LEVELS = ["Foundation", "Standard", "Hard", "Expert"];
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
@@ -62,6 +63,7 @@ function useNow(on: boolean): number {
 export function ShiftConsole() {
   const [available, setAvailable] = useState<boolean | null>(null);
   const [shift, setShift] = useState<Shift | null>(null);
+  const [labState, setLabState] = useState<LabState>("none");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const finishing = useRef(false);
@@ -71,7 +73,10 @@ export function ShiftConsole() {
       const r = await academyFetch("/academy/api/shift");
       const data = await r.json();
       setAvailable(Boolean(data.available));
-      if (data.available) setShift(data.shift ?? null);
+      if (data.available) {
+        setShift(data.shift ?? null);
+        setLabState((data.labState as LabState) ?? "none");
+      }
     } catch {
       setAvailable(true);
     }
@@ -84,51 +89,49 @@ export function ShiftConsole() {
   const active = shift?.status === "active";
   const now = useNow(active);
 
-  // Poll while active to pull newly arrived incidents and server-side state.
+  // Poll while active for new arrivals, and on the intro to catch the lab coming Online.
+  const polling = active || (available === true && shift?.status !== "done");
   useEffect(() => {
-    if (!active) return;
+    if (!polling) return;
     const t = window.setInterval(() => void load(), 5000);
     return () => window.clearInterval(t);
-  }, [active, load]);
+  }, [polling, load]);
 
-  const post = useCallback(
-    async (payload: Record<string, unknown>) => {
-      setBusy(true);
-      setError(null);
-      try {
-        const r = await academyFetch("/academy/api/shift", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-        const data = await r.json();
-        if (!r.ok) {
-          setError(data.error ?? "Something went wrong.");
-          return null;
-        }
-        if (data.shift) setShift(data.shift);
-        return data;
-      } catch {
-        setError("Could not reach your shift. Try again.");
+  const post = useCallback(async (payload: Record<string, unknown>) => {
+    setBusy(true);
+    setError(null);
+    try {
+      const r = await academyFetch("/academy/api/shift", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const data = await r.json();
+      if (!r.ok) {
+        setError(data.error ?? "Something went wrong.");
         return null;
-      } finally {
-        setBusy(false);
       }
-    },
-    []
-  );
+      if (data.shift) setShift(data.shift);
+      return data;
+    } catch {
+      setError("Could not reach your shift. Try again.");
+      return null;
+    } finally {
+      setBusy(false);
+    }
+  }, []);
 
-  // End the shift automatically the moment the clock runs out.
+  // End the shift the moment the clock runs out.
   useEffect(() => {
     if (!active || !shift) return;
     const left = Date.parse(shift.endsAt) - Date.now();
-    if (left <= 0 && !finishing.current) {
-      finishing.current = true;
-      void post({ action: "finish" });
-      return;
-    }
-    const t = window.setTimeout(() => {
+    const fire = () => {
       if (!finishing.current) {
         finishing.current = true;
         void post({ action: "finish" });
       }
-    }, Math.max(0, left));
+    };
+    if (left <= 0) {
+      fire();
+      return;
+    }
+    const t = window.setTimeout(fire, left);
     return () => window.clearTimeout(t);
   }, [active, shift, post]);
 
@@ -138,7 +141,7 @@ export function ShiftConsole() {
       <div className="sh">
         <div className="sh-intro">
           <h1>Shift</h1>
-          <p>Shifts run in your hosted lab, and hosted labs are not on for this account yet. Ask your instructor.</p>
+          <p className="sh-lede">Shifts run in your hosted lab, and hosted labs are not on for this account yet. Ask your instructor.</p>
         </div>
       </div>
     );
@@ -146,38 +149,76 @@ export function ShiftConsole() {
   if (shift?.status === "done" && shift.report) return <ShiftReport report={shift.report} onAgain={() => post({ action: "start" })} busy={busy} />;
   if (active && shift) return <ActiveShift shift={shift} now={now} busy={busy} error={error} post={post} />;
 
+  return <ShiftIntro labState={labState} busy={busy} error={error} onStart={() => post({ action: "start" })} onRefresh={load} />;
+}
+
+// ---- intro (with the lab-online gate) -------------------------------------
+
+function ShiftIntro({ labState, busy, error, onStart, onRefresh }: { labState: LabState; busy: boolean; error: string | null; onStart: () => void; onRefresh: () => void }) {
+  const online = labState === "ready";
+  const labWord = online ? "Online" : labState === "starting" ? "Starting…" : "Offline";
   return (
     <div className="sh">
       <div className="sh-intro">
         <p className="sh-kicker">PurveX Financial · Security Operations</p>
         <h1>Start your shift</h1>
-        <p className="sh-lede">You are on the desk for 15 minutes. Incidents arrive on their own: alerts from the SIEM, tickets from staff. Investigate each one in your lab, act, and write it up before its deadline. A hint costs points, like asking a senior analyst.</p>
+        <p className="sh-lede">You are on the desk for 15 minutes. Incidents arrive on their own as a live queue: alerts from the SIEM, tickets from staff. Investigate each in your lab, act, and write it up before its deadline. A hint costs points, like asking a senior analyst.</p>
         <ul className="sh-rules">
           <li><ShieldAlert className="h-4 w-4" /> Real incidents, fired into your own lab</li>
           <li><Clock className="h-4 w-4" /> 15 minutes · P1 in 5, P2 in 8, P3 in 12</li>
           <li><LifeBuoy className="h-4 w-4" /> Hints cost 10%, 20%, then 40%</li>
         </ul>
+
+        <div className={`sh-labgate sh-labgate--${online ? "on" : "off"}`}>
+          <span className={`sh-labdot sh-labdot--${online ? "on" : labState === "starting" ? "wait" : "off"}`} />
+          <span className="sh-labgate__text">Your lab is <strong>{labWord}</strong>. {online ? "You are ready to start." : "Bring it Online from the lab button in the top bar, then this updates on its own."}</span>
+          {!online && (
+            <button type="button" className="sh-refresh" onClick={onRefresh} aria-label="Refresh lab status">
+              <RefreshCw className="h-3.5 w-3.5" /> Refresh
+            </button>
+          )}
+        </div>
+
         {error && <p className="sh-error">{error}</p>}
-        <button type="button" className="sh-go" disabled={busy} onClick={() => post({ action: "start" })}>
+        <button type="button" className="sh-go" disabled={busy || !online} onClick={onStart}>
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Start shift <ArrowRight className="h-4 w-4" />
         </button>
-        <p className="sh-note">Your lab must be Online. It stays as you left it; incidents are cleaned up when the shift ends.</p>
+        <p className="sh-note">Your lab stays as you left it; incidents are cleaned up when the shift ends.</p>
       </div>
     </div>
   );
 }
 
+// ---- active shift: the queue ----------------------------------------------
+
+const SEV_CLASS: Record<Sev, string> = { P1: "sh-sev--p1", P2: "sh-sev--p2", P3: "sh-sev--p3" };
+
+function status(inc: Incident): { label: string; cls: string } {
+  if (inc.resolved) return { label: "Resolved", cls: "done" };
+  if (inc.overdue) return { label: "Overdue", cls: "late" };
+  if (inc.acknowledged) return { label: "Investigating", cls: "ack" };
+  return { label: "New", cls: "new" };
+}
+
 function ActiveShift({ shift, now, busy, error, post }: { shift: Shift; now: number; busy: boolean; error: string | null; post: (p: Record<string, unknown>) => Promise<Record<string, unknown> | null> }) {
   const left = Math.max(0, Math.round((Date.parse(shift.endsAt) - now) / 1000));
   const start = Date.parse(shift.startedAt);
-  const queue = [...shift.incidents].sort((a, b) => (a.resolved === b.resolved ? 0 : a.resolved ? 1 : -1));
   const open = shift.incidents.filter((i) => !i.resolved).length;
+  const resolved = shift.incidents.filter((i) => i.resolved).length;
+
+  // Order: unresolved by severity first, then resolved.
+  const order = { P1: 0, P2: 1, P3: 2 };
+  const queue = [...shift.incidents].sort((a, b) => (a.resolved === b.resolved ? order[a.severity] - order[b.severity] : a.resolved ? 1 : -1));
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selected = queue.find((i) => i.defId === selectedId) ?? queue.find((i) => !i.resolved) ?? queue[0] ?? null;
+
   return (
     <div className="sh sh--active">
       <header className="sh-bar">
         <div>
           <p className="sh-kicker">On shift · {LEVELS[shift.level - 1] ?? "Standard"}</p>
-          <p className="sh-bar__open">{open ? `${open} open incident${open === 1 ? "" : "s"}` : "Queue clear"}</p>
+          <p className="sh-bar__open">{open ? `${open} open · ${resolved} resolved` : "Queue clear"}</p>
         </div>
         <div className={`sh-timer ${left <= 60 ? "sh-timer--low" : ""}`}>
           <Clock className="h-4 w-4" />
@@ -188,24 +229,45 @@ function ActiveShift({ shift, now, busy, error, post }: { shift: Shift; now: num
         </button>
       </header>
       {error && <p className="sh-error">{error}</p>}
+
       {queue.length === 0 ? (
         <p className="sh-waiting"><Loader2 className="h-4 w-4 animate-spin" /> Watching the queue. The first incident will land shortly.</p>
       ) : (
-        <div className="sh-queue">
-          {queue.map((inc) => (
-            <IncidentCard key={inc.defId} inc={inc} start={start} now={now} busy={busy} post={post} />
-          ))}
+        <div className="sh-console">
+          <ul className="sh-list" role="tablist" aria-label="Incident queue">
+            {queue.map((inc) => {
+              const st = status(inc);
+              const deadlineAt = start + (inc.arriveSec + inc.deadlineSec) * 1000;
+              const secs = inc.resolved ? null : Math.max(0, Math.round((deadlineAt - now) / 1000));
+              const isSel = selected?.defId === inc.defId;
+              return (
+                <li key={inc.defId}>
+                  <button type="button" role="tab" aria-selected={isSel} className={`sh-li ${isSel ? "sh-li--on" : ""} ${inc.resolved ? "sh-li--done" : ""}`} onClick={() => setSelectedId(inc.defId)}>
+                    <span className="sh-li__top">
+                      <span className={`sh-sev ${SEV_CLASS[inc.severity]}`}>{inc.severity}</span>
+                      <span className={`sh-status sh-status--${st.cls}`}>{st.label}</span>
+                      {!inc.resolved && secs !== null && <span className={`sh-li__timer ${secs <= 60 ? "sh-li__timer--low" : ""}`}>{clock(secs)}</span>}
+                    </span>
+                    <span className="sh-li__title">{inc.title}</span>
+                    <span className="sh-li__from">{inc.kind === "ticket" ? <Ticket className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />} {inc.from}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className="sh-detail">
+            {selected ? <IncidentDetail key={selected.defId} inc={selected} start={start} now={now} busy={busy} post={post} /> : <p className="sh-waiting">Select an incident.</p>}
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-const SEV_CLASS: Record<Sev, string> = { P1: "sh-sev--p1", P2: "sh-sev--p2", P3: "sh-sev--p3" };
-
 type SubmitResult = { resolved: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[] };
 
-function IncidentCard({ inc, start, now, busy, post }: { inc: Incident; start: number; now: number; busy: boolean; post: (p: Record<string, unknown>) => Promise<Record<string, unknown> | null> }) {
+function IncidentDetail({ inc, start, now, busy, post }: { inc: Incident; start: number; now: number; busy: boolean; post: (p: Record<string, unknown>) => Promise<Record<string, unknown> | null> }) {
   const [diagnosis, setDiagnosis] = useState(inc.diagnosis);
   const [response, setResponse] = useState("");
   const [result, setResult] = useState<SubmitResult | null>(null);
@@ -214,6 +276,7 @@ function IncidentCard({ inc, start, now, busy, post }: { inc: Incident; start: n
   const deadlineAt = start + (inc.arriveSec + inc.deadlineSec) * 1000;
   const left = inc.resolved ? null : Math.max(0, Math.round((deadlineAt - now) / 1000));
   const late = left === 0 && !inc.resolved;
+  const st = status(inc);
 
   async function submit() {
     const data = await post({ action: "submit", defId: inc.defId, diagnosis, response });
@@ -225,7 +288,7 @@ function IncidentCard({ inc, start, now, busy, post }: { inc: Incident; start: n
   }
 
   return (
-    <section className={`sh-card ${inc.resolved ? "sh-card--done" : ""}`}>
+    <div className={`sh-card ${inc.resolved ? "sh-card--done" : ""}`}>
       <header className="sh-card__head">
         <span className={`sh-sev ${SEV_CLASS[inc.severity]}`}>{inc.severity}</span>
         <span className="sh-card__kind">
@@ -233,13 +296,7 @@ function IncidentCard({ inc, start, now, busy, post }: { inc: Incident; start: n
           {inc.kind === "ticket" ? "Help desk ticket" : "SIEM alert"}
         </span>
         <span className="sh-card__from">{inc.from}</span>
-        {inc.resolved ? (
-          <span className="sh-card__state sh-card__state--done"><Check className="h-3.5 w-3.5" /> Resolved</span>
-        ) : (
-          <span className={`sh-card__timer ${left !== null && left <= 60 ? "sh-card__timer--low" : ""} ${late ? "sh-card__timer--late" : ""}`}>
-            {late ? "Overdue" : left !== null ? clock(left) : ""}
-          </span>
-        )}
+        <span className={`sh-status sh-status--${st.cls} sh-card__state`}>{inc.resolved && <Check className="h-3.5 w-3.5" />}{st.label}{!inc.resolved && left !== null ? ` · ${late ? "overdue" : clock(left)}` : ""}</span>
       </header>
       <h3 className="sh-card__title">{inc.title}</h3>
       <p className="sh-card__brief">{inc.brief}</p>
@@ -272,9 +329,7 @@ function IncidentCard({ inc, start, now, busy, post }: { inc: Incident; start: n
           {result && !result.resolved && (
             <div className="sh-result sh-result--wait">
               {result.waiting ? "Waiting for your lab to report the change. Make the fix, then submit again in about a minute." : "Not resolved yet:"}
-              {!result.waiting && (
-                <ul>{result.results.filter((r) => !r.ok).map((r, i) => <li key={i}>{r.label}</li>)}</ul>
-              )}
+              {!result.waiting && <ul>{result.results.filter((r) => !r.ok).map((r, i) => <li key={i}>{r.label}</li>)}</ul>}
             </div>
           )}
 
@@ -290,7 +345,7 @@ function IncidentCard({ inc, start, now, busy, post }: { inc: Incident; start: n
           </div>
         </div>
       )}
-    </section>
+    </div>
   );
 }
 

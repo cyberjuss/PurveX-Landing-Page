@@ -22,8 +22,46 @@
 .sh-go:hover:not(:disabled) { background: #4636c9; }
 .sh-go:disabled { opacity: 0.7; cursor: default; }
 
+/* Lab-online gate on the intro */
+.sh-labgate { display: flex; align-items: center; gap: 10px; margin: 4px 0; padding: 12px 14px; border: 1px solid var(--rd-line); background: var(--rd-line-2); font-size: 14px; color: var(--rd-ink-2); }
+.sh-labgate--on { border-color: color-mix(in srgb, var(--rd-good, #16a34a) 40%, transparent); }
+.sh-labgate__text { flex: 1; }
+.sh-labgate strong { color: var(--rd-ink); }
+.sh-labdot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: #94a3b8; }
+.sh-labdot--on { background: var(--rd-good, #16a34a); }
+.sh-labdot--wait { background: var(--rd-warn, #a15c07); }
+.sh-labdot--off { background: var(--rd-bad, #b42318); }
+.sh-refresh { display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 10px; border: 1px solid var(--rd-line); background: none; color: var(--rd-ink-2); font-size: 12.5px; font-weight: 600; cursor: pointer; }
+.sh-refresh:hover { border-color: var(--rd-accent); color: var(--rd-accent); }
+
 /* Active shift bar */
 .sh--active { display: grid; gap: 18px; }
+
+/* The console: queue on the left, open ticket on the right. */
+.sh-console { display: grid; grid-template-columns: minmax(240px, 320px) 1fr; gap: 18px; align-items: start; }
+.sh-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.sh-li { width: 100%; display: grid; gap: 5px; padding: 12px 13px; border: 1px solid var(--rd-line); border-left: 3px solid var(--rd-ink-3); background: none; text-align: left; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.sh-li:hover { background: var(--rd-line-2); }
+.sh-li--on { border-color: var(--rd-accent); border-left-color: var(--rd-accent); background: var(--rd-line-2); }
+.sh-li--done { opacity: 0.6; border-left-color: var(--rd-good, #16a34a); }
+.sh-li__top { display: flex; align-items: center; gap: 8px; }
+.sh-li__timer { margin-left: auto; font-family: ui-monospace, monospace; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--rd-ink-3); }
+.sh-li__timer--low { color: var(--rd-bad, #b42318); }
+.sh-li__title { font-size: 14.5px; font-weight: 600; color: var(--rd-ink); line-height: 1.3; }
+.sh-li__from { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--rd-ink-3); }
+.sh-detail { min-width: 0; }
+
+/* Status chip, shared by the list and the detail head. */
+.sh-status { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 7px; border: 1px solid var(--rd-line); color: var(--rd-ink-3); }
+.sh-status--new { color: var(--rd-accent); border-color: color-mix(in srgb, var(--rd-accent) 40%, transparent); }
+.sh-status--ack { color: var(--rd-warn, #a15c07); border-color: color-mix(in srgb, var(--rd-warn, #a15c07) 40%, transparent); }
+.sh-status--done { color: var(--rd-good, #16a34a); border-color: color-mix(in srgb, var(--rd-good, #16a34a) 40%, transparent); }
+.sh-status--late { color: var(--rd-bad, #b42318); border-color: color-mix(in srgb, var(--rd-bad, #b42318) 40%, transparent); }
+
+@media (max-width: 720px) {
+  .sh-console { grid-template-columns: 1fr; }
+  .sh-list { grid-auto-flow: row; }
+}
 .sh-bar { display: flex; align-items: center; gap: 16px; padding: 14px 18px; border: 1px solid var(--rd-line); background: var(--rd-line-2); }
 .sh-bar__open { margin: 4px 0 0; font-size: 16px; font-weight: 650; color: var(--rd-ink); }
 .sh-timer { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--rd-ink); }

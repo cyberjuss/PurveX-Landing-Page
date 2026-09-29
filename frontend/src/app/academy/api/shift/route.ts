@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
-import { canUseHostedLab } from "@/lib/academy-hosted";
+import { canUseHostedLab, hostedLabStatus } from "@/lib/academy-hosted";
 import { ackIncident, finishShift, getShift, hintIncident, startShift, submitIncident } from "@/lib/academy-shift-run";
 import { getAcademyStudent } from "@/lib/academy-student";
 
@@ -21,10 +21,11 @@ export async function GET(request: Request) {
   const s = await student(request);
   if (!s) return NextResponse.json({ available: false });
   try {
-    return NextResponse.json({ available: true, shift: await getShift(s.id) });
+    const [shift, lab] = await Promise.all([getShift(s.id), hostedLabStatus(s.id).catch(() => null)]);
+    return NextResponse.json({ available: true, shift, labState: lab?.state ?? "none" });
   } catch (err) {
     console.error("shift state failed", err instanceof Error ? err.message : err);
-    return NextResponse.json({ available: true, shift: null, error: "Could not reach your shift." });
+    return NextResponse.json({ available: true, shift: null, labState: "none", error: "Could not reach your shift." });
   }
 }
 

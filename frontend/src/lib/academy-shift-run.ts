@@ -1,6 +1,6 @@
 import "server-only";
 import { responseGrader } from "@/lib/academy-scenario";
-import { cleanupShiftLab, injectIncident } from "@/lib/academy-hosted";
+import { cleanupShiftLab, hostedLabStatus, injectIncident } from "@/lib/academy-hosted";
 import { levelFor, type DrillEntry, type Item } from "@/lib/academy-drills";
 import type { Results, Skill } from "@/lib/academy-score";
 import { loadDrills, loadLabState, loadProgress, loadShift, saveDrill, saveShift } from "@/lib/academy-store";
@@ -171,8 +171,11 @@ export async function startShift(userId: string): Promise<{ shift?: PublicShift;
   if (existing && existing.status === "active" && !shiftOver(existing)) {
     return { shift: await getShift(userId) ?? undefined };
   }
-  const lab = await loadLabState(userId);
-  if (!lab) return { error: "Start your lab and wait until it is Online before you begin a shift." };
+  // The lab must be Online: running and linked, so incidents can be fired into it.
+  const status = await hostedLabStatus(userId).catch(() => null);
+  if (status?.state !== "ready") {
+    return { error: "Your lab is not Online yet. Start it and wait until it is running, then begin your shift." };
+  }
   const [entries, results] = await Promise.all([loadDrills(userId), loadProgress(userId)]);
   const run = newShiftRun(`${userId}:${Date.now()}`, phaseFor(results), levelFor(entries));
   await saveShift(userId, run);
