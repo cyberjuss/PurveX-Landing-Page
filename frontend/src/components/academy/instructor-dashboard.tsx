@@ -284,7 +284,7 @@ function NewClassForm({ onCreated }: { onCreated: () => void }) {
     <section className="rd-sec iv-new">
       <div className="rd-sec__head">
         <h2>New class</h2>
-        <p>The instructor signs in to CaseFile with this email to see the class.</p>
+        <p>The instructor signs in to Range with this email to see the class.</p>
       </div>
       <form onSubmit={submit} className="iv-form">
         <label>

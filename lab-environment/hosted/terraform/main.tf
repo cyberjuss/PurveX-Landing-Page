@@ -1,9 +1,9 @@
-# CaseFile hosted labs: the shared AWS pieces every student lab uses.
+# Range hosted labs: the shared AWS pieces every student lab uses.
 #   - a private network with one public subnet (labs and the gateway)
 #   - the Guacamole gateway that opens labs in the browser
-#   - an AWS login CaseFile uses to start, stop and reset labs, limited to lab machines
+#   - an AWS login Range uses to start, stop and reset labs, limited to lab machines
 #   - a monthly budget alert
-# Student labs themselves are created by CaseFile, not by Terraform.
+# Student labs themselves are created by Range, not by Terraform.
 
 terraform {
   required_version = ">= 1.5"
@@ -37,7 +37,7 @@ resource "aws_internet_gateway" "labs" {
   tags   = { Name = "casefile-labs" }
 }
 
-# Public addresses give labs a way out to CaseFile without a NAT gateway.
+# Public addresses give labs a way out to Range without a NAT gateway.
 # Nothing can reach a lab from the internet: its security group only lets the gateway in.
 resource "aws_subnet" "labs" {
   vpc_id                  = aws_vpc.labs.id
@@ -125,7 +125,7 @@ resource "random_id" "gateway_key" {
 }
 
 resource "random_id" "lab_secret" {
-  byte_length = 32 # encrypts each lab's remote-desktop password in CaseFile
+  byte_length = 32 # encrypts each lab's remote-desktop password in Range
 }
 
 data "aws_ssm_parameter" "al2023" {
@@ -181,7 +181,7 @@ resource "aws_eip" "gateway" {
   tags     = { Name = "casefile-lab-gateway" }
 }
 
-# ---- CaseFile's AWS login -------------------------------------------------
+# ---- Range's AWS login -------------------------------------------------
 # It can create lab machines only with the casefile-lab tag, only in this
 # subnet and security group, and can only start, stop or end tagged machines.
 

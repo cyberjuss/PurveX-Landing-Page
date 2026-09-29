@@ -639,7 +639,7 @@ export function ProofEditor() {
                   Show on profile
                 </label>
               </div>
-              <p>Keywords applicant tracking systems scan for, from work you did in CaseFile.</p>
+              <p>Keywords applicant tracking systems scan for, from work you did in Range.</p>
               <div className="pf-ats">
                 <p>
                   {data.skills.map((g) => (

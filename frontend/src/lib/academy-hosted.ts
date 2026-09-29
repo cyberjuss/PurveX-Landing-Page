@@ -100,7 +100,7 @@ export function firstBootScript(key: string, password: string, url: string): str
     "# Active Directory takes a minute or two after boot.",
     "for ($i = 0; $i -lt 60; $i++) { try { Import-Module ActiveDirectory -ErrorAction Stop; Get-ADDomain -ErrorAction Stop | Out-Null; break } catch { Start-Sleep -Seconds 10 } }",
     `Set-ADAccountPassword -Identity Administrator -Reset -NewPassword (ConvertTo-SecureString ${ps(password)} -AsPlainText -Force)`,
-    "# Link the image's build script to this student, the same way the CaseFile download does.",
+    "# Link the image's build script to this student, the same way the Range download does.",
     '$text = Get-Content -LiteralPath "$dir\\image\\Build-Environment.ps1" -Raw',
     `$text = $text.Replace('[string]$PurvexKey = ""', ${ps(`[string]$PurvexKey = ${ps(key)}`)}).Replace('[string]$PurvexUrl = ""', ${ps(`[string]$PurvexUrl = ${ps(url)}`)})`,
     'New-Item -ItemType Directory -Path "$dir\\hosted" -Force | Out-Null',

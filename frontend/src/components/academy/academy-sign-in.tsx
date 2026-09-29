@@ -113,19 +113,19 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
 
   if (!configured) {
     return (
-      <AuthMinimal product="CaseFile">
-        <AuthHeading sub="Ask your instructor to finish setting up CaseFile.">Student accounts are not set up yet</AuthHeading>
+      <AuthMinimal product="Range">
+        <AuthHeading sub="Ask your instructor to finish setting up Range.">Student accounts are not set up yet</AuthHeading>
       </AuthMinimal>
     );
   }
 
   if (sentTo) {
     return (
-      <AuthMinimal product="CaseFile">
+      <AuthMinimal product="Range">
         <AuthHeading
           sub={
             <>
-              We sent a confirmation link to <strong className="text-[#10192e]">{sentTo}</strong>. Confirm your email and you will land back in CaseFile, signed in.
+              We sent a confirmation link to <strong className="text-[#10192e]">{sentTo}</strong>. Confirm your email and you will land back in Range, signed in.
             </>
           }
         >
@@ -148,13 +148,13 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
 
   if (step === "email") {
     return (
-      <AuthMinimal product="CaseFile">
+      <AuthMinimal product="Range">
         <div key="email" className="am-step">
           <AuthHeading
             sub={
               mode === "signup"
                 ? "One account for your course, your labs, and your progress."
-                : "Sign in with the email you use for CaseFile."
+                : "Sign in with the email you use for Range."
             }
           >
             {mode === "signin" ? "Welcome back" : "Create your account"}
@@ -197,7 +197,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
           </button>
 
           <p className="mt-8 text-center text-sm text-slate-600">
-            {mode === "signin" ? "New to CaseFile? " : "Already have an account? "}
+            {mode === "signin" ? "New to Range? " : "Already have an account? "}
             <button type="button" onClick={switchMode} className="am-link">
               {mode === "signin" ? "Create an account" : "Sign in"}
             </button>
@@ -208,7 +208,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
   }
 
   return (
-    <AuthMinimal product="CaseFile">
+    <AuthMinimal product="Range">
       <div key="password" className="am-step">
         <BackButton onClick={back} />
         <AuthHeading

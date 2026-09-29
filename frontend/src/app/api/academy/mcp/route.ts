@@ -5,7 +5,7 @@ import { loadLabState, loadProgress, resolveMcpKey } from "@/lib/academy-store";
 
 export const runtime = "nodejs";
 
-// CaseFile MCP server (Streamable HTTP, stateless, JSON responses).
+// Range MCP server (Streamable HTTP, stateless, JSON responses).
 // Students connect their own MCP client with a personal pvx_ key created in
 // the Academy. Every tool is scoped to the key's student and none returns
 // mission flags or explanations. Tools only read, except record_practice_result,
@@ -13,7 +13,7 @@ export const runtime = "nodejs";
 // and the CTF tools. Prompts carry the web Coach's modes to the client.
 
 const SUPPORTED_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26"];
-const SERVER_INFO = { name: "purvex-academy", title: "CaseFile", version: "1.1.0" };
+const SERVER_INFO = { name: "purvex-academy", title: "Range", version: "1.1.0" };
 
 type JsonRpcId = string | number | null;
 type JsonRpcMessage = { jsonrpc?: string; id?: JsonRpcId; method?: string; params?: Record<string, unknown> };
@@ -46,9 +46,9 @@ export async function POST(request: Request) {
 
   const auth = request.headers.get("authorization") || "";
   const key = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
-  if (!key) return unauthorized("Missing CaseFile key. Create one in CaseFile under Coach, Connect to Claude.");
+  if (!key) return unauthorized("Missing Range key. Create one in Range under Coach, Connect to Claude.");
   const userId = await resolveMcpKey(key);
-  if (!userId) return unauthorized("This CaseFile key is not valid. Create a new one in CaseFile.");
+  if (!userId) return unauthorized("This Range key is not valid. Create a new one in Range.");
 
   let msg: JsonRpcMessage;
   try {

@@ -62,7 +62,7 @@ async function act(action: "start" | "stop" | "extend" | "reset") {
     if (!r.ok) set({ error: data.error ?? "Something went wrong." });
     else set({ status: { available: true, ...data } });
   } catch {
-    set({ error: "Could not reach CaseFile. Try again." });
+    set({ error: "Could not reach Range. Try again." });
   } finally {
     set({ busy: false });
   }
@@ -89,7 +89,7 @@ async function open() {
     }
   } catch {
     tab?.close();
-    set({ error: "Could not reach CaseFile. Try again." });
+    set({ error: "Could not reach Range. Try again." });
   } finally {
     set({ busy: false });
   }
@@ -184,7 +184,7 @@ export function HostedLabButton() {
                 role="menuitem"
                 className="rounded px-2 py-1.5 text-left text-red-700 hover:bg-red-50"
                 onClick={() => {
-                  if (window.confirm("Reset your lab? You get a fresh copy of PurveX Financial and every change you made in the lab is gone. Your CaseFile progress stays.")) run("reset");
+                  if (window.confirm("Reset your lab? You get a fresh copy of PurveX Financial and every change you made in the lab is gone. Your Range progress stays.")) run("reset");
                 }}
               >
                 Reset to a fresh lab

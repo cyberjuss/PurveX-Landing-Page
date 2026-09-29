@@ -23,7 +23,7 @@ async function isLive(userId: string) {
 // The lab script asks this every few minutes. While it says live, the script sends a snapshot each time.
 export async function GET(request: Request) {
   const userId = await keyUser(request);
-  if (!userId) return NextResponse.json({ error: "Invalid or missing CaseFile key." }, { status: 401 });
+  if (!userId) return NextResponse.json({ error: "Invalid or missing Range key." }, { status: 401 });
   return NextResponse.json({ live: await isLive(userId) });
 }
 
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
   const key = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
   const userId = key ? await resolveLabKey(key) : null;
   if (!userId) {
-    return NextResponse.json({ error: "Invalid or missing CaseFile key." }, { status: 401 });
+    return NextResponse.json({ error: "Invalid or missing Range key." }, { status: 401 });
   }
 
   const declared = Number(request.headers.get("content-length") || 0);

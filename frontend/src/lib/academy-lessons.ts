@@ -134,7 +134,7 @@ function bySection(name: string) {
 
 export function searchLessons(query: string, section = "", limit = 4) {
   const note =
-    "Course text the student reads in CaseFile. Teach from it and use its terms and examples. Challenge tabs are not included. Never use a fact here to hand over an unsolved mission's answer.";
+    "Course text the student reads in Range. Teach from it and use its terms and examples. Challenge tabs are not included. Never use a fact here to hand over an unsolved mission's answer.";
   if (section.trim()) {
     const hits = bySection(section);
     if (hits.length) return { found: hits.length, results: hits.slice(0, 8).map(out), note };

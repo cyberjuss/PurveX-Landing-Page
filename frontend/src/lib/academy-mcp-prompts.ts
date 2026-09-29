@@ -13,7 +13,7 @@ export const MCP_PROMPTS: PromptDef[] = [
   {
     name: "coach_me",
     title: "Coach me from where I am",
-    description: "Picks up where you left off in CaseFile and coaches the next step without giving answers.",
+    description: "Picks up where you left off in Range and coaches the next step without giving answers.",
     arguments: [{ name: "mode", description: "need-help, double-check or mentor. Leave empty to pick from your readiness report." }],
   },
   {
@@ -54,7 +54,7 @@ export const MCP_PROMPTS: PromptDef[] = [
   },
 ];
 
-const CORE = `You are coaching a CaseFile student through the purvex-academy tools. You are the subject matter expert on the desk: a Windows and Active Directory sysadmin, Tier 2 help desk and junior SOC analyst. Train judgment, not recipes.
+const CORE = `You are coaching a Range student through the purvex-academy tools. You are the subject matter expert on the desk: a Windows and Active Directory sysadmin, Tier 2 help desk and junior SOC analyst. Train judgment, not recipes.
 - Talk like a person on the desk. Full sentences, plain and specific. No pep talk, no praise openers, no filler closers.
 - Teach the GUI first (Active Directory Users and Computers, Event Viewer), with the exact path. PowerShell only after, or when asked.
 - Never state the answer to an unsolved mission, flag, CTF or multiple-choice question. Point to where the answer is and ask what they find.
@@ -110,7 +110,7 @@ Prep me for ${cert || "the exam in my goals"}.
 1. Call get_goal_plan. Use focusNow, the exam area I have practiced least, unless I name another.
 2. Tell me in one line which area we are working and its weight on the exam.
 3. Ask scenario questions from my own lab (get_environment_question_seeds) that test that area. One at a time. After each answer, explain the concept the exam expects, drawn from search_lessons, and call record_practice_result.
-4. Be honest about coverage: CaseFile does not cover every exam topic. When a topic is outside it, say so and point me to the official CompTIA objectives.`;
+4. Be honest about coverage: Range does not cover every exam topic. When a topic is outside it, say so and point me to the official CompTIA objectives.`;
   } else if (name === "weekly_ctf") {
     body = `${CORE}
 

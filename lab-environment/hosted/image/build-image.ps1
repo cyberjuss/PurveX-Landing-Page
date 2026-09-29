@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Builds the CaseFile lab image: a Windows Server 2022 domain controller with
+    Builds the Range lab image: a Windows Server 2022 domain controller with
     PurveX Financial and the ticket-queue objects already in it.
 
 .DESCRIPTION
@@ -78,7 +78,7 @@ do {
 } while ($state -ne "stopped")
 
 $name = "casefile-dc-$stamp"
-$ami = Invoke-Aws ec2 create-image --instance-id $id --name $name --description "CaseFile lab: PurveX Financial domain controller" `
+$ami = Invoke-Aws ec2 create-image --instance-id $id --name $name --description "Range lab: PurveX Financial domain controller" `
     --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$name},{Key=casefile-lab-image,Value=true}]" --query ImageId
 Write-Host "Saving image $ami (about 10 to 20 minutes) ..."
 # The CLI waiter gives up after 10 minutes, and a 50 GB Windows image can take longer.

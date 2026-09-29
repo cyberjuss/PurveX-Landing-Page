@@ -160,7 +160,7 @@ function handsOnLine(all: Results, lab: LabSnapshot | null): string {
 
   if (!lab) {
     if (finished || attempted) {
-      return `Unverified. ${finished} mission${finished === 1 ? "" : "s"} answered, but no DC has ever synced. Treat directory claims as unconfirmed until they run the CaseFile Build-Environment.ps1 (or send a screenshot). Last mission activity: ${lastAskAgo ?? "no timestamp"}.`;
+      return `Unverified. ${finished} mission${finished === 1 ? "" : "s"} answered, but no DC has ever synced. Treat directory claims as unconfirmed until they run the Range Build-Environment.ps1 (or send a screenshot). Last mission activity: ${lastAskAgo ?? "no timestamp"}.`;
     }
     return "No lab synced and no missions finished. They have not connected a domain controller yet.";
   }
@@ -227,7 +227,7 @@ export function buildStudentBrief(results: Results, lab: LabSnapshot | null, dri
     .join("; ");
   const gap = s.finished > 0 ? s.focus[0] : undefined;
   const missions = Object.keys(MISSION_SKILLS).map((id) => `- ${missionLine(results, id)}`).join("\n");
-  let labLine = "No lab snapshot yet. It is saved when the student runs the CaseFile Build-Environment.ps1. After that, a scheduled task on the DC refreshes Coach about every minute while the server is on.";
+  let labLine = "No lab snapshot yet. It is saved when the student runs the Range Build-Environment.ps1. After that, a scheduled task on the DC refreshes Coach about every minute while the server is on.";
   if (lab) {
     const ev = labEvidence(lab);
     labLine = `Last sync ${ev.lastCapturedAgo} (${ev.lastCaptured}) on ${ev.domain}. ${
@@ -249,7 +249,7 @@ Lab: ${labLine}${goals ? `\n\n${goals}` : ""}`;
 
 // Sent to students' own MCP clients (Claude, Claude Code, Cursor) so they
 // coach the same way PurveX Coach does.
-export const MCP_INSTRUCTIONS = `CaseFile tools for one signed-in student: where they are in CaseFile right now, the course lessons, their Readiness score and weak spots, their goals and exam plan, mission and drill history, their real Active Directory lab and Security log, and the weekly CTF. The prompts (coach_me, explain_topic, practice_quiz, exam_prep, weekly_ctf, mock_interview, review_resume) start each kind of session the way PurveX Coach runs it. get_review_queue brings back missed topics on a 1, 3 and 7 day schedule.
+export const MCP_INSTRUCTIONS = `Range tools for one signed-in student: where they are in Range right now, the course lessons, their Readiness score and weak spots, their goals and exam plan, mission and drill history, their real Active Directory lab and Security log, and the weekly CTF. The prompts (coach_me, explain_topic, practice_quiz, exam_prep, weekly_ctf, mock_interview, review_resume) start each kind of session the way PurveX Coach runs it. get_review_queue brings back missed topics on a 1, 3 and 7 day schedule.
 
 When helping this student:
 - Start with get_current_activity so you know where they are. If they say "this" or "here", it is what that tool returns. If it was last seen hours ago, ask before assuming.
@@ -265,7 +265,7 @@ When helping this student:
 - Start a coaching session with get_weakness_profile. It blends mission scores, drill accuracy, and what they keep missing, so you know where to spend the time. Keep those misses as your notes. Do not recite the list or the weekly scores.
 - Hands-on work is real. Call get_lab_findings to see what is actually wrong in the student's own lab, and get_event_digest for what really happened in their Security log. Never invent an account, a ticket or a broken object. If the lab has nothing wrong, ask judgement questions. The weekly CTF is asked about their own Security log: call start_investigation, tell them where to look in Event Viewer, and ask them to investigate. When they answer, call check_investigation. If it has a second half it checks a real fix in their lab, so guide them to find and fix it, then call it again. Never read the answer to them.
 - Develop your own practice questions from their real environment: call get_environment_question_seeds, write a short scenario whose evidence is on screen, ask the student, and wait for their answer. Then call record_practice_result so the result shapes their weakness profile and future drill difficulty. Make each question different from the last. Raise the difficulty when they keep getting it right.
-- The browser labs (Phase 1: Monday Morning Risk Triage, The Update Nobody Can Vouch For, The Leaked Password Table, Who Can Open This?; Phase 2: Read the Sign-In Log) run in the CaseFile portal, not in their AD lab. Call get_lab_coaching first. Coach one step at a time with the hint ladder, one rung lower each time they ask again, and never state an answer, a value to type or an option to pick. Explaining CyberChef, PowerShell 7, sha256sum or OpenSSL mechanics in full is fine. Tie the step to their target role's objective in one clause. Keep replies under 80 words.
+- The browser labs (Phase 1: Monday Morning Risk Triage, The Update Nobody Can Vouch For, The Leaked Password Table, Who Can Open This?; Phase 2: Read the Sign-In Log) run in the Range portal, not in their AD lab. Call get_lab_coaching first. Coach one step at a time with the hint ladder, one rung lower each time they ask again, and never state an answer, a value to type or an option to pick. Explaining CyberChef, PowerShell 7, sha256sum or OpenSSL mechanics in full is fine. Tie the step to their target role's objective in one clause. Keep replies under 80 words.
 - Do not invent lab values. get_lab_state returns the student's real lab snapshot saved the last time they ran Build-Environment.ps1. It can be older than their latest changes. Use it to check their work, and point them to what to inspect instead of reading out values that answer unsolved missions.`;
 
 type AnthropicContent =
@@ -376,7 +376,7 @@ COACH_TOOLS.push(
   {
     name: "get_goal_plan",
     description:
-      "The student's goals from their intake (target roles, Security+ and CySA+ status and exam dates) with what each role does day to day, and for each exam area of the certs they are working toward: its weight, how much they have practiced it in missions and drills, and which CaseFile missions and job tasks practice it. Call this when they ask what to study, how close they are to a role or exam, or for exam prep.",
+      "The student's goals from their intake (target roles, Security+ and CySA+ status and exam dates) with what each role does day to day, and for each exam area of the certs they are working toward: its weight, how much they have practiced it in missions and drills, and which Range missions and job tasks practice it. Call this when they ask what to study, how close they are to a role or exam, or for exam prep.",
     input_schema: { type: "object", properties: {}, additionalProperties: false },
   },
   {
@@ -431,7 +431,7 @@ COACH_TOOLS.push(
   {
     name: "search_lessons",
     description:
-      "Search CaseFile's own lessons and return the matching passages, each with the tab it sits in and a link. Covers Phase 1 (CIA and risk, hashing and encryption, networking, authentication and access control, the Active Directory home lab) and Phase 2 log analysis. Call it before you explain a concept, so you teach it the way the course does, with its terms and examples. Pass section to get one whole tab, for example the tab get_current_activity returns. Challenge tabs are not included.",
+      "Search Range's own lessons and return the matching passages, each with the tab it sits in and a link. Covers Phase 1 (CIA and risk, hashing and encryption, networking, authentication and access control, the Active Directory home lab) and Phase 2 log analysis. Call it before you explain a concept, so you teach it the way the course does, with its terms and examples. Pass section to get one whole tab, for example the tab get_current_activity returns. Challenge tabs are not included.",
     input_schema: {
       type: "object",
       properties: {
@@ -445,7 +445,7 @@ COACH_TOOLS.push(
   {
     name: "get_current_activity",
     description:
-      "Where the student is in CaseFile: the page and tab they have open (and the step inside a browser lab), when it was last seen, their last mission and the next open one, labs passed, their last drill and their last lab sync. Call it at the start of a conversation, and whenever they say this, here or I am stuck without naming what.",
+      "Where the student is in Range: the page and tab they have open (and the step inside a browser lab), when it was last seen, their last mission and the next open one, labs passed, their last drill and their last lab sync. Call it at the start of a conversation, and whenever they say this, here or I am stuck without naming what.",
     input_schema: { type: "object", properties: {}, additionalProperties: false },
   },
   {
@@ -536,7 +536,7 @@ async function goalPlan(ctx: CoachToolContext) {
     certs,
     focusNow: focus ? `${CERTS[focus.cert].label} ${focus.name}` : null,
     honesty:
-      "CaseFile practices these areas through Active Directory, Windows logs and incident work. It does not cover every exam topic yet (for example cryptography depth, cloud and network architecture). Say so when they ask about exam readiness, and point them to the official CompTIA objectives for the rest.",
+      "Range practices these areas through Active Directory, Windows logs and incident work. It does not cover every exam topic yet (for example cryptography depth, cloud and network architecture). Say so when they ask about exam readiness, and point them to the official CompTIA objectives for the rest.",
     note: "Mission answers stay private. Point them at an unsolved mission by title, never at its answer.",
   };
 }
@@ -852,7 +852,7 @@ export const COACH_TOOL_TITLES: Record<string, string> = {
   investigation_status: "CTF status",
   check_investigation: "Check my CTF answer",
   search_lessons: "Search the lessons",
-  get_current_activity: "Where I am in CaseFile",
+  get_current_activity: "Where I am in Range",
   record_practice_result: "Record a practice answer",
 };
 

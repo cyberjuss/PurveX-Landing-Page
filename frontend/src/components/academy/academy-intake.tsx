@@ -198,7 +198,7 @@ export function AcademyIntake({
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <>
-              {last ? (initial ? "Save changes" : "Enter CaseFile") : "Continue"} <ArrowRight className="h-4 w-4" />
+              {last ? (initial ? "Save changes" : "Enter Range") : "Continue"} <ArrowRight className="h-4 w-4" />
             </>
           )}
         </button>

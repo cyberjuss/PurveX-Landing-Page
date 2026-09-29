@@ -24,7 +24,7 @@ export default async function VerifyPage({ params }: { params: Promise<{ id: str
   const title = state === "valid" ? "Credential verified" : state === "inactive" ? "Credential not active" : "Credential not found";
   const detail =
     state === "valid"
-      ? "This is a genuine, current credential issued by CaseFile."
+      ? "This is a genuine, current credential issued by Range."
       : state === "inactive"
         ? "This credential exists, but its holder has made their portfolio private."
         : wellFormed
@@ -67,7 +67,7 @@ export default async function VerifyPage({ params }: { params: Promise<{ id: str
               </div>
               <div>
                 <dt>Issued by</dt>
-                <dd>CaseFile</dd>
+                <dd>Range</dd>
               </div>
               {found.settings.updatedAt && (
                 <div>
