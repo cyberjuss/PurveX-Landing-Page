@@ -77,10 +77,12 @@ if ($stage -eq "1") {
 
         # Speed: no Server Manager at sign-in, no automatic updates (the image is rebuilt monthly),
         # Defender scans never scheduled (real-time protection stays on).
-        New-Item -Path "HKLM:\SOFTWARE\Microsoft\ServerManager" -Force | Out-Null
+        # New-Item -Force on a registry key that exists tries to recreate it, so only create missing keys.
+        foreach ($key in "HKLM:\SOFTWARE\Microsoft\ServerManager", "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU") {
+            if (-not (Test-Path $key)) { New-Item -Path $key -Force | Out-Null }
+        }
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ServerManager" -Name "DoNotOpenServerManagerAtLogon" -Value 1 -Type DWord
         Get-ScheduledTask -TaskName "ServerManager" -ErrorAction SilentlyContinue | Disable-ScheduledTask | Out-Null
-        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Value 1 -Type DWord
         Set-Service -Name wuauserv -StartupType Disabled -ErrorAction SilentlyContinue
         Stop-Service -Name wuauserv -Force -ErrorAction SilentlyContinue
