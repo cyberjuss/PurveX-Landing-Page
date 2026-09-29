@@ -40,6 +40,8 @@ export type PublicIncident = {
   deadlineSec: number;
   acknowledged: boolean;
   resolved: boolean;
+  /** Resolved before its deadline. Only meaningful when resolved. */
+  onTime: boolean;
   overdue: boolean;
   secondsLeft: number | null;
   hintsUsed: number;
@@ -116,6 +118,7 @@ function toPublic(run: ShiftRun, inc: IncidentRun, elapsed: number): PublicIncid
     deadlineSec: inc.deadlineSec,
     acknowledged: inc.ackedAtSec !== null,
     resolved: inc.resolvedAtSec !== null,
+    onTime: resolvedOnTime(inc),
     overdue: inc.resolvedAtSec === null && elapsed > deadlineAt,
     secondsLeft,
     hintsUsed: inc.hintsUsed,
