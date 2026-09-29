@@ -10,6 +10,7 @@ import { LabCarousel } from "./lab-carousel";
 import { MissionPager } from "./mission-pager";
 import { TrailDock, type TrailLink } from "./trail-dock";
 import { labSpot, useCoach } from "./coach-context";
+import { HostedLabCard } from "./hosted-lab-button";
 import { academyFetch } from "@/lib/academy-client";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import type { Quiz } from "@/content/academy/quizzes";
@@ -242,14 +243,17 @@ export function SectionTabs({
         />
       </div>
     ) : (
-      <MissionPager
-        key={current.label}
-        prevSection={prevTrail}
-        nextSection={nextTrail}
-        actionHost={current.kind === "challenge" ? challengeFoot : undefined}
-      >
-        <Markdown content={current.markdown} />
-      </MissionPager>
+      <>
+        {current.kind === "challenge" && <HostedLabCard />}
+        <MissionPager
+          key={current.label}
+          prevSection={prevTrail}
+          nextSection={nextTrail}
+          actionHost={current.kind === "challenge" ? challengeFoot : undefined}
+        >
+          <Markdown content={current.markdown} />
+        </MissionPager>
+      </>
     );
 
   return (

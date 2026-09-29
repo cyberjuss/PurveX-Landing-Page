@@ -1,0 +1,51 @@
+/* "Your lab" panel on challenges. Uses the report's --rd tokens so it follows the light and dark themes. */
+.hl-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px 16px;
+  margin: 0 0 24px;
+  padding: 16px 18px;
+  border: 1px solid var(--rd-line);
+  border-radius: 12px;
+  background: var(--rd-line-2);
+  box-shadow: 0 6px 18px -14px rgba(15, 23, 42, 0.35);
+}
+.hl-card__icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(85, 70, 224, 0.12);
+  color: #5546e0;
+}
+.hl-card__icon--ready { background: rgba(5, 150, 105, 0.14); color: #059669; }
+.hl-card__text { display: grid; gap: 2px; min-width: 0; }
+.hl-card__kicker { margin: 0; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
+.hl-card__title { margin: 0; font-size: 16px; font-weight: 600; color: var(--rd-ink); }
+.hl-card__status { margin: 0; font-size: 13.5px; color: var(--rd-ink-2); }
+.hl-card__error { margin: 4px 0 0; font-size: 13px; color: var(--rd-bad); }
+.hl-card__actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.hl-card__primary,
+.hl-card__secondary {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.hl-card__primary { border: 0; background: #5546e0; color: #fff; }
+.hl-card__primary:hover:not(:disabled) { background: #4636c9; }
+.hl-card__secondary { border: 1px solid var(--rd-line); background: none; color: var(--rd-ink-2); }
+.hl-card__secondary:hover:not(:disabled) { border-color: #5546e0; color: #5546e0; }
+.hl-card__primary:disabled,
+.hl-card__secondary:disabled { cursor: wait; opacity: 0.6; }
+.hl-card button:focus-visible { outline: 2px solid #5546e0; outline-offset: 2px; }
+@media (max-width: 560px) {
+  .hl-card { grid-template-columns: auto 1fr; }
+  .hl-card__actions { grid-column: 1 / -1; justify-content: stretch; }
+  .hl-card__primary { flex: 1; }
+}
