@@ -1,9 +1,10 @@
 import "server-only";
-import { responseGrader } from "@/lib/academy-scenario";
+import { responseGrader, shiftNarrator } from "@/lib/academy-scenario";
 import { cleanupShiftLab, hostedLabStatus, injectIncident } from "@/lib/academy-hosted";
+import { roleLabel } from "@/lib/academy-certs";
 import { levelFor, type DrillEntry, type Item } from "@/lib/academy-drills";
 import type { Results, Skill } from "@/lib/academy-score";
-import { loadDrills, loadLabState, loadProgress, loadShift, saveDrill, saveShift } from "@/lib/academy-store";
+import { loadDrills, loadLabState, loadProfile, loadProgress, loadShift, saveDrill, saveShift } from "@/lib/academy-store";
 import {
   gradeIncidentLab,
   HINT_COST,
@@ -97,13 +98,17 @@ function toPublic(run: ShiftRun, inc: IncidentRun, elapsed: number): PublicIncid
   if (!def || !incidentArrived(inc, elapsed)) return null;
   const deadlineAt = inc.arriveSec + inc.deadlineSec;
   const secondsLeft = inc.resolvedAtSec !== null ? null : Math.max(0, deadlineAt - elapsed);
+  // Claude's fresh wording for this shift, when it wrote some; otherwise the template.
+  const from = inc.text?.from ?? def.from;
+  const title = inc.text?.title ?? def.title;
+  const brief = inc.text?.brief ?? def.brief;
   return {
     defId: def.id,
     kind: def.kind,
     severity: def.severity,
-    from: def.from,
-    title: def.title,
-    brief: def.brief,
+    from,
+    title,
+    brief,
     diagnosisPrompt: def.diagnosis.prompt,
     arriveSec: inc.arriveSec,
     deadlineSec: inc.deadlineSec,
@@ -166,6 +171,30 @@ export async function getShift(userId: string): Promise<PublicShift | null> {
   return publicShift(run, now);
 }
 
+/**
+ * Have Claude rewrite each incident's sender, title and brief for this shift so
+ * it reads differently every time and speaks to the student's target roles. The
+ * facts stay in the template; only the wording is stored on the run. Best effort:
+ * if the model is unavailable, the incidents keep their template wording.
+ */
+async function narrateShift(run: ShiftRun, roles: import("@/lib/academy-certs").RoleId[]): Promise<void> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return;
+  const defs = run.incidents.map((inc) => incidentDef(inc.defId)).filter((d): d is IncidentDef => Boolean(d));
+  if (defs.length !== run.incidents.length) return;
+  const labels = roles.map((r) => roleLabel(r));
+  const written = await shiftNarrator(
+    apiKey,
+    labels,
+    defs.map((d) => ({ id: d.id, kind: d.kind, severity: d.severity, from: d.from, title: d.title, brief: d.brief }))
+  ).catch(() => null);
+  if (!written) return;
+  run.incidents.forEach((inc, n) => {
+    const t = written[n];
+    if (t) inc.text = t;
+  });
+}
+
 export async function startShift(userId: string): Promise<{ shift?: PublicShift; error?: string }> {
   const existing = await loadShift(userId);
   if (existing && existing.status === "active" && !shiftOver(existing)) {
@@ -176,8 +205,10 @@ export async function startShift(userId: string): Promise<{ shift?: PublicShift;
   if (status?.state !== "ready") {
     return { error: "Your lab is not Online yet. Start it and wait until it is running, then begin your shift." };
   }
-  const [entries, results] = await Promise.all([loadDrills(userId), loadProgress(userId)]);
-  const run = newShiftRun(`${userId}:${Date.now()}`, phaseFor(results), levelFor(entries));
+  const [entries, results, profile] = await Promise.all([loadDrills(userId), loadProgress(userId), loadProfile(userId)]);
+  const roles = profile?.roles ?? [];
+  const run = newShiftRun(`${userId}:${Date.now()}`, phaseFor(results), levelFor(entries), roles);
+  await narrateShift(run, roles);
   await saveShift(userId, run);
   await injectArrived(userId, run, 0);
   await saveShift(userId, run);

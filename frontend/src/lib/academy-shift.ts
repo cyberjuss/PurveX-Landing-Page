@@ -1,4 +1,5 @@
 import "server-only";
+import type { RoleId } from "@/lib/academy-certs";
 import { evalCheck, seeded, shuffle, type Check } from "@/lib/academy-drills";
 import type { LabEvents, LabSnapshot } from "@/lib/academy-lab";
 
@@ -28,6 +29,8 @@ export type IncidentDef = {
   /** Harder incidents are weighted up as the level rises. */
   weight?: number;
   falseAlarm?: boolean;
+  /** Which target roles this incident is bread-and-butter for. Weighted up when the student picked one. */
+  roles: RoleId[];
   /** The Incident-*.ps1 script baked into the lab image. */
   script: string;
   points: number;
@@ -59,6 +62,7 @@ export const INCIDENTS: IncidentDef[] = [
     minPhase: 1,
     minLevel: 1,
     weight: 1,
+    roles: ["help-desk", "sysadmin"],
     script: "Incident-Lockout.ps1",
     points: 100,
     from: "Riley Kwan, Operations",
@@ -83,6 +87,7 @@ export const INCIDENTS: IncidentDef[] = [
     minPhase: 1,
     minLevel: 1,
     weight: 1.3,
+    roles: ["soc-analyst", "cyber-analyst", "help-desk"],
     script: "Incident-Spray.ps1",
     points: 150,
     from: "SIEM · automated detection",
@@ -108,6 +113,7 @@ export const INCIDENTS: IncidentDef[] = [
     minPhase: 1,
     minLevel: 2,
     weight: 1.6,
+    roles: ["soc-analyst", "sysadmin", "ir-analyst"],
     script: "Incident-RogueAdmin.ps1",
     points: 200,
     from: "SIEM · automated detection",
@@ -131,6 +137,7 @@ export const INCIDENTS: IncidentDef[] = [
     minLevel: 3,
     weight: 1.2,
     falseAlarm: true,
+    roles: ["soc-analyst", "cyber-analyst"],
     script: "Incident-ApprovedChange.ps1",
     points: 120,
     from: "SIEM · automated detection",
@@ -152,6 +159,7 @@ export const INCIDENTS: IncidentDef[] = [
     minPhase: 2,
     minLevel: 3,
     weight: 1.8,
+    roles: ["soc-analyst", "ir-analyst"],
     script: "Incident-Compromise.ps1",
     points: 220,
     from: "SIEM · automated detection",
@@ -174,6 +182,7 @@ export const INCIDENTS: IncidentDef[] = [
     minPhase: 2,
     minLevel: 4,
     weight: 1.7,
+    roles: ["sysadmin", "cyber-analyst"],
     script: "Incident-WeakPolicy.ps1",
     points: 180,
     from: "SIEM · automated detection",
@@ -222,7 +231,7 @@ export function shiftSize(phase: number, level: number): number {
  * their phase and level are eligible; harder ones are weighted up as the level
  * rises. A false alarm is included from Hard (level 3) up. Deterministic per seed.
  */
-export function pickShift(seed: string, phase: number, level: number): ShiftIncident[] {
+export function pickShift(seed: string, phase: number, level: number, roles: RoleId[] = []): ShiftIncident[] {
   const r = seeded(seed);
   const eligible = INCIDENTS.filter((i) => i.minPhase <= phase && i.minLevel <= level);
   const real = eligible.filter((i) => !i.falseAlarm);
@@ -230,12 +239,15 @@ export function pickShift(seed: string, phase: number, level: number): ShiftInci
   // Never ask for more incidents than are eligible at this phase and level.
   const size = Math.min(shiftSize(phase, level), eligible.length);
 
+  // Incidents that match a target role are worth more, so the queue leans toward that job.
+  const roleFit = (i: IncidentDef) => (roles.length && i.roles.some((x) => roles.includes(x)) ? 1.8 : 1);
+
   const chosen: IncidentDef[] = [];
   // From Hard up, one slot is a false alarm when one is eligible.
   if (level >= 3 && alarms.length) chosen.push(shuffle(r, alarms)[0]);
 
   const weighted = shuffle(r, real)
-    .map((i) => ({ i, w: (i.weight ?? 1) * (0.6 + level * 0.2) + r() }))
+    .map((i) => ({ i, w: (i.weight ?? 1) * roleFit(i) * (0.6 + level * 0.2) + r() }))
     .sort((a, b) => b.w - a.w)
     .map((x) => x.i);
   for (const i of weighted) {
@@ -327,6 +339,8 @@ export type IncidentRun = {
   resolvedAtSec: number | null;
   /** The incident's script has been fired into the lab. */
   injected: boolean;
+  /** Fresh wording Claude wrote for this shift, so no two read alike. Falls back to the template. */
+  text?: { from: string; title: string; brief: string };
   hintsUsed: number;
   diagnosis: string;
   response: string;
@@ -353,8 +367,8 @@ export type ShiftRun = {
 };
 
 /** Build a fresh shift for this student. The caller persists it and injects the incidents. */
-export function newShiftRun(seed: string, phase: number, level: number, now = Date.now()): ShiftRun {
-  const picked = pickShift(seed, phase, level);
+export function newShiftRun(seed: string, phase: number, level: number, roles: RoleId[] = [], now = Date.now()): ShiftRun {
+  const picked = pickShift(seed, phase, level, roles);
   return {
     id: `shift-${now.toString(36)}`,
     startedAt: new Date(now).toISOString(),
