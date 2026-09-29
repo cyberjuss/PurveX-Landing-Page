@@ -7,7 +7,6 @@ import { ArrowRight, Check } from "lucide-react";
 import { academyFetch, READINESS_PATH, RESULTS_CHANGED_EVENT, RESULTS_UPDATED_EVENT } from "@/lib/academy-client";
 import { loadResults, saveResults, type MissionResult } from "@/lib/academy-score";
 import { useHostedLab } from "./hosted-lab-button";
-import { LabPulse } from "./lab-pulse";
 import { TrailDock } from "./trail-dock";
 
 type Neighbor = { label: string; go: () => void };
@@ -37,7 +36,6 @@ export function MissionPager({
   const [solved, setSolved] = useState<boolean[]>([]);
   const [flagged, setFlagged] = useState<boolean[]>([]);
   const [strip, setStrip] = useState<HTMLElement | null>(null);
-  const [labHost, setLabHost] = useState<HTMLElement | null>(null);
   const [started, setStarted] = useState(false);
   // A hosted lab starts from the brief, so it boots while the student reads question 1.
   const lab = useHostedLab();
@@ -145,8 +143,6 @@ export function MissionPager({
       m.setAttribute("data-n", String(i + 1).padStart(2, "0"));
       m.classList.toggle("ad-mission--off", total >= 2 && (onBrief || i !== at));
     });
-    const labOn = onBrief ? null : missions().find((m) => !m.classList.contains("ad-mission--off")) ?? missions()[at] ?? null;
-    setLabHost(labOn);
     if (first.current) {
       first.current = false;
       prevAt.current = at;
@@ -275,7 +271,6 @@ export function MissionPager({
           ) : null}
         </div>
       ) : null}
-      {labHost ? createPortal(<LabPulse />, labHost) : null}
       {nav && actionHost ? createPortal(nav, actionHost) : nav}
       {started && !onBrief ? (
         <button type="button" className="ad-challenge-reset" onClick={resetChallenge}>

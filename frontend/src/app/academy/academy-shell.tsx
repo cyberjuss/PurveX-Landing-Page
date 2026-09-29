@@ -567,7 +567,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           return;
         }
         if ((gate.noLab || gate.stale) && hasHostedLab()) {
-          labOffNote(feedback, "Your lab is not running. Start it, wait for the lab light to turn green, then submit again. This does not use an attempt.");
+          labOffNote(feedback, "Your lab is not running. Start it, wait until the lab button at the top says Online, then submit again. This does not use an attempt.");
           placeMiss(wrap);
           return;
         }
