@@ -29,7 +29,8 @@ export type HostedLabState = "none" | "starting" | "ready" | "stopping" | "stopp
 export type HostedLabStatus = { state: HostedLabState; stopAt: string | null; firstBoot: boolean };
 
 function cfg() {
-  const e = process.env;
+  // Trimmed: a value pasted or piped into Vercel can carry a stray line break.
+  const e = Object.fromEntries(Object.entries(process.env).filter(([k]) => k.startsWith("HOSTED_LAB_")).map(([k, v]) => [k, (v ?? "").trim()]));
   return {
     region: e.HOSTED_LAB_REGION || "us-east-1",
     accessKeyId: e.HOSTED_LAB_AWS_ACCESS_KEY_ID || "",

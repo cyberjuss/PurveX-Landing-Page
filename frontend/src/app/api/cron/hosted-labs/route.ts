@@ -8,7 +8,7 @@ export const maxDuration = 60;
 // the day the lab status route stops them as students check their labs.
 // Vercel sends CRON_SECRET as a Bearer token.
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET;
+  const secret = process.env.CRON_SECRET?.trim();
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
