@@ -26,7 +26,7 @@ output "vercel_env" {
     HOSTED_LAB_GATEWAY_URL           = "https://${var.gateway_domain}"
     HOSTED_LAB_GATEWAY_KEY           = random_id.gateway_key.hex
     HOSTED_LAB_SECRET                = random_id.lab_secret.hex
-    HOSTED_LAB_INSTANCE_TYPE         = "t3.medium"
+    HOSTED_LAB_INSTANCE_TYPE         = "t3.large"
     HOSTED_LAB_INSTANCE_PROFILE      = aws_iam_instance_profile.lab.name
   }
 }

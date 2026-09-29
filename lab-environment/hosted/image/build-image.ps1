@@ -55,7 +55,7 @@ $userData = Join-Path $tmp "casefile-image-userdata.txt"
 # persist=true: user data runs again after the forest restart.
 Set-Content -LiteralPath $userData -Value "<powershell>`r`n$setup`r`n</powershell>`r`n<persist>true</persist>" -Encoding ASCII
 $disk = Join-Path $tmp "casefile-image-disk.json"
-Set-Content -LiteralPath $disk -Encoding ASCII -Value '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":50,"VolumeType":"gp3","Encrypted":true,"DeleteOnTermination":true}}]'
+Set-Content -LiteralPath $disk -Encoding ASCII -Value '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":60,"VolumeType":"gp3","Encrypted":true,"DeleteOnTermination":true}}]'
 
 $stamp = Get-Date -Format "yyyyMMdd-HHmm"
 $tags = "ResourceType=instance,Tags=[{Key=Name,Value=casefile-image-builder-$stamp},{Key=casefile-image-builder,Value=true}]"
