@@ -115,23 +115,6 @@ html[data-academy-theme="dark"] .hl-note,
 .hl-pop { position: fixed; z-index: 90; animation: hl-pop-in 0.14s ease-out both; }
 @keyframes hl-pop-in { from { opacity: 0; transform: translateY(-4px); } }
 
-/* ---- status dot, for the header and strip chips ---- */
-.hl-dot { position: relative; flex: none; width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
-.hl-dot--none { background: none; box-shadow: inset 0 0 0 1.5px #94a3b8; }
-.hl-dot--ready { background: #16a34a; }
-.hl-dot--starting, .hl-dot--stopping { background: #6d5dfc; }
-.hl-dot--ready::after, .hl-dot--starting::after {
-  content: "";
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  border: 2px solid currentColor;
-  opacity: 0;
-  animation: hl-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-.hl-dot--ready::after { color: #16a34a; }
-.hl-dot--starting::after { color: #6d5dfc; }
-
 /* ---- question strip: question chips on the left, the lab on the right ---- */
 .ad-steps:has(.hl-lab) { justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px 16px; }
 .hl-lab {
@@ -198,5 +181,5 @@ button.ad-lab[aria-expanded="true"] .ad-lab__tip { display: none; }
 .ad-brief-start .ad-brief-start__note { margin: 0; font-size: 13px; color: var(--rd-ink-3, #6f7189); }
 
 @media (prefers-reduced-motion: reduce) {
-  .hl-pop, .hl-dot::after, .hl-lab--wait svg, .hl .hl__steps li.is-now i { animation: none; }
+  .hl-pop, .hl-lab--wait svg, .hl .hl__steps li.is-now i { animation: none; }
 }

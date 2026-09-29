@@ -158,13 +158,17 @@ export function useLabMenu<T extends HTMLElement>() {
 
 const CHIP: Record<State, string> = { none: "Offline", starting: "Starting", ready: "Online", stopping: "Stopping", stopped: "Offline" };
 
+/** Green online, amber while it changes, red offline: the lab light's colors. */
+const labTone = (state: State) => (state === "ready" ? "on" : state === "starting" || state === "stopping" ? "wait" : "off");
+
 // ---- header chip ----------------------------------------------------------
 
 /** A small status chip in the top bar, on every page. Opens the lab menu. */
 export function HostedLabButton() {
-  const { available, state, waiting } = useHostedLab();
+  const { available, state } = useHostedLab();
   const { anchor, isOpen, toggle, popover } = useLabMenu<HTMLButtonElement>();
   if (!available) return null;
+  const tone = labTone(state);
   return (
     <>
       <button
@@ -176,7 +180,9 @@ export function HostedLabButton() {
         title="Your lab"
         className="flex h-9 items-center gap-2 rounded-md border border-[var(--pvrx-border-light)] bg-white px-3 text-sm font-semibold text-slate-600 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
       >
-        {waiting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <span className={`hl-dot hl-dot--${state}`} aria-hidden="true" />}
+        <span className={`flex hl-lab--${tone}`}>
+          <LabMonitorIcon size={20} />
+        </span>
         <span className="hidden sm:inline">{CHIP[state]}</span>
       </button>
       {popover}
@@ -199,7 +205,7 @@ export function LabChip() {
   const { available, state } = useHostedLab();
   const { anchor, isOpen, toggle, popover } = useLabMenu<HTMLButtonElement>();
   if (!available) return null;
-  const tone = state === "ready" ? "on" : state === "starting" || state === "stopping" ? "wait" : "off";
+  const tone = labTone(state);
   return (
     <>
       <button
