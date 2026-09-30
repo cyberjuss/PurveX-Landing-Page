@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { loadLabLive, loadLabState, saveLabLive, touchLabLive } from "@/lib/academy-store";
+import { requestLabSync } from "@/lib/academy-hosted";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { CHALLENGE_MINUTES, LIVE_MINUTES, challengeOpen, challengeTarget, codeInSnapshot, isVerified, newChallengeCode, powershellLine } from "@/lib/academy-verify";
 
@@ -64,9 +65,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ ...(await state(userId)), error: "No open challenge. Start a new one." }, { status: 400 });
     }
     await touchLabLive(userId, LIVE_MINUTES);
-    const seen = codeInSnapshot(lab.snapshot, live.challengeCode);
+    // Push a fresh snapshot and wait briefly so the code the student just set lands fast.
+    const beforeAt = Date.parse(lab.uploadedAt) || 0;
+    let cur = lab;
+    if (await requestLabSync(userId, true)) {
+      const deadline = Date.now() + 8000;
+      while (Date.now() < deadline) {
+        await new Promise((r) => setTimeout(r, 300));
+        const next = await loadLabState(userId);
+        if (next && Date.parse(next.uploadedAt) > beforeAt) {
+          cur = next;
+          break;
+        }
+      }
+    }
+    const seen = codeInSnapshot(cur.snapshot, live.challengeCode);
     // A snapshot taken before the challenge cannot hold the code, so this only says whether to keep waiting.
-    const fresh = Date.parse(lab.uploadedAt) > Date.parse(live.challengeAt as string);
+    const fresh = Date.parse(cur.uploadedAt) > Date.parse(live.challengeAt as string);
     if (seen) {
       await saveLabLive(userId, { verifiedAt: new Date().toISOString(), challengeCode: null, challengeAt: null });
       return NextResponse.json({ ...(await state(userId)), passed: true });

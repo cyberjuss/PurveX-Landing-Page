@@ -26,6 +26,7 @@ import {
   type DrillMode,
 } from "@/lib/academy-drills";
 import { formatLabAge } from "@/lib/academy-lab";
+import { requestLabSync } from "@/lib/academy-hosted";
 import { auditLab } from "@/lib/academy-audit";
 import { CERTS, examFocus, examLinks, jobsForDomain, type StudentProfile } from "@/lib/academy-certs";
 import { createRealCtf } from "@/lib/academy-live";
@@ -288,6 +289,18 @@ export async function POST(request: Request) {
   // Check a lab change against the newest snapshot the student's domain controller sent.
   if (body.action === "check") {
     if (typeof body.token !== "string") return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    // Push a fresh snapshot now and wait briefly for it to land, so a change the
+    // student just made grades in seconds instead of waiting for the heartbeat.
+    const before = await loadLabState(userId);
+    const beforeAt = before ? new Date(before.uploadedAt).getTime() : 0;
+    if (await requestLabSync(userId, true)) {
+      const deadline = Date.now() + 8000;
+      while (Date.now() < deadline) {
+        await new Promise((r) => setTimeout(r, 300));
+        const cur = await loadLabState(userId);
+        if (cur && new Date(cur.uploadedAt).getTime() > beforeAt) break;
+      }
+    }
     const lab = await loadLabState(userId);
     const checked = checkChange(userId, body.token, lab, body.answers);
     if (!checked) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
