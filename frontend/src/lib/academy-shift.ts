@@ -10,7 +10,7 @@ import type { LabEvents, LabSnapshot } from "@/lib/academy-lab";
 // Grading reads the lab the same way missions do: real end state, real events.
 // Nothing here is faked. Difficulty rises with the student's phase and level.
 
-export const SHIFT_MINUTES = 15;
+export const SHIFT_MINUTES = 30;
 export const SHIFT_SECONDS = SHIFT_MINUTES * 60;
 
 export type Severity = "P1" | "P2" | "P3";
@@ -78,6 +78,9 @@ export type IncidentDef = {
   rubric: string[];
   /** Three rungs, each more explicit, none giving the answer. */
   hints: string[];
+  /** The MITRE ATT&CK technique this maps to, shown on the alert. Real attacks;
+   *  many line up with an Atomic Red Team test of the same id. */
+  attack?: { id: string; name: string };
   /** When set, the incident rotates its victim each shift: given a picker, it
    *  returns the concrete checks, brief and script args for this run. */
   bind?: (pick: <T>(arr: T[]) => T) => Bind;
@@ -134,6 +137,7 @@ export const INCIDENTS: IncidentDef[] = [
     weight: 1.3,
     roles: ["soc-analyst", "cyber-analyst", "help-desk"],
     script: "Incident-Spray.ps1",
+    attack: { id: "T1110.003", name: "Password Spraying" },
     points: 150,
     from: "SIEM · automated detection",
     title: "Burst of failed sign-ins across many accounts",
@@ -172,6 +176,7 @@ export const INCIDENTS: IncidentDef[] = [
     weight: 1.6,
     roles: ["soc-analyst", "sysadmin", "ir-analyst"],
     script: "Incident-RogueAdmin.ps1",
+    attack: { id: "T1098", name: "Account Manipulation" },
     points: 200,
     from: "SIEM · automated detection",
     title: "New account added to IT Admins overnight",
@@ -218,6 +223,7 @@ export const INCIDENTS: IncidentDef[] = [
     weight: 1.8,
     roles: ["soc-analyst", "ir-analyst"],
     script: "Incident-Compromise.ps1",
+    attack: { id: "T1078", name: "Valid Accounts" },
     points: 220,
     from: "SIEM · automated detection",
     title: "Failed sign-ins then a success on one account",
@@ -254,6 +260,7 @@ export const INCIDENTS: IncidentDef[] = [
     weight: 1.7,
     roles: ["sysadmin", "cyber-analyst"],
     script: "Incident-WeakPolicy.ps1",
+    attack: { id: "T1484.001", name: "Group Policy Modification" },
     points: 180,
     from: "SIEM · automated detection",
     title: "Domain password policy was weakened",
@@ -311,6 +318,7 @@ export const INCIDENTS: IncidentDef[] = [
     weight: 1.4,
     roles: ["soc-analyst", "cyber-analyst", "sysadmin"],
     script: "Incident-PreAuth.ps1",
+    attack: { id: "T1558.004", name: "AS-REP Roasting" },
     points: 160,
     from: "SIEM · automated detection",
     title: "Account exposed to AS-REP roasting",
@@ -350,14 +358,14 @@ export type ShiftIncident = {
   bind?: Bind;
 };
 
-/** When incidents arrive across the 15 minutes, spread so the queue keeps
+/** When incidents arrive across the 30 minutes, spread so the queue keeps
  *  filling the whole shift instead of front-loading. Keyed by how many there are. */
 const ARRIVALS: Record<number, number[]> = {
-  2: [20, 330],
-  3: [20, 240, 510],
-  4: [15, 195, 405, 630],
-  5: [10, 165, 330, 510, 690],
-  6: [0, 150, 300, 450, 600, 720],
+  2: [20, 660],
+  3: [20, 540, 1080],
+  4: [20, 420, 840, 1320],
+  5: [15, 360, 720, 1080, 1440],
+  6: [0, 300, 660, 1020, 1320, 1560],
 };
 
 /** How many incidents a shift has, from phase and level. More senior shifts run

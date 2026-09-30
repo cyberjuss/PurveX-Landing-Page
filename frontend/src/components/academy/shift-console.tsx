@@ -16,6 +16,7 @@ type Incident = {
   from: string;
   title: string;
   brief: string;
+  attack: { id: string; name: string } | null;
   diagnosisPrompt: string;
   arriveSec: number;
   deadlineSec: number;
@@ -225,16 +226,16 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
           </div>
         </div>
         <p className="sh-lede">
-          You are on the desk for 15 minutes. Tickets and alerts arrive on their own as a live queue. Investigate each one in your lab, make the fix, and close it before its SLA runs out. Asking Coach for help costs points, like pulling a senior analyst off their work.
+          You are on the desk for 30 minutes. Alerts and tickets arrive on their own. Investigate each in your lab, fix it, and close it before its SLA runs out.
         </p>
         <ul className="sh-rules">
           <li>
             <span className="sh-rule__icon"><ShieldAlert className="h-[18px] w-[18px]" /></span>
-            <span className="sh-rule__body"><b>Real incidents</b>Fired straight into your own lab</span>
+            <span className="sh-rule__body"><b>Real attacks</b>Fired straight into your own lab</span>
           </li>
           <li>
             <span className="sh-rule__icon"><Clock className="h-[18px] w-[18px]" /></span>
-            <span className="sh-rule__body"><b>15 minutes on the clock</b>P1 in 5, P2 in 8, P3 in 12</span>
+            <span className="sh-rule__body"><b>30 minutes on the clock</b>P1 in 5, P2 in 8, P3 in 12</span>
           </li>
           <li>
             <span className="sh-rule__icon"><LifeBuoy className="h-[18px] w-[18px]" /></span>
@@ -264,7 +265,6 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
         <button type="button" className="sh-go" disabled={busy || !online} onClick={onStart}>
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Start shift <ArrowRight className="h-4 w-4" />
         </button>
-        <p className="sh-note">Your lab stays as you left it; incidents are cleaned up when the shift ends.</p>
       </div>
     </div>
   );
@@ -423,6 +423,17 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
         <span className={`sh-tag sh-tag--${inc.kind}`}>{inc.kind}</span>
         <span className="sh-detail__no">{no}</span>
         <span className="sh-detail__skill">Skill: {skillOf(inc.kind)}</span>
+        {inc.attack && (
+          <a
+            className="sh-attack"
+            href={`https://attack.mitre.org/techniques/${inc.attack.id.replace(".", "/")}/`}
+            target="_blank"
+            rel="noreferrer"
+            title={`MITRE ATT&CK ${inc.attack.id}: ${inc.attack.name}`}
+          >
+            ATT&CK {inc.attack.id} · {inc.attack.name}
+          </a>
+        )}
         <span className={`sh-sev ${SEV_CLASS[inc.severity]}`}>{inc.severity}</span>
         {inc.resolved ? (
           <span className="sh-status sh-status--done"><Check className="h-3.5 w-3.5" /> Solved</span>

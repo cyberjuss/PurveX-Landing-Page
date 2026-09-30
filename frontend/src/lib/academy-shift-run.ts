@@ -35,6 +35,7 @@ export type PublicIncident = {
   from: string;
   title: string;
   brief: string;
+  attack: { id: string; name: string } | null;
   diagnosisPrompt: string;
   arriveSec: number;
   deadlineSec: number;
@@ -113,6 +114,7 @@ function toPublic(run: ShiftRun, inc: IncidentRun, elapsed: number): PublicIncid
     from,
     title,
     brief,
+    attack: def.attack ?? null,
     diagnosisPrompt: eff.diagnosis.prompt,
     arriveSec: inc.arriveSec,
     deadlineSec: inc.deadlineSec,
@@ -220,7 +222,13 @@ export async function startShift(userId: string): Promise<{ shift?: PublicShift;
   const [entries, results, profile] = await Promise.all([loadDrills(userId), loadProgress(userId), loadProfile(userId)]);
   const roles = profile?.roles ?? [];
   const run = newShiftRun(`${userId}:${Date.now()}`, phaseFor(results), levelFor(entries), roles);
+  // Composing the shift (Claude's wording) takes a few seconds; don't let that
+  // eat the clock. Stamp the start once setup is done, so the timer begins when
+  // the student actually sees the queue.
   await narrateShift(run, roles);
+  const startedMs = Date.now();
+  run.startedAt = new Date(startedMs).toISOString();
+  run.endsAt = new Date(startedMs + SHIFT_SECONDS * 1000).toISOString();
   await saveShift(userId, run);
   await injectArrived(userId, run, 0);
   await saveShift(userId, run);
