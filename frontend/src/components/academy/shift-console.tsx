@@ -417,7 +417,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   );
 }
 
-type SubmitResult = { resolved: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[] };
+type SubmitResult = { resolved: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[]; needFinding?: boolean };
 
 function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no: string; start: number; now: number; busy: boolean; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
   const [diagnosis, setDiagnosis] = useState(inc.diagnosis);
@@ -533,8 +533,12 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
 
           {result && !result.resolved && (
             <div className="sh-result sh-result--wait">
-              {result.waiting ? "Waiting for your lab to report the change. Make the fix, then check again in about a minute." : "Your lab does not show this fix yet:"}
-              {!result.waiting && <ul>{result.results.filter((r) => !r.ok).map((r, i) => <li key={i}>{r.label}</li>)}</ul>}
+              {result.needFinding
+                ? "Your fix is in. Now answer the question correctly to close this incident."
+                : result.waiting
+                  ? "Waiting for your lab to report the change. Make the fix, then check again in about a minute."
+                  : "Your lab does not show this fix yet:"}
+              {!result.waiting && !result.needFinding && <ul>{result.results.filter((r) => !r.ok).map((r, i) => <li key={i}>{r.label}</li>)}</ul>}
             </div>
           )}
 
