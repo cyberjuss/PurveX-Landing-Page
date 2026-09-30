@@ -78,7 +78,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
       <header className="rd-mast">
         <div className="ax-welcome">
           <div className="ax-titleblock">
-            <h1>{firstName ? `${greeting}, ${firstName}` : greeting}</h1>
+            <h1>{firstName ? `${greeting} ${firstName}` : greeting}</h1>
             <p>Work the same problems a new hire sees. Fundamentals first then a live directory then alerts and logs.</p>
           </div>
           <Link href={READINESS_PATH} className="ax-status__score">

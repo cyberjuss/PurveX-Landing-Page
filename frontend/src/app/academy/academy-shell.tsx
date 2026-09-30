@@ -567,7 +567,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
           return;
         }
         if ((gate.noLab || gate.stale) && hasHostedLab()) {
-          labOffNote(feedback, "Your lab is offline. Start it and wait for the top button to say Online, then submit again. No attempt is used.");
+          labOffNote(feedback, "Your lab is offline. Start it, wait for Online at the top, then submit again. No attempt used.");
           placeMiss(wrap);
           return;
         }
