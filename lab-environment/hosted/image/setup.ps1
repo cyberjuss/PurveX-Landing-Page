@@ -71,7 +71,7 @@ if ($stage -eq "1") {
         $incidentBase = '__SCRIPT_URL__'.Replace("Build-Environment.ps1", "incidents")
         $incidentDir = "$dir\incidents"
         New-Item -ItemType Directory -Path $incidentDir -Force | Out-Null
-        foreach ($f in @("Incident-Common.ps1", "Incident-Lockout.ps1", "Incident-Spray.ps1", "Incident-RogueAdmin.ps1", "Incident-ApprovedChange.ps1", "Incident-Compromise.ps1", "Incident-WeakPolicy.ps1", "Incident-Disable.ps1", "Incident-PreAuth.ps1", "Incident-AccessRequest.ps1", "Incident-Offboarding.ps1", "Incident-PwdNotReq.ps1", "Incident-Delegation.ps1")) {
+        foreach ($f in @("Incident-Common.ps1", "Incident-Lockout.ps1", "Incident-Spray.ps1", "Incident-RogueAdmin.ps1", "Incident-ApprovedChange.ps1", "Incident-Compromise.ps1", "Incident-WeakPolicy.ps1", "Incident-Disable.ps1", "Incident-PreAuth.ps1", "Incident-AccessRequest.ps1", "Incident-Offboarding.ps1", "Incident-PwdNotReq.ps1", "Incident-Delegation.ps1", "Incident-PwdExpired.ps1", "Incident-WrongOU.ps1", "Incident-NoExpire.ps1", "Incident-DisableAudit.ps1", "Incident-Reversible.ps1", "Incident-RogueComputer.ps1", "Incident-Kerberoast.ps1")) {
             try { Invoke-WebRequest -Uri "$incidentBase/$f" -OutFile "$incidentDir\$f" -UseBasicParsing } catch { Say "could not download $f" }
         }
         Say "downloaded incident scripts"

@@ -259,14 +259,15 @@ function Ensure-CTFChallengeData {
 # Every part is optional; if the log cannot be read, the rest of the sync still works.
 function Get-PurvexEventDigest {
     $days = 30
-    # v2 adds 4738 (account changed) and 4739 (policy changed). Range only enforces
-    # those as evidence when it sees v >= 2, so older labs keep working unchanged.
-    $digest = [ordered]@{ windowDays = $days; v = 2 }
+    # v2 adds 4738 (account changed) and 4739 (policy changed); v3 adds 4719 (audit
+    # policy changed). Range only enforces each as evidence when it sees a high
+    # enough v, so older labs keep working unchanged.
+    $digest = [ordered]@{ windowDays = $days; v = 3 }
     $iso = { param($d) ([datetime]$d).ToUniversalTime().ToString("o") }
     $skip = { param($n) (-not $n) -or ($n -eq "-") -or ($n.EndsWith('$')) -or ($n -match '^(ANONYMOUS LOGON|SYSTEM|LOCAL SERVICE|NETWORK SERVICE)$') }
     $short = { param($dn) (($dn -split '(?<!\\),', 2)[0] -replace '^(CN|OU)=', '') }
     try {
-        $events = @(Get-WinEvent -FilterHashtable @{ LogName = "Security"; Id = 4625, 4771, 4740, 4720, 4725, 4728, 4732, 4756, 4738, 4739; StartTime = (Get-Date).AddDays(-$days) } -MaxEvents 4000 -ErrorAction Stop)
+        $events = @(Get-WinEvent -FilterHashtable @{ LogName = "Security"; Id = 4625, 4771, 4740, 4720, 4725, 4728, 4732, 4756, 4738, 4739, 4719; StartTime = (Get-Date).AddDays(-$days) } -MaxEvents 4000 -ErrorAction Stop)
     }
     catch { return $digest }
 
@@ -298,6 +299,10 @@ function Get-PurvexEventDigest {
     })
     # 4739: a domain policy was changed (password/lockout policy).
     $digest.policyChanges = @($rows | Where-Object { $_.Id -eq 4739 } | Sort-Object Time -Descending | Select-Object -First 20 | ForEach-Object {
+        [ordered]@{ at = (& $iso $_.Time); by = $_.Subject }
+    })
+    # 4719: a system audit policy was changed (a subcategory turned on or off).
+    $digest.auditChanges = @($rows | Where-Object { $_.Id -eq 4719 } | Sort-Object Time -Descending | Select-Object -First 20 | ForEach-Object {
         [ordered]@{ at = (& $iso $_.Time); by = $_.Subject }
     })
     return $digest

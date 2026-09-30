@@ -37,6 +37,17 @@ export const ROSTER: Staff[] = [
  *  admin other incidents rely on) so a shift never contradicts itself. */
 export const VICTIMS: Staff[] = ROSTER.filter((s) => s.sam !== "alex.rivera");
 
+/** The OU short name for each department, matching Build-Environment.ps1. Used to
+ *  build the container a user should live in for the wrong-OU incident. */
+const DEPT_OU: Record<string, string> = {
+  IT: "IT",
+  Compliance: "Compliance",
+  "Wealth Management": "WealthManagement",
+  Operations: "Operations",
+  "Finance and Accounting": "FinanceAccounting",
+};
+const correctContainer = (dept: string) => `OU=Users,OU=${DEPT_OU[dept] ?? dept},OU=Departments`;
+
 /** The victim-specific parts of an incident, bound once when the shift is built
  *  so the same scenario targets a different person each time. Stored on the run;
  *  grading and injection read this in place of the template. */
@@ -113,6 +124,10 @@ const evChanged = (e: LabEvents | undefined, sam: string) =>
   !digestHas4738(e) || (e?.accountChanges ?? []).some((r) => (r.account ?? "").toLowerCase().includes(sam.toLowerCase()));
 // A 4739 (domain policy changed) proves the password/lockout policy was tampered with.
 const evPolicy = (e: LabEvents | undefined) => !digestHas4738(e) || (e?.policyChanges ?? []).length > 0;
+// 4719 evidence only exists in a v3+ digest. Fall back to resolve-only on older labs.
+const digestHas4719 = (e: LabEvents | undefined) => (e?.v ?? 1) >= 3;
+// A 4719 (audit policy changed) proves an audit subcategory was turned off.
+const evAudit = (e: LabEvents | undefined) => !digestHas4719(e) || (e?.auditChanges ?? []).length > 0;
 
 export const INCIDENTS: IncidentDef[] = [
   {
@@ -497,6 +512,209 @@ export const INCIDENTS: IncidentDef[] = [
         resolve: [{ c: { t: "flag", sam: v.sam, flag: "delegation", want: false } as Check, label: `${v.sam} is no longer trusted for delegation` }],
         diagnosis: { prompt: "What was enabled on the account?", accept: ["delegation", "trusted for delegation", "unconstrained delegation", "unconstrained"] },
         brief: `${v.name} in ${v.dept} was marked trusted for delegation, which an attacker can abuse to impersonate other users across the domain. Remove the trust and report who set it.`,
+        evidence: (e) => evChanged(e, v.sam),
+      };
+    },
+  },
+  {
+    id: "pwd-expired",
+    kind: "ticket",
+    severity: "P3",
+    minPhase: 1,
+    minLevel: 1,
+    weight: 1,
+    roles: ["help-desk", "sysadmin"],
+    script: "Incident-PwdExpired.ps1",
+    points: 100,
+    from: "Jordan Ellis, Finance and Accounting",
+    title: "My password expired and I can't get in",
+    brief: "A member of staff cannot sign in because their password has expired. Reset it so they can get back to work. This is a routine ticket, not an attack.",
+    resolve: [{ c: { t: "flag", sam: "jordan.ellis", flag: "passwordExpired", want: false }, label: "the account's password is no longer expired" }],
+    diagnosis: { prompt: "Why could the user not sign in?", accept: ["expired", "password expired", "expiry", "pwdlastset"] },
+    rubric: ["Confirmed the password was expired, not locked or disabled", "Reset the password", "Confirmed the user can sign in", "Why no escalation was needed"],
+    hints: [
+      "Open the account in Active Directory Users and Computers and read the Account tab.",
+      "An expired password is different from a lockout or a disable — check which one this is.",
+      "Reset the password (and clear 'must change at next logon' if that blocks them), then confirm sign-in.",
+    ],
+    bind: (pick) => {
+      const v = pick(VICTIMS.filter((x) => x.sam !== "riley.kwan"));
+      return {
+        args: { Sam: v.sam },
+        resolve: [{ c: { t: "flag", sam: v.sam, flag: "passwordExpired", want: false } as Check, label: `${v.sam}'s password is no longer expired` }],
+        diagnosis: { prompt: "Why could the user not sign in?", accept: ["expired", "password expired", "expiry", "pwdlastset"] },
+        brief: `${v.name} in ${v.dept} cannot sign in because their password has expired. Reset it so they can get back to work. This is a routine ticket, not an attack.`,
+        evidence: (e) => evChanged(e, v.sam),
+      };
+    },
+  },
+  {
+    id: "wrong-ou",
+    kind: "ticket",
+    severity: "P3",
+    minPhase: 1,
+    minLevel: 2,
+    weight: 1.1,
+    roles: ["help-desk", "sysadmin"],
+    script: "Incident-WrongOU.ps1",
+    points: 110,
+    from: "IT change review",
+    title: "Account is in the wrong OU",
+    brief: "A user account was moved out of its department's Users OU, so it no longer picks up the right Group Policy and delegated access. Move it back to where it belongs.",
+    resolve: [{ c: { t: "container", sam: "devon.brooks", ou: "OU=Users,OU=Compliance,OU=Departments" }, label: "the account is back in its department Users OU" }],
+    diagnosis: { prompt: "What was wrong with the account?", accept: ["ou", "wrong ou", "moved", "organizational unit", "container", "misplaced"] },
+    rubric: ["Named the OU it should be in", "Moved it to the correct department Users OU", "Confirmed the new location", "Noted why OU placement matters (GPO, delegation)"],
+    hints: [
+      "Find the account and check which OU it currently sits in.",
+      "Each person belongs in OU=Users under their own department OU.",
+      "Move the account back into its department's Users OU, then confirm the location.",
+    ],
+    bind: (pick) => {
+      const v = pick(VICTIMS);
+      const ouShort = DEPT_OU[v.dept] ?? v.dept;
+      const ou = correctContainer(v.dept);
+      return {
+        args: { Sam: v.sam, OU: ouShort },
+        resolve: [{ c: { t: "container", sam: v.sam, ou } as Check, label: `${v.sam} is back in ${ou}` }],
+        diagnosis: { prompt: "What was wrong with the account?", accept: ["ou", "wrong ou", "moved", "organizational unit", "container", "misplaced"] },
+        brief: `${v.name}'s account was moved out of the ${v.dept} Users OU, so it no longer picks up the right Group Policy and delegated access. Move it back to where it belongs.`,
+        evidence: (e) => evChanged(e, v.sam),
+      };
+    },
+  },
+  {
+    id: "never-expires",
+    kind: "alert",
+    severity: "P3",
+    minPhase: 1,
+    minLevel: 2,
+    weight: 1.2,
+    roles: ["sysadmin", "cyber-analyst", "soc-analyst"],
+    script: "Incident-NoExpire.ps1",
+    attack: { id: "T1098", name: "Account Manipulation" },
+    points: 130,
+    from: "SIEM · automated detection",
+    title: "Account set so its password never expires",
+    brief: "A standard user account was flagged so its password never expires, which defeats rotation and is a common thing an attacker leaves behind. Clear the flag and report who set it.",
+    resolve: [{ c: { t: "noexpire", sam: "sam.whitfield", want: false }, label: "the password expires on schedule again" }],
+    diagnosis: { prompt: "What flag was set on the account?", accept: ["never expires", "password never expires", "dont_expire", "no expiry", "never expire"] },
+    rubric: ["Named the account and the flag", "Explained why it matters on a normal user", "Cleared the flag", "Reported who set it"],
+    hints: [
+      "Open the account and read its account options.",
+      "'Password never expires' on an ordinary user is the finding.",
+      "Clear that option so the password expires on schedule, then report it.",
+    ],
+    bind: (pick) => {
+      const v = pick(VICTIMS.filter((x) => x.sam !== "riley.kwan"));
+      return {
+        args: { Sam: v.sam },
+        resolve: [{ c: { t: "noexpire", sam: v.sam, want: false } as Check, label: `${v.sam}'s password expires on schedule again` }],
+        diagnosis: { prompt: "What flag was set on the account?", accept: ["never expires", "password never expires", "dont_expire", "no expiry", "never expire"] },
+        brief: `${v.name} in ${v.dept} was flagged so their password never expires, which defeats rotation and is a common thing an attacker leaves behind. Clear the flag and report who set it.`,
+        evidence: (e) => evChanged(e, v.sam),
+      };
+    },
+  },
+  {
+    id: "rogue-computer",
+    kind: "alert",
+    severity: "P2",
+    minPhase: 1,
+    minLevel: 3,
+    weight: 1.4,
+    roles: ["sysadmin", "soc-analyst", "ir-analyst"],
+    script: "Incident-RogueComputer.ps1",
+    attack: { id: "T1136.002", name: "Create Account: Domain Account" },
+    points: 160,
+    from: "SIEM · automated detection",
+    title: "Unrecognized machine joined the domain",
+    brief: "A computer account with no asset record appeared in the IT Workstations OU. Treat it as an unauthorized machine: contain it by disabling the account, and keep it as evidence. Do not delete it yet.",
+    resolve: [{ c: { t: "computer", name: "WKS-TEMP7", enabled: false }, label: "the rogue machine account is disabled" }],
+    diagnosis: { prompt: "What is the name of the rogue machine?", accept: ["wks-temp7", "wks temp7", "temp7"] },
+    rubric: ["Named the rogue computer and where it appeared", "Confirmed it has no asset record", "Disabled the account instead of deleting it", "Escalated as a possible unauthorized join"],
+    hints: [
+      "Look at the computer objects in the IT Workstations OU.",
+      "One machine has no matching asset record and does not belong.",
+      "Disable the computer account to contain it, keep it as evidence, then escalate.",
+    ],
+  },
+  {
+    id: "audit-disabled",
+    kind: "alert",
+    severity: "P2",
+    minPhase: 2,
+    minLevel: 3,
+    weight: 1.6,
+    roles: ["soc-analyst", "ir-analyst", "sysadmin"],
+    script: "Incident-DisableAudit.ps1",
+    attack: { id: "T1562.002", name: "Impair Defenses: Disable Windows Event Logging" },
+    points: 180,
+    from: "SIEM · automated detection",
+    title: "Audit logging was turned off",
+    brief: "The Special Logon audit subcategory was switched off, blinding the SOC to elevated-privilege sign-ins. Turn auditing back on and report who changed it.",
+    resolve: [{ c: { t: "audit", sub: "Special Logon", need: "Success" }, label: "Special Logon auditing is on again" }],
+    evidence: (e) => evAudit(e),
+    diagnosis: { prompt: "Which event ID records an audit policy change?", accept: ["4719", "event 4719", "id 4719"] },
+    rubric: ["Named the subcategory that was turned off", "Named the event id for the audit change", "Re-enabled auditing for it", "Reported who made the change"],
+    hints: [
+      "Compare the current audit policy against what should be on (auditpol /get /category:*).",
+      "The Special Logon subcategory is set to No Auditing when it should record Success.",
+      "Turn Special Logon auditing back on for Success, then report the change with the event.",
+    ],
+  },
+  {
+    id: "reversible-enc",
+    kind: "alert",
+    severity: "P2",
+    minPhase: 2,
+    minLevel: 4,
+    weight: 1.5,
+    roles: ["sysadmin", "cyber-analyst", "soc-analyst"],
+    script: "Incident-Reversible.ps1",
+    attack: { id: "T1556", name: "Modify Authentication Process" },
+    points: 180,
+    from: "SIEM · automated detection",
+    title: "Domain set to store passwords reversibly",
+    brief: "The domain policy was changed to store passwords with reversible encryption, which keeps them effectively recoverable in plain text. Turn it back off and report who changed it.",
+    resolve: [{ c: { t: "policy", key: "reversible", bool: false }, label: "reversible encryption is off again" }],
+    evidence: (e) => evPolicy(e),
+    diagnosis: { prompt: "Which event ID records a domain policy change?", accept: ["4739", "event 4739", "id 4739"] },
+    rubric: ["Named what changed in the policy", "Explained why reversible encryption is dangerous", "Turned reversible encryption off", "Reported who made the change"],
+    hints: [
+      "Check the Default Domain Policy password settings.",
+      "'Store passwords using reversible encryption' should be disabled.",
+      "Turn reversible encryption off, then report the change with the event.",
+    ],
+  },
+  {
+    id: "kerberoast",
+    kind: "alert",
+    severity: "P1",
+    minPhase: 2,
+    minLevel: 3,
+    weight: 1.7,
+    roles: ["soc-analyst", "cyber-analyst", "ir-analyst"],
+    script: "Incident-Kerberoast.ps1",
+    attack: { id: "T1558.003", name: "Kerberoasting" },
+    points: 210,
+    from: "SIEM · automated detection",
+    title: "Service principal name set on a user account",
+    brief: "An SPN was registered on an ordinary user account, exposing it to Kerberoasting: any domain user can request its service ticket and crack the password offline. Remove the SPN and report who set it.",
+    resolve: [{ c: { t: "spn", sam: "morgan.lee", want: false }, label: "the account has no SPN and is not roastable" }],
+    diagnosis: { prompt: "What was registered on the account?", accept: ["spn", "service principal name", "kerberoast", "kerberoasting"] },
+    rubric: ["Named the account and the SPN", "Explained how an SPN enables Kerberoasting", "Removed the SPN", "Reported who set it"],
+    hints: [
+      "Check the account for a servicePrincipalName value (setspn -L <account>).",
+      "A normal user should have no SPN; one registered here is the exposure.",
+      "Remove the SPN from the account, then report the change.",
+    ],
+    bind: (pick) => {
+      const v = pick(VICTIMS.filter((x) => x.sam !== "riley.kwan"));
+      return {
+        args: { Sam: v.sam },
+        resolve: [{ c: { t: "spn", sam: v.sam, want: false } as Check, label: `${v.sam} has no SPN and is not roastable` }],
+        diagnosis: { prompt: "What was registered on the account?", accept: ["spn", "service principal name", "kerberoast", "kerberoasting"] },
+        brief: `${v.name} in ${v.dept} had an SPN registered on their account, exposing it to Kerberoasting: any domain user can request its service ticket and crack the password offline. Remove the SPN and report who set it.`,
         evidence: (e) => evChanged(e, v.sam),
       };
     },

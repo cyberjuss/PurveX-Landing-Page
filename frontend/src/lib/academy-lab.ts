@@ -60,6 +60,8 @@ export type LabEvents = {
   accountChanges: { account: string; at: string; by: string }[];
   /** 4739: a domain policy (password/lockout) was changed. */
   policyChanges: { at: string; by: string }[];
+  /** 4719: a system audit policy was changed (v3+). */
+  auditChanges: { at: string; by: string }[];
 };
 
 export type LabSnapshot = {
@@ -178,9 +180,19 @@ function sanitizeEvents(raw: unknown): LabEvents | undefined {
     policyChanges: rows(r.policyChanges)
       .map((x) => ({ at: date(x.at) ?? "", by: str(x.by, 80) }))
       .filter((x) => x.at),
+    auditChanges: rows(r.auditChanges)
+      .map((x) => ({ at: date(x.at) ?? "", by: str(x.by, 80) }))
+      .filter((x) => x.at),
   };
   const any =
-    out.failures.length + out.lockouts.length + out.created.length + out.disabled.length + out.groupAdds.length + out.accountChanges.length + out.policyChanges.length;
+    out.failures.length +
+    out.lockouts.length +
+    out.created.length +
+    out.disabled.length +
+    out.groupAdds.length +
+    out.accountChanges.length +
+    out.policyChanges.length +
+    out.auditChanges.length;
   return any ? out : undefined;
 }
 

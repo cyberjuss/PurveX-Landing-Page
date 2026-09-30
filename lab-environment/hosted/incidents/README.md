@@ -33,6 +33,13 @@ run on its own with no args.
 | Incident-Offboarding.ps1 | `-Sam` left enabled (a leaver) | disables the account | re-enable the account |
 | Incident-PwdNotReq.ps1 | `-Sam` set PASSWD_NOTREQD | clears the flag | clear the flag |
 | Incident-Delegation.ps1 | `-Sam` set trusted for delegation | removes the trust | remove the trust |
+| Incident-PwdExpired.ps1 | `-Sam` password expired (default jordan.ellis) | resets the password | reset the password |
+| Incident-WrongOU.ps1 | `-Sam` moved out of its `-OU` Users OU (default devon.brooks / Compliance) | moves it back to the department Users OU | move it back |
+| Incident-NoExpire.ps1 | `-Sam` set "password never expires" (default sam.whitfield) | clears the flag | clear the flag |
+| Incident-DisableAudit.ps1 | Special Logon auditing turned off | re-enables that auditing | re-enable auditing |
+| Incident-Reversible.ps1 | domain reversible encryption enabled | turns it off | turn it off |
+| Incident-RogueComputer.ps1 | `-Name` computer object in IT Workstations (default WKS-TEMP7) | disables the machine account | remove the object |
+| Incident-Kerberoast.ps1 | `-Sam` gets an SPN (default morgan.lee) | removes the SPN | remove the SPN |
 
 Notes:
 - Account passwords come from the image's `InitialPassword` (default
