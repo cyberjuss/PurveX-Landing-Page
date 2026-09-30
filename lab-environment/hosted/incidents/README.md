@@ -40,6 +40,11 @@ run on its own with no args.
 | Incident-Reversible.ps1 | domain reversible encryption enabled | turns it off | turn it off |
 | Incident-RogueComputer.ps1 | `-Name` computer object in IT Workstations (default WKS-TEMP7) | disables the machine account | remove the object |
 | Incident-Kerberoast.ps1 | `-Sam` gets an SPN (default morgan.lee) | removes the SPN | remove the SPN |
+| Incident-DomainAdmins.ps1 | `-Sam` added to Domain Admins (default taylor.osei) | removes it from Domain Admins | remove from Domain Admins |
+| Incident-BackdoorAccount.ps1 | `-Name` new account with no HR record (default svc.update) | disables the account | remove the account |
+| Incident-BruteForce.ps1 | `-Sam` hit with `-Count` failed sign-ins until locked (default sam.whitfield) | unlocks the account | unlock the account |
+| Incident-AdminPSO.ps1 | clears any PSO on `-Group` so it must be created (default IT Admins) | creates a PSO (len ≥ 15, lockout) for the group | removes the PSO |
+| Incident-DeptTransfer.ps1 | `-Sam` kept in `-From` group, not in `-To` (defaults Compliance→Operations) | removes the old group, adds the new | restore old, remove new |
 
 Notes:
 - Account passwords come from the image's `InitialPassword` (default

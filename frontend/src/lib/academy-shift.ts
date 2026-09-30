@@ -48,6 +48,15 @@ const DEPT_OU: Record<string, string> = {
 };
 const correctContainer = (dept: string) => `OU=Users,OU=${DEPT_OU[dept] ?? dept},OU=Departments`;
 
+/** The standard access group for each department, matching Build-Environment.ps1. */
+const DEPT_GROUP: Record<string, string> = {
+  IT: "IT Users",
+  Compliance: "Compliance Users",
+  "Wealth Management": "Wealth Management Users",
+  Operations: "Operations Users",
+  "Finance and Accounting": "Finance Accounting Users",
+};
+
 /** The victim-specific parts of an incident, bound once when the shift is built
  *  so the same scenario targets a different person each time. Stored on the run;
  *  grading and injection read this in place of the template. */
@@ -716,6 +725,166 @@ export const INCIDENTS: IncidentDef[] = [
         diagnosis: { prompt: "What was registered on the account?", accept: ["spn", "service principal name", "kerberoast", "kerberoasting"] },
         brief: `${v.name} in ${v.dept} had an SPN registered on their account, exposing it to Kerberoasting: any domain user can request its service ticket and crack the password offline. Remove the SPN and report who set it.`,
         evidence: (e) => evChanged(e, v.sam),
+      };
+    },
+  },
+  {
+    id: "domain-admins",
+    kind: "alert",
+    severity: "P1",
+    minPhase: 2,
+    minLevel: 3,
+    weight: 1.9,
+    roles: ["soc-analyst", "ir-analyst", "sysadmin"],
+    script: "Incident-DomainAdmins.ps1",
+    attack: { id: "T1098", name: "Account Manipulation" },
+    points: 230,
+    from: "SIEM · automated detection",
+    title: "Standard user added to Domain Admins",
+    brief: "A regular staff account was added to Domain Admins — full control of the domain — with no change ticket. Contain it fast without destroying the evidence, and find out how it got there.",
+    resolve: [{ c: { t: "member", sam: "taylor.osei", group: "Domain Admins", want: false }, label: "the account is out of Domain Admins" }],
+    diagnosis: { prompt: "Which event ID records the group addition?", accept: ["4728", "event 4728", "id 4728"] },
+    rubric: ["Named the account added and when", "Named the group and why it is the crown jewels", "Removed it without deleting the account (kept evidence)", "Escalated as a possible compromise"],
+    hints: [
+      "In the Security log, look for a member added to a security group.",
+      "Domain Admins is the most powerful group in the domain — nothing routine adds a user there.",
+      "Remove the account from Domain Admins, keep the account for evidence, then escalate.",
+    ],
+    bind: (pick) => {
+      const v = pick(VICTIMS.filter((x) => x.sam !== "riley.kwan"));
+      return {
+        args: { Sam: v.sam },
+        resolve: [{ c: { t: "member", sam: v.sam, group: "Domain Admins", want: false } as Check, label: `${v.sam} is out of Domain Admins` }],
+        diagnosis: { prompt: "Which event ID records the group addition?", accept: ["4728", "event 4728", "id 4728"] },
+        brief: `${v.name} in ${v.dept} was added to Domain Admins — full control of the domain — with no change ticket. Contain it fast without destroying the evidence, and find out how it got there.`,
+        evidence: (e) => evGroupAdd(e, v.sam, "Domain Admins"),
+      };
+    },
+  },
+  {
+    id: "backdoor-account",
+    kind: "alert",
+    severity: "P2",
+    minPhase: 2,
+    minLevel: 3,
+    weight: 1.6,
+    roles: ["soc-analyst", "ir-analyst"],
+    script: "Incident-BackdoorAccount.ps1",
+    attack: { id: "T1136.002", name: "Create Account: Domain Account" },
+    points: 180,
+    from: "SIEM · automated detection",
+    title: "New account created with no HR record",
+    brief: "A new user account appeared in the directory overnight with no HR record — a backdoor an attacker may have created to keep access. Contain it by disabling the account, and keep it as evidence. Do not delete it yet.",
+    resolve: [{ c: { t: "enabled", sam: "svc.update", want: false }, label: "the rogue account is disabled" }],
+    diagnosis: { prompt: "What is the name of the rogue account?", accept: ["svc.update", "svc update", "update"] },
+    rubric: ["Named the account and when it was created", "Named the 4720 that recorded the creation", "Disabled it instead of deleting it", "Escalated as a possible backdoor"],
+    hints: [
+      "Look for a recently created account that no one recognizes (Security log 4720).",
+      "svc.update has no HR record and does not match any real hire.",
+      "Disable the account to contain it, keep it as evidence, then escalate.",
+    ],
+  },
+  {
+    id: "targeted-bruteforce",
+    kind: "alert",
+    severity: "P2",
+    minPhase: 1,
+    minLevel: 2,
+    weight: 1.4,
+    roles: ["soc-analyst", "help-desk", "cyber-analyst"],
+    script: "Incident-BruteForce.ps1",
+    attack: { id: "T1110.001", name: "Password Guessing" },
+    points: 150,
+    from: "SIEM · automated detection",
+    title: "One account hit with repeated failed sign-ins",
+    brief: "A single account took a burst of failed sign-ins until it locked — a targeted guess against one user, not a spray across many. Confirm the pattern, restore the real user, and escalate.",
+    resolve: [
+      { c: { t: "flag", sam: "sam.whitfield", flag: "lockedOut", want: false }, label: "the account is unlocked" },
+      { c: { t: "enabled", sam: "sam.whitfield", want: true }, label: "the real user can sign in" },
+    ],
+    noHarm: [{ c: { t: "policy", key: "lockoutThreshold", min: 1 }, label: "Account lockout is still enforced" }],
+    diagnosis: { prompt: "Spray or targeted brute force? One account or many?", accept: ["brute", "brute force", "targeted", "one account", "single account", "guessing"] },
+    rubric: ["Named the pattern (one account, not a spray)", "Named 4625 and the 4740 lockout", "Unlocked the real user, kept lockout on", "Escalated with the evidence"],
+    hints: [
+      "Filter the Security log for failed sign-ins and see how many accounts are involved.",
+      "Many failures on one account is a targeted guess; many accounts once each is a spray.",
+      "Unlock the account, do not weaken the lockout policy, then escalate.",
+    ],
+    bind: (pick) => {
+      const v = pick(VICTIMS.filter((x) => x.sam !== "riley.kwan"));
+      return {
+        args: { Sam: v.sam },
+        resolve: [
+          { c: { t: "flag", sam: v.sam, flag: "lockedOut", want: false } as Check, label: `${v.sam} is unlocked` },
+          { c: { t: "enabled", sam: v.sam, want: true } as Check, label: `${v.sam} can sign in` },
+        ],
+        noHarm: [{ c: { t: "policy", key: "lockoutThreshold", min: 1 }, label: "Account lockout is still enforced" }],
+        diagnosis: { prompt: "Spray or targeted brute force? One account or many?", accept: ["brute", "brute force", "targeted", "one account", "single account", "guessing"] },
+        brief: `${v.name} in ${v.dept} took a burst of failed sign-ins until the account locked — a targeted guess against one user, not a spray across many. Confirm the pattern, restore the real user, and escalate.`,
+        evidence: (e) => evLocked(e, v.sam),
+      };
+    },
+  },
+  {
+    id: "admin-pso",
+    kind: "ticket",
+    severity: "P3",
+    minPhase: 2,
+    minLevel: 3,
+    weight: 1.2,
+    roles: ["sysadmin", "cyber-analyst"],
+    script: "Incident-AdminPSO.ps1",
+    points: 150,
+    from: "IT security review",
+    title: "Admins need a stronger password policy",
+    brief: "Privileged accounts (IT Admins) have no fine-grained password policy, so they fall back to the weaker domain default. Create a Password Settings Object for IT Admins with a longer minimum length (at least 15) and lockout.",
+    resolve: [{ c: { t: "pso", minLength: 15, appliesTo: "IT Admins", maxLockout: 10 }, label: "a PSO for IT Admins enforces length ≥ 15 and lockout" }],
+    diagnosis: { prompt: "What object enforces a per-group password policy?", accept: ["pso", "fine-grained", "fine grained", "password settings object", "password settings"] },
+    rubric: ["Named the tool (a fine-grained password policy / PSO)", "Applied it to the IT Admins group", "Set length to at least 15 with lockout", "Confirmed it takes precedence for admins"],
+    hints: [
+      "A fine-grained password policy (PSO) sets stronger rules for a specific group.",
+      "Create the PSO in Active Directory Administrative Center under Password Settings, or with New-ADFineGrainedPasswordPolicy.",
+      "Set minimum length to at least 15 with a lockout threshold, then apply it to IT Admins.",
+    ],
+  },
+  {
+    id: "dept-transfer",
+    kind: "ticket",
+    severity: "P3",
+    minPhase: 1,
+    minLevel: 2,
+    weight: 1.1,
+    roles: ["help-desk", "sysadmin"],
+    script: "Incident-DeptTransfer.ps1",
+    points: 120,
+    from: "People Operations",
+    title: "Department transfer — move their access",
+    brief: "A staff member transferred departments. Their access has to move with them: remove the group for their old department and grant the group for the new one. Least privilege — no leftover access.",
+    resolve: [
+      { c: { t: "member", sam: "devon.brooks", group: "Operations Users", want: true }, label: "the user has the new department's access" },
+      { c: { t: "member", sam: "devon.brooks", group: "Compliance Users", want: false }, label: "the old department's access is removed" },
+    ],
+    diagnosis: { prompt: "What must happen to a mover's old access?", accept: ["remove", "removed", "revoke", "take away", "least privilege", "deprovision"] },
+    rubric: ["Granted the new department group", "Removed the old department group", "Explained least privilege (no leftover access)", "Confirmed both changes"],
+    hints: [
+      "On the Member Of tab, compare the access they have against the department they moved to.",
+      "A transfer is not just adding access — the old access has to come off too.",
+      "Remove the old department group and add the new one, then confirm both.",
+    ],
+    bind: (pick) => {
+      const v = pick(VICTIMS);
+      const depts = ["IT", "Compliance", "Wealth Management", "Operations", "Finance and Accounting"];
+      const toDept = pick(depts.filter((d) => d !== v.dept));
+      const fromGroup = DEPT_GROUP[v.dept];
+      const toGroup = DEPT_GROUP[toDept];
+      return {
+        args: { Sam: v.sam, From: DEPT_OU[v.dept] ?? v.dept, To: DEPT_OU[toDept] ?? toDept },
+        resolve: [
+          { c: { t: "member", sam: v.sam, group: toGroup, want: true } as Check, label: `${v.sam} has ${toGroup}` },
+          { c: { t: "member", sam: v.sam, group: fromGroup, want: false } as Check, label: `${v.sam} no longer has ${fromGroup}` },
+        ],
+        diagnosis: { prompt: "What must happen to a mover's old access?", accept: ["remove", "removed", "revoke", "take away", "least privilege", "deprovision"] },
+        brief: `${v.name} transferred from ${v.dept} to ${toDept}. Move their access with them: remove ${fromGroup} and grant ${toGroup}. Least privilege — no leftover access.`,
       };
     },
   },
