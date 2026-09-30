@@ -202,21 +202,41 @@ export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "tq-05": { job: "fix-ou", label: "Service ticket INC-1045" },
 };
 
-export type OpenTask = { job: string; title: string; where: string; href: string };
+/** Portfolio jobs a live Shift can prove, mapped from the incident that proves each.
+ *  A task with a Shift path is locked until the student resolves it in a Shift. */
+export const SHIFT_JOB: Record<string, string> = {
+  "lockout-ticket": "enable-account",
+  "wrong-disable": "enable-account",
+  "pwd-expired": "enable-account",
+  "access-request": "group-access",
+  "wrong-ou": "fix-ou",
+  "dept-transfer": "fix-ou",
+  offboarding: "offboard",
+  "never-expires": "password-hygiene",
+  "rogue-admin": "least-privilege",
+  "domain-admins": "least-privilege",
+};
+const SHIFT_JOBS = new Set(Object.values(SHIFT_JOB));
 
-/** Tasks the portfolio can show that the student has not done yet, and where to do each one. */
+export type OpenTask = { job: string; title: string; where: string; href: string; locked: boolean };
+
+/** Tasks the portfolio can show that the student has not done yet, and where to do each one.
+ *  A task a Shift can prove is locked: it only joins the portfolio once resolved in a Shift. */
 export function openTasks(done: string[]): OpenTask[] {
   const have = new Set(done);
   const ticketFor = new Map(Object.entries(PROOF_TICKETS).map(([id, t]) => [t.job, { id, label: t.label }]));
   return Object.entries(CATALOG)
     .filter(([job]) => !have.has(job))
     .map(([job, e]) => {
+      if (SHIFT_JOBS.has(job)) {
+        return { job, title: e.title, where: "Live shift", href: "/academy/shift", locked: true };
+      }
       const t = ticketFor.get(job);
       return t
-        ? { job, title: e.title, where: `Ticket Queue · ${t.label.replace("Service ticket ", "")}`, href: `/academy/phase-1/home-lab-active-directory#${t.id}` }
-        : { job, title: e.title, where: "Daily drill", href: "/academy/drill" };
+        ? { job, title: e.title, where: `Ticket Queue · ${t.label.replace("Service ticket ", "")}`, href: `/academy/phase-1/home-lab-active-directory#${t.id}`, locked: false }
+        : { job, title: e.title, where: "Daily drill", href: "/academy/drill", locked: false };
     })
-    .sort((a, b) => Number(b.where !== "Daily drill") - Number(a.where !== "Daily drill"));
+    .sort((a, b) => Number(a.locked) - Number(b.locked) || Number(b.where !== "Daily drill") - Number(a.where !== "Daily drill"));
 }
 
 export type WorkItem = {
@@ -245,7 +265,10 @@ export function buildWorkItems(results: Results, drills: DrillEntry[]): WorkItem
   }
   for (const entry of drills) {
     for (const d of entry.detail ?? []) {
-      if (d.k === "change" && d.c === 1 && d.j) note(d.j, entry.day, entry.mode === "ctf" ? "Weekly CTF" : "Daily drill");
+      // A confirmed lab change (daily/ctf) or a shift incident the student resolved.
+      if ((d.k === "change" || entry.mode === "shift") && d.c === 1 && d.j) {
+        note(d.j, entry.day, entry.mode === "shift" ? "Live shift" : entry.mode === "ctf" ? "Weekly CTF" : "Daily drill");
+      }
     }
   }
   return [...found.entries()]

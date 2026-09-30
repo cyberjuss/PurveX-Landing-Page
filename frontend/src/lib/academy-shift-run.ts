@@ -5,6 +5,7 @@ import { roleLabel } from "@/lib/academy-certs";
 import { levelFor, type DrillEntry, type Item } from "@/lib/academy-drills";
 import type { Results, Skill } from "@/lib/academy-score";
 import { loadDrills, loadLabState, loadProfile, loadProgress, loadShift, saveDrill, saveShift } from "@/lib/academy-store";
+import { SHIFT_JOB } from "@/lib/academy-proof";
 import {
   effectiveIncident,
   gradeIncidentLab,
@@ -390,8 +391,11 @@ async function recordAndClose(userId: string, run: ShiftRun) {
     return {
       t: def?.title ?? inc.defId,
       s: def ? skillOf(def) : ("security" as Skill),
-      c: (inc.resolved && inc.onTime ? 1 : 0) as 0 | 1,
+      // Resolved (even if late) counts as worked: it proves the task for the portfolio.
+      c: (inc.resolved ? 1 : 0) as 0 | 1,
       th: `shift:${inc.defId}`,
+      // The portfolio job this incident proves, so a resolved shift task joins the portfolio.
+      j: inc.resolved ? SHIFT_JOB[inc.defId] : undefined,
     };
   });
   const entry: DrillEntry = {

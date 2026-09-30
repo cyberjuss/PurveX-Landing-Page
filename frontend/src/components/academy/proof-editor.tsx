@@ -280,16 +280,21 @@ export function ProofEditor() {
           <path d="M6 9l6 6 6-6" />
         </svg>
       </summary>
-      <p>Each one joins your portfolio once your lab confirms it. Your lab must be connected, with the lab light green.</p>
+      <p>Each one joins your portfolio once your lab confirms it. Locked tasks unlock when you resolve them in a live shift.</p>
       <ul className="pf-todo">
         {todo.map((t) => (
-          <li key={t.job}>
+          <li key={t.job} className={t.locked ? "pf-todo--locked" : ""}>
             <span>
+              {t.locked && (
+                <svg className="pf-todo-lock" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              )}
               {t.title}
-              <small>{t.where}</small>
+              <small>{t.locked ? "Locked · resolve it in a live shift" : t.where}</small>
             </span>
             <Link href={t.href} className="pf-btn">
-              Do it
+              {t.locked ? "Do it in a shift" : "Do it"}
             </Link>
           </li>
         ))}
