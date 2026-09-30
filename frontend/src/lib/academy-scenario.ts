@@ -178,6 +178,8 @@ function parseCtf(raw: string, fallback: Skill, theme: string): Item | null {
 }
 
 async function ask(apiKey: string, system: string, user: string, maxTokens: number, timeoutMs: number, model = COACH_SONNET_MODEL): Promise<string | null> {
+  // An empty prompt is a guaranteed 400 ("text content blocks must be non-empty").
+  if (!user.trim() || !system.trim()) return null;
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     signal: AbortSignal.timeout(timeoutMs),
@@ -189,7 +191,9 @@ async function ask(apiKey: string, system: string, user: string, maxTokens: numb
     body: JSON.stringify({ model, max_tokens: maxTokens, system, messages: [{ role: "user", content: user }] }),
   });
   if (!res.ok) {
-    console.error("scenario: model request failed", res.status);
+    // Include the API's reason so a 400 is diagnosable (bad model id, token limit, content).
+    const detail = await res.text().catch(() => "");
+    console.error("scenario: model request failed", res.status, model, detail.slice(0, 300));
     return null;
   }
   const body = (await res.json()) as { content?: { type: string; text?: string }[] };

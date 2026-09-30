@@ -8,7 +8,7 @@ import {
   StopInstancesCommand,
   TerminateInstancesCommand,
 } from "@aws-sdk/client-ec2";
-import { SendCommandCommand, SSMClient } from "@aws-sdk/client-ssm";
+import { DescribeInstanceInformationCommand, SendCommandCommand, SSMClient } from "@aws-sdk/client-ssm";
 import {
   createLabKey,
   deleteHostedLab,
@@ -297,6 +297,19 @@ async function runningInstance(userId: string): Promise<string | null> {
   return inst?.state === "running" ? row.instanceId : null;
 }
 
+/** True only when SSM can actually run a command on the instance. An instance can
+ *  be "running" in EC2 while its SSM agent is still coming up after boot, and
+ *  SendCommand then throws "Instances not in a valid state". Checking the ping
+ *  status first lets us skip quietly and retry on the next poll instead. */
+async function ssmOnline(instanceId: string): Promise<boolean> {
+  try {
+    const out = await ssm().send(new DescribeInstanceInformationCommand({ Filters: [{ Key: "InstanceIds", Values: [instanceId] }] }));
+    return out.InstanceInformationList?.[0]?.PingStatus === "Online";
+  } catch {
+    return false;
+  }
+}
+
 /**
  * PowerShell that downloads an incident script (and its shared helper) from the
  * site and runs it. Fetching at run time means an incident fix ships by
@@ -331,6 +344,9 @@ async function sendIncident(userId: string, script: string, undo: boolean, args?
   if (!INCIDENT_SCRIPT.test(script)) return false;
   const id = await runningInstance(userId);
   if (!id) return false;
+  // The instance is running but SSM may not be ready yet; skip quietly and let the
+  // next poll retry, rather than firing a command that throws and logs an error.
+  if (!(await ssmOnline(id))) return false;
   try {
     await ssm().send(
       new SendCommandCommand({
@@ -382,6 +398,8 @@ export async function requestLabSync(userId: string, force = false): Promise<boo
   }
   const id = await runningInstance(userId);
   if (!id) return false;
+  // Skip quietly when SSM is not ready yet, so a boot-window sync does not throw.
+  if (!(await ssmOnline(id))) return false;
   lastSyncAt.set(userId, Date.now());
   const command = "$ProgressPreference='SilentlyContinue'; $s=Join-Path $env:ProgramData 'PurveX\\Build-Environment.ps1'; if(Test-Path $s){ & $s -SyncOnly }";
   try {
