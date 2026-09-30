@@ -105,6 +105,10 @@ const evDisabled = (e: LabEvents | undefined, sam: string) => evAcct(e?.disabled
 const evFailed = (e: LabEvents | undefined, sam: string) => evAcct(e?.failures, sam);
 const evGroupAdd = (e: LabEvents | undefined, member: string, group: string) =>
   (e?.groupAdds ?? []).some((g) => (g.member ?? "").toLowerCase().includes(member.toLowerCase()) && (g.group ?? "").toLowerCase().includes(group.toLowerCase()));
+// A 4738 (account changed) proves an attribute/flag attack was applied to the account.
+const evChanged = (e: LabEvents | undefined, sam: string) => (e?.accountChanges ?? []).some((r) => (r.account ?? "").toLowerCase().includes(sam.toLowerCase()));
+// A 4739 (domain policy changed) proves the password/lockout policy was tampered with.
+const evPolicy = (e: LabEvents | undefined) => (e?.policyChanges ?? []).length > 0;
 
 export const INCIDENTS: IncidentDef[] = [
   {
@@ -290,6 +294,7 @@ export const INCIDENTS: IncidentDef[] = [
       { c: { t: "policy", key: "minLength", min: 12 }, label: "Minimum password length is back to at least 12" },
       { c: { t: "policy", key: "lockoutThreshold", min: 1, max: 10 }, label: "Account lockout is enforced again" },
     ],
+    evidence: (e) => evPolicy(e),
     diagnosis: { prompt: "Which event ID records a domain policy change?", accept: ["4739", "event 4739", "id 4739"] },
     rubric: ["Named what changed in the policy", "Named the event id for the policy change", "Restored length and lockout to safe values", "Reported who made the change"],
     hints: [
@@ -360,6 +365,7 @@ export const INCIDENTS: IncidentDef[] = [
         resolve: [{ c: { t: "flag", sam: v.sam, flag: "noPreAuth", want: false }, label: `${v.sam} requires pre-authentication again` }],
         diagnosis: { prompt: "What weakness was enabled on the account?", accept: ["as-rep", "asrep", "as rep", "pre-auth", "preauth", "pre authentication", "kerberos"] },
         brief: `${v.name} in ${v.dept} was set to not require Kerberos pre-authentication, which lets an attacker request a crackable ticket without any credentials. Close the exposure and report who changed it.`,
+        evidence: (e) => evChanged(e, v.sam),
       };
     },
   },
@@ -454,6 +460,7 @@ export const INCIDENTS: IncidentDef[] = [
         resolve: [{ c: { t: "flag", sam: v.sam, flag: "pwdNotRequired", want: false } as Check, label: `${v.sam} requires a password again` }],
         diagnosis: { prompt: "What weakness was set on the account?", accept: ["password not required", "passwd_notreqd", "pwdnotreqd", "no password", "blank password", "not required"] },
         brief: `${v.name} in ${v.dept} was flagged 'password not required', which lets the account sign in with a blank password. Close the exposure and report who changed it.`,
+        evidence: (e) => evChanged(e, v.sam),
       };
     },
   },
@@ -486,6 +493,7 @@ export const INCIDENTS: IncidentDef[] = [
         resolve: [{ c: { t: "flag", sam: v.sam, flag: "delegation", want: false } as Check, label: `${v.sam} is no longer trusted for delegation` }],
         diagnosis: { prompt: "What was enabled on the account?", accept: ["delegation", "trusted for delegation", "unconstrained delegation", "unconstrained"] },
         brief: `${v.name} in ${v.dept} was marked trusted for delegation, which an attacker can abuse to impersonate other users across the domain. Remove the trust and report who set it.`,
+        evidence: (e) => evChanged(e, v.sam),
       };
     },
   },

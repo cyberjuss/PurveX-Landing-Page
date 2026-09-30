@@ -54,6 +54,10 @@ export type LabEvents = {
   created: { account: string; at: string; by: string }[];
   disabled: { account: string; at: string; by: string }[];
   groupAdds: { member: string; group: string; at: string; by: string }[];
+  /** 4738: a user account's attributes/flags were changed. */
+  accountChanges: { account: string; at: string; by: string }[];
+  /** 4739: a domain policy (password/lockout) was changed. */
+  policyChanges: { at: string; by: string }[];
 };
 
 export type LabSnapshot = {
@@ -167,8 +171,13 @@ function sanitizeEvents(raw: unknown): LabEvents | undefined {
     groupAdds: rows(r.groupAdds)
       .map((x) => ({ member: str(x.member, 100), group: str(x.group, 100), at: date(x.at) ?? "", by: str(x.by, 80) }))
       .filter((x) => x.member && x.group && x.at),
+    accountChanges: acted(r.accountChanges),
+    policyChanges: rows(r.policyChanges)
+      .map((x) => ({ at: date(x.at) ?? "", by: str(x.by, 80) }))
+      .filter((x) => x.at),
   };
-  const any = out.failures.length + out.lockouts.length + out.created.length + out.disabled.length + out.groupAdds.length;
+  const any =
+    out.failures.length + out.lockouts.length + out.created.length + out.disabled.length + out.groupAdds.length + out.accountChanges.length + out.policyChanges.length;
   return any ? out : undefined;
 }
 

@@ -264,7 +264,7 @@ function Get-PurvexEventDigest {
     $skip = { param($n) (-not $n) -or ($n -eq "-") -or ($n.EndsWith('$')) -or ($n -match '^(ANONYMOUS LOGON|SYSTEM|LOCAL SERVICE|NETWORK SERVICE)$') }
     $short = { param($dn) (($dn -split '(?<!\\),', 2)[0] -replace '^(CN|OU)=', '') }
     try {
-        $events = @(Get-WinEvent -FilterHashtable @{ LogName = "Security"; Id = 4625, 4771, 4740, 4720, 4725, 4728, 4732, 4756; StartTime = (Get-Date).AddDays(-$days) } -MaxEvents 4000 -ErrorAction Stop)
+        $events = @(Get-WinEvent -FilterHashtable @{ LogName = "Security"; Id = 4625, 4771, 4740, 4720, 4725, 4728, 4732, 4756, 4738, 4739; StartTime = (Get-Date).AddDays(-$days) } -MaxEvents 4000 -ErrorAction Stop)
     }
     catch { return $digest }
 
@@ -289,6 +289,14 @@ function Get-PurvexEventDigest {
     })
     $digest.groupAdds = @($rows | Where-Object { @(4728, 4732, 4756) -contains $_.Id } | Sort-Object Time -Descending | Select-Object -First 40 | ForEach-Object {
         [ordered]@{ member = (& $short $_.Member); group = $_.Target; at = (& $iso $_.Time); by = $_.Subject }
+    })
+    # 4738: a user account was changed (flags like PASSWD_NOTREQD, delegation, no-preauth).
+    $digest.accountChanges = @($rows | Where-Object { $_.Id -eq 4738 -and -not (& $skip $_.Target) } | Sort-Object Time -Descending | Select-Object -First 40 | ForEach-Object {
+        [ordered]@{ account = $_.Target; at = (& $iso $_.Time); by = $_.Subject }
+    })
+    # 4739: a domain policy was changed (password/lockout policy).
+    $digest.policyChanges = @($rows | Where-Object { $_.Id -eq 4739 } | Sort-Object Time -Descending | Select-Object -First 20 | ForEach-Object {
+        [ordered]@{ at = (& $iso $_.Time); by = $_.Subject }
     })
     return $digest
 }
