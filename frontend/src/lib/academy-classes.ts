@@ -53,10 +53,11 @@ export async function classesFor(email: string | null): Promise<AcademyClass[]> 
   return [...memoryClasses.values()].filter((c) => admin || lower(c.instructorEmail) === lower(email));
 }
 
-/** A readable code from the class name, plus four random characters so it cannot be guessed. */
+/** A readable code from the class name, plus six random characters so it cannot be
+ *  guessed or brute-forced (~2 billion combinations). */
 function makeCode(name: string) {
   const word = name.toUpperCase().replace(/[^A-Z0-9]+/g, " ").trim().split(" ")[0]?.slice(0, 12) || "CLASS";
-  const tail = randomBytes(4).toString("base64").replace(/[^A-Z0-9]/gi, "").toUpperCase().slice(0, 4).padEnd(4, "X");
+  const tail = randomBytes(12).toString("base64").replace(/[^A-Z0-9]/gi, "").toUpperCase().slice(0, 6).padEnd(6, "X");
   return normalizeClassCode(`${word.length >= 2 ? word : "CLASS"}-${tail}`);
 }
 
