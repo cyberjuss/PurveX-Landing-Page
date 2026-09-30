@@ -229,17 +229,11 @@
 .sh-corner-home:hover { color: var(--rd-ink); background: var(--rd-surface, rgba(180,200,255,0.06)); }
 .sh-intro h1 { margin: 4px 0 0; font-family: var(--font-display, inherit); font-size: clamp(28px, 5vw, 40px); font-weight: 700; letter-spacing: -0.03em; color: var(--rd-ink); }
 .sh-lede { margin: 0; font-size: 16px; line-height: 1.62; color: var(--rd-ink-2); }
-/* A quiet, hairline-separated spec list. No cards, no fills -- simpler but premium. */
-.sh-facts { list-style: none; margin: 8px 0; padding: 0; display: grid; }
-.sh-facts li {
-  display: grid; grid-template-columns: 20px 1fr auto; align-items: center; gap: 14px;
-  padding: 15px 2px; border-top: 1px solid var(--rd-line);
-}
-.sh-facts li:last-child { border-bottom: 1px solid var(--rd-line); }
-.sh-fact__i { width: 17px; height: 17px; color: var(--rd-accent); }
-.sh-fact__t { font-size: 14.5px; font-weight: 600; color: var(--rd-ink); letter-spacing: -0.01em; }
-.sh-fact__v { font-size: 13px; color: var(--rd-ink-3); text-align: right; }
 .sh-note { margin: 2px 0 0; font-size: 13px; color: var(--rd-ink-3); }
+/* The shift's ground rules, moved into the queue sidebar as a quiet footer. */
+.sh-facts-mini { list-style: none; margin: auto 0 0; padding: 14px 2px 2px; display: grid; gap: 9px; border-top: 1px solid var(--rd-line); }
+.sh-facts-mini li { display: flex; align-items: center; gap: 9px; font-size: 12px; line-height: 1.4; color: var(--rd-ink-3); }
+.sh-facts-mini svg { flex: none; color: var(--rd-accent); }
 @media (max-width: 480px) {
   .sh-facts li { grid-template-columns: 20px 1fr; }
   .sh-fact__v { grid-column: 2; text-align: left; }

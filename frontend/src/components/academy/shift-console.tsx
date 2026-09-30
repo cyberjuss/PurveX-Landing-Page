@@ -235,25 +235,8 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
           </div>
         </div>
         <p className="sh-lede">
-          You are on the desk for 30 minutes. Alerts and tickets arrive on their own. Investigate each in your lab, fix it, and close it before its SLA runs out.
+          You are on the desk for 30 minutes. Real attacks and tickets fire into your own lab on their own. Investigate each, fix it, and close it before its SLA runs out.
         </p>
-        <ul className="sh-facts">
-          <li>
-            <ShieldAlert className="sh-fact__i" />
-            <span className="sh-fact__t">Real attacks</span>
-            <span className="sh-fact__v">Fired into your own lab</span>
-          </li>
-          <li>
-            <Clock className="sh-fact__i" />
-            <span className="sh-fact__t">30 minutes</span>
-            <span className="sh-fact__v">P1 in 5, P2 in 8, P3 in 12</span>
-          </li>
-          <li>
-            <LifeBuoy className="sh-fact__i" />
-            <span className="sh-fact__t">Coach costs points</span>
-            <span className="sh-fact__v">10%, then 20%, then 40%</span>
-          </li>
-        </ul>
 
         <div className={`sh-labgate sh-labgate--${online ? "on" : "off"}`}>
           <span className={`sh-labdot sh-labdot--${online ? "on" : labState === "starting" ? "wait" : "off"}`} />
@@ -415,6 +398,11 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
               })}
             </ul>
           )}
+          <ul className="sh-facts-mini">
+            <li><ShieldAlert className="h-3.5 w-3.5" /> Real attacks, fired into your own lab</li>
+            <li><Clock className="h-3.5 w-3.5" /> SLA · P1 5m · P2 8m · P3 12m</li>
+            <li><LifeBuoy className="h-3.5 w-3.5" /> Coach costs 10%, then 20%, then 40%</li>
+          </ul>
         </aside>
 
         <main className="sh-main">
