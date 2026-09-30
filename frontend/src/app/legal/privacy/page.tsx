@@ -37,7 +37,7 @@ const sections = [
     title: "3. Information from PurveX Range",
     paragraphs: [
       "If you use Range, we store your course progress: the missions and quizzes you have finished, your answers and results, your drill history, and a count of how many AI Coach questions you have used each day.",
-      "The Range lab runs on your own computer and uses a fictional company. When you run the lab setup script, it sends a snapshot of that practice lab to your Range account, such as its directory accounts, groups, settings, and security events, so the portal can check your work. We keep only the most recent snapshot.",
+      "The Range lab uses a fictional company. You can run it on your own computer, or choose a hosted lab that we run for you on a cloud server. When the lab setup runs, it sends a snapshot of that practice lab to your Range account, such as its directory accounts, groups, settings, and security events, so the portal can check your work. We keep only the most recent snapshot. For a hosted lab, we also store what we need to run it for you, such as the server's identifier and an encrypted password for remote access.",
       "If you create a connection key so your own AI tool (for example Claude or Cursor) can read your Range progress, we store that key in hashed form. Information your AI tool reads through that key is then handled under your own agreement with that tool's provider.",
       "If you use Get help in Range, we keep your message together with your lab status, the page you were on, and your browser type, and email them to our support team so we can fix the problem.",
       "Your browser also stores a copy of some progress and preferences locally, as described in the Cookies and local storage section.",
