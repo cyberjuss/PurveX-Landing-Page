@@ -79,6 +79,46 @@ function CopyLink({ text, label }: { text: string; label: string }) {
   );
 }
 
+// The QR is generated in the browser (qrcode, dynamically imported) so the join
+// URL never leaves the instructor's device -- no third-party QR service.
+function JoinQR({ link }: { link: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    let alive = true;
+    import("qrcode")
+      .then((m) => m.default.toDataURL(link, { width: 320, margin: 1, color: { dark: "#0f172a", light: "#ffffff" } }))
+      .then((u) => alive && setUrl(u))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [link]);
+  if (!url) return null;
+  return (
+    <div className="iv-qr">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={url} alt="Scan to join this class" width={132} height={132} />
+      <a href={url} download="class-join-qr.png" className="iv-copy">Download QR</a>
+    </div>
+  );
+}
+
+/** The shareable join link, one-click copy, and a QR -- everything an instructor
+ *  needs to hand a class its way in. */
+function InviteBlock({ code }: { code: string }) {
+  const origin = typeof window === "undefined" ? "" : window.location.origin;
+  const joinLink = `${origin}/academy/join?code=${encodeURIComponent(code)}`;
+  return (
+    <div className="iv-invite">
+      <div className="iv-invite__row">
+        <code className="iv-invite__link">{joinLink}</code>
+        <CopyLink text={joinLink} label="Copy join link" />
+      </div>
+      <JoinQR link={joinLink} />
+    </div>
+  );
+}
+
 function ClassView({ r }: { r: Report }) {
   const origin = typeof window === "undefined" ? "" : window.location.origin;
   const joinLink = `${origin}/academy/join?code=${encodeURIComponent(r.class.code)}`;
@@ -101,7 +141,8 @@ function ClassView({ r }: { r: Report }) {
           <CopyLink text={r.class.code} label="Copy code" />
           <CopyLink text={joinLink} label="Copy join link" />
         </div>
-        <p className="iv-note">Students enter the code on the passcode screen, or open the join link, then sign in. They join this class at sign-in.</p>
+        <p className="iv-note">Share the join link (or the QR). Students open it, sign in, and land in this class. The code is a fallback for typing on the passcode screen.</p>
+        <JoinQR link={joinLink} />
 
         <dl className="iv-stats">
           <div>
@@ -301,9 +342,13 @@ function NewClassForm({ onCreated }: { onCreated: () => void }) {
       </form>
       {error && <p className="iv-error">{error}</p>}
       {made && (
-        <p className="iv-made">
-          Created {made.name}. Class code <strong>{made.code}</strong>.
-        </p>
+        <div className="iv-made">
+          <p>
+            Created <strong>{made.name}</strong>. Share this with the class:
+          </p>
+          <InviteBlock code={made.code} />
+          <p className="iv-note">Code (fallback): <strong>{made.code}</strong></p>
+        </div>
       )}
     </section>
   );
