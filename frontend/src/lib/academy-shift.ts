@@ -361,10 +361,10 @@ export type ShiftIncident = {
 /** When incidents arrive across the 30 minutes, spread so the queue keeps
  *  filling the whole shift instead of front-loading. Keyed by how many there are. */
 const ARRIVALS: Record<number, number[]> = {
-  2: [20, 660],
-  3: [20, 540, 1080],
-  4: [20, 420, 840, 1320],
-  5: [15, 360, 720, 1080, 1440],
+  2: [0, 660],
+  3: [0, 540, 1080],
+  4: [0, 420, 840, 1320],
+  5: [0, 360, 720, 1080, 1440],
   6: [0, 300, 660, 1020, 1320, 1560],
 };
 
