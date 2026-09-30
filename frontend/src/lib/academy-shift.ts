@@ -363,6 +363,132 @@ export const INCIDENTS: IncidentDef[] = [
       };
     },
   },
+  {
+    id: "access-request",
+    kind: "ticket",
+    severity: "P3",
+    minPhase: 1,
+    minLevel: 1,
+    weight: 1,
+    roles: ["help-desk", "sysadmin"],
+    script: "Incident-AccessRequest.ps1",
+    points: 100,
+    from: "People Operations",
+    title: "New team member needs Compliance access",
+    brief: "A staff member moving to Compliance needs the access their team uses. Add them to the right group so they can do their job — grant only what the request asks for.",
+    resolve: [{ c: { t: "member", sam: "priya.nair", group: "Compliance Users", want: true }, label: "the user is in Compliance Users" }],
+    diagnosis: { prompt: "Which group grants Compliance access?", accept: ["compliance users", "compliance"] },
+    rubric: ["Named the group that grants the access", "Added only that group", "Confirmed the change took", "Did not over-grant"],
+    hints: [
+      "Open the user in Active Directory Users and Computers, on the Member Of tab.",
+      "Add them to the group the request names, and only that group.",
+      "Add the user to Compliance Users, then confirm the membership.",
+    ],
+    bind: (pick) => {
+      const v = pick(VICTIMS.filter((x) => ["priya.nair", "sam.whitfield", "jordan.ellis"].includes(x.sam)));
+      return {
+        args: { Sam: v.sam, Group: "Compliance Users" },
+        resolve: [{ c: { t: "member", sam: v.sam, group: "Compliance Users", want: true } as Check, label: `${v.sam} is in Compliance Users` }],
+        diagnosis: { prompt: "Which group grants Compliance access?", accept: ["compliance users", "compliance"] },
+        brief: `${v.name} is moving to Compliance and needs the access their team uses. Add them to the right group so they can do their job — grant only what the request asks for.`,
+      };
+    },
+  },
+  {
+    id: "offboarding",
+    kind: "ticket",
+    severity: "P2",
+    minPhase: 1,
+    minLevel: 2,
+    weight: 1.1,
+    roles: ["help-desk", "sysadmin"],
+    script: "Incident-Offboarding.ps1",
+    points: 130,
+    from: "People Operations",
+    title: "Employee has left — disable their access",
+    brief: "An employee left the company today. Disable their account so they can no longer sign in, and leave it in place for records. Do not delete it.",
+    resolve: [{ c: { t: "enabled", sam: "jordan.ellis", want: false }, label: "the leaver's account is disabled" }],
+    diagnosis: { prompt: "What should happen to a leaver's account on their last day?", accept: ["disable", "disabled", "disable the account"] },
+    rubric: ["Disabled the account instead of deleting it", "Left it in place for records", "Confirmed they can no longer sign in", "Noted the offboarding"],
+    hints: [
+      "Open the user in Active Directory Users and Computers.",
+      "Disabling keeps the account for records; deleting destroys the evidence.",
+      "Disable the account, then confirm it shows as disabled.",
+    ],
+    bind: (pick) => {
+      const v = pick(VICTIMS.filter((x) => x.sam !== "riley.kwan"));
+      return {
+        args: { Sam: v.sam },
+        resolve: [{ c: { t: "enabled", sam: v.sam, want: false } as Check, label: `${v.sam} is disabled` }],
+        diagnosis: { prompt: "What should happen to a leaver's account on their last day?", accept: ["disable", "disabled", "disable the account"] },
+        brief: `${v.name} in ${v.dept} left the company today. Disable their account so they can no longer sign in, and leave it in place for records. Do not delete it.`,
+      };
+    },
+  },
+  {
+    id: "pwd-notreqd",
+    kind: "alert",
+    severity: "P2",
+    minPhase: 1,
+    minLevel: 2,
+    weight: 1.4,
+    roles: ["sysadmin", "soc-analyst", "cyber-analyst"],
+    script: "Incident-PwdNotReq.ps1",
+    attack: { id: "T1098", name: "Account Manipulation" },
+    points: 160,
+    from: "SIEM · automated detection",
+    title: "Account set to not require a password",
+    brief: "An account was flagged 'password not required', which lets it sign in with a blank password. Close the exposure and report who changed it.",
+    resolve: [{ c: { t: "flag", sam: "priya.nair", flag: "pwdNotRequired", want: false }, label: "the account requires a password again" }],
+    diagnosis: { prompt: "What weakness was set on the account?", accept: ["password not required", "passwd_notreqd", "pwdnotreqd", "no password", "blank password", "not required"] },
+    rubric: ["Named the account and the flag", "Explained why a blank password is dangerous", "Cleared the flag", "Reported who changed it"],
+    hints: [
+      "Open the account and read its account options.",
+      "'Password not required' (PASSWD_NOTREQD) lets it sign in with no password.",
+      "Clear that option so a password is required again, then report it.",
+    ],
+    bind: (pick) => {
+      const v = pick(VICTIMS.filter((x) => x.sam !== "riley.kwan"));
+      return {
+        args: { Sam: v.sam },
+        resolve: [{ c: { t: "flag", sam: v.sam, flag: "pwdNotRequired", want: false } as Check, label: `${v.sam} requires a password again` }],
+        diagnosis: { prompt: "What weakness was set on the account?", accept: ["password not required", "passwd_notreqd", "pwdnotreqd", "no password", "blank password", "not required"] },
+        brief: `${v.name} in ${v.dept} was flagged 'password not required', which lets the account sign in with a blank password. Close the exposure and report who changed it.`,
+      };
+    },
+  },
+  {
+    id: "delegation",
+    kind: "alert",
+    severity: "P1",
+    minPhase: 2,
+    minLevel: 3,
+    weight: 1.7,
+    roles: ["soc-analyst", "cyber-analyst", "ir-analyst"],
+    script: "Incident-Delegation.ps1",
+    attack: { id: "T1484", name: "Domain Policy Modification" },
+    points: 200,
+    from: "SIEM · automated detection",
+    title: "Account trusted for delegation",
+    brief: "An ordinary account was marked trusted for delegation, which an attacker can abuse to impersonate other users across the domain. Remove the trust and report who set it.",
+    resolve: [{ c: { t: "flag", sam: "priya.nair", flag: "delegation", want: false }, label: "delegation trust is removed" }],
+    diagnosis: { prompt: "What was enabled on the account?", accept: ["delegation", "trusted for delegation", "unconstrained delegation", "unconstrained"] },
+    rubric: ["Named the account and the delegation trust", "Explained the impersonation risk", "Removed the trust", "Reported who set it"],
+    hints: [
+      "Open the account and check the Delegation tab and account options.",
+      "'Trust this user for delegation' on a normal account is the exposure.",
+      "Turn delegation off so the account is not trusted, then report it.",
+    ],
+    bind: (pick) => {
+      const v = pick(VICTIMS.filter((x) => x.sam !== "riley.kwan"));
+      return {
+        args: { Sam: v.sam },
+        resolve: [{ c: { t: "flag", sam: v.sam, flag: "delegation", want: false } as Check, label: `${v.sam} is no longer trusted for delegation` }],
+        diagnosis: { prompt: "What was enabled on the account?", accept: ["delegation", "trusted for delegation", "unconstrained delegation", "unconstrained"] },
+        brief: `${v.name} in ${v.dept} was marked trusted for delegation, which an attacker can abuse to impersonate other users across the domain. Remove the trust and report who set it.`,
+      };
+    },
+  },
 ];
 
 const byId = new Map(INCIDENTS.map((i) => [i.id, i]));

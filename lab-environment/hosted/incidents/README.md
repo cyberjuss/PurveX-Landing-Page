@@ -29,6 +29,10 @@ run on its own with no args.
 | Incident-ApprovedChange.ps1 | morgan.lee added to Compliance Users (approved) | leaves it in place | remove morgan.lee |
 | Incident-Compromise.ps1 | 4625 then a 4624 on `-Sam` (default jamie.torres) | disables the account | enable the account |
 | Incident-WeakPolicy.ps1 | domain password policy weakened | restores length ≥ 12 and lockout | restore baseline |
+| Incident-AccessRequest.ps1 | `-Sam` left OUT of `-Group` (default Compliance Users) | adds them to the group | remove from the group |
+| Incident-Offboarding.ps1 | `-Sam` left enabled (a leaver) | disables the account | re-enable the account |
+| Incident-PwdNotReq.ps1 | `-Sam` set PASSWD_NOTREQD | clears the flag | clear the flag |
+| Incident-Delegation.ps1 | `-Sam` set trusted for delegation | removes the trust | remove the trust |
 
 Notes:
 - Account passwords come from the image's `InitialPassword` (default
