@@ -228,9 +228,18 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
           You are on the desk for 15 minutes. Tickets and alerts arrive on their own as a live queue. Investigate each one in your lab, make the fix, and close it before its SLA runs out. Asking Coach for help costs points, like pulling a senior analyst off their work.
         </p>
         <ul className="sh-rules">
-          <li><ShieldAlert className="h-4 w-4" /> Real incidents, fired into your own lab</li>
-          <li><Clock className="h-4 w-4" /> 15 minutes · P1 in 5, P2 in 8, P3 in 12</li>
-          <li><LifeBuoy className="h-4 w-4" /> Coach costs 10%, 20%, then 40%</li>
+          <li>
+            <span className="sh-rule__icon"><ShieldAlert className="h-[18px] w-[18px]" /></span>
+            <span className="sh-rule__body"><b>Real incidents</b>Fired straight into your own lab</span>
+          </li>
+          <li>
+            <span className="sh-rule__icon"><Clock className="h-[18px] w-[18px]" /></span>
+            <span className="sh-rule__body"><b>15 minutes on the clock</b>P1 in 5, P2 in 8, P3 in 12</span>
+          </li>
+          <li>
+            <span className="sh-rule__icon"><LifeBuoy className="h-[18px] w-[18px]" /></span>
+            <span className="sh-rule__body"><b>Coach costs points</b>10%, then 20%, then 40%</span>
+          </li>
         </ul>
 
         <div className={`sh-labgate sh-labgate--${online ? "on" : "off"}`}>
