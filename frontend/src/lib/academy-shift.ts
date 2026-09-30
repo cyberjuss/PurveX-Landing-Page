@@ -105,10 +105,14 @@ const evDisabled = (e: LabEvents | undefined, sam: string) => evAcct(e?.disabled
 const evFailed = (e: LabEvents | undefined, sam: string) => evAcct(e?.failures, sam);
 const evGroupAdd = (e: LabEvents | undefined, member: string, group: string) =>
   (e?.groupAdds ?? []).some((g) => (g.member ?? "").toLowerCase().includes(member.toLowerCase()) && (g.group ?? "").toLowerCase().includes(group.toLowerCase()));
+// 4738/4739 evidence only exists in a v2+ digest. On older labs, don't gate on it
+// (fall back to the resolve check) so those incidents stay winnable until the lab updates.
+const digestHas4738 = (e: LabEvents | undefined) => (e?.v ?? 1) >= 2;
 // A 4738 (account changed) proves an attribute/flag attack was applied to the account.
-const evChanged = (e: LabEvents | undefined, sam: string) => (e?.accountChanges ?? []).some((r) => (r.account ?? "").toLowerCase().includes(sam.toLowerCase()));
+const evChanged = (e: LabEvents | undefined, sam: string) =>
+  !digestHas4738(e) || (e?.accountChanges ?? []).some((r) => (r.account ?? "").toLowerCase().includes(sam.toLowerCase()));
 // A 4739 (domain policy changed) proves the password/lockout policy was tampered with.
-const evPolicy = (e: LabEvents | undefined) => (e?.policyChanges ?? []).length > 0;
+const evPolicy = (e: LabEvents | undefined) => !digestHas4738(e) || (e?.policyChanges ?? []).length > 0;
 
 export const INCIDENTS: IncidentDef[] = [
   {

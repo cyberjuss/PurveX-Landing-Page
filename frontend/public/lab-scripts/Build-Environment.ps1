@@ -259,7 +259,9 @@ function Ensure-CTFChallengeData {
 # Every part is optional; if the log cannot be read, the rest of the sync still works.
 function Get-PurvexEventDigest {
     $days = 30
-    $digest = [ordered]@{ windowDays = $days }
+    # v2 adds 4738 (account changed) and 4739 (policy changed). Range only enforces
+    # those as evidence when it sees v >= 2, so older labs keep working unchanged.
+    $digest = [ordered]@{ windowDays = $days; v = 2 }
     $iso = { param($d) ([datetime]$d).ToUniversalTime().ToString("o") }
     $skip = { param($n) (-not $n) -or ($n -eq "-") -or ($n.EndsWith('$')) -or ($n -match '^(ANONYMOUS LOGON|SYSTEM|LOCAL SERVICE|NETWORK SERVICE)$') }
     $short = { param($dn) (($dn -split '(?<!\\),', 2)[0] -replace '^(CN|OU)=', '') }

@@ -49,6 +49,8 @@ export type LabSecurity = {
 /** A digest of the real Security log on the student's domain controller. Counts and names only, never raw events. */
 export type LabEvents = {
   windowDays: number;
+  /** Digest version. v>=2 captures 4738/4739; older labs omit it. */
+  v?: number;
   failures: { account: string; count: number; last: string | null }[];
   lockouts: { account: string; count: number; last: string | null }[];
   created: { account: string; at: string; by: string }[];
@@ -164,6 +166,7 @@ function sanitizeEvents(raw: unknown): LabEvents | undefined {
     rows(v).map((x) => ({ account: str(x.account, 80), at: date(x.at) ?? "", by: str(x.by, 80) })).filter((x) => x.account && x.at);
   const out: LabEvents = {
     windowDays: num(r.windowDays, 365) ?? 30,
+    v: num(r.v, 100) ?? 1,
     failures: counted(r.failures),
     lockouts: counted(r.lockouts),
     created: acted(r.created),
