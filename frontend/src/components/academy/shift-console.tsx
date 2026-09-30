@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { AlertTriangle, ArrowLeft, ArrowRight, Check, Clock, Loader2, LifeBuoy, Monitor, Power, RefreshCw, ShieldAlert } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, Check, Clock, Loader2, LifeBuoy, Power, RefreshCw, ShieldAlert } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { startHostedLabNow } from "@/components/academy/hosted-lab-button";
 import "./shift.css";
@@ -310,7 +310,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
           </div>
         </div>
         <div className="sh-top__right">
-          <span className="sh-online"><Monitor className="h-4 w-4" /> Lab online</span>
+          <span className="sh-online">Lab online</span>
           <div className={`sh-clock ${left <= 60 ? "sh-clock--low" : ""}`}>
             <span className="sh-clock__label">Shift ends in</span>
             <span className="sh-clock__time">{clock(left)}</span>

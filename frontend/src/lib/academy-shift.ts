@@ -360,18 +360,24 @@ export type ShiftIncident = {
   bind?: Bind;
 };
 
-/** Spread n incidents across the shift: the first at the start, the last with a
- *  buffer so even a P1 that lands late still has its full SLA. */
+/** When each incident arrives. The first few land fast so the queue has a real
+ *  backlog from the start, then the rest keep coming across the shift. The last
+ *  lands with a buffer so even a P1 that arrives late still has its full SLA. */
 function arrivalsFor(n: number): number[] {
   if (n <= 1) return [0];
-  const last = Math.max(0, SHIFT_SECONDS - 360);
-  return Array.from({ length: n }, (_, i) => Math.round((i / (n - 1)) * last));
+  const head = [0, 40, 90].slice(0, Math.min(n, 3));
+  if (n <= head.length) return head;
+  const rest = n - head.length;
+  const start = 210;
+  const last = Math.max(start, SHIFT_SECONDS - 300);
+  const tail = Array.from({ length: rest }, (_, j) => Math.round(start + (rest === 1 ? 0 : j / (rest - 1)) * (last - start)));
+  return [...head, ...tail];
 }
 
-/** How many incidents a shift has, from phase and level. Senior shifts run a
- *  busier queue; a 30-minute shift keeps work coming the whole time. */
+/** How many incidents a shift has, from phase and level. A 30-minute shift runs
+ *  a busy queue — more than a beginner clears — so work keeps arriving. */
 export function shiftSize(phase: number, level: number): number {
-  return Math.min(8, 4 + level + (phase >= 2 ? 1 : 0));
+  return Math.min(10, 6 + level + (phase >= 2 ? 1 : 0));
 }
 
 /**
