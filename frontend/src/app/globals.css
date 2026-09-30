@@ -4988,8 +4988,14 @@ textarea.pc-dock__field {
 .dr-exit { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 11.5rem; height: 40px; padding: 0 16px; border: 1px solid rgba(138, 148, 168, 0.55); border-radius: 0; background: transparent; font-size: 0.82rem; font-weight: 650; color: #334155; cursor: pointer; }
 .academy-bg[data-academy-theme="dark"] .dr-exit { border-color: rgba(180, 200, 255, 0.28); color: #c5d0ff; }
 .dr-exit:hover { border-color: var(--rd-bad); color: var(--rd-bad); }
-.dr-leave { display: inline-flex; align-items: center; gap: 12px; font-size: var(--ty-body, 14px); color: var(--rd-ink-2); }
+.dr-leave { display: inline-flex; align-items: center; gap: 10px; font-size: var(--ty-body, 14px); color: var(--rd-ink-2); }
 .dr-link--bad { color: var(--rd-bad); }
+/* Stay / Leave render as small square buttons, not text links. */
+.dr-leave .dr-link { display: inline-flex; align-items: center; justify-content: center; height: 34px; padding: 0 16px; border: 1px solid rgba(138, 148, 168, 0.55); border-radius: 0; background: transparent; text-decoration: none; font-weight: 650; line-height: 1; color: #334155; }
+.academy-bg[data-academy-theme="dark"] .dr-leave .dr-link { border-color: rgba(180, 200, 255, 0.28); color: #c5d0ff; }
+.dr-leave .dr-link:hover { border-color: var(--rd-accent); color: var(--rd-accent); }
+.dr-leave .dr-link--bad { color: var(--rd-bad); border-color: color-mix(in srgb, var(--rd-bad) 45%, transparent); }
+.dr-leave .dr-link--bad:hover { background: var(--rd-bad); border-color: var(--rd-bad); color: #fff; }
 
 /* Drills home, simplified: one scenario card, one quick drill */
 .dr-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 11.5rem; height: 40px; padding: 0 16px; border: 1px solid rgba(138, 148, 168, 0.55); border-radius: 0; background: transparent; font-size: 0.82rem; font-weight: 650; color: #334155; cursor: pointer; }
