@@ -225,8 +225,8 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
   }
   return (
     <div className="shift-app shift-app--center" data-academy-theme={theme}>
+      <Link href="/academy" className="sh-corner-home" aria-label="Back to Academy"><ArrowLeft className="h-4 w-4" /></Link>
       <div className="sh-intro">
-        <Link href="/academy" className="sh-back"><ArrowLeft className="h-3.5 w-3.5" /> Academy</Link>
         <div className="sh-brand">
           <span className="sh-logo">P</span>
           <div>

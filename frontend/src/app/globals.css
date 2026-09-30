@@ -4094,8 +4094,9 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   --rd-ink: #0f172a;
   --rd-ink-2: #475569;
   --rd-ink-3: #8a94a8;
-  --rd-line: rgba(15, 23, 42, 0.12);
-  --rd-line-2: rgba(15, 23, 42, 0.06);
+  --rd-line: rgba(15, 23, 42, 0.08);
+  --rd-line-2: rgba(15, 23, 42, 0.045);
+  --rd-surface: rgba(15, 23, 42, 0.025);
   --rd-accent: #5546e0;
   --rd-good: #0f9f6e;
   --rd-warn: #c4820e;
@@ -4107,8 +4108,9 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   --rd-ink: #e8eef8;
   --rd-ink-2: #9aa8bc;
   --rd-ink-3: #6b768a;
-  --rd-line: rgba(180, 200, 255, 0.14);
-  --rd-line-2: rgba(180, 200, 255, 0.07);
+  --rd-line: rgba(180, 200, 255, 0.09);
+  --rd-line-2: rgba(180, 200, 255, 0.05);
+  --rd-surface: rgba(180, 200, 255, 0.035);
   --rd-accent: #9eb0ff;
   --rd-good: #34d399;
   --rd-warn: #fbbf24;
