@@ -206,7 +206,7 @@ export const CERT_STATUSES: { id: CertStatus; label: string }[] = [
   { id: "none", label: "Not at this time" },
 ];
 
-export type CertGoal = { status: CertStatus; /** YYYY-MM-DD, only when studying. */ examDate?: string };
+export type CertGoal = { status: CertStatus; /** YYYY-MM-DD, only when studying. */ examDate?: string; /** YYYY-MM-DD, only when earned. */ earnedDate?: string };
 
 export type StudentProfile = {
   certs: Record<CertId, CertGoal>;
@@ -230,7 +230,9 @@ export function sanitizeProfile(raw: unknown): StudentProfile | null {
     const status = CERT_STATUSES.some((s) => s.id === row.status) ? (row.status as CertStatus) : null;
     if (!status) return null;
     const date = typeof row.examDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(row.examDate) ? row.examDate : undefined;
-    certs[id] = status === "studying" && date ? { status, examDate: date } : { status };
+    const earned = typeof row.earnedDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(row.earnedDate) ? row.earnedDate : undefined;
+    certs[id] =
+      status === "studying" && date ? { status, examDate: date } : status === "earned" && earned ? { status, earnedDate: earned } : { status };
   }
   const roles = Array.isArray(r.roles) ? [...new Set(r.roles.filter((x): x is RoleId => typeof x === "string" && ROLE_IDS.has(x)))].slice(0, MAX_ROLES) : [];
   if (!roles.length) return null;

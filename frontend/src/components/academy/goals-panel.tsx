@@ -73,7 +73,7 @@ export function GoalsPanel({
   }
 
   function setCert(id: CertId, next: CertGoal) {
-    setCerts((prev) => ({ ...prev, [id]: next.status === "studying" ? next : { status: next.status } }));
+    setCerts((prev) => ({ ...prev, [id]: next.status === "studying" || next.status === "earned" ? next : { status: next.status } }));
   }
 
   async function save() {
@@ -132,7 +132,11 @@ export function GoalsPanel({
                       <b>{daysUntil(goal.examDate, today)}</b> {daysUntil(goal.examDate, today) === 1 ? "day left" : "days left"}
                     </span>
                   )}
-                  {goal.status === "earned" && <span className="gp-count gp-count--done">Certified</span>}
+                  {goal.status === "earned" && (
+                    <span className="gp-count gp-count--done">
+                      {goal.earnedDate ? `Certified · ${new Date(`${goal.earnedDate}T00:00:00`).toLocaleDateString(undefined, { month: "short", year: "numeric" })}` : "Certified"}
+                    </span>
+                  )}
                 </div>
                 {late && (
                   <div className="gp-late" role="status">
@@ -160,7 +164,7 @@ export function GoalsPanel({
                       role="radio"
                       aria-checked={goal.status === s.id}
                       className="gp-chip"
-                      onClick={() => setCert(id, { status: s.id, examDate: s.id === "studying" ? goal.examDate : undefined })}
+                      onClick={() => setCert(id, { status: s.id, examDate: s.id === "studying" ? goal.examDate : undefined, earnedDate: s.id === "earned" ? goal.earnedDate : undefined })}
                     >
                       {s.label}
                     </button>
@@ -174,6 +178,17 @@ export function GoalsPanel({
                       min={today}
                       value={goal.examDate && goal.examDate >= today ? goal.examDate : ""}
                       onChange={(e) => setCert(id, { status: "studying", examDate: e.target.value || undefined })}
+                    />
+                  </label>
+                )}
+                {goal.status === "earned" && (
+                  <label className="gp-field">
+                    <span>Date earned · Optional</span>
+                    <input
+                      type="date"
+                      max={today}
+                      value={goal.earnedDate ?? ""}
+                      onChange={(e) => setCert(id, { status: "earned", earnedDate: e.target.value || undefined })}
                     />
                   </label>
                 )}

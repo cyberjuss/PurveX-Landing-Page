@@ -58,7 +58,10 @@ function certLines(profile: StudentProfile | null): { name: string; status: stri
   const out: { name: string; status: string }[] = [];
   for (const id of CERT_IDS) {
     const g = profile.certs[id];
-    if (g.status === "earned") out.push({ name: CERTS[id].full, status: "Certified" });
+    if (g.status === "earned") {
+      const on = g.earnedDate ? new Date(`${g.earnedDate}T00:00:00`).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : null;
+      out.push({ name: CERTS[id].full, status: on ? `Certified · ${on}` : "Certified" });
+    }
     else if (g.status === "studying") {
       const booked = g.examDate ? new Date(`${g.examDate}T00:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : null;
       out.push({ name: CERTS[id].full, status: booked ? `Exam booked ${booked}` : "Studying now" });

@@ -61,9 +61,12 @@ export function AcademyIntake({
   }
 
   function pickCert(id: CertId, status: CertStatus) {
-    setCerts((prev) => ({ ...prev, [id]: status === "studying" ? { status, examDate: prev[id]?.examDate } : { status } }));
-    // Studying asks for an exam date, so it waits for Next.
-    if (status !== "studying") timer.current = window.setTimeout(() => go(i + 1), ADVANCE_MS);
+    setCerts((prev) => ({
+      ...prev,
+      [id]: status === "studying" ? { status, examDate: prev[id]?.examDate } : status === "earned" ? { status, earnedDate: prev[id]?.earnedDate } : { status },
+    }));
+    // Studying and Certified ask for a date, so they wait for Next.
+    if (status !== "studying" && status !== "earned") timer.current = window.setTimeout(() => go(i + 1), ADVANCE_MS);
   }
 
   function toggleRole(id: RoleId) {
@@ -120,6 +123,17 @@ export function AcademyIntake({
             />
           </label>
         )}
+        {goal?.status === "earned" && (
+          <label className="axq-field axq-reveal">
+            <span>Date earned · Optional</span>
+            <input
+              type="date"
+              max={todayPlus(0)}
+              value={goal.earnedDate ?? ""}
+              onChange={(e) => setCerts((prev) => ({ ...prev, [step]: { status: "earned", earnedDate: e.target.value || undefined } }))}
+            />
+          </label>
+        )}
       </>
     );
   } else if (step === "roles") {
@@ -154,7 +168,8 @@ export function AcademyIntake({
   }
 
   // The Next button shows only where a tap does not move on by itself.
-  const showNext = step === "roles" || step === "start" || certs[step as CertId]?.status === "studying";
+  const showNext =
+    step === "roles" || step === "start" || certs[step as CertId]?.status === "studying" || certs[step as CertId]?.status === "earned";
 
   return (
     <section className="axq" aria-label={initial ? "Your goals" : "Before you start"}>
