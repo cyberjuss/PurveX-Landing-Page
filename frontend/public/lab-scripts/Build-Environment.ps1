@@ -506,13 +506,15 @@ function Start-PurvexSyncLoop {
     $lastSend = [datetime]::MinValue
     $lastUsn = [int64]-1
     while ($true) {
-        $waitMs = 400
+        # Poll fast so a directory change (an unlock, an enable, a group edit) is
+        # detected and pushed within a fraction of a second, not a beat later.
+        $waitMs = 150
         try {
             $age = ((Get-Date) - $lastSend).TotalSeconds
             $usn = Get-PurvexHighestUsn -DomainDN $domainDN
             $due = $age -ge 60
             # A short gap folds one edit (create, then add to a group) into a single send.
-            $changed = ($usn -ge 0) -and ($age -ge 0.8) -and (($lastUsn -lt 0) -or ($usn -ne $lastUsn))
+            $changed = ($usn -ge 0) -and ($age -ge 0.25) -and (($lastUsn -lt 0) -or ($usn -ne $lastUsn))
             if ($changed -or $due) {
                 if ($changed) { Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN -Fast }
                 else { Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN }

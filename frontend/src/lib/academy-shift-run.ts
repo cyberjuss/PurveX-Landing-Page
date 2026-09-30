@@ -290,15 +290,17 @@ export async function submitIncident(
   const before = await loadLabState(userId);
   const beforeAt = before ? Date.parse(before.uploadedAt) : 0;
   let lab = before;
-  if (await requestLabSync(userId, true)) {
-    const deadline = Date.now() + 8000;
-    while (Date.now() < deadline) {
-      await new Promise((r) => setTimeout(r, 700));
-      const next = await loadLabState(userId);
-      if (next && Date.parse(next.uploadedAt) > beforeAt) {
-        lab = next;
-        break;
-      }
+  // The lab's own change-watch loop pushes a fresh snapshot within a fraction of a
+  // second of the fix; also force one over SSM for changes it doesn't watch. Poll
+  // tightly and take whichever fresher snapshot lands first.
+  void requestLabSync(userId, true);
+  const deadline = Date.now() + 8000;
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 200));
+    const next = await loadLabState(userId);
+    if (next && Date.parse(next.uploadedAt) > beforeAt) {
+      lab = next;
+      break;
     }
   }
 
