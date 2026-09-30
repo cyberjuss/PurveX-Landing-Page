@@ -29,6 +29,7 @@ import {
 // ---- what the page and MCP see (never the answers) -------------------------
 
 export type PublicIncident = {
+  uid: string;
   defId: string;
   kind: "alert" | "ticket";
   severity: "P1" | "P2" | "P3";
@@ -108,6 +109,7 @@ function toPublic(run: ShiftRun, inc: IncidentRun, elapsed: number): PublicIncid
   const title = inc.text?.title ?? def.title;
   const brief = inc.text?.brief ?? eff.brief;
   return {
+    uid: inc.uid,
     defId: def.id,
     kind: def.kind,
     severity: def.severity,
@@ -237,17 +239,17 @@ export async function startShift(userId: string): Promise<{ shift?: PublicShift;
 
 // ---- acknowledge / hint / submit ------------------------------------------
 
-function activeIncident(run: ShiftRun | null, defId: string, now = Date.now()): { run: ShiftRun; inc: IncidentRun; def: IncidentDef; elapsed: number } | null {
+function activeIncident(run: ShiftRun | null, uid: string, now = Date.now()): { run: ShiftRun; inc: IncidentRun; def: IncidentDef; elapsed: number } | null {
   if (!run || run.status !== "active" || shiftOver(run, now)) return null;
-  const inc = run.incidents.find((i) => i.defId === defId);
-  const def = inc && incidentDef(defId);
+  const inc = run.incidents.find((i) => i.uid === uid);
+  const def = inc && incidentDef(inc.defId);
   const elapsed = shiftElapsed(run, now);
   if (!inc || !def || !incidentArrived(inc, elapsed)) return null;
   return { run, inc, def, elapsed };
 }
 
-export async function ackIncident(userId: string, defId: string): Promise<PublicShift | { error: string }> {
-  const found = activeIncident(await loadShift(userId), defId);
+export async function ackIncident(userId: string, uid: string): Promise<PublicShift | { error: string }> {
+  const found = activeIncident(await loadShift(userId), uid);
   if (!found) return { error: "That incident is not open." };
   if (found.inc.ackedAtSec === null) {
     found.inc.ackedAtSec = found.elapsed;
@@ -256,8 +258,8 @@ export async function ackIncident(userId: string, defId: string): Promise<Public
   return publicShift(found.run);
 }
 
-export async function hintIncident(userId: string, defId: string): Promise<{ hint: string; hintsUsed: number; costPct: number } | { error: string }> {
-  const found = activeIncident(await loadShift(userId), defId);
+export async function hintIncident(userId: string, uid: string): Promise<{ hint: string; hintsUsed: number; costPct: number } | { error: string }> {
+  const found = activeIncident(await loadShift(userId), uid);
   if (!found) return { error: "That incident is not open." };
   const { inc, def, run } = found;
   if (inc.hintsUsed >= def.hints.length) return { error: "No more hints for this incident." };
@@ -273,11 +275,11 @@ export async function hintIncident(userId: string, defId: string): Promise<{ hin
  */
 export async function submitIncident(
   userId: string,
-  defId: string,
+  uid: string,
   diagnosis: string,
   response: string
 ): Promise<{ resolved: boolean; onTime: boolean; results: { label: string; ok: boolean }[]; waiting: boolean } | { error: string }> {
-  const found = activeIncident(await loadShift(userId), defId);
+  const found = activeIncident(await loadShift(userId), uid);
   if (!found) return { error: "That incident is not open." };
   const { inc, def, run, elapsed } = found;
   inc.diagnosis = diagnosis.slice(0, 400);

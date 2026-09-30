@@ -83,6 +83,8 @@
   background: var(--brand); color: #fff; font-weight: 800; font-size: 16px;
 }
 .sh-brand { display: flex; align-items: center; gap: 12px; }
+.sh-top__home { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid var(--rd-line); color: var(--rd-ink-2); text-decoration: none; transition: border-color 0.15s, color 0.15s; }
+.sh-top__home:hover { border-color: var(--rd-accent); color: var(--rd-accent); }
 
 /* ---- top bar ------------------------------------------------------------ */
 .sh-top { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px 22px; border-bottom: 1px solid var(--rd-line); background: var(--panel); }

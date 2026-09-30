@@ -349,6 +349,8 @@ export const incidentDef = (id: string) => byId.get(id) ?? null;
 // ---- picking a shift ------------------------------------------------------
 
 export type ShiftIncident = {
+  /** Unique per instance this shift; the same template can appear more than once. */
+  uid: string;
   defId: string;
   severity: Severity;
   /** Seconds from shift start when it arrives, and the response deadline from arrival. */
@@ -358,35 +360,33 @@ export type ShiftIncident = {
   bind?: Bind;
 };
 
-/** When incidents arrive across the 30 minutes, spread so the queue keeps
- *  filling the whole shift instead of front-loading. Keyed by how many there are. */
-const ARRIVALS: Record<number, number[]> = {
-  2: [0, 660],
-  3: [0, 540, 1080],
-  4: [0, 420, 840, 1320],
-  5: [0, 360, 720, 1080, 1440],
-  6: [0, 300, 660, 1020, 1320, 1560],
-};
+/** Spread n incidents across the shift: the first at the start, the last with a
+ *  buffer so even a P1 that lands late still has its full SLA. */
+function arrivalsFor(n: number): number[] {
+  if (n <= 1) return [0];
+  const last = Math.max(0, SHIFT_SECONDS - 360);
+  return Array.from({ length: n }, (_, i) => Math.round((i / (n - 1)) * last));
+}
 
-/** How many incidents a shift has, from phase and level. More senior shifts run
- *  a busier queue. Capped by how many incidents are actually eligible. */
+/** How many incidents a shift has, from phase and level. Senior shifts run a
+ *  busier queue; a 30-minute shift keeps work coming the whole time. */
 export function shiftSize(phase: number, level: number): number {
-  const base = 2 + Math.max(0, level - 1) + (phase >= 2 ? 1 : 0);
-  return Math.min(6, base);
+  return Math.min(8, 4 + level + (phase >= 2 ? 1 : 0));
 }
 
 /**
  * Choose the shift's incidents for this student. Only incidents at or below
  * their phase and level are eligible; harder ones are weighted up as the level
- * rises. A false alarm is included from Hard (level 3) up. Deterministic per seed.
+ * rises. A false alarm is included from Hard (level 3) up. To keep the queue
+ * filling, victim-rotating incidents repeat (each hitting a different person).
+ * Deterministic per seed.
  */
 export function pickShift(seed: string, phase: number, level: number, roles: RoleId[] = []): ShiftIncident[] {
   const r = seeded(seed);
   const eligible = INCIDENTS.filter((i) => i.minPhase <= phase && i.minLevel <= level);
   const real = eligible.filter((i) => !i.falseAlarm);
   const alarms = eligible.filter((i) => i.falseAlarm);
-  // Never ask for more incidents than are eligible at this phase and level.
-  const size = Math.min(shiftSize(phase, level), eligible.length);
+  const size = eligible.length ? shiftSize(phase, level) : 0;
 
   // Incidents that match a target role are worth more, so the queue leans toward that job.
   const roleFit = (i: IncidentDef) => (roles.length && i.roles.some((x) => roles.includes(x)) ? 1.8 : 1);
@@ -399,18 +399,23 @@ export function pickShift(seed: string, phase: number, level: number, roles: Rol
     .map((i) => ({ i, w: (i.weight ?? 1) * roleFit(i) * (0.6 + level * 0.2) + r() }))
     .sort((a, b) => b.w - a.w)
     .map((x) => x.i);
+  // First the distinct incidents, most relevant first.
   for (const i of weighted) {
     if (chosen.length >= size) break;
     if (!chosen.includes(i)) chosen.push(i);
   }
+  // Then keep the queue coming by repeating the ones that rotate their victim, so
+  // each repeat is a different person and never a duplicate ticket.
+  const repeatable = weighted.filter((i) => i.bind);
+  for (let k = 0; chosen.length < size && repeatable.length; k++) {
+    chosen.push(repeatable[k % repeatable.length]);
+  }
 
-  const arrivals = ARRIVALS[chosen.length] ?? ARRIVALS[2];
-  const order = { P1: 0, P2: 1, P3: 2 };
-  // Most urgent first, so a P1 does not arrive last with no time to work it.
-  chosen.sort((a, b) => order[a.severity] - order[b.severity]);
+  const arrivals = arrivalsFor(chosen.length);
   // A deterministic single-pick helper for the incidents that rotate their victim.
   const pickOne = <T,>(arr: T[]): T => shuffle(r, arr)[0];
   return chosen.map((def, n) => ({
+    uid: `${def.id}-${n}`,
     defId: def.id,
     severity: def.severity,
     arriveSec: arrivals[n],
@@ -498,6 +503,8 @@ export function logColor(events: LabEvents | undefined, def: IncidentDef): strin
 // background timer: the page and the grader both read the clock.
 
 export type IncidentRun = {
+  /** Unique per instance this shift; used for selection and actions (defId can repeat). */
+  uid: string;
   defId: string;
   severity: Severity;
   arriveSec: number;

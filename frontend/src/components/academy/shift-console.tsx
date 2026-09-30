@@ -10,6 +10,7 @@ import "./shift.css";
 
 type Sev = "P1" | "P2" | "P3";
 type Incident = {
+  uid: string;
   defId: string;
   kind: "alert" | "ticket";
   severity: Sev;
@@ -286,19 +287,22 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   const hintsUsed = shift.incidents.reduce((s, i) => s + i.hintsUsed, 0);
 
   // Stable incident numbers follow the server's creation order.
-  const numOf = new Map(shift.incidents.map((i, idx) => [i.defId, incNo(idx)]));
+  const numOf = new Map(shift.incidents.map((i, idx) => [i.uid, incNo(idx)]));
 
   // Order: unresolved by severity first, then resolved.
   const order = { P1: 0, P2: 1, P3: 2 };
   const queue = [...shift.incidents].sort((a, b) => (a.resolved === b.resolved ? order[a.severity] - order[b.severity] : a.resolved ? 1 : -1));
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const selected = queue.find((i) => i.defId === selectedId) ?? queue.find((i) => !i.resolved) ?? queue[0] ?? null;
+  const selected = queue.find((i) => i.uid === selectedId) ?? queue.find((i) => !i.resolved) ?? queue[0] ?? null;
 
   return (
     <div className="shift-app" data-academy-theme={theme}>
       <header className="sh-top">
         <div className="sh-brand">
+          <Link href="/academy" className="sh-top__home" aria-label="Back to Academy" title="Back to Academy (your shift keeps running)">
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
           <span className="sh-logo">P</span>
           <div className="sh-top__title">
             <p className="sh-top__name">Night shift · PurveX Financial</p>
@@ -344,15 +348,15 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
               {queue.map((inc) => {
                 const deadlineAt = start + (inc.arriveSec + inc.deadlineSec) * 1000;
                 const secs = inc.resolved ? null : Math.max(0, Math.round((deadlineAt - now) / 1000));
-                const isSel = selected?.defId === inc.defId;
+                const isSel = selected?.uid === inc.uid;
                 const urgent = !inc.resolved && !inc.acknowledged && inc.severity === "P1";
                 const cls = ["sh-li", `sh-li--sev-${inc.severity.toLowerCase()}`, isSel && "sh-li--on", inc.resolved && "sh-li--done", urgent && "sh-li--urgent"].filter(Boolean).join(" ");
                 return (
-                  <li key={inc.defId}>
-                    <button type="button" role="tab" aria-selected={isSel} className={cls} onClick={() => setSelectedId(inc.defId)}>
+                  <li key={inc.uid}>
+                    <button type="button" role="tab" aria-selected={isSel} className={cls} onClick={() => setSelectedId(inc.uid)}>
                       <span className="sh-li__top">
                         <span className={`sh-tag sh-tag--${inc.kind}`}>{inc.kind}</span>
-                        <span className="sh-li__no">{numOf.get(inc.defId)}</span>
+                        <span className="sh-li__no">{numOf.get(inc.uid)}</span>
                         {inc.resolved ? (
                           <span className="sh-status sh-status--done">Solved</span>
                         ) : secs !== null ? (
@@ -373,7 +377,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
         <main className="sh-main">
           {error && <p className="sh-error">{error}</p>}
           {selected ? (
-            <IncidentDetail key={selected.defId} inc={selected} no={numOf.get(selected.defId) ?? ""} start={start} now={now} busy={busy} post={post} />
+            <IncidentDetail key={selected.uid} inc={selected} no={numOf.get(selected.uid) ?? ""} start={start} now={now} busy={busy} post={post} />
           ) : (
             <p className="sh-waiting sh-waiting--big"><Loader2 className="h-4 w-4 animate-spin" /> The first incident will land shortly.</p>
           )}
@@ -398,9 +402,9 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
 
   // Opening an incident acknowledges it (starts the "working" state). No button; matches the desk.
   useEffect(() => {
-    if (!inc.resolved && !inc.acknowledged) void post({ action: "ack", defId: inc.defId });
+    if (!inc.resolved && !inc.acknowledged) void post({ action: "ack", uid: inc.uid });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inc.defId]);
+  }, [inc.uid]);
 
   async function submit(escalate = false) {
     let note = response;
@@ -409,11 +413,11 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
       note = /escalat/i.test(base) ? base : `${base}\n\nEscalated to tier 2.`;
       setResponse(note);
     }
-    const data = await post({ action: "submit", defId: inc.defId, diagnosis, response: note });
+    const data = await post({ action: "submit", uid: inc.uid, diagnosis, response: note });
     if (data?.result) setResult(data.result as SubmitResult);
   }
   async function coach() {
-    const data = await post({ action: "hint", defId: inc.defId });
+    const data = await post({ action: "hint", uid: inc.uid });
     if (data && typeof data.hint === "string") setHints((h) => [...h, data.hint as string]);
   }
 
@@ -460,7 +464,7 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
       </div>
 
       {inc.resolved ? (
-        <p className="sh-resolved"><Check className="h-4 w-4" /> Handled. It counts toward your shift score.</p>
+        <p className="sh-resolved"><Check className="h-4 w-4" /> Handled — your lab shows the fix. It counts toward your shift score.</p>
       ) : (
         <div className="sh-work">
           <div className="sh-lab">
