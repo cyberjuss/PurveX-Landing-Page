@@ -281,7 +281,7 @@ export async function submitIncident(
   uid: string,
   diagnosis: string,
   response: string
-): Promise<{ resolved: boolean; onTime: boolean; results: { label: string; ok: boolean }[]; waiting: boolean } | { error: string }> {
+): Promise<{ resolved: boolean; onTime: boolean; results: { label: string; ok: boolean }[]; waiting: boolean; needFinding: boolean } | { error: string }> {
   const found = activeIncident(await loadShift(userId), uid);
   if (!found) return { error: "That incident is not open." };
   const { inc, def, run, elapsed } = found;
@@ -309,14 +309,19 @@ export async function submitIncident(
 
   const graded = gradeIncidentLab(effectiveIncident(def, inc), lab?.snapshot ?? null, inc.diagnosis);
   const fresh = Boolean(lab && Date.parse(lab.uploadedAt) >= Date.parse(run.startedAt));
-  if (graded.resolved && inc.resolvedAtSec === null) inc.resolvedAtSec = elapsed;
+  // An incident closes only when the lab shows the fix AND the finding is answered
+  // correctly. A correct fix with a wrong or blank finding stays open with a nudge.
+  const needFinding = graded.resolved && !graded.diagnosisRight;
+  const closed = graded.resolved && graded.diagnosisRight;
+  if (closed && inc.resolvedAtSec === null) inc.resolvedAtSec = elapsed;
   await saveShift(userId, run);
   return {
-    resolved: graded.resolved,
+    resolved: closed,
     onTime: inc.resolvedAtSec !== null && resolvedOnTime(inc),
     results: graded.results,
     // Not resolved and the lab has not reported since the shift began: the change may just be in flight.
     waiting: !graded.resolved && !fresh,
+    needFinding,
   };
 }
 
@@ -333,7 +338,9 @@ async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
     if (!def) continue;
     const eff = effectiveIncident(def, inc);
     const lg = gradeIncidentLab(eff, snapshot, inc.diagnosis);
-    if (lg.resolved && inc.resolvedAtSec === null) inc.resolvedAtSec = shiftElapsed(run, Date.parse(run.endsAt));
+    // An incident is only closed when the lab shows the fix AND the finding is right.
+    const closed = lg.resolved && lg.diagnosisRight;
+    if (closed && inc.resolvedAtSec === null) inc.resolvedAtSec = shiftElapsed(run, Date.parse(run.endsAt));
     const onTime = inc.resolvedAtSec !== null && resolvedOnTime(inc);
 
     let writeUp: number | null = null;
@@ -343,12 +350,12 @@ async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
       if (marked) writeUp = marked.total ? marked.hits / marked.total : null;
     }
 
-    inc.resolved = lg.resolved;
+    inc.resolved = closed;
     inc.noHarm = lg.noHarm;
     inc.diagnosisRight = lg.diagnosisRight;
     inc.onTime = onTime;
     inc.writeUp = writeUp;
-    inc.score = scoreIncident(def, { resolved: lg.resolved, onTime, noHarm: lg.noHarm, diagnosisRight: lg.diagnosisRight, writeUp }, inc.hintsUsed);
+    inc.score = scoreIncident(def, { resolved: closed, onTime, noHarm: lg.noHarm, diagnosisRight: lg.diagnosisRight, writeUp }, inc.hintsUsed);
   }
 
   run.totalScore = run.incidents.reduce((s, i) => s + (i.score ?? 0), 0);

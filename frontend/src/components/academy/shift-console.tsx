@@ -7,6 +7,7 @@ import {
   AlertTriangle, ArrowLeft, ArrowRight, Check, Clock, Loader2, LifeBuoy, Power, RefreshCw, ShieldAlert,
   Lock, Unlock, KeyRound, UserPlus, UserMinus, UserX, UserCog, ArrowLeftRight, FolderTree, SprayCan, Target,
   Crown, DoorOpen, BellOff, ShieldOff, ShieldCheck, ShieldX, Ticket, Search, Share2, Server, EyeOff, Infinity as InfinityIcon,
+  Wrench, Info, ArrowUpRight, FileText,
 } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { startHostedLabNow } from "@/components/academy/hosted-lab-button";
@@ -235,48 +236,29 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
           </div>
         </div>
         <p className="sh-lede">
-          You are on the desk for 30 minutes. Alerts and tickets arrive on their own. Investigate each in your lab, fix it, and close it before its SLA runs out.
+          You are on the desk for 30 minutes. Real attacks and tickets fire into your own lab on their own. Investigate each, fix it, and close it before its SLA runs out.
         </p>
-        <ul className="sh-facts">
-          <li>
-            <ShieldAlert className="sh-fact__i" />
-            <span className="sh-fact__t">Real attacks</span>
-            <span className="sh-fact__v">Fired into your own lab</span>
-          </li>
-          <li>
-            <Clock className="sh-fact__i" />
-            <span className="sh-fact__t">30 minutes</span>
-            <span className="sh-fact__v">P1 in 5, P2 in 8, P3 in 12</span>
-          </li>
-          <li>
-            <LifeBuoy className="sh-fact__i" />
-            <span className="sh-fact__t">Coach costs points</span>
-            <span className="sh-fact__v">10%, then 20%, then 40%</span>
-          </li>
-        </ul>
 
-        <div className={`sh-labgate sh-labgate--${online ? "on" : "off"}`}>
-          <span className={`sh-labdot sh-labdot--${online ? "on" : labState === "starting" ? "wait" : "off"}`} />
-          <span className="sh-labgate__text">
-            Your lab is <strong>{labWord}</strong>. {online ? "You are ready to start." : starting ? "It is coming up; this updates on its own." : "Start it, then this updates on its own."}
-          </span>
-          {!online && (
-            starting ? (
-              <button type="button" className="sh-refresh" onClick={onRefresh} aria-label="Refresh lab status">
-                <RefreshCw className="h-3.5 w-3.5" /> Refresh
-              </button>
-            ) : (
-              <button type="button" className="sh-refresh" onClick={startLab} disabled={labBusy}>
-                {labBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Power className="h-3.5 w-3.5" />} Start my lab
-              </button>
-            )
-          )}
-        </div>
+        <p className="sh-status">
+          <span className={`sh-labdot sh-labdot--${online ? "on" : starting ? "wait" : "off"}`} />
+          Lab is <strong>{labWord}</strong>{online ? "" : starting ? " — coming up, this updates on its own" : " — start it to begin"}
+        </p>
 
         {error && <p className="sh-error">{error}</p>}
-        <button type="button" className="sh-go" disabled={busy || !online} onClick={onStart}>
-          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Start shift <ArrowRight className="h-4 w-4" />
-        </button>
+
+        {online ? (
+          <button type="button" className="sh-go" disabled={busy} onClick={onStart}>
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Start shift <ArrowRight className="h-4 w-4" />
+          </button>
+        ) : starting ? (
+          <button type="button" className="sh-go sh-go--ghost" onClick={onRefresh}>
+            <RefreshCw className="h-4 w-4" /> Refresh status
+          </button>
+        ) : (
+          <button type="button" className="sh-go" disabled={labBusy} onClick={startLab}>
+            {labBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Power className="h-4 w-4" />} Start my lab
+          </button>
+        )}
       </div>
     </div>
   );
@@ -415,6 +397,11 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
               })}
             </ul>
           )}
+          <ul className="sh-facts-mini">
+            <li><ShieldAlert className="h-3.5 w-3.5" /> Real attacks, fired into your own lab</li>
+            <li><Clock className="h-3.5 w-3.5" /> SLA · P1 5m · P2 8m · P3 12m</li>
+            <li><LifeBuoy className="h-3.5 w-3.5" /> Coach costs 10%, then 20%, then 40%</li>
+          </ul>
         </aside>
 
         <main className="sh-main">
@@ -430,7 +417,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   );
 }
 
-type SubmitResult = { resolved: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[] };
+type SubmitResult = { resolved: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[]; needFinding?: boolean };
 
 function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no: string; start: number; now: number; busy: boolean; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
   const [diagnosis, setDiagnosis] = useState(inc.diagnosis);
@@ -497,7 +484,7 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
           </p>
           <p className="sh-msg__text">{inc.brief}</p>
           {inc.why && (
-            <p className="sh-why"><span className="sh-why__tag">Why it matters</span>{inc.why}</p>
+            <p className="sh-why"><span className="sh-why__tag"><Info className="h-3.5 w-3.5" /> Why it matters</span>{inc.why}</p>
           )}
           {inc.attack && (
             <a
@@ -518,7 +505,7 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
       ) : (
         <div className="sh-work">
           <div className="sh-lab">
-            <p className="sh-lab__head">In your lab</p>
+            <p className="sh-lab__head"><Wrench className="h-3.5 w-3.5" /> In your lab</p>
             <ul className="sh-lab__steps">
               <li>Investigate in Event Viewer and Active Directory Users and Computers.</li>
               <li>Make the fix on your domain controller.</li>
@@ -526,13 +513,13 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
               <li>Select <strong>Check my fix</strong>. Range reads your live lab, not a checkbox.</li>
             </ul>
             <label className="sh-field">
-              <span>{inc.diagnosisPrompt}</span>
+              <span><Search className="h-3.5 w-3.5" /> {inc.diagnosisPrompt}</span>
               <input value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} placeholder="Your finding" autoComplete="off" />
             </label>
           </div>
 
           <label className="sh-field">
-            <span>Closing note</span>
+            <span><FileText className="h-3.5 w-3.5" /> Closing note</span>
             <textarea value={response} onChange={(e) => setResponse(e.target.value)} rows={3} placeholder="What happened, what you changed, and what the next person should check." />
           </label>
 
@@ -546,17 +533,21 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
 
           {result && !result.resolved && (
             <div className="sh-result sh-result--wait">
-              {result.waiting ? "Waiting for your lab to report the change. Make the fix, then check again in about a minute." : "Your lab does not show this fix yet:"}
-              {!result.waiting && <ul>{result.results.filter((r) => !r.ok).map((r, i) => <li key={i}>{r.label}</li>)}</ul>}
+              {result.needFinding
+                ? "Your fix is in. Now answer the question correctly to close this incident."
+                : result.waiting
+                  ? "Waiting for your lab to report the change. Make the fix, then check again in about a minute."
+                  : "Your lab does not show this fix yet:"}
+              {!result.waiting && !result.needFinding && <ul>{result.results.filter((r) => !r.ok).map((r, i) => <li key={i}>{r.label}</li>)}</ul>}
             </div>
           )}
 
           <div className="sh-actions">
             <button type="button" className="sh-submit" disabled={busy} onClick={() => submit(false)}>
-              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Check my fix
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />} Check my fix
             </button>
             <button type="button" className="sh-escalate" disabled={busy} onClick={() => submit(true)}>
-              Escalate
+              <ArrowUpRight className="h-4 w-4" /> Escalate
             </button>
             {inc.nextHintCostPct !== null && (
               <button type="button" className="sh-coach" disabled={busy} onClick={coach}>
