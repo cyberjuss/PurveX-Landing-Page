@@ -143,7 +143,12 @@ const phase2Weeks: WeekDef[] = [
     slug: "week-1",
     title: "Week 1 — Malware",
     summary: "How malware works, how it spreads, and what arrives along with it.",
-    sections: [],
+    sections: [
+      { label: "Overview", file: "phase-2/week-1/overview.md" },
+      { label: "Types of Malware", file: "phase-2/week-1/lesson-types.md" },
+      { label: "How Malware Gets In", file: "phase-2/week-1/lesson-delivery.md" },
+      { label: "Working a Malware Alert", file: "phase-2/week-1/lesson-response.md" },
+    ],
   },
   {
     slug: "week-2",
