@@ -106,11 +106,12 @@ function HelpPanel({ email, initialTopic }: { email: string | null; initialTopic
 
         {phase === "sent" ? (
           <div className="gh__sent">
-            <span className="gh__sent-badge"><Check className="h-7 w-7" /></span>
+            <span className="gh__sent-badge"><Check className="h-8 w-8" strokeWidth={2.5} /></span>
             <h2 id="gh-title" className="gh__sent-title">Message sent</h2>
             <p className="gh__sent-note">
-              A person on the PurveX team will reply{email ? ` to ${email}` : " by email"} within one business day.
+              A real person on the PurveX team reads every message and replies within one business day.
             </p>
+            {email && <p className="gh__sent-to">Reply goes to <strong>{email}</strong></p>}
             <button type="button" className="hl__go" onClick={closeHelp}>
               Done
             </button>
