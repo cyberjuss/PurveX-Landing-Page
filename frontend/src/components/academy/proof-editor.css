@@ -36,7 +36,10 @@
 .pf-blockers li { list-style: disc; }
 .pf-blockers { margin: 0; padding: 10px 14px; border: 1px solid color-mix(in srgb, var(--rd-warn) 40%, transparent); background: color-mix(in srgb, var(--rd-warn) 8%, transparent); font-size: 13px; color: var(--rd-ink); }
 .pf-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.pf-btn { display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 14px; border: 1px solid var(--rd-line); background: none; font-size: 13px; font-weight: 650; color: var(--rd-ink); text-decoration: none; cursor: pointer; white-space: nowrap; }
+.pf-btn { display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 14px; border: 1px solid var(--rd-line); background: none; font-size: 13px; font-weight: 650; color: var(--rd-ink); text-decoration: none; cursor: pointer; white-space: nowrap; transition: border-color 0.15s, color 0.15s, background 0.15s, transform 0.1s; }
+.pf-btn:hover { border-color: var(--rd-accent); color: var(--rd-accent); background: color-mix(in srgb, var(--rd-accent) 6%, transparent); }
+.pf-btn:active { transform: scale(0.98); }
+@media (prefers-reduced-motion: reduce) { .pf-btn { transition: border-color 0.15s, color 0.15s; } .pf-btn:active { transform: none; } }
 .pf-btn:hover:not(:disabled) { border-color: var(--rd-ink-3); }
 .pf-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 /* Primary actions: the Academy purple with white text, in both themes. */
