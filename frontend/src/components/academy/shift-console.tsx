@@ -17,6 +17,7 @@ type Incident = {
   from: string;
   title: string;
   brief: string;
+  why: string | null;
   attack: { id: string; name: string } | null;
   diagnosisPrompt: string;
   arriveSec: number;
@@ -450,6 +451,9 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
             {s.role ? <span className="sh-msg__role">{s.role}</span> : null}
           </p>
           <p className="sh-msg__text">{inc.brief}</p>
+          {inc.why && (
+            <p className="sh-why"><span className="sh-why__tag">Why it matters</span>{inc.why}</p>
+          )}
           {inc.attack && (
             <a
               className="sh-attack"

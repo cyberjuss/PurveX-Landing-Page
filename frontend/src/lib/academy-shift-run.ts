@@ -36,6 +36,7 @@ export type PublicIncident = {
   from: string;
   title: string;
   brief: string;
+  why: string | null;
   attack: { id: string; name: string } | null;
   diagnosisPrompt: string;
   arriveSec: number;
@@ -116,6 +117,7 @@ function toPublic(run: ShiftRun, inc: IncidentRun, elapsed: number): PublicIncid
     from,
     title,
     brief,
+    why: def.why ?? null,
     attack: def.attack ?? null,
     diagnosisPrompt: eff.diagnosis.prompt,
     arriveSec: inc.arriveSec,

@@ -100,6 +100,12 @@ export type IncidentDef = {
   diagnosis: { prompt: string; accept: string[] };
   /** What a strong write-up covers. Coach scores the free-text response against these. */
   rubric: string[];
+  /** One line on why this task matters on the job, tied to the role's real duties.
+   *  Shown to the student so they learn the purpose, not just the mechanic. */
+  why?: string;
+  /** Incidents sharing a group never appear together in one shift (e.g. the
+   *  Kerberoast alert and the proactive hunt for the same SPN). */
+  exclusiveGroup?: string;
   /** Three rungs, each more explicit, none giving the answer. */
   hints: string[];
   /** The MITRE ATT&CK technique this maps to, shown on the alert. Real attacks;
@@ -702,6 +708,7 @@ export const INCIDENTS: IncidentDef[] = [
     minPhase: 2,
     minLevel: 3,
     weight: 1.7,
+    exclusiveGroup: "spn",
     roles: ["soc-analyst", "cyber-analyst", "ir-analyst"],
     script: "Incident-Kerberoast.ps1",
     attack: { id: "T1558.003", name: "Kerberoasting" },
@@ -888,7 +895,73 @@ export const INCIDENTS: IncidentDef[] = [
       };
     },
   },
+  {
+    id: "threat-hunt-spn",
+    kind: "alert",
+    severity: "P2",
+    minPhase: 2,
+    minLevel: 4,
+    weight: 1.5,
+    exclusiveGroup: "spn",
+    roles: ["cyber-analyst", "soc-analyst"],
+    script: "Incident-Kerberoast.ps1",
+    attack: { id: "T1558.003", name: "Kerberoasting" },
+    points: 200,
+    from: "Threat hunt · proactive sweep",
+    title: "Hunt: find the kerberoastable account",
+    brief: "No alert fired for this one. Sweep the directory for a user account that has been given a service principal name (SPN), which makes it Kerberoastable, then remove the SPN. You are not told which account — hunt for it.",
+    resolve: [{ c: { t: "spn", sam: "morgan.lee", want: false }, label: "the account has no SPN and is not roastable" }],
+    diagnosis: { prompt: "Which account did you find with an SPN?", accept: ["morgan.lee", "morgan lee"] },
+    rubric: ["Explained how you hunted (filtered users by SPN)", "Named the account you found", "Removed the SPN", "Noted why an SPN on a user is roastable"],
+    hints: [
+      "A normal user account has no SPN. Hunt for the exception across all accounts.",
+      "Get-ADUser -Filter {ServicePrincipalName -like '*'} -Properties ServicePrincipalName lists every account that has one.",
+      "Find the user with an SPN, remove it, and record which account it was.",
+    ],
+    bind: (pick) => {
+      const v = pick(VICTIMS.filter((x) => x.sam !== "riley.kwan"));
+      return {
+        args: { Sam: v.sam },
+        resolve: [{ c: { t: "spn", sam: v.sam, want: false } as Check, label: `${v.sam} has no SPN and is not roastable` }],
+        diagnosis: { prompt: "Which account did you find with an SPN?", accept: [v.sam, v.name.toLowerCase()] },
+        brief: "No alert fired for this one. Sweep the directory for a user account that has been given a service principal name (SPN), which makes it Kerberoastable, then remove the SPN. You are not told which account — hunt for it.",
+        evidence: (e) => evChanged(e, v.sam),
+      };
+    },
+  },
 ];
+
+// Why each task matters on the job, grounded in real entry-level role duties.
+// Shown to the student alongside the incident so they learn the purpose, not just
+// the fix. Kept to one line each. See academy-shift-run.ts (toPublic) for wiring.
+const WHY: Record<string, string> = {
+  "lockout-ticket": "Lockouts are the most common help-desk ticket. Restoring access fast, and confirming it was a lockout and not an attack, is the core tier-1 skill.",
+  spray: "Spotting a spray across many accounts and restoring users without weakening lockout is exactly what a SOC tier-1 analyst triages every shift.",
+  "rogue-admin": "Unexplained additions to an admin group are a top privilege-escalation signal. Containing it without destroying evidence is a core IR habit.",
+  "false-alarm": "Telling a real incident from an approved change is the tier-1 skill that fights alert fatigue and stops wasted escalations.",
+  "compromised-account": "Recognizing a failed-then-success logon and containing the account, not just resetting it, is how a SOC or IR analyst stops an active intruder.",
+  "weak-policy": "Password and lockout policy is a baseline control auditors check. A sysadmin restores it and reports who changed it.",
+  "wrong-disable": "Telling a disabled account from a lockout is a daily help-desk judgment call. The fix differs, and so does whether you escalate.",
+  "preauth-exposure": "AS-REP roasting exposure is a common finding a cyber analyst tracks and closes before an attacker cracks the ticket offline.",
+  "access-request": "Granting exactly what a request asks for, no more, is least-privilege provisioning: the everyday IAM task help desk and sysadmins own.",
+  offboarding: "Disabling, not deleting, a leaver's account on day one closes an access risk while keeping records. A standard IAM step.",
+  "pwd-notreqd": "A 'password not required' flag lets an account sign in blank. Clearing it is basic account hygiene a sysadmin or SOC analyst owns.",
+  delegation: "Trusted-for-delegation on a normal account is a lateral-movement risk. A SOC or IR analyst removes it and reports who set it.",
+  "pwd-expired": "Resetting an expired password is the highest-volume help-desk ticket. Doing it cleanly and confirming access is tier-1 bread and butter.",
+  "wrong-ou": "OU placement drives Group Policy and delegated rights, so a misplaced account is a real access problem help desk and sysadmins fix.",
+  "never-expires": "'Password never expires' on a user defeats rotation and is a classic attacker foothold. Clearing it is routine sysadmin hygiene.",
+  "rogue-computer": "An unrecognized machine account can be an unauthorized domain join. Containing it by disabling the object is a sysadmin and SOC control.",
+  "audit-disabled": "Attackers disable logging to hide. A SOC or IR analyst notices auditing gaps and restores them so later activity is caught.",
+  "reversible-enc": "Reversible encryption stores passwords recoverable in plain text. Turning it off is a domain-hardening control a cyber analyst owns.",
+  kerberoast: "An SPN on a user account is directly Kerberoastable. Removing it is a credential-attack remediation a SOC or cyber analyst performs.",
+  "domain-admins": "Additions to Domain Admins are the highest-severity escalation signal. Fast containment with evidence preserved is core IR work.",
+  "backdoor-account": "Attackers create accounts to keep access. Finding one with no HR record and containing it is a SOC and IR investigation skill.",
+  "targeted-bruteforce": "Telling a targeted guess against one account from a broad spray changes the response and the escalation. A tier-1 triage call.",
+  "admin-pso": "Privileged accounts need stronger password rules than the domain default. Building a fine-grained policy is a sysadmin hardening task.",
+  "dept-transfer": "A department move must remove old access and grant new, the IAM 'mover' event. Leftover access is a top audit finding.",
+  "threat-hunt-spn": "No alert fires for every risk. Proactively sweeping the directory for a dangerous configuration is the cyber analyst's threat-hunting job.",
+};
+for (const def of INCIDENTS) def.why = WHY[def.id];
 
 const byId = new Map(INCIDENTS.map((i) => [i.id, i]));
 export const incidentDef = (id: string) => byId.get(id) ?? null;
@@ -952,14 +1025,31 @@ export function pickShift(seed: string, phase: number, level: number, roles: Rol
     .map((i) => ({ i, w: (i.weight ?? 1) * roleFit(i) * (0.6 + level * 0.2) + r() }))
     .sort((a, b) => b.w - a.w)
     .map((x) => x.i);
+  // Track exclusive groups already used so paired incidents (e.g. the Kerberoast
+  // alert and the proactive SPN hunt) never land in the same shift.
+  const usedGroups = new Set<string>();
+  const takes = (i: IncidentDef) => !i.exclusiveGroup || !usedGroups.has(i.exclusiveGroup);
+  const mark = (i: IncidentDef) => {
+    if (i.exclusiveGroup) usedGroups.add(i.exclusiveGroup);
+  };
+  for (const i of chosen) mark(i);
   // First the distinct incidents, most relevant first.
   for (const i of weighted) {
     if (chosen.length >= size) break;
-    if (!chosen.includes(i)) chosen.push(i);
+    if (!chosen.includes(i) && takes(i)) {
+      chosen.push(i);
+      mark(i);
+    }
   }
   // Then keep the queue coming by repeating the ones that rotate their victim, so
-  // each repeat is a different person and never a duplicate ticket.
-  const repeatable = weighted.filter((i) => i.bind);
+  // each repeat is a different person and never a duplicate ticket. Keep at most
+  // one incident per exclusive group here too.
+  const repeatable: IncidentDef[] = [];
+  for (const i of weighted) {
+    if (!i.bind) continue;
+    if (i.exclusiveGroup && (usedGroups.has(i.exclusiveGroup) || repeatable.some((x) => x.exclusiveGroup === i.exclusiveGroup))) continue;
+    repeatable.push(i);
+  }
   for (let k = 0; chosen.length < size && repeatable.length; k++) {
     chosen.push(repeatable[k % repeatable.length]);
   }
