@@ -16,8 +16,8 @@ function brandEmail(content: string): string {
         <tr><td style="height:4px;background:#6a5cff;font-size:0;line-height:0;">&nbsp;</td></tr>
         <tr><td style="padding:22px 28px 4px 28px;">
           <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-            <td style="width:30px;height:30px;background:#6a5cff;border-radius:7px;text-align:center;vertical-align:middle;color:#ffffff;font-weight:800;font-size:16px;">P</td>
-            <td style="padding-left:10px;font-size:16px;font-weight:700;color:#0f172a;letter-spacing:-0.01em;">PurveX</td>
+            <td style="width:34px;vertical-align:middle;"><img src="https://purvex.io/logo.png" width="34" height="34" alt="PurveX" style="display:block;border:0;outline:none;text-decoration:none;" /></td>
+            <td style="padding-left:10px;font-size:17px;font-weight:700;color:#0f172a;letter-spacing:-0.01em;">PurveX</td>
           </tr></table>
         </td></tr>
         <tr><td style="padding:10px 28px 24px 28px;color:#334155;font-size:14px;line-height:1.6;">${content}</td></tr>
