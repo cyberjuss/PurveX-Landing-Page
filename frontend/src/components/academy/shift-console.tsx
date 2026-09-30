@@ -144,14 +144,15 @@ function ShiftConsoleInner() {
     return () => window.clearInterval(t);
   }, [polling, load]);
 
-  const post = useCallback(async (payload: Record<string, unknown>) => {
+  const post = useCallback(async (payload: Record<string, unknown>, opts?: { silent?: boolean }) => {
     setBusy(true);
-    setError(null);
+    if (!opts?.silent) setError(null);
     try {
       const r = await academyFetch("/academy/api/shift", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       const data = await r.json();
       if (!r.ok) {
-        setError(data.error ?? "Something went wrong.");
+        // A background action (like the auto-ack on open) should not throw a banner.
+        if (!opts?.silent) setError(data.error ?? "Something went wrong.");
         return null;
       }
       if (data.shift) setShift(data.shift);
@@ -314,7 +315,7 @@ const INCIDENT_ICON: Record<string, IconType> = {
 };
 const iconFor = (defId: string): IconType => INCIDENT_ICON[defId] ?? ShieldAlert;
 
-function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" | "dark"; shift: Shift; now: number; busy: boolean; error: string | null; post: (p: Record<string, unknown>) => Promise<Record<string, unknown> | null> }) {
+function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" | "dark"; shift: Shift; now: number; busy: boolean; error: string | null; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
   const start = Date.parse(shift.startedAt);
   const end = Date.parse(shift.endsAt);
   const left = Math.max(0, Math.round((end - now) / 1000));
@@ -411,7 +412,6 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
               })}
             </ul>
           )}
-          <p className="sh-sidenote">New tickets arrive during the shift, some of them without warning.</p>
         </aside>
 
         <main className="sh-main">
@@ -429,7 +429,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
 
 type SubmitResult = { resolved: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[] };
 
-function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no: string; start: number; now: number; busy: boolean; post: (p: Record<string, unknown>) => Promise<Record<string, unknown> | null> }) {
+function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no: string; start: number; now: number; busy: boolean; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
   const [diagnosis, setDiagnosis] = useState(inc.diagnosis);
   const [response, setResponse] = useState("");
   const [result, setResult] = useState<SubmitResult | null>(null);
@@ -442,7 +442,7 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
 
   // Opening an incident acknowledges it (starts the "working" state). No button; matches the desk.
   useEffect(() => {
-    if (!inc.resolved && !inc.acknowledged) void post({ action: "ack", uid: inc.uid });
+    if (!inc.resolved && !inc.acknowledged) void post({ action: "ack", uid: inc.uid }, { silent: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inc.uid]);
 
@@ -516,7 +516,12 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
         <div className="sh-work">
           <div className="sh-lab">
             <p className="sh-lab__head">In your lab</p>
-            <p className="sh-lab__note">Make the change on your domain controller, then <strong>Check my fix</strong>. Range reads your live lab, not a checkbox.</p>
+            <ul className="sh-lab__steps">
+              <li>Investigate in Event Viewer and Active Directory Users and Computers.</li>
+              <li>Make the fix on your domain controller.</li>
+              <li>Record your finding and a closing note below.</li>
+              <li>Select <strong>Check my fix</strong>. Range reads your live lab, not a checkbox.</li>
+            </ul>
             <label className="sh-field">
               <span>{inc.diagnosisPrompt}</span>
               <input value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} placeholder="Your finding" autoComplete="off" />

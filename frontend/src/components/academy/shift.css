@@ -188,6 +188,10 @@
 .sh-lab__head { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rd-ink-2); }
 .sh-lab__note { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--rd-ink-3); }
 .sh-lab__note strong { color: var(--rd-ink-2); }
+.sh-lab__steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; }
+.sh-lab__steps li { position: relative; padding-left: 20px; font-size: 13.5px; line-height: 1.5; color: var(--rd-ink-2); }
+.sh-lab__steps li::before { content: ""; position: absolute; left: 4px; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--rd-accent); }
+.sh-lab__steps strong { color: var(--rd-ink); font-weight: 650; }
 
 .sh-field { display: grid; gap: 6px; }
 .sh-field > span { font-size: 13px; font-weight: 600; color: var(--rd-ink-2); }
