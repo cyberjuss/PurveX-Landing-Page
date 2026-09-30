@@ -99,8 +99,7 @@ export async function POST(request: Request) {
       "We got your message",
       `<p>Thanks for writing. A person on the PurveX team reads every message and will reply to this address within one business day.</p>
        <p><strong>${esc(TOPICS[topic])}</strong></p>
-       <p style="white-space:pre-wrap">${esc(message)}</p>
-       <p style="color:#64748b;font-size:12px">We attached your lab status, so you do not need to send it again.</p>`
+       <p style="white-space:pre-wrap">${esc(message)}</p>`
     );
   }
 
