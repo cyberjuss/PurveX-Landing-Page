@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { AlertTriangle, ArrowLeft, ArrowRight, Check, Clock, Loader2, LifeBuoy, Power, RefreshCw, ShieldAlert } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
@@ -74,7 +75,22 @@ function useNow(on: boolean): number {
   return now;
 }
 
+const emptySubscribe = () => () => {};
+/** True only after hydration on the client, without a setState-in-effect. */
+function useMounted() {
+  return useSyncExternalStore(emptySubscribe, () => true, () => false);
+}
+
+// The console is a full-screen overlay. The academy wraps pages in an animated
+// container whose transform makes it the containing block for position:fixed, which
+// would trap the overlay inside the content column. Portalling to <body> escapes it.
 export function ShiftConsole() {
+  const mounted = useMounted();
+  if (!mounted) return null;
+  return createPortal(<ShiftConsoleInner />, document.body);
+}
+
+function ShiftConsoleInner() {
   const [available, setAvailable] = useState<boolean | null>(null);
   const [shift, setShift] = useState<Shift | null>(null);
   const [labState, setLabState] = useState<LabState>("none");
