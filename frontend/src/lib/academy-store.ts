@@ -524,3 +524,30 @@ export async function saveRoleBrief(brief: RoleBrief) {
     .upsert({ role: brief.role, brief, researched_at: brief.researchedAt });
   if (error) console.error("academy_role_briefs upsert failed", error.message);
 }
+
+// Help requests sent from Range. Stored before the email goes out, so a failed
+// send still leaves a record, and counted to keep one student from flooding the inbox.
+export type HelpRequest = { topic: string; message: string; context: Record<string, unknown>; emailed: boolean };
+const memoryHelp = new Map<string, string[]>();
+
+export async function countHelpRequestsSince(userId: string, since: Date): Promise<number> {
+  if (supabaseAdmin) {
+    const { count, error } = await supabaseAdmin
+      .from("academy_help_requests")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .gte("created_at", since.toISOString());
+    if (!error && count !== null) return count;
+  }
+  return (memoryHelp.get(userId) ?? []).filter((at) => Date.parse(at) >= since.getTime()).length;
+}
+
+export async function saveHelpRequest(userId: string, req: HelpRequest) {
+  const at = new Date().toISOString();
+  memoryHelp.set(userId, [...(memoryHelp.get(userId) ?? []), at].slice(-20));
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin
+    .from("academy_help_requests")
+    .insert({ user_id: userId, topic: req.topic, message: req.message, context: req.context, emailed: req.emailed, created_at: at });
+  if (error) console.error("academy_help_requests insert failed", error.message);
+}

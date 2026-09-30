@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { ArrowUpRight, Loader2, Server } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
+import { openHelp } from "@/components/academy/get-help";
 import "./hosted-lab.css";
 
 // The student's own hosted domain controller: a button in the header and a
@@ -236,7 +237,7 @@ const RESUME = [
   { label: "Reconnecting to Range", until: 80 },
 ];
 
-const SPECS: Record<string, string> = { "t3.medium": "2 vCPU Â· 4 GB", "t3.large": "2 vCPU Â· 8 GB", "t3.xlarge": "4 vCPU Â· 16 GB" };
+const SPECS: Record<string, string> = { "t3.medium": "2 vCPU · 4 GB", "t3.large": "2 vCPU · 8 GB", "t3.xlarge": "4 vCPU · 16 GB" };
 
 
 const PRIMARY: Record<State, string> = { none: "Start my lab", starting: "Starting", ready: "Open", stopping: "Stopping", stopped: "Resume lab" };
@@ -310,7 +311,7 @@ export function HostedLabMenu() {
           <p className="hl__title">PurveX Financial</p>
           <p className="hl__spec">
             <span>purvexfinancial.local</span>
-            <span>Windows Server 2022{spec ? ` Â· ${spec}` : ""}</span>
+            <span>Windows Server 2022{spec ? ` · ${spec}` : ""}</span>
           </p>
         </div>
       </div>
@@ -349,6 +350,9 @@ export function HostedLabMenu() {
           Reset to a fresh lab
         </button>
       )}
+      <button type="button" className="hl__help" onClick={() => openHelp("lab")}>
+        Something wrong? Get help from a person
+      </button>
     </section>
   );
 }

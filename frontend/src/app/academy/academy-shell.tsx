@@ -7,6 +7,7 @@ import { ChevronLeft, GraduationCap, Home, Loader2, Menu, Moon, Sun, X } from "l
 import type { PhaseDef } from "@/lib/academy-content";
 import { AcademyAccountProvider, AcademyGoalsProvider, AcademyProfileMenu, type AcademyStudent } from "@/components/academy/academy-account";
 import { hasHostedLab, HostedLabButton, startHostedLabNow } from "@/components/academy/hosted-lab-button";
+import { HelpDialog } from "@/components/academy/get-help";
 import { AcademyIntake } from "@/components/academy/academy-intake";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
@@ -1234,6 +1235,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         )}
         {!asking && profile !== undefined && <PurvexCoach />}
         {!asking && profile !== undefined && <ProofPrompt />}
+        <HelpDialog email={student?.email ?? null} />
         {editingGoals && profile && (
           <GoalsPanel
             profile={profile}

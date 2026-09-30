@@ -3,8 +3,9 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Headset, LogOut, Target, Users } from "lucide-react";
+import { ArrowRight, BadgeCheck, Headset, LifeBuoy, LogOut, Target, Users } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
+import { openHelp } from "@/components/academy/get-help";
 import type { StudentProfile } from "@/lib/academy-certs";
 import { academyFetch, READINESS_PATH, useResults } from "@/lib/academy-client";
 import { passedExamDates } from "@/lib/academy-goals";
@@ -232,6 +233,16 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                   <Users className="h-3.5 w-3.5" /> Instructor view
                 </Link>
               )}
+              <button
+                type="button"
+                className="ax-account__out"
+                onClick={() => {
+                  setOpen(false);
+                  openHelp();
+                }}
+              >
+                <LifeBuoy className="h-3.5 w-3.5" /> Get help
+              </button>
               <button type="button" className="ax-account__out" onClick={onSignOut}>
                 <LogOut className="h-3.5 w-3.5" /> Sign out
               </button>
