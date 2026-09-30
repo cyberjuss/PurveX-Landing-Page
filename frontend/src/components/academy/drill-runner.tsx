@@ -88,7 +88,7 @@ export function drillPassed(e: DrillEntry) {
 export function labLine(lab: DrillStatus["lab"]) {
   if (!lab.synced) return "";
   const stale = lab.days !== null && lab.days >= 7;
-  return `Written from your lab. It last checked in ${lab.ago}.${stale ? " Turn your domain controller on to refresh it." : ""}`;
+  return stale ? "Turn your domain controller on to refresh it." : "";
 }
 
 export function streakLine(s: DrillStatus["stats"]) {
@@ -1045,7 +1045,7 @@ export function DrillRunner() {
             />
           )}
 
-          {status.lab.synced && <p className="dr-lab">{labLine(status.lab)}</p>}
+          {labLine(status.lab) && <p className="dr-lab">{labLine(status.lab)}</p>}
         </>
       ) : (
         <p className="dr-note">Loading your drills…</p>
