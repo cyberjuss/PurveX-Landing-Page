@@ -731,21 +731,6 @@ export function DrillRunner() {
                       : "Daily scenario"}
           </span>
           <span className="dr-bar__end">
-            {leaving ? (
-              <span className="dr-leave">
-                Leave this drill?
-                <button type="button" className="dr-link" onClick={() => setLeaving(false)}>
-                  Stay
-                </button>
-                <button type="button" className="dr-link dr-link--bad" onClick={exitDrill}>
-                  Leave
-                </button>
-              </span>
-            ) : (
-              <button type="button" className="dr-exit" onClick={() => setLeaving(true)}>
-                <X className="h-4 w-4" /> Exit
-              </button>
-            )}
             <span className={`dr-clock${left !== null && left <= 30 ? " dr-clock--low" : ""}`}>
               <Timer className="h-4 w-4" />
               {clock(left ?? elapsed)}
@@ -765,20 +750,24 @@ export function DrillRunner() {
         </div>
 
         <div className="dr-actions">
-          {item.gated && !unlock ? (
-            <>
-              <span className="dr-actions__side">
-                <button type="button" className="dr-link" disabled={busy} onClick={() => void finish(run, answers, true)}>
-                  Give up and see the answer
-                </button>
+          <span className="dr-actions__side">
+            {leaving ? (
+              <span className="dr-leave">
+                Leave this drill?
+                <button type="button" className="dr-link" onClick={() => setLeaving(false)}>Stay</button>
+                <button type="button" className="dr-link dr-link--bad" onClick={exitDrill}>Leave</button>
               </span>
-              <button type="button" className="rd-cta" disabled={busy || !picked || !picked.trim()} onClick={() => void unlockTask(run, answers)}>
-                {busy ? "Checking…" : "Check my answer"} <ArrowRight className="h-4 w-4" />
+            ) : (
+              <button type="button" className="dr-exit" onClick={() => setLeaving(true)}>
+                <X className="h-4 w-4" /> Exit
               </button>
-            </>
-          ) : item.kind === "change" || (item.gated && unlock) ? (
-            <>
-              <span className="dr-actions__side">
+            )}
+            {item.gated && !unlock ? (
+              <button type="button" className="dr-link" disabled={busy} onClick={() => void finish(run, answers, true)}>
+                Give up and see the answer
+              </button>
+            ) : item.kind === "change" || (item.gated && unlock) ? (
+              <>
                 <button type="button" className="dr-link" disabled={busy} onClick={() => void finish(run, item.gated ? answers : [""], true)}>
                   Give up and see the steps
                 </button>
@@ -787,33 +776,34 @@ export function DrillRunner() {
                     Can&apos;t reach your lab? Do a written case instead
                   </button>
                 )}
-              </span>
-              <button type="button" className="rd-cta" disabled={busy} onClick={() => void checkLab(run, answers)}>
-                {busy ? "Checking…" : "Check my lab"} <ArrowRight className="h-4 w-4" />
+              </>
+            ) : idx > 0 ? (
+              <button type="button" className="dr-link" onClick={() => { setDir(-1); setIdx(idx - 1); }}>
+                Back
               </button>
-            </>
+            ) : run.mode === "ctf" ? (
+              <button type="button" className="dr-link" disabled={busy} onClick={() => void finish(run, answers, true)}>
+                Give up and see the answer
+              </button>
+            ) : null}
+          </span>
+          {item.gated && !unlock ? (
+            <button type="button" className="rd-cta" disabled={busy || !picked || !picked.trim()} onClick={() => void unlockTask(run, answers)}>
+              {busy ? "Checking…" : "Check my answer"} <ArrowRight className="h-4 w-4" />
+            </button>
+          ) : item.kind === "change" || (item.gated && unlock) ? (
+            <button type="button" className="rd-cta" disabled={busy} onClick={() => void checkLab(run, answers)}>
+              {busy ? "Checking…" : "Check my lab"} <ArrowRight className="h-4 w-4" />
+            </button>
           ) : (
-            <>
-              {idx > 0 ? (
-                <button type="button" className="dr-link" onClick={() => { setDir(-1); setIdx(idx - 1); }}>
-                  Back
-                </button>
-              ) : run.mode === "ctf" ? (
-                <button type="button" className="dr-link" disabled={busy} onClick={() => void finish(run, answers, true)}>
-                  Give up and see the answer
-                </button>
-              ) : (
-                <span />
-              )}
-              <button
-                type="button"
-                className="rd-cta"
-                disabled={busy || !picked || !picked.trim() || (item.kind === "respond" && picked.trim().length < 40)}
-                onClick={() => (last ? void finish(run, answers) : (setDir(1), setIdx(idx + 1)))}
-              >
-                {busy && item.kind === "respond" ? "Marking…" : last ? (single ? "Submit answer" : "Finish") : "Next"} <ArrowRight className="h-4 w-4" />
-              </button>
-            </>
+            <button
+              type="button"
+              className="rd-cta"
+              disabled={busy || !picked || !picked.trim() || (item.kind === "respond" && picked.trim().length < 40)}
+              onClick={() => (last ? void finish(run, answers) : (setDir(1), setIdx(idx + 1)))}
+            >
+              {busy && item.kind === "respond" ? "Marking…" : last ? (single ? "Submit answer" : "Finish") : "Next"} <ArrowRight className="h-4 w-4" />
+            </button>
           )}
         </div>
         {error && <p className="dr-error">{error}</p>}
