@@ -423,17 +423,6 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
         <span className={`sh-tag sh-tag--${inc.kind}`}>{inc.kind}</span>
         <span className="sh-detail__no">{no}</span>
         <span className="sh-detail__skill">Skill: {skillOf(inc.kind)}</span>
-        {inc.attack && (
-          <a
-            className="sh-attack"
-            href={`https://attack.mitre.org/techniques/${inc.attack.id.replace(".", "/")}/`}
-            target="_blank"
-            rel="noreferrer"
-            title={`MITRE ATT&CK ${inc.attack.id}: ${inc.attack.name}`}
-          >
-            ATT&CK {inc.attack.id} · {inc.attack.name}
-          </a>
-        )}
         <span className={`sh-sev ${SEV_CLASS[inc.severity]}`}>{inc.severity}</span>
         {inc.resolved ? (
           <span className="sh-status sh-status--done"><Check className="h-3.5 w-3.5" /> Solved</span>
@@ -456,6 +445,17 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
             {s.role ? <span className="sh-msg__role">{s.role}</span> : null}
           </p>
           <p className="sh-msg__text">{inc.brief}</p>
+          {inc.attack && (
+            <a
+              className="sh-attack"
+              href={`https://attack.mitre.org/techniques/${inc.attack.id.replace(".", "/")}/`}
+              target="_blank"
+              rel="noreferrer"
+              title={`MITRE ATT&CK ${inc.attack.id}: ${inc.attack.name}`}
+            >
+              MITRE ATT&CK {inc.attack.id} · {inc.attack.name}
+            </a>
+          )}
         </div>
       </div>
 

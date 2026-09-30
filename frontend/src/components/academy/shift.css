@@ -41,8 +41,8 @@
   --rd-ink: #e8eef8;
   --rd-ink-2: #9aa8bc;
   --rd-ink-3: #6b768a;
-  --rd-line: rgba(255, 255, 255, 0.16);
-  --rd-line-2: rgba(255, 255, 255, 0.08);
+  --rd-line: rgba(255, 255, 255, 0.09);
+  --rd-line-2: rgba(255, 255, 255, 0.05);
   --rd-accent: #9eb0ff;
   --rd-good: #34d399;
   --rd-warn: #fbbf24;
@@ -57,10 +57,21 @@
   --shadow-lg: none;
 }
 .shift-app * { box-sizing: border-box; }
+/* The academy's faint dot grid, so the console shares the portal's canvas.
+   Absolute (not a flex/grid item) and behind everything. */
+.shift-app::before {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-image: radial-gradient(rgba(16, 25, 46, 0.11) 2px, transparent 2px);
+  background-size: 26px 26px;
+  mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%);
+}
+.shift-app[data-academy-theme="dark"]::before { background-image: radial-gradient(rgba(180, 200, 255, 0.09) 2px, transparent 2px); }
+.shift-app > * { position: relative; z-index: 1; }
 /* Center the single child when it fits, but let it scroll when it is taller than
    the viewport. align-items: center would clip the top, so use auto margins. */
 .shift-app--center { display: flex; overflow-y: auto; overflow-x: hidden; padding: 28px 24px; }
-.shift-app--center > * { margin: auto; }
+.shift-app--center > * { margin: auto; position: relative; z-index: 1; }
 
 .sh-loading, .sh-waiting { display: flex; align-items: center; justify-content: center; gap: 9px; color: var(--rd-ink-3); font-size: 14px; }
 .sh-waiting--big { padding: 80px 0; font-size: 15px; }
@@ -148,7 +159,7 @@
 .sh-detail__crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 11px; }
 .sh-detail__no { font-family: ui-monospace, monospace; font-size: 12.5px; color: var(--rd-ink-3); }
 .sh-detail__skill { font-size: 12.5px; color: var(--rd-ink-3); }
-.sh-attack { display: inline-flex; align-items: center; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 8px; border: 1px solid color-mix(in srgb, var(--rd-accent) 45%, transparent); color: var(--rd-accent); text-decoration: none; }
+.sh-attack { align-self: start; margin-top: 11px; display: inline-flex; align-items: center; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 8px; border: 1px solid color-mix(in srgb, var(--rd-accent) 45%, transparent); color: var(--rd-accent); text-decoration: none; }
 .sh-attack:hover { background: color-mix(in srgb, var(--rd-accent) 12%, transparent); }
 .sh-detail__left { margin-left: auto; font-family: ui-monospace, monospace; font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; padding: 3px 9px; border-radius: 0; color: var(--rd-good); background: color-mix(in srgb, var(--rd-good) 12%, transparent); }
 .sh-detail__left--low { color: var(--rd-warn); background: color-mix(in srgb, var(--rd-warn) 12%, transparent); }
@@ -226,9 +237,9 @@
 .sh-refresh:hover:not(:disabled) { border-color: var(--rd-accent); color: var(--rd-accent); }
 .sh-refresh:disabled { opacity: 0.6; cursor: default; }
 
-.sh-go { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: fit-content; height: 46px; padding: 0 24px; margin-top: 4px; border: 0; border-radius: 0; background: var(--brand); color: #fff; font-size: 15px; font-weight: 650; cursor: pointer; box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--brand) 80%, transparent); transition: background 0.15s, transform 0.12s; }
-.sh-go:hover:not(:disabled) { background: var(--brand-hover); transform: translateY(-1px); }
-.sh-go:disabled { opacity: 0.5; cursor: default; box-shadow: none; }
+.sh-go { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: fit-content; height: 46px; padding: 0 24px; margin-top: 4px; border: 0; border-radius: 0; background: var(--brand); color: #fff; font-size: 15px; font-weight: 650; cursor: pointer; transition: background 0.15s; }
+.sh-go:hover:not(:disabled) { background: var(--brand-hover); }
+.sh-go:disabled { opacity: 0.5; cursor: default; }
 
 .sh-gate-card { max-width: 460px; text-align: center; display: grid; gap: 12px; }
 .sh-gate-card h1 { margin: 0; font-family: var(--font-display, inherit); font-size: 32px; font-weight: 700; color: var(--rd-ink); }
