@@ -47,6 +47,10 @@ export type Bind = {
   noHarm?: { c: Check; label: string }[];
   diagnosis: { prompt: string; accept: string[] };
   brief: string;
+  /** Proof the attack actually landed, read from the durable Security-log digest.
+   *  Resolution requires this, so a fix can never trivially pass on a lab where
+   *  the incident never fired. */
+  evidence?: (events?: LabEvents) => boolean;
 };
 
 export type IncidentDef = {
@@ -81,6 +85,8 @@ export type IncidentDef = {
   /** The MITRE ATT&CK technique this maps to, shown on the alert. Real attacks;
    *  many line up with an Atomic Red Team test of the same id. */
   attack?: { id: string; name: string };
+  /** Proof the attack landed (for incidents that do not rotate a victim). */
+  evidence?: (events?: LabEvents) => boolean;
   /** When set, the incident rotates its victim each shift: given a picker, it
    *  returns the concrete checks, brief and script args for this run. */
   bind?: (pick: <T>(arr: T[]) => T) => Bind;
@@ -89,6 +95,16 @@ export type IncidentDef = {
 // ---- the incident library -------------------------------------------------
 // Each incident's reality is planted by its script; the checks below read what
 // the student did about it. Keep resolve checks to the student's own actions.
+
+// ---- attack-landed evidence, read from the durable Security-log digest -----
+// These persist after the student remediates, so they prove the attack really
+// fired without depending on the account still being in its bad state.
+const evAcct = (rows: { account: string }[] | undefined, sam: string) => (rows ?? []).some((r) => (r.account ?? "").toLowerCase().includes(sam.toLowerCase()));
+const evLocked = (e: LabEvents | undefined, sam: string) => evAcct(e?.lockouts, sam) || evAcct(e?.failures, sam);
+const evDisabled = (e: LabEvents | undefined, sam: string) => evAcct(e?.disabled, sam);
+const evFailed = (e: LabEvents | undefined, sam: string) => evAcct(e?.failures, sam);
+const evGroupAdd = (e: LabEvents | undefined, member: string, group: string) =>
+  (e?.groupAdds ?? []).some((g) => (g.member ?? "").toLowerCase().includes(member.toLowerCase()) && (g.group ?? "").toLowerCase().includes(group.toLowerCase()));
 
 export const INCIDENTS: IncidentDef[] = [
   {
@@ -125,6 +141,7 @@ export const INCIDENTS: IncidentDef[] = [
         ],
         diagnosis: { prompt: `Was ${v.sam} locked out or disabled?`, accept: ["locked", "locked out", "lockout"] },
         brief: `${v.name} in ${v.dept} cannot sign in and thinks the account is locked. Confirm what is actually wrong before you act, then restore sign-in. Not every ticket is an attack.`,
+        evidence: (e) => evLocked(e, v.sam),
       };
     },
   },
@@ -164,6 +181,7 @@ export const INCIDENTS: IncidentDef[] = [
         noHarm: [{ c: { t: "policy", key: "lockoutThreshold", min: 1 }, label: "Account lockout is still enforced" }],
         diagnosis: { prompt: "Which event ID marks the failed sign-ins?", accept: ["4625", "event 4625", "id 4625"] },
         brief: `A wave of failed sign-ins hit ${VICTIMS.length} accounts in under a minute, and ${t1.name} and ${t2.name} are now locked out. Work out whether this is a password spray, find who was targeted, and restore the real users without opening anything up.`,
+        evidence: (e) => targets.every((t) => evLocked(e, t.sam)),
       };
     },
   },
@@ -182,6 +200,7 @@ export const INCIDENTS: IncidentDef[] = [
     title: "New account added to IT Admins overnight",
     brief: "A member was added to IT Admins at an odd hour with no change ticket. Contain it without destroying the evidence, and find out how it got there.",
     resolve: [{ c: { t: "member", sam: "svc.helpdesk", group: "IT Admins", want: false }, label: "svc.helpdesk is out of IT Admins" }],
+    evidence: (e) => evGroupAdd(e, "svc.helpdesk", "IT Admins"),
     noHarm: [{ c: { t: "member", sam: "alex.rivera", group: "IT Admins", want: true }, label: "The real admin alex.rivera is untouched" }],
     diagnosis: { prompt: "Which event ID records the group addition?", accept: ["4728", "event 4728", "id 4728"] },
     rubric: ["Named the account added and when", "Named the event id for the group add", "Removed it without deleting the account (kept evidence)", "Escalated as a possible compromise"],
@@ -206,6 +225,7 @@ export const INCIDENTS: IncidentDef[] = [
     title: "After-hours group change flagged",
     brief: "An alert fired for a group change made after hours. There is a matching approved change ticket in the notes. Decide whether this is an incident at all, and close it correctly. Do not undo an approved change.",
     resolve: [{ c: { t: "member", sam: "morgan.lee", group: "Compliance Users", want: true }, label: "The approved change is left in place" }],
+    evidence: (e) => evGroupAdd(e, "morgan.lee", "Compliance Users"),
     diagnosis: { prompt: "Is this a real incident? Answer incident or approved.", accept: ["approved", "approved change", "not an incident", "false", "false alarm", "no"] },
     rubric: ["Checked the change against the approval", "Concluded it was approved, not an attack", "Closed it without reverting the change", "Noted the evidence that made it approved"],
     hints: [
@@ -248,6 +268,7 @@ export const INCIDENTS: IncidentDef[] = [
         noHarm: [{ c: { t: "enabled", sam: peer.sam, want: true }, label: `${peer.sam} was left alone` }],
         diagnosis: { prompt: "Which event ID is the successful sign-in?", accept: ["4624", "event 4624", "id 4624"] },
         brief: `${v.name} in ${v.dept} shows many failed sign-ins and then a success, off-hours, from a workstation they never use. Treat it as compromised: contain the account and keep the evidence.`,
+        evidence: (e) => evFailed(e, v.sam),
       };
     },
   },
@@ -306,6 +327,7 @@ export const INCIDENTS: IncidentDef[] = [
         resolve: [{ c: { t: "enabled", sam: v.sam, want: true }, label: `${v.sam} can sign in` }],
         diagnosis: { prompt: "Was the account disabled or locked out?", accept: ["disabled", "account disabled", "disable"] },
         brief: `${v.name} in ${v.dept} cannot sign in this morning. Confirm whether the account is disabled or just locked out, then restore access. Not every ticket is an attack.`,
+        evidence: (e) => evDisabled(e, v.sam),
       };
     },
   },
@@ -435,7 +457,7 @@ export function pickShift(seed: string, phase: number, level: number, roles: Rol
 export function effectiveIncident(
   def: IncidentDef,
   inc: { bind?: Bind }
-): { resolve: IncidentDef["resolve"]; noHarm: IncidentDef["noHarm"]; diagnosis: IncidentDef["diagnosis"]; brief: string; args?: Record<string, string> } {
+): { resolve: IncidentDef["resolve"]; noHarm: IncidentDef["noHarm"]; diagnosis: IncidentDef["diagnosis"]; brief: string; args?: Record<string, string>; evidence?: (events?: LabEvents) => boolean } {
   const b = inc.bind;
   return {
     resolve: b?.resolve ?? def.resolve,
@@ -443,6 +465,7 @@ export function effectiveIncident(
     diagnosis: b?.diagnosis ?? def.diagnosis,
     brief: b?.brief ?? def.brief,
     args: b?.args,
+    evidence: b?.evidence ?? def.evidence,
   };
 }
 
@@ -450,7 +473,7 @@ export function effectiveIncident(
 
 /** The lab-and-diagnosis parts. Write-up and on-time are added by the caller. */
 export function gradeIncidentLab(
-  def: Pick<IncidentDef, "resolve" | "noHarm" | "diagnosis">,
+  def: Pick<IncidentDef, "resolve" | "noHarm" | "diagnosis" | "evidence">,
   snapshot: LabSnapshot | null,
   diagnosis: string
 ): { resolved: boolean; noHarm: boolean; diagnosisRight: boolean; results: { label: string; ok: boolean }[] } {
@@ -460,6 +483,12 @@ export function gradeIncidentLab(
     const ok = snapshot ? evalCheck(snapshot, c) : false;
     results.push({ label, ok });
     if (!ok) resolved = false;
+  }
+  // The fix only counts once the attack is proven in the lab's Security log, so a
+  // clean baseline (attack never fired) can never trivially pass the resolve check.
+  if (def.evidence && !def.evidence(snapshot?.events)) {
+    results.push({ label: "The incident has not landed in your lab yet — give it a moment, then check again", ok: false });
+    resolved = false;
   }
   let noHarm = true;
   if (def.noHarm && snapshot) {
