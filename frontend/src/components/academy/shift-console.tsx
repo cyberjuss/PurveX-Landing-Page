@@ -114,7 +114,9 @@ function ShiftConsoleInner() {
       const data = await r.json();
       setAvailable(Boolean(data.available));
       if (data.available) {
-        setShift(data.shift ?? null);
+        // Keep an active shift through a transient empty/failed poll instead of
+        // dropping the student back to the intro. A real end returns status "done".
+        setShift((prev) => data.shift ?? (prev && prev.status === "active" ? prev : null));
         setLabState((data.labState as LabState) ?? "none");
       }
     } catch {
