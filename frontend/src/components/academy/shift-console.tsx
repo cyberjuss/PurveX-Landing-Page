@@ -237,18 +237,21 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
         <p className="sh-lede">
           You are on the desk for 30 minutes. Alerts and tickets arrive on their own. Investigate each in your lab, fix it, and close it before its SLA runs out.
         </p>
-        <ul className="sh-rules">
+        <ul className="sh-facts">
           <li>
-            <span className="sh-rule__icon"><ShieldAlert className="h-[18px] w-[18px]" /></span>
-            <span className="sh-rule__body"><b>Real attacks</b>Fired straight into your own lab</span>
+            <ShieldAlert className="sh-fact__i" />
+            <span className="sh-fact__t">Real attacks</span>
+            <span className="sh-fact__v">Fired into your own lab</span>
           </li>
           <li>
-            <span className="sh-rule__icon"><Clock className="h-[18px] w-[18px]" /></span>
-            <span className="sh-rule__body"><b>30 minutes on the clock</b>P1 in 5, P2 in 8, P3 in 12</span>
+            <Clock className="sh-fact__i" />
+            <span className="sh-fact__t">30 minutes</span>
+            <span className="sh-fact__v">P1 in 5, P2 in 8, P3 in 12</span>
           </li>
           <li>
-            <span className="sh-rule__icon"><LifeBuoy className="h-[18px] w-[18px]" /></span>
-            <span className="sh-rule__body"><b>Coach costs points</b>10%, then 20%, then 40%</span>
+            <LifeBuoy className="sh-fact__i" />
+            <span className="sh-fact__t">Coach costs points</span>
+            <span className="sh-fact__v">10%, then 20%, then 40%</span>
           </li>
         </ul>
 
