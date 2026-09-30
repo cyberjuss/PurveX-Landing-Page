@@ -3,7 +3,11 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { AlertTriangle, ArrowLeft, ArrowRight, Check, Clock, Loader2, LifeBuoy, Power, RefreshCw, ShieldAlert } from "lucide-react";
+import {
+  AlertTriangle, ArrowLeft, ArrowRight, Check, Clock, Loader2, LifeBuoy, Power, RefreshCw, ShieldAlert,
+  Lock, Unlock, KeyRound, UserPlus, UserMinus, UserX, UserCog, ArrowLeftRight, FolderTree, SprayCan, Target,
+  Crown, DoorOpen, BellOff, ShieldOff, ShieldCheck, ShieldX, Ticket, Search, Share2, Server, EyeOff, Infinity as InfinityIcon,
+} from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { startHostedLabNow } from "@/components/academy/hosted-lab-button";
 import "./shift.css";
@@ -278,6 +282,38 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
 
 const SEV_CLASS: Record<Sev, string> = { P1: "sh-sev--p1", P2: "sh-sev--p2", P3: "sh-sev--p3" };
 
+// A cyber/tech glyph per incident type, same lucide family as the labs and drills,
+// so the queue reads at a glance. Falls back to a shield for anything unmapped.
+type IconType = typeof ShieldAlert;
+const INCIDENT_ICON: Record<string, IconType> = {
+  "lockout-ticket": Lock,
+  "wrong-disable": UserX,
+  "pwd-expired": KeyRound,
+  "wrong-ou": FolderTree,
+  "access-request": UserPlus,
+  offboarding: UserMinus,
+  "dept-transfer": ArrowLeftRight,
+  spray: SprayCan,
+  "targeted-bruteforce": Target,
+  "rogue-admin": UserCog,
+  "domain-admins": Crown,
+  "compromised-account": ShieldAlert,
+  "backdoor-account": DoorOpen,
+  "false-alarm": BellOff,
+  "weak-policy": ShieldOff,
+  "reversible-enc": Unlock,
+  "preauth-exposure": Ticket,
+  kerberoast: KeyRound,
+  "pwd-notreqd": ShieldX,
+  delegation: Share2,
+  "never-expires": InfinityIcon,
+  "rogue-computer": Server,
+  "audit-disabled": EyeOff,
+  "admin-pso": ShieldCheck,
+  "threat-hunt-spn": Search,
+};
+const iconFor = (defId: string): IconType => INCIDENT_ICON[defId] ?? ShieldAlert;
+
 function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" | "dark"; shift: Shift; now: number; busy: boolean; error: string | null; post: (p: Record<string, unknown>) => Promise<Record<string, unknown> | null> }) {
   const start = Date.parse(shift.startedAt);
   const end = Date.parse(shift.endsAt);
@@ -353,10 +389,12 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
                 const isSel = selected?.uid === inc.uid;
                 const urgent = !inc.resolved && !inc.acknowledged && inc.severity === "P1";
                 const cls = ["sh-li", `sh-li--sev-${inc.severity.toLowerCase()}`, isSel && "sh-li--on", inc.resolved && "sh-li--done", urgent && "sh-li--urgent"].filter(Boolean).join(" ");
+                const Icon = iconFor(inc.defId);
                 return (
                   <li key={inc.uid}>
                     <button type="button" role="tab" aria-selected={isSel} className={cls} onClick={() => setSelectedId(inc.uid)}>
                       <span className="sh-li__top">
+                        <span className="sh-li__icon"><Icon className="h-4 w-4" /></span>
                         <span className={`sh-tag sh-tag--${inc.kind}`}>{inc.kind}</span>
                         <span className="sh-li__no">{numOf.get(inc.uid)}</span>
                         {inc.resolved ? (
@@ -426,6 +464,10 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
   return (
     <div className={`sh-detail ${inc.resolved ? "sh-detail--done" : ""}`}>
       <div className="sh-detail__crumbs">
+        {(() => {
+          const Icon = iconFor(inc.defId);
+          return <span className="sh-detail__icon"><Icon className="h-4 w-4" /></span>;
+        })()}
         <span className={`sh-tag sh-tag--${inc.kind}`}>{inc.kind}</span>
         <span className="sh-detail__no">{no}</span>
         <span className="sh-detail__skill">Skill: {skillOf(inc.kind)}</span>
