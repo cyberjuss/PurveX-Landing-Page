@@ -238,28 +238,26 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
           You are on the desk for 30 minutes. Real attacks and tickets fire into your own lab on their own. Investigate each, fix it, and close it before its SLA runs out.
         </p>
 
-        <div className={`sh-labgate sh-labgate--${online ? "on" : "off"}`}>
-          <span className={`sh-labdot sh-labdot--${online ? "on" : labState === "starting" ? "wait" : "off"}`} />
-          <span className="sh-labgate__text">
-            Your lab is <strong>{labWord}</strong>. {online ? "You are ready to start." : starting ? "It is coming up; this updates on its own." : "Start it, then this updates on its own."}
-          </span>
-          {!online && (
-            starting ? (
-              <button type="button" className="sh-refresh" onClick={onRefresh} aria-label="Refresh lab status">
-                <RefreshCw className="h-3.5 w-3.5" /> Refresh
-              </button>
-            ) : (
-              <button type="button" className="sh-refresh" onClick={startLab} disabled={labBusy}>
-                {labBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Power className="h-3.5 w-3.5" />} Start my lab
-              </button>
-            )
-          )}
-        </div>
+        <p className="sh-status">
+          <span className={`sh-labdot sh-labdot--${online ? "on" : starting ? "wait" : "off"}`} />
+          Lab is <strong>{labWord}</strong>{online ? "" : starting ? " — coming up, this updates on its own" : " — start it to begin"}
+        </p>
 
         {error && <p className="sh-error">{error}</p>}
-        <button type="button" className="sh-go" disabled={busy || !online} onClick={onStart}>
-          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Start shift <ArrowRight className="h-4 w-4" />
-        </button>
+
+        {online ? (
+          <button type="button" className="sh-go" disabled={busy} onClick={onStart}>
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Start shift <ArrowRight className="h-4 w-4" />
+          </button>
+        ) : starting ? (
+          <button type="button" className="sh-go sh-go--ghost" onClick={onRefresh}>
+            <RefreshCw className="h-4 w-4" /> Refresh status
+          </button>
+        ) : (
+          <button type="button" className="sh-go" disabled={labBusy} onClick={startLab}>
+            {labBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Power className="h-4 w-4" />} Start my lab
+          </button>
+        )}
       </div>
     </div>
   );
