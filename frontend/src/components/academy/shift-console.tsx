@@ -7,6 +7,7 @@ import {
   AlertTriangle, ArrowLeft, ArrowRight, Check, Clock, Loader2, LifeBuoy, Power, RefreshCw, ShieldAlert,
   Lock, Unlock, KeyRound, UserPlus, UserMinus, UserX, UserCog, ArrowLeftRight, FolderTree, SprayCan, Target,
   Crown, DoorOpen, BellOff, ShieldOff, ShieldCheck, ShieldX, Ticket, Search, Share2, Server, EyeOff, Infinity as InfinityIcon,
+  Wrench, Info, ArrowUpRight, FileText,
 } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { startHostedLabNow } from "@/components/academy/hosted-lab-button";
@@ -483,7 +484,7 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
           </p>
           <p className="sh-msg__text">{inc.brief}</p>
           {inc.why && (
-            <p className="sh-why"><span className="sh-why__tag">Why it matters</span>{inc.why}</p>
+            <p className="sh-why"><span className="sh-why__tag"><Info className="h-3.5 w-3.5" /> Why it matters</span>{inc.why}</p>
           )}
           {inc.attack && (
             <a
@@ -504,7 +505,7 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
       ) : (
         <div className="sh-work">
           <div className="sh-lab">
-            <p className="sh-lab__head">In your lab</p>
+            <p className="sh-lab__head"><Wrench className="h-3.5 w-3.5" /> In your lab</p>
             <ul className="sh-lab__steps">
               <li>Investigate in Event Viewer and Active Directory Users and Computers.</li>
               <li>Make the fix on your domain controller.</li>
@@ -512,13 +513,13 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
               <li>Select <strong>Check my fix</strong>. Range reads your live lab, not a checkbox.</li>
             </ul>
             <label className="sh-field">
-              <span>{inc.diagnosisPrompt}</span>
+              <span><Search className="h-3.5 w-3.5" /> {inc.diagnosisPrompt}</span>
               <input value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} placeholder="Your finding" autoComplete="off" />
             </label>
           </div>
 
           <label className="sh-field">
-            <span>Closing note</span>
+            <span><FileText className="h-3.5 w-3.5" /> Closing note</span>
             <textarea value={response} onChange={(e) => setResponse(e.target.value)} rows={3} placeholder="What happened, what you changed, and what the next person should check." />
           </label>
 
@@ -539,10 +540,10 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
 
           <div className="sh-actions">
             <button type="button" className="sh-submit" disabled={busy} onClick={() => submit(false)}>
-              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Check my fix
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />} Check my fix
             </button>
             <button type="button" className="sh-escalate" disabled={busy} onClick={() => submit(true)}>
-              Escalate
+              <ArrowUpRight className="h-4 w-4" /> Escalate
             </button>
             {inc.nextHintCostPct !== null && (
               <button type="button" className="sh-coach" disabled={busy} onClick={coach}>
