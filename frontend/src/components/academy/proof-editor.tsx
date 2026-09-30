@@ -270,8 +270,16 @@ export function ProofEditor() {
   const skillsText = data.skills.map((g) => `${g.group}: ${g.items.join(", ")}`).join("\n");
   const todo = openTasks(items.map((i) => i.job));
   const todoSection = todo.length > 0 && (
-    <section className="pf-sec">
-      <h2>Tasks you can still add</h2>
+    <details className="pf-sec pf-todo-sec">
+      <summary className="pf-todo-summary">
+        <span className="pf-todo-h">
+          Tasks you can still add
+          <span className="pf-todo-count">{todo.length}</span>
+        </span>
+        <svg className="pf-todo-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </summary>
       <p>Each one joins your portfolio once your lab confirms it. Your lab must be connected, with the lab light green.</p>
       <ul className="pf-todo">
         {todo.map((t) => (
@@ -286,7 +294,7 @@ export function ProofEditor() {
           </li>
         ))}
       </ul>
-    </section>
+    </details>
   );
 
   return (

@@ -60,6 +60,13 @@
 .pf-ats { display: grid; grid-template-columns: 1fr auto; gap: 14px; padding: 14px; border: 1px solid var(--rd-line); background: var(--rd-line-2); }
 .pf-ats p { margin: 0; font-size: 13.5px; line-height: 1.7; color: var(--rd-ink); }
 
+.pf-todo-sec > summary { list-style: none; cursor: pointer; }
+.pf-todo-sec > summary::-webkit-details-marker { display: none; }
+.pf-todo-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pf-todo-h { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }
+.pf-todo-count { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 7px; border: 1px solid var(--rd-line); border-radius: 999px; font-family: var(--font-sans); font-size: 12px; font-weight: 600; color: var(--rd-ink-2); }
+.pf-todo-chev { flex: none; color: var(--rd-ink-3); transition: transform 0.18s ease; }
+.pf-todo-sec[open] .pf-todo-chev { transform: rotate(180deg); }
 .pf-todo { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .pf-todo > li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; border: 1px solid var(--rd-line); font-size: 14px; color: var(--rd-ink); }
 .pf-todo small { display: block; font-size: 12px; color: var(--rd-ink-3); }
