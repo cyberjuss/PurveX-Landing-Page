@@ -30,7 +30,11 @@
   --r2: 9px;
 }
 .shift-app * { box-sizing: border-box; }
-.shift-app--center { display: flex; align-items: center; justify-content: center; padding: 24px; overflow-y: auto; }
+/* Center the single child when it fits, but let it scroll when it is taller than
+   the viewport. `align-items: center` would clip the top and make it unreachable,
+   so center with auto margins on the child instead. */
+.shift-app--center { display: flex; overflow-y: auto; overflow-x: hidden; padding: 28px 24px; }
+.shift-app--center > * { margin: auto; }
 
 .sh-loading, .sh-waiting { display: flex; align-items: center; justify-content: center; gap: 9px; color: var(--ink-3); font-size: 14px; }
 .sh-waiting--big { padding: 80px 0; font-size: 15px; }
