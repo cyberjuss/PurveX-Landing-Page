@@ -263,7 +263,7 @@ export function SectionTabs({
     <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
       <div
         className={`shrink-0 transition-[width] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
-          collapsed ? "md:w-12" : "md:w-[196px]"
+          collapsed ? "md:w-12" : "md:w-[220px]"
         }`}
       >
         <button
@@ -306,7 +306,7 @@ export function SectionTabs({
                   onClick={() => goTo(i)}
                   className={`ax-tab ${active === i ? "ax-tab--on" : ""}`}
                 >
-                  <span className="font-mono text-[10px] font-normal text-slate-400">{pad(i + 1)}</span>
+                  <span className="font-mono text-[11px] font-normal text-slate-400">{pad(i + 1)}</span>
                   <span className="truncate">{item.label}</span>
                 </button>
               ))}
