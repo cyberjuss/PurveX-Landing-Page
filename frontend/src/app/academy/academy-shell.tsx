@@ -1049,6 +1049,36 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
       target.closest(".ad-guess")?.querySelector<HTMLButtonElement>(".ad-guess__submit")?.click();
     };
 
+    // Gently fade lesson blocks up as they scroll into view. Only blocks that
+    // start below the fold animate, so above-fold content never flashes and this
+    // never fights the tab-entrance. Off entirely for reduced motion.
+    const reduceMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const revealIO =
+      reduceMotion || typeof IntersectionObserver === "undefined"
+        ? null
+        : new IntersectionObserver(
+            (entries, obs) => {
+              for (const e of entries) {
+                if (e.isIntersecting) {
+                  e.target.classList.add("ax-reveal--in");
+                  obs.unobserve(e.target);
+                }
+              }
+            },
+            { rootMargin: "0px 0px -8% 0px", threshold: 0.05 }
+          );
+    const wireReveal = (root: Element) => {
+      if (!revealIO || root.getAttribute("data-reveal")) return;
+      root.setAttribute("data-reveal", "1");
+      const fold = window.innerHeight * 0.92;
+      Array.from(root.children).forEach((el) => {
+        if (el.getBoundingClientRect().top > fold) {
+          el.classList.add("ax-reveal");
+          revealIO.observe(el);
+        }
+      });
+    };
+
     let frame = 0;
     const sync = () => {
       frame = 0;
@@ -1057,6 +1087,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
         wireCommandCopy(root);
         wireZoom(root);
         wireGallery(root);
+        wireReveal(root);
       });
       if (openHintId) {
         const live = missionById(openHintId);
@@ -1085,6 +1116,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
     return () => {
       observer.disconnect();
+      revealIO?.disconnect();
       if (frame) window.cancelAnimationFrame(frame);
       window.clearTimeout(revealTimer);
       document.removeEventListener("click", onClick);
