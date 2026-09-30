@@ -307,3 +307,19 @@ alter table public.academy_shift enable row level security;
 -- Shifts record their result in the drill log alongside the other modes.
 alter table public.academy_drill_log drop constraint if exists academy_drill_log_mode_check;
 alter table public.academy_drill_log add constraint academy_drill_log_mode_check check (mode in ('daily', 'timed', 'ctf', 'coach', 'shift'));
+
+-- Help requests a student sends from Range when something is broken. Kept so
+-- nothing is lost if the email fails, and to limit how many one student sends.
+-- Written by the server only.
+create table if not exists public.academy_help_requests (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  topic text not null,
+  message text not null,
+  context jsonb not null default '{}'::jsonb,
+  emailed boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists academy_help_requests_user_created on public.academy_help_requests (user_id, created_at desc);
+alter table public.academy_help_requests enable row level security;

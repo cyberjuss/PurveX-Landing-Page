@@ -4,14 +4,14 @@ import LegalPage from "@/components/purvex-landing-page/legal-page";
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
-    "The terms for using the PurveX website, the PurveX Platform, and the PurveX Academy.",
+    "The terms for using the PurveX website, the PurveX Platform, and PurveX Range.",
 };
 
 const summaryItems = [
-  "These terms cover the website, your account, the PurveX Platform, and the PurveX Academy. Consulting and contracted training are covered by your signed agreement instead.",
+  "These terms cover the website, your account, the PurveX Platform, and PurveX Range. Consulting and contracted training are covered by your signed agreement instead.",
   "The PurveX Platform is self-hosted software on Free and Paid plans. PurveX does not host or receive the data inside your installation.",
   "Only test systems you own or are authorized to test.",
-  "Academy access is personal. Do not share your account or class passcode, and run lab scripts only on a computer you control.",
+  "Range access is personal. Do not share your account or class passcode, and run lab scripts only on a computer you control.",
   "AI features, including the AI Coach, can make mistakes. Check important answers before you act on them.",
   "Paid plans can be canceled anytime to stop future billing. The current billing period is not refunded.",
   "Disputes are resolved through binding individual arbitration in Maryland, not class actions. See Section 19.",
@@ -21,7 +21,7 @@ const sections = [
   {
     title: "1. Acceptance of Terms",
     paragraphs: [
-      "These Terms of Service (\"Terms\") are entered into between you (and, if applicable, the organization you represent) and PurveX LLC, a Maryland limited liability company (\"PurveX,\" \"we,\" \"us,\" or \"our\"), and govern access to and use of the PurveX website, your PurveX account and license portal, the PurveX Platform software, and the PurveX Academy training portal, including the AI Coach (together, the \"service\"). They do not govern consulting services or training delivered under a signed contract, which are provided exclusively under a separately signed order form, statement of work, or master services agreement between PurveX and the client organization. By creating an account, agreeing when you sign in, or otherwise using the service, you agree to these terms on your own behalf or on behalf of the organization you represent.",
+      "These Terms of Service (\"Terms\") are entered into between you (and, if applicable, the organization you represent) and PurveX LLC, a Maryland limited liability company (\"PurveX,\" \"we,\" \"us,\" or \"our\"), and govern access to and use of the PurveX website, your PurveX account and license portal, the PurveX Platform software, and the PurveX Range training portal, including the AI Coach (together, the \"service\"). They do not govern consulting services or training delivered under a signed contract, which are provided exclusively under a separately signed order form, statement of work, or master services agreement between PurveX and the client organization. By creating an account, agreeing when you sign in, or otherwise using the service, you agree to these terms on your own behalf or on behalf of the organization you represent.",
       "If you are accepting these terms for an organization, you represent that you have authority to bind that organization. If you do not agree to these terms, do not access or use the service.",
       "If your organization has executed a separate order form, subscription agreement, master services agreement, statement of work, or similar written contract with PurveX, that agreement controls over these website terms for the covered services.",
     ],
@@ -30,7 +30,7 @@ const sections = [
     title: "2. Eligibility",
     paragraphs: [
       "The PurveX Platform and consulting services are intended for business and professional use. To use them, you must be legally able to enter into a binding contract and, where applicable, authorized to act for the organization associated with your account.",
-      "The PurveX Academy is for individual learners. You must be at least 13 years old to use it. If you are under the age of legal majority where you live, you may use the Academy only with the permission of a parent, guardian, or the school or program that gave you access.",
+      "PurveX Range is for individual learners. You must be at least 13 years old to use it. If you are under the age of legal majority where you live, you may use Range only with the permission of a parent, guardian, or the school or program that gave you access.",
       "You may not use the service in violation of applicable law, export controls, sanctions, or contractual restrictions that apply to you or your organization.",
     ],
   },
@@ -43,19 +43,19 @@ const sections = [
     ],
   },
   {
-    title: "4. PurveX Academy",
+    title: "4. PurveX Range",
     paragraphs: [
-      "Academy access may be provided through a class passcode, a school or workforce program, an employer, or a direct purchase. Access granted through a school, program, or employer is also subject to that arrangement, including when it starts and ends.",
-      "Your Academy account is personal. Do not share your account, your class passcode, or your connection keys, and do not let anyone else complete work in your name.",
+      "Range access may be provided through a class passcode, a school or workforce program, an employer, or a direct purchase. Access granted through a school, program, or employer is also subject to that arrangement, including when it starts and ends.",
+      "Your Range account is personal. Do not share your account, your class passcode, or your connection keys, and do not let anyone else complete work in your name.",
       "Course materials, labs, missions, drills, and challenges are licensed to you for your own learning. You may not copy, publish, sell, or share them, including mission or challenge answers, without our written permission.",
-      "The Academy lab setup scripts run on your own computer and build a practice environment there. Run them only on a computer or virtual machine that you own or are authorized to use for this purpose, and never on a work or production system unless your organization has approved it. You are responsible for the computer you run them on.",
-      "Readiness scores, reports, and interview feedback reflect your work in the Academy. They are learning tools, not certifications, and they do not guarantee employment.",
+      "The Range lab setup scripts run on your own computer and build a practice environment there. Run them only on a computer or virtual machine that you own or are authorized to use for this purpose, and never on a work or production system unless your organization has approved it. You are responsible for the computer you run them on.",
+      "Readiness scores, reports, and interview feedback reflect your work in Range. They are learning tools, not certifications, and they do not guarantee employment.",
     ],
   },
   {
     title: "5. AI Features",
     paragraphs: [
-      "The Academy's AI Coach, AI-written drills, and similar features are generated by a third-party AI model. AI output can be incomplete or wrong. It is provided for learning and is not professional, legal, or security advice. Check important information before you act on it, and do not rely on AI output alone for decisions about real systems.",
+      "Range's AI Coach, AI-written drills, and similar features are generated by a third-party AI model. AI output can be incomplete or wrong. It is provided for learning and is not professional, legal, or security advice. Check important information before you act on it, and do not rely on AI output alone for decisions about real systems.",
       "Do not submit passwords, other people's personal information, or other sensitive information to AI features. PurveX may limit how often AI features can be used, for example with a daily question limit.",
       "The PurveX Platform's optional AI assistant runs with your own API key for a third-party AI provider, and your use of that provider is governed by your own agreement with them.",
     ],
@@ -94,7 +94,7 @@ const sections = [
   {
     title: "10. Fees, Billing, Renewal, and Taxes",
     paragraphs: [
-      "The PurveX Platform is offered on a Free plan, subject to the usage limits described on the website, and a Paid plan billed on a recurring subscription basis through the website checkout. Consulting and contracted training fees are governed exclusively by the applicable signed agreement, not by this section. Academy access provided through a school, program, or employer is billed under that arrangement.",
+      "The PurveX Platform is offered on a Free plan, subject to the usage limits described on the website, and a Paid plan billed on a recurring subscription basis through the website checkout. Consulting and contracted training fees are governed exclusively by the applicable signed agreement, not by this section. Range access provided through a school, program, or employer is billed under that arrangement.",
       "Fees are due as stated in the applicable order form, invoice, checkout flow, or subscription terms accepted at purchase. PurveX Platform Paid plan subscriptions are billed in advance on a recurring basis. You may cancel at any time to stop future billing, but canceling does not entitle you to a refund for the current billing period or any amount already paid. Except as required by law or expressly stated in a governing agreement, all fees are otherwise non-refundable.",
       "If you purchase through a self-serve subscription flow, you authorize PurveX and its payment providers to charge the payment method associated with your account for recurring fees, taxes, and other amounts due under the selected plan.",
       "For self-serve subscriptions that automatically renew, PurveX will present material terms before purchase, including billing frequency, price, trial-to-paid conversion details if applicable, renewal timing, and how to cancel. Enterprise invoiced subscriptions are governed by the applicable commercial agreement rather than consumer-style renewal flows.",
@@ -113,7 +113,7 @@ const sections = [
   {
     title: "12. Data Processing and Privacy",
     paragraphs: [
-      "PurveX's handling of personal information, including Academy progress, lab snapshots, and AI Coach use, is described in the Privacy Policy. The PurveX Platform is self-hosted software: PurveX does not host, ingest, or process the SIEM data, detection data, telemetry, logs, or other environment data within your installation. That data remains on your own infrastructure, under your own control, and you are solely responsible for its collection, security, and lawful use.",
+      "PurveX's handling of personal information, including Range progress, lab snapshots, and AI Coach use, is described in the Privacy Policy. The PurveX Platform is self-hosted software: PurveX does not host, ingest, or process the SIEM data, detection data, telemetry, logs, or other environment data within your installation. That data remains on your own infrastructure, under your own control, and you are solely responsible for its collection, security, and lawful use.",
       "If you enable the PurveX Platform's optional AI assistant using your own API key for a third-party AI provider (currently OpenAI or DeepSeek), data sent to that provider is governed by your own agreement with that provider, not by this section. Where consulting or contracted training engagements involve customer data, that data is handled under the terms of the signed agreement for that engagement.",
       "To the extent the website or purchase flow includes third-party integrations, hosting, or payment processing, your account and billing data may be processed through those providers as necessary to deliver those functions.",
     ],
@@ -202,9 +202,9 @@ export default function TermsPage() {
   return (
     <LegalPage
       badge="Terms of Service"
-      updated="Last updated September 26, 2026"
+      updated="Last updated September 30, 2026"
       title="Terms for using PurveX."
-      intro="These terms cover the PurveX website, your account, the PurveX Platform, and the PurveX Academy. Consulting and contracted training are governed by your separately signed agreement with PurveX, not by this page."
+      intro="These terms cover the PurveX website, your account, the PurveX Platform, and PurveX Range. Consulting and contracted training are governed by your separately signed agreement with PurveX, not by this page."
       note="Questions about these terms? Email justinduru@purvex.io."
       summaryTitle="The short version"
       summaryItems={summaryItems}

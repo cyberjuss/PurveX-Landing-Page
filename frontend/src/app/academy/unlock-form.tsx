@@ -10,7 +10,7 @@ export function UnlockForm() {
 
   return (
     <AuthMinimal product="Range">
-      <AuthHeading sub="Your instructor gave you this code to open Think Like a SOC Analyst.">
+      <AuthHeading sub="Your instructor gave you this code to open PurveX Range.">
         Enter your class passcode
       </AuthHeading>
 

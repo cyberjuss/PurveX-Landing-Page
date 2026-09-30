@@ -225,7 +225,7 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
   }
   return (
     <div className="shift-app shift-app--center" data-academy-theme={theme}>
-      <Link href="/academy" className="sh-corner-home" aria-label="Back to Academy"><ArrowLeft className="h-4 w-4" /></Link>
+      <Link href="/academy" className="sh-corner-home" aria-label="Back to Range"><ArrowLeft className="h-4 w-4" /></Link>
       <div className="sh-intro">
         <div className="sh-brand">
           <span className="sh-logo">P</span>
@@ -343,7 +343,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
     <div className="shift-app" data-academy-theme={theme}>
       <header className="sh-top">
         <div className="sh-brand">
-          <Link href="/academy" className="sh-top__home" aria-label="Back to Academy" title="Back to Academy (your shift keeps running)">
+          <Link href="/academy" className="sh-top__home" aria-label="Back to Range" title="Back to Range (your shift keeps running)">
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <span className="sh-logo">P</span>
@@ -618,7 +618,7 @@ function ShiftReport({ theme, report, onAgain, busy }: { theme: "light" | "dark"
           <button type="button" className="sh-go" disabled={busy} onClick={onAgain}>
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Start another shift <ArrowRight className="h-4 w-4" />
           </button>
-          <Link href="/academy" className="sh-report__leave"><ArrowLeft className="h-3.5 w-3.5" /> Back to Academy</Link>
+          <Link href="/academy" className="sh-report__leave"><ArrowLeft className="h-3.5 w-3.5" /> Back to Range</Link>
         </div>
       </div>
     </div>
