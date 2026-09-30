@@ -1055,8 +1055,29 @@ export function pickShift(seed: string, phase: number, level: number, roles: Rol
   }
 
   const arrivals = arrivalsFor(chosen.length);
-  // A deterministic single-pick helper for the incidents that rotate their victim.
-  const pickOne = <T,>(arr: T[]): T => shuffle(r, arr)[0];
+  // Hand each incident a victim nobody else in this shift is using, so no two
+  // incidents target the same person — which could contradict each other (disable
+  // vs unlock the same account), hand out double credit for one fix, or let one
+  // incident clobber another's account. Reuse only if a shift ever needs more
+  // accounts than exist. Deterministic via the seed.
+  const usedTargets = new Set<string>();
+  const targetKey = (e: unknown): string | null =>
+    e && typeof e === "object" && "sam" in (e as object)
+      ? String((e as { sam: string }).sam)
+      : typeof e === "string"
+        ? e
+        : null;
+  const pickOne = <T,>(arr: T[]): T => {
+    const shuffled = shuffle(r, arr);
+    const free = shuffled.find((e) => {
+      const key = targetKey(e);
+      return key === null || !usedTargets.has(key);
+    });
+    const picked = free ?? shuffled[0];
+    const key = targetKey(picked);
+    if (key !== null) usedTargets.add(key);
+    return picked;
+  };
   return chosen.map((def, n) => ({
     uid: `${def.id}-${n}`,
     defId: def.id,

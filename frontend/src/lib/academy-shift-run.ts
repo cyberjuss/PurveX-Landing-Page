@@ -339,7 +339,9 @@ async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
     const eff = effectiveIncident(def, inc);
     const lg = gradeIncidentLab(eff, snapshot, inc.diagnosis);
     // An incident is only closed when the lab shows the fix AND the finding is right.
-    const closed = lg.resolved && lg.diagnosisRight;
+    // Once it was closed during the shift it stays closed: a later incident (e.g. a
+    // spray re-locking an account) must not strip credit the student already earned.
+    const closed = inc.resolvedAtSec !== null || (lg.resolved && lg.diagnosisRight);
     if (closed && inc.resolvedAtSec === null) inc.resolvedAtSec = shiftElapsed(run, Date.parse(run.endsAt));
     const onTime = inc.resolvedAtSec !== null && resolvedOnTime(inc);
 
