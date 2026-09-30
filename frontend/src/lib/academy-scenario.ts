@@ -406,12 +406,15 @@ export async function shiftNarrator(
 ): Promise<({ from: string; title: string; brief: string } | null)[] | null> {
   if (!incidents.length) return null;
   const roleLine = roleLabels.length ? roleLabels.join(" and ") : "an entry-level IT or security hire";
-  const system = `You write the wording for a training shift on a fictional company's IT/security desk (PurveX Financial). For each incident, rewrite the sender, the title, and the brief so this shift reads differently from the last, in the voice of a real SIEM alert or a real staff ticket.
+  const system = `You write the wording for a training shift on a fictional company's IT/security desk (PurveX Financial). Each incident is a real task the trainee will investigate and remediate in their own Active Directory lab. Rewrite the sender, the title, and the brief so it reads like a real item in that person's queue on the job, and different from the last shift.
+Ground it in the trainee's target role and what they are actually responsible for: ${roleLine}.
+- Help desk / desktop support: password lockouts and resets, disabled or misconfigured accounts, access and group-membership requests, onboarding and offboarding. Write tickets from named staff or managers, in plain business language.
+- SOC analyst / cyber analyst / IR analyst: triage SIEM detections, confirm or dismiss them from the evidence, contain compromised or abused accounts, and escalate. Write alerts in the clipped voice of a detection tool, with the detail an analyst would triage.
 Rules:
-- Keep every fact the same: the same kind (alert vs ticket), the same severity, the same accounts, hosts, event ids and the required action. Only the phrasing changes.
-- Pitch it to the trainee's target role: ${roleLine}.
-- A ticket sounds like a person; an alert sounds like a detection tool. Keep the brief two to four sentences, and never reveal the answer or name the event id in the brief.
-- Never invent new incidents.
+- Keep every fact identical: the same kind (alert vs ticket), the same severity, the same accounts, hosts, counts, event ids, and the same required action. Only the framing and phrasing change.
+- Make it a task the trainee can actually do at a domain controller (ADUC, Event Viewer, Group Policy) — never ask for tools or access they would not have.
+- A ticket sounds like a person who needs something; an alert sounds like a detection that fired. Keep the brief two to four sentences. Never reveal the fix or name the event id in the brief.
+- Never invent new incidents or change what the task is.
 Return only JSON: {"incidents":[{"from":"...","title":"...","brief":"..."}, ...one per incident, in the same order]}.`;
   const user = incidents
     .map((i, n) => `${n + 1}. kind=${i.kind} severity=${i.severity}\n   from: ${i.from}\n   title: ${i.title}\n   brief: ${i.brief}`)
