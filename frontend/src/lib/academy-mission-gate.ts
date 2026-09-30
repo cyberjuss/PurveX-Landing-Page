@@ -1,4 +1,5 @@
 import "server-only";
+import { requestLabSync } from "@/lib/academy-hosted";
 import { formatLabAge, labIsLive } from "@/lib/academy-lab";
 import { checkMission, hasTicketObjects, missionGate } from "@/lib/academy-mission-lab";
 import { loadLabState, loadProgress, saveProgress, touchLabLive } from "@/lib/academy-store";
@@ -21,6 +22,9 @@ export async function labGate(student: { id: string; email: string | null }, id:
   const gated = Boolean(missionGate(id));
   const lab = await loadLabState(student.id);
   if (!lab) return { gated, passed: false, noLab: true, results: [] };
+  // On a hosted lab, push a fresh snapshot now so a just-made change lands in
+  // seconds instead of waiting for the sync loop's heartbeat. Best effort, throttled.
+  void requestLabSync(student.id);
   const syncedAgo = formatLabAge(lab.uploadedAt).ago;
   if (!labIsLive(lab.uploadedAt)) {
     // Asks the lab script to sync every minute, so a running lab turns green soon.

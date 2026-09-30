@@ -361,6 +361,46 @@ export async function cleanupShiftLab(userId: string, items: { script: string; a
   }
 }
 
+// ---- on-demand lab sync ---------------------------------------------------
+// The installed script syncs on a loop, but a change outside the watched OUs
+// waits for the ~1-minute heartbeat. When a student asks us to grade, we push a
+// snapshot immediately over SSM so the fresh state lands in seconds. Throttled
+// so repeated polls do not queue a burst of commands.
+
+const lastSyncAt = new Map<string, number>();
+const SYNC_THROTTLE_MS = 2500;
+
+/**
+ * Tell the student's hosted lab to send a fresh snapshot now. Returns true if a
+ * command was sent. Best effort: false when there is no running hosted lab, SSM
+ * is not set up, or a sync was just requested.
+ */
+export async function requestLabSync(userId: string, force = false): Promise<boolean> {
+  if (!force) {
+    const last = lastSyncAt.get(userId) ?? 0;
+    if (Date.now() - last < SYNC_THROTTLE_MS) return false;
+  }
+  const id = await runningInstance(userId);
+  if (!id) return false;
+  lastSyncAt.set(userId, Date.now());
+  const command = "$ProgressPreference='SilentlyContinue'; $s=Join-Path $env:ProgramData 'PurveX\\Build-Environment.ps1'; if(Test-Path $s){ & $s -SyncOnly }";
+  try {
+    await ssm().send(
+      new SendCommandCommand({
+        InstanceIds: [id],
+        DocumentName: "AWS-RunPowerShellScript",
+        Comment: "Range on-demand lab sync",
+        TimeoutSeconds: 120,
+        Parameters: { commands: [command] },
+      })
+    );
+    return true;
+  } catch (err) {
+    console.error("requestLabSync failed", err instanceof Error ? err.message : err);
+    return false;
+  }
+}
+
 // ---- auto-stop ------------------------------------------------------------
 
 /** Stops every lab past its stop time. Run by the cron route. */

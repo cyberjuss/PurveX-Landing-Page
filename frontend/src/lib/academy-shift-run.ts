@@ -1,6 +1,6 @@
 import "server-only";
 import { responseGrader, shiftNarrator } from "@/lib/academy-scenario";
-import { cleanupShiftLab, hostedLabStatus, injectIncident } from "@/lib/academy-hosted";
+import { cleanupShiftLab, hostedLabStatus, injectIncident, requestLabSync } from "@/lib/academy-hosted";
 import { roleLabel } from "@/lib/academy-certs";
 import { levelFor, type DrillEntry, type Item } from "@/lib/academy-drills";
 import type { Results, Skill } from "@/lib/academy-score";
@@ -275,7 +275,23 @@ export async function submitIncident(
   inc.diagnosis = diagnosis.slice(0, 400);
   inc.response = response.slice(0, 4000);
 
-  const lab = await loadLabState(userId);
+  // Push a fresh snapshot from the lab now and wait briefly for it, so a change
+  // the student just made is graded on this click instead of the next one.
+  const before = await loadLabState(userId);
+  const beforeAt = before ? Date.parse(before.uploadedAt) : 0;
+  let lab = before;
+  if (await requestLabSync(userId, true)) {
+    const deadline = Date.now() + 8000;
+    while (Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, 700));
+      const next = await loadLabState(userId);
+      if (next && Date.parse(next.uploadedAt) > beforeAt) {
+        lab = next;
+        break;
+      }
+    }
+  }
+
   const graded = gradeIncidentLab(effectiveIncident(def, inc), lab?.snapshot ?? null, inc.diagnosis);
   const fresh = Boolean(lab && Date.parse(lab.uploadedAt) >= Date.parse(run.startedAt));
   if (graded.resolved && inc.resolvedAtSec === null) inc.resolvedAtSec = elapsed;
