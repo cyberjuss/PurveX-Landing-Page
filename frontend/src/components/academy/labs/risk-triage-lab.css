@@ -1,12 +1,11 @@
 /* Week 1 lab: Monday Morning Risk Triage. Uses the Academy's --rd tokens so it follows the light and dark themes. */
-.rt { --rt-primary: #5546e0; margin-top: 28px; border: 1px solid var(--rd-line); scroll-margin-top: 96px; }
+.rt { --rt-primary: #5546e0; margin-top: 28px; border: 0; background: var(--rd-surface, rgba(180,200,255,0.035)); border-radius: 14px; overflow: hidden; scroll-margin-top: 96px; }
 .rt svg { width: 15px; height: 15px; flex: none; }
 .rt h3 { margin: 0; font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }
 .rt p { margin: 0; }
 
 /* Stepper. */
 .rt-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--rd-line); }
-.rt-steps li + li { border-left: 1px solid var(--rd-line); }
 .rt-step { display: flex; align-items: center; gap: 10px; width: 100%; padding: 14px 16px; border: 0; background: none; text-align: left; cursor: pointer; color: var(--rd-ink-3); }
 .rt-step:disabled { cursor: default; opacity: 0.55; }
 .rt-step:not(:disabled):hover { background: var(--rd-line-2); }
