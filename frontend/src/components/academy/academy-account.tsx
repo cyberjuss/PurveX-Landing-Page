@@ -158,9 +158,11 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                 display: inline-flex; align-items: center; justify-content: center; gap: 8px;
                 width: 100%; height: 40px; border: 0;
                 font-size: 14px; font-weight: 600; color: #fff; cursor: pointer;
-                background: #0f172a;
+                background: #5546e0;
               }
-              [data-ax-account][data-theme="dark"] .ax-account__coach { background: #e8eef8; color: #000; }
+              [data-ax-account] .ax-account__coach:hover { background: #4636c9; }
+              [data-ax-account][data-theme="dark"] .ax-account__coach { background: #6a5cff; color: #fff; }
+              [data-ax-account][data-theme="dark"] .ax-account__coach:hover { background: #7d70ff; }
               [data-ax-account] .ax-account__ask small { text-align: center; font-size: 11px; font-weight: 700; opacity: 0.55; }
               [data-ax-account] .ax-account__out { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; background: none; border: 0; padding: 0; font-size: 13px; font-weight: 600; color: inherit; cursor: pointer; opacity: 0.7; }
               [data-ax-account] .rd-kicker { font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.5; }

@@ -89,14 +89,14 @@ export async function POST(request: Request) {
     </table>
     <p style="color:#64748b;font-size:12px">Reply to this email to answer the student.</p>`;
 
-  const emailed = await sendEmail(SUPPORT_EMAIL, `Range help: ${TOPICS[topic]} (${student.email ?? student.id})`, html, student.email ?? undefined);
+  const emailed = await sendEmail(SUPPORT_EMAIL, `PurveX Range help — ${TOPICS[topic]} (${student.email ?? student.id})`, html, student.email ?? undefined);
   await saveHelpRequest(student.id, { topic, message, context, emailed });
 
   if (student.email) {
     // Awaited: a serverless function can stop as soon as it responds.
     await sendEmail(
       student.email,
-      "We got your message",
+      "We got your message · PurveX Range",
       `<p>Thanks for writing. A person on the PurveX team reads every message and will reply to this address within one business day.</p>
        <p><strong>${esc(TOPICS[topic])}</strong></p>
        <p style="white-space:pre-wrap">${esc(message)}</p>`

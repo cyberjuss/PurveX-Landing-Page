@@ -91,27 +91,30 @@ function HelpPanel({ email, initialTopic }: { email: string | null; initialTopic
       <button type="button" className="gh__scrim" aria-label="Close" onClick={closeHelp} />
       <section className="hl gh__panel" role="dialog" aria-modal="true" aria-labelledby="gh-title">
         <div className="gh__head">
-          <div>
-            <p className="hl__kicker">Get help</p>
-            <h2 id="gh-title" className="gh__title">
-              {phase === "sent" ? "Message sent" : "Talk to a person"}
-            </h2>
-          </div>
+          {phase === "sent" ? (
+            <span aria-hidden="true" />
+          ) : (
+            <div>
+              <p className="hl__kicker">Get help</p>
+              <h2 id="gh-title" className="gh__title">Talk to a person</h2>
+            </div>
+          )}
           <button type="button" className="gh__close" aria-label="Close" onClick={closeHelp}>
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {phase === "sent" ? (
-          <>
-            <p className="gh__done">
-              <Check className="h-4 w-4" />
+          <div className="gh__sent">
+            <span className="gh__sent-badge"><Check className="h-7 w-7" /></span>
+            <h2 id="gh-title" className="gh__sent-title">Message sent</h2>
+            <p className="gh__sent-note">
               A person on the PurveX team will reply{email ? ` to ${email}` : " by email"} within one business day.
             </p>
             <button type="button" className="hl__go" onClick={closeHelp}>
               Done
             </button>
-          </>
+          </div>
         ) : (
           <>
             <fieldset className="gh__topics">
