@@ -134,7 +134,6 @@ function HelpPanel({ email, initialTopic }: { email: string | null; initialTopic
                 onChange={(e) => setMessage(e.target.value)}
               />
             </label>
-            <p className="gh__note">We attach your lab status and the page you are on, so you do not need to.</p>
             {error && (
               <p className="hl__error" role="alert">
                 {error}
