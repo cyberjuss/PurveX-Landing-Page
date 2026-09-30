@@ -312,7 +312,6 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
           </div>
         </div>
         <div className="sh-top__right">
-          <span className="sh-online">Lab online</span>
           <div className={`sh-clock ${left <= 60 ? "sh-clock--low" : ""}`}>
             <span className="sh-clock__label">Shift ends in</span>
             <span className="sh-clock__time">{clock(left)}</span>

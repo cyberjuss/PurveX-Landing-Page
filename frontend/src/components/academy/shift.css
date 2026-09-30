@@ -91,8 +91,6 @@
 .sh-top__name { margin: 0; font-size: 15.5px; font-weight: 700; letter-spacing: -0.01em; color: var(--rd-ink); }
 .sh-top__sub { margin: 2px 0 0; font-size: 12.5px; color: var(--rd-ink-3); }
 .sh-top__right { display: flex; align-items: center; gap: 18px; }
-.sh-online { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 0; border: 1px solid color-mix(in srgb, var(--rd-good) 40%, transparent); background: color-mix(in srgb, var(--rd-good) 10%, transparent); font-size: 12.5px; font-weight: 600; color: var(--rd-ink-2); }
-.sh-online svg { color: var(--rd-good); }
 .sh-clock { text-align: right; line-height: 1; }
 .sh-clock__label { display: block; font-size: 9.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rd-ink-3); }
 .sh-clock__time { display: block; margin-top: 4px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--rd-ink); }
