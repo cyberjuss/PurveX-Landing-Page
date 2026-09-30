@@ -1139,7 +1139,10 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
                 <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[#5546e0] text-white">
                   <GraduationCap className="h-[18px] w-[18px]" />
                 </span>
-                <span className="hidden sm:inline">PurveX Range</span>
+                <span className="hidden sm:inline">
+                  Think Like a SOC Analyst
+                  <span className="ml-2 font-mono text-xs font-normal text-slate-400">101</span>
+                </span>
               </Link>
             </div>
             <div className="flex items-center gap-2">
