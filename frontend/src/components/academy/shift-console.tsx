@@ -80,6 +80,14 @@ const emptySubscribe = () => () => {};
 function useMounted() {
   return useSyncExternalStore(emptySubscribe, () => true, () => false);
 }
+/** The academy's current theme, so the portaled console matches the portal. */
+function useAcademyTheme(): "light" | "dark" {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => (document.documentElement.dataset.academyTheme === "dark" ? "dark" : "light"),
+    () => "light"
+  );
+}
 
 // The console is a full-screen overlay. The academy wraps pages in an animated
 // container whose transform makes it the containing block for position:fixed, which
@@ -165,16 +173,18 @@ function ShiftConsoleInner() {
     return () => window.clearTimeout(t);
   }, [active, shift, post]);
 
+  const theme = useAcademyTheme();
+
   if (available === null)
     return (
-      <div className="shift-app shift-app--center">
+      <div className="shift-app shift-app--center" data-academy-theme={theme}>
         <p className="sh-loading"><Loader2 className="h-4 w-4 animate-spin" /> Loading your shift…</p>
       </div>
     );
 
   if (!available)
     return (
-      <div className="shift-app shift-app--center">
+      <div className="shift-app shift-app--center" data-academy-theme={theme}>
         <div className="sh-gate-card">
           <h1>Shift</h1>
           <p>Shifts run in your hosted lab, and hosted labs are not on for this account yet. Ask your instructor.</p>
@@ -182,15 +192,15 @@ function ShiftConsoleInner() {
       </div>
     );
 
-  if (shift?.status === "done" && shift.report) return <ShiftReport report={shift.report} onAgain={() => post({ action: "start" })} busy={busy} />;
-  if (active && shift) return <ActiveShift shift={shift} now={now} busy={busy} error={error} post={post} />;
+  if (shift?.status === "done" && shift.report) return <ShiftReport theme={theme} report={shift.report} onAgain={() => post({ action: "start" })} busy={busy} />;
+  if (active && shift) return <ActiveShift theme={theme} shift={shift} now={now} busy={busy} error={error} post={post} />;
 
-  return <ShiftIntro labState={labState} busy={busy} error={error} onStart={() => post({ action: "start" })} onRefresh={load} />;
+  return <ShiftIntro theme={theme} labState={labState} busy={busy} error={error} onStart={() => post({ action: "start" })} onRefresh={load} />;
 }
 
 // ---- intro (with the lab-online gate) -------------------------------------
 
-function ShiftIntro({ labState, busy, error, onStart, onRefresh }: { labState: LabState; busy: boolean; error: string | null; onStart: () => void; onRefresh: () => void }) {
+function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { theme: "light" | "dark"; labState: LabState; busy: boolean; error: string | null; onStart: () => void; onRefresh: () => void }) {
   const online = labState === "ready";
   const starting = labState === "starting";
   const labWord = online ? "Online" : starting ? "Starting…" : "Offline";
@@ -204,7 +214,7 @@ function ShiftIntro({ labState, busy, error, onStart, onRefresh }: { labState: L
     setLabBusy(false);
   }
   return (
-    <div className="shift-app shift-app--center">
+    <div className="shift-app shift-app--center" data-academy-theme={theme}>
       <div className="sh-intro">
         <Link href="/academy" className="sh-back"><ArrowLeft className="h-3.5 w-3.5" /> Academy</Link>
         <div className="sh-brand">
@@ -255,7 +265,7 @@ function ShiftIntro({ labState, busy, error, onStart, onRefresh }: { labState: L
 
 const SEV_CLASS: Record<Sev, string> = { P1: "sh-sev--p1", P2: "sh-sev--p2", P3: "sh-sev--p3" };
 
-function ActiveShift({ shift, now, busy, error, post }: { shift: Shift; now: number; busy: boolean; error: string | null; post: (p: Record<string, unknown>) => Promise<Record<string, unknown> | null> }) {
+function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" | "dark"; shift: Shift; now: number; busy: boolean; error: string | null; post: (p: Record<string, unknown>) => Promise<Record<string, unknown> | null> }) {
   const start = Date.parse(shift.startedAt);
   const end = Date.parse(shift.endsAt);
   const left = Math.max(0, Math.round((end - now) / 1000));
@@ -277,7 +287,7 @@ function ActiveShift({ shift, now, busy, error, post }: { shift: Shift; now: num
   const selected = queue.find((i) => i.defId === selectedId) ?? queue.find((i) => !i.resolved) ?? queue[0] ?? null;
 
   return (
-    <div className="shift-app">
+    <div className="shift-app" data-academy-theme={theme}>
       <header className="sh-top">
         <div className="sh-brand">
           <span className="sh-logo">P</span>
@@ -483,13 +493,13 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
 
 // ---- report ---------------------------------------------------------------
 
-function ShiftReport({ report, onAgain, busy }: { report: Report; onAgain: () => void; busy: boolean }) {
+function ShiftReport({ theme, report, onAgain, busy }: { theme: "light" | "dark"; report: Report; onAgain: () => void; busy: boolean }) {
   const pct = report.maxScore ? Math.round((report.totalScore / report.maxScore) * 100) : 0;
   const R = 56;
   const C = 2 * Math.PI * R;
   const ringCls = pct >= 85 ? "sh-gauge__fg--good" : pct < 50 ? "sh-gauge__fg--low" : "";
   return (
-    <div className="shift-app shift-app--center">
+    <div className="shift-app shift-app--center" data-academy-theme={theme}>
       <div className="sh-report">
         <header className="sh-report__head">
           <div className="sh-gauge">
