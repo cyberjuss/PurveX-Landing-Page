@@ -14,14 +14,14 @@ async function emailInstructor(cls: AcademyClass, origin: string): Promise<boole
   const joinLink = `${origin}/academy/join?code=${encodeURIComponent(cls.code)}`;
   const dash = `${origin}/academy/instructor`;
   const html = `
-<h2 style="margin:0 0 12px;font-size:18px;color:#0f172a;">You're set up to teach ${esc(cls.name)}</h2>
-<p style="margin:0 0 14px;">Your class is ready on PurveX Range. Two steps:</p>
-<p style="margin:0 0 6px;"><strong>1. See your class.</strong> Sign in at <a href="${dash}" style="color:#6a5cff;">${dash}</a> with this email (${esc(cls.instructorEmail)}) to watch every student's progress.</p>
-<p style="margin:14px 0 6px;"><strong>2. Invite your students.</strong> Share this link — they open it, sign in, and land in your class:</p>
-<p style="margin:0 0 14px;"><a href="${joinLink}" style="display:inline-block;background:#6a5cff;color:#ffffff;text-decoration:none;font-weight:600;padding:11px 18px;border-radius:8px;">Open the student join link</a></p>
+<h2 style="margin:0 0 12px;font-size:19px;color:#0f172a;">Your class ${esc(cls.name)} is live</h2>
+<p style="margin:0 0 16px;">Two steps and you are running.</p>
+<p style="margin:0 0 6px;"><strong>1. See your class.</strong> Open your dashboard and sign in with this email.</p>
+<p style="margin:0 0 18px;"><a href="${dash}" style="display:inline-block;background:#6a5cff;color:#ffffff;text-decoration:none;font-weight:600;padding:12px 20px;border-radius:9px;">Open your dashboard</a></p>
+<p style="margin:0 0 6px;"><strong>2. Add students.</strong> Send them this link. They open it and sign in.</p>
 <p style="margin:0 0 4px;color:#64748b;font-size:13px;word-break:break-all;">${joinLink}</p>
-<p style="margin:14px 0 0;color:#64748b;font-size:13px;">Prefer a code? Students can type <strong>${esc(cls.code)}</strong> on the passcode screen instead.</p>`;
-  return sendEmail(cls.instructorEmail, `You're set up to teach ${cls.name} on PurveX Range`, html);
+<p style="margin:14px 0 0;color:#64748b;font-size:13px;">Passcode fallback <strong>${esc(cls.code)}</strong>.</p>`;
+  return sendEmail(cls.instructorEmail, `Your class ${cls.name} is live on PurveX Range`, html);
 }
 
 // The instructor view: each class the signed-in instructor teaches, with its

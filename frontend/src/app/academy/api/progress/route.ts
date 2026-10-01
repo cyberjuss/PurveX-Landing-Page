@@ -16,11 +16,11 @@ async function welcomeStudent(student: { email: string | null; name: string | nu
   const link = `${origin}/academy`;
   const first = student.name?.trim().split(/\s+/)[0] || "there";
   const html = `
-<h2 style="margin:0 0 12px;font-size:18px;color:#0f172a;">Welcome to ${esc(cls.name)}</h2>
-<p style="margin:0 0 14px;">Hi ${esc(first)}, you're in. Your hands-on cybersecurity training is ready — real labs, graded against a live environment, not multiple choice.</p>
-<p style="margin:0 0 14px;"><a href="${link}" style="display:inline-block;background:#6a5cff;color:#ffffff;text-decoration:none;font-weight:600;padding:11px 18px;border-radius:8px;">Open PurveX Range</a></p>
-<p style="margin:0;color:#64748b;font-size:13px;">Sign in with this email any time to pick up where you left off.</p>`;
-  return sendEmail(student.email, `You're in — ${cls.name} on PurveX Range`, html);
+<h2 style="margin:0 0 12px;font-size:19px;color:#0f172a;">Welcome to ${esc(cls.name)}</h2>
+<p style="margin:0 0 16px;">Hi ${esc(first)}. You are in. Your training is ready. Real labs graded on a live system. Not multiple choice.</p>
+<p style="margin:0 0 16px;"><a href="${link}" style="display:inline-block;background:#6a5cff;color:#ffffff;text-decoration:none;font-weight:600;padding:12px 20px;border-radius:9px;">Open PurveX Range</a></p>
+<p style="margin:0;color:#64748b;font-size:13px;">Use this email to sign in any time and continue where you stopped.</p>`;
+  return sendEmail(student.email, `Welcome to ${cls.name} on PurveX Range`, html);
 }
 
 export async function GET(request: Request) {

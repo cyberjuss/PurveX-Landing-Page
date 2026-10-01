@@ -356,7 +356,7 @@ function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
 
   if (viewingClass) {
     return (
-      <div className="rd">
+      <div className="rd iv-root">
         <button type="button" className="ov-back" onClick={() => setViewing(null)}>
           <ArrowLeft aria-hidden="true" /> All classes
         </button>
@@ -366,7 +366,7 @@ function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
   }
 
   return (
-    <div className="rd">
+    <div className="rd iv-root">
       <header className="rd-mast">
         <p className="rd-kicker">Owner</p>
         <h1 className="iv-title">Classes</h1>
@@ -392,6 +392,7 @@ function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
                   <div className="ov-class__main">
                     <strong>{r.class.name}</strong>
                     <small>{r.class.instructorEmail}</small>
+                    <code className="ov-class__link">{joinLink}</code>
                   </div>
                   <div className="ov-class__count">
                     <b>{r.summary.students}</b>
@@ -456,7 +457,7 @@ export function InstructorDashboard() {
 
   const current = data.classes[Math.min(pick, data.classes.length - 1)];
   return (
-    <div className="rd">
+    <div className="rd iv-root">
       {data.classes.length > 1 && (
         <nav className="iv-tabs" aria-label="Classes">
           {data.classes.map((c, i) => (
