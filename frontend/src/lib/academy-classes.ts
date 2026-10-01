@@ -113,6 +113,17 @@ export async function joinClass(classId: string, student: { id: string; email: s
   return !already;
 }
 
+/** Every class, for the weekly retention job. Server only. */
+export async function allClasses(): Promise<AcademyClass[]> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin.from("academy_classes").select("*").order("created_at", { ascending: false });
+    if (!error && data) return data.map(fromRow);
+    if (error) console.error("academy_classes list-all failed", error.message);
+    return [];
+  }
+  return [...memoryClasses.values()];
+}
+
 /** Delete a class and its roster. Students keep their own progress and labs. */
 export async function deleteClass(classId: string): Promise<boolean> {
   memoryClasses.delete(classId);

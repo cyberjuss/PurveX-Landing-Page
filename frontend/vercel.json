@@ -1,3 +1,6 @@
 {
-  "crons": [{ "path": "/api/cron/hosted-labs", "schedule": "0 7 * * *" }]
+  "crons": [
+    { "path": "/api/cron/hosted-labs", "schedule": "0 7 * * *" },
+    { "path": "/api/academy/retention", "schedule": "0 14 * * 1" }
+  ]
 }

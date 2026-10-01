@@ -1,28 +1,12 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
-import { classesFor, classMembers, createClass, deleteClass, isAcademyAdmin, type AcademyClass } from "@/lib/academy-classes";
+import { classesFor, classMembers, createClass, deleteClass, isAcademyAdmin } from "@/lib/academy-classes";
 import { classReport } from "@/lib/academy-roster";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { sendEmail } from "@/lib/email";
+import { instructorSetupEmail } from "@/lib/academy-emails";
 
 export const runtime = "nodejs";
-
-const esc = (s: string) => s.replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" })[c] ?? c);
-
-/** Email the instructor their class is ready: how to see it, and the link to share. */
-async function emailInstructor(cls: AcademyClass, origin: string): Promise<boolean> {
-  const joinLink = `${origin}/range/join?code=${encodeURIComponent(cls.code)}`;
-  const dash = `${origin}/range/instructor`;
-  const html = `
-<h2 style="margin:0 0 12px;font-size:19px;color:#0f172a;">Your class ${esc(cls.name)} is live</h2>
-<p style="margin:0 0 16px;">Two steps and you are running.</p>
-<p style="margin:0 0 6px;"><strong>1. See your class.</strong> Open your dashboard and sign in with this email.</p>
-<p style="margin:0 0 18px;"><a href="${dash}" style="display:inline-block;background:#6a5cff;color:#ffffff;text-decoration:none;font-weight:600;padding:12px 20px;border-radius:9px;">Open your dashboard</a></p>
-<p style="margin:0 0 6px;"><strong>2. Add students.</strong> Send them this link. They open it and sign in.</p>
-<p style="margin:0 0 4px;color:#64748b;font-size:13px;word-break:break-all;">${joinLink}</p>
-<p style="margin:14px 0 0;color:#64748b;font-size:13px;">Passcode fallback <strong>${esc(cls.code)}</strong>.</p>`;
-  return sendEmail(cls.instructorEmail, `Your class ${cls.name} is live on PurveX Range`, html);
-}
 
 // The instructor view: each class the signed-in instructor teaches, with its
 // students' progress. Admins see every class and can create new ones.
@@ -62,7 +46,8 @@ export async function POST(request: Request) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return NextResponse.json({ error: "Enter the instructor's email." }, { status: 400 });
   const cls = await createClass(name, email);
   if (!cls) return NextResponse.json({ error: "Could not create the class. Check that academy.sql has run." }, { status: 500 });
-  const emailed = await emailInstructor(cls, new URL(request.url).origin).catch(() => false);
+  const setup = instructorSetupEmail(cls, new URL(request.url).origin);
+  const emailed = await sendEmail(cls.instructorEmail, setup.subject, setup.html).catch(() => false);
   return NextResponse.json({ class: cls, emailed });
 }
 
