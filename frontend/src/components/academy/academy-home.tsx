@@ -14,19 +14,19 @@ import { isLockedHref, isPhaseLocked } from "@/lib/academy-locks";
 const PHASE_COPY: { slug: string; href: string; title: string; body: string }[] = [
   {
     slug: "phase-1",
-    href: "/academy/phase-1",
+    href: "/range/phase-1",
     title: "Fundamentals",
     body: "Name what failed then stand up PurveX Financial and work the directory yourself.",
   },
   {
     slug: "phase-2",
-    href: "/academy/phase-2",
+    href: "/range/phase-2",
     title: "Threat Detection & Log Analysis",
     body: "An alert fires. Read the host, the account, and the log before you decide what happened.",
   },
   {
     slug: "phase-3",
-    href: "/academy/phase-3",
+    href: "/range/phase-3",
     title: "Incident Response",
     body: "Triage, investigate, contain, and write it up.",
   },
@@ -57,7 +57,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
     if (isPhaseLocked(copy.slug)) continue;
     for (const entry of entriesOf(phase)) {
       if (entry.sections.length > 0 && phase && !isComplete(phase.slug, entry.slug)) {
-        firstOpen = { href: `/academy/${phase.slug}/${entry.slug}`, title: entry.title, phaseSlug: phase.slug, entrySlug: entry.slug };
+        firstOpen = { href: `/range/${phase.slug}/${entry.slug}`, title: entry.title, phaseSlug: phase.slug, entrySlug: entry.slug };
         break;
       }
     }
@@ -67,7 +67,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
   const lastPhase = lastStop && !isPhaseLocked(lastStop.phaseSlug) ? phases.find((p) => p.slug === lastStop.phaseSlug) : undefined;
   const lastEntry = lastPhase ? entriesOf(lastPhase).find((e) => e.slug === lastStop?.entrySlug && e.sections.length > 0) : undefined;
   const pin = lastEntry && lastPhase
-    ? { href: `/academy/${lastPhase.slug}/${lastEntry.slug}`, title: lastEntry.title, phaseSlug: lastPhase.slug, entrySlug: lastEntry.slug, kind: "last" as const }
+    ? { href: `/range/${lastPhase.slug}/${lastEntry.slug}`, title: lastEntry.title, phaseSlug: lastPhase.slug, entrySlug: lastEntry.slug, kind: "last" as const }
     : firstOpen
       ? { ...firstOpen, kind: "start" as const }
       : null;

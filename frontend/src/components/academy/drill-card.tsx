@@ -6,7 +6,7 @@ import { ArrowRight, Flame } from "lucide-react";
 import { labLine, localDay, scoreLabel, streakLine, type DrillStatus } from "@/components/academy/drill-runner";
 import { academyFetch } from "@/lib/academy-client";
 
-export const DRILL_PATH = "/academy/drill";
+export const DRILL_PATH = "/range/drill";
 
 // Home-page nudge: today's drill, the streak, and how stale their lab is.
 export function DrillCard() {

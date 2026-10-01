@@ -48,10 +48,10 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
   // phase or a lesson, where it's a real jump-around tool rather than a
   // second copy of the page you're looking at.
   const isReadiness = pathname === READINESS_PATH;
-  const isDrill = pathname === "/academy/drill";
-  const isProof = pathname === "/academy/portfolio";
-  const isHome = pathname === "/academy";
-  const showSidebar = pathname !== "/academy" && !isReadiness && !isDrill && !isProof;
+  const isDrill = pathname === "/range/drill";
+  const isProof = pathname === "/range/portfolio";
+  const isHome = pathname === "/range";
+  const showSidebar = pathname !== "/range" && !isReadiness && !isDrill && !isProof;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -1167,7 +1167,7 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
                   <Menu className="h-[18px] w-[18px]" />
                 </button>
               )}
-              <Link href="/academy" className="flex items-center gap-2.5 font-display text-base font-semibold tracking-tight text-slate-900">
+              <Link href="/range" className="flex items-center gap-2.5 font-display text-base font-semibold tracking-tight text-slate-900">
                 <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[#5546e0] text-white">
                   <GraduationCap className="h-[18px] w-[18px]" />
                 </span>

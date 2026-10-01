@@ -21,7 +21,8 @@ import { usePathname } from "next/navigation";
 // clip those menus into the header bar.
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  if (pathname?.startsWith("/academy")) return children;
+  // Range renders at /range (and still /academy directly), both skip the wrapper.
+  if (pathname?.startsWith("/academy") || pathname?.startsWith("/range")) return children;
 
   return (
     <>

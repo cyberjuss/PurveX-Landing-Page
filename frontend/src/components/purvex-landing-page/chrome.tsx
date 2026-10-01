@@ -214,7 +214,7 @@ export function SiteChrome({
             Get in Touch
           </a>
           <div className="sp-mobile__meta">
-            <Link href="/academy" onClick={closeNav}>Range</Link>
+            <Link href="/range" onClick={closeNav}>Range</Link>
             <Link href="/legal/privacy" onClick={closeNav}>Privacy</Link>
             <Link href="/legal/terms" onClick={closeNav}>Terms</Link>
           </div>
@@ -248,7 +248,7 @@ export function SiteChrome({
             <div className="sp-footer__col">
               <h4>Company</h4>
               <Link href="/cybersecurity-training">Cybersecurity Training</Link>
-              <Link href="/academy">Range</Link>
+              <Link href="/range">Range</Link>
               <Link href="/about">About</Link>
             </div>
             <div className="sp-footer__col">

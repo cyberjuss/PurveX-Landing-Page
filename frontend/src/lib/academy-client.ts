@@ -13,7 +13,7 @@ export const RESULTS_CHANGED_EVENT = "academy-results-changed";
 // RESULTS_CHANGED_EVENT is for whole-set replacements, which also re-apply
 // saved state to the missions on the page.
 export const RESULTS_UPDATED_EVENT = "academy-results-updated";
-export const READINESS_PATH = "/academy/readiness";
+export const READINESS_PATH = "/range/readiness";
 
 /** The student's local calendar day, same shape the drill APIs accept. */
 export const localDay = (d = new Date()) => d.toLocaleDateString("sv-SE");

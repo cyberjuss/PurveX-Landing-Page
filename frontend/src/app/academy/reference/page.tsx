@@ -326,7 +326,7 @@ const categories: RefCategory[] = [
             </table>
             <p>
               {"Any time you see a Level 3 (Helpdesk) account attempting something that belongs to Level 1 (Domain Admin), that is your first real red flag. Full detail lives on the "}
-              <Link href="/academy/phase-1/home-lab-active-directory">Home Lab page</Link>.
+              <Link href="/range/phase-1/home-lab-active-directory">Home Lab page</Link>.
             </p>
           </>
         ),

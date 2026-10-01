@@ -49,7 +49,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         // /academy/${phase.slug} redirects straight into a week, so that
         // exact path is never actually the current pathname -- highlight
         // the phase header instead whenever any of its own weeks is active.
-        const phaseActive = entries.some((entry) => pathname === `/academy/${phase.slug}/${entry.slug}`);
+        const phaseActive = entries.some((entry) => pathname === `/range/${phase.slug}/${entry.slug}`);
         // A phase with weeks planned but none published yet (Phase 2) has
         // no real destination -- its route just redirects straight back to
         // wherever you already were. A phase with no week structure at all
@@ -91,7 +91,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           <div key={phase.slug}>
             {hasDestination ? (
               <Link
-                href={`/academy/${phase.slug}`}
+                href={`/range/${phase.slug}`}
                 onClick={onNavigate}
                 className={`flex items-center justify-between gap-2 font-mono text-[12px] font-bold uppercase tracking-[0.1em] transition ${
                   phaseActive ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
@@ -120,7 +120,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
             >
               <ul className="flex flex-col gap-0.5 overflow-hidden border-l border-[var(--pvrx-border-light)] pl-3">
                 {entries.map((entry) => {
-                  const href = `/academy/${phase.slug}/${entry.slug}`;
+                  const href = `/range/${phase.slug}/${entry.slug}`;
                   const active = pathname === href;
                   const done = isComplete(phase.slug, entry.slug);
                   const hasContent = entry.sections.length > 0;
@@ -157,10 +157,10 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
       })}
 
       <Link
-        href="/academy/reference"
+        href="/range/reference"
         onClick={onNavigate}
         className={`flex items-center gap-2 font-mono text-[12px] font-bold uppercase tracking-[0.1em] transition ${
-          pathname === "/academy/reference" ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
+          pathname === "/range/reference" ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
         }`}
       >
         <BookMarked className="h-3 w-3 shrink-0" />

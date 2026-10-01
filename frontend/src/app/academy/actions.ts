@@ -18,5 +18,5 @@ export async function unlockAcademy(
   }
 
   await setAcademyCookie();
-  redirect("/academy");
+  redirect("/range");
 }

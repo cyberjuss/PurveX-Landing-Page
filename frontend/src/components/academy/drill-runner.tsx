@@ -990,7 +990,7 @@ export function DrillRunner() {
                 </span>
                 <span className="ax-path__count">
                   {hostedLab && (
-                    <a className="rd-cta" href="/academy/shift">
+                    <a className="rd-cta" href="/range/shift">
                       Start shift <ArrowRight className="h-4 w-4" />
                     </a>
                   )}

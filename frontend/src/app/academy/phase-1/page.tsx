@@ -8,5 +8,5 @@ import { findPhase, firstAvailableEntry } from "@/lib/academy-content";
 export default function Phase1Page() {
   const phase = findPhase("phase-1")!;
   const entry = firstAvailableEntry(phase);
-  redirect(entry ? `/academy/${phase.slug}/${entry.slug}` : "/academy");
+  redirect(entry ? `/range/${phase.slug}/${entry.slug}` : "/range");
 }

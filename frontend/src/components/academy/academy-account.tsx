@@ -231,7 +231,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                 <Target className="h-3.5 w-3.5" /> Goals
                 {needsUpdate && <span className="ax-account__dot" aria-label="An exam date has passed" />}
               </button>
-              <Link href="/academy/portfolio" className="ax-account__out" onClick={() => setOpen(false)}>
+              <Link href="/range/portfolio" className="ax-account__out" onClick={() => setOpen(false)}>
                 <BadgeCheck className="h-3.5 w-3.5" /> Portfolio
               </Link>
               {teaches && (

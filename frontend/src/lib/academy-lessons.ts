@@ -103,7 +103,7 @@ function build() {
             where: `${phase.label} · ${entry.title} · ${label}`,
             section: label,
             heading: p.heading,
-            url: `/academy/${phase.slug}/${entry.slug}#${slug(tab)}`,
+            url: `/range/${phase.slug}/${entry.slug}#${slug(tab)}`,
             text: p.body,
             terms: count(words(p.body)),
             head: new Set(words(`${label} ${p.heading}`)),

@@ -83,7 +83,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
           {(prevEntry || nextEntry) && (
             <nav className="ax-pager">
               {prevEntry ? (
-                <Link href={`/academy/${phase.slug}/${prevEntry.slug}`} className="ax-pager__link">
+                <Link href={`/range/${phase.slug}/${prevEntry.slug}`} className="ax-pager__link">
                   <span className="rd-kicker">
                     <ArrowLeft className="h-3 w-3" />
                   </span>
@@ -93,7 +93,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
                 <span />
               )}
               {nextEntry ? (
-                <Link href={`/academy/${phase.slug}/${nextEntry.slug}`} className="ax-pager__link ax-pager__link--next">
+                <Link href={`/range/${phase.slug}/${nextEntry.slug}`} className="ax-pager__link ax-pager__link--next">
                   <span className="rd-kicker">
                     Next <ArrowRight className="h-3 w-3" />
                   </span>
@@ -117,8 +117,8 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
                 labs={labSections.map((s) => ({ label: s.label.replace(/^Lab:\s*/, ""), markdown: s.markdown!, widget: s.widget }))}
                 challenges={challengeSections.map((s) => ({ label: s.label.replace(/^Challenge:\s*/, ""), markdown: s.markdown! }))}
                 troubleshooting={troubleshootingSections.map((s) => ({ label: s.label.replace(/^Troubleshooting:\s*/, ""), markdown: s.markdown! }))}
-                prevWeek={prevEntry ? { label: prevEntry.title, href: `/academy/${phase.slug}/${prevEntry.slug}` } : null}
-                nextWeek={nextEntry ? { label: nextEntry.title, href: `/academy/${phase.slug}/${nextEntry.slug}` } : null}
+                prevWeek={prevEntry ? { label: prevEntry.title, href: `/range/${phase.slug}/${prevEntry.slug}` } : null}
+                nextWeek={nextEntry ? { label: nextEntry.title, href: `/range/${phase.slug}/${nextEntry.slug}` } : null}
               />
             </div>
           )}

@@ -32,7 +32,7 @@ type ChallengeKey = MissionCatalogEntry["challenge"];
 
 /** The challenge a "Challenge: ..." tab runs, matched by its page and tab slug. */
 function challengeFor(phaseSlug: string, entrySlug: string, tabSlug: string): ChallengeKey | null {
-  const href = `/academy/${phaseSlug}/${entrySlug}`;
+  const href = `/range/${phaseSlug}/${entrySlug}`;
   const hit = (Object.entries(CHALLENGE_PATHS) as [ChallengeKey, { href: string; tab: string }][]).find(([, p]) => p.href === href && p.tab === tabSlug);
   return hit ? hit[0] : null;
 }

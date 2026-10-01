@@ -128,7 +128,7 @@ export function ProofPrompt() {
             <button type="button" className="pq__btn pq__btn--primary" onClick={close}>
               Continue
             </button>
-            <Link href="/academy/portfolio" className="pq__btn" onClick={close}>
+            <Link href="/range/portfolio" className="pq__btn" onClick={close}>
               See your portfolio
             </Link>
           </div>

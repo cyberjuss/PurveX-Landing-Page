@@ -140,7 +140,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         <div className="tp-features__head">
           <h2>Everything in Range</h2>
           <p>One portal for learning, practice, and proof. Students sign in and everything is there.</p>
-          <Link href="/academy" className="tp-link">
+          <Link href="/range" className="tp-link">
             Open the portal <ArrowRight size={14} />
           </Link>
         </div>
@@ -178,7 +178,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
             <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="pg-close__book">
               Book a cohort <ArrowRight size={16} />
             </a>
-            <Link href="/academy" className="pg-close__more">
+            <Link href="/range" className="pg-close__more">
               Sign in <ArrowRight size={14} />
             </Link>
           </div>

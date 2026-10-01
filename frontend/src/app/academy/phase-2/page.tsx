@@ -11,5 +11,5 @@ export default function Phase2Page() {
   const phase = findPhase("phase-2")!;
   if (isPhaseLocked(phase.slug)) return <PhaseLocked title={phase.title} summary="An alert fires. Read the host, the account, and the log before you decide what happened." />;
   const entry = firstAvailableEntry(phase);
-  redirect(entry ? `/academy/${phase.slug}/${entry.slug}` : "/academy");
+  redirect(entry ? `/range/${phase.slug}/${entry.slug}` : "/range");
 }

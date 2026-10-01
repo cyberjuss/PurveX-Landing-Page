@@ -495,7 +495,7 @@ export function CoachChat() {
               {remaining <= 5 && (
                 <>
                   {" · "}
-                  <a href="/academy/drill" className="pc-dock__earn">
+                  <a href="/range/drill" className="pc-dock__earn">
                     Earn more with a drill
                   </a>
                 </>

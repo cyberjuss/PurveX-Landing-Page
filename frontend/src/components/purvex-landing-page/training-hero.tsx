@@ -242,7 +242,7 @@ export function TrainingHero() {
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Book a cohort <ArrowRight size={16} />
           </a>
-          <Link href="/academy" className="sp-btn sp-btn--ghost sp-btn--lg">
+          <Link href="/range" className="sp-btn sp-btn--ghost sp-btn--lg">
             Sign in
           </Link>
         </div>

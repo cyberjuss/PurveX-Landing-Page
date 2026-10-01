@@ -650,7 +650,7 @@ async function currentActivity(ctx: CoachToolContext) {
             step: place.at ?? null,
             lastSeen: seen.ago,
             likelyStillThere: seen.hours < 2,
-            url: `/academy/${place.phase}/${place.entry}#${tabSlug(place.tab)}`,
+            url: `/range/${place.phase}/${place.entry}#${tabSlug(place.tab)}`,
           }
         : null,
     lastMission: lastId

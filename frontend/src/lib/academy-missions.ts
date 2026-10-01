@@ -157,14 +157,14 @@ export const CHALLENGE_PATHS: Record<
   MissionCatalogEntry["challenge"],
   { href: string; tab: string }
 > = {
-  "day-one": { href: "/academy/phase-1/home-lab-active-directory", tab: "operation-day-one" },
-  "ticket-queue": { href: "/academy/phase-1/home-lab-active-directory", tab: "ticket-queue" },
-  "alert-queue": { href: "/academy/phase-2/week-2", tab: "the-2-am-login" },
+  "day-one": { href: "/range/phase-1/home-lab-active-directory", tab: "operation-day-one" },
+  "ticket-queue": { href: "/range/phase-1/home-lab-active-directory", tab: "ticket-queue" },
+  "alert-queue": { href: "/range/phase-2/week-2", tab: "the-2-am-login" },
 };
 
 export function missionHref(id: string): string {
   const mission = MISSION_CATALOG[id];
-  if (!mission) return "/academy";
+  if (!mission) return "/range";
   return `${CHALLENGE_PATHS[mission.challenge].href}#${id}`;
 }
 

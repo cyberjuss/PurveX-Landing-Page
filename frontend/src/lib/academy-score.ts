@@ -210,5 +210,5 @@ export function scorecardHtml(s: Summary): string {
     s.finished === 0 ? "––" : s.overall
   }</span></div><div class="ad-score__head"><span class="ad-score__eyebrow">Readiness</span><strong>${
     lv.label
-  }</strong><small>${line}</small></div><a class="ad-score__link" href="/academy/readiness">Open report →</a></div>`;
+  }</strong><small>${line}</small></div><a class="ad-score__link" href="/range/readiness">Open report →</a></div>`;
 }
