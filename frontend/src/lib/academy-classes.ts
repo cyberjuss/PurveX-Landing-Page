@@ -113,6 +113,20 @@ export async function joinClass(classId: string, student: { id: string; email: s
   return !already;
 }
 
+/** Delete a class and its roster. Students keep their own progress and labs. */
+export async function deleteClass(classId: string): Promise<boolean> {
+  memoryClasses.delete(classId);
+  memoryMembers.delete(classId);
+  if (!supabaseAdmin) return true;
+  // academy_class_members has an on-delete-cascade FK, so the roster goes with it.
+  const { error } = await supabaseAdmin.from("academy_classes").delete().eq("id", classId);
+  if (error) {
+    console.error("academy_classes delete failed", error.message);
+    return false;
+  }
+  return true;
+}
+
 export async function classMembers(classId: string): Promise<ClassMember[]> {
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin.from("academy_class_members").select("user_id, email, name, joined_at").eq("class_id", classId);

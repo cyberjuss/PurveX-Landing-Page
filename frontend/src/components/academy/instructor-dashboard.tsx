@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Activity, AlertTriangle, ArrowLeft, Check, Copy, ExternalLink, Gauge, Users } from "lucide-react";
+import { Activity, AlertTriangle, ArrowLeft, Check, Copy, ExternalLink, Gauge, Trash2, Users } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { scoreTone } from "@/lib/academy-score";
 import "./instructor.css";
@@ -60,6 +60,10 @@ function statusOf(s: Student): { label: string; tone: "good" | "warn" | "bad" | 
   return { label: "Steady", tone: "none" };
 }
 
+// Roster order: the students who need attention sit at the top.
+const STATUS_PRIORITY: Record<string, number> = { Stuck: 0, Quiet: 1, "Not started": 2, Steady: 3, Active: 4 };
+const urgency = (s: Student) => STATUS_PRIORITY[statusOf(s).label] ?? 3;
+
 /** Why a student needs a look, most urgent first. */
 function flags(s: Student): string[] {
   const out: string[] = [];
@@ -85,6 +89,26 @@ function CopyLink({ text, label }: { text: string; label: string }) {
       }}
     >
       {done ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />} {done ? "Copied" : label}
+    </button>
+  );
+}
+
+function DeleteClassButton({ classId, name, onDeleted }: { classId: string; name: string; onDeleted: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const del = async () => {
+    if (!window.confirm(`Delete ${name}? This removes the class and its roster. Students keep their own progress and labs.`)) return;
+    setBusy(true);
+    try {
+      const res = await academyFetch(`/academy/api/instructor?classId=${encodeURIComponent(classId)}`, { method: "DELETE" });
+      if (res.ok) onDeleted();
+      else setBusy(false);
+    } catch {
+      setBusy(false);
+    }
+  };
+  return (
+    <button type="button" className="iv-copy iv-del" disabled={busy} onClick={del}>
+      <Trash2 className="h-3.5 w-3.5" /> {busy ? "Deleting…" : "Delete"}
     </button>
   );
 }
@@ -228,7 +252,7 @@ function ClassView({ r }: { r: Report }) {
             <div className="rd-sec__head">
               <span className="rd-sec__n">03</span>
               <h2>Students</h2>
-              <p>Most recently active first.</p>
+              <p>Who needs attention first.</p>
             </div>
             <div className="iv-table" role="table" aria-label={`${r.class.name} students`}>
               <div className="iv-tr iv-tr--head" role="row">
@@ -240,7 +264,7 @@ function ClassView({ r }: { r: Report }) {
                 <span role="columnheader">Drills this week</span>
                 <span role="columnheader">Portfolio</span>
               </div>
-              {r.students.map((s) => (
+              {[...r.students].sort((a, b) => urgency(a) - urgency(b) || (Date.parse(b.lastActive ?? "0") || 0) - (Date.parse(a.lastActive ?? "0") || 0)).map((s) => (
                 <div key={s.userId} className="iv-tr" role="row">
                   <span role="cell" className="iv-who">
                     <strong>{who(s)}</strong>
@@ -420,6 +444,7 @@ function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
                     <button type="button" className="iv-copy" onClick={() => setViewing(r.class.id)}>
                       View progress
                     </button>
+                    <DeleteClassButton classId={r.class.id} name={r.class.name} onDeleted={reload} />
                   </div>
                 </li>
               );

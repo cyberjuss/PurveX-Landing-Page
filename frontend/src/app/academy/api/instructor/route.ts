@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
-import { classesFor, classMembers, createClass, isAcademyAdmin, type AcademyClass } from "@/lib/academy-classes";
+import { classesFor, classMembers, createClass, deleteClass, isAcademyAdmin, type AcademyClass } from "@/lib/academy-classes";
 import { classReport } from "@/lib/academy-roster";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { sendEmail } from "@/lib/email";
@@ -64,4 +64,15 @@ export async function POST(request: Request) {
   if (!cls) return NextResponse.json({ error: "Could not create the class. Check that academy.sql has run." }, { status: 500 });
   const emailed = await emailInstructor(cls, new URL(request.url).origin).catch(() => false);
   return NextResponse.json({ class: cls, emailed });
+}
+
+export async function DELETE(request: Request) {
+  const me = await auth(request);
+  if (!me) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!isAcademyAdmin(me.email)) return NextResponse.json({ error: "Only an admin can delete a class." }, { status: 403 });
+  const classId = new URL(request.url).searchParams.get("classId") ?? "";
+  if (!classId) return NextResponse.json({ error: "Which class?" }, { status: 400 });
+  const ok = await deleteClass(classId);
+  if (!ok) return NextResponse.json({ error: "Could not delete the class." }, { status: 500 });
+  return NextResponse.json({ ok: true });
 }
