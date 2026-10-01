@@ -40,11 +40,13 @@ export function checkPasscode(input: string): boolean {
   return input.trim() === passcode;
 }
 
-export async function setAcademyCookie() {
+/** False when no passcode is configured, so there is no cookie to set. */
+export async function setAcademyCookie(): Promise<boolean> {
   const expected = expectedToken();
-  if (!expected) return;
+  if (!expected) return false;
   const store = await cookies();
   store.set(ACADEMY_COOKIE, expected, cookieOptions());
+  return true;
 }
 
 // A class code unlocks the course like the shared passcode, and remembers the

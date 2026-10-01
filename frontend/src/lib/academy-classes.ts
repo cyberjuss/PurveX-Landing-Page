@@ -138,6 +138,16 @@ export async function deleteClass(classId: string): Promise<boolean> {
   return true;
 }
 
+/** True when the student is already on any class roster. */
+export async function isClassMember(userId: string): Promise<boolean> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin.from("academy_class_members").select("class_id").eq("user_id", userId).limit(1);
+    if (!error) return Boolean(data?.length);
+    console.error("academy_class_members lookup failed", error.message);
+  }
+  return [...memoryMembers.values()].some((list) => list.some((m) => m.userId === userId));
+}
+
 export async function classMembers(classId: string): Promise<ClassMember[]> {
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin.from("academy_class_members").select("user_id, email, name, joined_at").eq("class_id", classId);
