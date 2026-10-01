@@ -61,12 +61,12 @@ export function instructorSetupEmail(cls: AcademyClass, o: string): Built {
     pre(`Your dashboard and the link to invite students to ${cls.name}.`) +
     badge("key") +
     h(`Your class ${cls.name} is live`) +
-    p("Two steps and you are running.") +
-    p("<strong>1. See your class.</strong> Open your dashboard and sign in with this email.") +
+    p("There are two quick steps to get your class running.") +
+    p("<strong>First, see your class.</strong> Open your dashboard and sign in with this email to follow every student's progress in one place.") +
     button(`${url}/range/instructor`, "Open your dashboard") +
-    p('<strong style="display:block;margin-top:18px;">2. Add students.</strong> Send them this link. They open it and sign in.') +
+    p('<strong style="display:block;margin-top:18px;">Second, add your students.</strong> Share the link below with them. They open it, sign in, and land straight in your class.') +
     linkRow("Student link", join) +
-    note(`Passcode fallback <strong style="color:${INK2};">${esc(cls.code)}</strong>.`);
+    note(`If a student needs to type a code instead, the passcode is <strong style="color:${INK2};">${esc(cls.code)}</strong>.`);
   return { subject: `Your class ${cls.name} is live on PurveX Range`, html };
 }
 
@@ -77,9 +77,9 @@ export function studentWelcomeEmail(student: Named, cls: AcademyClass, o: string
     pre("Your first lab is ready.") +
     badge("rocket") +
     h(`Welcome to ${cls.name}`) +
-    p(`Hi ${esc(first(student.name))}. You are in. Your training is ready. Real labs graded on a live system. Not multiple choice.`) +
+    p(`Hi ${esc(first(student.name))}, welcome to ${esc(cls.name)}. Your training is ready, with hands-on labs that are graded against a live environment, so you build the skills the job actually asks for rather than test-taking ones.`) +
     button(`${url}/range`, "Start training") +
-    note("Use this email to sign in any time and continue where you stopped.");
+    note("You can sign in with this email any time and pick up where you left off.");
   return { subject: `Welcome to ${cls.name} on PurveX Range`, html };
 }
 
@@ -89,10 +89,10 @@ export function studentNudgeEmail(student: Named, o: string): Built {
   const html =
     pre("Your lab is where you left it.") +
     badge("clock") +
-    h(`Your lab is waiting, ${first(student.name)}`) +
-    p("You have not been back in a week. Ten minutes gets you moving again.") +
+    h(`Pick up where you left off, ${first(student.name)}`) +
+    p("It has been about a week since your last session, and your lab is exactly where you left it. Ten minutes is enough to get moving again and keep your momentum going.") +
     button(`${url}/range`, "Jump back in") +
-    note("One daily drill still counts. Short sessions keep your streak alive.");
+    note("Even a single daily drill keeps your streak alive.");
   return { subject: "Your lab is waiting", html };
 }
 
@@ -136,7 +136,7 @@ export function instructorDigestEmail(d: DigestInput, o: string): Built {
     pre(`${d.className}: ${d.active} active, ${d.stuck} stuck this week.`) +
     badge("chart") +
     h(`${d.className} this week`) +
-    p(`${d.students} student${d.students === 1 ? "" : "s"}. ${d.active} active. ${d.attention.length} need a look.`) +
+    p(`Here is how your class is doing. You have ${d.students} student${d.students === 1 ? "" : "s"}, with ${d.active} active this week and ${d.attention.length} who could use a look.`) +
     stats +
     list +
     `<div style="height:20px;"></div>` +
@@ -152,9 +152,9 @@ export function studentMilestoneEmail(student: Named, title: string, o: string):
     pre(`Nice work. You cleared ${title}.`) +
     badge("trophy") +
     h(`Nice work, ${first(student.name)}`) +
-    p(`You passed ${esc(title)}. Real hands-on evidence. Not a quiz score.`) +
+    p(`You passed ${esc(title)}, which is real hands-on evidence of the skill rather than a quiz score.`) +
     button(`${url}/range`, "Keep going") +
-    note("Every one you clear builds your proof profile.");
+    note("Every lab you clear adds to your proof profile.");
   return { subject: `Nice work on ${title}`, html };
 }
 
@@ -165,9 +165,9 @@ export function studentJoinedEmail(className: string, studentName: string, o: st
     pre(`${studentName} joined ${className}.`) +
     badge("user") +
     h(`${studentName} joined ${className}`) +
-    p("A new student is in your class. Say hello and help them start.") +
+    p(`${esc(studentName)} just joined your class. Reaching out early to welcome them tends to help new students get started and stay engaged.`) +
     button(`${url}/range/instructor`, "Open your class") +
-    note("You see every student's progress on your dashboard.");
+    note("You can follow their progress any time on your dashboard.");
   return { subject: `${studentName} joined ${className}`, html };
 }
 
@@ -177,9 +177,9 @@ export function signupConfirmEmail(actionLink: string): Built {
     pre("Confirm your email to finish setting up.") +
     badge("mail") +
     h("Confirm your email") +
-    p("Confirm your email to finish setting up your PurveX account.") +
+    p("Thanks for signing up. Confirm your email address with the button below to finish setting up your PurveX account.") +
     button(actionLink, "Confirm email") +
-    note("Did not sign up? Ignore this email.");
+    note("If you did not sign up, you can safely ignore this email.");
   return { subject: "Confirm your PurveX email", html };
 }
 
@@ -189,8 +189,8 @@ export function passwordResetEmail(actionLink: string): Built {
     pre("Reset your password. The link lasts an hour.") +
     badge("lock") +
     h("Reset your password") +
-    p("Someone asked to reset the password for your PurveX account. Use this button within the hour.") +
+    p("We received a request to reset the password for your PurveX account. Use the button below within the hour to choose a new one.") +
     button(actionLink, "Reset your password") +
-    note("Did not ask for this? Ignore this email. Your password stays the same.");
+    note("If you did not request this, you can ignore this email and your password will stay the same.");
   return { subject: "Reset your PurveX password", html };
 }
