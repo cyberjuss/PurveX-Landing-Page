@@ -293,7 +293,7 @@ function NewClassForm({ onCreated }: { onCreated: () => void }) {
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [made, setMade] = useState<{ name: string; code: string } | null>(null);
+  const [made, setMade] = useState<{ name: string; code: string; emailed: boolean; to: string } | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -310,7 +310,7 @@ function NewClassForm({ onCreated }: { onCreated: () => void }) {
         setError(data.error ?? "Could not create the class.");
         return;
       }
-      setMade({ name: data.class.name, code: data.class.code });
+      setMade({ name: data.class.name, code: data.class.code, emailed: Boolean(data.emailed), to: email });
       setName("");
       setEmail("");
       onCreated();
@@ -344,7 +344,8 @@ function NewClassForm({ onCreated }: { onCreated: () => void }) {
       {made && (
         <div className="iv-made">
           <p>
-            Created <strong>{made.name}</strong>. Share this with the class:
+            Created <strong>{made.name}</strong>.{" "}
+            {made.emailed ? `We emailed the join link and sign-in steps to ${made.to}.` : `Couldn't send the email automatically — copy the link below and send it to ${made.to}.`}
           </p>
           <InviteBlock code={made.code} />
           <p className="iv-note">Code (fallback): <strong>{made.code}</strong></p>
