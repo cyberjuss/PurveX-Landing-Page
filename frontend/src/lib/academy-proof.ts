@@ -93,7 +93,7 @@ const CATALOG: Record<string, Entry> = {
   },
   "group-access": {
     title: "Provisioned access through role-based group membership",
-    actions: ["Identified the security group mapped to the requested resource", "Granted access through that group instead of direct rights, giving the user only what the role needs", "Verified the user's effective access, keeping it easy to review and remove later"],
+    actions: ["Identified the security group mapped to the requested resource", "Granted access through that group instead of direct rights, giving the user only what the role needs", "Confirmed the membership in the directory, keeping access easy to review and remove later"],
     keywords: ["Role-Based Access Control (RBAC)", "Least Privilege"],
     bullets: {
       soc: [["a", "Granted"], ["s", "a user's missing access"], ["a", "through the correct security group instead of admin rights,"], ["r", "keeping least privilege intact."]],
@@ -103,12 +103,12 @@ const CATALOG: Record<string, Entry> = {
   },
   "enable-account": {
     title: "Diagnosed and resolved a user sign-in failure",
-    actions: ["Distinguished a disabled account from a lockout before acting, avoiding the wrong fix", "Restored the account without an unnecessary password reset, sparing the user extra downtime", "Confirmed the user could sign in again"],
+    actions: ["Checked the account state before acting, telling a disabled, locked, or expired account apart", "Applied the fix the account actually needed, not the one the caller named", "Confirmed in the directory that the account was active again"],
     keywords: ["Account Management", "Troubleshooting"],
     bullets: {
       soc: [["a", "Investigated"], ["s", "a user sign-in failure"], ["a", "by checking account state before acting,"], ["r", "telling a disabled account from a lockout."]],
-      help: [["a", "Resolved"], ["s", "a locked-out user ticket"], ["a", "by inspecting the account first and re-enabling it,"], ["r", "restoring sign-in without an unneeded password reset."]],
-      sys: [["a", "Restored"], ["s", "a disabled Active Directory account"], ["a", "after verifying its state,"], ["r", "and confirmed the user could sign in."]],
+      help: [["a", "Resolved"], ["s", "a sign-in ticket"], ["a", "by inspecting the account first"], ["r", "and applying the fix it actually needed."]],
+      sys: [["a", "Restored"], ["s", "a blocked Active Directory account"], ["a", "after verifying its state,"], ["r", "and confirmed it was active again."]],
     },
   },
   "create-user": {
@@ -143,12 +143,12 @@ const CATALOG: Record<string, Entry> = {
   },
   offboard: {
     title: "Offboarded a departing user while preserving audit history",
-    actions: ["Disabled the account instead of deleting it, stopping sign-ins while keeping history for auditors and investigators", "Removed every group membership so the account held no access"],
+    actions: ["Disabled the account instead of deleting it, stopping sign-ins while keeping history for auditors and investigators", "Confirmed in the directory that the account could no longer sign in"],
     keywords: ["User Deprovisioning"],
     bullets: {
-      soc: [["a", "Contained"], ["s", "a departed user's access"], ["a", "by disabling the account and removing every group,"], ["r", "while keeping it for audit."]],
-      help: [["a", "Offboarded"], ["s", "a departed employee"], ["a", "by disabling the account and removing group access."]],
-      sys: [["a", "Offboarded"], ["s", "a user account"], ["a", "by disabling it and clearing its group memberships,"], ["r", "keeping the object for audit."]],
+      soc: [["a", "Contained"], ["s", "a departed user's access"], ["a", "by disabling the account instead of deleting it,"], ["r", "keeping it for audit."]],
+      help: [["a", "Offboarded"], ["s", "a departed employee"], ["a", "by disabling the account and keeping it for records."]],
+      sys: [["a", "Offboarded"], ["s", "a user account"], ["a", "by disabling it instead of deleting it,"], ["r", "keeping the object for audit."]],
     },
   },
   "service-account": {

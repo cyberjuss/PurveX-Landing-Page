@@ -1,5 +1,6 @@
-// Help desk readiness score for the two Home Lab challenges. Results live in
-// the browser only (localStorage), keyed by the mission's data-id.
+// Readiness score for Operation Day One, the Ticket Queue, and The 2 AM Login.
+// Results are cached in the browser (localStorage) and saved to the account,
+// keyed by the mission's data-id.
 
 export type Skill = "accounts" | "directory" | "troubleshooting" | "security";
 
@@ -142,18 +143,21 @@ export function summarize(results: Results): Summary {
       per[skill].done += 1;
     }
   }
-  const overall = Math.round(sum / total);
+  // Scores average the missions finished so far. Unfinished missions are not
+  // zeros; completion is reported separately and gates the Ready level.
+  const overall = finished ? Math.round(sum / finished) : 0;
   const skills = (Object.keys(per) as Skill[]).map((key) => ({
     key,
     label: SKILLS[key].label,
-    score: per[key].done === 0 ? null : Math.round(per[key].sum / per[key].total),
+    score: per[key].done === 0 ? null : Math.round(per[key].sum / per[key].done),
     done: per[key].done,
     total: per[key].total,
   }));
-  // Focus areas: unfinished or below the competent bar, weakest first, at most two.
+  // Focus areas: scored skills below the competent bar first, weakest first,
+  // then skills not started yet. At most two.
   const focus = skills
     .filter((s) => skillNeedsWork(s.score))
-    .sort((a, b) => (a.score ?? -1) - (b.score ?? -1))
+    .sort((a, b) => (a.score ?? 1000) - (b.score ?? 1000))
     .slice(0, 2)
     .map((s) => ({ key: s.key, label: s.label, advice: SKILLS[s.key].advice, score: s.score }));
   let level: Summary["level"] = "none";
@@ -191,9 +195,9 @@ export function sanitizeResults(raw: unknown, trustLabOk = false): Results {
 }
 
 export const LEVELS: Record<Summary["level"], { label: string; note: string }> = {
-  none: { label: "Not started", note: "Answer missions in Operation Day One and the Ticket Queue to build your score." },
-  progress: { label: "In progress", note: "Finish every mission to get your readiness rating." },
-  ready: { label: "Ready", note: "You met the bar on the missions you have finished. Keep going as new labs open." },
+  none: { label: "Not started", note: "Answer missions in Operation Day One, the Ticket Queue, and The 2 AM Login to build your score." },
+  progress: { label: "In progress", note: "Your score so far covers the missions you finished. Finish every mission to get your readiness rating." },
+  ready: { label: "Ready", note: "You met the bar on every mission and every competency. Keep going as new labs open." },
   almost: { label: "Almost Ready", note: "Solid base. Tighten the focus areas below and retake the missions you missed." },
   practice: { label: "Keep Practicing", note: "You have the start. Work through the focus areas below, then retake the challenges." },
 };
@@ -205,7 +209,11 @@ const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 export function scorecardHtml(s: Summary): string {
   const lv = LEVELS[s.level];
   const gap = s.finished > 0 ? s.focus[0] : undefined;
-  const line = gap ? `Biggest gap: ${esc(gap.label)}` : `${s.finished} of ${s.total} missions finished`;
+  const line = !gap
+    ? `${s.finished} of ${s.total} missions finished`
+    : gap.score === null
+      ? `Next up: ${esc(gap.label)}`
+      : `Biggest gap: ${esc(gap.label)}`;
   return `<div class="ad-score__top"><div class="ad-score__ring ad-score__ring--${s.level}"><span>${
     s.finished === 0 ? "––" : s.overall
   }</span></div><div class="ad-score__head"><span class="ad-score__eyebrow">Readiness</span><strong>${

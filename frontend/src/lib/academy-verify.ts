@@ -18,12 +18,18 @@ export function newChallengeCode() {
   return `PVX-${pick(0)}-${pick(4)}`;
 }
 
-/** The lab object the student edits. A real user when there is one, so the step is one line. */
+/** A description the Ticket Queue reads or grades. Writing the code over it would break a ticket. */
+const ticketData = (d: string | null | undefined) => /CTF-TICKET|\d{1,2}:\d{2}/i.test(d ?? "");
+
+/** The lab object the student edits. A real user when there is one, so the step is one line.
+ *  Prefers an empty Description, and never one a ticket depends on. */
 export function challengeTarget(s: LabSnapshot): { kind: "user" | "ou"; name: string; label: string } {
-  const users = s.users.filter((u) => u.enabled);
-  const user = users.find((u) => !/^(administrator|guest|krbtgt)$/i.test(u.sam) && !u.sam.endsWith("$"));
+  const users = s.users.filter(
+    (u) => u.enabled && !/^(administrator|guest|krbtgt|svc-backup-job)$/i.test(u.sam) && !u.sam.endsWith("$") && !ticketData(u.description)
+  );
+  const user = users.find((u) => !u.description) ?? users[0];
   if (user) return { kind: "user", name: user.sam, label: `the account ${user.sam}` };
-  const ou = s.ous[0];
+  const ou = s.ous.find((o) => !ticketData(o.description)) ?? s.ous[0];
   return { kind: "ou", name: ou?.path ?? "", label: "any organizational unit" };
 }
 

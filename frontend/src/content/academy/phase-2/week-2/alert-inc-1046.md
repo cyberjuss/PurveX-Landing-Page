@@ -4,7 +4,7 @@
 <p class="ad-brief__ask">Can you work one SIEM alert from the host, through the log, to the first response move?</p>
 <p>This is a SOC queue item, not a help desk ticket. A detection fired on <code>alex.rivera</code> at 2:00 AM from <code>WM-WKS07</code>.</p>
 <p>You already know how to look that host up in Active Directory. Here you read the exported events and decide whether a 2 AM login from that workstation fits this account and this firm. Do not treat the alert text as the finding.</p>
-<p>Build the Phase 1 lab from the Range download if you have not already. The host and group steps need your lab. The log steps use the export on this page.</p>
+<p>Build the Phase 1 lab from the Range download if you have not already, and keep it running. The host and group steps read your lab. The log steps use the export on this page, but every step checks that your lab is live before it grades.</p>
 <p>Each step asks for a short finding from the host, the log, or the first response. The hint tells you what to open. The finding shows the answer, the problem, and the solution.</p>
 </div>
 
@@ -88,8 +88,7 @@
 </ul>
 <p>Do this:</p>
 <ol>
-<li>Use the export on this page</li>
-<li>Or open Event Viewer (Win+R then <code>eventvwr.msc</code>) if you are reading the live Security log</li>
+<li>Use the export on this page. These events are not in your lab's Security log</li>
 <li>Count the 4625 rows that happen before the first 4624</li>
 </ol>
 </div>
@@ -102,7 +101,7 @@
 </div>
 <div>
 <span>Problem</span>
-<p>Four failed sign-ins (4625), then a success (4624), two seconds apart. A person at a keyboard does not type that fast.</p>
+<p>Four failed sign-ins (4625) exactly two seconds apart, then a success (4624) about two and a half minutes later. That even spacing is a script, not a person retyping.</p>
 </div>
 <div>
 <span>Solution</span>
@@ -163,7 +162,7 @@
 <div class="ad-mission" data-id="tq-09" data-attempts="0">
 <span class="ad-mission__num">Alert 04 · INC-1046 · Critical</span>
 <h4>Mistake or Attack?</h4>
-<p><strong>SIEM Alert · Part 4 of 5 · Automated detection · 2:10 AM</strong><br>Four failed logons two seconds apart, then a success, at 2 AM, on a workstation outside IT, using the only admin account. What best explains it?<br><strong>A</strong> Alex mistyped his password four times.<br><strong>B</strong> Automated password guessing against a real account, which finally worked.<br><strong>C</strong> A scheduled maintenance task using an old credential.<br><strong>D</strong> A clock problem on the domain controller.</p>
+<p><strong>SIEM Alert · Part 4 of 5 · Automated detection · 2:10 AM</strong><br>Four failed logons two seconds apart, then a success, at 2 AM, on a workstation outside IT, using an admin account. What best explains it?<br><strong>A</strong> Alex mistyped his password four times.<br><strong>B</strong> Automated password guessing against a real account, which finally worked.<br><strong>C</strong> A scheduled maintenance task using an old credential.<br><strong>D</strong> A clock problem on the domain controller.</p>
 <p><strong>Question:</strong> Type the letter of the best explanation.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -173,14 +172,14 @@
 <div class="ad-hint__text">
 <p>Stack the facts:</p>
 <ul>
-<li>Four failures in two seconds</li>
+<li>Four failures, evenly two seconds apart</li>
 <li>2 AM</li>
 <li>Wrong department PC</li>
 <li>Admin account</li>
 </ul>
 <p>Remember:</p>
 <ul>
-<li>A person does not type that fast</li>
+<li>A person does not retry on a steady beat</li>
 <li>A maintenance job does not try four bad passwords</li>
 </ul>
 </div>
@@ -193,7 +192,7 @@
 </div>
 <div>
 <span>Problem</span>
-<p>Four failures in two seconds, at 2 AM, on the wrong PC, using the admin account. A typo or a scheduled task does not look like that.</p>
+<p>Four failures two seconds apart, at 2 AM, on the wrong PC, using an admin account. A typo or a scheduled task does not look like that.</p>
 </div>
 <div>
 <span>Solution</span>
@@ -206,7 +205,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="tq-10" data-attempts="0">
 <span class="ad-mission__num">Alert 05 · INC-1046 · Critical</span>
 <h4>Your First Move</h4>
-<p><strong>SIEM Alert · Part 5 of 5 · Automated detection · 2:12 AM</strong><br>You believe the only admin account is compromised and in use on a Wealth Management machine. It is 2:12 AM. What do you do first?<br><strong>A</strong> Wipe and reimage WM-WKS07 right now.<br><strong>B</strong> Disable alex.rivera, isolate WM-WKS07 from the network, and keep the logs.<br><strong>C</strong> Email Alex and wait for an answer.<br><strong>D</strong> Clear the failed logon events so the alert stops repeating.</p>
+<p><strong>SIEM Alert · Part 5 of 5 · Automated detection · 2:12 AM</strong><br>You believe an admin account is compromised and in use on a Wealth Management machine. It is 2:12 AM. What do you do first?<br><strong>A</strong> Wipe and reimage WM-WKS07 right now.<br><strong>B</strong> Disable alex.rivera, isolate WM-WKS07 from the network, and keep the logs.<br><strong>C</strong> Email Alex and wait for an answer.<br><strong>D</strong> Clear the failed logon events so the alert stops repeating.</p>
 <p><strong>Question:</strong> Type the letter of the best first move.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">

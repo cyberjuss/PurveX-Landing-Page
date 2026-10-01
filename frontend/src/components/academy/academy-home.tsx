@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { PhaseDef, WeekDef } from "@/lib/academy-content";
 import { READINESS_PATH, useResults } from "@/lib/academy-client";
-import { challengeHref, lastTouchedMission } from "@/lib/academy-missions";
+import { CHALLENGE_LABELS, challengeHref, lastTouchedMission } from "@/lib/academy-missions";
 import { LEVELS, summarize } from "@/lib/academy-score";
 import { DrillCard } from "./drill-card";
 import { accountFirstName, useAcademyAccount } from "./academy-account";
@@ -71,7 +71,10 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
     : firstOpen
       ? { ...firstOpen, kind: "start" as const }
       : null;
-  const go = lastMission ? challengeHref(lastMission.challenge, results) : pin?.href;
+  // The card names the place it links to: an open challenge wins over the last lesson tab.
+  const resume = lastMission
+    ? { href: challengeHref(lastMission.challenge, results), title: CHALLENGE_LABELS[lastMission.challenge], kind: "last" as const }
+    : pin;
 
   return (
     <div className="rd ax-home">
@@ -91,11 +94,11 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
           </Link>
         </div>
         <div className="ax-status ax-rise" style={{ ["--ax-i" as string]: 0 }}>
-          {pin ? (
-            <Link href={go ?? pin.href} className="ax-status__next">
-              <span className="rd-kicker">{pin.kind === "last" ? "Last stop" : "Start here"}</span>
+          {resume ? (
+            <Link href={resume.href} className="ax-status__next">
+              <span className="rd-kicker">{resume.kind === "last" ? "Last stop" : "Start here"}</span>
               <strong>
-                {pin.title} <ArrowRight className="h-4 w-4" />
+                {resume.title} <ArrowRight className="h-4 w-4" />
               </strong>
             </Link>
           ) : (
@@ -120,7 +123,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
           const locked = isPhaseLocked(copy.slug);
           const soon = live.length === 0 || locked;
           const here = Boolean(pin && phase && pin.phaseSlug === phase.slug);
-          const href = here && go ? go : here ? pin!.href : copy.href;
+          const href = here ? pin!.href : copy.href;
           const row = (
             <>
               <span className="ax-path__n">{pad(i + 1)}</span>

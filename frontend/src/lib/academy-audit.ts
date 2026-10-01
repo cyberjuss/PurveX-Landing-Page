@@ -128,7 +128,7 @@ export function auditLab(s: LabSnapshot): Finding[] {
       out.push({
         id: `stale-account:${u.sam}`,
         kind: "stale-account",
-        job: "offboard",
+        job: "stale-objects",
         skill: "security",
         severity: "medium",
         title: `${name} has not signed in for ${Math.round(idle)} days`,
@@ -149,7 +149,7 @@ export function auditLab(s: LabSnapshot): Finding[] {
     out.push({
       id: `disabled-with-access:${u.sam}`,
       kind: "disabled-with-access",
-      job: "offboard",
+      job: "least-privilege",
       skill: "security",
       severity: "medium",
       title: `${name} is disabled but still in ${u.memberOf.length} group${u.memberOf.length === 1 ? "" : "s"}`,

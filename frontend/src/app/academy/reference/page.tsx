@@ -38,9 +38,9 @@ const filters = [
 ];
 
 const ciaRows = [
-  ["Confidentiality", "The vault door. Only badge holders get in.", "A phone lock, encryption, intercepted traffic"],
-  ["Integrity", "The cash-bag seal. Break it and everyone knows.", "A torn package seal, hashing, an altered file"],
-  ["Availability", "Posted hours. Open when customers need the branch.", "A site that loads, backups, a DDoS"],
+  ["Confidentiality", "Only authorized people can see information. It fails as a leak.", "Passwords, salaries. Controls: encryption, access control"],
+  ["Integrity", "Information stays accurate unless an authorized person changes it. It fails as a lie.", "Payroll amounts, firewall rules. Controls: hashing, signatures, audit logs"],
+  ["Availability", "Systems and data are there when people need them. It fails as a lockout.", "Email, the VPN, a DDoS. Controls: backups, redundancy, patching"],
 ];
 
 const riskRows = [
@@ -340,7 +340,7 @@ const categories: RefCategory[] = [
         id: "coach-modes",
         title: "PurveX Coach modes",
         icon: Headset,
-        keywords: "coach need help double-check mentor mode walk through lost beginner guidance brainstorm",
+        keywords: "coach need help double-check mentor job prep interview resume mode walk through lost beginner guidance brainstorm",
         body: (
           <>
             <p>The starting mode follows your readiness report. You can still switch.</p>
@@ -360,6 +360,10 @@ const categories: RefCategory[] = [
                 <tr>
                   <td><strong>Mentor</strong></td>
                   <td>You know the work and want real-world connections and brainstorming.</td>
+                </tr>
+                <tr>
+                  <td><strong>Job prep</strong></td>
+                  <td>You want a mock Tier 1 interview or help turning finished work into resume lines.</td>
                 </tr>
               </tbody>
             </table>

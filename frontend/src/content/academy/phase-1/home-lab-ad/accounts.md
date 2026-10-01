@@ -9,9 +9,9 @@ A **user account** is a person in this directory. Jordan Ellis is an account, an
 
 The account is the object you open on a ticket. Its folder tells you where the person lives, and its Member Of tab tells you what they can reach.
 
-Title is a field on the account, not a group. That is how Priya Nair can be a Help Desk Technician and still sit only in `IT Users`.
+Title is a field on the account, not a group. That is how Priya Nair can be a Help Desk Technician and still not be in `Helpdesk`.
 
-Nine people live in this domain, each in exactly one department OU. Remember Alex Rivera, because he is the only person in two groups.
+Nine people live in this domain, each in exactly one department OU. Remember Alex Rivera, because he is the only person with an elevated group.
 
 When a ticket names a person, open the account and check both of these:
 
@@ -22,7 +22,7 @@ If either one disagrees with The Environment tab, stop.
 
 ### Computer Objects
 
-A **computer object** is a machine in this directory, the same way a user account is a person. `IT-WKS01` is the only client workstation in this lab, and it lives under `OU=Workstations,OU=IT`.
+A **computer object** is a machine in this directory, the same way a user account is a person. `IT-WKS01` is the baseline's only client workstation, and it lives under `OU=Workstations,OU=IT`.
 
 You read a computer the same way you read a person: the folder first, then Member Of. Its name has no spaces.
 

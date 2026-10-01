@@ -11,7 +11,7 @@ After the domain reboot, sign in as `PURVEXFINANCIAL\Administrator` and run this
 
 * Creates two top-level OUs: `Departments` and `AccessLevels`
 * Creates all 5 department OUs (IT, Compliance, Wealth Management, Operations, Finance and Accounting), each with its own `Users` sub-OU (IT also gets a `Workstations` sub-OU)
-* Creates all 9 security groups. Each department gets a standard access group, `IT Admins` is elevated, and `Server Admins` and `Helpdesk` are the Level 2 and Level 3 access groups
+* Creates all 8 security groups. Each department gets a standard access group, `IT Admins` is elevated, and `Server Admins` and `Helpdesk` are the Level 2 and Level 3 access groups. Level 1 uses the built-in `Domain Admins`
 * Creates all 9 user accounts from the Full User Directory in The Environment tab, in the right OU, with the right title and department, and adds each one to the right group(s)
 * Pre-stages the `IT-WKS01` computer object
 * Prompts once for an initial password. Every account must change it at next logon, so nobody keeps that password long-term
@@ -297,12 +297,15 @@ function Ensure-CTFChallengeData {
 # Every part is optional; if the log cannot be read, the rest of the sync still works.
 function Get-PurvexEventDigest {
     $days = 30
-    $digest = [ordered]@{ windowDays = $days }
+    # v2 adds 4738 (account changed) and 4739 (policy changed); v3 adds 4719 (audit
+    # policy changed). Range only enforces each as evidence when it sees a high
+    # enough v, so older labs keep working unchanged.
+    $digest = [ordered]@{ windowDays = $days; v = 3 }
     $iso = { param($d) ([datetime]$d).ToUniversalTime().ToString("o") }
     $skip = { param($n) (-not $n) -or ($n -eq "-") -or ($n.EndsWith('$')) -or ($n -match '^(ANONYMOUS LOGON|SYSTEM|LOCAL SERVICE|NETWORK SERVICE)$') }
     $short = { param($dn) (($dn -split '(?&lt;!\\),', 2)[0] -replace '^(CN|OU)=', '') }
     try {
-        $events = @(Get-WinEvent -FilterHashtable @{ LogName = "Security"; Id = 4625, 4771, 4740, 4720, 4725, 4728, 4732, 4756; StartTime = (Get-Date).AddDays(-$days) } -MaxEvents 4000 -ErrorAction Stop)
+        $events = @(Get-WinEvent -FilterHashtable @{ LogName = "Security"; Id = 4625, 4771, 4740, 4720, 4725, 4728, 4732, 4756, 4738, 4739, 4719; StartTime = (Get-Date).AddDays(-$days) } -MaxEvents 4000 -ErrorAction Stop)
     }
     catch { return $digest }
 
@@ -327,6 +330,18 @@ function Get-PurvexEventDigest {
     })
     $digest.groupAdds = @($rows | Where-Object { @(4728, 4732, 4756) -contains $_.Id } | Sort-Object Time -Descending | Select-Object -First 40 | ForEach-Object {
         [ordered]@{ member = (&amp; $short $_.Member); group = $_.Target; at = (&amp; $iso $_.Time); by = $_.Subject }
+    })
+    # 4738: a user account was changed (flags like PASSWD_NOTREQD, delegation, no-preauth).
+    $digest.accountChanges = @($rows | Where-Object { $_.Id -eq 4738 -and -not (&amp; $skip $_.Target) } | Sort-Object Time -Descending | Select-Object -First 40 | ForEach-Object {
+        [ordered]@{ account = $_.Target; at = (&amp; $iso $_.Time); by = $_.Subject }
+    })
+    # 4739: a domain policy was changed (password/lockout policy).
+    $digest.policyChanges = @($rows | Where-Object { $_.Id -eq 4739 } | Sort-Object Time -Descending | Select-Object -First 20 | ForEach-Object {
+        [ordered]@{ at = (&amp; $iso $_.Time); by = $_.Subject }
+    })
+    # 4719: a system audit policy was changed (a subcategory turned on or off).
+    $digest.auditChanges = @($rows | Where-Object { $_.Id -eq 4719 } | Sort-Object Time -Descending | Select-Object -First 20 | ForEach-Object {
+        [ordered]@{ at = (&amp; $iso $_.Time); by = $_.Subject }
     })
     return $digest
 }
@@ -519,7 +534,7 @@ function Get-PurvexHighestUsn {
         try {
             $searcher = New-Object System.DirectoryServices.DirectorySearcher
             $searcher.SearchRoot = New-Object System.DirectoryServices.DirectoryEntry("LDAP://OU=$name,$DomainDN")
-            $searcher.Filter = "(uSNChanged>=1)"
+            $searcher.Filter = "(uSNChanged&gt;=1)"
             $searcher.PageSize = 1
             $searcher.SearchScope = "Subtree"
             [void]$searcher.PropertiesToLoad.Add("uSNChanged")
@@ -544,13 +559,15 @@ function Start-PurvexSyncLoop {
     $lastSend = [datetime]::MinValue
     $lastUsn = [int64]-1
     while ($true) {
-        $waitMs = 400
+        # Poll fast so a directory change (an unlock, an enable, a group edit) is
+        # detected and pushed within a fraction of a second, not a beat later.
+        $waitMs = 150
         try {
             $age = ((Get-Date) - $lastSend).TotalSeconds
             $usn = Get-PurvexHighestUsn -DomainDN $domainDN
             $due = $age -ge 60
             # A short gap folds one edit (create, then add to a group) into a single send.
-            $changed = ($usn -ge 0) -and ($age -ge 0.8) -and (($lastUsn -lt 0) -or ($usn -ne $lastUsn))
+            $changed = ($usn -ge 0) -and ($age -ge 0.25) -and (($lastUsn -lt 0) -or ($usn -ne $lastUsn))
             if ($changed -or $due) {
                 if ($changed) { Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN -Fast }
                 else { Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN }

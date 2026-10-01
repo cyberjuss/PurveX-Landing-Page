@@ -14,8 +14,8 @@ That is how an account can log on every night at 2 AM with nobody at a keyboard.
 
 Follow these practices every time:
 
-* **Dedicated OU.** Keep service accounts apart from real people. You can apply different policy and spot them at a glance. The clean PurveX Financial baseline has no such OU, so create `OU=ServiceAccounts` under the domain root.
-* **Naming convention.** Use a prefix that makes the account unmistakable, such as `svc-` or a leading `$`. `svc-backup-job` is a service account. `j.smith` is not.
+* **Dedicated OU.** Keep service accounts apart from real people. You can apply different policy and spot them at a glance. The Range download creates `OU=ServiceAccounts` under the domain root for this.
+* **Naming convention.** Use a prefix that makes the account unmistakable, such as `svc-`. `svc-backup-job` is a service account. `j.smith` is not.
 * **Password never expires.** A service account cannot type a new password when the old one expires. Set `PasswordNeverExpires = $true` and `ChangePasswordAtLogon = $false` on purpose. That is the opposite of a person's settings.
 * **Restricted logon hours.** If a backup job only runs overnight, the account's **Logon Hours** should reflect that. A logon outside that window is a red flag.
 * **A filled-in Description.** "Runs the nightly backup job on IT-WKS01" tells the next person what breaks if this account is disabled.

@@ -5,24 +5,23 @@
 
 ### Containers
 
-A **Container** looks like an OU in the console and uses the same folder icon. It is a different kind of object, and the icon will fool you if you stop at appearance.
+A **Container** looks like an OU in the console. Both use a folder icon, and the OU's extra badge is easy to miss. It is a different kind of object, and the icon will fool you if you stop at appearance.
 
 | | Organizational Unit | Container |
 | ----- | ----- | ----- |
 | Can a GPO link to it? | Yes | No |
-| Can you delegate permissions on it? | Yes | No |
-| Can you create your own? | Yes, anywhere | No, fixed set built by Windows |
+| Can you hold sub-OUs in it? | Yes | No |
+| Can you create your own in the console? | Yes, anywhere | No, Windows builds the default set |
 | Examples in this domain | `OU=IT`, `OU=Compliance` | `CN=Users`, `CN=Computers` |
 
 The default `Users` and `Computers` folders are Containers, not OUs. Windows creates those two folders, and they stay where they are.
 
-You cannot do any of these with a Container:
+You cannot do either of these with a Container:
 
-- Create your own
-- Delegate control
+- Create your own from the console
 - Link a GPO
 
-That is why the build script puts every account in a real OU. Group Policy can never target an account left in a Container.
+That is why the build script puts every account in a real OU. No OU-linked Group Policy can reach an account left in a Container.
 
 If you find someone in a default folder, that account is not where it belongs. Never treat the default folders as a department.
 

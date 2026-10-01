@@ -79,11 +79,14 @@ function verdict(s: Summary) {
     return "None of the competencies have work on them yet. Start Operation Day One. Look people up in the directory and we will see what you can already do.";
   }
   const strong = s.skills.filter((k) => skillSolid(k.score));
-  const weak = s.skills.filter((k) => skillNeedsWork(k.score));
+  // Scored but under the bar. A skill with no missions finished is not started, not weak.
+  const weak = s.skills.filter((k) => k.score !== null && skillNeedsWork(k.score));
+  const untouched = s.skills.filter((k) => k.score === null);
   const strongNames = joinNames(strong.map((k) => k.label));
   const weakNames = joinNames(weak.map((k) => k.label));
   const can = strong.slice(0, 2).map((k) => CAN[k.key]);
-  const next = weak[0] ? WORK[weak[0].key] : null;
+  const nextSkill = weak[0] ?? untouched[0];
+  const next = nextSkill ? WORK[nextSkill.key] : null;
   if (s.level === "ready" && weak.length === 0) {
     return `You are competent in ${strongNames}. You can ${joinNames(can)}. Redo one ticket on your own lab with the hint closed.`;
   }

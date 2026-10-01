@@ -984,7 +984,7 @@ export function DrillRunner() {
                 <span className="ax-path__main">
                   <span className="ax-path__title">Shift</span>
                   <span className="ax-path__body">
-                    15 minutes on the desk. Real incidents hit your own lab and you respond against the clock.
+                    30 minutes on the desk. Real incidents hit your own lab and you respond against the clock.
                     {!hostedLab ? " Needs a hosted lab." : ""}
                   </span>
                 </span>

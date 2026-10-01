@@ -34,5 +34,3 @@ Wiping too early destroys the trail, the same way deleting a suspicious account 
 Hand the incident up with what you found: the host, the account, the file, when it ran, and the path it likely came in through. Note what you already contained.
 
 A good escalation lets the next analyst start work instead of re-gathering basics. That write-up is the deliverable of a tier-1 malware response, as much as the containment itself.
-
-In a later section, you will run this order on a real alert and write the escalation the next analyst would need.

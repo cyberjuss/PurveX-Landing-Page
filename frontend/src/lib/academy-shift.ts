@@ -170,7 +170,8 @@ export const INCIDENTS: IncidentDef[] = [
       "Unlock the account (do not reset the password unless it is also expired), then confirm the lockout box is clear.",
     ],
     bind: (pick) => {
-      const v = pick(VICTIMS);
+      // riley.kwan is disabled in the baseline lab, so the answer would be both locked and disabled.
+      const v = pick(VICTIMS.filter((x) => x.sam !== "riley.kwan"));
       return {
         args: { Sam: v.sam },
         resolve: [
@@ -585,7 +586,8 @@ export const INCIDENTS: IncidentDef[] = [
       "Move the account back into its department's Users OU, then confirm the location.",
     ],
     bind: (pick) => {
-      const v = pick(VICTIMS);
+      // Ticket Queue INC-1045 moves taylor.osei to Compliance, so Taylor's right OU depends on the student.
+      const v = pick(VICTIMS.filter((x) => x.sam !== "taylor.osei"));
       const ouShort = DEPT_OU[v.dept] ?? v.dept;
       const ou = correctContainer(v.dept);
       return {
@@ -879,7 +881,8 @@ export const INCIDENTS: IncidentDef[] = [
       "Remove the old department group and add the new one, then confirm both.",
     ],
     bind: (pick) => {
-      const v = pick(VICTIMS);
+      // Ticket Queue INC-1045 already transfers taylor.osei, so Taylor's current groups depend on the student.
+      const v = pick(VICTIMS.filter((x) => x.sam !== "taylor.osei"));
       const depts = ["IT", "Compliance", "Wealth Management", "Operations", "Finance and Accounting"];
       const toDept = pick(depts.filter((d) => d !== v.dept));
       const fromGroup = DEPT_GROUP[v.dept];

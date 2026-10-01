@@ -35,4 +35,4 @@ Unpatched software can be attacked directly over the network, with no user actio
 
 This is why patching is a security control, not just maintenance. An infection with no user action points here, and it raises the question of what else on the network shares the same flaw.
 
-In a later section, you will trace an infection back to the path it came in through, because closing that path is part of the fix.
+Whatever the path, closing it is part of the fix. Cleaning one machine without closing the way in leaves the next infection waiting.

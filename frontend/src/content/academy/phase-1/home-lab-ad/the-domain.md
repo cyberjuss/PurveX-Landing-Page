@@ -32,11 +32,11 @@ The directory does three jobs, and you will use all three on the desk:
 
 ### Where the triad shows up
 
-In Week 1 you named the three CIA jobs the vault, the seal, and the hours. Each one maps to the directory:
+In Week 1 you named the three CIA failures: a leak, a lie, and a lockout. Each one maps to the directory:
 
-- **Confidentiality** is the vault. Authentication and group membership act as the badge. An account in the wrong group is a badge that opens a door it should not.
-- **Integrity** is the seal on the directory. A title, a ticket, or a caller can be wrong. The account, the group, and the OU are what you verify.
-- **Availability** is the hours. If a workstation cannot find the domain controller, nobody signs in, even when the directory is correct. Join a Computer walks through that failure.
+- **Confidentiality** fails as a leak. Authentication and group membership decide who can open what. An account in the wrong group can open a door it should not.
+- **Integrity** fails as a lie. A title, a ticket, or a caller can be wrong. The account, the group, and the OU are what you verify.
+- **Availability** fails as a lockout. If a workstation cannot find the domain controller, nobody signs in, even when the directory is correct. Join a Computer walks through that failure.
 
 ### Promote the server
 
@@ -60,4 +60,4 @@ When the server comes back, Server Manager shows Active Directory Domain Service
 <figcaption>After promotion the sign-in is the domain, then the account. This practice screen says CYBERJUSS\Administrator. Yours will say PURVEXFINANCIAL\Administrator.</figcaption>
 </figure>
 
-The next tab, Install the Domain, runs this same promotion with `Install-Forest.ps1` and links the lab to your Range account. Use the script when you want that link. Use these screens when you want to see each step.
+The next tab, Install the Domain, runs this same promotion with `Install-Forest.ps1`. Use the script for speed, or these screens to see each step. Either way, Build the Environment is what links the lab to your Range account.

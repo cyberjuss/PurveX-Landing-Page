@@ -48,5 +48,3 @@ The danger is quiet: no files are locked, so it can run for weeks. When you susp
 A rootkit hides an attacker's presence by tampering with the operating system itself, so normal tools may report that nothing is wrong. It is often what keeps other malware hidden.
 
 A suspected rootkit is beyond a tier-1 fix. Preserve the machine, do not trust its own output, and escalate to a team that can inspect it from outside the running system.
-
-In a later section, you will work a malware alert end to end and decide, from what the alert shows, which of these you are dealing with.

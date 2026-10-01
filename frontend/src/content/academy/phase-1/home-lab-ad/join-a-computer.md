@@ -11,7 +11,7 @@ If that address is wrong, the join fails even when the domain controller is up. 
 
 That is an availability failure, not a password problem. The domain controller never checked the password.
 
-1. Open Settings, then Network status, then Change adapter options. Right-click the adapter and choose Properties.
+1. Press Win+R, type `ncpa.cpl`, and press Enter. Right-click the adapter and choose Properties.
 2. Select Internet Protocol Version 4, then Properties.
 3. Select Use the following DNS server addresses. Enter the domain controller's IP as the Preferred DNS server.
 

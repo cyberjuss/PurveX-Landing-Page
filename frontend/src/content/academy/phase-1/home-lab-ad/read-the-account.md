@@ -14,7 +14,7 @@ The most useful new tab is **Attribute Editor**. It shows every raw attribute on
 - `pwdLastSet`
 - `memberOf`
 
-With them, you can replace a hunch with a time, a group list, or a last logon. Do not guess from the display name when the Attribute Editor can show you the time.
+With them, you can replace a hunch with a time, a group list, or a last logon. With more than one domain controller, `lastLogon` is kept per controller. `lastLogonTimestamp` is shared but can lag by up to 14 days. Do not guess from the display name when the Attribute Editor can show you the time.
 
 Filter the Attribute Editor to **Show only attributes that have values** so you are not scrolling past blank fields.
 

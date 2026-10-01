@@ -25,7 +25,7 @@ So if your file's hash matches the vendor's, character for character, it is the 
 ### Verify in three steps
 
 1. **Take the reference hash from the vendor's own site**, not from the mirror that served the file.
-2. **Hash your copy.** In CyberChef, use SHA2 set to 256 and drag the file into Input. In PowerShell 7: `Get-FileHash .\setup.exe`
+2. **Hash your copy.** In CyberChef, use SHA2 set to 256 and drag the file into Input. In PowerShell: `Get-FileHash .\setup.exe`
 3. **Let the tool compare.** Eyes skip characters.
 
 **If it does not match:** do not run it and do not delete it. Put both hashes in the ticket and escalate. Deleting destroys the evidence.

@@ -21,7 +21,7 @@
 <li>A window</li>
 <li>A title</li>
 </ul>
-<p>Case, spaces, dots, and dashes do not matter. The hint tells you what to open. The finding shows the answer, the problem, and the solution. You get three tries. The hint unlocks after two wrong tries. The explanation unlocks after the third.</p>
+<p>Case, spaces, dots, and dashes do not matter. The hint tells you what to open. The finding shows the answer, the problem, and the solution. You get three tries per ticket. The hint unlocks after two wrong tries. The explanation unlocks after the third.</p>
 </div>
 
 <div class="ad-progress">
@@ -125,7 +125,7 @@
 <div class="ad-mission" data-id="tq-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1043 · Medium</span>
 <h4>New Hire Access</h4>
-<p><strong>IT Manager · Information Technology · 10:30 AM</strong><br>Casey Reed starts on the help desk today. Create the account, give Casey the same access as the rest of IT Users, and nothing more. Clean up anything in that group that is not a current IT person.</p>
+<p><strong>IT Manager · Information Technology · 10:30 AM</strong><br>Casey Reed starts on the help desk today. Create the account as <code>casey.reed</code>, give Casey the same access as the rest of IT Users, and nothing more. Clean up anything in that group that is not a current IT person.</p>
 <p><strong>Question:</strong> One leftover account in <code>IT Users</code> is not a current person. Open it and read Description before you delete it. What ticket number is written there?</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="ticket number" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -135,7 +135,7 @@
 <div class="ad-hint__text">
 <p>Remember:</p>
 <ul>
-<li>Create Casey in the IT Users folder and mirror a current IT person</li>
+<li>Create <code>casey.reed</code> under Departments, IT, Users and mirror a current IT person</li>
 <li>A leftover intern and a service account do not belong</li>
 <li>Read the intern Description before you delete it</li>
 </ul>
@@ -230,7 +230,7 @@
 <p>Remember:</p>
 <ul>
 <li>Policy follows the folder</li>
-<li>Groups follow the folder</li>
+<li>Groups do not follow the folder. Change them yourself</li>
 <li>Title is a different box on General</li>
 </ul>
 <p>Do this:</p>
@@ -254,11 +254,11 @@
 </div>
 <div>
 <span>Problem</span>
-<p>Taylor still lived in Operations, so Compliance rules did not apply. A title change on an HR notice is not a move.</p>
+<p>Taylor still lived in Operations, so Compliance rules did not apply. An HR notice changes nothing in the directory until someone acts on it.</p>
 </div>
 <div>
 <span>Solution</span>
-<p>Move the account into Compliance Users, switch the groups, then confirm the folder before you close the ticket.</p>
+<p>Move the account to Departments, Compliance, Users. Swap <code>Operations Users</code> for <code>Compliance Users</code>. Confirm the folder before you close the ticket.</p>
 </div>
 </div>
 </div>

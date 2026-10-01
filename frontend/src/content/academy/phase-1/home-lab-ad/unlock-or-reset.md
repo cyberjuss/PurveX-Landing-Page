@@ -36,7 +36,7 @@ Say Riley Kwan in Operations calls in locked out after three failed logon attemp
 
 If she remembers it, unlock the account. If she has forgotten it, reset it and force a change at next logon. A temporary password is never a long-term credential.
 
-Check the Account tab before you change anything. Afterward, open it again and confirm the box you meant to clear is cleared.
+Check the Account tab before you change anything. If **Account is disabled** is ticked, neither unlock nor reset restores sign-in. That is a different fix. Afterward, open the tab again and confirm the box you meant to clear is cleared.
 
 <style>
 .ad-decision { margin: 1.25rem 0; }

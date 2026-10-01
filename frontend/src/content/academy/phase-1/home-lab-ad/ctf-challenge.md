@@ -82,7 +82,7 @@
 <div class="ad-hint__text">
 <p>Remember:</p>
 <ul>
-<li>That Members list is who can change the directory</li>
+<li>That Members list is who holds elevated IT access</li>
 <li>It should be short</li>
 </ul>
 <p>Do this:</p>
@@ -105,7 +105,7 @@
 </div>
 <div>
 <span>Problem</span>
-<p>If you do not know who is in <code>IT Admins</code>, you do not know who can reset passwords and add people to groups.</p>
+<p>If you do not know who is in <code>IT Admins</code>, you do not know who holds elevated access.</p>
 </div>
 <div>
 <span>Solution</span>
@@ -160,7 +160,7 @@
 <div class="ad-mission" data-id="d1-04" data-attempts="0">
 <span class="ad-mission__num">Task 04 · Spot the Default Folder</span>
 <h4>The Folder That Is Not an OU</h4>
-<p>One default folder sits beside your OUs, and Group Policy cannot be linked to it. What is it called, exactly as AD writes it?</p>
+<p>New user accounts land in a default folder when nobody picks a department. It is not an OU, so Group Policy cannot be linked to it. What is its name, exactly as AD writes it?</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="exact name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{cn=users}">Submit</button>
@@ -176,8 +176,8 @@
 <ol>
 <li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
 <li>Expand <code>purvexfinancial.local</code></li>
-<li>Turn on View, then Advanced Features if you need the full name</li>
-<li>Find the built-in folder that is not an OU. It does not say Organizational Unit</li>
+<li>Find the built-in folder that holds user accounts. Its icon is a plain folder, not an OU</li>
+<li>Turn on View, then Advanced Features. Open the folder's Properties, then Attribute Editor, and read the first part of distinguishedName</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -189,7 +189,7 @@
 </div>
 <div>
 <span>Problem</span>
-<p>That is a default folder, not an OU. Settings like drive maps and screen lock cannot attach to it.</p>
+<p>That is a default folder, not an OU. No Group Policy can be linked to it, so department settings like drive maps never reach accounts left there.</p>
 </div>
 <div>
 <span>Solution</span>
@@ -276,7 +276,7 @@
 </div>
 <div>
 <span>Solution</span>
-<p>Read Member Of. She is only in <code>IT Users</code>.</p>
+<p>Read Member Of. She has <code>IT Users</code>, not <code>Helpdesk</code>.</p>
 </div>
 </div>
 </div>
@@ -301,7 +301,7 @@
 <ol>
 <li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
 <li>Right-click the domain, then Find, then Advanced</li>
-<li>Set Field to Title and the value to <code>Settlements Coordinator</code></li>
+<li>Set Field to User, then Job Title, and the value to <code>Settlements Coordinator</code></li>
 <li>Or expand <code>Departments</code>, then <code>Operations</code>, then <code>Users</code>, and read Title on each account</li>
 </ol>
 <p>PowerShell is optional last.</p>

@@ -11,7 +11,7 @@
 - All 9 users sit in the right department with the right title
 - `alex.rivera` is in both `IT Users` and `IT Admins`
 
-If any of that is missing, the lab is not ready.
+If any of that is missing, the lab is not ready. The user list also shows `old.intern` from the Ticket Queue objects. Leave it for that ticket.
 
 ```powershell
 Get-ADOrganizationalUnit -Filter * | Sort-Object DistinguishedName

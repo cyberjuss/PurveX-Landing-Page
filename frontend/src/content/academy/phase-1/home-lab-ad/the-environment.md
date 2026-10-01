@@ -1,6 +1,6 @@
 ### The Environment
 
-This tab is the inventory: every user account, the one workstation, and the totals. The build script creates exactly what is listed here.
+This tab is the inventory: every user account, the one workstation, and the totals. The build script creates everything listed here. The Range download also adds the Ticket Queue objects listed at the bottom.
 
 Learn the roster well enough to notice when someone is missing. If your directory and this page ever disagree, stop and find out why before you close a ticket.
 
@@ -49,8 +49,18 @@ These totals are what normal looks like here.
 | Departments | 5 |
 | Critical departments | 3 |
 | Access levels | 3 |
-| Security groups | 9 (5 standard, 1 elevated, 3 access level groups) |
+| Security groups | 8 (5 standard, 1 elevated, 2 access level groups) |
 | User accounts | 9 |
 | Client workstations | 1 |
 
+Level 1 uses the built-in `Domain Admins` group, so the build does not create a third access level group.
+
 Once you build the lab, compare it to these counts. If anything differs, check the build before you trust a ticket answer.
+
+### Ticket Queue Objects
+
+The Range download also plants these for the Ticket Queue. They are work to do, not part of the baseline:
+
+- The `All Employees` group in `AccessLevels`
+- `old.intern` in IT, and `svc-backup-job` in `OU=ServiceAccounts`
+- Two more computer objects, `WM-WKS07` and `OPS-WKS03`

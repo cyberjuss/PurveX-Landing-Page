@@ -12,6 +12,8 @@ The lab runs as virtual machines on your own computer. Before you touch Active D
 
 Both run inside VMware Workstation Pro. Build them first, because every tab after this one assumes they are up.
 
+Windows 10 reached end of support in October 2025. It is fine for a lab VM that never holds real data. Windows 11 Pro joins a domain the same way.
+
 ### Install VMware Workstation Pro
 
 Download VMware Workstation Pro for Windows and run the installer with the default options.

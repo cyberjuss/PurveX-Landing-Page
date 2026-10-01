@@ -8,9 +8,9 @@ import { loadLesson, phases } from "@/lib/academy-content";
 
 type MissionKey = { accepts: string[]; reveal: string };
 
-/** Same rule the page used: case, spaces and dots do not matter, and the gtf{} wrapper is optional. */
+/** What the briefs promise: case, spaces, dots and dashes do not matter, and the gtf{} wrapper is optional. */
 export const normalizeGuess = (s: string) =>
-  s.trim().toLowerCase().replace(/^gtf\{|\}$/g, "").replace(/[\s.]+/g, "-");
+  s.trim().toLowerCase().replace(/^gtf\{|\}$/g, "").replace(/[\s._-]+/g, "");
 
 /** Index just past the </div> that closes the <div at `start`. */
 function divEnd(html: string, start: number): number {

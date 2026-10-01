@@ -13,7 +13,7 @@ Before two computers exchange data over TCP, they confirm both sides are ready:
 
 Data starts to flow only after these three steps.
 
-TCP is called reliable because it numbers and acknowledges every segment and resends anything lost.
+TCP is called reliable because it numbers every byte it sends, acknowledges what arrives, and resends anything lost.
 
 The handshake starts that process by agreeing on the starting sequence numbers. UDP, the other common transport protocol, skips all of it and trades reliability for speed.
 
