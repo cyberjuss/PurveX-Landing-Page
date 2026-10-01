@@ -13,6 +13,7 @@ import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
 import { AcademySignIn } from "@/components/academy/academy-sign-in";
 import { AcademyWelcome, takeAcademyWelcome } from "@/components/academy/academy-welcome";
+import { UnlockForm } from "./unlock-form";
 import { CoachProvider } from "@/components/academy/coach-context";
 import { GoalsPanel } from "@/components/academy/goals-panel";
 import { ProofPrompt } from "@/components/academy/proof-prompt";
@@ -39,7 +40,7 @@ type Student = AcademyStudent;
 /** What the server says about a submitted answer. blocked: the lab does not show the change yet. */
 type AnswerReply = { correct?: boolean; blocked?: boolean; result?: MissionResult; reveal?: string | null };
 
-export function AcademyShell({ phases, children }: { phases: PhaseDef[]; children: React.ReactNode }) {
+export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[]; children: React.ReactNode; unlocked: boolean }) {
   const pathname = usePathname();
   // The course sidebar is itself a "pick a phase, then a week" nav -- on the
   // course overview page, that's exactly what the phase cards in the main
@@ -1138,6 +1139,12 @@ export function AcademyShell({ phases, children }: { phases: PhaseDef[]; childre
 
   if (student === null) {
     return <AcademySignIn configured={Boolean(supabase)} />;
+  }
+
+  // Signed in but no class passcode yet: now ask for it. A student who arrived
+  // from a join link is already unlocked and skips this.
+  if (!unlocked) {
+    return <UnlockForm />;
   }
 
   // Only a first-time student gets the step-by-step intake. Editing opens the goals panel.
