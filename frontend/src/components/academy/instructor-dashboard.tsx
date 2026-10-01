@@ -148,21 +148,6 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
         <p className="rd-kicker">{kicker}</p>
         <h1 className="iv-title">{r.class.name}</h1>
         <p className="iv-lead">{health}</p>
-        <div className="iv-invitecard">
-          <div className="iv-invitecard__main">
-            <span className="iv-invitecard__label">Invite your class</span>
-            <p className="iv-invitecard__lead">Students open this link, sign in, and land in {r.class.name}. No code to type.</p>
-            <div className="iv-invitecard__link">
-              <code>{joinLink}</code>
-              <CopyLink text={joinLink} label="Copy link" />
-            </div>
-            <p className="iv-invitecard__code">
-              Class code <strong>{r.class.code}</strong>
-              <CopyLink text={r.class.code} label="Copy" />
-              <span>Fallback for the passcode screen.</span>
-            </p>
-          </div>
-        </div>
 
         <dl className="iv-glance">
           <div>
@@ -182,6 +167,19 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
             <dd className={`rd-text-${scoreTone(r.summary.avgReadiness)}`}>{r.summary.avgReadiness ?? "––"}</dd>
           </div>
         </dl>
+
+        <div className="iv-invitecard">
+          <span className="iv-invitecard__label">Invite your class</span>
+          <div className="iv-invitecard__link">
+            <code>{joinLink}</code>
+            <CopyLink text={joinLink} label="Copy link" />
+          </div>
+          <p className="iv-invitecard__code">
+            Class code <strong>{r.class.code}</strong>
+            <CopyLink text={r.class.code} label="Copy" />
+            <span>Fallback for the passcode screen.</span>
+          </p>
+        </div>
       </header>
 
       {r.students.length === 0 ? (

@@ -23,7 +23,7 @@ export async function GET(request: Request) {
   const classes = await classesFor(me.email);
   // The account menu only needs to know whether to show the link.
   if (new URL(request.url).searchParams.get("check") === "1") {
-    return NextResponse.json({ instructor: admin || classes.length > 0 });
+    return NextResponse.json({ instructor: admin || classes.length > 0, owner: admin });
   }
   if (!admin && !classes.length) return NextResponse.json({ error: "No classes for this account." }, { status: 403 });
   const reports = await Promise.all(classes.map(async (c) => classReport(c, await classMembers(c.id))));

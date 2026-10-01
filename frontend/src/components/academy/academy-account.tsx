@@ -89,13 +89,17 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
 
   // Instructors and admins get a link to their classes. Asked once, the first time the menu opens.
   const [teaches, setTeaches] = useState(false);
+  const [owner, setOwner] = useState(false);
   const askedTeaches = useRef(false);
   useEffect(() => {
     if (!open || askedTeaches.current) return;
     askedTeaches.current = true;
     academyFetch("/academy/api/instructor?check=1")
       .then((r) => (r.ok ? r.json() : null))
-      .then((d: { instructor?: boolean } | null) => setTeaches(Boolean(d?.instructor)))
+      .then((d: { instructor?: boolean; owner?: boolean } | null) => {
+        setTeaches(Boolean(d?.instructor));
+        setOwner(Boolean(d?.owner));
+      })
       .catch(() => {});
   }, [open]);
 
@@ -232,7 +236,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               </Link>
               {teaches && (
                 <Link href="/range/instructor" className="ax-account__out" onClick={() => setOpen(false)}>
-                  <Users className="h-3.5 w-3.5" /> Instructor view
+                  <Users className="h-3.5 w-3.5" /> {owner ? "Owner view" : "Instructor view"}
                 </Link>
               )}
               <button

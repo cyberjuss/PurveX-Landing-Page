@@ -33,13 +33,18 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
+  const [knownAgreed, setKnownAgreed] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const busyRef = useRef(false);
 
-  // Remember the agreement so it is a one-time step, not a per-sign-in one.
+  // Agreeing is one and done. If this browser already agreed, pre-accept and hide
+  // the checkbox entirely so returning students never see it again.
   useEffect(() => {
     try {
-      if (localStorage.getItem(TERMS_KEY) === "1") setAgreed(true);
+      if (localStorage.getItem(TERMS_KEY) === "1") {
+        setAgreed(true);
+        setKnownAgreed(true);
+      }
     } catch {}
   }, []);
 
@@ -195,7 +200,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
               aria-invalid={Boolean(error) && error !== TERMS_ERROR}
               disabled={busy}
             />
-            <AuthTerms checked={agreed} onChange={acceptTerms} disabled={busy} />
+            {!knownAgreed && <AuthTerms checked={agreed} onChange={acceptTerms} disabled={busy} />}
             <AuthError>{error}</AuthError>
             <button type="submit" className="am-primary mt-4" disabled={busy}>
               Continue
