@@ -14,7 +14,7 @@ type Student = {
   name: string | null;
   email: string | null;
   joinedAt: string;
-  readiness: { overall: number | null; level: string; finished: number; total: number };
+  readiness: { overall: number | null; accuracy: number | null; level: string; finished: number; total: number };
   skills: { key: string; label: string; score: number | null }[];
   stuck: { title: string; wrong: number; skipped: boolean }[];
   lastActive: string | null;
@@ -267,12 +267,14 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
                     })()}
                   </span>
                   <span role="cell" data-label="Readiness">
-                    <b className={`rd-text-${scoreTone(s.readiness.overall)}`}>{s.readiness.overall ?? "––"}</b>
+                    {/* Width is readiness (all missions). Color is accuracy, so a new student is not shown as failing. */}
+                    <b className={`rd-text-${scoreTone(s.readiness.accuracy)}`}>{s.readiness.overall ?? "––"}</b>
                     <span className="iv-bar" aria-hidden="true">
-                      <i className={`rd-bg-${scoreTone(s.readiness.overall)}`} style={{ width: `${s.readiness.overall ?? 0}%` }} />
+                      <i className={`rd-bg-${scoreTone(s.readiness.accuracy)}`} style={{ width: `${s.readiness.overall ?? 0}%` }} />
                     </span>
                     <small>
                       {s.readiness.level} · {s.readiness.finished}/{s.readiness.total} missions
+                      {s.readiness.accuracy !== null && ` · ${s.readiness.accuracy}% accuracy`}
                     </small>
                   </span>
                   <span role="cell" data-label="Where they are">

@@ -221,7 +221,9 @@ export function interviewStarters(results: Results): CoachStarter[] {
   const gap = summarize(results).focus[0];
   if (gap) {
     lines.push({
-      ask: `Interview me on ${gap.label}. That is my weakest area on the readiness report.`,
+      ask: gap.rated
+        ? `Interview me on ${gap.label}. That is my weakest area on the readiness report.`
+        : `Interview me on ${gap.label}. I have not done much of it on the readiness report yet.`,
       label: `Interview me on ${gap.label}`,
     });
   }

@@ -223,7 +223,7 @@ ${notes || "Not researched yet. Use general knowledge of the role."}`;
 export function buildStudentBrief(results: Results, lab: LabSnapshot | null, drills = "", goals = ""): string {
   const s = summarize(results);
   const skills = s.skills
-    .map((k) => `${k.label} ${k.score === null ? "not started" : `${k.score}%`} (${k.done} of ${k.total} finished)`)
+    .map((k) => `${k.label} ${k.score === null ? "not started" : `${k.score}%`} (${k.done} of ${k.total} finished${k.done > 0 && !k.rated ? ", too early to rate" : ""})`)
     .join("; ");
   const gap = s.finished > 0 ? s.focus[0] : undefined;
   const missions = Object.keys(MISSION_SKILLS).map((id) => `- ${missionLine(results, id)}`).join("\n");
@@ -237,9 +237,9 @@ export function buildStudentBrief(results: Results, lab: LabSnapshot | null, dri
     labLine += ` Real findings in their lab: ${found.length ? found.slice(0, 5).map((f) => f.title).join("; ") : "none right now"}. Call get_lab_findings for detail. Never invent broken objects.`;
   }
   return `Student brief (live data; use it, do not recite it)
-Readiness: ${s.finished === 0 ? "no score yet" : `${s.overall}/100`} (${LEVELS[s.level].label}), ${s.finished} of ${s.total} missions finished.
+Readiness: ${s.finished === 0 ? "no score yet" : `${s.overall}/100 across all ${s.total} missions, accuracy ${s.accuracy}% on the ${s.finished} finished`} (${LEVELS[s.level].label}). Readiness is low early because unfinished missions count as zero. Judge their work by accuracy.
 Skills: ${skills}.
-Biggest gap: ${gap ? `${gap.label}${gap.score === null ? " (not started)" : ` (${gap.score}%)`}` : "none yet"}.
+Biggest gap: ${gap ? `${gap.label}${gap.score === null ? " (not started)" : !gap.rated ? ` (${gap.score}% so far, too early to rate)` : ` (${gap.score}%)`}` : "none yet"}.
 Hands-on: ${handsOnLine(results, lab)}
 Drills: ${drills || "not loaded"} Use get_weakness_profile for the full picture, and get_environment_question_seeds to build questions from their own lab.
 Missions:
@@ -675,6 +675,8 @@ export async function runCoachTool(name: string, input: Record<string, unknown>,
     const strongest = [...s.skills].filter((k) => k.score !== null).sort((a, b) => (b.score ?? 0) - (a.score ?? 0))[0];
     return JSON.stringify({
       overall: s.finished === 0 ? null : s.overall,
+      accuracy: s.accuracy,
+      note: "overall counts every mission, so unfinished ones are zero. accuracy and skill scores average finished missions only. A skill is not rated until half its missions are finished.",
       level: LEVELS[s.level].label,
       finished: s.finished,
       total: s.total,

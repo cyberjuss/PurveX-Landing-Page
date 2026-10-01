@@ -12,8 +12,8 @@ import {
   missionPoints,
   SKILLS,
   scoreTone,
-  skillNeedsWork,
-  skillSolid,
+  skillCompetent,
+  skillWeak,
   summarize,
   type MissionResult,
   type Results,
@@ -47,7 +47,8 @@ function missionStatus(r: MissionResult | undefined): { tone: Tone; label: strin
   }
   if (r.flagged) {
     if (r.wrong >= 3) return { tone: "bad", label: "Flagged · missed", points, needsHelp: true };
-    return { tone: "warn", label: r.wrong ? `Flagged · ${r.wrong} wrong` : "Flagged", points, needsHelp: true };
+    // Flagged but not finished: still open, and not counted in the score.
+    return { tone: "live", label: r.wrong ? `Flagged · ${r.wrong} wrong` : "Flagged", points, needsHelp: true };
   }
   if (r.wrong >= 3) return { tone: "bad", label: "Missed", points, needsHelp: true };
   return { tone: "live", label: `Open · ${r.wrong} wrong`, points, needsHelp: r.wrong > 0 };
@@ -78,25 +79,27 @@ function verdict(s: Summary) {
   if (s.finished === 0) {
     return "None of the competencies have work on them yet. Start Operation Day One. Look people up in the directory and we will see what you can already do.";
   }
-  const strong = s.skills.filter((k) => skillSolid(k.score));
-  // Scored but under the bar. A skill with no missions finished is not started, not weak.
-  const weak = s.skills.filter((k) => k.score !== null && skillNeedsWork(k.score));
+  // A skill is only called competent or weak once half its missions are finished.
+  const strong = s.skills.filter(skillCompetent);
+  const weak = s.skills.filter(skillWeak);
+  const early = s.skills.filter((k) => k.score !== null && !k.rated);
   const untouched = s.skills.filter((k) => k.score === null);
   const strongNames = joinNames(strong.map((k) => k.label));
   const weakNames = joinNames(weak.map((k) => k.label));
   const can = strong.slice(0, 2).map((k) => CAN[k.key]);
-  const nextSkill = weak[0] ?? untouched[0];
-  const next = nextSkill ? WORK[nextSkill.key] : null;
+  const nextSkill = weak[0] ?? early[0] ?? untouched[0];
+  const next = nextSkill ? ` Next, ${WORK[nextSkill.key]}.` : "";
   if (s.level === "ready" && weak.length === 0) {
     return `You are competent in ${strongNames}. You can ${joinNames(can)}. Redo one ticket on your own lab with the hint closed.`;
   }
-  if (strong.length === 0) {
-    return `You have started, but none of the competencies are solid yet. ${weakNames} still need work. ${next ? `Next, ${next}.` : ""}`.trim();
+  if (strong.length === 0 && weak.length === 0) {
+    return `You have started, but no competency has enough missions finished to rate yet. Finish at least half the missions in one to get a rating.${next}`;
   }
-  if (weak.length === 0) {
-    return `You are competent in ${strongNames}. You can ${joinNames(can)}. Finish the remaining missions so this is a full rating.`;
-  }
-  return `You are competent in ${strongNames}. You can ${joinNames(can)}. ${weakNames} still need${weak.length === 1 ? "s" : ""} work. ${next ? `Next, ${next}.` : ""}`;
+  const parts: string[] = [];
+  if (strong.length) parts.push(`You are competent in ${strongNames}. You can ${joinNames(can)}.`);
+  if (weak.length) parts.push(`${weakNames} still need${weak.length === 1 ? "s" : ""} work.`);
+  if (!weak.length) parts.push("Finish the remaining missions so this is a full rating.");
+  return parts.join(" ") + next;
 }
 
 function ticketOf(title: string) {
@@ -151,6 +154,11 @@ export function ReadinessDashboard() {
               <span>/100</span>
             </p>
             <p className={`rd-stamp rd-text-${scoreTone}`}>{lv.label}</p>
+            {s.accuracy !== null && (
+              <p className="rd-acc">
+                Accuracy <strong>{s.accuracy}%</strong> on {s.finished} finished mission{s.finished === 1 ? "" : "s"}
+              </p>
+            )}
           </div>
 
           <div className="rd-hero__verdict">
@@ -210,6 +218,7 @@ export function ReadinessDashboard() {
                   </strong>
                   <span>
                     {k.done} of {k.total} missions
+                    {k.done > 0 && !k.rated && " · too early to rate"}
                   </span>
                 </div>
                 <div className="rd-scale">

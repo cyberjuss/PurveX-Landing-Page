@@ -94,13 +94,27 @@ export function missionPoints(r: MissionResult | undefined): number | null {
   return r.wrong >= 3 ? 0 : null;
 }
 
+export type SkillRow = {
+  key: Skill;
+  label: string;
+  /** Average points on this skill's finished missions. null until one is finished. */
+  score: number | null;
+  done: number;
+  total: number;
+  /** At least half its missions are finished, so the score is enough to call it solid or weak. */
+  rated: boolean;
+};
+
 export type Summary = {
+  /** Readiness: points earned out of points possible on every mission. Unfinished missions count as 0. */
   overall: number;
+  /** Average points on the missions finished so far. null until one is finished. */
+  accuracy: number | null;
   finished: number;
   total: number;
   level: "none" | "progress" | "ready" | "almost" | "practice";
-  skills: { key: Skill; label: string; score: number | null; done: number; total: number }[];
-  focus: { key: Skill; label: string; advice: string; score: number | null }[];
+  skills: SkillRow[];
+  focus: { key: Skill; label: string; advice: string; score: number | null; rated: boolean }[];
 };
 
 /** Competent / Almost Ready. Coach focus and the report use the same cut. */
@@ -114,6 +128,16 @@ export function skillSolid(score: number | null): boolean {
 
 export function skillNeedsWork(score: number | null): boolean {
   return !skillSolid(score);
+}
+
+/** Competent: enough missions finished to judge, and at the bar. */
+export function skillCompetent(k: Pick<SkillRow, "score" | "rated">): boolean {
+  return k.rated && skillSolid(k.score);
+}
+
+/** Weak: enough missions finished to judge, and under the bar. */
+export function skillWeak(k: Pick<SkillRow, "score" | "rated">): boolean {
+  return k.rated && !skillSolid(k.score);
 }
 
 export function scoreTone(score: number | null): "good" | "warn" | "bad" | "none" {
@@ -143,23 +167,26 @@ export function summarize(results: Results): Summary {
       per[skill].done += 1;
     }
   }
-  // Scores average the missions finished so far. Unfinished missions are not
-  // zeros; completion is reported separately and gates the Ready level.
-  const overall = finished ? Math.round(sum / finished) : 0;
-  const skills = (Object.keys(per) as Skill[]).map((key) => ({
+  // Readiness counts every mission, so it only reaches 100 when all are done cleanly.
+  // Accuracy and skill scores average only what is finished.
+  const overall = Math.round(sum / total);
+  const accuracy = finished ? Math.round(sum / finished) : null;
+  const skills: SkillRow[] = (Object.keys(per) as Skill[]).map((key) => ({
     key,
     label: SKILLS[key].label,
     score: per[key].done === 0 ? null : Math.round(per[key].sum / per[key].done),
     done: per[key].done,
     total: per[key].total,
+    rated: per[key].done >= Math.ceil(per[key].total / 2),
   }));
-  // Focus areas: scored skills below the competent bar first, weakest first,
-  // then skills not started yet. At most two.
+  // Focus areas, at most two: weak skills first (weakest first), then skills with
+  // too few missions to judge, then skills not started.
+  const rank = (k: SkillRow) => (skillWeak(k) ? 0 : k.score !== null ? 1 : 2);
   const focus = skills
-    .filter((s) => skillNeedsWork(s.score))
-    .sort((a, b) => (a.score ?? 1000) - (b.score ?? 1000))
+    .filter((k) => !skillCompetent(k))
+    .sort((a, b) => rank(a) - rank(b) || (a.score ?? 0) - (b.score ?? 0))
     .slice(0, 2)
-    .map((s) => ({ key: s.key, label: s.label, advice: SKILLS[s.key].advice, score: s.score }));
+    .map((k) => ({ key: k.key, label: k.label, advice: SKILLS[k.key].advice, score: k.score, rated: k.rated }));
   let level: Summary["level"] = "none";
   if (finished > 0) level = "progress";
   if (finished === total) {
@@ -167,7 +194,7 @@ export function summarize(results: Results): Summary {
     const weakest = Math.min(...skills.map((k) => k.score ?? 0));
     level = overall >= SCORE_READY && weakest >= SCORE_SOLID ? "ready" : overall >= SCORE_SOLID ? "almost" : "practice";
   }
-  return { overall, finished, total, level, skills, focus };
+  return { overall, accuracy, finished, total, level, skills, focus };
 }
 
 /**
@@ -196,7 +223,7 @@ export function sanitizeResults(raw: unknown, trustLabOk = false): Results {
 
 export const LEVELS: Record<Summary["level"], { label: string; note: string }> = {
   none: { label: "Not started", note: "Answer missions in Operation Day One, the Ticket Queue, and The 2 AM Login to build your score." },
-  progress: { label: "In progress", note: "Your score so far covers the missions you finished. Finish every mission to get your readiness rating." },
+  progress: { label: "In progress", note: "Readiness counts every mission, so it grows as you finish more. Accuracy shows how you did on the ones you finished." },
   ready: { label: "Ready", note: "You met the bar on every mission and every competency. Keep going as new labs open." },
   almost: { label: "Almost Ready", note: "Solid base. Tighten the focus areas below and retake the missions you missed." },
   practice: { label: "Keep Practicing", note: "You have the start. Work through the focus areas below, then retake the challenges." },
@@ -211,9 +238,9 @@ export function scorecardHtml(s: Summary): string {
   const gap = s.finished > 0 ? s.focus[0] : undefined;
   const line = !gap
     ? `${s.finished} of ${s.total} missions finished`
-    : gap.score === null
-      ? `Next up: ${esc(gap.label)}`
-      : `Biggest gap: ${esc(gap.label)}`;
+    : gap.rated
+      ? `Biggest gap: ${esc(gap.label)}`
+      : `Next up: ${esc(gap.label)}`;
   return `<div class="ad-score__top"><div class="ad-score__ring ad-score__ring--${s.level}"><span>${
     s.finished === 0 ? "––" : s.overall
   }</span></div><div class="ad-score__head"><span class="ad-score__eyebrow">Readiness</span><strong>${

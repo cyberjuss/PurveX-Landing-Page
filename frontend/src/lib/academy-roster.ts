@@ -16,7 +16,7 @@ export type RosterStudent = {
   name: string | null;
   email: string | null;
   joinedAt: string;
-  readiness: { overall: number | null; level: string; finished: number; total: number };
+  readiness: { overall: number | null; accuracy: number | null; level: string; finished: number; total: number };
   skills: { key: string; label: string; score: number | null }[];
   stuck: { title: string; wrong: number; skipped: boolean }[];
   lastActive: string | null;
@@ -104,7 +104,7 @@ function studentRow(m: ClassMember, raw: Raw): RosterStudent {
     name: m.name,
     email: m.email,
     joinedAt: m.joinedAt,
-    readiness: { overall: s.finished ? s.overall : null, level: LEVELS[s.level].label, finished: s.finished, total: s.total },
+    readiness: { overall: s.finished ? s.overall : null, accuracy: s.accuracy, level: LEVELS[s.level].label, finished: s.finished, total: s.total },
     skills: s.skills.map((k) => ({ key: k.key, label: k.label, score: k.score })),
     stuck: Object.entries(missionResults(raw.results))
       .filter(([, r]) => !r.solved && (r.wrong >= 2 || r.flagged))
