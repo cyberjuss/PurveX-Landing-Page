@@ -134,15 +134,22 @@ function ClassView({ r }: { r: Report }) {
       <header className="rd-mast">
         <p className="rd-kicker">Instructor view</p>
         <h1 className="iv-title">{r.class.name}</h1>
-        <div className="iv-code">
-          <span>
-            Class code <strong>{r.class.code}</strong>
-          </span>
-          <CopyLink text={r.class.code} label="Copy code" />
-          <CopyLink text={joinLink} label="Copy join link" />
+        <div className="iv-invitecard">
+          <div className="iv-invitecard__main">
+            <span className="iv-invitecard__label">Invite your class</span>
+            <p className="iv-invitecard__lead">Students open this link, sign in, and land in {r.class.name}. No code to type.</p>
+            <div className="iv-invitecard__link">
+              <code>{joinLink}</code>
+              <CopyLink text={joinLink} label="Copy link" />
+            </div>
+            <p className="iv-invitecard__code">
+              Class code <strong>{r.class.code}</strong>
+              <CopyLink text={r.class.code} label="Copy" />
+              <span>Fallback for the passcode screen.</span>
+            </p>
+          </div>
+          <JoinQR link={joinLink} />
         </div>
-        <p className="iv-note">Share the join link (or the QR). Students open it, sign in, and land in this class. The code is a fallback for typing on the passcode screen.</p>
-        <JoinQR link={joinLink} />
 
         <dl className="iv-stats">
           <div>

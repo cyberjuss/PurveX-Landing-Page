@@ -11,6 +11,19 @@
 .iv-qr { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; width: fit-content; padding: 12px; border: 1px solid var(--rd-line); border-radius: 12px; background: #fff; }
 .iv-qr img { display: block; border-radius: 4px; }
 
+/* Invite card: the join link, code and QR grouped into one clean panel. */
+.iv-invitecard { display: flex; flex-wrap: wrap; align-items: center; gap: 20px 28px; margin: 20px 0 4px; padding: 20px 22px; border: 1px solid var(--rd-line); border-radius: 16px; background: color-mix(in srgb, var(--rd-ink) 3%, transparent); }
+.iv-invitecard__main { flex: 1; min-width: 240px; }
+.iv-invitecard__label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rd-ink-3); }
+.iv-invitecard__lead { margin: 8px 0 14px; max-width: 48ch; font-size: 14.5px; line-height: 1.5; color: var(--rd-ink-2); }
+.iv-invitecard__link { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.iv-invitecard__link code { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; padding: 10px 12px; border-radius: 9px; border: 1px solid var(--rd-line); background: color-mix(in srgb, var(--rd-ink) 4%, #fff); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: var(--rd-ink); }
+.iv-invitecard__code { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 12px 0 0; font-size: 13px; color: var(--rd-ink-2); }
+.iv-invitecard__code strong { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; color: var(--rd-ink); }
+.iv-invitecard__code span { color: var(--rd-ink-3); }
+.iv-invitecard .iv-qr { margin: 0; }
+@media (max-width: 640px) { .iv-invitecard { padding: 16px; gap: 16px; } }
+
 .iv-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 28px 0 0; border-top: 1px solid var(--rd-ink); }
 .iv-stats > div { padding: 16px 16px 4px 0; }
 .iv-stats > div + div { padding-left: 16px; border-left: 1px solid var(--rd-line); }
