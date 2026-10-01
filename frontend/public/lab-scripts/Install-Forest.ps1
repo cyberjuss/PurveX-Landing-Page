@@ -23,11 +23,10 @@ Write-Host "Installing AD DS role..." -ForegroundColor Cyan
 Install-WindowsFeature -Name AD-Domain-Services -IncludeManagementTools
 
 Write-Host "Promoting this server to a new forest root domain: $DomainName" -ForegroundColor Cyan
-Write-Host "You will be prompted for a DSRM (recovery mode) password." -ForegroundColor Yellow
+Write-Host "You will be prompted twice for a DSRM (recovery mode) password." -ForegroundColor Yellow
 
 Install-ADDSForest `
     -DomainName $DomainName `
     -DomainNetbiosName $DomainNetbiosName `
     -InstallDns:$true `
-    -SafeModeAdministratorPassword (Read-Host -AsSecureString -Prompt "DSRM password") `
     -Force:$true

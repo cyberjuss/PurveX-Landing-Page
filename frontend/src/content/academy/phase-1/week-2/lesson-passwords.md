@@ -16,7 +16,7 @@
 A system should store a **salted, slow hash** of each password, never the password. At sign-in it hashes what you typed and compares.
 
 - **Salt:** a random value added per user. Two people with the same password get different hashes, so reuse is hidden.
-- **Slow hash:** Argon2id or bcrypt. Crackers on graphics cards try billions of SHA-256 guesses a second. bcrypt at a normal cost setting allows only a few per second on one processor core.
+- **Slow hash:** Argon2id or bcrypt. One high-end graphics card tries about 22 billion SHA-256 guesses a second. At bcrypt's minimum recommended cost of 10, the same card manages about 7,500.
 
 **Without a salt and a slow hash,** the same passwords show the same value, and tools like Hashcat and John the Ripper guess weak passwords fast. That is what happened to LinkedIn in 2012.
 

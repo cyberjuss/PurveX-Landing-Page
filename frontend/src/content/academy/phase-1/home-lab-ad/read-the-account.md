@@ -18,6 +18,8 @@ With them, you can replace a hunch with a time, a group list, or a last logon. W
 
 Filter the Attribute Editor to **Show only attributes that have values** so you are not scrolling past blank fields.
 
+Open the object from the tree, not from the Find dialog. An object opened from Find results does not show the Attribute Editor tab.
+
 ### Managing Computer Objects
 
 You manage computers the same way as users, through their own **Properties** dialog. IT-WKS01 is a good one to practice on.

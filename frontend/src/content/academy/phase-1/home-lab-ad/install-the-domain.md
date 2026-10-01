@@ -11,7 +11,7 @@ The script installs Active Directory Domain Services and promotes the server, th
 
 **Before you run it.** Use an elevated PowerShell on a fresh Windows Server that is not yet a domain controller.
 
-The script asks for one password, the DSRM recovery password. It is for Directory Services Restore Mode, not for any user. Use at least 8 characters and three of these: lowercase, uppercase, a number, and a symbol.
+The script asks for one password, the DSRM recovery password, and has you type it twice. It is for Directory Services Restore Mode, not for any user. Use at least 8 characters and three of these: lowercase, uppercase, a number, and a symbol.
 
 **What you should see at the end.** The server reboots on its own. Sign back in as `PURVEXFINANCIAL\Administrator`, then go to Build the Environment. That download is the one linked to your Range account, and it is what connects your lab to Coach.
 
@@ -51,13 +51,12 @@ Write-Host "Installing AD DS role..." -ForegroundColor Cyan
 Install-WindowsFeature -Name AD-Domain-Services -IncludeManagementTools
 
 Write-Host "Promoting this server to a new forest root domain: $DomainName" -ForegroundColor Cyan
-Write-Host "You will be prompted for a DSRM (recovery mode) password." -ForegroundColor Yellow
+Write-Host "You will be prompted twice for a DSRM (recovery mode) password." -ForegroundColor Yellow
 
 Install-ADDSForest `
     -DomainName $DomainName `
     -DomainNetbiosName $DomainNetbiosName `
     -InstallDns:$true `
-    -SafeModeAdministratorPassword (Read-Host -AsSecureString -Prompt "DSRM password") `
     -Force:$true</code></pre>
 </details>
 
