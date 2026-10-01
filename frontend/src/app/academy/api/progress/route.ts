@@ -1,11 +1,27 @@
 import { NextResponse } from "next/server";
 import { clearClassCookie, isAcademyUnlocked, readClassCookie } from "@/lib/academy-auth";
-import { findClassByCode, joinClass } from "@/lib/academy-classes";
+import { findClassByCode, joinClass, type AcademyClass } from "@/lib/academy-classes";
 import { MISSION_SKILLS, sanitizeResults, type Results } from "@/lib/academy-score";
 import { loadProgress, saveProgress } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
+import { sendEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
+
+const esc = (s: string) => s.replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" })[c] ?? c);
+
+/** Welcome a student the first time they join a class: who they're with, and where to start. */
+async function welcomeStudent(student: { email: string | null; name: string | null }, cls: AcademyClass, origin: string): Promise<boolean> {
+  if (!student.email) return false;
+  const link = `${origin}/academy`;
+  const first = student.name?.trim().split(/\s+/)[0] || "there";
+  const html = `
+<h2 style="margin:0 0 12px;font-size:18px;color:#0f172a;">Welcome to ${esc(cls.name)}</h2>
+<p style="margin:0 0 14px;">Hi ${esc(first)}, you're in. Your hands-on cybersecurity training is ready — real labs, graded against a live environment, not multiple choice.</p>
+<p style="margin:0 0 14px;"><a href="${link}" style="display:inline-block;background:#6a5cff;color:#ffffff;text-decoration:none;font-weight:600;padding:11px 18px;border-radius:8px;">Open PurveX Range</a></p>
+<p style="margin:0;color:#64748b;font-size:13px;">Sign in with this email any time to pick up where you left off.</p>`;
+  return sendEmail(student.email, `You're in — ${cls.name} on PurveX Range`, html);
+}
 
 export async function GET(request: Request) {
   if (!(await isAcademyUnlocked())) {
@@ -19,7 +35,10 @@ export async function GET(request: Request) {
   const code = await readClassCookie();
   if (code) {
     const cls = await findClassByCode(code);
-    if (cls) await joinClass(cls.id, student);
+    if (cls) {
+      const firstJoin = await joinClass(cls.id, student);
+      if (firstJoin) await welcomeStudent(student, cls, new URL(request.url).origin).catch(() => {});
+    }
     await clearClassCookie();
   }
   return NextResponse.json({ results: await loadProgress(student.id) });

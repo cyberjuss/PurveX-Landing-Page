@@ -84,11 +84,14 @@ export async function createClass(name: string, instructorEmail: string): Promis
   return null;
 }
 
-export async function joinClass(classId: string, student: { id: string; email: string | null; name: string | null }) {
+/** Enroll a student in a class, moving them out of any other. Returns true when
+ *  this is their first time in this class, so the caller can welcome them once. */
+export async function joinClass(classId: string, student: { id: string; email: string | null; name: string | null }): Promise<boolean> {
   const member: ClassMember = { userId: student.id, email: student.email, name: student.name, joinedAt: new Date().toISOString() };
   // A student belongs to exactly one class. Clicking a new client's link moves
   // them here rather than leaving them in two rosters, so each client's roster
   // stays clean. Labs and the MCP key are per-student and untouched by this.
+  const alreadyInMemory = (memoryMembers.get(classId) ?? []).some((m) => m.userId === student.id);
   for (const [cid, list] of memoryMembers) {
     if (cid === classId) continue;
     const pruned = list.filter((m) => m.userId !== student.id);
@@ -96,7 +99,10 @@ export async function joinClass(classId: string, student: { id: string; email: s
   }
   const list = (memoryMembers.get(classId) ?? []).filter((m) => m.userId !== student.id);
   memoryMembers.set(classId, [...list, member]);
-  if (!supabaseAdmin) return;
+  if (!supabaseAdmin) return !alreadyInMemory;
+  // Was the student already in this class? Decides whether to welcome them.
+  const { data: existing } = await supabaseAdmin.from("academy_class_members").select("user_id").eq("class_id", classId).eq("user_id", student.id).maybeSingle();
+  const already = Boolean(existing);
   // Drop any membership in other classes, then add this one.
   const { error: moveError } = await supabaseAdmin.from("academy_class_members").delete().eq("user_id", student.id).neq("class_id", classId);
   if (moveError) console.error("academy_class_members move failed", moveError.message);
@@ -104,6 +110,7 @@ export async function joinClass(classId: string, student: { id: string; email: s
     .from("academy_class_members")
     .upsert({ class_id: classId, user_id: student.id, email: student.email, name: student.name }, { onConflict: "class_id,user_id", ignoreDuplicates: true });
   if (error) console.error("academy_class_members upsert failed", error.message);
+  return !already;
 }
 
 export async function classMembers(classId: string): Promise<ClassMember[]> {
