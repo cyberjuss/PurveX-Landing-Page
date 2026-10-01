@@ -79,32 +79,7 @@ function CopyLink({ text, label }: { text: string; label: string }) {
   );
 }
 
-// The QR is generated in the browser (qrcode, dynamically imported) so the join
-// URL never leaves the instructor's device -- no third-party QR service.
-function JoinQR({ link }: { link: string }) {
-  const [url, setUrl] = useState<string | null>(null);
-  useEffect(() => {
-    let alive = true;
-    import("qrcode")
-      .then((m) => m.default.toDataURL(link, { width: 320, margin: 1, color: { dark: "#0f172a", light: "#ffffff" } }))
-      .then((u) => alive && setUrl(u))
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, [link]);
-  if (!url) return null;
-  return (
-    <div className="iv-qr">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={url} alt="Scan to join this class" width={132} height={132} />
-      <a href={url} download="class-join-qr.png" className="iv-copy">Download QR</a>
-    </div>
-  );
-}
-
-/** The shareable join link, one-click copy, and a QR -- everything an instructor
- *  needs to hand a class its way in. */
+/** The shareable join link with one-click copy -- what an instructor hands a class. */
 function InviteBlock({ code }: { code: string }) {
   const origin = typeof window === "undefined" ? "" : window.location.origin;
   const joinLink = `${origin}/academy/join?code=${encodeURIComponent(code)}`;
@@ -114,7 +89,6 @@ function InviteBlock({ code }: { code: string }) {
         <code className="iv-invite__link">{joinLink}</code>
         <CopyLink text={joinLink} label="Copy join link" />
       </div>
-      <JoinQR link={joinLink} />
     </div>
   );
 }
@@ -148,7 +122,6 @@ function ClassView({ r }: { r: Report }) {
               <span>Fallback for the passcode screen.</span>
             </p>
           </div>
-          <JoinQR link={joinLink} />
         </div>
 
         <dl className="iv-stats">
