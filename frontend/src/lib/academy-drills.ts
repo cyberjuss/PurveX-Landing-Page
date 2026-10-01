@@ -973,7 +973,12 @@ export function evalCheck(s: LabSnapshot, c: Check): boolean {
   if (c.t === "noexpire") return user.passwordNeverExpires === c.want;
   if (c.t === "spn") return ((user.spns ?? 0) > 0) === c.want;
   if (c.t === "flag") return (user[c.flag] ?? false) === c.want;
-  if (c.t === "desc") return `${user.description} ${user.title}`.toLowerCase().includes(c.text.toLowerCase());
+  if (c.t === "desc") {
+    // Spaces and an hour's leading zero do not matter, so 1:00 - 3:00 matches 01:00-03:00.
+    const loose = (s: string) => s.toLowerCase().replace(/\s+/g, "").replace(/(^|[^\d])0(\d:)/g, "$1$2");
+    const want = loose(c.text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp(`(^|[^\\d])${want}($|[^\\d])`).test(loose(`${user.description} ${user.title}`));
+  }
   const g = c.group.toLowerCase();
   const inGroup = user.memberOf.some((m) => m.toLowerCase() === g) || s.groups.some((x) => x.name.toLowerCase() === g && x.members.includes(user.name));
   return inGroup === c.want;
