@@ -44,9 +44,15 @@ export async function signInWithGoogle(redirectTo: string): Promise<void> {
 }
 
 export async function requestPasswordReset(email: string, redirectTo: string): Promise<void> {
-  const client = requireSupabase();
-  const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo });
-  if (error) throw new Error(error.message);
+  // Sent by our own branded route (see app/api/reset-password), not Supabase's
+  // default template. The route always answers ok so it never reveals whether an
+  // account exists for that email.
+  const res = await fetch("/api/reset-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, redirectTo }),
+  });
+  if (!res.ok) throw new Error("Unable to send reset email right now. Please try again.");
 }
 
 export async function updatePassword(newPassword: string): Promise<void> {
