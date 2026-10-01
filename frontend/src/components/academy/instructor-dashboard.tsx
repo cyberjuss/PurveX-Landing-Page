@@ -50,6 +50,16 @@ function ago(iso: string | null): string {
 const quietDays = (s: Student) => (s.lastActive ? Math.floor((Date.now() - Date.parse(s.lastActive)) / DAY) : null);
 const who = (s: Student) => s.name || s.email?.split("@")[0] || "Student";
 
+/** A single status read for a student, most urgent first. */
+function statusOf(s: Student): { label: string; tone: "good" | "warn" | "bad" | "none" } {
+  const quiet = quietDays(s);
+  if (quiet === null) return { label: "Not started", tone: "none" };
+  if (s.stuck.length) return { label: "Stuck", tone: "bad" };
+  if (quiet >= QUIET_DAYS) return { label: "Quiet", tone: "warn" };
+  if (quiet <= 7) return { label: "Active", tone: "good" };
+  return { label: "Steady", tone: "none" };
+}
+
 /** Why a student needs a look, most urgent first. */
 function flags(s: Student): string[] {
   const out: string[] = [];
@@ -82,7 +92,7 @@ function CopyLink({ text, label }: { text: string; label: string }) {
 /** The shareable join link with one-click copy -- what an instructor hands a class. */
 function InviteBlock({ code }: { code: string }) {
   const origin = typeof window === "undefined" ? "" : window.location.origin;
-  const joinLink = `${origin}/academy/join?code=${encodeURIComponent(code)}`;
+  const joinLink = `${origin}/range/join?code=${encodeURIComponent(code)}`;
   return (
     <div className="iv-invite">
       <div className="iv-invite__row">
@@ -95,7 +105,7 @@ function InviteBlock({ code }: { code: string }) {
 
 function ClassView({ r }: { r: Report }) {
   const origin = typeof window === "undefined" ? "" : window.location.origin;
-  const joinLink = `${origin}/academy/join?code=${encodeURIComponent(r.class.code)}`;
+  const joinLink = `${origin}/range/join?code=${encodeURIComponent(r.class.code)}`;
   const attention = r.students.map((s) => ({ s, why: flags(s) })).filter((x) => x.why.length);
   const skills = ["accounts", "directory", "troubleshooting", "security"].map((key) => {
     const scores = r.students.map((s) => s.skills.find((k) => k.key === key)).filter((k): k is Student["skills"][number] => Boolean(k));
@@ -235,9 +245,16 @@ function ClassView({ r }: { r: Report }) {
                   <span role="cell" className="iv-who">
                     <strong>{who(s)}</strong>
                     {s.email && <small>{s.email}</small>}
+                    {(() => {
+                      const st = statusOf(s);
+                      return <span className={`iv-pill iv-pill--${st.tone}`}>{st.label}</span>;
+                    })()}
                   </span>
                   <span role="cell" data-label="Readiness">
                     <b className={`rd-text-${scoreTone(s.readiness.overall)}`}>{s.readiness.overall ?? "––"}</b>
+                    <span className="iv-bar" aria-hidden="true">
+                      <i className={`rd-bg-${scoreTone(s.readiness.overall)}`} style={{ width: `${s.readiness.overall ?? 0}%` }} />
+                    </span>
                     <small>
                       {s.readiness.level} · {s.readiness.finished}/{s.readiness.total} missions
                     </small>
@@ -386,7 +403,7 @@ function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
         ) : (
           <ul className="ov-classes">
             {data.classes.map((r) => {
-              const joinLink = `${origin}/academy/join?code=${encodeURIComponent(r.class.code)}`;
+              const joinLink = `${origin}/range/join?code=${encodeURIComponent(r.class.code)}`;
               return (
                 <li key={r.class.id} className="ov-class">
                   <div className="ov-class__main">

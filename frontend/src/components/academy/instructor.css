@@ -49,6 +49,13 @@
 .iv-tr b { font-family: var(--font-display); font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .iv-who strong { display: block; font-weight: 600; color: var(--rd-ink); }
 .iv-who small { word-break: break-all; }
+.iv-pill { display: inline-flex; align-items: center; margin-top: 7px; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 650; letter-spacing: 0.01em; }
+.iv-pill--good { background: color-mix(in srgb, var(--rd-good) 16%, transparent); color: var(--rd-good); }
+.iv-pill--warn { background: color-mix(in srgb, var(--rd-warn) 18%, transparent); color: var(--rd-warn); }
+.iv-pill--bad { background: color-mix(in srgb, var(--rd-bad) 18%, transparent); color: var(--rd-bad); }
+.iv-pill--none { background: color-mix(in srgb, var(--rd-ink) 10%, transparent); color: var(--rd-ink-2); }
+.iv-bar { display: block; max-width: 128px; height: 5px; margin: 7px 0; border-radius: 999px; background: var(--rd-line-2); overflow: hidden; }
+.iv-bar > i { display: block; height: 100%; border-radius: 999px; }
 @media (max-width: 900px) {
   .iv-tr--head { display: none; }
   .iv-tr { grid-template-columns: 1fr 1fr; }

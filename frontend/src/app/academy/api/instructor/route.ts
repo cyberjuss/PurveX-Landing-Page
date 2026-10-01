@@ -11,7 +11,7 @@ const esc = (s: string) => s.replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt
 
 /** Email the instructor their class is ready: how to see it, and the link to share. */
 async function emailInstructor(cls: AcademyClass, origin: string): Promise<boolean> {
-  const joinLink = `${origin}/academy/join?code=${encodeURIComponent(cls.code)}`;
+  const joinLink = `${origin}/range/join?code=${encodeURIComponent(cls.code)}`;
   const dash = `${origin}/academy/instructor`;
   const html = `
 <h2 style="margin:0 0 12px;font-size:19px;color:#0f172a;">Your class ${esc(cls.name)} is live</h2>
