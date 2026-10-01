@@ -9,7 +9,7 @@
 .iv-invite__row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .iv-invite__link { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; padding: 9px 12px; border-radius: 8px; background: color-mix(in srgb, var(--rd-ink) 5%, transparent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: var(--rd-ink); }
 /* Invite card: the join link and code grouped into one clean panel. */
-.iv-invitecard { display: flex; flex-wrap: wrap; align-items: center; gap: 20px 28px; margin: 20px 0 4px; padding: 20px 22px; border: 1px solid color-mix(in srgb, var(--rd-ink) 14%, transparent); border-radius: 16px; background: var(--rd-surface); box-shadow: 0 1px 2px rgba(2, 6, 23, 0.05); }
+.iv-invitecard { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 28px; margin: 18px 0 4px; }
 .iv-invitecard__main { flex: 1; min-width: 240px; }
 .iv-invitecard__label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rd-ink-3); }
 .iv-invitecard__lead { margin: 8px 0 14px; max-width: 48ch; font-size: 14.5px; line-height: 1.5; color: var(--rd-ink-2); }
