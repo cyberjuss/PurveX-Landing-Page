@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import {
@@ -21,6 +21,10 @@ function errorText(err: unknown, fallback: string) {
   return err instanceof Error && err.message ? err.message : fallback;
 }
 
+// Agreeing to the terms is one and done per browser: once accepted, the box
+// comes back pre-checked so returning students never have to agree again.
+const TERMS_KEY = "purvex-terms-agreed";
+
 export function AcademySignIn({ configured }: { configured: boolean }) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [step, setStep] = useState<"email" | "password">("email");
@@ -31,6 +35,22 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
   const [agreed, setAgreed] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const busyRef = useRef(false);
+
+  // Remember the agreement so it is a one-time step, not a per-sign-in one.
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(TERMS_KEY) === "1") setAgreed(true);
+    } catch {}
+  }, []);
+
+  const acceptTerms = (v: boolean) => {
+    setAgreed(v);
+    try {
+      if (v) localStorage.setItem(TERMS_KEY, "1");
+      else localStorage.removeItem(TERMS_KEY);
+    } catch {}
+    if (error) setError(null);
+  };
 
   const returnTo = () => `${window.location.origin}${window.location.pathname}`;
 
@@ -175,14 +195,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
               aria-invalid={Boolean(error) && error !== TERMS_ERROR}
               disabled={busy}
             />
-            <AuthTerms
-              checked={agreed}
-              onChange={(v) => {
-                setAgreed(v);
-                if (error) setError(null);
-              }}
-              disabled={busy}
-            />
+            <AuthTerms checked={agreed} onChange={acceptTerms} disabled={busy} />
             <AuthError>{error}</AuthError>
             <button type="submit" className="am-primary mt-4" disabled={busy}>
               Continue

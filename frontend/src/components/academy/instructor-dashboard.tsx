@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Activity, AlertTriangle, Check, Copy, ExternalLink, Gauge, Users } from "lucide-react";
+import { Activity, AlertTriangle, ArrowLeft, Check, Copy, ExternalLink, Gauge, Users } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { scoreTone } from "@/lib/academy-score";
 import "./instructor.css";
@@ -316,8 +316,8 @@ function NewClassForm({ onCreated }: { onCreated: () => void }) {
   return (
     <section className="rd-sec iv-new">
       <div className="rd-sec__head">
-        <h2>New class</h2>
-        <p>The instructor signs in to Range with this email to see the class.</p>
+        <h2>Create a class</h2>
+        <p>Assign an instructor by email. They sign in to Range with it to run the class.</p>
       </div>
       <form onSubmit={submit} className="iv-form">
         <label>
@@ -344,6 +344,72 @@ function NewClassForm({ onCreated }: { onCreated: () => void }) {
         </div>
       )}
     </section>
+  );
+}
+
+// The owner's view: create a class, assign its instructor, and keep the list.
+// The instructor runs the class and tracks students; the owner just sets it up.
+function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
+  const [viewing, setViewing] = useState<string | null>(null);
+  const origin = typeof window === "undefined" ? "" : window.location.origin;
+  const viewingClass = viewing ? data.classes.find((c) => c.class.id === viewing) : null;
+
+  if (viewingClass) {
+    return (
+      <div className="rd">
+        <button type="button" className="ov-back" onClick={() => setViewing(null)}>
+          <ArrowLeft aria-hidden="true" /> All classes
+        </button>
+        <ClassView r={viewingClass} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="rd">
+      <header className="rd-mast">
+        <p className="rd-kicker">Owner</p>
+        <h1 className="iv-title">Classes</h1>
+        <p className="ov-lede">Create a class and assign its instructor. They run it and track their students. You just set it up.</p>
+      </header>
+
+      <NewClassForm onCreated={reload} />
+
+      <section className="rd-sec">
+        <div className="rd-sec__head">
+          <span className="rd-sec__n">{String(data.classes.length).padStart(2, "0")}</span>
+          <h2>Your classes</h2>
+          <p>Every class you have created, with its instructor and join link.</p>
+        </div>
+        {data.classes.length === 0 ? (
+          <p className="iv-empty">No classes yet. Create your first one above.</p>
+        ) : (
+          <ul className="ov-classes">
+            {data.classes.map((r) => {
+              const joinLink = `${origin}/academy/join?code=${encodeURIComponent(r.class.code)}`;
+              return (
+                <li key={r.class.id} className="ov-class">
+                  <div className="ov-class__main">
+                    <strong>{r.class.name}</strong>
+                    <small>{r.class.instructorEmail}</small>
+                  </div>
+                  <div className="ov-class__count">
+                    <b>{r.summary.students}</b>
+                    <span>student{r.summary.students === 1 ? "" : "s"}</span>
+                  </div>
+                  <div className="ov-class__actions">
+                    <CopyLink text={joinLink} label="Copy link" />
+                    <button type="button" className="iv-copy" onClick={() => setViewing(r.class.id)}>
+                      View progress
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+    </div>
   );
 }
 
@@ -385,6 +451,9 @@ export function InstructorDashboard() {
     );
   }
 
+  // The owner gets a simple create-and-assign view; instructors get the class.
+  if (data.admin) return <OwnerView data={data} reload={load} />;
+
   const current = data.classes[Math.min(pick, data.classes.length - 1)];
   return (
     <div className="rd">
@@ -399,7 +468,6 @@ export function InstructorDashboard() {
         </nav>
       )}
       {current ? <ClassView r={current} /> : <p className="iv-empty">No classes yet.</p>}
-      {data.admin && <NewClassForm onCreated={load} />}
     </div>
   );
 }

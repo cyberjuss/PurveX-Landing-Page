@@ -61,6 +61,22 @@
 .iv-tabs button[aria-pressed="true"] { border-color: var(--rd-ink); color: var(--rd-ink); }
 .iv-tabs small { color: var(--rd-ink-3); }
 
+/* Owner view: a simple list of classes to create and assign. */
+.ov-lede { max-width: 60ch; margin-top: 4px; font-size: 15px; line-height: 1.55; color: var(--rd-ink-2); }
+.ov-back { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 16px; padding: 0; border: 0; background: none; color: var(--rd-ink-2); font-size: 14px; font-weight: 600; cursor: pointer; }
+.ov-back:hover { color: var(--rd-accent); }
+.ov-back svg { width: 16px; height: 16px; }
+.ov-classes { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ov-class { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 16px 18px; border: 1px solid var(--rd-line); border-radius: 14px; background: color-mix(in srgb, var(--rd-ink) 3%, transparent); }
+.ov-class__main { flex: 1; min-width: 180px; }
+.ov-class__main strong { display: block; font-size: 16px; font-weight: 650; color: var(--rd-ink); }
+.ov-class__main small { color: var(--rd-ink-3); word-break: break-all; }
+.ov-class__count { display: flex; align-items: baseline; gap: 6px; color: var(--rd-ink-3); }
+.ov-class__count b { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--rd-ink); font-variant-numeric: tabular-nums; }
+.ov-class__count span { font-size: 12px; }
+.ov-class__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+@media (max-width: 560px) { .ov-class__count { order: 3; } }
+
 .iv-new { margin-top: 12px; }
 .iv-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end; }
 .iv-form label span { display: block; margin-bottom: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
