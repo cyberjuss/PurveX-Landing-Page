@@ -1,13 +1,22 @@
 import { NextResponse } from "next/server";
 import { clearClassCookie, isAcademyUnlocked, readClassCookie } from "@/lib/academy-auth";
 import { findClassByCode, joinClass } from "@/lib/academy-classes";
-import { MISSION_SKILLS, sanitizeResults, type Results } from "@/lib/academy-score";
+import { LAB_PASS_IDS, MISSION_SKILLS, sanitizeResults, type Results } from "@/lib/academy-score";
 import { loadProgress, saveProgress } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
+import { markEmailOnce } from "@/lib/academy-email-log";
 import { sendEmail } from "@/lib/email";
-import { studentWelcomeEmail } from "@/lib/academy-emails";
+import { studentJoinedEmail, studentMilestoneEmail, studentWelcomeEmail } from "@/lib/academy-emails";
 
 export const runtime = "nodejs";
+
+const LAB_NAME: Record<string, string> = {
+  "lab-signin-log": "the Sign-in Log lab",
+  "lab-effective-access": "the Effective Access lab",
+  "lab-risk-triage": "the Risk Triage lab",
+  "lab-password-table": "the Password Table lab",
+  "lab-hash-verify": "the Hash Verify lab",
+};
 
 export async function GET(request: Request) {
   if (!(await isAcademyUnlocked())) {
@@ -23,9 +32,16 @@ export async function GET(request: Request) {
     const cls = await findClassByCode(code);
     if (cls) {
       const firstJoin = await joinClass(cls.id, student);
-      if (firstJoin && student.email) {
-        const welcome = studentWelcomeEmail(student, cls, new URL(request.url).origin);
-        await sendEmail(student.email, welcome.subject, welcome.html).catch(() => {});
+      if (firstJoin) {
+        const origin = new URL(request.url).origin;
+        if (student.email) {
+          const welcome = studentWelcomeEmail(student, cls, origin);
+          await sendEmail(student.email, welcome.subject, welcome.html).catch(() => {});
+        }
+        // Tell the instructor someone joined, so they can engage early.
+        const who = student.name || student.email?.split("@")[0] || "A new student";
+        const joined = studentJoinedEmail(cls.name, who, origin);
+        await sendEmail(cls.instructorEmail, joined.subject, joined.html).catch(() => {});
       }
     }
     await clearClassCookie();
@@ -76,5 +92,20 @@ export async function PUT(request: Request) {
   for (const [id, row] of Object.entries(incoming)) if (!(id in MISSION_SKILLS)) results[id] = row;
 
   await saveProgress(student.id, student.email, results);
+
+  // Milestone: a lab passed for the first time. markEmailOnce keeps it to one
+  // send ever, even though the browser saves progress often.
+  if (student.email) {
+    const origin = new URL(request.url).origin;
+    for (const id of LAB_PASS_IDS) {
+      if (results[id]?.solved && !saved[id]?.solved && LAB_NAME[id]) {
+        if (await markEmailOnce(student.id, `lab:${id}`)) {
+          const mail = studentMilestoneEmail(student, LAB_NAME[id], origin);
+          await sendEmail(student.email, mail.subject, mail.html).catch(() => {});
+        }
+      }
+    }
+  }
+
   return NextResponse.json({ ok: true, results });
 }

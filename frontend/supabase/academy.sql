@@ -323,3 +323,14 @@ create table if not exists public.academy_help_requests (
 
 create index if not exists academy_help_requests_user_created on public.academy_help_requests (user_id, created_at desc);
 alter table public.academy_help_requests enable row level security;
+
+-- A ledger so once-only emails (milestones like passing a lab) are never sent
+-- twice. One row per (student, key). Written by the server only.
+create table if not exists public.academy_email_log (
+  user_id uuid not null references auth.users (id) on delete cascade,
+  key text not null,
+  sent_at timestamptz not null default now(),
+  primary key (user_id, key)
+);
+
+alter table public.academy_email_log enable row level security;

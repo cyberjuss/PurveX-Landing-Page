@@ -29,6 +29,9 @@ const ICON: Record<string, string> = {
   chart: '<path d="M4 20h16M7 20v-7M12 20V6M17 20v-4"/>',
   key: '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l2 2"/>',
   lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  trophy: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M5 5H3v2a3 3 0 0 0 3 3M19 5h2v2a3 3 0 0 1-3 3"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
 };
 
 // A small accent line icon above the heading. The dark header carries the brand,
@@ -140,6 +143,44 @@ export function instructorDigestEmail(d: DigestInput, o: string): Built {
     button(`${url}/range/instructor`, "Open your class") +
     note("You get this weekly for each class you run.");
   return { subject: `${d.className}: your weekly class digest`, html };
+}
+
+/** Retention: a student passed a lab or cleared a milestone. */
+export function studentMilestoneEmail(student: Named, title: string, o: string): Built {
+  const url = base(o);
+  const html =
+    pre(`Nice work. You cleared ${title}.`) +
+    badge("trophy") +
+    h(`Nice work, ${first(student.name)}`) +
+    p(`You passed ${esc(title)}. Real hands-on evidence. Not a quiz score.`) +
+    button(`${url}/range`, "Keep going") +
+    note("Every one you clear builds your proof profile.");
+  return { subject: `Nice work on ${title}`, html };
+}
+
+/** Sent to the instructor when a new student joins their class. */
+export function studentJoinedEmail(className: string, studentName: string, o: string): Built {
+  const url = base(o);
+  const html =
+    pre(`${studentName} joined ${className}.`) +
+    badge("user") +
+    h(`${studentName} joined ${className}`) +
+    p("A new student is in your class. Say hello and help them start.") +
+    button(`${url}/range/instructor`, "Open your class") +
+    note("You see every student's progress on your dashboard.");
+  return { subject: `${studentName} joined ${className}`, html };
+}
+
+/** Standalone signup confirmation (used by /api/academy/signup). */
+export function signupConfirmEmail(actionLink: string): Built {
+  const html =
+    pre("Confirm your email to finish setting up.") +
+    badge("mail") +
+    h("Confirm your email") +
+    p("Confirm your email to finish setting up your PurveX account.") +
+    button(actionLink, "Confirm email") +
+    note("Did not sign up? Ignore this email.");
+  return { subject: "Confirm your PurveX email", html };
 }
 
 /** Standalone password reset content (used by /api/reset-password). */

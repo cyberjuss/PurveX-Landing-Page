@@ -17,14 +17,16 @@ function requireSupabase() {
 }
 
 export async function signUpWithPassword(email: string, password: string, emailRedirectTo: string): Promise<{ user: User | null; session: Session | null }> {
-  const client = requireSupabase();
-  // Without this, Supabase falls back to the project's dashboard-configured
-  // "Site URL" for the confirmation link -- which won't point at this app
-  // unless someone's set it. This makes the link land back here explicitly,
-  // with a session already active, instead of somewhere unrelated.
-  const { data, error } = await client.auth.signUp({ email, password, options: { emailRedirectTo } });
-  if (error) throw new Error(error.message);
-  return data;
+  // Sent by our own branded route (see app/api/signup), not Supabase's default
+  // template. The user confirms via the emailed link, so there is no session yet.
+  const res = await fetch("/api/signup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password, redirectTo: emailRedirectTo }),
+  });
+  const data = (await res.json().catch(() => ({}))) as { error?: string };
+  if (!res.ok) throw new Error(data.error || "Unable to create your account.");
+  return { user: null, session: null };
 }
 
 export async function signInWithPassword(email: string, password: string): Promise<{ user: User | null; session: Session | null }> {

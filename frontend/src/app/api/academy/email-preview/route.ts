@@ -1,5 +1,14 @@
 import { brandEmail } from "@/lib/email";
-import { instructorDigestEmail, instructorSetupEmail, passwordResetEmail, studentNudgeEmail, studentWelcomeEmail } from "@/lib/academy-emails";
+import {
+  instructorDigestEmail,
+  instructorSetupEmail,
+  passwordResetEmail,
+  signupConfirmEmail,
+  studentJoinedEmail,
+  studentMilestoneEmail,
+  studentNudgeEmail,
+  studentWelcomeEmail,
+} from "@/lib/academy-emails";
 
 export const runtime = "nodejs";
 
@@ -18,7 +27,13 @@ export async function GET(request: Request) {
       ? instructorSetupEmail(cls, o)
       : t === "nudge"
         ? studentNudgeEmail(student, o)
-        : t === "reset"
+        : t === "milestone"
+          ? studentMilestoneEmail(student, "the Sign-in Log lab", o)
+          : t === "joined"
+            ? studentJoinedEmail("Govtech Academy", "Justin Duru", o)
+            : t === "signup"
+              ? signupConfirmEmail(`${o}/academy`)
+              : t === "reset"
           ? passwordResetEmail(`${o}/reset-password`)
           : t === "digest"
             ? instructorDigestEmail(
