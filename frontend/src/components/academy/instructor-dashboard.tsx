@@ -405,7 +405,7 @@ function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
       <header className="rd-mast">
         <p className="rd-kicker">Owner</p>
         <h1 className="iv-title">Classes</h1>
-        <p className="ov-lede">Create a class and assign its instructor. They run it and track their students. You just set it up.</p>
+        <p className="ov-lede">Create a class and assign an instructor to run it.</p>
       </header>
 
       <NewClassForm onCreated={reload} />
