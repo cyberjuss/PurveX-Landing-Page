@@ -237,7 +237,7 @@ export function buildStudentBrief(results: Results, lab: LabSnapshot | null, dri
     labLine += ` Real findings in their lab: ${found.length ? found.slice(0, 5).map((f) => f.title).join("; ") : "none right now"}. Call get_lab_findings for detail. Never invent broken objects.`;
   }
   return `Student brief (live data; use it, do not recite it)
-Readiness: ${s.finished === 0 ? "no score yet" : `${s.overall}/100 across all ${s.total} missions, accuracy ${s.accuracy}% on the ${s.finished} finished`} (${LEVELS[s.level].label}). Readiness is low early because unfinished missions count as zero. Judge their work by accuracy.
+Readiness: ${s.finished === 0 ? "no score yet" : `${s.overall}/100 across all ${s.total} missions and scored labs, accuracy ${s.accuracy}% on the ${s.finished} finished`} (${LEVELS[s.level].label}). Readiness is low early because unfinished work counts as zero. Judge their work by accuracy.
 Skills: ${skills}.
 Biggest gap: ${gap ? `${gap.label}${gap.score === null ? " (not started)" : !gap.rated ? ` (${gap.score}% so far, too early to rate)` : ` (${gap.score}%)`}` : "none yet"}.
 Hands-on: ${handsOnLine(results, lab)}

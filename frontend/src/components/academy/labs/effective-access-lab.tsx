@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { Folder, RotateCcw } from "lucide-react";
-import { Avatar, Deck, Guide, labPassed, Narrator, nextHint, Options, Stepper, Takeaway, useDeck, useLabDone, useLabPass, useSaved, Verdict, type DotStatus } from "./lab-kit";
+import { Avatar, Deck, Guide, Narrator, nextHint, Options, Stepper, Takeaway, useDeck, useLabDone, useLabResult, useSaved, Verdict, type DotStatus } from "./lab-kit";
 import "./effective-access-lab.css";
 
 // Week 4 lab: who can open a folder on PurveX's file server. The student
@@ -230,7 +230,7 @@ export function EffectiveAccessLab({ onDone }: { onDone?: () => void }) {
   }, [s, fix1Right, fix2Right]);
   const done = s.checked.every(Boolean);
   useLabDone(done, onDone);
-  useLabPass("lab-effective-access", labPassed(done, score.total, 10));
+  useLabResult("lab-effective-access", done, score.total, 10);
   const reached = [true, s.checked[0], s.checked[1], s.checked[2]];
 
   const balancesNtfs = BALANCES_NTFS.filter((a) => !s.removedAces.includes(a.who));

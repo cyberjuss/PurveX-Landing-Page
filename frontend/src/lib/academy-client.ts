@@ -46,11 +46,20 @@ export function useResults(): Results {
   }, [raw]);
 }
 
-/** Records a passed browser lab on the student's account, once. */
-export function recordLabPass(id: LabPassId) {
+/** Records a finished browser lab on the student's account. The first finished score
+ *  is the one that counts; a later pass still marks it passed for the portfolio. */
+export function recordLabResult(id: LabPassId, passed: boolean, pts: number) {
   const all = loadResults();
-  if (all[id]?.solved) return;
-  all[id] = { solved: true, wrong: 0, hint: false, at: new Date().toISOString() };
+  const cur = all[id];
+  const next = {
+    solved: Boolean(cur?.solved) || passed,
+    wrong: 0,
+    hint: false,
+    pts: typeof cur?.pts === "number" ? cur.pts : Math.min(100, Math.max(0, Math.round(pts))),
+    at: cur?.at ?? new Date().toISOString(),
+  };
+  if (cur && cur.solved === next.solved && cur.pts === next.pts) return;
+  all[id] = next;
   saveResults(all);
   window.dispatchEvent(new Event(RESULTS_UPDATED_EVENT));
   void academyFetch("/academy/api/progress", {

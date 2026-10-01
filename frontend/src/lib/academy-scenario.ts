@@ -46,6 +46,21 @@ const THEMES: Record<Skill, string[]> = {
     "an account that logs in from two places at once",
     "log evidence that must be kept before anything is changed",
   ],
+  logs: [
+    "count the failed sign-ins before the first success",
+    "line up event times to tell a script from a person",
+    "a lockout event that names the machine it came from",
+  ],
+  access: [
+    "a share allows more than the folder's NTFS permissions",
+    "a group grants access to a folder the role never needs",
+    "work out what one person can actually open",
+  ],
+  risk: [
+    "decide which CIA property failed",
+    "rank two weekend reports by likelihood and impact",
+    "a loud report that is low risk next to a quiet one that is not",
+  ],
 };
 
 const LEVEL_RULES = [

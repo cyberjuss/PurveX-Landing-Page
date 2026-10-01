@@ -6,7 +6,7 @@ import "./risk-triage-lab.css";
 import "./lab-kit.css";
 import { useOptionalCoach } from "../coach-context";
 import { LOST_ASK } from "./lab-brief";
-import { recordLabPass } from "@/lib/academy-client";
+import { recordLabResult } from "@/lib/academy-client";
 import type { LabPassId } from "@/lib/academy-score";
 
 // Shared pieces for the browser-only week labs. They use the Week 1 lab's
@@ -107,11 +107,13 @@ export function Narrator({ name = "Alex Rivera", role = "IT admin", children }: 
 /** Passing is 70% of the lab's points at the debrief, the same bar as the quizzes. */
 export const labPassed = (done: boolean, score: number, max: number) => done && score >= Math.ceil(max * 0.7);
 
-/** Records the pass on the student's account, so the portfolio lists the skills the lab used. */
-export function useLabPass(id: LabPassId, passed: boolean) {
+/** Once the lab is finished, records its score for readiness and, on a pass,
+ *  the pass the portfolio reads. */
+export function useLabResult(id: LabPassId, done: boolean, score: number, max: number) {
+  const passed = labPassed(done, score, max);
   useEffect(() => {
-    if (passed) recordLabPass(id);
-  }, [id, passed]);
+    if (done && max > 0) recordLabResult(id, passed, (score / max) * 100);
+  }, [id, done, passed, score, max]);
 }
 
 /** Tells the week this lab is finished once the student reaches its debrief. */

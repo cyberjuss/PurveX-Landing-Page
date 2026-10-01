@@ -1,8 +1,8 @@
-// Readiness score for Operation Day One, the Ticket Queue, and The 2 AM Login.
-// Results are cached in the browser (localStorage) and saved to the account,
-// keyed by the mission's data-id.
+// Readiness score for Operation Day One, the Ticket Queue, The 2 AM Login, and
+// the scored browser labs. Results are cached in the browser (localStorage) and
+// saved to the account, keyed by the mission's data-id or the lab's id.
 
-export type Skill = "accounts" | "directory" | "troubleshooting" | "security";
+export type Skill = "accounts" | "directory" | "troubleshooting" | "security" | "logs" | "access" | "risk";
 
 export const SKILLS: Record<Skill, { label: string; advice: string }> = {
   accounts: {
@@ -20,6 +20,18 @@ export const SKILLS: Record<Skill, { label: string; advice: string }> = {
   security: {
     label: "Security Response",
     advice: "Read the log before changing anything, contain the problem first, and keep the evidence.",
+  },
+  logs: {
+    label: "Log Analysis",
+    advice: "Count the events and line up their times before you name a pattern.",
+  },
+  access: {
+    label: "Access Control",
+    advice: "Work out access from every group and both share and NTFS permissions, and remove what grants too much.",
+  },
+  risk: {
+    label: "Risk Triage",
+    advice: "Name which CIA property failed, then score likelihood and impact before you rank the fix.",
   },
 };
 
@@ -41,7 +53,7 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "tq-04": "troubleshooting",
   "tq-05": "troubleshooting",
   "tq-06": "security",
-  "tq-07": "security",
+  "tq-07": "logs",
   "tq-08": "security",
   "tq-09": "security",
   "tq-10": "security",
@@ -52,12 +64,39 @@ export const LAB_PASS_IDS = ["lab-risk-triage", "lab-hash-verify", "lab-password
 export type LabPassId = (typeof LAB_PASS_IDS)[number];
 const isLabPass = (id: string) => (LAB_PASS_IDS as readonly string[]).includes(id);
 
+/** Browser labs that count toward readiness, scored by the points they earned the first time they were finished. */
+export const LAB_SKILLS: Partial<Record<LabPassId, Skill>> = {
+  "lab-risk-triage": "risk",
+  "lab-effective-access": "access",
+  "lab-signin-log": "logs",
+};
+
+/** The scored labs, for the readiness report. href opens the lab's tab. */
+export const LAB_CATALOG: { id: LabPassId; title: string; skill: Skill; href: string }[] = [
+  { id: "lab-risk-triage", title: "Monday Morning Risk Triage", skill: "risk", href: "/range/phase-1/week-1#lab-monday-morning-risk-triage" },
+  { id: "lab-effective-access", title: "Who Can Open This?", skill: "access", href: "/range/phase-1/week-4#lab-who-can-open-this" },
+  { id: "lab-signin-log", title: "Read the Sign-In Log", skill: "logs", href: "/range/phase-2/week-2#lab-read-the-sign-in-log" },
+];
+
+/** Everything readiness counts: missions and scored labs. */
+const SCORED_SKILLS: Record<string, Skill> = { ...MISSION_SKILLS, ...(LAB_SKILLS as Record<string, Skill>) };
+
 /** Mission results only, without passed labs. */
 export function missionResults(results: Results): Results {
   return Object.fromEntries(Object.entries(results).filter(([id]) => id in MISSION_SKILLS));
 }
 
-export type MissionResult = { solved: boolean; wrong: number; hint: boolean; flagged?: boolean; /** The change this ticket needs was seen in the student's lab. */ labOk?: boolean; at?: string };
+export type MissionResult = {
+  solved: boolean;
+  wrong: number;
+  hint: boolean;
+  flagged?: boolean;
+  /** The change this ticket needs was seen in the student's lab. */
+  labOk?: boolean;
+  /** Browser labs only: percent of the lab's points the first time it was finished. */
+  pts?: number;
+  at?: string;
+};
 export type Results = Record<string, MissionResult>;
 
 export const RESULTS_STORAGE_KEY = "academy-results-v1";
@@ -82,6 +121,21 @@ export function clearResults() {
   try {
     window.localStorage.removeItem(KEY);
   } catch {}
+}
+
+/** A lab pass saved before labs kept a score. 70% is the least a pass could be. */
+export const LEGACY_LAB_PASS_POINTS = 70;
+
+/** Points for a scored lab. null until it is finished. */
+export function labPoints(r: MissionResult | undefined): number | null {
+  if (!r) return null;
+  if (typeof r.pts === "number") return r.pts;
+  return r.solved ? LEGACY_LAB_PASS_POINTS : null;
+}
+
+/** Points for anything readiness counts, mission or lab. */
+export function itemPoints(id: string, r: MissionResult | undefined): number | null {
+  return id in LAB_SKILLS ? labPoints(r) : missionPoints(r);
 }
 
 // Points for one mission. null means it is still in progress.
@@ -146,20 +200,18 @@ export function scoreTone(score: number | null): "good" | "warn" | "bad" | "none
 }
 
 export function summarize(results: Results): Summary {
-  const ids = Object.keys(MISSION_SKILLS);
+  const ids = Object.keys(SCORED_SKILLS);
   const total = ids.length;
   let sum = 0;
   let finished = 0;
-  const per: Record<Skill, { sum: number; done: number; total: number }> = {
-    accounts: { sum: 0, done: 0, total: 0 },
-    directory: { sum: 0, done: 0, total: 0 },
-    troubleshooting: { sum: 0, done: 0, total: 0 },
-    security: { sum: 0, done: 0, total: 0 },
-  };
+  const per = Object.fromEntries((Object.keys(SKILLS) as Skill[]).map((k) => [k, { sum: 0, done: 0, total: 0 }])) as Record<
+    Skill,
+    { sum: number; done: number; total: number }
+  >;
   for (const id of ids) {
-    const skill = MISSION_SKILLS[id];
+    const skill = SCORED_SKILLS[id];
     per[skill].total += 1;
-    const p = missionPoints(results[id]);
+    const p = itemPoints(id, results[id]);
     if (p !== null) {
       finished += 1;
       sum += p;
@@ -215,6 +267,7 @@ export function sanitizeResults(raw: unknown, trustLabOk = false): Results {
       hint: v.hint === true,
       ...(flagged ? { flagged: true } : {}),
       ...(trustLabOk && v.labOk === true ? { labOk: true } : {}),
+      ...(isLabPass(id) && typeof v.pts === "number" && Number.isFinite(v.pts) ? { pts: Math.min(100, Math.max(0, Math.round(v.pts))) } : {}),
       ...(at ? { at } : {}),
     };
   }
@@ -237,7 +290,7 @@ export function scorecardHtml(s: Summary): string {
   const lv = LEVELS[s.level];
   const gap = s.finished > 0 ? s.focus[0] : undefined;
   const line = !gap
-    ? `${s.finished} of ${s.total} missions finished`
+    ? `${s.finished} of ${s.total} missions and labs finished`
     : gap.rated
       ? `Biggest gap: ${esc(gap.label)}`
       : `Next up: ${esc(gap.label)}`;

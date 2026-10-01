@@ -460,7 +460,9 @@ const alertGens: Gen[] = ALERTS.map((a) => (_s, r) => {
   return choices ? { skill: "security", title: a.title, prompt: a.prompt, evidence: a.evidence, choices, answer: a.answer, explain: a.explain } : null;
 });
 
-const GENERATORS: Record<Skill, Gen[]> = {
+// Drill questions come from the AD lab snapshot. Log Analysis, Access Control and
+// Risk Triage are scored by the browser labs instead, so they have no generators.
+const GENERATORS: Partial<Record<Skill, Gen[]>> = {
   accounts: [groupCount, whoIsMember, whichGroup, byTitle],
   directory: [whichDept, computerHome],
   troubleshooting: [accountState, claimGroup, lockedNow],
@@ -489,12 +491,12 @@ function pickItems(seed: string, snapshot: LabSnapshot, results: Results, mode: 
   const r = seeded(seed);
   const scores = new Map(summarize(results).skills.map((k) => [k.key, k.score]));
   // Weak skills get asked more. Timed runs lean on alerts and ticket checks.
-  const bias: Record<Skill, number> =
+  const bias: Partial<Record<Skill, number>> =
     mode === "timed"
       ? { accounts: 1, directory: 0.6, troubleshooting: 1.4, security: 1.8 }
       : { accounts: 1, directory: 1, troubleshooting: 1, security: 1 };
   const skills = Object.keys(GENERATORS) as Skill[];
-  const queues = new Map<Skill, Gen[]>(skills.map((k) => [k, shuffle(r, GENERATORS[k])]));
+  const queues = new Map<Skill, Gen[]>(skills.map((k) => [k, shuffle(r, GENERATORS[k] ?? [])]));
   const used = new Map<Skill, number>();
   const items: Item[] = [];
   const seen = new Set<string>();
@@ -505,7 +507,7 @@ function pickItems(seed: string, snapshot: LabSnapshot, results: Results, mode: 
     const open = live.filter((k) => (used.get(k) ?? 0) < 2);
     const pool = open.length ? open : live;
     if (!pool.length) break;
-    const weights = pool.map((k) => bias[k] * (1 + (100 - (scores.get(k) ?? 40)) / 25));
+    const weights = pool.map((k) => (bias[k] ?? 1) * (1 + (100 - (scores.get(k) ?? 40)) / 25));
     let roll = r() * weights.reduce((a, b) => a + b, 0);
     let skill = pool[pool.length - 1];
     for (let i = 0; i < pool.length; i++) {

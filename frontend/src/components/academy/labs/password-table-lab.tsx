@@ -18,9 +18,8 @@ import {
   Stepper,
   useDeck,
   useHashes,
-  labPassed,
   useLabDone,
-  useLabPass,
+  useLabResult,
   useSaved,
   Verdict,
   type DotStatus,
@@ -251,7 +250,7 @@ export function PasswordTableLab({ onDone }: { onDone?: () => void }) {
     const work = (reuseRight ? 1 : 0) + RECOVER.filter((u) => s.recovered[u] === PW[u]).length + (decodeRight ? 1 : 0) + (s.response === "reset" ? 1 : 0);
     return { tryIt, kinds, work, total: tryIt + kinds + work };
   }, [s, noteRight, reuseRight, decodeRight]);
-  useLabPass("lab-password-table", labPassed(s.checked.every(Boolean), score.total, 11));
+  useLabResult("lab-password-table", s.checked.every(Boolean), score.total, 11);
 
   const tryDone = [s.seen.includes("encode"), Boolean(s.noteWord.trim()), s.seen.includes("hash"), Boolean(s.saltWhy)];
   const anyRecovered = RECOVER.some((u) => s.recovered[u]);

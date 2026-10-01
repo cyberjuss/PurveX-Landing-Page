@@ -19,9 +19,8 @@ import {
   Stepper,
   useDeck,
   useHashes,
-  labPassed,
   useLabDone,
-  useLabPass,
+  useLabResult,
   useSaved,
   Verdict,
   type DotStatus,
@@ -196,7 +195,7 @@ export function HashVerifyLab({ onDone }: { onDone?: () => void }) {
     const calls = QUESTIONS.filter((q) => s.answers[q.id] === q.answer).length;
     return { matched, find: linesRight + effect, calls, total: matched + linesRight + effect + calls };
   }, [s]);
-  useLabPass("lab-hash-verify", labPassed(s.checked.every(Boolean), score.total, 8));
+  useLabResult("lab-hash-verify", s.checked.every(Boolean), score.total, 8);
 
   const allHashed = COPIES.every((c) => hashOk(c.id) && s.verdict[c.id]);
   const reached = [true, s.checked[0], s.checked[1], s.checked[2]];

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowDown, ArrowUp, Check, ChevronLeft, ChevronRight, MessageCircle, RotateCcw, X } from "lucide-react";
 import { useOptionalCoach } from "../coach-context";
 import { LOST_ASK } from "./lab-brief";
-import { Avatar, labPassed, Narrator, useLabDone, useLabPass } from "./lab-kit";
+import { Avatar, Narrator, useLabDone, useLabResult } from "./lab-kit";
 import "./lab-kit.css";
 import "./risk-triage-lab.css";
 
@@ -198,7 +198,7 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
     const rank = s.order.filter((id, i) => ANSWER_ORDER[i] === id).length;
     return { cia, scoring: lik + imp, rank, total: cia + lik + imp + rank };
   }, [s]);
-  useLabPass("lab-risk-triage", labPassed(s.checked.every(Boolean), score.total, 16));
+  useLabResult("lab-risk-triage", s.checked.every(Boolean), score.total, 16);
 
   const allCia = TICKETS.every((t) => s.cia[t.id]);
   const allScored = TICKETS.every((t) => s.likelihood[t.id] && s.impact[t.id]);

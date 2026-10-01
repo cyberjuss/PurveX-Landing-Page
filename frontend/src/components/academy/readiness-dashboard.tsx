@@ -8,8 +8,12 @@ import { challengeHref, challengeTabHref, missionHref, MISSION_CATALOG, type Mis
 import { isLockedHref } from "@/lib/academy-locks";
 import {
   clearResults,
+  LAB_CATALOG,
+  labPoints,
+  LEGACY_LAB_PASS_POINTS,
   LEVELS,
   missionPoints,
+  SCORE_READY,
   SKILLS,
   scoreTone,
   skillCompetent,
@@ -66,6 +70,9 @@ const CAN: Record<Summary["skills"][number]["key"], string> = {
   directory: "find an account or computer in the right folder",
   troubleshooting: "check the directory before you take the action a ticket names",
   security: "read an alert and decide the first response without wiping evidence",
+  logs: "count and time-line sign-in events to name the pattern behind them",
+  access: "work out what a person can open from their groups and the folder's permissions",
+  risk: "name what failed and rank fixes by likelihood and impact",
 };
 
 const WORK: Record<Summary["skills"][number]["key"], string> = {
@@ -73,6 +80,9 @@ const WORK: Record<Summary["skills"][number]["key"], string> = {
   directory: "walk Departments and AccessLevels until you can find an object without searching",
   troubleshooting: "open the account first and see if the caller is actually right",
   security: "start The 2 AM Login and read the log before you change anything",
+  logs: "open the Read the Sign-In Log lab and count before you name a pattern",
+  access: "open the Who Can Open This? lab and check both share and NTFS permissions",
+  risk: "open the Monday Morning Risk Triage lab and score likelihood and impact before you rank",
 };
 
 function verdict(s: Summary) {
@@ -93,13 +103,22 @@ function verdict(s: Summary) {
     return `You are competent in ${strongNames}. You can ${joinNames(can)}. Redo one ticket on your own lab with the hint closed.`;
   }
   if (strong.length === 0 && weak.length === 0) {
-    return `You have started, but no competency has enough missions finished to rate yet. Finish at least half the missions in one to get a rating.${next}`;
+    return `You have started, but no competency has enough work finished to rate yet. Finish at least half the missions and labs in one to get a rating.${next}`;
   }
   const parts: string[] = [];
   if (strong.length) parts.push(`You are competent in ${strongNames}. You can ${joinNames(can)}.`);
   if (weak.length) parts.push(`${weakNames} still need${weak.length === 1 ? "s" : ""} work.`);
-  if (!weak.length) parts.push("Finish the remaining missions so this is a full rating.");
+  if (!weak.length) parts.push("Finish the remaining missions and labs so this is a full rating.");
   return parts.join(" ") + next;
+}
+
+/** A scored browser lab: its first finished score, or open. */
+function labStatus(r: MissionResult | undefined): { tone: Tone; label: string; points: number | null } {
+  const points = labPoints(r);
+  if (points === null) return { tone: "none", label: "Not started", points };
+  const legacy = typeof r?.pts !== "number";
+  const label = legacy ? "Passed · score not saved" : r?.solved ? "Passed" : "Not passed";
+  return { tone: points >= SCORE_READY ? "good" : points >= LEGACY_LAB_PASS_POINTS ? "warn" : "bad", label, points };
 }
 
 function ticketOf(title: string) {
@@ -119,6 +138,11 @@ function MissionStrip({ results }: { results: Results }) {
             ))}
         </div>
       ))}
+      <div className="rd-strip__group">
+        {LAB_CATALOG.map((l) => (
+          <span key={l.id} className={`rd-strip__cell rd-tone-${labStatus(results[l.id]).tone}`} title={l.title} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -156,7 +180,7 @@ export function ReadinessDashboard() {
             <p className={`rd-stamp rd-text-${scoreTone}`}>{lv.label}</p>
             {s.accuracy !== null && (
               <p className="rd-acc">
-                Accuracy <strong>{s.accuracy}%</strong> on {s.finished} finished mission{s.finished === 1 ? "" : "s"}
+                Accuracy <strong>{s.accuracy}%</strong> on what you have finished, {s.finished} of {s.total}
               </p>
             )}
           </div>
@@ -186,7 +210,7 @@ export function ReadinessDashboard() {
         <div className="rd-evidence">
           <div className="rd-evidence__head">
             <span>
-              <strong>{s.finished}</strong> of {s.total} missions on record
+              <strong>{s.finished}</strong> of {s.total} missions and labs on record
             </span>
             <span className="rd-legend">
               <span><i className="rd-tone-good" />Clean</span>
@@ -217,7 +241,7 @@ export function ReadinessDashboard() {
                     {focusKey === k.key && <em>Focus</em>}
                   </strong>
                   <span>
-                    {k.done} of {k.total} missions
+                    {k.done} of {k.total} done
                     {k.done > 0 && !k.rated && " · too early to rate"}
                   </span>
                 </div>
@@ -318,10 +342,44 @@ export function ReadinessDashboard() {
             </div>
           );
         })}
+        <div className="rd-log">
+          <div className="rd-log__head">
+            <div>
+              <h3>Scored labs</h3>
+              <p>Your first finished score counts. Replays do not change it.</p>
+            </div>
+            <span className="rd-log__count">
+              {LAB_CATALOG.filter((l) => labPoints(results[l.id]) !== null).length}/{LAB_CATALOG.length}
+            </span>
+          </div>
+          <ol>
+            {LAB_CATALOG.map((l, i) => {
+              const st = labStatus(results[l.id]);
+              const locked = isLockedHref(l.href);
+              return (
+                <li key={l.id} className="rd-log__row">
+                  <span className="rd-log__i">{String(i + 1).padStart(2, "0")}</span>
+                  <span className={`rd-dot rd-tone-${st.tone}`} />
+                  {locked ? (
+                    <span className="rd-log__title">{l.title}</span>
+                  ) : (
+                    <Link href={l.href} className="rd-log__title">
+                      {l.title}
+                    </Link>
+                  )}
+                  <span className="rd-log__skill">{SKILLS[l.skill].label}</span>
+                  <span className={`rd-log__result rd-text-${st.tone}`}>{st.label}</span>
+                  <span className="rd-log__pts">{st.points === null ? "" : st.points}</span>
+                  <span className="rd-log__act" />
+                </li>
+              );
+            })}
+          </ol>
+        </div>
       </section>
 
       <footer className="rd-foot">
-        <span>Scores update the moment you submit a mission.</span>
+        <span>Scores update the moment you submit a mission or finish a lab.</span>
         {s.finished > 0 && (
           <button type="button" onClick={reset}>
             Reset evaluation

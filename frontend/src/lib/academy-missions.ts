@@ -128,7 +128,7 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     challenge: "alert-queue",
     title: "Read the Log (INC-1046)",
     prompt: "How many failed logons (4625) happen before the first successful logon (4624)?",
-    skill: "security",
+    skill: "logs",
   },
   "tq-08": {
     id: "tq-08",

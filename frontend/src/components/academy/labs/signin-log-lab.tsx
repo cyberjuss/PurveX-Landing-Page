@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { RotateCcw } from "lucide-react";
-import { Deck, labPassed, Narrator, nextHint, Options, Stepper, useDeck, useLabDone, useLabPass, useSaved, Verdict, Guide, Takeaway, type DotStatus } from "./lab-kit";
+import { Deck, Narrator, nextHint, Options, Stepper, useDeck, useLabDone, useLabResult, useSaved, Verdict, Guide, Takeaway, type DotStatus } from "./lab-kit";
 import { PythonCell } from "./python-cell";
 
 // Week 4 lab: a night of sign-in events from PurveX's domain controller and
@@ -218,7 +218,7 @@ export function SigninLogLab({ onDone }: { onDone?: () => void }) {
   }, [s]);
   const done = s.checked.every(Boolean);
   useLabDone(done, onDone);
-  useLabPass("lab-signin-log", labPassed(done, score.total, 14));
+  useLabResult("lab-signin-log", done, score.total, 14);
 
   const read = (id: string) => (s.read ?? []).includes(id);
   const card1Done = (i: Incident) => Boolean(s.pattern[i.id]) && s.proof[i.id] !== undefined;

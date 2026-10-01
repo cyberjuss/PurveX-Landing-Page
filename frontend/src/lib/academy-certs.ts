@@ -169,6 +169,9 @@ export const SKILL_DOMAINS: Record<Skill, string[]> = {
   directory: ["sp-arch", "sp-ops"],
   troubleshooting: ["sp-threats", "sp-program"],
   security: ["cy-ops", "cy-ir"],
+  logs: ["cy-ops", "sp-ops"],
+  access: ["sp-concepts", "sp-ops"],
+  risk: ["sp-program", "sp-concepts"],
 };
 
 export function domainsFor(ref: { job?: string; skill?: Skill; mission?: string }): ExamDomain[] {

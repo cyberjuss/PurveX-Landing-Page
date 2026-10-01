@@ -89,7 +89,12 @@ export async function PUT(request: Request) {
   }
   // Browser labs grade in the page and show their answers after each check, so a pass is completion, not proof.
   if (!resetAll) for (const [id, row] of Object.entries(saved)) if (!(id in MISSION_SKILLS)) results[id] = row;
-  for (const [id, row] of Object.entries(incoming)) if (!(id in MISSION_SKILLS)) results[id] = row;
+  // A lab's first finished score is the one that counts. A later save can add a pass, never change the score.
+  for (const [id, row] of Object.entries(incoming)) {
+    if (id in MISSION_SKILLS) continue;
+    const cur = results[id];
+    results[id] = cur ? { ...cur, solved: cur.solved || row.solved, ...(cur.pts === undefined && row.pts !== undefined ? { pts: row.pts } : {}) } : row;
+  }
 
   await saveProgress(student.id, student.email, results);
 
