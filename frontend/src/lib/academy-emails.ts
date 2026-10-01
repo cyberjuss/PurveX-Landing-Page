@@ -14,7 +14,6 @@ const INK2 = "#334155";
 const MUTED = "#8a94a6";
 const LINE = "#edeff3";
 const ACCENT = "#6a5cff";
-const ACCENT_SOFT = "#efecff";
 const TONE: Record<string, string> = { good: "#0f9f6e", warn: "#c4820e", bad: "#d93a3f", none: "#8a94a6" };
 
 const esc = (s: string) => s.replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" })[c] ?? c);
@@ -32,10 +31,11 @@ const ICON: Record<string, string> = {
   lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
 };
 
+// A small accent line icon above the heading. The dark header carries the brand,
+// so the body stays light: just the icon, no tile. Gmail may drop the SVG, which
+// only leaves a little space.
 const badge = (icon: keyof typeof ICON) =>
-  `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;"><tr><td style="width:48px;height:48px;background:${ACCENT_SOFT};border-radius:14px;text-align:center;vertical-align:middle;">` +
-  `<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="${ACCENT}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;">${ICON[icon]}</svg>` +
-  `</td></tr></table>`;
+  `<div style="margin:0 0 14px;line-height:0;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="${ACCENT}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[icon]}</svg></div>`;
 
 const h = (text: string) => `<h1 style="margin:0 0 12px;font-size:23px;line-height:1.25;color:${INK};font-weight:700;letter-spacing:-0.02em;">${esc(text)}</h1>`;
 const p = (html: string) => `<p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:${INK2};">${html}</p>`;
