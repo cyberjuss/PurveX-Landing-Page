@@ -14,5 +14,7 @@ export async function GET(request: Request) {
     await setClassCookie(cls.code);
     await setAcademyCookie();
   }
-  return NextResponse.redirect(new URL("/academy", url.origin));
+  // join=1 tells the sign-in to open on Create account, since a student arriving
+  // from a class link is almost always new.
+  return NextResponse.redirect(new URL("/range?join=1", url.origin));
 }

@@ -13,7 +13,9 @@ function cookieOptions() {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
-    path: "/academy",
+    // Site-wide so the unlock applies at /academy and /range alike, and a
+    // returning student stays unlocked instead of being re-asked for the code.
+    path: "/",
     maxAge: COOKIE_MAX_AGE_SECONDS,
   };
 }

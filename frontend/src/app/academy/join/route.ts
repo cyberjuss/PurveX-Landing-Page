@@ -14,5 +14,5 @@ export async function GET(request: Request) {
     await setClassCookie(cls.code);
     await setAcademyCookie();
   }
-  return NextResponse.redirect(new URL("/academy", url.origin));
+  return NextResponse.redirect(new URL("/range?join=1", url.origin));
 }

@@ -37,6 +37,14 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
   const [sentTo, setSentTo] = useState<string | null>(null);
   const busyRef = useRef(false);
 
+  // Arriving from a class join link means a new student, so open on Create account
+  // rather than "Welcome back".
+  useEffect(() => {
+    try {
+      if (new URLSearchParams(window.location.search).get("join") === "1") setMode("signup");
+    } catch {}
+  }, []);
+
   // Agreeing is one and done. If this browser already agreed, pre-accept and hide
   // the checkbox entirely so returning students never see it again.
   useEffect(() => {
