@@ -94,7 +94,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
   useEffect(() => {
     if (!open || askedTeaches.current) return;
     askedTeaches.current = true;
-    academyFetch("/academy/api/instructor?check=1")
+    academyFetch("/academy/api/instructor?check=1", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((d: { instructor?: boolean; owner?: boolean } | null) => {
         setTeaches(Boolean(d?.instructor));
