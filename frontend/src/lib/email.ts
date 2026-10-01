@@ -8,22 +8,23 @@ const FROM_ADDRESS = process.env.NOTIFICATION_FROM_EMAIL || "PurveX <onboarding@
 
 // Wrap message content in a branded, email-client-safe shell (table layout,
 // inline styles) so every email carries the PurveX mark, accent and footer.
-function brandEmail(content: string): string {
-  return `<!doctype html><html><body style="margin:0;padding:0;background:#f4f5f7;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f5f7;padding:24px 12px;">
+// Exported so a preview route can render it in the browser.
+export function brandEmail(content: string): string {
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light"></head>
+  <body style="margin:0;padding:0;background:#f4f5f8;-webkit-font-smoothing:antialiased;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f5f8;padding:36px 14px;">
     <tr><td align="center">
-      <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:560px;max-width:100%;background:#ffffff;border:1px solid #e6e8ee;border-radius:12px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-        <tr><td style="height:4px;background:#6a5cff;font-size:0;line-height:0;">&nbsp;</td></tr>
-        <tr><td style="padding:22px 28px 4px 28px;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;background:#ffffff;border:1px solid #ecedf2;border-radius:18px;box-shadow:0 1px 2px rgba(16,24,40,0.04),0 14px 36px -14px rgba(16,24,40,0.14);overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+        <tr><td style="padding:30px 40px 0 40px;">
           <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-            <td style="width:34px;vertical-align:middle;"><img src="https://purvex.io/logo.png" width="34" height="34" alt="PurveX" style="display:block;border:0;outline:none;text-decoration:none;" /></td>
-            <td style="padding-left:10px;font-size:17px;font-weight:700;color:#0f172a;letter-spacing:-0.01em;">PurveX</td>
+            <td style="width:40px;vertical-align:middle;"><img src="https://purvex.io/logo.png" width="40" height="40" alt="PurveX" style="display:block;border:0;outline:none;text-decoration:none;border-radius:10px;" /></td>
+            <td style="padding-left:12px;font-size:17px;font-weight:700;color:#0f172a;letter-spacing:-0.01em;vertical-align:middle;">PurveX<span style="color:#9aa3b2;font-weight:600;"> Range</span></td>
           </tr></table>
         </td></tr>
-        <tr><td style="padding:10px 28px 24px 28px;color:#334155;font-size:14px;line-height:1.6;">${content}</td></tr>
-        <tr><td style="padding:16px 28px;border-top:1px solid #eef0f4;color:#94a3b8;font-size:12px;line-height:1.5;">
-          PurveX &middot; Hands-on cybersecurity training<br>
-          <a href="https://purvex.io" style="color:#6a5cff;text-decoration:none;">purvex.io</a>
+        <tr><td style="padding:26px 40px 34px 40px;color:#334155;font-size:15px;line-height:1.6;">${content}</td></tr>
+        <tr><td style="padding:22px 40px;border-top:1px solid #eef0f4;color:#9aa3b2;font-size:12px;line-height:1.6;">
+          PurveX Range &middot; Hands-on cybersecurity training<br>
+          <a href="https://purvex.io" style="color:#6a5cff;text-decoration:none;font-weight:600;">purvex.io</a>
         </td></tr>
       </table>
     </td></tr>
