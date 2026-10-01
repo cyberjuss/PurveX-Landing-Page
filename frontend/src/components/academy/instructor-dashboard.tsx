@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Activity, AlertTriangle, ArrowLeft, Check, Copy, ExternalLink, Gauge, Trash2, Users } from "lucide-react";
+import { ArrowLeft, Check, Copy, ExternalLink, Trash2 } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { scoreTone } from "@/lib/academy-score";
 import "./instructor.css";
@@ -137,11 +137,17 @@ function ClassView({ r }: { r: Report }) {
     return { key, label: scores[0]?.label ?? key, avg: done.length ? Math.round(done.reduce((a, b) => a + b, 0) / done.length) : null, n: done.length };
   });
 
+  const health =
+    r.summary.students === 0
+      ? "No students yet. Share the link below to begin."
+      : `${r.summary.students} student${r.summary.students === 1 ? "" : "s"}. ${r.summary.activeThisWeek} active this week. ${attention.length} need a look.`;
+
   return (
     <div className="iv-class">
       <header className="rd-mast">
         <p className="rd-kicker">Instructor view</p>
         <h1 className="iv-title">{r.class.name}</h1>
+        <p className="iv-lead">{health}</p>
         <div className="iv-invitecard">
           <div className="iv-invitecard__main">
             <span className="iv-invitecard__label">Invite your class</span>
@@ -158,34 +164,22 @@ function ClassView({ r }: { r: Report }) {
           </div>
         </div>
 
-        <dl className="iv-stats">
-          <div className="iv-stat">
-            <span className="iv-stat__ico"><Users aria-hidden="true" /></span>
-            <div>
-              <dt>Students</dt>
-              <dd>{r.summary.students}</dd>
-            </div>
+        <dl className="iv-glance">
+          <div>
+            <dt>Students</dt>
+            <dd>{r.summary.students}</dd>
           </div>
-          <div className="iv-stat">
-            <span className="iv-stat__ico"><Activity aria-hidden="true" /></span>
-            <div>
-              <dt>Active this week</dt>
-              <dd>{r.summary.activeThisWeek}</dd>
-            </div>
+          <div>
+            <dt>Active this week</dt>
+            <dd>{r.summary.activeThisWeek}</dd>
           </div>
-          <div className="iv-stat">
-            <span className={`iv-stat__ico${r.summary.stuck ? " iv-stat__ico--warn" : ""}`}><AlertTriangle aria-hidden="true" /></span>
-            <div>
-              <dt>Stuck on a mission</dt>
-              <dd className={r.summary.stuck ? "rd-text-warn" : ""}>{r.summary.stuck}</dd>
-            </div>
+          <div>
+            <dt>Need a look</dt>
+            <dd className={attention.length ? "rd-text-warn" : ""}>{attention.length}</dd>
           </div>
-          <div className="iv-stat">
-            <span className="iv-stat__ico"><Gauge aria-hidden="true" /></span>
-            <div>
-              <dt>Average readiness</dt>
-              <dd className={`rd-text-${scoreTone(r.summary.avgReadiness)}`}>{r.summary.avgReadiness ?? "––"}</dd>
-            </div>
+          <div>
+            <dt>Average readiness</dt>
+            <dd className={`rd-text-${scoreTone(r.summary.avgReadiness)}`}>{r.summary.avgReadiness ?? "––"}</dd>
           </div>
         </dl>
       </header>

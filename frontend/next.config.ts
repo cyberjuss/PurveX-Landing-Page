@@ -20,6 +20,12 @@ const nextConfig: NextConfig = {
     fetches: {
       fullUrl: false,
     },
+  },
+  // Serve the course under /range too, so links we hand out say range, not
+  // academy. Real routes (e.g. /range/join) win over this; everything else
+  // falls through to the same /academy page.
+  async rewrites() {
+    return [{ source: "/range/:path*", destination: "/academy/:path*" }];
   }
   // Security headers (CSP with nonces, HSTS, COOP, CORP, X-Frame-Options,
   // etc.) are already applied site-wide in src/proxy.ts -- no need to

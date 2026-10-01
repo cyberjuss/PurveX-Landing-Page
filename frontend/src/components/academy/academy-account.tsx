@@ -231,7 +231,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                 <BadgeCheck className="h-3.5 w-3.5" /> Portfolio
               </Link>
               {teaches && (
-                <Link href="/academy/instructor" className="ax-account__out" onClick={() => setOpen(false)}>
+                <Link href="/range/instructor" className="ax-account__out" onClick={() => setOpen(false)}>
                   <Users className="h-3.5 w-3.5" /> Instructor view
                 </Link>
               )}
