@@ -239,6 +239,12 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
           You are on the desk for 30 minutes. Real attacks and tickets fire into your own lab on their own. Investigate each, fix it, and close it before its SLA runs out.
         </p>
 
+        <ul className="sh-facts-mini">
+          <li><ShieldAlert className="h-3.5 w-3.5" /> Real attacks, fired into your own lab</li>
+          <li><Clock className="h-3.5 w-3.5" /> SLA · P1 5m · P2 8m · P3 12m</li>
+          <li><LifeBuoy className="h-3.5 w-3.5" /> Coach costs 10%, then 20%, then 40%</li>
+        </ul>
+
         <p className="sh-status">
           <span className={`sh-labdot sh-labdot--${online ? "on" : starting ? "wait" : "off"}`} />
           Lab is <strong>{labWord}</strong>{online ? "" : starting ? " — coming up, this updates on its own" : " — start it to begin"}
@@ -397,11 +403,6 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
               })}
             </ul>
           )}
-          <ul className="sh-facts-mini">
-            <li><ShieldAlert className="h-3.5 w-3.5" /> Real attacks, fired into your own lab</li>
-            <li><Clock className="h-3.5 w-3.5" /> SLA · P1 5m · P2 8m · P3 12m</li>
-            <li><LifeBuoy className="h-3.5 w-3.5" /> Coach costs 10%, then 20%, then 40%</li>
-          </ul>
         </aside>
 
         <main className="sh-main">

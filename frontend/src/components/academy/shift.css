@@ -173,7 +173,7 @@
 .sh-detail__left--late { color: var(--rd-bad); background: color-mix(in srgb, var(--rd-bad) 14%, transparent); }
 .sh-detail__title { margin: 16px 0 18px; font-family: var(--font-display, inherit); font-size: clamp(22px, 3vw, 28px); font-weight: 700; letter-spacing: -0.02em; color: var(--rd-ink); line-height: 1.15; }
 
-.sh-msg { display: grid; grid-template-columns: auto 1fr; gap: 14px; padding: 20px 22px; border: 1px solid var(--rd-line); border-radius: var(--r); background: var(--rd-surface); box-shadow: none; }
+.sh-msg { display: grid; grid-template-columns: auto 1fr; gap: 14px; padding: 20px 22px; border: 1px solid var(--rd-line); border-radius: var(--r); background: transparent; box-shadow: none; }
 .sh-msg__avatar { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 0; background: var(--brand); color: #fff; font-size: 13px; font-weight: 700; }
 .sh-msg__avatar--alert { background: color-mix(in srgb, var(--rd-warn) 22%, var(--panel)); color: var(--rd-warn); }
 .sh-msg__from { margin: 2px 0 7px; display: flex; align-items: baseline; gap: 9px; }
@@ -186,7 +186,7 @@
 .sh-resolved { display: flex; align-items: center; gap: 9px; margin: 18px 0 0; padding: 14px 16px; border-radius: var(--r); border: 1px solid color-mix(in srgb, var(--rd-good) 40%, transparent); background: color-mix(in srgb, var(--rd-good) 10%, transparent); font-size: 14px; font-weight: 600; color: var(--rd-good); }
 
 .sh-work { display: grid; gap: 20px; margin-top: 24px; }
-.sh-lab { border: 1px solid var(--rd-line); border-radius: var(--r); padding: 18px 20px; background: var(--rd-surface); box-shadow: none; display: grid; gap: 12px; }
+.sh-lab { border: 1px solid var(--rd-line); border-radius: var(--r); padding: 18px 20px; background: transparent; box-shadow: none; display: grid; gap: 12px; }
 .sh-lab__head { display: flex; align-items: center; gap: 7px; margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rd-ink-2); }
 .sh-lab__head svg { color: var(--rd-accent); }
 .sh-lab__note { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--rd-ink-3); }
@@ -234,9 +234,9 @@
 .sh-intro h1 { margin: 4px 0 0; font-family: var(--font-display, inherit); font-size: clamp(28px, 5vw, 40px); font-weight: 700; letter-spacing: -0.03em; color: var(--rd-ink); }
 .sh-lede { margin: 0; font-size: 16px; line-height: 1.62; color: var(--rd-ink-2); }
 .sh-note { margin: 2px 0 0; font-size: 13px; color: var(--rd-ink-3); }
-/* The shift's ground rules, moved into the queue sidebar as a quiet footer. */
-.sh-facts-mini { list-style: none; margin: auto 0 0; padding: 14px 2px 2px; display: grid; gap: 9px; border-top: 1px solid var(--rd-line); }
-.sh-facts-mini li { display: flex; align-items: center; gap: 9px; font-size: 12px; line-height: 1.4; color: var(--rd-ink-3); }
+/* The shift's ground rules, shown on the intro before the shift starts. */
+.sh-facts-mini { list-style: none; margin: 2px 0 0; padding: 0; display: grid; gap: 11px; }
+.sh-facts-mini li { display: flex; align-items: center; gap: 11px; font-size: 13.5px; line-height: 1.4; color: var(--rd-ink-2); }
 .sh-facts-mini svg { flex: none; color: var(--rd-accent); }
 @media (max-width: 480px) {
   .sh-facts li { grid-template-columns: 20px 1fr; }
