@@ -255,7 +255,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
 
         {mode === "signin" && (
           <p className="mt-6 text-sm">
-            <Link href="/forgot-password" className="am-link">
+            <Link href="/forgot-password?next=/range" className="am-link">
               Forgot password?
             </Link>
           </p>

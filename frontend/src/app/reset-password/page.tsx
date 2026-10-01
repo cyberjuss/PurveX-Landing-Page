@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { hasRecoverySession, updatePassword } from "@/lib/portal-auth";
 import { AuthError, AuthHeading, AuthMinimal, PasswordInput, passwordStrength, StrengthBar } from "@/components/auth/auth-minimal";
@@ -12,6 +13,11 @@ function getErrorMessage(err: unknown, fallback: string) {
 }
 
 function ResetPasswordContent() {
+  // Where to send the user after a successful reset. A Range student arrives with
+  // ?next=/range; the platform flow has none and falls back to the portal login.
+  const params = useSearchParams();
+  const rawNext = params.get("next") ?? "";
+  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/account/login";
   const [hasSession, setHasSession] = useState<boolean | null>(null);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -100,7 +106,7 @@ function ResetPasswordContent() {
     return (
       <AuthMinimal>
         <AuthHeading sub="Your password has been reset. You can sign in with it now.">Password updated</AuthHeading>
-        <Link href="/account/login" className="am-primary mt-8">
+        <Link href={next} className="am-primary mt-8">
           Continue to sign in
         </Link>
       </AuthMinimal>

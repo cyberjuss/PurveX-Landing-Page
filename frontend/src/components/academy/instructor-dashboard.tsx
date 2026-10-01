@@ -127,7 +127,7 @@ function InviteBlock({ code }: { code: string }) {
   );
 }
 
-function ClassView({ r }: { r: Report }) {
+function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: string }) {
   const origin = typeof window === "undefined" ? "" : window.location.origin;
   const joinLink = `${origin}/range/join?code=${encodeURIComponent(r.class.code)}`;
   const attention = r.students.map((s) => ({ s, why: flags(s) })).filter((x) => x.why.length);
@@ -145,7 +145,7 @@ function ClassView({ r }: { r: Report }) {
   return (
     <div className="iv-class">
       <header className="rd-mast">
-        <p className="rd-kicker">Instructor view</p>
+        <p className="rd-kicker">{kicker}</p>
         <h1 className="iv-title">{r.class.name}</h1>
         <p className="iv-lead">{health}</p>
         <div className="iv-invitecard">
@@ -395,7 +395,7 @@ function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
         <button type="button" className="ov-back" onClick={() => setViewing(null)}>
           <ArrowLeft aria-hidden="true" /> All classes
         </button>
-        <ClassView r={viewingClass} />
+        <ClassView r={viewingClass} kicker="Owner view" />
       </div>
     );
   }

@@ -22,7 +22,11 @@ export default function ForgotPasswordPage() {
     setPhase("sending");
 
     try {
-      const redirectTo = `${window.location.origin}/reset-password`;
+      // Carry where the reset should land (Range vs the platform) through to the
+      // reset page, so a Range student returns to Range after resetting.
+      const raw = new URLSearchParams(window.location.search).get("next") ?? "";
+      const next = raw.startsWith("/") && !raw.startsWith("//") ? raw : "";
+      const redirectTo = `${window.location.origin}/reset-password${next ? `?next=${encodeURIComponent(next)}` : ""}`;
       await requestPasswordReset(email.trim(), redirectTo);
       setPhase("sent");
     } catch (err) {
