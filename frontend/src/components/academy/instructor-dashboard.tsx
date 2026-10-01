@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Check, Copy, ExternalLink } from "lucide-react";
+import { Activity, AlertTriangle, Check, Copy, ExternalLink, Gauge, Users } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { scoreTone } from "@/lib/academy-score";
 import "./instructor.css";
@@ -125,21 +125,33 @@ function ClassView({ r }: { r: Report }) {
         </div>
 
         <dl className="iv-stats">
-          <div>
-            <dt>Students</dt>
-            <dd>{r.summary.students}</dd>
+          <div className="iv-stat">
+            <span className="iv-stat__ico"><Users aria-hidden="true" /></span>
+            <div>
+              <dt>Students</dt>
+              <dd>{r.summary.students}</dd>
+            </div>
           </div>
-          <div>
-            <dt>Active this week</dt>
-            <dd>{r.summary.activeThisWeek}</dd>
+          <div className="iv-stat">
+            <span className="iv-stat__ico"><Activity aria-hidden="true" /></span>
+            <div>
+              <dt>Active this week</dt>
+              <dd>{r.summary.activeThisWeek}</dd>
+            </div>
           </div>
-          <div>
-            <dt>Stuck on a mission</dt>
-            <dd className={r.summary.stuck ? "rd-text-warn" : ""}>{r.summary.stuck}</dd>
+          <div className="iv-stat">
+            <span className={`iv-stat__ico${r.summary.stuck ? " iv-stat__ico--warn" : ""}`}><AlertTriangle aria-hidden="true" /></span>
+            <div>
+              <dt>Stuck on a mission</dt>
+              <dd className={r.summary.stuck ? "rd-text-warn" : ""}>{r.summary.stuck}</dd>
+            </div>
           </div>
-          <div>
-            <dt>Average readiness</dt>
-            <dd className={`rd-text-${scoreTone(r.summary.avgReadiness)}`}>{r.summary.avgReadiness ?? "––"}</dd>
+          <div className="iv-stat">
+            <span className="iv-stat__ico"><Gauge aria-hidden="true" /></span>
+            <div>
+              <dt>Average readiness</dt>
+              <dd className={`rd-text-${scoreTone(r.summary.avgReadiness)}`}>{r.summary.avgReadiness ?? "––"}</dd>
+            </div>
           </div>
         </dl>
       </header>

@@ -20,29 +20,30 @@
 .iv-invitecard__code span { color: var(--rd-ink-3); }
 @media (max-width: 640px) { .iv-invitecard { padding: 16px; gap: 16px; } }
 
-.iv-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 28px 0 0; border-top: 1px solid var(--rd-ink); }
-.iv-stats > div { padding: 16px 16px 4px 0; }
-.iv-stats > div + div { padding-left: 16px; border-left: 1px solid var(--rd-line); }
-.iv-stats dt { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rd-ink-3); }
-.iv-stats dd { margin: 6px 0 0; font-family: var(--font-display); font-size: 40px; font-weight: 700; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; color: var(--rd-ink); }
-.iv-stats dd.rd-text-good { color: var(--rd-good); }
-.iv-stats dd.rd-text-warn { color: var(--rd-warn); }
-.iv-stats dd.rd-text-bad { color: var(--rd-bad); }
-@media (max-width: 640px) {
-  .iv-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .iv-stats > div:nth-child(3) { padding-left: 0; border-left: 0; }
-}
+.iv-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 26px 0 0; }
+.iv-stat { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 1px solid var(--rd-line); border-radius: 14px; background: color-mix(in srgb, var(--rd-ink) 3%, transparent); }
+.iv-stat__ico { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 36px; height: 36px; border-radius: 10px; background: color-mix(in srgb, var(--rd-accent) 14%, transparent); color: var(--rd-accent); }
+.iv-stat__ico svg { width: 18px; height: 18px; }
+.iv-stat__ico--warn { background: color-mix(in srgb, var(--rd-warn) 16%, transparent); color: var(--rd-warn); }
+.iv-stat dt { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-ink-3); }
+.iv-stat dd { margin: 5px 0 0; font-family: var(--font-display); font-size: 32px; font-weight: 700; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: var(--rd-ink); }
+.iv-stat dd.rd-text-good { color: var(--rd-good); }
+.iv-stat dd.rd-text-warn { color: var(--rd-warn); }
+.iv-stat dd.rd-text-bad { color: var(--rd-bad); }
+@media (max-width: 760px) { .iv-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 .iv-empty { padding: 12px 0; font-size: 15px; color: var(--rd-ink-3); }
 
-.iv-attn { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--rd-ink); }
-.iv-attn li { display: grid; grid-template-columns: minmax(140px, 220px) 1fr; gap: 4px 20px; padding: 14px 0; border-bottom: 1px solid var(--rd-line); font-size: 14px; }
-.iv-attn strong { font-weight: 600; color: var(--rd-ink); }
+.iv-attn { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.iv-attn li { display: grid; grid-template-columns: minmax(140px, 200px) 1fr; align-items: center; gap: 4px 20px; padding: 14px 16px; border: 1px solid var(--rd-line); border-left: 3px solid var(--rd-warn); border-radius: 12px; background: color-mix(in srgb, var(--rd-warn) 5%, transparent); font-size: 14px; }
+.iv-attn strong { font-weight: 650; color: var(--rd-ink); }
 .iv-attn span { color: var(--rd-ink-2); }
 @media (max-width: 640px) { .iv-attn li { grid-template-columns: 1fr; } }
 
 .iv-table { border-top: 1px solid var(--rd-ink); font-size: 14px; }
 .iv-tr { display: grid; grid-template-columns: minmax(150px, 1.4fr) 1fr 1.3fr 0.8fr 1fr 0.6fr 0.7fr; gap: 14px; align-items: start; padding: 14px 0; border-bottom: 1px solid var(--rd-line); color: var(--rd-ink-2); }
+.iv-tr:not(.iv-tr--head) { transition: background 0.12s; }
+.iv-tr:not(.iv-tr--head):hover { background: color-mix(in srgb, var(--rd-ink) 3.5%, transparent); }
 .iv-tr--head { padding: 10px 0; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
 .iv-tr small { display: block; margin-top: 2px; font-size: 12px; color: var(--rd-ink-3); }
 .iv-tr b { font-family: var(--font-display); font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
