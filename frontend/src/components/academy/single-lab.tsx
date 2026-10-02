@@ -9,7 +9,7 @@ import { LabCarousel } from "./lab-carousel";
 import { LabBrief } from "./labs/lab-brief";
 import { HashVerifyLab } from "./labs/hash-verify-lab";
 import { PasswordTableLab } from "./labs/password-table-lab";
-import { RiskTriageLab } from "./labs/risk-triage-lab";
+import { RiskTriageLab } from "./labs/risk-triage-chat";
 import { SigninLogLab } from "./labs/signin-log-lab";
 import { EffectiveAccessLab } from "./labs/effective-access-lab";
 import { slugify, useAcademyProgress } from "./academy-progress";
