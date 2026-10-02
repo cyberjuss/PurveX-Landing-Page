@@ -3,8 +3,6 @@
 <h3>Operation Day One</h3>
 <p class="ad-brief__ask">Can you find your way around Active Directory well enough to handle a help desk technician's first day?</p>
 <p>It is your first day on the PurveX Financial help desk. Nobody expects you to close incidents yet. Your lead wants proof that you can find any person, group or computer and read what the directory says about it.</p>
-<p>Every answer comes from your own lab. Open Active Directory Users and Computers on your domain controller and look each one up there. When a job title and a group disagree, trust the group because the group is what grants access.</p>
-<p>Each task takes a short answer like a group name or a number. Capital letters and punctuation such as spaces or dashes do not matter. You get three tries per task. A common wrong answer gets a short note on where to look. The hint unlocks after two misses and the explanation unlocks once you solve the task or use all three tries.</p>
 </div>
 
 <div class="ad-progress">
