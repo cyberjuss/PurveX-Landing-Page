@@ -2,7 +2,10 @@
 
 import { useMemo } from "react";
 import { Folder, RotateCcw } from "lucide-react";
-import { Avatar, Deck, Guide, Narrator, nextHint, Options, Stepper, Takeaway, useDeck, useLabDone, useLabResult, useSaved, Verdict, type DotStatus } from "./lab-kit";
+import { Avatar, useLabDone, useLabResult, useSaved } from "./lab-kit";
+import { ChatShell, Chip, ChipRow, Mine, Says, SendAction } from "./lab-chat";
+import { useOptionalCoach } from "../coach-context";
+import { LOST_ASK } from "./lab-brief";
 import "./effective-access-lab.css";
 
 // Week 4 lab: who can open a folder on PurveX's file server. The student
@@ -209,16 +212,10 @@ const STORE = "academy-lab-effective-access-v1";
 
 export function EffectiveAccessLab({ onDone }: { onDone?: () => void }) {
   const [s, setS] = useSaved<State>(STORE, START, (v) => Array.isArray(v.checked) && v.checked.length === 3 && Array.isArray(v.removedAces));
-  const deck1 = useDeck(CASES.length);
-  const deck3 = useDeck(CHECKS.length);
+  const coach = useOptionalCoach();
   const patch = (p: Partial<State>) => setS((prev) => ({ ...prev, ...p }));
   const check = (i: 0 | 1 | 2) => setS((prev) => ({ ...prev, checked: prev.checked.map((c, j) => (j === i ? true : c)) as State["checked"] }));
-  const go = (step: number) => {
-    patch({ step });
-    deck1.reset();
-    deck3.reset();
-    document.querySelector(".rt")?.scrollIntoView({ block: "start", behavior: "smooth" });
-  };
+  const go = (step: number) => patch({ step });
 
   const fix1Right = s.removedAces.length === 1 && s.removedAces[0] === FIX_ACE;
   const fix2Right = s.removedGroups.length === 1 && s.removedGroups[0] === FIX_GROUP;
@@ -231,294 +228,166 @@ export function EffectiveAccessLab({ onDone }: { onDone?: () => void }) {
   const done = s.checked.every(Boolean);
   useLabDone(done, onDone);
   useLabResult("lab-effective-access", done, score.total, 10);
-  const reached = [true, s.checked[0], s.checked[1], s.checked[2]];
 
   const balancesNtfs = BALANCES_NTFS.filter((a) => !s.removedAces.includes(a.who));
   const taylorGroups = TAYLOR_GROUPS.filter((g) => !s.removedGroups.includes(g));
 
-  return (
-    <section className="rt" aria-label="Who Can Open This? lab">
-      <Stepper steps={STEPS} step={s.step} done={[...s.checked, false]} reached={reached} onGo={go} />
+  const pips = [s.checked[0], s.checked[1], s.checked[2], s.checked[2]];
+  const signal = `${s.step}:${Object.keys(s.guess).length}:${s.removedAces.length}:${s.removedGroups.length}:${Object.keys(s.answers).length}:${s.checked.join("")}`;
 
+  // first unanswered in each choice step
+  const cur0 = CASES.findIndex((c) => !s.guess[c.id]);
+  const cur2 = CHECKS.findIndex((q) => !s.answers[q.id]);
+
+  const thread = (
+    <>
       {s.step === 0 && (
-        <div className="rt-body">
-          <header className="rt-head">
-            <h3>Who can open this?</h3>
-            <Narrator>Read the person&apos;s groups and the folder&apos;s permissions, then say what they can do with it over the network.</Narrator>
-          </header>
-          <details className="lk-more" open>
-            <summary>How access adds up</summary>
-            <ol className="ea-rules">
-              {RULES.map(([rule, text]) => (
-                <li key={rule}>
-                  <b>{rule}.</b> {text}
-                </li>
-              ))}
-            </ol>
-          </details>
-          <Deck
-            tags={CASES.map((c) => c.tag)}
-            titles={CASES.map((c) => `${c.name}, ${c.path}`)}
-            index={deck1.card}
-            dir={deck1.dir}
-            onGo={deck1.show}
-            status={CASES.map((c): DotStatus => (s.checked[0] ? (s.guess[c.id] === answerOf(c) ? "right" : "wrong") : s.guess[c.id] ? "answered" : "open"))}
-          >
-            {(() => {
-              const c = CASES[deck1.card];
-              const checked = s.checked[0];
-              const right = s.guess[c.id] === answerOf(c);
-              return (
-                <div className={`rt-ticket${checked ? (right ? " is-right" : " is-wrong") : ""}`}>
-                  <AccessView person={c.person} name={c.name} dept={c.dept} groups={c.groups} path={c.path} share={c.share} ntfs={c.ntfs} reveal={checked} />
-                  <div className="lk-q">
-                    <b>
-                      What can {c.name.split(" ")[0]} do with {c.path}?
-                    </b>
-                    <Options
-                      label={`Access for ${c.name}`}
-                      options={ACCESS}
-                      value={s.guess[c.id]}
-                      answer={checked ? answerOf(c) : undefined}
-                      disabled={checked}
-                      onPick={(v) => {
-                        const guess = { ...s.guess, [c.id]: v as Access };
-                        patch({ guess });
-                        deck1.next((n) => Boolean(guess[CASES[n].id]));
-                      }}
-                    />
-                  </div>
-                  {checked && (
-                    <>
-                      <Working c={c} />
-                      <Verdict right={right}>
-                        <b>{c.rule}.</b> {c.why}
-                      </Verdict>
-                    </>
-                  )}
-                </div>
-              );
-            })()}
-          </Deck>
-          <footer className="rt-foot">
-            {s.checked[0] ? (
-              <>
-                <p className="rt-tally">
-                  <b>{score.predicted} of 4</b> right
-                </p>
-                <button type="button" className="rt-btn rt-btn--primary" onClick={() => go(1)}>
-                  Fix it
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="rt-tally">{nextHint(CASES.map((c) => Boolean(s.guess[c.id])), CASES.map((c) => c.name))}</p>
-                <button type="button" className="rt-btn rt-btn--primary" disabled={CASES.some((c) => !s.guess[c.id])} onClick={() => check(0)}>
-                  Check answers
-                </button>
-              </>
-            )}
-          </footer>
-        </div>
+        <>
+          <Says>Four people, four folders on the file server. For each one, read their groups and the folder&rsquo;s share and NTFS permissions, then tell me what they can do over the network.</Says>
+          <div className="lc-tool"><ol className="ea-rules">{RULES.map(([rule, text]) => <li key={rule}><b>{rule}.</b> {text}</li>)}</ol></div>
+          {CASES.slice(0, cur0 === -1 ? CASES.length : cur0 + 1).map((c) => {
+            const g = s.guess[c.id];
+            const right = g === answerOf(c);
+            return (
+              <div key={c.id}>
+                <Says><b>Case {c.tag} — {c.name}.</b> Here is their access to <code>{c.path}</code>.</Says>
+                <div className="lc-tool"><AccessView person={c.person} name={c.name} dept={c.dept} groups={c.groups} path={c.path} share={c.share} ntfs={c.ntfs} reveal={s.checked[0]} /></div>
+                <Says>What can {c.name.split(" ")[0]} do with it?</Says>
+                {g && <Mine>{ACCESS.find((a) => a.key === g)?.text}</Mine>}
+                {s.checked[0] && g && (
+                  <>
+                    <div className="lc-tool"><Working c={c} /></div>
+                    <Says tone={right ? "right" : "wrong"}><b>{c.rule}.</b> {c.why}</Says>
+                  </>
+                )}
+              </div>
+            );
+          })}
+          {cur0 === -1 && !s.checked[0] && <Says>That&rsquo;s all four. Check them?</Says>}
+          {s.checked[0] && <Says>You got <b>{score.predicted} of 4</b>. Now let&rsquo;s fix the two folders that give away too much.</Says>}
+        </>
       )}
 
       {s.step === 1 && (
-        <div className="rt-body">
-          <header className="rt-head">
-            <h3>Take away what should not be there</h3>
-            <Narrator>Two fixes. Click an entry or a group to remove it, and watch who can still get in.</Narrator>
-          </header>
-          <div className="rt-ticket">
-            <Guide
-              showAll
-              steps={[
-                {
-                  title: "Client-Balances should open only for Wealth Management. Remove the NTFS entry that lets everyone else read it.",
-                  done: s.removedAces.length > 0,
-                  body: (
-                    <>
-                      <AccessView
-                        path={CASES[3].path}
-                        share={BALANCES_SHARE}
-                        ntfs={BALANCES_NTFS}
-                        removed={s.removedAces}
-                        onToggleAce={s.checked[1] ? undefined : (who) => patch({ removedAces: s.removedAces.includes(who) ? s.removedAces.filter((x) => x !== who) : [...s.removedAces, who] })}
-                      />
-                      <WhoGetsIn
-                        rows={[
-                          { name: "Sam Whitfield", note: "Wealth Management", n: effective(BALANCES_SHARE, balancesNtfs, ["Wealth Management Users"]) },
-                          { name: "Devon Brooks", note: "Compliance", n: effective(BALANCES_SHARE, balancesNtfs, ["Compliance Users"]) },
-                          { name: "Any other account", note: "Domain Users", n: effective(BALANCES_SHARE, balancesNtfs, []) },
-                        ]}
-                      />
-                    </>
-                  ),
-                },
-                {
-                  title: "Taylor moved from Operations to Finance. Remove the group Taylor should no longer have.",
-                  done: s.removedGroups.length > 0,
-                  body: (
-                    <>
-                      <AccessView
-                        person="taylor.osei"
-                        name="Taylor Osei"
-                        dept="Finance, moved from Operations"
-                        groups={TAYLOR_GROUPS}
-                        removedGroups={s.removedGroups}
-                        onToggleGroup={s.checked[1] ? undefined : (g) => patch({ removedGroups: s.removedGroups.includes(g) ? s.removedGroups.filter((x) => x !== g) : [...s.removedGroups, g] })}
-                      />
-                      <WhoGetsIn rows={[{ name: "Taylor on \\\\FS01\\Payroll", note: taylorGroups.join(", ") || "no department group", n: effective(PAYROLL_SHARE, PAYROLL_NTFS, taylorGroups) }]} />
-                    </>
-                  ),
-                },
-              ]}
-            />
-            {s.checked[1] && (
-              <div className="rt-why">
-                <Verdict right={fix1Right}>Remove Domain Users. Every account is in it, so a Read entry for Domain Users opens client data to the whole firm, and to anyone with one stolen password.</Verdict>
-                <Verdict right={fix2Right}>
-                  Remove Operations Users. The old group kept Taylor&apos;s Operations access and its Deny blocked the Finance work Taylor now does. When the role changes, the groups have to change with it.
-                </Verdict>
-                <Takeaway>Give access through the group for the role, and take the old group away in the same change.</Takeaway>
-              </div>
-            )}
+        <>
+          <Says>Two fixes. Click an entry or a group to remove it, and watch who can still get in.</Says>
+          <Says><b>Fix 1.</b> Client-Balances should open only for Wealth Management. Remove the NTFS entry that lets everyone else read it.</Says>
+          <div className="lc-tool">
+            <AccessView path={CASES[3].path} share={BALANCES_SHARE} ntfs={BALANCES_NTFS} removed={s.removedAces} onToggleAce={s.checked[1] ? undefined : (who) => patch({ removedAces: s.removedAces.includes(who) ? s.removedAces.filter((x) => x !== who) : [...s.removedAces, who] })} />
+            <WhoGetsIn rows={[
+              { name: "Sam Whitfield", note: "Wealth Management", n: effective(BALANCES_SHARE, balancesNtfs, ["Wealth Management Users"]) },
+              { name: "Devon Brooks", note: "Compliance", n: effective(BALANCES_SHARE, balancesNtfs, ["Compliance Users"]) },
+              { name: "Any other account", note: "Domain Users", n: effective(BALANCES_SHARE, balancesNtfs, []) },
+            ]} />
           </div>
-          <footer className="rt-foot">
-            {s.checked[1] ? (
-              <>
-                <p className="rt-tally">
-                  <b>{score.fixed} of 2</b> right
-                </p>
-                <button type="button" className="rt-btn rt-btn--primary" onClick={() => go(2)}>
-                  Check it
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="rt-tally">{nextHint([s.removedAces.length > 0, s.removedGroups.length > 0], ["fix the Client-Balances folder", "fix Taylor's groups"])}</p>
-                <button type="button" className="rt-btn rt-btn--primary" disabled={!s.removedAces.length || !s.removedGroups.length} onClick={() => check(1)}>
-                  Check answers
-                </button>
-              </>
-            )}
-          </footer>
-        </div>
+          <Says><b>Fix 2.</b> Taylor moved from Operations to Finance. Remove the group Taylor should no longer have.</Says>
+          <div className="lc-tool">
+            <AccessView person="taylor.osei" name="Taylor Osei" dept="Finance, moved from Operations" groups={TAYLOR_GROUPS} removedGroups={s.removedGroups} onToggleGroup={s.checked[1] ? undefined : (gp) => patch({ removedGroups: s.removedGroups.includes(gp) ? s.removedGroups.filter((x) => x !== gp) : [...s.removedGroups, gp] })} />
+            <WhoGetsIn rows={[{ name: "Taylor on \\\\FS01\\Payroll", note: taylorGroups.join(", ") || "no department group", n: effective(PAYROLL_SHARE, PAYROLL_NTFS, taylorGroups) }]} />
+          </div>
+          {s.checked[1] && (
+            <>
+              <Says tone={fix1Right ? "right" : "wrong"}>Remove Domain Users. Every account is in it, so a Read entry for Domain Users opens client data to the whole firm, and to anyone with one stolen password.</Says>
+              <Says tone={fix2Right ? "right" : "wrong"}>Remove Operations Users. The old group kept Taylor&rsquo;s Operations access and its Deny blocked the Finance work Taylor now does.</Says>
+              <Says>Give access through the group for the role, and take the old group away in the same change. You got <b>{score.fixed} of 2</b>.</Says>
+            </>
+          )}
+        </>
       )}
 
       {s.step === 2 && (
-        <div className="rt-body">
-          <header className="rt-head">
-            <h3>How would you check it on the server?</h3>
-            <Narrator>On the job you confirm access with the tools, not by eye. Pick the right one each time.</Narrator>
-          </header>
-          <Deck
-            tags={CHECKS.map((q) => q.tag)}
-            titles={CHECKS.map((q) => q.title)}
-            index={deck3.card}
-            dir={deck3.dir}
-            onGo={deck3.show}
-            status={CHECKS.map((q): DotStatus => (s.checked[2] ? (s.answers[q.id] === q.answer ? "right" : "wrong") : s.answers[q.id] ? "answered" : "open"))}
-          >
-            {(() => {
-              const q = CHECKS[deck3.card];
-              const checked = s.checked[2];
-              const right = s.answers[q.id] === q.answer;
-              return (
-                <div className={`rt-ticket${checked ? (right ? " is-right" : " is-wrong") : ""}`}>
-                  <div className="lk-q">
-                    <b>{q.prompt}</b>
-                    <Options
-                      label={q.title}
-                      options={q.options}
-                      value={s.answers[q.id]}
-                      answer={checked ? q.answer : undefined}
-                      disabled={checked}
-                      onPick={(v) => {
-                        const answers = { ...s.answers, [q.id]: v };
-                        patch({ answers });
-                        deck3.next((n) => Boolean(answers[CHECKS[n].id]));
-                      }}
-                    />
-                  </div>
-                  {checked && <Verdict right={right}>{q.why}</Verdict>}
-                </div>
-              );
-            })()}
-          </Deck>
-          <footer className="rt-foot">
-            {s.checked[2] ? (
-              <>
-                <p className="rt-tally">
-                  <b>{score.checks} of 4</b> right
-                </p>
-                <button type="button" className="rt-btn rt-btn--primary" onClick={() => go(3)}>
-                  See the debrief
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="rt-tally">{nextHint(CHECKS.map((q) => Boolean(s.answers[q.id])), CHECKS.map((q) => `question ${q.tag}`))}</p>
-                <button type="button" className="rt-btn rt-btn--primary" disabled={CHECKS.some((q) => !s.answers[q.id])} onClick={() => check(2)}>
-                  Check answers
-                </button>
-              </>
-            )}
-          </footer>
-        </div>
+        <>
+          <Says>On the job you confirm access with the tools, not by eye. Four quick ones — pick the right command each time.</Says>
+          {CHECKS.slice(0, cur2 === -1 ? CHECKS.length : cur2 + 1).map((q) => {
+            const a = s.answers[q.id];
+            const right = a === q.answer;
+            return (
+              <div key={q.id}>
+                <Says><b>{q.title}.</b> {q.prompt}</Says>
+                {a && <Mine><code>{q.options.find((o) => o.key === a)?.text}</code></Mine>}
+                {s.checked[2] && a && <Says tone={right ? "right" : "wrong"}>{q.why}</Says>}
+              </div>
+            );
+          })}
+          {cur2 === -1 && !s.checked[2] && <Says>Ready to check?</Says>}
+          {s.checked[2] && <Says>You got <b>{score.checks} of 4</b>.</Says>}
+        </>
       )}
 
       {s.step === 3 && (
-        <div className="rt-body">
-          <header className="rt-head rt-head--result">
-            <div className={`rt-grade rt-grade--${score.total >= 9 ? "high" : score.total >= 7 ? "medium" : "low"}`}>
-              <b>{score.total}</b>
-              <small>of 10</small>
-            </div>
-            <div>
-              <h3>{score.total >= 9 ? "You can read a folder's access" : score.total >= 7 ? "Solid start" : "Worth another pass"}</h3>
-              <p>
-                Predicted {score.predicted} of 4 · Fixed {score.fixed} of 2 · Checked {score.checks} of 4
-              </p>
-            </div>
-          </header>
-          <div className="lk-scroll">
+        <>
+          <Says>Wrap-up. You scored <b>{score.total} of 10</b> — predicted {score.predicted} of 4, fixed {score.fixed} of 2, checked {score.checks} of 4. {score.total >= 9 ? "You can read a folder's access." : score.total >= 7 ? "Solid start." : "Worth another pass."}</Says>
+          <div className="lc-tool lc-tool--flush">
             <table className="lk-table">
-              <thead>
-                <tr>
-                  <th>Rule</th>
-                  <th>What it means</th>
-                </tr>
-              </thead>
+              <thead><tr><th>Rule</th><th>What it means</th></tr></thead>
               <tbody>
-                <tr>
-                  <td>Groups add up</td>
-                  <td>A person gets every Allow from every group they are in.</td>
-                </tr>
-                <tr>
-                  <td>Deny beats Allow</td>
-                  <td>One Deny from any group overrides the Allows.</td>
-                </tr>
-                <tr>
-                  <td>The stricter one wins</td>
-                  <td>Over the network, access is the lower of the share and NTFS permissions.</td>
-                </tr>
-                <tr>
-                  <td>Domain Users is everyone</td>
-                  <td>Every account is in it. An entry for Domain Users opens the folder to the whole firm.</td>
-                </tr>
+                <tr><td>Groups add up</td><td>A person gets every Allow from every group they are in.</td></tr>
+                <tr><td>Deny beats Allow</td><td>One Deny from any group overrides the Allows.</td></tr>
+                <tr><td>The stricter one wins</td><td>Over the network, access is the lower of the share and NTFS permissions.</td></tr>
+                <tr><td>Domain Users is everyone</td><td>Every account is in it. An entry for Domain Users opens the folder to the whole firm.</td></tr>
               </tbody>
             </table>
           </div>
-          <footer className="rt-foot">
-            <p className="rt-tally">When the role changes, the groups have to change with it.</p>
-            <button type="button" className="rt-btn" onClick={() => setS(START)}>
-              <RotateCcw aria-hidden="true" /> Try again
-            </button>
-          </footer>
-        </div>
+          <Says>When the role changes, the groups have to change with it. Nice work.</Says>
+        </>
       )}
-    </section>
+    </>
   );
+
+  const composer = (
+    <>
+      {s.step === 0 && (cur0 !== -1 ? (
+        <ChipRow label={`What can ${CASES[cur0].name.split(" ")[0]} do with ${CASES[cur0].path}?`}>
+          {ACCESS.map((a) => <Chip key={a.key} onClick={() => patch({ guess: { ...s.guess, [CASES[cur0].id]: a.key } })}>{a.text}</Chip>)}
+        </ChipRow>
+      ) : !s.checked[0] ? (
+        <SendAction onClick={() => check(0)}>Check answers</SendAction>
+      ) : (
+        <SendAction onClick={() => go(1)}>Fix it →</SendAction>
+      ))}
+
+      {s.step === 1 && (!s.checked[1] ? (
+        <div className="lc-actions">
+          <span className="rt-tally">{s.removedAces.length && s.removedGroups.length ? "Both done." : "Remove an entry and a group above."}</span>
+          <SendButton disabled={!s.removedAces.length || !s.removedGroups.length} onClick={() => check(1)}>Check answers</SendButton>
+        </div>
+      ) : (
+        <SendAction onClick={() => go(2)}>Check it →</SendAction>
+      ))}
+
+      {s.step === 2 && (cur2 !== -1 ? (
+        <ChipRow label={CHECKS[cur2].title}>
+          {CHECKS[cur2].options.map((o) => <Chip key={o.key} onClick={() => patch({ answers: { ...s.answers, [CHECKS[cur2].id]: o.key } })}>{o.text}</Chip>)}
+        </ChipRow>
+      ) : !s.checked[2] ? (
+        <SendAction onClick={() => check(2)}>Check answers</SendAction>
+      ) : (
+        <SendAction onClick={() => go(3)}>See the debrief →</SendAction>
+      ))}
+
+      {s.step === 3 && <SendAction subtle onClick={() => setS(START)}><RotateCcw aria-hidden="true" /> Try again</SendAction>}
+    </>
+  );
+
+  return (
+    <ChatShell
+      role="Your IT lead"
+      steps={STEPS}
+      step={s.step}
+      done={pips}
+      onAsk={coach?.enabled ? () => coach.ask(LOST_ASK) : undefined}
+      signal={signal}
+      thread={thread}
+      composer={composer}
+      label="Who Can Open This?, guided chat"
+    />
+  );
+}
+
+/** A primary action that can be disabled (the Options chips can't gate, so a
+ *  couple of steps use this instead). */
+function SendButton({ children, onClick, disabled }: { children: React.ReactNode; onClick: () => void; disabled?: boolean }) {
+  return <button type="button" className="lc-send" disabled={disabled} style={disabled ? { opacity: 0.45, cursor: "not-allowed", boxShadow: "none" } : undefined} onClick={onClick}>{children}</button>;
 }
 
 /** A person and their groups next to a folder and its permissions. Pieces can be left out. */
