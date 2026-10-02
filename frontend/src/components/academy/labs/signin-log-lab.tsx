@@ -2,7 +2,10 @@
 
 import { useMemo } from "react";
 import { RotateCcw } from "lucide-react";
-import { Deck, Narrator, nextHint, Options, Stepper, useDeck, useLabDone, useLabResult, useSaved, Verdict, Guide, Takeaway, type DotStatus } from "./lab-kit";
+import { useLabDone, useLabResult, useSaved } from "./lab-kit";
+import { ChatShell, Chip, ChipRow, Mine, Says, SendAction } from "./lab-chat";
+import { useOptionalCoach } from "../coach-context";
+import { LOST_ASK } from "./lab-brief";
 import { PythonCell } from "./python-cell";
 
 // Week 4 lab: a night of sign-in events from PurveX's domain controller and
@@ -199,16 +202,10 @@ const STORE = "academy-lab-signin-log-v1";
 
 export function SigninLogLab({ onDone }: { onDone?: () => void }) {
   const [s, setS] = useSaved<State>(STORE, START, (v) => Array.isArray(v.checked) && v.checked.length === 3 && typeof v.pattern === "object");
-  const deck1 = useDeck(INCIDENTS.length);
-  const deck3 = useDeck(INCIDENTS.length);
+  const coach = useOptionalCoach();
   const patch = (p: Partial<State>) => setS((prev) => ({ ...prev, ...p }));
   const check = (i: 0 | 1 | 2) => setS((prev) => ({ ...prev, checked: prev.checked.map((c, j) => (j === i ? true : c)) as State["checked"] }));
-  const go = (step: number) => {
-    patch({ step });
-    deck1.reset();
-    deck3.reset();
-    document.querySelector(".rt")?.scrollIntoView({ block: "start", behavior: "smooth" });
-  };
+  const go = (step: number) => patch({ step });
 
   const score = useMemo(() => {
     const named = INCIDENTS.filter((i) => s.pattern[i.id] === i.pattern).length + INCIDENTS.filter((i) => s.proof[i.id] === i.proof).length;
@@ -222,345 +219,178 @@ export function SigninLogLab({ onDone }: { onDone?: () => void }) {
 
   const read = (id: string) => (s.read ?? []).includes(id);
   const card1Done = (i: Incident) => Boolean(s.pattern[i.id]) && s.proof[i.id] !== undefined;
-  const reached = [true, s.checked[0], s.checked[1], s.checked[2]];
 
-  return (
-    <section className="rt" aria-label="Read the Sign-In Log lab">
-      <Stepper steps={STEPS} step={s.step} done={[...s.checked, false]} reached={reached} onGo={go} />
+  const pips = [s.checked[0], s.checked[1], s.checked[2], s.checked[2]];
+  const signal = `${s.step}:${Object.keys(s.pattern).length}:${Object.keys(s.proof).length}:${(s.read ?? []).length}:${s.ran}:${s.q.fails ?? ""}:${s.q.accounts ?? ""}:${Object.keys(s.response).length}:${s.checked.join("")}`;
 
+  const cur0 = INCIDENTS.findIndex((i) => !card1Done(i));
+  const cur2 = INCIDENTS.findIndex((i) => !s.response[i.id]);
+
+  const thread = (
+    <>
       {s.step === 0 && (
-        <div className="rt-body">
-          <header className="rt-head">
-            <h3>What happened overnight?</h3>
-            <Narrator>Four things in last night&apos;s log need a look. Read each log first, then tell me what is happening and click the row that proves it.</Narrator>
-          </header>
-          <Deck
-            tags={INCIDENTS.map((i) => i.tag)}
-            titles={INCIDENTS.map((i) => i.title)}
-            index={deck1.card}
-            dir={deck1.dir}
-            onGo={deck1.show}
-            status={INCIDENTS.map((i): DotStatus => (s.checked[0] ? (s.pattern[i.id] === i.pattern && s.proof[i.id] === i.proof ? "right" : "wrong") : card1Done(i) ? "answered" : "open"))}
-          >
-            {(() => {
-              const inc = INCIDENTS[deck1.card];
-              const checked = s.checked[0];
-              const right = s.pattern[inc.id] === inc.pattern && s.proof[inc.id] === inc.proof;
-              return (
-                <div className={`rt-ticket${checked ? (right ? " is-right" : " is-wrong") : ""}`}>
-                  <div className="lk-card-head">
-                    <b>{inc.title}</b>
-                    <small>Security log from DC01 and the MFA service. Read it top to bottom.</small>
+        <>
+          <Says>Four things in last night&rsquo;s log need a look. I&rsquo;ll bring them up one at a time. Read each log top to bottom, tell me what&rsquo;s happening, then tap the one row that proves it.</Says>
+          {INCIDENTS.slice(0, cur0 === -1 ? INCIDENTS.length : cur0 + 1).map((inc, idx) => {
+            const isCur = idx === cur0 && !s.checked[0];
+            const pat = s.pattern[inc.id];
+            const pr = s.proof[inc.id];
+            return (
+              <div key={inc.id}>
+                <Says><b>{inc.tag} — {inc.title}.</b> Security log from DC01 and the MFA service.</Says>
+                {(isCur || s.checked[0]) && (
+                  <div className="lc-tool lc-tool--flush" style={{ padding: 12 }}>
+                    <EventKey rows={inc.rows} />
+                    <LogTable
+                      rows={inc.rows}
+                      picked={pr}
+                      answer={s.checked[0] ? inc.proof : undefined}
+                      onPick={s.checked[0] || !read(inc.id) || !isCur ? undefined : (n) => patch({ proof: { ...s.proof, [inc.id]: n } })}
+                    />
+                    {isCur && !read(inc.id) && (
+                      <button type="button" className="lk-mini lk-mini--go" onClick={() => patch({ read: [...(s.read ?? []), inc.id] })}>I&rsquo;ve read the log</button>
+                    )}
                   </div>
-                  <Guide
-                    steps={[
-                      {
-                        title: "Read the log top to bottom",
-                        done: read(inc.id) || checked,
-                        body: (
-                          <>
-                            <EventKey rows={inc.rows} />
-                            <LogTable
-                              rows={inc.rows}
-                              picked={s.proof[inc.id]}
-                              answer={checked ? inc.proof : undefined}
-                              onPick={
-                                checked || !read(inc.id)
-                                  ? undefined
-                                  : (n) => {
-                                      const proof = { ...s.proof, [inc.id]: n };
-                                      patch({ proof });
-                                      deck1.next((k) => Boolean(s.pattern[INCIDENTS[k].id]) && proof[INCIDENTS[k].id] !== undefined);
-                                    }
-                              }
-                            />
-                            {!read(inc.id) && !checked && (
-                              <button type="button" className="lk-mini lk-mini--go" onClick={() => patch({ read: [...(s.read ?? []), inc.id] })}>
-                                I&apos;ve read the log
-                              </button>
-                            )}
-                          </>
-                        ),
-                      },
-                      {
-                        title: "What is happening?",
-                        done: Boolean(s.pattern[inc.id]),
-                        body: (
-                          <Options
-                            label={`Pattern for ${inc.title}`}
-                            options={PATTERNS}
-                            value={s.pattern[inc.id]}
-                            answer={checked ? inc.pattern : undefined}
-                            disabled={checked}
-                            onPick={(v) => {
-                              const pattern = { ...s.pattern, [inc.id]: v as Pattern };
-                              patch({ pattern });
-                              deck1.next((n) => Boolean(pattern[INCIDENTS[n].id]) && s.proof[INCIDENTS[n].id] !== undefined);
-                            }}
-                          />
-                        ),
-                      },
-                      {
-                        title: "Which row proves it? Click it in the log above.",
-                        done: s.proof[inc.id] !== undefined,
-                        body:
-                          s.proof[inc.id] !== undefined ? (
-                            <p className="lk-note">
-                              You picked {inc.rows[s.proof[inc.id]].time}, event {inc.rows[s.proof[inc.id]].event}, {inc.rows[s.proof[inc.id]].account}.
-                            </p>
-                          ) : (
-                            <p className="lk-note">Look for the moment the story turns: where the attack worked, or where the trouble started.</p>
-                          ),
-                      },
-                    ]}
-                  />
-                  {checked && (
-                    <div className="rt-why">
-                      <Verdict right={s.pattern[inc.id] === inc.pattern}>{inc.patternWhy}</Verdict>
-                      <Verdict right={s.proof[inc.id] === inc.proof}>{inc.proofWhy}</Verdict>
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
-          </Deck>
-          <footer className="rt-foot">
-            {s.checked[0] ? (
-              <>
-                <p className="rt-tally">
-                  <b>{INCIDENTS.filter((i) => s.pattern[i.id] === i.pattern).length + INCIDENTS.filter((i) => s.proof[i.id] === i.proof).length} of 8</b> right
-                </p>
-                <button type="button" className="rt-btn rt-btn--primary" onClick={() => go(1)}>
-                  Count it in Python
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="rt-tally">{nextHint(INCIDENTS.map(card1Done), INCIDENTS.map((i) => `incident ${i.tag}`))}</p>
-                <button type="button" className="rt-btn rt-btn--primary" disabled={!INCIDENTS.every(card1Done)} onClick={() => check(0)}>
-                  Check answers
-                </button>
-              </>
-            )}
-          </footer>
-        </div>
+                )}
+                {pat && <Mine>{PATTERNS.find((p) => p.key === pat)?.text}</Mine>}
+                {pr !== undefined && <Mine>Proof: {inc.rows[pr].time} · {inc.rows[pr].event} · {inc.rows[pr].account}</Mine>}
+                {s.checked[0] && (
+                  <>
+                    <Says tone={pat === inc.pattern ? "right" : "wrong"}>{inc.patternWhy}</Says>
+                    <Says tone={pr === inc.proof ? "right" : "wrong"}>{inc.proofWhy}</Says>
+                  </>
+                )}
+              </div>
+            );
+          })}
+          {cur0 === -1 && !s.checked[0] && <Says>That&rsquo;s all four. Check them?</Says>}
+          {s.checked[0] && <Says>You got <b>{score.named} of 8</b>. Now count the whole night in Python to find the real attacker.</Says>}
+        </>
       )}
 
       {s.step === 1 && (
-        <div className="rt-body">
-          <header className="rt-head">
-            <h3>Which source is the attacker?</h3>
-            <Narrator>Count the whole night with Python. Run the script as it is, then answer from what it prints.</Narrator>
-          </header>
-          <Guide
-            steps={[
-              {
-                title: "Run the script over signin.csv",
-                done: s.ran,
-                body: (
-                  <>
-                    <PythonCell initial={STARTER} files={{ "signin.csv": CSV }} onRun={(_, ok) => ok && !s.ran && patch({ ran: true })} />
-                    <details className="lk-more">
-                      <summary>Python blocked on this computer? See the whole log</summary>
-                      <LogTable rows={LOG} tall />
-                      {!s.ran && (
-                        <button type="button" className="lk-mini" onClick={() => patch({ ran: true })}>
-                          Continue without Python
-                        </button>
-                      )}
-                    </details>
-                  </>
-                ),
-              },
-              {
-                title: "Which source has the most failed sign-ins?",
-                done: Boolean(s.q.fails),
-                body: (
-                  <Options
-                    label="Most failed sign-ins"
-                    options={SOURCES.map((v) => ({ key: v, text: v }))}
-                    value={s.q.fails}
-                    answer={s.checked[1] ? MOST_FAILS : undefined}
-                    disabled={s.checked[1]}
-                    onPick={(fails) => patch({ q: { ...s.q, fails } })}
-                  />
-                ),
-              },
-              {
-                title: "Which source tried the most different accounts?",
-                done: Boolean(s.q.accounts),
-                body: (
-                  <Options
-                    label="Most accounts tried"
-                    options={SOURCES.map((v) => ({ key: v, text: v }))}
-                    value={s.q.accounts}
-                    answer={s.checked[1] ? MOST_ACCOUNTS : undefined}
-                    disabled={s.checked[1]}
-                    onPick={(accounts) => patch({ q: { ...s.q, accounts } })}
-                  />
-                ),
-              },
-            ]}
-          />
+        <>
+          <Says>Counting one log by eye is fine. Counting the whole night is a job for code. Run this over <code>signin.csv</code>, then answer from what it prints.</Says>
+          <div className="lc-tool">
+            <PythonCell initial={STARTER} files={{ "signin.csv": CSV }} onRun={(_, ok) => ok && !s.ran && patch({ ran: true })} />
+            <details className="lk-more" style={{ marginTop: 12 }}>
+              <summary>Python blocked on this computer? See the whole log</summary>
+              <LogTable rows={LOG} tall />
+              {!s.ran && <button type="button" className="lk-mini" onClick={() => patch({ ran: true })}>Continue without Python</button>}
+            </details>
+          </div>
+          {s.ran && <Says>Good. Now read the output: which source is the loudest, and which one is actually the spread?</Says>}
+          {s.q.fails && <Mine>Most failures: {s.q.fails}</Mine>}
+          {s.q.accounts && <Mine>Most accounts tried: {s.q.accounts}</Mine>}
           {s.checked[1] && (
-            <div className="rt-why">
-              <Verdict right={s.q.fails === MOST_FAILS}>
-                {MOST_FAILS} has the most failures, {COUNT[0][1]}. That is Riley&apos;s phone retrying one account.
-              </Verdict>
-              <Verdict right={s.q.accounts === MOST_ACCOUNTS}>
-                {MOST_ACCOUNTS} tried {SPREAD[0][1]} different accounts, one failure each. That is the spray.
-              </Verdict>
-              <Takeaway>Counting failures alone points at the noisiest device, not the attacker. A spray shows up as many accounts from one source, a few tries each.</Takeaway>
-            </div>
+            <>
+              <Says tone={s.q.fails === MOST_FAILS ? "right" : "wrong"}>{MOST_FAILS} has the most failures, {COUNT[0][1]}. That is Riley&rsquo;s phone retrying one account.</Says>
+              <Says tone={s.q.accounts === MOST_ACCOUNTS ? "right" : "wrong"}>{MOST_ACCOUNTS} tried {SPREAD[0][1]} different accounts, one failure each. That is the spray.</Says>
+              <Says>Counting failures alone points at the noisiest device, not the attacker. A spray is many accounts from one source, a few tries each. You got <b>{score.counted} of 2</b>.</Says>
+            </>
           )}
-          <footer className="rt-foot">
-            {s.checked[1] ? (
-              <>
-                <p className="rt-tally">
-                  <b>{score.counted} of 2</b> right
-                </p>
-                <button type="button" className="rt-btn rt-btn--primary" onClick={() => go(2)}>
-                  Make the call
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="rt-tally">{nextHint([Boolean(s.q.fails), Boolean(s.q.accounts)], ["most failed sign-ins", "most accounts tried"])}</p>
-                <button type="button" className="rt-btn rt-btn--primary" disabled={!s.q.fails || !s.q.accounts} onClick={() => check(1)}>
-                  Check answers
-                </button>
-              </>
-            )}
-          </footer>
-        </div>
+        </>
       )}
 
       {s.step === 2 && (
-        <div className="rt-body">
-          <header className="rt-head">
-            <h3>What do you do first?</h3>
-            <Narrator>One first move for each incident. Contain what is live before you tidy up.</Narrator>
-          </header>
-          <Deck
-            tags={INCIDENTS.map((i) => i.tag)}
-            titles={INCIDENTS.map((i) => i.title)}
-            index={deck3.card}
-            dir={deck3.dir}
-            onGo={deck3.show}
-            status={INCIDENTS.map((i): DotStatus => (s.checked[2] ? (s.response[i.id] === i.answer ? "right" : "wrong") : s.response[i.id] ? "answered" : "open"))}
-          >
-            {(() => {
-              const inc = INCIDENTS[deck3.card];
-              const checked = s.checked[2];
-              const right = s.response[inc.id] === inc.answer;
-              return (
-                <div className={`rt-ticket${checked ? (right ? " is-right" : " is-wrong") : ""}`}>
-                  <div className="lk-q">
-                    <b>
-                      {inc.tag}. {inc.title}
-                    </b>
-                    <p className="lk-note">{PATTERNS.find((p) => p.key === inc.pattern)?.text}</p>
-                    <b>{inc.prompt}</b>
-                    <Options
-                      label={inc.prompt}
-                      options={inc.options}
-                      value={s.response[inc.id]}
-                      answer={checked ? inc.answer : undefined}
-                      disabled={checked}
-                      onPick={(v) => {
-                        const response = { ...s.response, [inc.id]: v };
-                        patch({ response });
-                        deck3.next((n) => Boolean(response[INCIDENTS[n].id]));
-                      }}
-                    />
-                  </div>
-                  {checked && <Verdict right={right}>{inc.responseWhy}</Verdict>}
-                </div>
-              );
-            })()}
-          </Deck>
-          <footer className="rt-foot">
-            {s.checked[2] ? (
-              <>
-                <p className="rt-tally">
-                  <b>{score.calls} of 4</b> right
-                </p>
-                <button type="button" className="rt-btn rt-btn--primary" onClick={() => go(3)}>
-                  See the debrief
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="rt-tally">{nextHint(INCIDENTS.map((i) => Boolean(s.response[i.id])), INCIDENTS.map((i) => `incident ${i.tag}`))}</p>
-                <button type="button" className="rt-btn rt-btn--primary" disabled={INCIDENTS.some((i) => !s.response[i.id])} onClick={() => check(2)}>
-                  Check answers
-                </button>
-              </>
-            )}
-          </footer>
-        </div>
+        <>
+          <Says>Now the calls. One first move for each incident — contain what is live before you tidy up.</Says>
+          {INCIDENTS.slice(0, cur2 === -1 ? INCIDENTS.length : cur2 + 1).map((inc) => {
+            const r = s.response[inc.id];
+            return (
+              <div key={inc.id}>
+                <Says><b>{inc.tag} — {inc.title}.</b> {PATTERNS.find((p) => p.key === inc.pattern)?.text}. {inc.prompt}</Says>
+                {r && <Mine>{inc.options.find((o) => o.key === r)?.text}</Mine>}
+                {s.checked[2] && r && <Says tone={r === inc.answer ? "right" : "wrong"}>{inc.responseWhy}</Says>}
+              </div>
+            );
+          })}
+          {cur2 === -1 && !s.checked[2] && <Says>Ready to check?</Says>}
+          {s.checked[2] && <Says>You made <b>{score.calls} of 4</b> right.</Says>}
+        </>
       )}
 
       {s.step === 3 && (
-        <div className="rt-body">
-          <header className="rt-head rt-head--result">
-            <div className={`rt-grade rt-grade--${score.total >= 12 ? "high" : score.total >= 10 ? "medium" : "low"}`}>
-              <b>{score.total}</b>
-              <small>of 14</small>
-            </div>
-            <div>
-              <h3>{score.total >= 12 ? "Ready for the morning queue" : score.total >= 10 ? "Solid start" : "Worth another pass"}</h3>
-              <p>
-                Named {score.named} of 8 · Counted {score.counted} of 2 · Called {score.calls} of 4
-              </p>
-            </div>
-          </header>
-          <div className="lk-scroll">
+        <>
+          <Says>Wrap-up. You scored <b>{score.total} of 14</b> — named {score.named} of 8, counted {score.counted} of 2, called {score.calls} of 4. {score.total >= 12 ? "Ready for the morning queue." : score.total >= 10 ? "Solid start." : "Worth another pass."}</Says>
+          <div className="lc-tool lc-tool--flush">
             <table className="lk-table">
-              <thead>
-                <tr>
-                  <th>Pattern</th>
-                  <th>What gives it away</th>
-                  <th>First move</th>
-                </tr>
-              </thead>
+              <thead><tr><th>Pattern</th><th>What gives it away</th><th>First move</th></tr></thead>
               <tbody>
-                <tr>
-                  <td>Password spray</td>
-                  <td>Many accounts, one or two failures each, one source</td>
-                  <td>Look for a success from that source, and contain it</td>
-                </tr>
-                <tr>
-                  <td>Stale saved password</td>
-                  <td>One account, steady failures from one device after a password change</td>
-                  <td>Update the device, then unlock</td>
-                </tr>
-                <tr>
-                  <td>MFA fatigue</td>
-                  <td>Correct password, repeated pushes, then an approval at an odd hour</td>
-                  <td>Reset the password and revoke sessions</td>
-                </tr>
-                <tr>
-                  <td>Service account misuse</td>
-                  <td>Logon type 2 or 10 for an account that should only run as a service</td>
-                  <td>Escalate and block interactive sign-in</td>
-                </tr>
+                <tr><td>Password spray</td><td>Many accounts, one or two failures each, one source</td><td>Find a success from that source, contain it</td></tr>
+                <tr><td>Stale saved password</td><td>One account, steady failures from one device after a password change</td><td>Update the device, then unlock</td></tr>
+                <tr><td>MFA fatigue</td><td>Correct password, repeated pushes, then an approval at an odd hour</td><td>Reset the password and revoke sessions</td></tr>
+                <tr><td>Service account misuse</td><td>Logon type 2 or 10 for an account that should only run as a service</td><td>Escalate and block interactive sign-in</td></tr>
               </tbody>
             </table>
           </div>
-          <div className="lk-real">
-            <b>On the job</b>
-            <p>SOC analysts run these same counts in a SIEM, or with Python or PowerShell over exported logs. The events to know: 4624 success, 4625 failure, 4740 lockout, 4723 password change and 4672 admin rights.</p>
-          </div>
-          <footer className="rt-foot">
-            <p className="rt-tally">Count accounts, not just failures.</p>
-            <button type="button" className="rt-btn" onClick={() => setS(START)}>
-              <RotateCcw aria-hidden="true" /> Try again
-            </button>
-          </footer>
-        </div>
+          <Says>On the job you run these same counts in a SIEM, or with Python or PowerShell over exported logs. The events to know: 4624 success, 4625 failure, 4740 lockout, 4723 password change, 4672 admin rights. Count accounts, not just failures.</Says>
+        </>
       )}
-    </section>
+    </>
+  );
+
+  const composer = (
+    <>
+      {s.step === 0 && (cur0 !== -1 ? (
+        !read(INCIDENTS[cur0].id) ? (
+          <span className="rt-tally">Read the log above, then say what&rsquo;s happening.</span>
+        ) : !s.pattern[INCIDENTS[cur0].id] ? (
+          <ChipRow label={`Incident ${INCIDENTS[cur0].tag}: what is happening?`}>
+            {PATTERNS.map((p) => <Chip key={p.key} onClick={() => patch({ pattern: { ...s.pattern, [INCIDENTS[cur0].id]: p.key } })}>{p.text}</Chip>)}
+          </ChipRow>
+        ) : (
+          <span className="rt-tally">Now tap the row that proves it in the log above.</span>
+        )
+      ) : !s.checked[0] ? (
+        <SendAction onClick={() => check(0)}>Check answers</SendAction>
+      ) : (
+        <SendAction onClick={() => go(1)}>Count it in Python →</SendAction>
+      ))}
+
+      {s.step === 1 && (!s.ran ? (
+        <span className="rt-tally">Run the script above (or open the whole log) to continue.</span>
+      ) : !s.q.fails || !s.q.accounts ? (
+        <div className="lc-levels">
+          <ChipRow label="Most failed sign-ins">
+            {SOURCES.map((v) => <Chip key={v} active={s.q.fails === v} onClick={() => patch({ q: { ...s.q, fails: v } })}>{v}</Chip>)}
+          </ChipRow>
+          <ChipRow label="Most different accounts tried">
+            {SOURCES.map((v) => <Chip key={v} active={s.q.accounts === v} onClick={() => patch({ q: { ...s.q, accounts: v } })}>{v}</Chip>)}
+          </ChipRow>
+        </div>
+      ) : !s.checked[1] ? (
+        <SendAction onClick={() => check(1)}>Check answers</SendAction>
+      ) : (
+        <SendAction onClick={() => go(2)}>Make the call →</SendAction>
+      ))}
+
+      {s.step === 2 && (cur2 !== -1 ? (
+        <ChipRow label={INCIDENTS[cur2].prompt}>
+          {INCIDENTS[cur2].options.map((o) => <Chip key={o.key} onClick={() => patch({ response: { ...s.response, [INCIDENTS[cur2].id]: o.key } })}>{o.text}</Chip>)}
+        </ChipRow>
+      ) : !s.checked[2] ? (
+        <SendAction onClick={() => check(2)}>Check answers</SendAction>
+      ) : (
+        <SendAction onClick={() => go(3)}>See the debrief →</SendAction>
+      ))}
+
+      {s.step === 3 && <SendAction subtle onClick={() => setS(START)}><RotateCcw aria-hidden="true" /> Try again</SendAction>}
+    </>
+  );
+
+  return (
+    <ChatShell
+      role="Your IT lead"
+      steps={STEPS}
+      step={s.step}
+      done={pips}
+      onAsk={coach?.enabled ? () => coach.ask(LOST_ASK) : undefined}
+      signal={signal}
+      thread={thread}
+      composer={composer}
+      label="Read the Sign-In Log, guided chat"
+    />
   );
 }
 

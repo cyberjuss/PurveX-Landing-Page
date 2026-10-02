@@ -61,6 +61,7 @@
 .lc-send { justify-self: end; display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border: 0; border-radius: 12px; background: var(--lc-me); font: inherit; font-size: 14px; font-weight: 650; color: #fff; cursor: pointer; box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--lc-me) 80%, transparent); transition: transform 0.1s, filter 0.15s; }
 .lc-send:hover { filter: brightness(1.05); }
 .lc-send:active { transform: translateY(1px); }
+.lc-send:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
 .lc-send.is-subtle { background: var(--lc-card); border: 1px solid var(--rd-line); color: var(--rd-ink); box-shadow: none; }
 .lc-send.is-subtle:hover { border-color: var(--rd-ink-3); }
 .lc-send svg, .lc-undo svg { width: 15px; height: 15px; }

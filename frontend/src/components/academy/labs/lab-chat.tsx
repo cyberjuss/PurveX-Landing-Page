@@ -49,9 +49,9 @@ export function Chip({ children, onClick, active }: { children: ReactNode; onCli
   );
 }
 
-export function SendAction({ children, onClick, subtle }: { children: ReactNode; onClick: () => void; subtle?: boolean }) {
+export function SendAction({ children, onClick, subtle, disabled }: { children: ReactNode; onClick: () => void; subtle?: boolean; disabled?: boolean }) {
   return (
-    <button type="button" className={`lc-send${subtle ? " is-subtle" : ""}`} onClick={onClick}>
+    <button type="button" className={`lc-send${subtle ? " is-subtle" : ""}`} disabled={disabled} onClick={onClick}>
       {children}
     </button>
   );
