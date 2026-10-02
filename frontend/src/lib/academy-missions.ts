@@ -151,6 +151,34 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Members of Finance Reports cannot open the reports share. Find why the group grants nothing, fix it, and report how many members it has.",
     skill: "accounts",
   },
+  "tq-16": {
+    id: "tq-16",
+    challenge: "ticket-queue",
+    title: "Share Will Not Open by Name (INC-1052)",
+    prompt: "Staff can reach the file share by IP address but not by the name files. Find what the name resolves to, point it back at the domain controller, and report the wrong address.",
+    skill: "troubleshooting",
+  },
+  "tq-17": {
+    id: "tq-17",
+    challenge: "ticket-queue",
+    title: "Vendor Remote Access Left Open (INC-1053)",
+    prompt: "A firewall rule opened for a vendor visit is still allowing remote access to the domain controller. Find it, disable it, and report the port it allowed.",
+    skill: "security",
+  },
+  "tq-18": {
+    id: "tq-18",
+    challenge: "ticket-queue",
+    title: "Screens That Never Lock (INC-1054)",
+    prompt: "Finance screens never lock while Operations screens lock early. Find the screen lock GPO, link it to Finance, remove the wrong link, and report the OU it was linked to.",
+    skill: "directory",
+  },
+  "tq-19": {
+    id: "tq-19",
+    challenge: "ticket-queue",
+    title: "The Invoice Nobody Saved (INC-1055)",
+    prompt: "An unknown invoice file appeared on the Finance share. Find it, move it to quarantine without opening it, and report its full name with every extension.",
+    skill: "security",
+  },
   "tq-06": {
     id: "tq-06",
     challenge: "alert-queue",
@@ -210,7 +238,7 @@ export function challengeTabHref(challenge: MissionCatalogEntry["challenge"]): s
 
 export function challengeFromMission(id: string): MissionCatalogEntry["challenge"] | null {
   if (id.startsWith("d1-")) return "day-one";
-  if (/^tq-(0[1-5]|1[1-5])$/.test(id)) return "ticket-queue";
+  if (/^tq-(0[1-5]|1[1-9])$/.test(id)) return "ticket-queue";
   if (id.startsWith("tq-")) return "alert-queue";
   return MISSION_CATALOG[id]?.challenge ?? null;
 }
@@ -269,7 +297,7 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
 }
 
 /** Tickets that need a real change in the student's lab before they can answer. */
-export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15"];
+export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19"];
 
 /** The on-the-job task each mission practices. A gated ticket seen in the lab counts as proven. */
 export const MISSION_JOBS: Record<string, string> = {

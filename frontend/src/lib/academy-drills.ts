@@ -62,6 +62,10 @@ export type Check =
   | { t: "pso"; minLength: number; appliesTo: string; maxLockout?: number }
   | { t: "computer"; name: string; enabled: boolean }
   | { t: "computerAt"; name: string; ou: string }
+  | { t: "dnsToDc"; name: string }
+  | { t: "fwRuleOff"; name: string }
+  | { t: "gpoLink"; gpo: string; ous: string[]; want: boolean }
+  | { t: "file"; path: string; want: boolean }
   | { t: "spn"; sam: string; want: boolean }
   | { t: "policy"; key: "minLength" | "complexity" | "history" | "lockoutThreshold" | "lockoutDurationMin" | "lockoutWindowMin" | "reversible"; min?: number; max?: number; bool?: boolean }
   | { t: "audit"; sub: string; need: "Success" | "Failure" | "Both" }
@@ -937,6 +941,23 @@ export function evalCheck(s: LabSnapshot, c: Check): boolean {
   if (c.t === "computer") {
     const pc = s.computers.find((x) => x.name.toLowerCase() === c.name.toLowerCase());
     return Boolean(pc) && pc!.enabled === c.enabled;
+  }
+  if (c.t === "dnsToDc" || c.t === "fwRuleOff" || c.t === "gpoLink" || c.t === "file") {
+    // Lives outside Active Directory. A lab script older than these tickets sends no infra.
+    const infra = s.infra;
+    if (!infra) return false;
+    if (c.t === "dnsToDc") {
+      const ips = infra.dns.filter((r) => r.name.toLowerCase() === c.name.toLowerCase()).map((r) => r.ip);
+      return ips.length > 0 && ips.every((ip) => infra.dcIps.includes(ip));
+    }
+    if (c.t === "fwRuleOff") return !infra.firewall.some((r) => r.name.toLowerCase() === c.name.toLowerCase() && r.enabled);
+    if (c.t === "gpoLink") {
+      const ous = new Set(c.ous.map((o) => o.toLowerCase()));
+      const linked = infra.gpoLinks.some((l) => ous.has(l.ou.toLowerCase()) && l.gpos.some((g) => g.toLowerCase() === c.gpo.toLowerCase()));
+      return linked === c.want;
+    }
+    const present = infra.files.some((f) => f.path.toLowerCase() === c.path.toLowerCase());
+    return present === c.want;
   }
   if (c.t === "computerAt") {
     // The snapshot only covers the lab OUs, so a computer still in CN=Computers is simply absent.

@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Ticket Queue</h3>
 <p class="ad-brief__ask">When a request lands in your queue, can you check what is true in Active Directory and then make the change the ticket needs?</p>
-<p>This is the PurveX Financial help desk queue. Requests come from staff, HR and auditors. Treat each one as a claim to verify, and check the account or folder it names before you make the change.</p>
+<p>This is the PurveX Financial help desk queue. Requests come from staff, HR, auditors and vendors. Treat each one as a claim to verify and check what it names before you make the change. Later tickets take you beyond Active Directory into DNS, the firewall, Group Policy and the file shares on your domain controller.</p>
 <p>Each ticket asks for a short finding once the work is done, like a count or an account state. Your lab has to show the change before an answer is accepted, so the answer always reflects the directory after you act.</p>
 <p>The Range download plants the ticket objects when it builds your lab. If you built the lab earlier, download the script from Build the Environment again and run it once.</p>
 <p>Capital letters and punctuation such as spaces or dashes do not matter. You get three tries per ticket. The hint unlocks after two misses and the explanation unlocks once you solve the ticket or use all three tries.</p>
@@ -10,14 +10,14 @@
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
-<span id="ad-progress-label" class="ad-progress__label">0 / 10 solved</span>
+<span id="ad-progress-label" class="ad-progress__label">0 / 14 solved</span>
 </div>
 
 <div class="ad-mission" data-id="tq-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 01 · INC-1041 · Low</span>
 <h4>Missing Announcements</h4>
 <p><strong>Jamie Torres · Wealth Management · 9:12 AM</strong><br>I started last week and I still have not gotten a single company-wide email. Everyone else on my team has. Can you check my access?</p>
-<p><strong>Your task:</strong> Find the group that sends firm-wide announcements and add Jamie if she is missing. Then report how many members the group has.</p>
+<p><strong>Task:</strong> Find the group that sends firm-wide announcements and add Jamie if she is missing. Then report how many members the group has.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{9}">Submit</button>
@@ -55,7 +55,7 @@
 <span class="ad-mission__num">Ticket 02 · INC-1042 · Low</span>
 <h4>Locked Out</h4>
 <p><strong>Riley Kwan · Operations · 8:47 AM</strong><br>It will not let me sign in. I have typed my password wrong a few times, so I think I locked myself out. Can you unlock me?</p>
-<p><strong>Your task:</strong> Open Riley's account before you take the action she asked for. Restore sign-in if something is blocking her, then report what was wrong by typing <code>locked</code> or <code>disabled</code>.</p>
+<p><strong>Task:</strong> Open Riley's account before you take the action she asked for. Restore sign-in if something is blocking her, then report what was wrong by typing <code>locked</code> or <code>disabled</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="locked or disabled" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{disabled}" data-accept="account-is-disabled|account-disabled">Submit</button>
@@ -96,8 +96,8 @@
 <div class="ad-mission" data-id="tq-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1043 · Medium</span>
 <h4>New Hire Access</h4>
-<p><strong>IT Manager · Information Technology · 10:30 AM</strong><br>Casey Reed starts on the help desk today. Create the account as <code>casey.reed</code> and give Casey the same access as the rest of IT Users, nothing more. Clean up anything in that group that is not a current IT person.</p>
-<p><strong>Your task:</strong> Create <code>casey.reed</code> with IT Users only and remove anyone from <code>IT Users</code> who is not a current IT person. Before you delete the leftover intern account, report the ticket number written in its Description.</p>
+<p><strong>IT Manager · Information Technology · 10:30 AM</strong><br>Casey Reed starts on the help desk today and needs the same access as the rest of the IT team. I also suspect a few old accounts are still sitting in IT Users.</p>
+<p><strong>Task:</strong> Create <code>casey.reed</code> with IT Users only and remove anyone from <code>IT Users</code> who is not a current IT person. Before you delete the leftover intern account, report the ticket number written in its Description.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="ticket number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{ctf-ticket-1043}" data-accept="1043|ctf-1043">Submit</button>
@@ -134,8 +134,8 @@
 <div class="ad-mission" data-id="tq-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 04 · INC-1044 · Medium</span>
 <h4>The Backup Account</h4>
-<p><strong>Compliance Audit · Auditor request · 1:05 PM</strong><br><code>svc-backup-job</code> has no usable run window on its Description. Auditors want the approved hours written on the account. Those hours are not on this ticket, but they are already recorded on the folder that holds the account.</p>
-<p><strong>Your task:</strong> Find the approved run window on the folder that holds <code>svc-backup-job</code> and write it on the account's Description. Then type the same window here in the format 00:00-00:00.</p>
+<p><strong>Compliance Audit · Auditor request · 1:05 PM</strong><br>Our review of <code>svc-backup-job</code> found no approved run window on the account, so we cannot sign off on it. IT tells us the approved hours were recorded in the directory when the account was set up.</p>
+<p><strong>Task:</strong> Find the approved run window on the folder that holds <code>svc-backup-job</code> and write it on the account's Description. Then type the same window here in the format 00:00-00:00.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="00:00-00:00" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{01:00-03:00}" data-accept="1:00-3:00">Submit</button>
@@ -172,8 +172,8 @@
 <div class="ad-mission" data-id="tq-05" data-attempts="0">
 <span class="ad-mission__num">Ticket 05 · INC-1045 · High</span>
 <h4>The Transfer That Did Not Happen</h4>
-<p><strong>Human Resources · Transfer notice · 11:20 AM</strong><br>Taylor Osei has transferred from Operations to Compliance, effective today. Move the account so Compliance policies apply, and put Taylor in the Compliance group instead of Operations.</p>
-<p><strong>Your task:</strong> Move Taylor's account into the Compliance Users folder and swap the department groups. Then report the title still written on <code>taylor.osei</code>, because an HR notice does not update every field.</p>
+<p><strong>Human Resources · Transfer notice · 11:20 AM</strong><br>Taylor Osei transferred from Operations to Compliance, effective today. Taylor reports to the Compliance manager now and starts on Compliance work this morning.</p>
+<p><strong>Task:</strong> Move Taylor's account into the Compliance Users folder and swap the department groups. Then report the title still written on <code>taylor.osei</code>, because an HR notice does not update every field.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="title on the account" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{operations-analyst}">Submit</button>
@@ -210,8 +210,8 @@
 <div class="ad-mission" data-id="tq-11" data-attempts="0">
 <span class="ad-mission__num">Ticket 06 · INC-1047 · Medium</span>
 <h4>Contractor Offboarding</h4>
-<p><strong>Operations Manager · Operations · 4:40 PM</strong><br>Kai Mendes was a contractor helping the settlements team, and the engagement ended yesterday. Please make sure Kai can no longer get in. We need to keep the account for our records.</p>
-<p><strong>Your task:</strong> Disable <code>kai.mendes</code> and remove it from <code>Operations Users</code> without deleting the account. Then report the sponsor named in the account's Description.</p>
+<p><strong>Operations Manager · Operations · 4:40 PM</strong><br>Kai Mendes was a contractor helping the settlements team, and the engagement ended yesterday. We will still need Kai's records for the final invoice review next month.</p>
+<p><strong>Task:</strong> Disable <code>kai.mendes</code> and remove it from <code>Operations Users</code> without deleting the account. Then report the sponsor named in the account's Description.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{taylor-osei}">Submit</button>
@@ -254,7 +254,7 @@
 <span class="ad-mission__num">Ticket 07 · INC-1048 · Medium</span>
 <h4>Admin Rights Request</h4>
 <p><strong>Sam Whitfield · Wealth Management · 9:58 AM</strong><br>I need to install a charting tool for client meetings and IT is always busy. Can you add me to Server Admins so I can do it myself?</p>
-<p><strong>Your task:</strong> Read the Description on <code>Server Admins</code> before you decide. Leave Sam's groups as they are and report the access level the group grants as a number.</p>
+<p><strong>Task:</strong> Read the Description on <code>Server Admins</code> before you decide. Leave Sam's groups as they are and report the access level the group grants as a number.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}" data-accept="level-2|level2">Submit</button>
@@ -291,8 +291,8 @@
 <div class="ad-mission" data-id="tq-13" data-attempts="0">
 <span class="ad-mission__num">Ticket 08 · INC-1049 · Medium</span>
 <h4>Audit Finding</h4>
-<p><strong>Internal Audit · Quarterly access review · 2:15 PM</strong><br>Our review found a staff account whose password never expires. Policy allows that setting only on service accounts. Please find the account and bring it back under the password policy.</p>
-<p><strong>Your task:</strong> Find the staff account with Password never expires set and clear the setting without disabling the account. Then report its username.</p>
+<p><strong>Internal Audit · Quarterly access review · 2:15 PM</strong><br>Our quarterly review found a staff account whose password never expires. Policy allows that setting only on service accounts.</p>
+<p><strong>Task:</strong> Find the staff account with Password never expires set and clear the setting without disabling the account. Then report its username.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{noah-kim}">Submit</button>
@@ -333,7 +333,7 @@
 <span class="ad-mission__num">Ticket 09 · INC-1050 · Low</span>
 <h4>New Laptop Missing Policies</h4>
 <p><strong>Jordan Ellis · Finance and Accounting · 8:20 AM</strong><br>My new laptop FIN-LT14 is joined to the domain, but I still do not have the Finance drive maps my old one had. Can you take a look?</p>
-<p><strong>Your task:</strong> Find where <code>FIN-LT14</code> sits in the directory and move it to Departments → FinanceAccounting → Workstations. Then report the name of the folder it was sitting in.</p>
+<p><strong>Task:</strong> Find where <code>FIN-LT14</code> sits in the directory and move it to Departments → FinanceAccounting → Workstations. Then report the name of the folder it was sitting in.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="folder name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{computers}" data-accept="cn=computers">Submit</button>
@@ -370,11 +370,11 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="tq-15" data-attempts="0">
+<div class="ad-mission" data-id="tq-15" data-attempts="0">
 <span class="ad-mission__num">Ticket 10 · INC-1051 · High</span>
 <h4>Group Cannot Open the Share</h4>
-<p><strong>Finance Manager · Finance and Accounting · 11:05 AM</strong><br>We set up a Finance Reports group so people could read the reports share. Jordan and Devon are both in it, but neither of them can open the share. Can you fix it?</p>
-<p><strong>Your task:</strong> Find why <code>Finance Reports</code> grants no access and fix the group without changing its members. Then report how many members it has.</p>
+<p><strong>Finance Manager · Finance and Accounting · 11:05 AM</strong><br>We set up a Finance Reports group so people could read the reports share. Jordan and Devon are both in it, but neither of them can open the share.</p>
+<p><strong>Task:</strong> Find why <code>Finance Reports</code> grants no access and fix the group without changing its members. Then report how many members it has.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
@@ -407,6 +407,172 @@
 <div>
 <span>What to do</span>
 <p>Convert the group to a Security group and keep its members. Then confirm the share permission names the group.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="tq-16" data-attempts="0">
+<span class="ad-mission__num">Ticket 11 · INC-1052 · High</span>
+<h4>Share Will Not Open by Name</h4>
+<p><strong>Riley Kwan · Operations · 8:05 AM</strong><br>None of us can open the shared drive at \\files this morning. Typing the server's IP address works, but the name just times out.</p>
+<p><strong>Task:</strong> Find what the name <code>files</code> resolves to and correct its DNS record so it points at the domain controller, which hosts the shares. Then report the wrong address the record held.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{192.0.2.50}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>When an IP address works but the name does not, the network is fine and name resolution is the problem.</p>
+<ol>
+<li>On the domain controller run <code>Resolve-DnsName files</code> and note the address it returns.</li>
+<li>Run <code>ipconfig</code> to see the domain controller's own IPv4 address.</li>
+<li>Open DNS Manager with Win+R and <code>dnsmgmt.msc</code>, then go to Forward Lookup Zones → <code>purvexfinancial.local</code>.</li>
+<li>Open the <code>files</code> host record and change its address to the domain controller's address.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>Test-NetConnection files -Port 445</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{192.0.2.50}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Every device that asked for <code>files</code> was sent to an address where no server exists. One wrong record took the shared drive away from the whole firm even though the server never went down.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Point the record back at the server that hosts the shares and confirm the name resolves. Then find out who changed the record and why.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="tq-17" data-attempts="0">
+<span class="ad-mission__num">Ticket 12 · INC-1053 · High</span>
+<h4>Vendor Remote Access Left Open</h4>
+<p><strong>Vendor Management · Vendor offboarding · 9:30 AM</strong><br>Northwind Advisory finished its support visit last Friday. During the visit IT opened remote access on the domain controller so their engineer could connect from home.</p>
+<p><strong>Task:</strong> Find the inbound firewall rule on the domain controller that was opened for the vendor and disable it. Leave the built-in Remote Desktop rules alone, then report the port the vendor rule allowed.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="port number" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{3389}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Temporary rules usually carry a name or description that mentions the vendor. Check who the rule allows as well as which port it opens.</p>
+<ol>
+<li>Open Windows Defender Firewall with Advanced Security with Win+R and <code>wf.msc</code>.</li>
+<li>Select Inbound Rules and sort by Name or Group to find the vendor rule.</li>
+<li>Read its Protocols and Ports and its Scope tabs, then right-click the rule and choose Disable Rule.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>Get-NetFirewallRule -Direction Inbound -Enabled True | Where-Object DisplayName -like "*Vendor*"</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{3389}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>The rule let any address on the internet try Remote Desktop against the domain controller. Exposed RDP is one of the most common ways ransomware crews get in.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Disable the rule and keep it as a record of the change. Temporary access should come with an end date that someone checks.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="tq-18" data-attempts="0">
+<span class="ad-mission__num">Ticket 13 · INC-1054 · Medium</span>
+<h4>Screens That Never Lock</h4>
+<p><strong>Internal Audit · Control test · 3:40 PM</strong><br>Finance workstations are supposed to lock after ten minutes, but every Finance screen we tested stayed open over lunch. Operations staff mentioned their screens lock sooner than they would like.</p>
+<p><strong>Task:</strong> Find the screen lock GPO and link it to the Finance and Accounting OU, then remove its link from the wrong department. Report the name of the OU it was linked to.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{operations}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>A GPO only applies where it is linked. The Scope tab of a GPO lists every place it is linked.</p>
+<ol>
+<li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>.</li>
+<li>Expand Group Policy Objects, select the screen lock GPO and read its Scope tab.</li>
+<li>Right-click the FinanceAccounting OU and choose Link an Existing GPO.</li>
+<li>Under the wrong OU, right-click the GPO's link and choose Delete to remove only the link.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>Get-GPInheritance -Target "OU=FinanceAccounting,OU=Departments,DC=purvexfinancial,DC=local"</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{operations}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>An unlocked Finance screen lets anyone walking past reach payroll and client records. The control existed on paper but never applied to the people it was written for.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Link the GPO where the Finance accounts live and remove the stray link. Then test one Finance workstation before you tell Audit it is fixed.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission ad-mission--capstone" data-id="tq-19" data-attempts="0">
+<span class="ad-mission__num">Ticket 14 · INC-1055 · Critical</span>
+<h4>The Invoice Nobody Saved</h4>
+<p><strong>Jordan Ellis · Finance and Accounting · 7:50 AM</strong><br>There is a new invoice on our Finance share that nobody remembers saving. I double-clicked it to check the amount and nothing happened.</p>
+<p><strong>Task:</strong> Find the suspicious file in <code>C:\PurveX\Shares\Finance</code> on the domain controller and move it to <code>C:\PurveX\Quarantine</code> without opening it. Then report its full file name with every extension.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="full file name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{invoice_0923.pdf.exe}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Windows hides known file extensions by default, so a program can pass for a document. The Type column and the modified time are worth a look too.</p>
+<ol>
+<li>Open File Explorer and go to <code>C:\PurveX\Shares\Finance</code>.</li>
+<li>On the View menu, turn on File name extensions and compare the files.</li>
+<li>Cut the suspicious file and paste it into <code>C:\PurveX\Quarantine</code> without opening it.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>Get-ChildItem C:\PurveX\Shares\Finance | Select-Object Name, Length, LastWriteTime</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{Invoice_0923.pdf.exe}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A program named to look like a PDF is a classic way malware gets opened. Jordan already double-clicked it, so the laptop Jordan used needs checking as well.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Quarantine the file without opening it and keep it as evidence. Then escalate with the file name, its timestamp and who opened it.</p>
 </div>
 </div>
 </div>

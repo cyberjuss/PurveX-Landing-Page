@@ -5,7 +5,7 @@
 
 **Situation:** A web application stores each user's role on the server but also accepts a role value from the browser. If the server believes whatever the browser sends, any regular user can promote themselves to admin.
 
-**Your task:** In PortSwigger's "User role can be modified in user profile" lab, sign in as a regular user and gain admin access without admin credentials. Then use the admin panel to delete the user `carlos`. Then explain the fix the server needs.
+**Task:** In PortSwigger's "User role can be modified in user profile" lab, sign in as a regular user and gain admin access without admin credentials. Then use the admin panel to delete the user `carlos`. Then explain the fix the server needs.
 
 **What you need:** A free PortSwigger Web Security Academy account and Burp Suite Community Edition.
 

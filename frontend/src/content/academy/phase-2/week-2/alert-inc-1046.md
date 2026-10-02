@@ -16,7 +16,7 @@
 <span class="ad-mission__num">Alert 01 · INC-1046 · Critical</span>
 <h4>The 2 AM Login</h4>
 <p><strong>SIEM Alert · Part 1 of 5 · Automated detection · 2:04 AM</strong><br>ALERT: successful login for alex.rivera at 2:00 AM from workstation WM-WKS07, preceded by multiple failed logons. Severity: high.</p>
-<p><strong>Your task:</strong> Start with the machine. Find <code>WM-WKS07</code> in Active Directory and name the department OU that holds it, as Active Directory writes it.</p>
+<p><strong>Task:</strong> Start with the machine. Find <code>WM-WKS07</code> in Active Directory and name the department OU that holds it, as Active Directory writes it.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="department OU" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{wealthmanagement}">Submit</button>
@@ -65,7 +65,7 @@
 02:00:41  4624   alex.rivera   WM-WKS07  3     success
 02:00:41  4672   alex.rivera   WM-WKS07  -     special privileges assigned
 02:03:18  4624   alex.rivera   WM-WKS07  3     success</code></pre>
-<p><strong>Your task:</strong> Count the failed sign-ins (Event ID 4625) that happen before the first successful sign-in (4624).</p>
+<p><strong>Task:</strong> Count the failed sign-ins (Event ID 4625) that happen before the first successful sign-in (4624).</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{4}">Submit</button>
@@ -101,7 +101,7 @@
 <span class="ad-mission__num">Alert 03 · INC-1046 · Critical</span>
 <h4>Why the Privileges?</h4>
 <p><strong>SIEM Alert · Part 3 of 5 · Automated detection · 2:08 AM</strong><br>Event 4672 in the log shows special privileges assigned to Alex's new session. Windows logs it when a sign-in receives sensitive privileges, the kind admin accounts hold.</p>
-<p><strong>Your task:</strong> Name the group on Alex's account that explains why the session received special privileges.</p>
+<p><strong>Task:</strong> Name the group on Alex's account that explains why the session received special privileges.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-admins}">Submit</button>
@@ -142,7 +142,7 @@
 <span class="ad-mission__num">Alert 04 · INC-1046 · Critical</span>
 <h4>Mistake or Attack?</h4>
 <p><strong>SIEM Alert · Part 4 of 5 · Automated detection · 2:10 AM</strong><br>You now have four failed logons two seconds apart and then a success. It happened at 2 AM on a workstation outside IT with an admin account. Which explanation fits?<br><strong>A</strong> Alex mistyped his password four times.<br><strong>B</strong> Automated password guessing against a real account, which finally worked.<br><strong>C</strong> A scheduled maintenance task using an old credential.<br><strong>D</strong> A clock problem on the domain controller.</p>
-<p><strong>Your task:</strong> Choose the explanation that fits all of the evidence and type its letter.</p>
+<p><strong>Task:</strong> Choose the explanation that fits all of the evidence and type its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -175,7 +175,7 @@
 <span class="ad-mission__num">Alert 05 · INC-1046 · Critical</span>
 <h4>Your First Move</h4>
 <p><strong>SIEM Alert · Part 5 of 5 · Automated detection · 2:12 AM</strong><br>You believe an admin account is compromised and in use on a Wealth Management machine. It is 2:12 AM. What do you do first?<br><strong>A</strong> Wipe and reimage WM-WKS07 right now.<br><strong>B</strong> Disable alex.rivera and isolate WM-WKS07 from the network while keeping the logs.<br><strong>C</strong> Email Alex and wait for an answer.<br><strong>D</strong> Clear the failed logon events so the alert stops repeating.</p>
-<p><strong>Your task:</strong> Choose the best first move and type its letter.</p>
+<p><strong>Task:</strong> Choose the best first move and type its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>

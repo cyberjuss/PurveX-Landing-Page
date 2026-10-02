@@ -6,7 +6,7 @@ import type { LabSnapshot } from "@/lib/academy-lab";
 // the answer until their own lab shows the change.
 
 /** Objects a ticket needs in the snapshot. A lab built before the ticket existed lacks them. */
-type Needs = { users?: string[]; groups?: string[]; ous?: string[] };
+type Needs = { users?: string[]; groups?: string[]; ous?: string[]; tickets?: string[] };
 
 const G = (checks: { c: Check; label: string }[], needs?: Needs) => ({ checks, needs });
 
@@ -47,6 +47,25 @@ const MISSION_LAB = {
     { ous: ["OU=Workstations,OU=FinanceAccounting,OU=Departments"] }
   ),
   "tq-15": G([{ c: { t: "group", name: "Finance Reports", category: "Security" }, label: "Finance Reports is a Security group" }], { groups: ["Finance Reports"] }),
+  "tq-16": G([{ c: { t: "dnsToDc", name: "files" }, label: "files resolves to the domain controller" }], { tickets: ["INC-1052"] }),
+  "tq-17": G([{ c: { t: "fwRuleOff", name: "PurveX Temp - Vendor RDP" }, label: "The vendor RDP rule is disabled or removed" }], { tickets: ["INC-1053"] }),
+  "tq-18": G(
+    [
+      {
+        c: { t: "gpoLink", gpo: "PurveX - Finance Screen Lock", ous: ["OU=FinanceAccounting,OU=Departments", "OU=Users,OU=FinanceAccounting,OU=Departments"], want: true },
+        label: "The screen lock GPO is linked to Finance",
+      },
+      { c: { t: "gpoLink", gpo: "PurveX - Finance Screen Lock", ous: ["OU=Operations,OU=Departments"], want: false }, label: "The screen lock GPO is no longer linked to Operations" },
+    ],
+    { tickets: ["INC-1054"] }
+  ),
+  "tq-19": G(
+    [
+      { c: { t: "file", path: "Shares\\Finance\\Invoice_0923.pdf.exe", want: false }, label: "The file is gone from the Finance share" },
+      { c: { t: "file", path: "Quarantine\\Invoice_0923.pdf.exe", want: true }, label: "The file is kept in C:\\PurveX\\Quarantine" },
+    ],
+    { tickets: ["INC-1055"] }
+  ),
 } as const;
 
 type Gate = { checks: { c: Check; label: string }[]; needs?: Needs };
@@ -63,7 +82,8 @@ export function hasMissionObjects(id: string, s: LabSnapshot) {
   return (
     has(needs.users, s.users.map((u) => u.sam.toLowerCase())) &&
     has(needs.groups, s.groups.map((g) => g.name.toLowerCase())) &&
-    has(needs.ous, s.ous.map((o) => o.path.toLowerCase()))
+    has(needs.ous, s.ous.map((o) => o.path.toLowerCase())) &&
+    has(needs.tickets, (s.infra?.planted ?? []).map((t) => t.toLowerCase()))
   );
 }
 

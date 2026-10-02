@@ -64,9 +64,24 @@ export type LabEvents = {
   auditChanges: { at: string; by: string }[];
 };
 
+/** What lives outside Active Directory: DNS, the firewall, Group Policy links and the lab shares. */
+export type LabInfra = {
+  /** Ticket ids the build planted, from C:\PurveX\tickets.txt. */
+  planted: string[];
+  firewall: { name: string; enabled: boolean; direction: string; action: string; localPort: string; remoteAddress: string }[];
+  dns: { name: string; ip: string }[];
+  /** The domain controller's own addresses. */
+  dcIps: string[];
+  gpos: string[];
+  gpoLinks: { ou: string; gpos: string[] }[];
+  /** Paths relative to C:\PurveX, such as Shares\Finance\Report.csv. */
+  files: { path: string; size: number }[];
+};
+
 export type LabSnapshot = {
   security?: LabSecurity;
   events?: LabEvents;
+  infra?: LabInfra;
   capturedAt: string;
   domain: { dnsRoot: string; netbios: string };
   ous: LabOu[];
@@ -196,6 +211,41 @@ function sanitizeEvents(raw: unknown): LabEvents | undefined {
   return any ? out : undefined;
 }
 
+const IPV4 = /^\d{1,3}(\.\d{1,3}){3}$/;
+
+function sanitizeInfra(raw: unknown): LabInfra | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const r = raw as Record<string, unknown>;
+  const ip = (v: unknown) => {
+    const s = str(v, 40).trim();
+    return IPV4.test(s) ? s : "";
+  };
+  return {
+    planted: list(r.planted, 50).map((s) => s.slice(0, 20)),
+    firewall: rows(r.firewall, 50)
+      .map((x) => ({
+        name: str(x.name, 120),
+        enabled: bool(x.enabled),
+        direction: str(x.direction, 20),
+        action: str(x.action, 20),
+        localPort: str(x.localPort, 60),
+        remoteAddress: str(x.remoteAddress, 200),
+      }))
+      .filter((x) => x.name),
+    dns: rows(r.dns, 100)
+      .map((x) => ({ name: str(x.name, 100), ip: ip(x.ip) }))
+      .filter((x) => x.name && x.ip),
+    dcIps: list(r.dcIps, 10).map(ip).filter(Boolean),
+    gpos: list(r.gpos, 100).map((s) => s.slice(0, 120)),
+    gpoLinks: rows(r.gpoLinks, 100)
+      .map((x) => ({ ou: str(x.ou, 300), gpos: list(x.gpos, 30) }))
+      .filter((x) => x.ou),
+    files: rows(r.files, 200)
+      .map((x) => ({ path: str(x.path, 260), size: num(x.size, 1e12) ?? 0 }))
+      .filter((x) => x.path && !x.path.includes("..")),
+  };
+}
+
 export function sanitizeLabSnapshot(raw: unknown): LabSnapshot | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
@@ -203,6 +253,7 @@ export function sanitizeLabSnapshot(raw: unknown): LabSnapshot | null {
   const snapshot: LabSnapshot = {
     security: sanitizeSecurity(r.security),
     events: sanitizeEvents(r.events),
+    infra: sanitizeInfra(r.infra),
     capturedAt: date(r.capturedAt) ?? new Date().toISOString(),
     domain: { dnsRoot: str(domain.dnsRoot, 200), netbios: str(domain.netbios, 50) },
     ous: objects(r.ous).map((o) => ({ path: str(o.path), description: str(o.description) })),

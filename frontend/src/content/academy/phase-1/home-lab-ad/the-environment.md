@@ -65,3 +65,4 @@ The Range download also plants these for the Ticket Queue. They are work to do, 
 - `old.intern` in IT and `svc-backup-job` in `OU=ServiceAccounts`
 - A contractor account, `kai.mendes`, and one more staff account, `noah.kim`
 - Three more computer objects: `WM-WKS07`, `OPS-WKS03` and a new laptop that still has to be filed
+- A DNS record, a firewall rule, a screen lock GPO and a Finance share under `C:\PurveX` on the domain controller

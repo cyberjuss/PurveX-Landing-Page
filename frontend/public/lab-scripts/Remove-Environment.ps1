@@ -57,4 +57,18 @@ if ($laptop -and $laptop.DistinguishedName -like "*,CN=Computers,$domainDN" -and
     Write-Host "  Deleted: $($laptop.DistinguishedName)" -ForegroundColor Green
 }
 
+# Tickets INC-1052 to INC-1055 live outside Active Directory.
+$zone = (Get-ADDomain).DNSRoot
+if ($PSCmdlet.ShouldProcess("DNS, firewall, Group Policy and share tickets", "Remove")) {
+    Get-DnsServerResourceRecord -ZoneName $zone -Name "files" -RRType A -ErrorAction SilentlyContinue |
+        Remove-DnsServerResourceRecord -ZoneName $zone -Force -ErrorAction SilentlyContinue
+    Get-NetFirewallRule -Group "PurveX Lab" -ErrorAction SilentlyContinue | Remove-NetFirewallRule -ErrorAction SilentlyContinue
+    try { Import-Module GroupPolicy -ErrorAction Stop; Remove-GPO -Name "PurveX - Finance Screen Lock" -ErrorAction SilentlyContinue } catch {}
+    Remove-SmbShare -Name "Shares" -Force -ErrorAction SilentlyContinue
+    foreach ($item in @("C:\PurveX\Shares", "C:\PurveX\Quarantine", "C:\PurveX\tickets.txt")) {
+        if (Test-Path -LiteralPath $item) { Remove-Item -LiteralPath $item -Recurse -Force -ErrorAction SilentlyContinue }
+    }
+    Write-Host "  Deleted: DNS, firewall, Group Policy and share tickets" -ForegroundColor Green
+}
+
 Write-Host "`nDone. Run Build-Environment.ps1 to rebuild the lab." -ForegroundColor Cyan

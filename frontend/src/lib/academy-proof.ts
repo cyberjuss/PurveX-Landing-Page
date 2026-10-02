@@ -181,6 +181,46 @@ const CATALOG: Record<string, Entry> = {
       sys: [["a", "Enforced"], ["s", "password expiration"], ["a", "by clearing Password never expires on a user account."]],
     },
   },
+  "dns-fix": {
+    title: "Restored name resolution for a file server",
+    actions: ["Traced a share that worked by IP but not by name to a DNS record pointing at a dead address", "Corrected the record so the name resolved to the right server again"],
+    keywords: ["DNS", "Network Troubleshooting"],
+    bullets: {
+      soc: [["a", "Diagnosed"], ["s", "a file share outage"], ["a", "to a bad DNS record"], ["r", "and restored name resolution."]],
+      help: [["a", "Resolved"], ["s", "a shared drive that would not open by name"], ["a", "by correcting its DNS record."]],
+      sys: [["a", "Corrected"], ["s", "an A record in Windows DNS"], ["r", "so clients reached the file server by name."]],
+    },
+  },
+  "firewall-rule": {
+    title: "Closed an exposed remote access firewall rule",
+    actions: ["Found an inbound rule that still allowed Remote Desktop from any address after a vendor visit", "Disabled it while leaving the standard Remote Desktop rules in place"],
+    keywords: ["Windows Defender Firewall", "Attack Surface Reduction"],
+    bullets: {
+      soc: [["a", "Closed"], ["s", "a leftover vendor firewall rule"], ["r", "that exposed Remote Desktop to any address."]],
+      help: [["a", "Disabled"], ["s", "a temporary remote access rule"], ["r", "once the vendor visit was over."]],
+      sys: [["a", "Removed"], ["s", "an over-broad inbound firewall rule"], ["r", "from a domain controller."]],
+    },
+  },
+  "gpo-scope": {
+    title: "Applied a security policy to the right department with Group Policy",
+    actions: ["Found a screen lock GPO linked to the wrong department OU", "Linked it to Finance and removed the wrong link, so the policy reached the users it was written for"],
+    keywords: ["Group Policy (GPO)", "Organizational Units (OUs)"],
+    bullets: {
+      soc: [["a", "Fixed"], ["s", "a failed screen lock control"], ["a", "by correcting where its GPO was linked."]],
+      help: [["a", "Resolved"], ["s", "screens that never locked"], ["a", "by linking the right Group Policy to Finance."]],
+      sys: [["a", "Re-scoped"], ["s", "a Group Policy Object"], ["r", "from the wrong OU to the department it was built for."]],
+    },
+  },
+  "quarantine-file": {
+    title: "Quarantined a disguised executable on a file share",
+    actions: ["Spotted a program named to look like a PDF invoice by showing full file extensions", "Moved it to quarantine without opening it, keeping it as evidence"],
+    keywords: ["Malware Triage", "Incident Response"],
+    bullets: {
+      soc: [["a", "Quarantined"], ["s", "a double-extension executable"], ["r", "on a shared drive while preserving it as evidence."]],
+      help: [["a", "Removed"], ["s", "a suspicious file from a shared drive"], ["a", "without opening it."]],
+      sys: [["a", "Isolated"], ["s", "a disguised executable on a file server"], ["r", "for investigation."]],
+    },
+  },
   "group-type": {
     title: "Corrected a group that could not grant permissions",
     actions: ["Diagnosed a distribution group being used for access control, which cannot grant permissions", "Converted it to a security group so the permissions assigned to it took effect"],
@@ -203,6 +243,10 @@ export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "tq-11": { job: "offboard", label: "Service ticket INC-1047" },
   "tq-13": { job: "password-hygiene", label: "Service ticket INC-1049" },
   "tq-15": { job: "group-type", label: "Service ticket INC-1051" },
+  "tq-16": { job: "dns-fix", label: "Service ticket INC-1052" },
+  "tq-17": { job: "firewall-rule", label: "Service ticket INC-1053" },
+  "tq-18": { job: "gpo-scope", label: "Service ticket INC-1054" },
+  "tq-19": { job: "quarantine-file", label: "Service ticket INC-1055" },
 };
 
 /** Portfolio jobs a live Shift can prove, mapped from the incident that proves each.
@@ -292,10 +336,14 @@ const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
 export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean, results: Results = {}): { group: string; items: string[] }[] {
   const identity = new Set<string>();
   const monitoring = new Set<string>();
+  const network = new Set<string>();
+  const response = new Set<string>();
   if (hasLab || items.length) identity.add("Active Directory");
   for (const it of items) {
     for (const k of it.keywords) {
       if (/audit|event|log/i.test(k)) monitoring.add(k);
+      else if (/dns|network|firewall|attack surface/i.test(k)) network.add(k);
+      else if (/malware|incident/i.test(k)) response.add(k);
       else identity.add(k);
     }
   }
@@ -307,6 +355,8 @@ export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean,
   const groups = [
     { group: "Identity and Access Management (IAM)", items: [...identity] },
     { group: "Security Monitoring", items: [...monitoring] },
+    { group: "Networking and Infrastructure", items: [...network] },
+    { group: "Incident Response", items: [...response] },
     { group: "Security Analysis", items: (Object.keys(LAB_PASS_SKILLS) as LabPassId[]).filter((id) => results[id]?.solved).flatMap((id) => LAB_PASS_SKILLS[id]) },
     { group: "Scripting", items: hasLab ? ["PowerShell"] : [] },
   ];

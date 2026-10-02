@@ -226,6 +226,155 @@ function Ensure-UserDescription {
     }
 }
 
+# Tickets that live outside Active Directory (DNS, firewall, Group Policy, files)
+# keep their planted state under C:\PurveX. tickets.txt records which ones were
+# planted, so each is planted once and the server knows the lab has it.
+$PurvexLabRoot = "C:\PurveX"
+
+function Test-PurvexTicketMark {
+    param([string]$Id)
+    $file = Join-Path $PurvexLabRoot "tickets.txt"
+    return (Test-Path -LiteralPath $file) -and (@(Get-Content -LiteralPath $file) -contains $Id)
+}
+
+function Add-PurvexTicketMark {
+    param([string]$Id)
+    if (-not (Test-Path -LiteralPath $PurvexLabRoot)) { New-Item -ItemType Directory -Path $PurvexLabRoot -Force | Out-Null }
+    Add-Content -LiteralPath (Join-Path $PurvexLabRoot "tickets.txt") -Value $Id
+}
+
+function Ensure-InfraTickets {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param([hashtable]$DeptOUPaths)
+
+    Write-Host "`n== Network, firewall, Group Policy and file tickets ==" -ForegroundColor Cyan
+    $zone = $domain.DNSRoot
+
+    # INC-1052: the file server's DNS name points at an address that does not exist.
+    if (-not (Test-PurvexTicketMark "INC-1052") -and $PSCmdlet.ShouldProcess("files.$zone", "Plant DNS ticket")) {
+        try {
+            Get-DnsServerResourceRecord -ZoneName $zone -Name "files" -RRType A -ErrorAction SilentlyContinue |
+                Remove-DnsServerResourceRecord -ZoneName $zone -Force -ErrorAction SilentlyContinue
+            Add-DnsServerResourceRecordA -ZoneName $zone -Name "files" -IPv4Address "192.0.2.50" -ErrorAction Stop
+            Add-PurvexTicketMark "INC-1052"
+            Write-Host "  Planted INC-1052: files.$zone" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1052: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+
+    # INC-1053: a vendor remote-access rule left open after the visit.
+    if (-not (Test-PurvexTicketMark "INC-1053") -and $PSCmdlet.ShouldProcess("PurveX Temp - Vendor RDP", "Plant firewall ticket")) {
+        try {
+            New-NetFirewallRule -DisplayName "PurveX Temp - Vendor RDP" -Group "PurveX Lab" -Direction Inbound -Action Allow `
+                -Protocol TCP -LocalPort 3389 -RemoteAddress Any -Profile Any `
+                -Description "CTF-TICKET-1053: Opened for Northwind Advisory remote support on 2026-09-26." -ErrorAction Stop | Out-Null
+            Add-PurvexTicketMark "INC-1053"
+            Write-Host "  Planted INC-1053: firewall rule PurveX Temp - Vendor RDP" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1053: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+
+    # INC-1054: a screen-lock GPO linked to the wrong department.
+    if (-not (Test-PurvexTicketMark "INC-1054") -and $PSCmdlet.ShouldProcess("PurveX - Finance Screen Lock", "Plant Group Policy ticket")) {
+        try {
+            Import-Module GroupPolicy -ErrorAction Stop
+            $name = "PurveX - Finance Screen Lock"
+            if (-not (Get-GPO -Name $name -ErrorAction SilentlyContinue)) {
+                New-GPO -Name $name -Comment "CTF-TICKET-1054: Locks Finance screens after 10 minutes. Requested by Internal Audit." -ErrorAction Stop | Out-Null
+            }
+            $key = "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop"
+            Set-GPRegistryValue -Name $name -Key $key -ValueName "ScreenSaveActive" -Type String -Value "1" | Out-Null
+            Set-GPRegistryValue -Name $name -Key $key -ValueName "ScreenSaverIsSecure" -Type String -Value "1" | Out-Null
+            Set-GPRegistryValue -Name $name -Key $key -ValueName "ScreenSaveTimeOut" -Type String -Value "600" | Out-Null
+            New-GPLink -Name $name -Target $DeptOUPaths["Operations"].DeptOU -LinkEnabled Yes -ErrorAction Stop | Out-Null
+            Add-PurvexTicketMark "INC-1054"
+            Write-Host "  Planted INC-1054: $name linked to Operations" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1054: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+
+    # INC-1055: a program disguised as a PDF on the Finance share. It is a text file and cannot run.
+    if (-not (Test-PurvexTicketMark "INC-1055") -and $PSCmdlet.ShouldProcess("$PurvexLabRoot\Shares\Finance", "Plant suspicious file ticket")) {
+        try {
+            $finance = Join-Path $PurvexLabRoot "Shares\Finance"
+            New-Item -ItemType Directory -Path $finance -Force | Out-Null
+            New-Item -ItemType Directory -Path (Join-Path $PurvexLabRoot "Quarantine") -Force | Out-Null
+            Set-Content -LiteralPath (Join-Path $finance "Q3-Budget-Summary.csv") -Value "Department,Budget,Spent`r`nFinance,120000,87400`r`nOperations,95000,71250"
+            Set-Content -LiteralPath (Join-Path $finance "Vendor-Contacts.csv") -Value "Vendor,Contact,Phone`r`nNorthwind Advisory,Accounts Desk,555-0142`r`nLedgerLine,Support,555-0199"
+            $bad = Join-Path $finance "Invoice_0923.pdf.exe"
+            Set-Content -LiteralPath $bad -Value "PurveX training file. This is not a real program and it cannot run. Treat it as a suspicious attachment."
+            (Get-Item -LiteralPath $bad).LastWriteTime = Get-Date "2026-09-27 02:14"
+            if (-not (Get-SmbShare -Name "Shares" -ErrorAction SilentlyContinue)) {
+                New-SmbShare -Name "Shares" -Path (Join-Path $PurvexLabRoot "Shares") -ReadAccess "Domain Users" -ErrorAction SilentlyContinue | Out-Null
+            }
+            Add-PurvexTicketMark "INC-1055"
+            Write-Host "  Planted INC-1055: $bad" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1055: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+}
+
+# What the lab reports about DNS, the firewall and the shares. Cheap enough to
+# check every few seconds, so a fix shows up fast.
+function Get-PurvexInfraQuick {
+    param($Domain)
+    $infra = [ordered]@{ v = 1 }
+    try { $infra.planted = @(Get-Content -LiteralPath (Join-Path $PurvexLabRoot "tickets.txt") -ErrorAction Stop | Where-Object { $_ }) } catch { $infra.planted = @() }
+    try {
+        $infra.firewall = @(Get-NetFirewallRule -Group "PurveX Lab" -ErrorAction Stop | ForEach-Object {
+            [ordered]@{
+                name          = $_.DisplayName
+                enabled       = ("$($_.Enabled)" -eq "True")
+                direction     = "$($_.Direction)"
+                action        = "$($_.Action)"
+                localPort     = "$(($_ | Get-NetFirewallPortFilter).LocalPort -join ',')"
+                remoteAddress = "$(($_ | Get-NetFirewallAddressFilter).RemoteAddress -join ',')"
+            }
+        })
+    }
+    catch { $infra.firewall = @() }
+    try {
+        $records = @(Get-DnsServerResourceRecord -ZoneName $Domain.DNSRoot -RRType A -ErrorAction Stop)
+        $infra.dns = @($records | Where-Object { $_.HostName -notmatch '^(@|DomainDnsZones|ForestDnsZones)$' } | Select-Object -First 100 | ForEach-Object {
+            [ordered]@{ name = $_.HostName; ip = "$($_.RecordData.IPv4Address)" }
+        })
+        $infra.dcIps = @($records | Where-Object { $_.HostName -eq "@" -or $_.HostName -eq $env:COMPUTERNAME } | ForEach-Object { "$($_.RecordData.IPv4Address)" } | Select-Object -Unique)
+    }
+    catch {}
+    $files = @()
+    foreach ($sub in @("Shares", "Quarantine")) {
+        $dir = Join-Path $PurvexLabRoot $sub
+        if (Test-Path -LiteralPath $dir) {
+            $files += @(Get-ChildItem -LiteralPath $dir -Recurse -File -Force -ErrorAction SilentlyContinue | Select-Object -First 200 | ForEach-Object {
+                [ordered]@{ path = $_.FullName.Substring($PurvexLabRoot.Length + 1); size = [int64]$_.Length }
+            })
+        }
+    }
+    $infra.files = $files
+    return $infra
+}
+
+# Adds which Group Policy objects are linked to the lab OUs. Slower, so it rides with every send.
+function Get-PurvexInfra {
+    param($Domain)
+    $infra = Get-PurvexInfraQuick -Domain $Domain
+    try {
+        Import-Module GroupPolicy -ErrorAction Stop
+        $infra.gpos = @(Get-GPO -All | ForEach-Object { $_.DisplayName })
+        $suffix = [regex]::Escape(",$($Domain.DistinguishedName)") + '$'
+        $links = @()
+        foreach ($root in @("Departments", "AccessLevels", "ServiceAccounts")) {
+            Get-ADOrganizationalUnit -SearchBase "OU=$root,$($Domain.DistinguishedName)" -Filter * -ErrorAction SilentlyContinue | ForEach-Object {
+                $names = @((Get-GPInheritance -Target $_.DistinguishedName -ErrorAction SilentlyContinue).GpoLinks | Where-Object { $_.Enabled } | ForEach-Object { $_.DisplayName })
+                if ($names.Count) { $links += [ordered]@{ ou = ($_.DistinguishedName -replace $suffix, ''); gpos = $names } }
+            }
+        }
+        $infra.gpoLinks = $links
+    }
+    catch {}
+    return $infra
+}
+
 function Ensure-CTFChallengeData {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param(
@@ -328,6 +477,8 @@ function Ensure-CTFChallengeData {
         Add-ADGroupMember -Identity "Finance Reports" -Members "jordan.ellis", "devon.brooks"
         Write-Host "  Group created: Finance Reports (Distribution)" -ForegroundColor Green
     }
+
+    Ensure-InfraTickets -DeptOUPaths $DeptOUPaths
 }
 
 # Read-only security settings, so PurveX can check the hardening drills. Each
@@ -527,6 +678,7 @@ function Send-PurvexLabSnapshot {
         computers  = @($computers)
         security   = $security
         events     = $events
+        infra      = (Get-PurvexInfra -Domain $domain)
     }
     $json = $snapshot | ConvertTo-Json -Depth 6 -Compress
 
@@ -598,6 +750,10 @@ function Start-PurvexSyncLoop {
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
     $lastSend = [datetime]::MinValue
     $lastUsn = [int64]-1
+    # DNS, firewall and share changes do not touch the lab OUs, so they are
+    # fingerprinted every few seconds instead.
+    $lastInfraCheck = [datetime]::MinValue
+    $lastInfra = ""
     while ($true) {
         # Poll fast so a directory change (an unlock, an enable, a group edit) is
         # detected and pushed within a fraction of a second, not a beat later.
@@ -608,6 +764,12 @@ function Start-PurvexSyncLoop {
             $due = $age -ge 60
             # A short gap folds one edit (create, then add to a group) into a single send.
             $changed = ($usn -ge 0) -and ($age -ge 0.25) -and (($lastUsn -lt 0) -or ($usn -ne $lastUsn))
+            if (-not $changed -and ((Get-Date) - $lastInfraCheck).TotalSeconds -ge 5) {
+                $lastInfraCheck = Get-Date
+                $infraNow = (Get-PurvexInfraQuick -Domain $domain) | ConvertTo-Json -Depth 4 -Compress
+                if ($lastInfra -and $infraNow -ne $lastInfra) { $changed = $true }
+                $lastInfra = $infraNow
+            }
             if ($changed -or $due) {
                 if ($changed) { Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN -Fast }
                 else { Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN }
@@ -851,6 +1013,8 @@ The Range download plants the ticket-queue challenge data on the same run, so th
 - A new Finance laptop that landed in the wrong folder
 - A distribution group that someone tried to use for access
 - A few workstation objects
+- A broken DNS record, a leftover vendor firewall rule and a misplaced screen lock GPO
+- A Finance share under `C:\PurveX\Shares` with one suspicious file, which is plain text and cannot run
 
 Each ticket object is planted only once, so running the script again never undoes a ticket you already worked. To build the clean baseline without them, run `./Build-Environment.ps1 -NoCTF`.
 

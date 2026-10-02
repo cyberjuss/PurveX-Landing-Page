@@ -5,7 +5,7 @@
 
 **Situation:** Ransomware has hit a workstation, and responders captured its network traffic while it ran. Most of the capture is ordinary Windows background traffic, but somewhere inside it the malware sent data home to its command-and-control (C2) server.
 
-**Your task:** Separate the noise from the attack and find the request that sends data to the C2 server. Decode what it carries, then write up the indicators of compromise (IOCs) in a short table. In a live incident, finding that request quickly can decide whether the encrypted files can be recovered.
+**Task:** Separate the noise from the attack and find the request that sends data to the C2 server. Decode what it carries, then write up the indicators of compromise (IOCs) in a short table. In a live incident, finding that request quickly can decide whether the encrypted files can be recovered.
 
 **What you need:** Wireshark or tshark, and the capture file `hidden_tear_final_snipped_pcap.pcapng` from your instructor.
 

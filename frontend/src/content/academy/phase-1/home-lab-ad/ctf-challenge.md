@@ -15,8 +15,8 @@
 <div class="ad-mission" data-id="d1-01" data-attempts="0">
 <span class="ad-mission__num">Task 01 · Find an Account</span>
 <h4>Which Group Is Jordan In?</h4>
-<p><strong>Situation:</strong> A ticket from Finance and Accounting says Jordan Ellis cannot open a shared folder. Before anyone changes access, you need to know which department group Jordan already has.</p>
-<p><strong>Your task:</strong> Find the account <code>jordan.ellis</code> and name the department group it belongs to.</p>
+<p><strong>Situation:</strong> A ticket from Finance and Accounting says Jordan Ellis cannot open a shared folder. Nobody on the desk has looked at Jordan's account yet.</p>
+<p><strong>Task:</strong> Find the account <code>jordan.ellis</code> and name the department group it belongs to.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{finance-accounting-users}">Submit</button>
@@ -56,8 +56,8 @@
 <div class="ad-mission" data-id="d1-02" data-attempts="0">
 <span class="ad-mission__num">Task 02 · Find Who Has Admin Rights</span>
 <h4>Who Is an Admin?</h4>
-<p><strong>Situation:</strong> Your lead wants to know who holds elevated IT access, because those are the accounts an attacker would want most. At PurveX, that access comes from the <code>IT Admins</code> group.</p>
-<p><strong>Your task:</strong> Name the person who is a member of <code>IT Admins</code>, using their first and last name.</p>
+<p><strong>Situation:</strong> Your lead is preparing a list of accounts with elevated IT access, since those are the accounts attackers want most. At PurveX that access comes from the <code>IT Admins</code> group.</p>
+<p><strong>Task:</strong> Name the person who is a member of <code>IT Admins</code>, using their first and last name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{alex-rivera}">Submit</button>
@@ -98,7 +98,7 @@
 <span class="ad-mission__num">Task 03 · Find Where Things Live</span>
 <h4>Where Are the Access Groups?</h4>
 <p><strong>Situation:</strong> PurveX keeps the access-level groups <code>Server Admins</code> and <code>Helpdesk</code> apart from the department folders. That way, moving a person between departments never moves their privileges.</p>
-<p><strong>Your task:</strong> Name the top-level OU that holds <code>Server Admins</code> and <code>Helpdesk</code>.</p>
+<p><strong>Task:</strong> Name the top-level OU that holds <code>Server Admins</code> and <code>Helpdesk</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{accesslevels}">Submit</button>
@@ -135,7 +135,7 @@
 <span class="ad-mission__num">Task 04 · Spot the Default Folder</span>
 <h4>The Folder That Is Not an OU</h4>
 <p><strong>Situation:</strong> Someone created an account without choosing a department, so Windows put it in the default folder for new users. That folder is a container rather than an OU, and the difference matters for Group Policy.</p>
-<p><strong>Your task:</strong> Give the name of that default folder exactly as Active Directory writes it in the object's distinguished name.</p>
+<p><strong>Task:</strong> Give the name of that default folder exactly as Active Directory writes it in the object's distinguished name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="exact name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{cn=users}">Submit</button>
@@ -171,8 +171,8 @@
 <div class="ad-mission" data-id="d1-05" data-attempts="0">
 <span class="ad-mission__num">Task 05 · Read a Description</span>
 <h4>What Is the Admin Group For?</h4>
-<p><strong>Situation:</strong> A request asks you to add someone to <code>IT Admins</code>. Before you add anyone, the group's Description should tell you who the group is meant for.</p>
-<p><strong>Your task:</strong> Read the Description on <code>IT Admins</code> and name the role it is meant for.</p>
+<p><strong>Situation:</strong> A request has come in to add someone to <code>IT Admins</code>. The group's Description is supposed to say who the group is meant for.</p>
+<p><strong>Task:</strong> Read the Description on <code>IT Admins</code> and name the role it is meant for.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="role" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-systems-administrators}">Submit</button>
@@ -208,8 +208,8 @@
 <div class="ad-mission" data-id="d1-06" data-attempts="0">
 <span class="ad-mission__num">Task 06 · Titles Are Not Access</span>
 <h4>Is Priya on the Help Desk Group?</h4>
-<p><strong>Situation:</strong> A ticket asks you to remove Priya Nair's help desk privileges. Her title is Help Desk Technician, but a title is only a label on the account. Privileges come from groups.</p>
-<p><strong>Your task:</strong> Check whether Priya is a member of the <code>Helpdesk</code> group, and answer <code>yes</code> or <code>no</code>.</p>
+<p><strong>Situation:</strong> A ticket says Priya Nair has help desk privileges she should not have. Her title is Help Desk Technician, but a title is only a label on the account. Privileges come from groups.</p>
+<p><strong>Task:</strong> Check whether Priya is a member of the <code>Helpdesk</code> group, and answer <code>yes</code> or <code>no</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{no}">Submit</button>
@@ -245,8 +245,8 @@
 <div class="ad-mission" data-id="d1-07" data-attempts="0">
 <span class="ad-mission__num">Task 07 · Find by Title</span>
 <h4>Who Is the Settlements Coordinator?</h4>
-<p><strong>Situation:</strong> A manager calls about "the settlements coordinator" and does not know the person's username. You need the right account before you touch anything.</p>
-<p><strong>Your task:</strong> Find the person whose title is <strong>Settlements Coordinator</strong>, and answer with their first and last name.</p>
+<p><strong>Situation:</strong> A manager calls about "the settlements coordinator" and does not know the person's username. The request names only the job title.</p>
+<p><strong>Task:</strong> Find the person whose title is <strong>Settlements Coordinator</strong>, and answer with their first and last name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{riley-kwan}">Submit</button>
@@ -286,8 +286,8 @@
 <div class="ad-mission" data-id="d1-08" data-attempts="0">
 <span class="ad-mission__num">Task 08 · Find a Computer</span>
 <h4>What Is the Workstation Called?</h4>
-<p><strong>Situation:</strong> Alerts often name a computer rather than a person. To know whose machine it is, you first need to find the computer object and see where it lives.</p>
-<p><strong>Your task:</strong> Give the exact name of the computer object in the IT department's <code>Workstations</code> OU.</p>
+<p><strong>Situation:</strong> An overnight alert named a computer rather than a person, and nobody knows yet whose machine it is.</p>
+<p><strong>Task:</strong> Give the exact name of the computer object in the IT department's <code>Workstations</code> OU.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="computer name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-wks01}">Submit</button>
@@ -324,7 +324,7 @@
 <span class="ad-mission__num">Task 09 · Count a Group</span>
 <h4>How Many People Are in Compliance?</h4>
 <p><strong>Situation:</strong> An auditor wants a starting count of who can reach Compliance data, so any later change stands out.</p>
-<p><strong>Your task:</strong> Count the members of the <code>Compliance Users</code> group.</p>
+<p><strong>Task:</strong> Count the members of the <code>Compliance Users</code> group.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
@@ -364,8 +364,8 @@
 <div class="ad-mission ad-mission--capstone" data-id="d1-10" data-attempts="0">
 <span class="ad-mission__num">Task 10 · Day One Complete</span>
 <h4>How Many Departments Are There?</h4>
-<p><strong>Situation:</strong> To close out your first day, your lead asks you to confirm how many departments the directory holds.</p>
-<p><strong>Your task:</strong> Count the department OUs that sit directly under <code>Departments</code>.</p>
+<p><strong>Situation:</strong> It is the end of your first day, and your lead wants to know how well you understand the shape of the directory.</p>
+<p><strong>Task:</strong> Count the department OUs that sit directly under <code>Departments</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{5}">Submit</button>

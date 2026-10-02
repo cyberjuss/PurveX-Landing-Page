@@ -3,9 +3,9 @@
 <p>How do you tell ordinary network traffic from the traffic that does not belong?</p>
 </div>
 
-**Situation:** The SOC has a packet capture from a PurveX workstation that started behaving strangely. Before anyone can say whether the machine is infected, someone has to read the capture and find the traffic that does not belong.
+**Situation:** The SOC has a packet capture from a PurveX workstation that started behaving strangely. Nobody has looked at the traffic yet.
 
-**Your task:** Open the capture in Wireshark and learn its three panes. Then use three basic filters and Follow HTTP Stream to find the infected computer and the address it talks to. Note what looks unusual about that conversation.
+**Task:** Open the capture in Wireshark and learn its three panes. Then use three basic filters and Follow HTTP Stream to find the infected computer and the address it talks to. Note what looks unusual about that conversation.
 
 **What you need:** Wireshark installed on your computer and the practice capture your instructor provides.
 
