@@ -13,11 +13,6 @@
 <span id="ad-progress-label" class="ad-progress__label">0 / 15 solved</span>
 </div>
 
-<div class="ad-queue-section">
-<h3>Accounts and access</h3>
-<p>These tickets happen in Active Directory Users and Computers, which opens with Win+R and <code>dsa.msc</code>. Most of them come down to reading an account's Account and Member Of tabs before you change anything.</p>
-</div>
-
 <div class="ad-mission" data-id="tq-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 01 · INC-1041 · Low</span>
 <h4>Missing Announcements</h4>
@@ -357,11 +352,6 @@
 </div>
 </div>
 
-<div class="ad-queue-section">
-<h3>Computers and groups</h3>
-<p>These tickets still use Active Directory Users and Computers, this time for computer objects and groups rather than people.</p>
-</div>
-
 <div class="ad-mission" data-id="tq-14" data-attempts="0">
 <span class="ad-mission__num">Ticket 09 · INC-1050 · Low</span>
 <h4>New Laptop Missing Policies</h4>
@@ -450,11 +440,6 @@
 </div>
 </div>
 
-<div class="ad-queue-section">
-<h3>Network</h3>
-<p>DNS turns names into addresses. On the domain controller you can query it with <code>Resolve-DnsName</code> in PowerShell and edit its records in DNS Manager, which opens with Win+R and <code>dnsmgmt.msc</code>.</p>
-</div>
-
 <div class="ad-mission" data-id="tq-16" data-attempts="0">
 <span class="ad-mission__num">Ticket 11 · INC-1052 · High</span>
 <h4>Share Will Not Open by Name</h4>
@@ -541,11 +526,6 @@
 </div>
 </div>
 </div>
-</div>
-
-<div class="ad-queue-section">
-<h3>Firewall, policy and files</h3>
-<p>These tickets use three more tools on the domain controller. Windows Defender Firewall opens with <code>wf.msc</code>, Group Policy Management opens with <code>gpmc.msc</code> and File Explorer shows the shares under <code>C:\PurveX</code>.</p>
 </div>
 
 <div class="ad-mission" data-id="tq-17" data-attempts="0">
