@@ -1,11 +1,7 @@
 ### Monday Morning Risk Triage
 
-It is 8:10 on Monday at PurveX Financial. Alex Rivera from IT forwards four reports that came in over the weekend and asks one question: which do we fix first?
+**Situation:** It is 8:10 on Monday at PurveX Financial. Alex Rivera from IT has forwarded four reports that came in over the weekend, and the team can start only one fix this morning. Picking the report that sounds loudest is how teams lose a week on the wrong problem.
 
-You have one fix you can start this morning. Picking the ticket that sounds the loudest is how teams burn a week on the wrong problem. Work it the way an analyst does:
+**Your task:** Work the four reports the way an analyst would. Name which part of the CIA triad failed in each, rate how likely it is to hurt the firm and how badly, and then rank all four in the order you would fix them.
 
-- Name the failure. Say which job broke: confidentiality, integrity or availability.
-- Score the risk. Rate how likely it is to hurt the firm, and how badly if it does.
-- Rank the fixes. Put the four in the order you would work them.
-
-Each step is checked before you move on, and the debrief explains every call.
+Each step is checked before you move on, and the debrief explains every call. Your first finished score counts toward Risk Triage on your readiness report.

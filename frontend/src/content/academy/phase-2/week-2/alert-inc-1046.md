@@ -1,11 +1,10 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>The 2 AM Login</h3>
-<p class="ad-brief__ask">Can you work one SIEM alert from the host, through the log, to the first response move?</p>
-<p>This is a SOC queue item, not a help desk ticket. A detection fired on <code>alex.rivera</code> at 2:00 AM from <code>WM-WKS07</code>.</p>
-<p>You already know how to look that host up in Active Directory. Here you read the exported events and decide whether a 2 AM login from that workstation fits this account and this firm. Do not treat the alert text as the finding.</p>
-<p>Build the Phase 1 lab from the Range download if you have not already, and keep it running. The host and group steps read your lab. The log steps use the export on this page, but every step checks that your lab is live before it grades.</p>
-<p>Each step asks for a short finding from the host, the log, or the first response. The hint tells you what to open. The finding shows the answer, the problem, and the solution.</p>
+<p class="ad-brief__ask">Can you work one SIEM alert from the host, through the log, to the first response?</p>
+<p>This is a SOC queue item rather than a help desk ticket. At 2:04 AM the SIEM flagged a successful sign-in for <code>alex.rivera</code> on <code>WM-WKS07</code>, preceded by several failed attempts. Your job is to decide whether that sign-in fits this account and this firm.</p>
+<p>The host and group steps use your Phase 1 lab, and the log steps use the export shown on this page. Keep your lab running, because every step checks that it is live before it grades.</p>
+<p>Each step takes a short answer such as a folder name, a number, a group, or a letter. You get three tries per step, the hint unlocks after two misses, and the explanation unlocks once you solve it or use all three.</p>
 </div>
 
 <div class="ad-progress">
@@ -17,27 +16,20 @@
 <span class="ad-mission__num">Alert 01 · INC-1046 · Critical</span>
 <h4>The 2 AM Login</h4>
 <p><strong>SIEM Alert · Part 1 of 5 · Automated detection · 2:04 AM</strong><br>ALERT: successful login for alex.rivera at 2:00 AM from workstation WM-WKS07, preceded by multiple failed logons. Severity: high.</p>
-<p><strong>Question:</strong> Which department OU holds <code>WM-WKS07</code>?</p>
+<p><strong>Your task:</strong> Start with the machine. Find <code>WM-WKS07</code> in Active Directory and name the department OU that holds it, as Active Directory writes it.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="department OU" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{wealthmanagement}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>Look at the machine before you read any logs</li>
-<li>An OU is the folder the computer lives in</li>
-<li>Use the name as AD writes it, no spaces</li>
-</ul>
-<p>Do this:</p>
+<p>Look at the machine before you read any logs. The OU is the department folder the computer lives in.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Right-click the domain, then Find</li>
-<li>Change the type to Computers and type <code>WM-WKS07</code></li>
-<li>In the left tree, read the department folder above the computer</li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Expand <code>Departments</code> and open the <code>Workstations</code> folder under each department until you find <code>WM-WKS07</code>.</li>
+<li>The department folder above that Workstations folder is your answer.</li>
 </ol>
-<p>PowerShell is optional last.</p>
+<p>In PowerShell:</p>
 <ul>
 <li><code>(Get-ADComputer WM-WKS07).DistinguishedName</code></li>
 </ul>
@@ -50,12 +42,12 @@
 <p class="ad-flag__code"><code>GTF{wealthmanagement}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>This PC lives in Wealth Management. Alex is IT. An IT admin on that machine at 2 AM is already the wrong pairing.</p>
+<span>Why it matters</span>
+<p>WM-WKS07 belongs to Wealth Management, which handles client financial data, while Alex works in IT. An IT admin signing in to a Wealth Management PC at 2 AM is already a pairing that needs an explanation.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Check the computer's folder before you read the log. Then keep working this same alert.</p>
+<span>What to do</span>
+<p>Check where the computer lives before you read the log, then keep working the same alert.</p>
 </div>
 </div>
 </div>
@@ -64,7 +56,7 @@
 <div class="ad-mission" data-id="tq-07" data-attempts="0">
 <span class="ad-mission__num">Alert 02 · INC-1046 · Critical</span>
 <h4>Read the Log</h4>
-<p><strong>SIEM Alert · Part 2 of 5 · Automated detection · 2:06 AM</strong><br>The SIEM exported the events around the alert. The log is attached below.</p>
+<p><strong>SIEM Alert · Part 2 of 5 · Automated detection · 2:06 AM</strong><br>The SIEM exported the sign-in events around the alert. The export is below.</p>
 <pre class="ad-evidence"><code>TIME      EVENT  ACCOUNT       HOST      TYPE  DETAIL
 01:58:03  4625   alex.rivera   WM-WKS07  3     0xC000006A  bad password
 01:58:05  4625   alex.rivera   WM-WKS07  3     0xC000006A  bad password
@@ -73,23 +65,17 @@
 02:00:41  4624   alex.rivera   WM-WKS07  3     success
 02:00:41  4672   alex.rivera   WM-WKS07  -     special privileges assigned
 02:03:18  4624   alex.rivera   WM-WKS07  3     success</code></pre>
-<p><strong>Question:</strong> How many failed logons (Event ID 4625) happen before the first successful logon (4624)?</p>
+<p><strong>Your task:</strong> Count the failed sign-ins (Event ID 4625) that happen before the first successful sign-in (4624).</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{4}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>Event 4625 is a failed sign-in</li>
-<li>Event 4624 is a success</li>
-<li>You do not need PowerShell for this one</li>
-</ul>
-<p>Do this:</p>
+<p>Event 4625 is a failed sign-in and 4624 is a successful one. These events exist only in the export on this page, not in your lab's Security log.</p>
 <ol>
-<li>Use the export on this page. These events are not in your lab's Security log</li>
-<li>Count the 4625 rows that happen before the first 4624</li>
+<li>Read the export from top to bottom.</li>
+<li>Count the 4625 rows that appear before the first 4624.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -100,12 +86,12 @@
 <p class="ad-flag__code"><code>GTF{4}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>Four failed sign-ins (4625) exactly two seconds apart, then a success (4624) about two and a half minutes later. That even spacing is a script, not a person retyping.</p>
+<span>Why it matters</span>
+<p>Four failures land exactly two seconds apart, then a success follows about two and a half minutes later. That steady spacing points to a script guessing passwords, not a person retyping one.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Write the count in the ticket. Treat the speed as a sign of guessing, not a typo.</p>
+<span>What to do</span>
+<p>Record the count and the timing in the ticket, and treat the pattern as password guessing rather than a typo.</p>
 </div>
 </div>
 </div>
@@ -114,30 +100,23 @@
 <div class="ad-mission" data-id="tq-08" data-attempts="0">
 <span class="ad-mission__num">Alert 03 · INC-1046 · Critical</span>
 <h4>Why the Privileges?</h4>
-<p><strong>SIEM Alert · Part 3 of 5 · Automated detection · 2:08 AM</strong><br>Event 4672 in the log records special privileges being assigned to Alex's new session.</p>
-<p><strong>Question:</strong> Which of Alex's groups explains why his session received special privileges?</p>
+<p><strong>SIEM Alert · Part 3 of 5 · Automated detection · 2:08 AM</strong><br>Event 4672 in the log shows special privileges assigned to Alex's new session. Windows logs it when a sign-in receives sensitive privileges, the kind admin accounts hold.</p>
+<p><strong>Your task:</strong> Name the group on Alex's account that explains why the session received special privileges.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-admins}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>Event 4672 is unusual for a normal user</li>
-<li>It means Windows gave this session admin-level rights</li>
-<li>A staff group does not do that</li>
-</ul>
-<p>Do this:</p>
+<p>A department group such as IT Users grants standard access, so look for the group on Alex's account that grants more.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Right-click the domain, then Find, and type <code>alex.rivera</code></li>
-<li>Open the account, then Member Of</li>
-<li>Find the group that is not just department access</li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Right-click the domain, choose Find, and search for <code>alex.rivera</code>.</li>
+<li>Open the account, read Member Of, and find the group that goes beyond department access.</li>
 </ol>
-<p>PowerShell is optional last.</p>
+<p>In PowerShell:</p>
 <ul>
-<li><code>Get-ADPrincipalGroupMembership alex.rivera | Select Name</code></li>
+<li><code>Get-ADPrincipalGroupMembership alex.rivera | Select-Object Name</code></li>
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -148,12 +127,12 @@
 <p class="ad-flag__code"><code>GTF{it-admins}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>Event 4672 means this session got admin-level rights. A stolen admin can reset passwords and add people to groups.</p>
+<span>Why it matters</span>
+<p>The session that followed the guessing ran with admin-level rights. A stolen admin login can reset passwords, change group membership, and cover its tracks.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Treat every action this account takes as hostile until you stop the session.</p>
+<span>What to do</span>
+<p>Treat every action this account takes as hostile until the session is stopped and the account is secured.</p>
 </div>
 </div>
 </div>
@@ -162,26 +141,16 @@
 <div class="ad-mission" data-id="tq-09" data-attempts="0">
 <span class="ad-mission__num">Alert 04 · INC-1046 · Critical</span>
 <h4>Mistake or Attack?</h4>
-<p><strong>SIEM Alert · Part 4 of 5 · Automated detection · 2:10 AM</strong><br>Four failed logons two seconds apart, then a success, at 2 AM, on a workstation outside IT, using an admin account. What best explains it?<br><strong>A</strong> Alex mistyped his password four times.<br><strong>B</strong> Automated password guessing against a real account, which finally worked.<br><strong>C</strong> A scheduled maintenance task using an old credential.<br><strong>D</strong> A clock problem on the domain controller.</p>
-<p><strong>Question:</strong> Type the letter of the best explanation.</p>
+<p><strong>SIEM Alert · Part 4 of 5 · Automated detection · 2:10 AM</strong><br>You now have four failed logons two seconds apart, then a success, at 2 AM, on a workstation outside IT, using an admin account. Which explanation fits?<br><strong>A</strong> Alex mistyped his password four times.<br><strong>B</strong> Automated password guessing against a real account, which finally worked.<br><strong>C</strong> A scheduled maintenance task using an old credential.<br><strong>D</strong> A clock problem on the domain controller.</p>
+<p><strong>Your task:</strong> Choose the explanation that fits all of the evidence and type its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Stack the facts:</p>
-<ul>
-<li>Four failures, evenly two seconds apart</li>
-<li>2 AM</li>
-<li>Wrong department PC</li>
-<li>Admin account</li>
-</ul>
-<p>Remember:</p>
-<ul>
-<li>A person does not retry on a steady beat</li>
-<li>A maintenance job does not try four bad passwords</li>
-</ul>
+<p>Line up the facts: steady two-second failures, 2 AM, a PC in another department, and an admin account.</p>
+<p>A person does not retry on a steady beat, and a maintenance job does not try four wrong passwords before it works.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -191,12 +160,12 @@
 <p class="ad-flag__code"><code>GTF{b}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>Four failures two seconds apart, at 2 AM, on the wrong PC, using an admin account. A typo or a scheduled task does not look like that.</p>
+<span>Why it matters</span>
+<p>Each fact alone might have an innocent explanation, but together they match automated guessing that succeeded. A typo or a scheduled task does not look like this.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Treat it as an attack until you prove it is not.</p>
+<span>What to do</span>
+<p>Treat it as an attack until the evidence proves otherwise.</p>
 </div>
 </div>
 </div>
@@ -206,24 +175,15 @@
 <span class="ad-mission__num">Alert 05 · INC-1046 · Critical</span>
 <h4>Your First Move</h4>
 <p><strong>SIEM Alert · Part 5 of 5 · Automated detection · 2:12 AM</strong><br>You believe an admin account is compromised and in use on a Wealth Management machine. It is 2:12 AM. What do you do first?<br><strong>A</strong> Wipe and reimage WM-WKS07 right now.<br><strong>B</strong> Disable alex.rivera, isolate WM-WKS07 from the network, and keep the logs.<br><strong>C</strong> Email Alex and wait for an answer.<br><strong>D</strong> Clear the failed logon events so the alert stops repeating.</p>
-<p><strong>Question:</strong> Type the letter of the best first move.</p>
+<p><strong>Your task:</strong> Choose the best first move and type its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The first move must:</p>
-<ul>
-<li>Stop the session</li>
-<li>Keep the evidence</li>
-</ul>
-<p>Ask what each other option costs you:</p>
-<ul>
-<li>One deletes the log</li>
-<li>One gives the attacker time</li>
-<li>One hides the alert</li>
-</ul>
+<p>The first move has to stop the session and keep the evidence.</p>
+<p>For each other option, ask what it costs you. One destroys the log, one gives the attacker time, and one hides the alert.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -233,12 +193,12 @@
 <p class="ad-flag__code"><code>GTF{b}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>Wiping the PC deletes proof. Waiting on email gives the attacker time. Deleting events hides the alert.</p>
+<span>Why it matters</span>
+<p>Wiping the PC destroys the evidence, waiting on email gives the attacker time, and clearing events hides what happened.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Stop the session first. Keep the logs. Wipe later if you still need to.</p>
+<span>What to do</span>
+<p>Disable the account, isolate the machine, and keep the logs. Wipe it later, once the investigation has what it needs.</p>
 </div>
 </div>
 </div>

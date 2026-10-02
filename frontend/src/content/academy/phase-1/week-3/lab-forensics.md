@@ -1,67 +1,61 @@
-**File:** `hidden_tear_final_snipped_pcap.pcapng`  
-**Tool:** Wireshark (or tshark)  
-**Level:** Threat Detection / Incident Response
-
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
 <p>When a live capture contains far more noise than signal, how do you find the handful of packets that matter in a ransomware incident?</p>
 </div>
 
-This capture is noisy on purpose. Most of it is ordinary Windows background traffic. Your job is to separate that from the handful of packets that matter in a ransomware case.
+**Situation:** Ransomware has hit a workstation, and responders captured its network traffic while it ran. Most of the capture is ordinary Windows background traffic, but somewhere inside it the malware sent data home to its command-and-control (C2) server.
 
-You are looking for key exfiltration, the moment the malware sends data out. It sends that data to its command-and-control (C2) server.
+**Your task:** Separate the noise from the attack, find the request that sends data to the C2 server, decode what it carries, and write up the indicators of compromise (IOCs) in a short table. In a live incident, finding that request quickly can decide whether the encrypted files can be recovered.
 
-In a live incident, finding the C2 request fast can decide whether the files can be recovered.
+**What you need:** Wireshark or tshark, and the capture file `hidden_tear_final_snipped_pcap.pcapng` from your instructor.
 
-Part of that skill is spotting what the malware is stealing from the URL parameters alone, before you decode anything.
-
-Filter out the noise first, then hunt for the attack. That order is the forensic habit this lab builds.
+Work in the order below. Filtering out the noise before you hunt for the attack is the forensic habit this lab builds.
 
 ### Step 1. Orient yourself
 
-1. How many packets, and how long does the capture span?
-2. Open **Statistics → Protocol Hierarchy**. What is present?
-3. Open **Statistics → Conversations** (IPv4 tab). How many distinct external hosts does the internal machine talk to? List them.
+1. How many packets does the capture hold, and how long does it span?
+2. Open **Statistics → Protocol Hierarchy**. Which protocols are present?
+3. Open **Statistics → Conversations** and select the IPv4 tab. How many distinct external hosts does the internal machine talk to? List them.
 
-> **Guiding question:** This capture has *more* distinct external hosts than the other labs we have done. Before assuming they are all suspicious, what is the first thing you should check about each one?
+> **Guiding question:** The machine talks to many external hosts. Before you assume they are all suspicious, what is the first thing you should check about each one?
 
-### Step 2. Triage the conversations, separate signal from noise
+### Step 2. Triage the conversations
 
-For **each** external IP/hostname in your list from Step 1:
+Work through each external host from your Step 1 list:
 
-4. Filter to that host's web requests, for example `http.request && ip.addr == HOST-IP`, and look at the URI and User-Agent. Is this traffic suspicious? Why or why not?
-5. How many hosts are you left with that still look worth investigating?
+4. Filter to that host's web requests, for example `http.request && ip.addr == HOST-IP`, and read the URI and User-Agent. Is this traffic suspicious, and why?
+5. How many hosts still look worth investigating once the ordinary Windows traffic is ruled out?
 
-> **Note:** Do not rule a host in or out at a single glance. If something looks unfamiliar, look it up before you decide. Search the hostname, the User-Agent string, or the URI pattern.
+> **Note:** Do not rule a host in or out at a glance. If something looks unfamiliar, search the hostname, the User-Agent string, or the URI pattern before you decide.
 
-> **Guiding question:** Real investigations are mostly noise. What is the risk of skipping this triage step and jumping straight to the interesting-looking packets?
+> **Guiding question:** Real investigations are mostly noise. What do you risk by skipping triage and jumping straight to the packets that look interesting?
 
-### Step 3. Focus on What Is Left
+### Step 3. Focus on what is left
 
-For the host(s) you could not rule out as ordinary Windows traffic:
+For each host you could not rule out:
 
-6. What is the full URI being requested? Break down any parameters you see in the query string.
-7. Does the request method matter here (GET vs POST)? Why might a GET request still be dangerous even without a POST body?
-8. Look at any parameter named something like `info=`. Try to read it. Is it URL-encoded? What does it appear to contain?
+6. What is the full URI being requested? Break down the parameters in its query string.
+7. Does the request method matter here? Explain why a GET request can still carry stolen data without a POST body.
+8. Find the parameter named `info=` or something similar. Is it URL-encoded, and what does it appear to contain?
 
-### Step 4. Decode the exfil parameter
+### Step 4. Decode the exfiltrated data
 
-9. URL-decode the value of that parameter (Wireshark will often do this for you in the request line, or use an online URL decoder / Python).
-10. What pieces of information can you identify inside the decoded string? (Hint: think about what a piece of malware would need to send back to its author for its attack to work.)
-11. This request appears **twice** in the capture, at two different times. What is different about the parameter value between the two occurrences? What might that difference represent?
+9. URL-decode the value of that parameter. Wireshark often decodes it in the request line, or you can use a URL decoder or Python.
+10. What pieces of information can you identify in the decoded string? Think about what the malware would need to send its author for the attack to pay off.
+11. The request appears twice, at two different times. What changes in the parameter value between the two, and what might that difference mean?
 
 ### Step 5. Build a timeline
 
-12. What is the timestamp of each of the two suspicious requests?
-13. Given what you found in Step 4, what do you think happened on the victim machine *between* those two timestamps?
+12. Record the timestamp of each suspicious request.
+13. Based on Step 4, what most likely happened on the victim machine between those two timestamps?
 
 ### Step 6. Write it up
 
-Produce an IOC table with at minimum:
+Produce an IOC table that includes at least:
 
-* Victim host identifiers observed in traffic (hostname string, if present)
-* C2 domain and full gate path
-* Parameter name used for exfil
-* What data is being exfiltrated
+* Victim host identifiers seen in the traffic, such as a hostname string
+* The C2 domain and the full gate path
+* The parameter name used to send the data out
+* What data is being sent out
 
-**Bonus:** Given everything you found, what family of malware is this, and what is the single most urgent piece of information a responder would want to extract from this traffic during a live incident?
+**Bonus:** During a live incident, what is the single most urgent piece of information a responder would want from this traffic, and why?

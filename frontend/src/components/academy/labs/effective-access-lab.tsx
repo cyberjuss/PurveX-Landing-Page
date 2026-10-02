@@ -377,7 +377,7 @@ export function EffectiveAccessLab({ onDone }: { onDone?: () => void }) {
               <div className="rt-why">
                 <Verdict right={fix1Right}>Remove Domain Users. Every account is in it, so a Read entry for Domain Users opens client data to the whole firm, and to anyone with one stolen password.</Verdict>
                 <Verdict right={fix2Right}>
-                  Remove Operations Users. The old group kept Taylor&apos;s Operations access and its Deny blocked the Finance work Taylor now does. Change the role, change the groups.
+                  Remove Operations Users. The old group kept Taylor&apos;s Operations access and its Deny blocked the Finance work Taylor now does. When the role changes, the groups have to change with it.
                 </Verdict>
                 <Takeaway>Give access through the group for the role, and take the old group away in the same change.</Takeaway>
               </div>
@@ -510,7 +510,7 @@ export function EffectiveAccessLab({ onDone }: { onDone?: () => void }) {
             </table>
           </div>
           <footer className="rt-foot">
-            <p className="rt-tally">Change the role, change the groups.</p>
+            <p className="rt-tally">When the role changes, the groups have to change with it.</p>
             <button type="button" className="rt-btn" onClick={() => setS(START)}>
               <RotateCcw aria-hidden="true" /> Try again
             </button>

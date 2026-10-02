@@ -1,65 +1,44 @@
-**Lab:** PortSwigger Web Security Academy, "User role can be modified in user profile"  
-**Goal:** Get admin access and delete the user "Carlos" without admin credentials.
-
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
 <p>What happens when an application trusts the client to say who it is, instead of verifying that on the server?</p>
 </div>
 
-### Overview
+**Situation:** A web application stores each user's role on the server but also accepts a role value from the browser. If the server believes whatever the browser sends, any regular user can promote themselves to admin.
 
-This lab walks through PortSwigger's "user role can be modified in user profile" challenge from start to finish. You find the request that leaks a role field and tamper with it.
+**Your task:** In PortSwigger's "User role can be modified in user profile" lab, sign in as a regular user, gain admin access without admin credentials, and use the admin panel to delete the user `carlos`. Then explain the fix the server needs.
 
-Then you confirm the real fix: the server has to enforce the role itself.
+**What you need:** A free PortSwigger Web Security Academy account and Burp Suite Community Edition.
 
-The app lets the user's browser state its own role instead of checking it on the server. If you smuggle an extra field into a request, the server believes it.
+### Step 1. Sign in with the account you are given
 
-Your job is to prove that. The login page and the missing Admin Panel tell only part of the story. Watch the traffic and ask which request reveals more than the user needed to see.
+Open the lab and sign in as `wiener` with the password `peter`. This is a regular account on purpose, so it cannot see any admin features yet.
 
-### Step 1. Log In With the Account You Are Given
+### Step 2. Watch your traffic in Burp
 
-Sign in as `wiener` with the password `peter`, the account the lab provides. It is a regular, non-admin user on purpose.
+Route your browser through Burp Suite and keep the HTTP history open for the whole exercise. Every request the app makes should appear there.
 
-### Step 2. Turn On Burp Suite and Watch Your Traffic
+### Step 3. Rule out the obvious places
 
-Every request your browser makes should show up in Burp's HTTP history. Keep it open for the entire exercise.
+Open My Account and try browsing to `/admin`. Neither gets you in, which tells you the weakness is somewhere less obvious. The My Account page load sends only your session cookie, so there is nothing in it to tamper with.
 
-### Step 3. Try to Find the Admin Panel
+### Step 4. Change your email and read the response
 
-Poke around. Check "My Account" and try guessing `/admin`. Nothing works yet, and that is expected. You have not found the vulnerability, but you have ruled out the obvious places.
+On My Account, update your email address and submit it. In Burp, send that request to Repeater and read the response. The server returns more than you asked for, including a `roleid` field set to `1` for a regular user. Admins carry `roleid` 2.
 
-### Step 4. Look at the "My Account" Page Requests
+### Step 5. Add the role to your request
 
-Notice that this request sends only your session cookie. There is nothing to tamper with, so this is not the vulnerable spot.
-
-### Step 5. Try Changing Your Email Address
-
-On the "My Account" page, update your email and submit. Send that request to **Repeater** in Burp so you can inspect and replay it.
-
-### Step 6. Read the Response
-
-When you send that request, the server responds with more than you would expect, including a `roleid` field. Yours is set to `1`, a regular user. Admins carry `roleid = 2`.
-
-### Step 7. Add `roleid=2` to Your Request Yourself
-
-The original request did not include `roleid`. The request body is JSON, so add the field inside it, keeping your email:
+The request body is JSON and did not include `roleid`. Add the field yourself, keep your email, and send it:
 
 ```
 {"email":"wiener@normal-user.net","roleid":2}
 ```
 
-Send it.
+If the response now shows `roleid` 2, the server accepted a value it should never trust from the browser. That is the vulnerability.
 
-### Step 8. Check Whether It Worked
+### Step 6. Use your new access
 
-If the response now shows `roleid: 2`, the server accepted a value it should never trust from the client. That is the vulnerability: the application lets the client assign its own role.
+Browse to `/admin`. The admin panel now opens, because your account carries the admin role. Delete the user `carlos` to solve the lab.
 
-### Step 9. Reload the App
+### Step 7. Explain the fix
 
-The **Admin Panel** should now appear, because the account now carries admin privileges.
-
-### Step 10. Delete the User "Carlos"
-
-Go to the Admin Panel and delete Carlos. Lab solved.
-
-Hiding `roleid` would not fix this, because anyone can still craft a request by hand. The server has to enforce the role itself on every privileged action.
+Hiding the `roleid` field from the response would not fix this, because anyone can still add it to a request by hand. The server has to ignore role values sent by the client and check the user's role from its own records on every privileged action.

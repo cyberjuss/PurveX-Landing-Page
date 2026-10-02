@@ -444,7 +444,7 @@ export function PasswordTableLab({ onDone }: { onDone?: () => void }) {
                     </tbody>
                   </table>
                 </div>
-                {s.checked[2] && <Verdict right={reuseRight}>Priya, Devon and Sam share one. No cracking needed, because there is no salt.</Verdict>}
+                {s.checked[2] && <Verdict right={reuseRight}>Priya, Devon and Sam share one value, so whoever cracks it gets all three accounts. Without a salt, reuse shows up at a glance.</Verdict>}
               </div>
             )}
             {workDeck.card === 1 && (
@@ -501,7 +501,7 @@ export function PasswordTableLab({ onDone }: { onDone?: () => void }) {
                 />
                 {s.checked[2] && (
                   <>
-                    <Verdict right={workRight[1]}>Purvex123 and Welcome2026. A hash cannot be reversed, but a weak password can be guessed.</Verdict>
+                    <Verdict right={workRight[1]}>Purvex123 and Welcome2026 fall first. A hash cannot be reversed, but a weak password can still be guessed and hashed until one matches.</Verdict>
                     <AttackReplay table={plain} />
                   </>
                 )}
@@ -546,7 +546,7 @@ export function PasswordTableLab({ onDone }: { onDone?: () => void }) {
                     },
                   ]}
                 />
-                {s.checked[2] && <Verdict right={decodeRight}>{PW[DECODE_USER]}. No key and no guessing. Encoding hides nothing.</Verdict>}
+                {s.checked[2] && <Verdict right={decodeRight}>{PW[DECODE_USER]}, recovered without a key or a single guess, because encoding hides nothing.</Verdict>}
               </div>
             )}
             {workDeck.card === 3 && (
@@ -729,7 +729,7 @@ function EncodeCard({ onDone }: { onDone: () => void }) {
           },
         ]}
       />
-      {play > 0 && <Takeaway afterMorph>Encoding is not protection. Anyone can reverse it, with no key. A Base64 password in a script or a leaked table is a leaked password.</Takeaway>}
+      {play > 0 && <Takeaway afterMorph>Encoding is not protection, because anyone can reverse it without a key. A Base64 password in a script or a leaked table is a leaked password.</Takeaway>}
     </div>
   );
 }
@@ -802,8 +802,8 @@ function NoteCard({ word, locked, right, onWord }: { word: string; locked: boole
           },
         ]}
       />
-      {opened && <Takeaway afterMorph>Encryption comes back only with the key. It is only as safe as where the key is kept. A key stored next to the data protects nothing.</Takeaway>}
-      {locked && <Verdict right={right}>Right key, exact message. Any other key, nothing.</Verdict>}
+      {opened && <Takeaway afterMorph>Encrypted data comes back only with the key, so it is only as safe as the place the key is kept. A key stored next to the data protects nothing.</Takeaway>}
+      {locked && <Verdict right={right}>The right key returns the exact message, and any other key returns nothing.</Verdict>}
     </div>
   );
 }

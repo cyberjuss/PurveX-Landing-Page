@@ -1,9 +1,7 @@
 ### The Leaked Password Table
 
-LedgerLine, a portal eight PurveX staff used, was breached. The dump holds four generations of the same accounts, each stored a different way.
+**Situation:** LedgerLine, a vendor portal that eight PurveX staff used, was breached, and its user table is now online. Over the years the vendor stored the same passwords four different ways, so the dump holds four generations of each account.
 
-- **Encoding** changes how data looks. Anyone can reverse it.
-- **Encryption** needs a key to reverse.
-- **Hashing** is one-way, but weak passwords can be guessed.
+**Your task:** Work out what each generation gives away and what PurveX should do first. Encoding can be reversed by anyone, encryption needs the key, and hashing is one-way, although weak passwords can still be guessed.
 
-Find out what the dump gives away. Every password here is fictional.
+The vendor and every password in the dump are fictional.

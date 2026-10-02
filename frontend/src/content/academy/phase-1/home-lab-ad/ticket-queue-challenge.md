@@ -1,27 +1,11 @@
-﻿<div class="ad-brief">
+<div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Ticket Queue</h3>
-<p class="ad-brief__ask">When a request lands in your queue, can you check what is actually true in Active Directory, then make the change the ticket needs?</p>
-<p>This is the help desk queue at PurveX Financial. Tickets arrive as staff requests, HR notices, and auditor questions. Treat the ticket as a claim. Open Active Directory Users and Computers, check the account or the group or the folder, then do the work:</p>
-<ul>
-<li>Add a member</li>
-<li>Restore an account</li>
-<li>Create a hire</li>
-<li>Remove what does not belong</li>
-<li>Write a setting</li>
-<li>Move a transfer</li>
-</ul>
-<p>If the ticket and the directory disagree, fix the directory. The answer is what the directory shows after you act, not the first look.</p>
-<p>The Range download plants the ticket objects when it builds your lab. If you built the lab earlier, run the download again from Build the Environment and wait a minute for it to report.</p>
-<p>Each ticket asks for a short finding after you finish:</p>
-<ul>
-<li>A count</li>
-<li>A state</li>
-<li>A ticket number</li>
-<li>A window</li>
-<li>A title</li>
-</ul>
-<p>Case, spaces, dots, and dashes do not matter. The hint tells you what to open. The finding shows the answer, the problem, and the solution. You get three tries per ticket. The hint unlocks after two wrong tries. The explanation unlocks after the third.</p>
+<p class="ad-brief__ask">When a request lands in your queue, can you check what is true in Active Directory and then make the change the ticket needs?</p>
+<p>This is the PurveX Financial help desk queue. Requests come from staff, HR, and auditors, and each one is a claim you verify before you act. Check the account, group, or folder the ticket names, then make the change in Active Directory Users and Computers.</p>
+<p>Each ticket asks for a short finding once the work is done, such as a count, an account state, or a title. Your lab has to show the change before an answer is accepted, so the answer always reflects the directory after you act.</p>
+<p>The Range download plants the ticket objects when it builds your lab. If you built the lab earlier, download the script from Build the Environment again and run it once.</p>
+<p>Case, spaces, dots, and dashes do not matter. You get three tries per ticket, the hint unlocks after two misses, and the explanation unlocks once you solve it or use all three.</p>
 </div>
 
 <div class="ad-progress">
@@ -33,28 +17,20 @@
 <span class="ad-mission__num">Ticket 01 · INC-1041 · Low</span>
 <h4>Missing Announcements</h4>
 <p><strong>Jamie Torres · Wealth Management · 9:12 AM</strong><br>I started last week and I still have not gotten a single company-wide email. Everyone else on my team has. Can you check my access?</p>
-<p><strong>Question:</strong> Find the group that receives firm-wide announcements. Add Jamie if she is missing. After you fix it, how many members does that group have?</p>
+<p><strong>Your task:</strong> Find the group that sends firm-wide announcements and add Jamie if she is missing. Then report how many members the group has.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{9}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>Company-wide mail is not a department group</li>
-<li>Look under AccessLevels</li>
-<li>Read Description, then open Members</li>
-</ul>
-<p>Do this:</p>
+<p>Company-wide mail comes from a firm-wide group, not a department group. Look in AccessLevels and read each group's Description.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Expand AccessLevels</li>
-<li>Open the group for company-wide announcements, then Members</li>
-<li>Add <code>jamie.torres</code> if she is missing</li>
-<li>Count the names</li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Expand AccessLevels and open the group whose Description mentions company-wide announcements.</li>
+<li>On the Members tab, add <code>jamie.torres</code> if she is missing, then click Apply.</li>
+<li>Count the members and type the number here.</li>
 </ol>
-<p>PowerShell is optional last.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -64,12 +40,12 @@
 <p class="ad-flag__code"><code>GTF{9}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>Company-wide emails only go to people in <code>All Employees</code>. Jamie was missing, so she never got the emails.</p>
+<span>Why it matters</span>
+<p>Jamie was missing from <code>All Employees</code>, so every company-wide notice skipped her, including the policy and security updates staff are expected to follow.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Add Jamie to <code>All Employees</code>. The next company-wide email will reach her.</p>
+<span>What to do</span>
+<p>Add her to <code>All Employees</code> and confirm she appears on its member list. The next company-wide email will reach her.</p>
 </div>
 </div>
 </div>
@@ -79,29 +55,24 @@
 <span class="ad-mission__num">Ticket 02 · INC-1042 · Low</span>
 <h4>Locked Out</h4>
 <p><strong>Riley Kwan · Operations · 8:47 AM</strong><br>It will not let me sign in. I have typed my password wrong a few times, so I think I locked myself out. Can you unlock me?</p>
-<p><strong>Question:</strong> Do not take the action Riley named until you open the account. Restore sign-in if something is actually blocking her. What was wrong? Type <code>locked</code> or <code>disabled</code>.</p>
+<p><strong>Your task:</strong> Open Riley's account before you take the action she asked for. Restore sign-in if something is blocking her, then report what was wrong by typing <code>locked</code> or <code>disabled</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="locked or disabled" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{disabled}" data-accept="account-is-disabled|account-disabled">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>A caller names a symptom</li>
-<li>The Account tab names the cause</li>
-<li>Locked and disabled are different boxes</li>
-</ul>
-<p>Do this:</p>
+<p>A caller describes a symptom, and the Account tab shows the cause. Locked out and disabled are separate settings with separate fixes.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Right-click the domain, then Find, and type <code>riley.kwan</code></li>
-<li>Open the account, then Account</li>
-<li>Read both boxes</li>
-<li>Act on the one that is checked</li>
-<li>Submit the problem, not the word she used</li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Right-click the domain, choose Find, and search for <code>riley.kwan</code>.</li>
+<li>Open the account and go to the Account tab. Check both Unlock account and Account is disabled.</li>
+<li>Fix the setting that is blocking her, then submit the cause rather than the word she used.</li>
 </ol>
-<p>PowerShell is optional last.</p>
+<p>In PowerShell:</p>
+<ul>
+<li><code>Get-ADUser riley.kwan -Properties LockedOut, Enabled | Select-Object Name, LockedOut, Enabled</code></li>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -111,12 +82,12 @@
         <p class="ad-flag__code"><code>GTF{disabled}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>Riley said locked out. The account was disabled, so an unlock would not restore sign-in.</p>
+<span>Why it matters</span>
+<p>Riley believed she was locked out, but the account was disabled. An unlock would not have restored sign-in, and she would have stayed blocked while the ticket showed as closed.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Enable the account after you read the Account tab. Close the ticket on what you verified, not on the word she used.</p>
+<span>What to do</span>
+<p>Enable the account after you read the Account tab, and close the ticket on what you verified rather than on the word the caller used.</p>
 </div>
 </div>
 </div>
@@ -126,30 +97,20 @@
 <span class="ad-mission__num">Ticket 03 · INC-1043 · Medium</span>
 <h4>New Hire Access</h4>
 <p><strong>IT Manager · Information Technology · 10:30 AM</strong><br>Casey Reed starts on the help desk today. Create the account as <code>casey.reed</code>, give Casey the same access as the rest of IT Users, and nothing more. Clean up anything in that group that is not a current IT person.</p>
-<p><strong>Question:</strong> One leftover account in <code>IT Users</code> is not a current person. Open it and read Description before you delete it. What ticket number is written there?</p>
+<p><strong>Your task:</strong> Create <code>casey.reed</code> with IT Users only and remove anyone from <code>IT Users</code> who is not a current IT person. Before you delete the leftover intern account, report the ticket number written in its Description.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="ticket number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{ctf-ticket-1043}" data-accept="1043|ctf-1043">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>Create <code>casey.reed</code> under Departments, IT, Users and mirror a current IT person</li>
-<li>A leftover intern and a service account do not belong</li>
-<li>Read the intern Description before you delete it</li>
-</ul>
-<p>Do this:</p>
+<p>Create Casey in Departments, IT, Users and copy the groups of a current IT person. A leftover intern and a service account do not belong in a staff group.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Expand <code>Departments</code>, then <code>IT</code>, then <code>Users</code></li>
-<li>Create Casey</li>
-<li>Open <code>IT Users</code>, then Members</li>
-<li>Open each name that is not a current IT person</li>
-<li>Copy the ticket number from Description</li>
-<li>Delete the intern and remove the service account</li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Expand <code>Departments</code>, <code>IT</code>, <code>Users</code> and create <code>casey.reed</code> there.</li>
+<li>Open <code>IT Users</code>, go to Members, and open each name that is not a current IT person.</li>
+<li>Copy the ticket number from the intern's Description, then delete the intern and remove the service account from the group.</li>
 </ol>
-<p>PowerShell is optional last.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -159,12 +120,12 @@
         <p class="ad-flag__code"><code>GTF{ctf-ticket-1043}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>The group had a leftover intern and a backup service account in a staff group. Adding Casey without cleaning that up would have left extra access in place.</p>
+<span>Why it matters</span>
+<p>IT Users held a leftover intern account and a backup service account. Adding Casey without cleaning that up would have left unused access in place, which is exactly what attackers look for.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Create Casey with IT Users only. Remove the service account from the staff group. Delete the leftover intern. Confirm the member count matches current IT people plus Casey.</p>
+<span>What to do</span>
+<p>Create Casey with IT Users only, remove the service account from the staff group, and delete the intern account. Then confirm the member list shows only current IT staff and Casey.</p>
 </div>
 </div>
 </div>
@@ -173,29 +134,21 @@
 <div class="ad-mission" data-id="tq-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 04 · INC-1044 · Medium</span>
 <h4>The Backup Account</h4>
-<p><strong>Compliance Audit · Auditor request · 1:05 PM</strong><br><code>svc-backup-job</code> has no usable run window on Description. Auditors want the approved hours written on the account. Those hours are not on this ticket. They are already recorded on the folder that holds the account.</p>
-<p><strong>Question:</strong> Find the approved window, write it on Description, then type the window you wrote. Use the format 00:00-00:00.</p>
+<p><strong>Compliance Audit · Auditor request · 1:05 PM</strong><br><code>svc-backup-job</code> has no usable run window on its Description. Auditors want the approved hours written on the account. Those hours are not on this ticket, but they are already recorded on the folder that holds the account.</p>
+<p><strong>Your task:</strong> Find the approved run window on the folder that holds <code>svc-backup-job</code>, write it on the account's Description, and type the same window here in the format 00:00-00:00.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="00:00-00:00" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{01:00-03:00}" data-accept="1:00-3:00">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>The account Description currently says the window is not set</li>
-<li>The folder above the account has the approved hours</li>
-</ul>
-<p>Do this:</p>
+<p>The account's Description says the window is not set. The approved hours are on the OU directly above the account.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Right-click the domain, then Find, and type <code>svc-backup-job</code></li>
-<li>Note the folder path above the account</li>
-<li>Open that OU, then Properties, and read Description</li>
-<li>Open the account, then General, write that window, and Apply</li>
-<li>Type the same window here</li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Right-click the domain, choose Find, search for <code>svc-backup-job</code>, and note the folder that holds it.</li>
+<li>Open that OU's Properties and read its Description.</li>
+<li>Open the account, write the window into Description on the General tab, click Apply, and type the same window here.</li>
 </ol>
-<p>PowerShell is optional last.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -205,12 +158,12 @@
         <p class="ad-flag__code"><code>GTF{01:00-03:00}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>The account had no usable window on it. An auditor cannot use hours that only live on a folder.</p>
+<span>Why it matters</span>
+<p>Auditors cannot rely on hours that only live on a folder. With the window on the account, a sign-in at noon stands out as a problem instead of passing unnoticed.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Read the approved window on the ServiceAccounts folder. Write it on the account Description and confirm it is there. Later, a sign-in at noon is a problem because you have this range to compare against.</p>
+<span>What to do</span>
+<p>Copy the approved window from the ServiceAccounts folder onto the account's Description and confirm it saved.</p>
 </div>
 </div>
 </div>
@@ -220,30 +173,20 @@
 <span class="ad-mission__num">Ticket 05 · INC-1045 · High</span>
 <h4>The Transfer That Did Not Happen</h4>
 <p><strong>Human Resources · Transfer notice · 11:20 AM</strong><br>Taylor Osei has transferred from Operations to Compliance, effective today. Move the account so Compliance policies apply, and put Taylor in the Compliance group instead of Operations.</p>
-<p><strong>Question:</strong> Move the account and switch the groups. An HR notice does not rewrite every field. After you finish, what title is still on <code>taylor.osei</code>?</p>
+<p><strong>Your task:</strong> Move Taylor's account into the Compliance Users folder and swap the department groups. Then report the title still written on <code>taylor.osei</code>, because an HR notice does not update every field.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="title on the account" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{operations-analyst}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>Policy follows the folder</li>
-<li>Groups do not follow the folder. Change them yourself</li>
-<li>Title is a different box on General</li>
-</ul>
-<p>Do this:</p>
+<p>Group Policy follows the folder, but groups do not move with the account, so change them yourself. Title is a separate field on the General tab.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Find <code>taylor.osei</code></li>
-<li>Right-click, then Move into the Users folder under the department the ticket named</li>
-<li>Open Member Of</li>
-<li>Add that department group and remove the old one</li>
-<li>Open General and read Title</li>
-<li>Type the title you see, not the department HR named</li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Find <code>taylor.osei</code>, right-click the account, choose Move, and select Departments, Compliance, Users.</li>
+<li>On the Member Of tab, add <code>Compliance Users</code> and remove <code>Operations Users</code>.</li>
+<li>Open the General tab and type the Title you see, not the department HR named.</li>
 </ol>
-<p>PowerShell is optional last.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -253,12 +196,12 @@
         <p class="ad-flag__code"><code>GTF{operations-analyst}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>Taylor still lived in Operations, so Compliance rules did not apply. An HR notice changes nothing in the directory until someone acts on it.</p>
+<span>Why it matters</span>
+<p>Taylor still sat in Operations with Operations access, so Compliance policies did not apply and the old access stayed open. An HR notice changes nothing in the directory until someone acts on it.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Move the account to Departments, Compliance, Users. Swap <code>Operations Users</code> for <code>Compliance Users</code>. Confirm the folder before you close the ticket.</p>
+<span>What to do</span>
+<p>Move the account to Departments, Compliance, Users, swap <code>Operations Users</code> for <code>Compliance Users</code>, and confirm both before you close the ticket.</p>
 </div>
 </div>
 </div>

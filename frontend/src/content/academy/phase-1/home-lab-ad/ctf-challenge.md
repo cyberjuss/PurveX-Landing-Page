@@ -1,23 +1,10 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Operation Day One</h3>
-<p class="ad-brief__ask">Can you find your way around Active Directory well enough to do a help desk technician's first-day work?</p>
-<p>First day on the PurveX Financial IT help desk. Nobody expects you to close an incident yet but they do expect you to:</p>
-<ul>
-<li>Find people</li>
-<li>Find groups</li>
-<li>Find where things live</li>
-<li>Read what the directory says</li>
-</ul>
-<p>Every answer comes from your lab. Open Active Directory Users and Computers and do not answer from memory or from a tab you read earlier.</p>
-<p>If a title and a group disagree, trust the group. If a ticket and the folder disagree, trust the folder. Day One is the job of looking it up.</p>
-<p>Each task asks for a short answer:</p>
-<ul>
-<li>A group name</li>
-<li>A person</li>
-<li>A number</li>
-</ul>
-<p>Case, spaces, dots, and dashes do not matter. The hint tells you what to open. The finding shows the answer, the problem, and the solution. You get three tries per task. The hint unlocks after two wrong tries. The explanation unlocks after the third.</p>
+<p class="ad-brief__ask">Can you find your way around Active Directory well enough to handle a help desk technician's first day?</p>
+<p>It is your first day on the PurveX Financial help desk. Nobody expects you to close incidents yet, but your lead wants proof that you can find people, groups, and computers and read what the directory says about them.</p>
+<p>Every answer comes from your own lab. Open Active Directory Users and Computers on your domain controller and look each one up there. When a job title and a group disagree, trust the group, because the group is what grants access.</p>
+<p>Each task takes a short answer such as a group name, a person, or a number. Case, spaces, dots, and dashes do not matter. You get three tries, the hint unlocks after two misses, and the explanation unlocks once you solve it or use all three.</p>
 </div>
 
 <div class="ad-progress">
@@ -28,27 +15,23 @@
 <div class="ad-mission" data-id="d1-01" data-attempts="0">
 <span class="ad-mission__num">Task 01 · Find an Account</span>
 <h4>Which Group Is Jordan In?</h4>
-<p>Which department group is <code>jordan.ellis</code> in?</p>
+<p><strong>Situation:</strong> A ticket from Finance and Accounting says Jordan Ellis cannot open a shared folder. Before anyone changes access, you need to know which department group Jordan already has.</p>
+<p><strong>Your task:</strong> Find the account <code>jordan.ellis</code> and name the department group it belongs to.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{finance-accounting-users}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>Ignore Domain Users. Everyone has that</li>
-<li>The department group is the one that gives mail and file access</li>
-</ul>
-<p>Do this:</p>
+<p>The department group is the standard access group for that department, so skip Domain Users and any firm-wide group.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Right-click the domain, then Find, and type <code>jordan.ellis</code></li>
-<li>Open the account, then Member Of</li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Right-click the domain, choose Find, and search for <code>jordan.ellis</code>.</li>
+<li>Open the account and read the Member Of tab.</li>
 </ol>
-<p>PowerShell is optional last.</p>
+<p>In PowerShell:</p>
 <ul>
-<li><code>Get-ADPrincipalGroupMembership jordan.ellis | Select Name</code></li>
+<li><code>Get-ADPrincipalGroupMembership jordan.ellis | Select-Object Name</code></li>
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -59,12 +42,12 @@
 <p class="ad-flag__code"><code>GTF{finance-accounting-users}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>A ticket gives a name, not a group. Guessing from the job title adds the wrong access.</p>
+<span>Why it matters</span>
+<p>A ticket names a person, not a group. Guessing the group from a title or a department name adds the wrong access and can expose files the person should never see.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Find the account, then read Member Of. That group is what Jordan already has.</p>
+<span>What to do</span>
+<p>Find the account and read Member Of before you change anything. That list is the access Jordan already has.</p>
 </div>
 </div>
 </div>
@@ -73,27 +56,23 @@
 <div class="ad-mission" data-id="d1-02" data-attempts="0">
 <span class="ad-mission__num">Task 02 · Find Who Has Admin Rights</span>
 <h4>Who Is an Admin?</h4>
-<p>Who is in the <code>IT Admins</code> group?</p>
+<p><strong>Situation:</strong> Your lead wants to know who holds elevated IT access, because those are the accounts an attacker would want most. At PurveX, that access comes from the <code>IT Admins</code> group.</p>
+<p><strong>Your task:</strong> Name the person who is a member of <code>IT Admins</code>, using their first and last name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{alex-rivera}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>That Members list is who holds elevated IT access</li>
-<li>It should be short</li>
-</ul>
-<p>Do this:</p>
+<p>An admin group should have a short member list that you can read in one glance.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Right-click the domain, then Find, and type <code>IT Admins</code></li>
-<li>Open it, then Members</li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Right-click the domain, choose Find, and search for <code>IT Admins</code>.</li>
+<li>Open the group and read the Members tab.</li>
 </ol>
-<p>PowerShell is optional last.</p>
+<p>In PowerShell:</p>
 <ul>
-<li><code>Get-ADGroupMember "IT Admins"</code></li>
+<li><code>Get-ADGroupMember "IT Admins" | Select-Object Name</code></li>
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -104,12 +83,12 @@
 <p class="ad-flag__code"><code>GTF{alex-rivera}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>If you do not know who is in <code>IT Admins</code>, you do not know who holds elevated access.</p>
+<span>Why it matters</span>
+<p>If you do not know who holds elevated access, you cannot spot an account that should not be there. A stolen admin login does far more damage than a standard one.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Open the group and read Members. Keep that list short and current.</p>
+<span>What to do</span>
+<p>Open the group, read Members, and keep the list short and reviewed. Anyone you cannot explain is worth a question to your lead.</p>
 </div>
 </div>
 </div>
@@ -118,24 +97,19 @@
 <div class="ad-mission" data-id="d1-03" data-attempts="0">
 <span class="ad-mission__num">Task 03 · Find Where Things Live</span>
 <h4>Where Are the Access Groups?</h4>
-<p><code>Server Admins</code> and <code>Helpdesk</code> are not inside <code>Departments</code>. Which top-level OU holds them?</p>
+<p><strong>Situation:</strong> PurveX keeps its access-level groups, <code>Server Admins</code> and <code>Helpdesk</code>, apart from the department folders. That way, moving a person between departments never moves their privileges.</p>
+<p><strong>Your task:</strong> Name the top-level OU that holds <code>Server Admins</code> and <code>Helpdesk</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{accesslevels}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>An OU is a folder</li>
-<li>Department folders hold people</li>
-</ul>
-<p>Do this:</p>
+<p>An OU is a folder. The department folders hold people, so the access groups sit in a folder of their own at the same level.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Expand <code>purvexfinancial.local</code></li>
-<li>Look at the folders sitting next to <code>Departments</code></li>
-<li>Find the one that holds <code>Server Admins</code> and <code>Helpdesk</code></li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Expand <code>purvexfinancial.local</code> and look at the folders beside <code>Departments</code>.</li>
+<li>Open each one until you find <code>Server Admins</code> and <code>Helpdesk</code>.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -146,12 +120,12 @@
 <p class="ad-flag__code"><code>GTF{accesslevels}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>If admin groups live under a department, moving a person can drag those rights with them.</p>
+<span>Why it matters</span>
+<p>If admin groups lived inside a department folder, a reorganization or a folder-level permission could hand those privileges to the wrong people.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Keep people in Departments. Keep groups like Server Admins and Helpdesk in AccessLevels.</p>
+<span>What to do</span>
+<p>Keep people in Departments and keep domain-wide access groups such as Server Admins and Helpdesk in AccessLevels.</p>
 </div>
 </div>
 </div>
@@ -160,24 +134,19 @@
 <div class="ad-mission" data-id="d1-04" data-attempts="0">
 <span class="ad-mission__num">Task 04 · Spot the Default Folder</span>
 <h4>The Folder That Is Not an OU</h4>
-<p>New user accounts land in a default folder when nobody picks a department. It is not an OU, so Group Policy cannot be linked to it. What is its name, exactly as AD writes it?</p>
+<p><strong>Situation:</strong> Someone created an account without choosing a department, so Windows put it in the default folder for new users. That folder is a container, not an OU, and the difference matters for Group Policy.</p>
+<p><strong>Your task:</strong> Give the name of that default folder exactly as Active Directory writes it in the object's distinguished name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="exact name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{cn=users}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>New accounts land in a default folder if nobody picks a department folder</li>
-<li>Group Policy cannot attach to that folder</li>
-</ul>
-<p>Do this:</p>
+<p>A container uses a plain folder icon, while an OU's folder carries a small extra badge.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Expand <code>purvexfinancial.local</code></li>
-<li>Find the built-in folder that holds user accounts. Its icon is a plain folder, not an OU</li>
-<li>Turn on View, then Advanced Features. Open the folder's Properties, then Attribute Editor, and read the first part of distinguishedName</li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Expand <code>purvexfinancial.local</code> and find the built-in folder that holds user accounts.</li>
+<li>Turn on View, then Advanced Features. Open the folder's Properties from the tree, go to Attribute Editor, and read the first part of distinguishedName.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -188,12 +157,12 @@
 <p class="ad-flag__code"><code>GTF{cn=users}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>That is a default folder, not an OU. No Group Policy can be linked to it, so department settings like drive maps never reach accounts left there.</p>
+<span>Why it matters</span>
+<p>No Group Policy can be linked to a container, so department settings such as drive maps and screen-lock rules never reach an account left there. Only domain-wide policy does.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Create the user in the right department folder, or move them out of this folder the same day.</p>
+<span>What to do</span>
+<p>Create each account in its department's Users OU, or move it there the same day it is created.</p>
 </div>
 </div>
 </div>
@@ -202,23 +171,19 @@
 <div class="ad-mission" data-id="d1-05" data-attempts="0">
 <span class="ad-mission__num">Task 05 · Read a Description</span>
 <h4>What Is the Admin Group For?</h4>
-<p>The <code>IT Admins</code> group has a written description. Which role is it meant for? Use dashes between words.</p>
+<p><strong>Situation:</strong> A request asks you to add someone to <code>IT Admins</code>. Before you add anyone, the group's Description should tell you who the group is meant for.</p>
+<p><strong>Your task:</strong> Read the Description on <code>IT Admins</code> and name the role it is meant for.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="role" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-systems-administrators}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>Description should say who the group is for</li>
-<li>It should not just repeat the group name</li>
-</ul>
-<p>Do this:</p>
+<p>A good Description names who belongs in the group instead of repeating the group's name.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Right-click the domain, then Find, and type <code>IT Admins</code></li>
-<li>Open it, then General, and read Description</li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Right-click the domain, choose Find, and search for <code>IT Admins</code>.</li>
+<li>Open the group and read Description on the General tab.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -229,12 +194,12 @@
 <p class="ad-flag__code"><code>GTF{it-systems-administrators}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>A group with no description becomes a junk drawer. People get added just in case.</p>
+<span>Why it matters</span>
+<p>A group without a clear purpose collects members over time. Each extra member is one more account that can be misused if its password is stolen.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Read the Description on <code>IT Admins</code> before you add anyone. It says who belongs there.</p>
+<span>What to do</span>
+<p>Read the Description before you add anyone. If the request does not match it, ask your lead before you act.</p>
 </div>
 </div>
 </div>
@@ -243,24 +208,19 @@
 <div class="ad-mission" data-id="d1-06" data-attempts="0">
 <span class="ad-mission__num">Task 06 · Titles Are Not Access</span>
 <h4>Is Priya on the Help Desk Group?</h4>
-<p>Priya Nair's title is "Help Desk Technician." Is she a member of the <code>Helpdesk</code> group? Type <code>yes</code> or <code>no</code>.</p>
+<p><strong>Situation:</strong> A ticket asks you to remove Priya Nair's help desk privileges. Her title is Help Desk Technician, but a title is only a label on the account, and privileges come from groups.</p>
+<p><strong>Your task:</strong> Check whether Priya is a member of the <code>Helpdesk</code> group, and answer <code>yes</code> or <code>no</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{no}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>A title is a label on the account</li>
-<li>Access is a group</li>
-<li>Do not decide from the word Technician on her account</li>
-</ul>
-<p>Do this:</p>
+<p>Decide from the group's member list, not from the word Technician on her account.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Right-click the domain, then Find, and type <code>Helpdesk</code></li>
-<li>Open it, then Members</li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Right-click the domain, choose Find, and search for <code>Helpdesk</code>.</li>
+<li>Open the group and read the Members tab.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -271,12 +231,12 @@
 <p class="ad-flag__code"><code>GTF{no}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>Priya's title says Help Desk Technician, but a title does not grant access. She is not in the <code>Helpdesk</code> group.</p>
+<span>Why it matters</span>
+<p>Deciding access from a job title leads to wrong changes. You either remove access someone needs or leave access that should be gone.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Read Member Of. She has <code>IT Users</code>, not <code>Helpdesk</code>.</p>
+<span>What to do</span>
+<p>Read the group's Members or the person's Member Of tab. Priya has IT Users but not Helpdesk, so there is nothing to remove.</p>
 </div>
 </div>
 </div>
@@ -285,26 +245,21 @@
 <div class="ad-mission" data-id="d1-07" data-attempts="0">
 <span class="ad-mission__num">Task 07 · Find by Title</span>
 <h4>Who Is the Settlements Coordinator?</h4>
-<p>Who has the title <strong>Settlements Coordinator</strong>?</p>
+<p><strong>Situation:</strong> A manager calls about "the settlements coordinator" and does not know the person's username. You need the right account before you touch anything.</p>
+<p><strong>Your task:</strong> Find the person whose title is <strong>Settlements Coordinator</strong>, and answer with their first and last name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{riley-kwan}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>Tickets often say a job, not a username</li>
-<li>Confirm the name before you change anything</li>
-</ul>
-<p>Do this:</p>
+<p>Tickets often describe a job instead of a username, so search by the title.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Right-click the domain, then Find, then Advanced</li>
-<li>Set Field to User, then Job Title, and the value to <code>Settlements Coordinator</code></li>
-<li>Or expand <code>Departments</code>, then <code>Operations</code>, then <code>Users</code>, and read Title on each account</li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Right-click the domain, choose Find, then open the Advanced tab.</li>
+<li>Set Field to User, then Job Title, and search for <code>Settlements Coordinator</code>. You can also browse Departments, Operations, Users and read each Title.</li>
 </ol>
-<p>PowerShell is optional last.</p>
+<p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser -Filter "Title -eq 'Settlements Coordinator'"</code></li>
 </ul>
@@ -317,12 +272,12 @@
 <p class="ad-flag__code"><code>GTF{riley-kwan}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>A manager will often say "the settlements person" and never give a username. The wrong account is the wrong person.</p>
+<span>Why it matters</span>
+<p>Acting on the wrong account changes someone else's access, and that mistake is easy to miss until it causes harm.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Search by the title Settlements Coordinator, then confirm the name before you change anything.</p>
+<span>What to do</span>
+<p>Search by the title, then confirm the name with the caller before you make any change.</p>
 </div>
 </div>
 </div>
@@ -331,22 +286,19 @@
 <div class="ad-mission" data-id="d1-08" data-attempts="0">
 <span class="ad-mission__num">Task 08 · Find a Computer</span>
 <h4>What Is the Workstation Called?</h4>
-<p>What is the exact name of the computer object in the IT department's <code>Workstations</code> OU?</p>
+<p><strong>Situation:</strong> Alerts often name a computer rather than a person. To know whose machine it is, you first need to find the computer object and see where it lives.</p>
+<p><strong>Your task:</strong> Give the exact name of the computer object in the IT department's <code>Workstations</code> OU.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="computer name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-wks01}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>Find the computer object the same way you find a user</li>
-<li>Computer names have no spaces</li>
-</ul>
-<p>Do this:</p>
+<p>You find a computer the same way you find a person. Computer names have no spaces.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Expand <code>purvexfinancial.local</code>, then <code>Departments</code>, then <code>IT</code>, then <code>Workstations</code></li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Expand <code>purvexfinancial.local</code>, then <code>Departments</code>, <code>IT</code>, and <code>Workstations</code>.</li>
+<li>Read the name of the computer object inside.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -357,12 +309,12 @@
 <p class="ad-flag__code"><code>GTF{it-wks01}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>An alert names a host. If you cannot find that computer, you cannot tell whose machine it is.</p>
+<span>Why it matters</span>
+<p>If you cannot find the computer an alert names, you cannot tell which department or person it belongs to, and the investigation stalls.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Look under IT → Workstations. Find the object, read the name. Same as looking up a person.</p>
+<span>What to do</span>
+<p>Look under Departments, IT, Workstations and read the object's name, the same way you would look up a person.</p>
 </div>
 </div>
 </div>
@@ -371,24 +323,21 @@
 <div class="ad-mission" data-id="d1-09" data-attempts="0">
 <span class="ad-mission__num">Task 09 · Count a Group</span>
 <h4>How Many People Are in Compliance?</h4>
-<p>How many members does the <code>Compliance Users</code> group have?</p>
+<p><strong>Situation:</strong> An auditor wants a starting count of who can reach Compliance data, so any later change stands out.</p>
+<p><strong>Your task:</strong> Count the members of the <code>Compliance Users</code> group.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>If that number changes later, someone was added</li>
-</ul>
-<p>Do this:</p>
+<p>Count the people listed on the group's Members tab.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Right-click the domain, then Find, and type <code>Compliance Users</code></li>
-<li>Open it, then Members, and count the people</li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Right-click the domain, choose Find, and search for <code>Compliance Users</code>.</li>
+<li>Open the group and count the entries on the Members tab.</li>
 </ol>
-<p>PowerShell is optional last.</p>
+<p>In PowerShell:</p>
 <ul>
 <li><code>(Get-ADGroupMember "Compliance Users").Count</code></li>
 </ul>
@@ -401,12 +350,12 @@
 <p class="ad-flag__code"><code>GTF{2}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>Without a starting count, you cannot tell if someone was added later.</p>
+<span>Why it matters</span>
+<p>Without a starting count, nobody notices when someone is quietly added to a group that reaches regulated client data.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Open <code>Compliance Users</code> and count. If that number goes up later, someone new was added.</p>
+<span>What to do</span>
+<p>Record the count. If it grows later, find the ticket that explains the new member.</p>
 </div>
 </div>
 </div>
@@ -415,23 +364,19 @@
 <div class="ad-mission ad-mission--capstone" data-id="d1-10" data-attempts="0">
 <span class="ad-mission__num">Task 10 · Day One Complete</span>
 <h4>How Many Departments Are There?</h4>
-<p>How many department OUs sit directly under <code>Departments</code>?</p>
+<p><strong>Situation:</strong> To close out your first day, your lead asks you to confirm the shape of the directory, starting with how many departments it holds.</p>
+<p><strong>Your task:</strong> Count the department OUs that sit directly under <code>Departments</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{5}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Remember:</p>
-<ul>
-<li>Count only the first-level folders</li>
-<li>Skip Users and Workstations. Those sit inside a department. They are not departments</li>
-</ul>
-<p>Do this:</p>
+<p>Count only the first level of folders. Users and Workstations sit inside a department, so they are not departments themselves.</p>
 <ol>
-<li>Open Active Directory Users and Computers (Win+R then <code>dsa.msc</code>)</li>
-<li>Expand <code>purvexfinancial.local</code>, then <code>Departments</code></li>
-<li>Count the folders directly under Departments</li>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Expand <code>purvexfinancial.local</code>, then <code>Departments</code>.</li>
+<li>Count the folders directly under Departments.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -442,12 +387,12 @@
 <p class="ad-flag__code"><code>GTF{5}</code></p>
 </div>
 <div>
-<span>Problem</span>
-<p>Users and Workstations sit inside a department. Counting those folders makes the number too high.</p>
+<span>Why it matters</span>
+<p>Counting nested folders inflates the number, and a wrong picture of the directory leads to changes in the wrong place.</p>
 </div>
 <div>
-<span>Solution</span>
-<p>Count only the folders directly under Departments: IT, Compliance, Wealth Management, Operations, and Finance and Accounting.</p>
+<span>What to do</span>
+<p>Count only the folders directly under Departments: IT, Compliance, WealthManagement, Operations, and FinanceAccounting.</p>
 </div>
 </div>
 </div>

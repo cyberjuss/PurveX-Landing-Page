@@ -373,7 +373,7 @@ export function HashVerifyLab({ onDone }: { onDone?: () => void }) {
           {s.checked[1] && (
             <div className="rt-why">
               <Verdict right={score.find === 2}>
-                Line 5 swaps the letter l for the digit 1, pointing the VPN at the attacker. Line 7 downloads a program. Easy to miss by eye, impossible to miss by hash.
+                Line 5 swaps the letter l for the digit 1, pointing the VPN at the attacker. Line 7 downloads a program. Both changes are easy to miss by eye, but the hash exposes them at once.
               </Verdict>
             </div>
           )}
