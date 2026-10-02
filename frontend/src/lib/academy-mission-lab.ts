@@ -5,7 +5,10 @@ import type { LabSnapshot } from "@/lib/academy-lab";
 // Ticket Queue tickets that ask for a real change. The student cannot submit
 // the answer until their own lab shows the change.
 
-const G = (checks: { c: Check; label: string }[]) => ({ checks });
+/** Objects a ticket needs in the snapshot. A lab built before the ticket existed lacks them. */
+type Needs = { users?: string[]; groups?: string[]; ous?: string[] };
+
+const G = (checks: { c: Check; label: string }[], needs?: Needs) => ({ checks, needs });
 
 const MISSION_LAB = {
   "tq-01": G([{ c: { t: "member", sam: "jamie.torres", group: "All Employees", want: true }, label: "Jamie Torres is a member of All Employees" }]),
@@ -24,10 +27,44 @@ const MISSION_LAB = {
     { c: { t: "member", sam: "taylor.osei", group: "Compliance Users", want: true }, label: "taylor.osei is in Compliance Users" },
     { c: { t: "member", sam: "taylor.osei", group: "Operations Users", want: false }, label: "taylor.osei is no longer in Operations Users" },
   ]),
+  "tq-11": G(
+    [
+      { c: { t: "enabled", sam: "kai.mendes", want: false }, label: "kai.mendes is disabled" },
+      { c: { t: "member", sam: "kai.mendes", group: "Operations Users", want: false }, label: "kai.mendes is no longer in Operations Users" },
+    ],
+    { users: ["kai.mendes"] }
+  ),
+  "tq-12": G([{ c: { t: "member", sam: "sam.whitfield", group: "Server Admins", want: false }, label: "sam.whitfield is not in Server Admins" }]),
+  "tq-13": G(
+    [
+      { c: { t: "noexpire", sam: "noah.kim", want: false }, label: "noah.kim's password can expire again" },
+      { c: { t: "enabled", sam: "noah.kim", want: true }, label: "noah.kim's account is still enabled" },
+    ],
+    { users: ["noah.kim"] }
+  ),
+  "tq-14": G(
+    [{ c: { t: "computerAt", name: "FIN-LT14", ou: "OU=Workstations,OU=FinanceAccounting,OU=Departments" }, label: "FIN-LT14 is in Departments, FinanceAccounting, Workstations" }],
+    { ous: ["OU=Workstations,OU=FinanceAccounting,OU=Departments"] }
+  ),
+  "tq-15": G([{ c: { t: "group", name: "Finance Reports", category: "Security" }, label: "Finance Reports is a Security group" }], { groups: ["Finance Reports"] }),
 } as const;
 
+type Gate = { checks: { c: Check; label: string }[]; needs?: Needs };
+
 export function missionGate(id: string) {
-  return (MISSION_LAB as Record<string, { checks: { c: Check; label: string }[] }>)[id] ?? null;
+  return (MISSION_LAB as Record<string, Gate>)[id] ?? null;
+}
+
+/** True when the snapshot holds every object this ticket was planted with. */
+export function hasMissionObjects(id: string, s: LabSnapshot) {
+  const needs = missionGate(id)?.needs;
+  if (!needs) return true;
+  const has = (list: string[] | undefined, names: string[]) => (list ?? []).every((n) => names.includes(n.toLowerCase()));
+  return (
+    has(needs.users, s.users.map((u) => u.sam.toLowerCase())) &&
+    has(needs.groups, s.groups.map((g) => g.name.toLowerCase())) &&
+    has(needs.ous, s.ous.map((o) => o.path.toLowerCase()))
+  );
 }
 
 /** True when the lab was built with the Ticket Queue objects. Without them there is nothing to check. */

@@ -116,6 +116,41 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "HR transferred Taylor Osei to Compliance. Move the account and switch the groups, then report the title still on the account.",
     skill: "troubleshooting",
   },
+  "tq-11": {
+    id: "tq-11",
+    challenge: "ticket-queue",
+    title: "Contractor Offboarding (INC-1047)",
+    prompt: "A contractor's engagement has ended. Disable kai.mendes and remove the account's access while keeping it for records, then report the sponsor named on the account.",
+    skill: "accounts",
+  },
+  "tq-12": {
+    id: "tq-12",
+    challenge: "ticket-queue",
+    title: "Admin Rights Request (INC-1048)",
+    prompt: "Sam Whitfield asks to be added to Server Admins to install software. Read the group's Description before deciding, then report the access level it grants.",
+    skill: "security",
+  },
+  "tq-13": {
+    id: "tq-13",
+    challenge: "ticket-queue",
+    title: "Audit Finding (INC-1049)",
+    prompt: "An auditor found a staff account whose password never expires. Find it among the accounts with that setting, clear it, and report the username.",
+    skill: "security",
+  },
+  "tq-14": {
+    id: "tq-14",
+    challenge: "ticket-queue",
+    title: "New Laptop Missing Policies (INC-1050)",
+    prompt: "Jordan's new laptop FIN-LT14 is not getting Finance policies. Find where it landed, move it to the Finance workstations OU, and report the folder it was sitting in.",
+    skill: "directory",
+  },
+  "tq-15": {
+    id: "tq-15",
+    challenge: "ticket-queue",
+    title: "Group Cannot Open the Share (INC-1051)",
+    prompt: "Members of Finance Reports cannot open the reports share. Find why the group grants nothing, fix it, and report how many members it has.",
+    skill: "accounts",
+  },
   "tq-06": {
     id: "tq-06",
     challenge: "alert-queue",
@@ -175,7 +210,7 @@ export function challengeTabHref(challenge: MissionCatalogEntry["challenge"]): s
 
 export function challengeFromMission(id: string): MissionCatalogEntry["challenge"] | null {
   if (id.startsWith("d1-")) return "day-one";
-  if (/^tq-0[1-5]$/.test(id)) return "ticket-queue";
+  if (/^tq-(0[1-5]|1[1-5])$/.test(id)) return "ticket-queue";
   if (id.startsWith("tq-")) return "alert-queue";
   return MISSION_CATALOG[id]?.challenge ?? null;
 }
@@ -234,7 +269,7 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
 }
 
 /** Tickets that need a real change in the student's lab before they can answer. */
-export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05"];
+export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15"];
 
 /** The on-the-job task each mission practices. A gated ticket seen in the lab counts as proven. */
 export const MISSION_JOBS: Record<string, string> = {
@@ -242,6 +277,9 @@ export const MISSION_JOBS: Record<string, string> = {
   "tq-02": "enable-account",
   "tq-03": "create-user",
   "tq-05": "fix-ou",
+  "tq-11": "offboard",
+  "tq-13": "password-hygiene",
+  "tq-15": "group-type",
   "tq-06": "trace-logon",
   "tq-07": "read-logs",
   "tq-08": "read-logs",

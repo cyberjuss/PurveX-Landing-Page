@@ -61,6 +61,7 @@ export type Check =
   | { t: "group"; name: string; category?: "Security" | "Distribution"; scope?: string; container?: string; member?: string }
   | { t: "pso"; minLength: number; appliesTo: string; maxLockout?: number }
   | { t: "computer"; name: string; enabled: boolean }
+  | { t: "computerAt"; name: string; ou: string }
   | { t: "spn"; sam: string; want: boolean }
   | { t: "policy"; key: "minLength" | "complexity" | "history" | "lockoutThreshold" | "lockoutDurationMin" | "lockoutWindowMin" | "reversible"; min?: number; max?: number; bool?: boolean }
   | { t: "audit"; sub: string; need: "Success" | "Failure" | "Both" }
@@ -936,6 +937,11 @@ export function evalCheck(s: LabSnapshot, c: Check): boolean {
   if (c.t === "computer") {
     const pc = s.computers.find((x) => x.name.toLowerCase() === c.name.toLowerCase());
     return Boolean(pc) && pc!.enabled === c.enabled;
+  }
+  if (c.t === "computerAt") {
+    // The snapshot only covers the lab OUs, so a computer still in CN=Computers is simply absent.
+    const pc = s.computers.find((x) => x.name.toLowerCase() === c.name.toLowerCase());
+    return Boolean(pc) && pc!.container.toLowerCase() === c.ou.toLowerCase();
   }
   if (c.t === "group") {
     const g = s.groups.find((x) => x.name.toLowerCase() === c.name.toLowerCase());

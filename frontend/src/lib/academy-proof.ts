@@ -200,6 +200,9 @@ export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "tq-03": { job: "create-user", label: "Service ticket INC-1043" },
   "tq-04": { job: "service-account", label: "Service ticket INC-1044" },
   "tq-05": { job: "fix-ou", label: "Service ticket INC-1045" },
+  "tq-11": { job: "offboard", label: "Service ticket INC-1047" },
+  "tq-13": { job: "password-hygiene", label: "Service ticket INC-1049" },
+  "tq-15": { job: "group-type", label: "Service ticket INC-1051" },
 };
 
 /** Portfolio jobs a live Shift can prove, mapped from the incident that proves each.

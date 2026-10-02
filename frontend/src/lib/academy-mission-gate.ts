@@ -1,7 +1,7 @@
 import "server-only";
 import { requestLabSync } from "@/lib/academy-hosted";
 import { formatLabAge, labIsLive } from "@/lib/academy-lab";
-import { checkMission, hasTicketObjects, missionGate } from "@/lib/academy-mission-lab";
+import { checkMission, hasMissionObjects, hasTicketObjects, missionGate } from "@/lib/academy-mission-lab";
 import { loadLabState, loadProgress, saveProgress, touchLabLive } from "@/lib/academy-store";
 import { LIVE_MINUTES } from "@/lib/academy-verify";
 
@@ -34,7 +34,7 @@ export async function labGate(student: { id: string; email: string | null }, id:
   if (!gated) return { gated: false, passed: true, syncedAgo };
 
   // A lab built without -IncludeCTF has none of the ticket objects.
-  if (!hasTicketObjects(lab.snapshot)) return { gated: true, passed: false, noTicketObjects: true, results: [] };
+  if (!hasTicketObjects(lab.snapshot) || !hasMissionObjects(id, lab.snapshot)) return { gated: true, passed: false, noTicketObjects: true, results: [] };
   const checked = checkMission(id, lab.snapshot);
   if (!checked?.passed) await touchLabLive(student.id, LIVE_MINUTES).catch(() => {});
   // The server records that the change was seen. This is the only place labOk is ever set.

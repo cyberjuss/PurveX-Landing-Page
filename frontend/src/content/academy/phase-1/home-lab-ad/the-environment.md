@@ -61,6 +61,7 @@ Once you build the lab, compare it to these counts. If anything differs, check t
 
 The Range download also plants these for the Ticket Queue. They are work to do, not part of the baseline:
 
-- The `All Employees` group in `AccessLevels`
-- `old.intern` in IT, and `svc-backup-job` in `OU=ServiceAccounts`
-- Two more computer objects, `WM-WKS07` and `OPS-WKS03`
+- The `All Employees` and `Finance Reports` groups in `AccessLevels`
+- `old.intern` in IT and `svc-backup-job` in `OU=ServiceAccounts`
+- A contractor account, `kai.mendes`, and one more staff account, `noah.kim`
+- Three more computer objects: `WM-WKS07`, `OPS-WKS03` and a new laptop that still has to be filed

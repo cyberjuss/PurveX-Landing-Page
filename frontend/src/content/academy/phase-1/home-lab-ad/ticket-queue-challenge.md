@@ -10,7 +10,7 @@
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
-<span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
+<span id="ad-progress-label" class="ad-progress__label">0 / 10 solved</span>
 </div>
 
 <div class="ad-mission" data-id="tq-01" data-attempts="0">
@@ -169,7 +169,7 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="tq-05" data-attempts="0">
+<div class="ad-mission" data-id="tq-05" data-attempts="0">
 <span class="ad-mission__num">Ticket 05 · INC-1045 · High</span>
 <h4>The Transfer That Did Not Happen</h4>
 <p><strong>Human Resources · Transfer notice · 11:20 AM</strong><br>Taylor Osei has transferred from Operations to Compliance, effective today. Move the account so Compliance policies apply, and put Taylor in the Compliance group instead of Operations.</p>
@@ -202,6 +202,211 @@
 <div>
 <span>What to do</span>
 <p>Move the account to Departments → Compliance → Users and swap <code>Operations Users</code> for <code>Compliance Users</code>. Confirm both before you close the ticket.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="tq-11" data-attempts="0">
+<span class="ad-mission__num">Ticket 06 · INC-1047 · Medium</span>
+<h4>Contractor Offboarding</h4>
+<p><strong>Operations Manager · Operations · 4:40 PM</strong><br>Kai Mendes was a contractor helping the settlements team, and the engagement ended yesterday. Please make sure Kai can no longer get in. We need to keep the account for our records.</p>
+<p><strong>Your task:</strong> Disable <code>kai.mendes</code> and remove it from <code>Operations Users</code> without deleting the account. Then report the sponsor named in the account's Description.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{taylor-osei}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>A leaver's account is disabled rather than deleted so its history stays available to auditors.</p>
+<ol>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Right-click the domain and use Find to search for <code>kai.mendes</code>.</li>
+<li>Open the account and read the sponsor in Description on the General tab.</li>
+<li>Remove <code>Operations Users</code> on the Member Of tab. Then right-click the account and choose Disable Account.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>Remove-ADGroupMember "Operations Users" -Members kai.mendes</code></li>
+<li><code>Disable-ADAccount kai.mendes</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{taylor-osei}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A contractor account that stays enabled after the work ends is an unwatched way in. If its password leaks, nobody notices the sign-in because nobody expects one.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Disable the account and remove its groups on the day the engagement ends. Keep the account itself so its history stays available for audits.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="tq-12" data-attempts="0">
+<span class="ad-mission__num">Ticket 07 · INC-1048 · Medium</span>
+<h4>Admin Rights Request</h4>
+<p><strong>Sam Whitfield · Wealth Management · 9:58 AM</strong><br>I need to install a charting tool for client meetings and IT is always busy. Can you add me to Server Admins so I can do it myself?</p>
+<p><strong>Your task:</strong> Read the Description on <code>Server Admins</code> before you decide. Leave Sam's groups as they are and report the access level the group grants as a number.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{2}" data-accept="level-2|level2">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>A request names the access someone wants. The group's Description tells you what that access really covers.</p>
+<ol>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Expand AccessLevels and open <code>Server Admins</code>.</li>
+<li>Read Description on the General tab and compare it with what Sam needs.</li>
+<li>Do not add Sam. Type the access level from the Description here.</li>
+</ol>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{2}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Server Admins controls the firm's servers. An advisor with that access could be tricked into running malware with server rights, and installing one app does not need it.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Deny the request and route the install to IT through a normal software ticket. Grant the access a job needs rather than the access a shortcut needs.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="tq-13" data-attempts="0">
+<span class="ad-mission__num">Ticket 08 · INC-1049 · Medium</span>
+<h4>Audit Finding</h4>
+<p><strong>Internal Audit · Quarterly access review · 2:15 PM</strong><br>Our review found a staff account whose password never expires. Policy allows that setting only on service accounts. Please find the account and bring it back under the password policy.</p>
+<p><strong>Your task:</strong> Find the staff account with Password never expires set and clear the setting without disabling the account. Then report its username.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{noah-kim}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>A search for this setting also finds <code>svc-backup-job</code>, which is allowed to keep it. The account you want belongs to a person.</p>
+<ol>
+<li>Run the search below in PowerShell on the domain controller.</li>
+<li>Skip the service account and note the person's username.</li>
+<li>Open that account in Active Directory Users and Computers and clear Password never expires on the Account tab. Then click Apply.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>Search-ADAccount -PasswordNeverExpires -UsersOnly | Select-Object Name, SamAccountName</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{noah-kim}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A person's password that never expires stays valid forever if it leaks. It also survives every forced reset the firm uses to lock attackers out.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Clear the setting on staff accounts and leave it only on documented service accounts. Recheck the list during each access review.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="tq-14" data-attempts="0">
+<span class="ad-mission__num">Ticket 09 · INC-1050 · Low</span>
+<h4>New Laptop Missing Policies</h4>
+<p><strong>Jordan Ellis · Finance and Accounting · 8:20 AM</strong><br>My new laptop FIN-LT14 is joined to the domain, but I still do not have the Finance drive maps my old one had. Can you take a look?</p>
+<p><strong>Your task:</strong> Find where <code>FIN-LT14</code> sits in the directory and move it to Departments → FinanceAccounting → Workstations. Then report the name of the folder it was sitting in.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="folder name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{computers}" data-accept="cn=computers">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>A computer that joins the domain without a chosen OU lands in a default container, and no OU-linked Group Policy can reach it there.</p>
+<ol>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Expand <code>purvexfinancial.local</code> and look inside the default folders until you find <code>FIN-LT14</code>.</li>
+<li>Right-click the laptop and choose Move, then select Departments → FinanceAccounting → Workstations.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>(Get-ADComputer FIN-LT14).DistinguishedName</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{computers}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Finance drive maps and security settings come from policy linked to the Finance OU. A laptop left in the default container misses them, including any screen-lock or hardening rules.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Move new computers into their department's Workstations OU as soon as they join. Admins can also point new joins at a better default OU with the <code>redircmp</code> command.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission ad-mission--capstone" data-id="tq-15" data-attempts="0">
+<span class="ad-mission__num">Ticket 10 · INC-1051 · High</span>
+<h4>Group Cannot Open the Share</h4>
+<p><strong>Finance Manager · Finance and Accounting · 11:05 AM</strong><br>We set up a Finance Reports group so people could read the reports share. Jordan and Devon are both in it, but neither of them can open the share. Can you fix it?</p>
+<p><strong>Your task:</strong> Find why <code>Finance Reports</code> grants no access and fix the group without changing its members. Then report how many members it has.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Only one kind of group can grant permissions. Check the Group type on the General tab.</p>
+<ol>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Expand AccessLevels and open <code>Finance Reports</code>.</li>
+<li>On the General tab, change Group type from Distribution to Security and click Apply.</li>
+<li>Count the entries on the Members tab.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>Set-ADGroup "Finance Reports" -GroupCategory Security</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{2}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A distribution group is for email and cannot grant access, so every permission set on it did nothing. People blocked from files they need start looking for workarounds that skip security.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Convert the group to a Security group and keep its members. Then confirm the share permission names the group.</p>
 </div>
 </div>
 </div>

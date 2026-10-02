@@ -250,6 +250,46 @@ function Ensure-CTFChallengeData {
     Ensure-Computer -Name "WM-WKS07" -OUPath $wmWorkstationsOU -Description "CTF-TICKET-301: Wealth Management workstation named in a 02:00 successful-login alert for alex.rivera."
     $opsWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $DeptOUPaths["Operations"].DeptOU -Description "Operations department workstation computer objects."
     Ensure-Computer -Name "OPS-WKS03" -OUPath $opsWorkstationsOU -Description "CTF-TICKET-201: Dormant Operations workstation. Check whether this asset still belongs in scope."
+
+    # Tickets INC-1047 to INC-1051. Each object is planted only the first time, so
+    # running the script again never undoes a ticket the student already worked.
+
+    # INC-1047: a contractor whose engagement has ended, still enabled with access.
+    if (-not (Get-ADUser -Filter "SamAccountName -eq 'kai.mendes'" -ErrorAction SilentlyContinue)) {
+        Ensure-User `
+            -First "Kai" -Last "Mendes" -SamAccountName "kai.mendes" `
+            -Title "Contractor, Settlements Support" -Department "Operations" `
+            -OUPath $DeptOUPaths["Operations"].UsersOU `
+            -Groups @("Operations Users")
+        Ensure-UserDescription -SamAccountName "kai.mendes" -Description "CTF-TICKET-1047: Contractor. Engagement ended 2026-09-30. Sponsor: Taylor Osei."
+    }
+
+    # INC-1049: a staff account whose password was set to never expire.
+    if (-not (Get-ADUser -Filter "SamAccountName -eq 'noah.kim'" -ErrorAction SilentlyContinue)) {
+        Ensure-User `
+            -First "Noah" -Last "Kim" -SamAccountName "noah.kim" `
+            -Title "Portfolio Analyst" -Department "Wealth Management" `
+            -OUPath $DeptOUPaths["Wealth Management"].UsersOU `
+            -Groups @("Wealth Management Users")
+        if ($PSCmdlet.ShouldProcess("noah.kim", "Set password never expires for audit ticket")) {
+            Set-ADUser -Identity "noah.kim" -PasswordNeverExpires $true -ChangePasswordAtLogon $false
+            Write-Host "    ~ noah.kim password set to never expire" -ForegroundColor Green
+        }
+    }
+
+    # INC-1050: a new Finance laptop that landed in the default Computers container.
+    $finWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $DeptOUPaths["Finance and Accounting"].DeptOU -Description "Finance and Accounting department workstation computer objects."
+    if (-not (Get-ADComputer -Filter "Name -eq 'FIN-LT14'" -ErrorAction SilentlyContinue) -and $PSCmdlet.ShouldProcess("FIN-LT14", "Create laptop in the default Computers container")) {
+        New-ADComputer -Name "FIN-LT14" -SAMAccountName "FIN-LT14$" -Path "CN=Computers,$DomainDN" -Description "CTF-TICKET-1050: New Finance laptop for jordan.ellis. Joined to the domain 2026-09-29."
+        Write-Host "  Computer pre-staged: FIN-LT14 (CN=Computers)" -ForegroundColor Green
+    }
+
+    # INC-1051: a distribution group being used to grant access to a share.
+    if (-not (Get-ADGroup -Filter "Name -eq 'Finance Reports'" -ErrorAction SilentlyContinue) -and $PSCmdlet.ShouldProcess("Finance Reports", "Create distribution group")) {
+        New-ADGroup -Name "Finance Reports" -GroupScope Global -GroupCategory Distribution -Path $AccessLevelsOU -Description "CTF-TICKET-1051: Read access to the Finance reports share."
+        Add-ADGroupMember -Identity "Finance Reports" -Members "jordan.ellis", "devon.brooks"
+        Write-Host "  Group created: Finance Reports (Distribution)" -ForegroundColor Green
+    }
 }
 
 # Read-only security settings, so PurveX can check the hardening drills. Each

@@ -50,4 +50,11 @@ foreach ($name in $labOUs) {
     Write-Host "  Deleted: $path" -ForegroundColor Green
 }
 
+# Ticket INC-1050 plants a laptop in the default Computers container, outside the lab OUs.
+$laptop = Get-ADComputer -Filter "Name -eq 'FIN-LT14'" -ErrorAction SilentlyContinue
+if ($laptop -and $laptop.DistinguishedName -like "*,CN=Computers,$domainDN" -and $PSCmdlet.ShouldProcess($laptop.DistinguishedName, "Delete ticket laptop")) {
+    Remove-ADComputer -Identity $laptop -Confirm:$false
+    Write-Host "  Deleted: $($laptop.DistinguishedName)" -ForegroundColor Green
+}
+
 Write-Host "`nDone. Run Build-Environment.ps1 to rebuild the lab." -ForegroundColor Cyan
