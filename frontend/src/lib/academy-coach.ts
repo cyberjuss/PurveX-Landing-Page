@@ -26,6 +26,8 @@ import { ANTHROPIC_MESSAGES_URL, COACH_HAIKU_MODEL, COACH_SONNET_MODEL, webSearc
 import { isStale, ROLE_NOTE_RULES, roleBriefFrom, searchedUrls } from "@/lib/academy-role-research";
 import { findMissionsByQuery, MISSION_CATALOG } from "@/lib/academy-missions";
 import { labCoachingForMcp } from "@/lib/academy-lab-coach";
+import { firstCaseId } from "@/lib/siem/cases";
+import { sentinelSource } from "@/lib/siem/source";
 import { isBrowserLab } from "@/lib/academy-lab-briefs";
 import {
   LAB_PASS_IDS,
@@ -429,6 +431,26 @@ COACH_TOOLS.push(
     },
   },
   {
+    name: "list_siem_cases",
+    description:
+      "The SIEM investigation cases the student can work in the Range SIEM, each a realistic incident (such as a ransomware day) with its own logs. Use it to see what is available before you coach a SIEM case.",
+    input_schema: { type: "object", properties: {}, additionalProperties: false },
+  },
+  {
+    name: "run_sentinel_query",
+    description:
+      "Run a KQL query against a SIEM case's logs and get the rows back, using the same engine the student's console uses. Tables follow Microsoft Sentinel and Defender names (SecurityEvent, DeviceProcessEvents, DeviceFileEvents, DeviceNetworkEvents, EmailEvents). Use it to check the student's finding or to show how a query is built. Never paste the one query that hands over a flag, and never read an answer out.",
+    input_schema: {
+      type: "object",
+      properties: {
+        kql: { type: "string", description: "The KQL query, for example: DeviceNetworkEvents | summarize c = count() by RemoteIP | sort by c desc" },
+        case: { type: "string", description: "The case id from list_siem_cases. Defaults to the first case." },
+      },
+      required: ["kql"],
+      additionalProperties: false,
+    },
+  },
+  {
     name: "search_lessons",
     description:
       "Search Range's own lessons and return the matching passages, each with the tab it sits in and a link. Covers Phase 1 (CIA and risk, hashing and encryption, networking, authentication and access control, the Active Directory home lab) and Phase 2 log analysis. Call it before you explain a concept, so you teach it the way the course does, with its terms and examples. Pass section to get one whole tab, for example the tab get_current_activity returns. Challenge tabs are not included.",
@@ -807,6 +829,22 @@ export async function runCoachTool(name: string, input: Record<string, unknown>,
     if (!query.trim() && !section.trim()) return JSON.stringify({ error: "query or section is required" });
     return JSON.stringify(searchLessons(query, section, Number(input.limit) || 4));
   }
+  if (name === "list_siem_cases") {
+    const cases = await sentinelSource().listCases();
+    return JSON.stringify({ cases, note: cases.length ? "Each case is a SIEM investigation the student works in the Range SIEM. Use run_sentinel_query to read its logs and coach them through it." : "No SIEM cases are loaded yet." });
+  }
+  if (name === "run_sentinel_query") {
+    const caseId = String(input.case || "") || firstCaseId() || "";
+    if (!caseId) return JSON.stringify({ error: "no case loaded" });
+    const kql = String(input.kql || "").slice(0, 4000);
+    if (!kql.trim()) return JSON.stringify({ error: "kql is required" });
+    try {
+      const result = await sentinelSource().runQuery(ctx.userId || "coach", caseId, kql);
+      return JSON.stringify({ case: caseId, columns: result.columns, rows: result.rows.slice(0, 50), rowCount: result.rows.length, truncated: result.truncated, note: "This is the same engine the student's console uses, so you see what they see. Teach the query; never paste the one line that answers a flag, and never read an answer out." });
+    } catch (err) {
+      return JSON.stringify({ queryError: err instanceof Error ? err.message : "query failed" });
+    }
+  }
   if (name === "get_current_activity") return JSON.stringify(await currentActivity(ctx));
   if (name === "get_review_queue") {
     const queue = reviewQueue(ctx.userId ? await loadDrills(ctx.userId) : []);
@@ -853,6 +891,8 @@ export const COACH_TOOL_TITLES: Record<string, string> = {
   start_investigation: "Start this week's CTF",
   investigation_status: "CTF status",
   check_investigation: "Check my CTF answer",
+  list_siem_cases: "SIEM cases",
+  run_sentinel_query: "Run a SIEM query",
   search_lessons: "Search the lessons",
   get_current_activity: "Where I am in Range",
   record_practice_result: "Record a practice answer",

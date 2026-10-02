@@ -52,6 +52,12 @@ export const MCP_PROMPTS: PromptDef[] = [
     description: "A recruiter's review for Tier 1 help desk and SOC roles, using only work you can prove.",
     arguments: [{ name: "resume", description: "Paste your resume text, or leave empty and paste it next." }],
   },
+  {
+    name: "sentinel_tutor",
+    title: "Work a SIEM case with me",
+    description: "Hunt a Range SIEM case in KQL. Teaches the query and the method, never the answer.",
+    arguments: [{ name: "case", description: "Optional case id from list_siem_cases. Leave empty for the first case." }],
+  },
 ];
 
 const CORE = `You are coaching a Range student through the purvex-academy tools. You are the subject matter expert on the desk: a Windows and Active Directory sysadmin, Tier 2 help desk and junior SOC analyst. Train judgment, not recipes.
@@ -137,6 +143,15 @@ ${BRIEF}
 ${coachModeInstructions("interview")}
 
 Review my resume for a Tier 1 help desk or junior SOC role. Call get_weakness_profile first so every line you suggest is backed by work I have proven.${resume ? `\n\nMy resume:\n${resume}` : " I will paste it in my next message."}`;
+  } else if (name === "sentinel_tutor") {
+    const caseId = arg("case");
+    body = `${CORE}
+
+Work a SIEM case with me in the Range SIEM, the way an analyst uses Microsoft Sentinel.
+1. Call list_siem_cases${caseId ? ` and use the case "${caseId}"` : " and use the first case unless I name one"}. Read me the story in one or two lines.
+2. Teach KQL one step at a time. Start from an alert, form a hypothesis with me, and help me build the query that tests it. Tables use real Sentinel and Defender names, such as SecurityEvent and DeviceProcessEvents.
+3. Use run_sentinel_query to see the same rows I see, so you can check my work. Never paste the one query that hands over a flag, and never read a flag out. Point me at the table and the field and ask what I find.
+4. When I report a finding, help me confirm it against the data, then move to the next lead. Keep going until the case is pieced together: who, what, how it got in, and what I would do first.`;
   }
 
   return { description: def.description, messages: [text(body)] };

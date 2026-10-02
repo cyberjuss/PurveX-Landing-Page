@@ -6,9 +6,10 @@ const nextConfig: NextConfig = {
   // Coach and the MCP server search the lesson files at runtime, and the
   // answer check reads the challenge files.
   outputFileTracingIncludes: {
-    "/api/academy/mcp": ["./src/content/academy/**/*.md"],
+    "/api/academy/mcp": ["./src/content/academy/**/*.md", "./src/content/scenarios/**/*"],
     "/academy/api/coach": ["./src/content/academy/**/*.md"],
     "/academy/api/mission-answer": ["./src/content/academy/**/*.md"],
+    "/academy/api/siem": ["./src/content/scenarios/**/*"],
   },
   // Optimize compilation performance
   experimental: {
