@@ -97,7 +97,7 @@
 <div class="ad-mission" data-id="d1-03" data-attempts="0">
 <span class="ad-mission__num">Task 03 · Find Where Things Live</span>
 <h4>Where Are the Access Groups?</h4>
-<p><strong>Situation:</strong> PurveX keeps the access-level groups <code>Server Admins</code> and <code>Helpdesk</code> apart from the department folders. That way, moving a person between departments never moves their privileges.</p>
+<p><strong>Situation:</strong> An external auditor is reviewing who can administer servers and workstations. They want to know where the firm keeps its access-level groups, <code>Server Admins</code> and <code>Helpdesk</code>, since those groups sit outside the department folders.</p>
 <p><strong>Task:</strong> Name the top-level OU that holds <code>Server Admins</code> and <code>Helpdesk</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -286,7 +286,7 @@
 <div class="ad-mission" data-id="d1-08" data-attempts="0">
 <span class="ad-mission__num">Task 08 · Find a Computer</span>
 <h4>What Is the Workstation Called?</h4>
-<p><strong>Situation:</strong> An overnight alert named a computer rather than a person, and nobody knows yet whose machine it is.</p>
+<p><strong>Situation:</strong> IT is planning a hardware refresh, and the asset list for the IT department has one workstation on it. The vendor needs the computer's exact name as it appears in the domain before they can quote a replacement.</p>
 <p><strong>Task:</strong> Give the exact name of the computer object in the IT department's <code>Workstations</code> OU.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="computer name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -364,7 +364,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="d1-10" data-attempts="0">
 <span class="ad-mission__num">Task 10 · Day One Complete</span>
 <h4>How Many Departments Are There?</h4>
-<p><strong>Situation:</strong> It is the end of your first day, and your lead wants to know how well you understand the shape of the directory.</p>
+<p><strong>Situation:</strong> HR is updating the new-hire guide and asked IT how many departments the firm has in its directory. Your lead passed the question to you before you head home on your first day.</p>
 <p><strong>Task:</strong> Count the department OUs that sit directly under <code>Departments</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">

@@ -245,7 +245,7 @@ function Ensure-InfraTickets {
         try {
             New-NetFirewallRule -DisplayName "PurveX Temp - Vendor RDP" -Group "PurveX Lab" -Direction Inbound -Action Allow `
                 -Protocol TCP -LocalPort 3389 -RemoteAddress Any -Profile Any `
-                -Description "CTF-TICKET-1053: Opened for Northwind Advisory remote support on 2026-09-26." -ErrorAction Stop | Out-Null
+                -Description "CTF-TICKET-1053: Opened for Northwind Advisory remote support on 2026-09-24. Remove when the visit ends." -ErrorAction Stop | Out-Null
             Add-PurvexTicketMark "INC-1053"
             Write-Host "  Planted INC-1053: firewall rule PurveX Temp - Vendor RDP" -ForegroundColor Green
         }

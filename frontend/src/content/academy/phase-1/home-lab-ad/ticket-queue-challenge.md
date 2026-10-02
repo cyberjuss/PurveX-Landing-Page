@@ -210,7 +210,7 @@
 <div class="ad-mission" data-id="tq-11" data-attempts="0">
 <span class="ad-mission__num">Ticket 06 · INC-1047 · Medium</span>
 <h4>Contractor Offboarding</h4>
-<p><strong>Operations Manager · Operations · 4:40 PM</strong><br>Kai Mendes was a contractor helping the settlements team, and the engagement ended yesterday. We will still need Kai's records for the final invoice review next month.</p>
+<p><strong>Operations Manager · Operations · 4:40 PM</strong><br>Kai Mendes was a contractor helping the settlements team, and the engagement is now over. We will still need Kai's records for the final invoice review next month.</p>
 <p><strong>Task:</strong> Disable <code>kai.mendes</code> and remove it from <code>Operations Users</code> without deleting the account. Then report the sponsor named in the account's Description.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -253,7 +253,7 @@
 <div class="ad-mission" data-id="tq-12" data-attempts="0">
 <span class="ad-mission__num">Ticket 07 · INC-1048 · Medium</span>
 <h4>Admin Rights Request</h4>
-<p><strong>Sam Whitfield · Wealth Management · 9:58 AM</strong><br>I need to install a charting tool for client meetings and IT is always busy. Can you add me to Server Admins so I can do it myself?</p>
+<p><strong>Sam Whitfield · Wealth Management · 9:58 AM</strong><br>I need a charting tool installed before a client meeting this afternoon and the IT queue is backed up. A colleague said that if I am in the Server Admins group I can install it myself. Can you add me?</p>
 <p><strong>Task:</strong> Read the Description on <code>Server Admins</code> before you decide. Leave Sam's groups as they are and report the access level the group grants as a number.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -373,7 +373,7 @@
 <div class="ad-mission" data-id="tq-15" data-attempts="0">
 <span class="ad-mission__num">Ticket 10 · INC-1051 · High</span>
 <h4>Group Cannot Open the Share</h4>
-<p><strong>Finance Manager · Finance and Accounting · 11:05 AM</strong><br>We set up a Finance Reports group so people could read the reports share. Jordan and Devon are both in it, but neither of them can open the share.</p>
+<p><strong>Finance Manager · Finance and Accounting · 11:05 AM</strong><br>IT created a Finance Reports group last week so our team could read the reports share. Jordan and Devon are both in it, but neither of them can open the share.</p>
 <p><strong>Task:</strong> Find why <code>Finance Reports</code> grants no access and fix the group without changing its members. Then report how many members it has.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -499,7 +499,7 @@
 <div class="ad-mission" data-id="tq-17" data-attempts="0">
 <span class="ad-mission__num">Ticket 13 · INC-1053 · High</span>
 <h4>Vendor Remote Access Left Open</h4>
-<p><strong>Vendor Management · Vendor offboarding · 9:30 AM</strong><br>Northwind Advisory finished its support visit last Friday. During the visit IT opened remote access on the domain controller so their engineer could connect from home.</p>
+<p><strong>Vendor Management · Vendor offboarding · 9:30 AM</strong><br>Northwind Advisory finished its support engagement last week. While it ran, IT opened remote access on the domain controller so their engineer could connect from home. We are closing out the vendor file now.</p>
 <p><strong>Task:</strong> Find the inbound firewall rule on the domain controller that was opened for the vendor and disable it. Leave the built-in Remote Desktop rules alone, then report the port the vendor rule allowed.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="port number" autocomplete="off" autocapitalize="off" spellcheck="false">
