@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Check, CornerUpLeft, RotateCcw, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { CornerUpLeft, RotateCcw } from "lucide-react";
 import { useOptionalCoach } from "../coach-context";
 import { LOST_ASK } from "./lab-brief";
-import { Avatar, useLabDone, useLabResult } from "./lab-kit";
-import "./lab-kit.css";
-import "./risk-triage-chat.css";
+import { useLabDone, useLabResult } from "./lab-kit";
+import { ChatShell, Chip, ChipRow, Mine, Says, SendAction } from "./lab-chat";
 
 // Monday Morning Risk Triage, played as a guided chat with Alex, the student's
 // IT lead. Alex sends the tickets one at a time; the student answers by tapping
@@ -55,40 +54,13 @@ function loadSaved(): State {
   return START;
 }
 
-// ---- chat bubbles ----------------------------------------------------------
-
-function Says({ children, tone }: { children: ReactNode; tone?: "right" | "wrong" }) {
-  return (
-    <div className="rtc-row rtc-row--alex">
-      <Avatar name="Alex Rivera" size={30} />
-      <div className={`rtc-bubble rtc-bubble--alex${tone ? ` is-${tone}` : ""}`}>
-        {tone && (tone === "right" ? <Check className="rtc-ic" aria-hidden="true" /> : <X className="rtc-ic" aria-hidden="true" />)}
-        <span>{children}</span>
-      </div>
-    </div>
-  );
-}
-function Mine({ children }: { children: ReactNode }) {
-  return (
-    <div className="rtc-row rtc-row--me">
-      <div className="rtc-bubble rtc-bubble--me">{children}</div>
-    </div>
-  );
-}
-
 export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
   const [s, setS] = useState<State>(loadSaved);
   const [ranks, setRanks] = useState<string[]>([]);
   const coach = useOptionalCoach();
-  const threadRef = useRef<HTMLDivElement>(null);
   useLabDone(s.checked.every(Boolean), onDone);
 
   useEffect(() => { localStorage.setItem(STORE, JSON.stringify(s)); }, [s]);
-  // Keep the newest message in view, like a real chat.
-  useEffect(() => {
-    const el = threadRef.current;
-    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-  }, [s, ranks]);
 
   const patch = (p: Partial<State>) => setS((prev) => ({ ...prev, ...p }));
   const checkStep = (i: 0 | 1 | 2) => setS((prev) => ({ ...prev, checked: prev.checked.map((c, j) => (j === i ? true : c)) as State["checked"] }));
@@ -106,25 +78,8 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
   useLabResult("lab-risk-triage", s.checked.every(Boolean), score.total, 16);
 
   const reset = () => { setRanks([]); setS(START); };
-
-  // progress dots along the top
-  const header = (
-    <header className="rtc-head">
-      <Avatar name="Alex Rivera" size={38} />
-      <div className="rtc-head__who">
-        <b>Alex Rivera</b>
-        <span>Your IT lead · {STEPS[s.step]}</span>
-      </div>
-      <ol className="rtc-head__steps" aria-label="Progress">
-        {STEPS.map((label, i) => (
-          <li key={label} className={`rtc-pip${i === s.step ? " is-on" : ""}${(i < 3 && s.checked[i]) || (i === 3 && s.checked[2]) ? " is-done" : ""}`} title={label} />
-        ))}
-      </ol>
-      {coach?.enabled && (
-        <button type="button" className="rtc-ask" onClick={() => coach.ask(LOST_ASK)}>Lost?</button>
-      )}
-    </header>
-  );
+  const done = [s.checked[0], s.checked[1], s.checked[2], s.checked[2]];
+  const signal = `${s.step}:${Object.keys(s.cia).length}:${Object.keys(s.likelihood).length}:${Object.keys(s.impact).length}:${s.checked.join("")}:${ranks.length}`;
 
   // ---- step 0: name the failure -------------------------------------------
   const cur0 = TICKETS.findIndex((t) => !s.cia[t.id]);
@@ -139,10 +94,8 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
   const placeRank = (id: string) => setRanks((r) => (r.includes(id) ? r : [...r, id]));
   const remaining = TICKETS.filter((t) => !ranks.includes(t.id));
 
-  return (
-    <section className="rtc" aria-label="Monday Morning Risk Triage, guided chat">
-      {header}
-      <div className="rtc-thread" ref={threadRef}>
+  const thread = (
+    <>
         {s.step === 0 && (
           <>
             <Says>Morning. Four problems came in over the weekend and we can only start one fix today. First, let&rsquo;s name what actually broke on each. I&rsquo;ll send them one at a time.</Says>
@@ -220,22 +173,24 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
             <Says>Start the morning with the client balances folder, then fix the backup. Nice work.</Says>
           </>
         )}
-      </div>
+    </>
+  );
 
-      {/* composer: the current input, as chat chips or an action */}
-      <div className="rtc-composer">
+  // composer: the current input, as chat chips or a send action
+  const composer = (
+    <>
         {s.step === 0 && (cur0 !== -1 ? (
           <ChipRow label={`Ticket ${TICKETS[cur0].tag}: which job broke?`}>
             {CIA.map((c) => <Chip key={c.key} onClick={() => pickCia(TICKETS[cur0].id, c.key)}>{c.label}<small>{c.hint}</small></Chip>)}
           </ChipRow>
         ) : !s.checked[0] ? (
-          <Action onClick={() => checkStep(0)}>Check my answers</Action>
+          <SendAction onClick={() => checkStep(0)}>Check my answers</SendAction>
         ) : (
-          <Action onClick={() => goStep(1)}>Continue to scoring →</Action>
+          <SendAction onClick={() => goStep(1)}>Continue to scoring →</SendAction>
         ))}
 
         {s.step === 1 && (cur1 !== -1 ? (
-          <div className="rtc-levels">
+          <div className="lc-levels">
             <ChipRow label="Likelihood">
               {LEVELS.map((l) => <Chip key={l.key} active={s.likelihood[TICKETS[cur1].id] === l.key} onClick={() => pickLevel("likelihood", TICKETS[cur1].id, l.key)}>{l.label}</Chip>)}
             </ChipRow>
@@ -244,44 +199,42 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
             </ChipRow>
           </div>
         ) : !s.checked[1] ? (
-          <Action onClick={() => checkStep(1)}>Check my ratings</Action>
+          <SendAction onClick={() => checkStep(1)}>Check my ratings</SendAction>
         ) : (
-          <Action onClick={() => goStep(2)}>Continue to ranking →</Action>
+          <SendAction onClick={() => goStep(2)}>Continue to ranking →</SendAction>
         ))}
 
         {s.step === 2 && (ranks.length < 4 ? (
           <ChipRow label={`Pick #${ranks.length + 1} to work`}>
             {remaining.map((t) => <Chip key={t.id} onClick={() => placeRank(t.id)}>{t.title}</Chip>)}
-            {ranks.length > 0 && <button type="button" className="rtc-undo" onClick={() => setRanks((r) => r.slice(0, -1))}><CornerUpLeft aria-hidden="true" /> Undo</button>}
+            {ranks.length > 0 && <button type="button" className="lc-undo" onClick={() => setRanks((r) => r.slice(0, -1))}><CornerUpLeft aria-hidden="true" /> Undo</button>}
           </ChipRow>
         ) : !s.checked[2] ? (
-          <div className="rtc-actions">
-            <button type="button" className="rtc-undo" onClick={() => setRanks([])}><RotateCcw aria-hidden="true" /> Redo order</button>
-            <Action onClick={() => { patch({ order: ranks }); checkStep(2); }}>Check my order</Action>
+          <div className="lc-actions">
+            <button type="button" className="lc-undo" onClick={() => setRanks([])}><RotateCcw aria-hidden="true" /> Redo order</button>
+            <SendAction onClick={() => { patch({ order: ranks }); checkStep(2); }}>Check my order</SendAction>
           </div>
         ) : (
-          <Action onClick={() => goStep(3)}>See the debrief →</Action>
+          <SendAction onClick={() => goStep(3)}>See the debrief →</SendAction>
         ))}
 
         {s.step === 3 && (
-          <Action onClick={reset} subtle><RotateCcw aria-hidden="true" /> Try again</Action>
+          <SendAction onClick={reset} subtle><RotateCcw aria-hidden="true" /> Try again</SendAction>
         )}
-      </div>
-    </section>
+    </>
   );
-}
 
-function ChipRow({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="rtc-chiprow">
-      <span className="rtc-chiprow__label">{label}</span>
-      <div className="rtc-chips">{children}</div>
-    </div>
+    <ChatShell
+      role="Your IT lead"
+      steps={STEPS}
+      step={s.step}
+      done={done}
+      onAsk={coach?.enabled ? () => coach.ask(LOST_ASK) : undefined}
+      signal={signal}
+      thread={thread}
+      composer={composer}
+      label="Monday Morning Risk Triage, guided chat"
+    />
   );
-}
-function Chip({ children, onClick, active }: { children: ReactNode; onClick: () => void; active?: boolean }) {
-  return <button type="button" className={`rtc-chip${active ? " is-active" : ""}`} onClick={onClick}>{children}</button>;
-}
-function Action({ children, onClick, subtle }: { children: ReactNode; onClick: () => void; subtle?: boolean }) {
-  return <button type="button" className={`rtc-send${subtle ? " is-subtle" : ""}`} onClick={onClick}>{children}</button>;
 }
