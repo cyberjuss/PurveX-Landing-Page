@@ -2,29 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { ExternalLink, RotateCcw } from "lucide-react";
-import {
-  Avatar,
-  CHEF_SHA256,
-  Deck,
-  DownloadButton,
-  Guide,
-  Hash,
-  HashCompare,
-  HashPlayground,
-  HashTool,
-  Narrator,
-  nextHint,
-  normHash,
-  Options,
-  Stepper,
-  useDeck,
-  useHashes,
-  useLabDone,
-  useLabResult,
-  useSaved,
-  Verdict,
-  type DotStatus,
-} from "./lab-kit";
+import { CHEF_SHA256, DownloadButton, Hash, HashCompare, HashPlayground, HashTool, normHash, useHashes, useLabDone, useLabResult, useSaved } from "./lab-kit";
+import { ChatShell, Chip, ChipRow, Mine, Says, SendAction } from "./lab-chat";
+import { useOptionalCoach } from "../coach-context";
+import { LOST_ASK } from "./lab-brief";
 
 // Week 2 lab: three copies of one IT update, one of them tampered with.
 // Students hash every copy with a real tool, compare against the hash IT
@@ -172,17 +153,11 @@ export function HashVerifyLab({ onDone }: { onDone?: () => void }) {
   const [s, setS] = useSaved<State>(STORE, START, (v) => Array.isArray(v.lines) && Array.isArray(v.checked));
   useLabDone(s.checked.every(Boolean), onDone);
   const hashes = useHashes({ official: text(GENUINE), ...Object.fromEntries(COPIES.map((c) => [c.id, c.body])) });
-  const deck1 = useDeck(COPIES.length);
-  const deck3 = useDeck(QUESTIONS.length);
+  const coach = useOptionalCoach();
   const [got, setGot] = useState<string[]>([]);
 
   const patch = (p: Partial<State>) => setS((prev) => ({ ...prev, ...p }));
-  const go = (step: number) => {
-    patch({ step });
-    deck1.reset();
-    deck3.reset();
-    document.querySelector(".rt")?.scrollIntoView({ block: "start", behavior: "smooth" });
-  };
+  const go = (step: number) => patch({ step });
   const check = (i: 0 | 1 | 2) => setS((prev) => ({ ...prev, checked: prev.checked.map((c, j) => (j === i ? true : c)) as State["checked"] }));
 
   const hashOk = (id: string) => Boolean(hashes[id]) && normHash(s.pasted[id] ?? "") === hashes[id];
@@ -197,298 +172,154 @@ export function HashVerifyLab({ onDone }: { onDone?: () => void }) {
   }, [s]);
   useLabResult("lab-hash-verify", s.checked.every(Boolean), score.total, 8);
 
-  const allHashed = COPIES.every((c) => hashOk(c.id) && s.verdict[c.id]);
-  const reached = [true, s.checked[0], s.checked[1], s.checked[2]];
+  const pips = [s.checked[0], s.checked[1], s.checked[2], s.checked[2]];
+  const signal = `${s.step}:${Object.values(s.pasted).join("").length}:${Object.keys(s.verdict).length}:${s.lines.length}:${s.effect ?? ""}:${Object.keys(s.answers).length}:${s.checked.join("")}`;
 
-  return (
-    <section className="rt" aria-label="The Update Nobody Can Vouch For lab">
-      <Stepper steps={STEPS} step={s.step} done={[...s.checked, false]} reached={reached} onGo={go} />
+  const cur0 = COPIES.findIndex((c) => !(hashOk(c.id) && s.verdict[c.id]));
+  const cur2 = QUESTIONS.findIndex((q) => !s.answers[q.id]);
 
+  const thread = (
+    <>
       {s.step === 0 && (
-        <div className="rt-body">
-          <header className="rt-head">
-            <h3>Which copies are real?</h3>
-            <Narrator>Hash each copy and compare it to mine. Trust the hash, not how the file looks.</Narrator>
-          </header>
-          <div className="lk-real">
-            <b>IT portal · VPN update 2.4.1 · SHA-256</b>
-            <Hash value={hashes.official} />
+        <>
+          <Says>Three copies of our VPN update are going around, and one has been tampered with. Hash each one and compare it to the hash I published. Trust the hash, not how the file looks.</Says>
+          <div className="lc-tool lc-tool--flush" style={{ padding: 14 }}>
+            <div className="lk-real" style={{ border: 0, padding: 0 }}><b>IT portal · VPN update 2.4.1 · SHA-256</b><Hash value={hashes.official} /></div>
+            <details className="lk-more" style={{ marginTop: 10 }}><summary>New to hashes? Try one first</summary><HashPlayground seed="PurveX VPN update 2.4.1" /></details>
           </div>
-          <details className="lk-more">
-            <summary>New to hashes? Try one first</summary>
-            <HashPlayground seed="PurveX VPN update 2.4.1" />
-          </details>
-          <Deck
-            tags={COPIES.map((c) => c.tag)}
-            titles={COPIES.map((c) => c.title)}
-            index={deck1.card}
-            dir={deck1.dir}
-            onGo={deck1.show}
-            status={COPIES.map((c): DotStatus => (s.checked[0] ? (s.verdict[c.id] === truth(c) ? "right" : "wrong") : hashOk(c.id) && s.verdict[c.id] ? "answered" : "open"))}
-          >
-            {(() => {
-              const c = COPIES[deck1.card];
-              const done = s.checked[0];
-              const pasted = s.pasted[c.id] ?? "";
-              const ok = hashOk(c.id);
-              const right = s.verdict[c.id] === truth(c);
-              return (
-                <div className={`rt-ticket${done ? (right ? " is-right" : " is-wrong") : ""}`}>
-                  <div className="rt-ticket__head">
-                    <span className="rt-tag">{c.tag}</span>
-                    <div>
-                      <b>{c.title}</b>
-                      <small className="lk-from">
-                        <Avatar name={c.from} kind={c.id === "share" ? "server" : c.id === "teams" ? "unknown" : "person"} size={18} /> From {c.from}
-                      </small>
-                      <p>{c.story}</p>
-                    </div>
+          {COPIES.slice(0, cur0 === -1 ? COPIES.length : cur0 + 1).map((c, idx) => {
+            const isCur = idx === cur0 && !s.checked[0];
+            const pasted = s.pasted[c.id] ?? "";
+            const ok = hashOk(c.id);
+            return (
+              <div key={c.id}>
+                <Says><b>Copy {c.tag} — {c.title}.</b> From {c.from}. {c.story}</Says>
+                {isCur && (
+                  <div className="lc-tool">
+                    <DownloadButton name={c.file} text={c.body} onDone={() => setGot((g) => (g.includes(c.id) ? g : [...g, c.id]))} />
+                    <p className="lk-note" style={{ marginTop: 10 }}>Hash the file in CyberChef, then paste the hash.</p>
+                    <a className="lk-mini" href={CHEF_SHA256} target="_blank" rel="noreferrer"><ExternalLink aria-hidden="true" /> Open CyberChef</a>
+                    <label className="lk-field" style={{ marginTop: 8 }}>
+                      <span className="sr-only">SHA-256 of {c.file}</span>
+                      <div><input type="text" value={pasted} spellCheck={false} autoComplete="off" placeholder="Paste the hash" onChange={(e) => patch({ pasted: { ...s.pasted, [c.id]: e.target.value } })} /></div>
+                    </label>
+                    {pasted && !ok && <p className="lk-note is-bad">{normHash(pasted).length !== 64 ? "A SHA-256 is 64 characters." : "Not this file's hash. Hash the file for this copy."}</p>}
+                    {ok && <HashCompare label={`Copy ${c.tag}`} mine={pasted} reference={hashes.official} />}
+                    {!ok && !got.includes(c.id) && <HashTool mode="file" />}
                   </div>
-                  <Guide
-                    steps={[
-                      {
-                        title: "Download this copy",
-                        done: got.includes(c.id) || ok,
-                        body: <DownloadButton name={c.file} text={c.body} onDone={() => setGot((g) => (g.includes(c.id) ? g : [...g, c.id]))} />,
-                      },
-                      {
-                        title: "Hash it in CyberChef, then paste the hash here",
-                        done: ok,
-                        body: (
-                          <>
-                            <p className="lk-note">Drag the file into the Input box. Copy the Output.</p>
-                            <a className="lk-mini" href={CHEF_SHA256} target="_blank" rel="noreferrer">
-                              <ExternalLink aria-hidden="true" /> Open CyberChef
-                            </a>
-                            <label className="lk-field">
-                              <span className="sr-only">SHA-256 of {c.file}</span>
-                              <div>
-                                <input
-                                  type="text"
-                                  value={pasted}
-                                  disabled={done}
-                                  spellCheck={false}
-                                  autoComplete="off"
-                                  placeholder="Paste the hash"
-                                  onChange={(e) => patch({ pasted: { ...s.pasted, [c.id]: e.target.value } })}
-                                />
-                              </div>
-                            </label>
-                            {pasted && !ok && (
-                              <p className="lk-note is-bad">{normHash(pasted).length !== 64 ? "A SHA-256 is 64 characters." : "Not this file's hash. Hash the file for this copy."}</p>
-                            )}
-                            {!ok && <HashTool mode="file" />}
-                          </>
-                        ),
-                      },
-                      {
-                        title: "Does it match IT's hash?",
-                        done: Boolean(s.verdict[c.id]),
-                        body: (
-                          <>
-                            <HashCompare label={`Copy ${c.tag}`} mine={pasted} reference={hashes.official} />
-                            <div className="rt-choice" role="radiogroup" aria-label={`Does copy ${c.tag} match?`} style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
-                              {(["match", "nomatch"] as const).map((v) => (
-                                <button
-                                  key={v}
-                                  type="button"
-                                  role="radio"
-                                  aria-checked={s.verdict[c.id] === v}
-                                  disabled={done}
-                                  className={done && v === truth(c) ? "is-answer" : ""}
-                                  onClick={() => {
-                                    const verdict = { ...s.verdict, [c.id]: v };
-                                    patch({ verdict });
-                                    deck1.next((i) => hashOk(COPIES[i].id) && Boolean(verdict[COPIES[i].id]));
-                                  }}
-                                >
-                                  <b>{v === "match" ? "Matches" : "Does not match"}</b>
-                                </button>
-                              ))}
-                            </div>
-                          </>
-                        ),
-                      },
-                    ]}
-                  />
-                  {done && <Verdict right={right}>{c.why}</Verdict>}
-                </div>
-              );
-            })()}
-          </Deck>
-          <footer className="rt-foot">
-            {s.checked[0] ? (
-              <>
-                <p className="rt-tally">
-                  <b>{score.matched} of 3</b> called correctly
-                </p>
-                <button type="button" className="rt-btn rt-btn--primary" onClick={() => go(1)}>
-                  Find the change
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="rt-tally">{nextHint(COPIES.map((c) => hashOk(c.id) && Boolean(s.verdict[c.id])), COPIES.map((c) => `copy ${c.tag}, ${c.title.toLowerCase()}`))}</p>
-                <button type="button" className="rt-btn rt-btn--primary" disabled={!allHashed} onClick={() => check(0)}>
-                  Check answers
-                </button>
-              </>
-            )}
-          </footer>
-        </div>
+                )}
+                {s.verdict[c.id] && <Mine>{s.verdict[c.id] === "match" ? "Matches IT's hash" : "Does not match"}</Mine>}
+                {s.checked[0] && <Says tone={s.verdict[c.id] === truth(c) ? "right" : "wrong"}>{c.why}</Says>}
+              </div>
+            );
+          })}
+          {cur0 === -1 && !s.checked[0] && <Says>All three hashed. Check them?</Says>}
+          {s.checked[0] && <Says>You called <b>{score.matched} of 3</b>. Copy B&rsquo;s hash did not match — let&rsquo;s see what they changed.</Says>}
+        </>
       )}
 
       {s.step === 1 && (
-        <div className="rt-body">
-          <header className="rt-head">
-            <h3>What did they change?</h3>
-            <Narrator>Copy B&apos;s hash did not match, so someone edited it. Compare it with my real copy to find the edits.</Narrator>
-          </header>
-          <Guide
-            steps={[
-              {
-                title: "Find the 2 lines in copy B that differ from IT's copy, and click them",
-                done: s.lines.length > 0,
-                body: (
-                  <div className="lk-files">
-                    <FileView label="IT's real copy" name={BY_ID.email.file} note="Matches IT's hash" lines={GENUINE} />
-                    <FileView
-                      label="Copy B"
-                      name={BY_ID.share.file}
-                      lines={TAMPERED}
-                      picked={s.lines}
-                      reveal={s.checked[1]}
-                      onToggle={(n) => patch({ lines: s.lines.includes(n) ? s.lines.filter((x) => x !== n) : [...s.lines, n] })}
-                    />
-                  </div>
-                ),
-              },
-              {
-                title: "What would copy B do if someone ran it?",
-                done: Boolean(s.effect),
-                body: <Options label="What copy B does" options={EFFECT} value={s.effect} answer={s.checked[1] ? "redirect" : undefined} disabled={s.checked[1]} onPick={(effect) => patch({ effect })} />,
-              },
-            ]}
-          />
-          {s.checked[1] && (
-            <div className="rt-why">
-              <Verdict right={score.find === 2}>
-                Line 5 swaps the letter l for the digit 1, pointing the VPN at the attacker. Line 7 downloads a program. Both changes are easy to miss by eye, but the hash exposes them at once.
-              </Verdict>
+        <>
+          <Says>Copy B was edited. Compare it with my real copy and click the <b>two</b> lines that differ.</Says>
+          <div className="lc-tool">
+            <div className="lk-files">
+              <FileView label="IT's real copy" name={BY_ID.email.file} note="Matches IT's hash" lines={GENUINE} />
+              <FileView label="Copy B" name={BY_ID.share.file} lines={TAMPERED} picked={s.lines} reveal={s.checked[1]} onToggle={s.checked[1] ? undefined : (n) => patch({ lines: s.lines.includes(n) ? s.lines.filter((x) => x !== n) : [...s.lines, n] })} />
             </div>
+          </div>
+          {s.lines.length > 0 && <Mine>Picked {s.lines.length} line{s.lines.length === 1 ? "" : "s"}</Mine>}
+          {s.effect && <Mine>{EFFECT.find((e) => e.key === s.effect)?.text}</Mine>}
+          {s.checked[1] && (
+            <Says tone={score.find === 2 ? "right" : "wrong"}>Line 5 swaps the letter l for the digit 1, pointing the VPN at the attacker. Line 7 downloads a program. Both are easy to miss by eye, but the hash exposes them at once. You got <b>{score.find} of 2</b>.</Says>
           )}
-          <footer className="rt-foot">
-            {s.checked[1] ? (
-              <>
-                <p className="rt-tally">
-                  <b>{score.find} of 2</b> right
-                </p>
-                <button type="button" className="rt-btn rt-btn--primary" onClick={() => go(2)}>
-                  Make the call
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="rt-tally">{nextHint([s.lines.length > 0, Boolean(s.effect)], ["click the 2 changed lines", "say what copy B does"])}</p>
-                <button type="button" className="rt-btn rt-btn--primary" disabled={!s.lines.length || !s.effect} onClick={() => check(1)}>
-                  Check answers
-                </button>
-              </>
-            )}
-          </footer>
-        </div>
+        </>
       )}
 
       {s.step === 2 && (
-        <div className="rt-body">
-          <header className="rt-head">
-            <h3>What happens next?</h3>
-            <Narrator>Three quick calls before this goes any further.</Narrator>
-          </header>
-          <Deck
-            tags={QUESTIONS.map((q) => q.tag)}
-            titles={QUESTIONS.map((q) => q.title)}
-            index={deck3.card}
-            dir={deck3.dir}
-            onGo={deck3.show}
-            status={QUESTIONS.map((q): DotStatus => (s.checked[2] ? (s.answers[q.id] === q.answer ? "right" : "wrong") : s.answers[q.id] ? "answered" : "open"))}
-          >
-            {(() => {
-              const q = QUESTIONS[deck3.card];
-              const done = s.checked[2];
-              const right = s.answers[q.id] === q.answer;
-              return (
-                <div className={`rt-ticket${done ? (right ? " is-right" : " is-wrong") : ""}`}>
-                  <div className="lk-q">
-                    <b>{q.prompt}</b>
-                    <Options
-                      label={q.title}
-                      options={q.options}
-                      value={s.answers[q.id]}
-                      answer={done ? q.answer : undefined}
-                      disabled={done}
-                      onPick={(v) => {
-                        const answers = { ...s.answers, [q.id]: v };
-                        patch({ answers });
-                        deck3.next((i) => Boolean(answers[QUESTIONS[i].id]));
-                      }}
-                    />
-                  </div>
-                  {done && <Verdict right={right}>{q.why}</Verdict>}
-                </div>
-              );
-            })()}
-          </Deck>
-          <footer className="rt-foot">
-            {s.checked[2] ? (
-              <>
-                <p className="rt-tally">
-                  <b>{score.calls} of 3</b> right
-                </p>
-                <button type="button" className="rt-btn rt-btn--primary" onClick={() => go(3)}>
-                  See the debrief
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="rt-tally">{nextHint(QUESTIONS.map((q) => Boolean(s.answers[q.id])), QUESTIONS.map((q) => `question ${q.tag}`))}</p>
-                <button type="button" className="rt-btn rt-btn--primary" disabled={QUESTIONS.some((q) => !s.answers[q.id])} onClick={() => check(2)}>
-                  Check answers
-                </button>
-              </>
-            )}
-          </footer>
-        </div>
+        <>
+          <Says>Three quick calls before this goes any further.</Says>
+          {QUESTIONS.slice(0, cur2 === -1 ? QUESTIONS.length : cur2 + 1).map((q) => {
+            const a = s.answers[q.id];
+            return (
+              <div key={q.id}>
+                <Says><b>{q.title}.</b> {q.prompt}</Says>
+                {a && <Mine>{q.options.find((o) => o.key === a)?.text}</Mine>}
+                {s.checked[2] && a && <Says tone={a === q.answer ? "right" : "wrong"}>{q.why}</Says>}
+              </div>
+            );
+          })}
+          {cur2 === -1 && !s.checked[2] && <Says>Ready to check?</Says>}
+          {s.checked[2] && <Says>You made <b>{score.calls} of 3</b> right.</Says>}
+        </>
       )}
 
       {s.step === 3 && (
-        <div className="rt-body">
-          <header className="rt-head rt-head--result">
-            <div className={`rt-grade rt-grade--${score.total >= 7 ? "high" : score.total >= 5 ? "medium" : "low"}`}>
-              <b>{score.total}</b>
-              <small>of 8</small>
-            </div>
-            <div>
-              <h3>{score.total >= 7 ? "You would catch this one" : score.total >= 5 ? "Solid start" : "Worth another pass"}</h3>
-              <p>
-                Hashed {score.matched} of 3 · Found {score.find} of 2 · Called {score.calls} of 3
-              </p>
-            </div>
-          </header>
-          <p className="rt-lesson">A hash is a one-way fingerprint. It proves a file was not changed, but keeps nothing secret.</p>
-          <div className="lk-real">
-            <b>On the job</b>
-            <p>Analysts hash suspicious files with CyberChef or sha256sum and look the hash up in MISP, the open-source threat-sharing platform. The hash goes in the ticket.</p>
-          </div>
-          <footer className="rt-foot">
-            <p className="rt-tally">Check the hash. Then check the source.</p>
-            <button type="button" className="rt-btn" onClick={() => setS(START)}>
-              <RotateCcw aria-hidden="true" /> Try again
-            </button>
-          </footer>
-        </div>
+        <>
+          <Says>Wrap-up. You scored <b>{score.total} of 8</b> — hashed {score.matched} of 3, found {score.find} of 2, called {score.calls} of 3. {score.total >= 7 ? "You would catch this one." : score.total >= 5 ? "Solid start." : "Worth another pass."}</Says>
+          <Says>A hash is a one-way fingerprint. It proves a file was not changed, but keeps nothing secret.</Says>
+          <Says>On the job you hash suspicious files with CyberChef or sha256sum and look the hash up in MISP, the open-source threat-sharing platform. The hash goes in the ticket. Check the hash, then check the source.</Says>
+        </>
       )}
-    </section>
+    </>
+  );
+
+  const composer = (
+    <>
+      {s.step === 0 && (cur0 !== -1 ? (
+        !hashOk(COPIES[cur0].id) ? (
+          <span className="rt-tally">Download copy {COPIES[cur0].tag}, hash it, and paste the hash above.</span>
+        ) : !s.verdict[COPIES[cur0].id] ? (
+          <ChipRow label={`Does copy ${COPIES[cur0].tag} match IT's hash?`}>
+            <Chip onClick={() => patch({ verdict: { ...s.verdict, [COPIES[cur0].id]: "match" } })}>Matches</Chip>
+            <Chip onClick={() => patch({ verdict: { ...s.verdict, [COPIES[cur0].id]: "nomatch" } })}>Does not match</Chip>
+          </ChipRow>
+        ) : null
+      ) : !s.checked[0] ? (
+        <SendAction onClick={() => check(0)}>Check answers</SendAction>
+      ) : (
+        <SendAction onClick={() => go(1)}>Find the change →</SendAction>
+      ))}
+
+      {s.step === 1 && (!s.checked[1] ? (
+        <div className="lc-levels">
+          <ChipRow label="What would copy B do if someone ran it?">
+            {EFFECT.map((e) => <Chip key={e.key} active={s.effect === e.key} onClick={() => patch({ effect: e.key })}>{e.text}</Chip>)}
+          </ChipRow>
+          <div className="lc-actions">
+            <span className="rt-tally">{s.lines.length ? "" : "Click the 2 changed lines above."}</span>
+            <SendAction disabled={!s.lines.length || !s.effect} onClick={() => check(1)}>Check answers</SendAction>
+          </div>
+        </div>
+      ) : (
+        <SendAction onClick={() => go(2)}>Make the call →</SendAction>
+      ))}
+
+      {s.step === 2 && (cur2 !== -1 ? (
+        <ChipRow label={QUESTIONS[cur2].title}>
+          {QUESTIONS[cur2].options.map((o) => <Chip key={o.key} onClick={() => patch({ answers: { ...s.answers, [QUESTIONS[cur2].id]: o.key } })}>{o.text}</Chip>)}
+        </ChipRow>
+      ) : !s.checked[2] ? (
+        <SendAction onClick={() => check(2)}>Check answers</SendAction>
+      ) : (
+        <SendAction onClick={() => go(3)}>See the debrief →</SendAction>
+      ))}
+
+      {s.step === 3 && <SendAction subtle onClick={() => setS(START)}><RotateCcw aria-hidden="true" /> Try again</SendAction>}
+    </>
+  );
+
+  return (
+    <ChatShell
+      role="Your IT lead"
+      steps={STEPS}
+      step={s.step}
+      done={pips}
+      onAsk={coach?.enabled ? () => coach.ask(LOST_ASK) : undefined}
+      signal={signal}
+      thread={thread}
+      composer={composer}
+      label="The Update Nobody Can Vouch For, guided chat"
+    />
   );
 }
 
