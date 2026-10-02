@@ -133,6 +133,28 @@
 .rt-context dd { margin: 0; font-size: 13px; line-height: 1.5; color: var(--rd-ink); }
 .rt-context .rt-crit { margin-left: 6px; }
 
+/* Two-pane workspace: the active card on the left, a reference rail on the
+   right that stays in view. The whole lab works side by side. */
+.rt-work { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 22px; align-items: start; }
+.rt-work__main { min-width: 0; container-type: inline-size; }
+.rt-work__aside { position: sticky; top: 96px; display: grid; gap: 14px; }
+.rt-work__aside .rt-matrix { position: static; top: auto; box-shadow: var(--rt-shadow); }
+.rt-ref { display: grid; gap: 10px; padding: 16px; background: var(--rt-card); border: 1px solid var(--rd-line); border-radius: var(--rt-ri); box-shadow: var(--rt-shadow); }
+.rt-ref__title { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rd-ink-3); }
+.rt-ref__cia { display: grid; gap: 8px; }
+.rt-ref__cia > div { display: grid; gap: 2px; padding: 10px 12px; border-radius: 9px; background: color-mix(in srgb, var(--rd-ink) 2.5%, transparent); }
+.rt-ref__cia b { font-size: 13px; font-weight: 650; color: var(--rd-ink); }
+.rt-ref__cia small { font-size: 12px; line-height: 1.45; color: var(--rd-ink-2); }
+.rt-ref__scale { display: grid; gap: 4px; margin: 0; }
+.rt-ref__scale dt { font-size: 12px; font-weight: 700; color: var(--rd-ink); }
+.rt-ref__scale dt ~ dt { margin-top: 8px; }
+.rt-ref__scale dd { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--rd-ink-2); }
+.rt-ref__note { margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--rd-ink-2); }
+@media (max-width: 900px) {
+  .rt-work { grid-template-columns: 1fr; gap: 16px; }
+  .rt-work__aside { position: static; }
+}
+
 /* Scoring step: tickets beside the matrix. */
 .rt-score { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 20px; align-items: start; }
 .rt-level { display: grid; grid-template-columns: 84px minmax(0, 1fr); align-items: center; gap: 12px; }

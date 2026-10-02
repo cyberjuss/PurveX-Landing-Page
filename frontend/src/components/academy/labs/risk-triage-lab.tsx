@@ -226,6 +226,8 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
       {s.step === 0 && (
         <div className="rt-body">
           <Head title="Which job broke?">Read each report and pick the part of the CIA triad that failed, or is about to.</Head>
+          <div className="rt-work">
+          <div className="rt-work__main">
           <Deck
             index={card}
             dir={dir}
@@ -261,6 +263,18 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
               );
             })()}
           </Deck>
+          </div>
+          <aside className="rt-work__aside">
+            <div className="rt-ref">
+              <span className="rt-ref__title">The CIA triad</span>
+              <div className="rt-ref__cia">
+                <div><b>Confidentiality</b><small>A leak. The wrong people can see it.</small></div>
+                <div><b>Integrity</b><small>A lie. The data is changed or cannot be trusted.</small></div>
+                <div><b>Availability</b><small>A lockout. It is not there when people need it.</small></div>
+              </div>
+            </div>
+          </aside>
+          </div>
           <footer className="rt-foot">
             {s.checked[0] ? (
               <>
@@ -285,9 +299,10 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
 
       {s.step === 1 && (
         <div className="rt-body">
-          <Head title="How likely, and how bad?">Rate each ticket. Likelihood is how likely it is to hurt the firm. Impact is how much it costs when it does. Size both against the firm below, not against how urgent a ticket sounds.</Head>
+          <Head title="How likely, and how bad?">Rate each ticket. Likelihood is how likely it is to hurt the firm. Impact is how much it costs when it does. Size both against the firm, not against how urgent a ticket sounds.</Head>
           <FirmBrief />
-          <div className="rt-score">
+          <div className="rt-work">
+            <div className="rt-work__main">
             <Deck
               index={card}
               dir={dir}
@@ -356,7 +371,19 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
                 );
               })()}
             </Deck>
-            <Matrix s={s} showAnswer={s.checked[1]} />
+            </div>
+            <aside className="rt-work__aside">
+              <Matrix s={s} showAnswer={s.checked[1]} />
+              <div className="rt-ref">
+                <span className="rt-ref__title">Rating scale</span>
+                <dl className="rt-ref__scale">
+                  <dt>Likelihood</dt>
+                  <dd>Low needs a rare chain of events. Medium needs a trigger. High is already happening, or anyone could do it today.</dd>
+                  <dt>Impact</dt>
+                  <dd>Low has a workaround. Medium is limited and can be corrected. High hits regulated data or cannot be undone.</dd>
+                </dl>
+              </div>
+            </aside>
           </div>
           <footer className="rt-foot">
             {s.checked[1] ? (
@@ -383,6 +410,8 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
       {s.step === 2 && (
         <div className="rt-body">
           <Head title="What do you fix first?">Put the tickets in the order you would work them, first at the top. Your own risk scores are shown to help.</Head>
+          <div className="rt-work">
+            <div className="rt-work__main">
           <ol className="rt-rank">
             {s.order.map((id, i) => {
               const t = BY_ID[id];
@@ -422,6 +451,14 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
               The printer fails more often than anything else in the queue and still ranks last. How often something breaks does not set priority. Likelihood and impact together do.
             </p>
           )}
+            </div>
+            <aside className="rt-work__aside">
+              <div className="rt-ref">
+                <span className="rt-ref__title">How to order</span>
+                <p className="rt-ref__note">Work the highest risk score first. Risk is likelihood times impact, not how loud or how often a ticket comes in. When two scores tie, the one touching regulated or critical data goes first.</p>
+              </div>
+            </aside>
+          </div>
           <footer className="rt-foot">
             {s.checked[2] ? (
               <>
@@ -600,7 +637,7 @@ const DEPTS: { name: string; critical: boolean; data: string; people: string }[]
 // org chart and data pages so the week and the lab tell the same story.
 function FirmBrief() {
   return (
-    <details className="rt-brief" open>
+    <details className="rt-brief">
       <summary>
         <span>
           <b>PurveX Financial at a glance</b>
