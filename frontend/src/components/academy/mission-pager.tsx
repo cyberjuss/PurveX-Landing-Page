@@ -245,8 +245,8 @@ export function MissionPager({
         )}
       {paging && onBrief ? (
         <div className="ad-brief-start">
-          {lab.available && (lab.state === "none" || lab.state === "stopped") ? (
-            <>
+          <div className="ad-brief-start__row">
+            {lab.available && (lab.state === "none" || lab.state === "stopped") ? (
               <button
                 type="button"
                 className="rd-cta"
@@ -257,17 +257,19 @@ export function MissionPager({
               >
                 {lab.state === "stopped" ? "Resume lab & begin" : "Start lab & begin"} <ArrowRight className="h-4 w-4" />
               </button>
-              <p className="ad-brief-start__note">Your lab boots while you read question 1.</p>
-            </>
-          ) : (
-            <button type="button" className="rd-cta" onClick={() => setOnBrief(false)}>
-              Get Started <ArrowRight className="h-4 w-4" />
-            </button>
-          )}
-          {started ? (
-            <button type="button" className="ad-challenge-reset" onClick={resetChallenge}>
-              Reset challenge
-            </button>
+            ) : (
+              <button type="button" className="rd-cta" onClick={() => setOnBrief(false)}>
+                Get Started <ArrowRight className="h-4 w-4" />
+              </button>
+            )}
+            {started ? (
+              <button type="button" className="ad-challenge-reset" onClick={resetChallenge}>
+                Reset challenge
+              </button>
+            ) : null}
+          </div>
+          {lab.available && (lab.state === "none" || lab.state === "stopped") ? (
+            <p className="ad-brief-start__note">Your lab boots while you read question 1.</p>
           ) : null}
         </div>
       ) : null}
