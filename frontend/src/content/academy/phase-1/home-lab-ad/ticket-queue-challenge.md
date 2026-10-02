@@ -5,7 +5,7 @@
 <p>This is the PurveX Financial help desk queue. Requests come from staff, HR, auditors and vendors. Treat each one as a claim to verify and check what it names before you make the change. Later tickets take you beyond Active Directory into DNS, the firewall, Group Policy and the file shares on your domain controller.</p>
 <p>Each ticket asks for a short finding once the work is done, like a count or an account state. Your lab has to show the change before an answer is accepted, so the answer always reflects the directory after you act.</p>
 <p>The Range download plants the ticket objects when it builds your lab. If you built the lab earlier, download the script from Build the Environment again and run it once.</p>
-<p>The Low, Medium, High and Critical label on each ticket is its business priority, not its difficulty. Capital letters and punctuation such as spaces or dashes do not matter. You get three tries per ticket. The hint unlocks after two misses and the explanation unlocks once you solve the ticket or use all three tries.</p>
+<p>The Low, Medium, High and Critical label on each ticket is its business priority, not its difficulty. Capital letters and punctuation such as spaces or dashes do not matter. You get three tries per ticket. A common wrong answer gets a short note on where to look. The hint unlocks after two misses and the explanation unlocks once you solve the ticket or use all three tries.</p>
 </div>
 
 <div class="ad-progress">
@@ -25,7 +25,7 @@
 <p><strong>Task:</strong> Find the group that sends firm-wide announcements and add Jamie if she is missing. Then report how many members the group has.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Missing Announcements" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{9}">Submit</button>
+<button type="button" class="ad-guess__submit" data-answer="gtf{9}" data-lab-answer="members:All Employees">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
@@ -38,6 +38,8 @@
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="jamie-torres|all-employees">Report how many members the group has as a number.</div>
+<div class="ad-miss" data-guess="#">Count every entry on the Members tab of All Employees once Jamie is in it.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -80,6 +82,8 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="locked|locked-out|lockout|account-locked|account-locked-out|unlock|unlocked">Riley described a symptom. Open the Account tab and check both Unlock account and Account is disabled before you decide.</div>
+<div class="ad-miss" data-guess="enabled|enable">That is the state after your fix. Report what was blocking Riley before you changed anything.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -118,6 +122,11 @@
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="inc-1043">That is the queue number on this ticket. Report the reference written in the intern account's Description.</div>
+<div class="ad-miss" data-guess="old-intern|old-intern-account">That is the account. Open its General tab and report the ticket number in Description.</div>
+<div class="ad-miss" data-guess="casey-reed">Casey is the new hire. Report the ticket number in the leftover intern account's Description.</div>
+<div class="ad-miss" data-guess="1044|ctf-ticket-1044|svc-backup-job">That belongs to the backup service account. Open the leftover intern account and read its Description.</div>
+<div class="ad-miss" data-guess="1041|1042|1045|1047|1050|1051|ctf-ticket-1041|ctf-ticket-1042|ctf-ticket-1045|ctf-ticket-1047|ctf-ticket-1050|ctf-ticket-1051">That reference belongs to another account. Open the leftover intern account in IT Users and read its Description.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -143,7 +152,7 @@
 <p><strong>Task:</strong> Find the approved run window on the folder that holds <code>svc-backup-job</code> and write it on the account's Description. Then type the same window here in the format 00:00-00:00.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Backup Account" placeholder="00:00-00:00" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{01:00-03:00}" data-accept="1:00-3:00">Submit</button>
+<button type="button" class="ad-guess__submit" data-answer="gtf{01:00-03:00}" data-accept="1:00-3:00|0100-0300|1am-3am|1:00am-3:00am">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
@@ -156,6 +165,8 @@
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="window-not-set">That is the account's current Description. The approved hours are on the folder that holds the account.</div>
+<div class="ad-miss" data-guess="serviceaccounts">That is the folder. Type the approved window from its Description in the format 00:00-00:00.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -194,6 +205,9 @@
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="compliance|compliance-analyst|compliance-officer|regulatory-analyst">That is where HR says Taylor works now. Type the Title field on taylor.osei exactly as it is written.</div>
+<div class="ad-miss" data-guess="operations">That is a department. Type the full Title field from the General tab.</div>
+<div class="ad-miss" data-guess="compliance-users|operations-users">That is a group. Report the Title field on the General tab.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -237,6 +251,9 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="kai-mendes">That is the contractor. The sponsor is the person named in Kai's Description on the General tab.</div>
+<div class="ad-miss" data-guess="operations-manager">The manager raised the ticket. Report the sponsor named in Kai's Description by first and last name.</div>
+<div class="ad-miss" data-guess="taylor|osei">Type the sponsor's first and last name.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -275,6 +292,9 @@
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="no|deny|denied">Leaving Sam's groups alone is right. Report the access level number from the Description on Server Admins.</div>
+<div class="ad-miss" data-guess="server-admins">Report the access level as a number.</div>
+<div class="ad-miss" data-guess="#">Open Server Admins in AccessLevels and read the level named at the start of its Description.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -316,6 +336,9 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="svc-backup-job|service-backup">Service accounts may keep this setting. Find the account that belongs to a person.</div>
+<div class="ad-miss" data-guess="administrator|guest|krbtgt">That is a built-in account rather than a staff member. Look for a person whose account sits in a department Users folder.</div>
+<div class="ad-miss" data-guess="noah|kim">Type the full username as Active Directory shows it.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -362,6 +385,9 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="users|cn=users">The laptop is not in that folder. Expand each default folder under purvexfinancial.local until you see FIN-LT14.</div>
+<div class="ad-miss" data-guess="financeaccounting|workstations|finance">That is where the laptop belongs now. Report the folder it was sitting in before you moved it.</div>
+<div class="ad-miss" data-guess="domain-controllers">That folder holds only domain controllers. Expand the other default folders until you see FIN-LT14.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -404,6 +430,8 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="security|distribution">That explains the fault. Report how many members the group has as a number.</div>
+<div class="ad-miss" data-guess="#">Count the entries on the Members tab of Finance Reports. Changing the group type does not change who is in it.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -451,6 +479,8 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="@dcip">That is the domain controller's own address, which the record should hold after your fix. Report the wrong address it held before.</div>
+<div class="ad-miss" data-guess="192.0.2.80">That address belongs to the payroll record. Report the address the files record held.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -493,6 +523,8 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="@dcip">That is the domain controller's address, which is the record to keep. Report the address of the record you removed.</div>
+<div class="ad-miss" data-guess="192.0.2.50">That address belongs to the files record. Report the second address that payroll returned.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -539,6 +571,9 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="tcp|udp">That is the protocol. Report the port number from the rule's Protocols and Ports tab.</div>
+<div class="ad-miss" data-guess="any">Any is the rule's scope and the reason it is dangerous. Report the local port number it allowed.</div>
+<div class="ad-miss" data-guess="#">Read Local port on the vendor rule's Protocols and Ports tab. The built-in Remote Desktop rules are not the vendor rule.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -581,6 +616,9 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="financeaccounting|finance|finance-and-accounting">That is where the GPO belongs now. Report the OU the link was on before your fix.</div>
+<div class="ad-miss" data-guess="departments">The link sat on a single department OU. Read the Links list on the GPO's Scope tab.</div>
+<div class="ad-miss" data-guess="it|compliance|wealthmanagement">Read the Links list on the screen lock GPO's Scope tab and report the OU it shows.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -622,6 +660,9 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="invoice_0923.pdf|invoice_0923|invoice-0923.pdf">Windows is hiding at least one extension. Turn on File name extensions on the View menu and type the whole name.</div>
+<div class="ad-miss" data-guess="invoice_0923.exe">Type every extension in the name in the order it appears.</div>
+<div class="ad-miss" data-guess="q3-budget-summary.csv|vendor-contacts.csv">That file is an expected Finance export. Compare the extensions and modified times of the other files.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>

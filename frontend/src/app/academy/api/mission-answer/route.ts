@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { checkGuess, hasMissionKey, missionReveal } from "@/lib/academy-answers";
+import { checkGuess, hasMissionKey, missFeedback, missionReveal, needsLabForAnswer } from "@/lib/academy-answers";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { labGate } from "@/lib/academy-mission-gate";
 import type { MissionResult } from "@/lib/academy-score";
-import { loadProgress, saveProgress } from "@/lib/academy-store";
+import { loadLabState, loadProgress, saveProgress } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -41,14 +41,20 @@ export async function POST(request: Request) {
   const cur: MissionResult = results[id] ?? { solved: false, wrong: 0, hint: false };
   if (cur.solved) return NextResponse.json({ correct: true, result: cur, reveal: missionReveal(id) });
 
-  const correct = checkGuess(id, guess);
+  const lab = needsLabForAnswer(id) ? ((await loadLabState(student.id))?.snapshot ?? null) : null;
+  const correct = checkGuess(id, guess, lab);
   const next: MissionResult = correct
     ? { ...cur, solved: true, at: new Date().toISOString() }
     : { ...cur, wrong: Math.min(3, cur.wrong + 1), at: new Date().toISOString() };
   if (next.solved) delete next.flagged;
   results[id] = next;
   await saveProgress(student.id, student.email, results);
-  return NextResponse.json({ correct, result: next, reveal: earned(next) ? missionReveal(id) : null });
+  return NextResponse.json({
+    correct,
+    result: next,
+    reveal: earned(next) ? missionReveal(id) : null,
+    feedback: correct ? null : missFeedback(id, guess, lab),
+  });
 }
 
 /** The boxes this student has earned, for missions restored on page load. */

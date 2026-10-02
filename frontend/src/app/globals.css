@@ -3612,6 +3612,10 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 .academy-prose p.ad-guess__feedback:empty { display: none !important; margin: 0 !important; }
 .academy-prose .ad-guess__feedback--ok { color: #16a34a; }
 .academy-prose .ad-guess__feedback--err { color: #e5484d; }
+.academy-prose .ad-guess__feedback--tip { color: #475569; }
+.academy-prose .ad-guess__feedback--tip strong { color: #b42318; font-weight: 600; }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--tip { color: #c3cddb; }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--tip strong { color: #fca5a5; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--ok { color: #6ee7b7; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--err { color: #fca5a5; }
 .academy-prose .ad-guess { perspective: 720px; }

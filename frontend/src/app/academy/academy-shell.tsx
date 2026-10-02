@@ -38,7 +38,7 @@ import { supabase } from "@/lib/supabase";
 
 type Student = AcademyStudent;
 /** What the server says about a submitted answer. blocked: the lab does not show the change yet. */
-type AnswerReply = { correct?: boolean; blocked?: boolean; result?: MissionResult; reveal?: string | null };
+type AnswerReply = { correct?: boolean; blocked?: boolean; result?: MissionResult; reveal?: string | null; feedback?: string | null };
 
 export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[]; children: React.ReactNode; unlocked: boolean }) {
   const pathname = usePathname();
@@ -378,8 +378,9 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         feedback.style.removeProperty("margin");
         return;
       }
-      feedback.style.setProperty("font-size", "0.68rem", "important");
-      feedback.style.setProperty("font-weight", "600", "important");
+      const tip = feedback.classList.contains("ad-guess__feedback--tip");
+      feedback.style.setProperty("font-size", tip ? "0.8rem" : "0.68rem", "important");
+      feedback.style.setProperty("font-weight", tip ? "500" : "600", "important");
       feedback.style.setProperty("line-height", "1.4", "important");
       feedback.style.setProperty("margin", "1.25rem 0 0", "important");
     };
@@ -639,6 +640,18 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       if (row) flashMiss(row, input, feedback);
       else hideLine(feedback);
       if (attempts >= 3) reveal.classList.add("ad-flag--shown");
+      // A known mistake gets a pointer to where the right answer is found.
+      else if (reply.feedback) showTip(wrap, feedback, reply.feedback);
+    };
+
+    const showTip = (wrap: Element, feedback: HTMLElement, text: string) => {
+      feedback.textContent = "";
+      const lead = document.createElement("strong");
+      lead.textContent = "Not quite. ";
+      feedback.append(lead, text);
+      feedback.className = "ad-guess__feedback ad-guess__feedback--tip";
+      feedback.setAttribute("role", "status");
+      placeMiss(wrap);
     };
 
     const hintUnlocked = (wrap: Element) => parseInt(wrap.getAttribute("data-attempts") || "0", 10) >= 2;

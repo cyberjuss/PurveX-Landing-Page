@@ -6,7 +6,15 @@ import { loadLesson, phases } from "@/lib/academy-content";
 // every Answer/Problem/Solution box taken out. A box is sent back only once
 // the student has earned it: solved, or out of tries.
 
-type MissionKey = { accepts: string[]; reveal: string };
+/** A common wrong answer and the note that points the student at the right place to look.
+ *  Special guesses: "#" matches any number, "@dcip" matches the domain controller's own address. */
+type Miss = { guesses: string[]; text: string };
+/** An answer read from the student's live lab, such as "members:Compliance Users". */
+type LabAnswer = { kind: "members"; group: string };
+type MissionKey = { accepts: string[]; reveal: string; misses: Miss[]; labAnswer: LabAnswer | null };
+
+/** What the answer checks may read from the student's lab snapshot. */
+export type AnswerLab = { groups: { name: string; members: string[] }[]; infra?: { dcIps: string[] } } | null;
 
 /** What the briefs promise: case, spaces, dots and dashes do not matter, and the gtf{} wrapper is optional. */
 export const normalizeGuess = (s: string) =>
@@ -25,6 +33,13 @@ function divEnd(html: string, start: number): number {
 }
 
 const FLAG_OPEN = /<div class="ad-flag">/g;
+const MISS = /<div class="ad-miss" data-guess="([^"]*)">([\s\S]*?)<\/div>/g;
+const plain = (html: string) => html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+
+function parseLabAnswer(raw: string | undefined): LabAnswer | null {
+  const m = raw?.match(/^members:(.+)$/);
+  return m ? { kind: "members", group: m[1].trim() } : null;
+}
 
 function challengeFiles(): string[] {
   return phases.flatMap((p) => [...p.weeks, ...(p.homeLab ? [p.homeLab] : [])]).flatMap((e) => e.sections.filter((s) => /^Challenge:/.test(s.label)).map((s) => s.file));
@@ -46,9 +61,15 @@ function build() {
       const accept = block.match(/data-accept="([^"]*)"/)?.[1] ?? "";
       const flagAt = block.search(FLAG_OPEN);
       const flag = flagAt >= 0 ? block.slice(flagAt, divEnd(block, flagAt)) : "";
+      const misses: Miss[] = [...block.matchAll(MISS)].map((x) => ({
+        guesses: x[1].split("|").map((g) => (g === "#" || g === "@dcip" ? g : normalizeGuess(g))).filter(Boolean),
+        text: plain(x[2]),
+      }));
       keys.set(m[1], {
         accepts: [answer, ...accept.split("|")].map(normalizeGuess).filter(Boolean),
         reveal: flag.replace(/^<div class="ad-flag">/, "").replace(/<\/div>$/, "").trim(),
+        misses,
+        labAnswer: parseLabAnswer(block.match(/data-lab-answer="([^"]*)"/)?.[1]),
       });
     }
   }
@@ -57,17 +78,44 @@ function build() {
 
 export const hasMissionKey = (id: string) => build().has(id);
 
-export function checkGuess(id: string, guess: string): boolean {
+/** True when this mission's answer or feedback needs the student's lab snapshot. */
+export const needsLabForAnswer = (id: string) => {
+  const key = build().get(id);
+  return Boolean(key && (key.labAnswer || key.misses.some((x) => x.guesses.includes("@dcip"))));
+};
+
+export function checkGuess(id: string, guess: string, lab: AnswerLab = null): boolean {
   const key = build().get(id);
   const g = normalizeGuess(guess);
-  return Boolean(key && g && key.accepts.includes(g));
+  if (!key || !g) return false;
+  if (key.accepts.includes(g)) return true;
+  // A count that the student's own lab can legitimately change, such as a group that
+  // grows when a later ticket is worked, is also right when it matches the live lab.
+  if (key.labAnswer && lab) {
+    const group = lab.groups.find((x) => x.name.toLowerCase() === key.labAnswer!.group.toLowerCase());
+    if (group && g === String(group.members.length)) return true;
+  }
+  return false;
+}
+
+/** The note for a known wrong answer, or null. Never contains the answer. */
+export function missFeedback(id: string, guess: string, lab: AnswerLab = null): string | null {
+  const key = build().get(id);
+  const g = normalizeGuess(guess);
+  if (!key || !g) return null;
+  const dcIps = (lab?.infra?.dcIps ?? []).map(normalizeGuess);
+  const hit =
+    key.misses.find((x) => x.guesses.includes(g)) ??
+    key.misses.find((x) => x.guesses.includes("@dcip") && dcIps.includes(g)) ??
+    key.misses.find((x) => x.guesses.includes("#") && /^\d+$/.test(g));
+  return hit?.text ?? null;
 }
 
 export const missionReveal = (id: string) => build().get(id)?.reveal ?? null;
 
-/** The markup the page gets: no answer attributes, and every reveal box emptied. */
+/** The markup the page gets: no answer attributes, no wrong-answer notes, and every reveal box emptied. */
 export function stripAnswers(md: string): string {
-  const noAttrs = md.replace(/\s+data-(answer|accept)="[^"]*"/g, "");
+  const noAttrs = md.replace(/\s+data-(answer|accept|lab-answer)="[^"]*"/g, "").replace(/\s*<div class="ad-miss" data-guess="[^"]*">[\s\S]*?<\/div>/g, "");
   let out = "";
   let from = 0;
   FLAG_OPEN.lastIndex = 0;

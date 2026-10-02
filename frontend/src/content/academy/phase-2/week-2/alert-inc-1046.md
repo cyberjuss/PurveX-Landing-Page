@@ -4,7 +4,7 @@
 <p class="ad-brief__ask">Can you work one SIEM alert from the host through the log to the first response?</p>
 <p>This is a SOC queue item rather than a help desk ticket. At 2:04 AM the SIEM flagged a successful sign-in for <code>alex.rivera</code> on <code>WM-WKS07</code>, preceded by several failed attempts. Your job is to decide whether that sign-in fits this account and this firm.</p>
 <p>The host and group steps use your Phase 1 lab, and the log steps use the export shown on this page. Keep your lab running, because every step checks that it is live before it grades.</p>
-<p>Each step takes a short answer like a folder name or a number. You get three tries per step. The hint unlocks after two misses and the explanation unlocks once you solve the step or use all three tries.</p>
+<p>Each step takes a short answer like a folder name or a number. You get three tries per step. A common wrong answer gets a short note on where to look. The hint unlocks after two misses and the explanation unlocks once you solve the step or use all three tries.</p>
 </div>
 
 <div class="ad-progress">
@@ -35,6 +35,11 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="workstations">Workstations is the folder inside the department. Report the department OU above it.</div>
+<div class="ad-miss" data-guess="wealth-management-users">That is the department's group. Report the OU that holds the computer.</div>
+<div class="ad-miss" data-guess="departments">Departments holds every department. Report the one department OU that holds WM-WKS07.</div>
+<div class="ad-miss" data-guess="it">Alex works in IT but this step is about the computer. Find WM-WKS07 and read the folder that holds it.</div>
+<div class="ad-miss" data-guess="wm">Use the OU name as Active Directory writes it rather than the prefix on the computer's name.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -79,6 +84,8 @@
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="4625">That is the Event ID. Type how many rows carry it before the first success.</div>
+<div class="ad-miss" data-guess="#">Count only rows with 4625 in the EVENT column and stop at the first 4624.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -120,6 +127,9 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="it-users|domain-users">That group grants standard access. Find the group on Alex's Member Of tab that grants more.</div>
+<div class="ad-miss" data-guess="all-employees">All Employees is the firm-wide announcement group and grants no admin rights. Read Alex's Member Of tab again.</div>
+<div class="ad-miss" data-guess="domain-admins|administrators|enterprise-admins">Alex is not in that group in this lab. Read the Member Of tab on alex.rivera.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -153,6 +163,9 @@
 <p>A person does not retry on a steady beat, and a maintenance job does not try four wrong passwords before it works.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">People who mistype do not retry exactly every two seconds. Compare the times on the 4625 rows.</div>
+<div class="ad-miss" data-guess="c">A task with an old password fails on every run. It would not fail four times and then succeed.</div>
+<div class="ad-miss" data-guess="d">A clock problem shows up as Kerberos time errors. Every failure here is 0xC000006A, which means a bad password.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -186,6 +199,9 @@
 <p>For each other option, ask what it costs you. One destroys the log and one gives the attacker time. The last one hides the alert.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">Wiping the machine now destroys the evidence before anyone reads it. Contain the account and the machine first.</div>
+<div class="ad-miss" data-guess="c">Waiting on email gives the attacker time, and the attacker may be reading Alex's mail. Contain first.</div>
+<div class="ad-miss" data-guess="d">Clearing the log destroys evidence, and Windows records the clear itself as Event 1102. Contain first.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>

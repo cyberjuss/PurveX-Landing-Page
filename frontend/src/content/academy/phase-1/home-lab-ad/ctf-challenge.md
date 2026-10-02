@@ -4,7 +4,7 @@
 <p class="ad-brief__ask">Can you find your way around Active Directory well enough to handle a help desk technician's first day?</p>
 <p>It is your first day on the PurveX Financial help desk. Nobody expects you to close incidents yet. Your lead wants proof that you can find any person, group or computer and read what the directory says about it.</p>
 <p>Every answer comes from your own lab. Open Active Directory Users and Computers on your domain controller and look each one up there. When a job title and a group disagree, trust the group because the group is what grants access.</p>
-<p>Each task takes a short answer like a group name or a number. Capital letters and punctuation such as spaces or dashes do not matter. You get three tries per task. The hint unlocks after two misses and the explanation unlocks once you solve the task or use all three tries.</p>
+<p>Each task takes a short answer like a group name or a number. Capital letters and punctuation such as spaces or dashes do not matter. You get three tries per task. A common wrong answer gets a short note on where to look. The hint unlocks after two misses and the explanation unlocks once you solve the task or use all three tries.</p>
 </div>
 
 <div class="ad-progress">
@@ -35,6 +35,11 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="domain-users">Every account in the domain is in Domain Users. Find the group that belongs to Jordan's department.</div>
+<div class="ad-miss" data-guess="all-employees">All Employees is the firm-wide announcement group. Find the group that belongs to Jordan's department.</div>
+<div class="ad-miss" data-guess="finance-reports">Finance Reports exists for one share. Find the standard access group for Jordan's whole department.</div>
+<div class="ad-miss" data-guess="financeaccounting|finance-and-accounting|finance">That is the department or its OU. Type the group name exactly as the Member Of tab shows it.</div>
+<div class="ad-miss" data-guess="finance-and-accounting-users|finance-accounting-user">Check the spelling on the Member Of tab. The group name is not written the same way as the department.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -76,6 +81,10 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="alex|rivera">Type the person's first and last name.</div>
+<div class="ad-miss" data-guess="administrator">The built-in Administrator account is not a member of IT Admins. Read the group's Members tab.</div>
+<div class="ad-miss" data-guess="priya-nair">Priya works in IT but is not in IT Admins. Read the group's Members tab.</div>
+<div class="ad-miss" data-guess="it-admins|it-users">That is a group. Type the name of the person who is a member of IT Admins.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -113,6 +122,10 @@
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="departments">Departments holds the people. The access groups sit in a separate top-level OU beside it.</div>
+<div class="ad-miss" data-guess="it">The IT OU holds IT's own groups such as IT Admins. Server Admins and Helpdesk sit in a top-level OU of their own.</div>
+<div class="ad-miss" data-guess="users|cn=users|builtin">That is a built-in container rather than an OU the firm created. Look at the OUs directly under purvexfinancial.local.</div>
+<div class="ad-miss" data-guess="serviceaccounts">ServiceAccounts holds the backup service account. Open the other top-level OUs and look for Server Admins.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -150,6 +163,9 @@
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="users">That is the display name. The task asks for the name as distinguishedName writes it with its prefix.</div>
+<div class="ad-miss" data-guess="ou=users">Containers and OUs use different prefixes in a distinguishedName. This folder is a container.</div>
+<div class="ad-miss" data-guess="computers|cn=computers">That container holds new computers. This ticket is about a new user account.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -175,7 +191,7 @@
 <p><strong>Task:</strong> Read the Description on <code>IT Admins</code> and name the role it is meant for.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for What Is the Admin Group For?" placeholder="role" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{it-systems-administrators}">Submit</button>
+<button type="button" class="ad-guess__submit" data-answer="gtf{it-systems-administrators}" data-accept="it-systems-administrator">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
@@ -187,6 +203,10 @@
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="it-admins">That repeats the group's name. Read the Description field on the General tab.</div>
+<div class="ad-miss" data-guess="elevated-access">That is what the group grants. The Description also names who the group is for.</div>
+<div class="ad-miss" data-guess="alex-rivera">That is the current member. The task asks for the role the Description names.</div>
+<div class="ad-miss" data-guess="it-users">IT Users is the standard group. Name the role the IT Admins Description says the group is for.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -224,6 +244,7 @@
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="yes|y">Priya's title mentions the help desk, but a title grants nothing. Check for her name on the Helpdesk group's Members tab.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -265,6 +286,9 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="kai-mendes">Kai supports the settlements team as a contractor with a different title. Search the Job Title field for the exact title.</div>
+<div class="ad-miss" data-guess="taylor-osei">Taylor works in Operations under a different title. Search the Job Title field for the exact title.</div>
+<div class="ad-miss" data-guess="riley|kwan">Type the person's first and last name.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -302,6 +326,9 @@
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="wm-wks07|ops-wks03|fin-lt14">That computer belongs to another department. Open Departments → IT → Workstations.</div>
+<div class="ad-miss" data-guess="it-wks1|wks01|it-wks">Type the computer's name exactly as it appears, with every letter and digit.</div>
+<div class="ad-miss" data-guess="workstations">That is the OU. Report the name of the computer object inside it.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -327,7 +354,7 @@
 <p><strong>Task:</strong> Count the members of the <code>Compliance Users</code> group.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for How Many People Are in Compliance?" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
+<button type="button" class="ad-guess__submit" data-answer="gtf{2}" data-lab-answer="members:Compliance Users">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
@@ -343,6 +370,7 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="#">Count only the entries on the Members tab of Compliance Users. People in other groups or OUs do not count.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -380,6 +408,7 @@
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="#">Count only the folders one level under Departments. Users and Workstations sit inside a department, so they do not count.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
