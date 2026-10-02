@@ -48,6 +48,7 @@ const MISSION_LAB = {
   ),
   "tq-15": G([{ c: { t: "group", name: "Finance Reports", category: "Security" }, label: "Finance Reports is a Security group" }], { groups: ["Finance Reports"] }),
   "tq-16": G([{ c: { t: "dnsToDc", name: "files" }, label: "files resolves to the domain controller" }], { tickets: ["INC-1052"] }),
+  "tq-20": G([{ c: { t: "dnsToDc", name: "payroll" }, label: "payroll resolves only to the domain controller" }], { tickets: ["INC-1056"] }),
   "tq-17": G([{ c: { t: "fwRuleOff", name: "PurveX Temp - Vendor RDP" }, label: "The vendor RDP rule is disabled or removed" }], { tickets: ["INC-1053"] }),
   "tq-18": G(
     [

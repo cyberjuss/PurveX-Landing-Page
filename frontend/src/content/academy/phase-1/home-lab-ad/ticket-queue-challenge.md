@@ -10,7 +10,7 @@
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
-<span id="ad-progress-label" class="ad-progress__label">0 / 14 solved</span>
+<span id="ad-progress-label" class="ad-progress__label">0 / 15 solved</span>
 </div>
 
 <div class="ad-mission" data-id="tq-01" data-attempts="0">
@@ -454,8 +454,50 @@
 </div>
 </div>
 
+<div class="ad-mission" data-id="tq-20" data-attempts="0">
+<span class="ad-mission__num">Ticket 12 · INC-1056 · High</span>
+<h4>Payroll Works for Some People</h4>
+<p><strong>Devon Brooks · Compliance · 1:20 PM</strong><br>The payroll portal at payroll.purvexfinancial.local opens fine for me, but Morgan sitting next to me gets a timeout. When Morgan refreshes a few times it sometimes loads. IT moved payroll to a new server last month.</p>
+<p><strong>Task:</strong> Find why the name <code>payroll</code> resolves differently between attempts and remove the stale record, so the name points only at the domain controller. In this lab the domain controller stands in for the new payroll server. Report the stale record's address.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" placeholder="IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{192.0.2.80}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>A name with two A records is handed out in turn, which DNS calls round robin. If one address belongs to a server that no longer exists, every other lookup fails.</p>
+<ol>
+<li>On the domain controller run <code>Resolve-DnsName payroll</code> and look at how many addresses come back.</li>
+<li>Run <code>ipconfig</code> to find the domain controller's own address, then test the other one with <code>Test-NetConnection</code>.</li>
+<li>Open DNS Manager with Win+R and <code>dnsmgmt.msc</code>, go to Forward Lookup Zones → <code>purvexfinancial.local</code> and delete the stale <code>payroll</code> record.</li>
+<li>Clients cache answers, so <code>ipconfig /flushdns</code> clears the old address from a machine that still has it.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>Get-DnsServerResourceRecord -ZoneName purvexfinancial.local -Name payroll -RRType A</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{192.0.2.80}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>The old server's record survived the migration, so roughly every other lookup sent people to a machine that no longer exists. Intermittent failures like this burn hours because the fault never shows up when someone tests it once.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Delete the stale record and flush the cache on any client that still fails. Removing old records is part of every server migration, and DNS scavenging can catch the ones people forget.</p>
+</div>
+</div>
+</div>
+</div>
+
 <div class="ad-mission" data-id="tq-17" data-attempts="0">
-<span class="ad-mission__num">Ticket 12 · INC-1053 · High</span>
+<span class="ad-mission__num">Ticket 13 · INC-1053 · High</span>
 <h4>Vendor Remote Access Left Open</h4>
 <p><strong>Vendor Management · Vendor offboarding · 9:30 AM</strong><br>Northwind Advisory finished its support visit last Friday. During the visit IT opened remote access on the domain controller so their engineer could connect from home.</p>
 <p><strong>Task:</strong> Find the inbound firewall rule on the domain controller that was opened for the vendor and disable it. Leave the built-in Remote Desktop rules alone, then report the port the vendor rule allowed.</p>
@@ -496,7 +538,7 @@
 </div>
 
 <div class="ad-mission" data-id="tq-18" data-attempts="0">
-<span class="ad-mission__num">Ticket 13 · INC-1054 · Medium</span>
+<span class="ad-mission__num">Ticket 14 · INC-1054 · Medium</span>
 <h4>Screens That Never Lock</h4>
 <p><strong>Internal Audit · Control test · 3:40 PM</strong><br>Finance workstations are supposed to lock after ten minutes, but every Finance screen we tested stayed open over lunch. Operations staff mentioned their screens lock sooner than they would like.</p>
 <p><strong>Task:</strong> Find the screen lock GPO and link it to the Finance and Accounting OU, then remove its link from the wrong department. Report the name of the OU it was linked to.</p>
@@ -538,7 +580,7 @@
 </div>
 
 <div class="ad-mission ad-mission--capstone" data-id="tq-19" data-attempts="0">
-<span class="ad-mission__num">Ticket 14 · INC-1055 · Critical</span>
+<span class="ad-mission__num">Ticket 15 · INC-1055 · Critical</span>
 <h4>The Invoice Nobody Saved</h4>
 <p><strong>Jordan Ellis · Finance and Accounting · 7:50 AM</strong><br>There is a new invoice on our Finance share that nobody remembers saving. I double-clicked it to check the amount and nothing happened.</p>
 <p><strong>Task:</strong> Find the suspicious file in <code>C:\PurveX\Shares\Finance</code> on the domain controller and move it to <code>C:\PurveX\Quarantine</code> without opening it. Then report its full file name with every extension.</p>

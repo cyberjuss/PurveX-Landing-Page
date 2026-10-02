@@ -60,8 +60,10 @@ if ($laptop -and $laptop.DistinguishedName -like "*,CN=Computers,$domainDN" -and
 # Tickets INC-1052 to INC-1055 live outside Active Directory.
 $zone = (Get-ADDomain).DNSRoot
 if ($PSCmdlet.ShouldProcess("DNS, firewall, Group Policy and share tickets", "Remove")) {
-    Get-DnsServerResourceRecord -ZoneName $zone -Name "files" -RRType A -ErrorAction SilentlyContinue |
-        Remove-DnsServerResourceRecord -ZoneName $zone -Force -ErrorAction SilentlyContinue
+    foreach ($recordName in @("files", "payroll")) {
+        Get-DnsServerResourceRecord -ZoneName $zone -Name $recordName -RRType A -ErrorAction SilentlyContinue |
+            Remove-DnsServerResourceRecord -ZoneName $zone -Force -ErrorAction SilentlyContinue
+    }
     Get-NetFirewallRule -Group "PurveX Lab" -ErrorAction SilentlyContinue | Remove-NetFirewallRule -ErrorAction SilentlyContinue
     try { Import-Module GroupPolicy -ErrorAction Stop; Remove-GPO -Name "PurveX - Finance Screen Lock" -ErrorAction SilentlyContinue } catch {}
     Remove-SmbShare -Name "Shares" -Force -ErrorAction SilentlyContinue

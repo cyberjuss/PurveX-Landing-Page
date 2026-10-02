@@ -61,6 +61,7 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "tq-17": "security",
   "tq-18": "directory",
   "tq-19": "security",
+  "tq-20": "troubleshooting",
   "tq-06": "security",
   "tq-07": "logs",
   "tq-08": "security",

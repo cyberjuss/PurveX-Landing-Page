@@ -158,6 +158,13 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Staff can reach the file share by IP address but not by the name files. Find what the name resolves to, point it back at the domain controller, and report the wrong address.",
     skill: "troubleshooting",
   },
+  "tq-20": {
+    id: "tq-20",
+    challenge: "ticket-queue",
+    title: "Payroll Works for Some People (INC-1056)",
+    prompt: "The payroll portal times out for some people and works for others. Find why the name resolves differently between attempts, remove the stale record, and report its address.",
+    skill: "troubleshooting",
+  },
   "tq-17": {
     id: "tq-17",
     challenge: "ticket-queue",
@@ -238,7 +245,7 @@ export function challengeTabHref(challenge: MissionCatalogEntry["challenge"]): s
 
 export function challengeFromMission(id: string): MissionCatalogEntry["challenge"] | null {
   if (id.startsWith("d1-")) return "day-one";
-  if (/^tq-(0[1-5]|1[1-9])$/.test(id)) return "ticket-queue";
+  if (/^tq-(0[1-5]|1[1-9]|20)$/.test(id)) return "ticket-queue";
   if (id.startsWith("tq-")) return "alert-queue";
   return MISSION_CATALOG[id]?.challenge ?? null;
 }
@@ -297,7 +304,7 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
 }
 
 /** Tickets that need a real change in the student's lab before they can answer. */
-export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19"];
+export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20"];
 
 /** The on-the-job task each mission practices. A gated ticket seen in the lab counts as proven. */
 export const MISSION_JOBS: Record<string, string> = {

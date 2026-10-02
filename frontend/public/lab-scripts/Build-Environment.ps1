@@ -224,6 +224,22 @@ function Ensure-InfraTickets {
         catch { Write-Host "  Could not plant INC-1052: $($_.Exception.Message)" -ForegroundColor Yellow }
     }
 
+    # INC-1056: a stale record left from a server migration. DNS round robin hands
+    # out both addresses in turn, so payroll works for some people and not others.
+    if (-not (Test-PurvexTicketMark "INC-1056") -and $PSCmdlet.ShouldProcess("payroll.$zone", "Plant stale DNS record ticket")) {
+        try {
+            $dcIp = @(Get-DnsServerResourceRecord -ZoneName $zone -Name "@" -RRType A -ErrorAction Stop | ForEach-Object { "$($_.RecordData.IPv4Address)" })[0]
+            if (-not $dcIp) { throw "No address was found for the domain controller." }
+            Get-DnsServerResourceRecord -ZoneName $zone -Name "payroll" -RRType A -ErrorAction SilentlyContinue |
+                Remove-DnsServerResourceRecord -ZoneName $zone -Force -ErrorAction SilentlyContinue
+            Add-DnsServerResourceRecordA -ZoneName $zone -Name "payroll" -IPv4Address $dcIp -ErrorAction Stop
+            Add-DnsServerResourceRecordA -ZoneName $zone -Name "payroll" -IPv4Address "192.0.2.80" -ErrorAction Stop
+            Add-PurvexTicketMark "INC-1056"
+            Write-Host "  Planted INC-1056: payroll.$zone" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1056: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+
     # INC-1053: a vendor remote-access rule left open after the visit.
     if (-not (Test-PurvexTicketMark "INC-1053") -and $PSCmdlet.ShouldProcess("PurveX Temp - Vendor RDP", "Plant firewall ticket")) {
         try {
@@ -276,25 +292,115 @@ function Ensure-InfraTickets {
     }
 }
 
-# What the lab reports about DNS, the firewall and the shares. Cheap enough to
-# check every few seconds, so a fix shows up fast.
-function Get-PurvexInfraQuick {
-    param($Domain)
-    $infra = [ordered]@{ v = 1 }
-    try { $infra.planted = @(Get-Content -LiteralPath (Join-Path $PurvexLabRoot "tickets.txt") -ErrorAction Stop | Where-Object { $_ }) } catch { $infra.planted = @() }
+# Firewall rules in the PurveX Lab group, read straight from the registry. That
+# takes milliseconds, where the firewall cmdlets need most of a second.
+$PurvexFirewallKey = "HKLM:\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\FirewallRules"
+$PurvexLabRuleMatch = '\|EmbedCtxt=PurveX Lab(\||$)'
+
+function Get-PurvexFirewallRules {
+    $rules = @()
     try {
-        $infra.firewall = @(Get-NetFirewallRule -Group "PurveX Lab" -ErrorAction Stop | ForEach-Object {
-            [ordered]@{
-                name          = $_.DisplayName
-                enabled       = ("$($_.Enabled)" -eq "True")
-                direction     = "$($_.Direction)"
-                action        = "$($_.Action)"
-                localPort     = "$(($_ | Get-NetFirewallPortFilter).LocalPort -join ',')"
-                remoteAddress = "$(($_ | Get-NetFirewallAddressFilter).RemoteAddress -join ',')"
+        $item = Get-Item -LiteralPath $PurvexFirewallKey -ErrorAction Stop
+        foreach ($valueName in $item.GetValueNames()) {
+            $data = [string]$item.GetValue($valueName)
+            if ($data -notmatch $PurvexLabRuleMatch) { continue }
+            $f = @{}
+            foreach ($pair in $data.Split('|')) {
+                $kv = $pair.Split('=', 2)
+                if ($kv.Count -eq 2) { if ($f.ContainsKey($kv[0])) { $f[$kv[0]] += "," + $kv[1] } else { $f[$kv[0]] = $kv[1] } }
             }
-        })
+            $rules += [ordered]@{
+                name          = $f["Name"]
+                enabled       = ($f["Active"] -eq "TRUE")
+                direction     = "$($f['Dir'])"
+                action        = "$($f['Action'])"
+                localPort     = "$($f['LPort'])"
+                remoteAddress = $(if ($f["RA4"]) { $f["RA4"] } else { "Any" })
+            }
+        }
     }
-    catch { $infra.firewall = @() }
+    catch {}
+    # Fall back to the cmdlets if the registry layout ever differs.
+    if (-not $rules.Count) {
+        try {
+            $rules = @(Get-NetFirewallRule -Group "PurveX Lab" -ErrorAction Stop | ForEach-Object {
+                [ordered]@{
+                    name          = $_.DisplayName
+                    enabled       = ("$($_.Enabled)" -eq "True")
+                    direction     = "$($_.Direction)"
+                    action        = "$($_.Action)"
+                    localPort     = "$(($_ | Get-NetFirewallPortFilter).LocalPort -join ',')"
+                    remoteAddress = "$(($_ | Get-NetFirewallAddressFilter).RemoteAddress -join ',')"
+                }
+            })
+        }
+        catch {}
+    }
+    return $rules
+}
+
+function Get-PurvexLabFiles {
+    $files = @()
+    foreach ($sub in @("Shares", "Quarantine")) {
+        $dir = Join-Path $PurvexLabRoot $sub
+        if (Test-Path -LiteralPath $dir) {
+            $files += @(Get-ChildItem -LiteralPath $dir -Recurse -File -Force -ErrorAction SilentlyContinue | Select-Object -First 200)
+        }
+    }
+    return $files
+}
+
+# A cheap fingerprint of the firewall rules and the lab shares, taken every second.
+# DNS and Group Policy changes are caught by the directory watch instead.
+function Get-PurvexInfraPrint {
+    $parts = @()
+    try {
+        $item = Get-Item -LiteralPath $PurvexFirewallKey -ErrorAction Stop
+        foreach ($valueName in $item.GetValueNames()) {
+            $data = [string]$item.GetValue($valueName)
+            if ($data -match $PurvexLabRuleMatch) { $parts += "$valueName=$data" }
+        }
+    }
+    catch {}
+    $parts += @(Get-PurvexLabFiles | ForEach-Object { "$($_.FullName)|$($_.Length)" })
+    return (@($parts) | Sort-Object) -join "`n"
+}
+
+# GPO display names by GUID, read from the directory and cached until a link
+# names a GPO the cache has not seen.
+function Get-PurvexGpoNames {
+    param([string]$DomainDN, [switch]$Refresh)
+    if ($Refresh -or -not $script:PurvexGpoNames) {
+        $names = @{}
+        try {
+            Get-ADObject -SearchBase "CN=Policies,CN=System,$DomainDN" -SearchScope OneLevel -Filter "objectClass -eq 'groupPolicyContainer'" -Properties displayName -ErrorAction Stop |
+                ForEach-Object { $names[$_.Name.Trim('{', '}').ToLower()] = $_.displayName }
+        }
+        catch {}
+        $script:PurvexGpoNames = $names
+    }
+    return $script:PurvexGpoNames
+}
+
+# The enabled GPO links on one OU, from its gPLink attribute.
+function Get-PurvexOuLinks {
+    param([string]$GpLink, [string]$DomainDN)
+    if (-not $GpLink) { return @() }
+    $found = @([regex]::Matches($GpLink, '\[LDAP://cn=\{([0-9a-fA-F-]{36})\}[^;\]]*;(\d+)\]') |
+        Where-Object { ([int]$_.Groups[2].Value -band 1) -eq 0 } |
+        ForEach-Object { $_.Groups[1].Value.ToLower() })
+    $names = Get-PurvexGpoNames -DomainDN $DomainDN
+    if (@($found | Where-Object { -not $names.ContainsKey($_) }).Count) { $names = Get-PurvexGpoNames -DomainDN $DomainDN -Refresh }
+    return @($found | ForEach-Object { $names[$_] } | Where-Object { $_ })
+}
+
+# Everything outside Active Directory that the tickets check: DNS, the firewall,
+# Group Policy links and the lab shares.
+function Get-PurvexInfra {
+    param($Domain, [array]$GpoLinks = @())
+    $infra = [ordered]@{ v = 2 }
+    try { $infra.planted = @(Get-Content -LiteralPath (Join-Path $PurvexLabRoot "tickets.txt") -ErrorAction Stop | Where-Object { $_ }) } catch { $infra.planted = @() }
+    $infra.firewall = @(Get-PurvexFirewallRules)
     try {
         $records = @(Get-DnsServerResourceRecord -ZoneName $Domain.DNSRoot -RRType A -ErrorAction Stop)
         $infra.dns = @($records | Where-Object { $_.HostName -notmatch '^(@|DomainDnsZones|ForestDnsZones)$' } | Select-Object -First 100 | ForEach-Object {
@@ -303,37 +409,11 @@ function Get-PurvexInfraQuick {
         $infra.dcIps = @($records | Where-Object { $_.HostName -eq "@" -or $_.HostName -eq $env:COMPUTERNAME } | ForEach-Object { "$($_.RecordData.IPv4Address)" } | Select-Object -Unique)
     }
     catch {}
-    $files = @()
-    foreach ($sub in @("Shares", "Quarantine")) {
-        $dir = Join-Path $PurvexLabRoot $sub
-        if (Test-Path -LiteralPath $dir) {
-            $files += @(Get-ChildItem -LiteralPath $dir -Recurse -File -Force -ErrorAction SilentlyContinue | Select-Object -First 200 | ForEach-Object {
-                [ordered]@{ path = $_.FullName.Substring($PurvexLabRoot.Length + 1); size = [int64]$_.Length }
-            })
-        }
-    }
-    $infra.files = $files
-    return $infra
-}
-
-# Adds which Group Policy objects are linked to the lab OUs. Slower, so it rides with every send.
-function Get-PurvexInfra {
-    param($Domain)
-    $infra = Get-PurvexInfraQuick -Domain $Domain
-    try {
-        Import-Module GroupPolicy -ErrorAction Stop
-        $infra.gpos = @(Get-GPO -All | ForEach-Object { $_.DisplayName })
-        $suffix = [regex]::Escape(",$($Domain.DistinguishedName)") + '$'
-        $links = @()
-        foreach ($root in @("Departments", "AccessLevels", "ServiceAccounts")) {
-            Get-ADOrganizationalUnit -SearchBase "OU=$root,$($Domain.DistinguishedName)" -Filter * -ErrorAction SilentlyContinue | ForEach-Object {
-                $names = @((Get-GPInheritance -Target $_.DistinguishedName -ErrorAction SilentlyContinue).GpoLinks | Where-Object { $_.Enabled } | ForEach-Object { $_.DisplayName })
-                if ($names.Count) { $links += [ordered]@{ ou = ($_.DistinguishedName -replace $suffix, ''); gpos = $names } }
-            }
-        }
-        $infra.gpoLinks = $links
-    }
-    catch {}
+    $infra.gpos = @((Get-PurvexGpoNames -DomainDN $Domain.DistinguishedName).Values)
+    $infra.gpoLinks = @($GpoLinks)
+    $infra.files = @(Get-PurvexLabFiles | ForEach-Object {
+        [ordered]@{ path = $_.FullName.Substring($PurvexLabRoot.Length + 1); size = [int64]$_.Length }
+    })
     return $infra
 }
 
@@ -552,10 +632,13 @@ function Send-PurvexLabSnapshot {
         ForEach-Object { "OU=$_,$DomainDN" } |
         Where-Object { Get-ADOrganizationalUnit -Filter "DistinguishedName -eq '$_'" -ErrorAction SilentlyContinue }
 
-    $ous = @(); $users = @(); $groups = @(); $computers = @()
+    $ous = @(); $users = @(); $groups = @(); $computers = @(); $gpoLinks = @()
     foreach ($root in $roots) {
-        $ous += Get-ADOrganizationalUnit -SearchBase $root -Filter * -Properties Description | ForEach-Object {
-            [ordered]@{ path = ($_.DistinguishedName -replace $domainSuffix, ''); description = $_.Description }
+        $ous += Get-ADOrganizationalUnit -SearchBase $root -Filter * -Properties Description, gPLink | ForEach-Object {
+            $ouPath = $_.DistinguishedName -replace $domainSuffix, ''
+            $linked = @(Get-PurvexOuLinks -GpLink $_.gPLink -DomainDN $DomainDN)
+            if ($linked.Count) { $gpoLinks += [ordered]@{ ou = $ouPath; gpos = $linked } }
+            [ordered]@{ path = $ouPath; description = $_.Description }
         }
         $users += Get-ADUser -SearchBase $root -Filter * -Properties Title, Department, Description, Enabled, LockedOut, BadLogonCount, PasswordNeverExpires, PasswordExpired, LastLogonDate, MemberOf, PasswordNotRequired, DoesNotRequirePreAuth, TrustedForDelegation, ServicePrincipalNames | ForEach-Object {
             [ordered]@{
@@ -628,6 +711,8 @@ function Send-PurvexLabSnapshot {
         $security = Get-PurvexSecurityState -Domain $domain
         $events = Get-PurvexEventDigest
         $script:PurvexHeavy = @{ At = Get-Date; Security = $security; Events = $events }
+        # The heartbeat also refreshes GPO names, in case one was renamed.
+        [void](Get-PurvexGpoNames -DomainDN $DomainDN -Refresh)
     }
 
     $snapshot = [ordered]@{
@@ -640,7 +725,7 @@ function Send-PurvexLabSnapshot {
         computers  = @($computers)
         security   = $security
         events     = $events
-        infra      = (Get-PurvexInfra -Domain $domain)
+        infra      = (Get-PurvexInfra -Domain $domain -GpoLinks $gpoLinks)
     }
     $json = $snapshot | ConvertTo-Json -Depth 6 -Compress
 
@@ -679,15 +764,24 @@ function Get-PurvexSyncScriptPath {
     return (Join-Path $dir "Build-Environment.ps1")
 }
 
-# Highest update number in the lab folders only. The rest of the domain changes on its own
-# and must not trigger a snapshot.
-function Get-PurvexHighestUsn {
+# What the directory watch covers: the lab folders and the DNS zone. The rest of
+# the domain changes on its own and must not trigger a snapshot.
+function Get-PurvexWatchRoots {
     param([string]$DomainDN)
+    $roots = @("Departments", "AccessLevels", "ServiceAccounts" | ForEach-Object { "OU=$_,$DomainDN" })
+    if ($domain.DNSRoot) { $roots += "DC=$($domain.DNSRoot),CN=MicrosoftDNS,DC=DomainDnsZones,$DomainDN" }
+    return $roots
+}
+
+# Highest update number under the watched roots. Any edit there, including a GPO
+# link (it lives on the OU) or a DNS record, raises it.
+function Get-PurvexHighestUsn {
+    param([string[]]$Roots)
     $best = [int64]-1
-    foreach ($name in @("Departments", "AccessLevels", "ServiceAccounts")) {
+    foreach ($root in $Roots) {
         try {
             $searcher = New-Object System.DirectoryServices.DirectorySearcher
-            $searcher.SearchRoot = New-Object System.DirectoryServices.DirectoryEntry("LDAP://OU=$name,$DomainDN")
+            $searcher.SearchRoot = New-Object System.DirectoryServices.DirectoryEntry("LDAP://$root")
             $searcher.Filter = "(uSNChanged>=1)"
             $searcher.PageSize = 1
             $searcher.SearchScope = "Subtree"
@@ -704,42 +798,51 @@ function Get-PurvexHighestUsn {
     return $best
 }
 
-# Runs for as long as the task lives. A change in the lab folders sends those
-# folders right away. The Security log rides along once a minute. A failed
-# directory read never turns into a burst of uploads.
+# Runs for as long as the task lives.
+# - Directory and DNS edits are seen within about 150 ms.
+# - Firewall and share changes are fingerprinted every second.
+# - A change stays pending until an upload succeeds. A failed upload is retried
+#   after 2, 4, 8 and then 15 seconds, so a network blip never loses a change.
+# - The Security log and settings ride along with a full send once a minute.
 function Start-PurvexSyncLoop {
     param([string]$Key, [string]$Url)
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    $roots = Get-PurvexWatchRoots -DomainDN $domainDN
     $lastSend = [datetime]::MinValue
     $lastUsn = [int64]-1
-    # DNS, firewall and share changes do not touch the lab OUs, so they are
-    # fingerprinted every few seconds instead.
-    $lastInfraCheck = [datetime]::MinValue
-    $lastInfra = ""
+    $lastPrint = $null
+    $nextPrint = [datetime]::MinValue
+    $pending = $false
+    $failures = 0
     while ($true) {
-        # Poll fast so a directory change (an unlock, an enable, a group edit) is
-        # detected and pushed within a fraction of a second, not a beat later.
         $waitMs = 150
         try {
-            $age = ((Get-Date) - $lastSend).TotalSeconds
-            $usn = Get-PurvexHighestUsn -DomainDN $domainDN
+            $now = Get-Date
+            $usn = Get-PurvexHighestUsn -Roots $roots
+            if ($usn -ge 0 -and $usn -ne $lastUsn) {
+                if ($lastUsn -ge 0) { $pending = $true }
+                $lastUsn = $usn
+            }
+            if ($now -ge $nextPrint) {
+                $nextPrint = $now.AddSeconds(1)
+                $print = Get-PurvexInfraPrint
+                if ($null -ne $lastPrint -and $print -ne $lastPrint) { $pending = $true }
+                $lastPrint = $print
+            }
+            $age = ($now - $lastSend).TotalSeconds
             $due = $age -ge 60
             # A short gap folds one edit (create, then add to a group) into a single send.
-            $changed = ($usn -ge 0) -and ($age -ge 0.25) -and (($lastUsn -lt 0) -or ($usn -ne $lastUsn))
-            if (-not $changed -and ((Get-Date) - $lastInfraCheck).TotalSeconds -ge 5) {
-                $lastInfraCheck = Get-Date
-                $infraNow = (Get-PurvexInfraQuick -Domain $domain) | ConvertTo-Json -Depth 4 -Compress
-                if ($lastInfra -and $infraNow -ne $lastInfra) { $changed = $true }
-                $lastInfra = $infraNow
-            }
-            if ($changed -or $due) {
-                if ($changed) { Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN -Fast }
-                else { Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN }
+            if (($pending -and $age -ge 0.25) -or $due) {
+                Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN -Fast:(-not $due)
                 $lastSend = Get-Date
-                if ($usn -ge 0) { $lastUsn = $usn }
+                $pending = $false
+                $failures = 0
             }
         }
-        catch { $waitMs = 15000 }
+        catch {
+            $failures++
+            $waitMs = [int][Math]::Min(15000, 1000 * [Math]::Pow(2, [Math]::Min($failures, 4)))
+        }
         Start-Sleep -Milliseconds $waitMs
     }
 }
