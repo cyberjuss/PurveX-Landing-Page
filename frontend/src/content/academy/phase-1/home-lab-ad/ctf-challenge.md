@@ -18,7 +18,7 @@
 <p><strong>Situation:</strong> A ticket from Finance and Accounting says Jordan Ellis cannot open a shared folder. Nobody on the desk has looked at Jordan's account yet.</p>
 <p><strong>Task:</strong> Find the account <code>jordan.ellis</code> and name the department group it belongs to.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="group name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for Which Group Is Jordan In?" placeholder="group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{finance-accounting-users}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
@@ -59,7 +59,7 @@
 <p><strong>Situation:</strong> Your lead is preparing a list of accounts with elevated IT access, since those are the accounts attackers want most. At PurveX that access comes from the <code>IT Admins</code> group.</p>
 <p><strong>Task:</strong> Name the person who is a member of <code>IT Admins</code>, using their first and last name.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for Who Is an Admin?" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{alex-rivera}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
@@ -100,7 +100,7 @@
 <p><strong>Situation:</strong> An external auditor is reviewing who can administer servers and workstations. They want to know where the firm keeps its access-level groups, <code>Server Admins</code> and <code>Helpdesk</code>, since those groups sit outside the department folders.</p>
 <p><strong>Task:</strong> Name the top-level OU that holds <code>Server Admins</code> and <code>Helpdesk</code>.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for Where Are the Access Groups?" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{accesslevels}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
@@ -137,7 +137,7 @@
 <p><strong>Situation:</strong> Someone created an account without choosing a department, so Windows put it in the default folder for new users. That folder is a container rather than an OU, and the difference matters for Group Policy.</p>
 <p><strong>Task:</strong> Give the name of that default folder exactly as Active Directory writes it in the object's distinguished name.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="exact name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for The Folder That Is Not an OU" placeholder="exact name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{cn=users}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
@@ -174,7 +174,7 @@
 <p><strong>Situation:</strong> A request has come in to add someone to <code>IT Admins</code>. The group's Description is supposed to say who the group is meant for.</p>
 <p><strong>Task:</strong> Read the Description on <code>IT Admins</code> and name the role it is meant for.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="role" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for What Is the Admin Group For?" placeholder="role" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-systems-administrators}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
@@ -211,7 +211,7 @@
 <p><strong>Situation:</strong> A ticket says Priya Nair has help desk privileges she should not have. Her title is Help Desk Technician, but a title is only a label on the account. Privileges come from groups.</p>
 <p><strong>Task:</strong> Check whether Priya is a member of the <code>Helpdesk</code> group, and answer <code>yes</code> or <code>no</code>.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for Is Priya on the Help Desk Group?" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{no}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
@@ -248,7 +248,7 @@
 <p><strong>Situation:</strong> A manager calls about "the settlements coordinator" and does not know the person's username. The request names only the job title.</p>
 <p><strong>Task:</strong> Find the person whose title is <strong>Settlements Coordinator</strong>, and answer with their first and last name.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for Who Is the Settlements Coordinator?" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{riley-kwan}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
@@ -289,7 +289,7 @@
 <p><strong>Situation:</strong> IT is planning a hardware refresh, and the asset list for the IT department has one workstation on it. The vendor needs the computer's exact name as it appears in the domain before they can quote a replacement.</p>
 <p><strong>Task:</strong> Give the exact name of the computer object in the IT department's <code>Workstations</code> OU.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="computer name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for What Is the Workstation Called?" placeholder="computer name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-wks01}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
@@ -326,7 +326,7 @@
 <p><strong>Situation:</strong> An auditor wants a starting count of who can reach Compliance data, so any later change stands out.</p>
 <p><strong>Task:</strong> Count the members of the <code>Compliance Users</code> group.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for How Many People Are in Compliance?" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
@@ -367,7 +367,7 @@
 <p><strong>Situation:</strong> HR is updating the new-hire guide and asked IT how many departments the firm has in its directory. Your lead passed the question to you before you head home on your first day.</p>
 <p><strong>Task:</strong> Count the department OUs that sit directly under <code>Departments</code>.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for How Many Departments Are There?" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{5}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>

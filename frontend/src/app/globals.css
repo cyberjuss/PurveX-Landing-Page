@@ -3782,6 +3782,9 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 }
 .academy-prose .ad-flag p, .academy-prose .ad-flag ul { margin: 0; font-size: 0.86rem; color: var(--pvrx-text-secondary-light); }
 .academy-prose .ad-flag code { font-weight: 650; }
+.academy-prose .ad-queue-section { margin: 2.5rem 0 0.9rem; }
+.academy-prose .ad-queue-section h3 { margin: 0 0 0.35rem; font-size: 1.1rem; }
+.academy-prose .ad-queue-section p { margin: 0; max-width: 62ch; color: var(--pvrx-text-secondary-light); }
 .academy-prose .ad-break { margin: 0; display: grid; gap: 0.85rem; }
 .academy-prose .ad-break > div {
   display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: 0.2rem 0.75rem; align-items: start;
