@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookMarked, Check, ChevronDown, Lock } from "lucide-react";
+import { BookMarked, Check, ChevronDown, FlaskConical, Lock } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
 import { useAcademyProgress } from "./academy-progress";
 import { isPhaseLocked } from "@/lib/academy-locks";
@@ -155,6 +155,17 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           </div>
         );
       })}
+
+      <Link
+        href="/range/labs"
+        onClick={onNavigate}
+        className={`flex items-center gap-2 font-mono text-[12px] font-bold uppercase tracking-[0.1em] transition ${
+          pathname.startsWith("/range/labs") ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
+        }`}
+      >
+        <FlaskConical className="h-3 w-3 shrink-0" />
+        <span className="truncate">Labs — Hands-On</span>
+      </Link>
 
       <Link
         href="/range/reference"

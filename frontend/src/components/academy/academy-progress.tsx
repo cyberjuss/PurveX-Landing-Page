@@ -75,6 +75,7 @@ interface AcademyProgressContextValue {
   /** A phase is complete once every challenge in it is solved. */
   isPhaseComplete: (phaseSlug: string) => boolean;
   recordLabDone: (phaseSlug: string, entrySlug: string, labSlug: string) => void;
+  isLabDone: (phaseSlug: string, entrySlug: string, labSlug: string) => boolean;
   hasPassedQuiz: (phaseSlug: string, entrySlug: string) => boolean;
   recordQuizPass: (phaseSlug: string, entrySlug: string) => void;
   toggleComplete: (phaseSlug: string, entrySlug: string) => void;
@@ -208,6 +209,7 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
         const key = labKey(phaseSlug, entrySlug, labSlug);
         setLabsDone((prev) => (prev.has(key) ? prev : new Set([...prev, key])));
       },
+      isLabDone: (phaseSlug, entrySlug, labSlug) => labsDone.has(labKey(phaseSlug, entrySlug, labSlug)),
       hasPassedQuiz: (phaseSlug, entrySlug) => quizPasses.has(entryKey(phaseSlug, entrySlug)),
       recordQuizPass: (phaseSlug, entrySlug) => {
         const key = entryKey(phaseSlug, entrySlug);
@@ -240,7 +242,7 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
       completedCount: [...completed].filter((key) => !isPhaseLocked(key.split(":")[0])).length,
       totalCount,
     }),
-    [completed, quizPasses, reqs, phaseDone, lastStop, totalCount]
+    [completed, quizPasses, labsDone, reqs, phaseDone, lastStop, totalCount]
   );
 
   return <AcademyProgressContext.Provider value={value}>{children}</AcademyProgressContext.Provider>;

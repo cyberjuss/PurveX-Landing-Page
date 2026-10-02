@@ -1,0 +1,86 @@
+/* The Labs page. Dark cyber cards on any theme, each with a glowing accent
+ * icon. Generous spacing so nothing feels clogged. No grey. Each card sets its
+ * own hue through --lab-accent. */
+
+.lg { --lg-ink: #eaf0ff; --lg-ink-soft: #aab6d8; max-width: 72rem; margin: 0 auto; }
+
+.lg__head { margin: 0 0 2rem; }
+.lg__kicker { display: inline-flex; align-items: center; gap: 0.45rem; margin: 0 0 0.5rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #8b9bd4; }
+.lg__kicker svg { width: 14px; height: 14px; }
+.lg__head h1 { margin: 0; font-size: clamp(1.9rem, 4vw, 2.6rem); line-height: 1.05; letter-spacing: -0.02em; color: var(--rd-ink, #0f172a); }
+.lg__sub { margin: 0.6rem 0 0; max-width: 40rem; font-size: 0.98rem; line-height: 1.5; color: var(--rd-ink-2, #475569); }
+
+.lg__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 1.4rem; }
+
+/* card ---------------------------------------------------------------------- */
+.lgc {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 15rem;
+  padding: 1.5rem;
+  border-radius: 1.2rem;
+  overflow: hidden;
+  isolation: isolate;
+  text-decoration: none;
+  color: var(--lg-ink);
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--lab-accent) 24%, transparent) 0%, transparent 55%),
+    linear-gradient(165deg, #141a33 0%, #0d1124 100%);
+  border: 1px solid color-mix(in srgb, var(--lab-accent) 26%, #2a3356);
+  box-shadow: 0 1px 2px rgba(5, 8, 20, 0.5), 0 18px 40px -24px rgba(5, 8, 24, 0.9);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s, border-color 0.22s;
+}
+.lgc:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--lab-accent) 60%, transparent);
+  box-shadow: 0 1px 2px rgba(5, 8, 20, 0.5), 0 26px 55px -24px color-mix(in srgb, var(--lab-accent) 45%, rgba(5, 8, 24, 0.9));
+}
+.lgc:focus-visible { outline: 2px solid var(--lab-accent); outline-offset: 3px; }
+
+/* a soft accent glow bleeding up from behind the icon */
+.lgc__glow {
+  position: absolute; z-index: -1; top: -3rem; left: -2rem; width: 10rem; height: 10rem;
+  background: var(--lab-accent); filter: blur(60px); opacity: 0.35; border-radius: 50%;
+  transition: opacity 0.22s;
+}
+.lgc:hover .lgc__glow { opacity: 0.55; }
+
+.lgc__icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 3rem; height: 3rem; border-radius: 0.9rem;
+  color: var(--lab-accent);
+  background: color-mix(in srgb, var(--lab-accent) 16%, rgba(255, 255, 255, 0.03));
+  border: 1px solid color-mix(in srgb, var(--lab-accent) 45%, transparent);
+  box-shadow: inset 0 0 18px color-mix(in srgb, var(--lab-accent) 28%, transparent), 0 0 20px -4px color-mix(in srgb, var(--lab-accent) 50%, transparent);
+}
+.lgc__icon svg { width: 1.5rem; height: 1.5rem; }
+
+.lgc__body { display: flex; flex-direction: column; gap: 0.4rem; flex: 1; }
+.lgc__title { font-size: 1.12rem; font-weight: 700; line-height: 1.25; color: #f3f6ff; }
+.lgc__blurb { font-size: 0.86rem; line-height: 1.5; color: var(--lg-ink-soft); }
+
+.lgc__foot { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.lgc__tag {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 0.28rem 0.6rem; border-radius: 999px;
+  color: var(--lab-accent);
+  background: color-mix(in srgb, var(--lab-accent) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--lab-accent) 35%, transparent);
+}
+.lgc__time { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.74rem; color: #8b9bd4; }
+.lgc__time svg { width: 13px; height: 13px; }
+.lgc__done {
+  margin-left: auto; display: inline-flex; align-items: center;
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 0.22rem 0.5rem; border-radius: 999px; color: #091; color: #8ff0bd;
+  background: rgba(47, 191, 113, 0.16); border: 1px solid rgba(47, 191, 113, 0.4);
+}
+.lgc__go { position: absolute; top: 1.3rem; right: 1.3rem; width: 1.1rem; height: 1.1rem; color: #6b79a8; transition: color 0.2s, transform 0.2s; }
+.lgc:hover .lgc__go { color: var(--lab-accent); transform: translate(2px, -2px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .lgc, .lgc__go, .lgc__glow { transition: none; }
+  .lgc:hover { transform: none; }
+}

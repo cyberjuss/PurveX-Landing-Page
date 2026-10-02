@@ -1,0 +1,12 @@
+/* A lab on its own page: a back link, then the lab itself. Kept calm and
+ * open, no boxed-in rails. */
+.sl { max-width: 52rem; margin: 0 auto; }
+.sl__back {
+  display: inline-flex; align-items: center; gap: 0.4rem; margin-bottom: 1.4rem;
+  font-size: 0.8rem; font-weight: 650; text-decoration: none;
+  color: var(--rd-accent, #5546e0);
+}
+.sl__back svg { width: 15px; height: 15px; }
+.sl__back:hover { text-decoration: underline; text-underline-offset: 3px; }
+.sl__title { margin: 0 0 1.2rem; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.15; letter-spacing: -0.01em; color: var(--rd-ink, #0f172a); }
+.sl__soon { padding: 2.5rem 1rem; text-align: center; color: var(--rd-ink-2, #475569); }
