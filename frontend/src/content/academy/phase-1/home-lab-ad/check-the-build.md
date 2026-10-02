@@ -5,7 +5,7 @@
 
 ### Check what got built
 
-**Verify.** Do not trust the script output alone. Open Active Directory Users and Computers, or run the commands below, and confirm three things:
+**Verify.** Do not trust the script output alone. Open Active Directory Users and Computers or run the commands below to confirm three things:
 
 - All 5 departments exist
 - All 9 users sit in the right department with the right title
@@ -34,7 +34,7 @@ A few errors account for almost every "it will not run" report. Each one is easy
 <div class="ad-trouble__item">
 <span class="ad-trouble__label">Not running as Administrator</span>
 <img src="/academy/lab-scripts/run-as-admin-error.png" alt="PowerShell error: the script cannot be run because it contains a &quot;#requires&quot; statement for running as Administrator" class="ad-trouble__img" />
-<p>Close this window. Open the Start menu, search PowerShell, right-click it, and choose <strong>Run as Administrator</strong>. Then <code>cd</code> back to your Downloads folder and run the script again.</p>
+<p>Close this window. Search the Start menu for PowerShell, then right-click it and choose <strong>Run as Administrator</strong>. Then <code>cd</code> back to your Downloads folder and run the script again.</p>
 </div>
 
 <div class="ad-trouble__item">
@@ -51,7 +51,7 @@ A few errors account for almost every "it will not run" report. Each one is easy
 
 <div class="ad-trouble__item">
 <span class="ad-trouble__label">The script says it is not linked to Range</span>
-<p>You ran a copy without your account key, such as a saved or pasted copy. Sign in, open Build the Environment, and click <strong>Download Build-Environment.ps1</strong> once. Do not right-click and save. If a red message appears under the link, read it, sign in again, and click the link once more. Then run the new file. It only adds what is missing.</p>
+<p>You ran a copy without your account key, such as a saved or pasted copy. Sign in and click <strong>Download Build-Environment.ps1</strong> once on Build the Environment. Do not right-click and save. If a red message appears under the link, read it and sign in again before you click the link once more. Then run the new file. It only adds what is missing.</p>
 </div>
 
 <div class="ad-trouble__item">
@@ -72,13 +72,13 @@ A few errors account for almost every "it will not run" report. Each one is easy
 </div>
 </div>
 
-If you hit the Administrator, blocked-file, and execution-policy errors in one session, fix them in that order. Elevate first, unblock the file, then relax the execution policy. Each is a one-time fix per machine.
+If you hit all three of these errors in one session, fix them in order. Elevate first and unblock the file before you relax the execution policy. Each is a one-time fix per machine.
 
 ### Start Over
 
 For a fresh start, run the cleanup script on the domain controller. It asks you to confirm before it deletes anything.
 
-The script deletes the `Departments`, `AccessLevels`, and `ServiceAccounts` OUs and every user, group, and computer inside them, including the challenge data. The domain, the forest, and the built-in accounts stay untouched.
+The script deletes the `Departments`, `AccessLevels`, and `ServiceAccounts` OUs and everything inside them, including the challenge data. The domain and its built-in accounts stay untouched.
 
 ```powershell
 ./Remove-Environment.ps1

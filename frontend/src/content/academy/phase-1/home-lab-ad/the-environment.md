@@ -1,6 +1,6 @@
 ### The Environment
 
-This tab is the inventory: every user account, the one workstation, and the totals. The build script creates everything listed here. The Range download also adds the Ticket Queue objects listed at the bottom.
+This tab is the inventory of every user account and workstation, with the totals at the end. The build script creates everything listed here. The Range download also adds the Ticket Queue objects listed at the bottom.
 
 Learn the roster well enough to notice when someone is missing. If your directory and this page ever disagree, stop and find out why before you close a ticket.
 
@@ -24,9 +24,9 @@ There are nine users, and each sits in one standard group. Alex Rivera is the ex
 
 Remember that extra group. Unusual activity on Alex carries more risk than unusual activity on Jordan.
 
-A title is not a group. Priya Nair is a Help Desk Technician, but she sits in IT Users, not Helpdesk.
+A title is not a group. Priya Nair is a Help Desk Technician, but she sits in IT Users rather than Helpdesk.
 
-When a ticket names a person, look up the username and read the account's group list, called Member Of. Do not guess access from the title.
+When a ticket names a person, look up the username and read the account's Member Of list. Do not guess access from the title.
 
 ### The Client Workstation
 
@@ -38,7 +38,7 @@ The lab has only one client machine. Learn where it belongs so you notice if it 
 | Assigned department | IT |
 | Location | Workstations folder under IT |
 
-If a ticket names a different workstation, or this one sits under another department, that is already a finding. Confirm the folder before you treat the name as proof.
+A ticket that names a different workstation is already a finding, and so is this one sitting under another department. Confirm the folder before you treat the name as proof.
 
 ### What Is in This Environment
 

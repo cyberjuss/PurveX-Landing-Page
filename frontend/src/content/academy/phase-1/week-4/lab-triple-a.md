@@ -5,7 +5,7 @@
 
 **Situation:** A web application stores each user's role on the server but also accepts a role value from the browser. If the server believes whatever the browser sends, any regular user can promote themselves to admin.
 
-**Your task:** In PortSwigger's "User role can be modified in user profile" lab, sign in as a regular user, gain admin access without admin credentials, and use the admin panel to delete the user `carlos`. Then explain the fix the server needs.
+**Your task:** In PortSwigger's "User role can be modified in user profile" lab, sign in as a regular user and gain admin access without admin credentials. Then use the admin panel to delete the user `carlos`. Then explain the fix the server needs.
 
 **What you need:** A free PortSwigger Web Security Academy account and Burp Suite Community Edition.
 
@@ -27,7 +27,7 @@ On My Account, update your email address and submit it. In Burp, send that reque
 
 ### Step 5. Add the role to your request
 
-The request body is JSON and did not include `roleid`. Add the field yourself, keep your email, and send it:
+The request body is JSON and did not include `roleid`. Add the field yourself next to your email and send it:
 
 ```
 {"email":"wiener@normal-user.net","roleid":2}

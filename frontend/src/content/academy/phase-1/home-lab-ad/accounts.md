@@ -1,6 +1,6 @@
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
-<p>You opened an account. How do you tell a person, a machine, and a job apart?</p>
+<p>You opened an account. How do you tell a person from a machine or a job?</p>
 </div>
 
 ### User Accounts
@@ -28,10 +28,10 @@ You read a computer the same way you read a person: the folder first, then Membe
 
 ### Service Accounts
 
-A **service account** is a user object, but it is not a person. It gives an identity to a job, such as a scheduled task or an automated process, so a login can happen with nobody at a keyboard.
+A **service account** is a user object, but it is not a person. It gives an identity to a job such as a scheduled task, so a login can happen with nobody at a keyboard.
 
 This lab has one: `svc-backup-job`. The `svc-` prefix lets you tell it from `jordan.ellis` at a glance.
 
-A service account does not belong in a staff group. If you find it in `IT Users`, that is leftover access, not a person who works in IT.
+A service account does not belong in a staff group. If you find it in `IT Users`, that is leftover access rather than a person who works in IT.
 
 Check the name and the Description before you treat an account like a person. A service account has a written job and a written time window. A person has a department and a group.

@@ -43,7 +43,7 @@ Every department has a standard access group:
 
 IT also has a second, more privileged group called `IT Admins`. That extra group is how two people in the same folder end up with different access.
 
-To read access, open the object, read the folder, then read every group on Member Of. Compare these two:
+To read access, open the object and read its folder before every group on Member Of. Compare these two:
 
 <div class="ad-og" aria-label="Alex Rivera and Priya Nair with their groups">
   <article class="ad-og__card">

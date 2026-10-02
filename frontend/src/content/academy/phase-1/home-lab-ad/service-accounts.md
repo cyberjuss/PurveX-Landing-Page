@@ -20,7 +20,7 @@ Follow these practices every time:
 * **Restricted logon hours.** If a backup job only runs overnight, the account's **Logon Hours** should reflect that. A logon outside that window is a red flag.
 * **A filled-in Description.** "Runs the nightly backup job on IT-WKS01" tells the next person what breaks if this account is disabled.
 
-If the name, the OU, and the Description do not all say "service," treat the account like a person until you prove otherwise.
+Treat the account like a person until its name, OU and Description all show it is a service.
 
 ### Onboarding by Mirroring Group Membership
 
@@ -28,6 +28,6 @@ The fastest way to onboard someone into an existing role is to copy a peer's gro
 
 Open Priya's **Member Of** tab and note every group. Then open the new hire's **Member Of** tab and add the same groups. Keep both Properties windows side by side so you do not miss one.
 
-The same comparison helps during an investigation. An account with more groups than its peers, and no onboarding record to explain them, is worth asking about.
+The same comparison helps during an investigation. An account with more groups than its peers and no onboarding record to explain them is worth asking about.
 
 Compare against The Environment tab, not against the ticket.

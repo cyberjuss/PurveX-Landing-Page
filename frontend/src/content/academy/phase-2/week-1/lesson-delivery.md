@@ -9,7 +9,7 @@ Malicious downloads
 Removable media
 Exploited software
 
-As you read, notice that most of these depend on a person or an unpatched weakness, which is exactly what a SOC watches for.
+As you read, notice that most of these depend on a person or an unpatched weakness. Those are exactly what a SOC watches for.
 
 #### Phishing
 
@@ -19,7 +19,7 @@ When a machine is infected, the user's recent email is one of the first things t
 
 #### Malicious downloads
 
-A user downloads what looks like a normal file or installer, often from a search result or a cracked-software site, and runs it. This is how many trojans arrive.
+A user downloads and runs what looks like a normal installer, often from a search result or a cracked-software site. This is how many trojans arrive.
 
 The browser history and downloads folder show what was fetched and when. That timeline usually lines up with the moment the alert fired.
 
@@ -27,7 +27,7 @@ The browser history and downloads folder show what was fetched and when. That ti
 
 A USB drive can carry malware onto a machine, including machines with no internet access. Plugging it in can be enough if autorun is allowed.
 
-In an environment that should not allow unknown USB devices, a removable-media infection is also a policy finding, not just a cleanup job.
+In an environment that should not allow unknown USB devices, a removable-media infection is a policy finding as well as a cleanup job.
 
 #### Exploited software
 

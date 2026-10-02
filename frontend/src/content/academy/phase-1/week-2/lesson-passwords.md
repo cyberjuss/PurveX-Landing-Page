@@ -13,12 +13,12 @@
 
 ### Good storage in one line
 
-A system should store a **salted, slow hash** of each password, never the password. At sign-in it hashes what you typed and compares.
+A system should store a **salted, slow hash** of each password instead of the password. At sign-in it hashes what you typed and compares.
 
 - **Salt:** a random value added per user. Two people with the same password get different hashes, so reuse is hidden.
 - **Slow hash:** Argon2id or bcrypt. One high-end graphics card tries about 22 billion SHA-256 guesses a second. At bcrypt's minimum recommended cost of 10, the same card manages about 7,500.
 
-**Without a salt and a slow hash,** the same passwords show the same value, and tools like Hashcat and John the Ripper guess weak passwords fast. That is what happened to LinkedIn in 2012.
+**Without a salt and a slow hash,** the same passwords show the same value. Tools like Hashcat and John the Ripper then guess weak passwords fast. That is what happened to LinkedIn in 2012.
 
 ### Why their breach is your problem
 
@@ -42,7 +42,7 @@ $ openssl passwd -6 -salt N4tQ2x 'Harbor2026'
 $6$N4tQ2x$YkiZ5pKGVV3yPjoKhMV4oWEqyPJNVynJGzKwvp37hoCLb//X7KoVHJyXe8KXcZ2U7axpFTZFxABOn4py32W0v.
 ```
 
-`$6$` names the algorithm, then the salt, then the hash. The salt is not secret. It works by making every hash unique.
+`$6$` names the algorithm, and the salt and the hash follow it. The salt is not secret. It works by making every hash unique.
 
 A bcrypt hash: `$2b$12$1.A448CMPszJoJNh8XDqPeL1ZvsWBt7AjjvYj57Rfr1M4tDk/7Oye`. `12` is the cost setting, which you raise as computers get faster.
 

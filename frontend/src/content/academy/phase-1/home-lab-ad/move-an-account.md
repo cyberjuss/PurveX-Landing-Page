@@ -34,7 +34,7 @@ To move an account:
 - Choose **Move**
 - Select the destination OU
 
-Picture Taylor Osei transferring from Operations into Compliance. Find the account, choose **Move**, and select `OU=Users,OU=Compliance,OU=Departments`. Then open that OU and confirm Taylor appears there.
+Picture Taylor Osei transferring from Operations into Compliance. Choose **Move** on the account and select `OU=Users,OU=Compliance,OU=Departments`. Then open that OU and confirm Taylor appears there.
 
 A common mistake is updating the job title without moving the AD object. The old department's policies then stay in effect.
 

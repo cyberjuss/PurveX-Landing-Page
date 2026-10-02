@@ -5,7 +5,7 @@
 
 **Situation:** Ransomware has hit a workstation, and responders captured its network traffic while it ran. Most of the capture is ordinary Windows background traffic, but somewhere inside it the malware sent data home to its command-and-control (C2) server.
 
-**Your task:** Separate the noise from the attack, find the request that sends data to the C2 server, decode what it carries, and write up the indicators of compromise (IOCs) in a short table. In a live incident, finding that request quickly can decide whether the encrypted files can be recovered.
+**Your task:** Separate the noise from the attack and find the request that sends data to the C2 server. Decode what it carries, then write up the indicators of compromise (IOCs) in a short table. In a live incident, finding that request quickly can decide whether the encrypted files can be recovered.
 
 **What you need:** Wireshark or tshark, and the capture file `hidden_tear_final_snipped_pcap.pcapng` from your instructor.
 
@@ -23,10 +23,10 @@ Work in the order below. Filtering out the noise before you hunt for the attack 
 
 Work through each external host from your Step 1 list:
 
-4. Filter to that host's web requests, for example `http.request && ip.addr == HOST-IP`, and read the URI and User-Agent. Is this traffic suspicious, and why?
+4. Filter to that host's web requests with `http.request && ip.addr == HOST-IP` and read the URI and User-Agent. Is this traffic suspicious, and why?
 5. How many hosts still look worth investigating once the ordinary Windows traffic is ruled out?
 
-> **Note:** Do not rule a host in or out at a glance. If something looks unfamiliar, search the hostname, the User-Agent string, or the URI pattern before you decide.
+> **Note:** Do not rule a host in or out at a glance. If something looks unfamiliar, search the hostname or the User-Agent string before you decide.
 
 > **Guiding question:** Real investigations are mostly noise. What do you risk by skipping triage and jumping straight to the packets that look interesting?
 
@@ -58,4 +58,4 @@ Produce an IOC table that includes at least:
 * The parameter name used to send the data out
 * What data is being sent out
 
-**Bonus:** During a live incident, what is the single most urgent piece of information a responder would want from this traffic, and why?
+**Bonus:** What is the single most urgent piece of information a responder would want from this traffic during a live incident, and why?

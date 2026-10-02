@@ -20,7 +20,7 @@ Harbor2026   17e80eed5cd387f397eb28c8ba59af346a8ec8c5569f83cbfebcd5e3df291a7b
 Harbor2027   4ec765fd76caad15aec3c46f8c3dc0b9e77cd65b9e4c569677ed2b99d79a0d5b
 ```
 
-So if your file's hash matches the vendor's, character for character, it is the exact file the vendor published.
+So if your file's hash matches the vendor's character for character, it is the exact file the vendor published.
 
 ### Verify in three steps
 
@@ -58,7 +58,7 @@ printf '%s' 'Harbor2026' | sha256sum   17e80eed5cd3...
 echo 'Harbor2026' | sha256sum          be5cc1881c34...
 ```
 
-Use `printf '%s'`, and leave nothing after the text in CyberChef. For a file, always hash the file, not its copied text.
+Use `printf '%s'`, and leave nothing after the text in CyberChef. For a file, hash the file itself rather than its copied text.
 
 #### Old algorithms
 
@@ -66,13 +66,13 @@ MD5 (32 characters) and SHA-1 (40 characters) are broken. Researchers can make t
 
 #### Digital signatures
 
-A signature tells you who published the file. Open the file's **Properties**, then **Digital Signatures**, or run `Get-AuthenticodeSignature .\setup.exe` and look for `Valid` and a name you expect. The CCleaner and 3CX files were signed too, so no single check is enough.
+A signature tells you who published the file. Open **Properties → Digital Signatures** on the file or run `Get-AuthenticodeSignature .\setup.exe` and look for `Valid` and a name you expect. The CCleaner and 3CX files were signed too, so no single check is enough.
 
 #### How the SOC uses hashes
 
 - Alerts in tools like Microsoft Defender name files by their SHA-256.
 - Teams share the hashes of bad files so others can block them. MISP is a free, open-source platform for this.
-- When you collect evidence, you hash it right away and record the value, so anyone can later prove it was not changed.
+- When you collect evidence, hash it right away and record the value so anyone can later prove it was not changed.
 
 </details>
 

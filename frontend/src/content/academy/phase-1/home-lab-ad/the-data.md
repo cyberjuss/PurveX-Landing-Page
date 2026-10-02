@@ -5,7 +5,7 @@
 
 ### Data Categories
 
-Knowing where data lives changes how you read a ticket. Instead of "an account was accessed," you can say "an account was accessed, and here is what was at risk."
+Knowing where data lives changes how you read a ticket. Instead of saying an account was accessed, you can say what was at risk when it was.
 
 | Data Category | Examples | Primarily Handled By |
 | :---- | :---- | :---- |

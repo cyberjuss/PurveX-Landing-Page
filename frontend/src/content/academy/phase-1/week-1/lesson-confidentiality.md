@@ -1,6 +1,6 @@
 ### Confidentiality
 
-Confidentiality means only authorized people can see information. When it fails, the data stays where it was and unchanged, but someone who should not have it now has a copy. That failure is a **leak**.
+Confidentiality means only authorized people can see information. When it fails the data stays where it was, but someone who should not have it now has a copy. That failure is a **leak**.
 
 It matters most when seeing the data is the harm:
 

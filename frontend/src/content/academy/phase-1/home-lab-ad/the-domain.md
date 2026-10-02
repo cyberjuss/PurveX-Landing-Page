@@ -26,7 +26,7 @@ The directory is the one list the firm trusts to say who someone is and which co
 
 The directory does three jobs, and you will use all three on the desk:
 
-- **Authentication** is the domain controller checking who is signing in. Kerberos performs that check. After promotion, a sign-in reads as the domain, then the account.
+- **Authentication** is the domain controller checking who is signing in. Kerberos performs that check. After promotion a sign-in reads as the domain followed by the account.
 - **Authorization** is what the account is allowed to open. Groups do that job, and you meet them on the Groups tab.
 - **Accounting** is the record of each attempt. The domain controller logs the sign-in, so you can check a lockout or a sign-in from the wrong place.
 
@@ -35,8 +35,8 @@ The directory does three jobs, and you will use all three on the desk:
 In Week 1 you named the three CIA failures: a leak, a lie, and a lockout. Each one maps to the directory:
 
 - **Confidentiality** fails as a leak. Authentication and group membership decide who can open what. An account in the wrong group can open a door it should not.
-- **Integrity** fails as a lie. A title, a ticket, or a caller can be wrong. The account, the group, and the OU are what you verify.
-- **Availability** fails as a lockout. If a workstation cannot find the domain controller, nobody signs in, even when the directory is correct. Join a Computer walks through that failure.
+- **Integrity** fails as a lie. A ticket or a caller can be wrong. What you verify is the account along with its group and OU.
+- **Availability** fails as a lockout. If a workstation cannot find the domain controller, nobody signs in even when the directory is correct. Join a Computer walks through that failure.
 
 ### Promote the server
 
@@ -51,7 +51,7 @@ After the reboot, click the flag in Server Manager and choose Promote this serve
 
 1. Add a new forest with the root domain name `purvexfinancial.local`.
 2. Set the recovery password. It is for Directory Services Restore Mode, not for any user.
-3. Move through the checks, install, and let the server reboot.
+3. Move through the checks and install, then let the server reboot.
 
 When the server comes back, Server Manager shows Active Directory Domain Services installed. This server is now the domain controller.
 
@@ -60,4 +60,4 @@ When the server comes back, Server Manager shows Active Directory Domain Service
 <figcaption>After promotion the sign-in is the domain, then the account. This practice screen says CYBERJUSS\Administrator. Yours will say PURVEXFINANCIAL\Administrator.</figcaption>
 </figure>
 
-The next tab, Install the Domain, runs this same promotion with `Install-Forest.ps1`. Use the script for speed, or these screens to see each step. Either way, Build the Environment is what links the lab to your Range account.
+The Install the Domain tab runs this same promotion with `Install-Forest.ps1`. Use the script for speed, or these screens to see each step. Either way, Build the Environment is what links the lab to your Range account.

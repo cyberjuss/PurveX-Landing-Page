@@ -7,9 +7,9 @@
 
 You cannot call something suspicious until you know what **normal** looks like. In this lab, normal is PurveX Financial.
 
-PurveX Financial is a mid-sized wealth firm. Client money, financial records, and regulated data such as GLBA and SOX all sit in this environment. That is what is at stake on every ticket.
+PurveX Financial is a mid-sized wealth firm. Client money and regulated records covered by GLBA and SOX all sit in this environment. That is what is at stake on every ticket.
 
-The firm is your baseline for judging every account, group, and login. A 2 AM login from a Wealth Management workstation is a different question than a 2 AM login from a random lab machine.
+The firm is your baseline for judging every account and login. A 2 AM login from a Wealth Management workstation is a different question than a 2 AM login from a random lab machine.
 
 Either login might still be legitimate. You need to know the environment before you can decide whether it fits.
 
@@ -19,13 +19,13 @@ The environment is small enough to hold in your head:
 - Nine people
 - A defined set of groups
 
-A real desk works the same way. You learn who works where, what access they should have, which groups matter, and what normal activity looks like.
+A real desk works the same way. You learn who works where and what access they should have. Over time you also learn what normal activity looks like.
 
 ### A Directory Built Like a Real Firm
 
 A textbook gives you `User1` inside `OU=Users` and explains everything. Real environments are messier, and this lab copies a real firm.
 
-Here you work with departments, access groups, job titles, and tickets that may not tell the whole story.
+Here you work with real departments and access groups, and with tickets that may not tell the whole story.
 
 A job title does not set anyone's access. A person whose title says Helpdesk does not belong in the **Helpdesk** group because of that title.
 

@@ -12,8 +12,8 @@ Pick what you are looking for from the dropdown:
 - Users, Contacts, and Groups for a person
 - Computers for a machine
 
-You can search by first name, last name, or username.
+You can search by name or by username.
 
 Try it with `jordan.ellis`, the Staff Accountant in Finance and Accounting. The account turns up in seconds, whichever OU you started from.
 
-Get comfortable with Find early, because you will use it on most tickets. Finding the object is only the start. Once it opens, read the folder, then read Member Of.
+Get comfortable with Find early, because you will use it on most tickets. Finding the object is only the start. Once it opens, read the folder and then Member Of.

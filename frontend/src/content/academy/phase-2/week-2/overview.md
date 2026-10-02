@@ -1,6 +1,6 @@
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
-<p>When a SIEM fires, can you read the host, the account, and the log before you decide what happened?</p>
+<p>When a SIEM fires, can you check the host and the account against the log before you decide what happened?</p>
 </div>
 
 ### Log Analysis Fundamentals

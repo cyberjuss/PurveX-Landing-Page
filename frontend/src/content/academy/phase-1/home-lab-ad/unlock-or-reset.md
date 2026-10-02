@@ -7,8 +7,8 @@
 
 A locked account and a forgotten password are two different problems. New technicians often mix them up, and each one has its own fix:
 
-* **Account locked.** The user knows the password but mistyped it too many times, so AD locked the account as a precaution. Open **Properties → Account**, check **Unlock account**, and click Apply. The password stays the same.
-* **Password forgotten.** The user no longer knows the password. Right-click the account, choose **Reset Password**, set a temporary password, and check **User must change password at next logon**.
+* **Account locked.** The user knows the password but mistyped it too many times, so AD locked the account as a precaution. Open **Properties → Account** and check **Unlock account** before you click Apply. The password stays the same.
+* **Password forgotten.** The user no longer knows the password. Choose **Reset Password** on the account and set a temporary password. Check **User must change password at next logon** as well.
 
 If a forgotten password also locked the account, check **Unlock the user's account** in the same Reset Password dialog.
 

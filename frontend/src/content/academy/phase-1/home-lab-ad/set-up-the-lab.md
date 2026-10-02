@@ -53,7 +53,7 @@ An ISO file is the installer disk for an operating system. VMware boots each new
 
 ### Create a virtual machine
 
-You create both VMs with the same New Virtual Machine wizard. Open VMware, choose Create a New Virtual Machine, and walk through these screens.
+You create both VMs with the same New Virtual Machine wizard. Open VMware and choose Create a New Virtual Machine, then walk through these screens.
 
 <div class="ad-shots">
 <figure class="ad-shot">

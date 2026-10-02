@@ -2,10 +2,10 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Ticket Queue</h3>
 <p class="ad-brief__ask">When a request lands in your queue, can you check what is true in Active Directory and then make the change the ticket needs?</p>
-<p>This is the PurveX Financial help desk queue. Requests come from staff, HR, and auditors, and each one is a claim you verify before you act. Check the account, group, or folder the ticket names, then make the change in Active Directory Users and Computers.</p>
-<p>Each ticket asks for a short finding once the work is done, such as a count, an account state, or a title. Your lab has to show the change before an answer is accepted, so the answer always reflects the directory after you act.</p>
+<p>This is the PurveX Financial help desk queue. Requests come from staff, HR and auditors. Treat each one as a claim to verify, and check the account or folder it names before you make the change.</p>
+<p>Each ticket asks for a short finding once the work is done, like a count or an account state. Your lab has to show the change before an answer is accepted, so the answer always reflects the directory after you act.</p>
 <p>The Range download plants the ticket objects when it builds your lab. If you built the lab earlier, download the script from Build the Environment again and run it once.</p>
-<p>Case, spaces, dots, and dashes do not matter. You get three tries per ticket, the hint unlocks after two misses, and the explanation unlocks once you solve it or use all three.</p>
+<p>Capital letters and punctuation such as spaces or dashes do not matter. You get three tries per ticket. The hint unlocks after two misses and the explanation unlocks once you solve the ticket or use all three tries.</p>
 </div>
 
 <div class="ad-progress">
@@ -28,7 +28,7 @@
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open the group whose Description mentions company-wide announcements.</li>
-<li>On the Members tab, add <code>jamie.torres</code> if she is missing, then click Apply.</li>
+<li>On the Members tab, add <code>jamie.torres</code> if she is missing and click Apply.</li>
 <li>Count the members and type the number here.</li>
 </ol>
 </div>
@@ -41,7 +41,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Jamie was missing from <code>All Employees</code>, so every company-wide notice skipped her, including the policy and security updates staff are expected to follow.</p>
+<p>Jamie was missing from <code>All Employees</code>, so every company-wide notice skipped her. That includes the policy and security updates staff are expected to follow.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -65,7 +65,7 @@
 <p>A caller describes a symptom, and the Account tab shows the cause. Locked out and disabled are separate settings with separate fixes.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Right-click the domain, choose Find, and search for <code>riley.kwan</code>.</li>
+<li>Right-click the domain and use Find to search for <code>riley.kwan</code>.</li>
 <li>Open the account and go to the Account tab. Check both Unlock account and Account is disabled.</li>
 <li>Fix the setting that is blocking her, then submit the cause rather than the word she used.</li>
 </ol>
@@ -96,7 +96,7 @@
 <div class="ad-mission" data-id="tq-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1043 · Medium</span>
 <h4>New Hire Access</h4>
-<p><strong>IT Manager · Information Technology · 10:30 AM</strong><br>Casey Reed starts on the help desk today. Create the account as <code>casey.reed</code>, give Casey the same access as the rest of IT Users, and nothing more. Clean up anything in that group that is not a current IT person.</p>
+<p><strong>IT Manager · Information Technology · 10:30 AM</strong><br>Casey Reed starts on the help desk today. Create the account as <code>casey.reed</code> and give Casey the same access as the rest of IT Users, nothing more. Clean up anything in that group that is not a current IT person.</p>
 <p><strong>Your task:</strong> Create <code>casey.reed</code> with IT Users only and remove anyone from <code>IT Users</code> who is not a current IT person. Before you delete the leftover intern account, report the ticket number written in its Description.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="ticket number" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -104,11 +104,11 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Create Casey in Departments, IT, Users and copy the groups of a current IT person. A leftover intern and a service account do not belong in a staff group.</p>
+<p>Create Casey in Departments → IT → Users and copy the groups of a current IT person. A leftover intern and a service account do not belong in a staff group.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Expand <code>Departments</code>, <code>IT</code>, <code>Users</code> and create <code>casey.reed</code> there.</li>
-<li>Open <code>IT Users</code>, go to Members, and open each name that is not a current IT person.</li>
+<li>Expand <code>Departments</code> → <code>IT</code> → <code>Users</code> and create <code>casey.reed</code> there.</li>
+<li>Open the Members tab of <code>IT Users</code> and open each name that is not a current IT person.</li>
 <li>Copy the ticket number from the intern's Description, then delete the intern and remove the service account from the group.</li>
 </ol>
 </div>
@@ -125,7 +125,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Create Casey with IT Users only, remove the service account from the staff group, and delete the intern account. Then confirm the member list shows only current IT staff and Casey.</p>
+<p>Create Casey with IT Users only. Remove the service account from the staff group and delete the intern account, then confirm the member list shows only current IT staff and Casey.</p>
 </div>
 </div>
 </div>
@@ -135,7 +135,7 @@
 <span class="ad-mission__num">Ticket 04 · INC-1044 · Medium</span>
 <h4>The Backup Account</h4>
 <p><strong>Compliance Audit · Auditor request · 1:05 PM</strong><br><code>svc-backup-job</code> has no usable run window on its Description. Auditors want the approved hours written on the account. Those hours are not on this ticket, but they are already recorded on the folder that holds the account.</p>
-<p><strong>Your task:</strong> Find the approved run window on the folder that holds <code>svc-backup-job</code>, write it on the account's Description, and type the same window here in the format 00:00-00:00.</p>
+<p><strong>Your task:</strong> Find the approved run window on the folder that holds <code>svc-backup-job</code> and write it on the account's Description. Then type the same window here in the format 00:00-00:00.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="00:00-00:00" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{01:00-03:00}" data-accept="1:00-3:00">Submit</button>
@@ -145,9 +145,9 @@
 <p>The account's Description says the window is not set. The approved hours are on the OU directly above the account.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Right-click the domain, choose Find, search for <code>svc-backup-job</code>, and note the folder that holds it.</li>
+<li>Use Find on the domain to locate <code>svc-backup-job</code> and note the folder that holds it.</li>
 <li>Open that OU's Properties and read its Description.</li>
-<li>Open the account, write the window into Description on the General tab, click Apply, and type the same window here.</li>
+<li>Write the window into the account's Description on the General tab and click Apply. Then type the same window here.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -180,10 +180,10 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Group Policy follows the folder, but groups do not move with the account, so change them yourself. Title is a separate field on the General tab.</p>
+<p>Group Policy follows the folder, but groups do not move with the account. You have to change them yourself. Title is a separate field on the General tab.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Find <code>taylor.osei</code>, right-click the account, choose Move, and select Departments, Compliance, Users.</li>
+<li>Right-click <code>taylor.osei</code> and choose Move, then select Departments → Compliance → Users.</li>
 <li>On the Member Of tab, add <code>Compliance Users</code> and remove <code>Operations Users</code>.</li>
 <li>Open the General tab and type the Title you see, not the department HR named.</li>
 </ol>
@@ -201,7 +201,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Move the account to Departments, Compliance, Users, swap <code>Operations Users</code> for <code>Compliance Users</code>, and confirm both before you close the ticket.</p>
+<p>Move the account to Departments → Compliance → Users and swap <code>Operations Users</code> for <code>Compliance Users</code>. Confirm both before you close the ticket.</p>
 </div>
 </div>
 </div>

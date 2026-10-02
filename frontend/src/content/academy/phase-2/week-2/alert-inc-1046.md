@@ -1,10 +1,10 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>The 2 AM Login</h3>
-<p class="ad-brief__ask">Can you work one SIEM alert from the host, through the log, to the first response?</p>
+<p class="ad-brief__ask">Can you work one SIEM alert from the host through the log to the first response?</p>
 <p>This is a SOC queue item rather than a help desk ticket. At 2:04 AM the SIEM flagged a successful sign-in for <code>alex.rivera</code> on <code>WM-WKS07</code>, preceded by several failed attempts. Your job is to decide whether that sign-in fits this account and this firm.</p>
 <p>The host and group steps use your Phase 1 lab, and the log steps use the export shown on this page. Keep your lab running, because every step checks that it is live before it grades.</p>
-<p>Each step takes a short answer such as a folder name, a number, a group, or a letter. You get three tries per step, the hint unlocks after two misses, and the explanation unlocks once you solve it or use all three.</p>
+<p>Each step takes a short answer like a folder name or a number. You get three tries per step. The hint unlocks after two misses and the explanation unlocks once you solve the step or use all three tries.</p>
 </div>
 
 <div class="ad-progress">
@@ -43,7 +43,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>WM-WKS07 belongs to Wealth Management, which handles client financial data, while Alex works in IT. An IT admin signing in to a Wealth Management PC at 2 AM is already a pairing that needs an explanation.</p>
+<p>WM-WKS07 belongs to Wealth Management and its client financial data, but Alex works in IT. An IT admin signing in to a Wealth Management PC at 2 AM is already a pairing that needs an explanation.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -111,8 +111,8 @@
 <p>A department group such as IT Users grants standard access, so look for the group on Alex's account that grants more.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Right-click the domain, choose Find, and search for <code>alex.rivera</code>.</li>
-<li>Open the account, read Member Of, and find the group that goes beyond department access.</li>
+<li>Right-click the domain and use Find to search for <code>alex.rivera</code>.</li>
+<li>Open the account and find the group on Member Of that goes beyond department access.</li>
 </ol>
 <p>In PowerShell:</p>
 <ul>
@@ -128,7 +128,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The session that followed the guessing ran with admin-level rights. A stolen admin login can reset passwords, change group membership, and cover its tracks.</p>
+<p>The session that followed the guessing ran with admin-level rights. With a stolen admin login an attacker can reset passwords and change groups, then cover the tracks.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -141,7 +141,7 @@
 <div class="ad-mission" data-id="tq-09" data-attempts="0">
 <span class="ad-mission__num">Alert 04 · INC-1046 · Critical</span>
 <h4>Mistake or Attack?</h4>
-<p><strong>SIEM Alert · Part 4 of 5 · Automated detection · 2:10 AM</strong><br>You now have four failed logons two seconds apart, then a success, at 2 AM, on a workstation outside IT, using an admin account. Which explanation fits?<br><strong>A</strong> Alex mistyped his password four times.<br><strong>B</strong> Automated password guessing against a real account, which finally worked.<br><strong>C</strong> A scheduled maintenance task using an old credential.<br><strong>D</strong> A clock problem on the domain controller.</p>
+<p><strong>SIEM Alert · Part 4 of 5 · Automated detection · 2:10 AM</strong><br>You now have four failed logons two seconds apart and then a success. It happened at 2 AM on a workstation outside IT with an admin account. Which explanation fits?<br><strong>A</strong> Alex mistyped his password four times.<br><strong>B</strong> Automated password guessing against a real account, which finally worked.<br><strong>C</strong> A scheduled maintenance task using an old credential.<br><strong>D</strong> A clock problem on the domain controller.</p>
 <p><strong>Your task:</strong> Choose the explanation that fits all of the evidence and type its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -149,7 +149,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Line up the facts: steady two-second failures, 2 AM, a PC in another department, and an admin account.</p>
+<p>Line up the facts: steady two-second failures at 2 AM from an admin account on a PC in another department.</p>
 <p>A person does not retry on a steady beat, and a maintenance job does not try four wrong passwords before it works.</p>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -174,7 +174,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="tq-10" data-attempts="0">
 <span class="ad-mission__num">Alert 05 · INC-1046 · Critical</span>
 <h4>Your First Move</h4>
-<p><strong>SIEM Alert · Part 5 of 5 · Automated detection · 2:12 AM</strong><br>You believe an admin account is compromised and in use on a Wealth Management machine. It is 2:12 AM. What do you do first?<br><strong>A</strong> Wipe and reimage WM-WKS07 right now.<br><strong>B</strong> Disable alex.rivera, isolate WM-WKS07 from the network, and keep the logs.<br><strong>C</strong> Email Alex and wait for an answer.<br><strong>D</strong> Clear the failed logon events so the alert stops repeating.</p>
+<p><strong>SIEM Alert · Part 5 of 5 · Automated detection · 2:12 AM</strong><br>You believe an admin account is compromised and in use on a Wealth Management machine. It is 2:12 AM. What do you do first?<br><strong>A</strong> Wipe and reimage WM-WKS07 right now.<br><strong>B</strong> Disable alex.rivera and isolate WM-WKS07 from the network while keeping the logs.<br><strong>C</strong> Email Alex and wait for an answer.<br><strong>D</strong> Clear the failed logon events so the alert stops repeating.</p>
 <p><strong>Your task:</strong> Choose the best first move and type its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -183,7 +183,7 @@
 </div>
 <div class="ad-hint__text">
 <p>The first move has to stop the session and keep the evidence.</p>
-<p>For each other option, ask what it costs you. One destroys the log, one gives the attacker time, and one hides the alert.</p>
+<p>For each other option, ask what it costs you. One destroys the log and one gives the attacker time. The last one hides the alert.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -194,11 +194,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Wiping the PC destroys the evidence, waiting on email gives the attacker time, and clearing events hides what happened.</p>
+<p>Wiping the PC destroys the evidence and waiting on email gives the attacker time. Clearing the events hides what happened.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Disable the account, isolate the machine, and keep the logs. Wipe it later, once the investigation has what it needs.</p>
+<p>Disable the account and isolate the machine while you keep the logs. Wipe it later once the investigation has what it needs.</p>
 </div>
 </div>
 </div>

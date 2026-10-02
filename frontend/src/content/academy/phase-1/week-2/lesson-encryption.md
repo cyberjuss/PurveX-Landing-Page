@@ -20,11 +20,11 @@ That sets encryption apart from the other two methods this week. Anyone can reve
 
 ### Two kinds of keys
 
-**Symmetric encryption** uses one shared key to lock and unlock. It is fast, so it protects large amounts of data. **AES** is the standard, and BitLocker, VPNs and the encrypted note in this week's lab all use it.
+**Symmetric encryption** uses one shared key to lock and unlock. It is fast, so it protects large amounts of data. **AES** is the standard that BitLocker, VPNs and this week's lab all use.
 
 **Asymmetric encryption** uses a key pair. Anyone can have the public key, and only the owner keeps the private key. Pairs are slower, so they are used to agree on a shared key and to sign files.
 
-HTTPS uses both. Your browser and the website use key pairs to agree on a fresh session key, usually AES, and that key protects everything sent after that.
+HTTPS uses both. Your browser and the website use key pairs to agree on a fresh session key, usually AES. That key protects everything sent afterward.
 
 ### Where encryption fails
 
@@ -32,7 +32,7 @@ Attackers rarely break AES itself. They go after the key, or after mistakes in h
 
 - **The key sits next to the data.** A key saved in a config file on the same server is stolen in the same breach, and the attacker decrypts everything.
 - **The same input gives the same output.** Good encryption mixes in a random value, so one password encrypted twice gives two different results. Without it, users who share a password share an encrypted value.
-- **Clues sit beside the encrypted value.** Password hints stored in plain text, in the next column, give away what the encryption was meant to hide.
+- **Clues sit beside the encrypted value.** Password hints stored in plain text in the next column give away what the encryption was meant to hide.
 
 Adobe's 2013 breach exposed about 150 million encrypted passwords with the last two mistakes. Equal passwords had equal encrypted values, and the hints were readable. Attackers guessed common passwords without the key.
 
@@ -47,7 +47,7 @@ Sam's firmware update changed startup, so the TPM held the key back. BitLocker n
 3. **Read out the 48 digits** once both checks pass.
 4. **Document** who called, how you verified them and the Key ID.
 
-**Escalate** if the caller cannot be verified, asks for a laptop that is not theirs, or many laptops hit recovery at once.
+**Escalate** if the caller cannot be verified or asks for a laptop that is not theirs. Escalate too if many laptops hit recovery at once.
 
 <details class="academy-deeper">
 <summary>Go deeper: try it with OpenSSL, what encryption does not protect, and admin commands</summary>
@@ -72,7 +72,7 @@ The first command encrypts the memo. The second uses a key one character off and
 | In transit | Signing in to a web portal | HTTPS, VPN |
 | In use | A file open in an app | Access control and endpoint security |
 
-Once Sam signs in, the drive is unlocked, and malware running as Sam reads files the same way Sam does. BitLocker protects a lost or stolen laptop. It does nothing against malware on a laptop that is already unlocked.
+Once Sam signs in the drive is unlocked, and malware running as Sam reads files the same way Sam does. BitLocker protects a lost or stolen laptop. It does nothing against malware on a laptop that is already unlocked.
 
 #### Admin commands
 

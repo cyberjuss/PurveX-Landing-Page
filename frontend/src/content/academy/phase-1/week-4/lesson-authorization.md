@@ -41,7 +41,7 @@ A shared folder has two sets of permissions: **share** and **NTFS**. Over the ne
 - **Stale accounts:** leavers who are never disabled. Colonial Pipeline's attackers used a VPN account that was no longer in use.
 - **Admin accounts for daily work:** admins should use a normal account day to day and a separate admin account for admin tasks.
 - **Over-privileged service accounts:** `svc-backup-job` needs to read what it backs up, not sign in interactively or be a Domain Admin.
-- **Unreviewed groups:** regular access reviews, where each manager confirms group membership, catch what tickets miss.
+- **Unreviewed groups:** regular access reviews in which each manager confirms group membership catch what tickets miss.
 
 ### Logs
 

@@ -22,7 +22,7 @@ Hiding a button is not access control. Anyone who types the address still gets i
 
 ### Fixes
 
-- **Check on the server, every time.** Take identity and role from the session, and check ownership of every item requested.
+- **Check on the server, every time.** Take identity and role from the session and check ownership of every item requested.
 - **Deny by default.** An action stays closed unless a rule opens it for this role.
 - **Ignore fields the user should not set.** The server decides the role, the price and the account number.
 - **Unguessable IDs help but do not fix it.** A leaked link still works unless the server checks ownership.

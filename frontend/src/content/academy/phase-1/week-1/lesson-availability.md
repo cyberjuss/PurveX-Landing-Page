@@ -1,6 +1,6 @@
 ### Availability
 
-Availability means systems and data are there when people need them. When it fails, nothing leaks and nothing changes, but the work stops. That failure is a **lockout**.
+Availability means systems and data are there when people need them. When it fails nothing leaks or changes, but the work stops. That failure is a **lockout**.
 
 It matters most when being unavailable is the harm:
 

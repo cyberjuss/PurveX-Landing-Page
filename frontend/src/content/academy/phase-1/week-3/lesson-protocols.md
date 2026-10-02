@@ -19,7 +19,7 @@ HTTPS is the encrypted version of HTTP, so the contents of the page and any data
 
 #### DNS
 
-DNS translates names into IP addresses. Before a device can connect to anything by name, such as google.com, it makes a DNS lookup to find the matching address.
+DNS translates names into IP addresses. Before a device can connect to a name like google.com, it makes a DNS lookup to find the matching address.
 
 Because almost every connection begins with a name lookup, analysts check DNS activity early to see what a machine was trying to reach. A device asking for an address it has no reason to want is often the first sign that something does not fit.
 

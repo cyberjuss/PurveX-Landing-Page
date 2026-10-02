@@ -1,6 +1,6 @@
 ### Integrity
 
-Integrity means information stays accurate and unchanged unless an authorized person changes it. When it fails, the data can look normal, but you can no longer trust it. That failure is a **lie**.
+Integrity means information stays accurate and unchanged unless an authorized person changes it. When it fails the data can look normal, but you can no longer trust it. That failure is a **lie**.
 
 It matters most when a silent change is the harm:
 

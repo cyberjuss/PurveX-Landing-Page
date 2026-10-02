@@ -18,7 +18,7 @@ MFA matters because passwords leak. In 2021, attackers entered Colonial Pipeline
 
 From weakest to strongest:
 
-1. **Text or voice codes.** Open to SIM swapping, where an attacker moves the number to a new SIM, and to phishing.
+1. **Text or voice codes.** Open to phishing and to SIM swapping, where an attacker moves the number to a new SIM.
 2. **Authenticator app codes.** A fake sign-in page can still capture the code and use it within seconds.
 3. **Push approval.** Open to **MFA fatigue**, where an attacker sends prompts until the user approves one. Uber was breached this way in 2022.
 4. **Push with number matching.** The user types a number shown on the sign-in screen, so a blind approval fails.
@@ -26,7 +26,7 @@ From weakest to strongest:
 
 ### Sessions
 
-After sign-in, the system issues a **session token**, usually a cookie. The browser sends it with every request, so it stands in for the password. A stolen token bypasses both the password and MFA.
+After sign-in the system issues a **session token**, usually a cookie. The browser sends it with every request, so it stands in for the password. A stolen token bypasses both the password and MFA.
 
 In a Windows domain, **Kerberos** plays the same role. The domain controller checks the password once and issues a ticket that the computer shows to other services.
 
@@ -55,7 +55,7 @@ A password or MFA reset is an authentication decision. In 2023, attackers breach
 3. **Do not skip steps** for urgency or seniority. Pressure is the most common social engineering move.
 4. **Document** the caller, the verification method and the change.
 
-Unexpected MFA prompts mean someone already has the password. Tell the user to deny them, reset the password, end active sessions and escalate.
+Unexpected MFA prompts mean someone already has the password. Tell the user to deny them. Then reset the password and end active sessions before you escalate.
 
 ### Logs
 
@@ -78,4 +78,4 @@ Escalate:
 
 ### Check yourself
 
-A caller says they are Jordan Ellis, the Finance lead, and need an MFA reset before a board meeting in ten minutes. Their caller ID shows Jordan's name. What do you do, and which detail in that call should make you slow down, not speed up?
+A caller says they are Jordan Ellis from Finance and needs an MFA reset before a board meeting in ten minutes. Their caller ID shows Jordan's name. What do you do, and which detail in that call should make you slow down instead of speeding up?

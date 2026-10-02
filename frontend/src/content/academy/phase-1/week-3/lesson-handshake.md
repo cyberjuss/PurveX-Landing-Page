@@ -13,9 +13,9 @@ Before two computers exchange data over TCP, they confirm both sides are ready:
 
 Data starts to flow only after these three steps.
 
-TCP is called reliable because it numbers every byte it sends, acknowledges what arrives, and resends anything lost.
+TCP is called reliable because it numbers every byte it sends and resends anything that is not acknowledged.
 
-The handshake starts that process by agreeing on the starting sequence numbers. UDP, the other common transport protocol, skips all of it and trades reliability for speed.
+The handshake starts that process by agreeing on the starting sequence numbers. UDP is the other common transport protocol. It skips all of this and trades reliability for speed.
 
 In a capture, look for all three steps before you trust the conversation. If a SYN never gets a SYN-ACK, the other side did not agree to talk.
 

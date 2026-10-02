@@ -2,9 +2,9 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Operation Day One</h3>
 <p class="ad-brief__ask">Can you find your way around Active Directory well enough to handle a help desk technician's first day?</p>
-<p>It is your first day on the PurveX Financial help desk. Nobody expects you to close incidents yet, but your lead wants proof that you can find people, groups, and computers and read what the directory says about them.</p>
-<p>Every answer comes from your own lab. Open Active Directory Users and Computers on your domain controller and look each one up there. When a job title and a group disagree, trust the group, because the group is what grants access.</p>
-<p>Each task takes a short answer such as a group name, a person, or a number. Case, spaces, dots, and dashes do not matter. You get three tries, the hint unlocks after two misses, and the explanation unlocks once you solve it or use all three.</p>
+<p>It is your first day on the PurveX Financial help desk. Nobody expects you to close incidents yet. Your lead wants proof that you can find any person, group or computer and read what the directory says about it.</p>
+<p>Every answer comes from your own lab. Open Active Directory Users and Computers on your domain controller and look each one up there. When a job title and a group disagree, trust the group because the group is what grants access.</p>
+<p>Each task takes a short answer like a group name or a number. Capital letters and punctuation such as spaces or dashes do not matter. You get three tries per task. The hint unlocks after two misses and the explanation unlocks once you solve the task or use all three tries.</p>
 </div>
 
 <div class="ad-progress">
@@ -26,7 +26,7 @@
 <p>The department group is the standard access group for that department, so skip Domain Users and any firm-wide group.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Right-click the domain, choose Find, and search for <code>jordan.ellis</code>.</li>
+<li>Right-click the domain and use Find to search for <code>jordan.ellis</code>.</li>
 <li>Open the account and read the Member Of tab.</li>
 </ol>
 <p>In PowerShell:</p>
@@ -67,7 +67,7 @@
 <p>An admin group should have a short member list that you can read in one glance.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Right-click the domain, choose Find, and search for <code>IT Admins</code>.</li>
+<li>Right-click the domain and use Find to search for <code>IT Admins</code>.</li>
 <li>Open the group and read the Members tab.</li>
 </ol>
 <p>In PowerShell:</p>
@@ -88,7 +88,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Open the group, read Members, and keep the list short and reviewed. Anyone you cannot explain is worth a question to your lead.</p>
+<p>Read the group's Members tab and keep that list short and reviewed. Anyone you cannot explain is worth a question to your lead.</p>
 </div>
 </div>
 </div>
@@ -97,7 +97,7 @@
 <div class="ad-mission" data-id="d1-03" data-attempts="0">
 <span class="ad-mission__num">Task 03 · Find Where Things Live</span>
 <h4>Where Are the Access Groups?</h4>
-<p><strong>Situation:</strong> PurveX keeps its access-level groups, <code>Server Admins</code> and <code>Helpdesk</code>, apart from the department folders. That way, moving a person between departments never moves their privileges.</p>
+<p><strong>Situation:</strong> PurveX keeps the access-level groups <code>Server Admins</code> and <code>Helpdesk</code> apart from the department folders. That way, moving a person between departments never moves their privileges.</p>
 <p><strong>Your task:</strong> Name the top-level OU that holds <code>Server Admins</code> and <code>Helpdesk</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -134,7 +134,7 @@
 <div class="ad-mission" data-id="d1-04" data-attempts="0">
 <span class="ad-mission__num">Task 04 · Spot the Default Folder</span>
 <h4>The Folder That Is Not an OU</h4>
-<p><strong>Situation:</strong> Someone created an account without choosing a department, so Windows put it in the default folder for new users. That folder is a container, not an OU, and the difference matters for Group Policy.</p>
+<p><strong>Situation:</strong> Someone created an account without choosing a department, so Windows put it in the default folder for new users. That folder is a container rather than an OU, and the difference matters for Group Policy.</p>
 <p><strong>Your task:</strong> Give the name of that default folder exactly as Active Directory writes it in the object's distinguished name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="exact name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -146,7 +146,7 @@
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>purvexfinancial.local</code> and find the built-in folder that holds user accounts.</li>
-<li>Turn on View, then Advanced Features. Open the folder's Properties from the tree, go to Attribute Editor, and read the first part of distinguishedName.</li>
+<li>Turn on View → Advanced Features. Open the folder's Properties from the tree and read the first part of distinguishedName on the Attribute Editor tab.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -182,7 +182,7 @@
 <p>A good Description names who belongs in the group instead of repeating the group's name.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Right-click the domain, choose Find, and search for <code>IT Admins</code>.</li>
+<li>Right-click the domain and use Find to search for <code>IT Admins</code>.</li>
 <li>Open the group and read Description on the General tab.</li>
 </ol>
 </div>
@@ -208,7 +208,7 @@
 <div class="ad-mission" data-id="d1-06" data-attempts="0">
 <span class="ad-mission__num">Task 06 · Titles Are Not Access</span>
 <h4>Is Priya on the Help Desk Group?</h4>
-<p><strong>Situation:</strong> A ticket asks you to remove Priya Nair's help desk privileges. Her title is Help Desk Technician, but a title is only a label on the account, and privileges come from groups.</p>
+<p><strong>Situation:</strong> A ticket asks you to remove Priya Nair's help desk privileges. Her title is Help Desk Technician, but a title is only a label on the account. Privileges come from groups.</p>
 <p><strong>Your task:</strong> Check whether Priya is a member of the <code>Helpdesk</code> group, and answer <code>yes</code> or <code>no</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -219,7 +219,7 @@
 <p>Decide from the group's member list, not from the word Technician on her account.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Right-click the domain, choose Find, and search for <code>Helpdesk</code>.</li>
+<li>Right-click the domain and use Find to search for <code>Helpdesk</code>.</li>
 <li>Open the group and read the Members tab.</li>
 </ol>
 </div>
@@ -256,8 +256,8 @@
 <p>Tickets often describe a job instead of a username, so search by the title.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Right-click the domain, choose Find, then open the Advanced tab.</li>
-<li>Set Field to User, then Job Title, and search for <code>Settlements Coordinator</code>. You can also browse Departments, Operations, Users and read each Title.</li>
+<li>Open Find from the domain's right-click menu and go to the Advanced tab.</li>
+<li>Set Field to User → Job Title and search for <code>Settlements Coordinator</code>. You can also browse Departments → Operations → Users and read each Title.</li>
 </ol>
 <p>In PowerShell:</p>
 <ul>
@@ -297,7 +297,7 @@
 <p>You find a computer the same way you find a person. Computer names have no spaces.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Expand <code>purvexfinancial.local</code>, then <code>Departments</code>, <code>IT</code>, and <code>Workstations</code>.</li>
+<li>Expand <code>purvexfinancial.local</code> → <code>Departments</code> → <code>IT</code> → <code>Workstations</code>.</li>
 <li>Read the name of the computer object inside.</li>
 </ol>
 </div>
@@ -310,11 +310,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>If you cannot find the computer an alert names, you cannot tell which department or person it belongs to, and the investigation stalls.</p>
+<p>If you cannot find the computer an alert names, you cannot tell who it belongs to and the investigation stalls.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Look under Departments, IT, Workstations and read the object's name, the same way you would look up a person.</p>
+<p>Look under Departments → IT → Workstations and read the object's name the same way you would look up a person.</p>
 </div>
 </div>
 </div>
@@ -334,7 +334,7 @@
 <p>Count the people listed on the group's Members tab.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Right-click the domain, choose Find, and search for <code>Compliance Users</code>.</li>
+<li>Right-click the domain and use Find to search for <code>Compliance Users</code>.</li>
 <li>Open the group and count the entries on the Members tab.</li>
 </ol>
 <p>In PowerShell:</p>
@@ -364,7 +364,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="d1-10" data-attempts="0">
 <span class="ad-mission__num">Task 10 · Day One Complete</span>
 <h4>How Many Departments Are There?</h4>
-<p><strong>Situation:</strong> To close out your first day, your lead asks you to confirm the shape of the directory, starting with how many departments it holds.</p>
+<p><strong>Situation:</strong> To close out your first day, your lead asks you to confirm how many departments the directory holds.</p>
 <p><strong>Your task:</strong> Count the department OUs that sit directly under <code>Departments</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
