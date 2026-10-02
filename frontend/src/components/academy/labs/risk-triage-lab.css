@@ -12,34 +12,48 @@
   --rt-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 28px -20px rgba(15, 23, 42, 0.5);
   --rt-r: 14px;   /* outer radius */
   --rt-ri: 11px;  /* inner radius */
+  --rt-bar: color-mix(in srgb, var(--rd-ink) 4%, var(--rt-card));
   margin-top: 24px;
-  border: 0;
-  background: transparent;
+  border: 1px solid var(--rd-line);
+  border-radius: var(--rt-r);
+  overflow: hidden;
+  background: var(--rt-card);
+  box-shadow: var(--rt-shadow);
   scroll-margin-top: 96px;
 }
-.academy-bg[data-academy-theme="dark"] .rt { --rt-card: #171a2d; --rt-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 14px 30px -20px rgba(0, 0, 0, 0.8); }
+.academy-bg[data-academy-theme="dark"] .rt { --rt-card: #151826; --rt-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 40px -24px rgba(0, 0, 0, 0.85); }
 .rt svg { width: 15px; height: 15px; flex: none; }
-.rt h3 { margin: 0; font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }
+.rt h3 { margin: 0; font-family: var(--font-display); font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }
 .rt p { margin: 0; }
 
-/* Stepper: a connected rail. A line runs behind the circles and fills as steps
-   complete, so progress reads at a glance. */
-.rt-steps { position: relative; display: flex; gap: 8px; margin: 0; padding: 0 0 22px; list-style: none; border-bottom: 1px solid var(--rd-line); }
-.rt-steps li { flex: 1; min-width: 0; }
-.rt-step { position: relative; display: flex; align-items: center; gap: 10px; width: 100%; padding: 4px; border: 0; background: none; text-align: left; cursor: pointer; color: var(--rd-ink-3); transition: color 0.15s; }
-.rt-step:disabled { cursor: default; }
-.rt-step:not(:disabled):hover { color: var(--rd-ink-2); }
-.rt-step.is-on { color: var(--rd-ink); }
-/* the rail segment to the next step */
-.rt-steps li:not(:last-child) .rt-step::after { content: ""; position: absolute; left: calc(32px + 10px); right: -8px; top: 16px; height: 2px; border-radius: 2px; background: var(--rd-line); }
-.rt-step.is-done::after { background: var(--rd-good); }
-.rt-step__n { position: relative; z-index: 1; display: grid; place-items: center; flex: none; width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--rd-line); background: var(--rt-card); font-family: var(--font-mono, ui-monospace, monospace); font-size: 12.5px; font-weight: 700; color: var(--rd-ink-3); transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s; }
-.rt-step.is-on .rt-step__n { border-color: var(--rt-primary); background: var(--rt-primary); color: #fff; box-shadow: 0 0 0 4px color-mix(in srgb, var(--rt-primary) 16%, transparent); }
-.rt-step.is-done .rt-step__n { border-color: var(--rd-good); background: var(--rd-good); color: #fff; }
-.rt-step__n svg { width: 15px; height: 15px; }
-.rt-step__label { font-size: 13px; font-weight: 600; line-height: 1.25; min-width: 0; }
+/* Window chrome: a slim title bar reading like an analyst tool's path. */
+.rt::before {
+  content: "range \2022 hands-on lab";
+  display: block; padding: 9px 16px; border-bottom: 1px solid var(--rd-line);
+  background: var(--rt-bar);
+  font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; letter-spacing: 0.04em; color: var(--rd-ink-3);
+}
 
-.rt-body { display: grid; gap: 24px; padding: 24px 0 0; }
+/* Steps as editor tabs along the top of the window. */
+.rt-steps { position: relative; display: flex; gap: 0; margin: 0; padding: 0; list-style: none; background: var(--rt-bar); border-bottom: 1px solid var(--rd-line); overflow-x: auto; scrollbar-width: none; }
+.rt-steps::-webkit-scrollbar { display: none; }
+.rt-steps li { flex: 1 1 0; min-width: max-content; }
+.rt-step { position: relative; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px 14px; border: 0; border-right: 1px solid var(--rd-line); background: none; text-align: center; cursor: pointer; color: var(--rd-ink-3); font: inherit; white-space: nowrap; transition: color 0.15s, background 0.15s; }
+.rt-steps li:last-child .rt-step { border-right: 0; }
+.rt-step:disabled { cursor: default; opacity: 0.5; }
+.rt-step:not(:disabled):hover { color: var(--rd-ink-2); background: color-mix(in srgb, var(--rd-ink) 2.5%, transparent); }
+.rt-step.is-on { color: var(--rd-ink); background: var(--rt-card); }
+/* the active tab's underline */
+.rt-step::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--rt-primary); transform: scaleX(0); transition: transform 0.18s ease; }
+.rt-step.is-on::after { transform: scaleX(1); }
+.rt-step__n { display: grid; place-items: center; flex: none; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--rd-line); background: var(--rt-card); font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; font-weight: 700; color: var(--rd-ink-3); transition: background 0.2s, border-color 0.2s, color 0.2s; }
+.rt-step.is-on .rt-step__n { border-color: var(--rt-primary); background: color-mix(in srgb, var(--rt-primary) 14%, var(--rt-card)); color: var(--rt-primary); }
+.rt-step.is-done .rt-step__n { border-color: var(--rd-good); background: var(--rd-good); color: #fff; }
+.rt-step__n svg { width: 12px; height: 12px; }
+.rt-step__label { font-size: 12.5px; font-weight: 600; line-height: 1.2; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* Editor body. */
+.rt-body { display: grid; gap: 22px; padding: 24px 26px 28px; }
 .rt-head { display: grid; gap: 8px; }
 .rt-head p { max-width: 64ch; font-size: 14px; line-height: 1.6; color: var(--rd-ink-2); }
 .rt-head--ask { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
@@ -137,8 +151,12 @@
    right that stays in view. The whole lab works side by side. */
 .rt-work { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 22px; align-items: start; }
 .rt-work__main { min-width: 0; container-type: inline-size; }
-.rt-work__aside { position: sticky; top: 96px; display: grid; gap: 14px; }
-.rt-work__aside .rt-matrix { position: static; top: auto; box-shadow: var(--rt-shadow); }
+/* The reference docks on the right like an IDE inspector panel. */
+.rt-work__aside { position: sticky; top: 96px; display: grid; gap: 12px; align-content: start; padding: 16px; background: var(--rt-bar); border: 1px solid var(--rd-line); border-radius: var(--rt-ri); }
+.rt-work__aside::before { content: "Inspector"; font-family: var(--font-mono, ui-monospace, monospace); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rd-ink-3); }
+/* Inner reference sections are flat inside the one inspector panel. */
+.rt-work__aside .rt-ref, .rt-work__aside .rt-matrix { position: static; top: auto; padding: 0; background: transparent; border: 0; box-shadow: none; }
+.rt-work__aside .rt-ref + .rt-ref, .rt-work__aside .rt-matrix + .rt-ref, .rt-work__aside .rt-ref + .rt-matrix { padding-top: 12px; border-top: 1px solid var(--rd-line); }
 .rt-ref { display: grid; gap: 10px; padding: 16px; background: var(--rt-card); border: 1px solid var(--rd-line); border-radius: var(--rt-ri); box-shadow: var(--rt-shadow); }
 .rt-ref__title { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rd-ink-3); }
 .rt-ref__cia { display: grid; gap: 8px; }
@@ -229,7 +247,7 @@
 .rt-debrief > li > p { font-size: 13.5px; line-height: 1.6; color: var(--rd-ink-2); }
 
 /* Footer. */
-.rt-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-top: 20px; border-top: 1px solid var(--rd-line); }
+.rt-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 6px -26px -28px; padding: 15px 26px; border-top: 1px solid var(--rd-line); background: var(--rt-bar); }
 .rt-tally { font-size: 13.5px; color: var(--rd-ink-3); }
 .rt-tally b { color: var(--rd-ink); }
 .rt-btn { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 22px; border-radius: 11px; border: 1px solid var(--rd-line); background: var(--rt-card); font-size: 13.5px; font-weight: 650; color: var(--rd-ink); cursor: pointer; transition: border-color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.1s; }
@@ -249,12 +267,12 @@
   .rt-matrix { position: static; order: -1; max-width: 360px; }
 }
 @media (max-width: 640px) {
-  .rt-body { padding: 18px 0 0; }
+  .rt-body { padding: 18px; }
+  .rt-foot { margin: 6px -18px -18px; padding: 14px 18px; }
   .rt-head--ask { flex-direction: column; gap: 10px; }
-  .rt-steps { padding: 0 0 16px; gap: 4px; }
-  .rt-step { flex-direction: column; gap: 6px; padding: 4px 2px; text-align: center; }
-  .rt-step__label { font-size: 11px; }
-  .rt-steps li:not(:last-child) .rt-step::after { left: 50%; right: -50%; top: 16px; }
+  .rt-steps li { flex: 0 0 auto; }
+  .rt-step { padding: 11px 13px; gap: 6px; }
+  .rt-step__label { font-size: 12px; }
   .rt-choice--cia { grid-template-columns: 1fr; }
   .rt-level { grid-template-columns: 1fr; gap: 6px; }
   .rt-guide, .rt-context { grid-template-columns: 1fr; }
