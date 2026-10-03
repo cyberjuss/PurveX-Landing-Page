@@ -34,6 +34,7 @@ import {
 } from "@/lib/academy-client";
 import { clearResults, loadResults, saveResults, scorecardHtml, summarize, type MissionResult, type Results } from "@/lib/academy-score";
 import { LabSetupScreen } from "@/components/academy/lab-setup-screen";
+import { confettiFrom } from "@/lib/confetti";
 import { signOut } from "@/lib/portal-auth";
 import { supabase } from "@/lib/supabase";
 
@@ -624,6 +625,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       }
       if (reply.correct) {
         reveal.classList.add("ad-flag--shown");
+        confettiFrom(wrap.querySelector(".ad-guess") ?? wrap);
         markClosed(wrap, feedback, true);
         input.disabled = true;
         btn.disabled = true;

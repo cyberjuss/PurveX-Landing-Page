@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { Check, X } from "lucide-react";
+import { confettiFrom } from "@/lib/confetti";
 import { Avatar } from "./lab-kit";
 import "./lab-chat.css";
 
@@ -10,12 +11,18 @@ import "./lab-chat.css";
 // own replies. These primitives keep every chat lab consistent. Each lab keeps
 // its own scoring; it only changes how the steps are presented.
 
-/** Alex's message (left). tone marks a verdict bubble green or red. */
+/** Alex's message (left). tone marks a verdict bubble green or red. A right
+ *  verdict sets off confetti; the burst throttles itself, so a step that
+ *  reveals four right answers at once still celebrates just the once. */
 export function Says({ children, tone, who = "Alex Rivera" }: { children: ReactNode; tone?: "right" | "wrong"; who?: string }) {
+  const bubble = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (tone === "right") confettiFrom(bubble.current);
+  }, [tone]);
   return (
     <div className="lc-row lc-row--alex">
       <Avatar name={who} size={30} />
-      <div className={`lc-bubble lc-bubble--alex${tone ? ` is-${tone}` : ""}`}>
+      <div ref={bubble} className={`lc-bubble lc-bubble--alex${tone ? ` is-${tone}` : ""}`}>
         {tone && (tone === "right" ? <Check className="lc-ic" aria-hidden="true" /> : <X className="lc-ic" aria-hidden="true" />)}
         <span>{children}</span>
       </div>

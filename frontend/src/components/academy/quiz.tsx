@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { QUIZ_PASS_PERCENT, quizPassed, type Quiz } from "@/content/academy/quizzes";
+import { confetti } from "@/lib/confetti";
 import { useAcademyProgress } from "./academy-progress";
 import { TrailDock, type TrailLink } from "./trail-dock";
 
@@ -39,7 +40,10 @@ export function QuizBlock({
   function submit() {
     setSubmitted(true);
     const correct = answers.filter((a, i) => a === quiz.questions[i].correctIndex).length;
-    if (quizPassed(correct, total)) recordQuizPass(quiz.phaseSlug, quiz.weekSlug);
+    if (quizPassed(correct, total)) {
+      recordQuizPass(quiz.phaseSlug, quiz.weekSlug);
+      confetti();
+    }
   }
 
   function selectOption(optionIndex: number) {
