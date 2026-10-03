@@ -133,7 +133,7 @@ const TIERS: { name: string; price: string; per?: string; forWho: string; perks:
       "Everything in Explore",
       "Your own cloud lab one click away in a browser tab",
       "A real Windows domain built just for you",
-      "A coach that reads your lab and never hands you the answer",
+      "An AI coach that reads your own lab and never hands you the answer",
       "A Proof Profile any employer can verify",
       "Cancel the moment you want to",
     ],
