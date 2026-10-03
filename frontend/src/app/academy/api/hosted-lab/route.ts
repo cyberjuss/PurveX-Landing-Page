@@ -10,7 +10,6 @@ import {
   stopDueHostedLabs,
   stopHostedLab,
 } from "@/lib/academy-hosted";
-import { hasPro } from "@/lib/academy-membership";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -18,13 +17,10 @@ export const maxDuration = 30;
 
 // The lab button: status, start, open in the browser, extend, stop, reset.
 
-// A hosted lab runs a real AWS instance, so it is a paid feature: the student
-// needs an active plan on top of the environment being configured for them.
 async function auth(request: Request) {
   if (!(await isAcademyUnlocked())) return null;
   const student = await getAcademyStudent(request);
-  if (!student || !canUseHostedLab(student.email)) return null;
-  return (await hasPro(student)) ? student : null;
+  return student && canUseHostedLab(student.email) ? student : null;
 }
 
 // Labs past their stop time are stopped whenever anyone checks their lab, at most
@@ -40,8 +36,6 @@ export async function GET(request: Request) {
   if (!(await isAcademyUnlocked())) return NextResponse.json({ available: false });
   const student = await getAcademyStudent(request);
   if (!student || !canUseHostedLab(student.email)) return NextResponse.json({ available: false });
-  // Configured but not paid for: tell the page so it can offer the upgrade.
-  if (!(await hasPro(student))) return NextResponse.json({ available: false, needsPlan: true });
   sweep();
   try {
     return NextResponse.json({ available: true, ...(await hostedLabStatus(student.id)) });

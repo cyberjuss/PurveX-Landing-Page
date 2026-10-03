@@ -334,22 +334,3 @@ create table if not exists public.academy_email_log (
 );
 
 alter table public.academy_email_log enable row level security;
-
--- Self-serve Range membership. A row is created the first time a signed-in
--- account opens Range, which is what replaces the shared class passcode for
--- people who find us on their own. plan 'free' gets the lessons, challenges
--- and browser labs; 'pro' adds the hosted lab and Coach. Stripe sets 'pro'
--- through the webhook. Written by the server only.
-create table if not exists public.academy_members (
-  user_id uuid primary key references auth.users (id) on delete cascade,
-  email text,
-  plan text not null default 'free' check (plan in ('free', 'pro')),
-  -- Null for free. For pro, when the paid period ends; access lapses after it.
-  pro_until timestamptz,
-  stripe_customer_id text,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
-create index if not exists academy_members_email on public.academy_members (lower(email));
-alter table public.academy_members enable row level security;
