@@ -43,7 +43,11 @@ function UpgradeContent() {
     getCurrentUser().then(async (u) => {
       if (cancelled) return;
       if (!u) {
-        router.replace(`/account/login?next=${encodeURIComponent("/range/upgrade")}`);
+        // Sign-up, not sign-in. "Get Pro" is an acquisition button: most
+        // people arriving here have never had an account, and greeting them
+        // with "Welcome back" asks for a password they never set. The signup
+        // screen carries its own "Sign in" link for everyone else.
+        router.replace(`/account/signup?next=${encodeURIComponent("/range/upgrade")}`);
         return;
       }
       setUser(u);

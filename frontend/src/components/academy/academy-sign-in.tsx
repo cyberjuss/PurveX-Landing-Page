@@ -37,23 +37,31 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
   const [sentTo, setSentTo] = useState<string | null>(null);
   const busyRef = useRef(false);
 
-  // Arriving from a class join link means a new student, so open on Create account
-  // rather than "Welcome back".
+  // Which screen to open on, and whether the terms box is already settled.
+  // Both answers come from the same question -- has this browser been here
+  // before -- so they are read together.
+  //
+  // Agreeing is one and done: if this browser already agreed, pre-accept and
+  // hide the checkbox so returning students never see it again. That record
+  // is also the best "first time here" signal available, and without it a
+  // brand-new student was greeted with "Welcome back" and a password field
+  // for an account they had not created yet.
   useEffect(() => {
+    let seen = false;
     try {
-      if (new URLSearchParams(window.location.search).get("join") === "1") setMode("signup");
+      seen = localStorage.getItem(TERMS_KEY) === "1";
     } catch {}
-  }, []);
-
-  // Agreeing is one and done. If this browser already agreed, pre-accept and hide
-  // the checkbox entirely so returning students never see it again.
-  useEffect(() => {
+    if (seen) {
+      setAgreed(true);
+      setKnownAgreed(true);
+    }
+    let joining = false;
     try {
-      if (localStorage.getItem(TERMS_KEY) === "1") {
-        setAgreed(true);
-        setKnownAgreed(true);
-      }
+      joining = new URLSearchParams(window.location.search).get("join") === "1";
     } catch {}
+    // A class join link always means a new student, whatever this browser
+    // has done before.
+    if (joining || !seen) setMode("signup");
   }, []);
 
   const acceptTerms = (v: boolean) => {

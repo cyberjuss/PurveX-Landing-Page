@@ -38,15 +38,10 @@ function PortalLoginContent() {
   useEffect(() => {
     router.prefetch(next);
   }, [router, next]);
-  // If `next` carries a plan (e.g. "/pricing?plan=free" from the signup
-  // page's "Sign in" link), forward that same plan to "Create an account"
-  // so bouncing between login and signup never loses the plan they picked.
-  const planFromNext = (() => {
-    const qIndex = next.indexOf("?");
-    if (qIndex === -1) return null;
-    const p = new URLSearchParams(next.slice(qIndex + 1)).get("plan");
-    return p === "paid" || p === "free" ? p : null;
-  })();
+  // "Create an account" below forwards `next` whole, which carries any plan
+  // inside it -- so the plan no longer needs pulling out and re-attaching
+  // separately the way it used to.
+  const product = next.startsWith("/range") ? "Range" : "";
   const [step, setStep] = useState<"email" | "password">("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -122,7 +117,7 @@ function PortalLoginContent() {
 
   if (step === "email") {
     return (
-      <AuthMinimal>
+      <AuthMinimal product={product}>
         <div key="email" className="am-step">
           <AuthHeading sub="Sign in with the email for your PurveX account.">Welcome back</AuthHeading>
           <form onSubmit={handleEmail} className="mt-7" noValidate>
@@ -163,7 +158,10 @@ function PortalLoginContent() {
 
           <p className="mt-8 text-center text-sm text-slate-600">
             New to PurveX?{" "}
-            <Link href={planFromNext ? `/account/signup?plan=${planFromNext}` : "/account/signup"} className="am-link">
+            {/* Carries the whole destination, not just the plan: someone who
+                came here for Range Pro and clicks through to sign up was
+                landing back on the Platform pricing page afterwards. */}
+            <Link href={`/account/signup?next=${encodeURIComponent(next)}`} className="am-link">
               Create an account
             </Link>
           </p>
@@ -173,7 +171,7 @@ function PortalLoginContent() {
   }
 
   return (
-    <AuthMinimal>
+    <AuthMinimal product={product}>
       <div key="password" className="am-step">
         <BackButton onClick={back} />
         <AuthHeading
@@ -219,6 +217,8 @@ export default function PortalLoginPage() {
   return (
     <Suspense
       fallback={
+        // No product name here: this renders before the search params are
+        // read, so it cannot know yet which one this visit is for.
         <AuthMinimal>
           <div className="min-h-[200px]" />
         </AuthMinimal>

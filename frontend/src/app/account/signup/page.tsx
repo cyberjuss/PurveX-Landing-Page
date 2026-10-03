@@ -25,14 +25,31 @@ function getErrorMessage(err: unknown, fallback: string) {
 }
 
 
+// Only ever a relative in-app path -- never follow an absolute/external
+// "next" value, which would be an open redirect. Same guard as the login
+// page's.
+function safeNext(raw: string | null | undefined): string | null {
+  if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
+  return null;
+}
+
 function PortalSignupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const plan = searchParams?.get("plan") === "paid" ? "paid" : searchParams?.get("plan") === "free" ? "free" : null;
-  const pricingTarget = plan ? `/pricing?plan=${plan}` : "/pricing";
+  // Where to land once the account exists. /pricing is the $99 self-hosted
+  // Platform picker, which is only the right answer when nothing else was
+  // asked for -- a Range Pro buyer arriving from /range/upgrade was being
+  // dropped into the wrong product's checkout entirely.
+  const next = safeNext(searchParams?.get("next"));
+  const destination = next ?? (plan ? `/pricing?plan=${plan}` : "/pricing");
+  // Two products share this screen. Someone on their way to Range should not
+  // be handed a form that only says PurveX, then land somewhere branded
+  // differently again.
+  const product = destination.startsWith("/range") ? "Range" : "";
   useEffect(() => {
-    router.prefetch(pricingTarget);
-  }, [router, pricingTarget]);
+    router.prefetch(destination);
+  }, [router, destination]);
 
   const [step, setStep] = useState<"email" | "password">("email");
   const [email, setEmail] = useState("");
@@ -44,7 +61,8 @@ function PortalSignupContent() {
 
   const strength = passwordStrength(password);
   const busyRef = useRef(false);
-  const signInHref = plan ? `/account/login?next=${encodeURIComponent(pricingTarget)}` : "/account/login";
+  // Bouncing to sign-in and back must not lose where they were going.
+  const signInHref = next || plan ? `/account/login?next=${encodeURIComponent(destination)}` : "/account/login";
 
   async function handleGoogle() {
     if (busyRef.current) return;
@@ -56,7 +74,7 @@ function PortalSignupContent() {
     setError(null);
     setPhase("google");
     try {
-      const redirectTo = `${window.location.origin}${pricingTarget}`;
+      const redirectTo = `${window.location.origin}${destination}`;
       await signInWithGoogle(redirectTo);
     } catch (err) {
       busyRef.current = false;
@@ -106,10 +124,10 @@ function PortalSignupContent() {
     busyRef.current = true;
     setPhase("submitting");
     try {
-      const emailRedirectTo = `${window.location.origin}${pricingTarget}`;
+      const emailRedirectTo = `${window.location.origin}${destination}`;
       const { session } = await signUpWithPassword(email.trim(), password, emailRedirectTo);
       if (session) {
-        router.push(pricingTarget);
+        router.push(destination);
         return;
       }
       busyRef.current = false;
@@ -132,7 +150,7 @@ function PortalSignupContent() {
 
   if (phase === "sent") {
     return (
-      <AuthMinimal>
+      <AuthMinimal product={product}>
         <AuthHeading
           sub={
             <>
@@ -154,7 +172,7 @@ function PortalSignupContent() {
 
   if (step === "email") {
     return (
-      <AuthMinimal>
+      <AuthMinimal product={product}>
         <div key="email" className="am-step">
           <AuthHeading sub="One account to pick a plan and get PurveX running.">Create your account</AuthHeading>
 
@@ -208,7 +226,7 @@ function PortalSignupContent() {
   }
 
   return (
-    <AuthMinimal>
+    <AuthMinimal product={product}>
       <div key="password" className="am-step">
         <BackButton onClick={back} />
         <AuthHeading
@@ -266,6 +284,8 @@ export default function PortalSignupPage() {
   return (
     <Suspense
       fallback={
+        // No product name here: this renders before the search params are
+        // read, so it cannot know yet which one this visit is for.
         <AuthMinimal>
           <div className="min-h-[200px]" />
         </AuthMinimal>

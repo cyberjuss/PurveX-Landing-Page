@@ -68,6 +68,28 @@ async function main() {
     "the page rendered the unlock form, so it is behind the academy gate"
   );
 
+  console.log("\nSigning up for Range lands back in Range");
+  // Both of these shipped broken. /account/signup ignored `next` entirely and
+  // always pushed to /pricing -- the $99 self-hosted Platform picker -- so a
+  // Range Pro buyer created an account and was handed the wrong product's
+  // checkout. And "Create an account" on the login page forwarded only the
+  // plan, dropping the Range destination on the way through.
+  const signup = await hit("/account/signup?next=%2Frange%2Fupgrade");
+  check("the signup page loads with a next", signup.status === 200, `status ${signup.status}`);
+  check(
+    "signup for Range is branded Range",
+    /PurveX[\s\S]{0,120}Range/.test(signup.text),
+    "the signup screen never names Range, so it reads as the Platform product"
+  );
+
+  const login = await hit("/account/login?next=%2Frange%2Fupgrade");
+  check("the login page loads with a next", login.status === 200, `status ${login.status}`);
+  check(
+    "login carries the destination into Create an account",
+    login.text.includes("/account/signup?next=%2Frange%2Fupgrade"),
+    "the Create an account link dropped `next`, so signup would land on /pricing"
+  );
+
   console.log("\nThe plan endpoint answers without the passcode cookie");
   const plan = await hit("/academy/api/plan");
   check("/academy/api/plan returns 200", plan.status === 200, `status ${plan.status}`);
