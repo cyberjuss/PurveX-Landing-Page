@@ -50,6 +50,10 @@
 .lc-bubble { position: relative; padding: 11px 14px; font-size: 14px; line-height: 1.5; border-radius: 0; }
 .lc-bubble b { font-weight: 650; }
 .lc-bubble code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12.5px; }
+/* A short list inside a message, for the two or three things a step turns on. */
+.lc-list { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 7px; }
+.lc-list li { position: relative; padding-left: 15px; }
+.lc-list li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 5px; height: 5px; background: var(--lc-me); }
 .lc-bubble--alex { background: var(--lc-card); border: 1px solid var(--rd-line); color: var(--rd-ink); box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04); }
 .lc-bubble--me { background: var(--lc-me); color: #fff; font-weight: 500; }
 .lc-bubble--me code { color: #fff; }

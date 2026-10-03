@@ -119,7 +119,13 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
 
         {s.step === 1 && (
           <>
-            <Says>Now rate each one. <b>Likelihood</b> is how likely it is to hurt the firm. <b>Impact</b> is how much it costs when it does. Size both against the firm, not against how loud the ticket is. Low needs a rare chain, medium needs a trigger, high is anyone today. Impact is low for an inconvenience, high for regulated data or damage you cannot undo.</Says>
+            <Says>
+              Now rate each one. Size both against the firm, not against how loud the ticket is.
+              <ul className="lc-list">
+                <li><b>Likelihood</b> — how likely it is to hurt the firm. Low needs a rare chain of events, medium needs a trigger, high is anyone today.</li>
+                <li><b>Impact</b> — how much it costs when it does. Low is an inconvenience, high is regulated data or damage you cannot undo.</li>
+              </ul>
+            </Says>
             {TICKETS.slice(0, lastVisible1 + 1).map((t) => {
               const l = s.likelihood[t.id];
               const im = s.impact[t.id];

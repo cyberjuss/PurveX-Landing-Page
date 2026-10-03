@@ -2,7 +2,11 @@
  * they read the same in light and dark. One accent (rd-accent), used only for
  * the active filter, the hover edge and the arrow. No colorful fills. */
 
-.lg { max-width: 60rem; margin: 0 auto; }
+/* Cards are white on the light page and transparent on the dark one, so they
+   blend into the background instead of sitting on it as white blocks. */
+.lg { --lg-card: #ffffff; max-width: 60rem; margin: 0 auto; }
+.academy-bg[data-academy-theme="dark"] .lg { --lg-card: transparent; }
+.academy-bg[data-academy-theme="dark"] .lgc { box-shadow: none; }
 
 .lg__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; margin: 0 0 1.5rem; }
 .lg__kicker { margin: 0 0 0.3rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rd-accent, #5546e0); }
@@ -15,7 +19,7 @@
 .lg__search input {
   width: 100%; height: 2.5rem; padding: 0 0.8rem 0 2.1rem;
   font: inherit; font-size: 0.9rem; color: var(--rd-ink, #0f172a);
-  background: var(--rd-card, #fff);
+  background: var(--lg-card);
   border: 1px solid var(--rd-line, #d9e2ec); border-radius: 0.6rem;
 }
 .lg__search input:focus { outline: 2px solid color-mix(in srgb, var(--rd-accent, #5546e0) 45%, transparent); outline-offset: -1px; border-color: var(--rd-accent, #5546e0); }
@@ -25,7 +29,7 @@
 .lg__chip {
   display: inline-flex; align-items: center; gap: 0.4rem;
   padding: 0.38rem 0.75rem; font: inherit; font-size: 0.8rem; font-weight: 600;
-  color: var(--rd-ink, #0f172a); background: var(--rd-card, #fff);
+  color: var(--rd-ink, #0f172a); background: var(--lg-card);
   border: 1px solid var(--rd-line, #d9e2ec); border-radius: 999px; cursor: pointer;
   transition: border-color 0.15s, color 0.15s, background 0.15s;
 }
@@ -41,7 +45,7 @@
   position: relative; display: flex; align-items: flex-start; gap: 0.9rem;
   height: 100%; padding: 1.1rem 1.15rem;
   text-decoration: none; color: inherit;
-  background: var(--rd-card, #fff);
+  background: var(--lg-card);
   border: 1px solid var(--rd-line, #d9e2ec);
   border-radius: 0.7rem;
   transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
