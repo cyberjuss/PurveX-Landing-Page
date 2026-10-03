@@ -106,19 +106,20 @@ function Course({ outline }: { outline: CourseOutline }) {
 
 /* Three ways in, each written for the person choosing it. Explore is for
    someone still deciding. Pro is for someone who has decided and wants the
-   job. Custom is for whoever is answerable for a cohort. Perks are kept to
-   one idea a line so the difference between tiers reads at a glance. */
+   job. Custom is for whoever is answerable for a cohort. Each perk is one
+   smooth line with no commas and no clipped fragments, so the step up between
+   tiers reads at a glance. */
 const TIERS: { name: string; price: string; per?: string; forWho: string; perks: string[]; cta: string; href: string; featured?: boolean }[] = [
   {
     name: "Explore",
     price: "Free",
-    forWho: "See if this is for you. Nothing to lose.",
+    forWho: "See whether this is for you with nothing to lose",
     perks: [
-      "Every lesson. All three phases.",
-      "Every challenge and the whole Ticket Queue.",
-      "Five hands-on labs right in your browser.",
-      "Your readiness score from the first day.",
-      "No card. No trial clock.",
+      "Every lesson across all three phases",
+      "Every challenge and the whole Ticket Queue",
+      "Five hands-on labs that run in your browser",
+      "Your readiness score from the very first day",
+      "No card and no trial clock running down",
     ],
     cta: "Start free",
     href: "/range",
@@ -127,14 +128,14 @@ const TIERS: { name: string; price: string; per?: string; forWho: string; perks:
     name: "Pro",
     price: "$20",
     per: "/month",
-    forWho: "You want the job. This is the shortest way there.",
+    forWho: "The shortest road from learning this to being hired for it",
     perks: [
-      "Everything in Explore.",
-      "Your own cloud lab. One click in a browser tab.",
-      "A real Windows domain built just for you.",
-      "PurveX Coach. It sees your lab and never hands over the answer.",
-      "A Proof Profile any employer can verify.",
-      "Cancel the moment you want to.",
+      "Everything in Explore",
+      "Your own cloud lab one click away in a browser tab",
+      "A real Windows domain built just for you",
+      "A coach that reads your lab and never hands you the answer",
+      "A Proof Profile any employer can verify",
+      "Cancel the moment you want to",
     ],
     cta: "Get Pro",
     href: "/range",
@@ -143,14 +144,14 @@ const TIERS: { name: string; price: string; per?: string; forWho: string; perks:
   {
     name: "Custom",
     price: "Let's talk",
-    forWho: "Schools and workforce programs running a cohort.",
+    forWho: "Schools and workforce programs running a whole cohort",
     perks: [
-      "Everything in Pro for every seat.",
-      "Live progress for each student.",
-      "Your own classes and join links.",
-      "Labs provisioned and managed for you.",
-      "Onboarding for your instructors.",
-      "Invoicing and agreements.",
+      "Everything in Pro for every seat you need",
+      "Live progress for each student as they work",
+      "Your own classes with their own join links",
+      "Labs provisioned and managed for you",
+      "Onboarding that gets your instructors running",
+      "Invoicing and agreements that suit your finance team",
     ],
     cta: "Book a call",
     href: BOOKING_URL,
