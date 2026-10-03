@@ -2,28 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowRight, Ban, ExternalLink, Lock, LockOpen, Play, RotateCcw } from "lucide-react";
-import {
-  CHEF_FROM_BASE64,
-  CHEF_SHA256,
-  CopyButton,
-  Deck,
-  Guide,
-  HashTool,
-  Narrator,
-  Morph,
-  Takeaway,
-  nextHint,
-  Options,
-  sha256Hex,
-  Stepper,
-  useDeck,
-  useHashes,
-  useLabDone,
-  useLabResult,
-  useSaved,
-  Verdict,
-  type DotStatus,
-} from "./lab-kit";
+import { CHEF_FROM_BASE64, CHEF_SHA256, CopyButton, Guide, HashTool, Morph, Options, sha256Hex, Takeaway, useHashes, useLabDone, useLabResult, useSaved, Verdict } from "./lab-kit";
+import { ChatShell, Chip, ChipRow, Mine, Says, SendAction } from "./lab-chat";
+import { useOptionalCoach } from "../coach-context";
+import { LOST_ASK } from "./lab-brief";
 
 // Week 2 lab: a vendor breach dump that stored the same staff passwords four
 // ways over the years. One idea per card, so a beginner is never holding
@@ -209,6 +191,25 @@ interface State {
 const START: State = { step: 0, seen: [], noteWord: "", kinds: {}, reused: [], recovered: {}, decoded: "", checked: [false, false, false] };
 const STORE = "academy-lab-password-table-v4";
 
+const TRY_INTRO = [
+  "Make up a password and watch what Base64 does to it. Then try to get it back.",
+  "I sent you an encrypted note. Try a made-up key first, then the real key from your ticket, and tell me the code word inside.",
+  "Now hashing. Make one up, then try to reverse it.",
+  "Last one. Priya and Devon use the same password. Add a salt and watch what happens to their hashes.",
+];
+const WORK_INTRO = [
+  "Start with the 2020 table. Tick everyone whose hash matches someone else's.",
+  "Two people used a password off the common list. Guess, hash, compare — the way attackers crack hashes.",
+  `${DECODE_USER}'s 2014 value is only Base64. Decode it.`,
+  `Eight PurveX staff had ${VENDOR} accounts. What is your first move?`,
+];
+const WORK_WHY = [
+  "Priya, Devon and Sam share one value, so whoever cracks it gets all three accounts. Without a salt, reuse shows up at a glance.",
+  "Purvex123 and Welcome2026 fall first. A hash cannot be reversed, but a weak password can still be guessed and hashed until one matches.",
+  `${PW[DECODE_USER]}, recovered without a key or a single guess, because encoding hides nothing.`,
+  "People reuse passwords, so their breach is our risk. Never test leaked passwords, and never send them by email.",
+];
+
 export function PasswordTableLab({ onDone }: { onDone?: () => void }) {
   const [s, setS] = useSaved<State>(STORE, START, (v) => Array.isArray(v.checked) && v.checked.length === 3 && Array.isArray(v.seen));
   useLabDone(s.checked.every(Boolean), onDone);
@@ -216,22 +217,14 @@ export function PasswordTableLab({ onDone }: { onDone?: () => void }) {
   // Deterministic like the ECB mode Adobe used: the same password always gives the same output.
   const enc = useHashes(Object.fromEntries(SAMPLE.map((u) => [u, `ledgerline-app-key|${PW[u]}`])));
   const salted = useHashes(Object.fromEntries(SAMPLE.map((u) => [u, SALT[u] + PW[u]])));
-  const tryDeck = useDeck(TRY_CARDS.length);
-  const nameDeck = useDeck(GENS.length);
-  const workDeck = useDeck(WORK_CARDS.length);
+  const coach = useOptionalCoach();
   const [recoverOk, setRecoverOk] = useState<Record<string, boolean>>({});
   // Walkthrough progress that does not need saving: copied a value, opened CyberChef.
   const [did, setDid] = useState<Record<string, boolean>>({});
   const mark = (k: string) => setDid((d) => ({ ...d, [k]: true }));
 
   const patch = (p: Partial<State>) => setS((prev) => ({ ...prev, ...p }));
-  const go = (step: number) => {
-    patch({ step });
-    tryDeck.reset();
-    nameDeck.reset();
-    workDeck.reset();
-    document.querySelector(".rt")?.scrollIntoView({ block: "start", behavior: "smooth" });
-  };
+  const go = (step: number) => patch({ step });
   const check = (i: 0 | 1 | 2) => setS((prev) => ({ ...prev, checked: prev.checked.map((c, j) => (j === i ? true : c)) as State["checked"] }));
   const see = (id: string) => setS((prev) => (prev.seen.includes(id) ? prev : { ...prev, seen: [...prev.seen, id] }));
 
@@ -256,387 +249,267 @@ export function PasswordTableLab({ onDone }: { onDone?: () => void }) {
   const anyRecovered = RECOVER.some((u) => s.recovered[u]);
   const workDone = [s.reused.length > 0, RECOVER.every((u) => s.recovered[u]), Boolean(s.decoded.trim()), Boolean(s.response)];
   const workRight = [reuseRight, RECOVER.every((u) => s.recovered[u] === PW[u]), decodeRight, s.response === "reset"];
-  const reached = [true, s.checked[0], s.checked[1], s.checked[2]];
 
-  return (
-    <section className="rt" aria-label="The Leaked Password Table lab">
-      <Stepper steps={STEPS} step={s.step} done={[...s.checked, false]} reached={reached} onGo={go} />
+  const pips = [s.checked[0], s.checked[1], s.checked[2], s.checked[2]];
+  const signal = `${s.step}:${s.seen.length}:${s.noteWord}:${s.saltWhy ?? ""}:${Object.keys(s.kinds).length}:${s.reused.length}:${Object.values(s.recovered).join("")}:${s.decoded}:${s.response ?? ""}:${s.checked.join("")}`;
 
-      {s.step === 0 && (
-        <div className="rt-body">
-          <header className="rt-head">
-            <h3>Three ways to hide a password</h3>
-            <Narrator>Try each one before you meet all four in the leaked table. The test: can you get the password back?</Narrator>
-          </header>
-          <Deck
-            tags={TRY_CARDS.map((c) => c.tag)}
-            titles={TRY_CARDS.map((c) => c.title)}
-            index={tryDeck.card}
-            dir={tryDeck.dir}
-            onGo={tryDeck.show}
-            status={TRY_CARDS.map((_, i): DotStatus => (s.checked[0] && (i === 1 || i === 3) ? ((i === 1 ? noteRight : s.saltWhy === "input") ? "right" : "wrong") : tryDone[i] ? "answered" : "open"))}
-          >
-            {tryDeck.card === 0 && <EncodeCard onDone={() => see("encode")} />}
-            {tryDeck.card === 1 && (
-              <NoteCard
-                word={s.noteWord}
-                locked={s.checked[0]}
-                right={noteRight}
-                onWord={(noteWord) => patch({ noteWord })}
-              />
-            )}
-            {tryDeck.card === 2 && <HashCard onSeen={() => see("hash")} />}
-            {tryDeck.card === 3 && (
-              <SaltCard value={s.saltWhy} locked={s.checked[0]} onPick={(saltWhy) => patch({ saltWhy })} />
-            )}
-          </Deck>
-          <footer className="rt-foot">
-            {s.checked[0] ? (
-              <>
-                <p className="rt-tally">
-                  <b>{score.tryIt} of 2</b> right
-                </p>
-                <button type="button" className="rt-btn rt-btn--primary" onClick={() => go(1)}>
-                  Open the breach
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="rt-tally">{nextHint(tryDone, TRY_CARDS.map((c) => `card ${c.tag}, ${c.title}`))}</p>
-                <button type="button" className="rt-btn rt-btn--primary" disabled={!tryDone.every(Boolean)} onClick={() => check(0)}>
-                  Check answers
-                </button>
-              </>
-            )}
-          </footer>
+  const curTry = tryDone.findIndex((d) => !d);
+  const curGen = GENS.findIndex((g) => !s.kinds[g.id]);
+  const curWork = workDone.findIndex((d) => !d);
+
+  const genValue = (g: Gen, u: string) =>
+    g.kind === "encoding" ? b64(PW[u]) : g.kind === "encryption" ? (enc[u] ?? "").slice(0, 32).toUpperCase() : g.kind === "hash" ? plain[u] : salted[u];
+
+  const workTool = (i: number) => {
+    if (i === 0)
+      return (
+        <div className="lk-scroll">
+          <table className="lk-table">
+            <tbody>
+              {USERS.map((u) => {
+                const on = s.reused.includes(u);
+                return (
+                  <tr key={u} className={on ? "is-picked" : ""}>
+                    <td>
+                      <input type="checkbox" aria-label={`${u} shares a password`} checked={on} disabled={s.checked[2]} onChange={() => patch({ reused: on ? s.reused.filter((x) => x !== u) : [...s.reused, u] })} />
+                    </td>
+                    <td>{u}</td>
+                    <td><code>{plain[u] ?? "…"}</code></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
+      );
+    if (i === 1)
+      return (
+        <>
+          <Guide
+            showAll
+            steps={[
+              {
+                title: "Copy the common password list",
+                done: Boolean(did.listCopied || did.chefHash || anyRecovered),
+                body: (
+                  <div className="lk-hashout">
+                    <code>{COMMON.join("  ")}</code>
+                    <CopyButton text={COMMON.join("\n")} label="Copy list" onCopied={() => mark("listCopied")} />
+                  </div>
+                ),
+              },
+              {
+                title: "Hash each word in CyberChef",
+                done: Boolean(did.chefHash || anyRecovered),
+                body: (
+                  <>
+                    <a className="lk-mini" href={CHEF_SHA256} target="_blank" rel="noreferrer" onClick={() => mark("chefHash")}>
+                      <ExternalLink aria-hidden="true" /> Open CyberChef with SHA-256 ready
+                    </a>
+                    <HashTool mode="text" />
+                  </>
+                ),
+              },
+              {
+                title: "Type the word whose hash matches each person",
+                done: RECOVER.every((u) => s.recovered[u]),
+                body: RECOVER.map((u) => (
+                  <label key={u} className="lk-field">
+                    {u}
+                    <code className="lk-hash">{plain[u] ?? "…"}</code>
+                    <div>
+                      <input type="text" value={s.recovered[u] ?? ""} disabled={s.checked[2]} spellCheck={false} autoComplete="off" placeholder="Their password" onChange={(e) => void tryRecover(u, e.target.value)} />
+                    </div>
+                    {s.recovered[u] && !s.checked[2] && recoverOk[u] && <span className="lk-note is-good">Confirmed. It hashes to their value.</span>}
+                  </label>
+                )),
+              },
+            ]}
+          />
+          {s.checked[2] && <AttackReplay table={plain} />}
+        </>
+      );
+    if (i === 2)
+      return (
+        <Guide
+          showAll
+          steps={[
+            {
+              title: "Copy the stored value",
+              done: Boolean(did.b64Copied || did.chefB64 || s.decoded),
+              body: (
+                <div className="lk-hashout">
+                  <code>{b64(PW[DECODE_USER])}</code>
+                  <CopyButton text={b64(PW[DECODE_USER])} onCopied={() => mark("b64Copied")} />
+                </div>
+              ),
+            },
+            {
+              title: "Paste it into CyberChef's From Base64",
+              done: Boolean(did.chefB64 || s.decoded),
+              body: (
+                <a className="lk-mini" href={CHEF_FROM_BASE64} target="_blank" rel="noreferrer" onClick={() => mark("chefB64")}>
+                  <ExternalLink aria-hidden="true" /> Open CyberChef with From Base64 ready
+                </a>
+              ),
+            },
+            {
+              title: "Type the password CyberChef shows",
+              done: Boolean(s.decoded.trim()),
+              body: (
+                <label className="lk-field">
+                  <span className="sr-only">Decoded password</span>
+                  <div>
+                    <input type="text" value={s.decoded} disabled={s.checked[2]} placeholder="Decoded password" spellCheck={false} autoComplete="off" onChange={(e) => patch({ decoded: e.target.value })} />
+                  </div>
+                </label>
+              ),
+            },
+          ]}
+        />
+      );
+    return null;
+  };
+
+  const thread = (
+    <>
+      {s.step === 0 && (
+        <>
+          <Says>Before we open the breach, try three ways of hiding a password yourself. The test each time: can you get the password back?</Says>
+          {TRY_CARDS.slice(0, curTry === -1 ? TRY_CARDS.length : curTry + 1).map((c, i) => (
+            <div key={c.tag}>
+              <Says><b>{c.title}.</b> {TRY_INTRO[i]}</Says>
+              <div className="lc-tool">
+                {i === 0 && <EncodeCard onDone={() => see("encode")} />}
+                {i === 1 && <NoteCard word={s.noteWord} locked={s.checked[0]} right={noteRight} onWord={(noteWord) => patch({ noteWord })} />}
+                {i === 2 && <HashCard onSeen={() => see("hash")} />}
+                {i === 3 && <SaltCard value={s.saltWhy} locked={s.checked[0]} onPick={(saltWhy) => patch({ saltWhy })} />}
+              </div>
+            </div>
+          ))}
+          {curTry === -1 && !s.checked[0] && <Says>That&rsquo;s all four. Check the two I graded?</Says>}
+          {s.checked[0] && <Says>You got <b>{score.tryIt} of 2</b>. Now the real thing: {VENDOR} was breached, and the dump has our staff in it.</Says>}
+        </>
       )}
 
       {s.step === 1 && (
-        <div className="rt-body">
-          <header className="rt-head">
-            <h3>How did {VENDOR} store it?</h3>
-            <Narrator>The dump holds four generations. Name each one.</Narrator>
-          </header>
-          <Deck
-            tags={GENS.map((g) => g.tag)}
-            titles={GENS.map((g) => g.year)}
-            index={nameDeck.card}
-            dir={nameDeck.dir}
-            onGo={nameDeck.show}
-            status={GENS.map((g): DotStatus => (s.checked[1] ? (s.kinds[g.id] === g.kind ? "right" : "wrong") : s.kinds[g.id] ? "answered" : "open"))}
-          >
-            {(() => {
-              const g = GENS[nameDeck.card];
-              const done = s.checked[1];
-              const right = s.kinds[g.id] === g.kind;
-              const value = (u: string) => (g.kind === "encoding" ? b64(PW[u]) : g.kind === "encryption" ? (enc[u] ?? "").slice(0, 32).toUpperCase() : g.kind === "hash" ? plain[u] : salted[u]);
-              return (
-                <div className={`rt-ticket${done ? (right ? " is-right" : " is-wrong") : ""}`}>
-                  <div className="lk-card-head">
-                    <b>
-                      {g.year} · <code>{g.column}</code>
-                    </b>
-                    <small>{g.clue}</small>
-                  </div>
-                  <div className="lk-scroll">
-                    <table className="lk-table">
-                      <tbody>
-                        {SAMPLE.map((u) => (
-                          <tr key={u}>
-                            <td>{u}</td>
-                            {g.kind === "salted" && (
-                              <td>
-                                <code>{SALT[u]}</code>
-                              </td>
-                            )}
-                            <td>
-                              <code>{value(u) || "…"}</code>
-                            </td>
-                            {g.kind === "encryption" && <td className="lk-hint">hint: {HINT[u]}</td>}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <Options
-                    label={`Storage method, ${g.year}`}
-                    options={KINDS}
-                    value={s.kinds[g.id]}
-                    answer={done ? g.kind : undefined}
-                    disabled={done}
-                    onPick={(v) => {
-                      const kinds = { ...s.kinds, [g.id]: v as Kind };
-                      patch({ kinds });
-                      nameDeck.next((i) => Boolean(kinds[GENS[i].id]));
-                    }}
-                  />
-                  {done && <Verdict right={right}>{g.why}</Verdict>}
-                </div>
-              );
-            })()}
-          </Deck>
-          <footer className="rt-foot">
-            {s.checked[1] ? (
-              <>
-                <p className="rt-tally">
-                  <b>{score.kinds} of 4</b> named
-                </p>
-                <button type="button" className="rt-btn rt-btn--primary" onClick={() => go(2)}>
-                  Work the dump
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="rt-tally">{nextHint(GENS.map((g) => Boolean(s.kinds[g.id])), GENS.map((g) => `the ${g.year} table`))}</p>
-                <button type="button" className="rt-btn rt-btn--primary" disabled={GENS.some((g) => !s.kinds[g.id])} onClick={() => check(1)}>
-                  Check answers
-                </button>
-              </>
-            )}
-          </footer>
-        </div>
-      )}
-
-      {s.step === 2 && (
-        <div className="rt-body">
-          <header className="rt-head">
-            <h3>What does the dump give away?</h3>
-            <Narrator>Four short jobs with free tools. You never log in to anything.</Narrator>
-          </header>
-          <Deck
-            tags={WORK_CARDS.map((c) => c.tag)}
-            titles={WORK_CARDS.map((c) => c.title)}
-            index={workDeck.card}
-            dir={workDeck.dir}
-            onGo={workDeck.show}
-            status={WORK_CARDS.map((_, i): DotStatus => (s.checked[2] ? (workRight[i] ? "right" : "wrong") : workDone[i] ? "answered" : "open"))}
-          >
-            {workDeck.card === 0 && (
-              <div className={`rt-ticket${s.checked[2] ? (reuseRight ? " is-right" : " is-wrong") : ""}`}>
-                <div className="lk-card-head">
-                  <b>Who shares a password?</b>
-                  <small>The 2020 table. Tick everyone whose hash matches someone else&apos;s.</small>
-                </div>
+        <>
+          <Says>{VENDOR} stored the same staff passwords four different ways over the years. Name each one.</Says>
+          {GENS.slice(0, curGen === -1 ? GENS.length : curGen + 1).map((g) => (
+            <div key={g.id}>
+              <Says><b>{g.year} · <code>{g.column}</code></b> — {g.clue}</Says>
+              <div className="lc-tool lc-tool--flush">
                 <div className="lk-scroll">
                   <table className="lk-table">
                     <tbody>
-                      {USERS.map((u) => {
-                        const on = s.reused.includes(u);
-                        return (
-                          <tr key={u} className={on ? "is-picked" : ""}>
-                            <td>
-                              <input
-                                type="checkbox"
-                                aria-label={`${u} shares a password`}
-                                checked={on}
-                                disabled={s.checked[2]}
-                                onChange={() => patch({ reused: on ? s.reused.filter((x) => x !== u) : [...s.reused, u] })}
-                              />
-                            </td>
-                            <td>{u}</td>
-                            <td>
-                              <code>{plain[u] ?? "…"}</code>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                      {SAMPLE.map((u) => (
+                        <tr key={u}>
+                          <td>{u}</td>
+                          {g.kind === "salted" && <td><code>{SALT[u]}</code></td>}
+                          <td><code>{genValue(g, u) || "…"}</code></td>
+                          {g.kind === "encryption" && <td className="lk-hint">hint: {HINT[u]}</td>}
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
-                {s.checked[2] && <Verdict right={reuseRight}>Priya, Devon and Sam share one value, so whoever cracks it gets all three accounts. Without a salt, reuse shows up at a glance.</Verdict>}
               </div>
-            )}
-            {workDeck.card === 1 && (
-              <div className={`rt-ticket${s.checked[2] ? (workRight[1] ? " is-right" : " is-wrong") : ""}`}>
-                <CardHead title="Two people use a common password" sub="Guess, hash, compare. The way attackers crack hashes." />
-                <Guide
-                  showAll
-                  steps={[
-                    {
-                      title: "Copy the common password list",
-                      done: Boolean(did.listCopied || did.chefHash || anyRecovered),
-                      body: (
-                        <div className="lk-hashout">
-                          <code>{COMMON.join("  ")}</code>
-                          <CopyButton text={COMMON.join("\n")} label="Copy list" onCopied={() => mark("listCopied")} />
-                        </div>
-                      ),
-                    },
-                    {
-                      title: "Hash each word in CyberChef",
-                      done: Boolean(did.chefHash || anyRecovered),
-                      body: (
-                        <>
-                          <a className="lk-mini" href={CHEF_SHA256} target="_blank" rel="noreferrer" onClick={() => mark("chefHash")}>
-                            <ExternalLink aria-hidden="true" /> Open CyberChef with SHA-256 ready
-                          </a>
-                          <HashTool mode="text" />
-                        </>
-                      ),
-                    },
-                    {
-                      title: "Type the word whose hash matches each person",
-                      done: RECOVER.every((u) => s.recovered[u]),
-                      body: RECOVER.map((u) => (
-                        <label key={u} className="lk-field">
-                          {u}
-                          <code className="lk-hash">{plain[u] ?? "…"}</code>
-                          <div>
-                            <input
-                              type="text"
-                              value={s.recovered[u] ?? ""}
-                              disabled={s.checked[2]}
-                              spellCheck={false}
-                              autoComplete="off"
-                              placeholder="Their password"
-                              onChange={(e) => void tryRecover(u, e.target.value)}
-                            />
-                          </div>
-                          {s.recovered[u] && !s.checked[2] && recoverOk[u] && <span className="lk-note is-good">Confirmed. It hashes to their value.</span>}
-                        </label>
-                      )),
-                    },
-                  ]}
-                />
-                {s.checked[2] && (
-                  <>
-                    <Verdict right={workRight[1]}>Purvex123 and Welcome2026 fall first. A hash cannot be reversed, but a weak password can still be guessed and hashed until one matches.</Verdict>
-                    <AttackReplay table={plain} />
-                  </>
-                )}
-              </div>
-            )}
-            {workDeck.card === 2 && (
-              <div className={`rt-ticket${s.checked[2] ? (decodeRight ? " is-right" : " is-wrong") : ""}`}>
-                <CardHead title={`Decode ${DECODE_USER}'s 2014 password`} sub="It is only Base64." />
-                <Guide
-                  showAll
-                  steps={[
-                    {
-                      title: "Copy the stored value",
-                      done: Boolean(did.b64Copied || did.chefB64 || s.decoded),
-                      body: (
-                        <div className="lk-hashout">
-                          <code>{b64(PW[DECODE_USER])}</code>
-                          <CopyButton text={b64(PW[DECODE_USER])} onCopied={() => mark("b64Copied")} />
-                        </div>
-                      ),
-                    },
-                    {
-                      title: "Paste it into CyberChef's From Base64",
-                      done: Boolean(did.chefB64 || s.decoded),
-                      body: (
-                        <a className="lk-mini" href={CHEF_FROM_BASE64} target="_blank" rel="noreferrer" onClick={() => mark("chefB64")}>
-                          <ExternalLink aria-hidden="true" /> Open CyberChef with From Base64 ready
-                        </a>
-                      ),
-                    },
-                    {
-                      title: "Type the password CyberChef shows",
-                      done: Boolean(s.decoded.trim()),
-                      body: (
-                        <label className="lk-field">
-                          <span className="sr-only">Decoded password</span>
-                          <div>
-                            <input type="text" value={s.decoded} disabled={s.checked[2]} placeholder="Decoded password" spellCheck={false} autoComplete="off" onChange={(e) => patch({ decoded: e.target.value })} />
-                          </div>
-                        </label>
-                      ),
-                    },
-                  ]}
-                />
-                {s.checked[2] && <Verdict right={decodeRight}>{PW[DECODE_USER]}, recovered without a key or a single guess, because encoding hides nothing.</Verdict>}
-              </div>
-            )}
-            {workDeck.card === 3 && (
-              <div className={`rt-ticket${s.checked[2] ? (workRight[3] ? " is-right" : " is-wrong") : ""}`}>
-                <CardHead title="Your first move" sub={`Eight PurveX staff had ${VENDOR} accounts.`} />
-                <Options label="First move" options={RESPONSE} value={s.response} answer={s.checked[2] ? "reset" : undefined} disabled={s.checked[2]} onPick={(response) => patch({ response })} />
-                {s.checked[2] && <Verdict right={workRight[3]}>People reuse passwords, so their breach is our risk. Never test leaked passwords, and never send them by email.</Verdict>}
-              </div>
-            )}
-          </Deck>
-          <footer className="rt-foot">
-            {s.checked[2] ? (
-              <>
-                <p className="rt-tally">
-                  <b>{score.work} of 5</b> right
-                </p>
-                <button type="button" className="rt-btn rt-btn--primary" onClick={() => go(3)}>
-                  See the debrief
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="rt-tally">{nextHint(workDone, WORK_CARDS.map((c) => `card ${c.tag}, ${c.title}`))}</p>
-                <button type="button" className="rt-btn rt-btn--primary" disabled={!workDone.every(Boolean)} onClick={() => check(2)}>
-                  Check answers
-                </button>
-              </>
-            )}
-          </footer>
-        </div>
+              {s.kinds[g.id] && <Mine>{KINDS.find((k) => k.key === s.kinds[g.id])?.short}</Mine>}
+              {s.checked[1] && <Says tone={s.kinds[g.id] === g.kind ? "right" : "wrong"}>{g.why}</Says>}
+            </div>
+          ))}
+          {curGen === -1 && !s.checked[1] && <Says>All four named. Check them?</Says>}
+          {s.checked[1] && <Says>You named <b>{score.kinds} of 4</b>. Now let&rsquo;s see what the dump actually gives away.</Says>}
+        </>
+      )}
+
+      {s.step === 2 && (
+        <>
+          <Says>Four short jobs with free tools. You never log in to anything.</Says>
+          {WORK_CARDS.slice(0, curWork === -1 ? WORK_CARDS.length : curWork + 1).map((c, i) => (
+            <div key={c.tag}>
+              <Says><b>{c.title}.</b> {WORK_INTRO[i]}</Says>
+              {i < 3 && <div className="lc-tool">{workTool(i)}</div>}
+              {i === 3 && s.response && <Mine>{RESPONSE.find((r) => r.key === s.response)?.text}</Mine>}
+              {s.checked[2] && <Says tone={workRight[i] ? "right" : "wrong"}>{WORK_WHY[i]}</Says>}
+            </div>
+          ))}
+          {curWork === -1 && !s.checked[2] && <Says>All four done. Check them?</Says>}
+          {s.checked[2] && <Says>You got <b>{score.work} of 5</b>.</Says>}
+        </>
       )}
 
       {s.step === 3 && (
-        <div className="rt-body">
-          <header className="rt-head rt-head--result">
-            <div className={`rt-grade rt-grade--${score.total >= 10 ? "high" : score.total >= 7 ? "medium" : "low"}`}>
-              <b>{score.total}</b>
-              <small>of 11</small>
-            </div>
-            <div>
-              <h3>{score.total >= 10 ? "You would handle this breach" : score.total >= 7 ? "Solid start" : "Worth another pass"}</h3>
-              <p>
-                Tried {score.tryIt} of 2 · Named {score.kinds} of 4 · Worked {score.work} of 5
-              </p>
-            </div>
-          </header>
-          <div className="lk-scroll">
+        <>
+          <Says>Wrap-up. You scored <b>{score.total} of 11</b> — tried {score.tryIt} of 2, named {score.kinds} of 4, worked {score.work} of 5. {score.total >= 10 ? "You would handle this breach." : score.total >= 7 ? "Solid start." : "Worth another pass."}</Says>
+          <div className="lc-tool lc-tool--flush">
             <table className="lk-table">
-              <thead>
-                <tr>
-                  <th>Method</th>
-                  <th>Reversible?</th>
-                  <th>Use it for</th>
-                </tr>
-              </thead>
+              <thead><tr><th>Method</th><th>Reversible?</th><th>Use it for</th></tr></thead>
               <tbody>
-                <tr>
-                  <td>Encoding (Base64)</td>
-                  <td>Yes, by anyone</td>
-                  <td>Formatting. Never secrets.</td>
-                </tr>
-                <tr>
-                  <td>Encryption (AES)</td>
-                  <td>Yes, with the key</td>
-                  <td>Data you need back.</td>
-                </tr>
-                <tr>
-                  <td>Hash (SHA-256)</td>
-                  <td>No</td>
-                  <td>Proving a file did not change.</td>
-                </tr>
-                <tr>
-                  <td>Salted slow hash (bcrypt)</td>
-                  <td>No</td>
-                  <td>Storing passwords.</td>
-                </tr>
+                <tr><td>Encoding (Base64)</td><td>Yes, by anyone</td><td>Formatting. Never secrets.</td></tr>
+                <tr><td>Encryption (AES)</td><td>Yes, with the key</td><td>Data you need back.</td></tr>
+                <tr><td>Hash (SHA-256)</td><td>No</td><td>Proving a file did not change.</td></tr>
+                <tr><td>Salted slow hash (bcrypt)</td><td>No</td><td>Storing passwords.</td></tr>
               </tbody>
             </table>
           </div>
-          <footer className="rt-foot">
-            <p className="rt-tally">Adobe (2013) encrypted passwords. LinkedIn (2012) skipped the salt. Both leaked millions.</p>
-            <button type="button" className="rt-btn" onClick={() => setS(START)}>
-              <RotateCcw aria-hidden="true" /> Try again
-            </button>
-          </footer>
-        </div>
+          <Says>Adobe (2013) encrypted passwords and kept the key next to them. LinkedIn (2012) hashed without a salt. Both leaked millions.</Says>
+        </>
       )}
-    </section>
+    </>
+  );
+
+  const composer = (
+    <>
+      {s.step === 0 && (curTry !== -1 ? (
+        <span className="rt-tally">Finish {TRY_CARDS[curTry].title.toLowerCase()} above, then I&rsquo;ll check your answers.</span>
+      ) : !s.checked[0] ? (
+        <SendAction onClick={() => check(0)}>Check answers</SendAction>
+      ) : (
+        <SendAction onClick={() => go(1)}>Open the breach →</SendAction>
+      ))}
+
+      {s.step === 1 && (curGen !== -1 ? (
+        <ChipRow list label={`How did ${VENDOR} store the ${GENS[curGen].year} column?`}>
+          {KINDS.map((k) => <Chip key={k.key} onClick={() => patch({ kinds: { ...s.kinds, [GENS[curGen].id]: k.key } })}>{k.text}</Chip>)}
+        </ChipRow>
+      ) : !s.checked[1] ? (
+        <SendAction onClick={() => check(1)}>Check answers</SendAction>
+      ) : (
+        <SendAction onClick={() => go(2)}>Work the dump →</SendAction>
+      ))}
+
+      {s.step === 2 && (curWork === 3 ? (
+        <ChipRow list label="Your first move">
+          {RESPONSE.map((r) => <Chip key={r.key} onClick={() => patch({ response: r.key })}>{r.text}</Chip>)}
+        </ChipRow>
+      ) : curWork !== -1 ? (
+        <span className="rt-tally">Finish {WORK_CARDS[curWork].title.toLowerCase()} above.</span>
+      ) : !s.checked[2] ? (
+        <SendAction onClick={() => check(2)}>Check answers</SendAction>
+      ) : (
+        <SendAction onClick={() => go(3)}>See the debrief →</SendAction>
+      ))}
+
+      {s.step === 3 && <SendAction subtle onClick={() => setS(START)}><RotateCcw aria-hidden="true" /> Try again</SendAction>}
+    </>
+  );
+
+  return (
+    <ChatShell
+      role="Your IT lead"
+      steps={STEPS}
+      step={s.step}
+      done={pips}
+      onAsk={coach?.enabled ? () => coach.ask(LOST_ASK) : undefined}
+      signal={signal}
+      thread={thread}
+      composer={composer}
+      label="The Leaked Password Table, guided chat"
+    />
   );
 }
+
 
 // ---- the "Try it" cards: one method per card, walked through step by step ----
 
