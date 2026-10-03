@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { grantPro } from "@/lib/academy-membership";
 import { sendEmail } from "@/lib/email";
 
 // Closes the loop the pricing page's static Stripe Payment Link otherwise
@@ -84,9 +85,12 @@ export async function POST(request: NextRequest) {
   let processed = true;
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    processed = await handleCheckoutCompleted(session, event.id);
+    // Range plans and product licences share this endpoint; metadata says which.
+    processed = session.metadata?.product === "range" ? await handleRangeCheckout(session) : await handleCheckoutCompleted(session, event.id);
   } else if (event.type === "invoice.paid") {
     processed = await handleInvoicePaid(event.data.object as Stripe.Invoice, event.id);
+  } else if (event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted") {
+    processed = await handleRangeSubscription(event.data.object as Stripe.Subscription);
   }
 
   if (!processed) {
@@ -119,6 +123,35 @@ export async function POST(request: NextRequest) {
 // true for self-hosted software with no phone-home check, without ever
 // putting the ed25519 signing key anywhere but the owner's own machine.
 const LICENSE_DAYS = 35;
+
+// ---- Range (the course) -----------------------------------------------------
+// A Range plan is pure data: mark the member paid and record when the period
+// ends, so there is nothing to issue by hand. Safe to run twice.
+
+async function handleRangeCheckout(session: Stripe.Checkout.Session): Promise<boolean> {
+  const userId = session.client_reference_id || session.metadata?.user_id;
+  if (!userId) {
+    console.error("[stripe-webhook] range checkout with no user id:", session.id);
+    return true; // nothing to retry: the session is simply unusable
+  }
+  const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id ?? null;
+  return grantPro(userId, { customerId, email: session.customer_details?.email ?? null });
+}
+
+/** Keeps the paid-until date in step with the subscription, and drops the plan
+ *  when it ends. */
+async function handleRangeSubscription(sub: Stripe.Subscription): Promise<boolean> {
+  if (sub.metadata?.product !== "range") return true;
+  const userId = sub.metadata?.user_id;
+  if (!userId || !supabaseAdmin) return true;
+  const live = sub.status === "active" || sub.status === "trialing";
+  const endsAt = (sub as unknown as { current_period_end?: number }).current_period_end;
+  const until = endsAt ? new Date(endsAt * 1000).toISOString() : null;
+  if (live) return grantPro(userId, { until, customerId: typeof sub.customer === "string" ? sub.customer : null });
+  const { error } = await supabaseAdmin.from("academy_members").update({ plan: "free", pro_until: null, updated_at: new Date().toISOString() }).eq("user_id", userId);
+  if (error) console.error("[stripe-webhook] could not end range plan:", error.message);
+  return !error;
+}
 
 // Drops a row for scripts/poll_license_issuance.py to pick up. Failure here
 // is logged but never thrown -- the owner notification email below still

@@ -20,18 +20,18 @@ function cookieOptions() {
   };
 }
 
-function expectedToken(): string | null {
-  const passcode = process.env.ACADEMY_PASSCODE;
-  if (!passcode) return null;
+function expectedToken(): string {
   const salt = process.env.ACADEMY_SESSION_SALT || "purvex-academy";
-  return createHash("sha256").update(`${passcode}:${salt}`).digest("hex");
+  const passcode = process.env.ACADEMY_PASSCODE;
+  // Range is open to anyone who signs in, so the unlock has to work even when
+  // no cohort passcode is configured. The token still depends on the salt, so
+  // changing the salt signs everyone out.
+  return createHash("sha256").update(passcode ? `${passcode}:${salt}` : `open:${salt}`).digest("hex");
 }
 
 export async function isAcademyUnlocked(): Promise<boolean> {
-  const expected = expectedToken();
-  if (!expected) return false;
   const store = await cookies();
-  return store.get(ACADEMY_COOKIE)?.value === expected;
+  return store.get(ACADEMY_COOKIE)?.value === expectedToken();
 }
 
 export function checkPasscode(input: string): boolean {
@@ -40,12 +40,9 @@ export function checkPasscode(input: string): boolean {
   return input.trim() === passcode;
 }
 
-/** False when no passcode is configured, so there is no cookie to set. */
 export async function setAcademyCookie(): Promise<boolean> {
-  const expected = expectedToken();
-  if (!expected) return false;
   const store = await cookies();
-  store.set(ACADEMY_COOKIE, expected, cookieOptions());
+  store.set(ACADEMY_COOKIE, expectedToken(), cookieOptions());
   return true;
 }
 

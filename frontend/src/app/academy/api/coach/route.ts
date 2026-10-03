@@ -4,6 +4,7 @@ import { COACH_DAILY_LIMIT, effectiveCoachBonus, runCoachTurn } from "@/lib/acad
 import { modeFromReport, parseCoachMode, parseCoachPlace } from "@/lib/academy-coach-mode";
 import { COACH_SHOT_ASK, sanitizeCoachImages } from "@/lib/academy-coach-media";
 import { sanitizeProfile } from "@/lib/academy-certs";
+import { hasPro } from "@/lib/academy-membership";
 import { ensureRoleBrief } from "@/lib/academy-role-research";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
 import { bumpLabCoachUsage, bumpUsage, loadDrills, loadLabState, loadProfile, loadProgress, readLabCoachUsage, readUsage, resetUsage } from "@/lib/academy-store";
@@ -37,7 +38,7 @@ export async function GET(request: Request) {
   const used = await readUsage(student.id, day);
   const { bonus, limit } = await allowance(student.id, day);
   return NextResponse.json({
-    enabled: Boolean(process.env.ANTHROPIC_API_KEY),
+    enabled: Boolean(process.env.ANTHROPIC_API_KEY) && (await hasPro(student)),
     remaining: Math.max(0, Math.min(limit, limit - used)),
     limit,
     bonus,
@@ -51,6 +52,10 @@ export async function POST(request: Request) {
   const student = await getAcademyStudent(request);
   if (!student) {
     return NextResponse.json({ error: "Sign in to use PurveX Coach." }, { status: 401 });
+  }
+  // Coach costs money per answer, so it comes with a plan.
+  if (!(await hasPro(student))) {
+    return NextResponse.json({ error: "PurveX Coach is part of the full plan.", needsPlan: true }, { status: 402 });
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
