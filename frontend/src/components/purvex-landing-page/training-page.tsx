@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowRight, BookOpen, Bug, FileSearch, Fingerprint, KeyRound, MonitorDot, Network, Radar, ScanSearch,
+  ArrowRight, BookOpen, Bug, Check, FileSearch, Fingerprint, KeyRound, MonitorDot, Network, Radar, ScanSearch,
   Server, ShieldCheck, ShieldHalf, Siren, type LucideIcon,
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
@@ -104,6 +104,59 @@ function Course({ outline }: { outline: CourseOutline }) {
   );
 }
 
+/* Three ways in, each written for the person choosing it. Explore is for
+   someone still deciding. Pro is for someone who has decided and wants the
+   job. Custom is for whoever is answerable for a cohort. Perks are kept to
+   one idea a line so the difference between tiers reads at a glance. */
+const TIERS: { name: string; price: string; per?: string; forWho: string; perks: string[]; cta: string; href: string; featured?: boolean }[] = [
+  {
+    name: "Explore",
+    price: "Free",
+    forWho: "See if this is for you. Nothing to lose.",
+    perks: [
+      "Every lesson. All three phases.",
+      "Every challenge and the whole Ticket Queue.",
+      "Five hands-on labs right in your browser.",
+      "Your readiness score from the first day.",
+      "No card. No trial clock.",
+    ],
+    cta: "Start free",
+    href: "/range",
+  },
+  {
+    name: "Pro",
+    price: "$20",
+    per: "/month",
+    forWho: "You want the job. This is the shortest way there.",
+    perks: [
+      "Everything in Explore.",
+      "Your own cloud lab. One click in a browser tab.",
+      "A real Windows domain built just for you.",
+      "PurveX Coach. It sees your lab and never hands over the answer.",
+      "A Proof Profile any employer can verify.",
+      "Cancel the moment you want to.",
+    ],
+    cta: "Get Pro",
+    href: "/range",
+    featured: true,
+  },
+  {
+    name: "Custom",
+    price: "Let's talk",
+    forWho: "Schools and workforce programs running a cohort.",
+    perks: [
+      "Everything in Pro for every seat.",
+      "Live progress for each student.",
+      "Your own classes and join links.",
+      "Labs provisioned and managed for you.",
+      "Onboarding for your instructors.",
+      "Invoicing and agreements.",
+    ],
+    cta: "Book a call",
+    href: BOOKING_URL,
+  },
+];
+
 export default function TrainingPage({ outline }: { outline: CourseOutline }) {
   return (
     <SiteChrome active="training">
@@ -169,6 +222,46 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         <TrainingAudiences />
       </section>
 
+      <section className="pg-section tp-pricing" id="pricing">
+        <div className="pg-head">
+          <h2>Pick the way you want to learn</h2>
+          <p>Start free and stay as long as you like. Add a cloud lab and a coach the day you get serious.</p>
+        </div>
+        <ul className="tp-tiers" data-r>
+          {TIERS.map((t) => (
+            <li key={t.name} className={t.featured ? "is-featured" : ""}>
+              {t.featured && <em className="tp-tier__flag">Most popular</em>}
+              <div className="tp-tier__top">
+                <strong>{t.name}</strong>
+                <span className="tp-tier__price">
+                  {t.price}
+                  {t.per && <i>{t.per}</i>}
+                </span>
+                <p className="tp-tier__for">{t.forWho}</p>
+              </div>
+              <ul className="tp-tier__list">
+                {t.perks.map((p) => (
+                  <li key={p}>
+                    <Check size={15} aria-hidden="true" />
+                    <span>{p}</span>
+                  </li>
+                ))}
+              </ul>
+              {t.href.startsWith("http") ? (
+                <a href={t.href} target="_blank" rel="noreferrer" className="tp-tier__cta">
+                  {t.cta} <ArrowRight size={15} />
+                </a>
+              ) : (
+                <Link href={t.href} className="tp-tier__cta">
+                  {t.cta} <ArrowRight size={15} />
+                </Link>
+              )}
+            </li>
+          ))}
+        </ul>
+        <p className="tp-pricing__note">Every tier includes the full syllabus. Pro and Custom add the parts that run on real infrastructure.</p>
+      </section>
+
 
       <section className="pg-close" data-r>
         <div className="pg-close__copy">
@@ -217,6 +310,39 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         }
         .tp-feature-list strong { display: block; font-size: 1.05rem; font-weight: 650; letter-spacing: -.014em; color: var(--ink) }
         .tp-feature-list p { margin: 4px 0 0; color: var(--muted); font-size: .92rem; line-height: 1.5 }
+
+        .tp-tiers { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: stretch }
+        .tp-tiers > li {
+          position: relative; display: flex; flex-direction: column; padding: 30px 26px 28px;
+          background: #fff; border: 1px solid var(--border-strong);
+        }
+        .tp-tiers > li.is-featured { border-color: var(--accent); box-shadow: 0 26px 52px -34px rgba(42,34,128,.45) }
+        .tp-tier__flag {
+          position: absolute; top: -1px; right: 22px; transform: translateY(-50%);
+          padding: 4px 10px; background: var(--accent); color: #fff;
+          font-style: normal; font-size: .62rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+        }
+        .tp-tier__top { padding-bottom: 20px; border-bottom: 1px solid var(--border) }
+        .tp-tier__top strong { display: block; font-family: var(--font-display); font-size: 1.02rem; font-weight: 700; letter-spacing: -.012em; color: var(--ink) }
+        .tp-tier__price {
+          display: flex; align-items: baseline; gap: 5px; margin-top: 12px;
+          font-family: var(--font-display); font-size: clamp(1.9rem, 3vw, 2.5rem); font-weight: 700;
+          letter-spacing: -.03em; line-height: 1; color: var(--ink);
+        }
+        .tp-tier__price i { font-style: normal; font-size: .82rem; font-weight: 600; letter-spacing: 0; color: var(--muted) }
+        .tp-tier__for { margin: 14px 0 0; font-size: .92rem; line-height: 1.5; color: var(--muted); text-wrap: balance }
+        .tp-tier__list { list-style: none; margin: 20px 0 0; padding: 0; display: grid; gap: 11px; flex: 1 }
+        .tp-tier__list li { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; font-size: .92rem; line-height: 1.45; color: var(--ink) }
+        .tp-tier__list svg { margin-top: 3px; color: var(--accent-deep) }
+        .tp-tier__cta {
+          display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 24px;
+          padding: 13px 18px; font-size: .94rem; font-weight: 650; text-decoration: none;
+          border: 1px solid var(--border-strong); color: var(--ink); transition: gap .25s var(--ease)
+        }
+        .tp-tier__cta:hover { gap: 12px }
+        .tp-tiers > li.is-featured .tp-tier__cta { background: var(--accent); border-color: var(--accent); color: #fff }
+        .tp-pricing__note { margin: 22px 0 0; font-size: .88rem; color: var(--muted) }
+        @media (max-width: 900px) { .tp-tiers { grid-template-columns: 1fr; gap: 16px } }
 
         .tp-course { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); position: relative }
         .tp-course::before { content: ""; position: absolute; left: 28px; right: 28px; top: 28px; height: 2px; background: linear-gradient(90deg, rgba(106,92,255,.45), rgba(106,92,255,.12)) }
