@@ -14,7 +14,19 @@
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 24px 50px -32px rgba(15, 23, 42, 0.55);
   scroll-margin-top: 96px;
 }
-.academy-bg[data-academy-theme="dark"] .lc { --lc-card: #141726; }
+/* Dark: nothing is a lighter panel. Surfaces go transparent so the whole lab
+   sits on the page's own black, and only hairline borders mark the edges. */
+.academy-bg[data-academy-theme="dark"] .lc { --lc-card: transparent; background: transparent; box-shadow: none; }
+.academy-bg[data-academy-theme="dark"] .lc-head,
+.academy-bg[data-academy-theme="dark"] .lc-thread,
+.academy-bg[data-academy-theme="dark"] .lc-composer { background: transparent; }
+.academy-bg[data-academy-theme="dark"] .lc-bubble--alex,
+.academy-bg[data-academy-theme="dark"] .lc-tool,
+.academy-bg[data-academy-theme="dark"] .lc-chip,
+.academy-bg[data-academy-theme="dark"] .lc-ask,
+.academy-bg[data-academy-theme="dark"] .lc-field input { background: transparent; box-shadow: none; }
+/* Keep the selected state readable without a filled panel. */
+.academy-bg[data-academy-theme="dark"] .lc-chip.is-active { background: color-mix(in srgb, var(--lc-me) 22%, transparent); }
 
 .lc-head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--rd-line); background: color-mix(in srgb, var(--rd-ink) 2.5%, var(--lc-card)); }
 .lc-head__who { display: grid; gap: 1px; margin-right: auto; min-width: 0; }
