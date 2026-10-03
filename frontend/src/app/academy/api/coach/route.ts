@@ -8,6 +8,7 @@ import { ensureRoleBrief } from "@/lib/academy-role-research";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
 import { bumpLabCoachUsage, bumpUsage, loadDrills, loadLabState, loadProfile, loadProgress, readLabCoachUsage, readUsage, resetUsage } from "@/lib/academy-store";
 import { LAB_COACH_PER_LAB, LAB_PAUSE_REPLY, runLabCoachTurn } from "@/lib/academy-lab-coach";
+import { isRangePro, proRequired } from "@/lib/range-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { cleanDay, coachBonus } from "@/lib/academy-drills";
 
@@ -30,6 +31,13 @@ export async function GET(request: Request) {
   if (!student) {
     return NextResponse.json({ error: "Sign in first." }, { status: 401 });
   }
+  // Coach is in the Pro column on the pricing page and not in Explore's, so
+  // a free account is told what it costs instead of being told the feature
+  // is broken. enabled stays false, which is what the chat UI already reads
+  // to stay closed.
+  if (!(await isRangePro(student))) {
+    return NextResponse.json({ enabled: false, locked: true, remaining: 0, limit: 0, bonus: 0, upgrade: "/range/upgrade" });
+  }
   const url = new URL(request.url);
   const day = cleanDay(url.searchParams.get("day"));
   const wantReset = process.env.NODE_ENV !== "production" && url.searchParams.get("reset") === "1";
@@ -51,6 +59,13 @@ export async function POST(request: Request) {
   const student = await getAcademyStudent(request);
   if (!student) {
     return NextResponse.json({ error: "Sign in to use PurveX Coach." }, { status: 401 });
+  }
+
+  // Checked before the API key, before the body is read and before any
+  // model call: the one thing a paywall must not do is run the expensive
+  // part first and bill the answer to a free account.
+  if (!(await isRangePro(student))) {
+    return NextResponse.json(proRequired("PurveX Coach"), { status: 403 });
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;

@@ -138,7 +138,7 @@ const TIERS: { name: string; price: string; per?: string; forWho: string; perks:
       "Cancel the moment you want to",
     ],
     cta: "Get Pro",
-    href: "/range",
+    href: "/range/upgrade",
     featured: true,
   },
   {

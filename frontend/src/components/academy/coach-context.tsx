@@ -13,6 +13,8 @@ type CoachState = {
   messages: CoachMessage[];
   busy: boolean;
   enabled: boolean;
+  /** Coach exists and works, but this account is on Explore. Different from enabled:false, which means unconfigured. */
+  locked: boolean;
   remaining: number | null;
   limit: number;
   bonus: number;
@@ -69,6 +71,7 @@ export function CoachProvider({ children, profile = null }: { children: React.Re
   const [messages, setMessages] = useState<CoachMessage[]>([]);
   const [busy, setBusy] = useState(false);
   const [enabled, setEnabled] = useState(true);
+  const [locked, setLocked] = useState(false);
   const [remaining, setRemaining] = useState<number | null>(null);
   const [limit, setLimit] = useState(25);
   const [bonus, setBonus] = useState(0);
@@ -116,6 +119,7 @@ export function CoachProvider({ children, profile = null }: { children: React.Re
       .then((data) => {
         if (!data) return;
         setEnabled(data.enabled !== false);
+        setLocked(data.locked === true);
         if (typeof data.limit === "number") setLimit(data.limit);
         if (typeof data.remaining === "number") setRemaining(Math.min(data.remaining, typeof data.limit === "number" ? data.limit : data.remaining));
         if (typeof data.bonus === "number") setBonus(data.bonus);
@@ -206,7 +210,7 @@ export function CoachProvider({ children, profile = null }: { children: React.Re
 
   return (
     <CoachContext.Provider
-      value={{ messages, busy, enabled, remaining, limit, bonus, error, modalOpen, setModalOpen, mode, setMode, setPlace, send, clear, resetToday, ask, registerInline, profile }}
+      value={{ messages, busy, enabled, locked, remaining, limit, bonus, error, modalOpen, setModalOpen, mode, setMode, setPlace, send, clear, resetToday, ask, registerInline, profile }}
     >
       {children}
     </CoachContext.Provider>

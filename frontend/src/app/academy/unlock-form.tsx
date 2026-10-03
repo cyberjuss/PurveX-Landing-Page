@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { unlockAcademy } from "./actions";
+import Link from "next/link";
 import { AuthError, AuthHeading, AuthMinimal } from "@/components/auth/auth-minimal";
 import { academyFetch } from "@/lib/academy-client";
 
@@ -67,6 +68,16 @@ export function UnlockForm() {
           {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : "Unlock course"}
         </button>
       </form>
+
+      {/* A passcode is not the only way in any more. Someone who found Range
+          on their own has no instructor to ask, and this screen used to be a
+          dead end for them. */}
+      <p className="mt-6 text-center text-sm text-slate-600">
+        No instructor?{" "}
+        <Link href="/range/upgrade" className="am-link">
+          Get Pro for $20 a month
+        </Link>
+      </p>
     </AuthMinimal>
   );
 }

@@ -4835,6 +4835,8 @@ html:has(.academy-bg[data-academy-theme="dark"]) .pc-backdrop { background: rgba
   .pc-dots i { animation: none; opacity: 0.55; }
 }
 .pc-error { margin-top: 16px; padding: 10px 0; border-top: 1px solid var(--pc-bad); color: var(--pc-bad); font-size: 13px; }
+.pc-error__link { color: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.pc-error__link:hover { opacity: .8; }
 
 .pc-dock { padding: 16px 22px 20px; background: var(--pc-bg-2); }
 .pc-dock__done { margin: 0; font-size: 14px; color: var(--pc-text-2); }

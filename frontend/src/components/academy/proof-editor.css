@@ -34,6 +34,8 @@
 .pf-blockers b { display: block; margin-bottom: 4px; font-weight: 600; }
 .pf-blockers ul { margin: 0; padding-left: 18px; }
 .pf-blockers li { list-style: disc; }
+.pf-blockers__p { margin: 0; line-height: 1.5; }
+.pf-blockers__p a { font-weight: 650; color: var(--rd-accent); text-decoration: underline; text-underline-offset: 3px; }
 .pf-blockers { margin: 0; padding: 10px 14px; border: 1px solid color-mix(in srgb, var(--rd-warn) 40%, transparent); background: color-mix(in srgb, var(--rd-warn) 8%, transparent); font-size: 13px; color: var(--rd-ink); }
 .pf-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .pf-btn { display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 14px; border: 1px solid var(--rd-line); background: none; font-size: 13px; font-weight: 650; color: var(--rd-ink); text-decoration: none; cursor: pointer; white-space: nowrap; transition: border-color 0.15s, color 0.15s, background 0.15s, transform 0.1s; }

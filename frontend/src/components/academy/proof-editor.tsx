@@ -44,6 +44,8 @@ type Data = {
   saved: boolean;
   shots: Shot[];
   blockers: string[];
+  /** On Explore: the draft is readable, but publishing it is what Pro buys. */
+  locked?: boolean;
 };
 
 const TRACKS: Track[] = ["soc", "help", "sys"];
@@ -380,11 +382,25 @@ export function ProofEditor() {
                   aria-checked={settings.published}
                   aria-label="Make my portfolio public"
                   className="pf-switch"
-                  disabled={busy || (!settings.published && data.blockers.length > 0)}
+                  disabled={busy || data.locked || (!settings.published && data.blockers.length > 0)}
                   onClick={() => save({ published: !settings.published }, settings.published ? "Your portfolio is private. Your link no longer works." : "Your portfolio is public.")}
                 />
               </div>
-              {!settings.published && data.blockers.length > 0 && (
+              {/* Shown instead of the blockers list, not alongside it: on
+                  Explore the only thing standing between them and a public
+                  profile is the subscription, so listing the other work
+                  first would be misleading. */}
+              {data.locked && (
+                <div className="pf-blockers">
+                  <b>Publishing your portfolio is part of Range Pro.</b>
+                  <p className="pf-blockers__p">
+                    Keep building it here for free. Pro gives you the public link, the QR code and a credential ID any
+                    employer can check.{" "}
+                    <a href="/range/upgrade">Get Pro for $20 a month</a>
+                  </p>
+                </div>
+              )}
+              {!data.locked && !settings.published && data.blockers.length > 0 && (
                 <div className="pf-blockers">
                   <b>Before you can make it public:</b>
                   <ul>

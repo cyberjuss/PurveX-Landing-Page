@@ -11,7 +11,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "eval:coach": "npx -y tsx --tsconfig scripts/coach-eval/tsconfig.json scripts/coach-eval/eval.ts"
+    "eval:coach": "npx -y tsx --tsconfig scripts/coach-eval/tsconfig.json scripts/coach-eval/eval.ts",
+    "check:range": "npx -y tsx --tsconfig scripts/range-check/tsconfig.json scripts/range-check/check.ts",
+    "check:range:routes": "node scripts/range-check/routes.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-ec2": "^3.1142.0",

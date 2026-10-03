@@ -14,6 +14,7 @@ import {
   validSlug,
   type ProofSettings,
 } from "@/lib/academy-proof-store";
+import { isRangePro, proRequired } from "@/lib/range-plan";
 import { getAcademyStudent, type AcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -22,11 +23,24 @@ export const runtime = "nodejs";
 const MAX_BYTES = 4 * 1024 * 1024;
 const TYPES = new Set(["image/png", "image/jpeg"]);
 
-async function auth(request: Request) {
+// Reading a draft is open to everyone -- a free student can see the profile
+// their work has already earned, which is the whole argument for upgrading.
+// Everything that writes needs Pro, because what Pro sells is the published,
+// verifiable page, not the draft behind it.
+//
+// Deliberately not applied to /p/[slug]: a profile that is already public
+// stays public if a subscription lapses. Pulling a student's portfolio
+// offline mid-application over a declined card does more harm than the
+// entitlement is worth.
+async function auth(request: Request, requirePro = true) {
   if (!(await isAcademyUnlocked())) return { error: NextResponse.json({ error: "Locked" }, { status: 401 }) } as const;
   const student = await getAcademyStudent(request);
   if (!student) return { error: NextResponse.json({ error: "Sign in first." }, { status: 401 }) } as const;
-  return { student } as const;
+  const pro = await isRangePro(student);
+  if (requirePro && !pro) {
+    return { error: NextResponse.json(proRequired("A shareable Proof Profile"), { status: 403 }) } as const;
+  }
+  return { student, pro } as const;
 }
 
 /** An unpublished starting point for a student who has not saved anything yet. */
@@ -47,7 +61,7 @@ function draftName(student: AcademyStudent) {
 }
 
 export async function GET(request: Request) {
-  const a = await auth(request);
+  const a = await auth(request, false);
   if (a.error) return a.error;
   const data = await loadProofData(a.student.id);
   // Portfolios created before account names were read still carry the email
@@ -72,6 +86,8 @@ export async function GET(request: Request) {
     saved: Boolean(data.settings),
     shots: data.shots.map(({ id, job, caption }) => ({ id, job, caption })),
     blockers: shareBlockers(data.items),
+    locked: !a.pro,
+    ...(a.pro ? {} : { upgrade: "/range/upgrade" }),
   });
 }
 

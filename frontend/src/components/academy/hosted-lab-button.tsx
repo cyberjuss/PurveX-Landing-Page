@@ -12,7 +12,8 @@ import "./hosted-lab.css";
 // from either updates both.
 
 type State = "none" | "starting" | "ready" | "stopping" | "stopped";
-type Status = { available: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string };
+/** locked: hosted labs exist here, but this account is on Explore and has not bought one. */
+type Status = { available: boolean; locked?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string };
 type Snapshot = { status: Status | null; busy: boolean; error: string | null };
 
 const clock = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -103,7 +104,7 @@ export function useHostedLab() {
   const state: State = s.status?.state ?? "none";
   const moving = state === "starting" || state === "stopping";
   const primary = () => (state === "ready" ? open() : state === "none" || state === "stopped" ? act("start") : undefined);
-  return { ...s, state, waiting: s.busy || moving, primary, available: Boolean(s.status?.available) };
+  return { ...s, state, waiting: s.busy || moving, primary, available: Boolean(s.status?.available), locked: Boolean(s.status?.locked) };
 }
 
 /** For code outside React (the answer check): does this student have a hosted lab, and start it. */
@@ -203,7 +204,27 @@ export const LabMonitorIcon = ({ size = 30 }: { size?: number }) => (
 
 /** On the Home Lab setup tabs: hosted students skip building their own server. */
 export function HostedLabSetupNote() {
-  const { available, state, busy, primary } = useHostedLab();
+  const { available, locked, state, busy, primary } = useHostedLab();
+  // The one place the cloud lab is worth selling: this student is reading
+  // the instructions for building a domain controller by hand, which is
+  // exactly the work Pro does for them.
+  if (locked) {
+    return (
+      <aside className="hl-note" aria-label="Range Pro builds this lab for you">
+        <span className="hl-note__mark" aria-hidden="true">
+          <Server className="h-5 w-5" />
+        </span>
+        <div className="hl-note__text">
+          <p className="hl-note__title">Range Pro builds this lab for you.</p>
+          <p className="hl-note__body">Pro gives you your own Windows domain on a server we run, one click away in a browser tab, with the ticket objects and Coach sync already in place. You can also follow this tab and build it yourself for free.</p>
+        </div>
+        <a href="/range/upgrade" className="hl-note__go">
+          Get Pro
+          <ArrowUpRight className="h-4 w-4" />
+        </a>
+      </aside>
+    );
+  }
   if (!available) return null;
   return (
     <aside className="hl-note" aria-label="Your lab is hosted">

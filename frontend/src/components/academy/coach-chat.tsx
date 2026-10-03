@@ -202,7 +202,7 @@ export function CoachHeader({ children }: { children?: ReactNode }) {
 }
 
 export function CoachChat() {
-  const { messages, busy, enabled, remaining, error, send, resetToday, mode, setMode } = useCoach();
+  const { messages, busy, enabled, locked, remaining, error, send, resetToday, mode, setMode } = useCoach();
   const results = useResults();
   const prompts = mode === "interview" ? interviewStarters(results) : coachStarters(results);
   const [input, setInput] = useState("");
@@ -369,7 +369,19 @@ export function CoachChat() {
           )}
         </div>
         {error && <p className="pc-error">{error}</p>}
-        {!enabled && <p className="pc-error">PurveX Coach is not set up yet. Ask your instructor.</p>}
+        {/* Two different reasons the box is closed, and they need different
+            answers: locked means working as sold, go and buy it; !enabled
+            means we have not finished setting it up. */}
+        {locked ? (
+          <p className="pc-error">
+            PurveX Coach is part of Range Pro.{" "}
+            <a href="/range/upgrade" className="pc-error__link">
+              Get Pro for $20 a month
+            </a>
+          </p>
+        ) : (
+          !enabled && <p className="pc-error">PurveX Coach is not set up yet. Ask your instructor.</p>
+        )}
       </div>
 
       {remaining === 0 && messages.length > 0 ? (

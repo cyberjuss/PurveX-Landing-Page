@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { sendEmail } from "@/lib/email";
+import {
+  checkoutIsRangePro,
+  handleRangeCheckout,
+  handleRangeSubscriptionChange,
+  invoiceIsRangePro,
+  subscriptionIsRangePro,
+} from "@/lib/range-billing";
 
 // Closes the loop the pricing page's static Stripe Payment Link otherwise
 // leaves open: today, paying customer -> silence. Nobody is notified a sale
@@ -81,12 +88,40 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Two products share this endpoint: the $99/month self-hosted Platform
+  // plan (portal_profiles + a signed license key) and Range Pro at $20/month
+  // (academy_subscriptions, see lib/range-billing.ts). Every branch decides
+  // which one it is before doing anything, or a Range sale would trigger
+  // license issuance and a Platform sale would hand out a Range Pro seat.
   let processed = true;
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    processed = await handleCheckoutCompleted(session, event.id);
+    try {
+      processed = (await checkoutIsRangePro(stripe, session))
+        ? await handleRangeCheckout(stripe, session)
+        : await handleCheckoutCompleted(session, event.id);
+    } catch {
+      // checkoutIsRangePro throws when it cannot read the line items --
+      // retry rather than guess which product was bought.
+      processed = false;
+    }
   } else if (event.type === "invoice.paid") {
-    processed = await handleInvoicePaid(event.data.object as Stripe.Invoice, event.id);
+    const invoice = event.data.object as Stripe.Invoice;
+    // Range renewals are handled by customer.subscription.updated below,
+    // which carries the new period. Nothing to do here but stay out of the
+    // Platform's license-issuance path.
+    processed = invoiceIsRangePro(invoice) ? true : await handleInvoicePaid(invoice, event.id);
+  } else if (
+    event.type === "customer.subscription.updated" ||
+    event.type === "customer.subscription.deleted"
+  ) {
+    const subscription = event.data.object as Stripe.Subscription;
+    // The Platform plan tracks its own lifecycle through license expiry
+    // (keys last 35 days and are reissued on each invoice.paid), so these
+    // events only matter for Range.
+    if (subscriptionIsRangePro(subscription)) {
+      processed = await handleRangeSubscriptionChange(subscription);
+    }
   }
 
   if (!processed) {
