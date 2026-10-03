@@ -187,7 +187,6 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
             />
           </figure>
         </div>
-        <p className="tp-proof__note">Example portfolio. The student is fictional.</p>
       </section>
 
       <section className="pg-section tp-features" id="features">
@@ -260,7 +259,6 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
             </li>
           ))}
         </ul>
-        <p className="tp-pricing__note">Every tier includes the full syllabus. Pro and Custom add the parts that run on real infrastructure.</p>
       </section>
 
 
@@ -342,7 +340,6 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         }
         .tp-tier__cta:hover { gap: 12px }
         .tp-tiers > li.is-featured .tp-tier__cta { background: var(--accent); border-color: var(--accent); color: #fff }
-        .tp-pricing__note { margin: 22px 0 0; font-size: .88rem; color: var(--muted) }
         @media (max-width: 900px) { .tp-tiers { grid-template-columns: 1fr; gap: 16px } }
 
         .tp-course { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); position: relative }
@@ -395,7 +392,6 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           display: block; width: 100%; height: auto; background: #fff;
           border: 1px solid var(--border-strong); box-shadow: 0 22px 44px -32px rgba(42,34,128,.35);
         }
-        .tp-proof__note { margin: 18px 0 0; font-size: .8rem; color: var(--muted) }
         @media (prefers-reduced-motion: reduce) {
         }
 
