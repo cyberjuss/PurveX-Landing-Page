@@ -297,8 +297,8 @@
 
 /* ========================================================================
    Clean-SaaS polish. One consistent rounding and spacing pass over every lab
-   widget, so all labs read as one calm, light product instead of a wireframe
-   of hard square boxes. Later in the file, so it wins on equal specificity.
+   widget: hard-cut square corners, so every lab reads as one product.
+   Later in the file, so it wins on equal specificity.
    ======================================================================== */
 .lk-options button,
 .lk-mini,
@@ -308,10 +308,10 @@
 .lk-hashtext input, .lk-field input, .lk-input, .lk-play input, .lk-panel__key input, .lk-panel__try input,
 .lk-hash, .lk-hashout code, .lk-out, .lk-play__hash, .lk-panel code, .lk-note-box > code, .lk-flow__box > code,
 .lk-file, .lk-scroll, .lk-compare, .lk-play, .lk-panel, .lk-replay, .lk-replay__rows li, .lk-more, .lk-py, .lk-log, .lk-real,
-.lk-takeaway { border-radius: 11px; }
+.lk-takeaway { border-radius: 0; }
 
-.lk-howto pre, .lk-py__code, .lk-py__out, .lk-file ol { border-radius: 10px; }
-.lk-tabs button, .lk-mini { border-radius: 9px; }
+.lk-howto pre, .lk-py__code, .lk-py__out, .lk-file ol { border-radius: 0; }
+.lk-tabs button, .lk-mini { border-radius: 0; }
 
 /* Softer, airier option and mini buttons. */
 .lk-options button { padding: 13px 14px; background: var(--rt-card, #fff); transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s, transform 0.15s; }
@@ -334,7 +334,7 @@
 
 /* A touch more breathing room in the briefs and real-world notes. */
 .lk-real, .lk-play, .lk-panel, .lk-replay { background: var(--rt-card, #fff); box-shadow: var(--rt-shadow, 0 1px 2px rgba(15,23,42,0.04)); }
-.lk-takeaway { border-radius: 11px; }
+.lk-takeaway { border-radius: 0; }
 
 /* Softer field focus ring to match the SaaS language. */
 .lk-hashtext input:focus, .lk-field input:focus, .lk-input:focus, .lk-play input:focus, .lk-panel__key input:focus, .lk-panel__try input:focus {
