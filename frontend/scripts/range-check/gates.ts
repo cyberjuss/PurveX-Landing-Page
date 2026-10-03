@@ -160,6 +160,39 @@ async function main() {
   });
   check(`${surface.length} browser-lab files call nothing Pro-gated`, offenders.length === 0, offenders.join(", "));
 
+  console.log("\nGet Pro reaches Stripe without a second offer screen");
+  // The chain is: Get Pro -> signup -> back here -> Stripe. It runs entirely
+  // in the browser, so the HTTP suite cannot watch it; these read the source
+  // instead. Each assertion is one link that, if dropped, lands a buyer back
+  // on a price they already accepted.
+  const upgradeSrc = readFileSync("src/app/range/upgrade/page.tsx", "utf8");
+  const pricingSrc = readFileSync("src/components/purvex-landing-page/training-page.tsx", "utf8");
+
+  check(
+    "the pricing CTA asks to buy, not to read",
+    pricingSrc.includes('"/range/upgrade?checkout=1"'),
+    "Get Pro lost ?checkout=1"
+  );
+  check(
+    "the signup redirect keeps the intent",
+    upgradeSrc.includes('"/range/upgrade?checkout=1"'),
+    "the redirect to signup drops ?checkout=1, so they come back to the offer screen"
+  );
+  check(
+    "arriving back signed in goes straight to Stripe",
+    /autoCheckout\s*&&\s*goToStripe\(\)|goToStripe\(\)/.test(upgradeSrc) && upgradeSrc.includes("autoCheckout"),
+    "nothing forwards a returning buyer to Stripe automatically"
+  );
+  // The one case that must never auto-charge: someone who already pays. The
+  // match is pinned to the goToStripe call rather than the plan comparison
+  // alone, which also appears in the JSX below and made this pass with the
+  // guard deleted.
+  check(
+    "an existing subscriber is never auto-sent to buy again",
+    /plan\?\.plan === "free" && autoCheckout\)\s*goToStripe\(\)/.test(upgradeSrc),
+    "the auto-redirect does not check the plan first, so a Pro account could be sent to a second checkout"
+  );
+
   console.log("\nSigned out, nothing is reachable");
   asStudent(null);
   const outCoach = await read(await coachPost(json("/academy/api/coach", { message: "hi" })));

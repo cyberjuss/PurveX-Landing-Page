@@ -68,6 +68,24 @@ async function main() {
     "the page rendered the unlock form, so it is behind the academy gate"
   );
 
+  console.log("\nGet Pro carries the intent to buy all the way to Stripe");
+  // The chain is: Get Pro -> signup -> back here -> Stripe, with no second
+  // offer screen in between. ?checkout=1 is what survives the round trip and
+  // says "already decided"; losing it anywhere drops someone back onto a
+  // pricing page they have already read.
+  const landing = await hit("/cybersecurity-training");
+  check(
+    "Get Pro asks for checkout, not just the offer",
+    landing.text.includes("/range/upgrade?checkout=1"),
+    "the pricing CTA lost ?checkout=1, so buyers land on a second offer screen"
+  );
+
+  const buy = await hit("/range/upgrade?checkout=1");
+  check("the checkout route loads", buy.status === 200, `status ${buy.status}`);
+  // What happens next -- redirect to signup, then on to Stripe -- runs in an
+  // effect in the browser, so nothing over HTTP can observe it. The source
+  // check in check:range:gates covers that the intent survives the trip.
+
   console.log("\nSigning up for Range lands back in Range");
   // Both of these shipped broken. /account/signup ignored `next` entirely and
   // always pushed to /pricing -- the $99 self-hosted Platform picker -- so a

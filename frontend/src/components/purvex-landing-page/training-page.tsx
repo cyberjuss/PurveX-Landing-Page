@@ -138,7 +138,9 @@ const TIERS: { name: string; price: string; per?: string; forWho: string; perks:
       "Cancel the moment you want to",
     ],
     cta: "Get Pro",
-    href: "/range/upgrade",
+    // ?checkout=1 means "buy", not "read the offer": after signing up they
+    // go straight to Stripe rather than landing on a second pricing screen.
+    href: "/range/upgrade?checkout=1",
     featured: true,
   },
   {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Check, Loader2 } from "lucide-react";
 import { AuthHeading, AuthMinimal } from "@/components/auth/auth-minimal";
@@ -30,6 +30,17 @@ type Plan = { plan: "free" | "pro"; source: string; until: string | null; cancel
 
 function UpgradeContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // Set by the Get Pro button on the pricing page, and carried back through
+  // signup. It means "this person already read the price and the perks and
+  // pressed buy" -- so send them straight to Stripe instead of showing the
+  // same offer a second time with another button on it.
+  //
+  // Links from inside the product (the passcode screen, the Coach lock, the
+  // lab setup note) deliberately leave it off: those are text links next to
+  // other content, and throwing someone at a payment page from one with no
+  // price on screen first would be a nasty surprise.
+  const straightToCheckout = searchParams?.get("checkout") === "1";
   const [user, setUser] = useState<User | null | undefined>(undefined);
   const [plan, setPlan] = useState<Plan | null>(null);
   const [busy, setBusy] = useState(false);
@@ -47,7 +58,8 @@ function UpgradeContent() {
         // people arriving here have never had an account, and greeting them
         // with "Welcome back" asks for a password they never set. The signup
         // screen carries its own "Sign in" link for everyone else.
-        router.replace(`/account/signup?next=${encodeURIComponent("/range/upgrade")}`);
+        const back = straightToCheckout ? "/range/upgrade?checkout=1" : "/range/upgrade";
+        router.replace(`/account/signup?next=${encodeURIComponent(back)}`);
         return;
       }
       setUser(u);
@@ -58,16 +70,14 @@ function UpgradeContent() {
     return () => {
       cancelled = true;
     };
-  }, [router]);
+  }, [router, straightToCheckout]);
 
-  const checkout = useCallback(() => {
-    if (!user || busyRef.current) return;
-    if (!PAYMENT_LINK_URL) {
-      setError("Checkout is not configured yet. Email support@purvex.io and we will set you up.");
-      return;
-    }
+  // Leaves the page, so it sets no state of its own -- which is also what
+  // lets the auto-redirect effect below call it without setting state in an
+  // effect. Only the button needs a pending look, and it does that itself.
+  const goToStripe = useCallback(() => {
+    if (!user || busyRef.current || !PAYMENT_LINK_URL) return;
     busyRef.current = true;
-    setBusy(true);
     // client_reference_id is how the Stripe webhook knows which account to
     // grant Pro to -- without it the payment lands with nobody attached.
     const url = new URL(PAYMENT_LINK_URL);
@@ -76,11 +86,32 @@ function UpgradeContent() {
     window.location.href = url.toString();
   }, [user]);
 
-  if (user === undefined || !plan) {
+  const checkout = useCallback(() => {
+    if (!user || busyRef.current) return;
+    if (!PAYMENT_LINK_URL) {
+      setError("Checkout is not configured yet. Email support@purvex.io and we will set you up.");
+      return;
+    }
+    setBusy(true);
+    goToStripe();
+  }, [user, goToStripe]);
+
+  // Pressed Get Pro, then made an account: carry on to Stripe rather than
+  // landing them back on an offer they already accepted. Waits for `plan`
+  // so an existing subscriber is never sent to buy a second one, and falls
+  // through to the offer screen when checkout is not configured, instead of
+  // leaving someone on a spinner that never resolves.
+  const autoCheckout = straightToCheckout && Boolean(PAYMENT_LINK_URL);
+  useEffect(() => {
+    if (user && plan?.plan === "free" && autoCheckout) goToStripe();
+  }, [user, plan, autoCheckout, goToStripe]);
+
+  if (user === undefined || !plan || (plan.plan === "free" && autoCheckout)) {
     return (
       <AuthMinimal product="Range">
-        <div className="flex min-h-[200px] items-center justify-center">
+        <div className="flex min-h-[200px] flex-col items-center justify-center gap-3 text-sm text-slate-500">
           <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+          {plan?.plan === "free" && autoCheckout ? "Taking you to checkout..." : null}
         </div>
       </AuthMinimal>
     );
