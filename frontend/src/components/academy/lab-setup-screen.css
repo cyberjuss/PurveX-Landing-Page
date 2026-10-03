@@ -1,0 +1,47 @@
+/* The "setting up your environment" takeover. Dark and calm, centred, with a
+ * single progress bar doing the talking. Hard-cut rectangles, like the labs. */
+.ls {
+  position: fixed; inset: 0; z-index: 60;
+  display: grid; place-items: center;
+  padding: 24px;
+  background: #22242f;
+  animation: ls-in 0.25s ease-out both;
+}
+.ls__inner { width: min(46rem, 100%); text-align: center; }
+
+.ls__brand { display: inline-flex; align-items: center; gap: 10px; margin: 0 0 42px; }
+.ls__brand span { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; color: #fff; }
+.ls__brand i { width: 2px; height: 20px; background: #f5a524; }
+.ls__brand b { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #aab2c5; }
+
+.ls__title { margin: 0 0 26px; font-family: var(--font-display); font-size: clamp(1.15rem, 2.4vw, 1.6rem); font-weight: 700; letter-spacing: -0.01em; color: #c9cedb; }
+
+.ls__bar { height: 26px; background: #c9cbd4; overflow: hidden; }
+.ls__bar > span { display: block; height: 100%; background: #8b93a8; transition: width 0.9s linear; }
+
+.ls__steps { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 26px; margin: 26px 0 0; padding: 0; }
+.ls__steps li { display: inline-flex; align-items: center; gap: 8px; font-size: 0.84rem; color: #6f7686; }
+.ls__steps svg { width: 14px; height: 14px; }
+.ls__steps .ls__dot { width: 6px; height: 6px; background: #4c5365; }
+.ls__steps li.is-done { color: #9aa3b6; }
+.ls__steps li.is-done svg { color: #5fd4a0; }
+.ls__steps li.is-now { color: #e7ebf4; font-weight: 600; }
+.ls__spin { animation: ls-rot 0.9s linear infinite; }
+
+.ls__eta { margin: 20px 0 0; font-size: 0.82rem; color: #6f7686; }
+
+.ls__hide {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 34px; padding: 9px 16px;
+  border: 1px solid #3a3f4e; background: none; font: inherit; font-size: 0.8rem; font-weight: 600;
+  color: #8f97a8; cursor: pointer; transition: border-color 0.15s, color 0.15s;
+}
+.ls__hide:hover { border-color: #5b6376; color: #d6dbe6; }
+.ls__hide svg { width: 13px; height: 13px; }
+
+@keyframes ls-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ls-rot { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .ls { animation: none; }
+  .ls__spin { animation: none; }
+  .ls__bar > span { transition: none; }
+}

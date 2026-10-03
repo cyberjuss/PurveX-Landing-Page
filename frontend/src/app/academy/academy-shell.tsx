@@ -33,6 +33,7 @@ import {
   saveCachedProfile,
 } from "@/lib/academy-client";
 import { clearResults, loadResults, saveResults, scorecardHtml, summarize, type MissionResult, type Results } from "@/lib/academy-score";
+import { LabSetupScreen } from "@/components/academy/lab-setup-screen";
 import { signOut } from "@/lib/portal-auth";
 import { supabase } from "@/lib/supabase";
 
@@ -1300,6 +1301,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           />
         )}
         {hello && <AcademyWelcome student={student} onDone={() => setHello(false)} />}
+        <LabSetupScreen />
       </div>
       </CoachProvider>
       </AcademyGoalsProvider>
