@@ -4,6 +4,7 @@ import {
   canUseHostedLab,
   extendHostedLab,
   hostedLabLink,
+  hostedLabsConfigured,
   hostedLabStatus,
   resetHostedLab,
   startHostedLab,
@@ -18,16 +19,22 @@ export const maxDuration = 30;
 
 // The lab button: status, start, open in the browser, extend, stop, reset.
 
-// Two separate questions, both of which have to be yes. canUseHostedLab is
-// operational -- is AWS configured and is this account inside the pilot
-// allowlist. isRangePro is commercial -- is the cloud lab something this
-// account paid for. Keeping them apart means turning the pilot off does not
-// silently become a billing change, and vice versa.
+// Two separate questions, and the commercial one is asked first. isRangePro
+// is "did this account pay for a cloud lab"; canUseHostedLab is "can we hand
+// one over right now" -- AWS configured, account inside the pilot allowlist.
+// Asking the operational one first told a paying student their subscription
+// was the problem whenever AWS config was missing, and told a free student
+// nothing at all unless they happened to be in the pilot.
+type Denied = { denied: "pro" | "unavailable" };
+const isDenied = (v: unknown): v is Denied => typeof v === "object" && v !== null && "denied" in v;
+
 async function auth(request: Request) {
   if (!(await isAcademyUnlocked())) return null;
   const student = await getAcademyStudent(request);
-  if (!student || !canUseHostedLab(student.email)) return null;
-  return (await isRangePro(student)) ? student : null;
+  if (!student) return null;
+  if (!(await isRangePro(student))) return { denied: "pro" } as const;
+  if (!canUseHostedLab(student.email)) return { denied: "unavailable" } as const;
+  return student;
 }
 
 // Labs past their stop time are stopped whenever anyone checks their lab, at most
@@ -42,14 +49,20 @@ function sweep() {
 export async function GET(request: Request) {
   if (!(await isAcademyUnlocked())) return NextResponse.json({ available: false });
   const student = await getAcademyStudent(request);
-  if (!student || !canUseHostedLab(student.email)) return NextResponse.json({ available: false });
-  // available:false keeps every lab control off the page, same as for an
-  // account outside the pilot -- a Start button that always 403s is worse
-  // than no button. locked:true rides along so the one place it is worth
-  // selling, the Home Lab setup tab, can say what Pro would give them.
+  if (!student) return NextResponse.json({ available: false });
+  // available:false keeps every lab control off the page -- a Start button
+  // that always 403s is worse than no button. locked:true rides along so the
+  // one place it is worth selling, the Home Lab setup tab, can say what Pro
+  // would give them. Checked before the pilot allowlist, since whether to
+  // make the offer is a billing question, not an AWS one. Still conditional
+  // on hosted labs existing at all: advertising a lab we cannot build is
+  // worse than staying quiet.
   if (!(await isRangePro(student))) {
-    return NextResponse.json({ available: false, locked: true, upgrade: "/range/upgrade" });
+    return hostedLabsConfigured()
+      ? NextResponse.json({ available: false, locked: true, upgrade: "/range/upgrade" })
+      : NextResponse.json({ available: false });
   }
+  if (!canUseHostedLab(student.email)) return NextResponse.json({ available: false });
   sweep();
   try {
     return NextResponse.json({ available: true, ...(await hostedLabStatus(student.id)) });
@@ -60,8 +73,13 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const student = await auth(request);
-  if (!student) {
-    return NextResponse.json({ ...proRequired("Your own cloud lab"), hostedLabs: false }, { status: 403 });
+  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  // "Buy Pro" and "this is broken right now" are different answers, and a
+  // paying student told to buy what they already bought has no way forward.
+  if (isDenied(student)) {
+    return student.denied === "pro"
+      ? NextResponse.json(proRequired("Your own cloud lab"), { status: 403 })
+      : NextResponse.json({ error: "Cloud labs are not switched on for this account yet. Email support@purvex.io." }, { status: 503 });
   }
   let action = "";
   try {

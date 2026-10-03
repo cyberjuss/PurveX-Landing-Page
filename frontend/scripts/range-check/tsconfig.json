@@ -2,8 +2,18 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "@/*": ["../../src/*"],
-      "server-only": ["./server-only.ts"]
+      "@/*": [
+        "../../src/*"
+      ],
+      "server-only": [
+        "./server-only.ts"
+      ],
+      "@/lib/academy-student": [
+        "./academy-student.ts"
+      ],
+      "@/lib/academy-auth": [
+        "./academy-auth.ts"
+      ]
     }
   }
 }

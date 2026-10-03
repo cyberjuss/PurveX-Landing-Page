@@ -13,7 +13,8 @@
     "lint": "eslint",
     "eval:coach": "npx -y tsx --tsconfig scripts/coach-eval/tsconfig.json scripts/coach-eval/eval.ts",
     "check:range": "npx -y tsx --tsconfig scripts/range-check/tsconfig.json scripts/range-check/check.ts",
-    "check:range:routes": "node scripts/range-check/routes.mjs"
+    "check:range:routes": "node scripts/range-check/routes.mjs",
+    "check:range:gates": "npx -y tsx --tsconfig scripts/range-check/tsconfig.json scripts/range-check/gates.ts"
   },
   "dependencies": {
     "@aws-sdk/client-ec2": "^3.1142.0",

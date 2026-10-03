@@ -164,7 +164,8 @@ async function main() {
   }
 
   if (!TOKEN) {
-    console.log("\n  note  Set RANGE_TEST_TOKEN to check the free-vs-Pro split itself.");
+    console.log("\n  note  The free-vs-Pro split is covered offline by: npm run check:range:gates");
+    console.log("        Set RANGE_TEST_TOKEN to drive it over real HTTP with a real session too.");
   }
   console.log(failures === 0 ? "\nAll route checks passed.\n" : `\n${failures} route check(s) failed.\n`);
   process.exit(failures === 0 ? 0 : 1);
