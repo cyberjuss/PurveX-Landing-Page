@@ -336,7 +336,7 @@ export function SigninLogLab({ onDone }: { onDone?: () => void }) {
         !read(INCIDENTS[cur0].id) ? (
           <span className="rt-tally">Read the log above, then say what&rsquo;s happening.</span>
         ) : !s.pattern[INCIDENTS[cur0].id] ? (
-          <ChipRow label={`Incident ${INCIDENTS[cur0].tag}: what is happening?`}>
+          <ChipRow list label={`Incident ${INCIDENTS[cur0].tag}: what is happening?`}>
             {PATTERNS.map((p) => <Chip key={p.key} onClick={() => patch({ pattern: { ...s.pattern, [INCIDENTS[cur0].id]: p.key } })}>{p.text}</Chip>)}
           </ChipRow>
         ) : (
@@ -366,7 +366,7 @@ export function SigninLogLab({ onDone }: { onDone?: () => void }) {
       ))}
 
       {s.step === 2 && (cur2 !== -1 ? (
-        <ChipRow label={INCIDENTS[cur2].prompt}>
+        <ChipRow list label={INCIDENTS[cur2].prompt}>
           {INCIDENTS[cur2].options.map((o) => <Chip key={o.key} onClick={() => patch({ response: { ...s.response, [INCIDENTS[cur2].id]: o.key } })}>{o.text}</Chip>)}
         </ChipRow>
       ) : !s.checked[2] ? (

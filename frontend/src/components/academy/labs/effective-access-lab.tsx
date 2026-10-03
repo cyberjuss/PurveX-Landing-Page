@@ -337,7 +337,7 @@ export function EffectiveAccessLab({ onDone }: { onDone?: () => void }) {
   const composer = (
     <>
       {s.step === 0 && (cur0 !== -1 ? (
-        <ChipRow label={`What can ${CASES[cur0].name.split(" ")[0]} do with ${CASES[cur0].path}?`}>
+        <ChipRow list label={`What can ${CASES[cur0].name.split(" ")[0]} do with ${CASES[cur0].path}?`}>
           {ACCESS.map((a) => <Chip key={a.key} onClick={() => patch({ guess: { ...s.guess, [CASES[cur0].id]: a.key } })}>{a.text}</Chip>)}
         </ChipRow>
       ) : !s.checked[0] ? (
@@ -356,7 +356,7 @@ export function EffectiveAccessLab({ onDone }: { onDone?: () => void }) {
       ))}
 
       {s.step === 2 && (cur2 !== -1 ? (
-        <ChipRow label={CHECKS[cur2].title}>
+        <ChipRow list label={CHECKS[cur2].title}>
           {CHECKS[cur2].options.map((o) => <Chip key={o.key} onClick={() => patch({ answers: { ...s.answers, [CHECKS[cur2].id]: o.key } })}>{o.text}</Chip>)}
         </ChipRow>
       ) : !s.checked[2] ? (

@@ -205,7 +205,7 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
         ))}
 
         {s.step === 2 && (ranks.length < 4 ? (
-          <ChipRow label={`Pick #${ranks.length + 1} to work`}>
+          <ChipRow list label={`Pick #${ranks.length + 1} to work`}>
             {remaining.map((t) => <Chip key={t.id} onClick={() => placeRank(t.id)}>{t.title}</Chip>)}
             {ranks.length > 0 && <button type="button" className="lc-undo" onClick={() => setRanks((r) => r.slice(0, -1))}><CornerUpLeft aria-hidden="true" /> Undo</button>}
           </ChipRow>

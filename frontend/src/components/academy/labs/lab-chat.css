@@ -58,6 +58,21 @@
 .lc-chip.is-active { border-color: var(--lc-me); background: color-mix(in srgb, var(--lc-me) 10%, var(--lc-card)); }
 .lc-chip.is-active small { color: var(--rd-ink-2); }
 
+/* Long options: uniform rows, each the same width and height, with a radio
+   marker. Pills are only for short labels. */
+.lc-chips--list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 8px; align-items: stretch; }
+.lc-chips--list .lc-chip {
+  width: 100%; justify-content: flex-start; align-items: center; gap: 11px;
+  padding: 12px 14px; border-radius: 12px; text-align: left; font-weight: 550; line-height: 1.4;
+}
+.lc-chips--list .lc-chip::before {
+  content: ""; flex: none; width: 15px; height: 15px; border-radius: 50%;
+  border: 1.5px solid var(--rd-line); background: transparent; transition: border-color 0.15s, box-shadow 0.15s;
+}
+.lc-chips--list .lc-chip:hover::before { border-color: var(--lc-me); }
+.lc-chips--list .lc-chip.is-active::before { border-color: var(--lc-me); box-shadow: inset 0 0 0 3.5px var(--lc-me); }
+.lc-chips--list .lc-chip:hover { transform: none; box-shadow: 0 2px 10px -6px rgba(15, 23, 42, 0.45); }
+
 .lc-send { justify-self: end; display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border: 0; border-radius: 12px; background: var(--lc-me); font: inherit; font-size: 14px; font-weight: 650; color: #fff; cursor: pointer; box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--lc-me) 80%, transparent); transition: transform 0.1s, filter 0.15s; }
 .lc-send:hover { filter: brightness(1.05); }
 .lc-send:active { transform: translateY(1px); }

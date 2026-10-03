@@ -32,11 +32,13 @@ export function Mine({ children }: { children: ReactNode }) {
   );
 }
 
-export function ChipRow({ label, children }: { label?: string; children: ReactNode }) {
+/** `list` lays the options out as uniform rows instead of pills. Use it whenever
+ *  the options are full sentences, so they line up instead of running ragged. */
+export function ChipRow({ label, children, list }: { label?: string; children: ReactNode; list?: boolean }) {
   return (
     <div className="lc-chiprow">
       {label && <span className="lc-chiprow__label">{label}</span>}
-      <div className="lc-chips">{children}</div>
+      <div className={`lc-chips${list ? " lc-chips--list" : ""}`}>{children}</div>
     </div>
   );
 }

@@ -282,7 +282,7 @@ export function HashVerifyLab({ onDone }: { onDone?: () => void }) {
 
       {s.step === 1 && (!s.checked[1] ? (
         <div className="lc-levels">
-          <ChipRow label="What would copy B do if someone ran it?">
+          <ChipRow list label="What would copy B do if someone ran it?">
             {EFFECT.map((e) => <Chip key={e.key} active={s.effect === e.key} onClick={() => patch({ effect: e.key })}>{e.text}</Chip>)}
           </ChipRow>
           <div className="lc-actions">
@@ -295,7 +295,7 @@ export function HashVerifyLab({ onDone }: { onDone?: () => void }) {
       ))}
 
       {s.step === 2 && (cur2 !== -1 ? (
-        <ChipRow label={QUESTIONS[cur2].title}>
+        <ChipRow list label={QUESTIONS[cur2].title}>
           {QUESTIONS[cur2].options.map((o) => <Chip key={o.key} onClick={() => patch({ answers: { ...s.answers, [QUESTIONS[cur2].id]: o.key } })}>{o.text}</Chip>)}
         </ChipRow>
       ) : !s.checked[2] ? (
