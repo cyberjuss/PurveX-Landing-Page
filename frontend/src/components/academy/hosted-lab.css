@@ -54,12 +54,27 @@ html[data-academy-theme="dark"] .hl-note,
 }
 .hl--menu { width: min(360px, calc(100vw - 32px)); }
 
-.hl__top { display: grid; grid-template-columns: auto 1fr; align-items: start; gap: 12px 14px; }
-.hl__mark { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 0; color: #fff; background: var(--hl-accent); }
-.hl__id { display: grid; gap: 3px; min-width: 0; }
-.hl .hl__kicker { margin: 0; font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--hl-ink-3); }
-.hl .hl__title { margin: 0; font-size: 16.5px; font-weight: 650; letter-spacing: -0.015em; line-height: 1.2; color: var(--hl-ink); }
-.hl .hl__spec { display: grid; margin: 2px 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11.5px; line-height: 1.5; color: var(--hl-ink-3); }
+/* Identity row: what it is, and whether it is up, readable at a glance. */
+.hl__top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; }
+.hl__mark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 0; color: #fff; background: var(--hl-accent); }
+.hl__id { display: grid; gap: 2px; min-width: 0; }
+.hl .hl__kicker { margin: 0; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--hl-ink-3); }
+.hl .hl__title { margin: 0; font-size: 16px; font-weight: 650; letter-spacing: -0.015em; line-height: 1.2; color: var(--hl-ink); }
+
+/* A live state pill, so the lab's condition is never buried in a sentence. */
+.hl__state { display: inline-flex; align-items: center; gap: 6px; align-self: start; padding: 4px 9px; border: 1px solid var(--hl-line); font-size: 11px; font-weight: 650; letter-spacing: 0.02em; color: var(--hl-ink-2); white-space: nowrap; }
+.hl__state i { width: 6px; height: 6px; background: currentColor; }
+.hl__state.is-on { color: var(--hl-run); border-color: color-mix(in srgb, var(--hl-run) 45%, transparent); }
+.hl__state.is-wait { color: var(--hl-wait); border-color: color-mix(in srgb, var(--hl-wait) 45%, transparent); }
+.hl__state.is-wait i { animation: hl-pulse 1.4s ease-in-out infinite; }
+.hl__state.is-off { color: var(--hl-ink-3); }
+@keyframes hl-pulse { 50% { opacity: 0.25; } }
+
+/* The spec sheet: label on the left, value on the right, one fact a row. */
+.hl .hl__specs { display: grid; gap: 0; margin: 0; }
+.hl .hl__specs > div { display: grid; grid-template-columns: 62px 1fr; align-items: baseline; gap: 10px; padding: 7px 0; border-top: 1px solid var(--hl-line); }
+.hl .hl__specs dt { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--hl-ink-3); }
+.hl .hl__specs dd { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; line-height: 1.45; color: var(--hl-ink-2); overflow-wrap: anywhere; }
 
 @keyframes hl-ping {
   0% { transform: scale(0.6); opacity: 0.8; }
@@ -108,8 +123,13 @@ html[data-academy-theme="dark"] .hl-note,
 .hl .hl__ghost:disabled { cursor: default; opacity: 0.6; }
 .hl button:focus-visible { outline: 2px solid var(--hl-accent); outline-offset: 2px; }
 .hl .hl__error { margin: 0; padding: 10px 12px; font-size: 13px; color: var(--hl-bad); border: 1px solid color-mix(in srgb, var(--hl-bad) 40%, transparent); }
-.hl .hl__reset { justify-self: start; margin: -4px 0 0; padding: 0; border: 0; background: none; font: inherit; font-size: 12.5px; font-weight: 500; color: var(--hl-ink-3); cursor: pointer; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px; transition: color 0.15s, text-decoration-color 0.15s; }
-.hl .hl__reset:hover:not(:disabled) { color: var(--hl-bad); text-decoration-color: currentColor; }
+/* Quiet footer: the two things you rarely need, side by side and out of the way. */
+.hl__links { display: flex; align-items: center; gap: 14px; margin-top: -4px; }
+.hl__links > * + *::before { content: ""; position: absolute; left: -7px; top: 50%; width: 1px; height: 11px; transform: translateY(-50%); background: var(--hl-line); }
+.hl .hl__link { position: relative; padding: 0; border: 0; background: none; font: inherit; font-size: 12px; font-weight: 500; color: var(--hl-ink-3); cursor: pointer; transition: color 0.15s; }
+.hl .hl__link:hover:not(:disabled) { color: var(--hl-ink); }
+.hl .hl__link--warn:hover:not(:disabled) { color: var(--hl-bad); }
+.hl .hl__link:disabled { opacity: 0.5; cursor: default; }
 
 /* The menu, anchored under whatever opened it. */
 .hl-pop { position: fixed; z-index: 90; animation: hl-pop-in 0.14s ease-out both; }

@@ -302,19 +302,36 @@ export function HostedLabMenu() {
 
   return (
     <section className={`hl hl--menu hl--${state}`} aria-label="Your lab">
-      <div className="hl__top">
+      <header className="hl__top">
         <span className="hl__mark" aria-hidden="true">
           <Server className="h-5 w-5" />
         </span>
         <div className="hl__id">
           <p className="hl__kicker">Your lab</p>
           <p className="hl__title">PurveX Financial</p>
-          <p className="hl__spec">
-            <span>purvexfinancial.local</span>
-            <span>Windows Server 2022{spec ? ` · ${spec}` : ""}</span>
-          </p>
         </div>
-      </div>
+        <span className={`hl__state is-${labTone(state)}`}>
+          <i aria-hidden="true" />
+          {CHIP[state]}
+        </span>
+      </header>
+
+      <dl className="hl__specs">
+        <div>
+          <dt>Domain</dt>
+          <dd>purvexfinancial.local</dd>
+        </div>
+        <div>
+          <dt>System</dt>
+          <dd>Windows Server 2022</dd>
+        </div>
+        {spec && (
+          <div>
+            <dt>Size</dt>
+            <dd>{spec}</dd>
+          </div>
+        )}
+      </dl>
 
       {state === "starting" && <StartTracker status={status} />}
 
@@ -338,21 +355,23 @@ export function HostedLabMenu() {
           {error}
         </p>
       )}
-      {state !== "none" && (
-        <button
-          type="button"
-          className="hl__reset"
-          disabled={waiting}
-          onClick={() => {
-            if (window.confirm("Reset your lab? You get a fresh copy of PurveX Financial and every change you made in the lab is gone. Your Range progress stays.")) void act("reset");
-          }}
-        >
-          Reset to a fresh lab
+      <div className="hl__links">
+        {state !== "none" && (
+          <button
+            type="button"
+            className="hl__link hl__link--warn"
+            disabled={waiting}
+            onClick={() => {
+              if (window.confirm("Reset your lab? You get a fresh copy of PurveX Financial and every change you made in the lab is gone. Your Range progress stays.")) void act("reset");
+            }}
+          >
+            Reset to a fresh lab
+          </button>
+        )}
+        <button type="button" className="hl__link" onClick={() => openHelp("lab")}>
+          Get help
         </button>
-      )}
-      <button type="button" className="hl__help" onClick={() => openHelp("lab")}>
-        Something wrong? Get help from a person
-      </button>
+      </div>
     </section>
   );
 }
