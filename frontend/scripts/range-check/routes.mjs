@@ -102,6 +102,12 @@ async function main() {
     check("coach rejects a signed-out caller", coach.status === 401, `status ${coach.status}`);
     check("proof write rejects a signed-out caller", proofWrite.status === 401, `status ${proofWrite.status}`);
     check("lab start rejects a signed-out caller", labStart.status === 403 || labStart.status === 401, `status ${labStart.status}`);
+
+    // Static, so it needs no account at all -- and it is how a free student
+    // builds the lab every hands-on mission runs against.
+    console.log("\nExplore keeps what it is sold");
+    const script = await hit("/lab-scripts/Build-Environment.ps1");
+    check("the build script downloads without an account", script.status === 200, `status ${script.status}`);
   } else if (EXPECT_PRO) {
     check("coach does not answer 403 to Pro", coach.status !== 403, `status ${coach.status}`);
     check("proof write does not answer 403 to Pro", proofWrite.status !== 403, `status ${proofWrite.status}`);
@@ -114,14 +120,47 @@ async function main() {
     check("lab start is 403 for a free account", labStart.status === 403, `status ${labStart.status} ${JSON.stringify(labStart.json)}`);
     check("lab 403 points at the upgrade page", labStart.json?.upgrade === "/range/upgrade", JSON.stringify(labStart.json));
 
+    // Explore is not a teaser. It is sold as every lesson, every challenge,
+    // the whole Ticket Queue, the five browser labs and the readiness score,
+    // and a paywall that creeps into any of those is a broken promise, not a
+    // tightened gate. These run as a free account for that reason.
     console.log("\nExplore keeps what it is sold");
+    const progress = await hit("/academy/api/progress");
+    check("lesson progress is open to free", progress.status === 200, `status ${progress.status}`);
+
+    // Challenges: answering and checking a mission. 401/403 here would mean
+    // the course itself went behind the paywall.
+    const missionCheck = await hit("/academy/api/mission-check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: "ticket-queue-challenge" }),
+    });
+    check("challenges are open to free", missionCheck.status !== 401 && missionCheck.status !== 403, `status ${missionCheck.status}`);
+
+    // The Ticket Queue is a challenge tab inside this section, served through
+    // the normal lesson path -- not the Shift, which fires incidents into a
+    // cloud lab and is Pro by its nature. Explore is promised the former.
+    //
+    // These two render their content client-side, so a 200 proves the route
+    // still resolves rather than proving the content came back. They are here
+    // to catch a redirect or a 404 appearing where Explore should be, not as
+    // the last word on it.
+    const queue = await hit("/range/phase-1/home-lab-ad");
+    check("the Ticket Queue section still resolves", queue.status === 200, `status ${queue.status}`);
+
+    const labs = await hit("/range/labs");
+    check("the browser labs page still resolves", labs.status === 200, `status ${labs.status}`);
+
+    // Building the lab by hand is the free path to every hands-on mission.
+    // Pro pays to skip this, not to unlock it.
+    const script = await hit("/lab-scripts/Build-Environment.ps1");
+    check("the build script downloads for free", script.status === 200, `status ${script.status}`);
+
     // Reading a draft Proof Profile stays open: it is the argument for
     // upgrading, and the pricing page never put it behind Pro.
     const proofRead = await hit("/academy/api/proof");
     check("proof draft is readable", proofRead.status === 200, `status ${proofRead.status}`);
     check("proof draft is marked locked", proofRead.json?.locked === true, JSON.stringify(proofRead.json?.locked));
-    const progress = await hit("/academy/api/progress");
-    check("lesson progress is open to free", progress.status === 200, `status ${progress.status}`);
   }
 
   if (!TOKEN) {
