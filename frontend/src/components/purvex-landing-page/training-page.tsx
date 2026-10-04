@@ -113,12 +113,12 @@ const TIERS: { name: string; price: string; per?: string; forWho: string; perks:
   {
     name: "Explore",
     price: "Free",
-    forWho: "See whether this is for you with nothing to lose",
+    forWho: "The whole curriculum, free for as long as you want it",
     perks: [
-      "Every lesson across all three phases",
+      "All three phases, every lesson",
       "Every challenge and the whole Ticket Queue",
       "Five hands-on labs that run in your browser",
-      "Your readiness score from the very first day",
+      "A readiness score from day one",
       "No card and no trial clock running down",
     ],
     cta: "Start free",
@@ -135,7 +135,7 @@ const TIERS: { name: string; price: string; per?: string; forWho: string; perks:
       "A real Windows domain built just for you",
       "An AI coach that reads your own lab and never hands you the answer",
       "A Proof Profile any employer can verify",
-      "Cancel the moment you want to",
+      "Cancel in one click, any time",
     ],
     cta: "Get Pro",
     // ?checkout=1 means "buy", not "read the offer": after signing up they
@@ -145,15 +145,15 @@ const TIERS: { name: string; price: string; per?: string; forWho: string; perks:
   },
   {
     name: "Custom",
-    price: "Let's talk",
-    forWho: "Schools and workforce programs running a whole cohort",
+    price: "Talk to us",
+    forWho: "Schools, agencies, and workforce programs running a cohort",
     perks: [
-      "Everything in Pro for every seat you need",
-      "Live progress for each student as they work",
+      "Every seat gets everything in Pro",
+      "Live progress for every student as they work",
       "Your own classes with their own join links",
       "Labs provisioned and managed for you",
-      "Onboarding that gets your instructors running",
-      "Invoicing and agreements that suit your finance team",
+      "Instructor onboarding and training",
+      "Invoicing and agreements your finance team can sign",
     ],
     cta: "Book a call",
     href: BOOKING_URL,
@@ -226,8 +226,8 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
 
       <section className="pg-section tp-pricing" id="pricing">
         <div className="pg-head">
-          <h2>Pick the way you want to learn</h2>
-          <p>Start free and stay as long as you like. Add a cloud lab and a coach the day you get serious.</p>
+          <h2>Start free. Go Pro when you want the job.</h2>
+          <p>Every lesson is free, forever. Pro adds the cloud lab, the coach, and the proof an employer can check.</p>
         </div>
         <ul className="tp-tiers" data-r>
           {TIERS.map((t) => (
@@ -261,6 +261,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
             </li>
           ))}
         </ul>
+        <p className="tp-pricing__note">No contracts. No setup fees. Pro cancels in one click.</p>
       </section>
 
 
@@ -342,6 +343,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         }
         .tp-tier__cta:hover { gap: 12px }
         .tp-tiers > li.is-featured .tp-tier__cta { background: var(--accent); border-color: var(--accent); color: #fff }
+        .tp-pricing__note { margin: 22px 0 0; text-align: center; font-size: .88rem; color: var(--muted) }
         @media (max-width: 900px) { .tp-tiers { grid-template-columns: 1fr; gap: 16px } }
 
         .tp-course { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); position: relative }
