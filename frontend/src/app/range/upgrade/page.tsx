@@ -16,7 +16,9 @@ import type { User } from "@supabase/supabase-js";
 // not have to find an instructor first -- a real route wins over the
 // rewrite (same trick as /range/join) and skips that gate entirely.
 
-const PAYMENT_LINK_URL = process.env.NEXT_PUBLIC_STRIPE_RANGE_PRO_LINK_URL || "";
+// Only the build-time copy. /academy/api/plan serves the same link read at
+// request time, and that one wins -- see the route for why.
+const BUILT_IN_LINK_URL = process.env.NEXT_PUBLIC_STRIPE_RANGE_PRO_LINK_URL || "";
 
 const PERKS = [
   "Your own cloud lab one click away in a browser tab",
@@ -26,7 +28,13 @@ const PERKS = [
   "Cancel the moment you want to",
 ];
 
-type Plan = { plan: "free" | "pro"; source: string; until: string | null; canceled: boolean };
+type Plan = {
+  plan: "free" | "pro";
+  source: string;
+  until: string | null;
+  canceled: boolean;
+  checkoutUrl?: string;
+};
 
 function UpgradeContent() {
   const router = useRouter();
@@ -72,36 +80,38 @@ function UpgradeContent() {
     };
   }, [router, straightToCheckout]);
 
+  const linkUrl = plan?.checkoutUrl || BUILT_IN_LINK_URL;
+
   // Leaves the page, so it sets no state of its own -- which is also what
   // lets the auto-redirect effect below call it without setting state in an
   // effect. Only the button needs a pending look, and it does that itself.
   const goToStripe = useCallback(() => {
-    if (!user || busyRef.current || !PAYMENT_LINK_URL) return;
+    if (!user || busyRef.current || !linkUrl) return;
     busyRef.current = true;
     // client_reference_id is how the Stripe webhook knows which account to
     // grant Pro to -- without it the payment lands with nobody attached.
-    const url = new URL(PAYMENT_LINK_URL);
+    const url = new URL(linkUrl);
     url.searchParams.set("client_reference_id", user.id);
     if (user.email) url.searchParams.set("prefilled_email", user.email);
     window.location.href = url.toString();
-  }, [user]);
+  }, [user, linkUrl]);
 
   const checkout = useCallback(() => {
     if (!user || busyRef.current) return;
-    if (!PAYMENT_LINK_URL) {
+    if (!linkUrl) {
       setError("Checkout is not configured yet. Email support@purvex.io and we will set you up.");
       return;
     }
     setBusy(true);
     goToStripe();
-  }, [user, goToStripe]);
+  }, [user, linkUrl, goToStripe]);
 
   // Pressed Get Pro, then made an account: carry on to Stripe rather than
   // landing them back on an offer they already accepted. Waits for `plan`
   // so an existing subscriber is never sent to buy a second one, and falls
   // through to the offer screen when checkout is not configured, instead of
   // leaving someone on a spinner that never resolves.
-  const autoCheckout = straightToCheckout && Boolean(PAYMENT_LINK_URL);
+  const autoCheckout = straightToCheckout && Boolean(linkUrl);
   useEffect(() => {
     if (user && plan?.plan === "free" && autoCheckout) goToStripe();
   }, [user, plan, autoCheckout, goToStripe]);
