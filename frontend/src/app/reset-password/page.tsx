@@ -17,7 +17,7 @@ function ResetPasswordContent() {
   // ?next=/range; the platform flow has none and falls back to the portal login.
   const params = useSearchParams();
   const rawNext = params.get("next") ?? "";
-  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/account/login";
+  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/account/login?signin=1";
   const [hasSession, setHasSession] = useState<boolean | null>(null);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

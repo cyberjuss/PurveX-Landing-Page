@@ -17,7 +17,7 @@ import {
   AuthTerms,
   TERMS_ERROR,
 } from "@/components/auth/auth-minimal";
-import { signUpWithPassword, signInWithGoogle } from "@/lib/portal-auth";
+import { signUpWithPassword, signInWithGoogle, markPortalAccount } from "@/lib/portal-auth";
 
 function getErrorMessage(err: unknown, fallback: string) {
   if (err instanceof Error && err.message) return err.message;
@@ -62,7 +62,12 @@ function PortalSignupContent() {
   const strength = passwordStrength(password);
   const busyRef = useRef(false);
   // Bouncing to sign-in and back must not lose where they were going.
-  const signInHref = next || plan ? `/account/login?next=${encodeURIComponent(destination)}` : "/account/login";
+  // ?signin=1 is what stops the login page sending them straight back here:
+  // it opens on signup for any browser that has never signed in, which is
+  // exactly the browser clicking this link.
+  const signInHref = next || plan
+    ? `/account/login?signin=1&next=${encodeURIComponent(destination)}`
+    : "/account/login?signin=1";
 
   async function handleGoogle() {
     if (busyRef.current) return;
@@ -75,6 +80,9 @@ function PortalSignupContent() {
     setPhase("google");
     try {
       const redirectTo = `${window.location.origin}${destination}`;
+      // From here on this browser has an account, so the login page can greet
+      // them with "Welcome back" instead of offering to make a second one.
+      markPortalAccount();
       await signInWithGoogle(redirectTo);
     } catch (err) {
       busyRef.current = false;
@@ -126,6 +134,7 @@ function PortalSignupContent() {
     try {
       const emailRedirectTo = `${window.location.origin}${destination}`;
       const { session } = await signUpWithPassword(email.trim(), password, emailRedirectTo);
+      markPortalAccount();
       if (session) {
         router.push(destination);
         return;

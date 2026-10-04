@@ -141,7 +141,7 @@ function MyLicenseContent() {
     getCurrentUser().then(async (u) => {
       if (cancelled) return;
       if (!u) {
-        router.replace(`/account/login?next=${encodeURIComponent("/my-license")}`);
+        router.replace(`/account/signup?next=${encodeURIComponent("/my-license")}`);
         return;
       }
       setUser(u);

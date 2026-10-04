@@ -104,7 +104,7 @@ function PricingContent() {
       if (cancelled) return;
       if (!u) {
         const next = preselected ? `/pricing?plan=${preselected}` : "/pricing";
-        router.replace(`/account/login?next=${encodeURIComponent(next)}`);
+        router.replace(`/account/signup?next=${encodeURIComponent(next)}`);
         return;
       }
       setUser(u);

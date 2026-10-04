@@ -47,7 +47,7 @@ export default function ForgotPasswordPage() {
         >
           Check your inbox
         </AuthHeading>
-        <Link href="/account/login" className="am-secondary mt-8">
+        <Link href="/account/login?signin=1" className="am-secondary mt-8">
           Back to sign in
         </Link>
       </AuthMinimal>
@@ -78,7 +78,7 @@ export default function ForgotPasswordPage() {
         </button>
       </form>
       <p className="mt-6 text-sm">
-        <Link href="/account/login" className="am-link">
+        <Link href="/account/login?signin=1" className="am-link">
           Back to sign in
         </Link>
       </p>

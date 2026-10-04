@@ -16,6 +16,26 @@ function requireSupabase() {
   return supabase;
 }
 
+// Whether this browser has ever had a PurveX account on it. The portal opens
+// on "Create your account" until it has, so a first-time visitor is never
+// greeted with "Welcome back" and a password field for an account they have
+// not made yet. Same question AcademySignIn asks before picking its mode.
+const ACCOUNT_SEEN_KEY = "purvex-portal-seen";
+
+export function markPortalAccount(): void {
+  try {
+    localStorage.setItem(ACCOUNT_SEEN_KEY, "1");
+  } catch {}
+}
+
+export function hasPortalAccount(): boolean {
+  try {
+    return localStorage.getItem(ACCOUNT_SEEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
 export async function signUpWithPassword(email: string, password: string, emailRedirectTo: string): Promise<{ user: User | null; session: Session | null }> {
   // Sent by our own branded route (see app/api/signup), not Supabase's default
   // template. The user confirms via the emailed link, so there is no session yet.

@@ -15,7 +15,7 @@ import {
   AuthTerms,
   TERMS_ERROR,
 } from "@/components/auth/auth-minimal";
-import { signInWithPassword, signInWithGoogle } from "@/lib/portal-auth";
+import { signInWithPassword, signInWithGoogle, hasPortalAccount, markPortalAccount } from "@/lib/portal-auth";
 
 function getErrorMessage(err: unknown, fallback: string) {
   if (err instanceof Error && err.message) return err.message;
@@ -33,6 +33,23 @@ function PortalLoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = safeNext(searchParams?.get("next"));
+  // Set by every link that means "I already have an account" -- the Create an
+  // account page's own Sign in link, and the password-reset screens. Without
+  // it those links would bounce straight back to signup and the two pages
+  // would volley a first-time visitor between them.
+  const forceSignIn = searchParams?.get("signin") === "1";
+  // Most people reaching the portal have never made an account, so open on
+  // Create your account unless this browser has signed in before. Undefined
+  // means the answer is not in yet; localStorage cannot be read during the
+  // server render, so the form stays hidden for that one frame rather than
+  // flashing "Welcome back" at someone who is about to be sent elsewhere.
+  const [bounce, setBounce] = useState<boolean | undefined>(undefined);
+  useEffect(() => {
+    const send = !forceSignIn && !hasPortalAccount();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setBounce(send);
+    if (send) router.replace(`/account/signup?next=${encodeURIComponent(next)}`);
+  }, [router, next, forceSignIn]);
   // Warms the next route's code before the user submits, so router.push(next)
   // lands instantly instead of stalling on a route-segment fetch.
   useEffect(() => {
@@ -63,6 +80,9 @@ function PortalLoginContent() {
     setPhase("google");
     try {
       const redirectTo = `${window.location.origin}${next}`;
+      // Recorded before the redirect leaves the page: whatever Google says
+      // next, this browser has now been through sign-in once.
+      markPortalAccount();
       await signInWithGoogle(redirectTo);
     } catch (err) {
       busyRef.current = false;
@@ -99,6 +119,7 @@ function PortalLoginContent() {
     setPhase("submitting");
     try {
       await signInWithPassword(email.trim(), password);
+      markPortalAccount();
       router.push(next);
     } catch (err) {
       busyRef.current = false;
@@ -114,6 +135,15 @@ function PortalLoginContent() {
   }
 
   const isLoading = phase === "submitting" || phase === "google";
+
+  // Either the answer is still coming or we are on our way to signup.
+  if (bounce !== false) {
+    return (
+      <AuthMinimal product={product}>
+        <div className="min-h-[260px]" />
+      </AuthMinimal>
+    );
+  }
 
   if (step === "email") {
     return (
