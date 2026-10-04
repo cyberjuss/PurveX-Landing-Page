@@ -102,3 +102,13 @@ export async function classMembers(classId: string): Promise<ClassMember[]> {
   }
   return memoryMembers.get(classId) ?? [];
 }
+
+/** Whether this student belongs to any class. Class seats carry the full course (see academy-plan.ts). */
+export async function isClassMember(userId: string): Promise<boolean> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin.from("academy_class_members").select("class_id").eq("user_id", userId).limit(1);
+    if (!error && data) return data.length > 0;
+    if (error) console.error("academy_class_members lookup failed", error.message);
+  }
+  return [...memoryMembers.values()].some((list) => list.some((m) => m.userId === userId));
+}

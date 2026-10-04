@@ -1,6 +1,7 @@
 import "server-only";
-import { checkChange, gradeDrill, levelFor, startDrill, unlockGate, weekStart, type StartedDrill } from "@/lib/academy-drills";
+import { checkChange, gradeDrill, levelFor, startDrill, unlockGate, weekStart, type DrillEntry, type StartedDrill } from "@/lib/academy-drills";
 import { buildLogCtf } from "@/lib/academy-logctf";
+import { canDrill, planFor, PRO_ONLY } from "@/lib/academy-plan";
 import { loadDailyDrill, loadDrills, loadLabState, loadProgress, saveDailyDrill, saveDrill } from "@/lib/academy-store";
 
 // The weekly CTF built from the student's own Security log. Used by the Drills
@@ -66,7 +67,7 @@ export async function checkRealCtf(userId: string, day: string, answer: string) 
     }
     const graded = await gradeDrill(userId, token, [answer], { changePassed: true });
     if (!graded) return { error: "Could not score it." };
-    if (!(await loadDrills(userId)).some((e) => e.id === graded.entry.id)) await saveDrill(userId, graded.entry);
+    if (!(await recordCtf(userId, graded.entry, day))) return { error: PRO_ONLY.drills };
     return { correct: true, fixed: true, captured: true, explanation: graded.review[0]?.explain };
   }
 
@@ -74,6 +75,15 @@ export async function checkRealCtf(userId: string, day: string, answer: string) 
   const graded = await gradeDrill(userId, token, [answer]);
   if (!graded) return { error: "Could not score it." };
   if (!graded.review[0]?.correct) return { correct: false, message: "That is not right. Go back to the Security log and count again." };
-  if (!(await loadDrills(userId)).some((e) => e.id === graded.entry.id)) await saveDrill(userId, graded.entry);
+  if (!(await recordCtf(userId, graded.entry, day))) return { error: PRO_ONLY.drills };
   return { correct: true, captured: true, explanation: graded.review[0]?.explain };
+}
+
+/** Records a captured flag once. On Free it counts toward the weekly drills like any other. */
+async function recordCtf(userId: string, entry: DrillEntry, day: string) {
+  const drills = await loadDrills(userId);
+  if (drills.some((e) => e.id === entry.id)) return true;
+  if (!canDrill(await planFor(userId), drills, day)) return false;
+  await saveDrill(userId, entry);
+  return true;
 }

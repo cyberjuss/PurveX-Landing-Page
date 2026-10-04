@@ -18,6 +18,7 @@ import {
   type StudentProfile,
 } from "@/lib/academy-certs";
 import { checkRealCtf, createRealCtf, ctfStatus } from "@/lib/academy-live";
+import { canDrill, planFor, PRO_ONLY } from "@/lib/academy-plan";
 import { loadActivity, loadDrills, loadProfile, loadRoleBrief, saveDrill, saveRoleBrief } from "@/lib/academy-store";
 import { findEntry } from "@/lib/academy-content";
 import { searchLessons } from "@/lib/academy-lessons";
@@ -779,6 +780,10 @@ export async function runCoachTool(name: string, input: Record<string, unknown>,
     if (!ctx.userId) return JSON.stringify({ error: "not signed in" });
     const day = DAY();
     const before = await ctfStatus(ctx.userId, day);
+    // Opening the weekly CTF counts as a drill, the same as on the Drills page.
+    if (before.state === "not_started" && !canDrill(await planFor(ctx.userId), await loadDrills(ctx.userId), day)) {
+      return JSON.stringify({ error: PRO_ONLY.drills });
+    }
     if (before.state === "not_started") await createRealCtf(ctx.userId, day).catch(() => null);
     const now = await ctfStatus(ctx.userId, day);
     return JSON.stringify({

@@ -291,3 +291,25 @@ create table if not exists public.academy_hosted_labs (
 
 alter table public.academy_lab_keys enable row level security;
 alter table public.academy_hosted_labs enable row level security;
+
+-- Plans: who has Pro. A student on a class seat needs no row here; class
+-- membership carries the full course on its own (see src/lib/academy-plan.ts).
+-- Written by the server only. There is deliberately no insert or update
+-- policy, so a student can read their plan but never grant themselves Pro.
+-- Plans only take effect once ACADEMY_PLANS=on is set.
+create table if not exists public.academy_plans (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  plan text not null default 'free' check (plan in ('free', 'pro')),
+  source text not null default 'manual' check (source in ('manual', 'stripe')),
+  pro_until timestamptz,
+  stripe_customer_id text,
+  stripe_subscription_id text,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.academy_plans enable row level security;
+
+drop policy if exists "Students read their own plan" on public.academy_plans;
+create policy "Students read their own plan"
+  on public.academy_plans for select
+  using (auth.uid() = user_id);

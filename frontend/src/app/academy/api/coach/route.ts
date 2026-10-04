@@ -10,16 +10,16 @@ import { bumpLabCoachUsage, bumpUsage, loadDrills, loadLabState, loadProfile, lo
 import { LAB_COACH_PER_LAB, LAB_PAUSE_REPLY, runLabCoachTurn } from "@/lib/academy-lab-coach";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { cleanDay, coachBonus } from "@/lib/academy-drills";
+import { coachAllowance, isPaid, planFor, PRO_ONLY, type Plan } from "@/lib/academy-plan";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-// Drills earn extra chats for the student's local day. Harder work earns more.
-async function allowance(userId: string, day: string) {
+// Drills earn extra chats for the student's local day on a paid plan. Harder work earns more.
+async function allowance(userId: string, day: string, plan: Plan) {
   const drills = await loadDrills(userId).catch(() => []);
   const chats = coachBonus(drills, day);
-  const bonus = effectiveCoachBonus(chats.bonus);
-  return { drills, bonus, parts: chats.parts, limit: COACH_DAILY_LIMIT + bonus };
+  return { drills, ...coachAllowance(plan, COACH_DAILY_LIMIT, effectiveCoachBonus(chats.bonus)) };
 }
 
 export async function GET(request: Request) {
@@ -35,9 +35,11 @@ export async function GET(request: Request) {
   const wantReset = process.env.NODE_ENV !== "production" && url.searchParams.get("reset") === "1";
   if (wantReset) await resetUsage(student.id, day);
   const used = await readUsage(student.id, day);
-  const { bonus, limit } = await allowance(student.id, day);
+  const plan = await planFor(student.id, student.email);
+  const { bonus, limit } = await allowance(student.id, day, plan);
   return NextResponse.json({
     enabled: Boolean(process.env.ANTHROPIC_API_KEY),
+    plan,
     remaining: Math.max(0, Math.min(limit, limit - used)),
     limit,
     bonus,
@@ -79,7 +81,14 @@ export async function POST(request: Request) {
     day?: unknown;
   };
   const day = cleanDay(body.day);
+  const plan = await planFor(student.id, student.email);
   const rawImages = Array.isArray(body.images) ? body.images : [];
+  if (!isPaid(plan) && rawImages.length > 0) {
+    return NextResponse.json({ error: PRO_ONLY.screenshots }, { status: 403 });
+  }
+  if (!isPaid(plan) && body.mode === "interview") {
+    return NextResponse.json({ error: PRO_ONLY.interview }, { status: 403 });
+  }
   const images = sanitizeCoachImages(rawImages);
   if (rawImages.length > 0 && images.length === 0) {
     return NextResponse.json({ error: "That screenshot could not be read. Paste or upload a PNG or JPG." }, { status: 400 });
@@ -111,10 +120,11 @@ export async function POST(request: Request) {
   if (profile) after(() => Promise.all(profile.roles.map((role) => ensureRoleBrief(apiKey, role))).then(() => undefined));
 
   const used = await readUsage(student.id, day);
-  const { drills, bonus, limit } = await allowance(student.id, day);
+  const { drills, bonus, limit } = await allowance(student.id, day, plan);
   if (used >= limit) {
+    const more = isPaid(plan) ? "A drill earns more, or try again tomorrow." : "Pro has more each day, or try again tomorrow.";
     return NextResponse.json(
-      { error: `Daily coach limit reached (${limit} questions). A drill earns more, or try again tomorrow.`, remaining: 0, bonus },
+      { error: `Daily coach limit reached (${limit} questions). ${more}`, remaining: 0, bonus },
       { status: 429 }
     );
   }

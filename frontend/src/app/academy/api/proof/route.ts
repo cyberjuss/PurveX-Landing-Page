@@ -14,6 +14,7 @@ import {
   validSlug,
   type ProofSettings,
 } from "@/lib/academy-proof-store";
+import { isPaid, planFor, PRO_ONLY } from "@/lib/academy-plan";
 import { getAcademyStudent, type AcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -56,6 +57,8 @@ export async function GET(request: Request) {
     const renamed = { ...data.settings, displayName: a.student.name, updatedAt: new Date().toISOString() };
     if ((await saveProofSettings(a.student.id, renamed)) === "ok") data.settings = renamed;
   }
+  // A free account's portfolio is never public, whatever the saved row says.
+  if (data.settings?.published && !isPaid(await planFor(a.student.id, a.student.email))) data.settings = { ...data.settings, published: false };
   const name = data.settings?.displayName ?? draftName(a.student);
   const settings: ProofSettings = data.settings ?? {
     slug: slugify(name),
@@ -139,7 +142,10 @@ export async function PUT(request: Request) {
     }
   }
   const shotsOn = (Array.isArray(body.shotsOn) ? body.shotsOn : prev?.shotsOn ?? []).filter((j): j is string => typeof j === "string" && jobs.has(j));
-  const published = body.published ?? prev?.published ?? false;
+  // On Free the portfolio saves but stays private. A lapsed Pro portfolio goes private on its next save.
+  const paid = isPaid(await planFor(a.student.id, a.student.email));
+  if (body.published === true && !paid) return NextResponse.json({ error: PRO_ONLY.publish, upgrade: true }, { status: 403 });
+  const published = paid && (body.published ?? prev?.published ?? false);
   if (published) {
     const blockers = shareBlockers(data.items);
     if (blockers.length) return NextResponse.json({ error: blockers[0], blockers }, { status: 400 });

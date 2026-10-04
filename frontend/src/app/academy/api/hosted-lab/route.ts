@@ -10,17 +10,21 @@ import {
   stopDueHostedLabs,
   stopHostedLab,
 } from "@/lib/academy-hosted";
+import { isPaid, planFor, PRO_ONLY } from "@/lib/academy-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
 // The lab button: status, start, open in the browser, extend, stop, reset.
-
-async function auth(request: Request) {
-  if (!(await isAcademyUnlocked())) return null;
+// Hosted labs are a paid-plan feature on top of the HOSTED_LAB_EMAILS list.
+// Stopping is always allowed, so a lab left running when Pro ends can still be shut down.
+async function auth(request: Request, action = "") {
+  if (!(await isAcademyUnlocked())) return { student: null, reason: "Hosted labs are not on for this account." };
   const student = await getAcademyStudent(request);
-  return student && canUseHostedLab(student.email) ? student : null;
+  if (!student || !canUseHostedLab(student.email)) return { student: null, reason: "Hosted labs are not on for this account." };
+  if (action !== "stop" && !isPaid(await planFor(student.id, student.email))) return { student: null, reason: PRO_ONLY.hostedLab };
+  return { student, reason: "" };
 }
 
 // Labs past their stop time are stopped whenever anyone checks their lab, at most
@@ -33,9 +37,8 @@ function sweep() {
 }
 
 export async function GET(request: Request) {
-  if (!(await isAcademyUnlocked())) return NextResponse.json({ available: false });
-  const student = await getAcademyStudent(request);
-  if (!student || !canUseHostedLab(student.email)) return NextResponse.json({ available: false });
+  const { student } = await auth(request);
+  if (!student) return NextResponse.json({ available: false });
   sweep();
   try {
     return NextResponse.json({ available: true, ...(await hostedLabStatus(student.id)) });
@@ -45,14 +48,14 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const student = await auth(request);
-  if (!student) return NextResponse.json({ error: "Hosted labs are not on for this account." }, { status: 403 });
   let action = "";
   try {
     action = String(((await request.json()) as { action?: unknown }).action || "");
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
+  const { student, reason } = await auth(request, action);
+  if (!student) return NextResponse.json({ error: reason }, { status: 403 });
   try {
     if (action === "start") await startHostedLab(student.id);
     else if (action === "stop") await stopHostedLab(student.id);

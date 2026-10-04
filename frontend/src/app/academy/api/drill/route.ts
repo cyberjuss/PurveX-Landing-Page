@@ -33,6 +33,7 @@ import { generateCtf, generateDaily, responseGrader } from "@/lib/academy-scenar
 import { summarize, type Results } from "@/lib/academy-score";
 import { loadDailyDrill, loadDrills, loadLabLive, loadLabState, loadProfile, loadProgress, saveDailyDrill, saveDrill, touchLabLive } from "@/lib/academy-store";
 import { LIVE_MINUTES, isVerified } from "@/lib/academy-verify";
+import { canDrill, planFor, PRO_ONLY, type Plan } from "@/lib/academy-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -42,7 +43,7 @@ async function auth(request: Request) {
   if (!(await isAcademyUnlocked())) return { error: NextResponse.json({ error: "Locked" }, { status: 401 }) };
   const student = await getAcademyStudent(request);
   if (!student) return { error: NextResponse.json({ error: "Sign in first." }, { status: 401 }) };
-  return { student };
+  return { student, plan: await planFor(student.id, student.email) };
 }
 
 // What the student's own lab says about when they last worked in it.
@@ -126,7 +127,10 @@ function tokenExpired(entry: { mode: string; day: string }) {
   return false;
 }
 
-async function record(userId: string, gradedRaw: NonNullable<Awaited<ReturnType<typeof gradeDrill>>>, day: string) {
+// On Free, a drill started before the weekly limit was reached is not recorded once it has been.
+const overLimit = async (userId: string, plan: Plan, day: string) => !canDrill(plan, await loadDrills(userId), day);
+
+async function record(userId: string, gradedRaw: NonNullable<Awaited<ReturnType<typeof gradeDrill>>>, day: string, plan: Plan) {
   if (tokenExpired(gradedRaw.entry)) return null;
   // Which exam areas each question practiced, shown on the result only.
   const profile = await loadProfile(userId);
@@ -136,6 +140,7 @@ async function record(userId: string, gradedRaw: NonNullable<Awaited<ReturnType<
     const entries = await loadDrills(userId);
     const prior = entry.mode === "daily" ? drillStats(entries, entry.day).today : entries.find((e) => e.id === entry.id) ?? null;
     if (prior) entry = prior;
+    else if (await overLimit(userId, plan, day)) return "limit" as const;
     else await saveDrill(userId, entry);
   } else if (!graded.late) {
     if (entry.mode === "timed" && incidentHold(await loadDrills(userId))) {
@@ -147,6 +152,7 @@ async function record(userId: string, gradedRaw: NonNullable<Awaited<ReturnType<
         ...(await status(userId, day)),
       };
     }
+    if (await overLimit(userId, plan, day)) return "limit" as const;
     await saveDrill(userId, entry);
   }
   return {
@@ -169,6 +175,7 @@ export async function POST(request: Request) {
   const a = await auth(request);
   if (a.error) return a.error;
   const userId = a.student.id;
+  const plan = a.plan;
 
   let body: { action?: unknown; mode?: unknown; day?: unknown; token?: unknown; answers?: unknown; format?: unknown; final?: unknown };
   try {
@@ -196,6 +203,9 @@ export async function POST(request: Request) {
     }
     if (mode === "ctf" && ctfOf(entries, day)) {
       return NextResponse.json({ done: true, ...(await status(userId, day)) });
+    }
+    if (!canDrill(plan, entries, day)) {
+      return NextResponse.json({ error: PRO_ONLY.drills, limit: true }, { status: 403 });
     }
 
     // Daily and CTF scenarios are written once and then kept, so a reload
@@ -299,7 +309,8 @@ export async function POST(request: Request) {
     }
     const graded = await gradeDrill(userId, body.token, body.answers ?? [], { changePassed: true });
     if (!graded) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
-    const recorded = await record(userId, graded, day);
+    const recorded = await record(userId, graded, day, plan);
+    if (recorded === "limit") return NextResponse.json({ error: PRO_ONLY.drills, limit: true }, { status: 403 });
     if (!recorded) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
     return NextResponse.json({ ...checked, syncedAgo, ...recorded });
   }
@@ -317,7 +328,8 @@ export async function POST(request: Request) {
     if (graded.entry.mode === "ctf" && body.final !== true && graded.review.every((r) => !r.correct)) {
       return NextResponse.json({ retry: true });
     }
-    const recorded = await record(userId, graded, day);
+    const recorded = await record(userId, graded, day, plan);
+    if (recorded === "limit") return NextResponse.json({ error: PRO_ONLY.drills, limit: true }, { status: 403 });
     if (!recorded) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
     return NextResponse.json(recorded);
   }

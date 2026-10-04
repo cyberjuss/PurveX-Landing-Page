@@ -1,6 +1,7 @@
 import "server-only";
 import { randomBytes, randomUUID } from "crypto";
 import type { ExtraCert } from "@/lib/academy-proof";
+import { isPaid, planFor } from "@/lib/academy-plan";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
 // Proof Profile storage. Supabase when the service role is configured;
@@ -132,23 +133,33 @@ export async function saveProofSettings(userId: string, s: ProofSettings): Promi
   return "ok";
 }
 
-export async function findProofBySlug(slug: string): Promise<{ userId: string; settings: ProofSettings } | null> {
+type Found = { userId: string; settings: ProofSettings };
+
+// Every public read (/p/<slug> and its photo, resume and screenshots, and
+// /verify/<id>) goes through these two. A portfolio is public only while its
+// owner is on a paid plan, so a free or lapsed account reads as unpublished.
+async function publicOnly(found: Found | null): Promise<Found | null> {
+  if (!found?.settings.published || isPaid(await planFor(found.userId))) return found;
+  return { ...found, settings: { ...found.settings, published: false } };
+}
+
+export async function findProofBySlug(slug: string): Promise<Found | null> {
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin.from("academy_public_profiles").select("*").eq("slug", slug).maybeSingle();
-    if (!error) return data ? { userId: String(data.user_id), settings: fromRow(data) } : null;
+    if (!error) return publicOnly(data ? { userId: String(data.user_id), settings: fromRow(data) } : null);
     console.error("academy_public_profiles slug read failed", error.message);
   }
-  for (const [userId, settings] of memorySettings) if (settings.slug === slug) return { userId, settings };
+  for (const [userId, settings] of memorySettings) if (settings.slug === slug) return publicOnly({ userId, settings });
   return null;
 }
 
-export async function findProofByCredential(credentialId: string): Promise<{ userId: string; settings: ProofSettings } | null> {
+export async function findProofByCredential(credentialId: string): Promise<Found | null> {
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin.from("academy_public_profiles").select("*").eq("credential_id", credentialId).maybeSingle();
-    if (!error) return data ? { userId: String(data.user_id), settings: fromRow(data) } : null;
+    if (!error) return publicOnly(data ? { userId: String(data.user_id), settings: fromRow(data) } : null);
     console.error("academy_public_profiles credential read failed", error.message);
   }
-  for (const [userId, settings] of memorySettings) if (settings.credentialId === credentialId) return { userId, settings };
+  for (const [userId, settings] of memorySettings) if (settings.credentialId === credentialId) return publicOnly({ userId, settings });
   return null;
 }
 
