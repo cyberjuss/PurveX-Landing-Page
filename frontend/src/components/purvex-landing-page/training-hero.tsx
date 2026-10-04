@@ -243,7 +243,7 @@ export function TrainingHero() {
             Book a cohort <ArrowRight size={16} />
           </a>
           <Link href="/range" className="sp-btn sp-btn--ghost sp-btn--lg">
-            Sign in
+            Get started
           </Link>
         </div>
       </div>
