@@ -107,19 +107,19 @@ function Course({ outline }: { outline: CourseOutline }) {
 /* Three ways in, each written for the person choosing it. Explore is for
    someone still deciding. Pro is for someone who has decided and wants the
    job. Custom is for whoever is answerable for a cohort. Each perk is one
-   smooth line with no commas and no clipped fragments, so the step up between
-   tiers reads at a glance. */
+   smooth line that fits on one, with commas kept out of it, so the step up
+   between tiers reads at a glance. */
 const TIERS: { name: string; price: string; per?: string; forWho: string; perks: string[]; cta: string; href: string; featured?: boolean }[] = [
   {
     name: "Explore",
     price: "Free",
     forWho: "The whole curriculum, free for as long as you want it",
     perks: [
-      "All three phases, every lesson",
-      "Every challenge and the whole Ticket Queue",
-      "Five hands-on labs that run in your browser",
-      "A readiness score from day one",
-      "No card and no trial clock running down",
+      "Every lesson in all three phases",
+      "The whole Ticket Queue and every challenge",
+      "Five labs that run in your browser",
+      "Your readiness score from day one",
+      "No card. No trial clock.",
     ],
     cta: "Start free",
     href: "/range",
@@ -131,11 +131,11 @@ const TIERS: { name: string; price: string; per?: string; forWho: string; perks:
     forWho: "The shortest road from learning this to being hired for it",
     perks: [
       "Everything in Explore",
-      "Your own cloud lab one click away in a browser tab",
+      "Your own cloud lab in a browser tab",
       "A real Windows domain built just for you",
-      "An AI coach that reads your own lab and never hands you the answer",
+      "An AI coach that reads your lab and never hands you the answer",
       "A Proof Profile any employer can verify",
-      "Cancel in one click, any time",
+      "Cancel in one click",
     ],
     cta: "Get Pro",
     // ?checkout=1 means "buy", not "read the offer": after signing up they
@@ -148,12 +148,12 @@ const TIERS: { name: string; price: string; per?: string; forWho: string; perks:
     price: "Talk to us",
     forWho: "Schools, agencies, and workforce programs running a cohort",
     perks: [
-      "Every seat gets everything in Pro",
-      "Live progress for every student as they work",
+      "Everything in Pro on every seat",
+      "Watch every student work in real time",
       "Your own classes with their own join links",
-      "Labs provisioned and managed for you",
+      "Labs provisioned and run for you",
       "Instructor onboarding and training",
-      "Invoicing and agreements your finance team can sign",
+      "Invoicing and paperwork your finance team can sign",
     ],
     cta: "Book a call",
     href: BOOKING_URL,

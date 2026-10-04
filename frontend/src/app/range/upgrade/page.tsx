@@ -21,11 +21,11 @@ import type { User } from "@supabase/supabase-js";
 const BUILT_IN_LINK_URL = process.env.NEXT_PUBLIC_STRIPE_RANGE_PRO_LINK_URL || "";
 
 const PERKS = [
-  "Your own cloud lab one click away in a browser tab",
+  "Your own cloud lab in a browser tab",
   "A real Windows domain built just for you",
-  "An AI coach that reads your own lab and never hands you the answer",
+  "An AI coach that reads your lab and never hands you the answer",
   "A Proof Profile any employer can verify",
-  "Cancel the moment you want to",
+  "Cancel in one click",
 ];
 
 type Plan = {
