@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-import Link from "next/link";
 import {
   Activity, ArrowRight, Bug, ChartColumn, Check, Crosshair, Eye, FileCog, FileText, Globe, Laptop, Network, ScrollText,
   Server, ShieldAlert, SquareTerminal, Users, type LucideIcon,
@@ -242,9 +241,9 @@ export function TrainingHero() {
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
             Book a cohort <ArrowRight size={16} />
           </a>
-          <Link href="/range" className="sp-btn sp-btn--ghost sp-btn--lg">
+          <a href="#pricing" className="sp-btn sp-btn--ghost sp-btn--lg">
             Get started
-          </Link>
+          </a>
         </div>
       </div>
 
