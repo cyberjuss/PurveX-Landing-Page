@@ -53,8 +53,12 @@ export function accountFirstName(student: AcademyStudent | null): string | null 
   if (!student) return null;
   const fromName = student.name ? firstToken(student.name) : "";
   if (fromName && !GENERIC.test(fromName)) return titleCase(fromName);
+  // An email local part is only a name sometimes. "justin.duru" is one;
+  // "jduru213" is a handle, and "Welcome back Jduru213" reads worse than no
+  // name at all. Anything with a digit in it is a handle, so we say nothing
+  // and wait for the intake to tell us what to call them.
   const fromEmail = student.email ? firstToken(student.email.split("@")[0] ?? "", true) : "";
-  if (fromEmail && !GENERIC.test(fromEmail)) return titleCase(fromEmail);
+  if (fromEmail && !GENERIC.test(fromEmail) && !/\d/.test(fromEmail)) return titleCase(fromEmail);
   return null;
 }
 

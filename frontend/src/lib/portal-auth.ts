@@ -77,6 +77,19 @@ export async function requestPasswordReset(email: string, redirectTo: string): P
   if (!res.ok) throw new Error("Unable to send reset email right now. Please try again.");
 }
 
+/**
+ * Records what to call the student, on the account rather than in a table of
+ * our own. getAcademyStudent already reads user_metadata on every request, so
+ * the name reaches the greeting, the initials and the emails with no extra
+ * read and no column to migrate. Best effort: a student who finished the
+ * intake should not be told their answers failed to save over a display name.
+ */
+export async function updateDisplayName(fullName: string): Promise<void> {
+  if (!supabase) return;
+  const { error } = await supabase.auth.updateUser({ data: { full_name: fullName } });
+  if (error) console.error("display name not saved", error.message);
+}
+
 export async function updatePassword(newPassword: string): Promise<void> {
   const client = requireSupabase();
   const { error } = await client.auth.updateUser({ password: newPassword });

@@ -16,6 +16,7 @@ import {
   type StudentProfile,
 } from "@/lib/academy-certs";
 import { academyFetch } from "@/lib/academy-client";
+import { updateDisplayName } from "@/lib/portal-auth";
 // Imported here, not in globals.css, so the styles always arrive with the component.
 import "./academy-intake.css";
 
@@ -45,6 +46,9 @@ export function AcademyIntake({
   const [roles, setRoles] = useState<RoleId[]>(initial?.roles ?? []);
   const [start, setStart] = useState<StartLevel | null>(initial?.start ?? null);
   const [background, setBackground] = useState(initial?.background ?? "");
+  // Asked here rather than at signup, where an extra field costs more than it
+  // is worth. Without it the portal greets people by their email handle.
+  const [firstName, setFirstName] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const timer = useRef<number | undefined>(undefined);
@@ -78,6 +82,10 @@ export function AcademyIntake({
     setBusy(true);
     setError(null);
     try {
+      // Before the answers, so a student who types a name always gets it
+      // stored even if the profile save then fails and they retry.
+      const name = firstName.trim();
+      if (name) await updateDisplayName(name);
       const res = await academyFetch("/academy/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -92,7 +100,11 @@ export function AcademyIntake({
     }
   }
 
-  const canNext = step === "roles" ? roles.length > 0 : step === "start" ? Boolean(start) : Boolean(certs[step]?.status);
+  // The last step also asks for a name. Required, because the whole point of
+  // asking is that the portal stops calling people by their email handle, and
+  // a field everyone skips would not do that.
+  const canNext =
+    step === "roles" ? roles.length > 0 : step === "start" ? Boolean(start) && Boolean(firstName.trim()) : Boolean(certs[step]?.status);
 
   let title = "";
   let hint: string | null = null;
@@ -159,6 +171,17 @@ export function AcademyIntake({
             </Option>
           ))}
         </div>
+        <label className="axq-field">
+          <span>First name</span>
+          <input
+            type="text"
+            maxLength={40}
+            autoComplete="given-name"
+            placeholder="What should we call you?"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+        </label>
         <label className="axq-field">
           <span>Current role · Optional</span>
           <input type="text" maxLength={280} placeholder="e.g. Retail manager, student, veteran" value={background} onChange={(e) => setBackground(e.target.value)} />
