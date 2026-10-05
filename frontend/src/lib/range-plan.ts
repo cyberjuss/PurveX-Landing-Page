@@ -8,7 +8,7 @@ import type { AcademyStudent } from "@/lib/academy-student";
 // "why can this account do that".
 //
 // Three ways to be Pro, matching the three tiers we sell:
-//   subscription -- paid $20/month themselves (Pro)
+//   subscription -- paid $29/month themselves (Pro)
 //   class        -- on a class roster, so their school pays per seat (Custom)
 //   admin        -- ACADEMY_ADMIN_EMAILS, plus the RANGE_PRO_EMAILS comp list
 //

@@ -75,7 +75,7 @@ export function UnlockForm() {
       <p className="mt-6 text-center text-sm text-slate-600">
         No instructor?{" "}
         <Link href="/range/upgrade" className="am-link">
-          Get Pro for $20 a month
+          Get Pro for $29 a month
         </Link>
       </p>
     </AuthMinimal>

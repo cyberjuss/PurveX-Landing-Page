@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 
 // Accounts that already have access skip the passcode: instructors with a
 // class of their own, and anyone isRangePro() covers -- admins, students on
-// a class roster, and Range Pro subscribers. Someone who pays the $20 should
+// a class roster, and Range Pro subscribers. Someone who pays the $29 should
 // never be sent to find an instructor for a code.
 export async function POST(request: Request) {
   const me = await getAcademyStudent(request);

@@ -396,7 +396,7 @@ export function ProofEditor() {
                   <p className="pf-blockers__p">
                     Keep building it here for free. Pro gives you the public link, the QR code and a credential ID any
                     employer can check.{" "}
-                    <a href="/range/upgrade">Get Pro for $20 a month</a>
+                    <a href="/range/upgrade">Get Pro for $29 a month</a>
                   </p>
                 </div>
               )}

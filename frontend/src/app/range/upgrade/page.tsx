@@ -12,7 +12,7 @@ import type { User } from "@supabase/supabase-js";
 // Deliberately a real route under /range rather than a page under /academy.
 // next.config.ts rewrites /range/:path* to /academy/:path*, and everything
 // under /academy renders inside AcademyShell, which asks for a class
-// passcode before it shows anything. Someone who wants to pay us $20 should
+// passcode before it shows anything. Someone who wants to pay us $29 should
 // not have to find an instructor first -- a real route wins over the
 // rewrite (same trick as /range/join) and skips that gate entirely.
 
@@ -156,7 +156,7 @@ function UpgradeContent() {
       <AuthHeading sub="The shortest road from learning this to being hired for it.">Get Range Pro</AuthHeading>
 
       <p className="mt-6 text-[2.1rem] font-bold leading-none tracking-tight">
-        $20<span className="ml-1 align-middle text-base font-medium text-slate-500">/month</span>
+        $29<span className="ml-1 align-middle text-base font-medium text-slate-500">/month</span>
       </p>
 
       <ul className="mt-6 flex flex-col gap-3">

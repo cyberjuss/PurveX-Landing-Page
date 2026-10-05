@@ -126,7 +126,7 @@ const TIERS: { name: string; price: string; per?: string; forWho: string; perks:
   },
   {
     name: "Pro",
-    price: "$20",
+    price: "$29",
     per: "/month",
     forWho: "The shortest road from learning this to being hired for it",
     perks: [
