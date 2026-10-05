@@ -66,11 +66,19 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
 
   const lastPhase = lastStop && !isPhaseLocked(lastStop.phaseSlug) ? phases.find((p) => p.slug === lastStop.phaseSlug) : undefined;
   const lastEntry = lastPhase ? entriesOf(lastPhase).find((e) => e.slug === lastStop?.entrySlug && e.sections.length > 0) : undefined;
-  const pin = lastEntry && lastPhase
-    ? { href: `/range/${lastPhase.slug}/${lastEntry.slug}`, title: lastEntry.title, phaseSlug: lastPhase.slug, entrySlug: lastEntry.slug, kind: "last" as const }
+  // Opening something is not the same as getting anywhere. Until a student has
+  // finished an entry or a mission, the last place they clicked is not where
+  // they "left off" -- someone who looked at the home lab once and bounced was
+  // being sent back to it forever, with the course still reading 0/5 and week 1
+  // never offered. Once there is real progress, the last stop wins again.
+  const resumeEntry = completedCount > 0 || readiness.finished > 0 ? lastEntry : undefined;
+  const pin = resumeEntry && lastPhase
+    ? { href: `/range/${lastPhase.slug}/${resumeEntry.slug}`, title: resumeEntry.title, phaseSlug: lastPhase.slug, entrySlug: resumeEntry.slug, kind: "last" as const }
     : firstOpen
       ? { ...firstOpen, kind: "start" as const }
-      : null;
+      : lastEntry && lastPhase
+        ? { href: `/range/${lastPhase.slug}/${lastEntry.slug}`, title: lastEntry.title, phaseSlug: lastPhase.slug, entrySlug: lastEntry.slug, kind: "last" as const }
+        : null;
   // The card names the place it links to: an open challenge wins over the last lesson tab.
   const resume = lastMission
     ? { href: challengeHref(lastMission.challenge, results), title: CHALLENGE_LABELS[lastMission.challenge], kind: "last" as const }
