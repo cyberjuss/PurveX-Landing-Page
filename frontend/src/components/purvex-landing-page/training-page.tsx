@@ -115,7 +115,7 @@ const TIERS: { name: string; price: string; per?: string; forWho: string; perks:
     price: "Free",
     forWho: "The whole curriculum, free for as long as you want it",
     perks: [
-      "Every lesson in all three phases",
+      "Every lesson, including each new phase",
       "The whole Ticket Queue and every challenge",
       "Five labs that run in your browser",
       "Your readiness score from day one",
