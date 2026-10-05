@@ -227,8 +227,8 @@ export const CHALLENGE_PATHS: Record<
   MissionCatalogEntry["challenge"],
   { href: string; tab: string }
 > = {
-  "day-one": { href: "/range/phase-1/home-lab-active-directory", tab: "operation-day-one" },
-  "ticket-queue": { href: "/range/phase-1/home-lab-active-directory", tab: "ticket-queue" },
+  "day-one": { href: "/range/phase-1/home-lab-challenges", tab: "operation-day-one" },
+  "ticket-queue": { href: "/range/phase-1/home-lab-challenges", tab: "ticket-queue" },
   "alert-queue": { href: "/range/phase-2/week-2", tab: "the-2-am-login" },
 };
 

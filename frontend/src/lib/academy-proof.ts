@@ -281,7 +281,7 @@ export function openTasks(done: string[]): OpenTask[] {
       }
       const t = ticketFor.get(job);
       return t
-        ? { job, title: e.title, where: `Ticket Queue · ${t.label.replace("Service ticket ", "")}`, href: `/range/phase-1/home-lab-active-directory#${t.id}`, locked: false }
+        ? { job, title: e.title, where: `Ticket Queue · ${t.label.replace("Service ticket ", "")}`, href: `/range/phase-1/home-lab-challenges#${t.id}`, locked: false }
         : { job, title: e.title, where: "Daily drill", href: "/range/drill", locked: false };
     })
     .sort((a, b) => Number(a.locked) - Number(b.locked) || Number(b.where !== "Daily drill") - Number(a.where !== "Daily drill"));

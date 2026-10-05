@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import type { PhaseDef, WeekDef } from "@/lib/academy-content";
+import { type PhaseDef } from "@/lib/academy-content";
+import { entriesOf } from "@/lib/academy-entries";
 import { READINESS_PATH, useResults } from "@/lib/academy-client";
 import { CHALLENGE_LABELS, challengeHref, lastTouchedMission } from "@/lib/academy-missions";
 import { LEVELS, summarize } from "@/lib/academy-score";
@@ -31,11 +32,6 @@ const PHASE_COPY: { slug: string; href: string; title: string; body: string }[] 
     body: "Triage, investigate, contain, and write it up.",
   },
 ];
-
-function entriesOf(phase: PhaseDef | undefined): WeekDef[] {
-  if (!phase) return [];
-  return [...phase.weeks, ...(phase.homeLab ? [phase.homeLab] : [])];
-}
 
 function pad(n: number) {
   return String(n).padStart(2, "0");

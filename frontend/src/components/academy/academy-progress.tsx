@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import type { PhaseDef, WeekDef } from "@/lib/academy-content";
+import { type PhaseDef, type WeekDef } from "@/lib/academy-content";
+import { entriesOf } from "@/lib/academy-entries";
 import { findQuiz } from "@/content/academy/quizzes";
 import { useResults } from "@/lib/academy-client";
 import { CHALLENGE_PATHS, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
@@ -65,7 +66,7 @@ function parseLastStop(raw: string | null): LastStop | null {
 
 // Locked phases stay out of course progress until they open.
 function countEntries(phases: PhaseDef[]) {
-  return phases.filter((p) => !isPhaseLocked(p.slug)).reduce((total, phase) => total + phase.weeks.length + (phase.homeLab ? 1 : 0), 0);
+  return phases.filter((p) => !isPhaseLocked(p.slug)).reduce((total, phase) => total + entriesOf(phase).length, 0);
 }
 
 interface AcademyProgressContextValue {
@@ -161,7 +162,7 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
   const reqs = useMemo(() => {
     const map = new Map<string, Requirement[]>();
     for (const phase of phases) {
-      for (const entry of [...phase.weeks, ...(phase.homeLab ? [phase.homeLab] : [])]) {
+      for (const entry of entriesOf(phase)) {
         const key = entryKey(phase.slug, entry.slug);
         const list: Requirement[] = [];
         if (findQuiz(phase.slug, entry.slug)) list.push({ label: "Quiz", done: quizPasses.has(key) });
@@ -187,7 +188,7 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
   const phaseDone = useMemo(() => {
     const done = new Set<string>();
     for (const phase of phases) {
-      const entries = [...phase.weeks, ...(phase.homeLab ? [phase.homeLab] : [])];
+      const entries = entriesOf(phase);
       const challenges = entries.flatMap((e) => entryChallenges(phase.slug, e));
       const live = entries.filter((e) => e.sections.length > 0);
       // A phase without challenges falls back to every published week being complete.

@@ -1,5 +1,6 @@
 import "server-only";
 import fs from "fs";
+import { entriesOf } from "@/lib/academy-entries";
 import path from "path";
 
 const CONTENT_ROOT = path.join(process.cwd(), "src/content/academy");
@@ -35,7 +36,10 @@ export interface PhaseDef {
   label: string;
   title: string;
   weeks: WeekDef[];
-  homeLab?: HomeLabDef;
+  /** Hands-on entries, after the weeks. Several, because one entry holding the
+   *  whole home lab counted a multi-hour domain build as a fifth of the phase
+   *  and the progress bar barely moved while a student did the hardest work. */
+  homeLabs?: HomeLabDef[];
 }
 
 // Phase 1 -- Fundamentals. Weeks 1, 3, 4 have real lesson content migrated
@@ -106,35 +110,62 @@ const phase1Weeks: WeekDef[] = [
   },
 ];
 
-const phase1HomeLab: HomeLabDef = {
-  slug: "home-lab-active-directory",
-  title: "Home Lab — Active Directory",
-  summary: "Learn the PurveX Financial environment before touching a ticket, and then work its directory.",
-  sections: [
-    { label: "Overview", file: "phase-1/home-lab-ad/overview.md" },
-    { label: "The Org Chart", file: "phase-1/home-lab-ad/the-org-chart.md" },
-    { label: "Access Levels", file: "phase-1/home-lab-ad/access-levels.md" },
-    { label: "The Data", file: "phase-1/home-lab-ad/the-data.md" },
-    { label: "The Environment", file: "phase-1/home-lab-ad/the-environment.md" },
-    { label: "Set Up the Lab", file: "phase-1/home-lab-ad/set-up-the-lab.md" },
-    { label: "The Domain Controller", file: "phase-1/home-lab-ad/the-domain.md" },
-    { label: "Install the Domain", file: "phase-1/home-lab-ad/install-the-domain.md" },
-    { label: "Build the Environment", file: "phase-1/home-lab-ad/build-the-environment.md" },
-    { label: "Check the Build", file: "phase-1/home-lab-ad/check-the-build.md" },
-    { label: "Join a Computer", file: "phase-1/home-lab-ad/join-a-computer.md" },
-    { label: "Organizational Units", file: "phase-1/home-lab-ad/organizational-units.md" },
-    { label: "Accounts", file: "phase-1/home-lab-ad/accounts.md" },
-    { label: "Groups", file: "phase-1/home-lab-ad/groups.md" },
-    { label: "Service Accounts", file: "phase-1/home-lab-ad/service-accounts.md" },
-    { label: "Group Policy", file: "phase-1/home-lab-ad/group-policy.md" },
-    { label: "Find an Account", file: "phase-1/home-lab-ad/find-an-account.md" },
-    { label: "Unlock or Reset", file: "phase-1/home-lab-ad/unlock-or-reset.md" },
-    { label: "Move an Account", file: "phase-1/home-lab-ad/move-an-account.md" },
-    { label: "Read the Account", file: "phase-1/home-lab-ad/read-the-account.md" },
-    { label: "Challenge: Operation Day One", file: "phase-1/home-lab-ad/ctf-challenge.md" },
-    { label: "Challenge: Ticket Queue", file: "phase-1/home-lab-ad/ticket-queue-challenge.md" },
-  ],
-};
+// The home lab, in four sittings. It used to be one 22-section entry, which
+// made an evening of building a domain controller worth the same fifth of the
+// phase as a week of short lessons -- and nothing at all until the last
+// section was read. Each entry below is a place a student can reasonably stop.
+const phase1HomeLabs: HomeLabDef[] = [
+  {
+    slug: "home-lab-setup",
+    title: "Home Lab — Set Up",
+    summary: "Learn the PurveX Financial environment, then build it on your own machine.",
+    sections: [
+      { label: "Overview", file: "phase-1/home-lab-ad/overview.md" },
+      { label: "The Org Chart", file: "phase-1/home-lab-ad/the-org-chart.md" },
+      { label: "Access Levels", file: "phase-1/home-lab-ad/access-levels.md" },
+      { label: "The Data", file: "phase-1/home-lab-ad/the-data.md" },
+      { label: "The Environment", file: "phase-1/home-lab-ad/the-environment.md" },
+      { label: "Set Up the Lab", file: "phase-1/home-lab-ad/set-up-the-lab.md" },
+      { label: "The Domain Controller", file: "phase-1/home-lab-ad/the-domain.md" },
+      { label: "Install the Domain", file: "phase-1/home-lab-ad/install-the-domain.md" },
+      { label: "Build the Environment", file: "phase-1/home-lab-ad/build-the-environment.md" },
+      { label: "Check the Build", file: "phase-1/home-lab-ad/check-the-build.md" },
+    ],
+  },
+  {
+    slug: "home-lab-directory",
+    title: "Home Lab — The Directory",
+    summary: "What lives in Active Directory and how the firm's accounts, groups and policy fit together.",
+    sections: [
+      { label: "Join a Computer", file: "phase-1/home-lab-ad/join-a-computer.md" },
+      { label: "Organizational Units", file: "phase-1/home-lab-ad/organizational-units.md" },
+      { label: "Accounts", file: "phase-1/home-lab-ad/accounts.md" },
+      { label: "Groups", file: "phase-1/home-lab-ad/groups.md" },
+      { label: "Service Accounts", file: "phase-1/home-lab-ad/service-accounts.md" },
+      { label: "Group Policy", file: "phase-1/home-lab-ad/group-policy.md" },
+    ],
+  },
+  {
+    slug: "home-lab-desk",
+    title: "Home Lab — Working the Desk",
+    summary: "The four jobs a help desk does all day, done in your own directory.",
+    sections: [
+      { label: "Find an Account", file: "phase-1/home-lab-ad/find-an-account.md" },
+      { label: "Unlock or Reset", file: "phase-1/home-lab-ad/unlock-or-reset.md" },
+      { label: "Move an Account", file: "phase-1/home-lab-ad/move-an-account.md" },
+      { label: "Read the Account", file: "phase-1/home-lab-ad/read-the-account.md" },
+    ],
+  },
+  {
+    slug: "home-lab-challenges",
+    title: "Home Lab — Challenges",
+    summary: "A first day on the desk and a full ticket queue, graded against your own lab.",
+    sections: [
+      { label: "Challenge: Operation Day One", file: "phase-1/home-lab-ad/ctf-challenge.md" },
+      { label: "Challenge: Ticket Queue", file: "phase-1/home-lab-ad/ticket-queue-challenge.md" },
+    ],
+  },
+];
 
 // Phase 2 -- Threat Detection & Log Analysis. All weeks' folders in the
 // source Drive are still empty placeholders, same as Phase 1's Week 2.
@@ -179,7 +210,7 @@ const phase2Weeks: WeekDef[] = [
 // shows in the sidebar as a phase group with no entries underneath, linking
 // straight to the phase-3 page's "still being written" placeholder.
 export const phases: PhaseDef[] = [
-  { slug: "phase-1", label: "Phase 1", title: "Fundamentals", weeks: phase1Weeks, homeLab: phase1HomeLab },
+  { slug: "phase-1", label: "Phase 1", title: "Fundamentals", weeks: phase1Weeks, homeLabs: phase1HomeLabs },
   { slug: "phase-2", label: "Phase 2", title: "Threat Detection & Log Analysis", weeks: phase2Weeks },
   { slug: "phase-3", label: "Phase 3", title: "Incident Response", weeks: [] },
 ];
@@ -191,14 +222,12 @@ export function findPhase(phaseSlug: string): PhaseDef | undefined {
 export function findEntry(phaseSlug: string, entrySlug: string): WeekDef | undefined {
   const phase = findPhase(phaseSlug);
   if (!phase) return undefined;
-  if (phase.homeLab?.slug === entrySlug) return phase.homeLab;
-  return phase.weeks.find((w) => w.slug === entrySlug);
+  return entriesOf(phase).find((e) => e.slug === entrySlug);
 }
 
 // The first entry actually worth landing on -- an entry with no sections
 // yet is "Coming soon" and isn't clickable anywhere else either, so there's
 // nothing useful to redirect a phase's index route into for it.
 export function firstAvailableEntry(phase: PhaseDef): WeekDef | undefined {
-  const entries = [...phase.weeks, ...(phase.homeLab ? [phase.homeLab] : [])];
-  return entries.find((e) => e.sections.length > 0);
+  return entriesOf(phase).find((e) => e.sections.length > 0);
 }

@@ -4,7 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookMarked, Check, ChevronDown, FlaskConical, Lock } from "lucide-react";
-import type { PhaseDef } from "@/lib/academy-content";
+import { type PhaseDef } from "@/lib/academy-content";
+import { entriesOf } from "@/lib/academy-entries";
 import { useAcademyProgress } from "./academy-progress";
 import { isPhaseLocked } from "@/lib/academy-locks";
 
@@ -45,7 +46,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
       </div>
 
       {phases.map((phase) => {
-        const entries = [...phase.weeks, ...(phase.homeLab ? [phase.homeLab] : [])];
+        const entries = entriesOf(phase);
         // /academy/${phase.slug} redirects straight into a week, so that
         // exact path is never actually the current pathname -- highlight
         // the phase header instead whenever any of its own weeks is active.

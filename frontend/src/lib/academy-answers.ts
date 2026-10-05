@@ -1,5 +1,6 @@
 import "server-only";
 import { loadLesson, phases } from "@/lib/academy-content";
+import { entriesOf } from "@/lib/academy-entries";
 
 // Challenge answers stay on the server. The lesson markup still holds them
 // for authoring, so the page gets a copy with every answer attribute and
@@ -42,7 +43,7 @@ function parseLabAnswer(raw: string | undefined): LabAnswer | null {
 }
 
 function challengeFiles(): string[] {
-  return phases.flatMap((p) => [...p.weeks, ...(p.homeLab ? [p.homeLab] : [])]).flatMap((e) => e.sections.filter((s) => /^Challenge:/.test(s.label)).map((s) => s.file));
+  return phases.flatMap((p) => entriesOf(p)).flatMap((e) => e.sections.filter((s) => /^Challenge:/.test(s.label)).map((s) => s.file));
 }
 
 let keys: Map<string, MissionKey> | null = null;

@@ -1,4 +1,5 @@
 import { phases, type LabWidget, type WeekDef } from "@/lib/academy-content";
+import { entriesOf } from "@/lib/academy-entries";
 
 // Every hands-on lab in the course, flattened so the Labs page can give each
 // one its own card and its own page. The card art (icon, accent, blurb) lives
@@ -75,7 +76,7 @@ function labsInEntry(phaseLabel: string, phaseSlug: string, entry: WeekDef): Lab
 export function listLabs(): LabMeta[] {
   const out: LabMeta[] = [];
   for (const phase of phases) {
-    const entries = [...phase.weeks, ...(phase.homeLab ? [phase.homeLab] : [])];
+    const entries = entriesOf(phase);
     for (const entry of entries) out.push(...labsInEntry(`${phase.label} · ${phase.title}`, phase.slug, entry));
   }
   return out;

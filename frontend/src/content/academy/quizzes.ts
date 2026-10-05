@@ -323,7 +323,7 @@ export const quizzes: Quiz[] = [
   },
   {
     phaseSlug: "phase-1",
-    weekSlug: "home-lab-active-directory",
+    weekSlug: "home-lab-desk",
     questions: [
       {
         question: "In the PurveX Financial environment, how many administrative access levels are there, and what is the point of splitting them up?",

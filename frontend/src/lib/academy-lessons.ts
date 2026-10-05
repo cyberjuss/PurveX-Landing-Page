@@ -1,5 +1,6 @@
 import "server-only";
 import { loadLesson, phases, type WeekDef } from "@/lib/academy-content";
+import { entriesOf } from "@/lib/academy-entries";
 
 // Searchable course text, so Coach and MCP clients teach from the Academy's
 // own lessons instead of general knowledge. Challenge tabs are left out:
@@ -90,7 +91,7 @@ function build() {
   if (index) return index;
   const chunks: Chunk[] = [];
   for (const phase of phases) {
-    const entries: WeekDef[] = [...phase.weeks, ...(phase.homeLab ? [phase.homeLab] : [])];
+    const entries: WeekDef[] = entriesOf(phase);
     for (const entry of entries) {
       for (const section of entry.sections) {
         if (/^Challenge:/i.test(section.label)) continue;

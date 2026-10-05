@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { stripAnswers } from "@/lib/academy-answers";
 import { loadLesson, type ContentSection, type WeekDef, type PhaseDef } from "@/lib/academy-content";
+import { entriesOf } from "@/lib/academy-entries";
 import { findQuiz } from "@/content/academy/quizzes";
 import { extractEssentialQuestion } from "@/lib/markdown";
 import { SectionTabs } from "./section-tabs";
@@ -37,7 +38,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
   // to one here would just be a dead end. Cross-phase chaining is left out
   // deliberately: every later phase is currently all "Coming soon," so
   // there's nothing real to link to yet.
-  const phaseEntries = [...phase.weeks, ...(phase.homeLab ? [phase.homeLab] : [])];
+  const phaseEntries = entriesOf(phase);
   const availableEntries = phaseEntries.filter((e) => e.sections.length > 0);
   const currentIndex = availableEntries.findIndex((e) => e.slug === entry.slug);
   const prevEntry = currentIndex > 0 ? availableEntries[currentIndex - 1] : undefined;
