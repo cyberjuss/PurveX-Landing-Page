@@ -958,7 +958,11 @@ export async function runCoachTurn(params: {
   let research = Boolean(profile) && process.env.ACADEMY_COACH_WEB_SEARCH !== "off" && (missing.length > 0 || ROLE_QUESTION.test(params.userMessage));
   const goals = goalsBrief(profile, briefs, params.tools.results, params.drills ?? []);
   const socratic = socraticInstructions(params.place ?? null, mode);
-  const baseSystem = `${COACH_SYSTEM_PROMPT}\n\n${coachModeInstructions(mode)}${socratic ? `\n\n${socratic}` : ""}\n\n${buildStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results, lab) : "", goals)}`;
+  // Everything after COACH_SYSTEM_PROMPT changes with the student, the mode and
+  // the lab, so only the prompt itself is worth caching. It is kept apart from
+  // the tail rather than concatenated, so the cached prefix is byte-identical on
+  // every turn -- one stray character in front of it and the cache misses.
+  const systemTail = `${coachModeInstructions(mode)}${socratic ? `\n\n${socratic}` : ""}\n\n${buildStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results, lab) : "", goals)}`;
   // URLs the search returned this turn. A saved note may only cite these.
   const seen = new Map<string, string>();
   const messages: AnthropicMessage[] = [
@@ -971,7 +975,15 @@ export async function runCoachTurn(params: {
   for (let step = 0; step < 7; step++) {
     const left = deadline - Date.now();
     if (left < 3_000) throw new Error("Coach model timed out");
-    const system = research && profile ? `${baseSystem}\n\n${researchInstructions(missing)}` : baseSystem;
+    const tail = research && profile ? `${systemTail}\n\n${researchInstructions(missing)}` : systemTail;
+    // cache_control on the first block caches the tools and the prompt above it.
+    // At ~3.2k tokens the prompt clears the minimum comfortably, and it is the
+    // same for every student on every turn, so all but the first call in a
+    // five-minute window reads it at a tenth of the input price.
+    const system = [
+      { type: "text", text: COACH_SYSTEM_PROMPT, cache_control: { type: "ephemeral" } },
+      { type: "text", text: tail },
+    ];
     const tools_ = research ? [...COACH_TOOLS, webSearchTool(model, 3), SAVE_ROLE_NOTES_TOOL] : COACH_TOOLS;
     const res = await fetch(ANTHROPIC_MESSAGES_URL, {
       method: "POST",

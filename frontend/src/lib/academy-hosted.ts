@@ -10,11 +10,14 @@ import {
 } from "@aws-sdk/client-ec2";
 import { DescribeInstanceInformationCommand, SendCommandCommand, SSMClient } from "@aws-sdk/client-ssm";
 import {
+  addLabMinutes,
   createLabKey,
   deleteHostedLab,
   hostedLabsDueToStop,
+  hostedLabsIdleSince,
   loadHostedLab,
   loadLabState,
+  readLabMinutes,
   saveHostedLab,
   type HostedLabRow,
 } from "@/lib/academy-store";
@@ -47,8 +50,43 @@ function cfg() {
     secret: e.HOSTED_LAB_SECRET || "",
     syncUrl: (e.HOSTED_LAB_SYNC_URL || "https://purvex.io").replace(/\/+$/, ""),
     sessionHours: Math.min(8, Math.max(1, Number(e.HOSTED_LAB_SESSION_HOURS) || 3)),
+    /** Hours of lab a subscription buys per calendar month. Without one a
+     *  student can restart a session every day indefinitely, and the AWS bill
+     *  for that passes what they pay us. 0 turns the cap off. */
+    monthlyHours: Math.max(0, Number(e.HOSTED_LAB_MONTHLY_HOURS) || 20),
+    /** Days a lab may sit untouched before it is terminated. Its disks bill
+     *  every month whether or not anyone signs in, so a lab nobody has opened
+     *  since this long ago is pure cost. 0 turns reclaiming off. */
+    idleDays: Math.max(0, Number(e.HOSTED_LAB_IDLE_DAYS) || 21),
     emails: (e.HOSTED_LAB_EMAILS || "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean),
   };
+}
+
+/** Thrown when a student has spent their month. The route turns it into a 429
+ *  with this message, which is written for the student rather than the log. */
+export class LabHoursSpentError extends Error {
+  constructor(public readonly used: number, public readonly limit: number) {
+    super(`You have used all ${limit} lab hours on your plan this month. They reset on the 1st. Email support@purvex.io if you need more.`);
+    this.name = "LabHoursSpentError";
+  }
+}
+
+/** Hours used and left this month. limit 0 means the cap is off. */
+export async function labHours(userId: string): Promise<{ used: number; limit: number; left: number }> {
+  const limit = cfg().monthlyHours;
+  const used = (await readLabMinutes(userId)) / 60;
+  return { used, limit, left: limit ? Math.max(0, limit - used) : Infinity };
+}
+
+/** Charges one session against the month, or refuses when nothing is left.
+ *  Charged when a session starts rather than when it ends: a lab that is never
+ *  stopped cleanly would otherwise cost us the hours and never record them. */
+async function chargeSession(userId: string): Promise<void> {
+  const c = cfg();
+  if (!c.monthlyHours) return;
+  const used = (await readLabMinutes(userId)) / 60;
+  if (used + c.sessionHours > c.monthlyHours) throw new LabHoursSpentError(Math.round(used), c.monthlyHours);
+  await addLabMinutes(userId, c.sessionHours * 60);
 }
 
 export function hostedLabsConfigured(): boolean {
@@ -183,9 +221,15 @@ export async function startHostedLab(userId: string): Promise<void> {
   const row = await loadHostedLab(userId);
   const inst = row ? await describe(row.instanceId).catch(() => null) : null;
   if (!row || !inst || inst.state === "terminated" || inst.state === "shutting-down") {
+    await chargeSession(userId);
     await launch(userId);
     return;
   }
+  // A running lab still inside its window is the session they already paid for,
+  // so pressing Start again is a no-op. Resetting the stop time here instead
+  // would hand out free hours to anyone who kept pressing it.
+  if (inst.state === "running" && row.stopAt && Date.parse(row.stopAt) > Date.now()) return;
+  await chargeSession(userId);
   if (inst.state === "stopped") await ec2().send(new StartInstancesCommand({ InstanceIds: [row.instanceId] }));
   await saveHostedLab(userId, { ...row, stopAt: stopAtFromNow() });
 }
@@ -210,6 +254,7 @@ export async function stopHostedLab(userId: string): Promise<void> {
 export async function extendHostedLab(userId: string): Promise<string | null> {
   const row = await loadHostedLab(userId);
   if (!row) return null;
+  await chargeSession(userId);
   const stopAt = stopAtFromNow();
   await saveHostedLab(userId, { ...row, stopAt });
   return stopAt;
@@ -217,6 +262,8 @@ export async function extendHostedLab(userId: string): Promise<string | null> {
 
 /** A clean lab from the image. The old lab and everything the student changed in it are gone. */
 export async function resetHostedLab(userId: string): Promise<void> {
+  // A reset boots a fresh lab, which is a new session like any other.
+  await chargeSession(userId);
   const row = await loadHostedLab(userId);
   if (row) {
     await ec2().send(new TerminateInstancesCommand({ InstanceIds: [row.instanceId] })).catch(() => {});
@@ -420,6 +467,30 @@ export async function requestLabSync(userId: string, force = false): Promise<boo
 }
 
 // ---- auto-stop ------------------------------------------------------------
+
+/**
+ * Terminates labs nobody has touched in HOSTED_LAB_IDLE_DAYS and forgets them.
+ * A stopped lab still bills for its disks every month, so a student who signed
+ * up, opened the lab once and never came back costs us until they cancel. The
+ * next Start builds them a clean one from the image, which is what a reset
+ * already does -- so the loss is the state of a lab they stopped using.
+ */
+export async function reapIdleHostedLabs(): Promise<number> {
+  const c = cfg();
+  if (!c.idleDays) return 0;
+  const before = new Date(Date.now() - c.idleDays * 86_400_000);
+  let reaped = 0;
+  for (const { userId, row } of await hostedLabsIdleSince(before)) {
+    try {
+      await ec2().send(new TerminateInstancesCommand({ InstanceIds: [row.instanceId] }));
+      await deleteHostedLab(userId);
+      reaped++;
+    } catch (err) {
+      console.error("hosted lab reclaim failed", row.instanceId, err instanceof Error ? err.message : err);
+    }
+  }
+  return reaped;
+}
 
 /** Stops every lab past its stop time. Run by the cron route. */
 export async function stopDueHostedLabs(): Promise<number> {

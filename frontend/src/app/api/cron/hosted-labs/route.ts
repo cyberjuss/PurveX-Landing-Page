@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { hostedLabsConfigured, stopDueHostedLabs } from "@/lib/academy-hosted";
+import { hostedLabsConfigured, reapIdleHostedLabs, stopDueHostedLabs } from "@/lib/academy-hosted";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -12,6 +12,14 @@ export async function GET(request: Request) {
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!hostedLabsConfigured()) return NextResponse.json({ stopped: 0, configured: false });
-  return NextResponse.json({ stopped: await stopDueHostedLabs() });
+  if (!hostedLabsConfigured()) return NextResponse.json({ stopped: 0, reaped: 0, configured: false });
+  // Stop first, reclaim second: a lab stopped on this run has just been touched
+  // and will not look idle, which is what we want -- only labs that have been
+  // quiet for weeks are worth their disks.
+  const stopped = await stopDueHostedLabs();
+  const reaped = await reapIdleHostedLabs().catch((err) => {
+    console.error("idle reclaim failed", err instanceof Error ? err.message : err);
+    return 0;
+  });
+  return NextResponse.json({ stopped, reaped });
 }

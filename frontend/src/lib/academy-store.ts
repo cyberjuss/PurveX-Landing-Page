@@ -325,6 +325,57 @@ export async function hostedLabsDueToStop(now = new Date()): Promise<{ userId: s
   return [...memoryHosted.entries()].filter(([, r]) => r.stopAt && Date.parse(r.stopAt) <= now.getTime()).map(([userId, row]) => ({ userId, row }));
 }
 
+/** Labs nobody has touched since `before`, for the idle-reclaim job. The memory
+ *  fallback keeps no timestamp, so it never reports one -- reclaiming is a cost
+ *  job, and skipping it without a database is safer than guessing. */
+export async function hostedLabsIdleSince(before: Date): Promise<{ userId: string; row: HostedLabRow }[]> {
+  if (!supabaseAdmin) return [];
+  const { data, error } = await supabaseAdmin.from("academy_hosted_labs").select("*").lt("updated_at", before.toISOString());
+  if (error) {
+    console.error("academy_hosted_labs idle read failed", error.message);
+    return [];
+  }
+  return (data ?? []).map((d) => ({ userId: d.user_id, row: { instanceId: d.instance_id, passwordEnc: d.password_enc, stopAt: d.stop_at, createdAt: d.created_at } }));
+}
+
+// Lab minutes used this calendar month, so one student cannot run the cloud
+// bill up without limit. Its own table rather than another row in
+// academy_coach_usage, whose `day` is a real date -- a month key written there
+// would collide with the coach's own count on the first of every month.
+const memoryLabMinutes = new Map<string, { month: string; minutes: number }>();
+
+export const monthStamp = (d = new Date()) => d.toISOString().slice(0, 7);
+
+export async function readLabMinutes(userId: string, month = monthStamp()): Promise<number> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin
+      .from("academy_lab_usage")
+      .select("minutes")
+      .eq("user_id", userId)
+      .eq("month", month)
+      .maybeSingle();
+    if (!error && typeof data?.minutes === "number") return data.minutes;
+    if (error) console.error("academy_lab_usage read failed", error.message);
+  }
+  const row = memoryLabMinutes.get(userId);
+  return row && row.month === month ? row.minutes : 0;
+}
+
+export async function addLabMinutes(userId: string, minutes: number, month = monthStamp()): Promise<number> {
+  const next = (await readLabMinutes(userId, month)) + minutes;
+  memoryLabMinutes.set(userId, { month, minutes: next });
+  if (supabaseAdmin) {
+    const { error } = await supabaseAdmin.from("academy_lab_usage").upsert({
+      user_id: userId,
+      month,
+      minutes: next,
+      updated_at: new Date().toISOString(),
+    });
+    if (error) console.error("academy_lab_usage upsert failed", error.message);
+  }
+  return next;
+}
+
 // The student's running Shift, while it is on. One row per student, replaced
 // each shift. Cleared when the shift is graded (the result lands in the drill log).
 const memoryShift = new Map<string, ShiftRun>();

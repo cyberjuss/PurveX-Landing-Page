@@ -334,3 +334,24 @@ create table if not exists public.academy_email_log (
 );
 
 alter table public.academy_email_log enable row level security;
+
+-- Lab hours spent per calendar month, against HOSTED_LAB_MONTHLY_HOURS. Its own
+-- table rather than another row in academy_coach_usage, whose `day` is a real
+-- date -- a month key written there would collide with the coach's own count on
+-- the first of every month. Charged when a session starts, since a lab that is
+-- never stopped cleanly would otherwise cost the hours and never record them.
+-- Written by the server only; students read their own to see what is left.
+create table if not exists public.academy_lab_usage (
+  user_id uuid not null references auth.users (id) on delete cascade,
+  month text not null,
+  minutes integer not null default 0,
+  updated_at timestamptz not null default now(),
+  primary key (user_id, month)
+);
+
+alter table public.academy_lab_usage enable row level security;
+
+drop policy if exists "Students read their own lab usage" on public.academy_lab_usage;
+create policy "Students read their own lab usage"
+  on public.academy_lab_usage for select
+  using (auth.uid() = user_id);

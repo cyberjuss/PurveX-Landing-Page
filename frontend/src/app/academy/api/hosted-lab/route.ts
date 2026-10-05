@@ -6,6 +6,8 @@ import {
   hostedLabLink,
   hostedLabsConfigured,
   hostedLabStatus,
+  labHours,
+  LabHoursSpentError,
   resetHostedLab,
   startHostedLab,
   stopDueHostedLabs,
@@ -65,7 +67,16 @@ export async function GET(request: Request) {
   if (!canUseHostedLab(student.email)) return NextResponse.json({ available: false });
   sweep();
   try {
-    return NextResponse.json({ available: true, ...(await hostedLabStatus(student.id)) });
+    const [status, hours] = await Promise.all([hostedLabStatus(student.id), labHours(student.id)]);
+    // hoursLeft is Infinity when the cap is off, which JSON turns into null --
+    // the page reads null as "no cap to show", not "no hours left".
+    return NextResponse.json({
+      available: true,
+      ...status,
+      hoursUsed: Math.round(hours.used),
+      hoursLimit: hours.limit || null,
+      hoursLeft: Number.isFinite(hours.left) ? Math.round(hours.left) : null,
+    });
   } catch {
     return NextResponse.json({ available: true, state: "none", error: "Could not reach AWS. Try again in a minute." });
   }
@@ -99,6 +110,9 @@ export async function POST(request: Request) {
     } else return NextResponse.json({ error: "Unknown action." }, { status: 400 });
     return NextResponse.json(await hostedLabStatus(student.id));
   } catch (err) {
+    // Running out of hours is not a fault, so it does not get the AWS wording
+    // or the error log. 429 so the page can tell them apart from a real outage.
+    if (err instanceof LabHoursSpentError) return NextResponse.json({ error: err.message, hoursSpent: true }, { status: 429 });
     console.error("hosted lab action failed", action, err instanceof Error ? err.message : err);
     return NextResponse.json({ error: "AWS did not accept that. Try again in a minute." }, { status: 502 });
   }
