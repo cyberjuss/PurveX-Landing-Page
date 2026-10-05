@@ -13,7 +13,7 @@ import "./hosted-lab.css";
 
 type State = "none" | "starting" | "ready" | "stopping" | "stopped";
 /** locked: hosted labs exist here, but this account is on Explore and has not bought one. */
-type Status = { available: boolean; locked?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string };
+type Status = { available: boolean; locked?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean };
 type Snapshot = { status: Status | null; busy: boolean; error: string | null };
 
 const clock = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -318,7 +318,7 @@ export function HostedLabMenu() {
         : state === "stopping"
           ? "Saving your session."
           : state === "none"
-            ? "Your own domain controller, ready in about 3 minutes. It opens in a browser tab, nothing to install."
+            ? "Your own domain controller and an Ubuntu server beside it, ready in about 3 minutes. They open in a browser tab, nothing to install."
             : null;
 
   return (
@@ -344,7 +344,7 @@ export function HostedLabMenu() {
         </div>
         <div>
           <dt>System</dt>
-          <dd>Windows Server 2022</dd>
+          <dd>{status.linux ? "Windows Server 2022 + Ubuntu 24.04" : "Windows Server 2022"}</dd>
         </div>
         {spec && (
           <div>

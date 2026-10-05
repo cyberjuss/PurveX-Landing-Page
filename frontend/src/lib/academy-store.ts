@@ -280,15 +280,42 @@ export async function resolveLabKey(key: string): Promise<string | null> {
   return memoryLabKeys.get(hash) ?? null;
 }
 
-// Each student's hosted lab: the EC2 instance, its encrypted remote-desktop
-// password, and when it stops on its own.
-export type HostedLabRow = { instanceId: string; passwordEnc: string; stopAt: string | null; createdAt: string };
+// Each student's hosted lab pod: the domain controller, the Ubuntu server beside
+// it, their encrypted sign-in passwords, the pod slot that decides which
+// security group isolates them, and when the pod stops on its own.
+//
+// linuxInstanceId is null for a pod built before the Ubuntu server existed, and
+// for one whose Ubuntu machine failed to launch. Everything that touches it
+// checks first, so a pod with only a domain controller keeps working.
+export type HostedLabRow = {
+  instanceId: string;
+  passwordEnc: string;
+  stopAt: string | null;
+  createdAt: string;
+  linuxInstanceId: string | null;
+  linuxPasswordEnc: string | null;
+  podSlot: number | null;
+};
 const memoryHosted = new Map<string, HostedLabRow>();
+
+/** One place that turns a database row into a HostedLabRow, so a new column does
+ *  not have to be remembered in each of the four reads below. */
+function hostedRow(d: Record<string, unknown>): HostedLabRow {
+  return {
+    instanceId: d.instance_id as string,
+    passwordEnc: d.password_enc as string,
+    stopAt: (d.stop_at as string | null) ?? null,
+    createdAt: d.created_at as string,
+    linuxInstanceId: (d.linux_instance_id as string | null) ?? null,
+    linuxPasswordEnc: (d.linux_password_enc as string | null) ?? null,
+    podSlot: d.pod_slot === null || d.pod_slot === undefined ? null : Number(d.pod_slot),
+  };
+}
 
 export async function loadHostedLab(userId: string): Promise<HostedLabRow | null> {
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin.from("academy_hosted_labs").select("*").eq("user_id", userId).maybeSingle();
-    if (!error && data) return { instanceId: data.instance_id, passwordEnc: data.password_enc, stopAt: data.stop_at, createdAt: data.created_at };
+    if (!error && data) return hostedRow(data);
     if (error) console.error("academy_hosted_labs read failed", error.message);
   }
   return memoryHosted.get(userId) ?? null;
@@ -303,6 +330,9 @@ export async function saveHostedLab(userId: string, row: HostedLabRow) {
     password_enc: row.passwordEnc,
     stop_at: row.stopAt,
     created_at: row.createdAt,
+    linux_instance_id: row.linuxInstanceId,
+    linux_password_enc: row.linuxPasswordEnc,
+    pod_slot: row.podSlot,
     updated_at: new Date().toISOString(),
   });
   if (error) throw new Error(error.message);
@@ -319,7 +349,7 @@ export async function deleteHostedLab(userId: string) {
 export async function hostedLabsDueToStop(now = new Date()): Promise<{ userId: string; row: HostedLabRow }[]> {
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin.from("academy_hosted_labs").select("*").lte("stop_at", now.toISOString());
-    if (!error && data) return data.map((d) => ({ userId: d.user_id, row: { instanceId: d.instance_id, passwordEnc: d.password_enc, stopAt: d.stop_at, createdAt: d.created_at } }));
+    if (!error && data) return data.map((d) => ({ userId: d.user_id, row: hostedRow(d) }));
     if (error) console.error("academy_hosted_labs due read failed", error.message);
   }
   return [...memoryHosted.entries()].filter(([, r]) => r.stopAt && Date.parse(r.stopAt) <= now.getTime()).map(([userId, row]) => ({ userId, row }));
@@ -335,7 +365,71 @@ export async function hostedLabsIdleSince(before: Date): Promise<{ userId: strin
     console.error("academy_hosted_labs idle read failed", error.message);
     return [];
   }
-  return (data ?? []).map((d) => ({ userId: d.user_id, row: { instanceId: d.instance_id, passwordEnc: d.password_enc, stopAt: d.stop_at, createdAt: d.created_at } }));
+  return (data ?? []).map((d) => ({ userId: d.user_id, row: hostedRow(d) }));
+}
+
+/** Marks a reserved-but-not-yet-built pod. Overwritten seconds later with the
+ *  real instance ids; if the launch dies first, the next Start reuses the slot. */
+export const POD_RESERVED = "reserved";
+
+/**
+ * Takes the lowest free pod slot for a student and holds it.
+ *
+ * The slot decides which security group the student's two machines share, and
+ * two students must never land in the same one -- that would let each reach the
+ * other's domain controller. A unique index on pod_slot is what actually
+ * guarantees it: two students pressing Start at the same moment both compute the
+ * same lowest free slot, the second insert is rejected, and it tries the next.
+ *
+ * Returns null when every slot is taken; the caller turns that into "no room
+ * right now" rather than putting two students in one group. Without a database
+ * (local development) the student's own row is the only one, so slot 0 is safe.
+ */
+export async function claimPodSlot(userId: string, slots: number): Promise<number | null> {
+  if (slots <= 0) return null;
+  if (!supabaseAdmin) return 0;
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    // Holding the claim takes a row, and this student may already have one. Read
+    // the two not-null columns along with the slots so the claim can put them
+    // back unchanged: reading them from the in-memory copy instead would wipe a
+    // real instance id on any server that had not handled this student yet.
+    const { data, error } = await supabaseAdmin.from("academy_hosted_labs").select("user_id, pod_slot, instance_id, password_enc");
+    if (error) {
+      console.error("pod slot read failed", error.message);
+      return null;
+    }
+    const mine = (data ?? []).find((d) => d.user_id === userId);
+    // Already holding one: keep it, so a reset lands the student back in the
+    // same group instead of leaking a slot every time they rebuild.
+    if (mine?.pod_slot !== null && mine?.pod_slot !== undefined) return Number(mine.pod_slot);
+
+    const taken = new Set((data ?? []).map((d) => d.pod_slot).filter((v) => v !== null).map(Number));
+    let slot = -1;
+    for (let i = 0; i < slots; i++) {
+      if (!taken.has(i)) {
+        slot = i;
+        break;
+      }
+    }
+    if (slot < 0) return null;
+
+    const { error: claimError } = await supabaseAdmin.from("academy_hosted_labs").upsert({
+      user_id: userId,
+      instance_id: mine?.instance_id ?? POD_RESERVED,
+      password_enc: mine?.password_enc ?? POD_RESERVED,
+      pod_slot: slot,
+      updated_at: new Date().toISOString(),
+    });
+    // A unique-violation means someone else took this slot in the meantime.
+    if (!claimError) return slot;
+    if (claimError.code !== "23505") {
+      console.error("pod slot claim failed", claimError.message);
+      return null;
+    }
+  }
+  console.error("pod slot claim gave up after five collisions");
+  return null;
 }
 
 // Lab minutes used this calendar month, so one student cannot run the cloud

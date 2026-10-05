@@ -289,6 +289,18 @@ create table if not exists public.academy_hosted_labs (
   updated_at timestamptz not null default now()
 );
 
+-- A lab is now a pod of two machines: the domain controller above and an Ubuntu
+-- server beside it. pod_slot decides which security group isolates the pair, and
+-- the unique index is what stops two students sharing one group -- without it, a
+-- race between two students pressing Start would let each reach the other's
+-- domain controller. The columns are nullable so a pod built before the Ubuntu
+-- server existed keeps working with only its domain controller.
+alter table public.academy_hosted_labs add column if not exists linux_instance_id text;
+alter table public.academy_hosted_labs add column if not exists linux_password_enc text;
+alter table public.academy_hosted_labs add column if not exists pod_slot integer;
+create unique index if not exists academy_hosted_labs_pod_slot_key
+  on public.academy_hosted_labs (pod_slot) where pod_slot is not null;
+
 alter table public.academy_lab_keys enable row level security;
 alter table public.academy_hosted_labs enable row level security;
 

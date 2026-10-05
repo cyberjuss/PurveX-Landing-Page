@@ -8,6 +8,7 @@ import {
   hostedLabStatus,
   labHours,
   LabHoursSpentError,
+  PodSlotsFullError,
   resetHostedLab,
   startHostedLab,
   stopDueHostedLabs,
@@ -113,6 +114,12 @@ export async function POST(request: Request) {
     // Running out of hours is not a fault, so it does not get the AWS wording
     // or the error log. 429 so the page can tell them apart from a real outage.
     if (err instanceof LabHoursSpentError) return NextResponse.json({ error: err.message, hoursSpent: true }, { status: 429 });
+    // Every pod security group is taken. Not a fault either, and the fix is
+    // ours (raise pod_slots and apply), so it is logged but worded for them.
+    if (err instanceof PodSlotsFullError) {
+      console.error("hosted lab pod slots exhausted");
+      return NextResponse.json({ error: err.message }, { status: 503 });
+    }
     console.error("hosted lab action failed", action, err instanceof Error ? err.message : err);
     return NextResponse.json({ error: "AWS did not accept that. Try again in a minute." }, { status: 502 });
   }

@@ -1,9 +1,15 @@
-# Range hosted labs: the shared AWS pieces every student lab uses.
-#   - a private network with one public subnet (labs and the gateway)
+# Range hosted labs: the shared AWS pieces every student lab pod uses.
+#   - a private network with one public subnet (lab pods and the gateway)
 #   - the Guacamole gateway that opens labs in the browser
-#   - an AWS login Range uses to start, stop and reset labs, limited to lab machines
+#   - a pool of pod security groups, one per student, so no pod can reach another
+#   - an AWS login Range uses to start, stop and reset pods, limited to lab machines
 #   - a monthly budget alert
-# Student labs themselves are created by Range, not by Terraform.
+#
+# A pod is one student's two machines: a Windows domain controller and an Ubuntu
+# server. The pod's machines talk to each other freely and to nothing else on the
+# network. Range creates the machines; Terraform owns every piece of the network
+# they land in, so the Vercel key cannot change where a lab sits or who can
+# reach it.
 
 terraform {
   required_version = ">= 1.5"
@@ -90,6 +96,12 @@ resource "aws_security_group" "gateway" {
   }
 }
 
+# The image builder's security group. Students do not use this one -- each gets a
+# pod group below. Kept because image/build-image.ps1 launches the builder into it.
+# Its description still says "student labs", which it no longer is. AWS cannot
+# edit a description, so changing the wording replaces the group, and the group
+# cannot be deleted while a stopped lab still has it attached. Not worth an
+# outage; this comment is the correction.
 resource "aws_security_group" "lab" {
   name        = "casefile-lab"
   description = "Student labs: remote desktop from the gateway only, web out only"
@@ -118,6 +130,73 @@ resource "aws_security_group" "lab" {
   }
 }
 
+# ---- pod security groups ---------------------------------------------------
+# One group per student, claimed when their pod is built and released when it is
+# torn down. Everything a pod needs is inside the group:
+#
+#   - the two machines in the group reach each other on every port, which is what
+#     DNS, Kerberos, LDAP and SMB between the Ubuntu server and the domain
+#     controller need, and what makes the pod feel like a small real network
+#   - the gateway reaches them on 3389 and 22, and nothing else reaches them at
+#     all: no rule names the internet, another pod, or the wider VPC
+#   - they reach the web on 80 and 443 only, for apt, Windows updates and the
+#     sync back to Range
+#
+# A security group is default-deny, so student A's Ubuntu box cannot see student
+# B's domain controller: B's group names only B's own group and the gateway.
+# Groups cost nothing, so the pool is sized for the class rather than the hour.
+
+resource "aws_security_group" "pod" {
+  count       = var.pod_slots
+  name        = "casefile-pod-${count.index}"
+  description = "Lab pod ${count.index}: its own two machines, the gateway, and the web"
+  vpc_id      = aws_vpc.labs.id
+
+  ingress {
+    description = "Both machines in this pod, on every port"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    self        = true
+  }
+  ingress {
+    description     = "Remote desktop to the domain controller, from the gateway"
+    from_port       = 3389
+    to_port         = 3389
+    protocol        = "tcp"
+    security_groups = [aws_security_group.gateway.id]
+  }
+  ingress {
+    description     = "A shell on the Ubuntu server, from the gateway"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [aws_security_group.gateway.id]
+  }
+  egress {
+    description = "HTTPS out: the sync to Range, the SSM agent, apt, Windows update"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    description = "HTTP out: apt and certificate revocation checks"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Range is allowed to launch into a group carrying this tag and no other, so
+  # the tag is what keeps a lab out of the gateway group. See the login below.
+  tags = {
+    Name           = "casefile-pod-${count.index}"
+    "casefile-pod" = "true"
+    slot           = tostring(count.index)
+  }
+}
+
 # ---- gateway ---------------------------------------------------------------
 
 resource "random_id" "gateway_key" {
@@ -130,6 +209,13 @@ resource "random_id" "lab_secret" {
 
 data "aws_ssm_parameter" "al2023" {
   name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
+}
+
+# Canonical's own Ubuntu 24.04 LTS image, read so the pod's Ubuntu AMI lands in
+# the Vercel output rather than being looked up by hand. It is pinned in Vercel
+# on purpose: a cohort should not get a different Ubuntu halfway through.
+data "aws_ssm_parameter" "ubuntu2404" {
+  name = "/aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id"
 }
 
 resource "aws_iam_role" "gateway" {
@@ -210,20 +296,33 @@ resource "aws_iam_instance_profile" "lab" {
 }
 
 # ---- Range's AWS login -------------------------------------------------
-# It can create lab machines only with the casefile-lab tag, only in this
-# subnet and security group, and can only start, stop or end tagged machines.
+# The key Vercel holds. It can build a lab pod and nothing else:
+#
+#   - launch a machine only with the casefile-lab tag, only in the lab subnet,
+#     and only into a security group tagged casefile-pod -- never the gateway's
+#   - only the three instance types a lab uses, so a stolen key cannot start a
+#     fleet of large machines
+#   - start, stop and terminate only tagged lab machines
+#   - run only the PowerShell and shell documents, only on tagged lab machines
+#
+# It cannot create or edit a security group, a subnet or a route. The shape of
+# the network is Terraform's alone, so a key leak cannot open a lab to the
+# internet or let one pod reach another. It is a managed policy rather than an
+# inline one because an inline user policy is capped at 2,048 characters.
 
 locals {
   arn_prefix = "arn:aws:ec2:${var.region}:${data.aws_caller_identity.me.account_id}"
+  # What a lab pod is allowed to be. Anything else is denied below.
+  lab_instance_types = [var.dc_instance_type, var.linux_instance_type, "t3.medium"]
 }
 
 resource "aws_iam_user" "casefile" {
   name = "casefile-hosted-labs"
 }
 
-resource "aws_iam_user_policy" "casefile" {
-  name = "casefile-hosted-labs"
-  user = aws_iam_user.casefile.name
+resource "aws_iam_policy" "casefile" {
+  name        = "casefile-hosted-labs"
+  description = "What Range may do in AWS: build and run student lab pods, nothing else."
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -243,9 +342,35 @@ resource "aws_iam_user_policy" "casefile" {
         Resource = [
           "arn:aws:ec2:${var.region}::image/*",
           aws_subnet.labs.arn,
-          aws_security_group.lab.arn,
           "${local.arn_prefix}:network-interface/*",
         ]
+      },
+      {
+        # Only a pod group. The gateway group has no casefile-pod tag, so a lab
+        # cannot be launched into the one group that the internet can reach.
+        Sid      = "LaunchIntoPodGroupOnly"
+        Effect   = "Allow"
+        Action   = "ec2:RunInstances"
+        Resource = "${local.arn_prefix}:security-group/*"
+        Condition = {
+          StringEquals = { "aws:ResourceTag/casefile-pod" = "true" }
+        }
+      },
+      {
+        Sid      = "NeverTheGatewayGroup"
+        Effect   = "Deny"
+        Action   = "ec2:RunInstances"
+        Resource = aws_security_group.gateway.arn
+      },
+      {
+        # A stolen key cannot turn the account into a mining fleet.
+        Sid      = "OnlyLabSizedMachines"
+        Effect   = "Deny"
+        Action   = "ec2:RunInstances"
+        Resource = "${local.arn_prefix}:instance/*"
+        Condition = {
+          StringNotEquals = { "ec2:InstanceType" = local.lab_instance_types }
+        }
       },
       {
         Sid      = "TagAtLaunch"
@@ -266,9 +391,10 @@ resource "aws_iam_user_policy" "casefile" {
         }
       },
       {
+        # Read-only. Describing groups is how Range finds the pod group for a slot.
         Sid      = "SeeLabs"
         Effect   = "Allow"
-        Action   = "ec2:DescribeInstances"
+        Action   = ["ec2:DescribeInstances", "ec2:DescribeSecurityGroups"]
         Resource = "*"
       },
       {
@@ -290,10 +416,13 @@ resource "aws_iam_user_policy" "casefile" {
         }
       },
       {
-        Sid      = "RunPowerShellDocument"
-        Effect   = "Allow"
-        Action   = "ssm:SendCommand"
-        Resource = "arn:aws:ssm:${var.region}::document/AWS-RunPowerShellScript"
+        Sid    = "RunTheTwoScriptDocuments"
+        Effect = "Allow"
+        Action = "ssm:SendCommand"
+        Resource = [
+          "arn:aws:ssm:${var.region}::document/AWS-RunPowerShellScript",
+          "arn:aws:ssm:${var.region}::document/AWS-RunShellScript",
+        ]
       },
       {
         Sid      = "SeeCommandResults"
@@ -303,6 +432,11 @@ resource "aws_iam_user_policy" "casefile" {
       },
     ]
   })
+}
+
+resource "aws_iam_user_policy_attachment" "casefile" {
+  user       = aws_iam_user.casefile.name
+  policy_arn = aws_iam_policy.casefile.arn
 }
 
 resource "aws_iam_access_key" "casefile" {

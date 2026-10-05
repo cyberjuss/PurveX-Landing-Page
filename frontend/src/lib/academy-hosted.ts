@@ -2,6 +2,7 @@ import "server-only";
 import { createCipheriv, createDecipheriv, createHmac, randomBytes } from "crypto";
 import {
   DescribeInstancesCommand,
+  DescribeSecurityGroupsCommand,
   EC2Client,
   RunInstancesCommand,
   StartInstancesCommand,
@@ -11,26 +12,44 @@ import {
 import { DescribeInstanceInformationCommand, SendCommandCommand, SSMClient } from "@aws-sdk/client-ssm";
 import {
   addLabMinutes,
+  claimPodSlot,
   createLabKey,
   deleteHostedLab,
   hostedLabsDueToStop,
   hostedLabsIdleSince,
   loadHostedLab,
   loadLabState,
+  POD_RESERVED,
   readLabMinutes,
   saveHostedLab,
   type HostedLabRow,
 } from "@/lib/academy-store";
 
-// Hosted labs: each student's own PurveX Financial domain controller in AWS,
-// cloned from the image lab-environment/hosted builds. On first boot, EC2 user
-// data links it to the student with a lab key and installs the same sync task a
-// self-hosted lab uses, so Coach, the MCP server, missions and the portfolio
-// see it the same way. Students open it in the browser through the Guacamole
-// gateway with a signed link that expires in five minutes.
+// Hosted labs: each student's own two-machine pod in AWS. A Windows domain
+// controller cloned from the image lab-environment/hosted builds, and an Ubuntu
+// server beside it on the same small network. On first boot the domain
+// controller links itself to the student with a lab key and installs the same
+// sync task a self-hosted lab uses, so Coach, the MCP server, missions and the
+// portfolio see it the same way. Students open both machines in the browser
+// through the Guacamole gateway with one signed link.
+//
+// Isolation is the pod's security group, one per student, created by Terraform
+// and picked by slot number (see claimPodSlot). The two machines in a pod reach
+// each other on every port and nothing else on the network: no student's lab can
+// see another's, and nothing on the internet can open a connection to either
+// machine. This key cannot create or change a security group, so that shape
+// holds even if it leaks.
 
 export type HostedLabState = "none" | "starting" | "ready" | "stopping" | "stopped";
-export type HostedLabStatus = { state: HostedLabState; stopAt: string | null; startedAt: string | null; firstBoot: boolean; instanceType: string };
+export type HostedLabStatus = {
+  state: HostedLabState;
+  stopAt: string | null;
+  startedAt: string | null;
+  firstBoot: boolean;
+  instanceType: string;
+  /** True once the pod has an Ubuntu server too, so the UI can offer both machines. */
+  linux: boolean;
+};
 
 function cfg() {
   // Trimmed: a value pasted or piped into Vercel can carry a stray line break.
@@ -43,6 +62,13 @@ function cfg() {
     subnet: e.HOSTED_LAB_SUBNET || "",
     securityGroup: e.HOSTED_LAB_SECURITY_GROUP || "",
     instanceType: e.HOSTED_LAB_INSTANCE_TYPE || "t3.medium",
+    /** The Ubuntu server beside the domain controller. Unset means pods are built
+     *  with the domain controller alone, which is what they were before. */
+    linuxAmi: e.HOSTED_LAB_LINUX_AMI || "",
+    linuxInstanceType: e.HOSTED_LAB_LINUX_INSTANCE_TYPE || "t3.small",
+    /** How many pod security groups Terraform made. A pod takes one while it
+     *  exists, so this is also the cap on students holding a lab at once. */
+    podSlots: Math.max(0, Number(e.HOSTED_LAB_POD_SLOTS) || 0),
     /** Gives each lab the SSM agent role, so Range can fire Shift incidents into it. */
     instanceProfile: e.HOSTED_LAB_INSTANCE_PROFILE || "",
     gatewayUrl: (e.HOSTED_LAB_GATEWAY_URL || "").replace(/\/+$/, ""),
@@ -152,6 +178,91 @@ export function firstBootScript(key: string, password: string, url: string): str
   ].join("\r\n");
 }
 
+/** Thrown when every pod security group is taken. Raising var.pod_slots in
+ *  Terraform and applying again makes more; they cost nothing while empty. */
+export class PodSlotsFullError extends Error {
+  constructor() {
+    super("Every lab slot is in use right now. Try again in a few minutes, or email support@purvex.io.");
+    this.name = "PodSlotsFullError";
+  }
+}
+
+// ---- pod security group ---------------------------------------------------
+// Terraform makes casefile-pod-0 .. casefile-pod-N, each one a group only one
+// student's two machines ever share. We look the slot's group up by name rather
+// than keeping a list of ids in the environment, and cache it: the ids never
+// change once Terraform has made them.
+
+const podGroupIds = new Map<number, string>();
+
+async function podSecurityGroup(slot: number): Promise<string> {
+  const cached = podGroupIds.get(slot);
+  if (cached) return cached;
+  const name = `casefile-pod-${slot}`;
+  // Both the name and our own tag, so this can only ever find a group Terraform
+  // made for a pod. A group named the same in some other VPC would be refused by
+  // RunInstances anyway, but matching on the tag means it is never even picked.
+  const out = await ec2().send(
+    new DescribeSecurityGroupsCommand({
+      Filters: [
+        { Name: "group-name", Values: [name] },
+        { Name: "tag:casefile-pod", Values: ["true"] },
+      ],
+    })
+  );
+  const id = out.SecurityGroups?.[0]?.GroupId;
+  if (!id) throw new Error(`No security group named ${name}. Raise pod_slots in Terraform and apply.`);
+  podGroupIds.set(slot, id);
+  return id;
+}
+
+// ---- the Ubuntu server ----------------------------------------------------
+
+const sh = (v: string) => `'${v.replace(/'/g, `'\\''`)}'`;
+
+/**
+ * Cloud-init for the Ubuntu server, which boots standalone: its own local
+ * account, its own services, not joined to the domain. Joining it is a lab the
+ * student does by hand, so this only gets them as far as the starting line --
+ * the domain controller is in /etc/hosts and the tools a join needs are already
+ * installed, and the rest is theirs to work out.
+ *
+ * DNS is left pointing at the Amazon resolver on purpose. AWS exempts its own
+ * resolver from security group rules, so name resolution and apt keep working
+ * on a pod whose egress is 80 and 443 only -- and pointing resolution at the
+ * domain controller instead is the first real step of the join.
+ */
+export function linuxCloudInit(dcIp: string, password: string): string {
+  return [
+    "#!/bin/bash",
+    "set -x",
+    "exec > /var/log/purvex-first-boot.log 2>&1",
+    "hostnamectl set-hostname web01",
+    // The domain controller by name, so the student can reach it before they fix DNS.
+    `echo ${sh(`${dcIp} dc01.purvexfinancial.local dc01`)} >> /etc/hosts`,
+    `echo ${sh("127.0.0.1 web01 web01.purvexfinancial.local")} >> /etc/hosts`,
+    // The account the browser signs in with. Guacamole signs in with a password
+    // and the Canonical image turns password logins off, so put it back in a file
+    // that sorts ahead of the image's own: sshd keeps the first setting it reads.
+    "id -u student >/dev/null 2>&1 || useradd -m -s /bin/bash -G sudo student",
+    `echo ${sh(`student:${password}`)} | chpasswd`,
+    `echo ${sh("PasswordAuthentication yes")} > /etc/ssh/sshd_config.d/00-purvex.conf`,
+    `echo ${sh("PermitRootLogin no")} >> /etc/ssh/sshd_config.d/00-purvex.conf`,
+    "systemctl restart ssh || systemctl restart sshd",
+    // The tools the domain-join lab needs, plus what Tier 1 work on a Linux box
+    // takes. Installed now so the lab does not depend on apt being reachable.
+    "export DEBIAN_FRONTEND=noninteractive",
+    "apt-get update -y",
+    "apt-get install -y --no-install-recommends realmd sssd sssd-tools adcli samba-common-bin krb5-user packagekit oddjob oddjob-mkhomedir libnss-sss libpam-sss ldap-utils dnsutils net-tools auditd",
+    // A member server with nothing to serve is a thin lab, so it has a web server
+    // and a database to look after, the way a real one would.
+    "apt-get install -y --no-install-recommends nginx",
+    "systemctl enable --now nginx",
+    `echo ${sh("web01 -- PurveX Financial internal")} > /var/www/html/index.html`,
+    "echo first boot finished",
+  ].join("\n");
+}
+
 // ---- AWS ------------------------------------------------------------------
 
 async function describe(instanceId: string) {
@@ -162,14 +273,32 @@ async function describe(instanceId: string) {
 
 const stopAtFromNow = () => new Date(Date.now() + cfg().sessionHours * 3600_000).toISOString();
 
+/**
+ * Builds a student's pod: their domain controller, then the Ubuntu server beside
+ * it in the same security group.
+ *
+ * The domain controller is saved before the Ubuntu server is launched, so a
+ * failure on the second machine leaves a working one-machine pod rather than an
+ * EC2 instance nothing in the database knows about. A pod with no Ubuntu server
+ * is what every pod was before, and the rest of this file treats it that way.
+ */
 async function launch(userId: string): Promise<HostedLabRow> {
   const c = cfg();
+
+  // The slot picks the security group that isolates this pod. Without a pool
+  // configured yet, fall back to the shared group and a single machine: that is
+  // how labs ran before pods, and it keeps a half-finished rollout working.
+  const slot = c.podSlots ? await claimPodSlot(userId, c.podSlots) : null;
+  if (c.podSlots && slot === null) throw new PodSlotsFullError();
+  const securityGroup = slot === null ? c.securityGroup : await podSecurityGroup(slot);
+
   const key = await createLabKey(userId);
   const password = newPassword();
-  const tags = [
-    { Key: "Name", Value: `casefile-lab-${userId.slice(0, 8)}` },
+  const tags = (role: string) => [
+    { Key: "Name", Value: `casefile-${role}-${userId.slice(0, 8)}` },
     { Key: "casefile-lab", Value: "true" },
     { Key: "casefile-user", Value: userId },
+    { Key: "casefile-role", Value: role },
   ];
   const out = await ec2().send(
     new RunInstancesCommand({
@@ -178,7 +307,7 @@ async function launch(userId: string): Promise<HostedLabRow> {
       MinCount: 1,
       MaxCount: 1,
       SubnetId: c.subnet,
-      SecurityGroupIds: [c.securityGroup],
+      SecurityGroupIds: [securityGroup],
       UserData: Buffer.from(firstBootScript(key, password, c.syncUrl)).toString("base64"),
       // Never throttled to 20% CPU. Costs a little more only under long heavy load.
       CreditSpecification: { CpuCredits: "unlimited" },
@@ -189,23 +318,87 @@ async function launch(userId: string): Promise<HostedLabRow> {
       // The SSM agent role, so Shift incidents can be fired into the lab. Omitted when not set up.
       ...(c.instanceProfile ? { IamInstanceProfile: { Name: c.instanceProfile } } : {}),
       TagSpecifications: [
+        { ResourceType: "instance", Tags: tags("dc") },
+        { ResourceType: "volume", Tags: tags("dc") },
+      ],
+    })
+  );
+  const dc = out.Instances?.[0];
+  const instanceId = dc?.InstanceId;
+  if (!instanceId) throw new Error("AWS did not return an instance.");
+
+  const row: HostedLabRow = {
+    instanceId,
+    passwordEnc: sealPassword(password),
+    stopAt: stopAtFromNow(),
+    createdAt: new Date().toISOString(),
+    linuxInstanceId: null,
+    // Both set together once the Ubuntu server is up. A password with no machine
+    // to use it on would only be a stale secret sitting in the database.
+    linuxPasswordEnc: null,
+    podSlot: slot,
+  };
+  await saveHostedLab(userId, row);
+
+  // The Ubuntu server needs the domain controller's address, which RunInstances
+  // has already assigned. A private address survives stop and start, so writing
+  // it into the Ubuntu server's /etc/hosts once at first boot is enough.
+  if (!c.linuxAmi || slot === null || !dc.PrivateIpAddress) return row;
+  const linux = await launchLinux(securityGroup, dc.PrivateIpAddress, tags("linux")).catch((err) => {
+    console.error("pod Ubuntu server failed to launch", err instanceof Error ? err.message : err);
+    return null;
+  });
+  if (!linux) return row;
+  const full = { ...row, linuxInstanceId: linux.instanceId, linuxPasswordEnc: sealPassword(linux.password) };
+  await saveHostedLab(userId, full);
+  return full;
+}
+
+/** The Ubuntu half of a pod. No hibernation: it runs no desktop, so there is no
+ *  session worth keeping warm, and a plain stop is one less thing to go wrong. */
+async function launchLinux(
+  securityGroup: string,
+  dcIp: string,
+  tags: { Key: string; Value: string }[]
+): Promise<{ instanceId: string; password: string }> {
+  const c = cfg();
+  const password = newPassword();
+  const out = await ec2().send(
+    new RunInstancesCommand({
+      ImageId: c.linuxAmi,
+      InstanceType: c.linuxInstanceType as never,
+      MinCount: 1,
+      MaxCount: 1,
+      SubnetId: c.subnet,
+      SecurityGroupIds: [securityGroup],
+      UserData: Buffer.from(linuxCloudInit(dcIp, password)).toString("base64"),
+      CreditSpecification: { CpuCredits: "unlimited" },
+      MetadataOptions: { HttpTokens: "required", HttpPutResponseHopLimit: 1 },
+      InstanceInitiatedShutdownBehavior: "stop",
+      ...(c.instanceProfile ? { IamInstanceProfile: { Name: c.instanceProfile } } : {}),
+      BlockDeviceMappings: [{ DeviceName: "/dev/sda1", Ebs: { VolumeSize: 20, VolumeType: "gp3", Encrypted: true, DeleteOnTermination: true } }],
+      TagSpecifications: [
         { ResourceType: "instance", Tags: tags },
         { ResourceType: "volume", Tags: tags },
       ],
     })
   );
   const instanceId = out.Instances?.[0]?.InstanceId;
-  if (!instanceId) throw new Error("AWS did not return an instance.");
-  const row: HostedLabRow = { instanceId, passwordEnc: sealPassword(password), stopAt: stopAtFromNow(), createdAt: new Date().toISOString() };
-  await saveHostedLab(userId, row);
-  return row;
+  if (!instanceId) throw new Error("AWS did not return the Ubuntu server.");
+  return { instanceId, password };
+}
+
+/** Every machine in the pod. A reserved-but-unbuilt row holds no machine yet, and
+ *  a pod from before the Ubuntu server holds only its domain controller. */
+function podInstanceIds(row: HostedLabRow): string[] {
+  return [row.instanceId, row.linuxInstanceId].filter((id): id is string => Boolean(id) && id !== POD_RESERVED);
 }
 
 export async function hostedLabStatus(userId: string): Promise<HostedLabStatus> {
   const c = cfg();
-  const none: HostedLabStatus = { state: "none", stopAt: null, startedAt: null, firstBoot: false, instanceType: c.instanceType };
+  const none: HostedLabStatus = { state: "none", stopAt: null, startedAt: null, firstBoot: false, instanceType: c.instanceType, linux: false };
   const row = await loadHostedLab(userId);
-  if (!row) return none;
+  if (!row || row.instanceId === POD_RESERVED) return none;
   const inst = await describe(row.instanceId).catch(() => null);
   if (!inst || inst.state === "terminated" || inst.state === "shutting-down") return none;
   // Ready once the lab has sent a snapshot since it was created: first boot has finished linking it.
@@ -214,12 +407,12 @@ export async function hostedLabStatus(userId: string): Promise<HostedLabStatus> 
   const map: Record<string, HostedLabState> = { pending: "starting", running: linked ? "ready" : "starting", stopping: "stopping", stopped: "stopped" };
   // Each start sets the stop time a session ahead, so the start time is one session before it.
   const startedAt = row.stopAt ? new Date(Date.parse(row.stopAt) - c.sessionHours * 3600_000).toISOString() : null;
-  return { state: map[inst.state] ?? "starting", stopAt: row.stopAt, startedAt, firstBoot: !linked, instanceType: c.instanceType };
+  return { state: map[inst.state] ?? "starting", stopAt: row.stopAt, startedAt, firstBoot: !linked, instanceType: c.instanceType, linux: Boolean(row.linuxInstanceId) };
 }
 
 export async function startHostedLab(userId: string): Promise<void> {
   const row = await loadHostedLab(userId);
-  const inst = row ? await describe(row.instanceId).catch(() => null) : null;
+  const inst = row && row.instanceId !== POD_RESERVED ? await describe(row.instanceId).catch(() => null) : null;
   if (!row || !inst || inst.state === "terminated" || inst.state === "shutting-down") {
     await chargeSession(userId);
     await launch(userId);
@@ -230,11 +423,20 @@ export async function startHostedLab(userId: string): Promise<void> {
   // would hand out free hours to anyone who kept pressing it.
   if (inst.state === "running" && row.stopAt && Date.parse(row.stopAt) > Date.now()) return;
   await chargeSession(userId);
-  if (inst.state === "stopped") await ec2().send(new StartInstancesCommand({ InstanceIds: [row.instanceId] }));
+  // Both machines come back together. A student who opens the Ubuntu server and
+  // finds it stopped has a broken lab, not half a lab, so the pod starts as one.
+  const ids = podInstanceIds(row);
+  if (ids.length) await ec2().send(new StartInstancesCommand({ InstanceIds: ids })).catch((err) => console.error("pod start failed", err instanceof Error ? err.message : err));
   await saveHostedLab(userId, { ...row, stopAt: stopAtFromNow() });
 }
 
-async function stopInstance(instanceId: string) {
+/** Hibernate suits the domain controller: the student gets their windows back as
+ *  they left them. The Ubuntu server runs no desktop, so it takes a plain stop. */
+async function stopInstance(instanceId: string, hibernate: boolean) {
+  if (!hibernate) {
+    await ec2().send(new StopInstancesCommand({ InstanceIds: [instanceId] }));
+    return;
+  }
   try {
     await ec2().send(new StopInstancesCommand({ InstanceIds: [instanceId], Hibernate: true }));
   } catch {
@@ -243,11 +445,27 @@ async function stopInstance(instanceId: string) {
   }
 }
 
+/** Stops every machine in the pod that is up. Each one on its own, so a failure
+ *  on the Ubuntu server still stops the domain controller -- the expensive half. */
+async function stopPod(row: HostedLabRow): Promise<boolean> {
+  let stopped = false;
+  for (const id of podInstanceIds(row)) {
+    const inst = await describe(id).catch(() => null);
+    if (inst?.state !== "running" && inst?.state !== "pending") continue;
+    try {
+      await stopInstance(id, id === row.instanceId);
+      stopped = true;
+    } catch (err) {
+      console.error("pod stop failed", id, err instanceof Error ? err.message : err);
+    }
+  }
+  return stopped;
+}
+
 export async function stopHostedLab(userId: string): Promise<void> {
   const row = await loadHostedLab(userId);
   if (!row) return;
-  const inst = await describe(row.instanceId).catch(() => null);
-  if (inst?.state === "running" || inst?.state === "pending") await stopInstance(row.instanceId);
+  await stopPod(row);
   await saveHostedLab(userId, { ...row, stopAt: null });
 }
 
@@ -260,13 +478,16 @@ export async function extendHostedLab(userId: string): Promise<string | null> {
   return stopAt;
 }
 
-/** A clean lab from the image. The old lab and everything the student changed in it are gone. */
+/** A clean pod from the image. The old machines and everything the student
+ *  changed in them are gone. The pod slot goes back to the pool and is claimed
+ *  again by the new pod, so resetting does not use slots up. */
 export async function resetHostedLab(userId: string): Promise<void> {
   // A reset boots a fresh lab, which is a new session like any other.
   await chargeSession(userId);
   const row = await loadHostedLab(userId);
   if (row) {
-    await ec2().send(new TerminateInstancesCommand({ InstanceIds: [row.instanceId] })).catch(() => {});
+    const ids = podInstanceIds(row);
+    if (ids.length) await ec2().send(new TerminateInstancesCommand({ InstanceIds: ids })).catch(() => {});
     await deleteHostedLab(userId);
   }
   await launch(userId);
@@ -283,12 +504,33 @@ export async function resetHostedLab(userId: string): Promise<void> {
  */
 export async function hostedLabLink(userId: string): Promise<string | null> {
   const row = await loadHostedLab(userId);
-  if (!row) return null;
+  if (!row || row.instanceId === POD_RESERVED) return null;
   const inst = await describe(row.instanceId);
   if (inst?.state !== "running" || !inst.privateIp) return null;
   const c = cfg();
   const now = Date.now();
   const stopAt = row.stopAt ? Date.parse(row.stopAt) : now + c.sessionHours * 3600_000;
+  // The Ubuntu server as a second connection in the same link, so the student
+  // picks a machine in Guacamole rather than coming back here for another link.
+  // Left out if it is not running yet: a connection to a machine that is still
+  // booting fails in the browser with nothing useful to say.
+  const linux = row.linuxInstanceId && row.linuxPasswordEnc ? await describe(row.linuxInstanceId).catch(() => null) : null;
+  const linuxConnection =
+    linux?.state === "running" && linux.privateIp && row.linuxPasswordEnc
+      ? {
+          "web01 (Ubuntu)": {
+            protocol: "ssh",
+            parameters: {
+              hostname: linux.privateIp,
+              port: "22",
+              username: "student",
+              password: openPassword(row.linuxPasswordEnc),
+              "font-size": "12",
+              "color-scheme": "gray-black",
+            },
+          },
+        }
+      : {};
   const payload = JSON.stringify({
     username: `lab-${userId.slice(0, 8)}`,
     expires: Math.min(now + 8 * 3600_000, Math.max(now + 15 * 60_000, stopAt)),
@@ -313,6 +555,7 @@ export async function hostedLabLink(userId: string): Promise<string | null> {
           "server-layout": "en-us-qwerty",
         },
       },
+      ...linuxConnection,
     },
   });
   const key = Buffer.from(c.gatewayKey, "hex");
@@ -482,7 +725,9 @@ export async function reapIdleHostedLabs(): Promise<number> {
   let reaped = 0;
   for (const { userId, row } of await hostedLabsIdleSince(before)) {
     try {
-      await ec2().send(new TerminateInstancesCommand({ InstanceIds: [row.instanceId] }));
+      const ids = podInstanceIds(row);
+      if (ids.length) await ec2().send(new TerminateInstancesCommand({ InstanceIds: ids }));
+      // Deleting the row is what frees the pod's security group for someone else.
       await deleteHostedLab(userId);
       reaped++;
     } catch (err) {
@@ -497,11 +742,7 @@ export async function stopDueHostedLabs(): Promise<number> {
   let stopped = 0;
   for (const { userId, row } of await hostedLabsDueToStop()) {
     try {
-      const inst = await describe(row.instanceId);
-      if (inst?.state === "running" || inst?.state === "pending") {
-        await stopInstance(row.instanceId);
-        stopped++;
-      }
+      if (await stopPod(row)) stopped++;
       await saveHostedLab(userId, { ...row, stopAt: null });
     } catch (err) {
       console.error("hosted lab auto-stop failed", row.instanceId, err instanceof Error ? err.message : err);
