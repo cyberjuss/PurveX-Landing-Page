@@ -419,10 +419,8 @@ export function HostedLabMenu() {
   const note =
     state === "ready"
       ? status.stopAt ? `Stops at ${clock(status.stopAt)}.` : "Running."
-      : state === "starting"
+      : state === "starting" || state === "stopped"
         ? null
-        : state === "stopped"
-        ? "Your work is saved."
         : state === "stopping"
           ? "Saving your work."
           : state === "none"
