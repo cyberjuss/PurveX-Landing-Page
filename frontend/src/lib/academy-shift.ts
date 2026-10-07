@@ -1148,9 +1148,13 @@ export function gradeIncidentLab(
  */
 export function scoreIncident(
   def: IncidentDef,
-  g: { resolved: boolean; onTime: boolean; noHarm: boolean; diagnosisRight: boolean; writeUp: number | null },
+  g: { resolved: boolean; onTime: boolean; noHarm: boolean; diagnosisRight: boolean; writeUp: number | null; touched: boolean },
   hintsUsed: number
 ): number {
+  // An incident nobody worked scores nothing. Without this the "no collateral"
+  // credit pays out for leaving a ticket alone, which is how a shift with
+  // nothing closed still came back with points on the board.
+  if (!g.touched) return 0;
   let frac = 0;
   if (g.resolved) frac += 0.45;
   if (g.onTime) frac += 0.15;
@@ -1206,6 +1210,7 @@ export type IncidentRun = {
   onTime?: boolean;
   resolved?: boolean;
   escalated?: boolean;
+  touched?: boolean;
   noHarm?: boolean;
   diagnosisRight?: boolean;
 };

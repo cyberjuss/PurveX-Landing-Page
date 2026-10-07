@@ -63,6 +63,8 @@ export type IncidentReport = {
   severity: string;
   resolved: boolean;
   escalated: boolean;
+  /** They put a finding, a note, a fix or a handoff against it. */
+  touched: boolean;
   onTime: boolean;
   noHarm: boolean;
   diagnosisRight: boolean;
@@ -385,13 +387,18 @@ async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
       if (marked) writeUp = marked.total ? marked.hits / marked.total : null;
     }
 
+    // Worked means they put something in: a finding, a note, a fix or a handoff.
+    // Opening the incident does not count -- selecting it acknowledges it on its
+    // own, so an ack proves nothing but that the queue scrolled past.
+    const touched = closed || escalated || inc.diagnosis.trim().length > 0 || inc.response.trim().length > 0;
+    inc.touched = touched;
     inc.resolved = closed;
     inc.escalated = escalated;
     inc.noHarm = lg.noHarm;
     inc.diagnosisRight = lg.diagnosisRight;
     inc.onTime = onTime;
     inc.writeUp = writeUp;
-    inc.score = scoreIncident(def, { resolved: closed, onTime, noHarm: lg.noHarm, diagnosisRight: lg.diagnosisRight, writeUp }, inc.hintsUsed);
+    inc.score = scoreIncident(def, { resolved: closed, onTime, noHarm: lg.noHarm, diagnosisRight: lg.diagnosisRight, writeUp, touched }, inc.hintsUsed);
   }
 
   run.totalScore = run.incidents.reduce((s, i) => s + (i.score ?? 0), 0);
@@ -409,6 +416,7 @@ function buildReport(run: ShiftRun): ShiftReport {
       severity: inc.severity,
       resolved: Boolean(inc.resolved),
       escalated: Boolean(inc.escalated),
+      touched: Boolean(inc.touched),
       onTime: Boolean(inc.onTime),
       noHarm: Boolean(inc.noHarm),
       diagnosisRight: Boolean(inc.diagnosisRight),
@@ -430,6 +438,11 @@ function buildReport(run: ShiftRun): ShiftReport {
   // Said last so it outranks the generic advice: escalating everything is the
   // habit that most needs naming, and it is invisible in the score alone.
   if (escalatedCount && escalatedCount >= resolvedCount) habit = "You handed up more than you fixed. Escalate what is above your access, and work the rest yourself.";
+  // Last, so it outranks the rest: a queue nobody worked is the only thing worth
+  // saying about that shift.
+  const workedCount = incidents.filter((i) => i.touched).length;
+  if (!workedCount && incidents.length) habit = "Nothing on the queue was worked. Open the top incident, find the evidence, and write what you found before the clock runs out.";
+  else if (workedCount < incidents.length / 2) habit = "Most of the queue went untouched. Work them in severity order and put a finding against each one, even the ones you hand up.";
   return { totalScore: run.totalScore ?? 0, maxScore: run.maxScore ?? 0, resolvedCount, escalatedCount, onTimeCount, incidents, headline, habit };
 }
 

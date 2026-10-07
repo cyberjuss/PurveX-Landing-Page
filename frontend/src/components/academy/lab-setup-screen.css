@@ -50,10 +50,10 @@
 .ls__brand img { display: block; }
 .ls__brand span { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; color: var(--ls-ink); }
 .ls__brand i { width: 1px; height: 18px; background: var(--ls-line); }
-.ls__brand b { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ls-ink-3); }
+.ls__brand b { font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ls-ink-3); }
 
 .ls__title { margin: 0; font-family: var(--font-display); font-size: clamp(1.9rem, 3.6vw, 2.6rem); font-weight: 700; letter-spacing: -0.025em; color: var(--ls-ink); }
-.ls__lede { margin: 16px 0 40px; max-width: 40ch; font-size: 1.08rem; line-height: 1.6; color: var(--ls-ink-2); }
+.ls__lede { margin: 16px 0 40px; max-width: 40ch; font-size: 1.0625rem; line-height: 1.6; color: var(--ls-ink-2); }
 
 /* Thin, because it is a status line and not the subject of the screen. */
 .ls__bar { position: relative; height: 2px; background: var(--ls-tile); overflow: hidden; }
@@ -67,7 +67,7 @@
 }
 
 .ls__steps { list-style: none; display: grid; gap: 16px; margin: 34px 0 0; padding: 0; }
-.ls__steps li { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 14px; font-size: 1.05rem; color: var(--ls-ink-3); transition: color 0.25s, opacity 0.25s; opacity: 0.55; }
+.ls__steps li { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 14px; font-size: 1.0625rem; color: var(--ls-ink-3); transition: color 0.25s, opacity 0.25s; opacity: 0.55; }
 .ls__steps li.is-done, .ls__steps li.is-now { opacity: 1; }
 .ls__steps svg { width: 17px; height: 17px; }
 .ls__mark { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--ls-tile); box-shadow: inset 0 0 0 1px var(--ls-line); transition: background 0.25s, box-shadow 0.25s; }
@@ -81,13 +81,13 @@
 
 /* The remaining time and the step count on one baseline, held apart by the
    width of the bar above them, so the block reads as one object. */
-.ls__eta { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 36px 0 0; padding-top: 20px; border-top: 1px solid var(--ls-line); font-size: 0.92rem; color: var(--ls-ink-3); }
+.ls__eta { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 36px 0 0; padding-top: 20px; border-top: 1px solid var(--ls-line); font-size: 0.9375rem; color: var(--ls-ink-3); }
 .ls__eta em { font-family: var(--font-mono, ui-monospace, monospace); font-style: normal; font-variant-numeric: tabular-nums; color: var(--ls-ink-2); }
 .ls__eta i { font-style: normal; color: var(--ls-ink-3); }
 
 .ls__hide {
   display: inline-flex; align-items: center; gap: 7px; margin-top: 38px; padding: 10px 18px;
-  border: 1px solid var(--ls-line); background: none; font: inherit; font-size: 0.92rem; font-weight: 600;
+  border: 1px solid var(--ls-line); background: none; font: inherit; font-size: 0.9375rem; font-weight: 600;
   color: var(--ls-ink-2); cursor: pointer; transition: border-color 0.15s, color 0.15s;
 }
 .ls__hide:hover { border-color: var(--ls-accent); color: var(--ls-ink); }

@@ -3,13 +3,13 @@
 .pf .rd-kicker { margin: 0; font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
 .pf-head { padding-bottom: 24px; border-bottom: 1px solid var(--rd-line); }
 .pf-head h1 { margin: 8px 0 0; font-family: var(--font-display); font-size: clamp(26px, 5vw, 34px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; color: var(--rd-ink); }
-.pf-lede { margin: 8px 0 0; max-width: 62ch; font-size: 14.5px; color: var(--rd-ink-2); }
+.pf-lede { margin: 8px 0 0; max-width: 62ch; font-size: 14px; color: var(--rd-ink-2); }
 .pf-sec { display: grid; gap: 12px; padding: 26px 0; border-bottom: 1px solid var(--rd-line); }
-.pf-sec h2 { margin: 0; font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }
-.pf-sec > p { margin: 0; font-size: 13.5px; color: var(--rd-ink-2); }
+.pf-sec h2 { margin: 0; font-family: var(--font-display); font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }
+.pf-sec > p { margin: 0; font-size: 13px; color: var(--rd-ink-2); }
 .pf-sec__top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .pf-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.pf-fields label { display: grid; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--rd-ink-3); }
+.pf-fields label { display: grid; gap: 6px; font-size: 12px; font-weight: 600; color: var(--rd-ink-3); }
 .pf-fields input { height: 40px; padding: 0 12px; border: 1px solid var(--rd-line); background: transparent; font: inherit; font-size: 14px; font-weight: 400; color: var(--rd-ink); min-width: 0; }
 .pf-fields input:focus { outline: none; border-color: var(--rd-accent); }
 .pf-slug { display: flex; align-items: center; border: 1px solid var(--rd-line); }
@@ -28,8 +28,8 @@
 .pf-share .pf-blockers { border-width: 1px 0 0; border-top-color: var(--rd-line); }
 .pf-vis { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; }
 .pf-vis > div { display: grid; gap: 2px; }
-.pf-vis b { font-size: 14.5px; color: var(--rd-ink); }
-.pf-vis small { font-size: 12.5px; color: var(--rd-ink-3); }
+.pf-vis b { font-size: 14px; color: var(--rd-ink); }
+.pf-vis small { font-size: 12px; color: var(--rd-ink-3); }
 .pf-switch:disabled { cursor: not-allowed; opacity: 0.5; }
 .pf-blockers b { display: block; margin-bottom: 4px; font-weight: 600; }
 .pf-blockers ul { margin: 0; padding-left: 18px; }
@@ -53,7 +53,7 @@
 .pf-seg button[aria-pressed="true"] { background: color-mix(in srgb, var(--rd-accent) 12%, transparent); color: var(--rd-accent); }
 .pf-bullets { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .pf-bullets li { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: start; padding: 14px; border: 1px solid var(--rd-line); }
-.pf-bullets p { margin: 0; font-size: 14.5px; line-height: 1.6; color: var(--rd-ink); }
+.pf-bullets p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--rd-ink); }
 .pf-s { box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--c, var(--rd-ink-3)) 50%, transparent); }
 .pf-s--s { --c: var(--rd-ink-3); }
 .pf-s--t { --c: var(--rd-warn); }
@@ -63,12 +63,12 @@
 
 .pf-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--rd-ink-2); cursor: pointer; }
 .pf-ats { display: grid; grid-template-columns: 1fr auto; gap: 14px; padding: 14px; border: 1px solid var(--rd-line); background: var(--rd-line-2); }
-.pf-ats p { margin: 0; font-size: 13.5px; line-height: 1.7; color: var(--rd-ink); }
+.pf-ats p { margin: 0; font-size: 13px; line-height: 1.7; color: var(--rd-ink); }
 
 .pf-todo-sec > summary { list-style: none; cursor: pointer; }
 .pf-todo-sec > summary::-webkit-details-marker { display: none; }
 .pf-todo-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.pf-todo-h { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }
+.pf-todo-h { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-display); font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }
 .pf-todo-count { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 7px; border: 1px solid var(--rd-line); border-radius: 999px; font-family: var(--font-sans); font-size: 12px; font-weight: 600; color: var(--rd-ink-2); }
 .pf-todo-chev { flex: none; color: var(--rd-ink-3); transition: transform 0.18s ease; }
 .pf-todo-sec[open] .pf-todo-chev { transform: rotate(180deg); }
@@ -91,7 +91,7 @@
 .pf-thumb { position: relative; width: 96px; height: 54px; border: 1px solid var(--rd-line); overflow: hidden; background: var(--rd-line-2); }
 .pf-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: left top; }
 .pf-thumb button { position: absolute; top: 3px; right: 3px; display: grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; background: rgba(15, 23, 42, 0.75); color: #fff; cursor: pointer; }
-.pf-add { display: inline-flex; align-items: center; justify-content: center; width: 96px; height: 54px; border: 1px dashed var(--rd-line); font-size: 12.5px; font-weight: 600; color: var(--rd-accent); cursor: pointer; }
+.pf-add { display: inline-flex; align-items: center; justify-content: center; width: 96px; height: 54px; border: 1px dashed var(--rd-line); font-size: 12px; font-weight: 600; color: var(--rd-accent); cursor: pointer; }
 .pf-add:hover { border-color: var(--rd-accent); }
 
 .pf-loading { display: flex; justify-content: center; padding: 64px 0; color: var(--rd-ink-3); }
@@ -115,7 +115,7 @@
 .pf-preview .pp-head { padding-top: 32px; }
 
 /* Messages appear where the student can see them, whatever they clicked. */
-.pf-toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 60; transform: translateX(-50%); max-width: calc(100vw - 32px); margin: 0; padding: 10px 16px; border: 1px solid var(--rd-line); background: var(--rd-ink); color: #fff; font-size: 13.5px; font-weight: 600; box-shadow: 0 12px 32px -12px rgba(15, 23, 42, 0.45); }
+.pf-toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 60; transform: translateX(-50%); max-width: calc(100vw - 32px); margin: 0; padding: 10px 16px; border: 1px solid var(--rd-line); background: var(--rd-ink); color: #fff; font-size: 13px; font-weight: 600; box-shadow: 0 12px 32px -12px rgba(15, 23, 42, 0.45); }
 .academy-bg[data-academy-theme="dark"] .pf-toast { color: #000; }
 .pf-toast.is-bad { background: var(--rd-bad); border-color: var(--rd-bad); color: #fff; }
 
@@ -124,8 +124,8 @@
 .pf-photo > img, .pf-photo > span { flex: none; width: 88px; height: 88px; border-radius: 50%; object-fit: cover; border: 1px solid var(--rd-line); }
 .pf-photo > span { display: grid; place-items: center; background: color-mix(in srgb, var(--rd-accent) 12%, transparent); font-family: var(--font-display); font-size: 26px; font-weight: 600; color: var(--rd-accent); }
 .pf-photo > div { display: grid; gap: 4px; }
-.pf-photo b { font-size: 13.5px; color: var(--rd-ink); }
-.pf-photo small { font-size: 12.5px; color: var(--rd-ink-3); }
+.pf-photo b { font-size: 13px; color: var(--rd-ink); }
+.pf-photo small { font-size: 12px; color: var(--rd-ink-3); }
 .pf-photo__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
 
 /* Resume and certifications rows. */
@@ -133,24 +133,24 @@
 .pf-fields select option { color: #0f172a; }
 .pf-file { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 1px solid var(--rd-line); }
 .pf-file > div:first-child { display: grid; gap: 2px; }
-.pf-file b { font-size: 13.5px; color: var(--rd-ink); }
-.pf-file small { font-size: 12.5px; color: var(--rd-ink-3); white-space: pre-line; }
+.pf-file b { font-size: 13px; color: var(--rd-ink); }
+.pf-file small { font-size: 12px; color: var(--rd-ink-3); white-space: pre-line; }
 .pf-fields input, .pf-fields select { border-radius: 0; box-shadow: none; }
 
 /* Certifications: Goals ones read-only, added ones removable. */
 .pf-certs { display: grid; gap: 10px; padding: 12px 14px; border: 1px solid var(--rd-line); }
 .pf-certs__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .pf-certs__head > div { display: grid; gap: 2px; }
-.pf-certs__head b { font-size: 13.5px; color: var(--rd-ink); }
-.pf-certs__head small { font-size: 12.5px; color: var(--rd-ink-3); }
+.pf-certs__head b { font-size: 13px; color: var(--rd-ink); }
+.pf-certs__head small { font-size: 12px; color: var(--rd-ink-3); }
 .pf-certs ul { list-style: none; margin: 0; padding: 0; }
-.pf-certs li { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--rd-line); font-size: 13.5px; color: var(--rd-ink); }
+.pf-certs li { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--rd-line); font-size: 13px; color: var(--rd-ink); }
 .pf-certs li em { font-style: normal; font-weight: 600; color: var(--rd-ink-2); white-space: nowrap; }
 .pf-certs li small { font-size: 12px; color: var(--rd-ink-3); }
-.pf-link { padding: 0; border: 0; background: none; font-size: 12.5px; font-weight: 600; color: var(--rd-bad); cursor: pointer; }
+.pf-link { padding: 0; border: 0; background: none; font-size: 12px; font-weight: 600; color: var(--rd-bad); cursor: pointer; }
 .pf-link:disabled { opacity: 0.45; }
 .pf-certs__add { display: flex; flex-wrap: wrap; gap: 8px; }
-.pf-certs__add input, .pf-certs__add select { height: 38px; padding: 0 10px; border: 1px solid var(--rd-line); border-radius: 0; background: transparent; font: inherit; font-size: 13.5px; color: var(--rd-ink); }
+.pf-certs__add input, .pf-certs__add select { height: 38px; padding: 0 10px; border: 1px solid var(--rd-line); border-radius: 0; background: transparent; font: inherit; font-size: 13px; color: var(--rd-ink); }
 .pf-certs__add input[list] { flex: 1 1 220px; min-width: 0; }
 .pf-certs__add select option { color: #0f172a; }
 @media (max-width: 560px) { .pf-certs li { grid-template-columns: 1fr auto; } .pf-certs li em { grid-column: 1; } }

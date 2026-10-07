@@ -8,11 +8,11 @@
 .iv-note { max-width: 62ch; margin-top: 10px; font-size: 13px; color: var(--rd-ink-3); }
 .iv-invite { display: grid; gap: 12px; margin-top: 12px; }
 .iv-invite__row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-.iv-invite__link { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; padding: 9px 12px; border-radius: 8px; background: color-mix(in srgb, var(--rd-ink) 5%, transparent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: var(--rd-ink); }
+.iv-invite__link { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; padding: 9px 12px; border-radius: 8px; background: color-mix(in srgb, var(--rd-ink) 5%, transparent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--rd-ink); }
 /* Invite: two quiet buttons, with the link and code behind the second one. */
 .iv-invite2 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--rd-line); }
 .iv-invite2__open { flex-basis: 100%; display: grid; gap: 10px; margin-top: 4px; }
-.iv-invite2__open code { overflow-x: auto; white-space: nowrap; padding: 10px 12px; border-radius: 9px; background: color-mix(in srgb, var(--rd-ink) 6%, transparent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: var(--rd-ink); }
+.iv-invite2__open code { overflow-x: auto; white-space: nowrap; padding: 10px 12px; border-radius: 9px; background: color-mix(in srgb, var(--rd-ink) 6%, transparent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--rd-ink); }
 .iv-invite2__open p { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0; font-size: 13px; color: var(--rd-ink-2); }
 .iv-invite2__open strong { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; color: var(--rd-ink); }
 .iv-invite2__open span { color: var(--rd-ink-3); }
@@ -57,7 +57,7 @@
   .iv-tr--head { display: none; }
   .iv-tr { grid-template-columns: 1fr 1fr; }
   .iv-who { grid-column: 1 / -1; }
-  .iv-tr > [data-label]::before { content: attr(data-label); display: block; margin-bottom: 2px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
+  .iv-tr > [data-label]::before { content: attr(data-label); display: block; margin-bottom: 2px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
 }
 
 .iv-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
@@ -74,18 +74,18 @@
 
 /* Email a single at-risk student straight from the reason they are listed. */
 .iv-attn li { grid-template-columns: minmax(140px, 200px) 1fr auto; }
-.iv-attn__mail { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: color-mix(in srgb, var(--rd-ink) 7%, transparent); color: var(--rd-ink-2); font-size: 12.5px; font-weight: 650; text-decoration: none; white-space: nowrap; transition: background 0.15s, color 0.15s; }
+.iv-attn__mail { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: color-mix(in srgb, var(--rd-ink) 7%, transparent); color: var(--rd-ink-2); font-size: 12px; font-weight: 650; text-decoration: none; white-space: nowrap; transition: background 0.15s, color 0.15s; }
 .iv-attn__mail:hover { background: color-mix(in srgb, var(--rd-accent) 14%, transparent); color: var(--rd-accent); }
 @media (max-width: 640px) { .iv-attn li { grid-template-columns: 1fr; } .iv-attn__mail { justify-self: start; } }
 
 /* Marks the competency the class is weakest in, so "reteach the lowest" is
    not left to reading four bars and comparing them. */
-.iv-reteach { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--rd-warn) 15%, transparent); color: var(--rd-warn); font-size: 10.5px; font-style: normal; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; vertical-align: 1px; }
+.iv-reteach { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--rd-warn) 15%, transparent); color: var(--rd-warn); font-size: 10px; font-style: normal; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; vertical-align: 1px; }
 
 /* Roster tools. Calm by default: a filter only colours once it is the active one. */
 .iv-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
 .iv-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.iv-chips button { height: 30px; padding: 0 13px; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--rd-ink) 6%, transparent); color: var(--rd-ink-2); font-size: 12.5px; font-weight: 650; cursor: pointer; transition: background 0.15s, color 0.15s; }
+.iv-chips button { height: 30px; padding: 0 13px; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--rd-ink) 6%, transparent); color: var(--rd-ink-2); font-size: 12px; font-weight: 650; cursor: pointer; transition: background 0.15s, color 0.15s; }
 .iv-chips button:hover { background: color-mix(in srgb, var(--rd-ink) 11%, transparent); color: var(--rd-ink); }
 .iv-chips button[aria-pressed="true"] { background: color-mix(in srgb, var(--rd-accent) 16%, transparent); color: var(--rd-accent); }
 .iv-sort { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
@@ -107,18 +107,18 @@
 .iv-detail { padding: 4px 0 22px; }
 .iv-detail__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px 32px; }
 .iv-detail h3 { margin: 0 0 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
-.iv-detail__none { margin: 0; font-size: 13.5px; color: var(--rd-ink-3); }
+.iv-detail__none { margin: 0; font-size: 13px; color: var(--rd-ink-3); }
 .iv-detail__stuck { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.iv-detail__stuck li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: 13.5px; }
+.iv-detail__stuck li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: 13px; }
 .iv-detail__stuck strong { font-weight: 600; color: var(--rd-ink); }
 .iv-detail__stuck span { color: var(--rd-bad); }
 .iv-detail__skills { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
-.iv-detail__skills li { display: grid; grid-template-columns: 1fr 90px 34px; align-items: center; gap: 10px; font-size: 13.5px; color: var(--rd-ink-2); }
+.iv-detail__skills li { display: grid; grid-template-columns: 1fr 90px 34px; align-items: center; gap: 10px; font-size: 13px; color: var(--rd-ink-2); }
 .iv-detail__skills .iv-bar { margin: 0; max-width: none; }
 .iv-detail__skills b { font-family: var(--font-display); font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
 .iv-detail__facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; margin: 0; }
-.iv-detail__facts dt { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-ink-3); }
-.iv-detail__facts dd { margin: 3px 0 0; font-size: 13.5px; color: var(--rd-ink); }
+.iv-detail__facts dt { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-ink-3); }
+.iv-detail__facts dd { margin: 3px 0 0; font-size: 13px; color: var(--rd-ink); }
 .iv-detail__act { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
 .iv-detail__act .iv-copy { text-decoration: none; }
 @media (max-width: 860px) { .iv-detail__grid { grid-template-columns: 1fr; gap: 22px; } }
@@ -135,7 +135,7 @@
 .ov-class__main small { color: var(--rd-ink-2); word-break: break-all; }
 .ov-class__link { display: block; margin-top: 8px; max-width: 520px; overflow-x: auto; white-space: nowrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--rd-ink-3); }
 .ov-class__stats { display: flex; align-items: baseline; gap: 22px; margin: 0; color: var(--rd-ink-3); }
-.ov-class__stats dt { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.ov-class__stats dt { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
 .ov-class__stats dd { margin: 4px 0 0; font-family: var(--font-display); font-size: 22px; font-weight: 700; line-height: 1; color: var(--rd-ink); font-variant-numeric: tabular-nums; }
 .ov-class__actions { display: flex; flex-wrap: wrap; gap: 8px; }
 @media (max-width: 560px) { .ov-class__stats { order: 3; flex-wrap: wrap; gap: 14px 20px; } }

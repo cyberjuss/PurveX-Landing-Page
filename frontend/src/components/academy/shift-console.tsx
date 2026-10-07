@@ -47,7 +47,7 @@ type Report = {
   headline: string;
   habit: string;
   escalatedCount: number;
-  incidents: { title: string; severity: string; resolved: boolean; escalated: boolean; onTime: boolean; noHarm: boolean; diagnosisRight: boolean; hintsUsed: number; score: number; max: number }[];
+  incidents: { title: string; severity: string; resolved: boolean; escalated: boolean; touched: boolean; onTime: boolean; noHarm: boolean; diagnosisRight: boolean; hintsUsed: number; score: number; max: number }[];
 };
 type Shift = {
   id: string;
@@ -685,9 +685,9 @@ function ShiftReport({ theme, report, onAgain, busy }: { theme: "light" | "dark"
               <span className={`sh-sev ${SEV_CLASS[i.severity as Sev] ?? ""}`}>{i.severity}</span>
               <span className="sh-rep__title">{i.title}</span>
               <span className="sh-rep__tags">
-                <em className={i.resolved ? "ok" : i.escalated ? "up" : "no"}>{i.resolved ? "Solved" : i.escalated ? "Escalated" : "Missed"}</em>
+                <em className={i.resolved ? "ok" : i.escalated ? "up" : "no"}>{i.resolved ? "Solved" : i.escalated ? "Escalated" : i.touched ? "Missed" : "Not worked"}</em>
                 {i.resolved && <em className={i.onTime ? "ok" : "no"}>{i.onTime ? "On time" : "Late"}</em>}
-                {!i.noHarm && <em className="no">Collateral</em>}
+                {i.touched && !i.noHarm && <em className="no">Collateral</em>}
                 {i.resolved && !i.diagnosisRight && <em className="no">Weak diagnosis</em>}
                 {i.hintsUsed > 0 && <em className="hint">{i.hintsUsed} hint{i.hintsUsed === 1 ? "" : "s"}</em>}
               </span>

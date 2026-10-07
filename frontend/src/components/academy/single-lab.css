@@ -3,7 +3,7 @@
 .sl { max-width: 52rem; margin: 0 auto; }
 .sl__back {
   display: inline-flex; align-items: center; gap: 0.4rem; margin-bottom: 1.4rem;
-  font-size: 0.8rem; font-weight: 650; text-decoration: none;
+  font-size: 0.8125rem; font-weight: 650; text-decoration: none;
   color: var(--rd-accent, #5546e0);
 }
 .sl__back svg { width: 15px; height: 15px; }

@@ -55,6 +55,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
   const isDrill = pathname === "/range/drill";
   const isProof = pathname === "/range/portfolio";
   const isHome = pathname === "/range";
+  // A week's page: /range/phase-1/week-2 and the like, not the section index.
+  const isLesson = /^\/range\/[^/]+\/[^/]+$/.test(pathname);
   const showSidebar = pathname !== "/range" && !isReadiness && !isDrill && !isProof;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
@@ -1264,7 +1266,9 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           </aside>
 
           <main className={`min-w-0 flex-1 px-4 sm:px-6 lg:px-10 ${isHome ? "py-5" : "py-6"}`}>
-            <div key={pathname} className={`ax-page mx-auto ${isReadiness || isDrill ? "max-w-6xl" : "max-w-4xl"}`}>
+            {/* A lesson is wider than the rest: it carries an "On this page"
+                rail beside the reading column, and 4xl left no room for it. */}
+            <div key={pathname} className={`ax-page mx-auto ${isReadiness || isDrill || isLesson ? "max-w-6xl" : "max-w-4xl"}`}>
               {children}
             </div>
           </main>

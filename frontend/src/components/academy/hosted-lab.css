@@ -72,7 +72,7 @@ html[data-academy-theme="dark"] .hl-note,
 .hl .hl__rigs li { display: grid; gap: 3px; padding: 11px 12px; background: color-mix(in srgb, var(--hl-ink) 5%, transparent); box-shadow: inset 0 0 0 1px var(--hl-line); }
 .hl .hl__rigs svg { color: var(--hl-accent); }
 .hl .hl__rigs strong { font-size: 13px; font-weight: 650; line-height: 1.25; color: var(--hl-ink); }
-.hl .hl__rigs small { font-size: 11.5px; line-height: 1.35; color: var(--hl-ink-3); }
+.hl .hl__rigs small { font-size: 11px; line-height: 1.35; color: var(--hl-ink-3); }
 
 /* Hours are something running out, so they get a meter rather than a table row. */
 .hl .hl__budget { margin-top: 14px; }
@@ -81,7 +81,7 @@ html[data-academy-theme="dark"] .hl-note,
 .hl .hl__meter { display: block; height: 4px; background: color-mix(in srgb, var(--hl-ink) 12%, transparent); overflow: hidden; }
 .hl .hl__meter i { display: block; height: 100%; background: var(--hl-accent); }
 
-.hl .hl__legacy { margin: 10px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--hl-ink-3); }
+.hl .hl__legacy { margin: 10px 0 0; font-size: 12px; line-height: 1.5; color: var(--hl-ink-3); }
 
 @keyframes hl-ping {
   0% { transform: scale(0.6); opacity: 0.8; }
@@ -117,7 +117,7 @@ html[data-academy-theme="dark"] .hl-note,
 
 /* Footer */
 .hl__foot { display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding-top: 12px; border-top: 1px solid var(--hl-line); }
-.hl .hl__note { margin: 0; font-size: 13.5px; color: var(--hl-ink-2); }
+.hl .hl__note { margin: 0; font-size: 13px; color: var(--hl-ink-2); }
 .hl__actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .hl .hl__go,
 .hl .hl__ghost {
@@ -180,7 +180,7 @@ html[data-academy-theme="dark"] .hl-lab--off { color: #f87171; }
 .hl-note .hl-note__mark { display: grid; place-items: center; width: 40px; height: 40px; color: #fff; background: var(--hl-accent); }
 .hl-note .hl-note__text { display: grid; gap: 3px; min-width: 0; }
 .hl-note .hl-note__title { margin: 0; font-size: 15px; font-weight: 650; color: var(--hl-ink); }
-.hl-note .hl-note__body { margin: 0; max-width: 62ch; font-size: 13.5px; line-height: 1.5; color: var(--hl-ink-2); }
+.hl-note .hl-note__body { margin: 0; max-width: 62ch; font-size: 13px; line-height: 1.5; color: var(--hl-ink-2); }
 .hl-note .hl-note__go { display: inline-flex; align-items: center; gap: 6px; height: 40px; margin: 0; padding: 0 16px; border: 0; border-radius: 0; font: inherit; font-size: 14px; font-weight: 650; white-space: nowrap; color: #fff; background: var(--hl-accent); cursor: pointer; }
 .hl-note .hl-note__go:hover:not(:disabled) { background: var(--hl-accent-hi); }
 .hl-note .hl-note__go:disabled { opacity: 0.7; cursor: default; }
@@ -190,7 +190,7 @@ html[data-academy-theme="dark"] .hl-lab--off { color: #f87171; }
 }
 
 /* ---- Start my lab, inside the message when an answer cannot be checked ---- */
-.ad-guess__feedback .ad-labstart { margin-left: 6px; height: 26px; padding: 0 10px; border: 0; border-radius: 0; font-size: 0.72rem; font-weight: 700; color: #fff; background: #5546e0; cursor: pointer; vertical-align: middle; }
+.ad-guess__feedback .ad-labstart { margin-left: 6px; height: 26px; padding: 0 10px; border: 0; border-radius: 0; font-size: 0.75rem; font-weight: 700; color: #fff; background: #5546e0; cursor: pointer; vertical-align: middle; }
 .ad-guess__feedback .ad-labstart:disabled { opacity: 0.7; cursor: default; }
 
 .ad-brief-start .ad-brief-start__note { margin: 0; font-size: 13px; color: var(--rd-ink-3, #6f7189); }

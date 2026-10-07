@@ -19,8 +19,23 @@ function markCommandParagraphs(html: string) {
   );
 }
 
+/** Give every h2/h3 a stable id, so the lesson rail can link to it and a
+ *  deep link to a heading lands in the right place. Ids are made unique by
+ *  suffixing a repeat, since two sections can both have "What to do". */
+function addHeadingIds(html: string) {
+  const seen = new Map<string, number>();
+  return html.replace(/<(h[23])>([\s\S]*?)<\/\1>/gi, (full, tag: string, inner: string) => {
+    const text = inner.replace(/<[^>]+>/g, "").trim();
+    const base = text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    if (!base) return full;
+    const n = seen.get(base) ?? 0;
+    seen.set(base, n + 1);
+    return `<${tag} id="${n ? `${base}-${n + 1}` : base}">${inner}</${tag}>`;
+  });
+}
+
 export function Markdown({ content, className }: { content: string; className?: string }) {
-  const html = markCommandParagraphs(marked.parse(content, { async: false }) as string);
+  const html = addHeadingIds(markCommandParagraphs(marked.parse(content, { async: false }) as string));
   return <div className={`academy-prose ${className ?? ""}`} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
