@@ -148,11 +148,8 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
             <li key={entry.slug}>
               {entry.sections.length > 0 ? (
                 <span className="ax-siderow">
-                  <span aria-hidden className={`ax-sidemark${active ? " ax-sidemark--on" : ""}`} />
                   <Link href={href} onClick={onNavigate} className={`ax-sidelink ${active ? "ax-sidelink--on" : ""}`}>
-                    <span className={`ax-check ${done ? "ax-check--done" : ""}`}>
-                      {done && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
-                    </span>
+                    <span className={`ax-dot ${done ? "ax-dot--done" : ""}`} aria-hidden />
                     <span className="truncate">{label}</span>
                   </Link>
                   <button
@@ -167,8 +164,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 </span>
               ) : (
                 <span className="ax-soon-row">
-                  <span aria-hidden className={`ax-sidemark${active ? " ax-sidemark--on" : ""}`} />
-                  <span className="ax-check" />
+                  <span className="ax-dot" aria-hidden />
                   <span className="truncate">{label}</span>
                   <em>Soon</em>
                 </span>
@@ -224,7 +220,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 labsOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
               }`}
             >
-              <ul className="flex flex-col gap-0.5 overflow-hidden border-l border-[var(--pvrx-border-light)] pl-3">
+              <ul className="ax-list flex flex-col overflow-hidden">
                 {labs.map(row)}
               </ul>
             </div>
@@ -262,7 +258,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 phaseOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
               }`}
             >
-              <ul className="flex flex-col gap-0.5 overflow-hidden border-l border-[var(--pvrx-border-light)] pl-3">
+              <ul className="ax-list flex flex-col overflow-hidden">
                 {phase.weeks.map(row)}
               </ul>
             </div>
