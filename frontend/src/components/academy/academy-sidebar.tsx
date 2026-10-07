@@ -119,21 +119,37 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           labs.some((l) => pathname === `/range/${phase.slug}/${l.slug}`) || manualOpen.has(labsKey);
         const row = (entry: PhaseDef["weeks"][number]) => {
           const href = `/range/${phase.slug}/${entry.slug}`;
+          // Open for the entry you are in, shut for the rest, and the chevron
+          // flips whichever default applies. One Set covers both directions.
+          const secKey = `${phase.slug}:${entry.slug}:secs`;
           // Each sitting is titled "Home Lab — X". The group heading carries
           // the prefix so the row keeps only the part that differs.
           const label = entry.title.replace(/^Home Lab\s*[—-]\s*/, "");
           const active = pathname === href;
+          const secOpen = manualOpen.has(secKey) ? !active : active;
           const done = isComplete(phase.slug, entry.slug);
+          const secs = entry.sections.length > 0 ? sectionsOf(phase.slug, entry) : [];
           return (
             <li key={entry.slug} className="relative">
               <span aria-hidden className={`ax-sidemark${active ? " ax-sidemark--on" : ""}`} />
               {entry.sections.length > 0 ? (
-                <Link href={href} onClick={onNavigate} className={`ax-sidelink ${active ? "ax-sidelink--on" : ""}`}>
-                  <span className={`ax-check ${done ? "ax-check--done" : ""}`}>
-                    {done && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
-                  </span>
-                  <span className="truncate">{label}</span>
-                </Link>
+                <span className="ax-siderow">
+                  <Link href={href} onClick={onNavigate} className={`ax-sidelink ${active ? "ax-sidelink--on" : ""}`}>
+                    <span className={`ax-check ${done ? "ax-check--done" : ""}`}>
+                      {done && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
+                    </span>
+                    <span className="truncate">{label}</span>
+                  </Link>
+                  <button
+                    type="button"
+                    className="ax-sidecaret"
+                    aria-expanded={secOpen}
+                    aria-label={`${secOpen ? "Hide" : "Show"} sections of ${label}`}
+                    onClick={() => toggleManualOpen(secKey)}
+                  >
+                    <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${secOpen ? "" : "-rotate-90"}`} />
+                  </button>
+                </span>
               ) : (
                 <span className="ax-soon-row">
                   <span className="ax-check" />
@@ -143,21 +159,27 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               )}
               {/* Only the entry you are in opens its tabs. Every entry at once
                   would be a hundred rows before you had chosen anything. */}
-              {active && entry.sections.length > 0 && (
-                <ul className="ax-subs">
-                  {sectionsOf(phase.slug, entry).map((sec, n) => (
-                    <li key={sec.hash}>
-                      <a
-                        href={`${href}#${sec.hash}`}
-                        onClick={onNavigate}
-                        className={`ax-sub${(hash || sectionsOf(phase.slug, entry)[0].hash) === sec.hash ? " ax-sub--on" : ""}`}
-                      >
-                        <i aria-hidden>{String(n + 1).padStart(2, "0")}</i>
-                        <span className="truncate">{sec.label}</span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+              {secs.length > 0 && (
+                <div
+                  className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
+                    secOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                  }`}
+                >
+                  <ul className="ax-subs">
+                    {secs.map((sec, n) => (
+                      <li key={sec.hash}>
+                        <a
+                          href={`${href}#${sec.hash}`}
+                          onClick={onNavigate}
+                          className={`ax-sub${active && (hash || secs[0].hash) === sec.hash ? " ax-sub--on" : ""}`}
+                        >
+                          <i aria-hidden>{String(n + 1).padStart(2, "0")}</i>
+                          <span className="truncate">{sec.label}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               )}
             </li>
           );

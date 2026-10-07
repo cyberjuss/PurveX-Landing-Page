@@ -4466,7 +4466,7 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-sidemark--on { opacity: 1; transform: translateY(-50%) scaleY(1); }
 /* The tabs of the lesson you are in, nested under it in the rail. Numbered to
    match the list the lesson itself shows. */
-.ax-subs { display: flex; flex-direction: column; margin: 1px 0 8px; padding: 0; }
+.ax-subs { display: flex; flex-direction: column; margin: 0; padding: 1px 0 8px; overflow: hidden; }
 .ax-sub { position: relative; display: flex; align-items: center; gap: 9px; padding: 4px 0 4px 11px; font-size: 13px; color: var(--rd-ink-3); transition: color 0.15s; }
 .ax-sub::before { content: ""; position: absolute; left: 0; top: 2px; bottom: 2px; width: 2px; background: transparent; transition: background 0.15s; }
 .ax-sub i { flex: none; width: 15px; font-family: var(--font-mono, ui-monospace, monospace); font-size: 9.5px; font-style: normal; letter-spacing: 0.03em; opacity: 0.55; }
@@ -4474,6 +4474,14 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-sub--on { color: var(--rd-ink); font-weight: 600; }
 .ax-sub--on::before { background: var(--rd-accent); }
 .ax-sub--on i { opacity: 1; color: var(--rd-accent); }
+
+/* The week and the control that folds its sections away sit on one line, so the
+   link keeps the whole width and the chevron does not eat into the label. */
+.ax-siderow { display: flex; align-items: center; gap: 4px; }
+.ax-siderow .ax-sidelink { flex: 1; min-width: 0; }
+.ax-sidecaret { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border: 0; background: none; color: var(--rd-ink-3); cursor: pointer; transition: color 0.15s; }
+.ax-sidecaret:hover { color: var(--rd-accent); }
+.ax-sidecaret:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 1px; }
 
 .ax-sidelink { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 14.5px; color: var(--rd-ink-2); transition: color var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)); }
 .ax-sidelink:hover, .ax-sidelink--on { color: var(--rd-ink); }
