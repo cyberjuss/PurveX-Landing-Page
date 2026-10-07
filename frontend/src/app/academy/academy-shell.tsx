@@ -18,6 +18,7 @@ import { CoachProvider } from "@/components/academy/coach-context";
 import { GoalsPanel } from "@/components/academy/goals-panel";
 import { ProofPrompt } from "@/components/academy/proof-prompt";
 import { PurvexCoach } from "@/components/academy/purvex-coach";
+import { AcademyTour } from "@/components/academy/tour";
 import { ROLE_BRIEFS } from "@/lib/academy-briefs";
 import { askForProofShot, PROOF_TICKETS } from "@/lib/academy-proof";
 import { examLinks, roleLabel, sanitizeProfile, type RoleId, type StudentProfile } from "@/lib/academy-certs";
@@ -1186,6 +1187,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
                   className="flex h-10 w-10 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] text-slate-600 transition hover:bg-slate-50 lg:hidden"
                   aria-label="Open course menu"
                   aria-expanded={sidebarOpen}
+                  data-tour="menu"
                 >
                   <Menu className="h-[18px] w-[18px]" />
                 </button>
@@ -1240,6 +1242,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
               instant layout jump. Same width transition the manual
               collapse toggle already uses, just driven by route too. */}
           <aside
+            data-tour="menu-desktop"
             aria-hidden={!showSidebar}
             className={`hidden shrink-0 overflow-hidden bg-white transition-[width] duration-300 ease-[cubic-bezier(.16,1,.3,1)] lg:sticky lg:top-[65px] lg:block lg:h-[calc(100vh-65px)] ${
               showSidebar ? "border-r border-[var(--pvrx-border-light)]" : "border-r-0"
@@ -1290,6 +1293,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           </div>
         )}
         {!asking && profile !== undefined && <PurvexCoach />}
+        {!asking && profile !== undefined && <AcademyTour />}
         {!asking && profile !== undefined && <ProofPrompt />}
         <HelpDialog email={student?.email ?? null} />
         {editingGoals && profile && (

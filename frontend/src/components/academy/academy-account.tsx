@@ -267,6 +267,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
       <button
         type="button"
         className="ax-avatar"
+        data-tour="account"
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => setOpen((v) => !v)}

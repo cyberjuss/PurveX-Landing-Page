@@ -2,73 +2,133 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowLeft, ArrowRight, X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Flame,
+  Gauge,
+  Headset,
+  ListTree,
+  Palette,
+  PlayCircle,
+  Rocket,
+  Route,
+  Server,
+  Sparkles,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import "./tour.css";
 
-// A one-time walk around the Range home page for someone who has never seen it.
-// Anchored steps dim the page and lift one real control out of it; the opening
-// and closing steps have no target and sit in the middle of the window.
+// First-run walkthroughs. Anchored steps dim the page and lift one real control
+// out of it; the opening and closing steps have no target and sit in the middle.
 //
-// Steps whose target is missing are dropped before the tour starts. An Explore
-// account has no lab button, and a tour that points at nothing is worse than no
-// tour at all.
+// There is one tour per area rather than one for the whole portal, because the
+// home page and a lesson page share almost no furniture. Each remembers itself
+// separately, so someone who starts on a lesson still gets the home tour later.
+//
+// Steps whose target is missing are dropped before a tour starts. An Explore
+// account has no lab button, and pointing at nothing is worse than not running.
 
-type Step = { sel?: string; title: string; body: string };
+type Step = { sel?: string; icon: LucideIcon; title: string; body: string };
+type Tour = { key: string; when: (path: string) => boolean; min: number; steps: Step[] };
 
-const KEY = "purvex.tour.home.v2";
-
-const STEPS: Step[] = [
+const HOME: Step[] = [
   {
+    icon: Sparkles,
     title: "Welcome to Range",
     body: "This is where you work the same problems a new security hire sees. Here is the two minute version of what is on this page.",
   },
   {
     sel: '[data-tour="next"]',
+    icon: PlayCircle,
     title: "Pick up where you left off",
     body: "This card always names the next thing to do. It moves on its own as you finish lessons and missions.",
   },
   {
     sel: '[data-tour="readiness"]',
+    icon: Gauge,
     title: "Readiness",
     body: "One score out of 100 across everything you have finished. It opens at zero and climbs as you work. Open it to see which competencies are behind.",
   },
   {
     sel: '[data-tour="drills"]',
+    icon: Flame,
     title: "Practice every day",
     body: "One named case a day against your own directory. Shift and the weekly CTF start from the same place and the streak tracks how often you turn up.",
   },
   {
     sel: '[data-tour="path"]',
+    icon: Route,
     title: "The course runs in order",
     body: "Fundamentals first and then a live directory and then alerts and logs. Each row shows how far through it you are.",
   },
   {
     sel: '[data-tour="lab"]',
+    icon: Server,
     title: "A lab of your own",
     body: "A Windows domain controller and an Ubuntu server built for you alone. Start them here and they open in a browser tab with nothing to install.",
   },
   {
+    sel: '[data-tour="account"]',
+    icon: Headset,
+    title: "The coach is in here",
+    body: "Ask the coach when a lesson will not land. It knows the mission you are on and answers against your own lab rather than in general.",
+  },
+  {
     sel: '[data-tour="theme"]',
+    icon: Palette,
     title: "Light or dark",
     body: "Range follows whichever you pick and remembers it. Worth setting now if you are going to be reading for a while.",
   },
   {
+    icon: Rocket,
     title: "That is the tour",
     body: "Start with the card at the top of the page. Everything else can wait until you need it.",
   },
 ];
 
+// Shown on any other page in the portal, where the page body changes but the
+// header and the course menu do not.
+const PORTAL: Step[] = [
+  {
+    sel: '[data-tour="menu-desktop"], [data-tour="menu"]',
+    icon: ListTree,
+    title: "Every lesson in order",
+    body: "The whole course sits here. Anything finished is ticked and you can jump back to it whenever you want.",
+  },
+  {
+    sel: '[data-tour="lab"]',
+    icon: Server,
+    title: "Your lab travels with you",
+    body: "Start it or open it from any page. The same two machines follow you through every lesson and mission.",
+  },
+  {
+    sel: '[data-tour="account"]',
+    icon: Headset,
+    title: "The coach is in here",
+    body: "Ask the coach when something will not land. It knows the page you are on and answers against your own lab.",
+  },
+];
+
+const TOURS: Tour[] = [
+  { key: "purvex.tour.home.v3", when: (p) => p === "/range" || p === "/range/", min: 3, steps: HOME },
+  // Everywhere but home, which has its own tour and no course menu to point at.
+  { key: "purvex.tour.portal.v1", when: (p) => p.startsWith("/range") && p.replace(/\/$/, "") !== "/range", min: 2, steps: PORTAL },
+];
+
 /** Storage can throw in a private window, so a failed read means "show it". */
-function alreadySeen(): boolean {
+function seen(key: string): boolean {
   try {
-    return window.localStorage.getItem(KEY) === "1";
+    return window.localStorage.getItem(key) === "1";
   } catch {
     return false;
   }
 }
-function markSeen() {
+function markSeen(key: string) {
   try {
-    window.localStorage.setItem(KEY, "1");
+    window.localStorage.setItem(key, "1");
   } catch {
     /* a tour that repeats beats one that crashes */
   }
@@ -87,8 +147,8 @@ function pick(sel: string): Element | null {
 type Box = { top: number; left: number; width: number; height: number };
 type Spot = { top: number; left: number; side: "top" | "bottom"; caret: number };
 
-const CARD_W = 352;
-const CARD_H = 212;
+const CARD_W = 360;
+const CARD_H = 236;
 const GAP = 14;
 
 /** Below the target when it fits, otherwise above. The caret tracks the target
@@ -100,27 +160,30 @@ function locate(box: Box): Spot {
   const top = fits ? below : Math.max(GAP, box.top - GAP - CARD_H);
   const wanted = box.left + box.width / 2 - CARD_W / 2;
   const left = Math.min(Math.max(GAP, wanted), Math.max(GAP, window.innerWidth - CARD_W - GAP));
-  const caret = Math.min(Math.max(22, box.left + box.width / 2 - left), CARD_W - 22);
+  const caret = Math.min(Math.max(26, box.left + box.width / 2 - left), CARD_W - 26);
   return { top, left, side, caret };
 }
 
 export function AcademyTour() {
-  const [steps, setSteps] = useState<Step[] | null>(null);
+  const pathname = usePathname() ?? "";
+  const [run, setRun] = useState<{ key: string; steps: Step[] } | null>(null);
   const [i, setI] = useState(0);
   const [box, setBox] = useState<Box | null>(null);
 
   useEffect(() => {
-    if (alreadySeen()) return;
+    const tour = TOURS.find((t) => t.when(pathname) && !seen(t.key));
+    if (!tour) return;
     const id = window.setTimeout(() => {
-      const found = STEPS.filter((s) => !s.sel || pick(s.sel));
-      // Fewer than three anchored stops is not a tour, just a popup in the way.
-      if (found.filter((s) => s.sel).length >= 3) setSteps(found);
-      else markSeen();
+      const found = tour.steps.filter((s) => !s.sel || pick(s.sel));
+      if (found.filter((s) => s.sel).length >= tour.min) {
+        setI(0);
+        setRun({ key: tour.key, steps: found });
+      } else markSeen(tour.key);
     }, 700);
     return () => window.clearTimeout(id);
-  }, []);
+  }, [pathname]);
 
-  const step = steps?.[i];
+  const step = run?.steps[i];
 
   const place = useCallback(() => {
     if (!step?.sel) return;
@@ -144,18 +207,18 @@ export function AcademyTour() {
   }, [step, place]);
 
   const close = useCallback(() => {
-    markSeen();
-    setSteps(null);
-  }, []);
+    if (run) markSeen(run.key);
+    setRun(null);
+  }, [run]);
 
   const next = useCallback(() => {
-    if (!steps) return;
-    if (i + 1 >= steps.length) close();
+    if (!run) return;
+    if (i + 1 >= run.steps.length) close();
     else setI(i + 1);
-  }, [steps, i, close]);
+  }, [run, i, close]);
 
   useEffect(() => {
-    if (!steps) return;
+    if (!run) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close();
       else if (e.key === "ArrowRight") next();
@@ -163,16 +226,17 @@ export function AcademyTour() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [steps, close, next]);
+  }, [run, close, next]);
 
-  // A box left over from the previous step must not leak onto a centred one,
-  // so every use of it is gated on this step having a target of its own.
+  // A box left over from the previous step must not leak onto a centred one.
   const onTarget = Boolean(step?.sel) && box !== null;
   const spot = useMemo(() => (onTarget && box ? locate(box) : null), [onTarget, box]);
 
-  if (!steps || !step || typeof document === "undefined") return null;
+  if (!run || !step || typeof document === "undefined") return null;
+  const steps = run.steps;
   const last = i + 1 === steps.length;
   const anchored = spot !== null;
+  const Icon = step.icon;
 
   return createPortal(
     <div className="tour" role="dialog" aria-modal="true" aria-labelledby="tour-title">
@@ -194,6 +258,10 @@ export function AcademyTour() {
         <button type="button" className="tour__x" aria-label="Skip the tour" onClick={close}>
           <X className="h-4 w-4" />
         </button>
+
+        <span className="tour__ic" aria-hidden="true">
+          <Icon className="h-[18px] w-[18px]" />
+        </span>
 
         <h2 id="tour-title">{step.title}</h2>
         <p className="tour__body">{step.body}</p>
@@ -218,7 +286,7 @@ export function AcademyTour() {
               </button>
             )}
             <button type="button" className="tour__go" onClick={next}>
-              {last ? "Get started" : i === 0 ? "Show me" : "Next"}
+              {last ? "Get started" : i === 0 && !step.sel ? "Show me" : "Next"}
               {!last && <ArrowRight className="h-4 w-4" />}
             </button>
           </span>

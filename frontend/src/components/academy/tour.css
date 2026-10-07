@@ -40,8 +40,8 @@
 
 .tour__card {
   position: fixed;
-  width: min(352px, calc(100vw - 28px));
-  padding: 22px 24px 18px;
+  width: min(360px, calc(100vw - 28px));
+  padding: 24px 24px 18px;
   border: 1px solid var(--tour-line);
   border-radius: 16px;
   background: var(--tour-surface);
@@ -49,6 +49,14 @@
   color: var(--tour-ink-2);
   transition: top 0.26s cubic-bezier(0.16, 1, 0.3, 1), left 0.26s cubic-bezier(0.16, 1, 0.3, 1);
   animation: tour-in 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.tour__card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(90deg, var(--tour-accent), color-mix(in srgb, var(--tour-accent) 35%, transparent));
 }
 /* The opener and the closer have nothing to point at, so they sit in the middle. */
 .tour__card--mid { top: 50%; left: 50%; transform: translate(-50%, -50%); }
@@ -58,6 +66,20 @@
 .tour__caret { position: absolute; width: 12px; height: 12px; background: var(--tour-surface); border: 1px solid var(--tour-line); transform: translateX(-50%) rotate(45deg); }
 .tour__card--bottom .tour__caret { top: -7px; border-right: 0; border-bottom: 0; }
 .tour__card--top .tour__caret { bottom: -7px; border-left: 0; border-top: 0; }
+
+/* A tinted tile carrying the step's icon. It gives the card a fixed anchor at
+   the top left, so titles of different lengths do not shift the whole header. */
+.tour__ic {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 14px;
+  border-radius: 11px;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--tour-accent) 20%, transparent), color-mix(in srgb, var(--tour-accent) 9%, transparent));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tour-accent) 24%, transparent);
+  color: var(--tour-accent);
+}
 
 .tour__card h2 { margin: 0 0 8px; padding-right: 26px; font-family: var(--font-display, inherit); font-size: 19px; font-weight: 650; line-height: 1.25; letter-spacing: -0.015em; color: var(--tour-ink); }
 .tour__body { margin: 0; font-size: 14px; line-height: 1.6; }
