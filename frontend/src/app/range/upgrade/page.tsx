@@ -21,9 +21,9 @@ import type { User } from "@supabase/supabase-js";
 const BUILT_IN_LINK_URL = process.env.NEXT_PUBLIC_STRIPE_RANGE_PRO_LINK_URL || "";
 
 const PERKS = [
-  "Your own cloud lab in a browser tab",
-  "A real Windows domain built just for you",
-  "An AI coach that reads your lab and never hands you the answer",
+  "A cloud lab of your own in a browser tab",
+  "A real Windows domain built for one person",
+  "An AI coach that reads the lab and never hands over the answer",
   "A Proof Profile any employer can verify",
   "Cancel in one click",
 ];
@@ -155,18 +155,23 @@ function UpgradeContent() {
     <AuthMinimal product="Range">
       <AuthHeading sub="The shortest road from learning this to being hired for it.">Get Range Pro</AuthHeading>
 
-      <p className="mt-6 text-[2.1rem] font-bold leading-none tracking-tight">
-        $29<span className="ml-1 align-middle text-base font-medium text-slate-500">/month</span>
-      </p>
-
-      <ul className="mt-6 flex flex-col gap-3">
-        {PERKS.map((perk) => (
-          <li key={perk} className="flex items-start gap-2.5 text-[0.95rem] leading-snug">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#6a5cff]" strokeWidth={3} aria-hidden="true" />
-            <span>{perk}</span>
-          </li>
-        ))}
-      </ul>
+      {/* Price and what it buys read as one block. Loose on the page they were
+          two unrelated lists with nothing holding them together. */}
+      <div className="mt-7 rounded-xl border border-[#e6e7ee] bg-[#fbfbfd]">
+        <div className="flex items-baseline gap-2 border-b border-[#eceef4] px-5 py-4">
+          <span className="text-[2rem] font-bold leading-none tracking-tight text-[#10192e]">$29</span>
+          <span className="text-sm font-medium text-slate-500">per month</span>
+          <span className="ml-auto text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Range Pro</span>
+        </div>
+        <ul className="flex flex-col gap-2.5 px-5 py-4">
+          {PERKS.map((perk) => (
+            <li key={perk} className="flex items-start gap-2.5 text-[0.93rem] leading-snug text-[#39415a]">
+              <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#6a5cff]" strokeWidth={3} aria-hidden="true" />
+              <span>{perk}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <button type="button" onClick={checkout} disabled={busy} className="am-primary mt-7">
         {busy ? (
@@ -184,10 +189,14 @@ function UpgradeContent() {
         </p>
       ) : null}
 
-      <p className="am-legal">
-        Billed monthly through Stripe. Cancel anytime. Signed in as {user?.email}.
+      {/* Left aligned like everything above it. .am-legal centres itself, which
+          suits the sign-in screens and left this page looking half-justified. */}
+      <p className="am-legal !text-left">
+        Billed monthly through Stripe and you can cancel any time. Signed in as{" "}
+        <span className="font-medium text-[#39415a]">{user?.email}</span>.
       </p>
-      <p className="mt-3 text-center text-sm">
+      <p className="mt-5 border-t border-[#eceef4] pt-4 text-sm text-slate-500">
+        Not now?{" "}
         <Link href="/range" className="am-link">
           Keep using Explore for free
         </Link>
