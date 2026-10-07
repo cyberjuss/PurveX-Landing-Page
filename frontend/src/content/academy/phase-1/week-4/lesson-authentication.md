@@ -37,14 +37,14 @@ Do not re-enable a disabled account on request. Find out who disabled it and why
 
 ### Resets
 
-A password or MFA reset is not an administrative chore. It is an authentication decision, and for the duration of that call you are the authentication system. Whatever controls the organisation has invested in, you are briefly in a position to set them aside for one account, which is precisely why this is attacked. In 2023 attackers breached MGM Resorts by doing nothing more technical than talking the IT help desk into resetting an employee's MFA.
+A password or MFA reset is not an administrative chore. It is an authentication decision, and for the duration of that call you are the authentication system. Whatever controls the organization has invested in, you are briefly in a position to set them aside for one account, which is precisely why this is attacked. In 2023 attackers breached MGM Resorts by doing nothing more technical than talking the IT help desk into resetting an employee's MFA.
 
 1. **Verify** with a method the caller cannot fake, such as a callback to the number on file. Caller ID can be spoofed.
 2. **Treat an MFA change** as at least as sensitive as a password reset.
 3. **Do not skip steps** for urgency or seniority. Pressure is the most common social engineering move.
 4. **Document** the caller, the verification method and the change.
 
-One situation deserves to be recognised instantly. A user reporting MFA prompts they did not trigger is telling you that somebody already holds their password and is standing at the door waiting for approval, which means the second factor is the only thing still holding. Tell them to deny every prompt, then reset the password and terminate active sessions before you escalate. The last step matters because a reset on its own leaves any session the attacker has already established untouched.
+One situation deserves to be recognized instantly. A user reporting MFA prompts they did not trigger is telling you that somebody already holds their password and is standing at the door waiting for approval, which means the second factor is the only thing still holding. Tell them to deny every prompt, then reset the password and terminate active sessions before you escalate. The last step matters because a reset on its own leaves any session the attacker has already established untouched.
 
 ### Escalate
 

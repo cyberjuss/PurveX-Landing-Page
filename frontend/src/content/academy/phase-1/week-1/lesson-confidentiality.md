@@ -1,6 +1,6 @@
 ### Confidentiality
 
-Confidentiality means that only the people authorized to see a piece of information are able to see it. When it fails, the data itself is usually untouched and still sits exactly where it always did, but a copy of it now rests with somebody who was never meant to hold one. That is why the failure is a **leak** rather than a loss. Nothing has gone missing, so the systems carry on reporting themselves healthy and the failure can run a long time before anyone notices.
+Confidentiality means that only the people authorized to see a piece of information are able to see it. When it fails, the data itself usually still sits exactly where it always did, but a copy of it now rests with somebody who was never meant to hold one. That is why the failure is a **leak** rather than a loss. Nothing has gone missing, so the systems carry on reporting themselves healthy and the failure can run a long time before anyone notices.
 
 It matters most where simply seeing the data is the harm:
 

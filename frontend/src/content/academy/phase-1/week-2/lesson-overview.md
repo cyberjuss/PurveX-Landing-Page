@@ -25,7 +25,7 @@ The practical question you will face is never what a value looks like. It is wha
 
 Confusing them has a documented cost. In 2012 around 6.5 million LinkedIn password hashes leaked. They had been stored without a salt, so identical passwords produced identical values and the whole set could be attacked at once rather than one account at a time. Most of them were cracked within days. The storage method had offered far less protection than the people who chose it believed, which is the failure this week is trying to make visible to you before you meet it.
 
-The same ideas work in your favour just as reliably. In 2023 analysts tracked a poisoned 3CX installer across many organisations by sharing a single hash of the malicious file, and any team holding that one value could check their own copies in seconds. So these are not only things done to you. They are tools you pick up and use to establish facts.
+The same ideas work in your favour just as reliably. In 2023 analysts tracked a poisoned 3CX installer across many organizations by sharing a single hash of the malicious file, and any team holding that one value could check their own copies in seconds. So these are not only things done to you. They are tools you pick up and use to establish facts.
 
 By the end of the week you can:
 

@@ -135,7 +135,7 @@ const DRILLS: Tour = {
   key: "purvex.tour.drills.v2",
   when: (p) => p.startsWith("/range/drill"),
   min: 3,
-  title: "Four ways to practise.",
+  title: "Four ways to practice.",
   lede: "This page is the daily habit rather than the course. Here is what each row is for.",
   tiles: [
     {

@@ -14,5 +14,5 @@ The sequence numbers exchanged during those three messages are the reason TCP ca
 
 When you are working through a capture, look for all three steps before you trust a conversation at all:
 
-- A **SYN with no SYN-ACK** means the far side did not agree to talk. A long run of those across many addresses or ports is a recognisable pattern, not a network fault.
+- A **SYN with no SYN-ACK** means the far side did not agree to talk. A long run of those across many addresses or ports is a recognizable pattern, not a network fault.
 - **Data with no handshake in front of it** means the capture does not show you a completed TCP session. Whatever you conclude from that data rests on an assumption you have not checked.

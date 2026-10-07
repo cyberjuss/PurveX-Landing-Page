@@ -13,7 +13,7 @@ That is why a finding cannot be assessed on its own. You need all three parts be
 
 In practice teams rarely score the three separately, because threat and vulnerability together are really describing one thing: how likely this is to happen at all. Most teams therefore collapse the two and score risk as **likelihood × impact**, which is how the Week 1 lab scores it and how you will see it done almost everywhere else. Both versions are worth keeping. The three-part form is the better way to understand what you are measuring, and the two-part form is the practical way to measure it.
 
-This also explains what a security programme actually does. Threats are seldom removable, so a programme works on the other two factors:
+This also explains what a security program actually does. Threats are seldom removable, so a program works on the other two factors:
 
 - It **closes vulnerabilities**, so the likelihood falls.
 - It **reduces impact**, so the cost is lower when something does get through.

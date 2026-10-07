@@ -2,7 +2,7 @@
 
 **The ticket:** a vendor several PurveX staff used was breached, and its user table is online. Alex Rivera asks: "How bad is this for us, and what do we do first?"
 
-A password store never needs the password itself. It only needs to recognise the right one when it is offered again. So a well built system keeps a value calculated from the password, and at sign-in it runs the same calculation on whatever was typed and compares. The original is never written down, which means a stolen database does not immediately hand the attacker a set of working credentials.
+A password store never needs the password itself. It only needs to recognize the right one when it is offered again. So a well-built system keeps a value calculated from the password, and at sign-in it runs the same calculation on whatever was typed and compares. The original is never written down, which means a stolen database does not immediately hand the attacker a set of working credentials.
 
 That alone is not enough. Two further requirements are where most real systems fail:
 
@@ -20,9 +20,9 @@ Without both of those, identical passwords produce identical stored values and t
 
 ### Why their breach is your problem
 
-The reason a vendor's breach lands on your desk is that people reuse passwords across services, and they do so in large numbers regardless of what any policy says. Attackers know this, so a leaked set of email and password pairs is immediately tried against other sign-in pages to see where else the same combination works. This is called **credential stuffing**, and it requires no skill and no knowledge of your organisation at all.
+The reason a vendor's breach lands on your desk is that people reuse passwords across services, and they do so in large numbers regardless of what any policy says. Attackers know this, so a leaked set of email and password pairs is immediately tried against other sign-in pages to see where else the same combination works. This is called **credential stuffing**, and it requires no skill and no knowledge of your organization at all.
 
-The defence that actually holds here is **MFA**, because it changes what a stolen password is worth. A correct password on its own stops being sufficient to get in, which means the attacker needs something they did not obtain from the vendor's database.
+The defense that actually holds here is **MFA**, because it changes what a stolen password is worth. A correct password on its own stops being sufficient to get in, which means the attacker needs something they did not obtain from the vendor's database.
 
 ### What to do first after a vendor breach
 
