@@ -103,7 +103,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           return (
             <div
               key={phase.slug}
-              className="flex items-center justify-between gap-2 font-mono text-[12.5px] font-bold uppercase tracking-[0.1em] text-slate-400 opacity-70"
+              className="flex items-center justify-between gap-2 font-mono text-[13.5px] font-bold uppercase tracking-[0.1em] text-slate-400 opacity-70"
               title="Locked for now"
             >
               <span className="truncate">{phase.label} — {phase.title}</span>
@@ -130,10 +130,10 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           const done = isComplete(phase.slug, entry.slug);
           const secs = entry.sections.length > 0 ? sectionsOf(phase.slug, entry) : [];
           return (
-            <li key={entry.slug} className="relative">
-              <span aria-hidden className={`ax-sidemark${active ? " ax-sidemark--on" : ""}`} />
+            <li key={entry.slug}>
               {entry.sections.length > 0 ? (
                 <span className="ax-siderow">
+                  <span aria-hidden className={`ax-sidemark${active ? " ax-sidemark--on" : ""}`} />
                   <Link href={href} onClick={onNavigate} className={`ax-sidelink ${active ? "ax-sidelink--on" : ""}`}>
                     <span className={`ax-check ${done ? "ax-check--done" : ""}`}>
                       {done && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
@@ -152,6 +152,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 </span>
               ) : (
                 <span className="ax-soon-row">
+                  <span aria-hidden className={`ax-sidemark${active ? " ax-sidemark--on" : ""}`} />
                   <span className="ax-check" />
                   <span className="truncate">{label}</span>
                   <em>Soon</em>
@@ -193,7 +194,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               type="button"
               onClick={() => toggleManualOpen(labsKey)}
               aria-expanded={labsOpen}
-              className={`flex w-full items-center justify-between gap-2 font-mono text-[12.5px] font-bold uppercase tracking-[0.1em] transition ${
+              className={`flex w-full items-center justify-between gap-2 font-mono text-[13.5px] font-bold uppercase tracking-[0.1em] transition ${
                 labsOpen ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
               }`}
             >
@@ -221,7 +222,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               <Link
                 href={`/range/${phase.slug}`}
                 onClick={onNavigate}
-                className={`flex items-center justify-between gap-2 font-mono text-[12.5px] font-bold uppercase tracking-[0.1em] transition ${
+                className={`flex items-center justify-between gap-2 font-mono text-[13.5px] font-bold uppercase tracking-[0.1em] transition ${
                   phaseActive ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
                 }`}
               >
@@ -232,7 +233,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 type="button"
                 onClick={() => toggleManualOpen(phase.slug)}
                 aria-expanded={phaseOpen}
-                className="flex w-full items-center justify-between gap-2 font-mono text-[12.5px] font-bold uppercase tracking-[0.1em] text-slate-400 transition hover:text-slate-600"
+                className="flex w-full items-center justify-between gap-2 font-mono text-[13.5px] font-bold uppercase tracking-[0.1em] text-slate-400 transition hover:text-slate-600"
               >
                 {headerContent}
               </button>
@@ -259,7 +260,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
       <Link
         href="/range/labs"
         onClick={onNavigate}
-        className={`flex items-center gap-2 font-mono text-[12.5px] font-bold uppercase tracking-[0.1em] transition ${
+        className={`flex items-center gap-2 font-mono text-[13.5px] font-bold uppercase tracking-[0.1em] transition ${
           pathname.startsWith("/range/labs") ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
         }`}
       >
@@ -270,7 +271,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
       <Link
         href="/range/reference"
         onClick={onNavigate}
-        className={`flex items-center gap-2 font-mono text-[12.5px] font-bold uppercase tracking-[0.1em] transition ${
+        className={`flex items-center gap-2 font-mono text-[13.5px] font-bold uppercase tracking-[0.1em] transition ${
           pathname === "/range/reference" ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
         }`}
       >

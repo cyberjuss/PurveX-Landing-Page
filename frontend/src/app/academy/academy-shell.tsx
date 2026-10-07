@@ -1246,7 +1246,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
             aria-hidden={!showSidebar}
             className={`hidden shrink-0 overflow-hidden bg-white transition-[width] duration-300 ease-[cubic-bezier(.16,1,.3,1)] lg:sticky lg:top-[65px] lg:block lg:h-[calc(100vh-65px)] ${
               showSidebar ? "border-r border-[var(--pvrx-border-light)]" : "border-r-0"
-            } ${!showSidebar ? "lg:w-0" : collapsed ? "lg:w-12" : "lg:w-[21rem]"}`}
+            } ${!showSidebar ? "lg:w-0" : collapsed ? "lg:w-12" : "lg:w-[24rem]"}`}
           >
             <button
               type="button"
