@@ -157,6 +157,55 @@ const newPassword = () => `Pvx-${randomBytes(12).toString("base64url").replace(/
 
 const ps = (v: string) => `'${v.replace(/'/g, "''")}'`;
 
+/**
+ * The keys every pod would otherwise share, re-rolled so this student's forest
+ * has its own.
+ *
+ * Each pod is cloned from one image, so without this every student's domain has
+ * the same `krbtgt` key and the same directory-restore password. A student who
+ * dumped `krbtgt` from their own domain controller would hold a golden-ticket
+ * key for everyone else's. The security groups are what stop them using it, and
+ * this is what makes those groups the outer layer rather than the only one.
+ *
+ * `krbtgt` is reset twice on purpose. Active Directory keeps the previous key
+ * and still accepts tickets signed with it, so one reset leaves the image's
+ * shared key working; the second reset is what evicts it. Resetting twice in
+ * quick succession is the thing to avoid in a real forest with several domain
+ * controllers, because the second reset can outrun replication. There is one
+ * domain controller here, nothing to replicate to, and no tickets issued yet.
+ *
+ * Neither secret is kept. Nothing in Range or the lab content uses either one:
+ * the restore password exists for a recovery mode no student enters, and
+ * `krbtgt` is never typed. Active Directory also ignores the password handed to
+ * a `krbtgt` reset and generates its own, so these are rolled on the machine
+ * rather than passed in -- EC2 user data can be read back from inside the
+ * instance, and a secret nobody needs should not be sitting there.
+ */
+function rekeyLines(): string[] {
+  return [
+    "# Give this student's forest its own krbtgt key and restore password.",
+    "$rand = { -join ((48..57) + (65..90) + (97..122) | Get-Random -Count 24 | ForEach-Object { [char]$_ }) }",
+    "try {",
+    "  foreach ($pass in 1, 2) {",
+    "    Set-ADAccountPassword -Identity krbtgt -Reset -NewPassword (ConvertTo-SecureString (& $rand) -AsPlainText -Force) -ErrorAction Stop",
+    '    Write-Host "krbtgt reset $pass of 2"',
+    "    if ($pass -eq 1) { Start-Sleep -Seconds 20 }",
+    "  }",
+    "  # The domain controller is holding tickets signed with the key we just replaced.",
+    "  & klist.exe purge -li 0x3e7 | Out-Null",
+    "  & klist.exe purge | Out-Null",
+    "} catch {",
+    '  Write-Host "krbtgt reset failed: $($_.Exception.Message)"',
+    "}",
+    "try {",
+    '  & ntdsutil.exe "set dsrm password" "reset password on server null" (& $rand) q q | Out-Null',
+    '  Write-Host "directory restore password reset"',
+    "} catch {",
+    '  Write-Host "restore password reset failed: $($_.Exception.Message)"',
+    "}",
+  ];
+}
+
 /** PowerShell EC2 runs once, on the lab's first boot. Same sync task as a self-hosted lab. */
 export function firstBootScript(key: string, password: string, url: string): string {
   return [
@@ -173,6 +222,9 @@ export function firstBootScript(key: string, password: string, url: string): str
     'New-Item -ItemType Directory -Path "$dir\\hosted" -Force | Out-Null',
     'Set-Content -LiteralPath "$dir\\hosted\\Build-Environment.ps1" -Value $text -Encoding UTF8',
     '& powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$dir\\hosted\\Build-Environment.ps1" -InstallSync',
+    // Last, so nothing else in first boot runs across a Kerberos key change. The
+    // sync that follows talks to Range over HTTPS and does not use Kerberos.
+    ...rekeyLines(),
     "Stop-Transcript",
     "</powershell>",
   ].join("\r\n");

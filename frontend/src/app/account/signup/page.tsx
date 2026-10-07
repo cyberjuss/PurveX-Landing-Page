@@ -170,9 +170,9 @@ function PortalSignupContent() {
           <AuthHeading
             sub={
               <>
-                Your account for <strong className="text-[#10192e]">{email}</strong> was created, but we
-                could not send the confirmation email. Go to sign in and ask for a new confirmation
-                link, or email support@purvex.io and we will confirm it for you.
+                The account for <strong className="text-[#10192e]">{email}</strong> exists but the
+                confirmation email did not send. Go to sign in and ask for a new link. Email
+                support@purvex.io if that fails too.
               </>
             }
           >

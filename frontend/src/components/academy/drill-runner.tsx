@@ -995,7 +995,7 @@ export function DrillRunner() {
                   <span className="ax-path__title">Shift</span>
                   <span className="ax-path__body">
                     30 minutes on the desk. Real incidents hit your own lab and you respond against the clock.
-                    {!hostedLab ? " It needs your own hosted lab, which comes with Range Pro." : ""}
+                    {!hostedLab ? " It needs a hosted lab and that comes with Range Pro." : ""}
                   </span>
                 </span>
                 <span className="ax-path__count">

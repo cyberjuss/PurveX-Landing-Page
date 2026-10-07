@@ -136,7 +136,7 @@ function PortalLoginContent() {
       const message = getErrorMessage(err, "Unable to sign in. Check your email and password.");
       if (UNCONFIRMED.test(message)) {
         setUnconfirmed(true);
-        setError("This email has not been confirmed yet. Check your inbox for the confirmation link, including spam.");
+        setError("This email is not confirmed yet. Check your inbox and your spam folder for the link.");
         return;
       }
       setError(message);
@@ -270,7 +270,7 @@ function PortalLoginContent() {
           )}
           {resent && (
             <p className="mt-2 text-sm font-medium text-[#067647]" role="status">
-              Sent. Open the link in that email, then sign in.
+              Sent. Open the link in that email and sign in.
             </p>
           )}
           <button type="submit" className="am-primary mt-4" disabled={isLoading}>

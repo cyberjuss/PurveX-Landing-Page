@@ -198,7 +198,7 @@ function ShiftConsoleInner() {
       <div className="shift-app shift-app--center" data-academy-theme={theme}>
         <div className="sh-gate-card">
           <h1>Shift</h1>
-          <p>Shifts run in your own hosted lab, which is part of Range Pro. If you already have Pro, email support@purvex.io and we will switch it on.</p>
+          <p>Shifts need a hosted lab and that comes with Range Pro. Email support@purvex.io if you already have it.</p>
         </div>
       </div>
     );
@@ -247,7 +247,7 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
         <ul className="sh-rules">
           <li>
             <span className="sh-rules__ic"><ShieldAlert className="h-4 w-4" /></span>
-            <strong>Real attacks, fired into your own lab</strong>
+            <strong>Real attacks hit your own lab</strong>
             <small>Nothing is scripted for show. The same events land in your domain controller.</small>
           </li>
           <li>
@@ -258,7 +258,7 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
           <li>
             <span className="sh-rules__ic"><LifeBuoy className="h-4 w-4" /></span>
             <strong>The coach costs you</strong>
-            <small>First hint 10% of the ticket, then 20%, then 40%. Use it when you are genuinely stuck.</small>
+            <small>The first hint costs 10% of the ticket. The next two cost 20% and 40%.</small>
           </li>
         </ul>
 
@@ -273,9 +273,9 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
             {online
               ? "The desk is ready. Tickets start arriving the moment you begin."
               : starting
-                ? "First boot takes a couple of minutes. This updates on its own, so you can leave it."
+                ? "First boot takes a couple of minutes. This updates on its own."
                 : lab.locked
-                  ? "Shifts run in a hosted lab, which is part of Range Pro."
+                  ? "Shifts need a hosted lab and that comes with Range Pro."
                   : "Shifts run in your own lab. Start it and the desk opens."}
           </p>
 

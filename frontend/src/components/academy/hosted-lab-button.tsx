@@ -328,7 +328,7 @@ export function HostedLabMenu() {
         : state === "stopping"
           ? "Saving your session."
           : state === "none"
-            ? "Your own domain controller and an Ubuntu server beside it, ready in about 3 minutes. They open in a browser tab, nothing to install."
+            ? "A domain controller and an Ubuntu server on their own network. Both are ready in about 3 minutes and open in a browser tab."
             : null;
 
   return (
