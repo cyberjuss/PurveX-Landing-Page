@@ -68,7 +68,62 @@
 .iv-tabs small { color: var(--rd-ink-3); }
 
 /* Lift the muted section descriptions in the instructor and owner views. */
-.iv-root .rd-sec__head p { color: var(--rd-ink-2); }
+/* order puts the section action on the heading line; the description is full
+   width, so without this it would push the action down to a line of its own. */
+.iv-root .rd-sec__head p { color: var(--rd-ink-2); order: 2; }
+.rd-sec__act { order: 1; margin-left: auto; text-decoration: none; }
+@media (max-width: 560px) { .rd-sec__act { order: 3; margin-left: 0; } }
+
+/* Email a single at-risk student straight from the reason they are listed. */
+.iv-attn li { grid-template-columns: minmax(140px, 200px) 1fr auto; }
+.iv-attn__mail { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: color-mix(in srgb, var(--rd-ink) 7%, transparent); color: var(--rd-ink-2); font-size: 12.5px; font-weight: 650; text-decoration: none; white-space: nowrap; transition: background 0.15s, color 0.15s; }
+.iv-attn__mail:hover { background: color-mix(in srgb, var(--rd-accent) 14%, transparent); color: var(--rd-accent); }
+@media (max-width: 640px) { .iv-attn li { grid-template-columns: 1fr; } .iv-attn__mail { justify-self: start; } }
+
+/* Marks the competency the class is weakest in, so "reteach the lowest" is
+   not left to reading four bars and comparing them. */
+.iv-reteach { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--rd-warn) 15%, transparent); color: var(--rd-warn); font-size: 10.5px; font-style: normal; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; vertical-align: 1px; }
+
+/* Roster tools. Calm by default: a filter only colours once it is the active one. */
+.iv-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.iv-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.iv-chips button { height: 30px; padding: 0 13px; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--rd-ink) 6%, transparent); color: var(--rd-ink-2); font-size: 12.5px; font-weight: 650; cursor: pointer; transition: background 0.15s, color 0.15s; }
+.iv-chips button:hover { background: color-mix(in srgb, var(--rd-ink) 11%, transparent); color: var(--rd-ink); }
+.iv-chips button[aria-pressed="true"] { background: color-mix(in srgb, var(--rd-accent) 16%, transparent); color: var(--rd-accent); }
+.iv-sort { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
+.iv-sort select { height: 30px; padding: 0 8px; border: 1px solid var(--rd-line); border-radius: 8px; background: var(--rd-surface); color: var(--rd-ink); font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none; cursor: pointer; }
+.iv-sort select:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 1px; }
+
+/* An open row keeps its detail visually attached to it. */
+.iv-row { border-bottom: 1px solid var(--rd-line); }
+.iv-row .iv-tr { border-bottom: 0; }
+.iv-row--open { background: color-mix(in srgb, var(--rd-ink) 2.5%, transparent); }
+.iv-who__toggle { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.iv-who__chev { flex: none; color: var(--rd-ink-3); transition: transform 0.18s, color 0.15s; }
+.iv-who__toggle:hover .iv-who__chev { color: var(--rd-accent); }
+.iv-who__toggle:hover strong { color: var(--rd-accent); }
+.iv-who__toggle[aria-expanded="true"] .iv-who__chev { transform: rotate(-180deg); color: var(--rd-accent); }
+.iv-who__toggle:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 3px; border-radius: 4px; }
+
+/* The full record for one student, opened from their name. */
+.iv-detail { padding: 4px 0 22px; }
+.iv-detail__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px 32px; }
+.iv-detail h3 { margin: 0 0 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
+.iv-detail__none { margin: 0; font-size: 13.5px; color: var(--rd-ink-3); }
+.iv-detail__stuck { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.iv-detail__stuck li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: 13.5px; }
+.iv-detail__stuck strong { font-weight: 600; color: var(--rd-ink); }
+.iv-detail__stuck span { color: var(--rd-bad); }
+.iv-detail__skills { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+.iv-detail__skills li { display: grid; grid-template-columns: 1fr 90px 34px; align-items: center; gap: 10px; font-size: 13.5px; color: var(--rd-ink-2); }
+.iv-detail__skills .iv-bar { margin: 0; max-width: none; }
+.iv-detail__skills b { font-family: var(--font-display); font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+.iv-detail__facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; margin: 0; }
+.iv-detail__facts dt { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-ink-3); }
+.iv-detail__facts dd { margin: 3px 0 0; font-size: 13.5px; color: var(--rd-ink); }
+.iv-detail__act { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.iv-detail__act .iv-copy { text-decoration: none; }
+@media (max-width: 860px) { .iv-detail__grid { grid-template-columns: 1fr; gap: 22px; } }
 
 /* Owner view: a simple list of classes to create and assign. */
 .ov-lede { max-width: 60ch; margin-top: 4px; font-size: 15px; line-height: 1.55; color: var(--rd-ink-2); }

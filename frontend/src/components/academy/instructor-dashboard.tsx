@@ -1,13 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, Check, Copy, ExternalLink, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ArrowLeft, Check, ChevronDown, Copy, Download, ExternalLink, Mail, Trash2 } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { scoreTone } from "@/lib/academy-score";
 import "./instructor.css";
 
 // The instructor's view of a class: who is stuck, who has gone quiet, where
-// the class is weakest, and every student's progress in one table.
+// the class is weakest, and every student's progress in one table. Each row
+// opens to the full detail, and every read here has something you can do with
+// it: mail the student, mail the whole at-risk group, or take the roster away
+// as a spreadsheet.
 
 type Student = {
   userId: string;
@@ -33,6 +36,9 @@ type Data = { admin: boolean; classes: Report[] };
 
 const DAY = 864e5;
 const QUIET_DAYS = 7;
+// Under two days is "Active". Between that and a week is "Steady": still
+// moving, not worth chasing. Without this band Steady was unreachable.
+const ACTIVE_DAYS = 2;
 
 function ago(iso: string | null): string {
   if (!iso) return "Never";
@@ -47,16 +53,19 @@ function ago(iso: string | null): string {
   return days === 1 ? "Yesterday" : `${days} days ago`;
 }
 
+const onDay = (iso: string | null) => (iso && !Number.isNaN(Date.parse(iso)) ? new Date(iso).toLocaleDateString() : "—");
 const quietDays = (s: Student) => (s.lastActive ? Math.floor((Date.now() - Date.parse(s.lastActive)) / DAY) : null);
 const who = (s: Student) => s.name || s.email?.split("@")[0] || "Student";
 
+type Status = { label: string; tone: "good" | "warn" | "bad" | "none" };
+
 /** A single status read for a student, most urgent first. */
-function statusOf(s: Student): { label: string; tone: "good" | "warn" | "bad" | "none" } {
+function statusOf(s: Student): Status {
   const quiet = quietDays(s);
   if (quiet === null) return { label: "Not started", tone: "none" };
   if (s.stuck.length) return { label: "Stuck", tone: "bad" };
   if (quiet >= QUIET_DAYS) return { label: "Quiet", tone: "warn" };
-  if (quiet <= 7) return { label: "Active", tone: "good" };
+  if (quiet <= ACTIVE_DAYS) return { label: "Active", tone: "good" };
   return { label: "Steady", tone: "none" };
 }
 
@@ -73,6 +82,62 @@ function flags(s: Student): string[] {
   for (const m of s.stuck.slice(0, 2)) out.push(`Stuck on ${m.title}${m.wrong ? ` · ${m.wrong} wrong` : ""}${m.skipped ? " · skipped" : ""}`);
   if (s.stuck.length > 2) out.push(`${s.stuck.length - 2} more open missions`);
   return out;
+}
+
+/** mailto for one student, with the reason already in the subject. */
+function mailOne(s: Student, className: string): string | null {
+  if (!s.email) return null;
+  const why = flags(s);
+  const subject = why.length ? `${className}: checking in` : `${className}`;
+  const body = [
+    `Hi ${who(s)},`,
+    "",
+    why.length ? `I noticed ${why[0].toLowerCase()}. Anything I can help unblock?` : "Checking in on how you are getting on.",
+    "",
+  ].join("\n");
+  return `mailto:${encodeURIComponent(s.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+/** One mail to everyone who needs a look, bcc so they cannot see each other. */
+function mailGroup(students: Student[], className: string): string | null {
+  const to = students.map((s) => s.email).filter((e): e is string => Boolean(e));
+  if (!to.length) return null;
+  const body = ["Hi,", "", "Checking in on where you are. Reply here if anything is blocking you.", ""].join("\n");
+  return `mailto:?bcc=${encodeURIComponent(to.join(","))}&subject=${encodeURIComponent(`${className}: checking in`)}&body=${encodeURIComponent(body)}`;
+}
+
+const csvCell = (v: unknown) => {
+  const s = v === null || v === undefined ? "" : String(v);
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+};
+
+function exportCsv(r: Report) {
+  const head = [
+    "Name", "Email", "Status", "Readiness", "Accuracy", "Level",
+    "Missions finished", "Missions total", "Labs passed", "Drills this week",
+    "Last active", "Where they are", "Lab synced", "Portfolio", "Joined", "Stuck on",
+  ];
+  const rows = [...r.students]
+    .sort((a, b) => urgency(a) - urgency(b) || who(a).localeCompare(who(b)))
+    .map((s) => [
+      who(s), s.email ?? "", statusOf(s).label,
+      s.readiness.overall ?? "", s.readiness.accuracy ?? "", s.readiness.level,
+      s.readiness.finished, s.readiness.total, s.labsPassed, s.drillsThisWeek,
+      s.lastActive ? new Date(s.lastActive).toISOString() : "Never",
+      s.place ? `${s.place.tab} — ${s.place.page}` : "Not seen yet",
+      s.labSynced ? new Date(s.labSynced).toISOString() : "Not connected",
+      s.portfolio ? `${window.location.origin}/p/${s.portfolio}` : "",
+      new Date(s.joinedAt).toISOString(),
+      s.stuck.map((m) => m.title).join("; "),
+    ]);
+  // The BOM is what makes Excel read the accents correctly.
+  const csv = "﻿" + [head, ...rows].map((line) => line.map(csvCell).join(",")).join("\r\n");
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${r.class.name.replace(/[^\w.-]+/g, "-").replace(/^-|-$/g, "") || "class"}-roster.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function CopyLink({ text, label }: { text: string; label: string }) {
@@ -127,15 +192,161 @@ function InviteBlock({ code }: { code: string }) {
   );
 }
 
+/** Everything known about one student, opened from their row. */
+function StudentDetail({ s, classTitle }: { s: Student; classTitle: string }) {
+  const mail = mailOne(s, classTitle);
+  const rated = s.skills.filter((k) => k.score !== null);
+  return (
+    <div className="iv-detail">
+      <div className="iv-detail__grid">
+        <section>
+          <h3>Open missions</h3>
+          {s.stuck.length === 0 ? (
+            <p className="iv-detail__none">Nothing open. Every mission attempted is solved.</p>
+          ) : (
+            <ul className="iv-detail__stuck">
+              {s.stuck.map((m) => (
+                <li key={m.title}>
+                  <strong>{m.title}</strong>
+                  <span>
+                    {m.wrong > 0 && `${m.wrong} wrong`}
+                    {m.wrong > 0 && m.skipped && " · "}
+                    {m.skipped && "skipped"}
+                    {m.wrong === 0 && !m.skipped && "open"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section>
+          <h3>Competencies</h3>
+          {rated.length === 0 ? (
+            <p className="iv-detail__none">No scored work yet, so there is nothing to read here.</p>
+          ) : (
+            <ul className="iv-detail__skills">
+              {s.skills.map((k) => (
+                <li key={k.key}>
+                  <span>{k.label}</span>
+                  <span className="iv-bar" aria-hidden="true">
+                    <i className={`rd-bg-${scoreTone(k.score)}`} style={{ width: `${k.score ?? 0}%` }} />
+                  </span>
+                  <b className={`rd-text-${scoreTone(k.score)}`}>{k.score ?? "—"}</b>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section>
+          <h3>Record</h3>
+          <dl className="iv-detail__facts">
+            <div>
+              <dt>Joined</dt>
+              <dd>{onDay(s.joinedAt)}</dd>
+            </div>
+            <div>
+              <dt>Labs passed</dt>
+              <dd>{s.labsPassed}</dd>
+            </div>
+            <div>
+              <dt>Drills this week</dt>
+              <dd>{s.drillsThisWeek}</dd>
+            </div>
+            <div>
+              <dt>Lab</dt>
+              <dd>{s.labSynced ? `Synced ${ago(s.labSynced).toLowerCase()}` : "Not connected"}</dd>
+            </div>
+            <div>
+              <dt>Last active</dt>
+              <dd>{ago(s.lastActive)}</dd>
+            </div>
+            <div>
+              <dt>Portfolio</dt>
+              <dd>
+                {s.portfolio ? (
+                  <a className="rd-link" href={`/p/${s.portfolio}`} target="_blank" rel="noreferrer">
+                    Open <ExternalLink className="h-3 w-3" />
+                  </a>
+                ) : (
+                  "Not published"
+                )}
+              </dd>
+            </div>
+          </dl>
+        </section>
+      </div>
+
+      {s.email && (
+        <div className="iv-detail__act">
+          {mail && (
+            <a className="iv-copy" href={mail}>
+              <Mail className="h-3.5 w-3.5" /> Email {who(s)}
+            </a>
+          )}
+          <CopyLink text={s.email} label="Copy address" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+type SortKey = "urgency" | "name" | "readiness" | "active";
+const FILTERS = ["All", "Needs a look", "Active", "Not started"] as const;
+type Filter = (typeof FILTERS)[number];
+
 function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: string }) {
+  const [open, setOpen] = useState<string | null>(null);
+  const [filter, setFilter] = useState<Filter>("All");
+  const [sort, setSort] = useState<SortKey>("urgency");
+
   const origin = typeof window === "undefined" ? "" : window.location.origin;
   const joinLink = `${origin}/range/join?code=${encodeURIComponent(r.class.code)}`;
   const attention = r.students.map((s) => ({ s, why: flags(s) })).filter((x) => x.why.length);
-  const skills = ["accounts", "directory", "troubleshooting", "security"].map((key) => {
-    const scores = r.students.map((s) => s.skills.find((k) => k.key === key)).filter((k): k is Student["skills"][number] => Boolean(k));
-    const done = scores.filter((k) => k.score !== null).map((k) => k.score!);
-    return { key, label: scores[0]?.label ?? key, avg: done.length ? Math.round(done.reduce((a, b) => a + b, 0) / done.length) : null, n: done.length };
-  });
+
+  // Derived from the students rather than a fixed list, so a new competency in
+  // the catalog shows up here instead of being silently dropped.
+  const skills = useMemo(() => {
+    const order: string[] = [];
+    const seen = new Map<string, { label: string; scores: number[] }>();
+    for (const s of r.students) {
+      for (const k of s.skills) {
+        if (!seen.has(k.key)) {
+          seen.set(k.key, { label: k.label, scores: [] });
+          order.push(k.key);
+        }
+        if (k.score !== null) seen.get(k.key)!.scores.push(k.score);
+      }
+    }
+    return order.map((key) => {
+      const e = seen.get(key)!;
+      return { key, label: e.label, avg: e.scores.length ? Math.round(e.scores.reduce((a, b) => a + b, 0) / e.scores.length) : null, n: e.scores.length };
+    });
+  }, [r.students]);
+
+  // The server already works out the weakest competencies; mark them so the
+  // instructor knows where to start rather than reading four bars and guessing.
+  const reteach = new Set(r.summary.weakest.map((w) => w.label));
+
+  const shown = useMemo(() => {
+    const keep = (s: Student) => {
+      if (filter === "All") return true;
+      const label = statusOf(s).label;
+      if (filter === "Needs a look") return flags(s).length > 0;
+      if (filter === "Active") return label === "Active" || label === "Steady";
+      return label === "Not started";
+    };
+    const cmp: Record<SortKey, (a: Student, b: Student) => number> = {
+      urgency: (a, b) => urgency(a) - urgency(b) || (Date.parse(b.lastActive ?? "0") || 0) - (Date.parse(a.lastActive ?? "0") || 0),
+      name: (a, b) => who(a).localeCompare(who(b)),
+      readiness: (a, b) => (b.readiness.overall ?? -1) - (a.readiness.overall ?? -1),
+      active: (a, b) => (Date.parse(b.lastActive ?? "0") || 0) - (Date.parse(a.lastActive ?? "0") || 0),
+    };
+    return r.students.filter(keep).sort(cmp[sort]);
+  }, [r.students, filter, sort]);
+
+  const groupMail = mailGroup(attention.map((a) => a.s), r.class.name);
 
   const health =
     r.summary.students === 0
@@ -193,17 +404,30 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
               <span className="rd-sec__n">01</span>
               <h2>Needs a look</h2>
               <p>Students who are stuck on a mission, or who have gone quiet for a week.</p>
+              {groupMail && attention.length > 1 && (
+                <a className="iv-copy rd-sec__act" href={groupMail}>
+                  <Mail className="h-3.5 w-3.5" /> Email all {attention.length}
+                </a>
+              )}
             </div>
             {attention.length === 0 ? (
               <p className="iv-empty">Everyone is moving. Nobody is stuck or quiet.</p>
             ) : (
               <ul className="iv-attn">
-                {attention.map(({ s, why }) => (
-                  <li key={s.userId}>
-                    <strong>{who(s)}</strong>
-                    <span>{why.join(" · ")}</span>
-                  </li>
-                ))}
+                {attention.map(({ s, why }) => {
+                  const mail = mailOne(s, r.class.name);
+                  return (
+                    <li key={s.userId}>
+                      <strong>{who(s)}</strong>
+                      <span>{why.join(" · ")}</span>
+                      {mail && (
+                        <a className="iv-attn__mail" href={mail} aria-label={`Email ${who(s)}`}>
+                          <Mail className="h-3.5 w-3.5" /> Email
+                        </a>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </section>
@@ -220,7 +444,10 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
                 return (
                   <div key={k.key} className="rd-row">
                     <div className="rd-row__name">
-                      <strong>{k.label}</strong>
+                      <strong>
+                        {k.label}
+                        {k.avg !== null && reteach.has(k.label) && <em className="iv-reteach">Reteach first</em>}
+                      </strong>
                       <span>
                         {k.n} of {r.students.length} students have work here
                       </span>
@@ -244,8 +471,32 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
             <div className="rd-sec__head">
               <span className="rd-sec__n">03</span>
               <h2>Students</h2>
-              <p>Who needs attention first.</p>
+              <p>Who needs attention first. Open a name for the full record.</p>
+              <button type="button" className="iv-copy rd-sec__act" onClick={() => exportCsv(r)}>
+                <Download className="h-3.5 w-3.5" /> Export CSV
+              </button>
             </div>
+
+            <div className="iv-tools">
+              <div className="iv-chips" role="group" aria-label="Filter students">
+                {FILTERS.map((f) => (
+                  <button key={f} type="button" aria-pressed={filter === f} onClick={() => setFilter(f)}>
+                    {f}
+                  </button>
+                ))}
+              </div>
+              <label className="iv-sort">
+                <span>Sort</span>
+                <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
+                  <option value="urgency">Needs attention</option>
+                  <option value="name">Name</option>
+                  <option value="readiness">Readiness</option>
+                  <option value="active">Last active</option>
+                </select>
+              </label>
+            </div>
+
+            {shown.length === 0 && <p className="iv-empty">No students match that filter.</p>}
             <div className="iv-table" role="table" aria-label={`${r.class.name} students`}>
               <div className="iv-tr iv-tr--head" role="row">
                 <span role="columnheader">Student</span>
@@ -256,57 +507,69 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
                 <span role="columnheader">Drills this week</span>
                 <span role="columnheader">Portfolio</span>
               </div>
-              {[...r.students].sort((a, b) => urgency(a) - urgency(b) || (Date.parse(b.lastActive ?? "0") || 0) - (Date.parse(a.lastActive ?? "0") || 0)).map((s) => (
-                <div key={s.userId} className="iv-tr" role="row">
-                  <span role="cell" className="iv-who">
-                    <strong>{who(s)}</strong>
-                    {s.email && <small>{s.email}</small>}
-                    {(() => {
-                      const st = statusOf(s);
-                      return <span className={`iv-pill iv-pill--${st.tone}`}>{st.label}</span>;
-                    })()}
-                  </span>
-                  <span role="cell" data-label="Readiness">
-                    {/* Width is readiness (all missions). Color is accuracy, so a new student is not shown as failing. */}
-                    <b className={`rd-text-${scoreTone(s.readiness.accuracy)}`}>{s.readiness.overall ?? "––"}</b>
-                    <span className="iv-bar" aria-hidden="true">
-                      <i className={`rd-bg-${scoreTone(s.readiness.accuracy)}`} style={{ width: `${s.readiness.overall ?? 0}%` }} />
-                    </span>
-                    <small>
-                      {s.readiness.level} · {s.readiness.finished}/{s.readiness.total} missions
-                      {s.readiness.accuracy !== null && ` · ${s.readiness.accuracy}% accuracy`}
-                    </small>
-                  </span>
-                  <span role="cell" data-label="Where they are">
-                    {s.place ? (
-                      <>
-                        {s.place.tab}
-                        <small>{s.place.page}</small>
-                      </>
-                    ) : (
-                      <small>Not seen yet</small>
-                    )}
-                  </span>
-                  <span role="cell" data-label="Last active" className={quietDays(s) !== null && quietDays(s)! >= QUIET_DAYS ? "rd-text-warn" : ""}>
-                    {ago(s.lastActive)}
-                  </span>
-                  <span role="cell" data-label="Lab">
-                    {s.labSynced ? `Synced ${ago(s.labSynced).toLowerCase()}` : <small>Not connected</small>}
-                  </span>
-                  <span role="cell" data-label="Drills this week">
-                    {s.drillsThisWeek}
-                  </span>
-                  <span role="cell" data-label="Portfolio">
-                    {s.portfolio ? (
-                      <a className="rd-link" href={`/p/${s.portfolio}`} target="_blank" rel="noreferrer">
-                        Open <ExternalLink className="h-3 w-3" />
-                      </a>
-                    ) : (
-                      <small>Not published</small>
-                    )}
-                  </span>
-                </div>
-              ))}
+              {shown.map((s) => {
+                const st = statusOf(s);
+                const isOpen = open === s.userId;
+                return (
+                  <div key={s.userId} className={`iv-row${isOpen ? " iv-row--open" : ""}`}>
+                    <div className="iv-tr" role="row">
+                      <span role="cell" className="iv-who">
+                        <button
+                          type="button"
+                          className="iv-who__toggle"
+                          aria-expanded={isOpen}
+                          onClick={() => setOpen(isOpen ? null : s.userId)}
+                        >
+                          <ChevronDown className="iv-who__chev h-4 w-4" aria-hidden="true" />
+                          <strong>{who(s)}</strong>
+                        </button>
+                        {s.email && <small>{s.email}</small>}
+                        <span className={`iv-pill iv-pill--${st.tone}`}>{st.label}</span>
+                      </span>
+                      <span role="cell" data-label="Readiness">
+                        {/* Width is readiness (all missions). Color is accuracy, so a new student is not shown as failing. */}
+                        <b className={`rd-text-${scoreTone(s.readiness.accuracy)}`}>{s.readiness.overall ?? "––"}</b>
+                        <span className="iv-bar" aria-hidden="true">
+                          <i className={`rd-bg-${scoreTone(s.readiness.accuracy)}`} style={{ width: `${s.readiness.overall ?? 0}%` }} />
+                        </span>
+                        <small>
+                          {s.readiness.level} · {s.readiness.finished}/{s.readiness.total} missions
+                          {s.readiness.accuracy !== null && ` · ${s.readiness.accuracy}% accuracy`}
+                        </small>
+                      </span>
+                      <span role="cell" data-label="Where they are">
+                        {s.place ? (
+                          <>
+                            {s.place.tab}
+                            <small>{s.place.page}</small>
+                          </>
+                        ) : (
+                          <small>Not seen yet</small>
+                        )}
+                      </span>
+                      <span role="cell" data-label="Last active" className={quietDays(s) !== null && quietDays(s)! >= QUIET_DAYS ? "rd-text-warn" : ""}>
+                        {ago(s.lastActive)}
+                      </span>
+                      <span role="cell" data-label="Lab">
+                        {s.labSynced ? `Synced ${ago(s.labSynced).toLowerCase()}` : <small>Not connected</small>}
+                      </span>
+                      <span role="cell" data-label="Drills this week">
+                        {s.drillsThisWeek}
+                      </span>
+                      <span role="cell" data-label="Portfolio">
+                        {s.portfolio ? (
+                          <a className="rd-link" href={`/p/${s.portfolio}`} target="_blank" rel="noreferrer">
+                            Open <ExternalLink className="h-3 w-3" />
+                          </a>
+                        ) : (
+                          <small>Not published</small>
+                        )}
+                      </span>
+                    </div>
+                    {isOpen && <StudentDetail s={s} classTitle={r.class.name} />}
+                  </div>
+                );
+              })}
             </div>
           </section>
         </>
