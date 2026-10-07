@@ -153,7 +153,9 @@ function UpgradeContent() {
 
   return (
     <AuthMinimal product="Range">
-      <AuthHeading sub="The shortest road from learning this to being hired for it.">Get Range Pro</AuthHeading>
+      <AuthHeading sub="A cloud lab of your own on a real Windows domain. An AI coach that reads it. A Proof Profile any employer can verify.">
+        Get Range Pro
+      </AuthHeading>
 
       {/* Price and what it buys read as one block. Loose on the page they were
           two unrelated lists with nothing holding them together. */}
@@ -173,7 +175,13 @@ function UpgradeContent() {
         </ul>
       </div>
 
-      <button type="button" onClick={checkout} disabled={busy} className="am-primary mt-7">
+      {/* Which account is about to be charged belongs with the decision, not
+          buried in the billing line underneath it. */}
+      <p className="mt-6 text-[0.8rem] text-slate-500">
+        Signed in as <span className="font-medium text-[#39415a]">{user?.email}</span>
+      </p>
+
+      <button type="button" onClick={checkout} disabled={busy} className="am-primary mt-2">
         {busy ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" /> Opening checkout...
@@ -191,10 +199,7 @@ function UpgradeContent() {
 
       {/* Left aligned like everything above it. .am-legal centres itself, which
           suits the sign-in screens and left this page looking half-justified. */}
-      <p className="am-legal !text-left">
-        Billed monthly through Stripe and you can cancel any time. Signed in as{" "}
-        <span className="font-medium text-[#39415a]">{user?.email}</span>.
-      </p>
+      <p className="am-legal !text-left">Billed monthly through Stripe and you can cancel any time.</p>
       <p className="mt-5 border-t border-[#eceef4] pt-4 text-sm text-slate-500">
         Not now?{" "}
         <Link href="/range" className="am-link">
