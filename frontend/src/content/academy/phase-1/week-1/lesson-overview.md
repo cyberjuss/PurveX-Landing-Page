@@ -21,4 +21,4 @@ This week also covers how analysts talk about risk. A vulnerability and a threat
 
 Once you can tell them apart, you can rank a queue instead of reacting to every word that sounds scary.
 
-Your job this week is to look at a failure and say which job broke. Then say whether the danger is a weakness or an actor, or the chance that the two meet.
+This week you look at a failure and say which job broke. Then say whether the danger is a weakness or an actor, or the chance that the two meet.

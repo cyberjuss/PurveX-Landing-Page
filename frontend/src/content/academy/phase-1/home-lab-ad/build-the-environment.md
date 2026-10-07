@@ -23,7 +23,7 @@ After the domain reboot, sign in as `PURVEXFINANCIAL\Administrator` and run this
 
 The sync also sends your security settings, such as password and lockout policy, auditing, and log size. It adds a 30-day count of Security log events, such as failed sign-ins and accounts created.
 
-The sync never sends passwords or raw log entries. Your drills and the weekly CTF depend on it. If you built your lab before this feature existed, download the script again and run it once.
+The sync never sends passwords or raw log entries. The drills and the weekly CTF depend on it. If you built your lab before this feature existed, download the script again and run it once.
 
 [Download Build-Environment.ps1](/lab-scripts/Build-Environment.ps1)
 

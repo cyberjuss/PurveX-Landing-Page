@@ -4,4 +4,4 @@
 
 **Task:** Predict what each person can do in each folder, then remove the permission entries and group memberships that grant too much. Finish by naming the commands that show effective access on a real server.
 
-Your first finished score counts toward Access Control on your readiness report.
+Finishing it once counts toward Access Control on your readiness report.

@@ -24,7 +24,7 @@ That sets encryption apart from the other two methods this week. Anyone can reve
 
 **Asymmetric encryption** uses a key pair. Anyone can have the public key, and only the owner keeps the private key. Pairs are slower, so they are used to agree on a shared key and to sign files.
 
-HTTPS uses both. Your browser and the website use key pairs to agree on a fresh session key, usually AES. That key protects everything sent afterward.
+HTTPS uses both. The browser and the website use key pairs to agree on a fresh session key, usually AES. That key protects everything sent afterward.
 
 ### Where encryption fails
 

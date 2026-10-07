@@ -4,4 +4,4 @@
 
 **Task:** Work the four reports the way an analyst would. Name which part of the CIA triad failed in each and rate how likely and how costly it is for the firm. Then rank all four in the order you would fix them.
 
-Each step is checked before you move on, and the debrief explains every call. Your first finished score counts toward Risk Triage on your readiness report.
+Each step is checked before you move on, and the debrief explains every call. Finishing it once counts toward Risk Triage on your readiness report.

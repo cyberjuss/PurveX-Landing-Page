@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The 2 AM Login</h3>
 <p class="ad-brief__ask">Can you work one SIEM alert from the host through the log to the first response?</p>
-<p>This is a SOC queue item rather than a help desk ticket. At 2:04 AM the SIEM flagged a successful sign-in for <code>alex.rivera</code> on <code>WM-WKS07</code>, preceded by several failed attempts. Your job is to decide whether that sign-in fits this account and this firm.</p>
+<p>This is a SOC queue item rather than a help desk ticket. At 2:04 AM the SIEM flagged a successful sign-in for <code>alex.rivera</code> on <code>WM-WKS07</code>, preceded by several failed attempts. The task is to decide whether that sign-in fits this account and this firm.</p>
 <p>The host and group steps use your Phase 1 lab, and the log steps use the export shown on this page. Keep your lab running, because every step checks that it is live before it grades.</p>
 <p>Each step takes a short answer like a folder name or a number. You get three tries per step. A common wrong answer gets a short note on where to look. The hint unlocks after two misses and the explanation unlocks once you solve the step or use all three tries.</p>
 </div>
@@ -186,7 +186,7 @@
 
 <div class="ad-mission ad-mission--capstone" data-id="tq-10" data-attempts="0">
 <span class="ad-mission__num">Alert 05 · INC-1046 · Critical</span>
-<h4>Your First Move</h4>
+<h4>The First Move</h4>
 <p><strong>SIEM Alert · Part 5 of 5 · Automated detection · 2:12 AM</strong><br>You believe an admin account is compromised and in use on a Wealth Management machine. It is 2:12 AM. What do you do first?<br><strong>A</strong> Wipe and reimage WM-WKS07 right now.<br><strong>B</strong> Disable alex.rivera and isolate WM-WKS07 from the network while keeping the logs.<br><strong>C</strong> Email Alex and wait for an answer.<br><strong>D</strong> Clear the failed logon events so the alert stops repeating.</p>
 <p><strong>Task:</strong> Choose the best first move and type its letter.</p>
 <div class="ad-guess">

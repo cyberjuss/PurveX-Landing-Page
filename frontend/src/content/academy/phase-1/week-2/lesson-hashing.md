@@ -78,4 +78,4 @@ A signature tells you who published the file. Open **Properties → Digital Sign
 
 ### Check yourself
 
-The vendor emails a new installer and puts the SHA-256 in the same email. Your hash matches. Is the file verified?
+The vendor emails a new installer and puts the SHA-256 in the same email. The hash matches. Is the file verified?

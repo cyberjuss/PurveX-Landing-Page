@@ -31,7 +31,7 @@ A job title does not set anyone's access. A person whose title says Helpdesk doe
 
 Callers and tickets can be wrong, and handling that is part of the job. Verify what a ticket or caller tells you before you act on it.
 
-### Your Role
+### The Role You Play
 
 <div class="ad-goals-cue"><button type="button" class="ad-goals-open"><span class="ad-goals-open__tag">Analyst Brief</span><span class="ad-goals-open__text">Three questions to ask, written for the role you picked.</span><span class="ad-goals-open__cta">Open brief</span></button></div>
 <div class="ad-goals" hidden>

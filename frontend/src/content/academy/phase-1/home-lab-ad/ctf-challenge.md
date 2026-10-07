@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Operation Day One</h3>
 <p class="ad-brief__ask">Can you find your way around Active Directory well enough to handle a help desk technician's first day?</p>
-<p>It is your first day on the PurveX Financial help desk. Nobody expects you to close incidents yet. Your lead wants proof that you can find any person, group or computer and read what the directory says about it.</p>
+<p>It is your first day on the PurveX Financial help desk. Nobody expects you to close incidents yet. The lead on the desk wants proof that you can find any person, group or computer and read what the directory says about it.</p>
 </div>
 
 <div class="ad-progress">
@@ -390,7 +390,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="d1-10" data-attempts="0">
 <span class="ad-mission__num">Task 10 · Day One Complete</span>
 <h4>How Many Departments Are There?</h4>
-<p><strong>Situation:</strong> HR is updating the new-hire guide and asked IT how many departments the firm has in its directory. Your lead passed the question to you before you head home on your first day.</p>
+<p><strong>Situation:</strong> HR is updating the new-hire guide and asked IT how many departments the firm has in its directory. The lead passed the question to you before you head home on your first day.</p>
 <p><strong>Task:</strong> Count the department OUs that sit directly under <code>Departments</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for How Many Departments Are There?" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
