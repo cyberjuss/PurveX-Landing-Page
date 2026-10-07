@@ -4966,8 +4966,10 @@ textarea.pc-dock__field {
 .dr-note { margin: 14px 0 0; font-size: 14px; line-height: 1.55; color: var(--rd-ink-2); }
 .dr-note--lab { margin-top: 6px; color: var(--rd-ink-3); }
 .dr .rd-cta:disabled { opacity: 0.4; cursor: default; }
-.dr-link { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; background: none; border: 1px solid var(--rd-line); font-size: 14px; font-weight: 600; color: var(--rd-ink-2); cursor: pointer; transition: border-color 0.15s, color 0.15s; }
-.dr-link:hover { border-color: var(--rd-accent); color: var(--rd-accent); }
+.dr-link { padding: 0; background: none; border: 0; font-size: 14px; font-weight: 600; color: var(--rd-ink-2); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; transition: color 0.15s; }
+.dr-link:hover { color: var(--rd-accent); }
+.dr-actions--result .dr-link { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border: 1px solid var(--rd-line); text-decoration: none; }
+.dr-actions--result .dr-link:hover { border-color: var(--rd-accent); color: var(--rd-accent); }
 .dr-error { margin-top: 14px; font-size: 13px; color: var(--rd-bad); }
 
 .dr-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 8px; }
@@ -4983,8 +4985,8 @@ textarea.pc-dock__field {
 .dr-choice:hover { border-color: var(--rd-accent); }
 .dr-choice--on { border-color: var(--rd-accent); background: rgba(85, 70, 224, 0.08); box-shadow: inset 3px 0 0 var(--rd-accent); }
 .dr-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--rd-line); }
-.dr-actions .dr-link { margin-left: auto; }
-.dr-actions .dr-link + .dr-link { margin-left: 0; }
+.dr-actions--result .dr-link { margin-left: auto; }
+.dr-actions--result .dr-link + .dr-link { margin-left: 0; }
 
 .dr-score { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 20px; margin-top: 8px; }
 .dr-score strong { font-family: var(--font-display); font-size: clamp(72px, 12vw, 112px); font-weight: 700; letter-spacing: -0.06em; line-height: 0.9; color: var(--rd-accent); font-variant-numeric: tabular-nums; }
@@ -5238,7 +5240,8 @@ textarea.pc-dock__field {
 .dr-checks li.is-ok span { color: var(--rd-good); }
 .dr-checks li.is-bad span { color: var(--rd-bad); }
 .dr-checks__stale { padding: 12px 14px; border-radius: 8px; background: rgba(196, 130, 14, 0.12); color: var(--rd-ink) !important; }
-.dr-actions__side { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.dr-actions__side { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.dr-actions > .rd-cta { margin-left: auto; }
 .dr-earned { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-good); }
 
 /* Job tasks, setup scripts, and the PowerShell runbook */

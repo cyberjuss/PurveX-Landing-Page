@@ -899,7 +899,7 @@ export function DrillRunner() {
           ))}
         </ol>
 
-        <div className="dr-actions">
+        <div className="dr-actions dr-actions--result">
           {entry.mode === "daily" && !result.incidentUntil ? (
             <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("timed")}>
               Try an incident drill <ArrowRight className="h-4 w-4" />
