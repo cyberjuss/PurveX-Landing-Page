@@ -13,7 +13,7 @@ import "./hosted-lab.css";
 
 type State = "none" | "starting" | "ready" | "stopping" | "stopped";
 /** locked: hosted labs exist here, but this account is on Explore and has not bought one. */
-type Status = { available: boolean; locked?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string };
+type Status = { available: boolean; locked?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string; hoursUsed?: number; hoursLimit?: number | null; hoursLeft?: number | null };
 type Snapshot = { status: Status | null; busy: boolean; error: string | null };
 
 const clock = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -261,7 +261,9 @@ const RESUME = [
   { label: "Reconnecting to Range", until: 80 },
 ];
 
-const SPECS: Record<string, string> = { "t3.medium": "2 vCPU · 4 GB", "t3.large": "2 vCPU · 8 GB", "t3.xlarge": "4 vCPU · 16 GB" };
+const SPECS: Record<string, string> = { "t3.small": "2 vCPU · 2 GB", "t3.medium": "2 vCPU · 4 GB", "t3.large": "2 vCPU · 8 GB", "t3.xlarge": "4 vCPU · 16 GB" };
+// The Ubuntu server's size is fixed by var.linux_instance_type in Terraform.
+const LINUX_SPEC = SPECS["t3.small"];
 
 
 const PRIMARY: Record<State, string> = { none: "Start my lab", starting: "Starting", ready: "Open", stopping: "Stopping", stopped: "Resume lab" };
@@ -311,6 +313,11 @@ export function HostedLabMenu() {
   const { status, state, waiting, busy, error, primary } = useHostedLab();
   if (!status?.available) return null;
   const spec = SPECS[status.instanceType ?? ""] ?? status.instanceType;
+  // No lab yet means the next one is a pod, so describe what they will get.
+  // An existing lab describes what it actually has, which for one built before
+  // pods is a single machine.
+  const bothMachines = state === "none" ? true : Boolean(status.linux);
+  const legacySingle = state !== "none" && !status.linux;
   const note =
     state === "ready"
       ? status.stopAt ? `Stops on its own at ${clock(status.stopAt)}.` : "Running."
@@ -346,16 +353,29 @@ export function HostedLabMenu() {
           <dd>purvexfinancial.local</dd>
         </div>
         <div>
-          <dt>System</dt>
-          <dd>{status.linux ? "Windows Server 2022 + Ubuntu 24.04" : "Windows Server 2022"}</dd>
+          <dt>{bothMachines ? "Machines" : "Machine"}</dt>
+          <dd className="hl__machines">
+            <span>Windows Server 2022{spec ? ` · ${spec}` : ""}</span>
+            {bothMachines && <span>Ubuntu 24.04 · {LINUX_SPEC}</span>}
+          </dd>
         </div>
-        {spec && (
+        {typeof status.hoursLimit === "number" && status.hoursLimit > 0 && (
           <div>
-            <dt>Size</dt>
-            <dd>{spec}</dd>
+            <dt>This month</dt>
+            <dd>
+              {status.hoursUsed ?? 0} of {status.hoursLimit} hours used
+            </dd>
           </div>
         )}
       </dl>
+
+      {/* A lab built before pods existed is one machine, and nothing else on
+          this panel would ever tell them why their Ubuntu server is missing. */}
+      {legacySingle && (
+        <p className="hl__legacy">
+          This lab was built before the Ubuntu server existed. Reset it below to get both machines.
+        </p>
+      )}
 
       {state === "starting" && <StartTracker status={status} />}
 

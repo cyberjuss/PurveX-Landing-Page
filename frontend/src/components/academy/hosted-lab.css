@@ -72,7 +72,11 @@ html[data-academy-theme="dark"] .hl-note,
 
 /* The spec sheet: label on the left, value on the right, one fact a row. */
 .hl .hl__specs { display: grid; gap: 0; margin: 0; }
-.hl .hl__specs > div { display: grid; grid-template-columns: 62px 1fr; align-items: baseline; gap: 10px; padding: 7px 0; border-top: 1px solid var(--hl-line); }
+/* 86px, not 62px: "This month" and "Machines" do not fit the old column. */
+.hl .hl__specs > div { display: grid; grid-template-columns: 86px 1fr; align-items: baseline; gap: 10px; padding: 7px 0; border-top: 1px solid var(--hl-line); }
+/* One line per machine, so a pod reads as two things rather than one long string. */
+.hl .hl__machines { display: grid; gap: 3px; }
+.hl .hl__legacy { margin: 10px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--hl-ink-3); }
 .hl .hl__specs dt { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--hl-ink-3); }
 .hl .hl__specs dd { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; line-height: 1.45; color: var(--hl-ink-2); overflow-wrap: anywhere; }
 
