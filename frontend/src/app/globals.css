@@ -3398,7 +3398,7 @@ body:has(.lp) {
   letter-spacing: 0;
   text-transform: none;
   text-align: left;
-  box-shadow: 0 12px 28px -16px rgba(15, 23, 42, 0.28);
+  box-shadow: var(--sf-lift);
 }
 .ad-lab:hover .ad-lab__tip,
 .ad-lab:focus-visible .ad-lab__tip { display: block; }
@@ -3848,7 +3848,7 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 .academy-prose .ad-evidence {
   margin: 0.9rem 0; padding: 0.85rem 1rem; border-radius: 12px; overflow-x: auto;
   background: #0d1117; border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 18px 36px -24px rgba(16,25,46,0.5);
+  box-shadow: var(--sf-lift);
 }
 .academy-prose .ad-evidence code { background: none; padding: 0; color: #c9d1d9; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); line-height: 1.75; white-space: pre; }
 .academy-prose .ad-options { margin: 0.6rem 0 0; padding-left: 0; list-style: none; }
@@ -4777,10 +4777,12 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   font-size: var(--ty-micro); font-weight: 700; letter-spacing: 0.08em;
 }
 .ax-avatar:hover { filter: brightness(1.08); }
+/* The menu itself is [data-ax-account], styled in the component. These are
+   only its children. */
 .ax-account {
-  box-shadow: 0 18px 40px -20px rgba(15, 23, 42, 0.28);
   color: var(--rd-ink);
 }
+
 .ax-account > strong {
   display: block; margin-top: 4px;
   font-family: var(--font-display); font-size: var(--ty-h3); font-weight: 600; letter-spacing: -0.03em; color: var(--rd-ink);
@@ -4833,7 +4835,7 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .academy-bg[data-academy-theme="dark"] .ax-account {
   background: #000000;
   border-color: #0d0b12;
-  box-shadow: 0 20px 48px -16px rgba(0, 0, 0, 0.7);
+  box-shadow: var(--sf-lift);
 }
 
 /* PurveX Coach — same report language as the Academy, not a chat widget */
@@ -5077,7 +5079,7 @@ textarea.pc-dock__field {
 .dr-clock--low { color: var(--rd-bad); }
 .dr-segs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; margin: 12px 0 24px; }
 .dr-segs i { height: 6px; border-radius: 3px; }
-.dr-card { padding: 28px; border: 1px solid var(--rd-line); border-radius: 16px; background: var(--rd-line-2); box-shadow: 0 12px 32px -18px rgba(15, 23, 42, 0.4); }
+.dr-card { padding: 28px; border: 1px solid var(--rd-line); border-radius: 16px; background: var(--rd-line-2); box-shadow: var(--sf-lift); }
 .dr-card h2 { margin: 10px 0 0; font-family: var(--font-display); font-size: clamp(20px, 3vw, 26px); font-weight: 600; line-height: 1.25; letter-spacing: -0.02em; color: var(--rd-ink); }
 .dr-log { margin: 18px 0 0; padding: 14px 16px; overflow-x: auto; border-radius: 8px; background: #0b0f17; color: #cfe3ff; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); line-height: 1.7; }
 .dr-choices { display: grid; gap: 10px; margin-top: 20px; }

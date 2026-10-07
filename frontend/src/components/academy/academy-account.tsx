@@ -160,15 +160,39 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
       ? createPortal(
           <>
             <style>{`
+              /* The menu floats, so it carries the explainer card's surface:
+                 a wash of the accent off the top edge and the shared lift.
+                 The tokens are on :root, which is why this block can reach
+                 them from inside a portal. */
               [data-ax-account] {
                 position: fixed;
                 z-index: 80;
                 display: flex;
                 flex-direction: column;
-                width: 272px;
-                padding: 16px 16px 12px;
+                width: 288px;
+                padding: 20px 18px 14px;
                 box-sizing: border-box;
+                overflow: hidden;
               }
+              [data-ax-account]::before {
+                content: '';
+                position: absolute;
+                top: -40%;
+                left: 50%;
+                width: 150%;
+                height: 90%;
+                transform: translateX(-50%);
+                background: radial-gradient(ellipse at 50% 0%,
+                  color-mix(in srgb, #9a8cff var(--sf-wash-strength, 30%), transparent),
+                  transparent var(--sf-wash-stop, 48%));
+                pointer-events: none;
+              }
+              [data-ax-account][data-theme='light']::before {
+                background: radial-gradient(ellipse at 50% 0%,
+                  color-mix(in srgb, #5546e0 18%, transparent),
+                  transparent var(--sf-wash-stop, 48%));
+              }
+              [data-ax-account] > * { position: relative; }
               [data-ax-account] > strong { display: block; margin-top: 4px; font-size: 20px; font-weight: 600; letter-spacing: -0.03em; }
               [data-ax-account] > span { display: block; margin: 2px 0 12px; font-size: 12px; opacity: 0.65; word-break: break-all; }
               [data-ax-account] .ax-account__score { display: block; padding: 14px 0 12px; border-top: 1px solid rgba(255,255,255,0.12); border-bottom: 1px solid rgba(255,255,255,0.12); }
@@ -205,7 +229,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                 background: dark ? "#000" : "#fff",
                 color: dark ? "#e8eef8" : "#0f172a",
                 border: dark ? "1px solid rgba(180,200,255,0.18)" : "1px solid rgba(15,23,42,0.12)",
-                boxShadow: dark ? "0 20px 48px -16px rgba(0,0,0,0.85)" : "0 18px 40px -20px rgba(15,23,42,0.28)",
+                boxShadow: "var(--sf-lift)",
               }}
             >
               <p className="rd-kicker">Account</p>
