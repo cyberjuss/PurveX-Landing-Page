@@ -49,7 +49,7 @@ html[data-academy-theme="dark"] .lb,
 .lb .lb__title { margin: 4px 0 0; font-size: var(--ty-h3); font-weight: 650; letter-spacing: -0.02em; line-height: 1.15; color: var(--lb-ink); }
 .lb .lb__x {
   display: grid; place-items: center; width: 34px; height: 34px; flex: none; margin: -4px -4px 0 0;
-  border: 0; background: none; color: var(--lb-ink-3); cursor: pointer; transition: color 0.15s;
+  border: 0; background: none; color: var(--lb-ink-3); cursor: pointer; transition: color var(--ax-dur-fast);
 }
 .lb .lb__x:hover { color: var(--lb-ink); }
 
@@ -71,7 +71,7 @@ html[data-academy-theme="dark"] .lb,
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   height: 42px; margin: 0; padding: 0 18px; border-radius: 0;
   font: inherit; font-size: var(--ty-body); font-weight: 650; cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  transition: background var(--ax-dur-fast), border-color var(--ax-dur-fast), color var(--ax-dur-fast);
 }
 .lb .lb__go { flex: 1; border: 0; color: #fff; background: var(--lb-accent); }
 .lb .lb__go:hover:not(:disabled) { background: var(--lb-accent-hi); }

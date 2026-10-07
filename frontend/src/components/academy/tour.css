@@ -40,7 +40,7 @@
   color: var(--tour-ink);
   box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9);
   font-family: var(--font-sans, inherit);
-  animation: tour-in 0.2s cubic-bezier(.16, 1, .3, 1) both;
+  animation: tour-in 0.2s var(--ax-ease) both;
   overflow: hidden;
 }
 /* One wash of the accent behind the top of the card, so it is not a flat
@@ -91,14 +91,14 @@
   font-weight: 600;
   color: var(--tour-ink-3);
   cursor: pointer;
-  transition: color 0.15s;
+  transition: color var(--ax-dur-fast);
 }
 .tour .tour__skip:hover { color: var(--tour-ink); }
 
 /* One idea a card, so this can be generous. */
 .tour__main {
   padding: 34px 30px 32px;
-  animation: tour-step 0.26s cubic-bezier(.16, 1, .3, 1) both;
+  animation: tour-step 0.26s var(--ax-ease) both;
 }
 @keyframes tour-step { from { opacity: 0; transform: translateY(8px); } }
 @media (prefers-reduced-motion: reduce) { .tour__main { animation: none; } }
@@ -148,7 +148,7 @@
   border: 0;
   background: rgba(255, 255, 255, 0.2);
   cursor: pointer;
-  transition: background 0.2s, width 0.2s cubic-bezier(.16, 1, .3, 1);
+  transition: background var(--ax-dur), width var(--ax-dur) var(--ax-ease);
 }
 .tour .tour__dots button.is-past { background: color-mix(in srgb, var(--tour-accent) 55%, transparent); }
 .tour .tour__dots button.is-on { width: 22px; background: var(--tour-accent); }
@@ -165,7 +165,7 @@
   font-size: var(--ty-note);
   font-weight: 650;
   cursor: pointer;
-  transition: background 0.2s cubic-bezier(.16, 1, .3, 1), color 0.2s, border-color 0.2s;
+  transition: background var(--ax-dur) var(--ax-ease), color var(--ax-dur), border-color var(--ax-dur);
 }
 .tour .tour__back {
   border: 1px solid var(--tour-line);

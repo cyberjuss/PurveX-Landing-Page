@@ -21,7 +21,7 @@
   display: flex; align-items: center; gap: 10px;
   padding: 9px 12px; border: 1px solid var(--hl-line);
   font-size: var(--ty-note); color: var(--hl-ink-2); cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  transition: border-color var(--ax-dur-fast), color var(--ax-dur-fast);
 }
 .hl .gh__topics label:hover { border-color: var(--hl-ink-3); }
 .hl .gh__topics label.is-on { border-color: var(--hl-accent); color: var(--hl-ink); }

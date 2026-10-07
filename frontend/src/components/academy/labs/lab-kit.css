@@ -1,6 +1,6 @@
 /* Shared pieces for the browser-only week labs (hash tool, options, file views). Builds on risk-triage-lab.css. */
 .lk-options { display: grid; gap: 6px; }
-.lk-options button { display: flex; gap: 10px; align-items: flex-start; padding: 11px 12px; border: 1px solid var(--rd-line); background: none; text-align: left; font-size: var(--ty-note); line-height: 1.45; color: var(--rd-ink-2); cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s; }
+.lk-options button { display: flex; gap: 10px; align-items: flex-start; padding: 11px 12px; border: 1px solid var(--rd-line); background: none; text-align: left; font-size: var(--ty-note); line-height: 1.45; color: var(--rd-ink-2); cursor: pointer; transition: border-color var(--ax-dur-fast), background var(--ax-dur-fast), color var(--ax-dur-fast); }
 .lk-options button:not(:disabled):hover { border-color: var(--rd-accent); color: var(--rd-ink); }
 .lk-options button[aria-checked="true"] { border-color: var(--rt-primary); background: color-mix(in srgb, var(--rt-primary) 8%, transparent); color: var(--rd-ink); }
 .lk-options button:disabled { cursor: default; }
@@ -98,7 +98,7 @@
 .lk-play input { padding: 10px 12px; border: 1px solid var(--rd-line); background: transparent; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-body); color: var(--rd-ink); }
 .lk-play input:focus { outline: none; border-color: var(--rd-accent); }
 .lk-play__hash { display: block; padding: 10px 12px; background: #0f172a; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note); line-height: 1.6; color: #e2e8f0; word-break: break-all; }
-.lk-play__hash b { font-weight: 500; transition: color 0.3s, background 0.3s; }
+.lk-play__hash b { font-weight: 500; transition: color var(--ax-dur-slow), background var(--ax-dur-slow); }
 .lk-play__hash b.is-diff { color: #fbbf24; background: rgba(251, 191, 36, 0.12); }
 
 @media (prefers-reduced-motion: reduce) {
@@ -122,8 +122,8 @@
 .lk-panel__try input { flex: 1; }
 .lk-panel .lk-table td small { color: var(--rd-ink-3); font-family: var(--font-mono, ui-monospace, monospace); }
 .lk-switch { display: inline-flex; align-items: center; gap: 8px; font-size: var(--ty-note); font-weight: 600; color: var(--rd-ink-2); cursor: pointer; }
-.lk-switch input { width: 34px; height: 18px; appearance: none; border-radius: 999px; background: var(--rd-line); position: relative; cursor: pointer; transition: background 0.2s; }
-.lk-switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
+.lk-switch input { width: 34px; height: 18px; appearance: none; border-radius: 999px; background: var(--rd-line); position: relative; cursor: pointer; transition: background var(--ax-dur); }
+.lk-switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform var(--ax-dur); }
 .lk-switch input:checked { background: var(--rt-primary); }
 .lk-switch input:checked::after { transform: translateX(16px); }
 .lk-note-box { display: grid; gap: 8px; }
@@ -135,7 +135,7 @@
 .lk-replay .lk-note code { font-family: var(--font-mono, ui-monospace, monospace); }
 .lk-replay__rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
 @media (max-width: 560px) { .lk-replay__rows { grid-template-columns: minmax(0, 1fr); } }
-.lk-replay__rows li { display: flex; justify-content: space-between; gap: 8px; padding: 7px 10px; border: 1px solid var(--rd-line); font-size: var(--ty-small); color: var(--rd-ink-2); transition: background 0.3s, border-color 0.3s; }
+.lk-replay__rows li { display: flex; justify-content: space-between; gap: 8px; padding: 7px 10px; border: 1px solid var(--rd-line); font-size: var(--ty-small); color: var(--rd-ink-2); transition: background var(--ax-dur-slow), border-color var(--ax-dur-slow); }
 .lk-replay__rows li b { font-family: var(--font-mono, ui-monospace, monospace); font-weight: 500; color: var(--rd-ink-3); }
 .lk-replay__rows li.is-hit { border-color: var(--rd-bad); background: color-mix(in srgb, var(--rd-bad) 12%, transparent); animation: lk-pop 0.35s ease; }
 .lk-replay__rows li.is-hit b { color: var(--rd-bad); font-weight: 700; }
@@ -150,7 +150,7 @@
 .lk-input:focus { outline: none; border-color: var(--rd-accent); }
 .lk-out { display: block; min-height: 38px; padding: 9px 11px; background: #0f172a; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); line-height: 1.5; color: #e2e8f0; word-break: break-all; }
 .lk-pair { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 4px 10px; align-items: center; font-size: var(--ty-small); color: var(--rd-ink-2); }
-.lk-pair code { padding: 6px 8px; background: var(--rd-line-2); font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); color: var(--rd-ink); word-break: break-all; transition: background 0.2s, color 0.2s; }
+.lk-pair code { padding: 6px 8px; background: var(--rd-line-2); font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); color: var(--rd-ink); word-break: break-all; transition: background var(--ax-dur), color var(--ax-dur); }
 .lk-pair code.is-same { background: color-mix(in srgb, var(--rd-bad) 14%, transparent); color: var(--rd-bad); }
 .lk-hint { font-size: var(--ty-small); font-style: italic; color: var(--rd-ink-3); }
 .lk-more { border: 1px solid var(--rd-line); }
@@ -204,7 +204,7 @@
 .lk-flow { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 10px; }
 .lk-flow__box { display: grid; gap: 4px; min-width: 0; }
 .lk-flow__box > small { font-size: var(--ty-micro); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rd-ink-3); }
-.lk-flow__box > code { display: block; min-height: 38px; padding: 9px 11px; background: var(--rd-line-2); font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note); line-height: 1.45; color: var(--rd-ink); word-break: break-all; transition: background 0.3s, color 0.3s; }
+.lk-flow__box > code { display: block; min-height: 38px; padding: 9px 11px; background: var(--rd-line-2); font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note); line-height: 1.45; color: var(--rd-ink); word-break: break-all; transition: background var(--ax-dur-slow), color var(--ax-dur-slow); }
 .lk-flow__box > code.is-dark { background: #0f172a; color: #e2e8f0; }
 .lk-flow__box > code.is-back { background: color-mix(in srgb, var(--rd-bad) 12%, transparent); color: var(--rd-bad); font-weight: 600; }
 .lk-flow__box > code.is-open { background: color-mix(in srgb, var(--rd-good) 12%, transparent); color: var(--rd-good); font-weight: 600; }
@@ -322,10 +322,10 @@
 .lk-tabs button, .lk-mini { border-radius: 0; }
 
 /* Softer, airier option and mini buttons. */
-.lk-options button { padding: 13px 14px; background: var(--rt-card, #fff); transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s, transform 0.15s; }
+.lk-options button { padding: 13px 14px; background: var(--rt-card, #fff); transition: border-color var(--ax-dur-fast), background var(--ax-dur-fast), color var(--ax-dur-fast), box-shadow var(--ax-dur-fast), transform var(--ax-dur-fast); }
 .lk-options button:not(:disabled):hover { transform: translateY(-1px); box-shadow: var(--rt-shadow, 0 10px 24px -18px rgba(15,23,42,0.5)); }
 .lk-options button[aria-checked="true"] { box-shadow: 0 2px 10px -5px color-mix(in srgb, var(--rt-primary) 55%, transparent); }
-.lk-mini { padding: 7px 12px; background: var(--rt-card, #fff); transition: border-color 0.15s, color 0.15s, box-shadow 0.15s; }
+.lk-mini { padding: 7px 12px; background: var(--rt-card, #fff); transition: border-color var(--ax-dur-fast), color var(--ax-dur-fast), box-shadow var(--ax-dur-fast); }
 .lk-mini:hover { box-shadow: var(--rt-shadow, 0 10px 24px -18px rgba(15,23,42,0.5)); }
 
 /* Keep inner corners of composed widgets tidy. */
