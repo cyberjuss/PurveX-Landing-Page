@@ -4465,13 +4465,16 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-scroll::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--rd-accent) 55%, transparent); background-clip: content-box; }
 .ax-scroll::-webkit-scrollbar-button { display: none; }
 
-.ax-sideprog { padding-bottom: 14px; border: none; }
-.ax-sideprog__row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-.ax-sideprog strong { font-family: var(--font-display); font-size: 34px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--rd-ink); }
-.ax-sideprog strong small { font-size: 15px; margin-left: 1px; color: var(--rd-ink-3); }
-.ax-sideprog p { margin-top: 10px; font-size: 15px; color: var(--rd-ink-3); }
-.ax-sideprog__on { background: #fff; }
-.academy-bg:not([data-academy-theme="dark"]) .ax-sideprog__on { background: #0f172a; }
+/* Course progress. A label, a fraction and one segment per lesson. */
+.ax-prog { padding-bottom: 4px; }
+.ax-prog__row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 0 0 10px; }
+.ax-prog__row span { font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
+.ax-prog__row em { font-family: var(--font-display); font-size: 19px; font-style: normal; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--rd-ink); }
+.ax-prog__row i { font-style: normal; font-weight: 600; color: var(--rd-ink-3); }
+/* One segment per lesson, so the bar counts the same thing the fraction does. */
+.ax-prog__segs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px; }
+.ax-prog__segs i { height: 4px; background: color-mix(in srgb, var(--rd-ink) 13%, transparent); }
+.ax-prog__segs i.is-on { background: var(--rd-accent); }
 /* Course rail. A phase is a panel and its weeks are the rows inside it, so the
    grouping is a thing you can see rather than something inferred from indent.
    Sections are not here: they belong to the lesson, and eleven of them in the

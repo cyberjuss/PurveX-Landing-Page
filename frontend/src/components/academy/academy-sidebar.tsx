@@ -12,7 +12,6 @@ import { isPhaseLocked } from "@/lib/academy-locks";
 export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onNavigate?: () => void }) {
   const pathname = usePathname();
   const { isComplete, isPhaseComplete, requirements, completedCount, totalCount } = useAcademyProgress();
-  const progressPct = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
   // Only the Home Lab group collapses now, so one Set of open slugs is enough.
   const [manualOpen, setManualOpen] = useState<Set<string>>(new Set());
 
@@ -26,22 +25,29 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
 
   return (
     <nav className="ax-scroll flex h-full flex-col gap-6 overflow-y-auto px-5 py-6">
-      <div className="ax-sideprog">
-        <div className="ax-sideprog__row">
-          <span className="rd-kicker">Course progress</span>
-          <strong>
-            {progressPct}
-            <small>%</small>
-          </strong>
-        </div>
-        <span className="ax-segs ax-segs--tight" aria-hidden>
+      {/* One statement of the same number instead of three. The percentage, the
+          segments and "0 of 8 lessons complete" all said it, and a 30px zero
+          was the loudest thing in the rail. */}
+      <div className="ax-prog">
+        <p className="ax-prog__row">
+          <span>Course progress</span>
+          <em>
+            {completedCount}
+            <i>/{totalCount}</i>
+          </em>
+        </p>
+        <span
+          className="ax-prog__segs"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={totalCount}
+          aria-valuenow={completedCount}
+          aria-label={`${completedCount} of ${totalCount} lessons complete`}
+        >
           {Array.from({ length: totalCount }, (_, i) => (
-            <i key={i} className={i < completedCount ? "ax-sideprog__on" : "rd-tone-none"} />
+            <i key={i} className={i < completedCount ? "is-on" : ""} />
           ))}
         </span>
-        <p>
-          {completedCount} of {totalCount} lessons complete
-        </p>
       </div>
 
       {phases.map((phase) => {
