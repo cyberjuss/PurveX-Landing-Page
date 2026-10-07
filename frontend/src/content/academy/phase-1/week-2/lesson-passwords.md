@@ -2,14 +2,9 @@
 
 **The ticket:** a vendor several PurveX staff used was breached, and its user table is online. Alex Rivera asks: "How bad is this for us, and what do we do first?"
 
-<div class="academy-analogy">
-<span class="academy-analogy__tag">Think of it like a coat check</span>
-<ul>
-<li>It never needs your coat's description. It keeps a ticket that matches it.</li>
-<li>A good ticket is unique, even for two identical coats.</li>
-<li>A good ticket is also slow to fake, so nobody can try a thousand at the counter.</li>
-</ul>
-</div>
+A password store never needs the password itself. It keeps a value calculated from it and compares that value at sign-in.
+
+Two users who picked the same password must still store different values, and each value has to be slow enough to calculate that guessing in bulk is impractical.
 
 ### Good storage in one line
 

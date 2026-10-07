@@ -5,7 +5,7 @@
 
 ### Overview
 
-Encryption keeps data private. Hashing proves data was not changed. This week you learn what each one actually guarantees.
+Encryption keeps data private. Hashing proves data was not changed. This week you learn what each one guarantees.
 
 Three methods make data look scrambled. Only one test tells them apart:
 

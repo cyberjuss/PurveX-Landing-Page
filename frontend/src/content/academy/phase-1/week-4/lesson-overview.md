@@ -14,9 +14,11 @@ A third piece ties them together. **Access control** is the check that enforces 
 
 Most breaches you will study start here, not with clever malware.
 
-- In 2021, attackers entered Colonial Pipeline's network through a VPN account that had a leaked password and no multi-factor authentication. That one account led to a ransomware attack that shut down fuel supply for much of the US East Coast. That was an **authentication** failure.
-- In 2023, an attacker called MGM Resorts' IT help desk pretending to be an employee and talked the help desk into resetting that person's MFA. The call led to a ransomware attack that disrupted hotels and casinos for days. **Authentication** again, broken through a person instead of a password.
-- In 2019, First American Financial left about 885 million mortgage and banking documents reachable by changing one number in a web address. The site never checked whether the visitor was allowed to see that document. That was an **authorization** failure.
+| Breach | The way in | What it cost | What failed |
+|---|---|---|---|
+| Colonial Pipeline, 2021 | A VPN account with a leaked password and no MFA | Ransomware that shut down fuel supply for much of the US East Coast | **Authentication** |
+| MGM Resorts, 2023 | A caller who talked the IT help desk into resetting an employee's MFA | Ransomware that disrupted hotels and casinos for days | **Authentication**, broken through a person |
+| First American Financial, 2019 | Changing one number in a web address, with no check that the visitor was allowed to see the document | About 885 million mortgage and banking documents left reachable | **Authorization** |
 
 Since 2021, broken access control has been number one on the OWASP Top 10 list of web application risks.
 

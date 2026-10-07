@@ -2,14 +2,7 @@
 
 **The ticket:** Jordan Ellis finds this in a vendor script: `password: SGFyYm9yMjAyNg==`. "It's scrambled, so it's encrypted, right?"
 
-<div class="academy-analogy">
-<span class="academy-analogy__tag">Think of it like a mailroom</span>
-<ul>
-<li><strong>Encoding</strong> is shorthand. Anyone who knows it reads the letter.</li>
-<li><strong>Encryption</strong> is a locked box. Only the key opens it.</li>
-<li><strong>Hashing</strong> is a fingerprint. It identifies the letter but can never rebuild it.</li>
-</ul>
-</div>
+The three are easy to confuse because all three produce unreadable output. They differ in who can reverse it. Encoding is a format change anyone can undo, encryption can be undone only with the key, and hashing cannot be undone at all.
 
 ### How to tell them apart
 

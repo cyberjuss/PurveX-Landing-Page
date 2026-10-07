@@ -2,14 +2,11 @@
 
 Before two computers exchange data over TCP, they confirm both sides are ready:
 
-<div class="academy-analogy">
-<span class="academy-analogy__tag">Think of it like a phone call</span>
-<ul>
-<li><strong>SYN</strong>: Computer A says, "I would like to connect."</li>
-<li><strong>SYN-ACK</strong>: Computer B says, "Understood, I am ready too."</li>
-<li><strong>ACK</strong>: Computer A says, "Good, let us proceed."</li>
-</ul>
-</div>
+| Step | Sent by | Meaning |
+|---|---|---|
+| **SYN** | The computer opening the connection | Requests a connection and states its starting sequence number |
+| **SYN-ACK** | The computer being contacted | Accepts, and states its own starting sequence number |
+| **ACK** | The computer opening the connection | Confirms it received the reply |
 
 Data starts to flow only after these three steps.
 

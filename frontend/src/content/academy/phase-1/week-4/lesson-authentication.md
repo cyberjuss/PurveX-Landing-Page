@@ -14,21 +14,7 @@ Authentication proves an identity. It answers one question: who are you?
 
 MFA matters because passwords leak. In 2021, attackers entered Colonial Pipeline through a VPN account with a leaked password and no MFA.
 
-### MFA strength
-
-From weakest to strongest:
-
-1. **Text or voice codes.** Open to phishing and to SIM swapping, where an attacker moves the number to a new SIM.
-2. **Authenticator app codes.** A fake sign-in page can still capture the code and use it within seconds.
-3. **Push approval.** Open to **MFA fatigue**, where an attacker sends prompts until the user approves one. Uber was breached this way in 2022.
-4. **Push with number matching.** The user types a number shown on the sign-in screen, so a blind approval fails.
-5. **Security keys and passkeys (FIDO2).** The key checks the site's real address, so a fake page gets nothing. These are **phishing-resistant**.
-
-### Sessions
-
-After sign-in the system issues a **session token**, usually a cookie. The browser sends it with every request, so it stands in for the password. A stolen token bypasses both the password and MFA.
-
-In a Windows domain, **Kerberos** plays the same role. The domain controller checks the password once and issues a ticket that the computer shows to other services.
+Not every method is equally strong. Text codes and app codes can be captured by a fake sign-in page, while security keys and passkeys check the site's real address and give a fake page nothing.
 
 ### Account states
 
@@ -57,7 +43,33 @@ A password or MFA reset is an authentication decision. In 2023, attackers breach
 
 Unexpected MFA prompts mean someone already has the password. Tell the user to deny them. Then reset the password and end active sessions before you escalate.
 
-### Logs
+### Escalate
+
+- sign-ins to an account that should be dormant
+- MFA prompts the user did not start
+- a Remote Desktop sign-in to a machine the person never uses
+- several reset or MFA change requests for one person in a short time
+
+<details class="academy-deeper">
+<summary>Go deeper</summary>
+
+#### How strong is the MFA?
+
+From weakest to strongest:
+
+1. **Text or voice codes.** Open to phishing and to SIM swapping, where an attacker moves the number to a new SIM.
+2. **Authenticator app codes.** A fake sign-in page can still capture the code and use it within seconds.
+3. **Push approval.** Open to **MFA fatigue**, where an attacker sends prompts until the user approves one. Uber was breached this way in 2022.
+4. **Push with number matching.** The user types a number shown on the sign-in screen, so a blind approval fails.
+5. **Security keys and passkeys (FIDO2).** The key checks the site's real address, so a fake page gets nothing. These are **phishing-resistant**.
+
+#### What the system issues after sign-in
+
+After sign-in the system issues a **session token**, usually a cookie. The browser sends it with every request, so it stands in for the password. A stolen token bypasses both the password and MFA.
+
+In a Windows domain, **Kerberos** plays the same role. The domain controller checks the password once and issues a ticket that the computer shows to other services.
+
+#### Reading sign-in events
 
 Event **4624** is a successful sign-in. Its **logon type** shows how:
 
@@ -69,12 +81,7 @@ Event **4624** is a successful sign-in. Its **logon type** shows how:
 
 Event **4625** is a failed sign-in. `0xC000006A` is a wrong password for a real account. `0xC0000064` is an account name that does not exist, a sign of username guessing. `0xC0000234` is a locked account.
 
-Escalate:
-
-- sign-ins to an account that should be dormant
-- MFA prompts the user did not start
-- a Remote Desktop sign-in (type 10) to a machine the person never uses
-- several reset or MFA change requests for one person in a short time
+</details>
 
 ### Check yourself
 

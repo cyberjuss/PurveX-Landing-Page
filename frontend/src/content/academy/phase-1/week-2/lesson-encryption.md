@@ -26,16 +26,6 @@ That sets encryption apart from the other two methods this week. Anyone can reve
 
 HTTPS uses both. The browser and the website use key pairs to agree on a fresh session key, usually AES. That key protects everything sent afterward.
 
-### Where encryption fails
-
-Attackers rarely break AES itself. They go after the key, or after mistakes in how the encryption was set up. When encrypted data leaks, check for three mistakes:
-
-- **The key sits next to the data.** A key saved in a config file on the same server is stolen in the same breach, and the attacker decrypts everything.
-- **The same input gives the same output.** Good encryption mixes in a random value, so one password encrypted twice gives two different results. Without it, users who share a password share an encrypted value.
-- **Clues sit beside the encrypted value.** Password hints stored in plain text in the next column give away what the encryption was meant to hide.
-
-Adobe's 2013 breach exposed about 150 million encrypted passwords with the last two mistakes. Equal passwords had equal encrypted values, and the hints were readable. Attackers guessed common passwords without the key.
-
 ### Back to Sam: the recovery key call
 
 BitLocker keeps the drive key inside the laptop's TPM, a security chip on the motherboard. The TPM releases that key only when startup looks the same as it did last time.
@@ -51,6 +41,16 @@ Sam's firmware update changed startup, so the TPM held the key back. BitLocker n
 
 <details class="academy-deeper">
 <summary>Go deeper</summary>
+
+#### Where encryption fails
+
+Attackers rarely break AES itself. They go after the key, or after mistakes in how the encryption was set up. When encrypted data leaks, check for three mistakes:
+
+- **The key sits next to the data.** A key saved in a config file on the same server is stolen in the same breach, and the attacker decrypts everything.
+- **The same input gives the same output.** Good encryption mixes in a random value, so one password encrypted twice gives two different results. Without it, users who share a password share an encrypted value.
+- **Clues sit beside the encrypted value.** Password hints stored in plain text in the next column give away what the encryption was meant to hide.
+
+Adobe's 2013 breach exposed about 150 million encrypted passwords with the last two mistakes. Equal passwords had equal encrypted values, and the hints were readable. Attackers guessed common passwords without the key.
 
 #### Try it with OpenSSL
 

@@ -2,14 +2,7 @@
 
 **The ticket:** Riley Kwan has two copies of a vendor installer, one from email and one from a download mirror. The vendor's site lists a SHA-256. "Which one is safe to run?"
 
-<div class="academy-analogy">
-<span class="academy-analogy__tag">Think of it like a fingerprint</span>
-<ul>
-<li>The same file always leaves the same print.</li>
-<li>Change one byte and the print is completely different.</li>
-<li>You can match a print to a file, but never rebuild the file from it.</li>
-</ul>
-</div>
+A hash is a fixed-length value calculated from a file or some text. The same input always gives the same hash, and one changed byte gives an entirely different one. The calculation runs one way, so the input cannot be rebuilt from it.
 
 ### What a hash tells you
 

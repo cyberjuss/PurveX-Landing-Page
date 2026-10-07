@@ -122,15 +122,11 @@ const categories: RefCategory[] = [
                 ))}
               </tbody>
             </table>
-            <div className="academy-analogy">
-              <span className="academy-analogy__tag">Think of it like a house on the block</span>
-              <p>
-                A <strong>vulnerability</strong> is an unlocked door. A <strong>threat</strong> is a
-                burglar in the neighborhood. <strong>Risk</strong> is the chance the burglar finds and
-                uses that door, and what it costs you if they do. No vulnerability means no risk even
-                if the threat exists. No threat means no risk even if the vulnerability exists.
-              </p>
-            </div>
+            <p>
+              Risk exists only where a vulnerability and a threat meet. A weakness nobody is positioned
+              to exploit carries no risk, and an attacker with nothing to exploit carries none either.
+              Rank a queue on where the two overlap rather than on how alarming either sounds alone.
+            </p>
           </>
         ),
       },
@@ -205,16 +201,13 @@ const categories: RefCategory[] = [
         id: "tcp-handshake",
         title: "TCP Three-Way Handshake",
         icon: Handshake,
-        keywords: "syn ack synack tcp handshake connection reliable phone call",
+        keywords: "syn ack synack tcp handshake connection reliable sequence number",
         body: (
-          <div className="academy-analogy">
-            <span className="academy-analogy__tag">Think of it like a phone call</span>
-            <ul>
-              <li><strong>SYN</strong>: Computer A says, "I would like to connect."</li>
-              <li><strong>SYN-ACK</strong>: Computer B says, "Understood, I am ready too."</li>
-              <li><strong>ACK</strong>: Computer A says, "Good, let us proceed."</li>
-            </ul>
-          </div>
+          <ul>
+            <li><strong>SYN</strong>: the opening computer requests a connection and states its starting sequence number.</li>
+            <li><strong>SYN-ACK</strong>: the other computer accepts and states its own starting sequence number.</li>
+            <li><strong>ACK</strong>: the opening computer confirms the reply. Data flows only after this step.</li>
+          </ul>
         ),
       },
       {
