@@ -62,11 +62,10 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         // (Phase 3) still has its own "still being written" page, so that
         // one stays a real link.
         const hasDestination = entries.some((e) => e.sections.length > 0) || phase.weeks.length === 0;
-        // A phase you're not currently in still opens if you've toggled it
-        // manually -- without this, a phase with nothing published yet
-        // (no destination to navigate to and auto-open it) could never be
-        // previewed at all.
-        const phaseOpen = phaseActive || manualOpen.has(phase.slug);
+        // The chevron flips whichever default applies, so the phase you are in
+        // can be closed and one you are not in can be opened. ORing the two
+        // meant the phase you were reading could never be collapsed.
+        const phaseOpen = manualOpen.has(phase.slug) ? !phaseActive : phaseActive;
         const phaseDone = isPhaseComplete(phase.slug);
         const headerContent = (
           <>
@@ -97,8 +96,9 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         const labsKey = `${phase.slug}:labs`;
         // Open when you are inside one of them, or when you have opened it by
         // hand. Collapsed otherwise, so four sittings do not crowd the weeks.
-        const labsOpen =
-          labs.some((l) => pathname === `/range/${phase.slug}/${l.slug}`) || manualOpen.has(labsKey);
+        const labsOpen = manualOpen.has(labsKey)
+          ? !labs.some((l) => pathname === `/range/${phase.slug}/${l.slug}`)
+          : labs.some((l) => pathname === `/range/${phase.slug}/${l.slug}`);
         const row = (entry: PhaseDef["weeks"][number]) => {
           const href = `/range/${phase.slug}/${entry.slug}`;
           // Each sitting is titled "Home Lab — X". The group heading carries

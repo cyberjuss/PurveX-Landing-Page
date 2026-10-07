@@ -643,7 +643,7 @@ export async function hostedLabLink(userId: string): Promise<string | null> {
   const linuxConnection =
     linux?.state === "running" && linux.privateIp && row.linuxPasswordEnc
       ? {
-          "web01 (Ubuntu desktop)": {
+          "web01 (Ubuntu)": {
             protocol: "rdp",
             parameters: {
               hostname: linux.privateIp,
@@ -657,17 +657,6 @@ export async function hostedLabLink(userId: string): Promise<string | null> {
               "ignore-cert": "true",
               "resize-method": "display-update",
               "enable-wallpaper": "true",
-            },
-          },
-          "web01 (Ubuntu shell)": {
-            protocol: "ssh",
-            parameters: {
-              hostname: linux.privateIp,
-              port: "22",
-              username: "student",
-              password: openPassword(row.linuxPasswordEnc),
-              "font-size": "12",
-              "color-scheme": "gray-black",
             },
           },
         }

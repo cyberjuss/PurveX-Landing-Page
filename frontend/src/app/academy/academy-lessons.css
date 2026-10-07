@@ -3,50 +3,67 @@
 .academy-prose .ax-reveal--in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .academy-prose .ax-reveal { opacity: 1; transform: none; transition: none; } }
 
-/* "Go deeper" foldouts in lessons: the core stays short, detail is one click
-   away. The body is padded rather than margined, because margins on the
-   children of a bordered box leave anything that is not a direct child
-   touching the border and let a wide block push the box past its container. */
+/* "Go deeper" foldouts. The core lesson stays short and the detail is one click
+   away, so the shut state has to read as an invitation rather than a bordered
+   box with a plus in it. */
 .academy-prose details.academy-deeper {
-  margin: 1.5rem 0 0;
+  margin: 1.75rem 0 0;
   border: 1px solid var(--rd-line);
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--rd-ink, #0f172a) 3%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--rd-ink, #0f172a) 3.5%, transparent);
   overflow: hidden;
+  transition: border-color 0.18s, background 0.18s;
 }
+.academy-prose details.academy-deeper:hover { border-color: color-mix(in srgb, var(--rd-accent) 32%, transparent); }
+.academy-prose details.academy-deeper[open] { background: color-mix(in srgb, var(--rd-ink, #0f172a) 2%, transparent); }
+
 .academy-prose details.academy-deeper > summary {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0.85rem 1.1rem;
+  gap: 12px;
+  padding: 1rem 1.25rem;
   font-size: 0.95rem;
   font-weight: 650;
+  letter-spacing: -0.005em;
   color: var(--rd-ink-2);
   cursor: pointer;
   list-style: none;
   transition: color 0.15s;
 }
 .academy-prose details.academy-deeper > summary:hover { color: var(--rd-ink); }
+.academy-prose details.academy-deeper > summary:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: -3px; }
 .academy-prose details.academy-deeper > summary::-webkit-details-marker { display: none; }
-.academy-prose details.academy-deeper > summary::before { content: "+"; width: 1rem; font-weight: 700; color: var(--rd-accent); }
-.academy-prose details.academy-deeper[open] > summary::before { content: "2"; }
+
+/* A chevron in a tile, which rotates. A bare + swapping to a - is the default
+   disclosure and reads as a form control. */
+.academy-prose details.academy-deeper > summary::before {
+  content: "";
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background:
+    linear-gradient(45deg, transparent 46%, currentColor 46%, currentColor 54%, transparent 54%) no-repeat 6px 9px / 6px 6px,
+    linear-gradient(-45deg, transparent 46%, currentColor 46%, currentColor 54%, transparent 54%) no-repeat 10px 9px / 6px 6px,
+    color-mix(in srgb, var(--rd-accent) 15%, transparent);
+  color: var(--rd-accent);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.academy-prose details.academy-deeper[open] > summary::before { transform: rotate(180deg); }
 .academy-prose details.academy-deeper[open] > summary { border-bottom: 1px solid var(--rd-line); }
 
-/* One padded body, so every descendant is inset rather than only the direct
-   children the old margin rule could reach. */
-.academy-prose details.academy-deeper > .ax-deeper__body,
-.academy-prose details.academy-deeper > :not(summary) { margin-left: 0; margin-right: 0; }
-.academy-prose details.academy-deeper[open] { padding-bottom: 0.2rem; }
-.academy-prose details.academy-deeper > :not(summary) { padding-left: 1.1rem; padding-right: 1.1rem; }
-.academy-prose details.academy-deeper > pre { margin-left: 1.1rem; margin-right: 1.1rem; padding-left: 1rem; padding-right: 1rem; }
+/* Padding, not child margins: a margin only reaches direct children, so
+   anything a level deeper sat against the border. */
+.academy-prose details.academy-deeper > :not(summary) { margin-left: 0; margin-right: 0; padding-left: 1.25rem; padding-right: 1.25rem; }
+.academy-prose details.academy-deeper > pre { margin-left: 1.25rem; margin-right: 1.25rem; padding-left: 1rem; padding-right: 1rem; }
+.academy-prose details.academy-deeper > :last-child { margin-bottom: 1.1rem; }
 
-/* A heading inside the foldout still has to outrank the paragraph under it. */
 .academy-prose details.academy-deeper h4 {
-  margin: 1.4rem 0 0.4rem;
-  font-size: 1rem;
+  margin: 1.5rem 0 0.45rem;
+  font-size: 1.02rem;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.012em;
   color: var(--rd-ink);
 }
 .academy-prose details.academy-deeper > :not(summary):first-of-type h4,
-.academy-prose details.academy-deeper h4:first-child { margin-top: 1.1rem; }
+.academy-prose details.academy-deeper h4:first-child { margin-top: 1.25rem; }

@@ -4613,14 +4613,9 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   .ax-index__toggle { min-height: 44px; }
 }
 .ax-panel { min-width: 0; }
-.ax-lesson .academy-prose p,
-.ax-lesson .academy-prose ul,
-.ax-lesson .academy-prose ol,
-.ax-lesson .academy-prose blockquote,
-.ax-lesson .academy-prose h1,
-.ax-lesson .academy-prose h2,
-.ax-lesson .academy-prose h3,
-.ax-lesson .academy-prose h4 { max-width: 74ch; }
+/* No measure on the lesson: the content takes the width of the page. The rail
+   already claims the left of the screen, so what is left is not wide enough to
+   need holding back. */
 /* Nothing in a lesson may push its container wider than the page. A long token
    wraps, and a code block scrolls inside itself. */
 .ax-lesson .academy-prose { min-width: 0; overflow-wrap: break-word; }
