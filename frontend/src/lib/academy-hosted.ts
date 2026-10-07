@@ -91,8 +91,16 @@ function cfg() {
 /** Thrown when a student has spent their month. The route turns it into a 429
  *  with this message, which is written for the student rather than the log. */
 export class LabHoursSpentError extends Error {
-  constructor(public readonly used: number, public readonly limit: number) {
-    super(`You have used all ${limit} lab hours on your plan this month. They reset on the 1st. Email support@purvex.io if you need more.`);
+  // The test is whether a whole session still fits, so someone with 2 hours
+  // left is refused while having spent 18 of 20. Saying they used all 20 was
+  // both wrong and unactionable.
+  constructor(public readonly used: number, public readonly limit: number, session = 0) {
+    const left = Math.max(0, limit - used);
+    super(
+      left > 0 && session > 0
+        ? `A session needs ${session} hours and only ${left} of your ${limit} are left this month. Hours reset on the 1st. Email support@purvex.io if you need more.`
+        : `All ${limit} lab hours on your plan are used for this month. Hours reset on the 1st. Email support@purvex.io if you need more.`
+    );
     this.name = "LabHoursSpentError";
   }
 }
@@ -107,11 +115,22 @@ export async function labHours(userId: string): Promise<{ used: number; limit: n
 /** Charges one session against the month, or refuses when nothing is left.
  *  Charged when a session starts rather than when it ends: a lab that is never
  *  stopped cleanly would otherwise cost us the hours and never record them. */
+/** Hand a session back when the start it paid for never happened. Charging up
+ *  front is deliberate, but it must not bill for a lab that failed to launch. */
+async function refundSession(userId: string): Promise<void> {
+  const c = cfg();
+  if (!c.monthlyHours) return;
+  await addLabMinutes(userId, -c.sessionHours * 60).catch((err) => {
+    console.error("session refund failed", err instanceof Error ? err.message : err);
+    return 0;
+  });
+}
+
 async function chargeSession(userId: string): Promise<void> {
   const c = cfg();
   if (!c.monthlyHours) return;
   const used = (await readLabMinutes(userId)) / 60;
-  if (used + c.sessionHours > c.monthlyHours) throw new LabHoursSpentError(Math.round(used), c.monthlyHours);
+  if (used + c.sessionHours > c.monthlyHours) throw new LabHoursSpentError(Math.round(used), c.monthlyHours, c.sessionHours);
   await addLabMinutes(userId, c.sessionHours * 60);
 }
 
@@ -467,7 +486,12 @@ export async function startHostedLab(userId: string): Promise<void> {
   const inst = row && row.instanceId !== POD_RESERVED ? await describe(row.instanceId).catch(() => null) : null;
   if (!row || !inst || inst.state === "terminated" || inst.state === "shutting-down") {
     await chargeSession(userId);
-    await launch(userId);
+    try {
+      await launch(userId);
+    } catch (err) {
+      await refundSession(userId);
+      throw err;
+    }
     return;
   }
   // A running lab still inside its window is the session they already paid for,

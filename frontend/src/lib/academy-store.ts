@@ -469,7 +469,9 @@ export async function readLabMinutes(userId: string, month = monthStamp()): Prom
 }
 
 export async function addLabMinutes(userId: string, minutes: number, month = monthStamp()): Promise<number> {
-  const next = (await readLabMinutes(userId, month)) + minutes;
+  // Negative minutes give a session back when the start it paid for failed.
+  // Clamped so a refund can never leave a student with a negative month.
+  const next = Math.max(0, (await readLabMinutes(userId, month)) + minutes);
   memoryLabMinutes.set(userId, { month, minutes: next });
   if (supabaseAdmin) {
     const { error } = await supabaseAdmin.from("academy_lab_usage").upsert({
