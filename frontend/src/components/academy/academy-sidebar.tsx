@@ -3,7 +3,7 @@
 import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, BookMarked, Check, ChevronDown, FlaskConical, Lock } from "lucide-react";
+import { BookMarked, Check, ChevronDown, FlaskConical, Hammer, Lock } from "lucide-react";
 import { type PhaseDef } from "@/lib/academy-content";
 import { entriesOf, labLinksOf } from "@/lib/academy-entries";
 import { useAcademyProgress } from "./academy-progress";
@@ -14,14 +14,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
   const { isComplete, isPhaseComplete, requirements, completedCount, totalCount } = useAcademyProgress();
   // Only the Home Lab group collapses now, so one Set of open slugs is enough.
   const [manualOpen, setManualOpen] = useState<Set<string>>(new Set());
-  // The hands-on labs, flattened out of the same phases the rail is built from.
-  // They live inside weeks, so this is the only place the rail can list them
-  // as labs rather than as a tab buried in whichever week owns them.
-  //
-  // Locked phases are dropped first. The rail hides a locked phase's weeks, so
-  // listing its labs here would hand out the one thing the lock exists to hold
-  // back. Read the Sign-In Log sits in phase 2 and is the live example.
-  const labLinks = labLinksOf(phases.filter((p) => !isPhaseLocked(p.slug)));
+
 
   const toggleManualOpen = (slug: string) =>
     setManualOpen((prev) => {
@@ -167,7 +160,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               }`}
             >
               <span className="flex min-w-0 items-center gap-1.5">
-                <FlaskConical className="h-3 w-3 shrink-0" aria-hidden />
+                <Hammer className="h-3 w-3 shrink-0" aria-hidden />
                 <span className="truncate">Home Lab</span>
               </span>
               <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${labsOpen ? "" : "-rotate-90"}`} />
@@ -179,12 +172,42 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
             >
               <ul className="ax-list flex flex-col overflow-hidden">
                 {labs.map(row)}
-                {labLinks.length > 0 && (
-                  <li className="ax-sublabel" aria-hidden="true">
-                    Labs
-                  </li>
-                )}
-                {labLinks.map((lab) => {
+              </ul>
+            </div>
+          </div>
+        );
+
+        // Labs are their own section beside the Home Lab, not a list tacked on
+        // the end of it. They are a different kind of work: the home lab is an
+        // evening of building, a lab is a task you finish in twenty minutes.
+        const phaseLabs = labLinksOf([phase]);
+        const labsListKey = `${phase.slug}:labslist`;
+        const labsListOpen = manualOpen.has(labsListKey)
+          ? !phaseLabs.some((l) => pathname === `/range/labs/${l.slug}`)
+          : phaseLabs.some((l) => pathname === `/range/labs/${l.slug}`);
+        const labsListSection = phaseLabs.length > 0 && (
+          <div>
+            <button
+              type="button"
+              onClick={() => toggleManualOpen(labsListKey)}
+              aria-expanded={labsListOpen}
+              className={`ax-subhead flex w-full items-center justify-between gap-2 font-mono text-[length:var(--ty-small)] font-bold uppercase tracking-[0.1em] transition ${
+                labsListOpen ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
+              }`}
+            >
+              <span className="flex min-w-0 items-center gap-1.5">
+                <FlaskConical className="h-3 w-3 shrink-0" aria-hidden />
+                <span className="truncate">Labs</span>
+              </span>
+              <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${labsListOpen ? "" : "-rotate-90"}`} />
+            </button>
+            <div
+              className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
+                labsListOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+              }`}
+            >
+              <ul className="ax-list flex flex-col overflow-hidden">
+                {phaseLabs.map((lab) => {
                   const href = `/range/labs/${lab.slug}`;
                   return (
                     <li key={lab.slug}>
@@ -198,18 +221,6 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                     </li>
                   );
                 })}
-                {labLinks.length > 0 && (
-                  <li>
-                    <Link
-                      href="/range/labs"
-                      onClick={onNavigate}
-                      className={`ax-week ax-week--all${pathname === "/range/labs" ? " ax-week--on" : ""}`}
-                    >
-                      <span className="ax-week__name truncate">All labs</span>
-                      <ArrowRight className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                    </Link>
-                  </li>
-                )}
               </ul>
             </div>
           </div>
@@ -256,6 +267,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                   {phase.weeks.map(row)}
                 </ul>
                 {labSection}
+                {labsListSection}
               </div>
             </div>
           </div>

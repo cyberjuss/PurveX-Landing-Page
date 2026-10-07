@@ -4522,20 +4522,6 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
    is indented under the phase's own heading and set a step smaller. */
 .ax-subhead { margin-top: 18px; padding-left: 17px; }
 
-.ax-sublabel {
-  margin: 14px 0 0;
-  padding: 0 14px 7px 17px;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: var(--ty-kicker);
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--rd-ink-3);
-}
-/* The row out to the full gallery, which has the search and the skill chips. */
-.ax-week--all { color: var(--rd-ink-3); }
-.ax-week--all svg { margin-left: auto; opacity: 0.7; }
-.ax-week--all:hover { color: var(--rd-accent); }
 .ax-list li + li .ax-week { border-top: 1px solid var(--rd-line); }
 .ax-week::before {
   content: "";
