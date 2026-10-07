@@ -648,7 +648,10 @@ function NewClassForm({ onCreated }: { onCreated: () => void }) {
 // The owner's view: create a class, assign its instructor, and keep the list.
 // The instructor runs the class and tracks students; the owner just sets it up.
 function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
-  const [viewing, setViewing] = useState<string | null>(null);
+  // With one class there is nothing to choose between, so open it. Landing on
+  // a list of one and having to click it put the roster a step out of the way
+  // for the person who opens this page most.
+  const [viewing, setViewing] = useState<string | null>(data.classes.length === 1 ? data.classes[0].class.id : null);
   const origin = typeof window === "undefined" ? "" : window.location.origin;
   const viewingClass = viewing ? data.classes.find((c) => c.class.id === viewing) : null;
 
@@ -685,6 +688,7 @@ function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
           <ul className="ov-classes">
             {data.classes.map((r) => {
               const joinLink = `${origin}/range/join?code=${encodeURIComponent(r.class.code)}`;
+              const needLook = r.students.filter((s) => flags(s).length > 0).length;
               return (
                 <li key={r.class.id} className="ov-class">
                   <div className="ov-class__main">
@@ -692,10 +696,26 @@ function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
                     <small>{r.class.instructorEmail}</small>
                     <code className="ov-class__link">{joinLink}</code>
                   </div>
-                  <div className="ov-class__count">
-                    <b>{r.summary.students}</b>
-                    <span>student{r.summary.students === 1 ? "" : "s"}</span>
-                  </div>
+                  {/* The list is where the owner decides which class to open,
+                      so it carries the same read the class view opens on. */}
+                  <dl className="ov-class__stats">
+                    <div>
+                      <dt>Students</dt>
+                      <dd>{r.summary.students}</dd>
+                    </div>
+                    <div>
+                      <dt>Active</dt>
+                      <dd>{r.summary.activeThisWeek}</dd>
+                    </div>
+                    <div>
+                      <dt>Need a look</dt>
+                      <dd className={needLook ? "rd-text-warn" : ""}>{needLook}</dd>
+                    </div>
+                    <div>
+                      <dt>Readiness</dt>
+                      <dd className={`rd-text-${scoreTone(r.summary.avgReadiness)}`}>{r.summary.avgReadiness ?? "––"}</dd>
+                    </div>
+                  </dl>
                   <div className="ov-class__actions">
                     <CopyLink text={joinLink} label="Copy link" />
                     <button type="button" className="iv-copy" onClick={() => setViewing(r.class.id)}>
