@@ -68,17 +68,28 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         const phaseOpen = manualOpen.has(phase.slug) ? !phaseActive : phaseActive;
         const phaseDone = isPhaseComplete(phase.slug);
         const headerContent = (
-          <>
-            <span className="flex min-w-0 items-center gap-1.5">
-              {phaseDone && (
-                <span className="ax-check ax-check--done" title={`${phase.label} complete`}>
-                  <Check className="h-2.5 w-2.5" strokeWidth={3} />
-                </span>
-              )}
-              <span className="truncate">{phase.label} — {phase.title}</span>
-            </span>
-            <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${phaseOpen ? "" : "-rotate-90"}`} />
-          </>
+          <span className="flex min-w-0 items-center gap-1.5">
+            {phaseDone && (
+              <span className="ax-check ax-check--done" title={`${phase.label} complete`}>
+                <Check className="h-2.5 w-2.5" strokeWidth={3} />
+              </span>
+            )}
+            <span className="truncate">{phase.label} — {phase.title}</span>
+          </span>
+        );
+        // The chevron is its own control. Inside the link it navigated to the
+        // phase instead of collapsing it, so a phase you were reading could
+        // never be shut however the open state was worked out.
+        const phaseCaret = (
+          <button
+            type="button"
+            className="ax-phasecaret"
+            aria-expanded={phaseOpen}
+            aria-label={`${phaseOpen ? "Collapse" : "Expand"} ${phase.label}`}
+            onClick={() => toggleManualOpen(phase.slug)}
+          >
+            <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${phaseOpen ? "" : "-rotate-90"}`} />
+          </button>
         );
         if (isPhaseLocked(phase.slug)) {
           return (
@@ -167,26 +178,29 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         return (
           <Fragment key={phase.slug}>
           <div>
-            {hasDestination ? (
-              <Link
-                href={`/range/${phase.slug}`}
-                onClick={onNavigate}
-                className={`flex items-center justify-between gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] transition ${
-                  phaseActive ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
-                }`}
-              >
-                {headerContent}
-              </Link>
-            ) : (
-              <button
-                type="button"
-                onClick={() => toggleManualOpen(phase.slug)}
-                aria-expanded={phaseOpen}
-                className="flex w-full items-center justify-between gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] text-slate-400 transition hover:text-slate-600"
-              >
-                {headerContent}
-              </button>
-            )}
+            <span className="ax-phaserow">
+              {hasDestination ? (
+                <Link
+                  href={`/range/${phase.slug}`}
+                  onClick={onNavigate}
+                  className={`flex min-w-0 flex-1 items-center gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] transition ${
+                    phaseActive ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
+                  }`}
+                >
+                  {headerContent}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => toggleManualOpen(phase.slug)}
+                  aria-expanded={phaseOpen}
+                  className="flex min-w-0 flex-1 items-center gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] text-slate-400 transition hover:text-slate-600"
+                >
+                  {headerContent}
+                </button>
+              )}
+              {phaseCaret}
+            </span>
             {/* Week lists stay collapsed for every phase you're not
                 currently in (or haven't manually opened) -- otherwise the
                 sidebar dumps all four phases' weeks on screen at once

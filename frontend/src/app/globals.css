@@ -4479,6 +4479,13 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
    grouping is a thing you can see rather than something inferred from indent.
    Sections are not here: they belong to the lesson, and eleven of them in the
    rail buried the four weeks that are the actual shape of the course. */
+/* The phase title navigates and the chevron collapses, so they are two
+   controls on one row rather than one control doing both jobs badly. */
+.ax-phaserow { display: flex; align-items: center; gap: 6px; }
+.ax-phasecaret { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border: 0; background: none; color: var(--rd-ink-3); cursor: pointer; transition: color 0.15s; }
+.ax-phasecaret:hover { color: var(--rd-accent); }
+.ax-phasecaret:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 1px; }
+
 .ax-list {
   display: flex;
   flex-direction: column;
