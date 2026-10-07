@@ -132,7 +132,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         // hand. Collapsed otherwise, so four sittings do not crowd the weeks.
         const labsOpen =
           labs.some((l) => pathname === `/range/${phase.slug}/${l.slug}`) || manualOpen.has(labsKey);
-        const row = (entry: PhaseDef["weeks"][number]) => {
+        const row = (entry: PhaseDef["weeks"][number], n: number) => {
           const href = `/range/${phase.slug}/${entry.slug}`;
           // Open for the entry you are in, shut for the rest, and the chevron
           // flips whichever default applies. One Set covers both directions.
@@ -149,7 +149,9 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               {entry.sections.length > 0 ? (
                 <span className="ax-siderow">
                   <Link href={href} onClick={onNavigate} className={`ax-sidelink ${active ? "ax-sidelink--on" : ""}`}>
-                    <span className={`ax-dot ${done ? "ax-dot--done" : ""}`} aria-hidden />
+                    <span className={`ax-node${done ? " ax-node--done" : ""}${active ? " ax-node--on" : ""}`} aria-hidden>
+                      {done ? <Check className="h-3 w-3" strokeWidth={3} /> : n + 1}
+                    </span>
                     <span className="truncate">{label}</span>
                   </Link>
                   <button
@@ -164,7 +166,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 </span>
               ) : (
                 <span className="ax-soon-row">
-                  <span className="ax-dot" aria-hidden />
+                  <span className="ax-node" aria-hidden>{n + 1}</span>
                   <span className="truncate">{label}</span>
                   <em>Soon</em>
                 </span>
