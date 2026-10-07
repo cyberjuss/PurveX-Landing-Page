@@ -5,17 +5,28 @@ import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import {
   ArrowRight,
+  BadgeCheck,
+  BookMarked,
+  CheckSquare,
   Clock,
+  FileText,
   Flag,
   Flame,
+  FlaskConical,
   Gauge,
   Headset,
+  Image,
+  LayoutList,
   ListTree,
   Palette,
   PlayCircle,
   Route,
+  Search,
   Server,
   ShieldAlert,
+  SlidersHorizontal,
+  Ticket,
+  Timer,
   type LucideIcon,
 } from "lucide-react";
 import "./tour.css";
@@ -165,7 +176,167 @@ const DRILLS: Tour = {
   ],
 };
 
-const TOURS: Tour[] = [HOME, DRILLS, PORTAL];
+// A week's page. The tabs across the top are the part nobody finds on their
+// own, because a week looks like one page until you notice it is eleven.
+const LESSON: Tour = {
+  key: "purvex.tour.lesson.v1",
+  when: (p) => /^\/range\/phase-[^/]+\/[^/]+\/?$/.test(p),
+  min: 3,
+  title: "Reading a week.",
+  lede: "A week is not one page. It is a set of tabs you work through in order.",
+  tiles: [
+    {
+      icon: LayoutList,
+      title: "Tabs across the top",
+      body: "Reading sections first, then any lab or challenge, then the quiz at the end.",
+    },
+    {
+      icon: CheckSquare,
+      title: "Mark complete",
+      body: "Tick the week off when you are done. The course menu and your progress follow it.",
+    },
+    {
+      icon: ArrowRight,
+      title: "Previous and next",
+      body: "Move to the week either side from the foot of the page, without going back to the menu.",
+    },
+    {
+      sel: '[data-tour="menu-desktop"], [data-tour="menu"]',
+      icon: ListTree,
+      title: "Course menu",
+      body: "Every week in order, with anything finished ticked. Jump back to any of it.",
+    },
+  ],
+};
+
+const LABS: Tour = {
+  key: "purvex.tour.labs.v1",
+  when: (p) => p.startsWith("/range/labs"),
+  min: 3,
+  title: "Hands-on labs.",
+  lede: "Each lab is a real task from the PurveX environment, worked start to finish on its own page.",
+  tiles: [
+    {
+      icon: Search,
+      title: "Search",
+      body: "Find a lab by name when you already know the one you want.",
+    },
+    {
+      icon: SlidersHorizontal,
+      title: "Filter by skill",
+      body: "The chips narrow the list to one skill, and each carries the number of labs behind it.",
+    },
+    {
+      icon: FlaskConical,
+      title: "One lab, one page",
+      body: "Open a lab and it takes the whole page. Nothing here needs the hosted lab running.",
+    },
+  ],
+};
+
+const REFERENCE: Tour = {
+  key: "purvex.tour.reference.v1",
+  when: (p) => p.startsWith("/range/reference"),
+  min: 2,
+  title: "The cheat sheet.",
+  lede: "The things worth looking up rather than memorising, in one page you can keep open beside the work.",
+  tiles: [
+    {
+      icon: BookMarked,
+      title: "Five sections",
+      body: "Fundamentals, Networking, Investigation, Home Lab and Coach, each a short stack of cards.",
+    },
+    {
+      icon: Search,
+      title: "Search the lot",
+      body: "Searching matches the card titles and the terms behind them, so wireshark finds the filter card.",
+    },
+    {
+      icon: Flag,
+      title: "Built for during, not before",
+      body: "Open this while you work a ticket. It is a lookup, not another thing to read end to end.",
+    },
+  ],
+};
+
+const READINESS: Tour = {
+  key: "purvex.tour.readiness.v1",
+  when: (p) => p.startsWith("/range/readiness"),
+  min: 2,
+  title: "Are you ready for the job?",
+  lede: "One report, built from what you have actually finished rather than what you have opened.",
+  tiles: [
+    {
+      icon: Gauge,
+      title: "One score",
+      body: "Out of 100, across everything you have done. It opens at zero and climbs as you work.",
+    },
+    {
+      icon: Route,
+      title: "Competencies",
+      body: "Each one measured against the bar for a Tier 1 hire, so you can see what is behind.",
+    },
+    {
+      icon: FileText,
+      title: "Mission log",
+      body: "Every attempt, as it will look to a hiring manager. The misses stay on the record.",
+    },
+  ],
+};
+
+const PORTFOLIO: Tour = {
+  key: "purvex.tour.portfolio.v1",
+  when: (p) => p.startsWith("/range/portfolio"),
+  min: 2,
+  title: "Show employers your lab work.",
+  lede: "A portfolio built out of what you did here, rather than a list of courses you sat through.",
+  tiles: [
+    {
+      icon: FileText,
+      title: "Resume bullets",
+      body: "Written from your finished work, ready to paste into a CV or a LinkedIn profile.",
+    },
+    {
+      icon: Image,
+      title: "Screenshots",
+      body: "Evidence from your own lab. A hiring manager can see the thing rather than take your word.",
+    },
+    {
+      icon: BadgeCheck,
+      title: "Publishing is Pro",
+      body: "Building it here is free. Pro adds the public link, the QR code and a credential ID employers can check.",
+    },
+  ],
+};
+
+const SHIFT: Tour = {
+  key: "purvex.tour.shift.v1",
+  when: (p) => p.startsWith("/range/shift"),
+  min: 2,
+  title: "Thirty minutes on the desk.",
+  lede: "Real attacks and tickets fire into your own lab on their own. Investigate, fix, and close each one.",
+  tiles: [
+    {
+      icon: Ticket,
+      title: "Tickets arrive on their own",
+      body: "You do not pick them. They land while you are still working the last one, the way a queue does.",
+    },
+    {
+      icon: Timer,
+      title: "Every ticket has a clock",
+      body: "P1 five minutes, P2 eight, P3 twelve. Miss it and the ticket closes late against you.",
+    },
+    {
+      icon: ShieldAlert,
+      title: "Fixed in the lab, not on paper",
+      body: "A ticket closes when the change is real in your own directory, so the check reads the lab.",
+    },
+  ],
+};
+
+// Most specific first. PORTAL is the fallback for any page in the portal
+// that has no card of its own, so it has to stay last.
+const TOURS: Tour[] = [HOME, DRILLS, LABS, REFERENCE, READINESS, PORTFOLIO, SHIFT, LESSON, PORTAL];
 
 /** Storage can throw in a private window, so a failed read means "show it". */
 function seen(key: string): boolean {
