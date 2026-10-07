@@ -214,26 +214,39 @@ function locate(box: Box): Spot {
   return { top, left, side, caret };
 }
 
-/** The portal keeps its theme on .academy-bg, and this is portaled to <body>,
- *  which is a sibling of it rather than a child. Without copying the attribute
- *  across, the card renders light on a dark portal. */
-function useAcademyTheme(): "light" | "dark" {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+/** The portal keeps its colours on .academy-bg, and this is portaled to <body>,
+ *  which is a sibling of it rather than a child, so none of them are in scope.
+ *  Rather than keeping a second palette in step with the first, the real values
+ *  are read off the page and copied onto the tour root. The page background is
+ *  read as a computed colour because it is pure black in dark mode and white in
+ *  light, and a floating card has to be opaque. */
+const TOKENS = ["--rd-ink", "--rd-ink-2", "--rd-ink-3", "--rd-line", "--rd-accent"] as const;
+
+function useAcademySkin(): React.CSSProperties {
+  const [skin, setSkin] = useState<React.CSSProperties>({});
   useEffect(() => {
     const root = document.querySelector(".academy-bg");
     if (!root) return;
-    const read = () => setTheme(root.getAttribute("data-academy-theme") === "dark" ? "dark" : "light");
+    const read = () => {
+      const cs = window.getComputedStyle(root);
+      const vars: Record<string, string> = { "--tour-surface": cs.backgroundColor || "#ffffff" };
+      for (const t of TOKENS) {
+        const v = cs.getPropertyValue(t).trim();
+        if (v) vars[t.replace("--rd-", "--tour-")] = v;
+      }
+      setSkin(vars as React.CSSProperties);
+    };
     read();
     const obs = new MutationObserver(read);
-    obs.observe(root, { attributes: true, attributeFilter: ["data-academy-theme"] });
+    obs.observe(root, { attributes: true, attributeFilter: ["data-academy-theme", "style", "class"] });
     return () => obs.disconnect();
   }, []);
-  return theme;
+  return skin;
 }
 
 export function AcademyTour() {
   const pathname = usePathname() ?? "";
-  const theme = useAcademyTheme();
+  const skin = useAcademySkin();
   const [run, setRun] = useState<{ key: string; steps: Step[] } | null>(null);
   const [i, setI] = useState(0);
   const [box, setBox] = useState<Box | null>(null);
@@ -276,8 +289,10 @@ export function AcademyTour() {
     const r = el.getBoundingClientRect();
     // A circular avatar should be ringed by a circle, so the highlight borrows
     // the target's own corner radius instead of guessing one.
+    // A square target gets a square ring, because Range is square. Only a target
+    // that is actually rounded, like the avatar, gets a rounded one.
     const raw = window.getComputedStyle(el).borderRadius.split(" ")[0] || "0px";
-    const radius = raw === "0px" ? "10px" : `calc(${raw} + 6px)`;
+    const radius = parseFloat(raw) > 0 ? `calc(${raw} + 6px)` : "0px";
     setBox({ top: r.top, left: r.left, width: r.width, height: r.height, radius });
   }, [step]);
 
@@ -327,7 +342,7 @@ export function AcademyTour() {
   const Icon = step.icon;
 
   return createPortal(
-    <div className="tour" data-academy-theme={theme} role="dialog" aria-modal="true" aria-labelledby="tour-title">
+    <div className="tour" style={skin} role="dialog" aria-modal="true" aria-labelledby="tour-title">
       <button type="button" className="tour__scrim" aria-label="Skip the tour" onClick={close} />
       {onTarget && box && (
         <span
