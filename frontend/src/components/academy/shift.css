@@ -158,10 +158,25 @@
 .sh-status--ack { color: var(--rd-warn); border-color: color-mix(in srgb, var(--rd-warn) 45%, transparent); }
 .sh-status--done { color: var(--rd-good); border-color: color-mix(in srgb, var(--rd-good) 45%, transparent); }
 .sh-status--late { color: var(--rd-bad); border-color: color-mix(in srgb, var(--rd-bad) 45%, transparent); }
+/* Escalated is closed but not solved, so it reads in the warn colour rather than
+   the green of a fix or the red of a miss. */
+.sh-status--up { color: var(--rd-warn); border-color: color-mix(in srgb, var(--rd-warn) 45%, transparent); }
 
 /* ---- detail pane -------------------------------------------------------- */
 .sh-main { overflow-y: auto; padding: 26px clamp(20px, 4vw, 44px) 60px; }
-.sh-detail { max-width: 760px; }
+/* The console owns the window, so the detail runs the width of it. Past the
+   breakpoint the briefing and the work stand side by side instead of the work
+   sitting a screen below the thing it refers to. The cap is there so a very
+   wide monitor does not stretch the prose past a readable measure. */
+.sh-detail { max-width: 1560px; }
+.sh-split { display: grid; gap: clamp(20px, 2.2vw, 40px); align-items: start; margin-top: 2px; }
+.sh-col { min-width: 0; display: grid; gap: 0; align-content: start; }
+@media (min-width: 1180px) {
+  .sh-split { grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); }
+  /* The work column starts level with the briefing rather than below its heading. */
+  .sh-split > .sh-col > .sh-work { margin-top: 0; }
+  .sh-split > .sh-col > .sh-resolved { margin-top: 0; }
+}
 .sh-detail--done { opacity: 0.9; }
 .sh-detail__crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 11px; }
 .sh-detail__no { font-family: ui-monospace, monospace; font-size: 12.5px; color: var(--rd-ink-3); }
@@ -215,7 +230,30 @@
 .sh-result--wait { padding: 12px 14px; border-radius: var(--r2); border: 1px dashed color-mix(in srgb, var(--rd-warn) 45%, transparent); background: color-mix(in srgb, var(--rd-warn) 8%, transparent); color: var(--rd-warn); }
 .sh-result ul { margin: 8px 0 0; padding-left: 18px; }
 
-.sh-actions { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 2px; }
+.sh-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-top: 2px; }
+.sh-actions__why { flex-basis: 100%; margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--rd-ink-3); }
+
+/* Escalating ends the incident, so it asks before it does. Warn-coloured, because
+   it costs points -- not red, because it is a legitimate thing to do. */
+.sh-confirm {
+  display: grid; gap: 10px; padding: 18px 20px; border-radius: var(--r);
+  border: 1px solid color-mix(in srgb, var(--rd-warn) 40%, transparent);
+  background: color-mix(in srgb, var(--rd-warn) 8%, transparent);
+}
+.sh-confirm p { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--rd-ink-2); }
+.sh-confirm__head { display: flex; align-items: center; gap: 8px; font-size: 14.5px; font-weight: 700; color: var(--rd-warn) !important; }
+.sh-confirm__cost { font-size: 12.5px !important; color: var(--rd-ink-3) !important; }
+.sh-confirm__btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.sh-escalate--go { border-color: var(--rd-warn); color: var(--rd-warn); }
+
+.sh-handoff {
+  display: grid; gap: 9px; margin-top: 18px; padding: 16px 18px; border-radius: var(--r);
+  border: 1px solid color-mix(in srgb, var(--rd-warn) 40%, transparent);
+  background: color-mix(in srgb, var(--rd-warn) 8%, transparent);
+}
+.sh-handoff p { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--rd-ink-2); }
+.sh-handoff__head { display: flex; align-items: center; gap: 8px; font-size: 14.5px; font-weight: 700; color: var(--rd-warn) !important; }
+.sh-handoff__cost { font-size: 12.5px !important; color: var(--rd-ink-3) !important; }
 .sh-submit { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 22px; border: 0; border-radius: 0; background: var(--brand); color: #fff; font-size: 14px; font-weight: 650; cursor: pointer; transition: background 0.15s, transform 0.12s; }
 .sh-submit:hover:not(:disabled) { background: var(--brand-hover); transform: translateY(-1px); }
 .sh-escalate, .sh-coach { display: inline-flex; align-items: center; gap: 7px; height: 42px; padding: 0 16px; border: 1px solid var(--rd-line); border-radius: 0; background: var(--panel-2); color: var(--rd-ink-2); font-size: 13.5px; font-weight: 600; cursor: pointer; transition: border-color 0.15s, color 0.15s; }
@@ -296,6 +334,7 @@
 .sh-rep__tags em.ok { color: var(--rd-good); border-color: color-mix(in srgb, var(--rd-good) 45%, transparent); }
 .sh-rep__tags em.no { color: var(--rd-bad); border-color: color-mix(in srgb, var(--rd-bad) 45%, transparent); }
 .sh-rep__tags em.hint { color: var(--rd-warn); border-color: color-mix(in srgb, var(--rd-warn) 45%, transparent); }
+.sh-rep__tags em.up { color: var(--rd-warn); border-color: color-mix(in srgb, var(--rd-warn) 45%, transparent); }
 .sh-rep__score { font-family: ui-monospace, monospace; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--rd-ink); }
 .sh-rep__score small { color: var(--rd-ink-3); font-weight: 500; }
 .sh-report__habit { margin: 0; padding: 15px 17px; border-radius: var(--r2); border-left: 3px solid color-mix(in srgb, var(--rd-accent) 60%, transparent); background: var(--panel-2); font-size: 15px; line-height: 1.6; color: var(--rd-ink-2); }

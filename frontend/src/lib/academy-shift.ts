@@ -1158,6 +1158,9 @@ export function scoreIncident(
   if (g.noHarm) frac += 0.1;
   frac += 0.15 * (g.writeUp ?? 0);
   // Never resolving the incident should cap the score, whatever the write-up.
+  // An escalation lands here too: handing it up is a legitimate answer and keeps
+  // the credit for the finding, the write-up and doing no harm, but it is not a
+  // fix, so it never earns the 0.45 for resolving or the 0.15 for being on time.
   if (!g.resolved) frac = Math.min(frac, 0.4);
   const penalty = HINT_COST.slice(0, hintsUsed).reduce((a, b) => a + b, 0);
   return Math.max(0, Math.round(def.points * frac * (1 - penalty)));
@@ -1186,6 +1189,8 @@ export type IncidentRun = {
   /** Seconds from shift start when the student acknowledged and resolved it. */
   ackedAtSec: number | null;
   resolvedAtSec: number | null;
+  /** Handed to tier 2 instead of fixed. Closes the incident and stops its clock. */
+  escalatedAtSec?: number | null;
   /** The incident's script has been fired into the lab. */
   injected: boolean;
   /** The victim-specific specifics bound when the shift was built. */
@@ -1200,6 +1205,7 @@ export type IncidentRun = {
   writeUp?: number | null;
   onTime?: boolean;
   resolved?: boolean;
+  escalated?: boolean;
   noHarm?: boolean;
   diagnosisRight?: boolean;
 };

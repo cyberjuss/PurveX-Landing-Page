@@ -44,6 +44,8 @@ export type PublicIncident = {
   deadlineSec: number;
   acknowledged: boolean;
   resolved: boolean;
+  /** Handed to tier 2. Closed, off the clock, and scored as a handoff not a fix. */
+  escalated: boolean;
   /** Resolved before its deadline. Only meaningful when resolved. */
   onTime: boolean;
   overdue: boolean;
@@ -60,6 +62,7 @@ export type IncidentReport = {
   title: string;
   severity: string;
   resolved: boolean;
+  escalated: boolean;
   onTime: boolean;
   noHarm: boolean;
   diagnosisRight: boolean;
@@ -72,6 +75,7 @@ export type ShiftReport = {
   totalScore: number;
   maxScore: number;
   resolvedCount: number;
+  escalatedCount: number;
   onTimeCount: number;
   incidents: IncidentReport[];
   headline: string;
@@ -104,7 +108,8 @@ function toPublic(run: ShiftRun, inc: IncidentRun, elapsed: number): PublicIncid
   const def = incidentDef(inc.defId);
   if (!def || !incidentArrived(inc, elapsed)) return null;
   const deadlineAt = inc.arriveSec + inc.deadlineSec;
-  const secondsLeft = inc.resolvedAtSec !== null ? null : Math.max(0, deadlineAt - elapsed);
+  const done = inc.resolvedAtSec !== null || inc.escalatedAtSec != null;
+  const secondsLeft = done ? null : Math.max(0, deadlineAt - elapsed);
   const eff = effectiveIncident(def, inc);
   // Claude's fresh wording for this shift, when it wrote some; otherwise the bound template.
   const from = inc.text?.from ?? def.from;
@@ -125,8 +130,9 @@ function toPublic(run: ShiftRun, inc: IncidentRun, elapsed: number): PublicIncid
     deadlineSec: inc.deadlineSec,
     acknowledged: inc.ackedAtSec !== null,
     resolved: inc.resolvedAtSec !== null,
+    escalated: inc.escalatedAtSec != null,
     onTime: resolvedOnTime(inc),
-    overdue: inc.resolvedAtSec === null && elapsed > deadlineAt,
+    overdue: !done && elapsed > deadlineAt,
     secondsLeft,
     hintsUsed: inc.hintsUsed,
     hintsTotal: def.hints.length,
@@ -272,21 +278,44 @@ export async function hintIncident(userId: string, uid: string): Promise<{ hint:
   return { hint: def.hints[rung], hintsUsed: inc.hintsUsed, costPct: Math.round(HINT_COST[rung] * 100) };
 }
 
+export type SubmitOutcome = {
+  resolved: boolean;
+  escalated: boolean;
+  onTime: boolean;
+  results: { label: string; ok: boolean }[];
+  waiting: boolean;
+  needFinding: boolean;
+};
+
 /**
  * Save the write-up and diagnosis, then check the lab for the fix. Marks the
  * incident resolved (with its time) the first moment the lab shows the change.
+ *
+ * Escalating is the other way to close an incident: it hands the work to tier 2
+ * without touching the lab. It still needs a finding -- an analyst who cannot
+ * say what they saw has nothing to hand up -- and it is scored as a handoff, so
+ * it keeps the credit for the finding, the write-up and doing no harm but never
+ * earns the points for resolving the incident or for being on time.
  */
 export async function submitIncident(
   userId: string,
   uid: string,
   diagnosis: string,
-  response: string
-): Promise<{ resolved: boolean; onTime: boolean; results: { label: string; ok: boolean }[]; waiting: boolean; needFinding: boolean } | { error: string }> {
+  response: string,
+  escalate = false
+): Promise<SubmitOutcome | { error: string }> {
   const found = activeIncident(await loadShift(userId), uid);
   if (!found) return { error: "That incident is not open." };
   const { inc, def, run, elapsed } = found;
   inc.diagnosis = diagnosis.slice(0, 400);
   inc.response = response.slice(0, 4000);
+
+  if (escalate) {
+    if (!inc.diagnosis.trim()) return { error: "Answer the question before you hand this to tier 2." };
+    if (inc.escalatedAtSec == null && inc.resolvedAtSec === null) inc.escalatedAtSec = elapsed;
+    await saveShift(userId, run);
+    return { resolved: false, escalated: true, onTime: false, results: [], waiting: false, needFinding: false };
+  }
 
   // Push a fresh snapshot from the lab now and wait briefly for it, so a change
   // the student just made is graded on this click instead of the next one.
@@ -317,6 +346,7 @@ export async function submitIncident(
   await saveShift(userId, run);
   return {
     resolved: closed,
+    escalated: false,
     onTime: inc.resolvedAtSec !== null && resolvedOnTime(inc),
     results: graded.results,
     // Not resolved and the lab has not reported since the shift began: the change may just be in flight.
@@ -341,7 +371,10 @@ async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
     // An incident is only closed when the lab shows the fix AND the finding is right.
     // Once it was closed during the shift it stays closed: a later incident (e.g. a
     // spray re-locking an account) must not strip credit the student already earned.
-    const closed = inc.resolvedAtSec !== null || (lg.resolved && lg.diagnosisRight);
+    // An escalation is final: once they handed it up, a fix the lab happens to
+    // show later does not turn it back into their resolve.
+    const escalated = inc.escalatedAtSec != null && inc.resolvedAtSec === null;
+    const closed = !escalated && (inc.resolvedAtSec !== null || (lg.resolved && lg.diagnosisRight));
     if (closed && inc.resolvedAtSec === null) inc.resolvedAtSec = shiftElapsed(run, Date.parse(run.endsAt));
     const onTime = inc.resolvedAtSec !== null && resolvedOnTime(inc);
 
@@ -353,6 +386,7 @@ async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
     }
 
     inc.resolved = closed;
+    inc.escalated = escalated;
     inc.noHarm = lg.noHarm;
     inc.diagnosisRight = lg.diagnosisRight;
     inc.onTime = onTime;
@@ -374,6 +408,7 @@ function buildReport(run: ShiftRun): ShiftReport {
       title: def?.title ?? inc.defId,
       severity: inc.severity,
       resolved: Boolean(inc.resolved),
+      escalated: Boolean(inc.escalated),
       onTime: Boolean(inc.onTime),
       noHarm: Boolean(inc.noHarm),
       diagnosisRight: Boolean(inc.diagnosisRight),
@@ -383,6 +418,7 @@ function buildReport(run: ShiftRun): ShiftReport {
     };
   });
   const resolvedCount = incidents.filter((i) => i.resolved).length;
+  const escalatedCount = incidents.filter((i) => i.escalated).length;
   const onTimeCount = incidents.filter((i) => i.onTime).length;
   const pct = run.maxScore ? (run.totalScore ?? 0) / run.maxScore : 0;
   const headline = pct >= 0.85 ? "Ready for the desk" : pct >= 0.6 ? "Solid shift" : resolvedCount ? "Getting there" : "Worth another shift";
@@ -391,7 +427,10 @@ function buildReport(run: ShiftRun): ShiftReport {
   else if (incidents.some((i) => !i.noHarm)) habit = "Contain the real problem without touching the accounts that were fine.";
   else if (incidents.some((i) => i.resolved && !i.diagnosisRight)) habit = "Name the evidence (event IDs, accounts, times), not just the fix.";
   else if (resolvedCount === incidents.length && incidents.length) habit = "Strong. Try a harder shift, or one with more incidents.";
-  return { totalScore: run.totalScore ?? 0, maxScore: run.maxScore ?? 0, resolvedCount, onTimeCount, incidents, headline, habit };
+  // Said last so it outranks the generic advice: escalating everything is the
+  // habit that most needs naming, and it is invisible in the score alone.
+  if (escalatedCount && escalatedCount >= resolvedCount) habit = "You handed up more than you fixed. Escalate what is above your access, and work the rest yourself.";
+  return { totalScore: run.totalScore ?? 0, maxScore: run.maxScore ?? 0, resolvedCount, escalatedCount, onTimeCount, incidents, headline, habit };
 }
 
 async function recordAndClose(userId: string, run: ShiftRun) {

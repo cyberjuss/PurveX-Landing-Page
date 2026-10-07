@@ -29,6 +29,7 @@ type Incident = {
   deadlineSec: number;
   acknowledged: boolean;
   resolved: boolean;
+  escalated: boolean;
   onTime: boolean;
   overdue: boolean;
   hintsUsed: number;
@@ -45,7 +46,8 @@ type Report = {
   onTimeCount: number;
   headline: string;
   habit: string;
-  incidents: { title: string; severity: string; resolved: boolean; onTime: boolean; noHarm: boolean; diagnosisRight: boolean; hintsUsed: number; score: number; max: number }[];
+  escalatedCount: number;
+  incidents: { title: string; severity: string; resolved: boolean; escalated: boolean; onTime: boolean; noHarm: boolean; diagnosisRight: boolean; hintsUsed: number; score: number; max: number }[];
 };
 type Shift = {
   id: string;
@@ -347,8 +349,8 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   const elapsedPct = Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
 
   const total = shift.incidents.length;
-  const resolved = shift.incidents.filter((i) => i.resolved).length;
-  const withinSla = shift.incidents.filter((i) => (i.resolved ? i.onTime : !i.overdue)).length;
+  const handled = shift.incidents.filter((i) => i.resolved || i.escalated).length;
+  const withinSla = shift.incidents.filter((i) => (i.resolved ? i.onTime : i.escalated ? true : !i.overdue)).length;
   const hintsUsed = shift.incidents.reduce((s, i) => s + i.hintsUsed, 0);
 
   // Stable incident numbers follow the server's creation order.
@@ -356,10 +358,11 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
 
   // Order: unresolved by severity first, then resolved.
   const order = { P1: 0, P2: 1, P3: 2 };
-  const queue = [...shift.incidents].sort((a, b) => (a.resolved === b.resolved ? order[a.severity] - order[b.severity] : a.resolved ? 1 : -1));
+  const done = (i: Incident) => i.resolved || i.escalated;
+  const queue = [...shift.incidents].sort((a, b) => (done(a) === done(b) ? order[a.severity] - order[b.severity] : done(a) ? 1 : -1));
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const selected = queue.find((i) => i.uid === selectedId) ?? queue.find((i) => !i.resolved) ?? queue[0] ?? null;
+  const selected = queue.find((i) => i.uid === selectedId) ?? queue.find((i) => !done(i)) ?? queue[0] ?? null;
 
   return (
     <div className="shift-app" data-academy-theme={theme}>
@@ -392,7 +395,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
         <aside className="sh-side">
           <div className="sh-stats">
             <div className="sh-stat">
-              <span className="sh-stat__num">{resolved}/{total}</span>
+              <span className="sh-stat__num">{handled}/{total}</span>
               <span className="sh-stat__label">Closed</span>
             </div>
             <div className="sh-stat">
@@ -411,10 +414,11 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
             <ul className="sh-list" role="tablist" aria-label="Incident queue">
               {queue.map((inc) => {
                 const deadlineAt = start + (inc.arriveSec + inc.deadlineSec) * 1000;
-                const secs = inc.resolved ? null : Math.max(0, Math.round((deadlineAt - now) / 1000));
+                const closed = inc.resolved || inc.escalated;
+                const secs = closed ? null : Math.max(0, Math.round((deadlineAt - now) / 1000));
                 const isSel = selected?.uid === inc.uid;
-                const urgent = !inc.resolved && !inc.acknowledged && inc.severity === "P1";
-                const cls = ["sh-li", `sh-li--sev-${inc.severity.toLowerCase()}`, isSel && "sh-li--on", inc.resolved && "sh-li--done", urgent && "sh-li--urgent"].filter(Boolean).join(" ");
+                const urgent = !closed && !inc.acknowledged && inc.severity === "P1";
+                const cls = ["sh-li", `sh-li--sev-${inc.severity.toLowerCase()}`, isSel && "sh-li--on", closed && "sh-li--done", urgent && "sh-li--urgent"].filter(Boolean).join(" ");
                 const Icon = iconFor(inc.defId);
                 return (
                   <li key={inc.uid}>
@@ -425,6 +429,8 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
                         <span className="sh-li__no">{numOf.get(inc.uid)}</span>
                         {inc.resolved ? (
                           <span className="sh-status sh-status--done">Solved</span>
+                        ) : inc.escalated ? (
+                          <span className="sh-status sh-status--up">Escalated</span>
                         ) : secs !== null ? (
                           <span className={`sh-li__timer ${secs <= 60 ? "sh-li__timer--low" : ""}`}>{clock(secs)} left</span>
                         ) : null}
@@ -452,13 +458,17 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   );
 }
 
-type SubmitResult = { resolved: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[]; needFinding?: boolean };
+type SubmitResult = { resolved: boolean; escalated?: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[]; needFinding?: boolean };
 
 function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no: string; start: number; now: number; busy: boolean; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
   const [diagnosis, setDiagnosis] = useState(inc.diagnosis);
   const [response, setResponse] = useState("");
   const [result, setResult] = useState<SubmitResult | null>(null);
   const [hints, setHints] = useState<string[]>(inc.shownHints);
+  // Escalating closes the incident for good, so it asks once instead of firing
+  // on the first click.
+  const [confirming, setConfirming] = useState(false);
+  const hasFinding = diagnosis.trim().length > 0;
 
   const deadlineAt = start + (inc.arriveSec + inc.deadlineSec) * 1000;
   const left = inc.resolved ? null : Math.max(0, Math.round((deadlineAt - now) / 1000));
@@ -474,12 +484,13 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
   async function submit(escalate = false) {
     let note = response;
     if (escalate) {
-      const base = response.trim() || "Contained in the lab and handed the evidence to tier 2.";
+      const base = response.trim() || "Handing this to tier 2 with the evidence below.";
       note = /escalat/i.test(base) ? base : `${base}\n\nEscalated to tier 2.`;
       setResponse(note);
     }
-    const data = await post({ action: "submit", uid: inc.uid, diagnosis, response: note });
+    const data = await post({ action: "submit", uid: inc.uid, diagnosis, response: note, escalate });
     if (data?.result) setResult(data.result as SubmitResult);
+    setConfirming(false);
   }
   async function coach() {
     const data = await post({ action: "hint", uid: inc.uid });
@@ -499,6 +510,8 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
         <span className={`sh-sev ${SEV_CLASS[inc.severity]}`}>{inc.severity}</span>
         {inc.resolved ? (
           <span className="sh-status sh-status--done"><Check className="h-3.5 w-3.5" /> Solved</span>
+        ) : inc.escalated ? (
+          <span className="sh-status sh-status--up"><ArrowUpRight className="h-3.5 w-3.5" /> Escalated</span>
         ) : (
           <span className={`sh-detail__left ${late ? "sh-detail__left--late" : left !== null && left <= 60 ? "sh-detail__left--low" : ""}`}>
             {late ? "SLA breached" : `${clock(left ?? 0)} left`}
@@ -508,6 +521,8 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
 
       <h2 className="sh-detail__title">{inc.title}</h2>
 
+      <div className="sh-split">
+        <div className="sh-col">
       <div className="sh-msg">
         <span className={`sh-msg__avatar ${inc.kind === "alert" ? "sh-msg__avatar--alert" : ""}`}>
           {inc.kind === "alert" ? <AlertTriangle className="h-4 w-4" /> : initials(s.name)}
@@ -535,8 +550,17 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
         </div>
       </div>
 
+        </div>
+
+        <div className="sh-col">
       {inc.resolved ? (
         <p className="sh-resolved"><Check className="h-4 w-4" /> Handled — your lab shows the fix. It counts toward your shift score.</p>
+      ) : inc.escalated ? (
+        <div className="sh-handoff">
+          <p className="sh-handoff__head"><ArrowUpRight className="h-4 w-4" /> Handed to tier 2</p>
+          <p>Tier 2 owns this now and the SLA clock has stopped. Your finding and your note went up with it.</p>
+          <p className="sh-handoff__cost">It scores as a handoff, not a fix: you keep the credit for the finding, the write-up and leaving the rest alone, and you give up the points for resolving it.</p>
+        </div>
       ) : (
         <div className="sh-work">
           <div className="sh-lab">
@@ -577,21 +601,51 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
             </div>
           )}
 
-          <div className="sh-actions">
-            <button type="button" className="sh-submit" disabled={busy} onClick={() => submit(false)}>
-              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />} Check my fix
-            </button>
-            <button type="button" className="sh-escalate" disabled={busy} onClick={() => submit(true)}>
-              <ArrowUpRight className="h-4 w-4" /> Escalate
-            </button>
-            {inc.nextHintCostPct !== null && (
-              <button type="button" className="sh-coach" disabled={busy} onClick={coach}>
-                <LifeBuoy className="h-3.5 w-3.5" /> Ask Coach (−{inc.nextHintCostPct}%)
+          {confirming ? (
+            <div className="sh-confirm">
+              <p className="sh-confirm__head"><ArrowUpRight className="h-4 w-4" /> Hand this to tier 2?</p>
+              <p>They take the incident over and the SLA clock stops, so nothing else on your queue is at risk while it sits.</p>
+              <p className="sh-confirm__cost">
+                It closes for you at that point. You keep the credit for your finding, your closing note and for leaving the
+                accounts that were fine alone, and you give up the points for fixing it and for being on time.
+              </p>
+              <div className="sh-confirm__btns">
+                <button type="button" className="sh-escalate sh-escalate--go" disabled={busy} onClick={() => submit(true)}>
+                  {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUpRight className="h-4 w-4" />} Hand it up
+                </button>
+                <button type="button" className="sh-coach" disabled={busy} onClick={() => setConfirming(false)}>
+                  Keep working it
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="sh-actions">
+              <button type="button" className="sh-submit" disabled={busy} onClick={() => submit(false)}>
+                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />} Check my fix
               </button>
-            )}
-          </div>
+              {/* Nothing to hand up without a finding, so the button says so rather
+                  than failing on the server after the click. */}
+              <button
+                type="button"
+                className="sh-escalate"
+                disabled={busy || !hasFinding}
+                title={hasFinding ? "Hand this incident to tier 2" : "Answer the question above first"}
+                onClick={() => setConfirming(true)}
+              >
+                <ArrowUpRight className="h-4 w-4" /> Escalate
+              </button>
+              {inc.nextHintCostPct !== null && (
+                <button type="button" className="sh-coach" disabled={busy} onClick={coach}>
+                  <LifeBuoy className="h-3.5 w-3.5" /> Ask Coach (−{inc.nextHintCostPct}%)
+                </button>
+              )}
+              {!hasFinding && <p className="sh-actions__why">Escalating needs your finding: tier 2 gets what you saw, not a blank ticket.</p>}
+            </div>
+          )}
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -618,7 +672,10 @@ function ShiftReport({ theme, report, onAgain, busy }: { theme: "light" | "dark"
             <p className="sh-kicker">Shift report</p>
             <p className="sh-report__headline">{report.headline}</p>
             <p className="sh-report__score"><b>{report.totalScore}</b> of {report.maxScore} points</p>
-            <p className="sh-report__sub">{report.resolvedCount} of {report.incidents.length} closed · {report.onTimeCount} within SLA</p>
+            <p className="sh-report__sub">
+                {report.resolvedCount} of {report.incidents.length} closed · {report.onTimeCount} within SLA
+                {report.escalatedCount ? ` · ${report.escalatedCount} escalated` : ""}
+              </p>
           </div>
         </header>
 
@@ -628,7 +685,7 @@ function ShiftReport({ theme, report, onAgain, busy }: { theme: "light" | "dark"
               <span className={`sh-sev ${SEV_CLASS[i.severity as Sev] ?? ""}`}>{i.severity}</span>
               <span className="sh-rep__title">{i.title}</span>
               <span className="sh-rep__tags">
-                <em className={i.resolved ? "ok" : "no"}>{i.resolved ? "Solved" : "Missed"}</em>
+                <em className={i.resolved ? "ok" : i.escalated ? "up" : "no"}>{i.resolved ? "Solved" : i.escalated ? "Escalated" : "Missed"}</em>
                 {i.resolved && <em className={i.onTime ? "ok" : "no"}>{i.onTime ? "On time" : "Late"}</em>}
                 {!i.noHarm && <em className="no">Collateral</em>}
                 {i.resolved && !i.diagnosisRight && <em className="no">Weak diagnosis</em>}

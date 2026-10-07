@@ -32,7 +32,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const s = await student(request);
   if (!s) return NextResponse.json({ error: "Shifts need a hosted lab." }, { status: 403 });
-  let body: { action?: unknown; uid?: unknown; defId?: unknown; diagnosis?: unknown; response?: unknown };
+  let body: { action?: unknown; uid?: unknown; defId?: unknown; diagnosis?: unknown; response?: unknown; escalate?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       return "error" in r ? NextResponse.json({ error: r.error }, { status: 409 }) : NextResponse.json(r);
     }
     if (action === "submit") {
-      const r = await submitIncident(s.id, uid, String(body.diagnosis || ""), String(body.response || ""));
+      const r = await submitIncident(s.id, uid, String(body.diagnosis || ""), String(body.response || ""), body.escalate === true);
       if ("error" in r) return NextResponse.json({ error: r.error }, { status: 409 });
       return NextResponse.json({ result: r, shift: await getShift(s.id) });
     }
