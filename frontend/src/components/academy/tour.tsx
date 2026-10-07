@@ -1,10 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import {
-  ArrowLeft,
   ArrowRight,
   Clock,
   Flag,
@@ -14,153 +13,159 @@ import {
   ListTree,
   Palette,
   PlayCircle,
-  Rocket,
   Route,
   Server,
   ShieldAlert,
-  Sparkles,
-  X,
   type LucideIcon,
 } from "lucide-react";
 import "./tour.css";
 
-// First-run walkthroughs. Anchored steps dim the page and lift one real control
-// out of it; the opening and closing steps have no target and sit in the middle.
+// First-run explainers. One card, in the middle, that says what is on the page
+// and then gets out of the way.
 //
-// There is one tour per area rather than one for the whole portal, because the
+// This used to walk the page: each step dimmed everything, lifted one real
+// control out of the page, and moved a caret-tagged card around to point at it.
+// Seven stops to read the home page. The same content fits on one card as a
+// grid of tiles, and nobody has to be led anywhere.
+//
+// There is one card per area rather than one for the whole portal, because the
 // home page and a lesson page share almost no furniture. Each remembers itself
-// separately, so someone who starts on a lesson still gets the home tour later.
+// separately, so someone who starts on a lesson still gets the home card later.
 //
-// Steps whose target is missing are dropped before a tour starts. An Explore
-// account has no lab button, and pointing at nothing is worse than not running.
+// A tile whose target is not on the page is dropped before the card opens. An
+// Explore account has no lab button, and describing furniture that is not there
+// is worse than saying nothing.
 
-type Step = { sel?: string; icon: LucideIcon; title: string; body: string };
-type Tour = { key: string; when: (path: string) => boolean; min: number; steps: Step[] };
+type Tile = { sel?: string; icon: LucideIcon; title: string; body: string };
+type Tour = {
+  key: string;
+  when: (path: string) => boolean;
+  /** Below this many surviving tiles the card is not worth opening. */
+  min: number;
+  title: string;
+  lede: string;
+  tiles: Tile[];
+};
 
-const HOME: Step[] = [
-  {
-    icon: Sparkles,
-    title: "Welcome to Range",
-    body: "This is where you work the same problems a new security hire sees. Here is the two minute version of what is on this page.",
-  },
-  {
-    sel: '[data-tour="next"]',
-    icon: PlayCircle,
-    title: "Pick up where you left off",
-    body: "This card always names the next thing to do. It moves on its own as you finish lessons and missions.",
-  },
-  {
-    sel: '[data-tour="readiness"]',
-    icon: Gauge,
-    title: "Readiness",
-    body: "One score out of 100 across everything you have finished. It opens at zero and climbs as you work. Open it to see which competencies are behind.",
-  },
-  {
-    sel: '[data-tour="drills"]',
-    icon: Flame,
-    title: "Practice every day",
-    body: "One named case a day against your own directory. Shift and the weekly CTF start from the same place and the streak tracks how often you turn up.",
-  },
-  {
-    sel: '[data-tour="path"]',
-    icon: Route,
-    title: "The course runs in order",
-    body: "Fundamentals first and then a live directory and then alerts and logs. Each row shows how far through it you are.",
-  },
-  {
-    sel: '[data-tour="lab"]',
-    icon: Server,
-    title: "A lab of your own",
-    body: "A Windows domain controller and an Ubuntu server built for you alone. Start them here and they open in a browser tab with nothing to install.",
-  },
-  {
-    sel: '[data-tour="account"]',
-    icon: Headset,
-    title: "The coach and your profile",
-    body: "Four things live behind here. Ask the coach when a lesson will not land, read the full readiness report, publish a Proof Profile employers can check, and sign out.",
-  },
-  {
-    sel: '[data-tour="theme"]',
-    icon: Palette,
-    title: "Light or dark",
-    body: "Range follows whichever you pick and remembers it. Worth setting now if you are going to be reading for a while.",
-  },
-  {
-    icon: Rocket,
-    title: "That is the tour",
-    body: "Start with the card at the top of the page. Everything else can wait until you need it.",
-  },
-];
+const HOME: Tour = {
+  key: "purvex.tour.home.v4",
+  when: (p) => p === "/range" || p === "/range/",
+  min: 3,
+  title: "Welcome to Range.",
+  lede: "This is where you work the same problems a new security hire sees. Here is what is on this page.",
+  tiles: [
+    {
+      sel: '[data-tour="next"]',
+      icon: PlayCircle,
+      title: "Next",
+      body: "Always names the next thing to do, and moves on its own as you finish.",
+    },
+    {
+      sel: '[data-tour="readiness"]',
+      icon: Gauge,
+      title: "Readiness",
+      body: "One score out of 100. Open it to see which competencies are behind.",
+    },
+    {
+      sel: '[data-tour="drills"]',
+      icon: Flame,
+      title: "Drills",
+      body: "A named case a day against your own directory. The streak tracks how often you turn up.",
+    },
+    {
+      sel: '[data-tour="path"]',
+      icon: Route,
+      title: "The course",
+      body: "Fundamentals, then a live directory, then alerts and logs. In that order.",
+    },
+    {
+      sel: '[data-tour="lab"]',
+      icon: Server,
+      title: "Your lab",
+      body: "A Windows domain controller and an Ubuntu desktop, yours alone, in a browser tab.",
+    },
+    {
+      sel: '[data-tour="account"]',
+      icon: Headset,
+      title: "Account",
+      body: "The coach, the full readiness report, your Proof Profile, and sign out.",
+    },
+  ],
+};
 
-// Shown on any other page in the portal, where the page body changes but the
-// header and the course menu do not.
-const PORTAL: Step[] = [
-  {
-    sel: '[data-tour="menu-desktop"], [data-tour="menu"]',
-    icon: ListTree,
-    title: "Every lesson in order",
-    body: "The whole course sits here. Anything finished is ticked and you can jump back to any of it whenever you want.",
-  },
-  {
-    sel: '[data-tour="lab"]',
-    icon: Server,
-    title: "Your lab travels with you",
-    body: "Start it or open it from any page. The same two machines follow you through every lesson and mission.",
-  },
-  {
-    sel: '[data-tour="account"]',
-    icon: Headset,
-    title: "The coach and your profile",
-    body: "Four things live behind here. Ask the coach when something will not land, read the full readiness report, publish a Proof Profile employers can check, and sign out.",
-  },
-  {
-    sel: '[data-tour="theme"]',
-    icon: Palette,
-    title: "Light or dark",
-    body: "Range follows whichever you pick and remembers it across every page.",
-  },
-];
+// Shown on any other page in the portal, where the body changes but the header
+// and the course menu do not.
+const PORTAL: Tour = {
+  key: "purvex.tour.portal.v2",
+  when: (p) => p.startsWith("/range") && p.replace(/\/$/, "") !== "/range",
+  min: 2,
+  title: "Around the portal.",
+  lede: "The page changes as you work. These four stay where they are.",
+  tiles: [
+    {
+      sel: '[data-tour="menu-desktop"], [data-tour="menu"]',
+      icon: ListTree,
+      title: "Course menu",
+      body: "Every lesson in order. Anything finished is ticked and you can jump back to it.",
+    },
+    {
+      sel: '[data-tour="lab"]',
+      icon: Server,
+      title: "Your lab",
+      body: "Start it or open it from any page. The same two machines follow you everywhere.",
+    },
+    {
+      sel: '[data-tour="account"]',
+      icon: Headset,
+      title: "Account",
+      body: "The coach, the full readiness report, your Proof Profile, and sign out.",
+    },
+    {
+      sel: '[data-tour="theme"]',
+      icon: Palette,
+      title: "Light or dark",
+      body: "Range follows whichever you pick and remembers it across every page.",
+    },
+  ],
+};
 
 // The drills page carries four separate things, and the numbered rows do not
 // say much about what any of them are until you open one.
-const DRILLS: Step[] = [
-  {
-    icon: Sparkles,
-    title: "Four ways to practise",
-    body: "This page is the daily habit rather than the course. Here is what each row is for.",
-  },
-  {
-    sel: '[data-tour="case"]',
-    icon: PlayCircle,
-    title: "A case a day",
-    body: "One named scenario written against your own directory. It is a decision or a short write-up or a real change you make in the lab.",
-  },
-  {
-    sel: '[data-tour="shift"]',
-    icon: Clock,
-    title: "Shift",
-    body: "Thirty minutes on the desk. Real incidents fire into your lab and each ticket has an SLA you are working against.",
-  },
-  {
-    sel: '[data-tour="ctf"]',
-    icon: Flag,
-    title: "The weekly CTF",
-    body: "One hard investigation a week asked about your own Security log. A new one opens every Monday.",
-  },
-  {
-    sel: '[data-tour="findings"]',
-    icon: ShieldAlert,
-    title: "What your lab needs",
-    body: "A real audit of your own directory. The daily task is often one of these and it is checked inside your lab rather than marked on paper.",
-  },
-];
+const DRILLS: Tour = {
+  key: "purvex.tour.drills.v2",
+  when: (p) => p.startsWith("/range/drill"),
+  min: 3,
+  title: "Four ways to practise.",
+  lede: "This page is the daily habit rather than the course. Here is what each row is for.",
+  tiles: [
+    {
+      sel: '[data-tour="case"]',
+      icon: PlayCircle,
+      title: "A case a day",
+      body: "One scenario written against your own directory. A decision, a write-up, or a real change.",
+    },
+    {
+      sel: '[data-tour="shift"]',
+      icon: Clock,
+      title: "Shift",
+      body: "Thirty minutes on the desk. Real incidents fire into your lab, each with an SLA.",
+    },
+    {
+      sel: '[data-tour="ctf"]',
+      icon: Flag,
+      title: "Weekly CTF",
+      body: "One hard investigation a week against your own Security log. A new one every Monday.",
+    },
+    {
+      sel: '[data-tour="findings"]',
+      icon: ShieldAlert,
+      title: "What your lab needs",
+      body: "A real audit of your directory, checked inside the lab rather than marked on paper.",
+    },
+  ],
+};
 
-const TOURS: Tour[] = [
-  { key: "purvex.tour.home.v3", when: (p) => p === "/range" || p === "/range/", min: 3, steps: HOME },
-  { key: "purvex.tour.drills.v1", when: (p) => p.startsWith("/range/drill"), min: 3, steps: DRILLS },
-  // Everywhere else, which has its own course menu to point at.
-  { key: "purvex.tour.portal.v1", when: (p) => p.startsWith("/range") && p.replace(/\/$/, "") !== "/range", min: 2, steps: PORTAL },
-];
+const TOURS: Tour[] = [HOME, DRILLS, PORTAL];
 
 /** Storage can throw in a private window, so a failed read means "show it". */
 function seen(key: string): boolean {
@@ -174,69 +179,24 @@ function markSeen(key: string) {
   try {
     window.localStorage.setItem(key, "1");
   } catch {
-    /* a tour that repeats beats one that crashes */
+    /* a card that repeats beats one that crashes */
   }
 }
 
-/** The first match that is actually rendered. A hidden element still matches a
- *  selector, so size is what decides whether a step has somewhere to point. */
-function pick(sel: string): Element | null {
+/** True when the selector matches something actually rendered. A hidden element
+ *  still matches, so size is what decides. */
+function present(sel: string): boolean {
   for (const el of Array.from(document.querySelectorAll(sel))) {
     const r = el.getBoundingClientRect();
-    if (r.width > 0 && r.height > 0) return el;
+    if (r.width > 0 && r.height > 0) return true;
   }
-  return null;
+  return false;
 }
 
-type Box = {
-  top: number;
-  left: number;
-  width: number;
-  height: number;
-  radius: string;
-  /** The card's measured height when this was taken, so placement uses the real one. */
-  cardH: number;
-  /** Which step index this belongs to. A box from the step before must never
-   *  position the ring, or the highlight marks the thing they just left. */
-  at: number;
-};
-type Spot = { top: number; left: number; side: "top" | "bottom"; caret: number };
-
-const CARD_W = 360;
-/** Only the first guess. Bodies run two or three sentences, so the real card is
- *  anywhere from about 210px to over 300px tall, and placing every one of them
- *  as though it were 236 is what put cards over their own target or off the
- *  bottom of the window. The rendered height replaces this on the next frame. */
-const CARD_H = 236;
-const GAP = 14;
-
-/** Below the target when it fits, otherwise above. The caret tracks the target
- *  so the card still reads as attached after it has been clamped to the window. */
-function locate(box: Box, cardH: number): Spot {
-  const below = box.top + box.height + GAP;
-  const roomAbove = box.top - GAP > cardH;
-  // Something taller than the window has no room on either side of it, so the
-  // card sits at the foot and the caret is dropped by pinning it off-card.
-  if (window.innerHeight - below <= cardH && !roomAbove) {
-    return { top: Math.max(GAP, window.innerHeight - cardH - GAP), left: Math.max(GAP, (window.innerWidth - CARD_W) / 2), side: "bottom", caret: -999 };
-  }
-  const fits = window.innerHeight - below > cardH;
-  const side: "top" | "bottom" = fits ? "bottom" : "top";
-  const top = fits ? below : Math.max(GAP, box.top - GAP - cardH);
-  const wanted = box.left + box.width / 2 - CARD_W / 2;
-  const left = Math.min(Math.max(GAP, wanted), Math.max(GAP, window.innerWidth - CARD_W - GAP));
-  const caret = Math.min(Math.max(26, box.left + box.width / 2 - left), CARD_W - 26);
-  return { top, left, side, caret };
-}
-
-/** The tour is portaled to <body>, a sibling of .academy-bg rather than a child,
+/** The card is portaled to <body>, a sibling of .academy-bg rather than a child,
  *  so the portal's tokens are out of scope. Only the brand accent is copied
- *  across, because that is the one value the tour must not get wrong.
- *
- *  The rest of the palette is the tour's own, keyed off the theme. Reading the
- *  page's computed background as the card surface is what made the card a black
- *  panel on a blacked-out page: in dark mode that background is pure #000, the
- *  same colour the scrim was dimming everything else to. */
+ *  across, because that is the one value this must not get wrong. The rest of
+ *  the palette is the card's own, keyed off the theme. */
 function useAcademySkin(): { skin: React.CSSProperties; theme: "light" | "dark" } {
   const [skin, setSkin] = useState<React.CSSProperties>({});
   const [theme, setTheme] = useState<"light" | "dark">("dark");
@@ -259,13 +219,9 @@ function useAcademySkin(): { skin: React.CSSProperties; theme: "light" | "dark" 
 export function AcademyTour() {
   const pathname = usePathname() ?? "";
   const { skin, theme } = useAcademySkin();
-  const [run, setRun] = useState<{ key: string; steps: Step[] } | null>(null);
-  const [i, setI] = useState(0);
-  const [box, setBox] = useState<Box | null>(null);
-
-  const cardRef = useRef<HTMLDivElement>(null);
-  const returnTo = useRef<Element | null>(null);
+  const [run, setRun] = useState<{ tour: Tour; tiles: Tile[] } | null>(null);
   const [replay, setReplay] = useState(0);
+
   useEffect(() => {
     const onReplay = () => {
       for (const t of TOURS) {
@@ -284,219 +240,75 @@ export function AcademyTour() {
   useEffect(() => {
     const tour = TOURS.find((t) => t.when(pathname) && !seen(t.key));
     if (!tour) return;
+    // The page needs a moment to finish rendering before its furniture can be
+    // found. A replay is a deliberate click, so it waits far less.
     const id = window.setTimeout(() => {
-      const found = tour.steps.filter((s) => !s.sel || pick(s.sel));
-      if (found.filter((s) => s.sel).length >= tour.min) {
-        setI(0);
-        setRun({ key: tour.key, steps: found });
-      } else markSeen(tour.key);
+      const tiles = tour.tiles.filter((t) => !t.sel || present(t.sel));
+      if (tiles.length >= tour.min) setRun({ tour, tiles });
+      else markSeen(tour.key);
     }, replay ? 80 : 700);
     return () => window.clearTimeout(id);
   }, [pathname, replay]);
-
-  const step = run?.steps[i];
-
-  const place = useCallback(() => {
-    if (!step?.sel) return;
-    const el = pick(step.sel);
-    if (!el) {
-      setBox(null);
-      return;
-    }
-    const r = el.getBoundingClientRect();
-    // A circular avatar should be ringed by a circle, so the highlight borrows
-    // the target's own corner radius instead of guessing one.
-    // A square target gets a square ring, because Range is square. Only a target
-    // that is actually rounded, like the avatar, gets a rounded one.
-    const raw = window.getComputedStyle(el).borderRadius.split(" ")[0] || "0px";
-    const radius = parseFloat(raw) > 0 ? `calc(${raw} + 6px)` : "0px";
-    setBox({
-      top: r.top,
-      left: r.left,
-      width: r.width,
-      height: r.height,
-      radius,
-      cardH: cardRef.current?.offsetHeight || CARD_H,
-      at: i,
-    });
-  }, [step, i]);
-
-  useEffect(() => {
-    if (!step?.sel) return;
-    // On the next frame, then again once the smooth scroll has settled. Waiting only
-    // for the delayed call left the ring sitting on the previous step's target
-    // for a third of a second, which read as the highlight pointing at the
-    // wrong thing. The ring's CSS transition carries it the rest of the way.
-    const frame = window.requestAnimationFrame(place);
-    pick(step.sel)?.scrollIntoView({ block: "center", behavior: "smooth" });
-    const t = window.setTimeout(place, 340);
-    window.addEventListener("resize", place);
-    window.addEventListener("scroll", place, true);
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.clearTimeout(t);
-      window.removeEventListener("resize", place);
-      window.removeEventListener("scroll", place, true);
-    };
-  }, [step, place]);
-
-  const close = useCallback(() => {
-    if (run) markSeen(run.key);
-    setRun(null);
-  }, [run]);
-
-  const next = useCallback(() => {
-    if (!run) return;
-    if (i + 1 >= run.steps.length) close();
-    else setI(i + 1);
-  }, [run, i, close]);
 
   useEffect(() => {
     if (!run) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        close();
-        return;
-      }
-      if (e.key === "ArrowRight") {
-        next();
-        return;
-      }
-      if (e.key === "ArrowLeft") {
-        setI((n) => Math.max(0, n - 1));
-        return;
-      }
-      if (e.key !== "Tab") return;
-      // Keep Tab inside the card. Without this it walks into the page behind
-      // the scrim, which cannot be seen or clicked.
-      const items = cardRef.current?.querySelectorAll<HTMLElement>("button, [href]");
-      if (!items?.length) return;
-      const list = Array.from(items);
-      const firstEl = list[0];
-      const lastEl = list[list.length - 1];
-      if (e.shiftKey && document.activeElement === firstEl) {
-        e.preventDefault();
-        lastEl.focus();
-      } else if (!e.shiftKey && document.activeElement === lastEl) {
-        e.preventDefault();
-        firstEl.focus();
+        markSeen(run.tour.key);
+        setRun(null);
       }
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [run, close, next]);
-
-  // No scroll lock here on purpose: each step scrolls its own target into view,
-  // and a locked page would strand every step below the fold. The ring already
-  // tracks the target through a scroll.
-  //
-  // Focus goes into the card and comes back to wherever it was on the way out.
-  useEffect(() => {
-    if (!run) return;
-    returnTo.current = document.activeElement;
-    const t = window.setTimeout(() => cardRef.current?.querySelector<HTMLElement>(".tour__go")?.focus(), 60);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      window.clearTimeout(t);
-      (returnTo.current as HTMLElement | null)?.focus?.();
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
     };
   }, [run]);
 
-  // The card settling to its real height re-places it. A step with a longer
-  // body is taller than the estimate, and without this it stayed where the
-  // estimate put it: over its own target, or off the bottom of the window.
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el || typeof ResizeObserver === "undefined") return;
-    const ro = new ResizeObserver(() => place());
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [place]);
+  if (!run || typeof document === "undefined") return null;
 
-  // Derived, not cleared: a box belongs to the step it was measured on, so one
-  // left over from the step before can never position this step's ring.
-  const onTarget = Boolean(step?.sel) && box?.at === i;
-  const spot = useMemo(() => (onTarget && box ? locate(box, box.cardH) : null), [onTarget, box]);
-
-  if (!run || !step || typeof document === "undefined") return null;
-  const steps = run.steps;
-  const last = i + 1 === steps.length;
-  const anchored = spot !== null;
-  const Icon = step.icon;
+  const close = () => {
+    markSeen(run.tour.key);
+    setRun(null);
+  };
 
   return createPortal(
-    <div
-      className={`tour${onTarget ? "" : " tour--plain"}`}
-      data-tour-theme={theme}
-      style={skin}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="tour-title"
-    >
-      <button type="button" className="tour__scrim" aria-label="Skip the tour" onClick={close} />
-      {onTarget && box && (
-        <span
-          key={i}
-          className="tour__ring"
-          aria-hidden="true"
-          style={{ top: box.top - 6, left: box.left - 6, width: box.width + 12, height: box.height + 12, borderRadius: box.radius }}
-        />
-      )}
+    <div className="tour" data-tour-theme={theme} style={skin} role="dialog" aria-modal="true" aria-labelledby="tour-title">
+      <button type="button" className="tour__scrim" aria-label="Close" onClick={close} />
 
-      <div
-        key={i}
-        ref={cardRef}
-        className={`tour__card${anchored ? ` tour__card--${spot!.side}` : " tour__card--mid"}`}
-        style={anchored ? { top: spot!.top, left: spot!.left } : undefined}
-      >
-        {anchored && spot!.caret > 0 && <span className="tour__caret" aria-hidden="true" style={{ left: spot!.caret }} />}
-
-        <button type="button" className="tour__x" aria-label="Skip the tour" onClick={close}>
-          <X className="h-4 w-4" />
-        </button>
-
-        <div className="tour__head">
-          <span className="tour__ic" aria-hidden="true">
-            <Icon className="h-[17px] w-[17px]" />
-          </span>
-          <h2 id="tour-title">{step.title}</h2>
-        </div>
-        <p className="tour__body">{step.body}</p>
-
-        <div className="tour__foot">
-          <span className="tour__dots">
-            {steps.map((s, n) => (
-              <button
-                key={s.title}
-                type="button"
-                className={n === i ? "is-on" : n < i ? "is-past" : ""}
-                aria-label={`Step ${n + 1}: ${s.title}`}
-                aria-current={n === i}
-                onClick={() => setI(n)}
-              />
-            ))}
-          </span>
-          <span className="tour__btns">
-            {i > 0 && (
-              <button type="button" className="tour__ghost" onClick={() => setI(Math.max(0, i - 1))}>
-                <ArrowLeft className="h-4 w-4" /> Back
-              </button>
-            )}
-            <button type="button" className="tour__go" onClick={next}>
-              {last ? "Get started" : i === 0 && !step.sel ? "Show me" : "Next"}
-              {!last && <ArrowRight className="h-4 w-4" />}
-            </button>
-          </span>
-        </div>
-
-        {!last && (
+      <div className="tour__card">
+        <header className="tour__strip">
+          <span className="tour__kicker">Getting started</span>
+          <strong>Range</strong>
           <button type="button" className="tour__skip" onClick={close}>
-            Skip the tour
+            Skip
           </button>
-        )}
-      </div>
+        </header>
 
-      <div className="tour__live" aria-live="polite">
-        Step {i + 1} of {steps.length}. {step.title}. {step.body}
+        <div className="tour__main">
+          <h2 id="tour-title">{run.tour.title}</h2>
+          <p className="tour__lede">{run.tour.lede}</p>
+
+          <ul className="tour__tiles">
+            {run.tiles.map(({ icon: Icon, title, body }) => (
+              <li key={title}>
+                <span className="tour__ic" aria-hidden="true">
+                  <Icon className="h-[18px] w-[18px]" />
+                </span>
+                <strong>{title}</strong>
+                <small>{body}</small>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <footer className="tour__foot">
+          <button type="button" className="tour__go" onClick={close}>
+            Continue <ArrowRight className="h-4 w-4" />
+          </button>
+        </footer>
       </div>
     </div>,
     document.body

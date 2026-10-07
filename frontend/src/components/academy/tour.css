@@ -1,176 +1,188 @@
-/* First-run tour. Portaled to <body>, so the academy tokens are out of scope and
-   the component copies the real ones onto this root at runtime (useAcademySkin).
-   The values below are only the fallback for the instant before that read lands.
-
-   Square corners throughout. Range is square: .rd-cta, .sh-go and the shift
-   console's --r are all 0, so a rounded card would be the odd one out. */
+/* The first-run explainer card. One card in the middle of the screen, never
+   anchored to anything, so nothing has to be measured, scrolled to or pointed
+   at. Square corners, like the rest of the portal's panels. */
 .tour {
   position: fixed;
   inset: 0;
-  z-index: 70;
-  /* One dim value. It was written out six times, so the scrim and the ring's
-     cut-out could drift apart and the page looked a different darkness
-     depending on whether a step had a target. */
-  --tour-dim: rgba(0, 0, 0, 0.78);
-  --tour-ink: #0f172a;
-  --tour-ink-2: #475569;
-  --tour-ink-3: #6b7689;
-  --tour-line: rgba(15, 23, 42, 0.14);
+  z-index: 95;
+  display: grid;
+  place-items: center;
+  padding: 16px;
   --tour-accent: #5546e0;
-  /* The card's own surface, not the page's. The portal is pure black in dark
-     mode, and a card that borrowed it was a black panel on a blacked-out page
-     with a 1px border to tell them apart. */
-  --tour-surface: #ffffff;
+  --tour-bg: #ffffff;
+  --tour-strip: #f6f7fb;
+  --tour-ink: #0f172a;
+  --tour-ink-2: #3f4a63;
+  --tour-ink-3: #6b7689;
+  --tour-line: rgba(15, 23, 42, 0.12);
+  --tour-line-2: rgba(15, 23, 42, 0.07);
 }
 .tour[data-tour-theme="dark"] {
-  --tour-ink: #f4f4f8;
-  --tour-ink-2: #b9b9c2;
-  --tour-ink-3: #8b8b95;
-  --tour-line: rgba(255, 255, 255, 0.16);
-  /* Lifted off black so the card reads as floating above the page. */
-  --tour-surface: #17171c;
+  --tour-bg: #000000;
+  --tour-strip: #0b0c12;
+  --tour-ink: #e8eef8;
+  --tour-ink-2: #b9c2d6;
+  --tour-ink-3: #7f889c;
+  --tour-line: rgba(255, 255, 255, 0.18);
+  --tour-line-2: rgba(255, 255, 255, 0.09);
 }
 
-/* A real button, so a click outside leaves without needing the keyboard. It is
-   transparent whenever a ring is on screen: the ring's own 9999px shadow is what
-   dims the page, and a scrim on top of that dimmed the highlighted element too,
-   which left nothing actually spotlit. */
-.tour > .tour__scrim { position: fixed; inset: 0; border: 0; padding: 0; background: transparent; cursor: pointer; }
-/* No target to cut a hole for, so the scrim does the dimming itself. */
-.tour--plain > .tour__scrim { background: var(--tour-dim); }
-
-/* The cut-out. A very large spread shadow dims everything but this rectangle,
-   which beats an SVG mask and leaves the control underneath fully legible. The
-   radius is set inline from the target, so a circle is ringed by a circle. */
-.tour__ring {
-  position: fixed;
-  pointer-events: none;
-  border: 1px solid var(--tour-accent);
-  box-shadow: 0 0 0 9999px var(--tour-dim), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent);
-  transition: top 0.26s cubic-bezier(0.16, 1, 0.3, 1), left 0.26s cubic-bezier(0.16, 1, 0.3, 1),
-    width 0.26s cubic-bezier(0.16, 1, 0.3, 1), height 0.26s cubic-bezier(0.16, 1, 0.3, 1);
-  /* One pulse as it lands, so the eye follows the highlight to its new home
-     instead of hunting for what moved. */
-  animation: tour-land 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-@keyframes tour-land {
-  0% { box-shadow: 0 0 0 9999px var(--tour-dim), 0 0 0 14px color-mix(in srgb, var(--tour-accent) 0%, transparent); }
-  45% { box-shadow: 0 0 0 9999px var(--tour-dim), 0 0 0 12px color-mix(in srgb, var(--tour-accent) 26%, transparent); }
-  100% { box-shadow: 0 0 0 9999px var(--tour-dim), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent); }
+.tour__scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(8, 11, 22, 0.58);
+  cursor: default;
 }
 
 .tour__card {
-  position: fixed;
-  width: min(360px, calc(100vw - 28px));
-  padding: 22px 24px 18px;
-  border: 1px solid color-mix(in srgb, var(--tour-accent) 32%, transparent);
-  background: var(--tour-surface);
-  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(0, 0, 0, 0.3);
-  color: var(--tour-ink-2);
-  transition: top 0.26s cubic-bezier(0.16, 1, 0.3, 1), left 0.26s cubic-bezier(0.16, 1, 0.3, 1);
-  animation: tour-in 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+  position: relative;
+  width: min(680px, 100%);
+  max-height: min(88vh, 760px);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--tour-line);
+  background: var(--tour-bg);
+  color: var(--tour-ink);
+  box-shadow: 0 28px 70px -28px rgba(8, 11, 22, 0.7);
+  font-family: var(--font-sans, inherit);
+  animation: tour-in 0.18s cubic-bezier(.16, 1, .3, 1) both;
 }
+@keyframes tour-in { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .tour__card { animation: none; } }
 
-/* Only the opener and the closer sit in the middle. Everything about the card's
-   shape is shared, so the tour is one format throughout. */
-.tour__card--mid { top: 50%; left: 50%; width: min(420px, calc(100vw - 28px)); padding: 30px 28px 22px; transform: translate(-50%, -50%); animation-name: tour-in-mid; }
-.tour__card--mid h2 { font-size: var(--ty-h3); }
-@keyframes tour-pop {
-  from { opacity: 0; transform: scale(0.72); }
-  to { opacity: 1; transform: scale(1); }
+/* Thin strip across the top: where you are, and the way out. */
+.tour__strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--tour-line-2);
+  background: var(--tour-strip);
 }
-
-/* A rotated square tucked under the card edge, so the card reads as attached to
-   the thing it describes even after being clamped to the window. */
-.tour__caret { position: absolute; width: 10px; height: 10px; background: var(--tour-surface); border: 1px solid color-mix(in srgb, var(--tour-accent) 32%, transparent); transform: translateX(-50%) rotate(45deg); }
-.tour__card--bottom .tour__caret { top: -6px; border-right: 0; border-bottom: 0; }
-.tour__card--top .tour__caret { bottom: -6px; border-left: 0; border-top: 0; }
-
-/* The step's icon, square like everything else, so the card header keeps a
-   fixed anchor and titles of different lengths stop shifting it. */
-.tour__card { text-align: center; }
-.tour__head { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 11px; }
-.tour__ic {
+.tour .tour__kicker {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--ty-kicker);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tour-ink-3);
+}
+.tour__strip strong {
+  margin-right: auto;
+  font-size: var(--ty-note);
+  font-weight: 650;
+  color: var(--tour-ink);
+}
+.tour .tour__skip {
   flex: none;
-  display: inline-grid;
+  padding: 2px 4px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--ty-small);
+  font-weight: 600;
+  color: var(--tour-ink-3);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.tour .tour__skip:hover { color: var(--tour-ink); }
+
+/* The tiles carry the content, so they get the scroll and the Continue button
+   stays put. A primary action below the fold is one nobody finds. */
+.tour__main {
+  padding: 24px 24px 22px;
+  overflow-y: auto;
+  min-height: 0;
+}
+.tour__main h2 {
+  margin: 0;
+  font-family: var(--font-display, inherit);
+  font-size: var(--ty-h2);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--tour-ink);
+}
+.tour .tour__lede {
+  margin: 10px 0 0;
+  max-width: 54ch;
+  font-size: var(--ty-note);
+  line-height: 1.55;
+  color: var(--tour-ink-2);
+}
+
+/* Three across on a desktop, one per row on a phone. */
+.tour .tour__tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.tour .tour__tiles li {
+  display: grid;
+  gap: 5px;
+  align-content: start;
+  margin: 0;
+  padding: 15px 15px 16px;
+  box-shadow: inset 0 0 0 1px var(--tour-line);
+  background: color-mix(in srgb, var(--tour-ink) 3%, transparent);
+}
+.tour .tour__ic {
+  display: grid;
   place-items: center;
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--tour-accent) 16%, transparent);
-  box-shadow: 0 0 0 7px color-mix(in srgb, var(--tour-accent) 7%, transparent);
+  width: 32px;
+  height: 32px;
+  margin-bottom: 4px;
   color: var(--tour-accent);
-  animation: tour-pop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  background: color-mix(in srgb, var(--tour-accent) 12%, transparent);
 }
-.tour__ic svg { width: 23px; height: 23px; }
-
-.tour__card h2 { margin: 0; padding: 0 22px; font-family: var(--font-display, inherit); font-size: var(--ty-h4); font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; color: var(--tour-ink); }
-.tour__body { margin: 0 auto; max-width: 40ch; font-size: var(--ty-body); line-height: 1.6; color: var(--tour-ink-2); }
-
-.tour__foot { display: flex; flex-direction: column-reverse; align-items: center; gap: 14px; margin-top: 20px; }
-.tour__btns { display: flex; width: 100%; align-items: center; gap: 8px; }
-.tour__btns > * { flex: 1 1 0; min-width: 0; }
-
-/* Segments rather than dots: round pills beside square everything looked borrowed. */
-.tour__dots { display: inline-flex; align-items: center; gap: 4px; }
-.tour__dots button { width: 11px; height: 3px; padding: 0; border: 0; background: color-mix(in srgb, var(--tour-ink) 22%, transparent); cursor: pointer; transition: width 0.2s, background 0.2s; }
-.tour__dots button.is-past { background: color-mix(in srgb, var(--tour-accent) 55%, transparent); }
-.tour__dots button.is-on { width: 22px; background: var(--tour-accent); }
-
-.tour__go { flex: 1; display: inline-flex; justify-content: center; align-items: center; gap: 7px; height: 42px; padding: 0 18px; border: 1px solid var(--tour-accent); background: var(--tour-accent); color: #fff; font-size: var(--ty-note); font-weight: 650; cursor: pointer; transition: filter 0.15s, transform 0.1s; }
-.tour__go:hover { filter: brightness(1.08); }
-.tour__go:active { transform: scale(0.98); }
-
-.tour__ghost { flex: 1; display: inline-flex; justify-content: center; align-items: center; gap: 6px; height: 42px; padding: 0 14px; border: 1px solid var(--tour-line); background: none; color: var(--tour-ink-2); font-size: var(--ty-note); font-weight: 650; cursor: pointer; transition: border-color 0.15s, color 0.15s; }
-.tour__ghost:hover { border-color: var(--tour-accent); color: var(--tour-accent); }
-
-.tour__skip { display: block; margin: 12px auto 0; padding: 0; border: 0; background: none; color: var(--tour-ink-3); font-size: var(--ty-small); font-weight: 600; cursor: pointer; }
-.tour__skip:hover { color: var(--tour-ink); text-decoration: underline; text-underline-offset: 3px; }
-
-.tour__x { position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 28px; height: 28px; border: 0; background: none; color: var(--tour-ink-3); cursor: pointer; transition: background 0.15s, color 0.15s; }
-.tour__x:hover { background: color-mix(in srgb, var(--tour-ink) 9%, transparent); color: var(--tour-ink); }
-
-.tour__go:focus-visible, .tour__ghost:focus-visible, .tour__skip:focus-visible, .tour__x:focus-visible, .tour__dots button:focus-visible {
-  outline: 2px solid var(--tour-accent);
-  outline-offset: 2px;
+.tour .tour__tiles strong {
+  font-size: var(--ty-note);
+  font-weight: 650;
+  line-height: 1.25;
+  color: var(--tour-ink);
+}
+.tour .tour__tiles small {
+  font-size: var(--ty-small);
+  line-height: 1.45;
+  color: var(--tour-ink-3);
 }
 
-/* Announced to a screen reader, which cannot see the ring. */
-.tour__live { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.tour__foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 18px;
+  border-top: 1px solid var(--tour-line-2);
+  background: var(--tour-strip);
+}
+.tour .tour__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 20px;
+  border: 0;
+  background: var(--tour-accent);
+  color: #fff;
+  font: inherit;
+  font-size: var(--ty-note);
+  font-weight: 650;
+  cursor: pointer;
+  transition: filter 0.2s cubic-bezier(.16, 1, .3, 1);
+}
+.tour .tour__go:hover { filter: brightness(1.08); }
+.tour button:focus-visible { outline: 2px solid var(--tour-accent); outline-offset: 2px; }
 
-@keyframes tour-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes tour-in-mid {
-  from { opacity: 0; transform: translate(-50%, calc(-50% + 6px)); }
-  to { opacity: 1; transform: translate(-50%, -50%); }
-}
-
-/* On a phone there is no room to float a card beside a header icon, so it
-   becomes a panel at the foot of the screen and the caret is dropped. The ring
-   still marks the target above it. */
-@media (max-width: 560px) {
-  .tour__card,
-  .tour__card--mid {
-    top: auto !important;
-    bottom: 0;
-    left: 0 !important;
-    right: 0;
-    width: 100%;
-    max-width: 100%;
-    transform: none !important;
-    animation-name: tour-sheet;
-  }
-  .tour__caret { display: none; }
-  .tour__go { flex: 1; justify-content: center; }
-}
-@keyframes tour-sheet {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tour__ring, .tour__card { transition: none; animation: none; }
-  .tour__ring { box-shadow: 0 0 0 9999px var(--tour-dim), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent); }
+@media (max-width: 40rem) {
+  .tour__card { max-height: 92vh; }
+  .tour__main { padding: 20px 18px 18px; }
+  .tour .tour__tiles { grid-template-columns: 1fr; gap: 8px; }
+  .tour .tour__tiles li { grid-template-columns: auto minmax(0, 1fr); gap: 3px 13px; padding: 13px 14px; }
+  .tour .tour__ic { grid-row: span 2; margin: 0; }
+  .tour__foot { padding: 12px 18px; }
+  .tour .tour__go { width: 100%; justify-content: center; }
 }
