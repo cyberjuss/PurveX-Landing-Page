@@ -409,11 +409,12 @@ export function AcademyTour() {
           <X className="h-4 w-4" />
         </button>
 
-        <span className="tour__ic" aria-hidden="true">
-          <Icon className="h-[18px] w-[18px]" />
-        </span>
-
-        <h2 id="tour-title">{step.title}</h2>
+        <div className="tour__head">
+          <span className="tour__ic" aria-hidden="true">
+            <Icon className="h-[17px] w-[17px]" />
+          </span>
+          <h2 id="tour-title">{step.title}</h2>
+        </div>
         <p className="tour__body">{step.body}</p>
 
         <div className="tour__foot">

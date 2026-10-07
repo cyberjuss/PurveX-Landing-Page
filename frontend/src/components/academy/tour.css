@@ -43,42 +43,41 @@
   position: fixed;
   width: min(360px, calc(100vw - 28px));
   padding: 22px 24px 18px;
-  border: 1px solid var(--tour-line);
+  border: 1px solid color-mix(in srgb, var(--tour-accent) 32%, transparent);
   background: var(--tour-surface);
-  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.85);
   color: var(--tour-ink-2);
   transition: top 0.26s cubic-bezier(0.16, 1, 0.3, 1), left 0.26s cubic-bezier(0.16, 1, 0.3, 1);
   animation: tour-in 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-/* One accent rule along the top, the same device the shift console uses. */
-.tour__card::before { content: ""; position: absolute; inset: 0 0 auto; height: 2px; background: var(--tour-accent); }
 
 /* The opener and the closer have nothing to point at, so they sit in the middle. */
 .tour__card--mid { top: 50%; left: 50%; transform: translate(-50%, -50%); animation-name: tour-in-mid; }
 
 /* A rotated square tucked under the card edge, so the card reads as attached to
    the thing it describes even after being clamped to the window. */
-.tour__caret { position: absolute; width: 11px; height: 11px; background: var(--tour-surface); border: 1px solid var(--tour-line); transform: translateX(-50%) rotate(45deg); }
-.tour__card--bottom .tour__caret { top: -6px; border-right: 0; border-bottom: 0; background: var(--tour-accent); border-color: var(--tour-accent); }
+.tour__caret { position: absolute; width: 10px; height: 10px; background: var(--tour-surface); border: 1px solid color-mix(in srgb, var(--tour-accent) 32%, transparent); transform: translateX(-50%) rotate(45deg); }
+.tour__card--bottom .tour__caret { top: -6px; border-right: 0; border-bottom: 0; }
 .tour__card--top .tour__caret { bottom: -6px; border-left: 0; border-top: 0; }
 
 /* The step's icon, square like everything else, so the card header keeps a
    fixed anchor and titles of different lengths stop shifting it. */
+.tour__head { display: flex; align-items: center; gap: 11px; margin-bottom: 10px; padding-right: 24px; }
 .tour__ic {
+  flex: none;
   display: inline-grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  margin-bottom: 14px;
+  width: 30px;
+  height: 30px;
   background: color-mix(in srgb, var(--tour-accent) 14%, transparent);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tour-accent) 28%, transparent);
   color: var(--tour-accent);
 }
 
-.tour__card h2 { margin: 0 0 8px; padding-right: 26px; font-family: var(--font-display, inherit); font-size: 18px; font-weight: 650; line-height: 1.3; letter-spacing: -0.015em; color: var(--tour-ink); }
+.tour__card h2 { margin: 0; font-family: var(--font-display, inherit); font-size: 17px; font-weight: 650; line-height: 1.3; letter-spacing: -0.015em; color: var(--tour-ink); }
 .tour__body { margin: 0; font-size: 14px; line-height: 1.6; color: var(--tour-ink-2); }
 
-.tour__foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 20px; }
+.tour__foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 18px; }
 .tour__btns { display: inline-flex; align-items: center; gap: 8px; }
 
 /* Segments rather than dots: round pills beside square everything looked borrowed. */
@@ -94,7 +93,7 @@
 .tour__ghost { display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 13px; border: 1px solid var(--tour-line); background: none; color: var(--tour-ink-2); font-size: 13.5px; font-weight: 650; cursor: pointer; transition: border-color 0.15s, color 0.15s; }
 .tour__ghost:hover { border-color: var(--tour-accent); color: var(--tour-accent); }
 
-.tour__skip { display: block; margin: 14px auto 0; padding: 0; border: 0; background: none; color: var(--tour-ink-3); font-size: 12.5px; font-weight: 600; cursor: pointer; }
+.tour__skip { display: block; margin: 12px auto 0; padding: 0; border: 0; background: none; color: var(--tour-ink-3); font-size: 12.5px; font-weight: 600; cursor: pointer; }
 .tour__skip:hover { color: var(--tour-ink); text-decoration: underline; text-underline-offset: 3px; }
 
 .tour__x { position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 28px; height: 28px; border: 0; background: none; color: var(--tour-ink-3); cursor: pointer; transition: background 0.15s, color 0.15s; }
