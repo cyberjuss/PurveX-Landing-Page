@@ -42,18 +42,19 @@ export function SingleLab({
 
       {widget ? (
         <>
-          <LabBrief lab={widget} title={title} ask={widget !== "risk-triage"} />
-          {widget === "risk-triage" ? (
-            <RiskTriageLab onDone={done} />
-          ) : widget === "hash-verify" ? (
-            <HashVerifyLab onDone={done} />
-          ) : widget === "signin-log" ? (
-            <SigninLogLab onDone={done} />
-          ) : widget === "effective-access" ? (
-            <EffectiveAccessLab onDone={done} />
-          ) : (
-            <PasswordTableLab onDone={done} />
-          )}
+          <LabBrief lab={widget} title={title} ask={widget !== "risk-triage"}>
+            {widget === "risk-triage" ? (
+              <RiskTriageLab onDone={done} />
+            ) : widget === "hash-verify" ? (
+              <HashVerifyLab onDone={done} />
+            ) : widget === "signin-log" ? (
+              <SigninLogLab onDone={done} />
+            ) : widget === "effective-access" ? (
+              <EffectiveAccessLab onDone={done} />
+            ) : (
+              <PasswordTableLab onDone={done} />
+            )}
+          </LabBrief>
         </>
       ) : markdown ? (
         <>

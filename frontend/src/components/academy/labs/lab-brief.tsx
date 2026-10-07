@@ -1,6 +1,7 @@
 "use client";
 
-import { Clock, MessageCircle } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { ArrowRight, Clock, MessageCircle } from "lucide-react";
 import type { LabWidget } from "@/lib/academy-content";
 import { LAB_BRIEFS, labObjective } from "@/lib/academy-lab-briefs";
 import { useOptionalCoach } from "../coach-context";
@@ -8,13 +9,30 @@ import "./lab-kit.css";
 
 export const LOST_ASK = "I'm lost on this step. Give me a hint, not the answer.";
 
-/** Above each browser lab: the real problem, today's situation, and the student's objective for their role. ask: false when the lab shows its own Coach button. */
-export function LabBrief({ lab, title, ask = true }: { lab: LabWidget; title: string; ask?: boolean }) {
+/** Above each browser lab: the real problem, today's situation, and the student's
+ *  objective for their role. ask: false when the lab shows its own Coach button.
+ *
+ *  Pass the lab as children and the brief gates it: the student reads what they
+ *  are walking into and starts it deliberately, rather than landing mid
+ *  conversation with Alex already talking. */
+export function LabBrief({
+  lab,
+  title,
+  ask = true,
+  children,
+}: {
+  lab: LabWidget;
+  title: string;
+  ask?: boolean;
+  children?: ReactNode;
+}) {
   const coach = useOptionalCoach();
+  const [started, setStarted] = useState(false);
   const brief = LAB_BRIEFS[lab];
   const goal = labObjective(lab, coach?.profile?.roles);
   return (
-    <header className="lb">
+    <>
+      <header className="lb">
       <h3>{title}</h3>
       <dl>
         <div>
@@ -37,6 +55,17 @@ export function LabBrief({ lab, title, ask = true }: { lab: LabWidget; title: st
           </button>
         )}
       </div>
-    </header>
+      </header>
+      {children !== undefined &&
+        (started ? (
+          children
+        ) : (
+          <div className="lb__start">
+            <button type="button" className="rd-cta" onClick={() => setStarted(true)}>
+              Get started <ArrowRight aria-hidden="true" className="h-4 w-4" />
+            </button>
+          </div>
+        ))}
+    </>
   );
 }

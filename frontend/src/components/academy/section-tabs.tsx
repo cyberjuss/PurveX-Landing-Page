@@ -201,18 +201,19 @@ export function SectionTabs({
       <QuizBlock quiz={quiz!} actionHost={quizFoot} prevBeyond={prevTrail} nextBeyond={nextTrail} />
     ) : current.kind === "lab" && current.widget ? (
       <div>
-        <LabBrief lab={current.widget} title={current.label.replace(/^Lab:\s*/, "")} ask={current.widget !== "risk-triage"} />
-        {current.widget === "risk-triage" ? (
-          <RiskTriageLab onDone={labDone} />
-        ) : current.widget === "hash-verify" ? (
-          <HashVerifyLab onDone={labDone} />
-        ) : current.widget === "signin-log" ? (
-          <SigninLogLab onDone={labDone} />
-        ) : current.widget === "effective-access" ? (
-          <EffectiveAccessLab onDone={labDone} />
-        ) : (
-          <PasswordTableLab onDone={labDone} />
-        )}
+        <LabBrief lab={current.widget} title={current.label.replace(/^Lab:\s*/, "")} ask={current.widget !== "risk-triage"}>
+          {current.widget === "risk-triage" ? (
+            <RiskTriageLab onDone={labDone} />
+          ) : current.widget === "hash-verify" ? (
+            <HashVerifyLab onDone={labDone} />
+          ) : current.widget === "signin-log" ? (
+            <SigninLogLab onDone={labDone} />
+          ) : current.widget === "effective-access" ? (
+            <EffectiveAccessLab onDone={labDone} />
+          ) : (
+            <PasswordTableLab onDone={labDone} />
+          )}
+        </LabBrief>
       </div>
     ) : current.kind === "lab" ? (
       <div>
