@@ -188,7 +188,7 @@ function pick(sel: string): Element | null {
   return null;
 }
 
-type Box = { top: number; left: number; width: number; height: number };
+type Box = { top: number; left: number; width: number; height: number; radius: string };
 type Spot = { top: number; left: number; side: "top" | "bottom"; caret: number };
 
 const CARD_W = 360;
@@ -199,6 +199,12 @@ const GAP = 14;
  *  so the card still reads as attached after it has been clamped to the window. */
 function locate(box: Box): Spot {
   const below = box.top + box.height + GAP;
+  const roomAbove = box.top - GAP > CARD_H;
+  // Something taller than the window has no room on either side of it, so the
+  // card sits at the foot and the caret is dropped by pinning it off-card.
+  if (window.innerHeight - below <= CARD_H && !roomAbove) {
+    return { top: window.innerHeight - CARD_H - GAP, left: Math.max(GAP, (window.innerWidth - CARD_W) / 2), side: "bottom", caret: -999 };
+  }
   const fits = window.innerHeight - below > CARD_H;
   const side: "top" | "bottom" = fits ? "bottom" : "top";
   const top = fits ? below : Math.max(GAP, box.top - GAP - CARD_H);
@@ -232,6 +238,22 @@ export function AcademyTour() {
   const [i, setI] = useState(0);
   const [box, setBox] = useState<Box | null>(null);
 
+  const [replay, setReplay] = useState(0);
+  useEffect(() => {
+    const onReplay = () => {
+      for (const t of TOURS) {
+        try {
+          window.localStorage.removeItem(t.key);
+        } catch {
+          /* nothing to clear */
+        }
+      }
+      setReplay((n) => n + 1);
+    };
+    window.addEventListener("purvex:tour-replay", onReplay);
+    return () => window.removeEventListener("purvex:tour-replay", onReplay);
+  }, []);
+
   useEffect(() => {
     const tour = TOURS.find((t) => t.when(pathname) && !seen(t.key));
     if (!tour) return;
@@ -241,9 +263,9 @@ export function AcademyTour() {
         setI(0);
         setRun({ key: tour.key, steps: found });
       } else markSeen(tour.key);
-    }, 700);
+    }, replay ? 80 : 700);
     return () => window.clearTimeout(id);
-  }, [pathname]);
+  }, [pathname, replay]);
 
   const step = run?.steps[i];
 
@@ -252,7 +274,11 @@ export function AcademyTour() {
     const el = pick(step.sel);
     if (!el) return;
     const r = el.getBoundingClientRect();
-    setBox({ top: r.top, left: r.left, width: r.width, height: r.height });
+    // A circular avatar should be ringed by a circle, so the highlight borrows
+    // the target's own corner radius instead of guessing one.
+    const raw = window.getComputedStyle(el).borderRadius.split(" ")[0] || "0px";
+    const radius = raw === "0px" ? "10px" : `calc(${raw} + 6px)`;
+    setBox({ top: r.top, left: r.left, width: r.width, height: r.height, radius });
   }, [step]);
 
   useEffect(() => {
@@ -307,15 +333,16 @@ export function AcademyTour() {
         <span
           className="tour__ring"
           aria-hidden="true"
-          style={{ top: box.top - 6, left: box.left - 6, width: box.width + 12, height: box.height + 12 }}
+          style={{ top: box.top - 6, left: box.left - 6, width: box.width + 12, height: box.height + 12, borderRadius: box.radius }}
         />
       )}
 
       <div
+        key={i}
         className={`tour__card${anchored ? ` tour__card--${spot!.side}` : " tour__card--mid"}`}
         style={anchored ? { top: spot!.top, left: spot!.left } : undefined}
       >
-        {anchored && <span className="tour__caret" aria-hidden="true" style={{ left: spot!.caret }} />}
+        {anchored && spot!.caret > 0 && <span className="tour__caret" aria-hidden="true" style={{ left: spot!.caret }} />}
 
         <button type="button" className="tour__x" aria-label="Skip the tour" onClick={close}>
           <X className="h-4 w-4" />

@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Headset, LifeBuoy, LogOut, Target, Users } from "lucide-react";
+import { ArrowRight, BadgeCheck, Compass, Headset, LifeBuoy, LogOut, Target, Users } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { openHelp } from "@/components/academy/get-help";
 import type { StudentProfile } from "@/lib/academy-certs";
@@ -238,6 +238,18 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               <Link href="/range/portfolio" className="ax-account__out" onClick={() => setOpen(false)}>
                 <BadgeCheck className="h-3.5 w-3.5" /> Portfolio
               </Link>
+              {/* The tour runs once by itself, so this is the only way back to
+                  it and the only way to show it to somebody. */}
+              <button
+                type="button"
+                className="ax-account__out"
+                onClick={() => {
+                  setOpen(false);
+                  window.dispatchEvent(new CustomEvent("purvex:tour-replay"));
+                }}
+              >
+                <Compass className="h-3.5 w-3.5" /> Show me around
+              </button>
               {teaches && (
                 <Link href="/range/instructor" className="ax-account__out" onClick={() => setOpen(false)}>
                   <Users className="h-3.5 w-3.5" /> {owner ? "Owner view" : "Instructor view"}
