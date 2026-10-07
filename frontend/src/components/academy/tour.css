@@ -20,9 +20,9 @@
    transparent whenever a ring is on screen: the ring's own 9999px shadow is what
    dims the page, and a scrim on top of that dimmed the highlighted element too,
    which left nothing actually spotlit. */
-.tour__scrim { position: fixed; inset: 0; border: 0; padding: 0; background: transparent; cursor: pointer; }
+.tour > .tour__scrim { position: fixed; inset: 0; border: 0; padding: 0; background: transparent; cursor: pointer; }
 /* No target to cut a hole for, so the scrim does the dimming itself. */
-.tour--plain .tour__scrim { background: rgba(4, 6, 14, 0.72); }
+.tour--plain > .tour__scrim { background: rgba(0, 0, 0, 0.82); }
 
 /* The cut-out. A very large spread shadow dims everything but this rectangle,
    which beats an SVG mask and leaves the control underneath fully legible. The
@@ -31,7 +31,7 @@
   position: fixed;
   pointer-events: none;
   border: 1px solid var(--tour-accent);
-  box-shadow: 0 0 0 9999px rgba(4, 6, 14, 0.66), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent);
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.82), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent);
   transition: top 0.26s cubic-bezier(0.16, 1, 0.3, 1), left 0.26s cubic-bezier(0.16, 1, 0.3, 1),
     width 0.26s cubic-bezier(0.16, 1, 0.3, 1), height 0.26s cubic-bezier(0.16, 1, 0.3, 1);
   /* One pulse as it lands, so the eye follows the highlight to its new home
@@ -39,9 +39,9 @@
   animation: tour-land 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 @keyframes tour-land {
-  0% { box-shadow: 0 0 0 9999px rgba(4, 6, 14, 0.66), 0 0 0 14px color-mix(in srgb, var(--tour-accent) 0%, transparent); }
-  45% { box-shadow: 0 0 0 9999px rgba(4, 6, 14, 0.66), 0 0 0 12px color-mix(in srgb, var(--tour-accent) 26%, transparent); }
-  100% { box-shadow: 0 0 0 9999px rgba(4, 6, 14, 0.66), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent); }
+  0% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.82), 0 0 0 14px color-mix(in srgb, var(--tour-accent) 0%, transparent); }
+  45% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.82), 0 0 0 12px color-mix(in srgb, var(--tour-accent) 26%, transparent); }
+  100% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.82), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent); }
 }
 
 .tour__card {
@@ -157,5 +157,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .tour__ring, .tour__card { transition: none; animation: none; }
-  .tour__ring { box-shadow: 0 0 0 9999px rgba(4, 6, 14, 0.66), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent); }
+  .tour__ring { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.82), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent); }
 }
