@@ -261,11 +261,8 @@ export function SectionTabs({
 
   return (
     <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
-      {/* Hidden from lg up, where the course rail lists the same sections and
-          two copies of one list sat side by side. Below lg that rail is behind
-          a menu button, so this stays as the only way to move between tabs. */}
       <div
-        className={`shrink-0 transition-[width] duration-300 ease-[cubic-bezier(.16,1,.3,1)] lg:hidden ${
+        className={`shrink-0 transition-[width] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
           collapsed ? "md:w-12" : "md:w-[220px]"
         }`}
       >

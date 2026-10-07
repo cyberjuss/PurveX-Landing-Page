@@ -1,59 +1,20 @@
 "use client";
 
-import { Fragment, useState, useSyncExternalStore } from "react";
+import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookMarked, Check, ChevronDown, FlaskConical, Lock } from "lucide-react";
 import { type PhaseDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
-import { slugify, useAcademyProgress } from "./academy-progress";
-import { findQuiz } from "@/content/academy/quizzes";
+import { useAcademyProgress } from "./academy-progress";
 import { isPhaseLocked } from "@/lib/academy-locks";
-
-/** The tabs inside a lesson, in the order section-tabs lays them out: the plain
- *  sections, then the quiz, then the labs and challenges with their prefix
- *  dropped. Each one is addressed by the hash that component already uses. */
-function sectionsOf(phaseSlug: string, entry: PhaseDef["weeks"][number]) {
-  const strip = (l: string) => l.replace(/^(Lab|Challenge|Troubleshooting):\s*/, "");
-  const plain = entry.sections.filter((x) => !/^(Lab|Challenge|Troubleshooting):/.test(x.label));
-  const rest = entry.sections.filter((x) => /^(Lab|Challenge|Troubleshooting):/.test(x.label));
-  const out = plain.map((x) => ({ label: x.label, hash: slugify(x.label) }));
-  if (findQuiz(phaseSlug, entry.slug)) out.push({ label: "Quiz", hash: "quiz" });
-  return [...out, ...rest.map((x) => ({ label: strip(x.label), hash: slugify(strip(x.label)) }))];
-}
 
 export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onNavigate?: () => void }) {
   const pathname = usePathname();
-  // Which tab is open, so the rail can mark it. Read from the URL rather than
-  // held here, because the lesson owns that state and writes it to the hash.
-  const hash = useSyncExternalStore(
-    (cb) => {
-      window.addEventListener("hashchange", cb);
-      return () => window.removeEventListener("hashchange", cb);
-    },
-    () => window.location.hash.replace(/^#/, ""),
-    () => ""
-  );
-  const { isComplete, isPhaseComplete, completedCount, totalCount } = useAcademyProgress();
+  const { isComplete, isPhaseComplete, requirements, completedCount, totalCount } = useAcademyProgress();
   const progressPct = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
-  // A phase with no destination page (see hasDestination below) has no
-  // route to open it via, so its expanded state has to live here instead
-  // -- otherwise there's no way to even preview what's inside it.
-  // One week's sections at a time. Opening a second closes the first, so the
-  // rail never carries two full section lists at once.
-  //
-  // `at` is the route the choice was made on: navigating to another lesson
-  // makes it stale and the rail goes back to following the route, which is how
-  // the week you have just opened ends up open without an effect to reset it.
-  type WeekOpen = { kind: "route" } | { kind: "none"; at: string } | { kind: "one"; key: string; at: string };
-  const [weekOpen, setWeekOpen] = useState<WeekOpen>({ kind: "route" });
+  // Only the Home Lab group collapses now, so one Set of open slugs is enough.
   const [manualOpen, setManualOpen] = useState<Set<string>>(new Set());
-  const sectionsShown = (key: string, active: boolean) => {
-    if (weekOpen.kind === "route" || weekOpen.at !== pathname) return active;
-    return weekOpen.kind === "one" && weekOpen.key === key;
-  };
-  const toggleWeek = (key: string, active: boolean) =>
-    setWeekOpen(sectionsShown(key, active) ? { kind: "none", at: pathname } : { kind: "one", key, at: pathname });
 
   const toggleManualOpen = (slug: string) =>
     setManualOpen((prev) => {
@@ -134,66 +95,38 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           labs.some((l) => pathname === `/range/${phase.slug}/${l.slug}`) || manualOpen.has(labsKey);
         const row = (entry: PhaseDef["weeks"][number]) => {
           const href = `/range/${phase.slug}/${entry.slug}`;
-          // Open for the entry you are in, shut for the rest, and the chevron
-          // flips whichever default applies. One Set covers both directions.
-          const secKey = `${phase.slug}:${entry.slug}:secs`;
           // Each sitting is titled "Home Lab — X". The group heading carries
           // the prefix so the row keeps only the part that differs.
           const label = entry.title.replace(/^Home Lab\s*[—-]\s*/, "");
           const active = pathname === href;
-          const secOpen = sectionsShown(secKey, active);
           const done = isComplete(phase.slug, entry.slug);
-          const secs = entry.sections.length > 0 ? sectionsOf(phase.slug, entry) : [];
+          // What the week actually asks of you: its quiz, labs and challenges.
+          // A count of reading tabs would say eleven and mean nothing.
+          const reqs = requirements(phase.slug, entry.slug);
+          const met = reqs.filter((q) => q.done).length;
+          const soon = entry.sections.length === 0;
           return (
             <li key={entry.slug}>
-              {entry.sections.length > 0 ? (
-                <span className="ax-siderow">
-                  <Link href={href} onClick={onNavigate} className={`ax-sidelink ${active ? "ax-sidelink--on" : ""}`}>
-                    <span className="truncate">{label}</span>
-                    {done && <Check className="ax-sidelink__done h-4 w-4" strokeWidth={2.5} aria-label="Complete" />}
-                  </Link>
-                  <button
-                    type="button"
-                    className="ax-sidecaret"
-                    aria-expanded={secOpen}
-                    aria-label={`${secOpen ? "Hide" : "Show"} sections of ${label}`}
-                    onClick={() => toggleWeek(secKey, active)}
-                  >
-                    <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${secOpen ? "" : "-rotate-90"}`} />
-                  </button>
+              {soon ? (
+                <span className="ax-week ax-week--soon">
+                  <span className="ax-week__name truncate">{label}</span>
+                  <em className="ax-week__tag">Soon</em>
                 </span>
               ) : (
-                <span className="ax-soon-row">
-                  <span className="truncate">{label}</span>
-                  <em>Soon</em>
-                </span>
-              )}
-              {/* Only the entry you are in opens its tabs. Every entry at once
-                  would be a hundred rows before you had chosen anything. */}
-              {secs.length > 0 && (
-                <div
-                  className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
-                    secOpen ? "mb-2 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                  }`}
+                <Link
+                  href={href}
+                  onClick={onNavigate}
+                  className={`ax-week${active ? " ax-week--on" : ""}${done ? " ax-week--done" : ""}`}
                 >
-                  {/* min-h-0 matters: a grid item's automatic minimum is its
-                      content, so without it a 0fr row still reserves the full
-                      height of the list and leaves a hole in the rail. */}
-                  <ul className="ax-subs min-h-0">
-                    {secs.map((sec, n) => (
-                      <li key={sec.hash}>
-                        <a
-                          href={`${href}#${sec.hash}`}
-                          onClick={onNavigate}
-                          className={`ax-sub${active && (hash || secs[0].hash) === sec.hash ? " ax-sub--on" : ""}`}
-                        >
-                          <i aria-hidden>{String(n + 1).padStart(2, "0")}</i>
-                          <span className="truncate">{sec.label}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                  <span className="ax-week__name truncate">{label}</span>
+                  {done ? (
+                    <Check className="ax-week__tick h-4 w-4" strokeWidth={2.5} aria-label="Complete" />
+                  ) : reqs.length > 0 ? (
+                    <em className="ax-week__count">
+                      {met}<span>/{reqs.length}</span>
+                    </em>
+                  ) : null}
+                </Link>
               )}
             </li>
           );
