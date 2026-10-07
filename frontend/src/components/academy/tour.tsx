@@ -386,7 +386,7 @@ export function AcademyTour() {
   const Icon = step.icon;
 
   return createPortal(
-    <div className="tour" style={skin} role="dialog" aria-modal="true" aria-labelledby="tour-title">
+    <div className={`tour${onTarget ? "" : " tour--plain"}`} style={skin} role="dialog" aria-modal="true" aria-labelledby="tour-title">
       <button type="button" className="tour__scrim" aria-label="Skip the tour" onClick={close} />
       {onTarget && box && (
         <span

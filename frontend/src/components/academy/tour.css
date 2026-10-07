@@ -16,8 +16,13 @@
   --tour-surface: #ffffff;
 }
 
-/* A real button, so a click outside leaves without needing the keyboard. */
-.tour__scrim { position: fixed; inset: 0; border: 0; padding: 0; background: rgba(4, 6, 14, 0.66); cursor: pointer; }
+/* A real button, so a click outside leaves without needing the keyboard. It is
+   transparent whenever a ring is on screen: the ring's own 9999px shadow is what
+   dims the page, and a scrim on top of that dimmed the highlighted element too,
+   which left nothing actually spotlit. */
+.tour__scrim { position: fixed; inset: 0; border: 0; padding: 0; background: transparent; cursor: pointer; }
+/* No target to cut a hole for, so the scrim does the dimming itself. */
+.tour--plain .tour__scrim { background: rgba(4, 6, 14, 0.72); }
 
 /* The cut-out. A very large spread shadow dims everything but this rectangle,
    which beats an SVG mask and leaves the control underneath fully legible. The
