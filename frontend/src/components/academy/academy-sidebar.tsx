@@ -162,7 +162,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               type="button"
               onClick={() => toggleManualOpen(labsKey)}
               aria-expanded={labsOpen}
-              className={`flex w-full items-center justify-between gap-2 font-mono text-[length:var(--ty-body)] font-bold uppercase tracking-[0.08em] transition ${
+              className={`ax-subhead flex w-full items-center justify-between gap-2 font-mono text-[length:var(--ty-small)] font-bold uppercase tracking-[0.1em] transition ${
                 labsOpen ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
               }`}
             >
@@ -249,12 +249,16 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 phaseOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
               }`}
             >
-              <ul className="ax-list flex flex-col overflow-hidden">
-                {phase.weeks.map(row)}
-              </ul>
+              {/* One child, so the row animation has a single thing to
+                  measure. The weeks and the home lab both sit in it. */}
+              <div className="min-h-0 overflow-hidden">
+                <ul className="ax-list flex flex-col">
+                  {phase.weeks.map(row)}
+                </ul>
+                {labSection}
+              </div>
             </div>
           </div>
-          {labSection}
           </Fragment>
         );
       })}

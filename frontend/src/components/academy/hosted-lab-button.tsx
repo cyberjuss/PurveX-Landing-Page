@@ -419,13 +419,11 @@ export function HostedLabMenu() {
   const note =
     state === "ready"
       ? status.stopAt ? `Stops at ${clock(status.stopAt)}.` : "Running."
-      : state === "starting" || state === "stopped"
+      : state === "starting" || state === "stopped" || state === "stopping"
         ? null
-        : state === "stopping"
-          ? "Saving your work."
-          : state === "none"
-            ? "A Windows domain controller and an Ubuntu desktop, yours alone. Ready in a few minutes, in a browser tab."
-            : null;
+        : state === "none"
+          ? "A Windows domain controller and an Ubuntu desktop, yours alone. Ready in a few minutes, in a browser tab."
+          : null;
 
   return (
     <section className={`hl hl--menu hl--${state}`} aria-label="Your lab">
