@@ -8,12 +8,27 @@
   position: fixed;
   inset: 0;
   z-index: 70;
+  /* One dim value. It was written out six times, so the scrim and the ring's
+     cut-out could drift apart and the page looked a different darkness
+     depending on whether a step had a target. */
+  --tour-dim: rgba(0, 0, 0, 0.78);
   --tour-ink: #0f172a;
   --tour-ink-2: #475569;
-  --tour-ink-3: #8a94a8;
-  --tour-line: rgba(15, 23, 42, 0.08);
+  --tour-ink-3: #6b7689;
+  --tour-line: rgba(15, 23, 42, 0.14);
   --tour-accent: #5546e0;
+  /* The card's own surface, not the page's. The portal is pure black in dark
+     mode, and a card that borrowed it was a black panel on a blacked-out page
+     with a 1px border to tell them apart. */
   --tour-surface: #ffffff;
+}
+.tour[data-tour-theme="dark"] {
+  --tour-ink: #f4f4f8;
+  --tour-ink-2: #b9b9c2;
+  --tour-ink-3: #8b8b95;
+  --tour-line: rgba(255, 255, 255, 0.16);
+  /* Lifted off black so the card reads as floating above the page. */
+  --tour-surface: #17171c;
 }
 
 /* A real button, so a click outside leaves without needing the keyboard. It is
@@ -22,7 +37,7 @@
    which left nothing actually spotlit. */
 .tour > .tour__scrim { position: fixed; inset: 0; border: 0; padding: 0; background: transparent; cursor: pointer; }
 /* No target to cut a hole for, so the scrim does the dimming itself. */
-.tour--plain > .tour__scrim { background: rgba(0, 0, 0, 0.82); }
+.tour--plain > .tour__scrim { background: var(--tour-dim); }
 
 /* The cut-out. A very large spread shadow dims everything but this rectangle,
    which beats an SVG mask and leaves the control underneath fully legible. The
@@ -31,7 +46,7 @@
   position: fixed;
   pointer-events: none;
   border: 1px solid var(--tour-accent);
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.82), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent);
+  box-shadow: 0 0 0 9999px var(--tour-dim), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent);
   transition: top 0.26s cubic-bezier(0.16, 1, 0.3, 1), left 0.26s cubic-bezier(0.16, 1, 0.3, 1),
     width 0.26s cubic-bezier(0.16, 1, 0.3, 1), height 0.26s cubic-bezier(0.16, 1, 0.3, 1);
   /* One pulse as it lands, so the eye follows the highlight to its new home
@@ -39,9 +54,9 @@
   animation: tour-land 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 @keyframes tour-land {
-  0% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.82), 0 0 0 14px color-mix(in srgb, var(--tour-accent) 0%, transparent); }
-  45% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.82), 0 0 0 12px color-mix(in srgb, var(--tour-accent) 26%, transparent); }
-  100% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.82), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent); }
+  0% { box-shadow: 0 0 0 9999px var(--tour-dim), 0 0 0 14px color-mix(in srgb, var(--tour-accent) 0%, transparent); }
+  45% { box-shadow: 0 0 0 9999px var(--tour-dim), 0 0 0 12px color-mix(in srgb, var(--tour-accent) 26%, transparent); }
+  100% { box-shadow: 0 0 0 9999px var(--tour-dim), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent); }
 }
 
 .tour__card {
@@ -50,7 +65,7 @@
   padding: 22px 24px 18px;
   border: 1px solid color-mix(in srgb, var(--tour-accent) 32%, transparent);
   background: var(--tour-surface);
-  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.85);
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(0, 0, 0, 0.3);
   color: var(--tour-ink-2);
   transition: top 0.26s cubic-bezier(0.16, 1, 0.3, 1), left 0.26s cubic-bezier(0.16, 1, 0.3, 1);
   animation: tour-in 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -102,7 +117,7 @@
 .tour__dots button.is-past { background: color-mix(in srgb, var(--tour-accent) 55%, transparent); }
 .tour__dots button.is-on { width: 22px; background: var(--tour-accent); }
 
-.tour__go { flex: 1; display: inline-flex; justify-content: center; align-items: center; gap: 7px; height: 42px; padding: 0 18px; border: 1px solid var(--tour-accent); background: var(--tour-accent); color: var(--tour-surface); font-size: 13px; font-weight: 650; cursor: pointer; transition: filter 0.15s, transform 0.1s; }
+.tour__go { flex: 1; display: inline-flex; justify-content: center; align-items: center; gap: 7px; height: 42px; padding: 0 18px; border: 1px solid var(--tour-accent); background: var(--tour-accent); color: #fff; font-size: 13px; font-weight: 650; cursor: pointer; transition: filter 0.15s, transform 0.1s; }
 .tour__go:hover { filter: brightness(1.08); }
 .tour__go:active { transform: scale(0.98); }
 
@@ -157,5 +172,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .tour__ring, .tour__card { transition: none; animation: none; }
-  .tour__ring { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.82), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent); }
+  .tour__ring { box-shadow: 0 0 0 9999px var(--tour-dim), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent); }
 }

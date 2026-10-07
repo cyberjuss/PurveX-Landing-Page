@@ -188,65 +188,77 @@ function pick(sel: string): Element | null {
   return null;
 }
 
-type Box = { top: number; left: number; width: number; height: number; radius: string };
+type Box = {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+  radius: string;
+  /** The card's measured height when this was taken, so placement uses the real one. */
+  cardH: number;
+  /** Which step index this belongs to. A box from the step before must never
+   *  position the ring, or the highlight marks the thing they just left. */
+  at: number;
+};
 type Spot = { top: number; left: number; side: "top" | "bottom"; caret: number };
 
 const CARD_W = 360;
+/** Only the first guess. Bodies run two or three sentences, so the real card is
+ *  anywhere from about 210px to over 300px tall, and placing every one of them
+ *  as though it were 236 is what put cards over their own target or off the
+ *  bottom of the window. The rendered height replaces this on the next frame. */
 const CARD_H = 236;
 const GAP = 14;
 
 /** Below the target when it fits, otherwise above. The caret tracks the target
  *  so the card still reads as attached after it has been clamped to the window. */
-function locate(box: Box): Spot {
+function locate(box: Box, cardH: number): Spot {
   const below = box.top + box.height + GAP;
-  const roomAbove = box.top - GAP > CARD_H;
+  const roomAbove = box.top - GAP > cardH;
   // Something taller than the window has no room on either side of it, so the
   // card sits at the foot and the caret is dropped by pinning it off-card.
-  if (window.innerHeight - below <= CARD_H && !roomAbove) {
-    return { top: window.innerHeight - CARD_H - GAP, left: Math.max(GAP, (window.innerWidth - CARD_W) / 2), side: "bottom", caret: -999 };
+  if (window.innerHeight - below <= cardH && !roomAbove) {
+    return { top: Math.max(GAP, window.innerHeight - cardH - GAP), left: Math.max(GAP, (window.innerWidth - CARD_W) / 2), side: "bottom", caret: -999 };
   }
-  const fits = window.innerHeight - below > CARD_H;
+  const fits = window.innerHeight - below > cardH;
   const side: "top" | "bottom" = fits ? "bottom" : "top";
-  const top = fits ? below : Math.max(GAP, box.top - GAP - CARD_H);
+  const top = fits ? below : Math.max(GAP, box.top - GAP - cardH);
   const wanted = box.left + box.width / 2 - CARD_W / 2;
   const left = Math.min(Math.max(GAP, wanted), Math.max(GAP, window.innerWidth - CARD_W - GAP));
   const caret = Math.min(Math.max(26, box.left + box.width / 2 - left), CARD_W - 26);
   return { top, left, side, caret };
 }
 
-/** The portal keeps its colours on .academy-bg, and this is portaled to <body>,
- *  which is a sibling of it rather than a child, so none of them are in scope.
- *  Rather than keeping a second palette in step with the first, the real values
- *  are read off the page and copied onto the tour root. The page background is
- *  read as a computed colour because it is pure black in dark mode and white in
- *  light, and a floating card has to be opaque. */
-const TOKENS = ["--rd-ink", "--rd-ink-2", "--rd-ink-3", "--rd-line", "--rd-accent"] as const;
-
-function useAcademySkin(): React.CSSProperties {
+/** The tour is portaled to <body>, a sibling of .academy-bg rather than a child,
+ *  so the portal's tokens are out of scope. Only the brand accent is copied
+ *  across, because that is the one value the tour must not get wrong.
+ *
+ *  The rest of the palette is the tour's own, keyed off the theme. Reading the
+ *  page's computed background as the card surface is what made the card a black
+ *  panel on a blacked-out page: in dark mode that background is pure #000, the
+ *  same colour the scrim was dimming everything else to. */
+function useAcademySkin(): { skin: React.CSSProperties; theme: "light" | "dark" } {
   const [skin, setSkin] = useState<React.CSSProperties>({});
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
   useEffect(() => {
     const root = document.querySelector(".academy-bg");
     if (!root) return;
     const read = () => {
-      const cs = window.getComputedStyle(root);
-      const vars: Record<string, string> = { "--tour-surface": cs.backgroundColor || "#ffffff" };
-      for (const t of TOKENS) {
-        const v = cs.getPropertyValue(t).trim();
-        if (v) vars[t.replace("--rd-", "--tour-")] = v;
-      }
-      setSkin(vars as React.CSSProperties);
+      setTheme(root.getAttribute("data-academy-theme") === "dark" ? "dark" : "light");
+      const accent = window.getComputedStyle(root).getPropertyValue("--rd-accent").trim();
+      setSkin(accent ? ({ "--tour-accent": accent } as React.CSSProperties) : {});
     };
     read();
     const obs = new MutationObserver(read);
     obs.observe(root, { attributes: true, attributeFilter: ["data-academy-theme", "style", "class"] });
     return () => obs.disconnect();
   }, []);
-  return skin;
+  return { skin, theme };
 }
 
 export function AcademyTour() {
   const pathname = usePathname() ?? "";
-  const skin = useAcademySkin();
+  const { skin, theme } = useAcademySkin();
   const [run, setRun] = useState<{ key: string; steps: Step[] } | null>(null);
   const [i, setI] = useState(0);
   const [box, setBox] = useState<Box | null>(null);
@@ -298,16 +310,30 @@ export function AcademyTour() {
     // that is actually rounded, like the avatar, gets a rounded one.
     const raw = window.getComputedStyle(el).borderRadius.split(" ")[0] || "0px";
     const radius = parseFloat(raw) > 0 ? `calc(${raw} + 6px)` : "0px";
-    setBox({ top: r.top, left: r.left, width: r.width, height: r.height, radius });
-  }, [step]);
+    setBox({
+      top: r.top,
+      left: r.left,
+      width: r.width,
+      height: r.height,
+      radius,
+      cardH: cardRef.current?.offsetHeight || CARD_H,
+      at: i,
+    });
+  }, [step, i]);
 
   useEffect(() => {
     if (!step?.sel) return;
+    // On the next frame, then again once the smooth scroll has settled. Waiting only
+    // for the delayed call left the ring sitting on the previous step's target
+    // for a third of a second, which read as the highlight pointing at the
+    // wrong thing. The ring's CSS transition carries it the rest of the way.
+    const frame = window.requestAnimationFrame(place);
     pick(step.sel)?.scrollIntoView({ block: "center", behavior: "smooth" });
     const t = window.setTimeout(place, 340);
     window.addEventListener("resize", place);
     window.addEventListener("scroll", place, true);
     return () => {
+      window.cancelAnimationFrame(frame);
       window.clearTimeout(t);
       window.removeEventListener("resize", place);
       window.removeEventListener("scroll", place, true);
@@ -375,9 +401,21 @@ export function AcademyTour() {
     };
   }, [run]);
 
-  // A box left over from the previous step must not leak onto a centred one.
-  const onTarget = Boolean(step?.sel) && box !== null;
-  const spot = useMemo(() => (onTarget && box ? locate(box) : null), [onTarget, box]);
+  // The card settling to its real height re-places it. A step with a longer
+  // body is taller than the estimate, and without this it stayed where the
+  // estimate put it: over its own target, or off the bottom of the window.
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => place());
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [place]);
+
+  // Derived, not cleared: a box belongs to the step it was measured on, so one
+  // left over from the step before can never position this step's ring.
+  const onTarget = Boolean(step?.sel) && box?.at === i;
+  const spot = useMemo(() => (onTarget && box ? locate(box, box.cardH) : null), [onTarget, box]);
 
   if (!run || !step || typeof document === "undefined") return null;
   const steps = run.steps;
@@ -386,7 +424,14 @@ export function AcademyTour() {
   const Icon = step.icon;
 
   return createPortal(
-    <div className={`tour${onTarget ? "" : " tour--plain"}`} style={skin} role="dialog" aria-modal="true" aria-labelledby="tour-title">
+    <div
+      className={`tour${onTarget ? "" : " tour--plain"}`}
+      data-tour-theme={theme}
+      style={skin}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tour-title"
+    >
       <button type="button" className="tour__scrim" aria-label="Skip the tour" onClick={close} />
       {onTarget && box && (
         <span
