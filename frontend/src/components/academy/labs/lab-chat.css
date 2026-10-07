@@ -30,13 +30,13 @@
 
 .lc-head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--rd-line); background: color-mix(in srgb, var(--rd-ink) 2.5%, var(--lc-card)); }
 .lc-head__who { display: grid; gap: 1px; margin-right: auto; min-width: 0; }
-.lc-head__who b { font-size: 14px; font-weight: 650; color: var(--rd-ink); }
-.lc-head__who span { font-size: 12px; color: var(--rd-ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lc-head__who b { font-size: var(--ty-body); font-weight: 650; color: var(--rd-ink); }
+.lc-head__who span { font-size: var(--ty-small); color: var(--rd-ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lc-head__steps { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; }
 .lc-pip { width: 8px; height: 8px; border-radius: 0; background: var(--rd-line); transition: background 0.2s, transform 0.2s; }
 .lc-pip.is-done { background: var(--rd-good); }
 .lc-pip.is-on { background: var(--lc-me); transform: scale(1.35); }
-.lc-ask { flex: none; padding: 6px 12px; border: 1px solid var(--rd-line); border-radius: 0; background: var(--lc-card); font: inherit; font-size: 12.5px; font-weight: 600; color: var(--rd-ink-2); cursor: pointer; }
+.lc-ask { flex: none; padding: 6px 12px; border: 1px solid var(--rd-line); border-radius: 0; background: var(--lc-card); font: inherit; font-size: var(--ty-small); font-weight: 600; color: var(--rd-ink-2); cursor: pointer; }
 .lc-ask:hover { border-color: var(--lc-me); color: var(--lc-me); }
 
 .lc-thread { overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 20px 18px; background: color-mix(in srgb, var(--rd-ink) 1.5%, var(--lc-card)); scroll-behavior: smooth; }
@@ -47,9 +47,9 @@
 .lc-row .lk-av { align-self: flex-end; margin-bottom: 2px; }
 @keyframes lc-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-.lc-bubble { position: relative; padding: 11px 14px; font-size: 14px; line-height: 1.5; border-radius: 0; }
+.lc-bubble { position: relative; padding: 11px 14px; font-size: var(--ty-body); line-height: 1.5; border-radius: 0; }
 .lc-bubble b { font-weight: 650; }
-.lc-bubble code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12.5px; }
+.lc-bubble code { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); }
 /* A short list inside a message, for the two or three things a step turns on. */
 .lc-list { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 7px; }
 .lc-list li { position: relative; padding-left: 15px; }
@@ -66,10 +66,10 @@
 .lc-composer { display: grid; gap: 10px; padding: 14px 16px; border-top: 1px solid var(--rd-line); background: color-mix(in srgb, var(--rd-ink) 2.5%, var(--lc-card)); }
 .lc-levels { display: grid; gap: 10px; }
 .lc-chiprow { display: grid; gap: 7px; }
-.lc-chiprow__label { font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--rd-ink-3); }
+.lc-chiprow__label { font-size: var(--ty-micro); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--rd-ink-3); }
 .lc-chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.lc-chip { display: inline-flex; align-items: baseline; gap: 7px; padding: 10px 15px; border: 1px solid var(--rd-line); border-radius: 0; background: var(--lc-card); font: inherit; font-size: 13.5px; font-weight: 600; color: var(--rd-ink); cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.1s, box-shadow 0.15s; }
-.lc-chip small { font-size: 11.5px; font-weight: 500; color: var(--rd-ink-3); }
+.lc-chip { display: inline-flex; align-items: baseline; gap: 7px; padding: 10px 15px; border: 1px solid var(--rd-line); border-radius: 0; background: var(--lc-card); font: inherit; font-size: var(--ty-note); font-weight: 600; color: var(--rd-ink); cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.1s, box-shadow 0.15s; }
+.lc-chip small { font-size: var(--ty-micro); font-weight: 500; color: var(--rd-ink-3); }
 .lc-chip:hover { border-color: var(--lc-me); transform: translateY(-1px); box-shadow: 0 6px 16px -10px color-mix(in srgb, var(--lc-me) 70%, transparent); }
 .lc-chip.is-active { border-color: var(--lc-me); background: color-mix(in srgb, var(--lc-me) 10%, var(--lc-card)); }
 .lc-chip.is-active small { color: var(--rd-ink-2); }
@@ -89,7 +89,7 @@
 .lc-chips--list .lc-chip.is-active::before { border-color: var(--lc-me); box-shadow: inset 0 0 0 3.5px var(--lc-me); }
 .lc-chips--list .lc-chip:hover { transform: none; box-shadow: 0 2px 10px -6px rgba(15, 23, 42, 0.45); }
 
-.lc-send { justify-self: end; display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border: 0; border-radius: 0; background: var(--lc-me); font: inherit; font-size: 14px; font-weight: 650; color: #fff; cursor: pointer; box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--lc-me) 80%, transparent); transition: transform 0.1s, filter 0.15s; }
+.lc-send { justify-self: end; display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border: 0; border-radius: 0; background: var(--lc-me); font: inherit; font-size: var(--ty-body); font-weight: 650; color: #fff; cursor: pointer; box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--lc-me) 80%, transparent); transition: transform 0.1s, filter 0.15s; }
 .lc-send:hover { filter: brightness(1.05); }
 .lc-send:active { transform: translateY(1px); }
 .lc-send:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
@@ -98,7 +98,7 @@
 .lc-send svg, .lc-undo svg { width: 15px; height: 15px; }
 
 .lc-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.lc-undo { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border: 0; background: none; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--rd-ink-3); cursor: pointer; }
+.lc-undo { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border: 0; background: none; font: inherit; font-size: var(--ty-small); font-weight: 600; color: var(--rd-ink-3); cursor: pointer; }
 .lc-undo:hover { color: var(--lc-me); }
 
 /* A real tool dropped into the conversation (a table, a viewer, a result).
@@ -107,7 +107,7 @@
 .lc-tool--flush { padding: 0; overflow: hidden; }
 
 .lc-field { display: flex; gap: 8px; }
-.lc-field input { flex: 1; min-width: 0; padding: 11px 13px; border: 1px solid var(--rd-line); border-radius: 0; background: var(--lc-card); font: inherit; font-size: 13.5px; color: var(--rd-ink); }
+.lc-field input { flex: 1; min-width: 0; padding: 11px 13px; border: 1px solid var(--rd-line); border-radius: 0; background: var(--lc-card); font: inherit; font-size: var(--ty-note); color: var(--rd-ink); }
 .lc-field input:focus { outline: 2px solid color-mix(in srgb, var(--lc-me) 40%, transparent); outline-offset: -1px; border-color: var(--lc-me); }
 
 @media (max-width: 600px) {

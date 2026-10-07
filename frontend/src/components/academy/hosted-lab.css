@@ -42,9 +42,9 @@ html[data-academy-theme="dark"] .hl-note,
 /* ---- the lab menu ---- */
 .hl {
   display: grid;
-  gap: 16px;
+  gap: 18px;
   margin: 0;
-  padding: 18px;
+  padding: 20px;
   border: 1px solid var(--hl-line);
   border-radius: 0;
   color: var(--hl-ink);
@@ -52,7 +52,7 @@ html[data-academy-theme="dark"] .hl-note,
   box-shadow: var(--hl-shadow);
   font-family: var(--font-sans, inherit);
 }
-.hl--menu { width: min(420px, calc(100vw - 32px)); padding: 20px; }
+.hl--menu { width: min(500px, calc(100vw - 32px)); padding: 24px; }
 
 /* Identity row: what it is, and whether it is up, readable at a glance. */
 /* Two children: the lab's name, and the hours in the corner. The third column
@@ -62,9 +62,9 @@ html[data-academy-theme="dark"] .hl-note,
 .hl__top { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 12px; }
 .hl__mark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 0; color: #fff; background: var(--hl-accent); }
 .hl__id { display: grid; gap: 2px; min-width: 0; }
-.hl .hl__kicker { margin: 0; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--hl-ink-3); }
-.hl .hl__domain { margin: 3px 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; color: var(--hl-ink-3); }
-.hl .hl__title { margin: 0; font-size: 16px; font-weight: 650; letter-spacing: -0.015em; line-height: 1.2; color: var(--hl-ink); }
+.hl .hl__kicker { margin: 0; font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--hl-ink-3); }
+.hl .hl__domain { margin: 3px 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: var(--ty-small); color: var(--hl-ink-3); }
+.hl .hl__title { margin: 0; font-size: var(--ty-lead); font-weight: 650; letter-spacing: -0.015em; line-height: 1.2; color: var(--hl-ink); }
 
 /* A live state pill, so the lab's condition is never buried in a sentence. */
 @keyframes hl-pulse { 50% { opacity: 0.25; } }
@@ -73,45 +73,45 @@ html[data-academy-theme="dark"] .hl-note,
 /* One tile per machine. Square, quiet fill, no table. */
 .hl .hl__rigs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .hl .hl__rigs:has(li:only-child) { grid-template-columns: 1fr; }
-.hl .hl__rigs li { display: grid; gap: 3px; padding: 13px 14px; background: color-mix(in srgb, var(--hl-ink) 5%, transparent); box-shadow: inset 0 0 0 1px var(--hl-line); }
+.hl .hl__rigs li { display: grid; gap: 4px; padding: 15px 16px; background: color-mix(in srgb, var(--hl-ink) 5%, transparent); box-shadow: inset 0 0 0 1px var(--hl-line); }
 .hl .hl__rigs svg { color: var(--hl-accent); }
-.hl .hl__rigs strong { font-size: 13px; font-weight: 650; line-height: 1.25; color: var(--hl-ink); }
-.hl .hl__rigs small { font-size: 11px; line-height: 1.35; color: var(--hl-ink-3); }
+.hl .hl__rigs strong { font-size: var(--ty-note); font-weight: 650; line-height: 1.25; color: var(--hl-ink); }
+.hl .hl__rigs small { font-size: var(--ty-micro); line-height: 1.35; color: var(--hl-ink-3); }
 
 /* The Ubuntu local sign-in. Same tile treatment as the machines above it, since
    it belongs to one of them. The password is fetched on request, so until they
    ask, this row holds a button rather than a blank. */
-.hl .hl__creds { padding: 13px 14px; background: color-mix(in srgb, var(--hl-ink) 5%, transparent); box-shadow: inset 0 0 0 1px var(--hl-line); }
-.hl .hl__creds__head { margin: 0; font-size: 13px; font-weight: 650; line-height: 1.25; color: var(--hl-ink); }
-.hl .hl__creds__why { margin: 3px 0 0; font-size: 11px; line-height: 1.35; color: var(--hl-ink-3); }
+.hl .hl__creds { padding: 15px 16px; background: color-mix(in srgb, var(--hl-ink) 5%, transparent); box-shadow: inset 0 0 0 1px var(--hl-line); }
+.hl .hl__creds__head { margin: 0; font-size: var(--ty-note); font-weight: 650; line-height: 1.25; color: var(--hl-ink); }
+.hl .hl__creds__why { margin: 3px 0 0; font-size: var(--ty-micro); line-height: 1.35; color: var(--hl-ink-3); }
 .hl .hl__creds__rows { display: grid; gap: 7px; margin: 11px 0 0; }
 .hl .hl__creds__rows > div { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); align-items: center; gap: 10px; min-height: 28px; }
-.hl .hl__creds dt { font-size: 11px; font-weight: 600; color: var(--hl-ink-3); }
+.hl .hl__creds dt { font-size: var(--ty-micro); font-weight: 600; color: var(--hl-ink-3); }
 .hl .hl__creds dd { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin: 0; min-width: 0; }
-.hl .hl__creds code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; letter-spacing: 0.01em; color: var(--hl-ink); }
+.hl .hl__creds code { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note); letter-spacing: 0.01em; color: var(--hl-ink); }
 /* It wraps rather than truncating: a password you cannot see all of is no use,
    and selecting it by hand is the fallback when the clipboard is blocked. */
 .hl .hl__creds__secret { overflow-wrap: anywhere; user-select: all; }
 .hl .hl__creds__btn {
   display: inline-flex; align-items: center; gap: 5px; min-height: 26px; padding: 2px 8px;
   border: 1px solid var(--hl-line); background: none; color: var(--hl-ink-2);
-  font: inherit; font-size: 11px; font-weight: 600; cursor: pointer;
+  font: inherit; font-size: var(--ty-micro); font-weight: 600; cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 }
 .hl .hl__creds__btn:hover:not(:disabled) { border-color: var(--hl-accent); color: var(--hl-ink); }
 .hl .hl__creds__btn:disabled { opacity: 0.55; cursor: default; }
-.hl .hl__creds__err { margin: 7px 0 0; font-size: 11px; line-height: 1.4; color: var(--hl-bad); }
+.hl .hl__creds__err { margin: 7px 0 0; font-size: var(--ty-micro); line-height: 1.4; color: var(--hl-bad); }
 @media (pointer: coarse) { .hl .hl__creds__btn { min-height: 44px; } }
 
 /* Hours in the corner of the header: a balance you glance at beside the lab's
    name, not a band across the panel. Still a meter -- it is running out. */
 .hl .hl__hours { display: grid; justify-items: end; gap: 3px; min-width: 74px; }
-.hl .hl__hours em { font-style: normal; font-size: 17px; font-weight: 650; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--hl-ink); }
-.hl .hl__hours em i { font-style: normal; font-weight: 600; font-size: 13px; color: var(--hl-ink-3); }
+.hl .hl__hours em { font-style: normal; font-size: var(--ty-lead); font-weight: 650; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--hl-ink); }
+.hl .hl__hours em i { font-style: normal; font-weight: 600; font-size: var(--ty-note); color: var(--hl-ink-3); }
 .hl .hl__meter { display: block; width: 100%; height: 3px; margin-top: 2px; background: color-mix(in srgb, var(--hl-ink) 12%, transparent); overflow: hidden; }
 .hl .hl__meter i { display: block; height: 100%; background: var(--hl-accent); }
 
-.hl .hl__legacy { margin: 0; font-size: 12px; line-height: 1.5; color: var(--hl-ink-3); }
+.hl .hl__legacy { margin: 0; font-size: var(--ty-small); line-height: 1.5; color: var(--hl-ink-3); }
 
 @keyframes hl-ping {
   0% { transform: scale(0.6); opacity: 0.8; }
@@ -133,7 +133,7 @@ html[data-academy-theme="dark"] .hl-note,
 }
 @media (prefers-reduced-motion: reduce) { .hl__bar--idle span { animation: none; width: 100%; opacity: 0.5; } }
 .hl .hl__steps { display: grid; grid-template-columns: 1fr; gap: 7px; margin: 0; padding: 0; list-style: none; }
-.hl .hl__steps li { display: flex; align-items: center; gap: 9px; margin: 0; font-size: 13px; color: var(--hl-ink-3); }
+.hl .hl__steps li { display: flex; align-items: center; gap: 9px; margin: 0; font-size: var(--ty-note); color: var(--hl-ink-3); }
 .hl .hl__steps i { flex: none; width: 13px; height: 13px; border: 1.5px solid var(--hl-line); }
 .hl .hl__steps li.is-done { color: var(--hl-ink-2); }
 .hl .hl__steps li.is-done i { border-color: var(--hl-accent); background: var(--hl-accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 11px no-repeat; }
@@ -141,13 +141,13 @@ html[data-academy-theme="dark"] .hl-note,
 .hl .hl__steps li.is-now i { border-color: var(--hl-wait); border-radius: 50%; border-top-color: transparent; animation: hl-spin 0.9s linear infinite; }
 @keyframes hl-spin { to { transform: rotate(360deg); } }
 /* What it is doing and how long is left, read as one line above the bar. */
-.hl .hl__eta { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0; font-size: 13px; color: var(--hl-ink-3); font-variant-numeric: tabular-nums; }
+.hl .hl__eta { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0; font-size: var(--ty-note); color: var(--hl-ink-3); font-variant-numeric: tabular-nums; }
 .hl .hl__eta span { font-weight: 650; color: var(--hl-ink); }
 .hl .hl__eta em { flex: none; font-style: normal; }
 
 /* Footer */
 .hl__foot { display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding-top: 12px; border-top: 1px solid var(--hl-line); }
-.hl .hl__note { margin: 0; font-size: 13px; color: var(--hl-ink-2); }
+.hl .hl__note { margin: 0; font-size: var(--ty-note); color: var(--hl-ink-2); }
 .hl__actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .hl .hl__go,
 .hl .hl__ghost {
@@ -160,7 +160,7 @@ html[data-academy-theme="dark"] .hl-note,
   padding: 0 16px;
   border-radius: 0;
   font: inherit;
-  font-size: 14px;
+  font-size: var(--ty-body);
   font-weight: 650;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
@@ -172,12 +172,12 @@ html[data-academy-theme="dark"] .hl-note,
 .hl .hl__go:disabled,
 .hl .hl__ghost:disabled { cursor: default; opacity: 0.6; }
 .hl button:focus-visible { outline: 2px solid var(--hl-accent); outline-offset: 2px; }
-.hl .hl__error { margin: 0; padding: 10px 12px; font-size: 13px; color: var(--hl-bad); border: 1px solid color-mix(in srgb, var(--hl-bad) 40%, transparent); }
+.hl .hl__error { margin: 0; padding: 10px 12px; font-size: var(--ty-note); color: var(--hl-bad); border: 1px solid color-mix(in srgb, var(--hl-bad) 40%, transparent); }
 /* Quiet footer: the two things you rarely need, side by side and out of the way. */
 /* Two actions at opposite ends rather than two words joined by a pipe. */
-.hl__links { display: flex; align-items: center; gap: 14px; margin-top: -2px; }
+.hl__links { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-top: -2px; }
 .hl .hl__link--end { margin-left: auto; }
-.hl .hl__link { position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; font: inherit; font-size: 12px; font-weight: 500; color: var(--hl-ink-3); cursor: pointer; transition: color 0.15s; }
+.hl .hl__link { position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; font: inherit; font-size: var(--ty-small); font-weight: 500; color: var(--hl-ink-3); cursor: pointer; transition: color 0.15s; }
 .hl .hl__link:hover:not(:disabled) { color: var(--hl-ink); }
 .hl .hl__link--warn:hover:not(:disabled) { color: var(--hl-bad); }
 .hl .hl__link:disabled { opacity: 0.5; cursor: default; }
@@ -209,9 +209,9 @@ html[data-academy-theme="dark"] .hl-lab--off { color: #f87171; }
 }
 .hl-note .hl-note__mark { display: grid; place-items: center; width: 40px; height: 40px; color: #fff; background: var(--hl-accent); }
 .hl-note .hl-note__text { display: grid; gap: 3px; min-width: 0; }
-.hl-note .hl-note__title { margin: 0; font-size: 15px; font-weight: 650; color: var(--hl-ink); }
-.hl-note .hl-note__body { margin: 0; max-width: 62ch; font-size: 13px; line-height: 1.5; color: var(--hl-ink-2); }
-.hl-note .hl-note__go { display: inline-flex; align-items: center; gap: 6px; height: 40px; margin: 0; padding: 0 16px; border: 0; border-radius: 0; font: inherit; font-size: 14px; font-weight: 650; white-space: nowrap; color: #fff; background: var(--hl-accent); cursor: pointer; }
+.hl-note .hl-note__title { margin: 0; font-size: var(--ty-lead); font-weight: 650; color: var(--hl-ink); }
+.hl-note .hl-note__body { margin: 0; max-width: 62ch; font-size: var(--ty-note); line-height: 1.5; color: var(--hl-ink-2); }
+.hl-note .hl-note__go { display: inline-flex; align-items: center; gap: 6px; height: 40px; margin: 0; padding: 0 16px; border: 0; border-radius: 0; font: inherit; font-size: var(--ty-body); font-weight: 650; white-space: nowrap; color: #fff; background: var(--hl-accent); cursor: pointer; }
 .hl-note .hl-note__go:hover:not(:disabled) { background: var(--hl-accent-hi); }
 .hl-note .hl-note__go:disabled { opacity: 0.7; cursor: default; }
 @media (max-width: 600px) {
@@ -220,10 +220,10 @@ html[data-academy-theme="dark"] .hl-lab--off { color: #f87171; }
 }
 
 /* ---- Start my lab, inside the message when an answer cannot be checked ---- */
-.ad-guess__feedback .ad-labstart { margin-left: 6px; height: 26px; padding: 0 10px; border: 0; border-radius: 0; font-size: 0.75rem; font-weight: 700; color: #fff; background: #5546e0; cursor: pointer; vertical-align: middle; }
+.ad-guess__feedback .ad-labstart { margin-left: 6px; height: 26px; padding: 0 10px; border: 0; border-radius: 0; font-size: var(--ty-small); font-weight: 700; color: #fff; background: #5546e0; cursor: pointer; vertical-align: middle; }
 .ad-guess__feedback .ad-labstart:disabled { opacity: 0.7; cursor: default; }
 
-.ad-brief-start .ad-brief-start__note { margin: 0; font-size: 13px; color: var(--rd-ink-3, #6f7189); }
+.ad-brief-start .ad-brief-start__note { margin: 0; font-size: var(--ty-note); color: var(--rd-ink-3, #6f7189); }
 
 @media (prefers-reduced-motion: reduce) {
   .hl-pop, .hl-lab--wait svg, .hl .hl__steps li.is-now i { animation: none; }

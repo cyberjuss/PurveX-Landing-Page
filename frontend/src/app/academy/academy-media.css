@@ -40,13 +40,13 @@
 .academy-prose .ad-shots__nav[hidden] { display: none; }
 .academy-prose .ad-shots__btn {
   display: grid; place-items: center; width: 30px; height: 30px; padding: 0 0 2px; border-radius: 50%;
-  border: 1px solid var(--pvrx-border-light); background: #fff; color: #10192e; font-size: 1.2rem; line-height: 1; cursor: pointer;
+  border: 1px solid var(--pvrx-border-light); background: #fff; color: #10192e; font-size: var(--ty-h4); line-height: 1; cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
 }
 .academy-prose .ad-shots__btn:hover:not(:disabled) { border-color: #5546e0; color: #5546e0; }
 .academy-prose .ad-shots__btn:disabled { opacity: 0.35; cursor: default; }
 .academy-prose .ad-shots__btn:focus-visible { outline: 2px solid #5546e0; outline-offset: 2px; }
-.academy-prose .ad-shots__count { min-width: 3.2em; text-align: center; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.75rem; font-weight: 700; color: var(--pvrx-text-secondary-light); }
+.academy-prose .ad-shots__count { min-width: 3.2em; text-align: center; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); font-weight: 700; color: var(--pvrx-text-secondary-light); }
 
 /* Full-size screenshot viewer (opened from academy-shell.tsx). */
 /* Tailwind's reset zeroes the dialog's default auto margin, so re-center it. */
@@ -56,27 +56,27 @@
 }
 .ad-zoom::backdrop { background: rgba(10,14,30,0.8); backdrop-filter: blur(3px); }
 .ad-zoom img { display: block; max-width: 94vw; max-height: 84vh; margin: 0 auto; border-radius: 10px; background: #fff; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6); }
-.ad-zoom__cap { max-width: 70ch; margin: 0.75rem auto 0; font-size: 0.9rem; line-height: 1.5; color: #e7e9f3; text-align: center; }
+.ad-zoom__cap { max-width: 70ch; margin: 0.75rem auto 0; font-size: var(--ty-body); line-height: 1.5; color: #e7e9f3; text-align: center; }
 .ad-zoom__close {
   position: absolute; top: -14px; right: -14px; display: grid; place-items: center; width: 34px; height: 34px;
-  border: 0; border-radius: 50%; background: #fff; color: #10192e; font-size: 1.3rem; line-height: 1; cursor: pointer;
+  border: 0; border-radius: 50%; background: #fff; color: #10192e; font-size: var(--ty-h3); line-height: 1; cursor: pointer;
   box-shadow: 0 6px 18px -6px rgba(0,0,0,0.5);
 }
 .ad-zoom__close:focus-visible { outline: 2px solid #5546e0; outline-offset: 2px; }
 .ad-zoom__arrow {
   position: fixed; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 44px; height: 44px;
   padding: 0 0 3px; border: 0; border-radius: 50%; background: rgba(255,255,255,0.92); color: #10192e;
-  font-size: 1.7rem; line-height: 1; cursor: pointer; box-shadow: 0 6px 18px -6px rgba(0,0,0,0.5);
+  font-size: var(--ty-h1); line-height: 1; cursor: pointer; box-shadow: 0 6px 18px -6px rgba(0,0,0,0.5);
 }
 .ad-zoom__arrow--prev { left: 16px; }
 .ad-zoom__arrow--next { right: 16px; }
 .ad-zoom__arrow:focus-visible { outline: 2px solid #5546e0; outline-offset: 2px; }
 @media (max-width: 640px) {
   .ad-zoom__close { top: 6px; right: 6px; }
-  .ad-zoom__arrow { width: 36px; height: 36px; font-size: 1.4rem; }
+  .ad-zoom__arrow { width: 36px; height: 36px; font-size: var(--ty-h2); }
   .ad-zoom__arrow--prev { left: 6px; }
   .ad-zoom__arrow--next { right: 6px; }
 }
 
 /* width 0 + min-width 100% lets the image, not the caption, set the card width. */
-.academy-prose .ad-shot figcaption { width: 0; min-width: 100%; box-sizing: border-box; margin: 0; padding: 0.45rem 0.25rem 0.05rem; font-size: 0.8rem; line-height: 1.45; color: var(--pvrx-text-secondary-light); }
+.academy-prose .ad-shot figcaption { width: 0; min-width: 100%; box-sizing: border-box; margin: 0; padding: 0.45rem 0.25rem 0.05rem; font-size: var(--ty-small); line-height: 1.45; color: var(--pvrx-text-secondary-light); }

@@ -22,7 +22,7 @@
   align-items: center;
   gap: 12px;
   padding: 1rem 1.25rem;
-  font-size: 0.95rem;
+  font-size: var(--ty-lead);
   font-weight: 650;
   letter-spacing: -0.005em;
   color: var(--rd-ink-2);
@@ -60,7 +60,7 @@
 
 .academy-prose details.academy-deeper h4 {
   margin: 1.5rem 0 0.45rem;
-  font-size: 1.02rem;
+  font-size: var(--ty-lead);
   font-weight: 700;
   letter-spacing: -0.012em;
   color: var(--rd-ink);

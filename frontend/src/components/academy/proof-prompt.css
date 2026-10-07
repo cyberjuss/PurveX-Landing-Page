@@ -3,15 +3,15 @@
 .academy-bg[data-academy-theme="dark"] .pq { background: #000; }
 .pq::backdrop { background: rgba(2, 6, 23, 0.6); }
 .pq__body { display: grid; gap: 12px; padding: 22px; }
-.pq__ok { font-size: 12px; font-weight: 700; color: var(--rd-good); }
-.pq h2 { margin: 0; font-family: var(--font-display); font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
-.pq p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--rd-ink-2); }
+.pq__ok { font-size: var(--ty-small); font-weight: 700; color: var(--rd-good); }
+.pq h2 { margin: 0; font-family: var(--font-display); font-size: var(--ty-h4); font-weight: 600; letter-spacing: -0.01em; }
+.pq p { margin: 0; font-size: var(--ty-body); line-height: 1.55; color: var(--rd-ink-2); }
 .pq p b { color: var(--rd-ink); font-weight: 600; }
 .pq__actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.pq__btn { display: inline-flex; align-items: center; justify-content: center; min-width: 96px; height: 38px; padding: 0 14px; border: 1px solid var(--rd-line); background: none; font-size: 13px; font-weight: 650; color: var(--rd-ink); text-decoration: none; cursor: pointer; }
+.pq__btn { display: inline-flex; align-items: center; justify-content: center; min-width: 96px; height: 38px; padding: 0 14px; border: 1px solid var(--rd-line); background: none; font-size: var(--ty-note); font-weight: 650; color: var(--rd-ink); text-decoration: none; cursor: pointer; }
 .pq__btn--primary { border-color: #5546e0; background: #5546e0; color: #fff; }
 .pq__btn--primary:hover { border-color: #4538c9; background: #4538c9; }
 .pq__btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.pq p.pq__tip { font-size: 12px; color: var(--rd-ink-3); }
-.pq kbd { padding: 1px 6px; border: 1px solid var(--rd-line); font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; color: var(--rd-ink); }
-.pq p.pq__error { font-size: 13px; color: var(--rd-bad); }
+.pq p.pq__tip { font-size: var(--ty-small); color: var(--rd-ink-3); }
+.pq kbd { padding: 1px 6px; border: 1px solid var(--rd-line); font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-micro); color: var(--rd-ink); }
+.pq p.pq__error { font-size: var(--ty-note); color: var(--rd-bad); }

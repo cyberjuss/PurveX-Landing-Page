@@ -74,7 +74,7 @@
 /* Only the opener and the closer sit in the middle. Everything about the card's
    shape is shared, so the tour is one format throughout. */
 .tour__card--mid { top: 50%; left: 50%; width: min(420px, calc(100vw - 28px)); padding: 30px 28px 22px; transform: translate(-50%, -50%); animation-name: tour-in-mid; }
-.tour__card--mid h2 { font-size: 20px; }
+.tour__card--mid h2 { font-size: var(--ty-h3); }
 @keyframes tour-pop {
   from { opacity: 0; transform: scale(0.72); }
   to { opacity: 1; transform: scale(1); }
@@ -104,8 +104,8 @@
 }
 .tour__ic svg { width: 23px; height: 23px; }
 
-.tour__card h2 { margin: 0; padding: 0 22px; font-family: var(--font-display, inherit); font-size: 18px; font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; color: var(--tour-ink); }
-.tour__body { margin: 0 auto; max-width: 40ch; font-size: 14px; line-height: 1.6; color: var(--tour-ink-2); }
+.tour__card h2 { margin: 0; padding: 0 22px; font-family: var(--font-display, inherit); font-size: var(--ty-h4); font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; color: var(--tour-ink); }
+.tour__body { margin: 0 auto; max-width: 40ch; font-size: var(--ty-body); line-height: 1.6; color: var(--tour-ink-2); }
 
 .tour__foot { display: flex; flex-direction: column-reverse; align-items: center; gap: 14px; margin-top: 20px; }
 .tour__btns { display: flex; width: 100%; align-items: center; gap: 8px; }
@@ -117,14 +117,14 @@
 .tour__dots button.is-past { background: color-mix(in srgb, var(--tour-accent) 55%, transparent); }
 .tour__dots button.is-on { width: 22px; background: var(--tour-accent); }
 
-.tour__go { flex: 1; display: inline-flex; justify-content: center; align-items: center; gap: 7px; height: 42px; padding: 0 18px; border: 1px solid var(--tour-accent); background: var(--tour-accent); color: #fff; font-size: 13px; font-weight: 650; cursor: pointer; transition: filter 0.15s, transform 0.1s; }
+.tour__go { flex: 1; display: inline-flex; justify-content: center; align-items: center; gap: 7px; height: 42px; padding: 0 18px; border: 1px solid var(--tour-accent); background: var(--tour-accent); color: #fff; font-size: var(--ty-note); font-weight: 650; cursor: pointer; transition: filter 0.15s, transform 0.1s; }
 .tour__go:hover { filter: brightness(1.08); }
 .tour__go:active { transform: scale(0.98); }
 
-.tour__ghost { flex: 1; display: inline-flex; justify-content: center; align-items: center; gap: 6px; height: 42px; padding: 0 14px; border: 1px solid var(--tour-line); background: none; color: var(--tour-ink-2); font-size: 13px; font-weight: 650; cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+.tour__ghost { flex: 1; display: inline-flex; justify-content: center; align-items: center; gap: 6px; height: 42px; padding: 0 14px; border: 1px solid var(--tour-line); background: none; color: var(--tour-ink-2); font-size: var(--ty-note); font-weight: 650; cursor: pointer; transition: border-color 0.15s, color 0.15s; }
 .tour__ghost:hover { border-color: var(--tour-accent); color: var(--tour-accent); }
 
-.tour__skip { display: block; margin: 12px auto 0; padding: 0; border: 0; background: none; color: var(--tour-ink-3); font-size: 12px; font-weight: 600; cursor: pointer; }
+.tour__skip { display: block; margin: 12px auto 0; padding: 0; border: 0; background: none; color: var(--tour-ink-3); font-size: var(--ty-small); font-weight: 600; cursor: pointer; }
 .tour__skip:hover { color: var(--tour-ink); text-decoration: underline; text-underline-offset: 3px; }
 
 .tour__x { position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 28px; height: 28px; border: 0; background: none; color: var(--tour-ink-3); cursor: pointer; transition: background 0.15s, color 0.15s; }
