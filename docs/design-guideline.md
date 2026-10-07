@@ -66,7 +66,24 @@ not been done.
 
 ### Surfaces
 
-The explainer card set the bar, so its decisions are tokens any floating panel
+The explainer card set the bar, so its decisions are tokens any floating
+panel can adopt rather than one card's private styling.
+
+| token | what it does |
+| --- | --- |
+| `--sf-wash-strength`, `--sf-wash-stop` | a radial wash of the accent off the top edge, so a panel is not a flat rectangle |
+| `--sf-lift` | deep enough to read as floating rather than outlined. Heavier in dark. |
+| `--sf-line`, `--sf-line-2` | one hairline weight across every panel |
+| `--sf-mark-fill`, `--sf-mark-line` | an icon or tag drawn as a tinted square with an inset hairline |
+
+`.sf-wash` draws the wash for anything that sets `position: relative` and
+`overflow: hidden`. The lab card and the first-run briefing both carry all
+four. Generous padding is the fifth decision and is not a token: 26px on a
+panel, 30-34px on a modal.
+
+Still on the old flatter styling, in rough order of how often they are seen:
+the academy home, the readiness dashboard, the lab gallery, the Shift and
+SIEM consoles, and the lesson callouts.
 can adopt. Four of them:
 
 | token | what it does |
