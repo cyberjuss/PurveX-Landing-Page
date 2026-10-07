@@ -87,7 +87,13 @@ export function LabSetupScreen() {
           ))}
         </ol>
 
-        <p className="ls__eta">{elapsed > total ? "Almost there. Running the last checks." : `About ${left} min left`}</p>
+        <p className="ls__eta">
+          <span>{elapsed > total ? "Almost there. Running the last checks." : `About ${left} min left`}</span>
+          <em>
+            {String(Math.min(current + 1, steps.length)).padStart(2, "0")}
+            <i>/{String(steps.length).padStart(2, "0")}</i>
+          </em>
+        </p>
 
         <button type="button" className="ls__hide" onClick={() => setHidden(true)}>
           <X aria-hidden="true" /> Keep reading while it builds
