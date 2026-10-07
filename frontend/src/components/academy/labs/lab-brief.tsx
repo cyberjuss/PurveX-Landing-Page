@@ -12,9 +12,9 @@ export const LOST_ASK = "I'm lost on this step. Give me a hint, not the answer."
 /** Above each browser lab: the real problem, today's situation, and the student's
  *  objective for their role. ask: false when the lab shows its own Coach button.
  *
- *  Pass the lab as children and the brief gates it: the student reads what they
- *  are walking into and starts it deliberately, rather than landing mid
- *  conversation with Alex already talking. */
+ *  The lab follows straight after as children. There used to be a Get started
+ *  button between the two, so the brief was read before Alex started talking;
+ *  it was removed because it floated over the brief it was meant to sit under. */
 export function LabBrief({
   lab,
   title,

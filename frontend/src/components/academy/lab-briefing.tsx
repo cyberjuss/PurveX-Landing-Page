@@ -104,23 +104,23 @@ export function LabBriefing({
   if (typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="lb" role="dialog" aria-modal="true" aria-labelledby="lb-title">
-      <div className="lb__scrim" onClick={onClose} />
-      <div className="lb__panel" ref={panel} tabIndex={-1}>
-        <header className="lb__head">
+    <div className="lbm" role="dialog" aria-modal="true" aria-labelledby="lb-title">
+      <div className="lbm__scrim" onClick={onClose} />
+      <div className="lbm__panel" ref={panel} tabIndex={-1}>
+        <header className="lbm__head">
           <div>
-            <p className="lb__kicker">Your hosted lab</p>
-            <h2 className="lb__title" id="lb-title">Before you begin</h2>
+            <p className="lbm__kicker">Your hosted lab</p>
+            <h2 className="lbm__title" id="lb-title">Before you begin</h2>
           </div>
-          <button type="button" className="lb__x" onClick={onClose} aria-label="Close">
+          <button type="button" className="lbm__x" onClick={onClose} aria-label="Close">
             <X className="h-[18px] w-[18px]" aria-hidden />
           </button>
         </header>
 
-        <ul className="lb__points">
+        <ul className="lbm__points">
           {points(sessionHours, monthlyHours).map(({ Icon, title, body }) => (
             <li key={title}>
-              <span className="lb__mark" aria-hidden>
+              <span className="lbm__mark" aria-hidden>
                 <Icon className="h-[18px] w-[18px]" />
               </span>
               <div>
@@ -131,18 +131,18 @@ export function LabBriefing({
           ))}
         </ul>
 
-        <footer className="lb__foot">
+        <footer className="lbm__foot">
           {onStart ? (
             <>
-              <button type="button" className="lb__go" onClick={onStart} disabled={starting}>
+              <button type="button" className="lbm__go" onClick={onStart} disabled={starting}>
                 {starting ? "Starting" : "Start my lab"}
               </button>
-              <button type="button" className="lb__ghost" onClick={onClose}>
+              <button type="button" className="lbm__ghost" onClick={onClose}>
                 Not yet
               </button>
             </>
           ) : (
-            <button type="button" className="lb__go" onClick={onClose}>
+            <button type="button" className="lbm__go" onClick={onClose}>
               Got it
             </button>
           )}
