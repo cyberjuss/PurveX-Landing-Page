@@ -1,6 +1,6 @@
 ### How It All Connects
 
-The pieces from this week fit together in one direction. A vulnerability gives a threat a way in. If the threat succeeds, one or more parts of the CIA triad fail. Risk measures how likely that chain is to complete and what it would cost, worked out before anything has happened.
+The pieces from this week fit together in one direction, as a chain. A vulnerability gives a threat a way in, and if that threat succeeds, one or more parts of the CIA triad fail. Risk is the measure of how likely the chain is to complete and what it would cost, worked out before any of it has happened.
 
 Work through it in that order when something lands in front of you:
 

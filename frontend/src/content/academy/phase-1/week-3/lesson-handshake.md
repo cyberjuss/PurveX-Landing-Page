@@ -10,7 +10,7 @@ Before two computers exchange any data over TCP, they go through a short exchang
 
 Data begins to flow only after all three steps have completed. Until then the two machines have agreed to talk but have not said anything, which is a distinction that matters a great deal when you are reading a capture.
 
-The sequence numbers exchanged during those three messages are the reason TCP can call itself reliable. TCP numbers every byte it sends and expects the far side to acknowledge what it received, resending anything that goes unconfirmed. The handshake is what starts that bookkeeping, by having each side declare the number it intends to count from. It is worth knowing that UDP, the other transport protocol you will meet constantly, does none of this. It skips the handshake and the acknowledgements entirely, trading reliability for speed, which is the right trade for things like voice and video where a late packet is worthless anyway.
+The sequence numbers exchanged during those three messages are the reason TCP can call itself reliable. It numbers every byte it sends and expects the far side to acknowledge what it received, resending anything that goes unconfirmed, and the handshake is what starts that bookkeeping by having each side declare the number it intends to count from. It is worth knowing that UDP, the other transport protocol you will meet constantly, does none of this. It skips the handshake and the acknowledgements entirely, trading reliability for speed, which is the right trade for things like voice and video where a late packet is worthless anyway.
 
 When you are working through a capture, look for all three steps before you trust a conversation at all:
 

@@ -18,7 +18,7 @@ Jordan's question matters because the answer changes what happens next. If the v
 | **Encryption** | Random characters that grow with the input | Only with the key |
 | **Hash** | Always the same length: SHA-256 is 64 characters | Never |
 
-Jordan's line is Base64. The letters, the digits and the trailing `=` are the signature, and CyberChef's **From Base64** operation turns it into `Harbor2026` in a single click with no key and no secret of any kind. So the answer to Jordan's question is no. The value is not encrypted and never was. That password should be treated as exposed and reported so it gets changed, and the script should be corrected so the next person does not inherit the same assumption.
+Jordan's line is Base64, and the letters, the digits and the trailing `=` are its signature. CyberChef's **From Base64** operation turns it into `Harbor2026` in a single click, with no key and no secret of any kind involved. So the answer to Jordan's question is no: the value is not encrypted and never was. That password should be treated as exposed and reported so it gets changed, and the script itself should be corrected so the next person to read it does not inherit the same assumption.
 
 <details class="academy-deeper">
 <summary>Go deeper</summary>

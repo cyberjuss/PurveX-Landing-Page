@@ -10,7 +10,7 @@ A threat is something or someone that could exploit a vulnerability:
 
 The category is broader than it first appears, because it covers anything capable of causing the harm, whether or not there is any intent behind it. A flood that takes out a data centre is a threat in exactly the same sense that a criminal group is, even though only one of them chose to be there.
 
-The useful thing to understand about threats is how little of that list you control. You cannot patch a criminal organisation out of existence, you cannot decommission a storm, and you cannot reliably remove the possibility that somebody already inside the business does something they should not. Threats are largely a fixed feature of the environment you work in, and a plan that depends on them going away is not a plan.
+The useful thing to understand about that list is how little of it you control. You cannot patch a criminal organisation out of existence, you cannot decommission a storm, and you cannot reliably remove the possibility that somebody already inside the business does something they should not. Threats are therefore a largely fixed feature of the environment you work in, and a plan that depends on them going away is not a plan.
 
 What you can control is:
 

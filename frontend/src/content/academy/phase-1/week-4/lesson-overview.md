@@ -15,7 +15,7 @@ Three pieces do this work:
 
 The distinction between deciding something and enforcing it is where a great deal goes wrong. You will hear the whole set called Triple A, for authentication, authorization and accounting, with accounting being the record of who did what.
 
-What makes this worth a full week is how most real breaches actually begin. The attacks that end up in the news are rarely a matter of clever malware defeating a defence. Far more often somebody simply signed in, using a credential they should not have had, to a system that never checked whether they ought to be there. The three cases below are among the better documented examples, and each one failed at a different point in the chain you have just read about.
+What makes this worth a full week is how most real breaches actually begin. The attacks that end up in the news are rarely a matter of clever malware defeating a defence, and far more often somebody simply signed in, using a credential they should not have had, to a system that never checked whether they ought to be there. The three cases below are among the better documented examples, and each of them failed at a different point in the chain you have just read about.
 
 | Breach | The way in | What it cost | What failed |
 |---|---|---|---|
@@ -23,7 +23,7 @@ What makes this worth a full week is how most real breaches actually begin. The 
 | MGM Resorts, 2023 | A caller who talked the IT help desk into resetting an employee's MFA | Ransomware that disrupted hotels and casinos for days | **Authentication**, broken through a person |
 | First American Financial, 2019 | Changing one number in a web address, with no check that the visitor was allowed to see the document | About 885 million mortgage and banking documents left reachable | **Authorization** |
 
-The pattern in that table is worth sitting with for a moment. None of these required an unknown vulnerability or a sophisticated piece of tooling. In two cases a valid credential was used by the wrong person, and in the third the application simply never asked whether the visitor was entitled to the document it was handing over. This is not a historical accident either. Since 2021 broken access control has sat at number one on the OWASP Top 10 list of web application risks, above every category of injection and every category of misconfiguration.
+The pattern in that table is worth sitting with for a moment, because none of these required an unknown vulnerability or a sophisticated piece of tooling. In two cases a valid credential was used by the wrong person, and in the third the application simply never asked whether the visitor was entitled to the document it was handing over. Nor is that a historical accident. Since 2021 broken access control has sat at number one on the OWASP Top 10 list of web application risks, above every category of injection and every category of misconfiguration.
 
 ### Where you meet this on the job
 

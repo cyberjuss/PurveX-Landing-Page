@@ -67,6 +67,43 @@ No em dashes. No semicolons. Overview owns the baseline. Later tabs teach
 their own object. Missions stay scenario plus question. Teaching goes in the
 hint.
 
+## Sentences carry into each other
+
+A paragraph is an argument, not a stack of facts. Each sentence should pick up
+something from the one before it and carry it forward, so a reader is never
+dropped into a new subject with no handhold.
+
+Watch for a sentence that opens a brand new subject cold, straight after a full
+stop. Usually it wants joining to its neighbour with because, so, which, while
+or where, or it wants an opening phrase that names what came before.
+
+Cold:
+
+> None of them prevents a change. A hash does not stop somebody editing a file.
+
+Carried:
+
+> None of them actually prevents a change: a hash does not stop somebody
+> editing a file.
+
+Cold:
+
+> That shapes how you investigate. Confidentiality asks whether anyone could
+> have seen this. Integrity asks whether this is still what it was.
+
+Carried:
+
+> That difference shapes how you investigate. Where confidentiality asks
+> whether anyone could have seen this, integrity asks whether this is still
+> what it was.
+
+Three or more consecutive short declaratives is the signal to re-read. There
+are no em dashes and no semicolons here, so the joins get made with
+conjunctions, a colon, or a phrase that refers back.
+
+Reference material inside a `Go deeper` block, event-ID tables and command
+explanations are exempt. Terse is correct there.
+
 ## Structure of an overview tab
 
 The page already prints the week's title and summary above the content, so an

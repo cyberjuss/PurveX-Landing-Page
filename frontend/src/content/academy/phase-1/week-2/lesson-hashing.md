@@ -29,7 +29,7 @@ The two inputs above differ by one character, and the resulting hashes have noth
 
 It is just as important to know what the check does not establish. A match proves that your file is identical to the reference you compared it against. It says nothing at all about whether that reference was safe to begin with, because the hash only ever describes what the vendor shipped, not whether what the vendor shipped was trustworthy.
 
-This is not a theoretical gap. CCleaner in 2017, SolarWinds in 2020 and 3CX in 2023 all shipped malware out of the vendor's own build process. Every customer who verified their download found a correct hash and a valid signature, because the malicious code was present before the vendor calculated either one. Verification tells you the supply chain delivered the file intact. Whether the thing at the start of that chain was clean is a separate question.
+This is not a theoretical gap. CCleaner in 2017, SolarWinds in 2020 and 3CX in 2023 all shipped malware out of the vendor's own build process, and every customer who verified their download found a correct hash and a valid signature. The checks passed because the malicious code was already present before the vendor calculated either one. All verification tells you, then, is that the supply chain delivered the file intact. Whether the thing at the start of that chain was clean is a separate question, and one a hash cannot answer.
 
 <details class="academy-deeper">
 <summary>Go deeper</summary>

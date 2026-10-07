@@ -44,7 +44,7 @@ A password or MFA reset is not an administrative chore. It is an authentication 
 3. **Do not skip steps** for urgency or seniority. Pressure is the most common social engineering move.
 4. **Document** the caller, the verification method and the change.
 
-One situation deserves to be recognised instantly. A user reporting MFA prompts they did not trigger is telling you that somebody already holds their password and is standing at the door waiting for approval. The second factor is the only thing still holding. Tell the user to deny every prompt, then reset the password and terminate active sessions before you escalate, because a reset alone leaves any session the attacker already established untouched.
+One situation deserves to be recognised instantly. A user reporting MFA prompts they did not trigger is telling you that somebody already holds their password and is standing at the door waiting for approval, which means the second factor is the only thing still holding. Tell them to deny every prompt, then reset the password and terminate active sessions before you escalate. The last step matters because a reset on its own leaves any session the attacker has already established untouched.
 
 ### Escalate
 

@@ -11,7 +11,7 @@ Writing it as a product makes one property obvious: **if any factor is zero, the
 
 That is why a finding cannot be assessed on its own. You need all three parts before the number means anything.
 
-In practice teams rarely score the three separately, because threat and vulnerability together are really describing one thing: how likely this is to happen at all. Most teams collapse them and score risk as **likelihood × impact**. The Week 1 lab scores it that way, and you will see that convention almost everywhere. The three-part version is the better way to understand what you are measuring. The two-part version is the practical way to measure it.
+In practice teams rarely score the three separately, because threat and vulnerability together are really describing one thing: how likely this is to happen at all. Most teams therefore collapse the two and score risk as **likelihood × impact**, which is how the Week 1 lab scores it and how you will see it done almost everywhere else. Both versions are worth keeping. The three-part form is the better way to understand what you are measuring, and the two-part form is the practical way to measure it.
 
 This also explains what a security programme actually does. Threats are seldom removable, so a programme works on the other two factors:
 

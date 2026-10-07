@@ -7,7 +7,7 @@ That job is to wrap a connection in encryption. Anybody capturing the traffic af
 - Without TLS (HTTP): anyone watching the wire can read the data
 - With TLS (HTTPS): the data is encrypted and watchers see only gibberish
 
-TLS performs a handshake of its own, and it is entirely separate from the TCP handshake covered earlier in the week. The order is what makes this confusing at first. The TCP three-way handshake runs first and establishes the connection itself. Only once that has completed do the two sides begin negotiating encryption keys, and only once that second negotiation finishes does any actual data move.
+TLS performs a handshake of its own, entirely separate from the TCP handshake covered earlier in the week, and the order of the two is what makes this confusing at first. The TCP three-way handshake runs first and establishes the connection itself. Only once that has completed do the two sides begin negotiating encryption keys, and only once that second negotiation finishes does any actual data move.
 
 The cleanest way to hold the two apart is by what each one produces:
 

@@ -12,7 +12,7 @@ Three principles shape almost every authorization decision you will make, and th
 
 ### Role-based access control
 
-In practice permissions are almost never assigned to people directly. They are granted to **security groups**, and people are added to the groups. The group stands in for the role, which means changing somebody's job is a matter of changing which groups they belong to, and it also means you can answer the question of what an account can do by reading its memberships rather than hunting through every system individually.
+In practice permissions are almost never assigned to people directly. They are granted to **security groups** instead, and people are added to those groups, so the group stands in for the role. That indirection buys you two things: changing somebody's job becomes a matter of changing which groups they belong to, and you can answer the question of what an account can do by reading its memberships rather than hunting through every system individually.
 
 PurveX has one standard group per department: `IT Users`, `Compliance Users`, `Wealth Management Users`, `Operations Users` and `Finance Accounting Users`. `IT Admins` adds admin rights on top of `IT Users`.
 

@@ -6,7 +6,7 @@ The laptop is fine, and saying so early will do a great deal for the person on t
 
 ### What encryption does
 
-Encryption transforms data using a key, so that it reads as random characters to anybody who does not hold that key. Supplying the same key reverses the transformation and returns the original exactly as it was, down to the byte. This is the property that makes encryption useful for things you need back, which is most things.
+Encryption transforms data using a key, so that it reads as random characters to anybody who does not hold that key. Supplying the same key reverses the transformation and returns the original exactly as it was, down to the byte. That reversibility is what makes encryption useful for things you need back, which is most things.
 
 A key is a secret value, often derived from a passphrase such as `Tide-Lamp-42`. The relationship between the key and the data is unforgiving by design. Change a single character of the key and decryption does not degrade or return something close. It fails outright, and well built modern tools report that failure rather than handing back a garbled guess that somebody might mistake for real data.
 
