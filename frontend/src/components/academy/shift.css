@@ -234,18 +234,31 @@
 .sh-intro h1 { margin: 4px 0 0; font-family: var(--font-display, inherit); font-size: clamp(28px, 5vw, 40px); font-weight: 700; letter-spacing: -0.03em; color: var(--rd-ink); }
 .sh-lede { margin: 0; font-size: 16px; line-height: 1.62; color: var(--rd-ink-2); }
 .sh-note { margin: 2px 0 0; font-size: 13px; color: var(--rd-ink-3); }
-/* The shift's ground rules, shown on the intro before the shift starts. */
-.sh-facts-mini { list-style: none; margin: 2px 0 0; padding: 0; display: grid; gap: 11px; }
-.sh-facts-mini li { display: flex; align-items: center; gap: 11px; font-size: 13.5px; line-height: 1.4; color: var(--rd-ink-2); }
-.sh-facts-mini svg { flex: none; color: var(--rd-accent); }
+/* The shift's ground rules, shown on the intro before the shift starts. Square
+   corners throughout: --r is 0 here on purpose, this is a console not a card. */
+.sh-rules { list-style: none; margin: 6px 0 0; padding: 0; display: grid; }
+.sh-rules li { display: grid; grid-template-columns: 34px 1fr; align-items: baseline; gap: 2px 14px; padding: 16px 0; border-top: 1px solid var(--rd-line); }
+.sh-rules li:last-child { border-bottom: 1px solid var(--rd-line); }
+.sh-rules__ic { grid-row: span 2; display: grid; place-items: center; width: 34px; height: 34px; background: color-mix(in srgb, var(--rd-accent) 11%, transparent); color: var(--rd-accent); align-self: start; }
+.sh-rules strong { font-size: 14.5px; font-weight: 650; line-height: 1.35; color: var(--rd-ink); }
+.sh-rules small { font-size: 13px; line-height: 1.5; color: var(--rd-ink-3); }
 @media (max-width: 480px) {
   .sh-facts li { grid-template-columns: 20px 1fr; }
   .sh-fact__v { grid-column: 2; text-align: left; }
 }
 
-/* Lab status: a quiet inline line, no box. */
-.sh-status { display: flex; align-items: center; gap: 10px; margin: 4px 0 0; font-size: 14px; color: var(--rd-ink-2); }
-.sh-status strong { color: var(--rd-ink); }
+/* Lab state and its action in one block, so "Offline" and the button that
+   fixes it are not read as two unrelated things. */
+.sh-lab { display: grid; gap: 8px; justify-items: start; margin-top: 10px; padding: 20px 22px; background: var(--rd-surface); border-left: 2px solid var(--rd-line); }
+.sh-lab--on { border-left-color: var(--rd-good); }
+.sh-lab--wait { border-left-color: var(--rd-warn); }
+.sh-lab--off { border-left-color: var(--rd-bad); }
+.sh-lab__note { margin: 0; max-width: 54ch; font-size: 13.5px; line-height: 1.55; color: var(--rd-ink-3); }
+.sh-lab .sh-go { margin-top: 10px; text-decoration: none; }
+/* Its own name, not .sh-status: that one is the queue's SLA chip, and sharing
+   it put an uppercase bordered box around this line. */
+.sh-labline { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 15px; color: var(--rd-ink-2); }
+.sh-labline strong { color: var(--rd-ink); }
 .sh-labdot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--rd-ink-3); }
 .sh-labdot--on { background: var(--rd-good); box-shadow: 0 0 0 4px color-mix(in srgb, var(--rd-good) 20%, transparent); }
 .sh-labdot--wait { background: var(--rd-warn); animation: sh-pulse 1.4s ease-in-out infinite; }

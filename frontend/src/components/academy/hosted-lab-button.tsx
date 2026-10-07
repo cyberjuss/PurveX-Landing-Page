@@ -13,7 +13,7 @@ import "./hosted-lab.css";
 
 type State = "none" | "starting" | "ready" | "stopping" | "stopped";
 /** locked: hosted labs exist here, but this account is on Explore and has not bought one. */
-type Status = { available: boolean; locked?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean };
+type Status = { available: boolean; locked?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string };
 type Snapshot = { status: Status | null; busy: boolean; error: string | null };
 
 const clock = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -40,7 +40,10 @@ function load(): Promise<void> {
   loading ??= academyFetch("/academy/api/hosted-lab")
     .then((r) => (r.ok ? r.json() : null))
     .then((data: Status | null) => {
-      if (data) set({ status: data });
+      // A status read carries its own failure when AWS cannot be reached. That
+      // landed in status.error, which nothing rendered, so a lab that could not
+      // be reached was indistinguishable from one that was simply off.
+      if (data) set({ status: data, error: data.error ?? null });
     })
     .catch(() => {})
     .finally(() => {

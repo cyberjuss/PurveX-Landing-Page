@@ -10,7 +10,7 @@ import {
   Wrench, Info, ArrowUpRight, FileText,
 } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
-import { startHostedLabNow } from "@/components/academy/hosted-lab-button";
+import { startHostedLabNow, useHostedLab } from "@/components/academy/hosted-lab-button";
 import "./shift.css";
 
 type Sev = "P1" | "P2" | "P3";
@@ -212,17 +212,22 @@ function ShiftConsoleInner() {
 // ---- intro (with the lab-online gate) -------------------------------------
 
 function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { theme: "light" | "dark"; labState: LabState; busy: boolean; error: string | null; onStart: () => void; onRefresh: () => void }) {
-  const online = labState === "ready";
-  const starting = labState === "starting";
+  // Both the shift route and the hosted-lab store know the lab's state, and
+  // they disagree for a few seconds after a start. The store leads because it
+  // updates the moment a start is accepted; the shift route's copy covers the
+  // first paint, before the store has loaded.
+  const lab = useHostedLab();
+  const state: LabState = lab.status ? lab.state : labState;
+  const online = state === "ready";
+  const starting = state === "starting";
   const labWord = online ? "Online" : starting ? "Starting…" : "Offline";
-  const [labBusy, setLabBusy] = useState(false);
+  // act() reports a refusal by writing to the store rather than throwing, so a
+  // start that is denied has to be read from there. Without this the button
+  // silently did nothing and the reason was never shown.
+  const shown = error ?? lab.error;
   async function startLab() {
-    setLabBusy(true);
-    try {
-      await startHostedLabNow();
-    } catch {}
+    await startHostedLabNow();
     onRefresh();
-    setLabBusy(false);
   }
   return (
     <div className="shift-app shift-app--center" data-academy-theme={theme}>
@@ -239,32 +244,61 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
           You are on the desk for 30 minutes. Real attacks and tickets fire into your own lab on their own. Investigate each, fix it, and close it before its SLA runs out.
         </p>
 
-        <ul className="sh-facts-mini">
-          <li><ShieldAlert className="h-3.5 w-3.5" /> Real attacks, fired into your own lab</li>
-          <li><Clock className="h-3.5 w-3.5" /> SLA · P1 5m · P2 8m · P3 12m</li>
-          <li><LifeBuoy className="h-3.5 w-3.5" /> Coach costs 10%, then 20%, then 40%</li>
+        <ul className="sh-rules">
+          <li>
+            <span className="sh-rules__ic"><ShieldAlert className="h-4 w-4" /></span>
+            <strong>Real attacks, fired into your own lab</strong>
+            <small>Nothing is scripted for show. The same events land in your domain controller.</small>
+          </li>
+          <li>
+            <span className="sh-rules__ic"><Clock className="h-4 w-4" /></span>
+            <strong>Every ticket has a clock</strong>
+            <small>P1 five minutes · P2 eight minutes · P3 twelve minutes. Miss it and it closes late.</small>
+          </li>
+          <li>
+            <span className="sh-rules__ic"><LifeBuoy className="h-4 w-4" /></span>
+            <strong>The coach costs you</strong>
+            <small>First hint 10% of the ticket, then 20%, then 40%. Use it when you are genuinely stuck.</small>
+          </li>
         </ul>
 
-        <p className="sh-status">
-          <span className={`sh-labdot sh-labdot--${online ? "on" : starting ? "wait" : "off"}`} />
-          Lab is <strong>{labWord}</strong>{online ? "" : starting ? " — coming up, this updates on its own" : " — start it to begin"}
-        </p>
+        {/* Lab state and the action on it belong together: reading "Offline" and
+            then hunting for a button is what made this feel broken. */}
+        <div className={`sh-lab sh-lab--${online ? "on" : starting ? "wait" : "off"}`}>
+          <p className="sh-labline">
+            <span className={`sh-labdot sh-labdot--${online ? "on" : starting ? "wait" : "off"}`} />
+            Your lab is <strong>{labWord}</strong>
+          </p>
+          <p className="sh-lab__note">
+            {online
+              ? "The desk is ready. Tickets start arriving the moment you begin."
+              : starting
+                ? "First boot takes a couple of minutes. This updates on its own, so you can leave it."
+                : lab.locked
+                  ? "Shifts run in a hosted lab, which is part of Range Pro."
+                  : "Shifts run in your own lab. Start it and the desk opens."}
+          </p>
 
-        {error && <p className="sh-error">{error}</p>}
+          {shown && <p className="sh-error">{shown}</p>}
 
-        {online ? (
-          <button type="button" className="sh-go" disabled={busy} onClick={onStart}>
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Start shift <ArrowRight className="h-4 w-4" />
-          </button>
-        ) : starting ? (
-          <button type="button" className="sh-go sh-go--ghost" onClick={onRefresh}>
-            <RefreshCw className="h-4 w-4" /> Refresh status
-          </button>
-        ) : (
-          <button type="button" className="sh-go" disabled={labBusy} onClick={startLab}>
-            {labBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Power className="h-4 w-4" />} Start my lab
-          </button>
-        )}
+          {online ? (
+            <button type="button" className="sh-go" disabled={busy} onClick={onStart}>
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Start shift <ArrowRight className="h-4 w-4" />
+            </button>
+          ) : starting ? (
+            <button type="button" className="sh-go sh-go--ghost" onClick={onRefresh}>
+              <RefreshCw className="h-4 w-4" /> Refresh status
+            </button>
+          ) : lab.locked ? (
+            <Link href="/range/upgrade" className="sh-go">
+              See Range Pro <ArrowRight className="h-4 w-4" />
+            </Link>
+          ) : (
+            <button type="button" className="sh-go" disabled={lab.waiting} onClick={startLab}>
+              {lab.waiting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Power className="h-4 w-4" />} Start my lab
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
