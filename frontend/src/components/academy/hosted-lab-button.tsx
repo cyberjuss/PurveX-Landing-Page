@@ -293,8 +293,14 @@ function StartTracker({ status }: { status: Status }) {
   const left = Math.max(0, Math.ceil((total - elapsed) / 60));
   return (
     <div className="hl__track" aria-live="polite">
+      <p className="hl__eta">
+        <span>{steps[current].label}</span>
+        <em>{elapsed > total ? "Almost there" : `About ${left} min left`}</em>
+      </p>
+      {/* A 4px rule with a 5% fill read as a stray dash, so the empty part of
+          the track is drawn and the fill never shrinks below a visible stub. */}
       <div className="hl__bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct)} aria-label="Lab start progress">
-        <span style={{ width: `${pct}%` }} />
+        <span style={{ width: `max(6px, ${pct}%)` }} />
       </div>
       <ol className="hl__steps">
         {steps.map((s, i) => (
@@ -304,7 +310,6 @@ function StartTracker({ status }: { status: Status }) {
           </li>
         ))}
       </ol>
-      <p className="hl__eta">{elapsed > total ? "Almost there. Finishing the last checks." : `About ${left} min left`}</p>
     </div>
   );
 }
@@ -383,11 +388,13 @@ export function HostedLabMenu() {
       <div className="hl__foot">
         {note && <p className="hl__note">{note}</p>}
         <div className="hl__actions">
-          <button type="button" className="hl__go" onClick={primary} disabled={waiting}>
-            {busy || state === "starting" || state === "stopping" ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            {PRIMARY[state]}
-            {state === "ready" && !busy && <ArrowUpRight className="h-4 w-4" />}
-          </button>
+          {state !== "starting" && state !== "stopping" && (
+            <button type="button" className="hl__go" onClick={primary} disabled={waiting}>
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              {PRIMARY[state]}
+              {state === "ready" && !busy && <ArrowUpRight className="h-4 w-4" />}
+            </button>
+          )}
           {state === "ready" && (
             <button type="button" className="hl__ghost" onClick={() => void act("stop")} disabled={waiting}>
               Stop
@@ -405,7 +412,9 @@ export function HostedLabMenu() {
           <button
             type="button"
             className="hl__link hl__link--warn"
-            disabled={waiting}
+            // Not disabled while starting: a boot that hangs is exactly when
+            // someone needs this, and it terminates the instances by id.
+            disabled={busy}
             onClick={() => {
               if (window.confirm("Reset your lab? You get a fresh copy of PurveX Financial and every change you made in the lab is gone. Your Range progress stays.")) void act("reset");
             }}

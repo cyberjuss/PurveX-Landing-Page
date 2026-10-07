@@ -566,7 +566,14 @@ export async function resetHostedLab(userId: string): Promise<void> {
     if (ids.length) await ec2().send(new TerminateInstancesCommand({ InstanceIds: ids })).catch(() => {});
     await deleteHostedLab(userId);
   }
-  await launch(userId);
+  // Same deal as a first start: the session is charged before the lab exists,
+  // so a launch that throws must hand the hours back.
+  try {
+    await launch(userId);
+  } catch (err) {
+    await refundSession(userId);
+    throw err;
+  }
 }
 
 // ---- browser access -------------------------------------------------------
