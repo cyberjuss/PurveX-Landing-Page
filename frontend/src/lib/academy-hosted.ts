@@ -348,6 +348,26 @@ export function linuxCloudInit(dcIp: string, password: string): string {
     "apt-get install -y --no-install-recommends nginx",
     "systemctl enable --now nginx",
     `echo ${sh("web01 -- PurveX Financial internal")} > /var/www/html/index.html`,
+    // A desktop, so the Ubuntu half is a machine you look at rather than a
+    // terminal. XFCE because it runs in the memory a lab instance has, and
+    // xrdp because the gateway already speaks RDP to the domain controller and
+    // the pod group already allows 3389 to both machines.
+    //
+    // Recommends are left in here: a desktop without them comes up missing the
+    // session bits that make it usable.
+    "apt-get install -y xfce4 xfce4-goodies xrdp dbus-x11 x11-xserver-utils",
+    // xrdp reads this to decide what to start. The image's default tries the
+    // system session, which on a server install is nothing.
+    `echo ${sh("#!/bin/sh")} > /etc/xrdp/startwm.sh`,
+    `echo ${sh("export XDG_SESSION_DESKTOP=xfce")} >> /etc/xrdp/startwm.sh`,
+    `echo ${sh("export XDG_CURRENT_DESKTOP=XFCE")} >> /etc/xrdp/startwm.sh`,
+    `echo ${sh("exec startxfce4")} >> /etc/xrdp/startwm.sh`,
+    "chmod +x /etc/xrdp/startwm.sh",
+    `echo ${sh("xfce4-session")} > /home/student/.xsession`,
+    "chown student:student /home/student/.xsession",
+    // xrdp reads the machine certificate, which is root-owned by default.
+    "adduser xrdp ssl-cert || true",
+    "systemctl enable --now xrdp",
     "echo first boot finished",
   ].join("\n");
 }
@@ -443,8 +463,8 @@ async function launch(userId: string): Promise<HostedLabRow> {
   return full;
 }
 
-/** The Ubuntu half of a pod. No hibernation: it runs no desktop, so there is no
- *  session worth keeping warm, and a plain stop is one less thing to go wrong. */
+/** The Ubuntu half of a pod. No hibernation: xrdp hands back a fresh session on
+ *  reconnect anyway, and a plain stop is one less thing to go wrong. */
 async function launchLinux(
   securityGroup: string,
   dcIp: string,
@@ -623,7 +643,23 @@ export async function hostedLabLink(userId: string): Promise<string | null> {
   const linuxConnection =
     linux?.state === "running" && linux.privateIp && row.linuxPasswordEnc
       ? {
-          "web01 (Ubuntu)": {
+          "web01 (Ubuntu desktop)": {
+            protocol: "rdp",
+            parameters: {
+              hostname: linux.privateIp,
+              port: "3389",
+              username: "student",
+              password: openPassword(row.linuxPasswordEnc),
+              // xrdp presents a self-signed certificate, and the gateway is the
+              // only thing that can reach the port, so there is nothing for a
+              // certificate to prove here.
+              security: "any",
+              "ignore-cert": "true",
+              "resize-method": "display-update",
+              "enable-wallpaper": "true",
+            },
+          },
+          "web01 (Ubuntu shell)": {
             protocol: "ssh",
             parameters: {
               hostname: linux.privateIp,

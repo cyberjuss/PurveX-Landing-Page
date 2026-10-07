@@ -264,7 +264,7 @@ const RESUME = [
 
 const SPECS: Record<string, string> = { "t3.small": "2 vCPU · 2 GB", "t3.medium": "2 vCPU · 4 GB", "t3.large": "2 vCPU · 8 GB", "t3.xlarge": "4 vCPU · 16 GB" };
 // The Ubuntu server's size is fixed by var.linux_instance_type in Terraform.
-const LINUX_SPEC = SPECS["t3.small"];
+const LINUX_SPEC = SPECS["t3.medium"];
 
 
 const PRIMARY: Record<State, string> = { none: "Start my lab", starting: "Starting", ready: "Open", stopping: "Stopping", stopped: "Resume lab" };
@@ -334,7 +334,7 @@ export function HostedLabMenu() {
         : state === "stopping"
           ? "Saving your session."
           : state === "none"
-            ? "A domain controller and an Ubuntu server on their own network. Both are ready in about 3 minutes and open in a browser tab."
+            ? "A Windows domain controller and an Ubuntu desktop on their own network. Both are ready in a few minutes and open in a browser tab."
             : null;
 
   return (
@@ -357,7 +357,7 @@ export function HostedLabMenu() {
         {bothMachines && (
           <li>
             <Terminal className="h-4 w-4" aria-hidden />
-            <strong>Ubuntu 24.04</strong>
+            <strong>Ubuntu 24.04 desktop</strong>
             <small>Linux server · {LINUX_SPEC}</small>
           </li>
         )}

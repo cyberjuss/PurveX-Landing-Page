@@ -39,9 +39,9 @@ variable "pod_slots" {
 }
 
 variable "linux_instance_type" {
-  description = "The Ubuntu server in each pod. It runs no desktop, so t3.small is enough."
+  description = "The Ubuntu server in each pod. It runs an XFCE desktop over xrdp, which 2 GB does not carry."
   type        = string
-  default     = "t3.small"
+  default     = "t3.medium"
 }
 
 variable "dc_instance_type" {
