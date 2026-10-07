@@ -20,9 +20,17 @@ That table is the whole distinction between encryption and the other two methods
 
 ### Two kinds of keys
 
-**Symmetric encryption** uses a single shared key to both lock and unlock the data. Because one key does both jobs the operation is fast, which makes it the right choice wherever there is a lot of data to protect. **AES** is the standard you will see named everywhere, and it is what BitLocker, most VPNs and this week's lab all use underneath.
+**Symmetric encryption** uses a single shared key to both lock and unlock.
 
-**Asymmetric encryption** uses a pair of keys instead. The public key can be given to anybody, while the private key never leaves its owner. Anything locked with one of the pair can only be opened with the other. Key pairs are considerably slower than a shared key, so they are not used to protect bulk data. Their job is to establish trust between two parties who have never met, and to sign files in a way that proves who published them.
+- One key does both jobs, so it is fast.
+- That makes it the right choice wherever there is a lot of data.
+- **AES** is the standard, and what BitLocker, most VPNs and this week's lab use underneath.
+
+**Asymmetric encryption** uses a pair of keys instead.
+
+- The public key can be given to anybody. The private key never leaves its owner.
+- Anything locked with one of the pair opens only with the other.
+- Pairs are much slower, so they are not used for bulk data. Their job is establishing trust between parties who have never met, and signing files to prove who published them.
 
 HTTPS shows how the two work together rather than in competition. The browser and the website use their key pairs to agree on a fresh shared key for that one session, usually AES, and everything sent afterwards is protected by that shared key. The slow method solves the problem of agreeing on a secret in public, and the fast method does the actual work.
 

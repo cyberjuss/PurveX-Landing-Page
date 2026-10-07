@@ -7,7 +7,13 @@
 
 Most of the data you will handle on the desk arrives unreadable. A string in a config file, a password column in a leaked table, a long value printed beside a download link. None of it means anything on sight, and the common instinct is to call all of it encrypted and move on. That instinct is wrong often enough to cause real damage, because the three methods that make data unreadable offer three completely different guarantees.
 
-Encryption keeps data private, and it can be reversed by whoever holds the key. Hashing proves data was not changed, and it cannot be reversed by anybody at all. Encoding is a format change that anybody can undo in a single step, and it guarantees nothing whatsoever. This week is about learning what each one actually promises, because the practical question you will face is never what the value looks like. It is what somebody could do with it if they had a copy.
+Three methods make data unreadable, and they promise three different things:
+
+- **Encryption** keeps data private. It can be reversed by whoever holds the key.
+- **Hashing** proves data was not changed. It cannot be reversed by anybody at all.
+- **Encoding** is a format change anybody can undo in one step. It guarantees nothing.
+
+The practical question you will face is never what a value looks like. It is what somebody could do with it if they had a copy.
 
 | Method | Can you get the original back? |
 |---|---|
@@ -15,11 +21,18 @@ Encryption keeps data private, and it can be reversed by whoever holds the key. 
 | Encryption | Yes, but only with the key |
 | Hashing | No. Never. |
 
-The consequences of confusing them are well documented. In 2012 around 6.5 million LinkedIn password hashes leaked. They had been stored without a salt, which meant identical passwords produced identical values and the whole set could be attacked at once rather than one account at a time. Most were cracked within days. The failure was not that the passwords were hashed badly in some abstract sense, but that the storage method chosen offered far less protection than the people who chose it believed.
+### Why it matters
 
-The same ideas work in your favour just as reliably. In 2023 analysts tracked a poisoned 3CX installer across many organisations by sharing one hash of the malicious file. Any team holding that value could check their own copies in seconds and know with certainty whether they had the compromised build. That is the other half of the week: these are not only things that get done to you, they are tools you use to establish facts.
+Confusing them has a documented cost. In 2012 around 6.5 million LinkedIn password hashes leaked. They had been stored without a salt, so identical passwords produced identical values and the whole set could be attacked at once rather than one account at a time. Most were cracked within days. The storage method offered far less protection than the people who chose it believed.
 
-By the end of the week you should be able to tell encoding, encryption and hashing apart on sight, verify a download against a published hash, explain why a password store needs both a salt and a slow algorithm, and work a BitLocker recovery call and a vendor password breach without guessing at any step.
+The same ideas work in your favour just as reliably. In 2023 analysts tracked a poisoned 3CX installer across many organisations by sharing one hash of the malicious file. Any team holding that value could check their own copies in seconds. These are not only things done to you. They are tools you use to establish facts.
+
+By the end of the week you can:
+
+- Tell encoding, encryption and hashing apart on sight
+- Verify a download against a published hash
+- Explain why a password store needs both a salt and a slow algorithm
+- Work a BitLocker recovery call and a vendor password breach without guessing
 
 ### Questions Answered in This Week
 

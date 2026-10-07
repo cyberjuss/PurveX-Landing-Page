@@ -14,7 +14,10 @@ Authentication is the work of proving an identity. It answers a single question,
 
 MFA matters for a blunt reason: passwords leak, constantly and at scale, and a password that has leaked offers no protection whatsoever to the account it guards. In 2021 attackers walked into Colonial Pipeline through a VPN account that had a leaked password and no second factor, and the consequence was a ransomware incident that interrupted fuel supply across much of the US East Coast.
 
-It is a mistake, though, to treat MFA as a single thing that is either present or absent. The methods vary considerably in how much they actually protect you. Text codes and authenticator app codes can both be captured by a convincing fake sign-in page and replayed by the attacker within seconds, because the user hands the code over willingly. Security keys and passkeys work differently, since they check the real address of the site before responding, which means a fake page receives nothing it can use.
+It is a mistake, though, to treat MFA as a single thing that is either present or absent. The methods vary considerably in how much they protect you:
+
+- **Text and app codes** can be captured by a convincing fake sign-in page and replayed within seconds, because the user hands the code over willingly.
+- **Security keys and passkeys** check the real address of the site before responding, so a fake page receives nothing it can use.
 
 ### Account states
 

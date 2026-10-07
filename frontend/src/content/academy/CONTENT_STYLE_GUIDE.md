@@ -49,10 +49,19 @@ Address the reader as "you" and keep the register even and measured. Explain
 consequences rather than asserting importance. "It would be costly to build
 the wrong thing" teaches. "This is critical" does not.
 
-Prose carries the teaching. Reach for a list only where the material is
-genuinely a set of parallel items, such as the questions closing an overview
-or a group of ports. Do not break an explanation into bullets to make it look
-shorter.
+Prose and lists share the work. Prose explains and connects. A list carries
+anything parallel: examples, controls, failure modes, the order to check
+things in, what to escalate on. If you find yourself writing "X, Y and Z"
+inside a sentence and those three are a real set, make them a list.
+
+Do not stack more than three paragraphs without a list, a subheading or a
+table between them. A screen of unbroken prose is not thorough, it is hard to
+read and a student skims it. Alternate: explain, then enumerate, then explain
+what the enumeration means.
+
+The opposite failure still applies. Do not shred an explanation into bullet
+fragments. A list item is a parallel item, not a sentence that lost its
+paragraph.
 
 No em dashes. No semicolons. Overview owns the baseline. Later tabs teach
 their own object. Missions stay scenario plus question. Teaching goes in the

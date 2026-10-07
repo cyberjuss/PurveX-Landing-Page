@@ -12,4 +12,7 @@ Data begins to flow only after all three steps have completed. Until then the tw
 
 The sequence numbers exchanged during those three messages are the reason TCP can call itself reliable. TCP numbers every byte it sends and expects the far side to acknowledge what it received, resending anything that goes unconfirmed. The handshake is what starts that bookkeeping, by having each side declare the number it intends to count from. It is worth knowing that UDP, the other transport protocol you will meet constantly, does none of this. It skips the handshake and the acknowledgements entirely, trading reliability for speed, which is the right trade for things like voice and video where a late packet is worthless anyway.
 
-When you are working through a capture, look for all three steps before you trust a conversation at all. A SYN that never receives a SYN-ACK means the far side did not agree to talk, and a long run of unanswered SYNs across many addresses or many ports is a recognisable pattern rather than a network fault. If data appears with no handshake in front of it, the capture simply does not show you a completed TCP session, and whatever you conclude from that data rests on an assumption you have not checked.
+When you are working through a capture, look for all three steps before you trust a conversation at all:
+
+- A **SYN with no SYN-ACK** means the far side did not agree to talk. A long run of those across many addresses or ports is a recognisable pattern, not a network fault.
+- **Data with no handshake in front of it** means the capture does not show you a completed TCP session. Whatever you conclude from that data rests on an assumption you have not checked.

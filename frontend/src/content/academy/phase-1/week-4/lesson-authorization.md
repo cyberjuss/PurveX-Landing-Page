@@ -4,9 +4,11 @@ Authorization decides what an identity the system has already authenticated is a
 
 ### Principles
 
-Three principles shape almost every authorization decision you will make, and they are worth understanding by their purpose rather than their definition.
+Three principles shape almost every authorization decision you will make, and they are worth understanding by their purpose rather than their definition:
 
-**Least privilege** means each account receives only the access its job actually requires. Its value is not tidiness. It is that an account which has been compromised can only reach as far as its permissions allow, so the blast radius of a stolen credential is decided in advance by whoever granted the access. **Need to know** narrows this further for specific data, granting it only while a task genuinely requires it rather than permanently because somebody once asked. **Separation of duties** ensures no single person controls an entire sensitive process end to end, such as being able to both edit what clients are billed and approve those same changes, which removes the possibility of one person acting alone.
+- **Least privilege.** Each account gets only the access its job requires. The value is not tidiness. A compromised account can only reach as far as its permissions allow, so the blast radius of a stolen credential is decided in advance by whoever granted the access.
+- **Need to know.** Access to specific data only while a task genuinely requires it, rather than permanently because somebody once asked.
+- **Separation of duties.** No single person controls an entire sensitive process end to end, such as both editing what clients are billed and approving those same changes. It removes the possibility of one person acting alone.
 
 ### Role-based access control
 
@@ -37,11 +39,13 @@ A shared folder has two sets of permissions: **share** and **NTFS**. Over the ne
 
 ### Common failures
 
-The failures below account for most of the authorization problems you will encounter, and all of them accumulate quietly rather than arriving as an incident.
+The failures below account for most of the authorization problems you will encounter. All of them accumulate quietly rather than arriving as an incident.
 
-**Privilege creep** happens when people change roles and keep the groups from their old one, so that a long career produces an account that can reach almost everything. The fix is procedural rather than technical: remove the old access in the same change that grants the new access, because a separate ticket to remove it later is a ticket nobody raises. **Stale accounts** are the same problem for people who have left entirely, and Colonial Pipeline is the cautionary example, since the VPN account the attackers used was one that was no longer in use by anybody.
-
-**Admin accounts used for daily work** turn every routine action into a privileged one, so an administrator should hold a normal account for day to day use and a separate admin account used only for admin tasks. **Over-privileged service accounts** follow the same logic for software: an account such as `svc-backup-job` needs to read the data it backs up and nothing else, and it has no business signing in interactively or holding Domain Admin. **Unreviewed groups** is the underlying condition that lets all of the above persist, which is why organisations run periodic access reviews where each manager confirms who should still be in which group. Reviews catch what individual tickets miss.
+- **Privilege creep.** People change roles and keep the groups from the old one, so a long career produces an account that can reach almost everything. The fix is procedural: remove old access in the same change that grants new access, because a separate ticket to do it later is a ticket nobody raises.
+- **Stale accounts.** The same problem for people who have left entirely. Colonial Pipeline is the cautionary example, since the VPN account the attackers used was no longer in use by anybody.
+- **Admin accounts for daily work.** Every routine action becomes a privileged one. An administrator should hold a normal account for day to day use and a separate admin account for admin tasks.
+- **Over-privileged service accounts.** `svc-backup-job` needs to read the data it backs up and nothing else. It has no business signing in interactively or holding Domain Admin.
+- **Unreviewed groups.** The condition that lets all of the above persist. Periodic access reviews, where each manager confirms who should still be in which group, catch what individual tickets miss.
 
 ### Logs
 

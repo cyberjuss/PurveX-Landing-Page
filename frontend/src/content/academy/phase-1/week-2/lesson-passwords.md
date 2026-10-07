@@ -2,9 +2,12 @@
 
 **The ticket:** a vendor several PurveX staff used was breached, and its user table is online. Alex Rivera asks: "How bad is this for us, and what do we do first?"
 
-The first thing to understand is that a password store never needs the password itself. It only needs to recognise the right one when it is offered again. So a well built system keeps a value calculated from the password, and at sign-in it performs the same calculation on whatever was typed and compares the two results. The original is never written down anywhere, which means a stolen database does not immediately hand the attacker a set of working credentials.
+A password store never needs the password itself. It only needs to recognise the right one when it is offered again. So a well built system keeps a value calculated from the password, and at sign-in it runs the same calculation on whatever was typed and compares. The original is never written down, which means a stolen database does not immediately hand the attacker a set of working credentials.
 
-That alone is not enough, and the two requirements that follow are where most real systems fail. Two users who happened to choose the same password must still end up with different stored values, otherwise the table itself reveals which accounts share a password. And the calculation has to be slow enough that working through millions of guesses is impractical, because an attacker with a copy of the table can try as many as they like without the system ever knowing.
+That alone is not enough. Two further requirements are where most real systems fail:
+
+- Two users who chose the same password must still end up with **different stored values**, or the table itself reveals which accounts share a password.
+- The calculation has to be **slow enough that bulk guessing is impractical**, because an attacker holding a copy of the table can try as many guesses as they like without the system ever knowing.
 
 ### Good storage in one line
 

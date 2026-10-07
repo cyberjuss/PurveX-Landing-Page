@@ -7,7 +7,13 @@
 
 Every sign-in, and in fact every click that follows it, answers two entirely separate questions. The first is who you are, and the second is what you are allowed to do now that the system knows. These get collapsed together in ordinary speech, where people talk about having access to something as though it were one idea. Keeping them apart is the foundation of everything in this week, because they fail separately, they are attacked separately, and they are fixed by different people.
 
-**Authentication** answers the first question. It is the work of proving that somebody is who they claim to be, and it happens at the front door. **Authorization** answers the second. It takes an identity the system has already established and decides what that identity may reach. A third piece ties the two together. **Access control** is the check that actually enforces the authorization decision on every single request rather than once at sign-in, and the distinction between deciding something and enforcing it is where a great deal goes wrong. You will hear the whole set referred to as Triple A, for authentication, authorization and accounting, with accounting being the record of who did what.
+Three pieces do this work:
+
+- **Authentication** proves somebody is who they claim to be. It happens at the front door.
+- **Authorization** takes an identity the system has already established and decides what it may reach.
+- **Access control** enforces that decision on every single request, not once at sign-in.
+
+The distinction between deciding something and enforcing it is where a great deal goes wrong. You will hear the whole set called Triple A, for authentication, authorization and accounting, with accounting being the record of who did what.
 
 What makes this worth a full week is how most real breaches actually begin. The attacks that end up in the news are rarely a matter of clever malware defeating a defence. Far more often somebody simply signed in, using a credential they should not have had, to a system that never checked whether they ought to be there. The three cases below are among the better documented examples, and each one failed at a different point in the chain you have just read about.
 
@@ -21,11 +27,19 @@ The pattern in that table is worth sitting with for a moment. None of these requ
 
 ### Where you meet this on the job
 
-This material reaches you differently depending on where you sit, and all three vantage points matter because you will likely occupy each of them at some stage.
+This material reaches you differently depending on where you sit, and you will likely occupy each seat at some stage:
 
-On the **help desk** you reset passwords and MFA, which makes you an active part of the authentication system rather than an observer of it. Attackers understand this perfectly well, which is why the desk gets called. On the **systems administration** side you decide who belongs to which group, and since groups are what grant permissions, every extra membership you hand out is a door that somebody may walk through later. As a **SOC analyst** you read the record both of those activities leave behind, where sign-in logs and group changes are frequently the clearest evidence that somebody is not who they claim to be, or is reaching further than their job requires.
+- **Help desk.** You reset passwords and MFA, which makes you an active part of the authentication system rather than an observer of it. Attackers understand that, which is why the desk gets called.
+- **Systems administrator.** You decide who belongs to which group, and groups are what grant permissions. Every extra membership you hand out is a door somebody may walk through later.
+- **SOC analyst.** You read the record the other two leave behind. Sign-in logs and group changes are frequently the clearest evidence that somebody is not who they claim to be, or is reaching further than their job requires.
 
-By the end of the week you should be able to name the three kinds of proof and rank the common MFA methods by how hard each is to trick. You should be able to handle a password or MFA reset without becoming the attacker's route in, which is a narrower path than it first appears. You should be able to explain least privilege and work out what an account can actually do by reading its group memberships. You should be able to say why the server has to re-check permissions on every request rather than trusting what it decided a moment ago. And in the lab you should be able to find a broken access control flaw, exploit it, and describe how it ought to be fixed.
+By the end of the week you can:
+
+- Name the three kinds of proof and rank MFA methods by how hard each is to trick
+- Handle a password or MFA reset without becoming the attacker's route in
+- Explain least privilege and read what an account can do from its groups
+- Say why the server must re-check permissions on every request
+- Find a broken access control flaw in the lab, exploit it, and describe the fix
 
 ### Questions Answered in This Week
 

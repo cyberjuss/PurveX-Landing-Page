@@ -4,7 +4,15 @@ Access control is the enforcement half of authorization. Deciding that a particu
 
 ### The rule: never trust the client
 
-The single rule underneath every fix in this section is that nothing arriving from the browser can be trusted. Everything the browser sends is under the control of whoever is using it, including the address, form fields, hidden fields, cookies and the body of the request. This is not an exotic capability requiring special skill. Browser developer tools are sufficient, and intercepting proxies such as Burp Suite or OWASP ZAP make editing a request on its way out entirely routine.
+The single rule underneath every fix in this section is that **nothing arriving from the browser can be trusted.** Everything it sends is under the control of whoever is using it:
+
+- the address
+- form fields
+- hidden fields
+- cookies
+- the body of the request
+
+This is not an exotic capability requiring special skill. Browser developer tools are sufficient, and intercepting proxies such as Burp Suite or OWASP ZAP make editing a request on its way out entirely routine.
 
 The consequence is that the server can take nothing about identity or permission from the request itself. On every request it has to establish three things from its own records.
 
@@ -22,9 +30,13 @@ This is why hiding a button is not access control, and it is worth being blunt a
 
 ### Fixes
 
-The fixes all follow from the rule above. **Check on the server, every time**, taking the identity and the role from the session rather than the request, and confirming ownership of each item before returning it. **Deny by default**, so that an action remains closed unless some rule explicitly opens it for this role, which means a newly added feature is safe until somebody decides otherwise rather than exposed until somebody notices.
+The fixes all follow from that rule:
 
-**Ignore fields the user should not be setting at all.** The server decides the role, the price and the account number, and a value supplied for any of them should be discarded rather than validated. **Unguessable identifiers help but do not fix anything**, because a long random ID only makes the record harder to find by guessing. A link that leaks still works perfectly unless the server checks ownership when it is used. Finally, **log refused requests**, since a sudden run of denials from one source is frequently the earliest visible sign that somebody is testing where the boundaries are.
+- **Check on the server, every time.** Take identity and role from the session rather than the request, and confirm ownership of each item before returning it.
+- **Deny by default.** An action stays closed unless a rule explicitly opens it for this role, so a newly added feature is safe until somebody decides otherwise rather than exposed until somebody notices.
+- **Ignore fields the user should not set.** The server decides the role, the price and the account number. A value supplied for any of them is discarded, not validated.
+- **Unguessable IDs help but fix nothing.** A long random ID only makes a record harder to find by guessing. A leaked link still works unless the server checks ownership when it is used.
+- **Log refused requests.** A sudden run of denials from one source is frequently the earliest visible sign that somebody is testing where the boundaries are.
 
 ### Testing
 
