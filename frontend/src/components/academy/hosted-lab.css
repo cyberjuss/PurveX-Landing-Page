@@ -63,12 +63,6 @@ html[data-academy-theme="dark"] .hl-note,
 .hl .hl__title { margin: 0; font-size: 16px; font-weight: 650; letter-spacing: -0.015em; line-height: 1.2; color: var(--hl-ink); }
 
 /* A live state pill, so the lab's condition is never buried in a sentence. */
-.hl__state { display: inline-flex; align-items: center; gap: 6px; align-self: start; padding: 4px 9px; border: 1px solid var(--hl-line); font-size: 11px; font-weight: 650; letter-spacing: 0.02em; color: var(--hl-ink-2); white-space: nowrap; }
-.hl__state i { width: 6px; height: 6px; background: currentColor; }
-.hl__state.is-on { color: var(--hl-run); border-color: color-mix(in srgb, var(--hl-run) 45%, transparent); }
-.hl__state.is-wait { color: var(--hl-wait); border-color: color-mix(in srgb, var(--hl-wait) 45%, transparent); }
-.hl__state.is-wait i { animation: hl-pulse 1.4s ease-in-out infinite; }
-.hl__state.is-off { color: var(--hl-ink-3); }
 @keyframes hl-pulse { 50% { opacity: 0.25; } }
 
 /* The spec sheet: label on the left, value on the right, one fact a row. */

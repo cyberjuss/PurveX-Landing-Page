@@ -344,10 +344,6 @@ export function HostedLabMenu() {
           <p className="hl__title">PurveX Financial</p>
           <p className="hl__domain">purvexfinancial.local</p>
         </div>
-        <span className={`hl__state is-${labTone(state)}`}>
-          <i aria-hidden="true" />
-          {CHIP[state]}
-        </span>
       </header>
 
       {/* The lab is two machines, so they are the subject rather than a row in
