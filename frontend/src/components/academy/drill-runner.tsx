@@ -517,6 +517,11 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
 export function DrillRunner() {
   const { ask } = useCoach();
   const { available: hostedLab } = useHostedLab();
+  // Which row is working, and which row failed. A single flag made every button
+  // say "Writing…" at once, and a single error landed under all four rows
+  // rather than against the one the person had just pressed.
+  const [starting, setStarting] = useState<Mode | null>(null);
+  const [errorMode, setErrorMode] = useState<Mode | null>(null);
   const [status, setStatus] = useState<DrillStatus | null>(null);
   const [run, setRun] = useState<Run | null>(null);
   const [answers, setAnswers] = useState<(string | null)[]>([]);
@@ -607,7 +612,9 @@ export function DrillRunner() {
 
   async function start(mode: Mode, format?: string) {
     setBusy(true);
+    setStarting(mode);
     setError(null);
+    setErrorMode(null);
     const ctrl = new AbortController();
     const timer = window.setTimeout(() => ctrl.abort(), 70_000);
     try {
@@ -644,9 +651,11 @@ export function DrillRunner() {
     } catch (err) {
       const aborted = err instanceof DOMException && err.name === "AbortError";
       setError(aborted ? "That took too long. Try again in a minute." : err instanceof Error ? err.message : "Could not start the drill.");
+      setErrorMode(mode);
     } finally {
       window.clearTimeout(timer);
       setBusy(false);
+      setStarting(null);
     }
   }
 
@@ -968,11 +977,12 @@ export function DrillRunner() {
                       ? `Daily scenario · ${clock(s.today.seconds)}. ${streakLine(s)}`
                       : `A decision, a written case, or a real change in your lab${status.focus ? `, aimed at ${status.focus}` : ""}. It gets a name when you open it.`}
                   </span>
+                  {errorMode === "daily" && error && <span className="ax-path__err">{error}</span>}
                 </span>
                 <span className="ax-path__count">
                   {!s.today && (
                     <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("daily")}>
-                      {busy ? "Writing…" : "Open case"} <ArrowRight className="h-4 w-4" />
+                      {starting === "daily" ? "Writing…" : "Open case"} <ArrowRight className="h-4 w-4" />
                     </button>
                   )}
                 </span>
@@ -985,13 +995,17 @@ export function DrillRunner() {
                   <span className="ax-path__title">Shift</span>
                   <span className="ax-path__body">
                     30 minutes on the desk. Real incidents hit your own lab and you respond against the clock.
-                    {!hostedLab ? " Needs a hosted lab." : ""}
+                    {!hostedLab ? " It needs your own hosted lab, which comes with Range Pro." : ""}
                   </span>
                 </span>
                 <span className="ax-path__count">
-                  {hostedLab && (
+                  {hostedLab ? (
                     <a className="rd-cta" href="/range/shift">
                       Start shift <ArrowRight className="h-4 w-4" />
+                    </a>
+                  ) : (
+                    <a className="rd-cta" href="/range/upgrade">
+                      See Range Pro <ArrowRight className="h-4 w-4" />
                     </a>
                   )}
                 </span>
@@ -1014,11 +1028,12 @@ export function DrillRunner() {
                             : "Update the lab script from Build the Environment so it can ask about your own Security log."
                         }`}
                   </span>
+                  {errorMode === "ctf" && error && <span className="ax-path__err">{error}</span>}
                 </span>
                 <span className="ax-path__count">
                   {!status.ctf.entry && (
-                    <button type="button" className="dr-outline" disabled={busy} onClick={() => void start("ctf")}>
-                      {busy ? "Writing…" : "Start"} <ArrowRight className="h-4 w-4" />
+                    <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("ctf")}>
+                      {starting === "ctf" ? "Writing…" : "Start"} <ArrowRight className="h-4 w-4" />
                     </button>
                   )}
                 </span>
@@ -1026,7 +1041,7 @@ export function DrillRunner() {
             </li>
             <LabFindings items={status.findings} />
           </ol>
-          {error && <p className="dr-error">{error}</p>}
+          {error && !errorMode && <p className="dr-error">{error}</p>}
           {/* A hosted lab is verified by Range itself, so there is no code to plant. */}
           {status.lab.synced && !hostedLab && (
             <VerifyLab

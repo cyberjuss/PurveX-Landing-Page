@@ -5033,10 +5033,11 @@ textarea.pc-dock__field {
 .dr-leave .dr-link--bad:hover { background: var(--rd-bad); border-color: var(--rd-bad); color: #fff; }
 
 /* Drills home, simplified: one scenario card, one quick drill */
-.dr-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 11.5rem; height: 40px; padding: 0 16px; border: 1px solid rgba(138, 148, 168, 0.55); border-radius: 0; background: transparent; font-size: 0.82rem; font-weight: 650; color: #334155; cursor: pointer; }
-.academy-bg[data-academy-theme="dark"] .dr-outline { border-color: rgba(180, 200, 255, 0.28); color: #c5d0ff; }
-.dr-outline:hover:not(:disabled) { border-color: var(--rd-accent); color: var(--rd-accent); }
-.dr-outline:disabled { opacity: 0.4; cursor: default; }
+/* .dr-outline used to live here: a copy of .rd-cta that had drifted apart from
+   it, so one row in the drill list hovered and pressed differently from the
+   rest. Every action on the page uses .rd-cta now. */
+/* A row's own failure, shown against that row rather than under all of them. */
+.ax-path__err { display: block; margin-top: 6px; font-size: 13px; line-height: 1.45; color: var(--rd-bad); }
 .dr-streakline { display: inline-flex; align-items: center; gap: 6px; font-size: var(--ty-body); font-weight: 600; color: var(--rd-ink); }
 .dr-streakline svg { color: var(--rd-warn); }
 .dr-days { display: inline-flex; gap: 8px; }
@@ -5121,7 +5122,7 @@ textarea.pc-dock__field {
 .dr-rows .ax-path__row { align-items: center; grid-template-columns: 44px minmax(0, 1fr) auto; }
 .dr-rows .ax-path__main { min-width: 0; }
 .dr-rows .ax-path__count { justify-self: end; padding-top: 0; }
-.dr-outline, .dr-rows .rd-cta { white-space: nowrap; flex-shrink: 0; }
+.dr-rows .rd-cta { white-space: nowrap; flex-shrink: 0; }
 .dr-report { margin-top: 48px; padding: 0; border: 0; border-radius: 0; background: none; }
 .dr-report .rd-sec__head { align-items: center; }
 .dr-report__copy { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; text-decoration: none; }
