@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Flag, FlaskConical, Wrench } from "lucide-react";
+import { Flag, FlaskConical, Wrench } from "lucide-react";
 import { Markdown, splitMarkdownIntoSlides } from "@/lib/markdown";
 import { CHALLENGE_PATHS, MISSION_CATALOG } from "@/lib/academy-missions";
 import { QuizBlock } from "./quiz";
@@ -96,20 +96,6 @@ export function SectionTabs({
   const [quizFoot, setQuizFoot] = useState<HTMLElement | null>(null);
   const [labFoot, setLabFoot] = useState<HTMLElement | null>(null);
   const [challengeFoot, setChallengeFoot] = useState<HTMLElement | null>(null);
-  // Expanded by default -- collapsing is an option for a long list like Home
-  // Lab's 9 sections, not the default state. Collapsed shows just the
-  // current section's name so context isn't lost while the list is hidden.
-  const [collapsed, setCollapsed] = useState(false);
-  // Phones stack the list above the lesson, so an open list pushes the
-  // content a full screen down. There it starts collapsed, as a "you are
-  // here" dropdown, and folds back up after a pick.
-  const isPhone = () => window.matchMedia("(max-width: 767px)").matches;
-  useEffect(() => {
-    const fold = () => {
-      if (isPhone()) setCollapsed(true);
-    };
-    fold();
-  }, []);
   const current = items[active];
   const { setPlace } = useCoach();
   const { recordLabDone } = useAcademyProgress();
@@ -159,7 +145,6 @@ export function SectionTabs({
   function goTo(i: number) {
     setDir(i >= active ? 1 : -1);
     setActive(i);
-    if (isPhone()) setCollapsed(true);
     // Keep the tab in the URL so a refresh or shared link reopens it.
     const { pathname, search } = window.location;
     window.history.replaceState(window.history.state, "", i === 0 ? pathname + search : `${pathname}${search}#${slugify(items[i].label)}`);
@@ -260,134 +245,35 @@ export function SectionTabs({
     );
 
   return (
-    <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
-      <div
-        className={`shrink-0 transition-[width] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
-          collapsed ? "md:w-12" : "md:w-[220px]"
-        }`}
-      >
-        <button
-          type="button"
-          onClick={() => setCollapsed((c) => !c)}
-          aria-expanded={!collapsed}
-          title={collapsed ? "Expand sections" : "Collapse sections"}
-          className={`ax-index__toggle flex w-full items-center gap-2 py-2 text-left ${
-            collapsed ? "justify-between md:justify-center" : "justify-between"
-          }`}
-        >
-          {/* On desktop, collapsing frees the column's width for the content
-              panel to expand into -- there's no room left for the label, so
-              only the chevron stays. Mobile never collapses width (it's a
-              single stacked column there), so the label stays visible. */}
-          <span className={`truncate ${collapsed ? "md:hidden" : ""}`}>{collapsed ? current.label : "Sections"}</span>
-          <ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200 ${collapsed ? "md:-rotate-90" : "rotate-180"}`} />
-        </button>
-        {/* Always mounted (never conditionally rendered) so the collapse
-            can animate -- a grid row tweened between 0fr and 1fr shrinks
-            the list inward instead of the list just popping in/out. */}
-        <div
-          className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
-            collapsed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"
-          }`}
-          aria-hidden={collapsed}
-        >
-          {/* One grid child: the 0fr row only folds the first child, so
-              the Labs/Challenges/Troubleshooting groups used to stay full
-              height (invisible, but still taking space and taps). */}
-          <div className="min-h-0 overflow-hidden">
-            <div role="tablist" aria-orientation="vertical" className="flex flex-col gap-0.5 overflow-hidden pt-1">
-              {numberedItems.map((item, i) => (
-                <button
-                  key={item.label}
-                  type="button"
-                  role="tab"
-                  tabIndex={collapsed ? -1 : 0}
-                  aria-selected={active === i}
-                  onClick={() => goTo(i)}
-                  className={`ax-tab ${active === i ? "ax-tab--on" : ""}`}
-                >
-                  <span className="font-mono text-[11px] font-normal text-slate-400">{pad(i + 1)}</span>
-                  <span className="truncate">{item.label}</span>
-                </button>
-              ))}
-            </div>
-            {labItems.length > 0 && (
-              <div className="mt-1 flex flex-col gap-0.5 overflow-hidden border-t border-[var(--pvrx-border-light)] pt-2">
-                <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">Labs</p>
-                {labItems.map((item, i) => {
-                  const idx = numberedItems.length + i;
-                  return (
-                    <button
-                      key={item.label}
-                      type="button"
-                      role="tab"
-                      tabIndex={collapsed ? -1 : 0}
-                      aria-selected={active === idx}
-                      onClick={() => goTo(idx)}
-                      className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
-                    >
-                      <FlaskConical className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                      {/* Lab titles run longer than a section's ("Network
-                          Forensics -- Hidden Tear Ransomware") -- truncating
-                          to one line lost the part that actually identifies
-                          the lab, so this wraps instead. */}
-                      <span className="min-w-0">{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
+    <div className="ax-lesson">
+      {/* One horizontal strip instead of a column of its own. The course rail
+          already occupies the left of the screen, so a second vertical list
+          beside it left the lesson reading in two thirds of the width. */}
+      <nav className="ax-lesstabs" role="tablist" aria-label="Sections">
+        {items.map((item, i) => (
+          <button
+            key={item.label}
+            type="button"
+            role="tab"
+            aria-selected={active === i}
+            onClick={() => goTo(i)}
+            className={`ax-lesstab ${active === i ? "ax-lesstab--on" : ""}`}
+          >
+            {item.kind === "lab" ? (
+              <FlaskConical className="h-3.5 w-3.5 shrink-0" aria-hidden />
+            ) : item.kind === "challenge" ? (
+              <Flag className="h-3.5 w-3.5 shrink-0" aria-hidden />
+            ) : item.kind === "troubleshooting" ? (
+              <Wrench className="h-3.5 w-3.5 shrink-0" aria-hidden />
+            ) : (
+              <i aria-hidden>{pad(i + 1)}</i>
             )}
-            {challengeItems.length > 0 && (
-              <div className="mt-1 flex flex-col gap-0.5 overflow-hidden border-t border-[var(--pvrx-border-light)] pt-2">
-                <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">Challenges</p>
-                {challengeItems.map((item, i) => {
-                  const idx = numberedItems.length + labItems.length + i;
-                  return (
-                    <button
-                      key={item.label}
-                      type="button"
-                      role="tab"
-                      tabIndex={collapsed ? -1 : 0}
-                      aria-selected={active === idx}
-                      onClick={() => goTo(idx)}
-                      className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
-                    >
-                      <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                      <span className="min-w-0">
-                        {item.label}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-            {troubleshootingItems.length > 0 && (
-              <div className="mt-1 flex flex-col gap-0.5 overflow-hidden border-t border-[var(--pvrx-border-light)] pt-2">
-                <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate-400">Troubleshooting</p>
-                {troubleshootingItems.map((item, i) => {
-                  const idx = numberedItems.length + labItems.length + challengeItems.length + i;
-                  return (
-                    <button
-                      key={item.label}
-                      type="button"
-                      role="tab"
-                      tabIndex={collapsed ? -1 : 0}
-                      aria-selected={active === idx}
-                      onClick={() => goTo(idx)}
-                      className={`ax-tab ${active === idx ? "ax-tab--on" : ""}`}
-                    >
-                      <Wrench className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                      <span className="min-w-0">{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+            <span>{item.label}</span>
+          </button>
+        ))}
+      </nav>
 
-      <div className="ax-panel min-w-0 flex-1">
+      <div className="ax-panel">
         <div className="overflow-hidden py-2 sm:py-4">
           <div key={current.label} className={dir === 1 ? "ax-enter-fwd" : "ax-enter-back"}>
             {panel}

@@ -4537,6 +4537,55 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   color: var(--rd-ink-3);
 }
 
+/* Lesson page. The sections run along the top rather than down a second column
+   beside the course rail, so the reading area gets the full width of the page. */
+.ax-lesson { display: flex; flex-direction: column; }
+.ax-lesstabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--rd-line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.ax-lesstabs::-webkit-scrollbar { display: none; }
+.ax-lesstab {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 0;
+  background: none;
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--rd-ink-3);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+/* Sits on the strip's own rule, so the current tab joins the line rather than
+   floating above it. */
+.ax-lesstab::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: -1px;
+  height: 2px;
+  background: transparent;
+  transition: background 0.15s;
+}
+.ax-lesstab i { font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; font-style: normal; opacity: 0.6; }
+.ax-lesstab:hover { color: var(--rd-ink-2); }
+.ax-lesstab--on { color: var(--rd-ink); font-weight: 650; }
+.ax-lesstab--on::after { background: var(--rd-accent); }
+.ax-lesstab--on i { opacity: 1; color: var(--rd-accent); }
+.ax-lesstab svg { color: var(--rd-accent); opacity: 0.75; }
+.ax-lesstab--on svg { opacity: 1; }
+.ax-lesstab:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: -4px; }
+
 .ax-index__toggle { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); border: none; }
 .ax-tab {
   display: flex; align-items: baseline; gap: 8px; width: 100%; padding: 8px 0;
