@@ -361,35 +361,33 @@ function LinuxSignIn() {
     }
   }
 
+  // One quiet row until it is asked for. This used to be a bordered card with
+  // a heading, an explanation and two labelled rows, which made the busiest
+  // thing on the panel the one thing a student needs least often.
   return (
     <div className="hl__creds">
-      <p className="hl__creds__head">Ubuntu sign-in</p>
-      <p className="hl__creds__why">The desktop opens signed in. You need this when a command asks for a sudo password.</p>
-      <dl className="hl__creds__rows">
-        <div>
-          <dt>User</dt>
-          <dd><code>student</code></dd>
-        </div>
-        <div>
-          <dt>Password</dt>
-          <dd>
-            {creds ? (
-              <>
-                <code className="hl__creds__secret">{creds.password}</code>
-                <button type="button" className="hl__creds__btn" onClick={copy}>
-                  {copied ? <Check className="h-3 w-3" aria-hidden /> : <Copy className="h-3 w-3" aria-hidden />}
-                  {copied ? "Copied" : "Copy"}
-                </button>
-              </>
-            ) : (
-              <button type="button" className="hl__creds__btn" onClick={reveal} disabled={loading}>
-                {loading ? <Loader2 className="h-3 w-3 animate-spin" aria-hidden /> : <Eye className="h-3 w-3" aria-hidden />}
-                Show password
-              </button>
-            )}
-          </dd>
-        </div>
-      </dl>
+      <p className="hl__creds__row">
+        <span>Ubuntu sudo password</span>
+        {creds ? (
+          <>
+            <code className="hl__creds__secret">{creds.password}</code>
+            <button type="button" className="hl__creds__btn" onClick={copy}>
+              {copied ? <Check className="h-3 w-3" aria-hidden /> : <Copy className="h-3 w-3" aria-hidden />}
+              {copied ? "Copied" : "Copy"}
+            </button>
+          </>
+        ) : (
+          <button type="button" className="hl__creds__btn" onClick={reveal} disabled={loading}>
+            {loading ? <Loader2 className="h-3 w-3 animate-spin" aria-hidden /> : <Eye className="h-3 w-3" aria-hidden />}
+            Show
+          </button>
+        )}
+      </p>
+      {creds && (
+        <p className="hl__creds__why">
+          User <code>student</code>. The desktop opens signed in, so you only need this when a command asks.
+        </p>
+      )}
       {err && <p className="hl__creds__err" role="alert">{err}</p>}
     </div>
   );
