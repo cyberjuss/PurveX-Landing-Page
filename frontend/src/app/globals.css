@@ -4468,8 +4468,8 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-sideprog { padding-bottom: 14px; border: none; }
 .ax-sideprog__row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 .ax-sideprog strong { font-family: var(--font-display); font-size: 34px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--rd-ink); }
-.ax-sideprog strong small { font-size: 13px; margin-left: 1px; color: var(--rd-ink-3); }
-.ax-sideprog p { margin-top: 10px; font-size: 14.5px; color: var(--rd-ink-3); }
+.ax-sideprog strong small { font-size: 15px; margin-left: 1px; color: var(--rd-ink-3); }
+.ax-sideprog p { margin-top: 10px; font-size: 15px; color: var(--rd-ink-3); }
 .ax-sideprog__on { background: #fff; }
 .academy-bg:not([data-academy-theme="dark"]) .ax-sideprog__on { background: #0f172a; }
 /* The rail as a stepper. The course runs in order, so the weeks sit as numbered
@@ -4478,7 +4478,7 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-list::before {
   content: "";
   position: absolute;
-  left: 13px;
+  left: 14px;
   top: 14px;
   bottom: 14px;
   width: 2px;
@@ -4491,13 +4491,13 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   flex: none;
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: var(--pvrx-surface-light, #fff);
   box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--rd-ink) 16%, transparent);
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 12px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--rd-ink-3);
   transition: box-shadow 0.15s, color 0.15s, background 0.15s;
@@ -4508,9 +4508,9 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 /* The tabs of the lesson you are in, nested under it in the rail. Numbered to
    match the list the lesson itself shows. */
 .ax-subs { display: flex; flex-direction: column; margin: 0; padding: 0 0 4px; overflow: hidden; }
-.ax-sub { position: relative; z-index: 1; display: flex; align-items: center; gap: 11px; padding: 6px 0 6px 42px; font-size: 15.5px; color: var(--rd-ink-3); transition: color 0.15s; }
+.ax-sub { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; padding: 8px 0 8px 44px; font-size: 18px; color: var(--rd-ink-3); transition: color 0.15s; }
 .ax-sub:hover { color: var(--rd-ink); }
-.ax-sub i { flex: none; width: 21px; font-family: var(--font-mono, ui-monospace, monospace); font-size: 12.5px; font-style: normal; letter-spacing: 0.03em; opacity: 0.55; }
+.ax-sub i { flex: none; width: 23px; font-family: var(--font-mono, ui-monospace, monospace); font-size: 13.5px; font-style: normal; letter-spacing: 0.03em; opacity: 0.55; }
 .ax-sub:hover { color: var(--rd-ink); }
 .ax-sub--on { color: var(--rd-accent); font-weight: 650; }
 .ax-sub--on i { opacity: 1; color: var(--rd-accent); }
@@ -4523,13 +4523,13 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-sidecaret:hover { color: var(--rd-accent); }
 .ax-sidecaret:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 1px; }
 
-.ax-sidelink { display: flex; align-items: center; gap: 11px; padding: 11px 0; font-size: 18.5px; color: var(--rd-ink-2); transition: color var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)); }
+.ax-sidelink { display: flex; align-items: center; gap: 12px; padding: 11px 0; font-size: 18px; color: var(--rd-ink-2); transition: color var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)); }
 .ax-sidelink:hover, .ax-sidelink--on { color: var(--rd-ink); }
 .ax-sidelink--on { font-weight: 600; }
 .ax-check { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border: 1.5px solid var(--rd-line); border-radius: 2px; color: transparent; flex-shrink: 0; }
 .ax-check--done { background: #fff; border-color: #fff; color: #0f172a; }
-.ax-soon-row { position: relative; display: flex; align-items: center; gap: 11px; padding: 11px 0; font-size: 17.5px; color: var(--rd-ink-3); }
-.ax-soon-row em { margin-left: auto; font-family: var(--font-mono, ui-monospace, monospace); font-size: 10px; font-style: normal; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.ax-soon-row { position: relative; display: flex; align-items: center; gap: 12px; padding: 11px 0; font-size: 18px; color: var(--rd-ink-3); }
+.ax-soon-row em { margin-left: auto; font-family: var(--font-mono, ui-monospace, monospace); font-size: 11.5px; font-style: normal; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
 
 .ax-index__toggle { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); border: none; }
 .ax-tab {

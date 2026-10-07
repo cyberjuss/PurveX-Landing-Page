@@ -118,7 +118,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           return (
             <div
               key={phase.slug}
-              className="flex items-center justify-between gap-2 font-mono text-[14.5px] font-bold uppercase tracking-[0.08em] text-slate-400 opacity-70"
+              className="flex items-center justify-between gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] text-slate-400 opacity-70"
               title="Locked for now"
             >
               <span className="truncate">{phase.label} — {phase.title}</span>
@@ -207,7 +207,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               type="button"
               onClick={() => toggleManualOpen(labsKey)}
               aria-expanded={labsOpen}
-              className={`flex w-full items-center justify-between gap-2 font-mono text-[14.5px] font-bold uppercase tracking-[0.08em] transition ${
+              className={`flex w-full items-center justify-between gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] transition ${
                 labsOpen ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
               }`}
             >
@@ -235,7 +235,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               <Link
                 href={`/range/${phase.slug}`}
                 onClick={onNavigate}
-                className={`flex items-center justify-between gap-2 font-mono text-[14.5px] font-bold uppercase tracking-[0.08em] transition ${
+                className={`flex items-center justify-between gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] transition ${
                   phaseActive ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
                 }`}
               >
@@ -246,7 +246,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 type="button"
                 onClick={() => toggleManualOpen(phase.slug)}
                 aria-expanded={phaseOpen}
-                className="flex w-full items-center justify-between gap-2 font-mono text-[14.5px] font-bold uppercase tracking-[0.08em] text-slate-400 transition hover:text-slate-600"
+                className="flex w-full items-center justify-between gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] text-slate-400 transition hover:text-slate-600"
               >
                 {headerContent}
               </button>
@@ -273,7 +273,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
       <Link
         href="/range/labs"
         onClick={onNavigate}
-        className={`flex items-center gap-2 font-mono text-[14.5px] font-bold uppercase tracking-[0.08em] transition ${
+        className={`flex items-center gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] transition ${
           pathname.startsWith("/range/labs") ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
         }`}
       >
@@ -284,7 +284,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
       <Link
         href="/range/reference"
         onClick={onNavigate}
-        className={`flex items-center gap-2 font-mono text-[14.5px] font-bold uppercase tracking-[0.08em] transition ${
+        className={`flex items-center gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] transition ${
           pathname === "/range/reference" ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
         }`}
       >
