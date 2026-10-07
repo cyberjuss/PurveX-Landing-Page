@@ -126,6 +126,24 @@ async function refundSession(userId: string): Promise<void> {
   });
 }
 
+/** Give back the part of a session that was never used. The charge is taken up
+ *  front so a lab that is never stopped cleanly still counts against the month,
+ *  but that means stopping after ten minutes spent three hours. stopAt is the
+ *  end of the session that was paid for, so whatever is left of it at the moment
+ *  of stopping is the refund. */
+async function refundUnused(userId: string, stopAt: string | null): Promise<void> {
+  const c = cfg();
+  if (!c.monthlyHours || !stopAt) return;
+  const leftMs = Date.parse(stopAt) - Date.now();
+  if (!Number.isFinite(leftMs) || leftMs <= 0) return;
+  const minutes = Math.min(c.sessionHours * 60, Math.floor(leftMs / 60000));
+  if (minutes <= 0) return;
+  await addLabMinutes(userId, -minutes).catch((err) => {
+    console.error("session reconcile failed", err instanceof Error ? err.message : err);
+    return 0;
+  });
+}
+
 async function chargeSession(userId: string): Promise<void> {
   const c = cfg();
   if (!c.monthlyHours) return;
@@ -542,6 +560,9 @@ export async function stopHostedLab(userId: string): Promise<void> {
   const row = await loadHostedLab(userId);
   if (!row) return;
   await stopPod(row);
+  // Clearing stopAt first would lose the only record of how much of the session
+  // was left, and a second stop then refunds nothing because it is already null.
+  await refundUnused(userId, row.stopAt);
   await saveHostedLab(userId, { ...row, stopAt: null });
 }
 
@@ -564,6 +585,7 @@ export async function resetHostedLab(userId: string): Promise<void> {
   if (row) {
     const ids = podInstanceIds(row);
     if (ids.length) await ec2().send(new TerminateInstancesCommand({ InstanceIds: ids })).catch(() => {});
+    await refundUnused(userId, row.stopAt);
     await deleteHostedLab(userId);
   }
   // Same deal as a first start: the session is charged before the lab exists,
