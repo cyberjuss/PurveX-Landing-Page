@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { ArrowUpRight, Check, Copy, Eye, Info, LifeBuoy, Loader2, RotateCcw, Server, Terminal } from "lucide-react";
+import { ArrowUpRight, Check, Copy, Eye, Info, LifeBuoy, Loader2, RotateCcw, Server } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { openHelp } from "@/components/academy/get-help";
 import { LabBriefing, labBriefed, markLabBriefed } from "@/components/academy/lab-briefing";
@@ -422,7 +422,7 @@ export function HostedLabMenu() {
       : state === "starting"
         ? null
         : state === "stopped"
-        ? "Stopped. Your work is saved."
+        ? "Your work is saved."
         : state === "stopping"
           ? "Saving your work."
           : state === "none"
@@ -436,41 +436,25 @@ export function HostedLabMenu() {
           <p className="hl__title">PurveX Financial</p>
           <p className="hl__domain">purvexfinancial.local</p>
         </div>
-        {/* Hours sit in the corner beside the name rather than as a band across
-            the panel: it is a balance you glance at, not a step in starting. */}
-        {typeof status.hoursLimit === "number" && status.hoursLimit > 0 && (
-          <div className="hl__hours">
-            <p className="hl__kicker">Lab hours</p>
-            <em>
-              {status.hoursUsed ?? 0}<i>/{status.hoursLimit}</i>
-            </em>
-            <span
-              className="hl__meter"
-              role="progressbar"
-              aria-valuemin={0}
-              aria-valuemax={status.hoursLimit}
-              aria-valuenow={status.hoursUsed ?? 0}
-              aria-label={`${status.hoursUsed ?? 0} of ${status.hoursLimit} lab hours used this month`}
-            >
-              <i style={{ width: `${Math.min(100, ((status.hoursUsed ?? 0) / status.hoursLimit) * 100)}%` }} />
-            </span>
-          </div>
-        )}
+        <span className={`hl__state hl__state--${labTone(state)}`}>
+          <i aria-hidden />
+          {CHIP[state]}
+        </span>
       </header>
 
       {/* The lab is two machines, so they are the subject rather than a row in
           a spec table. One tile each, side by side, the way they actually sit. */}
       <ul className="hl__rigs">
         <li>
-          <Server className="h-4 w-4" aria-hidden />
+          <em>DC</em>
           <strong>Windows Server 2022</strong>
-          <small>Domain controller{spec ? ` · ${spec}` : ""}</small>
+          <small>{spec ?? ""}</small>
         </li>
         {bothMachines && (
           <li>
-            <Terminal className="h-4 w-4" aria-hidden />
+            <em>DESKTOP</em>
             <strong>Ubuntu 24.04</strong>
-            <small>Desktop · {LINUX_SPEC}</small>
+            <small>{LINUX_SPEC}</small>
           </li>
         )}
       </ul>
@@ -514,6 +498,25 @@ export function HostedLabMenu() {
           {error}
         </p>
       )}
+      {typeof status.hoursLimit === "number" && status.hoursLimit > 0 && (
+        <p className="hl__hours">
+          <span>Hours</span>
+          <span
+            className="hl__meter"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={status.hoursLimit}
+            aria-valuenow={status.hoursUsed ?? 0}
+            aria-label={`${status.hoursUsed ?? 0} of ${status.hoursLimit} lab hours used this month`}
+          >
+            <i style={{ width: `${Math.min(100, ((status.hoursUsed ?? 0) / status.hoursLimit) * 100)}%` }} />
+          </span>
+          <em>
+            {String(status.hoursUsed ?? 0).padStart(2, "0")}<i>/{status.hoursLimit}</i>
+          </em>
+        </p>
+      )}
+
       <div className="hl__links">
         {state !== "none" && (
           <button
