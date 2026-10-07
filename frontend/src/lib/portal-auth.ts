@@ -36,17 +36,19 @@ export function hasPortalAccount(): boolean {
   }
 }
 
-export async function signUpWithPassword(email: string, password: string, emailRedirectTo: string): Promise<{ user: User | null; session: Session | null }> {
+export async function signUpWithPassword(email: string, password: string, emailRedirectTo: string): Promise<{ user: User | null; session: Session | null; emailed: boolean }> {
   // Sent by our own branded route (see app/api/signup), not Supabase's default
   // template. The user confirms via the emailed link, so there is no session yet.
+  // `emailed` is false when the account was created but the link did not go
+  // out, which the page has to say rather than promise mail that never comes.
   const res = await fetch("/api/signup", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password, redirectTo: emailRedirectTo }),
   });
-  const data = (await res.json().catch(() => ({}))) as { error?: string };
+  const data = (await res.json().catch(() => ({}))) as { error?: string; emailed?: boolean };
   if (!res.ok) throw new Error(data.error || "Unable to create your account.");
-  return { user: null, session: null };
+  return { user: null, session: null, emailed: data.emailed !== false };
 }
 
 export async function signInWithPassword(email: string, password: string): Promise<{ user: User | null; session: Session | null }> {
@@ -75,6 +77,18 @@ export async function requestPasswordReset(email: string, redirectTo: string): P
     body: JSON.stringify({ email, redirectTo }),
   });
   if (!res.ok) throw new Error("Unable to send reset email right now. Please try again.");
+}
+
+export async function resendConfirmation(email: string, redirectTo: string): Promise<void> {
+  // For the account whose signup email never arrived. Sign-in answers "Email
+  // not confirmed" until they click a link, and the first one is single-use.
+  // The route always answers ok so it never reveals whether an account exists.
+  const res = await fetch("/api/resend-confirmation", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, redirectTo }),
+  });
+  if (!res.ok) throw new Error("Unable to send that email right now. Please try again.");
 }
 
 /**

@@ -15,7 +15,12 @@ import {
   AuthTerms,
   TERMS_ERROR,
 } from "@/components/auth/auth-minimal";
-import { signInWithPassword, signInWithGoogle, hasPortalAccount, markPortalAccount } from "@/lib/portal-auth";
+import { signInWithPassword, signInWithGoogle, hasPortalAccount, markPortalAccount, resendConfirmation } from "@/lib/portal-auth";
+
+// Supabase's own wording for an account that never clicked its confirmation
+// link. We catch it so the page can offer a new link instead of repeating a
+// message the person can do nothing about.
+const UNCONFIRMED = /not\s*confirmed/i;
 
 function getErrorMessage(err: unknown, fallback: string) {
   if (err instanceof Error && err.message) return err.message;
@@ -64,6 +69,9 @@ function PortalLoginContent() {
   const [password, setPassword] = useState("");
   const [phase, setPhase] = useState<"form" | "submitting" | "google">("form");
   const [error, setError] = useState<string | null>(null);
+  const [unconfirmed, setUnconfirmed] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
   const [agreed, setAgreed] = useState(false);
   // A ref is checked and set synchronously, so a fast double-click cannot
   // send two sign-in requests before the disabled state renders.
@@ -111,6 +119,7 @@ function PortalLoginContent() {
     e.preventDefault();
     if (busyRef.current) return;
     setError(null);
+    setUnconfirmed(false);
     if (!password) {
       setError("Enter your password.");
       return;
@@ -124,7 +133,28 @@ function PortalLoginContent() {
     } catch (err) {
       busyRef.current = false;
       setPhase("form");
-      setError(getErrorMessage(err, "Unable to sign in. Check your email and password."));
+      const message = getErrorMessage(err, "Unable to sign in. Check your email and password.");
+      if (UNCONFIRMED.test(message)) {
+        setUnconfirmed(true);
+        setError("This email has not been confirmed yet. Check your inbox for the confirmation link, including spam.");
+        return;
+      }
+      setError(message);
+    }
+  }
+
+  async function handleResend() {
+    if (resending) return;
+    setResending(true);
+    try {
+      await resendConfirmation(email.trim(), `${window.location.origin}${next}`);
+      setUnconfirmed(false);
+      setError(null);
+      setResent(true);
+    } catch (err) {
+      setError(getErrorMessage(err, "Unable to send that email right now. Please try again."));
+    } finally {
+      setResending(false);
     }
   }
 
@@ -132,6 +162,8 @@ function PortalLoginContent() {
     setStep("email");
     setPassword("");
     setError(null);
+    setUnconfirmed(false);
+    setResent(false);
   }
 
   const isLoading = phase === "submitting" || phase === "google";
@@ -228,6 +260,19 @@ function PortalLoginContent() {
             label="Password"
           />
           <AuthError>{error}</AuthError>
+          {unconfirmed && (
+            <p className="mt-2 text-sm text-slate-500">
+              Nothing there?{" "}
+              <button type="button" onClick={handleResend} className="am-link" disabled={resending}>
+                {resending ? "Sending..." : "Send a new confirmation link"}
+              </button>
+            </p>
+          )}
+          {resent && (
+            <p className="mt-2 text-sm font-medium text-[#067647]" role="status">
+              Sent. Open the link in that email, then sign in.
+            </p>
+          )}
           <button type="submit" className="am-primary mt-4" disabled={isLoading}>
             {phase === "submitting" ? <Loader2 className="h-5 w-5 animate-spin" /> : "Sign in"}
           </button>

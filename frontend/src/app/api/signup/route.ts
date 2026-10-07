@@ -31,9 +31,20 @@ export async function POST(request: Request) {
   if (error) return NextResponse.json({ error: error.message || "Could not create your account." }, { status: 400 });
 
   const link = data?.properties?.action_link;
-  if (link) {
-    const mail = signupConfirmEmail(link);
-    await sendEmail(email, mail.subject, mail.html).catch(() => {});
+  if (!link) {
+    console.error(`[signup] no action_link returned for ${email}`);
+    return NextResponse.json({ ok: true, emailed: false });
   }
-  return NextResponse.json({ ok: true });
+
+  // The account now exists, so a failed send is not a reason to fail the
+  // request. It is a reason to say so: without this the user is left with an
+  // account they can never confirm and a sign-in that answers "Email not
+  // confirmed" forever. The page offers them a resend instead.
+  const mail = signupConfirmEmail(link);
+  const emailed = await sendEmail(email, mail.subject, mail.html).catch((err) => {
+    console.error(`[signup] confirmation email threw for ${email}:`, err);
+    return false;
+  });
+  if (!emailed) console.error(`[signup] confirmation email not delivered to ${email}`);
+  return NextResponse.json({ ok: true, emailed });
 }

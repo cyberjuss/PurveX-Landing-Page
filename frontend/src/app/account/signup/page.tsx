@@ -56,6 +56,8 @@ function PortalSignupContent() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phase, setPhase] = useState<"form" | "submitting" | "google" | "sent">("form");
+  // The account is made before the email goes out, so these can disagree.
+  const [emailed, setEmailed] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
@@ -133,13 +135,14 @@ function PortalSignupContent() {
     setPhase("submitting");
     try {
       const emailRedirectTo = `${window.location.origin}${destination}`;
-      const { session } = await signUpWithPassword(email.trim(), password, emailRedirectTo);
+      const { session, emailed } = await signUpWithPassword(email.trim(), password, emailRedirectTo);
       markPortalAccount();
       if (session) {
         router.push(destination);
         return;
       }
       busyRef.current = false;
+      setEmailed(emailed);
       setPhase("sent");
     } catch (err) {
       busyRef.current = false;
@@ -158,6 +161,29 @@ function PortalSignupContent() {
   const isLoading = phase === "submitting" || phase === "google";
 
   if (phase === "sent") {
+    // The account exists either way. Only the email is in doubt, and saying
+    // "check your inbox" when nothing was sent leaves them waiting on mail
+    // that is never coming.
+    if (!emailed) {
+      return (
+        <AuthMinimal product={product}>
+          <AuthHeading
+            sub={
+              <>
+                Your account for <strong className="text-[#10192e]">{email}</strong> was created, but we
+                could not send the confirmation email. Go to sign in and ask for a new confirmation
+                link, or email support@purvex.io and we will confirm it for you.
+              </>
+            }
+          >
+            Account created
+          </AuthHeading>
+          <Link href={signInHref} className="am-secondary mt-8">
+            Go to sign in
+          </Link>
+        </AuthMinimal>
+      );
+    }
     return (
       <AuthMinimal product={product}>
         <AuthHeading
