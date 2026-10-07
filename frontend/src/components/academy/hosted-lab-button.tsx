@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { ArrowUpRight, LifeBuoy, Loader2, RotateCcw, Server } from "lucide-react";
+import { ArrowUpRight, LifeBuoy, Loader2, RotateCcw, Server, Terminal } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { openHelp } from "@/components/academy/get-help";
 import "./hosted-lab.css";
@@ -340,12 +340,9 @@ export function HostedLabMenu() {
   return (
     <section className={`hl hl--menu hl--${state}`} aria-label="Your lab">
       <header className="hl__top">
-        <span className="hl__mark" aria-hidden="true">
-          <Server className="h-5 w-5" />
-        </span>
         <div className="hl__id">
-          <p className="hl__kicker">Your lab</p>
           <p className="hl__title">PurveX Financial</p>
+          <p className="hl__domain">purvexfinancial.local</p>
         </div>
         <span className={`hl__state is-${labTone(state)}`}>
           <i aria-hidden="true" />
@@ -353,27 +350,38 @@ export function HostedLabMenu() {
         </span>
       </header>
 
-      <dl className="hl__specs">
-        <div>
-          <dt>Domain</dt>
-          <dd>purvexfinancial.local</dd>
-        </div>
-        <div>
-          <dt>{bothMachines ? "Machines" : "Machine"}</dt>
-          <dd className="hl__machines">
-            <span>Windows Server 2022{spec ? ` · ${spec}` : ""}</span>
-            {bothMachines && <span>Ubuntu 24.04 · {LINUX_SPEC}</span>}
-          </dd>
-        </div>
-        {typeof status.hoursLimit === "number" && status.hoursLimit > 0 && (
-          <div>
-            <dt>This month</dt>
-            <dd>
-              {status.hoursUsed ?? 0} of {status.hoursLimit} hours used
-            </dd>
-          </div>
+      {/* The lab is two machines, so they are the subject rather than a row in
+          a spec table. One tile each, side by side, the way they actually sit. */}
+      <ul className="hl__rigs">
+        <li>
+          <Server className="h-4 w-4" aria-hidden />
+          <strong>Windows Server 2022</strong>
+          <small>Domain controller{spec ? ` · ${spec}` : ""}</small>
+        </li>
+        {bothMachines && (
+          <li>
+            <Terminal className="h-4 w-4" aria-hidden />
+            <strong>Ubuntu 24.04</strong>
+            <small>Linux server · {LINUX_SPEC}</small>
+          </li>
         )}
-      </dl>
+      </ul>
+
+      {/* A budget you are spending is a quantity, so it gets a bar. A row of a
+          spec table made twenty hours a fact rather than something running out. */}
+      {typeof status.hoursLimit === "number" && status.hoursLimit > 0 && (
+        <div className="hl__budget">
+          <p>
+            <span>Lab hours this month</span>
+            <em>
+              {status.hoursUsed ?? 0} of {status.hoursLimit}
+            </em>
+          </p>
+          <span className="hl__meter" aria-hidden="true">
+            <i style={{ width: `${Math.min(100, ((status.hoursUsed ?? 0) / status.hoursLimit) * 100)}%` }} />
+          </span>
+        </div>
+      )}
 
       {/* A lab built before pods existed is one machine, and nothing else on
           this panel would ever tell them why their Ubuntu server is missing. */}

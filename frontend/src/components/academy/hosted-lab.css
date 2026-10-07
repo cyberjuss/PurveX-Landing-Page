@@ -59,6 +59,7 @@ html[data-academy-theme="dark"] .hl-note,
 .hl__mark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 0; color: #fff; background: var(--hl-accent); }
 .hl__id { display: grid; gap: 2px; min-width: 0; }
 .hl .hl__kicker { margin: 0; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--hl-ink-3); }
+.hl .hl__domain { margin: 3px 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; color: var(--hl-ink-3); }
 .hl .hl__title { margin: 0; font-size: 16px; font-weight: 650; letter-spacing: -0.015em; line-height: 1.2; color: var(--hl-ink); }
 
 /* A live state pill, so the lab's condition is never buried in a sentence. */
@@ -71,14 +72,22 @@ html[data-academy-theme="dark"] .hl-note,
 @keyframes hl-pulse { 50% { opacity: 0.25; } }
 
 /* The spec sheet: label on the left, value on the right, one fact a row. */
-.hl .hl__specs { display: grid; gap: 0; margin: 0; }
-/* 86px, not 62px: "This month" and "Machines" do not fit the old column. */
-.hl .hl__specs > div { display: grid; grid-template-columns: 86px 1fr; align-items: baseline; gap: 10px; padding: 7px 0; border-top: 1px solid var(--hl-line); }
-/* One line per machine, so a pod reads as two things rather than one long string. */
-.hl .hl__machines { display: grid; gap: 3px; }
+/* One tile per machine. Square, quiet fill, no table. */
+.hl .hl__rigs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0 0; padding: 0; list-style: none; }
+.hl .hl__rigs:has(li:only-child) { grid-template-columns: 1fr; }
+.hl .hl__rigs li { display: grid; gap: 3px; padding: 11px 12px; background: color-mix(in srgb, var(--hl-ink) 5%, transparent); box-shadow: inset 0 0 0 1px var(--hl-line); }
+.hl .hl__rigs svg { color: var(--hl-accent); }
+.hl .hl__rigs strong { font-size: 13px; font-weight: 650; line-height: 1.25; color: var(--hl-ink); }
+.hl .hl__rigs small { font-size: 11.5px; line-height: 1.35; color: var(--hl-ink-3); }
+
+/* Hours are something running out, so they get a meter rather than a table row. */
+.hl .hl__budget { margin-top: 14px; }
+.hl .hl__budget p { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 0 0 7px; font-size: 12px; color: var(--hl-ink-3); }
+.hl .hl__budget em { font-style: normal; font-variant-numeric: tabular-nums; color: var(--hl-ink-2); }
+.hl .hl__meter { display: block; height: 4px; background: color-mix(in srgb, var(--hl-ink) 12%, transparent); overflow: hidden; }
+.hl .hl__meter i { display: block; height: 100%; background: var(--hl-accent); }
+
 .hl .hl__legacy { margin: 10px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--hl-ink-3); }
-.hl .hl__specs dt { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--hl-ink-3); }
-.hl .hl__specs dd { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; line-height: 1.45; color: var(--hl-ink-2); overflow-wrap: anywhere; }
 
 @keyframes hl-ping {
   0% { transform: scale(0.6); opacity: 0.8; }
