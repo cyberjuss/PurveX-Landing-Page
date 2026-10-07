@@ -158,7 +158,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               [data-ax-account] > strong { display: block; margin-top: 4px; font-size: 20px; font-weight: 600; letter-spacing: -0.03em; }
               [data-ax-account] > span { display: block; margin: 2px 0 12px; font-size: 12px; opacity: 0.65; word-break: break-all; }
               [data-ax-account] .ax-account__score { display: block; padding: 14px 0 12px; border-top: 1px solid rgba(255,255,255,0.12); border-bottom: 1px solid rgba(255,255,255,0.12); }
-              [data-ax-account] .ax-account__score em { display: block; margin: 6px 0 4px; font-size: 36px; font-style: normal; font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: #9eb0ff; }
+              [data-ax-account] .ax-account__score em { display: block; margin: 6px 0 4px; font-size: 36px; font-style: normal; font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: #9a8cff; }
               [data-ax-account] .ax-account__score small { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.55; }
               [data-ax-account] .ax-account__score b { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 13px; font-weight: 600; }
               [data-ax-account] .ax-account__ask { display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding: 14px 0 12px; border-bottom: 1px solid rgba(255,255,255,0.12); }

@@ -120,13 +120,20 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               }`}
             >
               <ul className="flex flex-col gap-0.5 overflow-hidden border-l border-[var(--pvrx-border-light)] pl-3">
-                {entries.map((entry) => {
+                {entries.map((entry, n) => {
                   const href = `/range/${phase.slug}/${entry.slug}`;
+                  // The home labs all begin "Home Lab — ", which repeated the
+                  // same eleven characters down the rail and pushed the real
+                  // title into an ellipsis. One heading carries it instead.
+                  const isLab = (phase.homeLabs ?? []).some((l) => l.slug === entry.slug);
+                  const firstLab = isLab && n > 0 && !(phase.homeLabs ?? []).some((l) => l.slug === entries[n - 1].slug);
+                  const label = isLab ? entry.title.replace(/^Home Lab\s*[—-]\s*/, "") : entry.title;
                   const active = pathname === href;
                   const done = isComplete(phase.slug, entry.slug);
                   const hasContent = entry.sections.length > 0;
                   return (
                     <li key={entry.slug} className="relative">
+                      {firstLab && <span className="ax-sidegroup">Home Lab</span>}
                       <span aria-hidden className={`ax-sidemark${active ? " ax-sidemark--on" : ""}`} />
                       {hasContent ? (
                         <Link
@@ -139,12 +146,12 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                           >
                             {done && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
                           </span>
-                          <span className="truncate">{entry.title}</span>
+                          <span className="truncate">{label}</span>
                         </Link>
                       ) : (
                         <span className="ax-soon-row">
                           <span className="ax-check" />
-                          <span className="truncate">{entry.title}</span>
+                          <span className="truncate">{label}</span>
                           <em>Soon</em>
                         </span>
                       )}

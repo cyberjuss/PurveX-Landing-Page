@@ -28,7 +28,7 @@ html[data-academy-theme="dark"] .hl-note,
   --hl-ink: #e8eef8;
   --hl-ink-2: #b9c2d6;
   --hl-ink-3: #7f889c;
-  --hl-line: rgba(180, 200, 255, 0.18);
+  --hl-line: rgba(255, 255, 255, 0.18);
   /* The portal's purple in both themes. */
   --hl-accent: #5546e0;
   --hl-accent-hi: #4636c9;

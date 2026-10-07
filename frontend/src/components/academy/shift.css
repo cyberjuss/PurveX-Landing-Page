@@ -45,7 +45,7 @@
   --rd-line: rgba(255, 255, 255, 0.09);
   --rd-line-2: rgba(255, 255, 255, 0.05);
   --rd-surface: rgba(255, 255, 255, 0.03);
-  --rd-accent: #9eb0ff;
+  --rd-accent: #9a8cff;
   --rd-good: #34d399;
   --rd-warn: #fbbf24;
   --rd-bad: #f87171;
@@ -68,7 +68,7 @@
   mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%);
   -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%);
 }
-.shift-app[data-academy-theme="dark"]::before { background-image: radial-gradient(rgba(180, 200, 255, 0.09) 2px, transparent 2px); }
+.shift-app[data-academy-theme="dark"]::before { background-image: radial-gradient(rgba(255, 255, 255, 0.09) 2px, transparent 2px); }
 .shift-app > * { position: relative; z-index: 1; }
 /* Center the single child when it fits, but let it scroll when it is taller than
    the viewport. align-items: center would clip the top, so use auto margins. */
