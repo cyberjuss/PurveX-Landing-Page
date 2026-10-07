@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { sendEmail } from "@/lib/email";
-import { signupConfirmEmail } from "@/lib/academy-emails";
+import { passwordResetEmail, signupConfirmEmail } from "@/lib/academy-emails";
 import { mailGuard, safeRedirect } from "@/lib/auth-guard";
 
 export const runtime = "nodejs";
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   if (!email || !password) return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
   if (!supabaseAdmin) return NextResponse.json({ error: "Sign-up is not configured yet." }, { status: 503 });
   if (!mailGuard(request, email)) {
-    return NextResponse.json({ error: "Too many attempts. Wait a few minutes and try again." }, { status: 429 });
+    return NextResponse.json({ error: "Too many attempts. Wait a minute and try again." }, { status: 429 });
   }
 
   const { data, error } = await supabaseAdmin.auth.admin.generateLink({
@@ -33,20 +33,31 @@ export async function POST(request: Request) {
     options: redirectTo ? { redirectTo } : undefined,
   });
   if (error) {
-    // Supabase answers "User already registered" for an address that exists,
-    // and passing that through turned sign-up into a way to test whether any
-    // given person has an account here. resend-confirmation already refuses to
-    // answer that question, so this was the hole in the same rule.
     console.error(`[signup] generateLink failed for ${email}:`, error.message);
-    const taken = /already|exist|registered/i.test(error.message || "");
-    return NextResponse.json(
-      {
-        error: taken
-          ? "If that address can be used, we have sent a confirmation link. Check your inbox, or reset your password."
-          : "Could not create your account. Check the address and try again.",
-      },
-      { status: 400 }
-    );
+    // Supabase answers "User already registered" for an address that exists.
+    // Wording it differently is not enough, because the status code answers the
+    // same question on its own: a taken address replied 400 where a new one
+    // replied 200, so sign-up could still be used to test whether any given
+    // person has an account here.
+    //
+    // So a taken address gets the success response, byte for byte, and the
+    // person who actually owns it gets a reset link rather than a second
+    // confirmation it has no use for. Someone probing learns nothing; someone
+    // who forgot they had signed up gets the mail that helps.
+    if (/already|exist|registered/i.test(error.message || "")) {
+      const back = await supabaseAdmin.auth.admin.generateLink({
+        type: "recovery",
+        email,
+        options: redirectTo ? { redirectTo } : undefined,
+      });
+      const link = back.data?.properties?.action_link;
+      if (link) {
+        const mail = passwordResetEmail(link);
+        await sendEmail(email, mail.subject, mail.html).catch(() => false);
+      }
+      return NextResponse.json({ ok: true, emailed: true });
+    }
+    return NextResponse.json({ error: "Could not create your account. Check the address and try again." }, { status: 400 });
   }
 
   const link = data?.properties?.action_link;

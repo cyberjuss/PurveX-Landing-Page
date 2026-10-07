@@ -74,10 +74,28 @@ export function clientKey(request: Request | NextRequest): string {
 }
 
 /**
- * One call per email and one per caller, so neither a single address nor a
- * single source can be used to send in bulk. Three an address in fifteen
- * minutes covers a genuine retry; ten a caller covers a shared office.
+ * Three limits, because any one of them alone is either useless or a weapon.
+ *
+ * Every per-recipient limit is also a way to lock that recipient out: anyone can
+ * name someone else's address, so whatever allowance it has can be spent by a
+ * stranger. A generous per-address window therefore cuts both ways, and a long
+ * one is worse than the flooding it prevents -- somebody locked out of their
+ * account cannot wait a quarter of an hour for the reset mail they need. So the
+ * per-address rule is a short cooldown and nothing more: the worst an attacker
+ * can do with it is make a real user press the button again a minute later.
+ *
+ * The bulk protection sits where the attacker cannot aim it at a victim. The
+ * caller limit stops one source sending in volume, and the global limit is what
+ * actually protects the Resend quota and the domain's reputation, since it holds
+ * however many addresses or sources a flood is spread across.
  */
 export function mailGuard(request: Request, email: string): boolean {
-  return throttle(`ip:${clientKey(request)}`, 10, 15 * 60_000) && throttle(`em:${email}`, 3, 15 * 60_000);
+  return (
+    // However it is distributed, we will not send more than this in a quarter of
+    // an hour. Far above any real signup rate, far below a reputation problem.
+    throttle("all", 200, 15 * 60_000) &&
+    throttle(`ip:${clientKey(request)}`, 10, 15 * 60_000) &&
+    // One per minute per address. A cooldown, deliberately not a lockout.
+    throttle(`em:${email}`, 1, 60_000)
+  );
 }

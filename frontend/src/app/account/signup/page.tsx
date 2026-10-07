@@ -189,10 +189,14 @@ function PortalSignupContent() {
         <AuthHeading
           sub={
             <>
-              We sent a confirmation link to <strong className="text-[#10192e]">{email}</strong>.{" "}
+              {/* "a link" rather than "a confirmation link": an address that
+                  already has an account is sent a reset link instead, and this
+                  screen must read the same either way or it answers whether
+                  that account exists. */}
+              We sent a link to <strong className="text-[#10192e]">{email}</strong>.{" "}
               {plan
-                ? `Confirm your email and you will be taken straight to your ${plan} plan.`
-                : "Confirm your email, then come back and sign in to choose a plan."}
+                ? `Open it and you will be taken straight to your ${plan} plan.`
+                : "Open it, then come back and sign in to choose a plan."}
             </>
           }
         >
