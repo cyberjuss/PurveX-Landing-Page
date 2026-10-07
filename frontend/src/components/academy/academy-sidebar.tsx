@@ -3,9 +3,9 @@
 import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookMarked, Check, ChevronDown, FlaskConical, Lock } from "lucide-react";
+import { ArrowRight, BookMarked, Check, ChevronDown, FlaskConical, Lock } from "lucide-react";
 import { type PhaseDef } from "@/lib/academy-content";
-import { entriesOf } from "@/lib/academy-entries";
+import { entriesOf, labLinksOf } from "@/lib/academy-entries";
 import { useAcademyProgress } from "./academy-progress";
 import { isPhaseLocked } from "@/lib/academy-locks";
 
@@ -14,6 +14,14 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
   const { isComplete, isPhaseComplete, requirements, completedCount, totalCount } = useAcademyProgress();
   // Only the Home Lab group collapses now, so one Set of open slugs is enough.
   const [manualOpen, setManualOpen] = useState<Set<string>>(new Set());
+  // The hands-on labs, flattened out of the same phases the rail is built from.
+  // They live inside weeks, so this is the only place the rail can list them
+  // as labs rather than as a tab buried in whichever week owns them.
+  //
+  // Locked phases are dropped first. The rail hides a locked phase's weeks, so
+  // listing its labs here would hand out the one thing the lock exists to hold
+  // back. Read the Sign-In Log sits in phase 2 and is the live example.
+  const labLinks = labLinksOf(phases.filter((p) => !isPhaseLocked(p.slug)));
 
   const toggleManualOpen = (slug: string) =>
     setManualOpen((prev) => {
@@ -171,6 +179,37 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
             >
               <ul className="ax-list flex flex-col overflow-hidden">
                 {labs.map(row)}
+                {labLinks.length > 0 && (
+                  <li className="ax-sublabel" aria-hidden="true">
+                    Labs
+                  </li>
+                )}
+                {labLinks.map((lab) => {
+                  const href = `/range/labs/${lab.slug}`;
+                  return (
+                    <li key={lab.slug}>
+                      <Link
+                        href={href}
+                        onClick={onNavigate}
+                        className={`ax-week${pathname === href ? " ax-week--on" : ""}`}
+                      >
+                        <span className="ax-week__name truncate">{lab.title}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+                {labLinks.length > 0 && (
+                  <li>
+                    <Link
+                      href="/range/labs"
+                      onClick={onNavigate}
+                      className={`ax-week ax-week--all${pathname === "/range/labs" ? " ax-week--on" : ""}`}
+                    >
+                      <span className="ax-week__name truncate">All labs</span>
+                      <ArrowRight className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                    </Link>
+                  </li>
+                )}
               </ul>
             </div>
           </div>
@@ -219,17 +258,6 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           </Fragment>
         );
       })}
-
-      <Link
-        href="/range/labs"
-        onClick={onNavigate}
-        className={`flex items-center gap-2 font-mono text-[length:var(--ty-body)] font-bold uppercase tracking-[0.08em] transition ${
-          pathname.startsWith("/range/labs") ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
-        }`}
-      >
-        <FlaskConical className="h-3 w-3 shrink-0" />
-        <span className="truncate">Labs — Hands-On</span>
-      </Link>
 
       <Link
         href="/range/reference"

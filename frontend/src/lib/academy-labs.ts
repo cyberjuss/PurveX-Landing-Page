@@ -1,5 +1,5 @@
 import { phases, type LabWidget, type WeekDef } from "@/lib/academy-content";
-import { entriesOf } from "@/lib/academy-entries";
+import { entriesOf, labSlug } from "@/lib/academy-entries";
 
 // Every hands-on lab in the course, flattened so the Labs page can give each
 // one its own card and its own page. The card art (icon, accent, blurb) lives
@@ -43,17 +43,12 @@ const ART: Record<string, { blurb: string; skill: string; icon: string; accent: 
 
 const FALLBACK = { blurb: "A hands-on lab in the PurveX environment.", skill: "Hands-on", icon: "FlaskConical", accent: "#5546e0", minutes: 15 };
 
-function slugForLab(file: string, widget?: LabWidget): string {
-  if (widget) return widget;
-  const base = file.split("/").pop() ?? file;
-  return base.replace(/^lab-/, "").replace(/\.md$/, "");
-}
 
 function labsInEntry(phaseLabel: string, phaseSlug: string, entry: WeekDef): LabMeta[] {
   return entry.sections
     .filter((s) => s.label.startsWith("Lab:"))
     .map((s) => {
-      const slug = slugForLab(s.file, s.widget);
+      const slug = labSlug(s.file, s.widget);
       const art = ART[slug] ?? FALLBACK;
       return {
         slug,
