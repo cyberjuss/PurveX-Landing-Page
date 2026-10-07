@@ -8,6 +8,7 @@ import { READINESS_PATH, useResults } from "@/lib/academy-client";
 import { CHALLENGE_LABELS, challengeHref, lastTouchedMission } from "@/lib/academy-missions";
 import { LEVELS, summarize } from "@/lib/academy-score";
 import { DrillCard } from "./drill-card";
+import { AcademyTour } from "./tour";
 import { accountFirstName, useAcademyAccount } from "./academy-account";
 import { useAcademyProgress } from "./academy-progress";
 import { isLockedHref, isPhaseLocked } from "@/lib/academy-locks";
@@ -88,7 +89,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
             <h1>{firstName ? `${greeting} ${firstName}` : greeting}</h1>
             <p>Work the same problems a new hire sees. Fundamentals first then a live directory then alerts and logs.</p>
           </div>
-          <Link href={READINESS_PATH} className="ax-status__score">
+          <Link href={READINESS_PATH} className="ax-status__score" data-tour="readiness">
             <span className="rd-kicker">Readiness</span>
             <strong>
               {readiness.finished === 0 ? "––" : readiness.overall}
@@ -99,7 +100,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
         </div>
         <div className="ax-status ax-rise" style={{ ["--ax-i" as string]: 0 }}>
           {resume ? (
-            <Link href={resume.href} className="ax-status__next">
+            <Link href={resume.href} className="ax-status__next" data-tour="next">
               <span className="rd-kicker">{resume.kind === "last" ? "Last stop" : "Start here"}</span>
               <strong>
                 {resume.title} <ArrowRight className="h-4 w-4" />
@@ -114,11 +115,11 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
         </div>
       </header>
 
-      <div className="ax-rise" style={{ ["--ax-i" as string]: 1 }}>
+      <div className="ax-rise" style={{ ["--ax-i" as string]: 1 }} data-tour="drills">
         <DrillCard />
       </div>
 
-      <ol className="ax-path">
+      <ol className="ax-path" data-tour="path">
         {PHASE_COPY.map((copy, i) => {
           const phase = phases.find((p) => p.slug === copy.slug);
           const entries = entriesOf(phase);
@@ -182,6 +183,8 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
           );
         })}
       </ol>
+
+      <AcademyTour />
     </div>
   );
 }

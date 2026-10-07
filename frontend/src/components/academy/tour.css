@@ -1,0 +1,70 @@
+/* First-run tour. Portaled to <body>, so it carries its own colours rather than
+   relying on an academy token being in scope. Square corners to match the rest
+   of Range. */
+.tour {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  --tour-ink: #0f172a;
+  --tour-ink-2: #475569;
+  --tour-ink-3: #8a94a8;
+  --tour-surface: #ffffff;
+  --tour-line: rgba(15, 23, 42, 0.1);
+  --tour-accent: #5546e0;
+}
+[data-academy-theme="dark"] .tour,
+.academy-bg[data-academy-theme="dark"] ~ .tour {
+  --tour-ink: #eef2ff;
+  --tour-ink-2: #c3cbe8;
+  --tour-ink-3: #8f9ac0;
+  --tour-surface: #141a2e;
+  --tour-line: rgba(180, 200, 255, 0.16);
+  --tour-accent: #9eb0ff;
+}
+
+/* The scrim is a real button so Escape is not the only way out. */
+.tour__scrim { position: fixed; inset: 0; border: 0; padding: 0; background: rgba(8, 12, 24, 0.58); cursor: pointer; }
+
+/* The cut-out. A huge spread shadow dims everything except this rectangle, which
+   avoids an SVG mask and keeps the highlighted control fully readable. */
+.tour__ring {
+  position: fixed;
+  pointer-events: none;
+  border: 2px solid var(--tour-accent);
+  border-radius: 4px;
+  box-shadow: 0 0 0 9999px rgba(8, 12, 24, 0.58);
+  transition: top 0.22s ease, left 0.22s ease, width 0.22s ease, height 0.22s ease;
+}
+
+.tour__card {
+  position: fixed;
+  width: min(344px, calc(100vw - 32px));
+  padding: 20px 22px 18px;
+  background: var(--tour-surface);
+  border: 1px solid var(--tour-line);
+  box-shadow: 0 18px 48px -18px rgba(8, 12, 24, 0.55);
+  color: var(--tour-ink-2);
+  transition: top 0.22s ease, left 0.22s ease;
+}
+.tour__count { margin: 0 0 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tour-accent); }
+.tour__card h2 { margin: 0 0 8px; font-family: var(--font-display, inherit); font-size: 19px; font-weight: 650; letter-spacing: -0.015em; color: var(--tour-ink); }
+.tour__body { margin: 0; font-size: 14px; line-height: 1.55; }
+
+.tour__row { display: flex; align-items: center; gap: 8px; margin-top: 18px; }
+.tour__go { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 16px; border: 0; background: var(--tour-accent); color: #fff; font-size: 13.5px; font-weight: 650; cursor: pointer; }
+.tour__go:hover { filter: brightness(1.08); }
+.tour__ghost { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border: 1px solid var(--tour-line); background: none; color: var(--tour-ink-2); font-size: 13.5px; font-weight: 650; cursor: pointer; }
+.tour__ghost:hover { border-color: var(--tour-accent); color: var(--tour-accent); }
+.tour__skip { margin-left: auto; padding: 0; border: 0; background: none; color: var(--tour-ink-3); font-size: 13px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.tour__skip:hover { color: var(--tour-ink); }
+.tour__x { position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 28px; height: 28px; border: 0; background: none; color: var(--tour-ink-3); cursor: pointer; }
+.tour__x:hover { color: var(--tour-ink); }
+
+.tour__go:focus-visible, .tour__ghost:focus-visible, .tour__skip:focus-visible, .tour__x:focus-visible { outline: 2px solid var(--tour-accent); outline-offset: 2px; }
+
+/* Announced to a screen reader, which cannot see the ring. */
+.tour__live { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tour__ring, .tour__card { transition: none; }
+}

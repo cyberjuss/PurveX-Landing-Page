@@ -183,6 +183,7 @@ export function HostedLabButton() {
         aria-haspopup="dialog"
         aria-expanded={isOpen}
         title="Your lab"
+        data-tour="lab"
         className="flex h-9 items-center gap-2 rounded-md border border-[var(--pvrx-border-light)] bg-white px-3 text-sm font-semibold text-slate-600 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
       >
         <span className={`flex hl-lab--${tone}`}>
