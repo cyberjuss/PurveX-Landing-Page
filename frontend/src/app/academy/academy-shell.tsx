@@ -584,7 +584,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           return;
         }
         if (gate.stale) {
-          feedback.textContent = `Your lab is not live${gate.syncedAgo ? ` (it last reported ${gate.syncedAgo})` : ""}. Turn on your domain controller and wait for the lab light to turn green. If it stays grey, run Build-Environment.ps1 -SyncOnly as Administrator. This does not use an attempt.`;
+          feedback.textContent = `The lab is not live${gate.syncedAgo ? ` (it last reported ${gate.syncedAgo})` : ""}. Turn the domain controller on and wait for the lab light to go green. If it stays grey, run Build-Environment.ps1 -SyncOnly as Administrator. This does not use an attempt.`;
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
           placeMiss(wrap);
           return;
@@ -598,8 +598,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         if (!gate.passed) {
           const missing = (gate.results ?? []).filter((r) => !r.ok).map((r) => r.label).join("; ");
           feedback.textContent = missing
-            ? `Your lab does not show this change yet: ${missing}. Make the change, then submit again. This does not use an attempt.`
-            : "Your lab does not show this change yet. Make it, then submit again. This does not use an attempt.";
+            ? `The lab does not show this change yet: ${missing}. Make the change and submit again. This does not use an attempt.`
+            : "The lab does not show this change yet. Make it and submit again. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
           placeMiss(wrap);
           return;
@@ -609,7 +609,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         reply = await sendAnswer(missionId, guess);
         if (!reply || reply.blocked) {
           feedback.textContent = reply?.blocked
-            ? "Your lab does not show this change yet. Make it, then submit again. This does not use an attempt."
+            ? "The lab does not show this change yet. Make it and submit again. This does not use an attempt."
             : "Could not check your answer. Try submit again. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
           placeMiss(wrap);

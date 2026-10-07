@@ -65,7 +65,7 @@ export function PythonCell({
     const w = worker.current;
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => stop("Python took too long to start. Check your connection and run it again."), LOAD_MS);
-    w.onerror = () => stop("Python could not load here. Your network may block it. You can still answer from the log above.");
+    w.onerror = () => stop("Python could not load here. A network block is the usual cause. You can still answer from the log above.");
     w.onmessage = (e: MessageEvent<{ id: number; type: string; ok?: boolean; out?: string }>) => {
       if (e.data.id !== id) return;
       if (e.data.type === "running") {

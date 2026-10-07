@@ -107,7 +107,7 @@ export async function POST(request: Request) {
     else if (action === "reset") await resetHostedLab(student.id);
     else if (action === "open") {
       const url = await hostedLabLink(student.id);
-      if (!url) return NextResponse.json({ error: "Your lab is not running yet. Start it first." }, { status: 409 });
+      if (!url) return NextResponse.json({ error: "The lab is not running yet. Start it first." }, { status: 409 });
       return NextResponse.json({ url });
     } else return NextResponse.json({ error: "Unknown action." }, { status: 400 });
     return NextResponse.json(await hostedLabStatus(student.id));

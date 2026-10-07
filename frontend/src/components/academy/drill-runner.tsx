@@ -94,7 +94,7 @@ export function labLine(lab: DrillStatus["lab"]) {
 export function streakLine(s: DrillStatus["stats"]) {
   if (s.today) return s.streak > 1 ? `${s.streak} days in a row. See you tomorrow.` : "Done for today. Come back tomorrow to start a streak.";
   if (s.streak > 0) return `${s.streak}-day streak. Do today's scenario to keep it.`;
-  if (s.total > 0) return "Your streak reset. Start a new one today.";
+  if (s.total > 0) return "The streak reset. Start a new one today.";
   return "One scenario a day. About two minutes.";
 }
 
@@ -267,8 +267,8 @@ function LabFindings({ items }: { items: Finding[] }) {
           <span className="ax-path__title">What your lab needs</span>
           <span className="ax-path__body">
             {items.length === 0
-              ? "Nothing is wrong in your lab right now. Your daily case will be a judgement case."
-              : "A real audit of your own lab. Your daily lab task is one of these, and it is checked in your lab."}
+              ? "Nothing is wrong in your lab right now. The daily case will be a judgement case."
+              : "A real audit of your own lab. The daily lab task is one of these and it is checked in the lab."}
           </span>
         </span>
         <span className="ax-path__count">
@@ -345,7 +345,7 @@ function VerifyLab({ verified, onVerified }: { verified: boolean; onVerified: ()
           setNote("Verified. You can remove the code from the description now.");
           onVerified();
         } else {
-          setNote(data.fresh ? "Your lab reported, but the code is not in it yet. Check the description and try again." : "Waiting for a report that includes this code.");
+          setNote(data.fresh ? "The lab reported and the code is not in it yet. Check the description and try again." : "Waiting for a report that includes this code.");
         }
       }
     } catch (err) {
@@ -363,7 +363,7 @@ function VerifyLab({ verified, onVerified }: { verified: boolean; onVerified: ()
         <h2>Verify your lab</h2>
         <p>
           {verified
-            ? "Your lab is verified. A code you planted showed up in a live snapshot. Verify again any time."
+            ? "The lab is verified. A code you planted showed up in a live snapshot. Verify again any time."
             : "Plant a one-time code in your lab to show your snapshots come from a lab you control right now."}
         </p>
       </div>
@@ -1033,7 +1033,7 @@ export function DrillRunner() {
                       ? "A new investigation opens Monday."
                       : `One hard investigation a week, asked about your own Security log. ${
                           status.lab.events
-                            ? "Your lab sent its log, so this one is about what really happened in it."
+                            ? "The lab sent its log so this one is about what really happened in it."
                             : "Update the lab script from Build the Environment so it can ask about your own Security log."
                         }`}
                   </span>

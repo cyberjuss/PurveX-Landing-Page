@@ -569,10 +569,10 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
           {result && !result.resolved && (
             <div className="sh-result sh-result--wait">
               {result.needFinding
-                ? "Your fix is in. Now answer the question correctly to close this incident."
+                ? "The fix is in. Now answer the question correctly to close this incident."
                 : result.waiting
                   ? "Waiting for your lab to report the change. Make the fix, then check again in about a minute."
-                  : "Your lab does not show this fix yet:"}
+                  : "The lab does not show this fix yet:"}
               {!result.waiting && !result.needFinding && <ul>{result.results.filter((r) => !r.ok).map((r, i) => <li key={i}>{r.label}</li>)}</ul>}
             </div>
           )}

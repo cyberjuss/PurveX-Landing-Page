@@ -161,7 +161,7 @@ export function buildLogCtf(params: { snapshot: LabSnapshot; seed: string; level
     title: q.title,
     story: q.story,
     prompt: q.prompt,
-    evidence: ["Your evidence is the real Security log on your own domain controller.", ...q.where],
+    evidence: ["The evidence is the real Security log on your own domain controller.", ...q.where],
     choices: [],
     answer: q.answer,
     accept: q.accept,

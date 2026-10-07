@@ -267,7 +267,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripeE
         <strong>purvex.io/my-license</strong>. Download it there and upload it in
         <strong>Settings &rarr; License</strong> in your PurveX instance -- it takes effect immediately, no
         restart needed.</p>
-        <p>Your key is valid for ${LICENSE_DAYS} days and renews automatically with your subscription -- check
+        <p>The key is valid for ${LICENSE_DAYS} days and renews automatically with your subscription -- check
         back at that same page each cycle for the current one, no action needed on your end as long as you
         stay subscribed.</p>
         <p>Questions in the meantime? Just reply to this email.</p>

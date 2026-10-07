@@ -236,7 +236,7 @@ export function HostedLabSetupNote() {
         <Server className="h-5 w-5" />
       </span>
       <div className="hl-note__text">
-        <p className="hl-note__title">Your lab is hosted. Skip this setup.</p>
+        <p className="hl-note__title">The lab is hosted for you. Skip this setup.</p>
         <p className="hl-note__body">Range already built PurveX Financial on your own server with the ticket objects and Coach sync in place, so read this tab to see what the setup does and then work in your hosted lab.</p>
       </div>
       <button type="button" className="hl-note__go" onClick={primary} disabled={busy || state === "starting" || state === "stopping"}>

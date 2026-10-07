@@ -105,7 +105,7 @@ function ResetPasswordContent() {
   if (phase === "success") {
     return (
       <AuthMinimal>
-        <AuthHeading sub="Your password has been reset. You can sign in with it now.">Password updated</AuthHeading>
+        <AuthHeading sub="That password is reset. You can sign in with it now.">Password updated</AuthHeading>
         <Link href={next} className="am-primary mt-8">
           Continue to sign in
         </Link>

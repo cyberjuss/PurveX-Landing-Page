@@ -222,7 +222,7 @@ export async function startShift(userId: string): Promise<{ shift?: PublicShift;
   // The lab must be Online: running and linked, so incidents can be fired into it.
   const status = await hostedLabStatus(userId).catch(() => null);
   if (status?.state !== "ready") {
-    return { error: "Your lab is not Online yet. Start it and wait until it is running, then begin your shift." };
+    return { error: "The lab is not Online yet. Start it and wait until it is running before you begin the shift." };
   }
   const [entries, results, profile] = await Promise.all([loadDrills(userId), loadProgress(userId), loadProfile(userId)]);
   const roles = profile?.roles ?? [];

@@ -48,7 +48,7 @@ export async function loadProofData(userId: string): Promise<ProofData> {
 /** Why the profile cannot be shared yet. Empty means it can. */
 export function shareBlockers(items: WorkItem[]): string[] {
   const out: string[] = [];
-  if (!items.length) out.push("Finish a lab task or Ticket Queue ticket first. Your portfolio shows confirmed lab work.");
+  if (!items.length) out.push("Finish a lab task or Ticket Queue ticket first. The portfolio shows confirmed lab work.");
   return out;
 }
 

@@ -61,7 +61,7 @@ export function studentWelcomeEmail(student: Named, cls: AcademyClass, o: string
   const html =
     pre("Your first lab is ready.") +
     h(`Welcome to ${cls.name}`) +
-    p(`Hi ${esc(first(student.name))}, welcome to ${esc(cls.name)}. Your training is ready, with hands-on labs that are graded against a live environment, so you build the skills the job actually asks for rather than test-taking ones.`) +
+    p(`Hi ${esc(first(student.name))}, welcome to ${esc(cls.name)}. The training is ready, with hands-on labs graded against a live environment, so you build the skills the job actually asks for rather than test-taking ones.`) +
     button(`${url}/range`, "Start training") +
     note("You can sign in with this email any time and pick up where you left off.");
   return { subject: `Welcome to ${cls.name} on PurveX Range`, html };
@@ -71,12 +71,12 @@ export function studentWelcomeEmail(student: Named, cls: AcademyClass, o: string
 export function studentNudgeEmail(student: Named, o: string): Built {
   const url = base(o);
   const html =
-    pre("Your lab is where you left it.") +
+    pre("The lab is where you left it.") +
     h(`Pick up where you left off, ${first(student.name)}`) +
     p("It has been about a week since your last session, and your lab is exactly where you left it. Ten minutes is enough to get moving again and keep your momentum going.") +
     button(`${url}/range`, "Jump back in") +
     note("Even a single daily drill keeps your streak alive.");
-  return { subject: "Your lab is waiting", html };
+  return { subject: "The lab is waiting for you", html };
 }
 
 export type DigestInput = {

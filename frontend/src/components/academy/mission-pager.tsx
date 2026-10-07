@@ -269,7 +269,7 @@ export function MissionPager({
             ) : null}
           </div>
           {lab.available && (lab.state === "none" || lab.state === "stopped") ? (
-            <p className="ad-brief-start__note">Your lab boots while you read question 1.</p>
+            <p className="ad-brief-start__note">The lab boots while you read question 1.</p>
           ) : null}
         </div>
       ) : null}

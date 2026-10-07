@@ -409,7 +409,7 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
 
       {s.step === 2 && (
         <div className="rt-body">
-          <Head title="What do you fix first?">Put the tickets in the order you would work them, first at the top. Your own risk scores are shown to help.</Head>
+          <Head title="What do you fix first?">Put the tickets in the order you would work them with the first at the top. The risk scores you gave are shown to help.</Head>
           <div className="rt-work">
             <div className="rt-work__main">
           <ol className="rt-rank">

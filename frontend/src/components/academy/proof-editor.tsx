@@ -358,7 +358,7 @@ export function ProofEditor() {
         <>
           <section className="pf-sec">
             <h2>Nothing to show yet</h2>
-            <p>Your portfolio fills in as the lab confirms your work. Pick a task below. Your lab must be connected, with the lab light green.</p>
+            <p>The portfolio fills in as the lab confirms your work. Pick a task below. The lab has to be connected with its light green.</p>
           </section>
           {todoSection}
         </>
@@ -373,7 +373,7 @@ export function ProofEditor() {
                   <small>
                     {settings.published
                       ? "Anyone with your link or QR code can see your portfolio, and your credential shows as valid."
-                      : "Only you can see your portfolio. Your link shows nothing and your credential shows as not active."}
+                      : "Only you can see your portfolio. The link shows nothing and the credential reads as not active."}
                   </small>
                 </div>
                 <button
@@ -383,7 +383,7 @@ export function ProofEditor() {
                   aria-label="Make my portfolio public"
                   className="pf-switch"
                   disabled={busy || data.locked || (!settings.published && data.blockers.length > 0)}
-                  onClick={() => save({ published: !settings.published }, settings.published ? "Your portfolio is private. Your link no longer works." : "Your portfolio is public.")}
+                  onClick={() => save({ published: !settings.published }, settings.published ? "The portfolio is private. The link no longer works." : "The portfolio is public.")}
                 />
               </div>
               {/* Shown instead of the blockers list, not alongside it: on
