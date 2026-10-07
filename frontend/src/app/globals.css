@@ -4464,8 +4464,12 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
     transform var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1));
 }
 .ax-sidemark--on { opacity: 1; transform: translateY(-50%) scaleY(1); }
-/* One heading for the home-lab sittings, so each row carries only its own name. */
-.ax-sidegroup { display: block; margin: 10px 0 4px; padding-left: 2px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3, #74747e); }
+/* The home-lab sittings are their own collapsible group, so the four of them
+   do not sit alongside the weeks as though they were more of the same. */
+.ax-sidegroup { display: flex; width: 100%; align-items: center; gap: 7px; margin: 10px 0 2px; padding: 4px 0; border: 0; background: none; font-family: var(--font-mono, ui-monospace, monospace); font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-ink-3, #74747e); cursor: pointer; transition: color 0.15s; }
+.ax-sidegroup:hover { color: var(--rd-accent, #5546e0); }
+.ax-sidegroup svg:last-child { margin-left: auto; }
+.ax-sidegroup:focus-visible { outline: 2px solid var(--rd-accent, #5546e0); outline-offset: 2px; }
 
 .ax-sidelink { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 15px; color: var(--rd-ink-2); transition: color var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)); }
 .ax-sidelink:hover, .ax-sidelink--on { color: var(--rd-ink); }
@@ -4659,6 +4663,10 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--rd-ink-3);
 }
+/* The one row in this menu that is an offer rather than a destination. */
+.ax-account__pro { color: var(--rd-accent, #5546e0); font-weight: 650; }
+.ax-account__pro:hover { color: var(--rd-accent, #5546e0); }
+
 .ax-account__out {
   display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
   font-size: 13px; font-weight: 600; color: var(--rd-ink-2);

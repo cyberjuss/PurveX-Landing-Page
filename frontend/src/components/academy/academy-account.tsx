@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Headset, LifeBuoy, LogOut, Target, Users } from "lucide-react";
+import { ArrowRight, BadgeCheck, Sparkles, Headset, LifeBuoy, LogOut, Target, Users } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { openHelp } from "@/components/academy/get-help";
 import type { StudentProfile } from "@/lib/academy-certs";
@@ -104,6 +104,20 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
         setTeaches(Boolean(d?.instructor));
         setOwner(Boolean(d?.owner));
       })
+      .catch(() => {});
+  }, [open]);
+
+  // Every other route to the upgrade page is a dead end you only meet after
+  // bumping into something you cannot use. A free account browsing lessons had
+  // no way to buy until it hit a wall.
+  const [isFree, setIsFree] = useState(false);
+  const askedPlan = useRef(false);
+  useEffect(() => {
+    if (!open || askedPlan.current) return;
+    askedPlan.current = true;
+    academyFetch("/academy/api/plan", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { plan?: string } | null) => setIsFree(d?.plan === "free"))
       .catch(() => {});
   }, [open]);
 
@@ -238,6 +252,11 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               <Link href="/range/portfolio" className="ax-account__out" onClick={() => setOpen(false)}>
                 <BadgeCheck className="h-3.5 w-3.5" /> Portfolio
               </Link>
+              {isFree && (
+                <Link href="/range/upgrade" className="ax-account__out ax-account__pro" onClick={() => setOpen(false)}>
+                  <Sparkles className="h-3.5 w-3.5" /> Upgrade to Pro
+                </Link>
+              )}
               {teaches && (
                 <Link href="/range/instructor" className="ax-account__out" onClick={() => setOpen(false)}>
                   <Users className="h-3.5 w-3.5" /> {owner ? "Owner view" : "Instructor view"}

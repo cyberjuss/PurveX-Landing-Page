@@ -88,6 +88,39 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
             </div>
           );
         }
+        const labs = phase.homeLabs ?? [];
+        const labsKey = `${phase.slug}:labs`;
+        // Open when you are inside one of them, or when you have opened it by
+        // hand. Collapsed otherwise, so four sittings do not crowd the weeks.
+        const labsOpen =
+          labs.some((l) => pathname === `/range/${phase.slug}/${l.slug}`) || manualOpen.has(labsKey);
+        const row = (entry: PhaseDef["weeks"][number]) => {
+          const href = `/range/${phase.slug}/${entry.slug}`;
+          // Each sitting is titled "Home Lab — X". The group heading carries
+          // the prefix so the row keeps only the part that differs.
+          const label = entry.title.replace(/^Home Lab\s*[—-]\s*/, "");
+          const active = pathname === href;
+          const done = isComplete(phase.slug, entry.slug);
+          return (
+            <li key={entry.slug} className="relative">
+              <span aria-hidden className={`ax-sidemark${active ? " ax-sidemark--on" : ""}`} />
+              {entry.sections.length > 0 ? (
+                <Link href={href} onClick={onNavigate} className={`ax-sidelink ${active ? "ax-sidelink--on" : ""}`}>
+                  <span className={`ax-check ${done ? "ax-check--done" : ""}`}>
+                    {done && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
+                  </span>
+                  <span className="truncate">{label}</span>
+                </Link>
+              ) : (
+                <span className="ax-soon-row">
+                  <span className="ax-check" />
+                  <span className="truncate">{label}</span>
+                  <em>Soon</em>
+                </span>
+              )}
+            </li>
+          );
+        };
         return (
           <div key={phase.slug}>
             {hasDestination ? (
@@ -119,46 +152,30 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 phaseOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
               }`}
             >
-              <ul className="flex flex-col gap-0.5 overflow-hidden border-l border-[var(--pvrx-border-light)] pl-3">
-                {entries.map((entry, n) => {
-                  const href = `/range/${phase.slug}/${entry.slug}`;
-                  // The home labs all begin "Home Lab — ", which repeated the
-                  // same eleven characters down the rail and pushed the real
-                  // title into an ellipsis. One heading carries it instead.
-                  const isLab = (phase.homeLabs ?? []).some((l) => l.slug === entry.slug);
-                  const firstLab = isLab && n > 0 && !(phase.homeLabs ?? []).some((l) => l.slug === entries[n - 1].slug);
-                  const label = isLab ? entry.title.replace(/^Home Lab\s*[—-]\s*/, "") : entry.title;
-                  const active = pathname === href;
-                  const done = isComplete(phase.slug, entry.slug);
-                  const hasContent = entry.sections.length > 0;
-                  return (
-                    <li key={entry.slug} className="relative">
-                      {firstLab && <span className="ax-sidegroup">Home Lab</span>}
-                      <span aria-hidden className={`ax-sidemark${active ? " ax-sidemark--on" : ""}`} />
-                      {hasContent ? (
-                        <Link
-                          href={href}
-                          onClick={onNavigate}
-                          className={`ax-sidelink ${active ? "ax-sidelink--on" : ""}`}
-                        >
-                          <span
-                            className={`ax-check ${done ? "ax-check--done" : ""}`}
-                          >
-                            {done && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
-                          </span>
-                          <span className="truncate">{label}</span>
-                        </Link>
-                      ) : (
-                        <span className="ax-soon-row">
-                          <span className="ax-check" />
-                          <span className="truncate">{label}</span>
-                          <em>Soon</em>
-                        </span>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
+              <div className="flex flex-col overflow-hidden border-l border-[var(--pvrx-border-light)] pl-3">
+                <ul className="flex flex-col gap-0.5">{phase.weeks.map(row)}</ul>
+                {labs.length > 0 && (
+                  <>
+                    <button
+                      type="button"
+                      className="ax-sidegroup"
+                      aria-expanded={labsOpen}
+                      onClick={() => toggleManualOpen(labsKey)}
+                    >
+                      <FlaskConical className="h-3 w-3 shrink-0" aria-hidden />
+                      <span className="truncate">Home Lab</span>
+                      <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${labsOpen ? "" : "-rotate-90"}`} />
+                    </button>
+                    <div
+                      className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
+                        labsOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                      }`}
+                    >
+                      <ul className="flex flex-col gap-0.5 overflow-hidden">{labs.map(row)}</ul>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         );
