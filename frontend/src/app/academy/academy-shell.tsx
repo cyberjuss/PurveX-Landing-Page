@@ -1286,7 +1286,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
                   <X className="h-[18px] w-[18px]" />
                 </button>
               </div>
-              <div className="h-[calc(100%-65px)] overflow-y-auto pb-[env(safe-area-inset-bottom)]">
+              <div className="ax-scroll h-[calc(100%-65px)] overflow-y-auto pb-[env(safe-area-inset-bottom)]">
                 <AcademySidebar phases={phases} onNavigate={() => setSidebarOpen(false)} />
               </div>
             </div>

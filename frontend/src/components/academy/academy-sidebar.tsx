@@ -64,7 +64,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
     });
 
   return (
-    <nav className="flex h-full flex-col gap-6 overflow-y-auto px-5 py-6">
+    <nav className="ax-scroll flex h-full flex-col gap-6 overflow-y-auto px-5 py-6">
       <div className="ax-sideprog">
         <div className="ax-sideprog__row">
           <span className="rd-kicker">Course progress</span>
