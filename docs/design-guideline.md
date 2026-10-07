@@ -50,9 +50,19 @@ is why a lesson read at 17px beside a lab panel at 13px.
   `.academy-bg[data-academy-theme="dark"]`, so most of the portal re-themes
   from one block.
 
-**Known debt:** 125 distinct hex values are still hardcoded in portal CSS, and
-`#fff` and `#ffffff` are both in heavy use as the same colour. That is the next
-consolidation, and it is larger than the type or motion ones.
+**On the 125 hardcoded hex values.** That number, quoted earlier as debt, turned
+out to overstate the problem. Auditing them against dark mode found 477 rules
+holding a literal, of which almost all are either a fallback behind a
+theme-aware token (`var(--rd-ink, #0f172a)`), a theme definition block that has
+to hold literals, a background rather than text, or already covered by an
+explicit dark override. One rule was genuinely broken: `.ad-code > summary`
+drew `#5546e0` on a surface that is `#000000` in dark mode, 3.34:1. It now uses
+`--rd-accent` and reads 7.57:1.
+
+Seventeen bare `color: #5546e0` literals moved onto `var(--rd-accent, #5546e0)`.
+Light is byte-identical, since the token is exactly that value there, and dark
+can no longer drift. Normalising `#fff` against `#ffffff` is cosmetic and has
+not been done.
 
 ### Surfaces
 

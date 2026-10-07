@@ -43,7 +43,7 @@
   border: 1px solid var(--pvrx-border-light); background: #fff; color: #10192e; font-size: var(--ty-h4); line-height: 1; cursor: pointer;
   transition: border-color var(--ax-dur), color var(--ax-dur);
 }
-.academy-prose .ad-shots__btn:hover:not(:disabled) { border-color: #5546e0; color: #5546e0; }
+.academy-prose .ad-shots__btn:hover:not(:disabled) { border-color: #5546e0; color: var(--rd-accent, #5546e0); }
 .academy-prose .ad-shots__btn:disabled { opacity: 0.35; cursor: default; }
 .academy-prose .ad-shots__btn:focus-visible { outline: 2px solid #5546e0; outline-offset: 2px; }
 .academy-prose .ad-shots__count { min-width: 3.2em; text-align: center; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); font-weight: 700; color: var(--pvrx-text-secondary-light); }
