@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { ArrowUpRight, Check, Copy, Eye, LifeBuoy, Loader2, RotateCcw, Server, Terminal } from "lucide-react";
+import { ArrowUpRight, Check, Copy, Eye, Info, LifeBuoy, Loader2, RotateCcw, Server, Terminal } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { openHelp } from "@/components/academy/get-help";
+import { LabBriefing, labBriefed, markLabBriefed } from "@/components/academy/lab-briefing";
 import "./hosted-lab.css";
 
 // The student's own hosted domain controller: a button in the header and a
@@ -13,7 +14,7 @@ import "./hosted-lab.css";
 
 type State = "none" | "starting" | "ready" | "stopping" | "stopped";
 /** locked: hosted labs exist here, but this account is on Explore and has not bought one. */
-type Status = { available: boolean; locked?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string; hoursUsed?: number; hoursLimit?: number | null; hoursLeft?: number | null };
+type Status = { available: boolean; locked?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string; hoursUsed?: number; hoursLimit?: number | null; hoursLeft?: number | null; sessionHours?: number };
 type Snapshot = { status: Status | null; busy: boolean; error: string | null };
 
 const clock = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -396,7 +397,21 @@ function LinuxSignIn() {
 
 export function HostedLabMenu() {
   const { status, state, waiting, busy, error, primary } = useHostedLab();
+  // "start" stands in front of the first start; "read" is the same briefing
+  // reopened from the footer link once they have been through it.
+  const [brief, setBrief] = useState<null | "start" | "read">(null);
   if (!status?.available) return null;
+  // Nobody should meet a live Windows domain cold. The first start goes
+  // through the briefing; every later one does not.
+  const onPrimary = () => {
+    if (state === "none" && !labBriefed()) setBrief("start");
+    else primary();
+  };
+  const startFromBrief = () => {
+    markLabBriefed();
+    setBrief(null);
+    primary();
+  };
   const spec = SPECS[status.instanceType ?? ""] ?? status.instanceType;
   // No lab yet means the next one is a pod, so describe what they will get.
   // An existing lab describes what it actually has, which for one built before
@@ -423,6 +438,26 @@ export function HostedLabMenu() {
           <p className="hl__title">PurveX Financial</p>
           <p className="hl__domain">purvexfinancial.local</p>
         </div>
+        {/* Hours sit in the corner beside the name rather than as a band across
+            the panel: it is a balance you glance at, not a step in starting. */}
+        {typeof status.hoursLimit === "number" && status.hoursLimit > 0 && (
+          <div className="hl__hours">
+            <p className="hl__kicker">Lab hours</p>
+            <em>
+              {status.hoursUsed ?? 0}<i>/{status.hoursLimit}</i>
+            </em>
+            <span
+              className="hl__meter"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={status.hoursLimit}
+              aria-valuenow={status.hoursUsed ?? 0}
+              aria-label={`${status.hoursUsed ?? 0} of ${status.hoursLimit} lab hours used this month`}
+            >
+              <i style={{ width: `${Math.min(100, ((status.hoursUsed ?? 0) / status.hoursLimit) * 100)}%` }} />
+            </span>
+          </div>
+        )}
       </header>
 
       {/* The lab is two machines, so they are the subject rather than a row in
@@ -444,22 +479,6 @@ export function HostedLabMenu() {
 
       {state === "ready" && Boolean(status.linux) && <LinuxSignIn />}
 
-      {/* A budget you are spending is a quantity, so it gets a bar. A row of a
-          spec table made twenty hours a fact rather than something running out. */}
-      {typeof status.hoursLimit === "number" && status.hoursLimit > 0 && (
-        <div className="hl__budget">
-          <p>
-            <span>Lab hours this month</span>
-            <em>
-              {status.hoursUsed ?? 0} of {status.hoursLimit}
-            </em>
-          </p>
-          <span className="hl__meter" aria-hidden="true">
-            <i style={{ width: `${Math.min(100, ((status.hoursUsed ?? 0) / status.hoursLimit) * 100)}%` }} />
-          </span>
-        </div>
-      )}
-
       {/* A lab built before pods existed is one machine, and nothing else on
           this panel would ever tell them why their Ubuntu server is missing. */}
       {legacySingle && (
@@ -479,7 +498,7 @@ export function HostedLabMenu() {
         {note && <p className="hl__note">{note}</p>}
         <div className="hl__actions">
           {state !== "starting" && state !== "stopping" && (
-            <button type="button" className="hl__go" onClick={primary} disabled={waiting}>
+            <button type="button" className="hl__go" onClick={onPrimary} disabled={waiting}>
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               {PRIMARY[state]}
               {state === "ready" && !busy && <ArrowUpRight className="h-4 w-4" />}
@@ -512,10 +531,27 @@ export function HostedLabMenu() {
             <RotateCcw className="h-3 w-3" aria-hidden /> Reset to a fresh lab
           </button>
         )}
+        <button type="button" className="hl__link" onClick={() => setBrief("read")}>
+          <Info className="h-3 w-3" aria-hidden /> How the lab works
+        </button>
         <button type="button" className="hl__link hl__link--end" onClick={() => openHelp("lab")}>
           <LifeBuoy className="h-3 w-3" aria-hidden /> Get help
         </button>
       </div>
+      {brief && (
+        <LabBriefing
+          sessionHours={status.sessionHours ?? 3}
+          monthlyHours={typeof status.hoursLimit === "number" && status.hoursLimit > 0 ? status.hoursLimit : null}
+          onStart={brief === "start" ? startFromBrief : undefined}
+          starting={busy}
+          onClose={() => {
+            // Read once, even if they back out of starting: they have seen it,
+            // and a dialog that keeps reappearing in front of Start is a wall.
+            if (brief === "start") markLabBriefed();
+            setBrief(null);
+          }}
+        />
+      )}
     </section>
   );
 }

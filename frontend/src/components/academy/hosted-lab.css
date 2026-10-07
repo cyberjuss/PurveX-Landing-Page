@@ -55,7 +55,11 @@ html[data-academy-theme="dark"] .hl-note,
 .hl--menu { width: min(420px, calc(100vw - 32px)); padding: 20px; }
 
 /* Identity row: what it is, and whether it is up, readable at a glance. */
-.hl__top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; }
+/* Two children: the lab's name, and the hours in the corner. The third column
+   this used to carry belonged to a mark that is no longer rendered, and it
+   left the hours sitting in the 1fr -- which stretched their meter clean
+   across the panel. */
+.hl__top { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 12px; }
 .hl__mark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 0; color: #fff; background: var(--hl-accent); }
 .hl__id { display: grid; gap: 2px; min-width: 0; }
 .hl .hl__kicker { margin: 0; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--hl-ink-3); }
@@ -99,11 +103,12 @@ html[data-academy-theme="dark"] .hl-note,
 .hl .hl__creds__err { margin: 7px 0 0; font-size: 11px; line-height: 1.4; color: var(--hl-bad); }
 @media (pointer: coarse) { .hl .hl__creds__btn { min-height: 44px; } }
 
-/* Hours are something running out, so they get a meter rather than a table row. */
-.hl .hl__budget { margin: 0; }
-.hl .hl__budget p { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 0 0 7px; font-size: 12px; color: var(--hl-ink-3); }
-.hl .hl__budget em { font-style: normal; font-variant-numeric: tabular-nums; color: var(--hl-ink-2); }
-.hl .hl__meter { display: block; height: 4px; background: color-mix(in srgb, var(--hl-ink) 12%, transparent); overflow: hidden; }
+/* Hours in the corner of the header: a balance you glance at beside the lab's
+   name, not a band across the panel. Still a meter -- it is running out. */
+.hl .hl__hours { display: grid; justify-items: end; gap: 3px; min-width: 74px; }
+.hl .hl__hours em { font-style: normal; font-size: 17px; font-weight: 650; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--hl-ink); }
+.hl .hl__hours em i { font-style: normal; font-weight: 600; font-size: 13px; color: var(--hl-ink-3); }
+.hl .hl__meter { display: block; width: 100%; height: 3px; margin-top: 2px; background: color-mix(in srgb, var(--hl-ink) 12%, transparent); overflow: hidden; }
 .hl .hl__meter i { display: block; height: 100%; background: var(--hl-accent); }
 
 .hl .hl__legacy { margin: 0; font-size: 12px; line-height: 1.5; color: var(--hl-ink-3); }

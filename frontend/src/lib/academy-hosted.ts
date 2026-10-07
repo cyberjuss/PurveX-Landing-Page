@@ -152,6 +152,11 @@ async function chargeSession(userId: string): Promise<void> {
   await addLabMinutes(userId, c.sessionHours * 60);
 }
 
+/** How long one session runs before the lab stops itself. The briefing and the
+ *  panel both state it, so it comes from the same config the stop clock uses
+ *  rather than a number written down twice. */
+export const hostedLabSessionHours = (): number => cfg().sessionHours;
+
 export function hostedLabsConfigured(): boolean {
   const c = cfg();
   return Boolean(c.accessKeyId && c.secretAccessKey && c.ami && c.subnet && c.securityGroup && c.gatewayUrl && /^[0-9a-f]{32}$/i.test(c.gatewayKey) && /^[0-9a-f]{64}$/i.test(c.secret));

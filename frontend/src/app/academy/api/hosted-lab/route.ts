@@ -5,6 +5,7 @@ import {
   extendHostedLab,
   hostedLabLink,
   hostedLabsConfigured,
+  hostedLabSessionHours,
   hostedLabStatus,
   labHours,
   linuxCredentials,
@@ -79,6 +80,7 @@ export async function GET(request: Request) {
       hoursUsed: Math.round(hours.used),
       hoursLimit: hours.limit || null,
       hoursLeft: Number.isFinite(hours.left) ? Math.round(hours.left) : null,
+      sessionHours: hostedLabSessionHours(),
     });
   } catch {
     return NextResponse.json({ available: true, state: "none", error: "Could not reach AWS. Try again in a minute." });
