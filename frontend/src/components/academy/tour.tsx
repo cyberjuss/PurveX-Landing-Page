@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
+  Clock,
+  Flag,
   Flame,
   Gauge,
   Headset,
@@ -15,6 +17,7 @@ import {
   Rocket,
   Route,
   Server,
+  ShieldAlert,
   Sparkles,
   X,
   type LucideIcon,
@@ -73,8 +76,8 @@ const HOME: Step[] = [
   {
     sel: '[data-tour="account"]',
     icon: Headset,
-    title: "The coach is in here",
-    body: "Ask the coach when a lesson will not land. It knows the mission you are on and answers against your own lab rather than in general.",
+    title: "The coach and your profile",
+    body: "Four things live behind here. Ask the coach when a lesson will not land, read the full readiness report, publish a Proof Profile employers can check, and sign out.",
   },
   {
     sel: '[data-tour="theme"]',
@@ -96,7 +99,7 @@ const PORTAL: Step[] = [
     sel: '[data-tour="menu-desktop"], [data-tour="menu"]',
     icon: ListTree,
     title: "Every lesson in order",
-    body: "The whole course sits here. Anything finished is ticked and you can jump back to it whenever you want.",
+    body: "The whole course sits here. Anything finished is ticked and you can jump back to any of it whenever you want.",
   },
   {
     sel: '[data-tour="lab"]',
@@ -107,14 +110,55 @@ const PORTAL: Step[] = [
   {
     sel: '[data-tour="account"]',
     icon: Headset,
-    title: "The coach is in here",
-    body: "Ask the coach when something will not land. It knows the page you are on and answers against your own lab.",
+    title: "The coach and your profile",
+    body: "Four things live behind here. Ask the coach when something will not land, read the full readiness report, publish a Proof Profile employers can check, and sign out.",
+  },
+  {
+    sel: '[data-tour="theme"]',
+    icon: Palette,
+    title: "Light or dark",
+    body: "Range follows whichever you pick and remembers it across every page.",
+  },
+];
+
+// The drills page carries four separate things, and the numbered rows do not
+// say much about what any of them are until you open one.
+const DRILLS: Step[] = [
+  {
+    icon: Sparkles,
+    title: "Four ways to practise",
+    body: "This page is the daily habit rather than the course. Here is what each row is for.",
+  },
+  {
+    sel: '[data-tour="case"]',
+    icon: PlayCircle,
+    title: "A case a day",
+    body: "One named scenario written against your own directory. It is a decision or a short write-up or a real change you make in the lab.",
+  },
+  {
+    sel: '[data-tour="shift"]',
+    icon: Clock,
+    title: "Shift",
+    body: "Thirty minutes on the desk. Real incidents fire into your lab and each ticket has an SLA you are working against.",
+  },
+  {
+    sel: '[data-tour="ctf"]',
+    icon: Flag,
+    title: "The weekly CTF",
+    body: "One hard investigation a week asked about your own Security log. A new one opens every Monday.",
+  },
+  {
+    sel: '[data-tour="findings"]',
+    icon: ShieldAlert,
+    title: "What your lab needs",
+    body: "A real audit of your own directory. The daily task is often one of these and it is checked inside your lab rather than marked on paper.",
   },
 ];
 
 const TOURS: Tour[] = [
   { key: "purvex.tour.home.v3", when: (p) => p === "/range" || p === "/range/", min: 3, steps: HOME },
-  // Everywhere but home, which has its own tour and no course menu to point at.
+  { key: "purvex.tour.drills.v1", when: (p) => p.startsWith("/range/drill"), min: 3, steps: DRILLS },
+  // Everywhere else, which has its own course menu to point at.
   { key: "purvex.tour.portal.v1", when: (p) => p.startsWith("/range") && p.replace(/\/$/, "") !== "/range", min: 2, steps: PORTAL },
 ];
 
@@ -164,8 +208,26 @@ function locate(box: Box): Spot {
   return { top, left, side, caret };
 }
 
+/** The portal keeps its theme on .academy-bg, and this is portaled to <body>,
+ *  which is a sibling of it rather than a child. Without copying the attribute
+ *  across, the card renders light on a dark portal. */
+function useAcademyTheme(): "light" | "dark" {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  useEffect(() => {
+    const root = document.querySelector(".academy-bg");
+    if (!root) return;
+    const read = () => setTheme(root.getAttribute("data-academy-theme") === "dark" ? "dark" : "light");
+    read();
+    const obs = new MutationObserver(read);
+    obs.observe(root, { attributes: true, attributeFilter: ["data-academy-theme"] });
+    return () => obs.disconnect();
+  }, []);
+  return theme;
+}
+
 export function AcademyTour() {
   const pathname = usePathname() ?? "";
+  const theme = useAcademyTheme();
   const [run, setRun] = useState<{ key: string; steps: Step[] } | null>(null);
   const [i, setI] = useState(0);
   const [box, setBox] = useState<Box | null>(null);
@@ -239,7 +301,7 @@ export function AcademyTour() {
   const Icon = step.icon;
 
   return createPortal(
-    <div className="tour" role="dialog" aria-modal="true" aria-labelledby="tour-title">
+    <div className="tour" data-academy-theme={theme} role="dialog" aria-modal="true" aria-labelledby="tour-title">
       <button type="button" className="tour__scrim" aria-label="Skip the tour" onClick={close} />
       {onTarget && box && (
         <span

@@ -13,7 +13,7 @@
   --tour-accent: #5546e0;
   --tour-dim: rgba(9, 12, 26, 0.6);
 }
-[data-academy-theme="dark"] .tour {
+.tour[data-academy-theme="dark"] {
   --tour-ink: #f1f4ff;
   --tour-ink-2: #c3cbe8;
   --tour-ink-3: #8691b5;
@@ -95,7 +95,7 @@
 .tour__go { display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 18px; border: 0; border-radius: 10px; background: var(--tour-accent); color: #fff; font-size: 13.5px; font-weight: 650; cursor: pointer; transition: filter 0.15s, transform 0.1s; }
 .tour__go:hover { filter: brightness(1.07); }
 .tour__go:active { transform: scale(0.98); }
-[data-academy-theme="dark"] .tour__go { color: #10152b; }
+.tour[data-academy-theme="dark"] .tour__go { color: #10152b; }
 
 .tour__ghost { display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 13px; border: 1px solid var(--tour-line); border-radius: 10px; background: none; color: var(--tour-ink-2); font-size: 13.5px; font-weight: 650; cursor: pointer; transition: border-color 0.15s, color 0.15s; }
 .tour__ghost:hover { border-color: var(--tour-accent); color: var(--tour-accent); }

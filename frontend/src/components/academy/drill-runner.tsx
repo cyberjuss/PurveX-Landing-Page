@@ -260,7 +260,7 @@ function LabFindings({ items }: { items: Finding[] }) {
   const tone = { high: "Serious", medium: "Worth fixing", low: "Minor" } as const;
   const [open, setOpen] = useState(false);
   return (
-    <li>
+    <li data-tour="findings">
       <div className="ax-path__row">
         <span className="ax-path__n">04</span>
         <span className="ax-path__main">
@@ -964,7 +964,7 @@ export function DrillRunner() {
           </div>
 
           <ol className="ax-path dr-rows">
-            <li>
+            <li data-tour="case">
               <div className="ax-path__row">
                 <span className="ax-path__n">01</span>
                 <span className="ax-path__main">
@@ -988,7 +988,7 @@ export function DrillRunner() {
                 </span>
               </div>
             </li>
-            <li>
+            <li data-tour="shift">
               <div className="ax-path__row">
                 <span className="ax-path__n">02</span>
                 <span className="ax-path__main">
@@ -1011,7 +1011,7 @@ export function DrillRunner() {
                 </span>
               </div>
             </li>
-            <li>
+            <li data-tour="ctf">
               <div className="ax-path__row">
                 <span className="ax-path__n">03</span>
                 <span className="ax-path__main">
