@@ -249,7 +249,8 @@ export function SectionTabs({
       {/* One horizontal strip instead of a column of its own. The course rail
           already occupies the left of the screen, so a second vertical list
           beside it left the lesson reading in two thirds of the width. */}
-      <nav className="ax-lesstabs" role="tablist" aria-label="Sections">
+      <div className="ax-lesshead">
+        <nav className="ax-lesstabs" role="tablist" aria-label="Sections">
         {items.map((item, i) => (
           <button
             key={item.label}
@@ -271,7 +272,13 @@ export function SectionTabs({
             <span>{item.label}</span>
           </button>
         ))}
-      </nav>
+        </nav>
+        {/* How far through the lesson you are. The pager says it at the foot,
+            which is no use while you are still reading. */}
+        <span className="ax-lessbar" aria-hidden>
+          <i style={{ width: `${((active + 1) / items.length) * 100}%` }} />
+        </span>
+      </div>
 
       <div className="ax-panel">
         <div className="overflow-hidden py-2 sm:py-4">

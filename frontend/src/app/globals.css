@@ -4540,14 +4540,23 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 /* Lesson page. The sections run along the top rather than down a second column
    beside the course rail, so the reading area gets the full width of the page. */
 .ax-lesson { display: flex; flex-direction: column; }
+/* Stays under the header while you read, so the sections are reachable without
+   scrolling back. Opaque, or the content runs underneath it. */
+.ax-lesshead {
+  position: sticky;
+  top: 65px;
+  z-index: 5;
+  margin-bottom: 30px;
+  background: var(--pvrx-bg-light, #fff);
+}
 .ax-lesstabs {
   display: flex;
   gap: 2px;
-  margin-bottom: 28px;
-  border-bottom: 1px solid var(--rd-line);
   overflow-x: auto;
   scrollbar-width: none;
 }
+.ax-lessbar { display: block; height: 2px; background: var(--rd-line); }
+.ax-lessbar i { display: block; height: 100%; background: var(--rd-accent); transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
 .ax-lesstabs::-webkit-scrollbar { display: none; }
 .ax-lesstab {
   position: relative;
@@ -4572,7 +4581,7 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   position: absolute;
   left: 10px;
   right: 10px;
-  bottom: -1px;
+  bottom: 0;
   height: 2px;
   background: transparent;
   transition: background 0.15s;
@@ -4602,6 +4611,14 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   .ax-index__toggle { min-height: 44px; }
 }
 .ax-panel { min-width: 0; }
+.ax-lesson .academy-prose > p,
+.ax-lesson .academy-prose > ul,
+.ax-lesson .academy-prose > ol,
+.ax-lesson .academy-prose > blockquote,
+.ax-lesson .academy-prose > h1,
+.ax-lesson .academy-prose > h2,
+.ax-lesson .academy-prose > h3,
+.ax-lesson .academy-prose > h4 { max-width: 74ch; }
 .ax-panel__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--rd-line); }
 .ax-dock {
   display: grid !important;
