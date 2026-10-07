@@ -1,16 +1,39 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookMarked, Check, ChevronDown, FlaskConical, Lock } from "lucide-react";
 import { type PhaseDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
-import { useAcademyProgress } from "./academy-progress";
+import { slugify, useAcademyProgress } from "./academy-progress";
+import { findQuiz } from "@/content/academy/quizzes";
 import { isPhaseLocked } from "@/lib/academy-locks";
+
+/** The tabs inside a lesson, in the order section-tabs lays them out: the plain
+ *  sections, then the quiz, then the labs and challenges with their prefix
+ *  dropped. Each one is addressed by the hash that component already uses. */
+function sectionsOf(phaseSlug: string, entry: PhaseDef["weeks"][number]) {
+  const strip = (l: string) => l.replace(/^(Lab|Challenge|Troubleshooting):\s*/, "");
+  const plain = entry.sections.filter((x) => !/^(Lab|Challenge|Troubleshooting):/.test(x.label));
+  const rest = entry.sections.filter((x) => /^(Lab|Challenge|Troubleshooting):/.test(x.label));
+  const out = plain.map((x) => ({ label: x.label, hash: slugify(x.label) }));
+  if (findQuiz(phaseSlug, entry.slug)) out.push({ label: "Quiz", hash: "quiz" });
+  return [...out, ...rest.map((x) => ({ label: strip(x.label), hash: slugify(strip(x.label)) }))];
+}
 
 export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onNavigate?: () => void }) {
   const pathname = usePathname();
+  // Which tab is open, so the rail can mark it. Read from the URL rather than
+  // held here, because the lesson owns that state and writes it to the hash.
+  const hash = useSyncExternalStore(
+    (cb) => {
+      window.addEventListener("hashchange", cb);
+      return () => window.removeEventListener("hashchange", cb);
+    },
+    () => window.location.hash.replace(/^#/, ""),
+    () => ""
+  );
   const { isComplete, isPhaseComplete, completedCount, totalCount } = useAcademyProgress();
   const progressPct = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
   // A phase with no destination page (see hasDestination below) has no
@@ -117,6 +140,24 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                   <span className="truncate">{label}</span>
                   <em>Soon</em>
                 </span>
+              )}
+              {/* Only the entry you are in opens its tabs. Every entry at once
+                  would be a hundred rows before you had chosen anything. */}
+              {active && entry.sections.length > 0 && (
+                <ul className="ax-subs">
+                  {sectionsOf(phase.slug, entry).map((sec, n) => (
+                    <li key={sec.hash}>
+                      <a
+                        href={`${href}#${sec.hash}`}
+                        onClick={onNavigate}
+                        className={`ax-sub${(hash || sectionsOf(phase.slug, entry)[0].hash) === sec.hash ? " ax-sub--on" : ""}`}
+                      >
+                        <i aria-hidden>{String(n + 1).padStart(2, "0")}</i>
+                        <span className="truncate">{sec.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               )}
             </li>
           );
