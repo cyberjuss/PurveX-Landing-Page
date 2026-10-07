@@ -382,7 +382,22 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
             <span className="sh-clock__label">Shift ends in</span>
             <span className="sh-clock__time">{clock(left)}</span>
           </div>
-          <button type="button" className="sh-end" disabled={busy} onClick={() => post({ action: "finish" })}>
+          {/* Ending grades the shift and there is no way back into it, so it
+              asks -- and says how much is still open, since that is what the
+              student is actually giving up. Every other destructive control on
+              the portal confirms; this one did not. */}
+          <button
+            type="button"
+            className="sh-end"
+            disabled={busy}
+            onClick={() => {
+              const open = shift.incidents.filter((i) => !i.resolved && !i.escalated).length;
+              const warn = open
+                ? `End the shift now? ${open} incident${open === 1 ? " is" : "s are"} still open and will score nothing. You cannot come back into this shift.`
+                : "End the shift now? It is graded as it stands and you cannot come back into it.";
+              if (window.confirm(warn)) void post({ action: "finish" });
+            }}
+          >
             End shift
           </button>
         </div>
@@ -426,6 +441,10 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
                       <span className="sh-li__top">
                         <span className="sh-li__icon"><Icon className="h-4 w-4" /></span>
                         <span className={`sh-tag sh-tag--${inc.kind}`}>{inc.kind}</span>
+                        {/* Severity is drawn as a coloured bar down the left of
+                            this row; stated here too so it does not rest on
+                            colour alone. */}
+                        <span className="sh-li__sev">{inc.severity}</span>
                         <span className="sh-li__no">{numOf.get(inc.uid)}</span>
                         {inc.resolved ? (
                           <span className="sh-status sh-status--done">Solved</span>

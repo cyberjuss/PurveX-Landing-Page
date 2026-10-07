@@ -86,3 +86,9 @@
 .siem-finding__note { margin: 0.4rem 0 0; font-size: 0.75rem; color: var(--rd-ink-2, #475569); line-height: 1.35; }
 .siem-finding__done { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.75rem; font-weight: 600; color: var(--rd-good, #0f9f6e); }
 .siem-findings__hint { margin: 0.3rem 0 0; font-size: 0.6875rem; color: var(--rd-ink-3, #8a94a8); line-height: 1.4; }
+
+/* A spinner says "still working", so it slows rather than stops: a frozen one
+   reads as hung. */
+@media (prefers-reduced-motion: reduce) {
+  .siem-spin { animation-duration: 3s; }
+}

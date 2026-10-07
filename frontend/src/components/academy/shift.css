@@ -130,7 +130,11 @@
 .sh-li--on { border-color: var(--rd-accent); background: color-mix(in srgb, var(--rd-accent) 14%, var(--bg)); }
 .sh-li--done { opacity: 0.55; }
 .sh-li--done::before { background: var(--rd-good); }
-.sh-li--urgent::before { animation: sh-pulse 1.1s ease-in-out infinite; }
+/* An unworked P1. The pulse draws the eye, but it cannot be the only thing
+   carrying the urgency: with motion off this was indistinguishable from any
+   other P1. The wider bar and the border say it without moving. */
+.sh-li--urgent::before { width: 5px; animation: sh-pulse 1.1s ease-in-out infinite; }
+.sh-li--urgent { border-color: color-mix(in srgb, var(--rd-bad) 50%, transparent); }
 .sh-li__top { display: flex; align-items: center; gap: 8px; }
 .sh-li__icon { display: inline-flex; color: var(--rd-ink-3); }
 .sh-li--sev-p1 .sh-li__icon { color: var(--rd-bad); }
@@ -357,4 +361,20 @@
   .sh-rep { grid-template-columns: auto 1fr; }
   .sh-rep__score { grid-column: 2; justify-self: end; }
   .sh-coach { margin-left: 0; }
+}
+
+/* Severity in the queue is drawn as a coloured bar, which is meaning carried by
+   colour alone. The chip states it in text beside it. */
+.sh-li__sev { font-family: ui-monospace, monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: var(--rd-ink-3); }
+.sh-li--sev-p1 .sh-li__sev { color: var(--rd-bad); }
+.sh-li--sev-p2 .sh-li__sev { color: var(--rd-warn); }
+
+@media (prefers-reduced-motion: reduce) {
+  /* The pulsing states keep their colour, width and border, so nothing is lost
+     by holding them still. */
+  .sh-clock--low .sh-clock__time,
+  .sh-li--urgent::before,
+  .sh-labdot--wait {
+    animation: none;
+  }
 }
