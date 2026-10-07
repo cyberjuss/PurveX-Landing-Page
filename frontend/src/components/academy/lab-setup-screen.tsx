@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import Image from "next/image";
 import { Check, Loader2, X } from "lucide-react";
 import { useHostedLab } from "./hosted-lab-button";
 import "./lab-setup-screen.css";
@@ -53,16 +55,24 @@ export function LabSetupScreen() {
   const pct = Math.min(94, (elapsed / total) * 100);
   const left = Math.max(1, Math.ceil((total - elapsed) / 60));
 
-  return (
+  // Portaled to <body>. The lesson wrapper animates with a transform, and a
+  // transformed ancestor makes position: fixed resolve against it rather than
+  // the viewport, which is why this covered part of the page instead of all
+  // of it.
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
     <div className="ls" role="status" aria-live="polite">
       <div className="ls__inner">
         <p className="ls__brand">
+          <Image src="/logo.png" alt="" width={34} height={34} priority />
           <span>PurveX</span>
           <i aria-hidden="true" />
           <b>Range</b>
         </p>
 
-        <h1 className="ls__title">We are setting up your environment.</h1>
+        <h1 className="ls__title">Building your environment</h1>
+        <p className="ls__lede">A Windows domain controller and an Ubuntu desktop, built for you alone.</p>
 
         <div className="ls__bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct)} aria-label="Setup progress">
           <span style={{ width: `${pct}%` }} />
@@ -83,6 +93,7 @@ export function LabSetupScreen() {
           <X aria-hidden="true" /> Keep reading while it builds
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

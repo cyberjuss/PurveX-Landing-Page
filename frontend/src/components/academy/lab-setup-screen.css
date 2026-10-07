@@ -1,41 +1,66 @@
-/* The "setting up your environment" takeover. Dark and calm, centred, with a
- * single progress bar doing the talking. Hard-cut rectangles, like the labs. */
+/* The "building your environment" takeover. Portaled to <body>, so it carries
+ * its own colours: the portal's black rather than the blue-grey this used, and
+ * the brand violet rather than the orange its divider was drawn in.
+ *
+ * Hard-cut rectangles, like the rest of Range. */
 .ls {
-  position: fixed; inset: 0; z-index: 60;
-  display: grid; place-items: center;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
   padding: 24px;
-  background: #22242f;
-  animation: ls-in 0.25s ease-out both;
+  background: #05060b;
+  animation: ls-in 0.3s ease-out both;
+  --ls-ink: #f2f2f6;
+  --ls-ink-2: #9aa0b0;
+  --ls-ink-3: #666c7c;
+  --ls-line: rgba(255, 255, 255, 0.09);
+  --ls-accent: #9a8cff;
+  --ls-good: #34d399;
 }
-.ls__inner { width: min(46rem, 100%); text-align: center; }
+/* A very soft wash behind the content, so a full black screen has some depth
+   without anything on it competing with the progress. */
+.ls::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60rem 32rem at 50% 38%, color-mix(in srgb, var(--ls-accent) 9%, transparent), transparent 70%);
+  pointer-events: none;
+}
+.ls__inner { position: relative; width: min(34rem, 100%); text-align: center; }
 
-.ls__brand { display: inline-flex; align-items: center; gap: 10px; margin: 0 0 42px; }
-.ls__brand span { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; color: #fff; }
-.ls__brand i { width: 2px; height: 20px; background: #f5a524; }
-.ls__brand b { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #aab2c5; }
+.ls__brand { display: inline-flex; align-items: center; gap: 10px; margin: 0 0 54px; }
+.ls__brand img { display: block; }
+.ls__brand span { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; color: var(--ls-ink); }
+.ls__brand i { width: 1px; height: 18px; background: var(--ls-line); }
+.ls__brand b { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ls-ink-3); }
 
-.ls__title { margin: 0 0 26px; font-family: var(--font-display); font-size: clamp(1.15rem, 2.4vw, 1.6rem); font-weight: 700; letter-spacing: -0.01em; color: #c9cedb; }
+.ls__title { margin: 0; font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 700; letter-spacing: -0.025em; color: var(--ls-ink); }
+.ls__lede { margin: 12px 0 34px; font-size: 0.95rem; line-height: 1.55; color: var(--ls-ink-2); }
 
-.ls__bar { height: 26px; background: #c9cbd4; overflow: hidden; }
-.ls__bar > span { display: block; height: 100%; background: #8b93a8; transition: width 0.9s linear; }
+/* Thin, because it is a status line and not the subject of the screen. */
+.ls__bar { height: 3px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+.ls__bar > span { display: block; height: 100%; background: var(--ls-accent); transition: width 0.9s linear; }
 
-.ls__steps { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 26px; margin: 26px 0 0; padding: 0; }
-.ls__steps li { display: inline-flex; align-items: center; gap: 8px; font-size: 0.84rem; color: #6f7686; }
-.ls__steps svg { width: 14px; height: 14px; }
-.ls__steps .ls__dot { width: 6px; height: 6px; background: #4c5365; }
-.ls__steps li.is-done { color: #9aa3b6; }
-.ls__steps li.is-done svg { color: #5fd4a0; }
-.ls__steps li.is-now { color: #e7ebf4; font-weight: 600; }
+.ls__steps { list-style: none; display: grid; gap: 11px; margin: 26px 0 0; padding: 0; text-align: left; }
+.ls__steps li { display: grid; grid-template-columns: 16px 1fr; align-items: center; gap: 11px; font-size: 0.9rem; color: var(--ls-ink-3); transition: color 0.2s; }
+.ls__steps svg { width: 15px; height: 15px; }
+.ls__steps .ls__dot { width: 5px; height: 5px; margin: 0 5px; background: var(--ls-ink-3); opacity: 0.5; }
+.ls__steps li.is-done { color: var(--ls-ink-2); }
+.ls__steps li.is-done svg { color: var(--ls-good); }
+.ls__steps li.is-now { color: var(--ls-ink); font-weight: 600; }
+.ls__steps li.is-now svg { color: var(--ls-accent); }
 .ls__spin { animation: ls-rot 0.9s linear infinite; }
 
-.ls__eta { margin: 20px 0 0; font-size: 0.82rem; color: #6f7686; }
+.ls__eta { margin: 26px 0 0; font-size: 0.8rem; font-variant-numeric: tabular-nums; color: var(--ls-ink-3); }
 
 .ls__hide {
-  display: inline-flex; align-items: center; gap: 7px; margin-top: 34px; padding: 9px 16px;
-  border: 1px solid #3a3f4e; background: none; font: inherit; font-size: 0.8rem; font-weight: 600;
-  color: #8f97a8; cursor: pointer; transition: border-color 0.15s, color 0.15s;
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 38px; padding: 10px 18px;
+  border: 1px solid var(--ls-line); background: none; font: inherit; font-size: 0.82rem; font-weight: 600;
+  color: var(--ls-ink-3); cursor: pointer; transition: border-color 0.15s, color 0.15s;
 }
-.ls__hide:hover { border-color: #5b6376; color: #d6dbe6; }
+.ls__hide:hover { border-color: var(--ls-accent); color: var(--ls-ink); }
 .ls__hide svg { width: 13px; height: 13px; }
 
 @keyframes ls-in { from { opacity: 0; } to { opacity: 1; } }
