@@ -3,5 +3,7 @@
 *.tfstate
 *.tfstate.*
 *.tfvars
+# A saved plan carries the same values state does, so it stays off GitHub too.
+*.tfplan
 crash.log
 vercel-env.local.txt
