@@ -1,6 +1,6 @@
 ### Authentication
 
-Authentication proves an identity. It answers one question: who are you?
+Authentication is the work of proving an identity. It answers a single question, which is who you are, and it has nothing at all to say about what you may do once the answer is established. Everything in this section is about making that proof hard to fake, because every permission the system grants afterwards rests on the assumption that it got this first step right.
 
 ### Factors
 
@@ -10,11 +10,11 @@ Authentication proves an identity. It answers one question: who are you?
 | Something you have | Phone with an authenticator app, security key, smart card |
 | Something you are | Fingerprint, face |
 
-**Multi-factor authentication (MFA)** requires proof from two different factors. A password plus a security question is still one factor, because both are something you know.
+**Multi-factor authentication**, almost always shortened to MFA, requires proof drawn from two different rows of that table. The word different is doing real work there. A password combined with a security question is not multi-factor at all, because both are things you know and both are lost in the same way, usually in the same breach.
 
-MFA matters because passwords leak. In 2021, attackers entered Colonial Pipeline through a VPN account with a leaked password and no MFA.
+MFA matters for a blunt reason: passwords leak, constantly and at scale, and a password that has leaked offers no protection whatsoever to the account it guards. In 2021 attackers walked into Colonial Pipeline through a VPN account that had a leaked password and no second factor, and the consequence was a ransomware incident that interrupted fuel supply across much of the US East Coast.
 
-Not every method is equally strong. Text codes and app codes can be captured by a fake sign-in page, while security keys and passkeys check the site's real address and give a fake page nothing.
+It is a mistake, though, to treat MFA as a single thing that is either present or absent. The methods vary considerably in how much they actually protect you. Text codes and authenticator app codes can both be captured by a convincing fake sign-in page and replayed by the attacker within seconds, because the user hands the code over willingly. Security keys and passkeys work differently, since they check the real address of the site before responding, which means a fake page receives nothing it can use.
 
 ### Account states
 
@@ -34,14 +34,14 @@ Do not re-enable a disabled account on request. Find out who disabled it and why
 
 ### Resets
 
-A password or MFA reset is an authentication decision. In 2023, attackers breached MGM Resorts by talking the help desk into an MFA reset.
+A password or MFA reset is not an administrative chore. It is an authentication decision, and for the duration of that call you are the authentication system. Whatever controls the organisation has invested in, you are briefly in a position to set them aside for one account, which is precisely why this is attacked. In 2023 attackers breached MGM Resorts by doing nothing more technical than talking the IT help desk into resetting an employee's MFA.
 
 1. **Verify** with a method the caller cannot fake, such as a callback to the number on file. Caller ID can be spoofed.
 2. **Treat an MFA change** as at least as sensitive as a password reset.
 3. **Do not skip steps** for urgency or seniority. Pressure is the most common social engineering move.
 4. **Document** the caller, the verification method and the change.
 
-Unexpected MFA prompts mean someone already has the password. Tell the user to deny them. Then reset the password and end active sessions before you escalate.
+One situation deserves to be recognised instantly. A user reporting MFA prompts they did not trigger is telling you that somebody already holds their password and is standing at the door waiting for approval. The second factor is the only thing still holding. Tell the user to deny every prompt, then reset the password and terminate active sessions before you escalate, because a reset alone leaves any session the attacker already established untouched.
 
 ### Escalate
 

@@ -2,7 +2,9 @@
 
 **The ticket:** Jordan Ellis finds this in a vendor script: `password: SGFyYm9yMjAyNg==`. "It's scrambled, so it's encrypted, right?"
 
-The three are easy to confuse because all three produce unreadable output. They differ in who can reverse it. Encoding is a format change anyone can undo, encryption can be undone only with the key, and hashing cannot be undone at all.
+The three are easy to confuse because all three produce output that a person cannot read, and that surface similarity is exactly what makes the mistake so common. What separates them has nothing to do with how scrambled the result looks. It is a question of who is able to reverse it. Encoding is a format change that anybody can undo, encryption can be undone only by somebody holding the key, and hashing cannot be undone by anybody under any circumstances.
+
+Jordan's question matters because the answer changes what happens next. If the value were genuinely encrypted, the exposure would depend on whether the key had also been exposed. If it is merely encoded, the password is already public to anyone who has read that script, and the clock on replacing it started the moment the file was written.
 
 ### How to tell them apart
 
@@ -12,7 +14,7 @@ The three are easy to confuse because all three produce unreadable output. They 
 | **Encryption** | Random characters that grow with the input | Only with the key |
 | **Hash** | Always the same length: SHA-256 is 64 characters | Never |
 
-Jordan's line is Base64. CyberChef's **From Base64** turns it into `Harbor2026` in one click. So the answer is no, it is not encrypted. That password is exposed. Report it so it gets changed.
+Jordan's line is Base64. The letters, the digits and the trailing `=` are the signature, and CyberChef's **From Base64** operation turns it into `Harbor2026` in a single click with no key and no secret of any kind. So the answer to Jordan's question is no. The value is not encrypted and never was. That password should be treated as exposed and reported so it gets changed, and the script should be corrected so the next person does not inherit the same assumption.
 
 <details class="academy-deeper">
 <summary>Go deeper</summary>

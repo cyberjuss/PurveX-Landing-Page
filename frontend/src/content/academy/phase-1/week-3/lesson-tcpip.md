@@ -1,15 +1,9 @@
 ### TCP/IP: The Foundation
 
-Every device on a network needs two things to talk at all:
+Before two devices on a network can exchange anything at all, two separate problems have to be solved. Each device needs an address, so that others have some way of finding it among everything else connected. And both devices need to agree on a shared set of rules for how the conversation proceeds once they have found each other. TCP/IP is the name for the pair of protocols that solve those two problems, and keeping them separate in your mind is the first step to reading a capture.
 
-- An address so others can find it
-- A shared set of rules for how to talk once found
+**IP**, the Internet Protocol, handles the addressing. It gives every device an address in much the same way a building has a street address, and it is responsible for getting a piece of data from one address to another across whatever network equipment sits between them. IP does this on a best effort basis. It will try to deliver, but it makes no promise that anything arrives, and it does not check.
 
-That is TCP/IP.
+**TCP**, the Transmission Control Protocol, handles the conversation. It makes sure the data arrives complete and in the right order, which it does by numbering what it sends and waiting for the other side to confirm receipt. A useful way to picture it is a phone call where each side keeps checking that the other heard them. If something goes unacknowledged, TCP sends it again rather than assuming it got through.
 
-* **IP (Internet Protocol):** Gives every device an address (like a street address) so data knows where to go.
-* **TCP (Transmission Control Protocol):** Makes sure data arrives complete and in order. Think of a phone call in which each side keeps checking, "did you get that?"
-
-IP gets the data *there*. TCP makes sure it arrives *correctly*.
-
-Keep that split in mind. When a capture looks broken, you need to know whether the packet never found the host or the host never confirmed it got the data.
+The split is worth committing to memory, because it tells you where to look when something has gone wrong. IP gets the data there and TCP makes sure it arrives correctly. So when a capture looks broken, your first question is which of the two failed. A packet that never found the host is an addressing or routing problem, and a host that never confirmed it received the data is a different problem with a different cause and a different set of people who need to know about it.

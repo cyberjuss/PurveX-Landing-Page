@@ -1,20 +1,20 @@
 ### Authorization
 
-Authorization decides what an authenticated identity is allowed to do. It answers one question: what can you access?
+Authorization decides what an identity the system has already authenticated is allowed to do. It answers one question, which is what you can reach, and it assumes the previous question has been settled. Everything here therefore applies equally to a legitimate employee and to an attacker who has successfully signed in as one, which is the reason authorization is a security control rather than an administrative convenience.
 
 ### Principles
 
-- **Least privilege:** each account gets only the access its job needs. It limits how far a compromised account can reach.
-- **Need to know:** access to specific data only when a task requires it.
-- **Separation of duties:** no single person controls a whole sensitive process, such as both editing and approving what clients are billed.
+Three principles shape almost every authorization decision you will make, and they are worth understanding by their purpose rather than their definition.
+
+**Least privilege** means each account receives only the access its job actually requires. Its value is not tidiness. It is that an account which has been compromised can only reach as far as its permissions allow, so the blast radius of a stolen credential is decided in advance by whoever granted the access. **Need to know** narrows this further for specific data, granting it only while a task genuinely requires it rather than permanently because somebody once asked. **Separation of duties** ensures no single person controls an entire sensitive process end to end, such as being able to both edit what clients are billed and approve those same changes, which removes the possibility of one person acting alone.
 
 ### Role-based access control
 
-Permissions go to **security groups**, and people are added to groups. The group stands for the role, so changing someone's role means changing their groups.
+In practice permissions are almost never assigned to people directly. They are granted to **security groups**, and people are added to the groups. The group stands in for the role, which means changing somebody's job is a matter of changing which groups they belong to, and it also means you can answer the question of what an account can do by reading its memberships rather than hunting through every system individually.
 
 PurveX has one standard group per department: `IT Users`, `Compliance Users`, `Wealth Management Users`, `Operations Users` and `Finance Accounting Users`. `IT Admins` adds admin rights on top of `IT Users`.
 
-Administrative power is split into three levels:
+Administrative power is deliberately split into three levels rather than granted as a single thing, so that the most dangerous rights sit with the smallest number of people. The boundary each level must not cross matters as much as what it controls.
 
 | Level | Controls | Must never touch |
 |---|---|---|
@@ -37,11 +37,11 @@ A shared folder has two sets of permissions: **share** and **NTFS**. Over the ne
 
 ### Common failures
 
-- **Privilege creep:** people change roles and keep their old groups. Remove old access in the same change that grants new access.
-- **Stale accounts:** leavers who are never disabled. Colonial Pipeline's attackers used a VPN account that was no longer in use.
-- **Admin accounts for daily work:** admins should use a normal account day to day and a separate admin account for admin tasks.
-- **Over-privileged service accounts:** `svc-backup-job` needs to read what it backs up, not sign in interactively or be a Domain Admin.
-- **Unreviewed groups:** regular access reviews in which each manager confirms group membership catch what tickets miss.
+The failures below account for most of the authorization problems you will encounter, and all of them accumulate quietly rather than arriving as an incident.
+
+**Privilege creep** happens when people change roles and keep the groups from their old one, so that a long career produces an account that can reach almost everything. The fix is procedural rather than technical: remove the old access in the same change that grants the new access, because a separate ticket to remove it later is a ticket nobody raises. **Stale accounts** are the same problem for people who have left entirely, and Colonial Pipeline is the cautionary example, since the VPN account the attackers used was one that was no longer in use by anybody.
+
+**Admin accounts used for daily work** turn every routine action into a privileged one, so an administrator should hold a normal account for day to day use and a separate admin account used only for admin tasks. **Over-privileged service accounts** follow the same logic for software: an account such as `svc-backup-job` needs to read the data it backs up and nothing else, and it has no business signing in interactively or holding Domain Admin. **Unreviewed groups** is the underlying condition that lets all of the above persist, which is why organisations run periodic access reviews where each manager confirms who should still be in which group. Reviews catch what individual tickets miss.
 
 ### Logs
 

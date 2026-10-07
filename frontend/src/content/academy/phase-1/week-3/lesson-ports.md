@@ -1,6 +1,8 @@
 ### Common Ports
 
-A port is like an apartment number. The IP address gets you to the building, and the port gets you to the correct door. Every meaningful service on a device listens behind a port.
+A port is the second half of a network destination. If the IP address gets you to the building, the port gets you to the correct door inside it. Every meaningful service running on a device listens behind one, which is what allows a single machine with a single address to run a web server, a mail server and a remote login service at the same time without any of them interfering with the others.
+
+A number of ports are used so consistently that seeing the number is enough to tell you what service is almost certainly on the other end. These are the ones you will meet most often.
 
 | Port | Protocol | Use |
 | :---- | :---- | :---- |
@@ -13,10 +15,6 @@ A port is like an apartment number. The IP address gets you to the building, and
 | 443 | HTTPS | Web traffic (encrypted) |
 | 3389 | RDP | Remote desktop |
 
-Traffic on port 22 or 3389 from somewhere unexpected deserves a second look. Those ports let someone *control* a machine, which is why attackers reach for them once they are inside a network.
+Two entries in that table deserve particular attention. Traffic on port 22 or port 3389 coming from somewhere you did not expect is always worth a second look, because both of those ports exist to let somebody control a machine rather than simply retrieve something from it. That is precisely why attackers reach for them once they have a foothold inside a network, and why movement on those ports between two internal machines that have no business connecting is one of the more useful things to watch for.
 
-A port tells you which door was used. It does not tell you the conversation was allowed. Verify these:
-
-- the host
-- the direction
-- whether that service belongs there
+Be careful not to read more into a port number than it can tell you, though. A port tells you which door the traffic used. It does not tell you that the conversation was legitimate, and an attacker is free to run any service they like on any port they choose. Before drawing a conclusion, check the host involved, the direction the connection travelled, and whether that service has any reason to be running there at all.

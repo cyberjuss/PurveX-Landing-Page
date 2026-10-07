@@ -1,13 +1,9 @@
 ### Confidentiality
 
-Confidentiality means only authorized people can see information. When it fails the data stays where it was, but someone who should not have it now has a copy. That failure is a **leak**.
+Confidentiality means that only the people authorized to see a piece of information are able to see it. When confidentiality fails, the data itself is usually untouched and still sits exactly where it always did, but a copy of it now rests with somebody who was never meant to hold one. This is why the failure is described as a **leak** rather than a loss. Nothing has gone missing, so the systems carry on reporting themselves healthy, and the failure can run for a long time before anyone notices it happened at all.
 
-It matters most when seeing the data is the harm:
+The property matters most where simply seeing the data is the harm. Passwords, salaries, Social Security numbers, medical records and unreleased deals all fall into this group. In each case the damage is done at the moment of reading. There is no undoing it afterwards, because you cannot take back knowledge once somebody has it, and that is what separates a confidentiality failure from the other two. A system that has been made unavailable can be brought back and data that has been altered can be corrected, but a secret that has been read stays read.
 
-- passwords
-- salaries
-- Social Security numbers
-- medical records
-- unreleased deals
+The controls that protect confidentiality are encryption, authentication and access control. Authentication establishes who somebody is, access control decides what that person is allowed to reach, and encryption makes the data unreadable to anyone who gets hold of it by another route. Each covers a gap the others leave open, which is why they are used together rather than chosen between.
 
-**Controls:** encryption, authentication and access control. Data sent without encryption can be read by anyone on the network path.
+Encryption is the control people most often assume is already in place. Data sent without it can be read by anyone sitting on the network path between the two ends, and a network path involves far more equipment than most people picture. When you are asked whether a system is safe to send something through, the question underneath is usually whether that traffic is encrypted in transit.

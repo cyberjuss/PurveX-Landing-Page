@@ -32,9 +32,49 @@ Use only facts, names, systems, and tickets already in the source. Do not
 invent examples to make a lesson sound more complete. If the source does not
 support a claim, leave it out.
 
-Mix long and short sentences. Short to medium paragraphs. No em dashes. No
-semicolons. Overview owns the baseline. Later tabs teach their own object.
-Missions stay scenario plus question. Teaching goes in the hint.
+## Tone and paragraph shape
+
+Write in continuous textbook prose, the way a professional reference book
+explains a subject to a practitioner. This replaces the clipped one-sentence
+style the lessons used to carry, and the old 240-character paragraph ceiling
+no longer applies.
+
+A paragraph is three to six sentences. It opens with a topic sentence and then
+develops that one idea: what the thing is, why it matters, what it costs when
+it goes wrong, and what the reader will be able to do about it. A paragraph
+that states a fact and stops is too short. A paragraph carrying two ideas
+should be two paragraphs.
+
+Address the reader as "you" and keep the register even and measured. Explain
+consequences rather than asserting importance. "It would be costly to build
+the wrong thing" teaches. "This is critical" does not.
+
+Prose carries the teaching. Reach for a list only where the material is
+genuinely a set of parallel items, such as the questions closing an overview
+or a group of ports. Do not break an explanation into bullets to make it look
+shorter.
+
+No em dashes. No semicolons. Overview owns the baseline. Later tabs teach
+their own object. Missions stay scenario plus question. Teaching goes in the
+hint.
+
+## Structure of an overview tab
+
+The page already prints the week's title and summary above the content, so an
+overview opens at its introduction and never repeats them.
+
+```
+### Introduction
+
+Four to six paragraphs. What the week covers, why the work matters, what is
+hard about it, and what the reader can do by the end.
+
+### Questions Answered in This Week
+
+- One question per section the week teaches.
+```
+
+Every later tab opens with its own `###` heading and then runs as prose.
 
 ## Banned phrases
 

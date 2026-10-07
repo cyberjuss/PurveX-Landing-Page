@@ -1,18 +1,18 @@
 ### Broken Access Control
 
-Access control enforces authorization on every request. **Broken access control** means the server skips that check, so a user reaches data or actions beyond their permissions. It is the number one risk on the OWASP Top 10.
+Access control is the enforcement half of authorization. Deciding that a particular role may read a particular record achieves nothing on its own. Something has to actually apply that decision, on every request, before any data is returned. **Broken access control** is the name for what happens when the server skips that check and a user consequently reaches data or performs actions beyond their permissions. It has been the number one risk on the OWASP Top 10 since 2021, which tells you how routinely the check gets missed.
 
 ### The rule: never trust the client
 
-Anything the browser sends can be changed: the address, form fields, hidden fields, cookies and request data. Browser developer tools can do it, and proxies such as Burp Suite or OWASP ZAP make it easy.
+The single rule underneath every fix in this section is that nothing arriving from the browser can be trusted. Everything the browser sends is under the control of whoever is using it, including the address, form fields, hidden fields, cookies and the body of the request. This is not an exotic capability requiring special skill. Browser developer tools are sufficient, and intercepting proxies such as Burp Suite or OWASP ZAP make editing a request on its way out entirely routine.
 
-On every request, the server must decide:
+The consequence is that the server can take nothing about identity or permission from the request itself. On every request it has to establish three things from its own records.
 
 1. Who this session belongs to, from its own session records.
 2. What role that person has, from its own records.
 3. Whether that role may perform this action on this item.
 
-Hiding a button is not access control. Anyone who types the address still gets in unless the server checks.
+This is why hiding a button is not access control, and it is worth being blunt about because the mistake is so common. Removing a link from a menu changes what one user is invited to do. It changes nothing whatsoever about what the server will do if somebody types the address directly, and an attacker is not working from your menu.
 
 ### Common forms
 
@@ -22,15 +22,13 @@ Hiding a button is not access control. Anyone who types the address still gets i
 
 ### Fixes
 
-- **Check on the server, every time.** Take identity and role from the session and check ownership of every item requested.
-- **Deny by default.** An action stays closed unless a rule opens it for this role.
-- **Ignore fields the user should not set.** The server decides the role, the price and the account number.
-- **Unguessable IDs help but do not fix it.** A leaked link still works unless the server checks ownership.
-- **Log refused requests.** A burst of denials is often the first sign of probing.
+The fixes all follow from the rule above. **Check on the server, every time**, taking the identity and the role from the session rather than the request, and confirming ownership of each item before returning it. **Deny by default**, so that an action remains closed unless some rule explicitly opens it for this role, which means a newly added feature is safe until somebody decides otherwise rather than exposed until somebody notices.
+
+**Ignore fields the user should not be setting at all.** The server decides the role, the price and the account number, and a value supplied for any of them should be discarded rather than validated. **Unguessable identifiers help but do not fix anything**, because a long random ID only makes the record harder to find by guessing. A link that leaks still works perfectly unless the server checks ownership when it is used. Finally, **log refused requests**, since a sudden run of denials from one source is frequently the earliest visible sign that somebody is testing where the boundaries are.
 
 ### Testing
 
-Changing IDs on a system without written permission to test it is unauthorized access, even if you only look. Practice on the PortSwigger Web Security Academy labs. On the job, testing needs a signed scope.
+A word of caution before the lab. Changing identifiers on a system you do not have written permission to test is unauthorized access, and that remains true even if you only looked and even if the flaw was obvious. Intent is not the test, and discovering a genuine vulnerability is not a defence. Practise on the PortSwigger Web Security Academy labs, which exist for exactly this purpose, and understand that on the job this kind of testing requires a signed scope agreed in advance.
 
 ### When a user reports it
 

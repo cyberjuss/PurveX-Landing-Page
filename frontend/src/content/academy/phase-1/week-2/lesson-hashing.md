@@ -2,7 +2,9 @@
 
 **The ticket:** Riley Kwan has two copies of a vendor installer, one from email and one from a download mirror. The vendor's site lists a SHA-256. "Which one is safe to run?"
 
-A hash is a fixed-length value calculated from a file or some text. The same input always gives the same hash, and one changed byte gives an entirely different one. The calculation runs one way, so the input cannot be rebuilt from it.
+A hash is a fixed-length value calculated from a file or a piece of text. Two properties make it useful. The same input always produces the same hash, so the value is repeatable by anybody who has the same file, and changing a single byte of the input produces an entirely different hash rather than a slightly different one. The calculation also runs in one direction only, which means the original cannot be rebuilt from the value no matter how much computing power is applied to it.
+
+Taken together those properties turn a hash into a fingerprint. It is short enough to publish on a web page or paste into a ticket, and it is specific enough that no other file anybody is likely to encounter will produce the same one.
 
 ### What a hash tells you
 
@@ -13,7 +15,7 @@ Harbor2026   17e80eed5cd387f397eb28c8ba59af346a8ec8c5569f83cbfebcd5e3df291a7b
 Harbor2027   4ec765fd76caad15aec3c46f8c3dc0b9e77cd65b9e4c569677ed2b99d79a0d5b
 ```
 
-So if your file's hash matches the vendor's character for character, it is the exact file the vendor published.
+The two inputs above differ by one character, and the resulting hashes have nothing in common. This is what makes the comparison meaningful. If your file's hash matches the vendor's character for character, it is not a similar file or a probably correct file. It is the exact sequence of bytes the vendor published.
 
 ### Verify in three steps
 
@@ -25,9 +27,9 @@ So if your file's hash matches the vendor's character for character, it is the e
 
 ### What a hash cannot prove
 
-A match proves the file is identical to the reference. It does not prove the reference is safe.
+It is just as important to know what the check does not establish. A match proves that your file is identical to the reference you compared it against. It says nothing at all about whether that reference was safe to begin with, because the hash only ever describes what the vendor shipped, not whether what the vendor shipped was trustworthy.
 
-CCleaner (2017), SolarWinds (2020) and 3CX (2023) all shipped malware from the vendor's own build. Every download matched what the vendor shipped, and carried its valid signature.
+This is not a theoretical gap. CCleaner in 2017, SolarWinds in 2020 and 3CX in 2023 all shipped malware out of the vendor's own build process. Every customer who verified their download found a correct hash and a valid signature, because the malicious code was present before the vendor calculated either one. Verification tells you the supply chain delivered the file intact. Whether the thing at the start of that chain was clean is a separate question.
 
 <details class="academy-deeper">
 <summary>Go deeper</summary>
