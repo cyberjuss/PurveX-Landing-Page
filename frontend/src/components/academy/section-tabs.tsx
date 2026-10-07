@@ -273,11 +273,6 @@ export function SectionTabs({
           </button>
         ))}
         </nav>
-        {/* How far through the lesson you are. The pager says it at the foot,
-            which is no use while you are still reading. */}
-        <span className="ax-lessbar" aria-hidden>
-          <i style={{ width: `${((active + 1) / items.length) * 100}%` }} />
-        </span>
       </div>
 
       <div className="ax-panel">

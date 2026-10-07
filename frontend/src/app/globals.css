@@ -4550,6 +4550,7 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   top: 65px;
   z-index: 5;
   margin-bottom: 30px;
+  border-bottom: 1px solid var(--rd-line);
   background: var(--pvrx-bg-light, #fff);
 }
 .ax-lesstabs {
@@ -4558,8 +4559,6 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   overflow-x: auto;
   scrollbar-width: none;
 }
-.ax-lessbar { display: block; height: 2px; background: var(--rd-line); }
-.ax-lessbar i { display: block; height: 100%; background: var(--rd-accent); transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
 .ax-lesstabs::-webkit-scrollbar { display: none; }
 .ax-lesstab {
   position: relative;
@@ -4584,7 +4583,7 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   position: absolute;
   left: 10px;
   right: 10px;
-  bottom: 0;
+  bottom: -1px;
   height: 2px;
   background: transparent;
   transition: background 0.15s;
