@@ -651,6 +651,24 @@ export async function resetHostedLab(userId: string): Promise<void> {
  * the link expires, so a refresh or reconnect during a session needs it alive.
  * Guacamole refuses a link that was already used, so it cannot be replayed.
  */
+/**
+ * The Ubuntu box's local sign-in, for the student to read.
+ *
+ * Guacamole signs them in with this already, so the desktop never asks for it.
+ * `sudo` does, and the domain-join lab needs sudo, so without somewhere to read
+ * this a student hits a prompt for a credential that exists only sealed in the
+ * database. Deliberately not part of the polled status response: that is held in
+ * client state for the whole session, and this only needs to exist for the
+ * moment they ask for it.
+ */
+export async function linuxCredentials(userId: string): Promise<{ username: string; password: string } | null> {
+  const row = await loadHostedLab(userId);
+  if (!row?.linuxInstanceId || !row.linuxPasswordEnc) return null;
+  const linux = await describe(row.linuxInstanceId).catch(() => null);
+  if (linux?.state !== "running") return null;
+  return { username: "student", password: openPassword(row.linuxPasswordEnc) };
+}
+
 export async function hostedLabLink(userId: string): Promise<string | null> {
   const row = await loadHostedLab(userId);
   if (!row || row.instanceId === POD_RESERVED) return null;

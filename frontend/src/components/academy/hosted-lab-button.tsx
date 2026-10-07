@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { ArrowUpRight, LifeBuoy, Loader2, RotateCcw, Server, Terminal } from "lucide-react";
+import { ArrowUpRight, Check, Copy, Eye, LifeBuoy, Loader2, RotateCcw, Server, Terminal } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { openHelp } from "@/components/academy/get-help";
 import "./hosted-lab.css";
@@ -315,6 +315,85 @@ function StartTracker({ status }: { status: Status }) {
 }
 
 /** The lab menu the lab icon opens on each mission: status, open, stop, start. */
+/**
+ * The Ubuntu box's local sign-in.
+ *
+ * Guacamole signs them in, so the desktop never asks. `sudo` does, and the
+ * domain-join lab needs it, so this is the only place the password exists for
+ * them to read. Fetched on request rather than with the status, so it is not
+ * sitting in the page for a whole session, and hidden again when the panel
+ * closes.
+ */
+function LinuxSignIn() {
+  const [creds, setCreds] = useState<{ username: string; password: string } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  async function reveal() {
+    setLoading(true);
+    setErr(null);
+    try {
+      const r = await academyFetch("/academy/api/hosted-lab", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "credentials" }),
+      });
+      const data = await r.json();
+      if (!r.ok) setErr(data.error ?? "Could not read the sign-in.");
+      else setCreds(data as { username: string; password: string });
+    } catch {
+      setErr("Could not reach Range. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function copy() {
+    if (!creds) return;
+    try {
+      await navigator.clipboard.writeText(creds.password);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    } catch {
+      setErr("Your browser blocked the copy. Select the password and copy it by hand.");
+    }
+  }
+
+  return (
+    <div className="hl__creds">
+      <p className="hl__creds__head">Ubuntu sign-in</p>
+      <p className="hl__creds__why">The desktop opens signed in. You need this when a command asks for a sudo password.</p>
+      <dl className="hl__creds__rows">
+        <div>
+          <dt>User</dt>
+          <dd><code>student</code></dd>
+        </div>
+        <div>
+          <dt>Password</dt>
+          <dd>
+            {creds ? (
+              <>
+                <code className="hl__creds__secret">{creds.password}</code>
+                <button type="button" className="hl__creds__btn" onClick={copy}>
+                  {copied ? <Check className="h-3 w-3" aria-hidden /> : <Copy className="h-3 w-3" aria-hidden />}
+                  {copied ? "Copied" : "Copy"}
+                </button>
+              </>
+            ) : (
+              <button type="button" className="hl__creds__btn" onClick={reveal} disabled={loading}>
+                {loading ? <Loader2 className="h-3 w-3 animate-spin" aria-hidden /> : <Eye className="h-3 w-3" aria-hidden />}
+                Show password
+              </button>
+            )}
+          </dd>
+        </div>
+      </dl>
+      {err && <p className="hl__creds__err" role="alert">{err}</p>}
+    </div>
+  );
+}
+
 export function HostedLabMenu() {
   const { status, state, waiting, busy, error, primary } = useHostedLab();
   if (!status?.available) return null;
@@ -362,6 +441,8 @@ export function HostedLabMenu() {
           </li>
         )}
       </ul>
+
+      {state === "ready" && Boolean(status.linux) && <LinuxSignIn />}
 
       {/* A budget you are spending is a quantity, so it gets a bar. A row of a
           spec table made twenty hours a fact rather than something running out. */}

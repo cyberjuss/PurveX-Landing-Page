@@ -7,6 +7,7 @@ import {
   hostedLabsConfigured,
   hostedLabStatus,
   labHours,
+  linuxCredentials,
   LabHoursSpentError,
   PodSlotsFullError,
   resetHostedLab,
@@ -109,6 +110,12 @@ export async function POST(request: Request) {
       const url = await hostedLabLink(student.id);
       if (!url) return NextResponse.json({ error: "The lab is not running yet. Start it first." }, { status: 409 });
       return NextResponse.json({ url });
+    } else if (action === "credentials") {
+      // Asked for, never pushed. The Ubuntu desktop signs in on its own, so
+      // this exists for the sudo prompt the domain-join lab runs into.
+      const creds = await linuxCredentials(student.id);
+      if (!creds) return NextResponse.json({ error: "The Ubuntu machine is not running yet." }, { status: 409 });
+      return NextResponse.json(creds);
     } else return NextResponse.json({ error: "Unknown action." }, { status: 400 });
     return NextResponse.json(await hostedLabStatus(student.id));
   } catch (err) {
