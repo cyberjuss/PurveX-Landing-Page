@@ -4472,64 +4472,92 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-sideprog p { margin-top: 10px; font-size: 15px; color: var(--rd-ink-3); }
 .ax-sideprog__on { background: #fff; }
 .academy-bg:not([data-academy-theme="dark"]) .ax-sideprog__on { background: #0f172a; }
-/* The rail as a stepper. The course runs in order, so the weeks sit as numbered
-   nodes on one spine, and the spine itself carries how far along you are. */
-.ax-list { position: relative; margin: 0; }
-.ax-list::before {
+/* Course rail. Typographic: no spine, no nodes, no boxes, no ruled lists. The
+   only mark on the page is a bar at the flush left edge for where you are.
+   Hierarchy is indent, weight and colour, which is all it needs. */
+.ax-list { display: flex; flex-direction: column; margin: 0; }
+
+.ax-sidelink, .ax-soon-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px 11px 18px;
+  margin: 0 -14px;
+  font-size: 18px;
+  line-height: 1.3;
+  color: var(--rd-ink-2);
+  transition: color 0.15s, background 0.15s;
+}
+.ax-soon-row { color: var(--rd-ink-3); }
+/* The bar is the whole design. It only ever marks one row. */
+.ax-sidelink::before {
   content: "";
   position: absolute;
-  left: 14px;
-  top: 14px;
-  bottom: 14px;
-  width: 2px;
-  background: color-mix(in srgb, var(--rd-ink) 12%, transparent);
+  left: 0;
+  top: 7px;
+  bottom: 7px;
+  width: 3px;
+  background: transparent;
+  transition: background 0.15s;
 }
-.ax-sidelink, .ax-soon-row { position: relative; z-index: 1; padding-right: 32px; }
+.ax-sidelink:hover { color: var(--rd-ink); }
+.ax-sidelink--on { color: var(--rd-ink); font-weight: 650; }
+.ax-sidelink--on::before { background: var(--rd-accent); }
+.ax-sidelink__done { flex: none; margin-left: auto; color: var(--rd-good); }
+.ax-soon-row em {
+  margin-left: auto;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11.5px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 
-/* The node masks the spine behind it, so its fill has to be the panel colour. */
-.ax-node {
+/* Sections sit inside a week, so they indent and quieten. */
+.ax-subs { display: flex; flex-direction: column; margin: 0; padding: 2px 0 10px; overflow: hidden; }
+.ax-sub {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 7px 14px 7px 18px;
+  margin: 0 -14px;
+  font-size: 16.5px;
+  line-height: 1.35;
+  color: var(--rd-ink-3);
+  transition: color 0.15s;
+}
+.ax-sub i {
   flex: none;
+  width: 20px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 13px;
+  font-style: normal;
+  letter-spacing: 0.03em;
+  opacity: 0.6;
+}
+.ax-sub:hover { color: var(--rd-ink-2); }
+.ax-sub--on { color: var(--rd-accent); font-weight: 600; }
+.ax-sub--on i { opacity: 1; }
+
+.ax-siderow { position: relative; display: flex; align-items: center; }
+.ax-siderow .ax-sidelink { flex: 1; min-width: 0; padding-right: 34px; }
+.ax-sidecaret {
+  position: absolute;
+  right: -8px;
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--pvrx-surface-light, #fff);
-  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--rd-ink) 16%, transparent);
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 13.5px;
-  font-weight: 700;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: none;
   color: var(--rd-ink-3);
-  transition: box-shadow 0.15s, color 0.15s, background 0.15s;
+  cursor: pointer;
+  transition: color 0.15s;
 }
-.ax-node--on { box-shadow: inset 0 0 0 2px var(--rd-accent), 0 0 0 4px color-mix(in srgb, var(--rd-accent) 16%, transparent); color: var(--rd-accent); }
-.ax-node--done { background: var(--rd-good); box-shadow: none; color: #04140d; }
-
-/* The tabs of the lesson you are in, nested under it in the rail. Numbered to
-   match the list the lesson itself shows. */
-.ax-subs { display: flex; flex-direction: column; margin: 0; padding: 0 0 4px; overflow: hidden; }
-.ax-sub { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; padding: 8px 0 8px 44px; font-size: 18px; color: var(--rd-ink-3); transition: color 0.15s; }
-.ax-sub:hover { color: var(--rd-ink); }
-.ax-sub i { flex: none; width: 23px; font-family: var(--font-mono, ui-monospace, monospace); font-size: 13.5px; font-style: normal; letter-spacing: 0.03em; opacity: 0.55; }
-.ax-sub:hover { color: var(--rd-ink); }
-.ax-sub--on { color: var(--rd-accent); font-weight: 650; }
-.ax-sub--on i { opacity: 1; color: var(--rd-accent); }
-
-/* The week and the control that folds its sections away sit on one line, so the
-   link keeps the whole width and the chevron does not eat into the label. */
-.ax-siderow { position: relative; display: flex; align-items: center; }
-.ax-siderow .ax-sidelink { flex: 1; min-width: 0; padding-right: 32px; }
-.ax-sidecaret { position: absolute; right: 4px; z-index: 1; display: grid; place-items: center; width: 26px; height: 26px; border: 0; background: none; color: var(--rd-ink-3); cursor: pointer; transition: color 0.15s; }
 .ax-sidecaret:hover { color: var(--rd-accent); }
 .ax-sidecaret:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 1px; }
-
-.ax-sidelink { display: flex; align-items: center; gap: 12px; padding: 11px 0; font-size: 18px; color: var(--rd-ink-2); transition: color var(--ax-dur, 320ms) var(--ax-ease, cubic-bezier(.16,1,.3,1)); }
-.ax-sidelink:hover, .ax-sidelink--on { color: var(--rd-ink); }
-.ax-sidelink--on { font-weight: 600; }
-.ax-check { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border: 1.5px solid var(--rd-line); border-radius: 2px; color: transparent; flex-shrink: 0; }
-.ax-check--done { background: #fff; border-color: #fff; color: #0f172a; }
-.ax-soon-row { position: relative; display: flex; align-items: center; gap: 12px; padding: 11px 0; font-size: 18px; color: var(--rd-ink-3); }
-.ax-soon-row em { margin-left: auto; font-family: var(--font-mono, ui-monospace, monospace); font-size: 11.5px; font-style: normal; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
 
 .ax-index__toggle { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); border: none; }
 .ax-tab {
