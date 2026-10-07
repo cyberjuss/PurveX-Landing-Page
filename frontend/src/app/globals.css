@@ -4098,17 +4098,21 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-score__focuslabel { color: #9a8cff; }
 
 /* Readiness report and the Academy's report-style design system */
+/* Light theme. The muted ink and the status colours are measured against white:
+   ink-3 carries 10-13px labels all over the portal, so it has to clear 4.5:1
+   rather than the 3:1 that is only good enough for large text. The dark theme
+   below already clears it. */
 .academy-bg, .rd {
   --rd-ink: #0f172a;
   --rd-ink-2: #475569;
-  --rd-ink-3: #8a94a8;
+  --rd-ink-3: #6b7689; /* 4.59:1 on white (was #8a94a8, 3.05:1) */
   --rd-line: rgba(15, 23, 42, 0.08);
   --rd-line-2: rgba(15, 23, 42, 0.045);
   --rd-surface: rgba(15, 23, 42, 0.025);
   --rd-accent: #5546e0;
-  --rd-good: #0f9f6e;
-  --rd-warn: #c4820e;
-  --rd-bad: #d93a3f;
+  --rd-good: #0a7d55; /* 5.15:1 on white (was #0f9f6e, 3.38:1) */
+  --rd-warn: #9a6508; /* 4.95:1 on white (was #c4820e, 3.21:1) */
+  --rd-bad: #d93a3f;  /* 4.54:1 */
   --rd-none: rgba(15, 23, 42, 0.1);
 }
 .rd { color: var(--rd-ink); }
@@ -4756,6 +4760,10 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-search { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--rd-ink); }
 .ax-search input { flex: 1; min-width: 0; background: transparent; border: 0; outline: none; font-size: 16px; color: var(--rd-ink); }
 .ax-search input::placeholder { color: var(--rd-ink-3); }
+/* The input drops its own outline, so the box it sits in has to show the focus.
+   Without this the search was the one control on the portal that gave a
+   keyboard user nothing at all. */
+.ax-search:focus-within { border-bottom-color: var(--rd-accent); box-shadow: 0 2px 0 -1px var(--rd-accent); }
 
 .ax-quiz__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 10px 20px; padding: 12px 0 4px; border: none; }
 .ax-quiz__q { padding: 22px 0; border: none; }
@@ -5292,7 +5300,7 @@ textarea.pc-dock__field {
 .dr-free { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
 .dr-free label { font-size: var(--ty-small, 13px); color: var(--rd-ink-3); }
 .dr-free input { width: 100%; padding: 14px 16px; border: 1.5px solid var(--rd-line); border-radius: 10px; background: transparent; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-lead, 16px); color: var(--rd-ink); outline: none; }
-.dr-free input:focus { border-color: var(--rd-accent); }
+.dr-free input:focus { border-color: var(--rd-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--rd-accent) 22%, transparent); }
 .dr-hint { margin: 0; padding: 12px 14px; border-radius: 8px; background: rgba(196, 130, 14, 0.12); font-size: var(--ty-body, 14px); line-height: 1.5; color: var(--rd-ink); }
 .dr-report { margin-top: 16px; padding: 24px 28px; border: 1px solid var(--rd-line); border-radius: 16px; background: var(--rd-line-2); }
 .dr-bars { display: grid; gap: 10px; margin: 18px 0 0; padding: 0; list-style: none; }
@@ -5341,7 +5349,7 @@ textarea.pc-dock__field {
 
 /* Lab change and written-case drills */
 .dr-free textarea { width: 100%; padding: 14px 16px; border: 1.5px solid var(--rd-line); border-radius: 10px; background: transparent; font-size: var(--ty-lead, 16px); line-height: 1.55; color: var(--rd-ink); outline: none; resize: vertical; }
-.dr-free textarea:focus { border-color: var(--rd-accent); }
+.dr-free textarea:focus { border-color: var(--rd-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--rd-accent) 22%, transparent); }
 .dr-free__count { align-self: flex-end; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); color: var(--rd-ink-3); }
 .dr-task { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; padding: 18px 0 0; border-top: 1px solid var(--rd-line); }
 .dr-task .rd-kicker { color: var(--rd-accent); }
@@ -5490,3 +5498,47 @@ textarea.pc-dock__field {
 .dr-shift__sub { font-size: 14px; color: var(--rd-ink-2); max-width: 60ch; }
 .dr-shift__go { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px; background: var(--rd-accent); color: #fff; font-size: 14px; font-weight: 650; white-space: nowrap; }
 @media (max-width: 560px) { .dr-shift { flex-direction: column; align-items: stretch; } .dr-shift__go { margin-left: 0; justify-content: center; } }
+
+/* ---- touch targets ------------------------------------------------------
+   On a finger, a 30px chip is a miss. These controls are sized for a cursor,
+   so rather than making every one of them 44px everywhere (which would wreck
+   the density the portal is built on), the floor is raised only where the
+   pointer is coarse. Icon buttons get a square; text buttons keep their width
+   and only grow in height. */
+@media (pointer: coarse) {
+  .axq-icon,
+  .gh__close,
+  .tour__x,
+  .pf-thumb button,
+  .ax-drawer__panel button[aria-label],
+  .ad-steps__chip {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .iv-copy,
+  .iv-tabs button,
+  .iv-chips button,
+  .iv-sort select,
+  .pf-btn,
+  .pf-certs__add input,
+  .pf-certs__add select,
+  .ad-labstart,
+  .ax-lesstab,
+  .sh-escalate,
+  .sh-coach,
+  .sh-submit {
+    min-height: 44px;
+  }
+  /* The switch keeps its 24px track -- stretching it to 44 would strand the
+     knob -- and grows its hit area instead. */
+  .pf-switch { position: relative; }
+  .pf-switch::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+}
