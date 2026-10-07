@@ -13,7 +13,7 @@ export async function unlockAcademy(
   // The shared passcode, or a class code that also puts the student in that class once they sign in.
   if (!checkPasscode(passcode)) {
     const cls = await findClassByCode(passcode);
-    if (!cls) return { error: "That passcode did not work. Check with your instructor and try again." };
+    if (!cls) return { error: "That passcode did not work. Check the code you were given and try again." };
     await setClassCookie(cls.code);
   }
 

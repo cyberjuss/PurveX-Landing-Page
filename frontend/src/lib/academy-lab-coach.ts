@@ -17,7 +17,7 @@ const LAB_HISTORY = 6;
 
 /** Sent when a lab's questions for today are used up. No model call, and no talk of limits. */
 export const LAB_PAUSE_REPLY =
-  "You have what you need for this one. Reread the highlighted step, try it once more on your own, and check your answer. A wrong answer here costs nothing, and the debrief explains every call. If it still is not clicking, bring this step to your instructor.";
+  "You have what you need for this one. Reread the highlighted step, try it once more on your own, and check your answer. A wrong answer here costs nothing, and the debrief explains every call. If it still is not clicking, leave it and come back to it after the debrief.";
 
 interface LabNotes {
   /** What each step asks, in the order the student sees it. */

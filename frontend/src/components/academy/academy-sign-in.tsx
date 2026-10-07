@@ -155,7 +155,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
   if (!configured) {
     return (
       <AuthMinimal product="Range">
-        <AuthHeading sub="Ask your instructor to finish setting up Range.">Student accounts are not set up yet</AuthHeading>
+        <AuthHeading sub="Email support@purvex.io and we will finish setting it up.">Range sign-in is not ready yet</AuthHeading>
       </AuthMinimal>
     );
   }

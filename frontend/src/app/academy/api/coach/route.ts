@@ -71,7 +71,7 @@ export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: "PurveX Coach is not configured yet. Ask your instructor." },
+      { error: "PurveX Coach is not switched on yet. Email support@purvex.io." },
       { status: 503 }
     );
   }

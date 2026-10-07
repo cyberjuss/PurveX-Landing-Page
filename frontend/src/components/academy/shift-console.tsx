@@ -198,7 +198,7 @@ function ShiftConsoleInner() {
       <div className="shift-app shift-app--center" data-academy-theme={theme}>
         <div className="sh-gate-card">
           <h1>Shift</h1>
-          <p>Shifts run in your hosted lab, and hosted labs are not on for this account yet. Ask your instructor.</p>
+          <p>Shifts run in your own hosted lab, which is part of Range Pro. If you already have Pro, email support@purvex.io and we will switch it on.</p>
         </div>
       </div>
     );

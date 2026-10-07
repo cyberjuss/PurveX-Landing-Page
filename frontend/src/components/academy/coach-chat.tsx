@@ -380,7 +380,7 @@ export function CoachChat() {
             </a>
           </p>
         ) : (
-          !enabled && <p className="pc-error">PurveX Coach is not set up yet. Ask your instructor.</p>
+          !enabled && <p className="pc-error">PurveX Coach is not switched on yet. Email support@purvex.io.</p>
         )}
       </div>
 
