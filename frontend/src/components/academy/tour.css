@@ -94,6 +94,7 @@
 
 .tour__foot { display: flex; flex-direction: column-reverse; align-items: center; gap: 14px; margin-top: 20px; }
 .tour__btns { display: flex; width: 100%; align-items: center; gap: 8px; }
+.tour__btns > * { flex: 1 1 0; min-width: 0; }
 
 /* Segments rather than dots: round pills beside square everything looked borrowed. */
 .tour__dots { display: inline-flex; align-items: center; gap: 4px; }
@@ -105,7 +106,7 @@
 .tour__go:hover { filter: brightness(1.08); }
 .tour__go:active { transform: scale(0.98); }
 
-.tour__ghost { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 42px; padding: 0 14px; border: 1px solid var(--tour-line); background: none; color: var(--tour-ink-2); font-size: 13.5px; font-weight: 650; cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+.tour__ghost { flex: 1; display: inline-flex; justify-content: center; align-items: center; gap: 6px; height: 42px; padding: 0 14px; border: 1px solid var(--tour-line); background: none; color: var(--tour-ink-2); font-size: 13.5px; font-weight: 650; cursor: pointer; transition: border-color 0.15s, color 0.15s; }
 .tour__ghost:hover { border-color: var(--tour-accent); color: var(--tour-accent); }
 
 .tour__skip { display: block; margin: 12px auto 0; padding: 0; border: 0; background: none; color: var(--tour-ink-3); font-size: 12.5px; font-weight: 600; cursor: pointer; }
