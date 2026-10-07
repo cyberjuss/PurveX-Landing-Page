@@ -872,7 +872,16 @@ export function DrillRunner() {
                         : "Best answer"}
                   : <b>{/flag/i.test(items[i]?.format ?? "") ? `gtf{${r.answer}}` : r.answer}</b>
                 </p>
-                <p>{r.explain}</p>
+                {(() => {
+                  // explain is written as "Outcome: <answer>. Steps: ..." while
+                  // the line above already prints the same label and answer, so
+                  // rendering it whole said the outcome twice. Only what is left
+                  // after the repeat is new.
+                  const detail = (r.explain ?? "").replace(/^\s*Outcome:\s*/i, "").trim();
+                  const ans = (r.answer ?? "").trim();
+                  const rest = ans && detail.startsWith(ans) ? detail.slice(ans.length).replace(/^[.\s]+/, "") : detail;
+                  return rest ? <p>{rest}</p> : null;
+                })()}
                 {r.exam && r.exam.length > 0 && <p className="dr-review__exam">Exam practice: {r.exam.join(", ")}</p>}
                 {r.runbook && r.runbook.length > 0 && (
                   <div className="dr-term dr-term--small">
