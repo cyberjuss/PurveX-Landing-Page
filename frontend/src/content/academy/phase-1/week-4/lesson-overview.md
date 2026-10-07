@@ -5,7 +5,7 @@
 
 ### Introduction
 
-Every sign-in, and in fact every click that follows it, answers two entirely separate questions. The first is who you are, and the second is what you are allowed to do now that the system knows. These get collapsed together in ordinary speech, where people talk about having access to something as though it were one idea. Keeping them apart is the foundation of everything in this week, because they fail separately, they are attacked separately, and they are fixed by different people.
+Every sign-in, and in fact every click that follows it, answers two entirely separate questions. The first is who you are, and the second is what you are allowed to do now that the system knows. These get collapsed together in ordinary speech, where people talk about having access to something as though it were one idea. Keeping them apart is the foundation of everything in this week. They fail separately, they are attacked separately, and they are fixed by different people.
 
 Three pieces do this work:
 
@@ -15,7 +15,7 @@ Three pieces do this work:
 
 The distinction between deciding something and enforcing it is where a great deal goes wrong. You will hear the whole set called Triple A, for authentication, authorization and accounting, with accounting being the record of who did what.
 
-What makes this worth a full week is how most real breaches actually begin. The attacks that end up in the news are rarely a matter of clever malware defeating a defence, and far more often somebody simply signed in, using a credential they should not have had, to a system that never checked whether they ought to be there. The three cases below are among the better documented examples, and each of them failed at a different point in the chain you have just read about.
+What makes this worth a full week is how most real breaches actually begin. The attacks that end up in the news are rarely a matter of clever malware defeating a defence. Far more often somebody simply signed in with a credential they should not have had, to a system that never checked whether they ought to be there. The three cases below are among the better documented examples, and each of them failed at a different point in the chain you have just read about.
 
 | Breach | The way in | What it cost | What failed |
 |---|---|---|---|

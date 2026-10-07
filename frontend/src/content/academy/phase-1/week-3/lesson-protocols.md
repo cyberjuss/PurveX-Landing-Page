@@ -1,6 +1,6 @@
 ### Protocols
 
-Protocols are the agreed sets of rules that decide what happens once traffic has reached a device. The distinction from the previous section is worth holding on to, because the two are easy to blur together: a port tells you which door the traffic went through, while a protocol tells you what conversation took place once it was inside. Convention ties them together so tightly that you can usually guess one from the other, but they remain separate things, and the gap between them is where a certain amount of hiding gets done.
+Protocols are the agreed sets of rules that decide what happens once traffic has reached a device. The distinction from the previous section is worth holding on to, because the two are easy to blur together. A port tells you which door the traffic went through. A protocol tells you what conversation took place once it was inside. Convention ties them together so tightly that you can usually guess one from the other, but they remain separate things, and the gap between them is where a certain amount of hiding gets done.
 
 The sections below cover the protocols you will encounter most often, what each one is for, and what an analyst notices about each when reading a capture.
 
@@ -14,11 +14,11 @@ HTTPS is the encrypted form of HTTP, which means the contents of the page and an
 
 DNS translates names into IP addresses. Before a device can connect to a name such as google.com it has to perform a DNS lookup to find the matching address, because the network itself only ever routes on addresses and knows nothing about names.
 
-That ordering makes DNS unusually valuable to an analyst. Almost every connection a machine makes begins with a name lookup, so the DNS record is close to a complete list of what a machine was trying to reach, including the attempts that never succeeded. It is that last part which does the real work, because a device asking for an address it has no business wanting is frequently the earliest visible sign that something is wrong, and it shows up in DNS whether or not the connection that followed ever completed.
+That ordering makes DNS unusually valuable to an analyst. Almost every connection a machine makes begins with a name lookup, so the DNS record is close to a complete list of what a machine was trying to reach, including the attempts that never succeeded. It is that last part which does the real work. A device asking for an address it has no business wanting is frequently the earliest visible sign that something is wrong. It shows up in DNS whether or not the connection that followed ever completed.
 
 #### DHCP
 
-DHCP hands out IP addresses to devices as they join a network. A laptop connecting to the office Wi-Fi receives its address through a short DHCP request and response, along with the other settings it needs in order to communicate, such as which gateway to use and which DNS server to ask.
+DHCP hands out IP addresses to devices as they join a network. A laptop connecting to the office Wi-Fi receives its address through a short DHCP request and response. The same exchange hands it the other settings it needs, such as which gateway to use and which DNS server to ask.
 
 The alternative is an administrator setting an address on every device by hand, which does not scale past a small number of machines and is why DHCP is close to universal. That near-universality is exactly what makes an exception interesting, because a device running with an address no DHCP server ever issued was configured deliberately by somebody. There are legitimate reasons for that, but it is worth finding out which one applies.
 

@@ -1,6 +1,6 @@
 ### Authorization
 
-Authorization decides what an identity the system has already authenticated is allowed to do. It answers one question, which is what you can reach, and it assumes the previous question has been settled. Everything here therefore applies equally to a legitimate employee and to an attacker who has successfully signed in as one, which is the reason authorization is a security control rather than an administrative convenience.
+Authorization decides what an identity the system has already authenticated is allowed to do. It answers one question, which is what you can reach, and it assumes the previous question has been settled. Everything here therefore applies equally to a legitimate employee and to an attacker who has signed in as one. That is why authorization is a security control rather than an administrative convenience.
 
 ### Principles
 
@@ -12,7 +12,10 @@ Three principles shape almost every authorization decision you will make, and th
 
 ### Role-based access control
 
-In practice permissions are almost never assigned to people directly. They are granted to **security groups** instead, and people are added to those groups, so the group stands in for the role. That indirection buys you two things: changing somebody's job becomes a matter of changing which groups they belong to, and you can answer the question of what an account can do by reading its memberships rather than hunting through every system individually.
+In practice permissions are almost never assigned to people directly. They are granted to **security groups** instead, and people are added to those groups, so the group stands in for the role. That indirection buys you two things:
+
+- Changing somebody's job becomes a matter of changing which groups they belong to.
+- You can read what an account is able to do from its memberships, rather than hunting through every system one at a time.
 
 PurveX has one standard group per department: `IT Users`, `Compliance Users`, `Wealth Management Users`, `Operations Users` and `Finance Accounting Users`. `IT Admins` adds admin rights on top of `IT Users`.
 

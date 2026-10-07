@@ -1,6 +1,6 @@
 ### Broken Access Control
 
-Access control is the enforcement half of authorization. Deciding that a particular role may read a particular record achieves nothing on its own, because something still has to apply that decision, on every request, before any data is returned. **Broken access control** is the name for what happens when the server skips that check and a user consequently reaches data or performs actions beyond their permissions. It has been the number one risk on the OWASP Top 10 since 2021, which tells you how routinely the check gets missed.
+Access control is the enforcement half of authorization. Deciding that a particular role may read a particular record achieves nothing on its own. Something still has to apply that decision on every request, before any data is returned. **Broken access control** is the name for what happens when the server skips that check and a user consequently reaches data or performs actions beyond their permissions. It has been the number one risk on the OWASP Top 10 since 2021, which tells you how routinely the check gets missed.
 
 ### The rule: never trust the client
 

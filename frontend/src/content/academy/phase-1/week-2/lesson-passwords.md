@@ -30,7 +30,7 @@ The defence that actually holds here is **MFA**, because it changes what a stole
 2. Force resets for affected staff, starting with any confirmed exposed.
 3. Turn on MFA for those accounts, and watch their sign-ins.
 
-Two things to avoid while doing this. **Never** test leaked passwords against real accounts to see which ones work, because you will generate exactly the sign-in pattern a credential-stuffing attack produces and you may lock out the people you are trying to protect. And never send anybody their password by email, which puts a working credential into a mailbox and a mail server you do not control.
+Two things to avoid while doing this. **Never** test leaked passwords against real accounts to see which ones work. You will generate exactly the sign-in pattern a credential-stuffing attack produces, and you may lock out the people you are trying to protect. And never send anybody their password by email, which puts a working credential into a mailbox and a mail server you do not control.
 
 <details class="academy-deeper">
 <summary>Go deeper</summary>

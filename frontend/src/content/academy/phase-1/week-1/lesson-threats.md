@@ -19,4 +19,4 @@ What you can control is:
 
 That is why the two ideas matter in combination rather than separately. The same threat meets a well patched system and a neglected one with entirely different results, and the difference is the part you built.
 
-Knowing which threats are realistic for your own organisation also keeps the work proportionate. A regional accounting firm and a defence contractor face genuinely different sets of actors, and treating every organisation as though a nation-state group were about to arrive spends effort that would have been better aimed at what is far more likely to turn up.
+Knowing which threats are realistic for your own organisation also keeps the work proportionate. A regional accounting firm and a defence contractor face genuinely different sets of actors. Treating every organisation as though a nation-state group were about to arrive spends effort better aimed at what is far more likely to turn up.

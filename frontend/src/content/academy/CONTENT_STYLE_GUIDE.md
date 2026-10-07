@@ -104,6 +104,30 @@ conjunctions, a colon, or a phrase that refers back.
 Reference material inside a `Go deeper` block, event-ID tables and command
 explanations are exempt. Terse is correct there.
 
+### Do not pay for flow with commas
+
+Joining every pair of sentences with a comma and a conjunction fixes
+choppiness by creating the opposite problem. Keep sentences at a median of
+roughly 15 to 20 words and rarely past 40, which is about 240 characters.
+
+When a sentence runs long, split it and open the second one with a phrase that
+points back. A backward reference costs no commas and carries the thought just
+as well as a conjunction would.
+
+> Long: It numbers every byte it sends and expects the far side to acknowledge
+> what it received, resending anything that goes unconfirmed, and the handshake
+> is what starts that bookkeeping by having each side declare the number it
+> intends to count from.
+
+> Split: It numbers every byte it sends and expects the far side to acknowledge
+> what it received, resending anything that goes unconfirmed. The handshake
+> starts that bookkeeping, by having each side declare the number it intends to
+> count from.
+
+Three commas in one sentence is the signal to re-read it. If the commas are
+carrying a genuine set of parallel items, that set probably wants to be a
+list instead.
+
 ## Structure of an overview tab
 
 The page already prints the week's title and summary above the content, so an

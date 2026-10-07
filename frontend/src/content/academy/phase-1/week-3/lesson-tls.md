@@ -1,6 +1,6 @@
 ### SSL/TLS: What "Encrypted" Means
 
-A word on names before anything else. SSL is the older term and **TLS** is the modern standard that replaced it, but the old name stuck in conversation and in product documentation, so you will hear people say SSL when they mean TLS for the rest of your career. They are referring to the same job.
+A word on names before anything else. SSL is the older term and **TLS** is the modern standard that replaced it. The old name stuck in conversation and in product documentation, so you will hear people say SSL when they mean TLS for the rest of your career. They are referring to the same job.
 
 That job is to wrap a connection in encryption. Anybody capturing the traffic afterwards sees scrambled data where the content used to be, which is the difference between the two cases below.
 
