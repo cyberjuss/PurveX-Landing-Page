@@ -29,6 +29,14 @@
   box-shadow: 0 0 0 9999px rgba(4, 6, 14, 0.66), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent);
   transition: top 0.26s cubic-bezier(0.16, 1, 0.3, 1), left 0.26s cubic-bezier(0.16, 1, 0.3, 1),
     width 0.26s cubic-bezier(0.16, 1, 0.3, 1), height 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+  /* One pulse as it lands, so the eye follows the highlight to its new home
+     instead of hunting for what moved. */
+  animation: tour-land 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes tour-land {
+  0% { box-shadow: 0 0 0 9999px rgba(4, 6, 14, 0.66), 0 0 0 14px color-mix(in srgb, var(--tour-accent) 0%, transparent); }
+  45% { box-shadow: 0 0 0 9999px rgba(4, 6, 14, 0.66), 0 0 0 12px color-mix(in srgb, var(--tour-accent) 26%, transparent); }
+  100% { box-shadow: 0 0 0 9999px rgba(4, 6, 14, 0.66), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent); }
 }
 
 .tour__card {
@@ -134,4 +142,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .tour__ring, .tour__card { transition: none; animation: none; }
+  .tour__ring { box-shadow: 0 0 0 9999px rgba(4, 6, 14, 0.66), 0 0 0 4px color-mix(in srgb, var(--tour-accent) 20%, transparent); }
 }

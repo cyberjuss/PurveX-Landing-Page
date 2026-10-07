@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import {
@@ -251,6 +251,8 @@ export function AcademyTour() {
   const [i, setI] = useState(0);
   const [box, setBox] = useState<Box | null>(null);
 
+  const cardRef = useRef<HTMLDivElement>(null);
+  const returnTo = useRef<Element | null>(null);
   const [replay, setReplay] = useState(0);
   useEffect(() => {
     const onReplay = () => {
@@ -285,7 +287,10 @@ export function AcademyTour() {
   const place = useCallback(() => {
     if (!step?.sel) return;
     const el = pick(step.sel);
-    if (!el) return;
+    if (!el) {
+      setBox(null);
+      return;
+    }
     const r = el.getBoundingClientRect();
     // A circular avatar should be ringed by a circle, so the highlight borrows
     // the target's own corner radius instead of guessing one.
@@ -323,13 +328,52 @@ export function AcademyTour() {
   useEffect(() => {
     if (!run) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-      else if (e.key === "ArrowRight") next();
-      else if (e.key === "ArrowLeft") setI((n) => Math.max(0, n - 1));
+      if (e.key === "Escape") {
+        close();
+        return;
+      }
+      if (e.key === "ArrowRight") {
+        next();
+        return;
+      }
+      if (e.key === "ArrowLeft") {
+        setI((n) => Math.max(0, n - 1));
+        return;
+      }
+      if (e.key !== "Tab") return;
+      // Keep Tab inside the card. Without this it walks into the page behind
+      // the scrim, which cannot be seen or clicked.
+      const items = cardRef.current?.querySelectorAll<HTMLElement>("button, [href]");
+      if (!items?.length) return;
+      const list = Array.from(items);
+      const firstEl = list[0];
+      const lastEl = list[list.length - 1];
+      if (e.shiftKey && document.activeElement === firstEl) {
+        e.preventDefault();
+        lastEl.focus();
+      } else if (!e.shiftKey && document.activeElement === lastEl) {
+        e.preventDefault();
+        firstEl.focus();
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [run, close, next]);
+
+  // No scroll lock here on purpose: each step scrolls its own target into view,
+  // and a locked page would strand every step below the fold. The ring already
+  // tracks the target through a scroll.
+  //
+  // Focus goes into the card and comes back to wherever it was on the way out.
+  useEffect(() => {
+    if (!run) return;
+    returnTo.current = document.activeElement;
+    const t = window.setTimeout(() => cardRef.current?.querySelector<HTMLElement>(".tour__go")?.focus(), 60);
+    return () => {
+      window.clearTimeout(t);
+      (returnTo.current as HTMLElement | null)?.focus?.();
+    };
+  }, [run]);
 
   // A box left over from the previous step must not leak onto a centred one.
   const onTarget = Boolean(step?.sel) && box !== null;
@@ -346,6 +390,7 @@ export function AcademyTour() {
       <button type="button" className="tour__scrim" aria-label="Skip the tour" onClick={close} />
       {onTarget && box && (
         <span
+          key={i}
           className="tour__ring"
           aria-hidden="true"
           style={{ top: box.top - 6, left: box.left - 6, width: box.width + 12, height: box.height + 12, borderRadius: box.radius }}
@@ -354,6 +399,7 @@ export function AcademyTour() {
 
       <div
         key={i}
+        ref={cardRef}
         className={`tour__card${anchored ? ` tour__card--${spot!.side}` : " tour__card--mid"}`}
         style={anchored ? { top: spot!.top, left: spot!.left } : undefined}
       >
