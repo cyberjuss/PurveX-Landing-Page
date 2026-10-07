@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { ArrowUpRight, Loader2, Server } from "lucide-react";
+import { ArrowUpRight, LifeBuoy, Loader2, RotateCcw, Server } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { openHelp } from "@/components/academy/get-help";
 import "./hosted-lab.css";
@@ -384,6 +384,11 @@ export function HostedLabMenu() {
       )}
 
       {state === "starting" && <StartTracker status={status} />}
+      {state === "stopping" && (
+        <div className="hl__bar hl__bar--idle" role="progressbar" aria-label="Stopping your lab">
+          <span />
+        </div>
+      )}
 
       <div className="hl__foot">
         {note && <p className="hl__note">{note}</p>}
@@ -419,11 +424,11 @@ export function HostedLabMenu() {
               if (window.confirm("Reset your lab? You get a fresh copy of PurveX Financial and every change you made in the lab is gone. Your Range progress stays.")) void act("reset");
             }}
           >
-            Reset to a fresh lab
+            <RotateCcw className="h-3 w-3" aria-hidden /> Reset to a fresh lab
           </button>
         )}
-        <button type="button" className="hl__link" onClick={() => openHelp("lab")}>
-          Get help
+        <button type="button" className="hl__link hl__link--end" onClick={() => openHelp("lab")}>
+          <LifeBuoy className="h-3 w-3" aria-hidden /> Get help
         </button>
       </div>
     </section>

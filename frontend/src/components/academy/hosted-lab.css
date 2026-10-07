@@ -91,6 +91,14 @@ html[data-academy-theme="dark"] .hl-note,
    invisible, so a 5% fill looked like a stray dash rather than early progress. */
 .hl__bar { height: 5px; background: color-mix(in srgb, var(--hl-ink) 14%, transparent); overflow: hidden; }
 .hl__bar span { display: block; height: 100%; background: var(--hl-wait); transition: width 1s linear; }
+/* Shutting down has no measurable progress, so the bar paces instead of filling. */
+.hl__bar--idle { margin-top: 2px; }
+.hl__bar--idle span { width: 38%; transition: none; animation: hl-pace 1.15s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+@keyframes hl-pace {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(263%); }
+}
+@media (prefers-reduced-motion: reduce) { .hl__bar--idle span { animation: none; width: 100%; opacity: 0.5; } }
 .hl .hl__steps { display: grid; grid-template-columns: 1fr; gap: 7px; margin: 0; padding: 0; list-style: none; }
 .hl .hl__steps li { display: flex; align-items: center; gap: 9px; margin: 0; font-size: 13px; color: var(--hl-ink-3); }
 .hl .hl__steps i { flex: none; width: 13px; height: 13px; border: 1.5px solid var(--hl-line); }
@@ -105,7 +113,7 @@ html[data-academy-theme="dark"] .hl-note,
 .hl .hl__eta em { flex: none; font-style: normal; }
 
 /* Footer */
-.hl__foot { display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding-top: 14px; border-top: 1px solid var(--hl-line); }
+.hl__foot { display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding-top: 12px; border-top: 1px solid var(--hl-line); }
 .hl .hl__note { margin: 0; font-size: 13.5px; color: var(--hl-ink-2); }
 .hl__actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .hl .hl__go,
@@ -133,9 +141,10 @@ html[data-academy-theme="dark"] .hl-note,
 .hl button:focus-visible { outline: 2px solid var(--hl-accent); outline-offset: 2px; }
 .hl .hl__error { margin: 0; padding: 10px 12px; font-size: 13px; color: var(--hl-bad); border: 1px solid color-mix(in srgb, var(--hl-bad) 40%, transparent); }
 /* Quiet footer: the two things you rarely need, side by side and out of the way. */
-.hl__links { display: flex; align-items: center; gap: 14px; margin-top: -4px; }
-.hl__links > * + *::before { content: ""; position: absolute; left: -7px; top: 50%; width: 1px; height: 11px; transform: translateY(-50%); background: var(--hl-line); }
-.hl .hl__link { position: relative; padding: 0; border: 0; background: none; font: inherit; font-size: 12px; font-weight: 500; color: var(--hl-ink-3); cursor: pointer; transition: color 0.15s; }
+/* Two actions at opposite ends rather than two words joined by a pipe. */
+.hl__links { display: flex; align-items: center; gap: 14px; margin-top: -2px; }
+.hl .hl__link--end { margin-left: auto; }
+.hl .hl__link { position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; font: inherit; font-size: 12px; font-weight: 500; color: var(--hl-ink-3); cursor: pointer; transition: color 0.15s; }
 .hl .hl__link:hover:not(:disabled) { color: var(--hl-ink); }
 .hl .hl__link--warn:hover:not(:disabled) { color: var(--hl-bad); }
 .hl .hl__link:disabled { opacity: 0.5; cursor: default; }
