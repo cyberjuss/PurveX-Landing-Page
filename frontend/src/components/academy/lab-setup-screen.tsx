@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-import { Check, Loader2, X } from "lucide-react";
+import { Check, Database, Loader2, Network, Server, ShieldCheck, Workflow, X, type LucideIcon } from "lucide-react";
 import { useHostedLab } from "./hosted-lab-button";
 import "./lab-setup-screen.css";
 
@@ -13,16 +13,19 @@ import "./lab-setup-screen.css";
 // It can be dismissed: the lab keeps building in the background and the lab
 // light in the header carries on showing progress.
 
-const FIRST_BOOT = [
-  { label: "Starting your server", until: 45 },
-  { label: "Booting Windows", until: 110 },
-  { label: "Starting Active Directory", until: 160 },
-  { label: "Building PurveX Financial", until: 200 },
+// An icon per step, so a step that has not started still says what it is
+// rather than sitting behind an identical grey dot.
+type Step = { label: string; until: number; icon: LucideIcon };
+const FIRST_BOOT: Step[] = [
+  { label: "Starting your server", until: 45, icon: Server },
+  { label: "Booting Windows", until: 110, icon: Workflow },
+  { label: "Starting Active Directory", until: 160, icon: Network },
+  { label: "Building PurveX Financial", until: 200, icon: Database },
 ];
-const RESUME = [
-  { label: "Waking your server", until: 20 },
-  { label: "Resuming Windows", until: 50 },
-  { label: "Reconnecting to Range", until: 80 },
+const RESUME: Step[] = [
+  { label: "Waking your server", until: 20, icon: Server },
+  { label: "Resuming Windows", until: 50, icon: Workflow },
+  { label: "Reconnecting to Range", until: 80, icon: ShieldCheck },
 ];
 
 export function LabSetupScreen() {
@@ -79,12 +82,17 @@ export function LabSetupScreen() {
         </div>
 
         <ol className="ls__steps">
-          {steps.map((s, i) => (
-            <li key={s.label} className={i < current ? "is-done" : i === current ? "is-now" : ""}>
-              {i < current ? <Check aria-hidden="true" /> : i === current ? <Loader2 className="ls__spin" aria-hidden="true" /> : <i className="ls__dot" aria-hidden="true" />}
-              {s.label}
-            </li>
-          ))}
+          {steps.map((s, i) => {
+            const Icon = s.icon;
+            return (
+              <li key={s.label} className={i < current ? "is-done" : i === current ? "is-now" : ""}>
+                <span className="ls__mark" aria-hidden="true">
+                  {i < current ? <Check /> : i === current ? <Loader2 className="ls__spin" /> : <Icon />}
+                </span>
+                {s.label}
+              </li>
+            );
+          })}
         </ol>
 
         <p className="ls__eta">
