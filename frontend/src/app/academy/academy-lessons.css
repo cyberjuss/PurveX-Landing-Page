@@ -3,13 +3,50 @@
 .academy-prose .ax-reveal--in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .academy-prose .ax-reveal { opacity: 1; transform: none; transition: none; } }
 
-/* "Go deeper" foldouts in lessons: the core stays short, detail is one click away. */
-.academy-prose details.academy-deeper { margin: 1.25rem 0 0; border: 1px solid var(--rd-line); }
-.academy-prose details.academy-deeper > summary { display: flex; align-items: center; gap: 8px; padding: 0.7rem 0.9rem; font-size: 0.9rem; font-weight: 650; color: var(--rd-ink-2); cursor: pointer; list-style: none; }
+/* "Go deeper" foldouts in lessons: the core stays short, detail is one click
+   away. The body is padded rather than margined, because margins on the
+   children of a bordered box leave anything that is not a direct child
+   touching the border and let a wide block push the box past its container. */
+.academy-prose details.academy-deeper {
+  margin: 1.5rem 0 0;
+  border: 1px solid var(--rd-line);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--rd-ink, #0f172a) 3%, transparent);
+  overflow: hidden;
+}
+.academy-prose details.academy-deeper > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.85rem 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: var(--rd-ink-2);
+  cursor: pointer;
+  list-style: none;
+  transition: color 0.15s;
+}
+.academy-prose details.academy-deeper > summary:hover { color: var(--rd-ink); }
 .academy-prose details.academy-deeper > summary::-webkit-details-marker { display: none; }
 .academy-prose details.academy-deeper > summary::before { content: "+"; width: 1rem; font-weight: 700; color: var(--rd-accent); }
-.academy-prose details.academy-deeper[open] > summary::before { content: "\2212"; }
+.academy-prose details.academy-deeper[open] > summary::before { content: "2"; }
 .academy-prose details.academy-deeper[open] > summary { border-bottom: 1px solid var(--rd-line); }
-.academy-prose details.academy-deeper > :not(summary) { margin-left: 0.9rem; margin-right: 0.9rem; }
-.academy-prose details.academy-deeper > :last-child { margin-bottom: 0.9rem; }
-.academy-prose details.academy-deeper h4 { margin: 1rem 0 0.35rem; font-size: 0.95rem; font-weight: 650; color: var(--rd-ink); }
+
+/* One padded body, so every descendant is inset rather than only the direct
+   children the old margin rule could reach. */
+.academy-prose details.academy-deeper > .ax-deeper__body,
+.academy-prose details.academy-deeper > :not(summary) { margin-left: 0; margin-right: 0; }
+.academy-prose details.academy-deeper[open] { padding-bottom: 0.2rem; }
+.academy-prose details.academy-deeper > :not(summary) { padding-left: 1.1rem; padding-right: 1.1rem; }
+.academy-prose details.academy-deeper > pre { margin-left: 1.1rem; margin-right: 1.1rem; padding-left: 1rem; padding-right: 1rem; }
+
+/* A heading inside the foldout still has to outrank the paragraph under it. */
+.academy-prose details.academy-deeper h4 {
+  margin: 1.4rem 0 0.4rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--rd-ink);
+}
+.academy-prose details.academy-deeper > :not(summary):first-of-type h4,
+.academy-prose details.academy-deeper h4:first-child { margin-top: 1.1rem; }
