@@ -300,6 +300,7 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
   const [open, setOpen] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>("All");
   const [sort, setSort] = useState<SortKey>("urgency");
+  const [showInvite, setShowInvite] = useState(false);
 
   const origin = typeof window === "undefined" ? "" : window.location.origin;
   const joinLink = `${origin}/range/join?code=${encodeURIComponent(r.class.code)}`;
@@ -379,17 +380,24 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
           </div>
         </dl>
 
-        <div className="iv-invitecard">
-          <span className="iv-invitecard__label">Invite your class</span>
-          <div className="iv-invitecard__link">
-            <code>{joinLink}</code>
-            <CopyLink text={joinLink} label="Copy link" />
-          </div>
-          <p className="iv-invitecard__code">
-            Class code <strong>{r.class.code}</strong>
-            <CopyLink text={r.class.code} label="Copy" />
-            <span>Fallback for the passcode screen.</span>
-          </p>
+        {/* You invite a class once and then read this page all term, so the
+            link and the code fold away rather than sitting above the roster
+            every visit. */}
+        <div className="iv-invite2">
+          <CopyLink text={joinLink} label="Copy join link" />
+          <button type="button" className="iv-copy" aria-expanded={showInvite} onClick={() => setShowInvite((v) => !v)}>
+            {showInvite ? "Hide" : "Show"} class code
+          </button>
+          {showInvite && (
+            <div className="iv-invite2__open">
+              <code>{joinLink}</code>
+              <p>
+                Class code <strong>{r.class.code}</strong>
+                <CopyLink text={r.class.code} label="Copy" />
+                <span>Fallback for the passcode screen.</span>
+              </p>
+            </div>
+          )}
         </div>
       </header>
 
@@ -503,9 +511,6 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
                 <span role="columnheader">Readiness</span>
                 <span role="columnheader">Where they are</span>
                 <span role="columnheader">Last active</span>
-                <span role="columnheader">Lab</span>
-                <span role="columnheader">Drills this week</span>
-                <span role="columnheader">Portfolio</span>
               </div>
               {shown.map((s) => {
                 const st = statusOf(s);
@@ -549,21 +554,6 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
                       </span>
                       <span role="cell" data-label="Last active" className={quietDays(s) !== null && quietDays(s)! >= QUIET_DAYS ? "rd-text-warn" : ""}>
                         {ago(s.lastActive)}
-                      </span>
-                      <span role="cell" data-label="Lab">
-                        {s.labSynced ? `Synced ${ago(s.labSynced).toLowerCase()}` : <small>Not connected</small>}
-                      </span>
-                      <span role="cell" data-label="Drills this week">
-                        {s.drillsThisWeek}
-                      </span>
-                      <span role="cell" data-label="Portfolio">
-                        {s.portfolio ? (
-                          <a className="rd-link" href={`/p/${s.portfolio}`} target="_blank" rel="noreferrer">
-                            Open <ExternalLink className="h-3 w-3" />
-                          </a>
-                        ) : (
-                          <small>Not published</small>
-                        )}
                       </span>
                     </div>
                     {isOpen && <StudentDetail s={s} classTitle={r.class.name} />}
