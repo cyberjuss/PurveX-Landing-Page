@@ -3,7 +3,7 @@
 import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookMarked, Check, ChevronDown, FlaskConical, Lock } from "lucide-react";
+import { Check, ChevronDown, FlaskConical, Lock } from "lucide-react";
 import { type PhaseDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { useAcademyProgress } from "./academy-progress";
@@ -95,7 +95,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           return (
             <div
               key={phase.slug}
-              className="flex items-center justify-between gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] text-slate-400 opacity-70"
+              className="flex items-center justify-between gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] text-[var(--rd-ink-3)] opacity-70"
               title="Locked for now"
             >
               <span className="truncate">{phase.label} — {phase.title}</span>
@@ -155,7 +155,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               onClick={() => toggleManualOpen(labsKey)}
               aria-expanded={labsOpen}
               className={`flex w-full items-center justify-between gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] transition ${
-                labsOpen ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
+                labsOpen ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
               }`}
             >
               <span className="flex min-w-0 items-center gap-1.5">
@@ -184,7 +184,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                   href={`/range/${phase.slug}`}
                   onClick={onNavigate}
                   className={`flex min-w-0 flex-1 items-center gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] transition ${
-                    phaseActive ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
+                    phaseActive ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
                   }`}
                 >
                   {headerContent}
@@ -194,7 +194,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                   type="button"
                   onClick={() => toggleManualOpen(phase.slug)}
                   aria-expanded={phaseOpen}
-                  className="flex min-w-0 flex-1 items-center gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] text-slate-400 transition hover:text-slate-600"
+                  className="flex min-w-0 flex-1 items-center gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] text-[var(--rd-ink-3)] transition hover:text-[var(--rd-ink-2)]"
                 >
                   {headerContent}
                 </button>
@@ -220,27 +220,6 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         );
       })}
 
-      <Link
-        href="/range/labs"
-        onClick={onNavigate}
-        className={`flex items-center gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] transition ${
-          pathname.startsWith("/range/labs") ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
-        }`}
-      >
-        <FlaskConical className="h-3 w-3 shrink-0" />
-        <span className="truncate">Labs — Hands-On</span>
-      </Link>
-
-      <Link
-        href="/range/reference"
-        onClick={onNavigate}
-        className={`flex items-center gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] transition ${
-          pathname === "/range/reference" ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
-        }`}
-      >
-        <BookMarked className="h-3 w-3 shrink-0" />
-        <span className="truncate">Reference — Cheat Sheet</span>
-      </Link>
     </nav>
   );
 }

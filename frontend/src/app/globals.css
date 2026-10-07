@@ -1557,9 +1557,15 @@ body {
   z-index: 1;
 }
 
-/* Enhanced focus states for accessibility */
+/* Keyboard focus. This used to be `outline: none` with nothing in its place,
+   declared twice, so every link and button in the app was invisible to anyone
+   tabbing through it -- only four components defined a ring of their own. The
+   offset leaves a gap of page background between the element and the ring, so
+   it stays visible on a filled button as well as a bare link. Marketing keeps
+   its own heavier 3px version (.sp ... :focus-visible), which outranks this. */
 *:focus-visible {
-  outline: none;
+  outline: 2px solid var(--rd-accent, var(--pvrx-accent, #5546e0));
+  outline-offset: 2px;
 }
 
 /* Smooth transitions for interactive elements */
@@ -1691,10 +1697,6 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Enhanced Focus States with Youthful Energy */
-*:focus-visible {
-  outline: none;
-}
 
 /* Micro-interactions for buttons */
 .btn-dynamic {
@@ -4308,7 +4310,7 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 }
 
 .ax-home {
-  min-height: calc(100dvh - 65px - 2.5rem);
+  min-height: calc(100dvh - var(--ax-chrome, 65px) - 2.5rem);
   display: flex;
   flex-direction: column;
 }
@@ -4558,7 +4560,7 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
    scrolling back. Opaque, or the content runs underneath it. */
 .ax-lesshead {
   position: sticky;
-  top: 65px;
+  top: var(--ax-chrome, 65px);
   z-index: 5;
   margin-bottom: 30px;
   border-bottom: 1px solid var(--rd-line);
@@ -5541,4 +5543,64 @@ textarea.pc-dock__field {
     height: 44px;
     transform: translate(-50%, -50%);
   }
+}
+
+/* ── Range places — the flat destination row under the portal header.
+   Six links, one level, same position on every page. It shares the header's
+   sticky block, so --ax-chrome (set on .academy-bg) is the height of both
+   together and everything that parks itself under the chrome reads it. ── */
+.ax-places {
+  container-type: inline-size;
+  border-top: 1px solid var(--rd-line-2);
+  background: var(--pvrx-bg-light, #fff);
+}
+.ax-places__list {
+  display: flex;
+  gap: 2px;
+  margin: 0 auto;
+  padding: 0 10px;
+  max-width: 80rem;
+  list-style: none;
+}
+.ax-places__link {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 44px;
+  padding: 0 11px;
+  border-bottom: 2px solid transparent;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  color: var(--rd-ink-2);
+  transition: color 160ms var(--ax-ease, cubic-bezier(.16,1,.3,1)),
+              border-color 160ms var(--ax-ease, cubic-bezier(.16,1,.3,1));
+}
+.ax-places__link:hover { color: var(--rd-ink); }
+.ax-places__link--on {
+  border-bottom-color: var(--rd-accent);
+  color: var(--rd-accent);
+}
+.ax-places__icon { width: 15px; height: 15px; flex-shrink: 0; }
+/* Six labels will not fit one phone-width line, and a swipeable row would put
+   the last two behind a gesture -- which is the same hidden-destination
+   problem this row exists to fix. Two rows of three instead. The chrome height
+   is measured from the header, so the extra line is accounted for on its own. */
+@container (max-width: 36rem) {
+  .ax-places__list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 0 6px 4px;
+  }
+  /* fit-content keeps the active underline hugging its word instead of
+     stretching the full third of the line. */
+  .ax-places__link { width: fit-content; max-width: 100%; margin: 0 auto; height: 40px; min-width: 0; padding: 0 6px; font-size: 13px; }
+}
+/* On the narrowest phones the icon is the 22px that stops "Reference" and
+   "Portfolio" fitting their third of the line. The word is the part that has
+   to survive, so the icon is what goes. */
+@container (max-width: 24rem) {
+  .ax-places__icon { display: none; }
+  .ax-places__link { gap: 0; }
 }

@@ -163,7 +163,7 @@ function UpgradeContent() {
         <div className="flex items-baseline gap-2 border-b border-[#eceef4] px-5 py-4">
           <span className="text-[2rem] font-bold leading-none tracking-tight text-[#10192e]">$29</span>
           <span className="text-sm font-medium text-slate-500">per month</span>
-          <span className="ml-auto text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Range Pro</span>
+          <span className="ml-auto text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">Range Pro</span>
         </div>
         <ul className="flex flex-col gap-2.5 px-5 py-4">
           {PERKS.map((perk) => (

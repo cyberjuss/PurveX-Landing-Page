@@ -273,7 +273,7 @@ function PricingContent() {
 
         <div className="grid gap-5 pt-2 sm:grid-cols-2 sm:items-start">
           <div className="flex flex-col rounded-2xl border border-[var(--pvrx-border-light)] bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-7">
-            <p className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">Free</p>
+            <p className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Free</p>
             <p className="mt-2 text-[1.9rem] font-display font-semibold tracking-tight text-slate-900">$0</p>
             <p className="mt-0.5 text-sm text-slate-500">Forever, no card required</p>
             <div className="mt-5 h-px bg-[var(--pvrx-border-light)]" />

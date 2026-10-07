@@ -12,6 +12,7 @@ import { AcademyIntake } from "@/components/academy/academy-intake";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
 import { AcademySignIn } from "@/components/academy/academy-sign-in";
+import { RangePlaces } from "@/components/academy/range-places";
 import { AcademyWelcome, takeAcademyWelcome } from "@/components/academy/academy-welcome";
 import { UnlockForm } from "./unlock-form";
 import { CoachProvider } from "@/components/academy/coach-context";
@@ -59,6 +60,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
   const isLesson = /^\/range\/[^/]+\/[^/]+$/.test(pathname);
   const showSidebar = pathname !== "/range" && !isReadiness && !isDrill && !isProof;
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -74,6 +76,24 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
     profileRef.current = next ?? null;
     setProfileState(next);
   };
+
+  // Height of the sticky chrome (header + the places row inside it), published
+  // as --ax-chrome so the sidebar, the lesson tab bar and the reference filter
+  // bar all park directly underneath it. Measured rather than written down:
+  // the bar is a different height on a phone than on a desktop, and the three
+  // separate copies of "65px" it replaced were already wrong on both.
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const write = () =>
+      document.documentElement.style.setProperty("--ax-chrome", `${Math.round(el.getBoundingClientRect().height)}px`);
+    write();
+    const ro = new ResizeObserver(write);
+    ro.observe(el);
+    return () => ro.disconnect();
+    // The header only renders past the sign-in and passcode gates, so the
+    // effect has to run again once those clear and the ref is finally set.
+  }, [student, unlocked]);
 
   useEffect(() => {
     if (!supabase) return;
@@ -1176,6 +1196,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       <CoachProvider profile={profile ?? null}>
       <div className="academy-bg min-h-dvh" data-academy-theme={theme}>
         <header
+          ref={headerRef}
           className={`sticky top-0 z-40 overflow-visible border-b bg-white transition-shadow ${
             scrolled ? "border-[var(--pvrx-border-light)] shadow-[0_1px_0_rgba(16,25,46,0.03),0_8px_24px_-16px_rgba(16,25,46,0.12)]" : "border-[var(--pvrx-border-light)]"
           }`}
@@ -1200,7 +1221,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
                 </span>
                 <span className="hidden sm:inline">
                   Think Like a SOC Analyst
-                  <span className="ml-2 font-mono text-xs font-normal text-slate-400">101</span>
+                  <span className="ml-2 font-mono text-xs font-normal text-[var(--rd-ink-3)]">101</span>
                 </span>
               </Link>
             </div>
@@ -1226,6 +1247,10 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
               <AcademyProfileMenu onSignOut={handleSignOut} />
             </div>
           </div>
+          {/* Flat row of destinations, inside the sticky block so it rides
+              along with the header. Hidden only while the intake is asking,
+              where there is nowhere to go yet. */}
+          {!asking && <RangePlaces />}
         </header>
 
         {profile === undefined ? (
@@ -1246,7 +1271,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           <aside
             data-tour="menu-desktop"
             aria-hidden={!showSidebar}
-            className={`hidden shrink-0 overflow-hidden bg-white transition-[width] duration-300 ease-[cubic-bezier(.16,1,.3,1)] lg:sticky lg:top-[65px] lg:block lg:h-[calc(100vh-65px)] ${
+            className={`hidden shrink-0 overflow-hidden bg-white transition-[width] duration-300 ease-[cubic-bezier(.16,1,.3,1)] lg:sticky lg:top-[var(--ax-chrome,69px)] lg:block lg:h-[calc(100vh-var(--ax-chrome,69px))] ${
               showSidebar ? "border-r border-[var(--pvrx-border-light)]" : "border-r-0"
             } ${!showSidebar ? "lg:w-0" : collapsed ? "lg:w-14" : "lg:w-[27rem]"}`}
           >
@@ -1256,7 +1281,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
               aria-expanded={!collapsed}
               tabIndex={showSidebar ? 0 : -1}
               title={collapsed ? "Expand course menu" : "Collapse course menu"}
-              className="flex h-11 w-full items-center justify-center border-b border-[var(--pvrx-border-light)] text-slate-400 transition hover:bg-slate-50 hover:text-[#5546e0]"
+              className="flex h-11 w-full items-center justify-center border-b border-[var(--pvrx-border-light)] text-[var(--rd-ink-3)] transition hover:bg-slate-50 hover:text-[var(--rd-accent)]"
             >
               <ChevronLeft className={`h-4 w-4 transition-transform duration-300 ${collapsed ? "rotate-180" : ""}`} />
             </button>

@@ -491,7 +491,7 @@ export default function ReferencePage() {
         </div>
       </header>
 
-      <div className="sticky top-[65px] z-10 -mx-4 bg-[var(--pvrx-bg-light)] px-4 pb-2 pt-6 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
+      <div className="sticky top-[var(--ax-chrome,69px)] z-10 -mx-4 bg-[var(--pvrx-bg-light)] px-4 pb-2 pt-6 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
         <div className="ax-search">
           <Search className="h-4 w-4 shrink-0 text-[var(--rd-ink-3)]" />
           <input
@@ -538,7 +538,7 @@ export default function ReferencePage() {
             <div className="flex flex-col gap-10">
               {filteredCategories.map((cat) => (
                 <div key={cat.label}>
-                  <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400 lg:hidden">
+                  <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--rd-ink-3)] lg:hidden">
                     {cat.label}
                   </h2>
                   <div className="mt-4 flex flex-col gap-6 lg:mt-0">
