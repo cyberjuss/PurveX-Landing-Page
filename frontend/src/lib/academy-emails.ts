@@ -20,31 +20,17 @@ const esc = (s: string) => s.replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt
 const base = (o: string) => o.replace(/\/$/, "");
 const first = (name: string | null) => name?.trim().split(/\s+/)[0] || "there";
 
-// Simple stroke icons. Apple Mail, Outlook and mobile render the SVG; Gmail
-// strips it and the soft accent tile remains, so the header still reads clean.
-const ICON: Record<string, string> = {
-  welcome: '<path d="M5 12l4 4L19 7"/>',
-  rocket: '<path d="M12 3c3 1 5 4 5 8l-3 3-4 0-3-3c0-4 2-7 5-8z"/><path d="M9 16l-3 3M15 16l3 3"/>',
-  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-  chart: '<path d="M4 20h16M7 20v-7M12 20V6M17 20v-4"/>',
-  key: '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l2 2"/>',
-  lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
-  trophy: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M5 5H3v2a3 3 0 0 0 3 3M19 5h2v2a3 3 0 0 1-3 3"/>',
-  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
-  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
-};
-
-// A small accent line icon above the heading. The dark header carries the brand,
-// so the body stays light: just the icon, no tile. Gmail may drop the SVG, which
-// only leaves a little space.
-const badge = (icon: keyof typeof ICON) =>
-  `<div style="margin:0 0 14px;line-height:0;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="${ACCENT}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[icon]}</svg></div>`;
-
 const h = (text: string) => `<h1 style="margin:0 0 12px;font-size:23px;line-height:1.25;color:${INK};font-weight:700;letter-spacing:-0.02em;">${esc(text)}</h1>`;
 const p = (html: string) => `<p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:${INK2};">${html}</p>`;
 const note = (html: string) => `<p style="margin:20px 0 0;font-size:13px;line-height:1.55;color:${MUTED};">${html}</p>`;
 const mono = (text: string) => `<span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:${INK2};word-break:break-all;">${esc(text)}</span>`;
 const pre = (text: string) => `<span style="display:none;max-height:0;overflow:hidden;opacity:0;mso-hide:all;">${esc(text)}</span>`;
+/** The same action as a plain link, for a client that will not draw the button
+ *  or a reader who would rather copy it. */
+const fallback = (href: string, lead: string) =>
+  `<p style="margin:16px 0 0;font-size:12.5px;line-height:1.6;color:${MUTED};">${esc(lead)}<br>` +
+  `<a href="${href}" style="color:${ACCENT};text-decoration:underline;word-break:break-all;">${esc(href)}</a></p>`;
+
 const button = (href: string, label: string) =>
   `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:6px 0 4px;"><tr><td style="border-radius:11px;background:${ACCENT};box-shadow:0 2px 8px rgba(106,92,255,0.32);">` +
   `<a href="${href}" style="display:inline-block;padding:13px 26px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;letter-spacing:0.01em;">${esc(label)}</a>` +
@@ -59,7 +45,6 @@ export function instructorSetupEmail(cls: AcademyClass, o: string): Built {
   const join = `${url}/range/join?code=${encodeURIComponent(cls.code)}`;
   const html =
     pre(`Your dashboard and the link to invite students to ${cls.name}.`) +
-    badge("key") +
     h(`Your class ${cls.name} is live`) +
     p("There are two quick steps to get your class running.") +
     p("<strong>First, see your class.</strong> Open your dashboard and sign in with this email to follow every student's progress in one place.") +
@@ -75,7 +60,6 @@ export function studentWelcomeEmail(student: Named, cls: AcademyClass, o: string
   const url = base(o);
   const html =
     pre("Your first lab is ready.") +
-    badge("rocket") +
     h(`Welcome to ${cls.name}`) +
     p(`Hi ${esc(first(student.name))}, welcome to ${esc(cls.name)}. Your training is ready, with hands-on labs that are graded against a live environment, so you build the skills the job actually asks for rather than test-taking ones.`) +
     button(`${url}/range`, "Start training") +
@@ -88,7 +72,6 @@ export function studentNudgeEmail(student: Named, o: string): Built {
   const url = base(o);
   const html =
     pre("Your lab is where you left it.") +
-    badge("clock") +
     h(`Pick up where you left off, ${first(student.name)}`) +
     p("It has been about a week since your last session, and your lab is exactly where you left it. Ten minutes is enough to get moving again and keep your momentum going.") +
     button(`${url}/range`, "Jump back in") +
@@ -134,7 +117,6 @@ export function instructorDigestEmail(d: DigestInput, o: string): Built {
     : `<p style="margin:0;font-size:14px;color:${TONE.good};font-weight:600;">Everyone is moving. Nobody is stuck or quiet.</p>`;
   const html =
     pre(`${d.className}: ${d.active} active, ${d.stuck} stuck this week.`) +
-    badge("chart") +
     h(`${d.className} this week`) +
     p(`Here is how your class is doing. You have ${d.students} student${d.students === 1 ? "" : "s"}, with ${d.active} active this week and ${d.attention.length} who could use a look.`) +
     stats +
@@ -150,7 +132,6 @@ export function studentMilestoneEmail(student: Named, title: string, o: string):
   const url = base(o);
   const html =
     pre(`Nice work. You cleared ${title}.`) +
-    badge("trophy") +
     h(`Nice work, ${first(student.name)}`) +
     p(`You passed ${esc(title)}, which is real hands-on evidence of the skill rather than a quiz score.`) +
     button(`${url}/range`, "Keep going") +
@@ -163,7 +144,6 @@ export function studentJoinedEmail(className: string, studentName: string, o: st
   const url = base(o);
   const html =
     pre(`${studentName} joined ${className}.`) +
-    badge("user") +
     h(`${studentName} joined ${className}`) +
     p(`${esc(studentName)} just joined your class. Reaching out early to welcome them tends to help new students get started and stay engaged.`) +
     button(`${url}/range/instructor`, "Open your class") +
@@ -175,11 +155,11 @@ export function studentJoinedEmail(className: string, studentName: string, o: st
 export function signupConfirmEmail(actionLink: string): Built {
   const html =
     pre("Confirm your email to finish setting up.") +
-    badge("mail") +
     h("Confirm your email") +
-    p("Thanks for signing up. Confirm your email address with the button below to finish setting up your PurveX account.") +
+    p("Thanks for signing up. One click confirms this address and finishes setting up your PurveX account.") +
     button(actionLink, "Confirm email") +
-    note("If you did not sign up, you can safely ignore this email.");
+    fallback(actionLink, "Or paste this into your browser:") +
+    note("If you did not sign up, you can safely ignore this email and nothing will happen.");
   return { subject: "Confirm your PurveX email", html };
 }
 
@@ -187,10 +167,10 @@ export function signupConfirmEmail(actionLink: string): Built {
 export function passwordResetEmail(actionLink: string): Built {
   const html =
     pre("Reset your password. The link lasts an hour.") +
-    badge("lock") +
     h("Reset your password") +
-    p("We received a request to reset the password for your PurveX account. Use the button below within the hour to choose a new one.") +
+    p("Someone asked to reset the password on your PurveX account. Choose a new one within the hour and this link stops working after that.") +
     button(actionLink, "Reset your password") +
-    note("If you did not request this, you can ignore this email and your password will stay the same.");
+    fallback(actionLink, "Or paste this into your browser:") +
+    note("If that was not you then ignore this email and your password stays as it is.");
   return { subject: "Reset your PurveX password", html };
 }
