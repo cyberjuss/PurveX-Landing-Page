@@ -385,6 +385,16 @@ export const POD_RESERVED = "reserved";
  * right now" rather than putting two students in one group. Without a database
  * (local development) the student's own row is the only one, so slot 0 is safe.
  */
+/** The slot table could not be read at all, which is a fault on our side and
+ *  not a full pool. Most often academy.sql has not been run since pods landed. */
+export class PodSlotsUnreadableError extends Error {
+  constructor(detail: string) {
+    super("Range is missing a database update and cannot build a lab right now. Email support@purvex.io.");
+    this.name = "PodSlotsUnreadableError";
+    this.cause = detail;
+  }
+}
+
 export async function claimPodSlot(userId: string, slots: number): Promise<number | null> {
   if (slots <= 0) return null;
   if (!supabaseAdmin) return 0;
@@ -395,9 +405,12 @@ export async function claimPodSlot(userId: string, slots: number): Promise<numbe
     // back unchanged: reading them from the in-memory copy instead would wipe a
     // real instance id on any server that had not handled this student yet.
     const { data, error } = await supabaseAdmin.from("academy_hosted_labs").select("user_id, pod_slot, instance_id, password_enc");
+    // Returning null here used to be indistinguishable from "every slot is
+    // taken", so an unrun migration told students to wait for a free slot that
+    // was never coming. 42703 is the column not existing.
     if (error) {
-      console.error("pod slot read failed", error.message);
-      return null;
+      console.error("pod slot read failed", error.code, error.message);
+      throw new PodSlotsUnreadableError(error.message);
     }
     const mine = (data ?? []).find((d) => d.user_id === userId);
     // Already holding one: keep it, so a reset lands the student back in the

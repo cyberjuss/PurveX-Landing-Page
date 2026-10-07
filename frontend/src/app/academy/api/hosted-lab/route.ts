@@ -14,6 +14,7 @@ import {
   stopDueHostedLabs,
   stopHostedLab,
 } from "@/lib/academy-hosted";
+import { PodSlotsUnreadableError } from "@/lib/academy-store";
 import { isRangePro, proRequired } from "@/lib/range-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
 
@@ -118,6 +119,12 @@ export async function POST(request: Request) {
     // ours (raise pod_slots and apply), so it is logged but worded for them.
     if (err instanceof PodSlotsFullError) {
       console.error("hosted lab pod slots exhausted");
+      return NextResponse.json({ error: err.message }, { status: 503 });
+    }
+    // Our own missing migration, not AWS. Saying "try again in a minute" sends
+    // them round a loop that cannot end until someone runs academy.sql.
+    if (err instanceof PodSlotsUnreadableError) {
+      console.error("hosted lab blocked: academy.sql has not been run", err.cause);
       return NextResponse.json({ error: err.message }, { status: 503 });
     }
     console.error("hosted lab action failed", action, err instanceof Error ? err.message : err);
