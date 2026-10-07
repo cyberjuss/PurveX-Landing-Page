@@ -220,8 +220,8 @@ export function HostedLabSetupNote() {
           <Server className="h-5 w-5" />
         </span>
         <div className="hl-note__text">
-          <p className="hl-note__title">Range Pro builds this lab for you.</p>
-          <p className="hl-note__body">Pro gives you your own Windows domain on a server we run, one click away in a browser tab, with the ticket objects and Coach sync already in place. You can also follow this tab and build it yourself for free.</p>
+          <p className="hl-note__title">Pro builds this lab for you.</p>
+          <p className="hl-note__body">Pro gives you your own Windows domain in a browser tab, with the ticket objects and Coach sync already in place. Or follow this tab and build it yourself for free.</p>
         </div>
         <a href="/range/upgrade" className="hl-note__go">
           Get Pro
@@ -237,11 +237,11 @@ export function HostedLabSetupNote() {
         <Server className="h-5 w-5" />
       </span>
       <div className="hl-note__text">
-        <p className="hl-note__title">The lab is hosted for you. Skip this setup.</p>
-        <p className="hl-note__body">Range already built PurveX Financial on your own server with the ticket objects and Coach sync in place, so read this tab to see what the setup does and then work in your hosted lab.</p>
+        <p className="hl-note__title">Your lab is hosted. Skip this setup.</p>
+        <p className="hl-note__body">Range already built PurveX Financial for you, ticket objects and Coach sync in place. Read this tab to see what the setup does, then work in your lab.</p>
       </div>
       <button type="button" className="hl-note__go" onClick={primary} disabled={busy || state === "starting" || state === "stopping"}>
-        {state === "ready" ? "Open" : state === "starting" ? "Starting" : state === "stopping" ? "Stopping" : state === "stopped" ? "Resume lab" : "Start my lab"}
+        {state === "ready" ? "Open" : state === "starting" ? "Starting" : state === "stopping" ? "Stopping" : state === "stopped" ? "Resume" : "Start"}
         {state === "ready" && <ArrowUpRight className="h-4 w-4" />}
       </button>
     </aside>
@@ -268,7 +268,7 @@ const SPECS: Record<string, string> = { "t3.small": "2 vCPU · 2 GB", "t3.medium
 const LINUX_SPEC = SPECS["t3.medium"];
 
 
-const PRIMARY: Record<State, string> = { none: "Start my lab", starting: "Starting", ready: "Open", stopping: "Stopping", stopped: "Resume lab" };
+const PRIMARY: Record<State, string> = { none: "Start", starting: "Starting", ready: "Open", stopping: "Stopping", stopped: "Resume" };
 
 /** Seconds since this start, ticking once a second while the lab starts. */
 function useElapsed(startedAt: string | null | undefined, on: boolean): number {
@@ -367,7 +367,7 @@ function LinuxSignIn() {
   return (
     <div className="hl__creds">
       <p className="hl__creds__row">
-        <span>Ubuntu sudo password</span>
+        <span>Sudo password</span>
         {creds ? (
           <>
             <code className="hl__creds__secret">{creds.password}</code>
@@ -385,7 +385,7 @@ function LinuxSignIn() {
       </p>
       {creds && (
         <p className="hl__creds__why">
-          User <code>student</code>. The desktop opens signed in, so you only need this when a command asks.
+          User <code>student</code>. The desktop is already signed in.
         </p>
       )}
       {err && <p className="hl__creds__err" role="alert">{err}</p>}
@@ -418,15 +418,15 @@ export function HostedLabMenu() {
   const legacySingle = state !== "none" && !status.linux;
   const note =
     state === "ready"
-      ? status.stopAt ? `Stops on its own at ${clock(status.stopAt)}.` : "Running."
+      ? status.stopAt ? `Stops at ${clock(status.stopAt)}.` : "Running."
       : state === "starting"
         ? null
         : state === "stopped"
-        ? "Stopped. Everything you changed is saved."
+        ? "Stopped. Your work is saved."
         : state === "stopping"
-          ? "Saving your session."
+          ? "Saving your work."
           : state === "none"
-            ? "A Windows domain controller and an Ubuntu desktop on their own network. Both are ready in a few minutes and open in a browser tab."
+            ? "A Windows domain controller and an Ubuntu desktop, yours alone. Ready in a few minutes, in a browser tab."
             : null;
 
   return (
@@ -469,8 +469,8 @@ export function HostedLabMenu() {
         {bothMachines && (
           <li>
             <Terminal className="h-4 w-4" aria-hidden />
-            <strong>Ubuntu 24.04 desktop</strong>
-            <small>Linux server · {LINUX_SPEC}</small>
+            <strong>Ubuntu 24.04</strong>
+            <small>Desktop · {LINUX_SPEC}</small>
           </li>
         )}
       </ul>
@@ -481,7 +481,7 @@ export function HostedLabMenu() {
           this panel would ever tell them why their Ubuntu server is missing. */}
       {legacySingle && (
         <p className="hl__legacy">
-          This lab was built before the Ubuntu server existed. Reset it below to get both machines.
+          This lab predates the Ubuntu server. Reset it to get both machines.
         </p>
       )}
 
@@ -523,17 +523,17 @@ export function HostedLabMenu() {
             // someone needs this, and it terminates the instances by id.
             disabled={busy}
             onClick={() => {
-              if (window.confirm("Reset your lab? You get a fresh copy of PurveX Financial and every change you made in the lab is gone. Your Range progress stays.")) void act("reset");
+              if (window.confirm("Reset your lab? You get a fresh PurveX Financial. Everything you changed in the lab is gone. Your Range progress stays.")) void act("reset");
             }}
           >
-            <RotateCcw className="h-3 w-3" aria-hidden /> Reset to a fresh lab
+            <RotateCcw className="h-3 w-3" aria-hidden /> Reset
           </button>
         )}
         <button type="button" className="hl__link" onClick={() => setBrief("read")}>
-          <Info className="h-3 w-3" aria-hidden /> How the lab works
+          <Info className="h-3 w-3" aria-hidden /> How it works
         </button>
         <button type="button" className="hl__link hl__link--end" onClick={() => openHelp("lab")}>
-          <LifeBuoy className="h-3 w-3" aria-hidden /> Get help
+          <LifeBuoy className="h-3 w-3" aria-hidden /> Help
         </button>
       </div>
       {brief && (
