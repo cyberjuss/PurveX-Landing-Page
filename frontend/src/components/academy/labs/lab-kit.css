@@ -188,7 +188,6 @@
 .lb .lb__goal { margin: 0; padding: 12px 14px; border: 1px solid var(--rd-line); max-width: none; font-size: var(--ty-body); line-height: 1.55; font-weight: 600; color: var(--rd-ink); }
 /* The lab waits behind this. Starting it is a decision, not something that
    happens while the brief is still being read. */
-.lb__start { margin: 18px 0 0; }
 
 .lb__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; font-size: var(--ty-small); color: var(--rd-ink-3); }
 .lb__foot > span { display: inline-flex; align-items: center; gap: 6px; }

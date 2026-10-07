@@ -4651,41 +4651,7 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
    room for two, and :has means a section whose rail removed itself gets the
    full width back rather than a blank gutter. */
 .ax-lessbody { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; align-items: start; }
-@media (min-width: 1280px) {
-  .ax-lessbody:has(.ax-rail) { grid-template-columns: minmax(0, 1fr) 15rem; gap: 3rem; }
-}
 .ax-panel { min-width: 0; }
-
-/* Sticky, under the section tabs. Quiet by default: this is a map, not a menu,
-   so only the heading you are under carries any weight. */
-.ax-rail { display: none; min-width: 0; }
-@media (min-width: 1280px) {
-  .ax-rail { display: block; }
-}
-.ax-rail__inner { position: sticky; top: 7.5rem; padding-left: 1.25rem; border-left: 1px solid var(--rd-line); }
-.ax-rail__head {
-  margin: 0 0 0.75rem;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: var(--ty-micro);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--rd-ink-3);
-}
-.ax-rail__nav { display: grid; gap: 0.1rem; }
-.ax-rail__link {
-  display: block;
-  padding: 0.3rem 0;
-  font-size: 0.8125rem;
-  line-height: 1.45;
-  color: var(--rd-ink-3);
-  text-decoration: none;
-  transition: color 0.15s;
-}
-.ax-rail__link--sub { padding-left: 0.85rem; font-size: var(--ty-small); }
-.ax-rail__link:hover { color: var(--rd-ink-2); }
-.ax-rail__link--on { color: var(--rd-accent); font-weight: 600; }
-.ax-rail__link:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 2px; }
 
 /* A heading the rail jumps to must clear the sticky section tabs. */
 .ax-lesson .academy-prose :is(h2, h3)[id] { scroll-margin-top: 7rem; }

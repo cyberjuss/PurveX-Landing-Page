@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
-import { ArrowRight, Clock, MessageCircle } from "lucide-react";
+import { type ReactNode } from "react";
+import { Clock, MessageCircle } from "lucide-react";
 import type { LabWidget } from "@/lib/academy-content";
 import { LAB_BRIEFS, labObjective } from "@/lib/academy-lab-briefs";
 import { useOptionalCoach } from "../coach-context";
@@ -27,7 +27,6 @@ export function LabBrief({
   children?: ReactNode;
 }) {
   const coach = useOptionalCoach();
-  const [started, setStarted] = useState(false);
   const brief = LAB_BRIEFS[lab];
   const goal = labObjective(lab, coach?.profile?.roles);
   return (
@@ -56,16 +55,7 @@ export function LabBrief({
         )}
       </div>
       </header>
-      {children !== undefined &&
-        (started ? (
-          children
-        ) : (
-          <div className="lb__start">
-            <button type="button" className="rd-cta" onClick={() => setStarted(true)}>
-              Get started <ArrowRight aria-hidden="true" className="h-4 w-4" />
-            </button>
-          </div>
-        ))}
+      {children}
     </>
   );
 }

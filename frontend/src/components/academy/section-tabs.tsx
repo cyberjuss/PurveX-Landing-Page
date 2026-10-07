@@ -11,7 +11,6 @@ import { MissionPager } from "./mission-pager";
 import { TrailDock, type TrailLink } from "./trail-dock";
 import { labSpot, useCoach } from "./coach-context";
 import { HostedLabSetupNote } from "./hosted-lab-button";
-import { LessonRail } from "./lesson-rail";
 
 // Home Lab tabs about building your own server. A hosted student skips them.
 const HOSTED_SETUP_TABS = new Set(["Set Up the Lab", "Install the Domain", "Build the Environment", "Check the Build"]);
@@ -278,10 +277,6 @@ export function SectionTabs({
         </nav>
       </div>
 
-      {/* Content plus an "On this page" rail. The lesson is a reading measure,
-          so on a wide screen the rail uses the room beside it instead of
-          leaving the right third of the window blank. The rail removes itself
-          when a section has nothing worth listing. */}
       <div className="ax-lessbody" ref={bodyRef}>
       <div className="ax-panel">
         <div className="overflow-hidden py-2 sm:py-4">
@@ -308,7 +303,6 @@ export function SectionTabs({
           />
         )}
       </div>
-        <LessonRail key={current.label} scope={bodyRef} />
       </div>
     </div>
   );
