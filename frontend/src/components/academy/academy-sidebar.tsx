@@ -162,10 +162,13 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               {secs.length > 0 && (
                 <div
                   className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
-                    secOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                    secOpen ? "mb-2 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
                   }`}
                 >
-                  <ul className="ax-subs">
+                  {/* min-h-0 matters: a grid item's automatic minimum is its
+                      content, so without it a 0fr row still reserves the full
+                      height of the list and leaves a hole in the rail. */}
+                  <ul className="ax-subs min-h-0">
                     {secs.map((sec, n) => (
                       <li key={sec.hash}>
                         <a

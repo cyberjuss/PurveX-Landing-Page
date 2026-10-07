@@ -4466,7 +4466,7 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-sidemark--on { opacity: 1; transform: translateY(-50%) scaleY(1); }
 /* The tabs of the lesson you are in, nested under it in the rail. Numbered to
    match the list the lesson itself shows. */
-.ax-subs { display: flex; flex-direction: column; margin: 0; padding: 1px 0 8px; overflow: hidden; }
+.ax-subs { display: flex; flex-direction: column; margin: 0; padding: 0; overflow: hidden; }
 .ax-sub { position: relative; display: flex; align-items: center; gap: 9px; padding: 4px 0 4px 11px; font-size: 13px; color: var(--rd-ink-3); transition: color 0.15s; }
 .ax-sub::before { content: ""; position: absolute; left: 0; top: 2px; bottom: 2px; width: 2px; background: transparent; transition: background 0.15s; }
 .ax-sub i { flex: none; width: 15px; font-family: var(--font-mono, ui-monospace, monospace); font-size: 9.5px; font-style: normal; letter-spacing: 0.03em; opacity: 0.55; }
