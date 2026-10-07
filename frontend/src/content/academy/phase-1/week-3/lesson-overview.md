@@ -3,7 +3,7 @@
 <p>How do analysts tell ordinary network traffic from something worth a second look?</p>
 </div>
 
-### Introduction
+### Overview
 
 Opening a network capture for the first time is a disorienting experience. Thousands of rows scroll past, every one of them full of numbers, and none of it offers any obvious clue about which rows matter. The instinct is to start reading at the top and hope something stands out. It will not, because there is nothing in a packet that announces itself as suspicious, and an environment working perfectly produces just as many rows as one that is compromised.
 

@@ -131,10 +131,11 @@ list instead.
 ## Structure of an overview tab
 
 The page already prints the week's title and summary above the content, so an
-overview opens at its introduction and never repeats them.
+overview never repeats them. Its first heading stays "Overview", matching the
+tab label in academy-content.ts.
 
 ```
-### Introduction
+### Overview
 
 Four to six paragraphs. What the week covers, why the work matters, what is
 hard about it, and what the reader can do by the end.

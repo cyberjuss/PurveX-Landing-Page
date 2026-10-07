@@ -3,7 +3,7 @@
 <p>Who are you, what are you allowed to do, and who checks every time?</p>
 </div>
 
-### Introduction
+### Overview
 
 Every sign-in, and in fact every click that follows it, answers two entirely separate questions. The first is who you are, and the second is what you are allowed to do now that the system knows. These get collapsed together in ordinary speech, where people talk about having access to something as though it were one idea. Keeping them apart is the foundation of everything in this week. They fail separately, they are attacked separately, and they are fixed by different people.
 

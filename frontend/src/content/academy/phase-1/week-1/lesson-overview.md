@@ -3,7 +3,7 @@
 <p>What are we protecting when we call something "secure"?</p>
 </div>
 
-### Introduction
+### Overview
 
 Calling a system secure tells the people around you almost nothing they can act on. Security is not a single property that a system either has or lacks. It is three separate jobs running at once, and when something goes wrong it is one of those three that has failed. Before you write a ticket or close an alert, your first task is to name which one.
 

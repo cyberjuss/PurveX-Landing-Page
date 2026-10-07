@@ -3,7 +3,7 @@
 <p>How do you trust a file or a password when you cannot see inside it?</p>
 </div>
 
-### Introduction
+### Overview
 
 Most of the data you will handle on the desk arrives unreadable. A string in a config file, a password column in a leaked table, a long value printed beside a download link. None of it means anything on sight, and the common instinct is to call all of it encrypted and move on. That instinct is wrong often enough to cause real damage, because the three methods that make data unreadable offer three completely different guarantees.
 
