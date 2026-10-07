@@ -1186,7 +1186,6 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
                   className="flex h-10 w-10 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] text-slate-600 transition hover:bg-slate-50 lg:hidden"
                   aria-label="Open course menu"
                   aria-expanded={sidebarOpen}
-                  data-tour="menu"
                 >
                   <Menu className="h-[18px] w-[18px]" />
                 </button>
@@ -1208,6 +1207,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
                 onClick={toggleTheme}
                 aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
                 title={theme === "dark" ? "Light mode" : "Dark mode"}
+                data-tour="theme"
                 className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] bg-white text-slate-500 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
               >
                 {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
@@ -1240,7 +1240,6 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
               instant layout jump. Same width transition the manual
               collapse toggle already uses, just driven by route too. */}
           <aside
-            data-tour="menu-desktop"
             aria-hidden={!showSidebar}
             className={`hidden shrink-0 overflow-hidden bg-white transition-[width] duration-300 ease-[cubic-bezier(.16,1,.3,1)] lg:sticky lg:top-[65px] lg:block lg:h-[calc(100vh-65px)] ${
               showSidebar ? "border-r border-[var(--pvrx-border-light)]" : "border-r-0"
