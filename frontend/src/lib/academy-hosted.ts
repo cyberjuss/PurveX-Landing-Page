@@ -342,7 +342,7 @@ export function linuxCloudInit(dcIp: string, password: string): string {
     // takes. Installed now so the lab does not depend on apt being reachable.
     "export DEBIAN_FRONTEND=noninteractive",
     "apt-get update -y",
-    "apt-get install -y --no-install-recommends realmd sssd sssd-tools adcli samba-common-bin krb5-user packagekit oddjob oddjob-mkhomedir libnss-sss libpam-sss ldap-utils dnsutils net-tools auditd",
+    "apt-get install -y --no-install-recommends realmd sssd sssd-tools adcli samba-common-bin krb5-user packagekit oddjob oddjob-mkhomedir libnss-sss libpam-sss ldap-utils dnsutils net-tools auditd curl",
     // A member server with nothing to serve is a thin lab, so it has a web server
     // and a database to look after, the way a real one would.
     "apt-get install -y --no-install-recommends nginx",
@@ -366,6 +366,30 @@ export function linuxCloudInit(dcIp: string, password: string): string {
     `echo ${sh("xfce4-session")} > /home/student/.xsession`,
     "chown student:student /home/student/.xsession",
     // xrdp reads the machine certificate, which is root-owned by default.
+    // A browser, because a desktop without one is a desktop that cannot reach
+    // the web -- which is most of what the egress rules on this pod are for.
+    // Mozilla's own .deb rather than the snap: the snap is a quarter of a
+    // gigabyte and takes the better part of a minute to open the first time on
+    // an instance this size, which reads as a broken lab.
+    "install -d -m 0755 /etc/apt/keyrings",
+    "curl -fsSL https://packages.mozilla.org/apt/repo-signing-key.gpg -o /etc/apt/keyrings/packages.mozilla.org.asc",
+    `echo ${sh("deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main")} > /etc/apt/sources.list.d/mozilla.list`,
+    // Without the pin, apt prefers Ubuntu's firefox package, which is a stub
+    // that pulls the snap back in.
+    `echo ${sh("Package: *")} > /etc/apt/preferences.d/mozilla`,
+    `echo ${sh("Pin: origin packages.mozilla.org")} >> /etc/apt/preferences.d/mozilla`,
+    `echo ${sh("Pin-Priority: 1000")} >> /etc/apt/preferences.d/mozilla`,
+    "apt-get update -y",
+    "apt-get install -y firefox || apt-get install -y --no-install-recommends epiphany-browser",
+    // The desktop asks xdg which browser to open a link with, and on a server
+    // install the answer is nothing.
+    "update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/firefox 200 || true",
+    "xdg-settings set default-web-browser firefox.desktop || true",
+    // On the desktop itself, so it is the first thing the student sees.
+    "install -d -m 0755 -o student -g student /home/student/Desktop",
+    "cp /usr/share/applications/firefox.desktop /home/student/Desktop/firefox.desktop 2>/dev/null || true",
+    "chown student:student /home/student/Desktop/firefox.desktop 2>/dev/null || true",
+    "chmod +x /home/student/Desktop/firefox.desktop 2>/dev/null || true",
     "adduser xrdp ssl-cert || true",
     "systemctl enable --now xrdp",
     "echo first boot finished",
