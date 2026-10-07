@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookMarked, Check, ChevronDown, FlaskConical, Lock } from "lucide-react";
@@ -121,8 +121,36 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
             </li>
           );
         };
+        const labSection = labs.length > 0 && (
+          <div>
+            <button
+              type="button"
+              onClick={() => toggleManualOpen(labsKey)}
+              aria-expanded={labsOpen}
+              className={`flex w-full items-center justify-between gap-2 font-mono text-[12px] font-bold uppercase tracking-[0.1em] transition ${
+                labsOpen ? "text-[#5546e0]" : "text-slate-400 hover:text-[#5546e0]"
+              }`}
+            >
+              <span className="flex min-w-0 items-center gap-1.5">
+                <FlaskConical className="h-3 w-3 shrink-0" aria-hidden />
+                <span className="truncate">Home Lab</span>
+              </span>
+              <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${labsOpen ? "" : "-rotate-90"}`} />
+            </button>
+            <div
+              className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
+                labsOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+              }`}
+            >
+              <ul className="flex flex-col gap-0.5 overflow-hidden border-l border-[var(--pvrx-border-light)] pl-3">
+                {labs.map(row)}
+              </ul>
+            </div>
+          </div>
+        );
         return (
-          <div key={phase.slug}>
+          <Fragment key={phase.slug}>
+          <div>
             {hasDestination ? (
               <Link
                 href={`/range/${phase.slug}`}
@@ -152,32 +180,13 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 phaseOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
               }`}
             >
-              <div className="flex flex-col overflow-hidden border-l border-[var(--pvrx-border-light)] pl-3">
-                <ul className="flex flex-col gap-0.5">{phase.weeks.map(row)}</ul>
-                {labs.length > 0 && (
-                  <>
-                    <button
-                      type="button"
-                      className="ax-sidegroup"
-                      aria-expanded={labsOpen}
-                      onClick={() => toggleManualOpen(labsKey)}
-                    >
-                      <FlaskConical className="h-3 w-3 shrink-0" aria-hidden />
-                      <span className="truncate">Home Lab</span>
-                      <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${labsOpen ? "" : "-rotate-90"}`} />
-                    </button>
-                    <div
-                      className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
-                        labsOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                      }`}
-                    >
-                      <ul className="flex flex-col gap-0.5 overflow-hidden">{labs.map(row)}</ul>
-                    </div>
-                  </>
-                )}
-              </div>
+              <ul className="flex flex-col gap-0.5 overflow-hidden border-l border-[var(--pvrx-border-light)] pl-3">
+                {phase.weeks.map(row)}
+              </ul>
             </div>
           </div>
+          {labSection}
+          </Fragment>
         );
       })}
 
