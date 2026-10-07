@@ -50,7 +50,7 @@ Sam's firmware update changed startup, so the TPM held the key back. BitLocker n
 **Escalate** if the caller cannot be verified or asks for a laptop that is not theirs. Escalate too if many laptops hit recovery at once.
 
 <details class="academy-deeper">
-<summary>Go deeper: try it with OpenSSL, what encryption does not protect, and admin commands</summary>
+<summary>Go deeper</summary>
 
 #### Try it with OpenSSL
 

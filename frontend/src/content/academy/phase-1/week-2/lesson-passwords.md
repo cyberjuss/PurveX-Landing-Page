@@ -33,7 +33,7 @@ People reuse passwords. Attackers try leaked email and password pairs on other s
 **Never** try leaked passwords on real accounts, and never email anyone their password.
 
 <details class="academy-deeper">
-<summary>Go deeper: what a salted hash looks like, Windows passwords, safe resets, and sign-in logs</summary>
+<summary>Go deeper</summary>
 
 #### A salted hash, read left to right
 

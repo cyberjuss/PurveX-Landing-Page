@@ -22,7 +22,7 @@
 Jordan's line is Base64. CyberChef's **From Base64** turns it into `Harbor2026` in one click. So the answer is no, it is not encrypted. That password is exposed. Report it so it gets changed.
 
 <details class="academy-deeper">
-<summary>Go deeper: decoding from the command line, and hidden PowerShell</summary>
+<summary>Go deeper</summary>
 
 #### Decode Base64 without CyberChef
 

@@ -37,7 +37,7 @@ A match proves the file is identical to the reference. It does not prove the ref
 CCleaner (2017), SolarWinds (2020) and 3CX (2023) all shipped malware from the vendor's own build. Every download matched what the vendor shipped, and carried its valid signature.
 
 <details class="academy-deeper">
-<summary>Go deeper: more tools, the line-break trap, signatures, and how the SOC uses hashes</summary>
+<summary>Go deeper</summary>
 
 #### Compare automatically
 
