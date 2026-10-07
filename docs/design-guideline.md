@@ -81,9 +81,21 @@ panel can adopt rather than one card's private styling.
 four. Generous padding is the fifth decision and is not a token: 26px on a
 panel, 30-34px on a modal.
 
+**Where the wash goes.** It belongs to a surface that floats above the page,
+and to at most one hero per page. The lab card, the first-run briefing, the
+account menu and the explainer all float. On the home page it is on the Last
+stop card alone, because if every row had one then none of them would read as
+the next thing to do. Rows, list items and dashboard panels get the hairline,
+the mark and the padding, and no wash.
+
+**Marks.** Anything that labels a thing is a mark: an icon, a status tag, a
+step number, a role tag. Tinted fill, inset hairline, square. The home page's
+phase numbers, its Here and Locked tags and its streak counter are all marks,
+as are the lab card's DC and DESKTOP tags.
+
 Still on the old flatter styling, in rough order of how often they are seen:
-the academy home, the readiness dashboard, the lab gallery, the Shift and
-SIEM consoles, and the lesson callouts.
+the readiness dashboard, the lab gallery, the Shift and SIEM consoles, and
+the lesson callouts.
 can adopt. Four of them:
 
 | token | what it does |
