@@ -39,7 +39,22 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
   // A phase with no destination page (see hasDestination below) has no
   // route to open it via, so its expanded state has to live here instead
   // -- otherwise there's no way to even preview what's inside it.
+  // One week's sections at a time. Opening a second closes the first, so the
+  // rail never carries two full section lists at once.
+  //
+  // `at` is the route the choice was made on: navigating to another lesson
+  // makes it stale and the rail goes back to following the route, which is how
+  // the week you have just opened ends up open without an effect to reset it.
+  type WeekOpen = { kind: "route" } | { kind: "none"; at: string } | { kind: "one"; key: string; at: string };
+  const [weekOpen, setWeekOpen] = useState<WeekOpen>({ kind: "route" });
   const [manualOpen, setManualOpen] = useState<Set<string>>(new Set());
+  const sectionsShown = (key: string, active: boolean) => {
+    if (weekOpen.kind === "route" || weekOpen.at !== pathname) return active;
+    return weekOpen.kind === "one" && weekOpen.key === key;
+  };
+  const toggleWeek = (key: string, active: boolean) =>
+    setWeekOpen(sectionsShown(key, active) ? { kind: "none", at: pathname } : { kind: "one", key, at: pathname });
+
   const toggleManualOpen = (slug: string) =>
     setManualOpen((prev) => {
       const next = new Set(prev);
@@ -126,7 +141,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           // the prefix so the row keeps only the part that differs.
           const label = entry.title.replace(/^Home Lab\s*[—-]\s*/, "");
           const active = pathname === href;
-          const secOpen = manualOpen.has(secKey) ? !active : active;
+          const secOpen = sectionsShown(secKey, active);
           const done = isComplete(phase.slug, entry.slug);
           const secs = entry.sections.length > 0 ? sectionsOf(phase.slug, entry) : [];
           return (
@@ -145,7 +160,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                     className="ax-sidecaret"
                     aria-expanded={secOpen}
                     aria-label={`${secOpen ? "Hide" : "Show"} sections of ${label}`}
-                    onClick={() => toggleManualOpen(secKey)}
+                    onClick={() => toggleWeek(secKey, active)}
                   >
                     <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${secOpen ? "" : "-rotate-90"}`} />
                   </button>
