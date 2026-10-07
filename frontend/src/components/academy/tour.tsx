@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import {
+  ArrowLeft,
   ArrowRight,
   BadgeCheck,
   BookMarked,
@@ -31,19 +32,21 @@ import {
 } from "lucide-react";
 import "./tour.css";
 
-// First-run explainers. One card, in the middle, that says what is on the page
-// and then gets out of the way.
+// First-run explainers. A short run of cards, each one in the middle of the
+// screen, that say what is on the page and then get out of the way.
 //
-// This used to walk the page: each step dimmed everything, lifted one real
-// control out of the page, and moved a caret-tagged card around to point at it.
-// Seven stops to read the home page. The same content fits on one card as a
-// grid of tiles, and nobody has to be led anywhere.
+// Two things this deliberately is not. It does not walk the page: nothing is
+// anchored to a control, nothing is spotlit, and the card never moves, so
+// there is no measuring, no caret and no scrolling the reader somewhere they
+// did not ask to go. And it is not a single card either, because one card
+// holding six tiles is a wall of small print nobody reads. One idea a card,
+// a few cards a page, always in the same place.
 //
 // There is one card per area rather than one for the whole portal, because the
 // home page and a lesson page share almost no furniture. Each remembers itself
 // separately, so someone who starts on a lesson still gets the home card later.
 //
-// A tile whose target is not on the page is dropped before the card opens. An
+// A step whose target is not on the page is dropped before the run starts. An
 // Explore account has no lab button, and describing furniture that is not there
 // is worse than saying nothing.
 
@@ -51,10 +54,11 @@ type Tile = { sel?: string; icon: LucideIcon; title: string; body: string };
 type Tour = {
   key: string;
   when: (path: string) => boolean;
-  /** Below this many surviving tiles the card is not worth opening. */
+  /** Below this many surviving steps the run is not worth opening. */
   min: number;
+  /** The small label in the strip, above the run's name. */
+  kicker: string;
   title: string;
-  lede: string;
   tiles: Tile[];
 };
 
@@ -62,8 +66,8 @@ const HOME: Tour = {
   key: "purvex.tour.home.v4",
   when: (p) => p === "/range" || p === "/range/",
   min: 3,
-  title: "Welcome to Range.",
-  lede: "This is where you work the same problems a new security hire sees. Here is what is on this page.",
+  kicker: "Getting started",
+  title: "Range",
   tiles: [
     {
       sel: '[data-tour="next"]',
@@ -110,8 +114,8 @@ const PORTAL: Tour = {
   key: "purvex.tour.portal.v2",
   when: (p) => p.startsWith("/range") && p.replace(/\/$/, "") !== "/range",
   min: 2,
-  title: "Around the portal.",
-  lede: "The page changes as you work. These four stay where they are.",
+  kicker: "Getting started",
+  title: "Around the portal",
   tiles: [
     {
       sel: '[data-tour="menu-desktop"], [data-tour="menu"]',
@@ -146,8 +150,8 @@ const DRILLS: Tour = {
   key: "purvex.tour.drills.v2",
   when: (p) => p.startsWith("/range/drill"),
   min: 3,
-  title: "Four ways to practice.",
-  lede: "This page is the daily habit rather than the course. Here is what each row is for.",
+  kicker: "Getting started",
+  title: "Drills",
   tiles: [
     {
       sel: '[data-tour="case"]',
@@ -182,8 +186,8 @@ const LESSON: Tour = {
   key: "purvex.tour.lesson.v1",
   when: (p) => /^\/range\/phase-[^/]+\/[^/]+\/?$/.test(p),
   min: 3,
-  title: "Reading a week.",
-  lede: "A week is not one page. It is a set of tabs you work through in order.",
+  kicker: "Getting started",
+  title: "Reading a week",
   tiles: [
     {
       icon: LayoutList,
@@ -213,8 +217,8 @@ const LABS: Tour = {
   key: "purvex.tour.labs.v1",
   when: (p) => p.startsWith("/range/labs"),
   min: 3,
-  title: "Hands-on labs.",
-  lede: "Each lab is a real task from the PurveX environment, worked start to finish on its own page.",
+  kicker: "Getting started",
+  title: "Labs",
   tiles: [
     {
       icon: Search,
@@ -238,8 +242,8 @@ const REFERENCE: Tour = {
   key: "purvex.tour.reference.v1",
   when: (p) => p.startsWith("/range/reference"),
   min: 2,
-  title: "The cheat sheet.",
-  lede: "The things worth looking up rather than memorising, in one page you can keep open beside the work.",
+  kicker: "Getting started",
+  title: "Cheat sheet",
   tiles: [
     {
       icon: BookMarked,
@@ -263,8 +267,8 @@ const READINESS: Tour = {
   key: "purvex.tour.readiness.v1",
   when: (p) => p.startsWith("/range/readiness"),
   min: 2,
-  title: "Are you ready for the job?",
-  lede: "One report, built from what you have actually finished rather than what you have opened.",
+  kicker: "Getting started",
+  title: "Readiness",
   tiles: [
     {
       icon: Gauge,
@@ -288,8 +292,8 @@ const PORTFOLIO: Tour = {
   key: "purvex.tour.portfolio.v1",
   when: (p) => p.startsWith("/range/portfolio"),
   min: 2,
-  title: "Show employers your lab work.",
-  lede: "A portfolio built out of what you did here, rather than a list of courses you sat through.",
+  kicker: "Getting started",
+  title: "Portfolio",
   tiles: [
     {
       icon: FileText,
@@ -313,8 +317,8 @@ const SHIFT: Tour = {
   key: "purvex.tour.shift.v1",
   when: (p) => p.startsWith("/range/shift"),
   min: 2,
-  title: "Thirty minutes on the desk.",
-  lede: "Real attacks and tickets fire into your own lab on their own. Investigate, fix, and close each one.",
+  kicker: "Getting started",
+  title: "Shift",
   tiles: [
     {
       icon: Ticket,
@@ -389,8 +393,9 @@ function useAcademySkin(): { skin: React.CSSProperties; theme: "light" | "dark" 
 
 export function AcademyTour() {
   const pathname = usePathname() ?? "";
-  const { skin, theme } = useAcademySkin();
-  const [run, setRun] = useState<{ tour: Tour; tiles: Tile[] } | null>(null);
+  const { skin } = useAcademySkin();
+  const [run, setRun] = useState<{ tour: Tour; steps: Tile[] } | null>(null);
+  const [i, setI] = useState(0);
   const [replay, setReplay] = useState(0);
 
   useEffect(() => {
@@ -414,9 +419,11 @@ export function AcademyTour() {
     // The page needs a moment to finish rendering before its furniture can be
     // found. A replay is a deliberate click, so it waits far less.
     const id = window.setTimeout(() => {
-      const tiles = tour.tiles.filter((t) => !t.sel || present(t.sel));
-      if (tiles.length >= tour.min) setRun({ tour, tiles });
-      else markSeen(tour.key);
+      const steps = tour.tiles.filter((t) => !t.sel || present(t.sel));
+      if (steps.length >= tour.min) {
+        setI(0);
+        setRun({ tour, steps });
+      } else markSeen(tour.key);
     }, replay ? 80 : 700);
     return () => window.clearTimeout(id);
   }, [pathname, replay]);
@@ -428,6 +435,8 @@ export function AcademyTour() {
         markSeen(run.tour.key);
         setRun(null);
       }
+      if (e.key === "ArrowRight") setI((n) => Math.min(run.steps.length - 1, n + 1));
+      if (e.key === "ArrowLeft") setI((n) => Math.max(0, n - 1));
     };
     window.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
@@ -445,40 +454,62 @@ export function AcademyTour() {
     setRun(null);
   };
 
+  const steps = run.steps;
+  const step = steps[i];
+  const last = i + 1 === steps.length;
+  const Icon = step.icon;
+
   return createPortal(
-    <div className="tour" data-tour-theme={theme} style={skin} role="dialog" aria-modal="true" aria-labelledby="tour-title">
+    <div className="tour" style={skin} role="dialog" aria-modal="true" aria-labelledby="tour-title">
       <button type="button" className="tour__scrim" aria-label="Close" onClick={close} />
 
       <div className="tour__card">
         <header className="tour__strip">
-          <span className="tour__kicker">Getting started</span>
-          <strong>Range</strong>
+          <span className="tour__kicker">{run.tour.kicker}</span>
+          <strong>{run.tour.title}</strong>
           <button type="button" className="tour__skip" onClick={close}>
             Skip
           </button>
         </header>
 
-        <div className="tour__main">
-          <h2 id="tour-title">{run.tour.title}</h2>
-          <p className="tour__lede">{run.tour.lede}</p>
-
-          <ul className="tour__tiles">
-            {run.tiles.map(({ icon: Icon, title, body }) => (
-              <li key={title}>
-                <span className="tour__ic" aria-hidden="true">
-                  <Icon className="h-[18px] w-[18px]" />
-                </span>
-                <strong>{title}</strong>
-                <small>{body}</small>
-              </li>
-            ))}
-          </ul>
+        {/* key on the index so each card fades in rather than swapping text
+            under a static frame. */}
+        <div className="tour__main" key={i}>
+          <span className="tour__ic" aria-hidden="true">
+            <Icon className="h-7 w-7" />
+          </span>
+          <h2 id="tour-title">{step.title}</h2>
+          <p className="tour__lede">{step.body}</p>
         </div>
 
         <footer className="tour__foot">
-          <button type="button" className="tour__go" onClick={close}>
-            Continue <ArrowRight className="h-4 w-4" />
-          </button>
+          <span className="tour__dots">
+            {steps.map((st, n) => (
+              <button
+                key={st.title}
+                type="button"
+                className={n === i ? "is-on" : n < i ? "is-past" : ""}
+                aria-label={`Step ${n + 1} of ${steps.length}: ${st.title}`}
+                aria-current={n === i}
+                onClick={() => setI(n)}
+              />
+            ))}
+          </span>
+          <span className="tour__btns">
+            {i > 0 && (
+              <button type="button" className="tour__back" onClick={() => setI(Math.max(0, i - 1))}>
+                <ArrowLeft className="h-4 w-4" /> Back
+              </button>
+            )}
+            <button
+              type="button"
+              className="tour__go"
+              onClick={() => (last ? close() : setI(i + 1))}
+            >
+              {last ? "Get started" : "Next"}
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </span>
         </footer>
       </div>
     </div>,

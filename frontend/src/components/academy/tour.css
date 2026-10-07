@@ -1,6 +1,8 @@
-/* The first-run explainer card. One card in the middle of the screen, never
-   anchored to anything, so nothing has to be measured, scrolled to or pointed
-   at. Square corners, like the rest of the portal's panels. */
+/* The first-run explainer. A short run of cards, each in the middle of the
+   screen. It is black in both themes on purpose: it sits over a dimmed page as
+   its own surface rather than pretending to be part of whichever theme is on,
+   and the accent is the only colour in it. Square corners, like every other
+   panel in the portal. */
 .tour {
   position: fixed;
   inset: 0;
@@ -8,23 +10,14 @@
   display: grid;
   place-items: center;
   padding: 16px;
-  --tour-accent: #5546e0;
-  --tour-bg: #ffffff;
-  --tour-strip: #f6f7fb;
-  --tour-ink: #0f172a;
-  --tour-ink-2: #3f4a63;
-  --tour-ink-3: #6b7689;
-  --tour-line: rgba(15, 23, 42, 0.12);
-  --tour-line-2: rgba(15, 23, 42, 0.07);
-}
-.tour[data-tour-theme="dark"] {
-  --tour-bg: #000000;
-  --tour-strip: #0b0c12;
-  --tour-ink: #e8eef8;
-  --tour-ink-2: #b9c2d6;
-  --tour-ink-3: #7f889c;
-  --tour-line: rgba(255, 255, 255, 0.18);
-  --tour-line-2: rgba(255, 255, 255, 0.09);
+  --tour-accent: #9a8cff;
+  --tour-bg: #08080c;
+  --tour-strip: #0e0e15;
+  --tour-ink: #f4f6fb;
+  --tour-ink-2: #aab3c7;
+  --tour-ink-3: #767e92;
+  --tour-line: rgba(255, 255, 255, 0.14);
+  --tour-line-2: rgba(255, 255, 255, 0.07);
 }
 
 .tour__scrim {
@@ -32,34 +25,47 @@
   inset: 0;
   border: 0;
   padding: 0;
-  background: rgba(8, 11, 22, 0.58);
+  background: rgba(4, 5, 10, 0.72);
+  backdrop-filter: blur(2px);
   cursor: default;
 }
 
 .tour__card {
   position: relative;
-  width: min(680px, 100%);
-  max-height: min(88vh, 760px);
+  width: min(560px, 100%);
   display: flex;
   flex-direction: column;
   border: 1px solid var(--tour-line);
   background: var(--tour-bg);
   color: var(--tour-ink);
-  box-shadow: 0 28px 70px -28px rgba(8, 11, 22, 0.7);
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9);
   font-family: var(--font-sans, inherit);
-  animation: tour-in 0.18s cubic-bezier(.16, 1, .3, 1) both;
+  animation: tour-in 0.2s cubic-bezier(.16, 1, .3, 1) both;
+  overflow: hidden;
 }
-@keyframes tour-in { from { opacity: 0; transform: translateY(8px); } }
+/* One wash of the accent behind the top of the card, so it is not a flat
+   black rectangle. */
+.tour__card::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: 50%;
+  width: 150%;
+  height: 90%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--tour-accent) 22%, transparent), transparent 62%);
+  pointer-events: none;
+}
+.tour__card > * { position: relative; }
+@keyframes tour-in { from { opacity: 0; transform: translateY(10px); } }
 @media (prefers-reduced-motion: reduce) { .tour__card { animation: none; } }
 
-/* Thin strip across the top: where you are, and the way out. */
 .tour__strip {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 13px 18px;
+  padding: 14px 20px;
   border-bottom: 1px solid var(--tour-line-2);
-  background: var(--tour-strip);
 }
 .tour .tour__kicker {
   font-family: var(--font-mono, ui-monospace, monospace);
@@ -67,7 +73,7 @@
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--tour-ink-3);
+  color: var(--tour-accent);
 }
 .tour__strip strong {
   margin-right: auto;
@@ -89,12 +95,23 @@
 }
 .tour .tour__skip:hover { color: var(--tour-ink); }
 
-/* The tiles carry the content, so they get the scroll and the Continue button
-   stays put. A primary action below the fold is one nobody finds. */
+/* One idea a card, so this can be generous. */
 .tour__main {
-  padding: 24px 24px 22px;
-  overflow-y: auto;
-  min-height: 0;
+  padding: 34px 30px 32px;
+  animation: tour-step 0.26s cubic-bezier(.16, 1, .3, 1) both;
+}
+@keyframes tour-step { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .tour__main { animation: none; } }
+
+.tour .tour__ic {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 22px;
+  color: var(--tour-accent);
+  background: color-mix(in srgb, var(--tour-accent) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tour-accent) 30%, transparent);
 }
 .tour__main h2 {
   margin: 0;
@@ -106,83 +123,68 @@
   color: var(--tour-ink);
 }
 .tour .tour__lede {
-  margin: 10px 0 0;
-  max-width: 54ch;
-  font-size: var(--ty-note);
-  line-height: 1.55;
+  margin: 12px 0 0;
+  max-width: 46ch;
+  font-size: var(--ty-lead);
+  line-height: 1.6;
   color: var(--tour-ink-2);
-}
-
-/* Three across on a desktop, one per row on a phone. */
-.tour .tour__tiles {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin: 20px 0 0;
-  padding: 0;
-  list-style: none;
-}
-.tour .tour__tiles li {
-  display: grid;
-  gap: 5px;
-  align-content: start;
-  margin: 0;
-  padding: 15px 15px 16px;
-  box-shadow: inset 0 0 0 1px var(--tour-line);
-  background: color-mix(in srgb, var(--tour-ink) 3%, transparent);
-}
-.tour .tour__ic {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  margin-bottom: 4px;
-  color: var(--tour-accent);
-  background: color-mix(in srgb, var(--tour-accent) 12%, transparent);
-}
-.tour .tour__tiles strong {
-  font-size: var(--ty-note);
-  font-weight: 650;
-  line-height: 1.25;
-  color: var(--tour-ink);
-}
-.tour .tour__tiles small {
-  font-size: var(--ty-small);
-  line-height: 1.45;
-  color: var(--tour-ink-3);
 }
 
 .tour__foot {
   display: flex;
-  justify-content: flex-end;
-  padding: 14px 18px;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
   border-top: 1px solid var(--tour-line-2);
   background: var(--tour-strip);
 }
+
+/* How far through, and a way back to any card already read. */
+.tour__dots { display: flex; align-items: center; gap: 7px; margin-right: auto; }
+.tour .tour__dots button {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: background 0.2s, width 0.2s cubic-bezier(.16, 1, .3, 1);
+}
+.tour .tour__dots button.is-past { background: color-mix(in srgb, var(--tour-accent) 55%, transparent); }
+.tour .tour__dots button.is-on { width: 22px; background: var(--tour-accent); }
+
+.tour__btns { display: flex; align-items: center; gap: 8px; }
+.tour .tour__back,
 .tour .tour__go {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 42px;
-  padding: 0 20px;
-  border: 0;
-  background: var(--tour-accent);
-  color: #fff;
+  height: 40px;
+  padding: 0 18px;
   font: inherit;
   font-size: var(--ty-note);
   font-weight: 650;
   cursor: pointer;
-  transition: filter 0.2s cubic-bezier(.16, 1, .3, 1);
+  transition: background 0.2s cubic-bezier(.16, 1, .3, 1), color 0.2s, border-color 0.2s;
 }
-.tour .tour__go:hover { filter: brightness(1.08); }
+.tour .tour__back {
+  border: 1px solid var(--tour-line);
+  background: none;
+  color: var(--tour-ink-2);
+}
+.tour .tour__back:hover { border-color: var(--tour-ink-3); color: var(--tour-ink); }
+.tour .tour__go {
+  border: 0;
+  background: var(--tour-accent);
+  color: #0b0a14;
+}
+.tour .tour__go:hover { filter: brightness(1.1); }
 .tour button:focus-visible { outline: 2px solid var(--tour-accent); outline-offset: 2px; }
 
-@media (max-width: 40rem) {
-  .tour__card { max-height: 92vh; }
-  .tour__main { padding: 20px 18px 18px; }
-  .tour .tour__tiles { grid-template-columns: 1fr; gap: 8px; }
-  .tour .tour__tiles li { grid-template-columns: auto minmax(0, 1fr); gap: 3px 13px; padding: 13px 14px; }
-  .tour .tour__ic { grid-row: span 2; margin: 0; }
-  .tour__foot { padding: 12px 18px; }
-  .tour .tour__go { width: 100%; justify-content: center; }
+@media (max-width: 34rem) {
+  .tour__main { padding: 26px 20px 24px; }
+  .tour .tour__ic { width: 50px; height: 50px; margin-bottom: 18px; }
+  .tour__foot { flex-wrap: wrap; }
+  .tour__btns { width: 100%; }
+  .tour .tour__go { flex: 1; justify-content: center; }
 }
