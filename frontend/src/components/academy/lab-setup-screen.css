@@ -10,33 +10,37 @@
   display: grid;
   place-items: center;
   padding: 24px;
-  background: #05060b;
+  background: #000;
   animation: ls-in 0.3s ease-out both;
   --ls-ink: #f2f2f6;
-  --ls-ink-2: #9aa0b0;
-  --ls-ink-3: #666c7c;
-  --ls-line: rgba(255, 255, 255, 0.09);
+  --ls-ink-2: #a5a5ae;
+  --ls-ink-3: #74747e;
+  --ls-line: rgba(255, 255, 255, 0.1);
+  --ls-dot: rgba(255, 255, 255, 0.09);
+  --ls-tile: rgba(255, 255, 255, 0.05);
   --ls-accent: #9a8cff;
   --ls-good: #34d399;
 }
-/* A very soft wash behind the content, so a full black screen has some depth
-   without anything on it competing with the progress. */
+.ls[data-academy-theme="light"] {
+  background: #fff;
+  --ls-ink: #0f172a;
+  --ls-ink-2: #475569;
+  --ls-ink-3: #8a94a8;
+  --ls-line: rgba(15, 23, 42, 0.1);
+  --ls-dot: rgba(16, 25, 46, 0.11);
+  --ls-tile: rgba(15, 23, 42, 0.04);
+  --ls-accent: #5546e0;
+  --ls-good: #0f9f6e;
+}
+/* The portal's own dot grid, and nothing else behind the content. */
 .ls::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.09) 2px, transparent 2px);
+  background-image: radial-gradient(var(--ls-dot) 2px, transparent 2px);
   background-size: 26px 26px;
   mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%);
-}
-/* The accent wash sits over the grid rather than instead of it. */
-.ls::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(60rem 34rem at 50% 34%, color-mix(in srgb, var(--ls-accent) 10%, transparent), transparent 70%);
 }
 /* Left aligned throughout. A centred heading over a left aligned list of steps
    is what made this look assembled rather than composed. */
@@ -52,13 +56,13 @@
 .ls__lede { margin: 16px 0 40px; max-width: 40ch; font-size: 1.08rem; line-height: 1.6; color: var(--ls-ink-2); }
 
 /* Thin, because it is a status line and not the subject of the screen. */
-.ls__bar { position: relative; height: 2px; background: rgba(255, 255, 255, 0.07); overflow: hidden; }
+.ls__bar { position: relative; height: 2px; background: var(--ls-tile); overflow: hidden; }
 .ls__bar > span { position: relative; display: block; height: 100%; background: var(--ls-accent); transition: width 0.9s linear; }
 .ls__bar > span::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--ls-accent) 70%, #fff), transparent);
   animation: ls-sheen 1.9s ease-in-out infinite;
 }
 
@@ -66,7 +70,7 @@
 .ls__steps li { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 14px; font-size: 1.05rem; color: var(--ls-ink-3); transition: color 0.25s, opacity 0.25s; opacity: 0.55; }
 .ls__steps li.is-done, .ls__steps li.is-now { opacity: 1; }
 .ls__steps svg { width: 17px; height: 17px; }
-.ls__mark { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.05); box-shadow: inset 0 0 0 1px var(--ls-line); transition: background 0.25s, box-shadow 0.25s; }
+.ls__mark { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--ls-tile); box-shadow: inset 0 0 0 1px var(--ls-line); transition: background 0.25s, box-shadow 0.25s; }
 .ls__steps li.is-done .ls__mark { background: color-mix(in srgb, var(--ls-good) 15%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ls-good) 30%, transparent); }
 .ls__steps li.is-now .ls__mark { background: color-mix(in srgb, var(--ls-accent) 17%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ls-accent) 38%, transparent); }
 .ls__steps li.is-done { color: var(--ls-ink-2); }

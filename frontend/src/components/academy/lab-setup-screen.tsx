@@ -28,8 +28,26 @@ const RESUME: Step[] = [
   { label: "Reconnecting to Range", until: 80, icon: ShieldCheck },
 ];
 
+/** Black in the dark portal, white in the light one. The screen is portaled to
+ *  <body>, so the academy's own tokens are out of scope and the theme has to be
+ *  read off .academy-bg and carried here. */
+function usePortalTheme(): "light" | "dark" {
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
+  useEffect(() => {
+    const root = document.querySelector(".academy-bg");
+    if (!root) return;
+    const read = () => setTheme(root.getAttribute("data-academy-theme") === "dark" ? "dark" : "light");
+    read();
+    const obs = new MutationObserver(read);
+    obs.observe(root, { attributes: true, attributeFilter: ["data-academy-theme"] });
+    return () => obs.disconnect();
+  }, []);
+  return theme;
+}
+
 export function LabSetupScreen() {
   const { status, state } = useHostedLab();
+  const theme = usePortalTheme();
   const [hidden, setHidden] = useState(false);
   const starting = state === "starting";
 
@@ -65,7 +83,7 @@ export function LabSetupScreen() {
   if (typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="ls" role="status" aria-live="polite">
+    <div className="ls" data-academy-theme={theme} role="status" aria-live="polite">
       <div className="ls__inner">
         <p className="ls__brand">
           <Image src="/logo.png" alt="" width={34} height={34} priority />
