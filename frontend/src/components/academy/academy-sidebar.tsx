@@ -3,7 +3,7 @@
 import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Check, ChevronDown, FlaskConical, Lock } from "lucide-react";
+import { BookMarked, Check, ChevronDown, FlaskConical, Lock } from "lucide-react";
 import { type PhaseDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { useAcademyProgress } from "./academy-progress";
@@ -220,6 +220,27 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         );
       })}
 
+      <Link
+        href="/range/labs"
+        onClick={onNavigate}
+        className={`flex items-center gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] transition ${
+          pathname.startsWith("/range/labs") ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
+        }`}
+      >
+        <FlaskConical className="h-3 w-3 shrink-0" />
+        <span className="truncate">Labs — Hands-On</span>
+      </Link>
+
+      <Link
+        href="/range/reference"
+        onClick={onNavigate}
+        className={`flex items-center gap-2 font-mono text-[15px] font-bold uppercase tracking-[0.08em] transition ${
+          pathname === "/range/reference" ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
+        }`}
+      >
+        <BookMarked className="h-3 w-3 shrink-0" />
+        <span className="truncate">Reference — Cheat Sheet</span>
+      </Link>
     </nav>
   );
 }

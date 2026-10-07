@@ -12,7 +12,6 @@ import { AcademyIntake } from "@/components/academy/academy-intake";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
 import { AcademySignIn } from "@/components/academy/academy-sign-in";
-import { RangePlaces } from "@/components/academy/range-places";
 import { AcademyWelcome, takeAcademyWelcome } from "@/components/academy/academy-welcome";
 import { UnlockForm } from "./unlock-form";
 import { CoachProvider } from "@/components/academy/coach-context";
@@ -77,11 +76,11 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
     setProfileState(next);
   };
 
-  // Height of the sticky chrome (header + the places row inside it), published
-  // as --ax-chrome so the sidebar, the lesson tab bar and the reference filter
-  // bar all park directly underneath it. Measured rather than written down:
-  // the bar is a different height on a phone than on a desktop, and the three
-  // separate copies of "65px" it replaced were already wrong on both.
+  // Height of the sticky header, published as --ax-chrome so the sidebar, the
+  // lesson tab bar and the reference filter bar all park directly underneath
+  // it. Measured rather than written down: the bar is a different height on a
+  // phone than on a desktop, and the three separate copies of "65px" it
+  // replaced were already wrong on both.
   useEffect(() => {
     const el = headerRef.current;
     if (!el) return;
@@ -1247,10 +1246,6 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
               <AcademyProfileMenu onSignOut={handleSignOut} />
             </div>
           </div>
-          {/* Flat row of destinations, inside the sticky block so it rides
-              along with the header. Hidden only while the intake is asking,
-              where there is nowhere to go yet. */}
-          {!asking && <RangePlaces />}
         </header>
 
         {profile === undefined ? (
