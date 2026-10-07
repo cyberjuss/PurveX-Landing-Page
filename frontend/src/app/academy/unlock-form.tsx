@@ -31,6 +31,23 @@ export function UnlockForm() {
     };
   }, [router]);
 
+  // The check above runs once, and a subscriber whose turn at it failed lands
+  // here and gets told their code is wrong. They do not have a code. Ask again
+  // on a rejection, so a transient failure costs them one attempt, not the page.
+  useEffect(() => {
+    if (!state?.error) return;
+    let cancelled = false;
+    academyFetch("/academy/api/access", { method: "POST", cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { unlocked?: boolean } | null) => {
+        if (!cancelled && d?.unlocked) router.refresh();
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [state, router]);
+
   if (checking) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-white">
@@ -41,8 +58,11 @@ export function UnlockForm() {
 
   return (
     <AuthMinimal product="Range">
-      <AuthHeading sub="Your instructor gave you this code to open Think Like a SOC Analyst.">
-        Enter your class passcode
+      {/* Two ways in, and neither is the default. A class was given a code. An
+          individual buys Pro and needs no code at all, so this screen cannot
+          open by asking who their instructor is. */}
+      <AuthHeading sub="Enter the code your class was given. If you are here on your own, you do not need one.">
+        Open Range
       </AuthHeading>
 
       <form action={formAction} className="mt-7">
@@ -69,14 +89,12 @@ export function UnlockForm() {
         </button>
       </form>
 
-      {/* A passcode is not the only way in any more. Someone who found Range
-          on their own has no instructor to ask, and this screen used to be a
-          dead end for them. */}
       <p className="mt-6 text-center text-sm text-slate-600">
-        No instructor?{" "}
+        No code?{" "}
         <Link href="/range/upgrade" className="am-link">
           Get Pro for $29 a month
-        </Link>
+        </Link>{" "}
+        and start on your own.
       </p>
     </AuthMinimal>
   );
