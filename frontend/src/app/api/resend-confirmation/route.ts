@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { sendEmail } from "@/lib/email";
 import { signupConfirmEmail } from "@/lib/academy-emails";
+import { mailGuard, safeRedirect } from "@/lib/auth-guard";
 
 export const runtime = "nodejs";
 
@@ -36,8 +37,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
   const email = String(body.email ?? "").trim().toLowerCase();
-  const redirectTo = typeof body.redirectTo === "string" ? body.redirectTo : undefined;
+  const redirectTo = safeRedirect(request, body.redirectTo);
   if (!email || !supabaseAdmin) return NextResponse.json({ ok: true });
+  // Same ok:true as every other outcome here, so the throttle does not become
+  // the tell that the rest of the endpoint avoids being.
+  if (!mailGuard(request, email)) return NextResponse.json({ ok: true });
 
   try {
     const user = await findUser(email);

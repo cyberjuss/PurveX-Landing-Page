@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { sendEmail } from "@/lib/email";
 import { signupConfirmEmail } from "@/lib/academy-emails";
+import { mailGuard, safeRedirect } from "@/lib/auth-guard";
 
 export const runtime = "nodejs";
 
@@ -18,9 +19,12 @@ export async function POST(request: Request) {
   }
   const email = String(body.email ?? "").trim().toLowerCase();
   const password = String(body.password ?? "");
-  const redirectTo = typeof body.redirectTo === "string" ? body.redirectTo : undefined;
+  const redirectTo = safeRedirect(request, body.redirectTo);
   if (!email || !password) return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
   if (!supabaseAdmin) return NextResponse.json({ error: "Sign-up is not configured yet." }, { status: 503 });
+  if (!mailGuard(request, email)) {
+    return NextResponse.json({ error: "Too many attempts. Wait a few minutes and try again." }, { status: 429 });
+  }
 
   const { data, error } = await supabaseAdmin.auth.admin.generateLink({
     type: "signup",
@@ -28,7 +32,22 @@ export async function POST(request: Request) {
     password,
     options: redirectTo ? { redirectTo } : undefined,
   });
-  if (error) return NextResponse.json({ error: error.message || "Could not create your account." }, { status: 400 });
+  if (error) {
+    // Supabase answers "User already registered" for an address that exists,
+    // and passing that through turned sign-up into a way to test whether any
+    // given person has an account here. resend-confirmation already refuses to
+    // answer that question, so this was the hole in the same rule.
+    console.error(`[signup] generateLink failed for ${email}:`, error.message);
+    const taken = /already|exist|registered/i.test(error.message || "");
+    return NextResponse.json(
+      {
+        error: taken
+          ? "If that address can be used, we have sent a confirmation link. Check your inbox, or reset your password."
+          : "Could not create your account. Check the address and try again.",
+      },
+      { status: 400 }
+    );
+  }
 
   const link = data?.properties?.action_link;
   if (!link) {

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { sendEmail } from "@/lib/email";
 import { passwordResetEmail } from "@/lib/academy-emails";
+import { mailGuard, safeRedirect } from "@/lib/auth-guard";
 
 export const runtime = "nodejs";
 
@@ -18,8 +19,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
   const email = String(body.email ?? "").trim().toLowerCase();
-  const redirectTo = typeof body.redirectTo === "string" ? body.redirectTo : undefined;
+  const redirectTo = safeRedirect(request, body.redirectTo);
   if (!email || !supabaseAdmin) return NextResponse.json({ ok: true });
+  // Still ok:true. A 429 here would say this address has been asked for
+  // recently, which is the one thing the endpoint is careful not to say.
+  if (!mailGuard(request, email)) return NextResponse.json({ ok: true });
 
   try {
     const { data, error } = await supabaseAdmin.auth.admin.generateLink({
