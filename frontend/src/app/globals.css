@@ -3863,6 +3863,9 @@ p.ad-cmd, li.ad-cmd { position: relative; }
    --------------------------------------------------------------------------- */
 .academy-bg[data-academy-theme="dark"] {
   color-scheme: dark;
+  --sf-lift: 0 40px 90px -30px rgba(0, 0, 0, 0.9);
+  --sf-line: rgba(255, 255, 255, 0.10);
+  --sf-line-2: rgba(255, 255, 255, 0.05);
   --pvrx-bg-light: #000000;
   --pvrx-surface-light: #000000;
   --pvrx-surface-alt-light: #000000;
@@ -5196,6 +5199,19 @@ textarea.pc-dock__field {
   --ax-dur: 240ms;        /* the default: open, close, move */
   --ax-dur-slow: 320ms;   /* a panel or drawer travelling a long way */
   --ax-dur-page: 420ms;   /* a route change */
+
+  /* Surface language, taken off the explainer card because that is the one
+     the portal is being held to. Four decisions, reusable by any panel that
+     floats: a wash of the accent off the top edge so it is not a flat
+     rectangle, a lift deep enough to read as floating rather than outlined,
+     one hairline weight, and a mark treatment for an icon. */
+  --sf-wash-strength: 30%;
+  --sf-wash-stop: 48%;
+  --sf-lift: 0 40px 90px -30px rgba(0, 0, 0, 0.55);
+  --sf-line: rgba(15, 23, 42, 0.12);
+  --sf-line-2: rgba(15, 23, 42, 0.07);
+  --sf-mark-fill: 14%;
+  --sf-mark-line: 30%;
 }
 .dr--floor, .dr--play { max-width: none; }
 .dr--play { max-width: 880px; margin-inline: auto; }
@@ -5537,3 +5553,20 @@ textarea.pc-dock__field {
   }
 }
 
+/* The accent wash. A panel opts in by setting position: relative and
+   overflow: hidden, then this draws it. Same geometry as the explainer's. */
+.sf-wash::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: 50%;
+  width: 150%;
+  height: 90%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 0%,
+    color-mix(in srgb, var(--rd-accent) var(--sf-wash-strength), transparent),
+    transparent var(--sf-wash-stop));
+  pointer-events: none;
+  z-index: 0;
+}
+.sf-wash > * { position: relative; z-index: 1; }

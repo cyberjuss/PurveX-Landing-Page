@@ -66,6 +66,20 @@ not been done.
 
 ### Surfaces
 
+The explainer card set the bar, so its decisions are tokens any floating panel
+can adopt. Four of them:
+
+| token | what it does |
+| --- | --- |
+|  /  | a radial wash of the accent off the top edge, so a panel is not a flat rectangle |
+|  | deep enough to read as floating rather than outlined. Heavier in dark. |
+|  /  | one hairline weight across every panel |
+|  /  | an icon or tag as a tinted square with an inset hairline |
+
+ draws the wash for anything that sets  and
+. The lab card and the first-run briefing both carry it.
+
+
 - **Square corners.** Portal panels do not round. This was tried and reverted
   on the lab card.
 - **No colour-strip callouts.** A flat fill with a bright bar down one side is

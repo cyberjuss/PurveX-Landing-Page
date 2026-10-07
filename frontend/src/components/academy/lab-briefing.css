@@ -32,15 +32,28 @@ html[data-academy-theme="dark"] .lb,
   max-height: min(86vh, 760px);
   display: flex;
   flex-direction: column;
-  padding: 22px;
-  border: 1px solid var(--lb-line);
+  overflow: hidden;
+  padding: 26px;
+  border: 1px solid var(--sf-line, var(--lb-line));
   background: var(--lb-bg);
   color: var(--lb-ink);
-  box-shadow: 0 24px 60px -24px rgba(8, 11, 22, 0.6);
+  box-shadow: var(--sf-lift, 0 24px 60px -24px rgba(8, 11, 22, 0.6));
   font-family: var(--font-sans, inherit);
   animation: lb-in 0.16s ease-out both;
 }
 .lb__panel:focus { outline: none; }
+.lb__panel::before {
+  content: "";
+  position: absolute;
+  top: -40%; left: 50%;
+  width: 150%; height: 90%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 0%,
+    color-mix(in srgb, var(--lb-accent) var(--sf-wash-strength, 30%), transparent),
+    transparent var(--sf-wash-stop, 48%));
+  pointer-events: none;
+}
+.lb__panel > * { position: relative; }
 @keyframes lb-in { from { opacity: 0; transform: translateY(6px); } }
 @media (prefers-reduced-motion: reduce) { .lb__panel { animation: none; } }
 
@@ -61,7 +74,12 @@ html[data-academy-theme="dark"] .lb,
   list-style: none; overflow-y: auto; min-height: 0;
 }
 .lb .lb__points li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 13px; margin: 0; }
-.lb .lb__mark { display: grid; place-items: center; width: 34px; height: 34px; flex: none; color: var(--lb-accent); background: color-mix(in srgb, var(--lb-accent) 12%, transparent); }
+.lb .lb__mark {
+  display: grid; place-items: center; width: 36px; height: 36px; flex: none;
+  color: var(--lb-accent);
+  background: color-mix(in srgb, var(--lb-accent) var(--sf-mark-fill, 14%), transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lb-accent) var(--sf-mark-line, 30%), transparent);
+}
 .lb .lb__points strong { display: block; font-size: var(--ty-body); font-weight: 650; line-height: 1.3; color: var(--lb-ink); }
 .lb .lb__points p { margin: 4px 0 0; font-size: var(--ty-note); line-height: 1.5; color: var(--lb-ink-2); }
 

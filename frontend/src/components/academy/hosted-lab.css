@@ -39,20 +39,36 @@ html[data-academy-theme="dark"] .hl-note,
   --hl-shadow: 0 20px 48px -16px rgba(0, 0, 0, 0.85);
 }
 
-/* ---- the lab menu ---- */
+/* ---- the lab menu ----
+   Carries the explainer card's surface language: a wash of the accent off the
+   top edge, a lift deep enough to read as floating, and the same hairline. */
 .hl {
+  position: relative;
+  overflow: hidden;
   display: grid;
   gap: 18px;
   margin: 0;
-  padding: 20px;
-  border: 1px solid var(--hl-line);
+  padding: 22px;
+  border: 1px solid var(--sf-line, var(--hl-line));
   border-radius: 0;
   color: var(--hl-ink);
   background: var(--hl-bg);
-  box-shadow: var(--hl-shadow);
+  box-shadow: var(--sf-lift, var(--hl-shadow));
   font-family: var(--font-sans, inherit);
 }
-.hl--menu { width: min(500px, calc(100vw - 32px)); padding: 24px; }
+.hl--menu { width: min(500px, calc(100vw - 32px)); padding: 26px; }
+.hl::before {
+  content: "";
+  position: absolute;
+  top: -40%; left: 50%;
+  width: 150%; height: 90%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 0%,
+    color-mix(in srgb, var(--hl-accent) var(--sf-wash-strength, 30%), transparent),
+    transparent var(--sf-wash-stop, 48%));
+  pointer-events: none;
+}
+.hl > * { position: relative; }
 
 /* Identity row: what it is on the left, whether it is up on the right. */
 .hl__top { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 12px; }
@@ -72,7 +88,14 @@ html[data-academy-theme="dark"] .hl-note,
   padding: 11px 2px; font-family: var(--font-mono, ui-monospace, monospace);
 }
 .hl .hl__rigs li + li { box-shadow: inset 0 1px 0 color-mix(in srgb, var(--hl-line) 60%, transparent); }
-.hl .hl__rigs em { font-style: normal; font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.14em; color: var(--hl-accent); }
+.hl .hl__rigs em {
+  display: inline-grid; place-items: center; justify-self: start;
+  min-width: 4.6rem; padding: 4px 8px;
+  font-style: normal; font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.14em;
+  color: var(--hl-accent);
+  background: color-mix(in srgb, var(--hl-accent) var(--sf-mark-fill, 14%), transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--hl-accent) var(--sf-mark-line, 30%), transparent);
+}
 .hl .hl__rigs strong { font-size: var(--ty-note); font-weight: 600; letter-spacing: 0.01em; color: var(--hl-ink); }
 .hl .hl__rigs small { font-size: var(--ty-small); color: var(--hl-ink-3); white-space: nowrap; }
 
