@@ -384,7 +384,7 @@ function CopyButton({ text }: { text: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      className={`ml-2 inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-semibold transition ${
+      className={`ml-2 inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[length:var(--ty-kicker)] font-semibold transition ${
         copied
           ? "border-emerald-300 bg-emerald-50 text-emerald-700"
           : "border-[var(--pvrx-border-light)] text-slate-500 hover:border-slate-300 hover:text-slate-900"
@@ -538,7 +538,7 @@ export default function ReferencePage() {
             <div className="flex flex-col gap-10">
               {filteredCategories.map((cat) => (
                 <div key={cat.label}>
-                  <h2 className="text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--rd-ink-3)] lg:hidden">
+                  <h2 className="text-[length:var(--ty-micro)] font-bold uppercase tracking-[0.12em] text-[var(--rd-ink-3)] lg:hidden">
                     {cat.label}
                   </h2>
                   <div className="mt-4 flex flex-col gap-6 lg:mt-0">
