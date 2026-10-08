@@ -20,18 +20,18 @@
   padding: 16px 20px;
   border: 1px solid var(--sf-line, var(--rd-line));
   background: var(--rd-surface);
-  box-shadow: var(--sf-lift, 0 24px 60px -30px rgba(8, 11, 22, 0.5)),
-              inset 0 1px 0 color-mix(in srgb, var(--rd-ink) 6%, transparent);
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9),
+              inset 0 1px 0 color-mix(in srgb, var(--rd-ink) 7%, transparent);
 }
 /* The purple shine across the top, the same wash the tour card carries, so the
-   bar reads as slick black rather than a flat panel. */
+   bar reads as shiny black rather than a flat rectangle. */
 .iv-cc__bar::before {
   content: "";
   position: absolute;
-  top: -45%; left: 50%;
-  width: 150%; height: 95%;
+  top: -40%; left: 50%;
+  width: 150%; height: 90%;
   transform: translateX(-50%);
-  background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--rd-accent) 16%, transparent), transparent 55%);
+  background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--rd-accent) 26%, transparent), transparent 52%);
   pointer-events: none;
 }
 .iv-cc__bar > * { position: relative; }
@@ -85,7 +85,32 @@
 @media (min-width: 1001px) { .iv-cc__side { position: sticky; top: calc(var(--ax-chrome, 0px) + 92px); } }
 
 /* ---- panels ------------------------------------------------------------- */
-.iv-panel { padding: 18px 20px; border: 1px solid var(--sf-line, var(--rd-line)); background: var(--rd-surface); box-shadow: inset 0 1px 0 color-mix(in srgb, var(--rd-ink) 5%, transparent); }
+/* The tour card's treatment on every panel: rich black, a crisp edge, a
+   whisper of the accent at the top so it is not a flat rectangle, a deep lift,
+   and a smooth rise in. Lighter wash than the hero bar, since there are
+   several of them. */
+.iv-panel {
+  position: relative;
+  overflow: hidden;
+  padding: 18px 20px;
+  border: 1px solid var(--sf-line, var(--rd-line));
+  background: var(--rd-surface);
+  box-shadow: 0 30px 70px -36px rgba(0, 0, 0, 0.85),
+              inset 0 1px 0 color-mix(in srgb, var(--rd-ink) 5%, transparent);
+  animation: iv-rise 0.32s var(--ax-ease, ease-out) both;
+}
+.iv-panel::before {
+  content: "";
+  position: absolute;
+  top: -40%; left: 50%;
+  width: 150%; height: 80%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--rd-accent) 11%, transparent), transparent 50%);
+  pointer-events: none;
+}
+.iv-panel > * { position: relative; }
+@keyframes iv-rise { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .iv-panel { animation: none; } }
 .iv-panel__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-bottom: 14px; }
 .iv-panel__head h2 { margin: 0; font-family: var(--font-display); font-size: var(--ty-h4); font-weight: 650; letter-spacing: -0.01em; color: var(--rd-ink); }
 .iv-panel__head p { margin: 0; font-size: var(--ty-small); color: var(--rd-ink-3); }
