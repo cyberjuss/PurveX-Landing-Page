@@ -36,6 +36,8 @@ const ART: Record<string, { blurb: string; skill: string; icon: string; accent: 
   "severity-risk": { blurb: "Score one flaw three ways with CVSS, and watch Critical stop meaning urgent.", skill: "Risk Triage", icon: "Gauge", accent: "#f5a524", minutes: 30 },
   "hash-verify": { blurb: "Prove a downloaded update is the file IT really published.", skill: "Integrity", icon: "Fingerprint", accent: "#8b7bff", minutes: 15 },
   "password-table": { blurb: "Crack a leaked table to see which password storage holds up.", skill: "Credentials", icon: "KeyRound", accent: "#22b8cf", minutes: 20 },
+  "tell-them-apart": { blurb: "Tell encoding, encryption and hashing apart in CyberChef, and prove which reverse.", skill: "Credentials", icon: "ScanSearch", accent: "#22b8cf", minutes: 20 },
+  "store-a-password": { blurb: "See why a leaked unsalted table gives a company away, and how salting fixes it.", skill: "Credentials", icon: "KeyRound", accent: "#22b8cf", minutes: 25 },
   "wireshark": { blurb: "Read a packet capture and follow a conversation on the wire.", skill: "Networking", icon: "Radar", accent: "#3b9eff", minutes: 20 },
   "forensics": { blurb: "Trace Hidden Tear ransomware through captured network traffic.", skill: "Forensics", icon: "Bug", accent: "#ff6b81", minutes: 25 },
   "effective-access": { blurb: "Work out who can really open a file after nested groups.", skill: "Access Control", icon: "ShieldCheck", accent: "#2fbf71", minutes: 15 },

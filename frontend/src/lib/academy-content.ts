@@ -78,6 +78,8 @@ const phase1Weeks: WeekDef[] = [
       { label: "Resources", file: "phase-1/week-2/resources.md" },
       { label: "Lab: The Update Nobody Can Vouch For", file: "phase-1/week-2/lab-hash-verify.md", widget: "hash-verify" },
       { label: "Lab: The Leaked Password Table", file: "phase-1/week-2/lab-password-table.md", widget: "password-table" },
+      { label: "Lab: Tell Them Apart", file: "phase-1/week-2/lab-tell-them-apart.md" },
+      { label: "Lab: Store a Password the Safe Way", file: "phase-1/week-2/lab-store-a-password.md" },
     ],
   },
   {
