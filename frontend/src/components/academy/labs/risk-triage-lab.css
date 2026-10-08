@@ -132,7 +132,7 @@
 .rt-depts td { padding: 9px 10px 9px 0; border-top: 1px solid var(--rd-line); vertical-align: top; line-height: 1.5; color: var(--rd-ink-2); }
 .rt-depts td:first-child { white-space: nowrap; }
 .rt-depts td b { font-weight: 650; color: var(--rd-ink); }
-.rt-crit { display: inline-block; margin-left: 8px; padding: 1px 7px; background: color-mix(in srgb, var(--rd-bad) 13%, transparent); font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--rd-bad); vertical-align: 1px; }
+.rt-crit { display: inline-block; margin-left: 8px; padding: 1px 7px; background: color-mix(in srgb, var(--rd-bad) var(--sf-mark-fill), transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-bad) var(--sf-mark-line), transparent); font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--rd-bad); vertical-align: 1px; }
 .rt-guide { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .rt-guide > div { display: grid; align-content: start; gap: 8px; padding: 14px 16px; border: 1px solid var(--rd-line); border-radius: var(--rt-ri); background: color-mix(in srgb, var(--rd-ink) 1.5%, transparent); }
 .rt-guide > div > b { font-size: var(--ty-micro); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rd-accent); }
@@ -180,7 +180,7 @@
 .rt-level .rt-choice button { padding: 9px 8px; }
 .rt-score > :first-child { container-type: inline-size; }
 @container (max-width: 420px) { .rt-level { grid-template-columns: 1fr; gap: 6px; } }
-.rt-risk { justify-self: start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; font-size: var(--ty-small); font-weight: 600; }
+.rt-risk { justify-self: start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; font-size: var(--ty-small); font-weight: 600; background: color-mix(in srgb, var(--rd-ink) var(--sf-mark-fill), transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-ink) var(--sf-mark-line), transparent);}
 .rt-risk b { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note); }
 .rt-risk--high { background: color-mix(in srgb, var(--rd-bad) 13%, transparent); color: var(--rd-bad); }
 .rt-risk--medium { background: color-mix(in srgb, var(--rd-warn) 15%, transparent); color: var(--rd-warn); }
