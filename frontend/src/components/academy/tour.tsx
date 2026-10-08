@@ -342,6 +342,11 @@ const SHIFT: Tour = {
 // that has no card of its own, so it has to stay last.
 const TOURS: Tour[] = [HOME, DRILLS, LABS, REFERENCE, READINESS, PORTFOLIO, SHIFT, LESSON, PORTAL];
 
+// One welcome, not one per page. Once the portal has shown the tour the first
+// time, this flag stops any other tour from firing on a first visit to drills,
+// labs, SIEM and the rest. Cleared by a replay.
+const PORTAL_TOURED = "academy-toured-v1";
+
 /** Storage can throw in a private window, so a failed read means "show it". */
 function seen(key: string): boolean {
   try {
@@ -407,6 +412,12 @@ export function AcademyTour() {
           /* nothing to clear */
         }
       }
+      // Clear the one-welcome flag too, or a replay would be suppressed.
+      try {
+        window.localStorage.removeItem(PORTAL_TOURED);
+      } catch {
+        /* nothing to clear */
+      }
       setReplay((n) => n + 1);
     };
     window.addEventListener("purvex:tour-replay", onReplay);
@@ -414,6 +425,8 @@ export function AcademyTour() {
   }, []);
 
   useEffect(() => {
+    // Shown once for the whole portal, on the first page that can display it.
+    if (seen(PORTAL_TOURED)) return;
     const tour = TOURS.find((t) => t.when(pathname) && !seen(t.key));
     if (!tour) return;
     // The page needs a moment to finish rendering before its furniture can be
@@ -423,6 +436,10 @@ export function AcademyTour() {
       if (steps.length >= tour.min) {
         setI(0);
         setRun({ tour, steps });
+        // From here on the portal counts as toured, so no other page's tour
+        // fires. A page that could not show its tour does not burn this, so
+        // the welcome still appears on the next page that can.
+        markSeen(PORTAL_TOURED);
       } else markSeen(tour.key);
     }, replay ? 80 : 700);
     return () => window.clearTimeout(id);
