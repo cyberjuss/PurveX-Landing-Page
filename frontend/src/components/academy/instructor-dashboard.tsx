@@ -349,139 +349,64 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
 
   const groupMail = mailGroup(attention.map((a) => a.s), r.class.name);
 
-  const health =
-    r.summary.students === 0
-      ? "No students yet. Share the link below to begin."
-      : `${r.summary.students} student${r.summary.students === 1 ? "" : "s"}. ${r.summary.activeThisWeek} active this week. ${attention.length} need a look.`;
-
   return (
-    <div className="iv-class">
-      <header className="rd-mast">
-        <p className="rd-kicker">{kicker}</p>
-        <h1 className="iv-title">{r.class.name}</h1>
-        <p className="iv-lead">{health}</p>
-
-        <dl className="iv-glance">
+    <div className="iv-cc">
+      {/* Always-visible summary. Sticks under the portal header so the headline
+          numbers stay in view while the roster scrolls. */}
+      <div className="iv-cc__bar">
+        <div className="iv-cc__id">
+          <p className="rd-kicker">{kicker}</p>
+          <h1 className="iv-cc__title">{r.class.name}</h1>
+        </div>
+        <dl className="iv-cc__stats">
           <div>
             <dt>Students</dt>
             <dd>{r.summary.students}</dd>
           </div>
           <div>
-            <dt>Active this week</dt>
+            <dt>Active</dt>
             <dd>{r.summary.activeThisWeek}</dd>
           </div>
-          <div>
-            <dt>Need a look</dt>
-            <dd className={attention.length ? "rd-text-warn" : ""}>{attention.length}</dd>
+          <div className={attention.length ? "is-warn" : ""}>
+            <dt>Needs a look</dt>
+            <dd>{attention.length}</dd>
           </div>
           <div>
-            <dt>Average readiness</dt>
-            <dd className={`rd-text-${scoreTone(r.summary.avgReadiness)}`}>{r.summary.avgReadiness ?? "––"}</dd>
+            <dt>Readiness</dt>
+            <dd className={`rd-text-${scoreTone(r.summary.avgReadiness)}`}>{r.summary.avgReadiness ?? "\u2013\u2013"}</dd>
           </div>
         </dl>
-
-        {/* You invite a class once and then read this page all term, so the
-            link and the code fold away rather than sitting above the roster
-            every visit. */}
-        <div className="iv-invite2">
-          <CopyLink text={joinLink} label="Copy join link" />
+        <div className="iv-cc__invite">
+          <CopyLink text={joinLink} label="Join link" />
           <button type="button" className="iv-copy" aria-expanded={showInvite} onClick={() => setShowInvite((v) => !v)}>
-            {showInvite ? "Hide" : "Show"} class code
+            {showInvite ? "Hide code" : "Class code"}
           </button>
-          {showInvite && (
-            <div className="iv-invite2__open">
-              <code>{joinLink}</code>
-              <p>
-                Class code <strong>{r.class.code}</strong>
-                <CopyLink text={r.class.code} label="Copy" />
-                <span>Fallback for the passcode screen.</span>
-              </p>
-            </div>
-          )}
         </div>
-      </header>
+      </div>
+
+      {showInvite && (
+        <div className="iv-cc__code">
+          <code>{joinLink}</code>
+          <p>
+            Class code <strong>{r.class.code}</strong>
+            <CopyLink text={r.class.code} label="Copy" />
+            <span>Fallback for the join screen.</span>
+          </p>
+        </div>
+      )}
 
       {r.students.length === 0 ? (
-        <section className="rd-sec">
-          <p className="iv-empty">No students yet. Share the class code or the join link to get started.</p>
+        <section className="iv-panel">
+          <p className="iv-empty">No students yet. Share the join link above to get started.</p>
         </section>
       ) : (
-        <>
-          <section className="rd-sec">
-            <div className="rd-sec__head">
-              <span className="rd-sec__n">01</span>
-              <h2>Needs a look</h2>
-              <p>Students who are stuck on a mission, or who have gone quiet for a week.</p>
-              {groupMail && attention.length > 1 && (
-                <a className="iv-copy rd-sec__act" href={groupMail}>
-                  <Mail className="h-3.5 w-3.5" /> Email all {attention.length}
-                </a>
-              )}
-            </div>
-            {attention.length === 0 ? (
-              <p className="iv-empty">Everyone is moving. Nobody is stuck or quiet.</p>
-            ) : (
-              <ul className="iv-attn">
-                {attention.map(({ s, why }) => {
-                  const mail = mailOne(s, r.class.name);
-                  return (
-                    <li key={s.userId}>
-                      <strong>{who(s)}</strong>
-                      <span>{why.join(" · ")}</span>
-                      {mail && (
-                        <a className="iv-attn__mail" href={mail} aria-label={`Email ${who(s)}`}>
-                          <Mail className="h-3.5 w-3.5" /> Email
-                        </a>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </section>
-
-          <section className="rd-sec">
-            <div className="rd-sec__head">
-              <span className="rd-sec__n">02</span>
-              <h2>Class skills</h2>
-              <p>Average score on the missions students have finished. Reteach the lowest first.</p>
-            </div>
-            <div className="rd-ledger">
-              {skills.map((k) => {
-                const tone = scoreTone(k.avg);
-                return (
-                  <div key={k.key} className="rd-row">
-                    <div className="rd-row__name">
-                      <strong>
-                        {k.label}
-                        {k.avg !== null && reteach.has(k.label) && <em className="iv-reteach">Reteach first</em>}
-                      </strong>
-                      <span>
-                        {k.n} of {r.students.length} students have work here
-                      </span>
-                    </div>
-                    <div className="rd-scale">
-                      <div className={`rd-scale__fill rd-bg-${tone}`} style={{ width: `${k.avg ?? 0}%` }} />
-                      <i style={{ left: "65%" }} data-mark="Almost · 65" />
-                      <i style={{ left: "85%" }} data-mark="Ready · 85" />
-                    </div>
-                    <p className={`rd-row__score rd-text-${tone}`}>
-                      {k.avg ?? "—"}
-                      {k.avg !== null && <small>%</small>}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
-          <section className="rd-sec">
-            <div className="rd-sec__head">
-              <span className="rd-sec__n">03</span>
-              <h2>Students</h2>
-              <p>Who needs attention first. Open a name for the full record.</p>
-              <button type="button" className="iv-copy rd-sec__act" onClick={() => exportCsv(r)}>
-                <Download className="h-3.5 w-3.5" /> Export CSV
+        <div className="iv-cc__grid">
+          <section className="iv-panel iv-cc__roster">
+            <div className="iv-panel__head">
+              <h2>Roster</h2>
+              <p>Open a name for the full record.</p>
+              <button type="button" className="iv-copy iv-panel__act" onClick={() => exportCsv(r)}>
+                <Download className="h-3.5 w-3.5" /> CSV
               </button>
             </div>
 
@@ -562,7 +487,70 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
               })}
             </div>
           </section>
-        </>
+
+          <aside className="iv-cc__side">
+            <section className="iv-panel">
+              <div className="iv-panel__head">
+                <h2>Needs a look</h2>
+                {groupMail && attention.length > 1 && (
+                  <a className="iv-copy iv-panel__act" href={groupMail}>
+                    <Mail className="h-3.5 w-3.5" /> Email {attention.length}
+                  </a>
+                )}
+              </div>
+              {attention.length === 0 ? (
+                <p className="iv-empty iv-empty--sm">Everyone is moving. Nobody is stuck or quiet.</p>
+              ) : (
+                <ul className="iv-attn">
+                  {attention.map(({ s, why }) => {
+                    const mail = mailOne(s, r.class.name);
+                    return (
+                      <li key={s.userId}>
+                        <strong>{who(s)}</strong>
+                        <span>{why.join(" \u00b7 ")}</span>
+                        {mail && (
+                          <a className="iv-attn__mail" href={mail} aria-label={`Email ${who(s)}`}>
+                            <Mail className="h-3.5 w-3.5" />
+                          </a>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </section>
+
+            <section className="iv-panel">
+              <div className="iv-panel__head">
+                <h2>Class skills</h2>
+                <p>Reteach the lowest first.</p>
+              </div>
+              <ul className="iv-skills">
+                {skills.map((k) => {
+                  const tone = scoreTone(k.avg);
+                  return (
+                    <li key={k.key}>
+                      <div className="iv-skills__top">
+                        <strong>
+                          {k.label}
+                          {k.avg !== null && reteach.has(k.label) && <em className="iv-reteach">Reteach</em>}
+                        </strong>
+                        <b className={`rd-text-${tone}`}>
+                          {k.avg ?? "\u2014"}
+                          {k.avg !== null && <small>%</small>}
+                        </b>
+                      </div>
+                      <span className="iv-bar" aria-hidden="true">
+                        <i className={`rd-bg-${tone}`} style={{ width: `${k.avg ?? 0}%` }} />
+                      </span>
+                      <small className="iv-skills__n">{k.n} of {r.students.length} have work here</small>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          </aside>
+        </div>
       )}
     </div>
   );

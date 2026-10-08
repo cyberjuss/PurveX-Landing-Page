@@ -1,112 +1,158 @@
-/* Instructor view. Uses the report's --rd tokens so it follows the light and dark themes. */
-.iv-title { margin: 6px 0 12px; font-family: var(--font-display); font-size: clamp(30px, 5vw, 44px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; color: var(--rd-ink); }
-.iv-code { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; font-size: var(--ty-body); color: var(--rd-ink-2); }
-.iv-code strong { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; color: var(--rd-ink); }
-.iv-copy { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid var(--rd-line); background: none; color: var(--rd-ink-2); font-size: var(--ty-note); font-weight: 600; cursor: pointer; transition: border-color var(--ax-dur-fast), color var(--ax-dur-fast); }
-.iv-copy:hover { border-color: var(--rd-accent); color: var(--rd-accent); }
-.iv-del:hover:not(:disabled) { border-color: var(--rd-bad); color: var(--rd-bad); }
-.iv-note { max-width: 62ch; margin-top: 10px; font-size: var(--ty-note); color: var(--rd-ink-3); }
-.iv-invite { display: grid; gap: 12px; margin-top: 12px; }
-.iv-invite__row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-.iv-invite__link { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; padding: 9px 12px; border-radius: 8px; background: color-mix(in srgb, var(--rd-ink) 5%, transparent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--ty-small); color: var(--rd-ink); }
-/* Invite: two quiet buttons, with the link and code behind the second one. */
-.iv-invite2 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--rd-line); }
-.iv-invite2__open { flex-basis: 100%; display: grid; gap: 10px; margin-top: 4px; }
-.iv-invite2__open code { overflow-x: auto; white-space: nowrap; padding: 10px 12px; border-radius: 9px; background: color-mix(in srgb, var(--rd-ink) 6%, transparent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--ty-small); color: var(--rd-ink); }
-.iv-invite2__open p { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0; font-size: var(--ty-note); color: var(--rd-ink-2); }
-.iv-invite2__open strong { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; color: var(--rd-ink); }
-.iv-invite2__open span { color: var(--rd-ink-3); }
+/* Instructor command center. Uses the portal's --rd and --sf tokens, so it
+   follows the light and dark themes and shares the portal's surface language:
+   square corners, hairlines, marks (tinted fill + inset hairline), one lift on
+   the thing that floats. */
 
-/* Clean report: a one-line health lead and a spacious at-a-glance strip. */
-.iv-lead { margin: 12px 0 0; max-width: 60ch; font-size: var(--ty-h4); line-height: 1.5; color: var(--rd-ink-2); }
-.iv-glance { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 34px 0 8px; }
-.iv-glance > div { padding: 2px 26px; border-left: 1px solid var(--rd-line); }
-.iv-glance > div:first-child { padding-left: 0; border-left: 0; }
-.iv-glance dt { font-size: var(--ty-micro); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
-.iv-glance dd { margin: 12px 0 0; font-family: var(--font-display); font-size: clamp(34px, 4vw, 46px); font-weight: 600; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: var(--rd-ink); }
-.iv-glance dd.rd-text-good { color: var(--rd-good); }
-.iv-glance dd.rd-text-warn { color: var(--rd-warn); }
-.iv-glance dd.rd-text-bad { color: var(--rd-bad); }
-@media (max-width: 760px) { .iv-glance { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 26px; } .iv-glance > div:nth-child(3) { padding-left: 0; border-left: 0; } }
+.iv-cc { display: grid; gap: 18px; }
 
-.iv-empty { padding: 12px 0; font-size: var(--ty-lead); color: var(--rd-ink-3); }
+/* ---- the sticky summary ------------------------------------------------- */
+/* The headline numbers stay in view while the roster scrolls. It floats, so it
+   is the one surface here that gets the lift. */
+.iv-cc__bar {
+  position: sticky;
+  top: var(--ax-chrome, 0px);
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 28px;
+  padding: 16px 20px;
+  border: 1px solid var(--sf-line, var(--rd-line));
+  background: var(--rd-surface);
+  box-shadow: var(--sf-lift, 0 24px 60px -30px rgba(8, 11, 22, 0.5));
+}
+.iv-cc__id { min-width: 0; margin-right: auto; }
+.iv-cc__id .rd-kicker { margin: 0 0 2px; }
+.iv-cc__title {
+  margin: 0; font-family: var(--font-display);
+  font-size: clamp(22px, 3vw, 30px); font-weight: 650;
+  letter-spacing: -0.02em; line-height: 1.1; color: var(--rd-ink);
+}
 
-.iv-attn { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
-.iv-attn li { display: grid; grid-template-columns: minmax(140px, 200px) 1fr; align-items: center; gap: 4px 20px; padding: 14px 16px; border: 1px solid var(--rd-line); border-left: 3px solid var(--rd-warn); border-radius: 12px; background: color-mix(in srgb, var(--rd-warn) 5%, transparent); font-size: var(--ty-body); }
-.iv-attn strong { font-weight: 650; color: var(--rd-ink); }
-.iv-attn span { color: var(--rd-ink-2); }
-@media (max-width: 640px) { .iv-attn li { grid-template-columns: 1fr; } }
+/* Four stats as compact marks, so the numbers read as a set. */
+.iv-cc__stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+.iv-cc__stats > div {
+  min-width: 92px; padding: 8px 12px;
+  background: color-mix(in srgb, var(--rd-ink) var(--sf-mark-fill, 14%), transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-ink) var(--sf-mark-line, 30%), transparent);
+}
+.iv-cc__stats dt { font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-ink-3); }
+.iv-cc__stats dd {
+  margin: 4px 0 0; font-family: var(--font-display);
+  font-size: var(--ty-h2); font-weight: 700; line-height: 1;
+  letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: var(--rd-ink);
+}
+.iv-cc__stats .is-warn { background: color-mix(in srgb, var(--rd-warn) 13%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-warn) 32%, transparent); }
+.iv-cc__stats .is-warn dd { color: var(--rd-warn); }
+.iv-cc__stats dd.rd-text-good { color: var(--rd-good); }
+.iv-cc__stats dd.rd-text-warn { color: var(--rd-warn); }
+.iv-cc__stats dd.rd-text-bad { color: var(--rd-bad); }
 
+.iv-cc__invite { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+.iv-cc__code { display: grid; gap: 8px; margin-top: -6px; padding: 14px 16px; border: 1px solid var(--rd-line); background: color-mix(in srgb, var(--rd-ink) 3%, transparent); }
+.iv-cc__code code { overflow-x: auto; white-space: nowrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--ty-small); color: var(--rd-ink); }
+.iv-cc__code p { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0; font-size: var(--ty-note); color: var(--rd-ink-2); }
+.iv-cc__code strong { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; color: var(--rd-ink); }
+.iv-cc__code span { color: var(--rd-ink-3); }
+
+/* ---- the two-column body ------------------------------------------------ */
+.iv-cc__grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 1000px) { .iv-cc__grid { grid-template-columns: 1fr; } }
+.iv-cc__side { display: grid; gap: 18px; }
+/* The side panels follow the roster on a phone, and track the scroll on a wide
+   screen so a long roster does not leave them stranded at the top. */
+@media (min-width: 1001px) { .iv-cc__side { position: sticky; top: calc(var(--ax-chrome, 0px) + 92px); } }
+
+/* ---- panels ------------------------------------------------------------- */
+.iv-panel { padding: 18px 20px; border: 1px solid var(--sf-line, var(--rd-line)); background: var(--rd-surface); }
+.iv-panel__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-bottom: 14px; }
+.iv-panel__head h2 { margin: 0; font-family: var(--font-display); font-size: var(--ty-h4); font-weight: 650; letter-spacing: -0.01em; color: var(--rd-ink); }
+.iv-panel__head p { margin: 0; font-size: var(--ty-small); color: var(--rd-ink-3); }
+.iv-panel__act { margin-left: auto; text-decoration: none; }
+
+.iv-empty { padding: 10px 0; font-size: var(--ty-lead); color: var(--rd-ink-3); }
+.iv-empty--sm { padding: 0; font-size: var(--ty-note); }
+
+/* ---- shared controls ---------------------------------------------------- */
+.iv-copy { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid var(--rd-line); background: none; color: var(--rd-ink-2); font-size: var(--ty-note); font-weight: 600; cursor: pointer; transition: border-color var(--ax-dur) var(--ax-ease), color var(--ax-dur) var(--ax-ease), background var(--ax-dur) var(--ax-ease); }
+.iv-copy:hover { border-color: var(--rd-accent); color: var(--rd-accent); background: color-mix(in srgb, var(--rd-accent) 7%, transparent); }
+.iv-del:hover:not(:disabled) { border-color: var(--rd-bad); color: var(--rd-bad); background: color-mix(in srgb, var(--rd-bad) 7%, transparent); }
+
+/* ---- needs a look (side) ------------------------------------------------ */
+.iv-attn { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.iv-attn li {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 10px;
+  padding: 11px 13px;
+  background: color-mix(in srgb, var(--rd-warn) var(--sf-mark-fill, 14%), transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-warn) var(--sf-mark-line, 30%), transparent);
+  font-size: var(--ty-note);
+}
+.iv-attn strong { grid-column: 1; font-weight: 650; color: var(--rd-ink); }
+.iv-attn span { grid-column: 1; color: var(--rd-ink-2); font-size: var(--ty-small); }
+.iv-attn__mail { grid-column: 2; grid-row: 1 / span 2; display: inline-grid; place-items: center; width: 32px; height: 32px; color: var(--rd-ink-2); text-decoration: none; transition: color var(--ax-dur) var(--ax-ease), background var(--ax-dur) var(--ax-ease); background: color-mix(in srgb, var(--rd-ink) 7%, transparent); }
+.iv-attn__mail:hover { background: color-mix(in srgb, var(--rd-accent) 16%, transparent); color: var(--rd-accent); }
+
+/* ---- class skills (side) ------------------------------------------------ */
+.iv-skills { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px; }
+.iv-skills__top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.iv-skills strong { font-size: var(--ty-note); font-weight: 600; color: var(--rd-ink); }
+.iv-skills b { font-family: var(--font-display); font-size: var(--ty-lead); font-weight: 700; font-variant-numeric: tabular-nums; }
+.iv-skills b small { font-size: var(--ty-small); font-weight: 600; }
+.iv-skills .iv-bar { margin: 6px 0 4px; max-width: none; }
+.iv-skills__n { font-size: var(--ty-small); color: var(--rd-ink-3); }
+.iv-reteach { display: inline-block; margin-left: 8px; padding: 1px 7px; background: color-mix(in srgb, var(--rd-warn) var(--sf-mark-fill, 14%), transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-warn) var(--sf-mark-line, 30%), transparent); color: var(--rd-warn); font-size: var(--ty-kicker); font-style: normal; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; vertical-align: 1px; }
+
+.iv-bar { display: block; max-width: 128px; height: 5px; margin: 7px 0; background: var(--rd-line-2); overflow: hidden; }
+.iv-bar > i { display: block; height: 100%; }
+
+/* ---- roster tools ------------------------------------------------------- */
+.iv-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.iv-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.iv-chips button { height: 30px; padding: 0 13px; border: 0; background: color-mix(in srgb, var(--rd-ink) 6%, transparent); color: var(--rd-ink-2); font-size: var(--ty-small); font-weight: 650; cursor: pointer; transition: background var(--ax-dur) var(--ax-ease), color var(--ax-dur) var(--ax-ease); }
+.iv-chips button:hover { background: color-mix(in srgb, var(--rd-ink) 11%, transparent); color: var(--rd-ink); }
+.iv-chips button[aria-pressed="true"] { background: color-mix(in srgb, var(--rd-accent) var(--sf-mark-fill, 14%), transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) var(--sf-mark-line, 30%), transparent); color: var(--rd-accent); }
+.iv-sort { display: inline-flex; align-items: center; gap: 8px; font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
+.iv-sort select { height: 30px; padding: 0 8px; border: 1px solid var(--rd-line); background: var(--rd-surface); color: var(--rd-ink); font-size: var(--ty-note); font-weight: 600; letter-spacing: 0; text-transform: none; cursor: pointer; }
+.iv-sort select:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 1px; }
+
+/* ---- roster table ------------------------------------------------------- */
 .iv-table { border-top: 1px solid var(--rd-ink); font-size: var(--ty-body); }
-.iv-tr { display: grid; grid-template-columns: minmax(190px, 1.7fr) 1fr 1.2fr 0.8fr; gap: 20px; align-items: start; padding: 14px 0; border-bottom: 1px solid var(--rd-line); color: var(--rd-ink-2); }
-.iv-tr:not(.iv-tr--head) { transition: background var(--ax-dur-fast); }
+.iv-tr { display: grid; grid-template-columns: minmax(170px, 1.7fr) 1fr 1.2fr 0.8fr; gap: 20px; align-items: start; padding: 14px 0; border-bottom: 1px solid var(--rd-line); color: var(--rd-ink-2); }
+.iv-tr:not(.iv-tr--head) { transition: background var(--ax-dur) var(--ax-ease); }
 .iv-tr:not(.iv-tr--head):hover { background: color-mix(in srgb, var(--rd-ink) 3.5%, transparent); }
-.iv-tr--head { padding: 10px 0; font-size: var(--ty-micro); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
+.iv-tr--head { padding: 10px 0; font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
 .iv-tr small { display: block; margin-top: 2px; font-size: var(--ty-small); color: var(--rd-ink-3); }
 .iv-tr b { font-family: var(--font-display); font-size: var(--ty-h3); font-weight: 700; font-variant-numeric: tabular-nums; }
 .iv-who strong { display: block; font-weight: 600; color: var(--rd-ink); }
 .iv-who small { word-break: break-all; }
-.iv-pill { display: inline-flex; align-items: center; margin-top: 7px; padding: 2px 9px; border-radius: 999px; font-size: var(--ty-micro); font-weight: 650; letter-spacing: 0.01em; }
-.iv-pill--good { background: color-mix(in srgb, var(--rd-good) 16%, transparent); color: var(--rd-good); }
-.iv-pill--warn { background: color-mix(in srgb, var(--rd-warn) 18%, transparent); color: var(--rd-warn); }
-.iv-pill--bad { background: color-mix(in srgb, var(--rd-bad) 18%, transparent); color: var(--rd-bad); }
-.iv-pill--none { background: color-mix(in srgb, var(--rd-ink) 10%, transparent); color: var(--rd-ink-2); }
-.iv-bar { display: block; max-width: 128px; height: 5px; margin: 7px 0; border-radius: 999px; background: var(--rd-line-2); overflow: hidden; }
-.iv-bar > i { display: block; height: 100%; border-radius: 999px; }
-@media (max-width: 900px) {
+/* Status is a mark now, not a rounded pill, to match the rest of the portal. */
+.iv-pill { display: inline-flex; align-items: center; margin-top: 7px; padding: 2px 9px; font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.iv-pill--good { background: color-mix(in srgb, var(--rd-good) var(--sf-mark-fill, 14%), transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-good) var(--sf-mark-line, 30%), transparent); color: var(--rd-good); }
+.iv-pill--warn { background: color-mix(in srgb, var(--rd-warn) var(--sf-mark-fill, 14%), transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-warn) var(--sf-mark-line, 30%), transparent); color: var(--rd-warn); }
+.iv-pill--bad { background: color-mix(in srgb, var(--rd-bad) var(--sf-mark-fill, 14%), transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-bad) var(--sf-mark-line, 30%), transparent); color: var(--rd-bad); }
+.iv-pill--none { background: color-mix(in srgb, var(--rd-ink) var(--sf-mark-fill, 14%), transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-ink) var(--sf-mark-line, 30%), transparent); color: var(--rd-ink-2); }
+@media (max-width: 760px) {
   .iv-tr--head { display: none; }
   .iv-tr { grid-template-columns: 1fr 1fr; }
   .iv-who { grid-column: 1 / -1; }
   .iv-tr > [data-label]::before { content: attr(data-label); display: block; margin-bottom: 2px; font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
 }
 
-.iv-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-.iv-tabs button { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 1px solid var(--rd-line); background: none; color: var(--rd-ink-2); font-size: var(--ty-note); font-weight: 600; cursor: pointer; }
-.iv-tabs button[aria-pressed="true"] { border-color: var(--rd-ink); color: var(--rd-ink); }
-.iv-tabs small { color: var(--rd-ink-3); }
-
-/* Lift the muted section descriptions in the instructor and owner views. */
-/* order puts the section action on the heading line; the description is full
-   width, so without this it would push the action down to a line of its own. */
-.iv-root .rd-sec__head p { color: var(--rd-ink-2); order: 2; }
-.rd-sec__act { order: 1; margin-left: auto; text-decoration: none; }
-@media (max-width: 560px) { .rd-sec__act { order: 3; margin-left: 0; } }
-
-/* Email a single at-risk student straight from the reason they are listed. */
-.iv-attn li { grid-template-columns: minmax(140px, 200px) 1fr auto; }
-.iv-attn__mail { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: color-mix(in srgb, var(--rd-ink) 7%, transparent); color: var(--rd-ink-2); font-size: var(--ty-small); font-weight: 650; text-decoration: none; white-space: nowrap; transition: background var(--ax-dur-fast), color var(--ax-dur-fast); }
-.iv-attn__mail:hover { background: color-mix(in srgb, var(--rd-accent) 14%, transparent); color: var(--rd-accent); }
-@media (max-width: 640px) { .iv-attn li { grid-template-columns: 1fr; } .iv-attn__mail { justify-self: start; } }
-
-/* Marks the competency the class is weakest in, so "reteach the lowest" is
-   not left to reading four bars and comparing them. */
-.iv-reteach { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--rd-warn) 15%, transparent); color: var(--rd-warn); font-size: var(--ty-kicker); font-style: normal; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; vertical-align: 1px; }
-
-/* Roster tools. Calm by default: a filter only colours once it is the active one. */
-.iv-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
-.iv-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.iv-chips button { height: 30px; padding: 0 13px; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--rd-ink) 6%, transparent); color: var(--rd-ink-2); font-size: var(--ty-small); font-weight: 650; cursor: pointer; transition: background var(--ax-dur-fast), color var(--ax-dur-fast); }
-.iv-chips button:hover { background: color-mix(in srgb, var(--rd-ink) 11%, transparent); color: var(--rd-ink); }
-.iv-chips button[aria-pressed="true"] { background: color-mix(in srgb, var(--rd-accent) 16%, transparent); color: var(--rd-accent); }
-.iv-sort { display: inline-flex; align-items: center; gap: 8px; font-size: var(--ty-micro); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
-.iv-sort select { height: 30px; padding: 0 8px; border: 1px solid var(--rd-line); border-radius: 8px; background: var(--rd-surface); color: var(--rd-ink); font-size: var(--ty-note); font-weight: 600; letter-spacing: 0; text-transform: none; cursor: pointer; }
-.iv-sort select:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 1px; }
-
-/* An open row keeps its detail visually attached to it. */
+/* an open row keeps its detail attached */
 .iv-row { border-bottom: 1px solid var(--rd-line); }
 .iv-row .iv-tr { border-bottom: 0; }
-.iv-row--open { background: color-mix(in srgb, var(--rd-ink) 2.5%, transparent); }
+.iv-row--open { background: color-mix(in srgb, var(--rd-accent) 4%, transparent); }
 .iv-who__toggle { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
-.iv-who__chev { flex: none; color: var(--rd-ink-3); transition: transform var(--ax-dur), color var(--ax-dur-fast); }
-.iv-who__toggle:hover .iv-who__chev { color: var(--rd-accent); }
-.iv-who__toggle:hover strong { color: var(--rd-accent); }
+.iv-who__chev { flex: none; color: var(--rd-ink-3); transition: transform var(--ax-dur) var(--ax-ease), color var(--ax-dur) var(--ax-ease); }
+.iv-who__toggle:hover .iv-who__chev, .iv-who__toggle:hover strong { color: var(--rd-accent); }
 .iv-who__toggle[aria-expanded="true"] .iv-who__chev { transform: rotate(-180deg); color: var(--rd-accent); }
-.iv-who__toggle:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 3px; border-radius: 4px; }
+.iv-who__toggle:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 3px; }
 
-/* The full record for one student, opened from their name. */
-.iv-detail { padding: 4px 0 22px; }
-.iv-detail__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px 32px; }
-.iv-detail h3 { margin: 0 0 10px; font-size: var(--ty-micro); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
+/* ---- one student's full record ----------------------------------------- */
+.iv-detail { padding: 6px 0 20px; }
+.iv-detail__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 30px; }
+.iv-detail h3 { margin: 0 0 10px; font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
 .iv-detail__none { margin: 0; font-size: var(--ty-note); color: var(--rd-ink-3); }
 .iv-detail__stuck { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .iv-detail__stuck li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: var(--ty-note); }
@@ -119,17 +165,30 @@
 .iv-detail__facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; margin: 0; }
 .iv-detail__facts dt { font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-ink-3); }
 .iv-detail__facts dd { margin: 3px 0 0; font-size: var(--ty-note); color: var(--rd-ink); }
-.iv-detail__act { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.iv-detail__act { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
 .iv-detail__act .iv-copy { text-decoration: none; }
-@media (max-width: 860px) { .iv-detail__grid { grid-template-columns: 1fr; gap: 22px; } }
+@media (max-width: 860px) { .iv-detail__grid { grid-template-columns: 1fr; gap: 20px; } }
 
-/* Owner view: a simple list of classes to create and assign. */
+/* ---- class switcher ----------------------------------------------------- */
+.iv-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.iv-tabs button { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 1px solid var(--rd-line); background: none; color: var(--rd-ink-2); font-size: var(--ty-note); font-weight: 600; cursor: pointer; transition: border-color var(--ax-dur) var(--ax-ease), color var(--ax-dur) var(--ax-ease); }
+.iv-tabs button:hover { border-color: var(--rd-accent); color: var(--rd-ink); }
+.iv-tabs button[aria-pressed="true"] { border-color: var(--rd-ink); color: var(--rd-ink); }
+.iv-tabs small { color: var(--rd-ink-3); }
+
+/* ---- owner view --------------------------------------------------------- */
+.iv-title { margin: 6px 0 12px; font-family: var(--font-display); font-size: clamp(30px, 5vw, 44px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; color: var(--rd-ink); }
+.iv-note { max-width: 62ch; margin-top: 10px; font-size: var(--ty-note); color: var(--rd-ink-3); }
+.iv-invite { display: grid; gap: 12px; margin-top: 12px; }
+.iv-invite__row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.iv-invite__link { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; padding: 9px 12px; background: color-mix(in srgb, var(--rd-ink) 5%, transparent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--ty-small); color: var(--rd-ink); }
+
 .ov-lede { max-width: 60ch; margin-top: 4px; font-size: var(--ty-lead); line-height: 1.55; color: var(--rd-ink-2); }
-.ov-back { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 16px; padding: 0; border: 0; background: none; color: var(--rd-ink-2); font-size: var(--ty-body); font-weight: 600; cursor: pointer; }
+.ov-back { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 16px; padding: 0; border: 0; background: none; color: var(--rd-ink-2); font-size: var(--ty-body); font-weight: 600; cursor: pointer; transition: color var(--ax-dur) var(--ax-ease); }
 .ov-back:hover { color: var(--rd-accent); }
 .ov-back svg { width: 16px; height: 16px; }
 .ov-classes { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.ov-class { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 16px 18px; border: 1px solid color-mix(in srgb, var(--rd-ink) 14%, transparent); border-radius: 14px; }
+.ov-class { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 16px 18px; border: 1px solid var(--sf-line, var(--rd-line)); background: var(--rd-surface); }
 .ov-class__main { flex: 1; min-width: 180px; }
 .ov-class__main strong { display: block; font-size: var(--ty-lead); font-weight: 650; color: var(--rd-ink); }
 .ov-class__main small { color: var(--rd-ink-2); word-break: break-all; }
@@ -137,13 +196,16 @@
 .ov-class__stats { display: flex; align-items: baseline; gap: 22px; margin: 0; color: var(--rd-ink-3); }
 .ov-class__stats dt { font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
 .ov-class__stats dd { margin: 4px 0 0; font-family: var(--font-display); font-size: var(--ty-h2); font-weight: 700; line-height: 1; color: var(--rd-ink); font-variant-numeric: tabular-nums; }
+.ov-class__stats dd.rd-text-warn { color: var(--rd-warn); }
+.ov-class__stats dd.rd-text-good { color: var(--rd-good); }
+.ov-class__stats dd.rd-text-bad { color: var(--rd-bad); }
 .ov-class__actions { display: flex; flex-wrap: wrap; gap: 8px; }
 @media (max-width: 560px) { .ov-class__stats { order: 3; flex-wrap: wrap; gap: 14px 20px; } }
 
-.iv-new { margin-top: 20px; padding: 22px; border: 1px solid color-mix(in srgb, var(--rd-ink) 14%, transparent); border-radius: 16px; }
+.iv-new { margin-top: 20px; padding: 22px; border: 1px solid var(--sf-line, var(--rd-line)); background: var(--rd-surface); }
 .iv-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end; }
-.iv-form label span { display: block; margin-bottom: 6px; font-size: var(--ty-micro); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
-.iv-form input { width: 100%; height: 42px; padding: 0 14px; border: 1px solid color-mix(in srgb, var(--rd-ink) 16%, transparent); border-radius: 10px; background: var(--rd-surface); color: var(--rd-ink); font-size: var(--ty-body); }
+.iv-form label span { display: block; margin-bottom: 6px; font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
+.iv-form input { width: 100%; height: 42px; padding: 0 14px; border: 1px solid var(--rd-line); background: var(--rd-surface); color: var(--rd-ink); font-size: var(--ty-body); }
 .iv-form input::placeholder { color: var(--rd-ink-3); }
 .iv-form input:focus { outline: none; border-color: var(--rd-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--rd-accent) 22%, transparent); }
 @media (max-width: 640px) { .iv-form { grid-template-columns: 1fr; } }
