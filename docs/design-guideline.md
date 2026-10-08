@@ -159,6 +159,18 @@ Rules:
   Thirteen of those remain and are intentional.
 - Sequential delays for a list: 60-70ms apart, no more than four steps.
 
+**Everything clickable transitions.** One rule on `.academy-bg a, button,
+[role=button], [role=tab], summary, label[for]` gives every interactive
+element the same settle: colour, background, border, shadow and opacity at
+`--ax-dur-fast`. Half the portal's hover states had none at all. Layout and
+transform are left out on purpose, since those are what make a hover feel
+loose, and the few surfaces that do move declare it themselves.
+
+**Collections stagger in.** The gallery grid, the readiness ledger, the
+portfolio sections, the Shift queue and the SIEM table each reveal their rows
+55ms apart for three steps, then flat. Past that the last row is waiting on an
+animation nobody is watching.
+
 The portal had **13 distinct durations** and wrote its one signature curve
 **three different ways**. 217 declarations now point at the scale.
 

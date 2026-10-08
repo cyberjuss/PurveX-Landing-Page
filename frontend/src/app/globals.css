@@ -2798,6 +2798,27 @@ body:has(.lp) {
 .academy-bg summary,
 .academy-bg label[for] {
   cursor: pointer;
+  /* Everything you can click settles instead of snapping. Half the portal's
+     hover states had no transition at all, and rather than add one to each,
+     this gives every interactive element the same one. A rule with its own
+     transition comes later in the file and still wins.
+
+     Colour, edge and depth only. Layout and transform are left out: they are
+     what makes a hover feel loose, and the few places that do move already
+     declare it themselves. */
+  transition: color var(--ax-dur-fast) var(--ax-ease),
+              background-color var(--ax-dur-fast) var(--ax-ease),
+              border-color var(--ax-dur-fast) var(--ax-ease),
+              box-shadow var(--ax-dur-fast) var(--ax-ease),
+              opacity var(--ax-dur-fast) var(--ax-ease);
+}
+@media (prefers-reduced-motion: reduce) {
+.academy-bg a,
+.academy-bg button:not(:disabled),
+.academy-bg [role="button"]:not(:disabled),
+.academy-bg [role="tab"],
+.academy-bg summary,
+.academy-bg label[for] { transition: none; }
 }
 .academy-bg button:disabled,
 .academy-bg [role="button"]:disabled,
@@ -3810,6 +3831,22 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 .ax-enter-back, .academy-slide-in-left { animation: ax-enter-back var(--ax-dur) var(--ax-ease) both }
 .ax-page { animation: ax-enter-page var(--ax-dur-page, 420ms) var(--ax-ease) both }
 .ax-rise { animation: ax-enter var(--ax-dur) var(--ax-ease) both; animation-delay: calc(var(--ax-i, 0) * 55ms) }
+
+/* The same staggered entry the home page has, for the collections on every
+   other page. The home page set --ax-i by hand in its markup; a list does not
+   need to, because nth-child can carry the delay. Four steps and then flat:
+   past that the last card is waiting on an animation nobody is watching. */
+.lg__grid > li,
+.rd-ledger > .rd-row,
+.pf-sec,
+.sh-li,
+.siem-table > li {
+  animation: ax-enter var(--ax-dur) var(--ax-ease) both;
+}
+.lg__grid > li:nth-child(1), .rd-ledger > .rd-row:nth-child(1), .pf-sec:nth-child(1), .sh-li:nth-child(1), .siem-table > li:nth-child(1) { animation-delay: 0ms }
+.lg__grid > li:nth-child(2), .rd-ledger > .rd-row:nth-child(2), .pf-sec:nth-child(2), .sh-li:nth-child(2), .siem-table > li:nth-child(2) { animation-delay: 55ms }
+.lg__grid > li:nth-child(3), .rd-ledger > .rd-row:nth-child(3), .pf-sec:nth-child(3), .sh-li:nth-child(3), .siem-table > li:nth-child(3) { animation-delay: 110ms }
+.lg__grid > li:nth-child(n+4), .rd-ledger > .rd-row:nth-child(n+4), .pf-sec:nth-child(n+4), .sh-li:nth-child(n+4), .siem-table > li:nth-child(n+4) { animation-delay: 165ms }
 .ax-drawer__scrim { animation: ax-scrim-in var(--ax-dur) var(--ax-ease) both }
 .ax-drawer__panel { animation: ax-drawer-in var(--ax-dur) var(--ax-ease) both; background: #fff; color: #0f172a; }
 .academy-bg[data-academy-theme="dark"] .ax-drawer__panel { background: #000; color: #e8eef8; }
@@ -3817,6 +3854,7 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   .ax-enter, .ax-enter-fwd, .ax-enter-back, .ax-page, .ax-rise,
   .academy-slide-in-right, .academy-slide-in-left,
   .ax-drawer__scrim, .ax-drawer__panel,
+  .lg__grid > li, .rd-ledger > .rd-row, .pf-sec, .sh-li, .siem-table > li,
   .academy-prose .ad-flag--shown { animation: none }
 }
 
