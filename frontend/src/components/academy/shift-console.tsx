@@ -205,7 +205,7 @@ function ShiftConsoleInner() {
       </div>
     );
 
-  if (shift?.status === "done" && shift.report) return <ShiftReport theme={theme} report={shift.report} onAgain={() => post({ action: "start" })} busy={busy} />;
+  if (shift?.status === "done" && shift.report) return <ShiftReport theme={theme} report={shift.report} onAgain={() => post({ action: "start" })} busy={busy} error={error} />;
   if (active && shift) return <ActiveShift theme={theme} shift={shift} now={now} busy={busy} error={error} post={post} />;
 
   return <ShiftIntro theme={theme} labState={labState} busy={busy} error={error} onStart={() => post({ action: "start" })} onRefresh={load} />;
@@ -671,7 +671,7 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
 
 // ---- report ---------------------------------------------------------------
 
-function ShiftReport({ theme, report, onAgain, busy }: { theme: "light" | "dark"; report: Report; onAgain: () => void; busy: boolean }) {
+function ShiftReport({ theme, report, onAgain, busy, error }: { theme: "light" | "dark"; report: Report; onAgain: () => void; busy: boolean; error: string | null }) {
   const pct = report.maxScore ? Math.round((report.totalScore / report.maxScore) * 100) : 0;
   const R = 56;
   const C = 2 * Math.PI * R;
@@ -722,6 +722,9 @@ function ShiftReport({ theme, report, onAgain, busy }: { theme: "light" | "dark"
           </button>
           <Link href="/range" className="sh-report__leave"><ArrowLeft className="h-3.5 w-3.5" /> Back to Range</Link>
         </div>
+        {/* A new shift needs the hosted lab connected. Without this the Start
+            button spun and stopped with nothing said. */}
+        {error && <p className="sh-error">{error}</p>}
       </div>
     </div>
   );
