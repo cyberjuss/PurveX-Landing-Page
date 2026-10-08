@@ -217,6 +217,11 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 labsListOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
               }`}
             >
+              {/* One wrapper, so the grid has a single row to collapse. The week
+                  groups inside it would otherwise land in auto-sized implicit
+                  rows that 0fr never touches, which left a gap under a closed
+                  Labs section. */}
+              <div className="min-h-0 overflow-hidden">
               {labWeeks.map((group) => (
               <Fragment key={group.entrySlug}>
               <p className="ax-labweek">{group.label}</p>
@@ -245,6 +250,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               </ul>
               </Fragment>
               ))}
+              </div>
             </div>
           </div>
         );
