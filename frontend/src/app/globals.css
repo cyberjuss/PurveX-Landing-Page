@@ -2831,10 +2831,12 @@ body:has(.lp) {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: radial-gradient(rgba(16,25,46,.11) 2px, transparent 2px);
-  background-size: 26px 26px;
-  mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%);
-  animation: academy-print-live 5.5s ease-in-out infinite;
+  /* A pinch of the accent as a soft blur at the top of the page, in both
+     light and dark, fading into the page colour. --rd-accent is purple in
+     each theme. */
+  background-image: radial-gradient(ellipse 130% 90% at 50% -15%, color-mix(in srgb, var(--rd-accent) 14%, transparent) 0%, color-mix(in srgb, var(--rd-accent) 4%, transparent) 35%, transparent 72%);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 @keyframes academy-print-live {
   0%, 100% { opacity: 0.42; }
@@ -3940,7 +3942,7 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   /* A smooth silky black instead of the printed dot grid: one soft sheen at
      the top fading into pure black, no texture and no pulse, so the page
      reads like the tour card's surface. */
-  background-image: radial-gradient(ellipse 130% 90% at 50% -15%, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 35%, transparent 72%);
+  background-image: radial-gradient(ellipse 130% 90% at 50% -15%, color-mix(in srgb, var(--rd-accent) 18%, transparent) 0%, color-mix(in srgb, var(--rd-accent) 6%, transparent) 35%, transparent 72%);
   background-size: 100% 100%;
   background-repeat: no-repeat;
   mask-image: none;
