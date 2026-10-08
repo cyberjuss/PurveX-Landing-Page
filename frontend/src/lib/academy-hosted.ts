@@ -550,8 +550,17 @@ export async function hostedLabStatus(userId: string): Promise<HostedLabStatus> 
 
 export async function startHostedLab(userId: string): Promise<void> {
   const row = await loadHostedLab(userId);
-  const inst = row && row.instanceId !== POD_RESERVED ? await describe(row.instanceId).catch(() => null) : null;
+  // Not caught on purpose. A describe that throws means AWS could not be
+  // reached, which is not the same thing as the lab being gone, and treating
+  // the two alike is what left five domain controllers running: the call
+  // failed, the branch below built a second pod, and the row stopped naming
+  // the first one. Failing the Start is the cheaper mistake.
+  const inst = row && row.instanceId !== POD_RESERVED ? await describe(row.instanceId) : null;
   if (!row || !inst || inst.state === "terminated" || inst.state === "shutting-down") {
+    // Whatever the old row still points at is about to stop being tracked, so
+    // take it down first. A machine nothing in the database names is a machine
+    // no stop button and no reaper can ever reach again.
+    if (row) await terminatePod(row);
     await chargeSession(userId);
     try {
       await launch(userId);
@@ -605,6 +614,18 @@ async function stopPod(row: HostedLabRow): Promise<boolean> {
   return stopped;
 }
 
+/** Every machine a row still names, gone. Used when a row is about to be
+ *  replaced or dropped: after that moment nothing knows these instances exist,
+ *  so this is the last chance to stop paying for them. Best effort, because a
+ *  machine that is already terminated must not block the launch behind it. */
+async function terminatePod(row: HostedLabRow): Promise<void> {
+  const ids = podInstanceIds(row);
+  if (!ids.length) return;
+  await ec2()
+    .send(new TerminateInstancesCommand({ InstanceIds: ids }))
+    .catch((err) => console.error("pod terminate failed", ids.join(","), err instanceof Error ? err.message : err));
+}
+
 export async function stopHostedLab(userId: string): Promise<void> {
   const row = await loadHostedLab(userId);
   if (!row) return;
@@ -632,8 +653,7 @@ export async function resetHostedLab(userId: string): Promise<void> {
   await chargeSession(userId);
   const row = await loadHostedLab(userId);
   if (row) {
-    const ids = podInstanceIds(row);
-    if (ids.length) await ec2().send(new TerminateInstancesCommand({ InstanceIds: ids })).catch(() => {});
+    await terminatePod(row);
     await refundUnused(userId, row.stopAt);
     await deleteHostedLab(userId);
   }
