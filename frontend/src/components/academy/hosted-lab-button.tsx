@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { ArrowUpRight, Check, Copy, Eye, Info, LifeBuoy, Loader2, RotateCcw, Server } from "lucide-react";
+import { ArrowUpRight, Check, Copy, Eye, EyeOff, Info, LifeBuoy, Loader2, RotateCcw, Server } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { openHelp } from "@/components/academy/get-help";
 import { LabBriefing, labBriefed, markLabBriefed } from "@/components/academy/lab-briefing";
@@ -325,11 +325,30 @@ function StartTracker({ status }: { status: Status }) {
  * sitting in the page for a whole session, and hidden again when the panel
  * closes.
  */
+/** How long a revealed password stays on screen before it hides itself. */
+const SECRET_VISIBLE_MS = 90_000;
+
 function LinuxSignIn() {
   const [creds, setCreds] = useState<{ username: string; password: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // Students demonstrate these labs on a shared screen, and a class watches a
+  // recording of one later. A password that stays up until the panel closes is
+  // a password that ends up in someone's video. It goes away on its own, and
+  // Show brings it straight back.
+  useEffect(() => {
+    if (!creds) return;
+    const t = window.setTimeout(() => setCreds(null), SECRET_VISIBLE_MS);
+    return () => window.clearTimeout(t);
+  }, [creds]);
+
+  function hide() {
+    setCreds(null);
+    setCopied(false);
+    setErr(null);
+  }
 
   async function reveal() {
     setLoading(true);
@@ -370,10 +389,13 @@ function LinuxSignIn() {
         <span>Sudo password</span>
         {creds ? (
           <>
-            <code className="hl__creds__secret">{creds.password}</code>
             <button type="button" className="hl__creds__btn" onClick={copy}>
               {copied ? <Check className="h-3 w-3" aria-hidden /> : <Copy className="h-3 w-3" aria-hidden />}
               {copied ? "Copied" : "Copy"}
+            </button>
+            <button type="button" className="hl__creds__btn" onClick={hide}>
+              <EyeOff className="h-3 w-3" aria-hidden />
+              Hide
             </button>
           </>
         ) : (
@@ -383,9 +405,11 @@ function LinuxSignIn() {
           </button>
         )}
       </p>
+      {creds && <code className="hl__creds__secret">{creds.password}</code>}
       {creds && (
         <p className="hl__creds__why">
-          User <code>student</code>. The desktop is already signed in.
+          User <code>student</code>. The desktop is already signed in. This hides itself in a
+          minute and a half.
         </p>
       )}
       {err && <p className="hl__creds__err" role="alert">{err}</p>}

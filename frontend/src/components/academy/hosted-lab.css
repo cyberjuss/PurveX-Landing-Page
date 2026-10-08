@@ -110,9 +110,21 @@ html[data-academy-theme="dark"] .hl-note,
 }
 .hl .hl__creds__row > span { margin-right: auto; }
 .hl .hl__creds code { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note); color: var(--hl-ink); }
-/* It wraps rather than truncating: a password you cannot see all of is no use,
-   and selecting it by hand is the fallback when the clipboard is blocked. */
-.hl .hl__creds__secret { overflow-wrap: anywhere; user-select: all; }
+/* On its own line, not wedged between the label and the buttons. It wraps
+   rather than truncating: a password you cannot see all of is no use, and
+   selecting it by hand is the fallback when the clipboard is blocked. Filled
+   and hairlined like the panel's other marks, because while it is up it is the
+   one thing on the panel you are meant to be reading. */
+.hl .hl__creds__secret {
+  display: block; margin-top: 9px; padding: 9px 11px;
+  overflow-wrap: anywhere; user-select: all;
+  font-size: var(--ty-body); letter-spacing: 0.02em; color: var(--hl-ink);
+  background: color-mix(in srgb, var(--hl-accent) var(--sf-mark-fill, 14%), transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--hl-accent) var(--sf-mark-line, 30%), transparent);
+  animation: hl-secret-in var(--ax-dur, 240ms) var(--ax-ease, ease-out) both;
+}
+@keyframes hl-secret-in { from { opacity: 0; transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .hl .hl__creds__secret { animation: none; } }
 .hl .hl__creds__why { margin: 6px 0 0; font-size: var(--ty-micro); line-height: 1.4; color: var(--hl-ink-3); }
 .hl .hl__creds__why code { font-size: var(--ty-micro); color: var(--hl-ink-2); }
 .hl .hl__creds__btn {
