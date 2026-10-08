@@ -3937,7 +3937,16 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   color: var(--pvrx-text-primary-light);
 }
 .academy-bg[data-academy-theme="dark"]::before {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.09) 2px, transparent 2px);
+  /* A smooth silky black instead of the printed dot grid: one soft sheen at
+     the top fading into pure black, no texture and no pulse, so the page
+     reads like the tour card's surface. */
+  background-image: radial-gradient(ellipse 90% 55% at 50% -8%, rgba(255, 255, 255, 0.035), transparent 62%);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  mask-image: none;
+  -webkit-mask-image: none;
+  animation: none;
+  opacity: 1;
 }
 
 /* surfaces */
