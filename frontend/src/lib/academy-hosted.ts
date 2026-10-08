@@ -348,6 +348,13 @@ export function linuxCloudInit(dcIp: string, password: string): string {
     "export DEBIAN_FRONTEND=noninteractive",
     "apt-get update -y",
     "apt-get install -y --no-install-recommends realmd sssd sssd-tools adcli samba-common-bin krb5-user packagekit oddjob oddjob-mkhomedir libnss-sss libpam-sss ldap-utils dnsutils net-tools auditd curl",
+    // Packet capture for the Week 3 labs. Wireshark asks at install time whether
+    // non-root users may capture, and a noninteractive install answers no, which
+    // leaves dumpcap without the capability and the tool listing no interfaces.
+    // Preseed yes, then put student in the group the postinst grants capture to.
+    `echo ${sh("wireshark-common wireshark-common/install-setuid boolean true")} | debconf-set-selections`,
+    "apt-get install -y --no-install-recommends tcpdump tshark wireshark",
+    "usermod -aG wireshark student",
     // A member server with nothing to serve is a thin lab, so it has a web server
     // and a database to look after, the way a real one would.
     "apt-get install -y --no-install-recommends nginx",

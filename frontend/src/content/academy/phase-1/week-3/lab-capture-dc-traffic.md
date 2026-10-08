@@ -1,166 +1,177 @@
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
-<p>A domain controller is talking to the network constantly. If you captured a few seconds of it, would you recognise what the conversations are?</p>
+<p>From one machine, can you capture and read a conversation it is having with another? And what can that machine's capture never show you?</p>
 </div>
 
-**Situation:** Analysts read network traffic every day, but most people first meet it as a textbook diagram rather than a real capture from a real machine. Traffic you have never captured yourself is traffic you cannot read under pressure.
+**Situation:** Analysts rarely sit on the server they are investigating. They watch from a separate machine and read the traffic as it crosses the wire. Learning to capture from one box the conversation it holds with another is the everyday shape of the work.
 
-**Task:** Capture a short window of live traffic on the domain controller, turn it into something readable, and find the handshakes, ports and protocols the week covered. Predict what you expect to see before you look.
+**Task:** On the Ubuntu server, open Wireshark, make the machine talk to the domain controller, and capture the exchange. Find the handshake, the ports and the protocols from the domain controller's own replies. Predict what you will see, and what the capture cannot contain, before you start.
 
-**What you need:** Your hosted lab running, and the domain controller desktop open. You sign in as Administrator, so nothing needs installing. The capture tool, Packet Monitor, ships with Windows Server.
+**What you need:** Your hosted lab running, with both machines started. Wireshark is already installed on the Ubuntu desktop. The two machines must be able to reach each other, so if a later step cannot connect, see Troubleshooting at the end.
 
 ### Before You Start
 
 Commit to an answer before you capture anything. Nothing is marked yet. The capture settles each one.
 
 <div class="ad-check ad-check--predict" data-check="w3e-p1">
-<p class="ad-check__q">A domain controller sitting idle, with nobody logged in, on the network. How much traffic is it sending?</p>
-<button type="button" class="ad-check__opt" data-i="0">Almost none, since nobody is using it</button>
-<button type="button" class="ad-check__opt" data-i="1">A steady stream of its own background traffic</button>
-<p class="ad-check__note">Locked in. You will capture a few seconds and count what comes back.</p>
+<p class="ad-check__q">Wireshark on the Ubuntu box captures its network card. Which traffic can it see?</p>
+<button type="button" class="ad-check__opt" data-i="0">Every machine's traffic on the whole network</button>
+<button type="button" class="ad-check__opt" data-i="1">Only traffic this machine is part of</button>
+<p class="ad-check__note">Locked in. You will test this by capturing a conversation you start yourself.</p>
 </div>
 
 <div class="ad-check ad-check--predict" data-check="w3e-p2">
-<p class="ad-check__q">Every TCP conversation opens the same way. What are the first three packets?</p>
-<button type="button" class="ad-check__opt" data-i="0">SYN, then SYN-ACK, then ACK</button>
-<button type="button" class="ad-check__opt" data-i="1">A single CONNECT packet</button>
-<button type="button" class="ad-check__opt" data-i="2">The data goes straight across, no setup</button>
-<p class="ad-check__note">Locked in. You will find this exact pattern in your own capture.</p>
+<p class="ad-check__q">You run a command on Ubuntu that queries the domain controller. What are the first three packets of that TCP connection?</p>
+<button type="button" class="ad-check__opt" data-i="0">SYN, then SYN-ACK back, then ACK</button>
+<button type="button" class="ad-check__opt" data-i="1">The query goes straight across, no setup</button>
+<button type="button" class="ad-check__opt" data-i="2">A single CONNECT packet</button>
+<p class="ad-check__note">Locked in. You will find this exact pattern filtered to the domain controller.</p>
 </div>
 
 <div class="ad-check ad-check--predict" data-check="w3e-p3">
-<p class="ad-check__q">You see traffic on port 53. Before reading anything else, what service is almost certainly involved?</p>
-<button type="button" class="ad-check__opt" data-i="0">Web browsing</button>
-<button type="button" class="ad-check__opt" data-i="1">DNS, name resolution</button>
-<button type="button" class="ad-check__opt" data-i="2">Email</button>
-<p class="ad-check__note">Locked in. The port numbers you learned this week are about to do real work.</p>
+<p class="ad-check__q">You send an LDAP query to the domain controller. Which port will the connection use?</p>
+<button type="button" class="ad-check__opt" data-i="0">80</button>
+<button type="button" class="ad-check__opt" data-i="1">389</button>
+<button type="button" class="ad-check__opt" data-i="2">443</button>
+<p class="ad-check__note">Locked in. The port numbers from this week are about to appear in a real capture.</p>
 </div>
 
-### Find the Machine First
+### Find the Domain Controller
 
-Open a PowerShell window on the domain controller. Right-click Start and choose Windows PowerShell (Admin). First confirm which machine you are on and its address.
+Open a terminal on the Ubuntu desktop. The domain controller is already known to this machine by name, so look up its address.
 
-```powershell
-hostname
-ipconfig | Select-String "IPv4"
+```bash
+getent hosts dc01
 ```
 
-Write down the IPv4 address. Every packet you capture either starts or ends at this machine.
+Write down the address it prints. Every packet in this lab goes to or from it.
 
 <div class="ad-shots">
 <figure class="ad-shot">
-<img src="/academy/week-3/PLACEHOLDER-dc-ipconfig.png" alt="PowerShell on the domain controller showing the hostname and IPv4 address" />
-<figcaption>Screenshot 1. [ADD IMAGE] The domain controller and its address.</figcaption>
+<img src="/academy/week-3/PLACEHOLDER-getent-dc.png" alt="Terminal on the Ubuntu server showing the domain controller's name resolved to an IP address" />
+<figcaption>Screenshot 1. [ADD IMAGE] The domain controller's address, from the Ubuntu box.</figcaption>
 </figure>
 </div>
 
-### Capture a Few Seconds
+### Start Wireshark on the Right Interface
 
-Packet Monitor records every packet that crosses the machine. Start it, wait about thirty seconds while the domain controller does its normal background work, then stop it.
+Open Wireshark from the desktop. Applications → Internet → Wireshark. It lists the network interfaces it can capture on.
 
-```powershell
-pktmon start --capture --pkt-size 0
-Start-Sleep -Seconds 30
-pktmon stop
-```
-
-The capture lands in the current folder as `PktMon.etl`. That file is not readable yet, which is the next step.
+Choose the interface named `ens5`, the Ubuntu server's network card. Double-click it to start capturing. Packets begin scrolling immediately.
 
 <div class="ad-shots">
 <figure class="ad-shot">
-<img src="/academy/week-3/PLACEHOLDER-pktmon-capture.png" alt="PowerShell showing pktmon start and stop with the capture file reported" />
-<figcaption>Screenshot 2. [ADD IMAGE] Thirty seconds of the machine's own traffic.</figcaption>
+<img src="/academy/week-3/PLACEHOLDER-wireshark-interface.png" alt="Wireshark welcome screen with the ens5 interface selected" />
+<figcaption>Screenshot 2. [ADD IMAGE] Capturing on ens5, the Ubuntu card.</figcaption>
 </figure>
 </div>
 
-### Make It Readable
+### Make the Two Machines Talk
 
-Convert the capture to a plain text log you can scroll through.
+Leave Wireshark running. In the terminal, send the domain controller two kinds of request. The first asks it to resolve a name, the second asks its directory for its naming contexts.
 
-```powershell
-pktmon format PktMon.etl -o capture.txt
-notepad capture.txt
+```bash
+dig @dc01 purvexfinancial.local
+ldapsearch -x -H ldap://dc01 -s base -b "" namingContexts
 ```
 
-Each line is one packet with its time, its source and destination addresses, the ports and the protocol. Scroll through and notice how much is here from a machine nobody is actively using.
+Each command produces a short conversation with the domain controller, and Wireshark records both as they happen.
 
 <div class="ad-shots">
 <figure class="ad-shot">
-<img src="/academy/week-3/PLACEHOLDER-capture-text.png" alt="Notepad showing the formatted packet capture with addresses, ports and protocols" />
-<figcaption>Screenshot 3. [ADD IMAGE] The capture as readable lines.</figcaption>
+<img src="/academy/week-3/PLACEHOLDER-dc-queries.png" alt="Terminal showing a dig query and an ldapsearch query to the domain controller returning results" />
+<figcaption>Screenshot 3. [ADD IMAGE] Two requests to the domain controller.</figcaption>
 </figure>
 </div>
 
-### Find the Handshake
+### Filter to the Domain Controller
 
-Every TCP conversation starts with the three-way handshake from this week. Look for a packet flagged SYN, followed by one flagged SYN-ACK coming back, then an ACK. That is one connection being set up before any real data moves.
+Wireshark is now full of unrelated packets. In the filter bar at the top, type the filter below, using the address you wrote down, and press Enter.
 
-Pick one conversation and follow its first three packets in order. The two addresses stay the same while the flags change.
-
-### Map the Ports
-
-Now read the port numbers. Match what you see against the common ports from this week.
-
-| Port | Service |
-| ----- | ----- |
-| 53 | DNS |
-| 88 | Kerberos |
-| 389 | LDAP |
-| 445 | SMB |
-
-A domain controller uses all of these constantly, so a short capture will show several. Each port is a service answering on the machine, which is the idea from the Common Ports lesson in front of you as real traffic.
-
-### For the Job
-
-On a real server you rarely read a text dump. You open the capture in Wireshark, the tool almost every analyst job expects. Packet Monitor can hand Wireshark a file it understands.
-
-```powershell
-pktmon pcapng PktMon.etl -o capture.pcapng
+```
+ip.addr == 10.60.1.x
 ```
 
-If Wireshark is on the machine, open `capture.pcapng` in it. The same packets appear with colour, filters and a readable handshake view. The capture is yours either way.
+Only the traffic to and from the domain controller remains. This is the conversation you just created, and nothing else.
+
+<div class="ad-shots">
+<figure class="ad-shot">
+<img src="/academy/week-3/PLACEHOLDER-wireshark-filtered.png" alt="Wireshark filtered to the domain controller's address showing DNS and LDAP packets" />
+<figcaption>Screenshot 4. [ADD IMAGE] Only the domain controller's traffic.</figcaption>
+</figure>
+</div>
+
+### Find the Handshake and the Ports
+
+Look at the Protocol column and the Info column. You will see several things from this week.
+
+* A TCP handshake opening the LDAP connection. Find the packet marked SYN, the SYN-ACK coming back from the domain controller, and the ACK.
+* The LDAP query itself on port 389, after the handshake.
+* The DNS request and reply on port 53, which is UDP and needs no handshake at all.
+
+Notice that DNS did its whole job in two packets while LDAP set up a connection first. That is the difference between UDP and TCP, seen once rather than described.
+
+### The Command-Line View
+
+Wireshark has a terminal twin called tshark, which prints the same capture as text. It is what you reach for on a server with no desktop, and the answer is a line you can read rather than a screen to scan.
+
+```bash
+sudo tshark -i ens5 -f "host dc01" -c 20
+```
+
+Run that, then repeat the two queries from another terminal. tshark prints twenty packets of the same conversation.
 
 ### Check Yourself
 
 Answer from what you captured, not from what you remember reading.
 
 <div class="ad-check" data-check="w3e-c1" data-answer="1">
-<p class="ad-check__q">Your idle domain controller over thirty seconds produced roughly what?</p>
-<button type="button" class="ad-check__opt" data-i="0">Almost nothing</button>
-<button type="button" class="ad-check__opt" data-i="1">A steady stream of background packets</button>
-<p class="ad-check__note">A domain controller is never quiet. It answers DNS, Kerberos and LDAP for the whole domain, which is why a real baseline capture is busy even with nobody logged in.</p>
+<p class="ad-check__q">Could this Ubuntu capture show you a conversation between the domain controller and a third machine it never involved?</p>
+<button type="button" class="ad-check__opt" data-i="0">Yes, it sees everything on the network</button>
+<button type="button" class="ad-check__opt" data-i="1">No, it only sees traffic it is part of</button>
+<p class="ad-check__note">A machine captures its own card. On a switched network it sees only what it sends or receives, which is why analysts need a capture from the right place.</p>
 </div>
 
 <div class="ad-check" data-check="w3e-c2" data-answer="0">
-<p class="ad-check__q">In a TCP handshake you followed, what was the second packet, coming back from the other side?</p>
+<p class="ad-check__q">For the LDAP connection, which packet came back from the domain controller to open the handshake?</p>
 <button type="button" class="ad-check__opt" data-i="0">SYN-ACK</button>
 <button type="button" class="ad-check__opt" data-i="1">A second SYN</button>
-<button type="button" class="ad-check__opt" data-i="2">The first line of data</button>
-<p class="ad-check__note">SYN out, SYN-ACK back, ACK out. Three packets to agree the connection before a single byte of real data moves.</p>
+<button type="button" class="ad-check__opt" data-i="2">The directory results</button>
+<p class="ad-check__note">The Ubuntu box sent SYN, the domain controller answered SYN-ACK, the Ubuntu box sent ACK. Only then did the LDAP query move.</p>
 </div>
 
-<div class="ad-check" data-check="w3e-c3" data-answer="2">
-<p class="ad-check__q">You find a burst of traffic on port 88. What is the machine most likely doing?</p>
-<button type="button" class="ad-check__opt" data-i="0">Serving a web page</button>
-<button type="button" class="ad-check__opt" data-i="1">Sending email</button>
-<button type="button" class="ad-check__opt" data-i="2">Handling Kerberos authentication</button>
-<p class="ad-check__note">Port 88 is Kerberos, the ticket system a domain uses to prove who an account is. Heavy traffic here is normal on a domain controller.</p>
+<div class="ad-check" data-check="w3e-c3" data-answer="1">
+<p class="ad-check__q">The DNS request and reply needed how many packets, and why?</p>
+<button type="button" class="ad-check__opt" data-i="0">Three, because every service uses a handshake</button>
+<button type="button" class="ad-check__opt" data-i="1">Two, because DNS uses UDP and skips the handshake</button>
+<button type="button" class="ad-check__opt" data-i="2">Twenty, one per name</button>
+<p class="ad-check__note">DNS runs over UDP, which has no handshake. One question, one answer, done. LDAP runs over TCP, so it sets up a connection first.</p>
 </div>
 
 <div class="ad-check" data-check="w3e-c4" data-answer="1">
-<p class="ad-check__q">Why convert the capture to pcapng as the last step?</p>
-<button type="button" class="ad-check__opt" data-i="0">The text log is wrong and pcapng fixes it</button>
-<button type="button" class="ad-check__opt" data-i="1">So it opens in Wireshark, the tool a real job uses</button>
-<button type="button" class="ad-check__opt" data-i="2">To make the file smaller</button>
-<p class="ad-check__note">The text dump is fine for a quick look. On the job you read captures in Wireshark, and pcapng is the format it expects.</p>
+<p class="ad-check__q">When would you reach for tshark instead of the Wireshark window?</p>
+<button type="button" class="ad-check__opt" data-i="0">When the capture is wrong and needs fixing</button>
+<button type="button" class="ad-check__opt" data-i="1">On a server with no desktop, where you need a readable line</button>
+<button type="button" class="ad-check__opt" data-i="2">Never, the window is always better</button>
+<p class="ad-check__note">Most servers have no desktop. tshark gives you the same capture as text over an SSH session, which is where a lot of real capture work happens.</p>
 </div>
+
+### Troubleshooting
+
+If `dig` or `ldapsearch` hangs or cannot reach the domain controller, the two machines cannot talk to each other yet. Test it first.
+
+```bash
+ping -c 2 dc01
+```
+
+No reply means the pod's own firewall is blocking traffic between the two machines, and the labs that use both will not work until that is fixed. A reply means the path is open and the capture steps will work.
 
 ### Take It Further
 
-You capture thirty seconds on the domain controller and see steady traffic to addresses inside your own network. Then one connection goes out to an address you do not recognise, on a port nothing here should be using.
+You capture from the Ubuntu box and see its conversation with the domain controller clearly. Your manager asks you to also capture what the domain controller says to a third server during a backup job.
 
-Say what makes that one connection worth a second look, and name the two things in the capture you would write down about it.
+Say why the Ubuntu capture cannot show that, and name where you would have to capture instead to see it.
 
 ### Why It Matters
 
-Every investigation that touches the network starts with a capture, and the first skill is telling ordinary traffic from the one line that does not belong. You cannot spot the odd connection until you have seen enough normal ones to know what normal looks like, which is exactly what a baseline capture like this one gives you.
+Knowing where to capture is as important as knowing how to read the result. A capture taken in the wrong place is empty of the very traffic you were sent to find, and plenty of investigations stall on exactly that. The habit of capturing a conversation you understand, from a machine that is part of it, is where the skill starts.
