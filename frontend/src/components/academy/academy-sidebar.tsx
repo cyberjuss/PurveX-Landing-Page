@@ -181,6 +181,17 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         // the end of it. They are a different kind of work: the home lab is an
         // evening of building, a lab is a task you finish in twenty minutes.
         const phaseLabs = labLinksOf([phase]);
+        // Grouped under the week that assigns them. Five labs from three weeks
+        // in one flat list told a student on week 2 nothing about which two
+        // were theirs. Course order is already the order labLinksOf returns.
+        const labWeeks: { entrySlug: string; label: string; labs: typeof phaseLabs }[] = [];
+        for (const lab of phaseLabs) {
+          const group = labWeeks.find((g) => g.entrySlug === lab.entrySlug);
+          if (group) group.labs.push(lab);
+          // "Week 2 -- Encryption & Hashing" is too long for the rail, and the
+          // part before the dash is the part that locates it.
+          else labWeeks.push({ entrySlug: lab.entrySlug, label: lab.entryTitle.split("—")[0].trim() || lab.entryTitle, labs: [lab] });
+        }
         const labsListKey = `${phase.slug}:labslist`;
         const labsListOpen = manualOpen.has(labsListKey)
           ? !phaseLabs.some((l) => pathname === `/range/labs/${l.slug}`)
@@ -206,8 +217,11 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 labsListOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
               }`}
             >
+              {labWeeks.map((group) => (
+              <Fragment key={group.entrySlug}>
+              <p className="ax-labweek">{group.label}</p>
               <ul className="ax-list flex flex-col overflow-hidden">
-                {phaseLabs.map((lab) => {
+                {group.labs.map((lab) => {
                   const href = `/range/labs/${lab.slug}`;
                   // The same tick a finished week gets. Without it this list,
                   // which is now the way into every lab, was the one place in
@@ -229,6 +243,8 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                   );
                 })}
               </ul>
+              </Fragment>
+              ))}
             </div>
           </div>
         );
