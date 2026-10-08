@@ -77,7 +77,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
 
   async function handleGoogle() {
     if (busyRef.current) return;
-    if (!agreed) {
+    if (mode === "signup" && !agreed) {
       setError(TERMS_ERROR);
       return;
     }
@@ -101,7 +101,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
       setError("Enter a valid email address.");
       return;
     }
-    if (!agreed) {
+    if (mode === "signup" && !agreed) {
       setError(TERMS_ERROR);
       return;
     }
@@ -216,7 +216,10 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
               aria-invalid={Boolean(error) && error !== TERMS_ERROR}
               disabled={busy}
             />
-            {!knownAgreed && <AuthTerms checked={agreed} onChange={acceptTerms} disabled={busy} />}
+            {/* Terms are a signup-time action. A returning user signing in
+                already agreed when they created the account, so they never see
+                this box. */}
+            {mode === "signup" && !knownAgreed && <AuthTerms checked={agreed} onChange={acceptTerms} disabled={busy} />}
             <AuthError>{error}</AuthError>
             <button type="submit" className="am-primary mt-4" disabled={busy}>
               Continue
