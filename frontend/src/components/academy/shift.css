@@ -271,7 +271,7 @@
 .sh-back { justify-self: start; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 2px; font-size: var(--ty-note); font-weight: 600; color: var(--rd-ink-3); text-decoration: none; transition: color var(--ax-dur-fast); }
 .sh-back:hover { color: var(--rd-ink); }
 /* Home tucked into the top-right corner, out of the reading path. */
-.sh-corner-home { position: absolute; top: 20px; right: 22px; z-index: 2; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 999px; color: var(--rd-ink-3); text-decoration: none; transition: color var(--ax-dur-fast), background var(--ax-dur-fast); }
+.sh-corner-home { position: absolute; top: 20px; right: 22px; z-index: 2; display: grid; place-items: center; width: 36px; height: 36px; color: var(--rd-ink-3); text-decoration: none; transition: color var(--ax-dur-fast), background var(--ax-dur-fast); }
 .sh-corner-home:hover { color: var(--rd-ink); background: var(--rd-surface, rgba(180,200,255,0.06)); }
 .sh-intro h1 { margin: 4px 0 0; font-family: var(--font-display, inherit); font-size: clamp(28px, 5vw, 40px); font-weight: 700; letter-spacing: -0.03em; color: var(--rd-ink); }
 .sh-lede { margin: 0; font-size: var(--ty-lead); line-height: 1.62; color: var(--rd-ink-2); }

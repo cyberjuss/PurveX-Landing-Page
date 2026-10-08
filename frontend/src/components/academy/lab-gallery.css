@@ -30,7 +30,7 @@
   display: inline-flex; align-items: center; gap: 0.4rem;
   padding: 0.38rem 0.75rem; font: inherit; font-size: var(--ty-note); font-weight: 600;
   color: var(--rd-ink, #0f172a); background: var(--lg-card);
-  border: 1px solid var(--rd-line, #d9e2ec); border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--rd-line, #d9e2ec); cursor: pointer;
   transition: border-color var(--ax-dur-fast), color var(--ax-dur-fast), background var(--ax-dur-fast);
 }
 .lg__chip span { font-size: var(--ty-small); font-weight: 600; color: var(--rd-ink-2, #475569); }

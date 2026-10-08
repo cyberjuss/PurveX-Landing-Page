@@ -12,7 +12,7 @@
 .siem-top__title h1 { font-size: var(--ty-h3); margin: 0; line-height: 1.2; }
 .siem-top__title p { margin: 0.1rem 0 0; font-size: var(--ty-note); color: var(--rd-ink-2, #475569); }
 .siem-top__right { display: flex; align-items: center; gap: 0.6rem; }
-.siem-badge { font-size: var(--ty-micro); font-weight: 600; padding: 0.22rem 0.55rem; border-radius: 999px; background: color-mix(in srgb, var(--rd-accent, #5546e0) 14%, transparent); color: var(--rd-accent, #5546e0); }
+.siem-badge { font-size: var(--ty-micro); font-weight: 600; padding: 0.22rem 0.55rem; background: color-mix(in srgb, var(--rd-accent, #5546e0) 14%, transparent); color: var(--rd-accent, #5546e0); }
 .siem-case { font: inherit; font-size: var(--ty-body); padding: 0.4rem 0.6rem; border-radius: 0.6rem; border: 1px solid var(--rd-line, #d9e2ec); background: var(--rd-card, #fff); color: inherit; }
 
 .siem-story { margin: 0; padding: 0.85rem 1rem; background: color-mix(in srgb, var(--rd-accent, #5546e0) 7%, var(--rd-card, #fff)); border-radius: 0.8rem; font-size: var(--ty-body); line-height: 1.5; color: var(--rd-ink, #0f172a); }
@@ -39,7 +39,7 @@
 .siem-main { display: flex; flex-direction: column; gap: 0.6rem; min-width: 0; }
 .siem-examples { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
 .siem-examples > span { font-size: var(--ty-small); color: var(--rd-ink-2, #475569); }
-.siem-chip { font: inherit; font-size: var(--ty-small); padding: 0.28rem 0.6rem; border-radius: 999px; border: 1px solid var(--rd-line, #d9e2ec); background: var(--rd-card, #fff); color: var(--rd-ink, #0f172a); cursor: pointer; }
+.siem-chip { font: inherit; font-size: var(--ty-small); padding: 0.28rem 0.6rem; border: 1px solid var(--rd-line, #d9e2ec); background: var(--rd-card, #fff); color: var(--rd-ink, #0f172a); cursor: pointer; }
 .siem-chip:hover { border-color: var(--rd-accent, #5546e0); color: var(--rd-accent, #5546e0); }
 
 .siem-editor { border: 1px solid var(--rd-line, #d9e2ec); border-radius: 0.8rem; overflow: hidden; background: var(--rd-card, #fff); box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04); }

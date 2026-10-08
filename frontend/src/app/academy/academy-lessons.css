@@ -9,7 +9,6 @@
 .academy-prose details.academy-deeper {
   margin: 1.75rem 0 0;
   border: 1px solid var(--rd-line);
-  border-radius: 12px;
   background: color-mix(in srgb, var(--rd-ink, #0f172a) 3.5%, transparent);
   overflow: hidden;
   transition: border-color var(--ax-dur), background var(--ax-dur);

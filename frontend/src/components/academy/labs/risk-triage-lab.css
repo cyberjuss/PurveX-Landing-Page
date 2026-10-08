@@ -70,7 +70,7 @@
 .rt-ticket__head b { font-size: var(--ty-lead); font-weight: 650; letter-spacing: -0.01em; color: var(--rd-ink); }
 .rt-ticket__head small { display: inline-flex; align-items: center; gap: 6px; font-size: var(--ty-small); color: var(--rd-ink-3); }
 .rt-ticket__head p { margin-top: 7px; font-size: var(--ty-body); line-height: 1.6; color: var(--rd-ink-2); }
-.rt-tag { display: grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 8px; background: color-mix(in srgb, var(--rd-accent) 13%, transparent); font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); font-weight: 700; color: var(--rd-accent); }
+.rt-tag { display: grid; place-items: center; flex: none; width: 28px; height: 28px; background: color-mix(in srgb, var(--rd-accent) 13%, transparent); font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); font-weight: 700; color: var(--rd-accent); }
 
 /* One ticket at a time. */
 .rt-deck { display: grid; gap: 14px; min-width: 0; }
@@ -132,7 +132,7 @@
 .rt-depts td { padding: 9px 10px 9px 0; border-top: 1px solid var(--rd-line); vertical-align: top; line-height: 1.5; color: var(--rd-ink-2); }
 .rt-depts td:first-child { white-space: nowrap; }
 .rt-depts td b { font-weight: 650; color: var(--rd-ink); }
-.rt-crit { display: inline-block; margin-left: 8px; padding: 1px 7px; border-radius: 999px; background: color-mix(in srgb, var(--rd-bad) 13%, transparent); font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--rd-bad); vertical-align: 1px; }
+.rt-crit { display: inline-block; margin-left: 8px; padding: 1px 7px; background: color-mix(in srgb, var(--rd-bad) 13%, transparent); font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--rd-bad); vertical-align: 1px; }
 .rt-guide { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .rt-guide > div { display: grid; align-content: start; gap: 8px; padding: 14px 16px; border: 1px solid var(--rd-line); border-radius: var(--rt-ri); background: color-mix(in srgb, var(--rd-ink) 1.5%, transparent); }
 .rt-guide > div > b { font-size: var(--ty-micro); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rd-accent); }
@@ -160,7 +160,7 @@
 .rt-ref { display: grid; gap: 10px; padding: 16px; background: var(--rt-card); border: 1px solid var(--rd-line); border-radius: var(--rt-ri); box-shadow: var(--rt-shadow); }
 .rt-ref__title { font-size: var(--ty-micro); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rd-ink-3); }
 .rt-ref__cia { display: grid; gap: 8px; }
-.rt-ref__cia > div { display: grid; gap: 2px; padding: 10px 12px; border-radius: 9px; background: color-mix(in srgb, var(--rd-ink) 2.5%, transparent); }
+.rt-ref__cia > div { display: grid; gap: 2px; padding: 10px 12px; background: color-mix(in srgb, var(--rd-ink) 2.5%, transparent); }
 .rt-ref__cia b { font-size: var(--ty-note); font-weight: 650; color: var(--rd-ink); }
 .rt-ref__cia small { font-size: var(--ty-small); line-height: 1.45; color: var(--rd-ink-2); }
 .rt-ref__scale { display: grid; gap: 4px; margin: 0; }
@@ -180,7 +180,7 @@
 .rt-level .rt-choice button { padding: 9px 8px; }
 .rt-score > :first-child { container-type: inline-size; }
 @container (max-width: 420px) { .rt-level { grid-template-columns: 1fr; gap: 6px; } }
-.rt-risk { justify-self: start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px; font-size: var(--ty-small); font-weight: 600; }
+.rt-risk { justify-self: start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; font-size: var(--ty-small); font-weight: 600; }
 .rt-risk b { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note); }
 .rt-risk--high { background: color-mix(in srgb, var(--rd-bad) 13%, transparent); color: var(--rd-bad); }
 .rt-risk--medium { background: color-mix(in srgb, var(--rd-warn) 15%, transparent); color: var(--rd-warn); }
@@ -195,7 +195,7 @@
 .rt-matrix__axis { position: absolute; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-ink-3); }
 .rt-matrix__axis--y { left: 0; top: 50%; transform: translate(-40%, -50%) rotate(-90deg); }
 .rt-matrix__axis--x { bottom: 0; left: calc(18px + 54px); right: 0; text-align: center; }
-.rt-cell { position: relative; aspect-ratio: 1; padding: 5px; border-radius: 8px; }
+.rt-cell { position: relative; aspect-ratio: 1; padding: 5px; }
 .rt-cell--high { background: color-mix(in srgb, var(--rd-bad) 15%, transparent); }
 .rt-cell--medium { background: color-mix(in srgb, var(--rd-warn) 15%, transparent); }
 .rt-cell--low { background: color-mix(in srgb, var(--rd-good) 12%, transparent); }
@@ -216,7 +216,7 @@
 .rt-rank__title { display: grid; gap: 2px; font-size: var(--ty-body); font-weight: 600; color: var(--rd-ink); }
 .rt-rank__title small { font-size: var(--ty-small); font-weight: 500; color: var(--rd-bad); }
 .rt-rank__move { display: flex; gap: 4px; }
-.rt-rank__move button { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid var(--rd-line); border-radius: 8px; background: none; color: var(--rd-ink-2); cursor: pointer; transition: border-color var(--ax-dur-fast), color var(--ax-dur-fast); }
+.rt-rank__move button { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid var(--rd-line); background: none; color: var(--rd-ink-2); cursor: pointer; transition: border-color var(--ax-dur-fast), color var(--ax-dur-fast); }
 .rt-rank__move button:not(:disabled):hover { border-color: var(--rd-accent); color: var(--rd-accent); }
 .rt-rank__move button:disabled { opacity: 0.3; cursor: default; }
 .rt-lesson { padding: 15px 18px; border: 1px solid color-mix(in srgb, var(--rd-accent) 25%, var(--rd-line)); border-left: 3px solid var(--rd-accent); border-radius: var(--rt-ri); background: color-mix(in srgb, var(--rd-accent) 7%, var(--rt-card)); font-size: var(--ty-body); line-height: 1.6; color: var(--rd-ink); }
@@ -238,7 +238,7 @@
 .rt-debrief__top { display: flex; align-items: center; gap: 12px; }
 .rt-debrief__top > b { flex: 1; font-size: var(--ty-lead); font-weight: 650; color: var(--rd-ink); }
 .rt-debrief dl { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0; }
-.rt-debrief dl > div { display: grid; gap: 4px; padding: 10px 12px; border-radius: 9px; background: color-mix(in srgb, var(--rd-ink) 2.5%, transparent); }
+.rt-debrief dl > div { display: grid; gap: 4px; padding: 10px 12px; background: color-mix(in srgb, var(--rd-ink) 2.5%, transparent); }
 .rt-debrief dl > div.is-wrong { background: color-mix(in srgb, var(--rd-bad) 8%, transparent); }
 .rt-debrief dt { font-size: var(--ty-micro); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rd-ink-3); }
 .rt-debrief dd { display: flex; align-items: center; gap: 6px; margin: 0; font-size: var(--ty-note); font-weight: 600; color: var(--rd-ink); }
@@ -250,7 +250,7 @@
 .rt-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 6px -26px -28px; padding: 15px 26px; border-top: 1px solid var(--rd-line); background: var(--rt-bar); }
 .rt-tally { font-size: var(--ty-note); color: var(--rd-ink-3); }
 .rt-tally b { color: var(--rd-ink); }
-.rt-btn { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 22px; border-radius: 11px; border: 1px solid var(--rd-line); background: var(--rt-card); font-size: var(--ty-note); font-weight: 650; color: var(--rd-ink); cursor: pointer; transition: border-color var(--ax-dur-fast), background var(--ax-dur-fast), box-shadow var(--ax-dur-fast), transform var(--ax-dur-fast); }
+.rt-btn { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 22px; border: 1px solid var(--rd-line); background: var(--rt-card); font-size: var(--ty-note); font-weight: 650; color: var(--rd-ink); cursor: pointer; transition: border-color var(--ax-dur-fast), background var(--ax-dur-fast), box-shadow var(--ax-dur-fast), transform var(--ax-dur-fast); }
 .rt-btn:not(:disabled):hover { border-color: var(--rd-ink-3); box-shadow: var(--rt-shadow); }
 .rt-btn:active:not(:disabled) { transform: translateY(1px); }
 .rt-btn:disabled { opacity: 0.45; cursor: not-allowed; }
