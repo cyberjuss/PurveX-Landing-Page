@@ -20,19 +20,10 @@
   padding: 16px 20px;
   border: 1px solid var(--sf-line, var(--rd-line));
   background: var(--rd-surface);
+  /* Shiny black: a deep lift off the page and a thin light sheen along the top
+     edge, no colour wash. */
   box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9),
-              inset 0 1px 0 color-mix(in srgb, var(--rd-ink) 7%, transparent);
-}
-/* The purple shine across the top, the same wash the tour card carries, so the
-   bar reads as shiny black rather than a flat rectangle. */
-.iv-cc__bar::before {
-  content: "";
-  position: absolute;
-  top: -40%; left: 50%;
-  width: 150%; height: 90%;
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--rd-accent) 26%, transparent), transparent 52%);
-  pointer-events: none;
+              inset 0 1px 0 color-mix(in srgb, var(--rd-ink) 8%, transparent);
 }
 .iv-cc__bar > * { position: relative; }
 .iv-cc__id { min-width: 0; margin-right: auto; }
@@ -59,10 +50,10 @@
 .iv-cc__stats .is-warn { background: color-mix(in srgb, var(--rd-warn) 13%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-warn) 32%, transparent); }
 .iv-cc__stats .is-warn dd { color: var(--rd-warn); }
 /* In the dark theme the neutral ink fill read as grey boxes. Slick near-black
-   with a faint purple edge instead, so the stats match the tour card. */
+   with a thin light edge instead, no colour. */
 .academy-bg[data-academy-theme="dark"] .iv-cc__stats > div:not(.is-warn) {
-  background: #0d0b17;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 20%, transparent);
+  background: #0c0b11;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-ink) 12%, transparent);
 }
 .iv-cc__stats dd.rd-text-good { color: var(--rd-good); }
 .iv-cc__stats dd.rd-text-warn { color: var(--rd-warn); }
@@ -85,30 +76,17 @@
 @media (min-width: 1001px) { .iv-cc__side { position: sticky; top: calc(var(--ax-chrome, 0px) + 92px); } }
 
 /* ---- panels ------------------------------------------------------------- */
-/* The tour card's treatment on every panel: rich black, a crisp edge, a
-   whisper of the accent at the top so it is not a flat rectangle, a deep lift,
-   and a smooth rise in. Lighter wash than the hero bar, since there are
-   several of them. */
+/* Shiny black panels: rich near-black, a crisp edge, a deep lift off the page
+   and a thin light sheen along the top, no colour wash, and a smooth rise in. */
 .iv-panel {
   position: relative;
-  overflow: hidden;
   padding: 18px 20px;
   border: 1px solid var(--sf-line, var(--rd-line));
   background: var(--rd-surface);
   box-shadow: 0 30px 70px -36px rgba(0, 0, 0, 0.85),
-              inset 0 1px 0 color-mix(in srgb, var(--rd-ink) 5%, transparent);
+              inset 0 1px 0 color-mix(in srgb, var(--rd-ink) 6%, transparent);
   animation: iv-rise 0.32s var(--ax-ease, ease-out) both;
 }
-.iv-panel::before {
-  content: "";
-  position: absolute;
-  top: -40%; left: 50%;
-  width: 150%; height: 80%;
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--rd-accent) 11%, transparent), transparent 50%);
-  pointer-events: none;
-}
-.iv-panel > * { position: relative; }
 @keyframes iv-rise { from { opacity: 0; transform: translateY(8px); } }
 @media (prefers-reduced-motion: reduce) { .iv-panel { animation: none; } }
 .iv-panel__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-bottom: 14px; }
