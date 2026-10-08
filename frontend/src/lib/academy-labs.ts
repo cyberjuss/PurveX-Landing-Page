@@ -39,6 +39,8 @@ const ART: Record<string, { blurb: string; skill: string; icon: string; accent: 
   "tell-them-apart": { blurb: "Tell encoding, encryption and hashing apart in CyberChef, and prove which reverse.", skill: "Credentials", icon: "ScanSearch", accent: "#22b8cf", minutes: 20 },
   "store-a-password": { blurb: "See why a leaked unsalted table gives a company away, and how salting fixes it.", skill: "Credentials", icon: "KeyRound", accent: "#22b8cf", minutes: 25 },
   "wireshark": { blurb: "Read a packet capture and follow a conversation on the wire.", skill: "Networking", icon: "Radar", accent: "#3b9eff", minutes: 20 },
+  "capture-dc-traffic": { blurb: "Capture a few seconds of the domain controller and find the handshakes, ports and protocols.", skill: "Networking", icon: "Radar", accent: "#3b9eff", minutes: 25 },
+  "read-a-scan": { blurb: "Produce a port scan, capture it, and learn the signature that tells an open door from a closed one.", skill: "Networking", icon: "ScanSearch", accent: "#3b9eff", minutes: 30 },
   "forensics": { blurb: "Trace Hidden Tear ransomware through captured network traffic.", skill: "Forensics", icon: "Bug", accent: "#ff6b81", minutes: 25 },
   "effective-access": { blurb: "Work out who can really open a file after nested groups.", skill: "Access Control", icon: "ShieldCheck", accent: "#2fbf71", minutes: 15 },
   "triple-a": { blurb: "Break a broken access-control flow, then close the hole.", skill: "Access Control", icon: "LockKeyhole", accent: "#19c3b2", minutes: 20 },

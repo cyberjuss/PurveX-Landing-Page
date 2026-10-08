@@ -93,6 +93,8 @@ const phase1Weeks: WeekDef[] = [
       { label: "Common Ports", file: "phase-1/week-3/lesson-ports.md" },
       { label: "Protocols", file: "phase-1/week-3/lesson-protocols.md" },
       { label: "SSL/TLS", file: "phase-1/week-3/lesson-tls.md" },
+      { label: "Lab: Capture the Domain Controller's Traffic", file: "phase-1/week-3/lab-capture-dc-traffic.md" },
+      { label: "Lab: Read a Port Scan", file: "phase-1/week-3/lab-read-a-scan.md" },
       { label: "Resources", file: "phase-1/week-3/resources.md" },
     ],
   },
