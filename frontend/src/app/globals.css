@@ -4185,10 +4185,10 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   --rd-ink-3: #74747e;
   --rd-line: rgba(255, 255, 255, 0.09);
   --rd-line-2: rgba(255, 255, 255, 0.05);
-  /* A rich near-black with a hint of purple, not a white film. The old
-     translucent white read as dusty grey on the pitch-black page; this blends
-     with the portal black and matches the tour card's slick surface. */
-  --rd-surface: #08070d;
+  /* A clean dark charcoal, a clear step above the pitch-black page so a panel
+     reads as an elevated surface. Solid, not the old translucent white film
+     that looked dusty grey, and not so dark it blends into the background. */
+  --rd-surface: #16141d;
   --rd-accent: #9a8cff;
   --rd-good: #34d399;
   --rd-warn: #fbbf24;

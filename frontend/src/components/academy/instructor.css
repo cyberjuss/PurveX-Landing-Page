@@ -52,7 +52,7 @@
 /* In the dark theme the neutral ink fill read as grey boxes. Slick near-black
    with a thin light edge instead, no colour. */
 .academy-bg[data-academy-theme="dark"] .iv-cc__stats > div:not(.is-warn) {
-  background: #0c0b11;
+  background: #1f1d29;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-ink) 12%, transparent);
 }
 .iv-cc__stats dd.rd-text-good { color: var(--rd-good); }
@@ -157,7 +157,7 @@
 .iv-pill--none { background: color-mix(in srgb, var(--rd-ink) var(--sf-mark-fill, 14%), transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-ink) var(--sf-mark-line, 30%), transparent); color: var(--rd-ink-2); }
 /* The muted "not started" tag read as a grey box on the black page. Slick
    near-black with a faint edge instead, so it stays quiet without the grey. */
-.academy-bg[data-academy-theme="dark"] .iv-pill--none { background: #0d0b17; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-ink) 16%, transparent); color: var(--rd-ink-3); }
+.academy-bg[data-academy-theme="dark"] .iv-pill--none { background: #1f1d29; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-ink) 16%, transparent); color: var(--rd-ink-3); }
 @media (max-width: 760px) {
   .iv-tr--head { display: none; }
   .iv-tr { grid-template-columns: 1fr 1fr; }
