@@ -109,6 +109,8 @@ const phase1Weeks: WeekDef[] = [
       { label: "Broken Access Control", file: "phase-1/week-4/lesson-access-control.md" },
       { label: "Lab: Who Can Open This?", file: "phase-1/week-4/lab-effective-access.md", widget: "effective-access" },
       { label: "Lab: Broken Access Control (PortSwigger)", file: "phase-1/week-4/lab-triple-a.md" },
+      { label: "Lab: Read the Login Record", file: "phase-1/week-4/lab-read-the-login-record.md" },
+      { label: "Lab: Give Exactly One Power Away", file: "phase-1/week-4/lab-one-power.md" },
       { label: "Resources", file: "phase-1/week-4/resources.md" },
     ],
   },

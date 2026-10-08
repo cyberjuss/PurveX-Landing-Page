@@ -44,6 +44,8 @@ const ART: Record<string, { blurb: string; skill: string; icon: string; accent: 
   "forensics": { blurb: "Trace Hidden Tear ransomware through captured network traffic.", skill: "Forensics", icon: "Bug", accent: "#ff6b81", minutes: 25 },
   "effective-access": { blurb: "Work out who can really open a file after nested groups.", skill: "Access Control", icon: "ShieldCheck", accent: "#2fbf71", minutes: 15 },
   "triple-a": { blurb: "Break a broken access-control flow, then close the hole.", skill: "Access Control", icon: "LockKeyhole", accent: "#19c3b2", minutes: 20 },
+  "read-the-login-record": { blurb: "Make a failed and a successful login, find both in the log, and tell them apart.", skill: "Log Analysis", icon: "ScanSearch", accent: "#9b8cff", minutes: 20 },
+  "one-power": { blurb: "Grant a user exactly one command as root, and prove you did not hand over the machine.", skill: "Access Control", icon: "LockKeyhole", accent: "#19c3b2", minutes: 25 },
   "signin-log": { blurb: "Find four problems hiding in a night of sign-in events.", skill: "Log Analysis", icon: "ScanSearch", accent: "#9b8cff", minutes: 18 },
 };
 
