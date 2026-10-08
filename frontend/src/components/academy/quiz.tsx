@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { QUIZ_PASS_PERCENT, quizPassed, type Quiz } from "@/content/academy/quizzes";
@@ -14,11 +15,14 @@ export function QuizBlock({
   actionHost,
   prevBeyond,
   nextBeyond,
+  weekLabs,
 }: {
   quiz: Quiz;
   actionHost?: HTMLElement | null;
   prevBeyond?: TrailLink | null;
   nextBeyond?: TrailLink | null;
+  /** This week's labs. Pages of their own, so the hand-off is a link out. */
+  weekLabs?: { slug: string; title: string }[];
 }) {
   const { recordQuizPass, requirements } = useAcademyProgress();
   const [answers, setAnswers] = useState<(number | null)[]>(() => quiz.questions.map(() => null));
@@ -44,6 +48,11 @@ export function QuizBlock({
     ? requirements(quiz.phaseSlug, quiz.weekSlug).filter((r) => r.label !== "Quiz" && !r.done)
     : [];
   const plain = (label: string) => label.replace(/^(Lab|Challenge|Troubleshooting):\s*/, "");
+  // The first lab they have not finished, matched by title because that is what
+  // the requirement list carries. Falls back to the week's first lab, so a
+  // student who somehow has no match is still handed somewhere real.
+  const undone = new Set(left.map((r) => plain(r.label)));
+  const nextLab = (weekLabs ?? []).find((l) => undone.has(l.title)) ?? (weekLabs ?? [])[0] ?? null;
 
   function submit() {
     setSubmitted(true);
@@ -144,10 +153,16 @@ export function QuizBlock({
               <p className="ax-quiz__left">
                 {left.length === 1 ? "One more to finish the week." : `${left.length} more to finish the week.`}
               </p>
-              {nextBeyond && (
-                <button type="button" className="ax-quiz__go" onClick={nextBeyond.go}>
-                  {plain(nextBeyond.label)}
-                </button>
+              {nextLab ? (
+                <Link href={`/range/labs/${nextLab.slug}`} className="ax-quiz__go">
+                  {nextLab.title}
+                </Link>
+              ) : (
+                nextBeyond && (
+                  <button type="button" className="ax-quiz__go" onClick={nextBeyond.go}>
+                    {plain(nextBeyond.label)}
+                  </button>
+                )
               )}
             </>
           ) : (

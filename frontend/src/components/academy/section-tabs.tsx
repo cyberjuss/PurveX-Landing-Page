@@ -65,7 +65,7 @@ export function SectionTabs({
   entrySlug,
   sections,
   quiz,
-  labs,
+  weekLabs,
   challenges,
   troubleshooting,
   prevWeek,
@@ -75,7 +75,8 @@ export function SectionTabs({
   entrySlug: string;
   sections: TabSection[];
   quiz?: Quiz;
-  labs?: TabSection[];
+  /** The week's labs, as links. They are pages of their own now, not tabs. */
+  weekLabs?: { slug: string; title: string }[];
   challenges?: TabSection[];
   troubleshooting?: TabSection[];
   prevWeek?: WeekLink | null;
@@ -85,10 +86,9 @@ export function SectionTabs({
     ...sections.map((s): Item => ({ kind: "section", label: s.label, markdown: s.markdown })),
     ...(quiz ? [{ kind: "quiz", label: "Quiz" } as Item] : []),
   ];
-  const labItems: Item[] = (labs ?? []).map((l) => ({ kind: "lab", label: l.label, markdown: l.markdown, widget: l.widget }));
   const challengeItems: Item[] = (challenges ?? []).map((c) => ({ kind: "challenge", label: c.label, markdown: c.markdown }));
   const troubleshootingItems: Item[] = (troubleshooting ?? []).map((t) => ({ kind: "troubleshooting", label: t.label, markdown: t.markdown }));
-  const items = [...numberedItems, ...labItems, ...challengeItems, ...troubleshootingItems];
+  const items = [...numberedItems, ...challengeItems, ...troubleshootingItems];
 
   const router = useRouter();
   const [active, setActive] = useState(0);
@@ -199,7 +199,7 @@ export function SectionTabs({
 
   const panel =
     current.kind === "quiz" ? (
-      <QuizBlock quiz={quiz!} actionHost={quizFoot} prevBeyond={prevTrail} nextBeyond={nextTrail} />
+      <QuizBlock quiz={quiz!} actionHost={quizFoot} prevBeyond={prevTrail} nextBeyond={nextTrail} weekLabs={weekLabs} />
     ) : current.kind === "lab" && current.widget ? (
       <div>
         <LabBrief lab={current.widget} title={current.label.replace(/^Lab:\s*/, "")} ask={current.widget !== "risk-triage"}>

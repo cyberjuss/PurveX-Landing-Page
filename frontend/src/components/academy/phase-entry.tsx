@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { stripAnswers } from "@/lib/academy-answers";
 import { loadLesson, type ContentSection, type WeekDef, type PhaseDef } from "@/lib/academy-content";
-import { entriesOf } from "@/lib/academy-entries";
+import { entriesOf, labSlug } from "@/lib/academy-entries";
 import { findQuiz } from "@/content/academy/quizzes";
 import { extractEssentialQuestion } from "@/lib/markdown";
 import { SectionTabs } from "./section-tabs";
@@ -51,7 +51,15 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
   // A CTF-style challenge (e.g. Operation Day One) and a troubleshooting
   // page get the same treatment, named "Challenge: ..." / "Troubleshooting:
   // ..." by the same convention.
+  // Labs are no longer tabs on the week. They have their own pages under
+  // /range/labs, they are listed in the sidebar's Labs section and in the
+  // gallery, and the week's quiz hands the student over to them. Kept here
+  // only to build those links and to know whether the week has any.
   const labSections = sections.filter((s) => s.label.startsWith("Lab:"));
+  const weekLabs = labSections.map((s) => ({
+    slug: labSlug(s.file, s.widget),
+    title: s.label.replace(/^Lab:\s*/, ""),
+  }));
   const challengeSections = sections.filter((s) => s.label.startsWith("Challenge:"));
   const troubleshootingSections = sections.filter((s) => s.label.startsWith("Troubleshooting:"));
   const otherSections = sections.filter(
@@ -115,7 +123,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
                 entrySlug={entry.slug}
                 sections={otherSections.map((s) => ({ label: s.label, markdown: s.markdown! }))}
                 quiz={quiz}
-                labs={labSections.map((s) => ({ label: s.label.replace(/^Lab:\s*/, ""), markdown: s.markdown!, widget: s.widget }))}
+                weekLabs={weekLabs}
                 challenges={challengeSections.map((s) => ({ label: s.label.replace(/^Challenge:\s*/, ""), markdown: s.markdown! }))}
                 troubleshooting={troubleshootingSections.map((s) => ({ label: s.label.replace(/^Troubleshooting:\s*/, ""), markdown: s.markdown! }))}
                 prevWeek={prevEntry ? { label: prevEntry.title, href: `/range/${phase.slug}/${prevEntry.slug}` } : null}
