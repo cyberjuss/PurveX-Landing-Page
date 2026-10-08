@@ -11,13 +11,29 @@
 
 ### Before You Start
 
-Commit to an answer before you open anything.
+Commit to an answer before you open anything. Nothing is marked yet. The calculator settles each one.
 
-1. A finding scores 9.8 out of 10. Does that mean it is dangerous on every machine that has it?
-2. Which matters more for how urgent a fix is, how bad the flaw is or what the machine holds?
-3. Can the same finding honestly carry two different scores at the same time?
+<div class="ad-check ad-check--predict" data-check="w1m-p1">
+<p class="ad-check__q">A finding scores 9.8 out of 10. Does that mean it is dangerous on every machine that has it?</p>
+<button type="button" class="ad-check__opt" data-i="0">Yes, a high score means high danger everywhere</button>
+<button type="button" class="ad-check__opt" data-i="1">No, it depends on what the machine holds and who can reach it</button>
+<p class="ad-check__note">Locked in. You score the same flaw on two different machines and compare.</p>
+</div>
 
-Write your three answers down.
+<div class="ad-check ad-check--predict" data-check="w1m-p2">
+<p class="ad-check__q">Which matters more for how urgent a fix is?</p>
+<button type="button" class="ad-check__opt" data-i="0">How bad the flaw is on its own</button>
+<button type="button" class="ad-check__opt" data-i="1">What the machine holds and who can reach it</button>
+<button type="button" class="ad-check__opt" data-i="2">They always matter equally</button>
+<p class="ad-check__note">Locked in. The Environmental score is where this gets decided.</p>
+</div>
+
+<div class="ad-check ad-check--predict" data-check="w1m-p3">
+<p class="ad-check__q">Can the same finding honestly carry two different scores at the same time?</p>
+<button type="button" class="ad-check__opt" data-i="0">No, a finding has one true score</button>
+<button type="button" class="ad-check__opt" data-i="1">Yes, the base and the environment give different numbers</button>
+<p class="ad-check__note">Locked in. You will produce three scores for one flaw without inventing anything.</p>
+</div>
 
 ### Open the Calculator
 
@@ -96,10 +112,35 @@ Record this third number. You now have one flaw with three scores and no numbers
 
 ### Check Yourself
 
-1. Did the Base Score change at any point during this lab?
-2. For finding A, which was higher, the Environmental Score for the practice server or for the domain controller?
-3. The three Security Requirements are named after which model from this week?
-4. Did your ranking by Environmental Score match your ranking by Base Score?
+<div class="ad-check" data-check="w1m-c1" data-answer="1">
+<p class="ad-check__q">Did the Base Score change at any point during this lab?</p>
+<button type="button" class="ad-check__opt" data-i="0">Yes</button>
+<button type="button" class="ad-check__opt" data-i="1">No</button>
+<p class="ad-check__note">The Base Score describes the flaw itself, which never changed. Only the Environmental Score moved, because only the machine changed.</p>
+</div>
+
+<div class="ad-check" data-check="w1m-c2" data-answer="1">
+<p class="ad-check__q">For finding A, which Environmental Score was higher?</p>
+<button type="button" class="ad-check__opt" data-i="0">The practice server that holds nothing</button>
+<button type="button" class="ad-check__opt" data-i="1">The domain controller that holds every account</button>
+<p class="ad-check__note">Same flaw, same base, but the machine that holds the accounts scores higher because the data at risk is worth more.</p>
+</div>
+
+<div class="ad-check" data-check="w1m-c3" data-answer="0">
+<p class="ad-check__q">The three Security Requirements are named after which model from this week?</p>
+<button type="button" class="ad-check__opt" data-i="0">The CIA triad</button>
+<button type="button" class="ad-check__opt" data-i="1">The AAA model</button>
+<button type="button" class="ad-check__opt" data-i="2">The TCP handshake</button>
+<p class="ad-check__note">Confidentiality, Integrity and Availability Requirement. The triad is an input to the score, not a separate topic.</p>
+</div>
+
+<div class="ad-check" data-check="w1m-c4" data-answer="0">
+<p class="ad-check__q">Which CVSS input captures that a machine holds nothing sensitive?</p>
+<button type="button" class="ad-check__opt" data-i="0">The Security Requirements (CR, IR, AR)</button>
+<button type="button" class="ad-check__opt" data-i="1">The Base Score</button>
+<button type="button" class="ad-check__opt" data-i="2">The Attack Complexity</button>
+<p class="ad-check__note">The three requirements are where you tell the score how much this machine's data is worth, which is the whole reason two machines differ.</p>
+</div>
 
 ### Take It Further
 

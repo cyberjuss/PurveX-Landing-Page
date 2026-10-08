@@ -11,13 +11,29 @@
 
 ### Before You Start
 
-Commit to an answer first.
+Commit to an answer first. Nothing is marked yet. The output settles each one.
 
-1. Two users choose the password `Summer2024!`. If the system hashes it with plain SHA-256, do their stored values look the same or different?
-2. What does adding a random salt to each password change about that?
-3. Does salting make an individual password harder to guess, or does it do something else?
+<div class="ad-check ad-check--predict" data-check="w2m-p1">
+<p class="ad-check__q">Two users choose <code>Summer2024!</code>. Hashed with plain SHA-256, do their stored values look the same or different?</p>
+<button type="button" class="ad-check__opt" data-i="0">The same</button>
+<button type="button" class="ad-check__opt" data-i="1">Different</button>
+<p class="ad-check__note">Locked in. You will hash it twice in the next step and see.</p>
+</div>
 
-Write your three answers down.
+<div class="ad-check ad-check--predict" data-check="w2m-p2">
+<p class="ad-check__q">What does adding a random salt to each password change about that?</p>
+<button type="button" class="ad-check__opt" data-i="0">Nothing, the same password still hashes the same</button>
+<button type="button" class="ad-check__opt" data-i="1">The stored values differ even for the same password</button>
+<button type="button" class="ad-check__opt" data-i="2">It encrypts the password so it can be read back</button>
+<p class="ad-check__note">Locked in. You will run the salted version twice and compare.</p>
+</div>
+
+<div class="ad-check ad-check--predict" data-check="w2m-p3">
+<p class="ad-check__q">Does salting make one password harder to guess, or does it do something else?</p>
+<button type="button" class="ad-check__opt" data-i="0">Harder to guess</button>
+<button type="button" class="ad-check__opt" data-i="1">Stops identical passwords from looking identical in storage</button>
+<p class="ad-check__note">Locked in. The three-account loop makes the real effect visible.</p>
+</div>
 
 ### Store It the Weak Way
 
@@ -87,10 +103,34 @@ These two match, because you forced the same salt both times. The system uses a 
 
 Answer from the output you saw.
 
-1. Did two unsalted SHA-256 hashes of the same password match or differ?
-2. In the three-account loop, how many of the three stored values were identical?
-3. With `openssl passwd -6` and no fixed salt, did the same password produce the same value twice or two different values?
-4. Salting mainly stops an attacker from doing which one: guessing a single password faster, or spotting that many accounts share one?
+<div class="ad-check" data-check="w2m-c1" data-answer="0">
+<p class="ad-check__q">Did two unsalted SHA-256 hashes of the same password match or differ?</p>
+<button type="button" class="ad-check__opt" data-i="0">They matched exactly</button>
+<button type="button" class="ad-check__opt" data-i="1">They differed</button>
+<p class="ad-check__note">Plain hashing is deterministic, so the same input always gives the same output. That is the property that leaks reuse.</p>
+</div>
+
+<div class="ad-check" data-check="w2m-c2" data-answer="1">
+<p class="ad-check__q">In the three-account loop, how many of the three stored values were identical?</p>
+<button type="button" class="ad-check__opt" data-i="0">Zero</button>
+<button type="button" class="ad-check__opt" data-i="1">Two</button>
+<button type="button" class="ad-check__opt" data-i="2">All three</button>
+<p class="ad-check__note">Two accounts reused a password, and their stored values matched. You spotted the reuse without recovering a single password.</p>
+</div>
+
+<div class="ad-check" data-check="w2m-c3" data-answer="1">
+<p class="ad-check__q">With <code>openssl passwd -6</code> and no fixed salt, did the same password give the same value twice?</p>
+<button type="button" class="ad-check__opt" data-i="0">The same value both times</button>
+<button type="button" class="ad-check__opt" data-i="1">Two different values</button>
+<p class="ad-check__note">The random salt differs each run, so the stored value differs even though the password is identical.</p>
+</div>
+
+<div class="ad-check" data-check="w2m-c4" data-answer="1">
+<p class="ad-check__q">Salting mainly stops an attacker from doing which one?</p>
+<button type="button" class="ad-check__opt" data-i="0">Guessing a single password faster</button>
+<button type="button" class="ad-check__opt" data-i="1">Spotting that many accounts share one password</button>
+<p class="ad-check__note">Salting defeats precomputation and breaks the correlation between accounts. A weak password is still weak, so length and complexity still matter.</p>
+</div>
 
 ### Take It Further
 

@@ -3358,6 +3358,38 @@ body:has(.lp) {
    currently mounted -- only one .academy-prose is ever rendered at a
    time (SectionTabs swaps content, not visibility), so this is safe. */
 .academy-prose { counter-reset: mission; }
+/* Self-check multiple choice in a lab slide. A prediction (Before You Start)
+   locks the pick and reveals a neutral note. A graded check (Check Yourself)
+   marks the right option and the wrong pick and reveals the explanation. */
+.academy-prose .ad-check {
+  margin: 1.1rem 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--rd-line, rgba(16,25,46,0.1));
+  background: color-mix(in srgb, var(--rd-accent, #5546e0) 4%, transparent);
+}
+.academy-prose .ad-check__q { margin: 0 0 0.75rem; font-weight: 600; color: var(--rd-ink, #0f172a); }
+.academy-prose .ad-check__opt {
+  display: block; width: 100%; text-align: left; margin: 0.4rem 0; padding: 0.6rem 0.8rem;
+  border: 1px solid var(--rd-line, rgba(16,25,46,0.12)); background: var(--rd-surface, #fff);
+  color: var(--rd-ink-2, #334155); font: inherit; font-size: var(--ty-note); cursor: pointer;
+  transition: border-color var(--ax-dur-fast, 160ms), background var(--ax-dur-fast, 160ms);
+}
+.academy-prose .ad-check__opt:hover:not([aria-disabled]) { border-color: var(--rd-accent, #5546e0); }
+.academy-prose .ad-check__opt:focus-visible { outline: 2px solid var(--rd-accent, #5546e0); outline-offset: 2px; }
+.academy-prose .ad-check__opt[aria-disabled] { cursor: default; }
+.academy-prose .ad-check__opt.is-chosen { border-color: var(--rd-accent, #5546e0); font-weight: 600; color: var(--rd-ink, #0f172a); }
+.academy-prose .ad-check__opt.is-correct {
+  border-color: var(--rd-good, #0f9f6e); color: var(--rd-good, #0f9f6e); font-weight: 600;
+  background: color-mix(in srgb, var(--rd-good, #0f9f6e) 10%, transparent);
+}
+.academy-prose .ad-check__opt.is-wrong {
+  border-color: var(--rd-bad, #d93a3f); color: var(--rd-bad, #d93a3f);
+  background: color-mix(in srgb, var(--rd-bad, #d93a3f) 8%, transparent);
+}
+/* The note is hidden until a choice is made, then slides in. */
+.academy-prose .ad-check__note { margin: 0.75rem 0 0; font-size: var(--ty-small); color: var(--rd-ink-2, #475569); display: none; }
+.academy-prose .ad-check__note.is-shown { display: block; }
+
 .academy-prose .ad-mission {
   position: relative; margin: 0; padding: 0.4rem 0 0 2.4rem;
   border: none; border-radius: 0;

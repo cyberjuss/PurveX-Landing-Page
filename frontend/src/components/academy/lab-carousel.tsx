@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { Markdown } from "@/lib/markdown";
 import type { MarkdownSlide } from "@/lib/markdown";
 import { TrailDock, type TrailLink } from "./trail-dock";
+import { restoreSelfChecks, wireSelfChecks } from "./self-check";
 
 // A lab used to be one long scroll of Step 1 through Step N. This shows
 // one slide at a time instead -- buttons, arrow keys, and a swipe on
@@ -30,6 +31,7 @@ export function LabCarousel({
   const [dir, setDir] = useState<1 | -1>(1);
   const skipEnter = useRef(true);
   const touchStartX = useRef<number | null>(null);
+  const slideRef = useRef<HTMLDivElement>(null);
   const total = slides.length;
 
   // Remember the step for this tab so a refresh lands back on it.
@@ -47,6 +49,18 @@ export function LabCarousel({
   useEffect(() => {
     if (total > 0 && index === total - 1) onDone?.();
   }, [index, total, onDone]);
+
+  // Self-check multiple choice inside the slide markdown. Delegation on the
+  // stable slide host, restored on every slide change so a prediction or a
+  // check answered earlier is still there when the student pages back to it.
+  useEffect(() => {
+    const root = slideRef.current;
+    if (!root) return;
+    return wireSelfChecks(root, storageKey);
+  }, [storageKey]);
+  useEffect(() => {
+    if (slideRef.current) restoreSelfChecks(slideRef.current, storageKey);
+  }, [index, storageKey]);
 
   function go(next: number) {
     const clamped = Math.max(0, Math.min(total - 1, next));
@@ -105,6 +119,7 @@ export function LabCarousel({
   return (
     <div>
       <div
+        ref={slideRef}
         role="group"
         aria-roledescription="carousel"
         aria-label={`Lab steps, slide ${index + 1} of ${total}`}

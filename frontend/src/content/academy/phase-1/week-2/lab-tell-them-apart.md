@@ -11,13 +11,30 @@
 
 ### Before You Start
 
-Commit to an answer before you open anything.
+Commit to an answer before you open anything. Nothing is marked yet. The tool settles each one.
 
-1. Base64 and encryption both produce gibberish. Which one can anyone reverse without a secret?
-2. If you hash a password and later lose the original, can you get the password back from the hash?
-3. Which of the three is the only one that needs a key to undo?
+<div class="ad-check ad-check--predict" data-check="w2e-p1">
+<p class="ad-check__q">Base64 and encryption both produce gibberish. Which one can anyone reverse without a secret?</p>
+<button type="button" class="ad-check__opt" data-i="0">Base64</button>
+<button type="button" class="ad-check__opt" data-i="1">Encryption</button>
+<button type="button" class="ad-check__opt" data-i="2">Neither</button>
+<p class="ad-check__note">Locked in. You will reverse one of them with a single operation and need a key for the other.</p>
+</div>
 
-Write your three answers down.
+<div class="ad-check ad-check--predict" data-check="w2e-p2">
+<p class="ad-check__q">If you hash a password and later lose the original, can you get the password back from the hash?</p>
+<button type="button" class="ad-check__opt" data-i="0">Yes, by reversing the hash</button>
+<button type="button" class="ad-check__opt" data-i="1">No, hashing is one-way</button>
+<p class="ad-check__note">Locked in. You will search the tool for a reverse operation and see what you find.</p>
+</div>
+
+<div class="ad-check ad-check--predict" data-check="w2e-p3">
+<p class="ad-check__q">Which of the three is the only one that needs a key to undo?</p>
+<button type="button" class="ad-check__opt" data-i="0">Encoding</button>
+<button type="button" class="ad-check__opt" data-i="1">Hashing</button>
+<button type="button" class="ad-check__opt" data-i="2">Encryption</button>
+<p class="ad-check__note">Locked in. You will change the key and watch the result stop coming back.</p>
+</div>
 
 ### Open CyberChef
 
@@ -92,10 +109,37 @@ The Output is the encrypted value. This is encryption. Drag in "AES Decrypt" bel
 
 Answer from what you saw in the tool.
 
-1. Which of the three had no reverse operation anywhere in the list?
-2. To undo the AES output, what did you have to supply that Base64 never asked for?
-3. A password is stored so a server can check it later but never needs to read it back. Which of the three fits that job?
-4. You intercept the value `YWR2aXNvcnk=` in a log. Encoding, encryption or hashing?
+<div class="ad-check" data-check="w2e-c1" data-answer="1">
+<p class="ad-check__q">Which of the three had no reverse operation anywhere in the list?</p>
+<button type="button" class="ad-check__opt" data-i="0">Encoding</button>
+<button type="button" class="ad-check__opt" data-i="1">Hashing</button>
+<button type="button" class="ad-check__opt" data-i="2">Encryption</button>
+<p class="ad-check__note">Hashing is one-way by design. There is no unhash operation to drag in, which is exactly why it suits password storage.</p>
+</div>
+
+<div class="ad-check" data-check="w2e-c2" data-answer="0">
+<p class="ad-check__q">To undo the AES output, what did you have to supply that Base64 never asked for?</p>
+<button type="button" class="ad-check__opt" data-i="0">A key</button>
+<button type="button" class="ad-check__opt" data-i="1">Nothing extra</button>
+<button type="button" class="ad-check__opt" data-i="2">The original text</button>
+<p class="ad-check__note">Encryption is reversible only with the key. Base64 is reversible by anyone, because its rule is public.</p>
+</div>
+
+<div class="ad-check" data-check="w2e-c3" data-answer="2">
+<p class="ad-check__q">A password is stored so a server can check it later but never needs to read it back. Which of the three fits that job?</p>
+<button type="button" class="ad-check__opt" data-i="0">Encoding</button>
+<button type="button" class="ad-check__opt" data-i="1">Encryption</button>
+<button type="button" class="ad-check__opt" data-i="2">Hashing</button>
+<p class="ad-check__note">Hashing. The server stores the hash and compares against it, and never needs the original, so one-way is a feature.</p>
+</div>
+
+<div class="ad-check" data-check="w2e-c4" data-answer="0">
+<p class="ad-check__q">You intercept the value <code>YWR2aXNvcnk=</code> in a log. Encoding, encryption or hashing?</p>
+<button type="button" class="ad-check__opt" data-i="0">Encoding</button>
+<button type="button" class="ad-check__opt" data-i="1">Encryption</button>
+<button type="button" class="ad-check__opt" data-i="2">Hashing</button>
+<p class="ad-check__note">The trailing <code>=</code> and the character set mark it as Base64. You could read it in seconds, so treating it as encrypted would be a costly mistake.</p>
+</div>
 
 ### Take It Further
 

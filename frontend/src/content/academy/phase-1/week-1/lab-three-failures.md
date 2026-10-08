@@ -11,13 +11,29 @@
 
 ### Before You Start
 
-Answer these three before you type anything. Being wrong here is useful, so commit to an answer rather than skipping ahead.
+Commit to an answer before you type anything. Being wrong here is useful, so pick one rather than skipping ahead. Nothing is marked right or wrong yet. You confirm each by doing the lab.
 
-1. If you remove another user's permission to read a file, does the file change?
-2. If you change one character inside a file, how much of its SHA-256 hash changes?
-3. If a web server is stopped, is the page it served still on the disk?
+<div class="ad-check ad-check--predict" data-check="w1e-p1">
+<p class="ad-check__q">If you remove another user's permission to read a file, does the file change?</p>
+<button type="button" class="ad-check__opt" data-i="0">Yes, its contents change</button>
+<button type="button" class="ad-check__opt" data-i="1">No, only who can read it changes</button>
+<p class="ad-check__note">Locked in. You prove this when you run <code>chmod</code> below.</p>
+</div>
 
-Write your three answers down. You will compare them at the end.
+<div class="ad-check ad-check--predict" data-check="w1e-p2">
+<p class="ad-check__q">If you change one character inside a file, how much of its SHA-256 hash changes?</p>
+<button type="button" class="ad-check__opt" data-i="0">Only the part for that character</button>
+<button type="button" class="ad-check__opt" data-i="1">Roughly half of it</button>
+<button type="button" class="ad-check__opt" data-i="2">Almost all of it</button>
+<p class="ad-check__note">Locked in. You compare the two hashes in the Integrity step.</p>
+</div>
+
+<div class="ad-check ad-check--predict" data-check="w1e-p3">
+<p class="ad-check__q">If a web server is stopped, is the page it served still on the disk?</p>
+<button type="button" class="ad-check__opt" data-i="0">Yes, the file stays put</button>
+<button type="button" class="ad-check__opt" data-i="1">No, stopping it removes the page</button>
+<p class="ad-check__note">Locked in. You check with <code>ls</code> in the Availability step.</p>
+</div>
 
 ### Set Up One File
 
@@ -129,10 +145,35 @@ curl -I http://localhost
 
 Answer from what you saw, not from what you remember reading.
 
-1. After `chmod 600`, had the contents of `ledger.txt` changed in any way?
-2. You changed one digit out of twenty-four characters. Roughly how much of the SHA-256 hash changed?
-3. While nginx was stopped, was `index.html` still on the disk?
-4. Which single property failed in each of the three steps, and which stayed intact?
+<div class="ad-check" data-check="w1e-c1" data-answer="1">
+<p class="ad-check__q">After <code>chmod 600</code>, had the contents of <code>ledger.txt</code> changed in any way?</p>
+<button type="button" class="ad-check__opt" data-i="0">Yes</button>
+<button type="button" class="ad-check__opt" data-i="1">No</button>
+<p class="ad-check__note">Permissions decide who may read a file, never what it holds. Confidentiality failed while integrity stayed intact.</p>
+</div>
+
+<div class="ad-check" data-check="w1e-c2" data-answer="2">
+<p class="ad-check__q">You changed one digit out of twenty-four characters. Roughly how much of the SHA-256 hash changed?</p>
+<button type="button" class="ad-check__opt" data-i="0">About one character</button>
+<button type="button" class="ad-check__opt" data-i="1">About a quarter</button>
+<button type="button" class="ad-check__opt" data-i="2">Almost all of it</button>
+<p class="ad-check__note">A hash has no partial match. One changed character scrambles the whole digest, which is what lets it flag any change at all.</p>
+</div>
+
+<div class="ad-check" data-check="w1e-c3" data-answer="0">
+<p class="ad-check__q">While nginx was stopped, was <code>index.html</code> still on the disk?</p>
+<button type="button" class="ad-check__opt" data-i="0">Yes</button>
+<button type="button" class="ad-check__opt" data-i="1">No</button>
+<p class="ad-check__note">Availability failed while the file sat untouched. The page was there the whole time, just not being served.</p>
+</div>
+
+<div class="ad-check" data-check="w1e-c4" data-answer="0">
+<p class="ad-check__q">A client opens the portal and sees another client's statement. Which property failed?</p>
+<button type="button" class="ad-check__opt" data-i="0">Confidentiality</button>
+<button type="button" class="ad-check__opt" data-i="1">Integrity</button>
+<button type="button" class="ad-check__opt" data-i="2">Availability</button>
+<p class="ad-check__note">The data is correct and available. It just reached the wrong person, which is a confidentiality failure.</p>
+</div>
 
 ### Take It Further
 
