@@ -40,8 +40,8 @@ html[data-academy-theme="dark"] .hl-note,
 }
 
 /* ---- the lab menu ----
-   Carries the explainer card's surface language: a wash of the accent off the
-   top edge, a lift deep enough to read as floating, and the same hairline. */
+   Shiny black: a lift deep enough to read as floating and a hairline edge, no
+   accent wash. */
 .hl {
   position: relative;
   overflow: hidden;
@@ -57,18 +57,8 @@ html[data-academy-theme="dark"] .hl-note,
   font-family: var(--font-sans, inherit);
 }
 .hl--menu { width: min(500px, calc(100vw - 32px)); padding: 26px; }
-.hl::before {
-  content: "";
-  position: absolute;
-  top: -40%; left: 50%;
-  width: 150%; height: 90%;
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse at 50% 0%,
-    color-mix(in srgb, var(--hl-accent) var(--sf-wash-strength, 30%), transparent),
-    transparent var(--sf-wash-stop, 48%));
-  pointer-events: none;
-}
-.hl > * { position: relative; }
+/* No accent wash: the panel is shiny black from its lift and hairline alone,
+   not a purple glow. */
 
 /* Identity row: what it is on the left, whether it is up on the right. */
 .hl__top { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 12px; }
