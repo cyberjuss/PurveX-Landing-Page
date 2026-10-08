@@ -2,11 +2,11 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Ticket Queue</h3>
 <p class="ad-brief__ask">When a request lands in your queue, can you check what is true in Active Directory and then make the change the ticket needs?</p>
-<p>This is the PurveX Financial help desk queue. Requests come from staff, HR, auditors and vendors. Treat each one as a claim to verify and check what it names before you make the change. Later tickets take you beyond Active Directory into DNS, the firewall, Group Policy and the file shares on your domain controller.</p>
-<p>Each ticket asks for a short finding once the work is done, like a count or an account state. The lab has to show the change before an answer is accepted, so the answer always reflects the directory after you act.</p>
-<p>The Range download plants the ticket objects when it builds your lab. If you built the lab earlier, download the script from Build the Environment again and run it once.</p>
-<p>The Low, Medium, High and Critical label on each ticket is its business priority, not its difficulty. Capital letters and punctuation such as spaces or dashes do not matter. You get three tries per ticket. A common wrong answer gets a short note on where to look. The hint unlocks after two misses and the explanation unlocks once you solve the ticket or use all three tries.</p>
+<p>This is the PurveX Financial help desk queue. Every request is a claim to verify before you change anything, and later tickets take you past Active Directory into DNS, the firewall, Group Policy and the file shares.</p>
+<p>Each ticket wants a short finding at the end. The lab has to show the change first, so your answer always reflects the directory after you act.</p>
 </div>
+
+<p>Built your lab before today? Run the script from Build the Environment once more so the ticket objects are there.</p>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
