@@ -5186,7 +5186,7 @@ textarea.pc-dock__field {
 
 /* Drills: daily and timed practice on the student's own directory */
 .dr { padding-bottom: 64px; }
-.dr--play { max-width: 760px; }
+.dr--play { max-width: 780px; margin: 0 auto; }
 .dr-note { margin: 14px 0 0; font-size: var(--ty-body); line-height: 1.55; color: var(--rd-ink-2); }
 .dr-note--lab { margin-top: 6px; color: var(--rd-ink-3); }
 .dr .rd-cta:disabled { opacity: 0.4; cursor: default; }
@@ -5201,7 +5201,11 @@ textarea.pc-dock__field {
 .dr-clock--low { color: var(--rd-bad); }
 .dr-segs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; margin: 12px 0 24px; }
 .dr-segs i { height: 6px; border-radius: 3px; }
-.dr-card { padding: 28px; border: 1px solid var(--rd-line); background: var(--rd-line-2); }
+/* The case file: one contained surface, shiny black with a deep lift, rather
+   than loose text floating on the page. A divider after the title splits the
+   header from the brief, and another before the question splits the brief from
+   the task. */
+.dr-card { position: relative; padding: 30px 32px 32px; border: 1px solid var(--sf-line, var(--rd-line)); background: var(--rd-surface); box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9), inset 0 1px 0 color-mix(in srgb, var(--rd-ink) 6%, transparent); }
 .dr-card h2 { margin: 10px 0 0; font-family: var(--font-display); font-size: clamp(20px, 3vw, 26px); font-weight: 600; line-height: 1.25; letter-spacing: -0.02em; color: var(--rd-ink); }
 .dr-log { margin: 18px 0 0; padding: 14px 16px; overflow-x: auto; background: #0b0f17; color: #cfe3ff; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); line-height: 1.7; }
 .dr-choices { display: grid; gap: 10px; margin-top: 20px; }
@@ -5271,14 +5275,18 @@ textarea.pc-dock__field {
 .dr-chip.is-right { background: rgba(15, 159, 110, 0.14); color: var(--rd-good); }
 .dr-chip.is-wrong { background: rgba(217, 58, 63, 0.14); color: var(--rd-bad); }
 
-.dr-card__title { margin: 8px 0 0; font-family: var(--font-display); font-size: clamp(22px, 3vw, 28px); font-weight: 600; line-height: 1.2; letter-spacing: -0.03em; color: var(--rd-ink); }
-.dr-story { position: relative; margin: 16px 0 0; padding: 16px 18px 16px 20px; background: var(--rd-line-2); font-size: var(--ty-lead); line-height: 1.65; color: var(--rd-ink); box-shadow: inset 3px 0 0 var(--rd-accent); }
-.dr-term { margin-top: 16px; overflow: hidden; background: #0b0f17; }
+.dr-card__title { margin: 10px 0 0; padding-bottom: 22px; border-bottom: 1px solid var(--rd-line); font-family: var(--font-display); font-size: clamp(22px, 3vw, 28px); font-weight: 600; line-height: 1.2; letter-spacing: -0.03em; color: var(--rd-ink); }
+/* The situation, framed by a left accent rather than a grey fill. */
+.dr-story { position: relative; margin: 22px 0 0; padding: 2px 0 2px 18px; background: none; font-size: var(--ty-lead); line-height: 1.65; color: var(--rd-ink); box-shadow: inset 3px 0 0 var(--rd-accent); }
+.dr-term { margin-top: 18px; overflow: hidden; border: 1px solid var(--rd-line); background: #070a11; }
 .dr-term__bar { display: flex; align-items: center; gap: 6px; padding: 9px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.07); }
 .dr-term__bar i { width: 9px; height: 9px; border-radius: 50%; background: #3a4152; }
 .dr-term__bar span { margin-left: 8px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); letter-spacing: 0.12em; text-transform: uppercase; color: #7d879d; }
 .dr-term pre { margin: 0; padding: 14px 16px; overflow-x: auto; color: #cfe3ff; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); line-height: 1.75; }
-.dr-question { margin: 24px 0 0; font-family: var(--font-display); font-size: clamp(18px, 2.4vw, 21px); font-weight: 600; line-height: 1.35; letter-spacing: -0.02em; color: var(--rd-ink); }
+/* The task. A divider lifts it off the brief above, and a small label names it
+   so the case reads as brief-then-task rather than one long column. */
+.dr-question { position: relative; margin: 28px 0 0; padding-top: 26px; border-top: 1px solid var(--rd-line); font-family: var(--font-display); font-size: clamp(18px, 2.4vw, 21px); font-weight: 600; line-height: 1.35; letter-spacing: -0.02em; color: var(--rd-ink); }
+.dr-question::before { content: "Your task"; display: block; margin-bottom: 10px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rd-accent); }
 .dr-choice { gap: 14px; }
 .dr-choice b { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; width: 28px; height: 28px; background: var(--rd-none); font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); font-weight: 700; color: var(--rd-ink-2); }
 .dr-choice--on b { background: var(--rd-accent); color: #fff; }
@@ -5438,7 +5446,7 @@ textarea.pc-dock__field {
 .dr-level { padding: 3px 10px; background: color-mix(in srgb, var(--rd-accent) var(--sf-mark-fill), transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) var(--sf-mark-line), transparent); font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-accent); }
 .dr-free { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
 .dr-free label { font-size: var(--ty-small, 13px); color: var(--rd-ink-3); }
-.dr-free input { width: 100%; padding: 14px 16px; border: 1.5px solid var(--rd-line); border-radius: 10px; background: transparent; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-lead, 16px); color: var(--rd-ink); outline: none; }
+.dr-free input { width: 100%; padding: 14px 16px; border: 1px solid var(--rd-line); border-radius: 0; background: color-mix(in srgb, var(--rd-ink) 3%, transparent); font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-lead, 16px); color: var(--rd-ink); outline: none; transition: border-color var(--ax-dur) var(--ax-ease), box-shadow var(--ax-dur) var(--ax-ease); }
 .dr-free input:focus { border-color: var(--rd-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--rd-accent) 22%, transparent); }
 .dr-hint { margin: 0; padding: 12px 14px; background: rgba(196, 130, 14, 0.12); font-size: var(--ty-body, 14px); line-height: 1.5; color: var(--rd-ink); }
 .dr-report { margin-top: 16px; padding: 24px 28px; border: 1px solid var(--rd-line); background: var(--rd-line-2); }
@@ -5489,9 +5497,9 @@ textarea.pc-dock__field {
 .pc-dock__earn { color: var(--pc-accent); text-decoration: underline; text-underline-offset: 3px; }
 
 /* Lab change and written-case drills */
-.dr-free textarea { width: 100%; padding: 14px 16px; border: 1.5px solid var(--rd-line); border-radius: 10px; background: transparent; font-size: var(--ty-lead, 16px); line-height: 1.55; color: var(--rd-ink); outline: none; resize: vertical; }
+.dr-free textarea { width: 100%; padding: 15px 17px; border: 1px solid var(--rd-line); border-radius: 0; background: color-mix(in srgb, var(--rd-ink) 3%, transparent); font-size: var(--ty-lead, 16px); line-height: 1.6; color: var(--rd-ink); outline: none; resize: vertical; transition: border-color var(--ax-dur) var(--ax-ease), box-shadow var(--ax-dur) var(--ax-ease); }
 .dr-free textarea:focus { border-color: var(--rd-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--rd-accent) 22%, transparent); }
-.dr-free__count { align-self: flex-end; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); color: var(--rd-ink-3); }
+.dr-free__count { align-self: flex-end; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); font-variant-numeric: tabular-nums; color: var(--rd-ink-3); }
 .dr-task { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; padding: 18px 0 0; border-top: 1px solid var(--rd-line); }
 .dr-task .rd-kicker { color: var(--rd-accent); }
 .dr-task p { margin: 0; font-size: var(--ty-body, 14px); line-height: 1.55; color: var(--rd-ink-2); }
