@@ -12,6 +12,7 @@
   position: sticky;
   top: var(--ax-chrome, 0px);
   z-index: 5;
+  overflow: hidden;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -19,8 +20,21 @@
   padding: 16px 20px;
   border: 1px solid var(--sf-line, var(--rd-line));
   background: var(--rd-surface);
-  box-shadow: var(--sf-lift, 0 24px 60px -30px rgba(8, 11, 22, 0.5));
+  box-shadow: var(--sf-lift, 0 24px 60px -30px rgba(8, 11, 22, 0.5)),
+              inset 0 1px 0 color-mix(in srgb, var(--rd-ink) 6%, transparent);
 }
+/* The purple shine across the top, the same wash the tour card carries, so the
+   bar reads as slick black rather than a flat panel. */
+.iv-cc__bar::before {
+  content: "";
+  position: absolute;
+  top: -45%; left: 50%;
+  width: 150%; height: 95%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--rd-accent) 16%, transparent), transparent 55%);
+  pointer-events: none;
+}
+.iv-cc__bar > * { position: relative; }
 .iv-cc__id { min-width: 0; margin-right: auto; }
 .iv-cc__id .rd-kicker { margin: 0 0 2px; }
 .iv-cc__title {
@@ -44,6 +58,12 @@
 }
 .iv-cc__stats .is-warn { background: color-mix(in srgb, var(--rd-warn) 13%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-warn) 32%, transparent); }
 .iv-cc__stats .is-warn dd { color: var(--rd-warn); }
+/* In the dark theme the neutral ink fill read as grey boxes. Slick near-black
+   with a faint purple edge instead, so the stats match the tour card. */
+.academy-bg[data-academy-theme="dark"] .iv-cc__stats > div:not(.is-warn) {
+  background: #0d0b17;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 20%, transparent);
+}
 .iv-cc__stats dd.rd-text-good { color: var(--rd-good); }
 .iv-cc__stats dd.rd-text-warn { color: var(--rd-warn); }
 .iv-cc__stats dd.rd-text-bad { color: var(--rd-bad); }
@@ -65,7 +85,7 @@
 @media (min-width: 1001px) { .iv-cc__side { position: sticky; top: calc(var(--ax-chrome, 0px) + 92px); } }
 
 /* ---- panels ------------------------------------------------------------- */
-.iv-panel { padding: 18px 20px; border: 1px solid var(--sf-line, var(--rd-line)); background: var(--rd-surface); }
+.iv-panel { padding: 18px 20px; border: 1px solid var(--sf-line, var(--rd-line)); background: var(--rd-surface); box-shadow: inset 0 1px 0 color-mix(in srgb, var(--rd-ink) 5%, transparent); }
 .iv-panel__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-bottom: 14px; }
 .iv-panel__head h2 { margin: 0; font-family: var(--font-display); font-size: var(--ty-h4); font-weight: 650; letter-spacing: -0.01em; color: var(--rd-ink); }
 .iv-panel__head p { margin: 0; font-size: var(--ty-small); color: var(--rd-ink-3); }
