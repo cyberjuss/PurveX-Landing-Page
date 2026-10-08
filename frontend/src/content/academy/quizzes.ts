@@ -197,23 +197,6 @@ export const quizzes: Quiz[] = [
         correctIndex: 2,
         explanation: "These are two separate handshakes, back to back. TCP's three-way handshake establishes the connection. Then TLS does its own handshake to agree on encryption keys before real data moves.",
       },
-      {
-        question: "In Wireshark, which action reassembles a full back-and-forth exchange into a single readable view, showing exactly what a piece of malware sent and to where?",
-        options: ["Statistics → Protocol Hierarchy", "Right-click a packet → Follow → HTTP Stream", "Applying the `ip.addr` filter", "Opening the Bytes pane"],
-        correctIndex: 1,
-        explanation: "Follow → HTTP Stream reassembles the full conversation into something readable. It is the single most useful move for narrowing in on a suspicious host.",
-      },
-      {
-        question: "In the Hidden Tear ransomware lab, the stolen data (hostname + encryption key) was sent as a GET request query parameter instead of a POST body. Why is that useful for a responder?",
-        options: [
-          "It is not, since GET-based exfil is harder to detect than POST",
-          "GET requests cannot carry stolen data, so this traffic was actually benign",
-          "GET-based exfil shows up in plaintext in proxy/web logs and browser history, making it easier to recover after the fact",
-          "GET requests are always encrypted by the browser automatically",
-        ],
-        correctIndex: 2,
-        explanation: "Because the data rides in the URL itself, it is visible in plaintext web/proxy logs and browser history. That makes it easier to find after the fact than a POST body would be, a small silver lining in an otherwise bad situation.",
-      },
     ],
   },
   {

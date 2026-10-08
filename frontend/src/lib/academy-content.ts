@@ -89,8 +89,6 @@ const phase1Weeks: WeekDef[] = [
       { label: "Common Ports", file: "phase-1/week-3/lesson-ports.md" },
       { label: "Protocols", file: "phase-1/week-3/lesson-protocols.md" },
       { label: "SSL/TLS", file: "phase-1/week-3/lesson-tls.md" },
-      { label: "Lab: Wireshark Basics", file: "phase-1/week-3/lab-wireshark.md" },
-      { label: "Lab: Network Forensics — Hidden Tear Ransomware", file: "phase-1/week-3/lab-forensics.md" },
       { label: "Resources", file: "phase-1/week-3/resources.md" },
     ],
   },
