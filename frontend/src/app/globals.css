@@ -4820,6 +4820,22 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-quiz__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 0 4px; }
 .ax-quiz__foot p, .ax-quiz__mark { font-size: var(--ty-note); color: var(--rd-ink-3); }
 .ax-quiz__mark { margin: 8px 0 0; }
+/* Passing the quiz is the middle of the week, not the end of it. The labs are
+   already the next tabs along, but nothing said so, and confetti reads like a
+   finish line. This says what is left and opens it. */
+.ax-quiz__after { display: grid; justify-items: start; gap: 4px; margin-top: 8px; }
+.ax-quiz__after .ax-quiz__mark { margin: 0; color: var(--rd-good, var(--rd-ink-2)); font-weight: 650; }
+.ax-quiz__left { margin: 0; font-size: var(--ty-note); color: var(--rd-ink-3); }
+.ax-quiz__go {
+  margin-top: 8px; padding: 10px 16px;
+  border: 1px solid color-mix(in srgb, var(--rd-accent) var(--sf-mark-line, 30%), transparent);
+  background: color-mix(in srgb, var(--rd-accent) var(--sf-mark-fill, 14%), transparent);
+  color: var(--rd-accent);
+  font: inherit; font-size: var(--ty-note); font-weight: 650; cursor: pointer;
+  transition: background var(--ax-dur-fast) var(--ax-ease), border-color var(--ax-dur-fast) var(--ax-ease);
+}
+.ax-quiz__go:hover { background: color-mix(in srgb, var(--rd-accent) 22%, transparent); border-color: var(--rd-accent); }
+.ax-quiz__go:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 2px; }
 .ax-quiz__result { padding: 18px 0; border: none; }
 .ax-quiz__result strong { display: block; font-family: var(--font-display); font-size: var(--ty-stat); letter-spacing: -0.04em; line-height: 1; }
 .ax-quiz__result p { margin-top: 8px; font-size: var(--ty-body); color: var(--rd-ink-2); }

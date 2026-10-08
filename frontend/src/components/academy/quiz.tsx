@@ -20,7 +20,7 @@ export function QuizBlock({
   prevBeyond?: TrailLink | null;
   nextBeyond?: TrailLink | null;
 }) {
-  const { recordQuizPass } = useAcademyProgress();
+  const { recordQuizPass, requirements } = useAcademyProgress();
   const [answers, setAnswers] = useState<(number | null)[]>(() => quiz.questions.map(() => null));
   const [submitted, setSubmitted] = useState(false);
   const [at, setAt] = useState(0);
@@ -35,7 +35,15 @@ export function QuizBlock({
   const passed = quizPassed(score, total);
   const passMark = Math.ceil((QUIZ_PASS_PERCENT / 100) * total);
   const isCorrect = selected === q.correctIndex;
-  const foot = submitted ? (passed ? "Passed." : `Need ${passMark} of ${total} to pass.`) : "";
+
+  // What the week still wants after the quiz. The week marks itself complete
+  // once every one of these is done, so passing the quiz is the middle of the
+  // week rather than the end of it, and the pass screen is the one place a
+  // student is certain to be looking when that needs saying.
+  const left = submitted && passed
+    ? requirements(quiz.phaseSlug, quiz.weekSlug).filter((r) => r.label !== "Quiz" && !r.done)
+    : [];
+  const plain = (label: string) => label.replace(/^(Lab|Challenge|Troubleshooting):\s*/, "");
 
   function submit() {
     setSubmitted(true);
@@ -127,7 +135,26 @@ export function QuizBlock({
       </div>
       </div>
 
-      {foot && <p className="ax-quiz__mark">{foot}</p>}
+      {submitted && !passed && <p className="ax-quiz__mark">Need {passMark} of {total} to pass.</p>}
+      {submitted && passed && (
+        <div className="ax-quiz__after">
+          <p className="ax-quiz__mark">Passed.</p>
+          {left.length > 0 ? (
+            <>
+              <p className="ax-quiz__left">
+                {left.length === 1 ? "One more to finish the week." : `${left.length} more to finish the week.`}
+              </p>
+              {nextBeyond && (
+                <button type="button" className="ax-quiz__go" onClick={nextBeyond.go}>
+                  {plain(nextBeyond.label)}
+                </button>
+              )}
+            </>
+          ) : (
+            <p className="ax-quiz__left">That finishes the week.</p>
+          )}
+        </div>
+      )}
       {actionHost ? createPortal(trail, actionHost) : <div className="ax-panel__foot">{trail}</div>}
     </div>
   );
