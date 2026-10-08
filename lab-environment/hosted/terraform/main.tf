@@ -173,6 +173,20 @@ resource "aws_security_group" "pod" {
     protocol        = "tcp"
     security_groups = [aws_security_group.gateway.id]
   }
+  # The matching half of the ingress rule above. Security groups are stateful,
+  # so a reply to an allowed inbound connection always gets out -- but a
+  # connection one pod machine *starts* to the other is new outbound traffic,
+  # and it is matched against egress. Without this rule the only thing either
+  # machine could open to the other was TCP 80 and 443, which is why ping died
+  # and why a domain join could not reach DNS, Kerberos or SMB on the domain
+  # controller.
+  egress {
+    description = "Both machines in this pod, on every port"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    self        = true
+  }
   egress {
     description = "HTTPS out: the sync to Range, the SSM agent, apt, Windows update"
     from_port   = 443
