@@ -32,6 +32,8 @@ export type LabMeta = {
 // Card art keyed by slug. Blurbs are short and plain. Icons are security-themed.
 const ART: Record<string, { blurb: string; skill: string; icon: string; accent: string; minutes: number }> = {
   "risk-triage": { blurb: "Score Monday's incoming tickets by real business risk.", skill: "Risk Triage", icon: "TriangleAlert", accent: "#f5a524", minutes: 12 },
+  "three-failures": { blurb: "Break confidentiality, integrity and availability on one file, and prove each one.", skill: "Fundamentals", icon: "ShieldAlert", accent: "#4fa3d1", minutes: 20 },
+  "severity-risk": { blurb: "Score one flaw three ways with CVSS, and watch Critical stop meaning urgent.", skill: "Risk Triage", icon: "Gauge", accent: "#f5a524", minutes: 30 },
   "hash-verify": { blurb: "Prove a downloaded update is the file IT really published.", skill: "Integrity", icon: "Fingerprint", accent: "#8b7bff", minutes: 15 },
   "password-table": { blurb: "Crack a leaked table to see which password storage holds up.", skill: "Credentials", icon: "KeyRound", accent: "#22b8cf", minutes: 20 },
   "wireshark": { blurb: "Read a packet capture and follow a conversation on the wire.", skill: "Networking", icon: "Radar", accent: "#3b9eff", minutes: 20 },

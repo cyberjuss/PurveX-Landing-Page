@@ -61,6 +61,8 @@ const phase1Weeks: WeekDef[] = [
       { label: "How It All Connects", file: "phase-1/week-1/lesson-connects.md" },
       { label: "Resources", file: "phase-1/week-1/resources.md" },
       { label: "Lab: Monday Morning Risk Triage", file: "phase-1/week-1/lab-risk-triage.md", widget: "risk-triage" },
+      { label: "Lab: Break One File Three Ways", file: "phase-1/week-1/lab-three-failures.md" },
+      { label: "Lab: Severity Is Not Risk", file: "phase-1/week-1/lab-severity-risk.md" },
     ],
   },
   {

@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Bug, Check, Fingerprint, FlaskConical, KeyRound, LockKeyhole, Radar, ScanSearch, Search, ShieldCheck, TriangleAlert, type LucideIcon } from "lucide-react";
+import { ArrowRight, Bug, Check, Fingerprint, FlaskConical, Gauge, KeyRound, LockKeyhole, Radar, ScanSearch, Search, ShieldAlert, ShieldCheck, TriangleAlert, type LucideIcon } from "lucide-react";
 import type { LabMeta } from "@/lib/academy-labs";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import "./lab-gallery.css";
 
 const ICONS: Record<string, LucideIcon> = {
-  TriangleAlert, Fingerprint, KeyRound, Radar, Bug, ShieldCheck, LockKeyhole, ScanSearch, FlaskConical,
+  TriangleAlert, Fingerprint, KeyRound, Radar, Bug, ShieldCheck, LockKeyhole, ScanSearch, FlaskConical, ShieldAlert, Gauge,
 };
 
 // The Labs page. Plain, neutral cards that read the same in light and dark. One
