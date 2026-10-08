@@ -209,7 +209,7 @@ export function SectionTabs({
 
   const panel =
     current.kind === "quiz" ? (
-      <QuizBlock quiz={quiz!} actionHost={quizFoot} prevBeyond={prevTrail} nextBeyond={nextTrail} weekLabs={weekLabs} />
+      <QuizBlock quiz={quiz!} actionHost={quizFoot} nextBeyond={nextTrail} weekLabs={weekLabs} />
     ) : current.kind === "lab" && current.widget ? (
       <div>
         <LabBrief lab={current.widget} title={current.label.replace(/^Lab:\s*/, "")} ask={current.widget !== "risk-triage"}>

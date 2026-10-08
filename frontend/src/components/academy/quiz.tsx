@@ -13,13 +13,12 @@ const LETTERS = ["A", "B", "C", "D", "E", "F"];
 export function QuizBlock({
   quiz,
   actionHost,
-  prevBeyond,
   nextBeyond,
   weekLabs,
 }: {
   quiz: Quiz;
   actionHost?: HTMLElement | null;
-  prevBeyond?: TrailLink | null;
+  /** Where the week goes next, offered on the pass screen once nothing is left. */
   nextBeyond?: TrailLink | null;
   /** This week's labs. Pages of their own, so the hand-off is a link out. */
   weekLabs?: { slug: string; title: string }[];
@@ -88,13 +87,15 @@ export function QuizBlock({
     </span>
   );
 
+  // Previous and Next move through the questions and nothing else. The wide
+  // dock also carried "To Resources" and "To <the next thing>", so four
+  // controls competed for one row and the two that matter while answering a
+  // question were the two in the middle. Where to go afterwards is the pass
+  // screen's job, and it only has to be said once.
   const trail = (
     <TrailDock
-      wide
-      back={prevBeyond}
       prev={{ go: () => { setDir(-1); setAt(at - 1); }, disabled: at === 0 }}
       next={{ go: () => { setDir(1); setAt(at + 1); }, disabled: isLast || (!submitted && selected === null) }}
-      forward={nextBeyond}
       center={action}
     />
   );
@@ -166,7 +167,14 @@ export function QuizBlock({
               )}
             </>
           ) : (
-            <p className="ax-quiz__left">That finishes the week.</p>
+            <>
+              <p className="ax-quiz__left">That finishes the week.</p>
+              {nextBeyond && (
+                <button type="button" className="ax-quiz__go" onClick={nextBeyond.go}>
+                  {plain(nextBeyond.label)}
+                </button>
+              )}
+            </>
           )}
         </div>
       )}
