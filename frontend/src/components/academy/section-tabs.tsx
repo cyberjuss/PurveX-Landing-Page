@@ -98,7 +98,7 @@ export function SectionTabs({
   const [challengeFoot, setChallengeFoot] = useState<HTMLElement | null>(null);
   const current = items[active];
   const { setPlace } = useCoach();
-  const { recordLabDone } = useAcademyProgress();
+  const { recordLabDone, isLabDone } = useAcademyProgress();
   const labSlug = current.kind === "lab" ? slugify(current.label) : "";
   const labDone = useCallback(() => {
     if (labSlug) recordLabDone(phaseSlug, entrySlug, labSlug);
@@ -155,11 +155,21 @@ export function SectionTabs({
     : prevWeek
       ? { label: prevWeek.label, go: () => router.push(prevWeek.href) }
       : null;
-  const nextTrail: TrailLink | null = nextItem
-    ? { label: nextItem.label, go: () => goTo(active + 1) }
-    : nextWeek
-      ? { label: nextWeek.label, go: () => router.push(nextWeek.href) }
+  // The quiz is the last tab now that labs have pages of their own, so the
+  // forward control pointed at the next week and walked a student straight
+  // past the labs that finish this one. While any of them is unfinished, the
+  // first of them is what "next" means.
+  const labAfterQuiz =
+    current.kind === "quiz"
+      ? (weekLabs ?? []).find((l) => !isLabDone(phaseSlug, entrySlug, slugify(l.title))) ?? null
       : null;
+  const nextTrail: TrailLink | null = labAfterQuiz
+    ? { label: labAfterQuiz.title, go: () => router.push(`/range/labs/${labAfterQuiz.slug}`) }
+    : nextItem
+      ? { label: nextItem.label, go: () => goTo(active + 1) }
+      : nextWeek
+        ? { label: nextWeek.label, go: () => router.push(nextWeek.href) }
+        : null;
   useEffect(() => {
     const apply = () => setActive(indexForHash(window.location.hash, items));
     apply();
