@@ -101,25 +101,38 @@ Only the traffic to and from the domain controller remains. This is the conversa
 </figure>
 </div>
 
+### Read the Three Panes
+
+Wireshark shows every capture in three stacked panes, and learning to move between them is most of the skill.
+
+* **Packet List, at the top.** One line per packet. The Protocol column names what it is, and the Info column summarises it. This is your timeline.
+* **Packet Details, in the middle.** The selected packet opened up layer by layer, from Ethernet at the bottom to the application at the top.
+* **Packet Bytes, at the bottom.** The raw data, for when the parsed view is not enough.
+
+Click a packet in the top pane and watch the middle pane fill with its layers. You will repeat that click for most of your time in Wireshark.
+
 ### Find the Handshake and the Ports
 
-Look at the Protocol column and the Info column. You will see several things from this week.
+Read down the Protocol and Info columns. You will see several things from this week.
 
-* A TCP handshake opening the LDAP connection. Find the packet marked SYN, the SYN-ACK coming back from the domain controller, and the ACK.
-* The LDAP query itself on port 389, after the handshake.
+* A TCP handshake opening the LDAP connection. The Info column labels the packets `[SYN]`, then `[SYN, ACK]` coming back from the domain controller, then `[ACK]`.
+* The LDAP query itself on port 389, after the handshake finishes.
 * The DNS request and reply on port 53, which is UDP and needs no handshake at all.
 
-Notice that DNS did its whole job in two packets while LDAP set up a connection first. That is the difference between UDP and TCP, seen once rather than described.
+DNS did its whole job in two packets while LDAP set up a connection first. That is the difference between UDP and TCP, seen once rather than described.
 
-### The Command-Line View
+### Follow the Whole Conversation
 
-Wireshark has a terminal twin called tshark, which prints the same capture as text. It is what you reach for on a server with no desktop, and the answer is a line you can read rather than a screen to scan.
+Right-click any LDAP packet and choose Follow → TCP Stream. Wireshark pulls every packet of that one connection out of the noise and lays the exchange out in order, both directions, in a single window.
 
-```bash
-sudo tshark -i ens5 -f "host dc01" -c 20
-```
+This is the move an analyst reaches for first when one conversation matters. Close the stream window and the filter it set stays in the bar, showing only that connection.
 
-Run that, then repeat the two queries from another terminal. tshark prints twenty packets of the same conversation.
+<div class="ad-shots">
+<figure class="ad-shot">
+<img src="/academy/week-3/PLACEHOLDER-follow-stream.png" alt="Wireshark Follow TCP Stream window showing the full LDAP exchange between the Ubuntu box and the domain controller" />
+<figcaption>Screenshot 5. [ADD IMAGE] One conversation, pulled out whole.</figcaption>
+</figure>
+</div>
 
 ### Check Yourself
 
@@ -149,11 +162,11 @@ Answer from what you captured, not from what you remember reading.
 </div>
 
 <div class="ad-check" data-check="w3e-c4" data-answer="1">
-<p class="ad-check__q">When would you reach for tshark instead of the Wireshark window?</p>
-<button type="button" class="ad-check__opt" data-i="0">When the capture is wrong and needs fixing</button>
-<button type="button" class="ad-check__opt" data-i="1">On a server with no desktop, where you need a readable line</button>
-<button type="button" class="ad-check__opt" data-i="2">Never, the window is always better</button>
-<p class="ad-check__note">Most servers have no desktop. tshark gives you the same capture as text over an SSH session, which is where a lot of real capture work happens.</p>
+<p class="ad-check__q">You want to read one connection's whole exchange without the surrounding noise. Which Wireshark move does that?</p>
+<button type="button" class="ad-check__opt" data-i="0">Opening the Bytes pane</button>
+<button type="button" class="ad-check__opt" data-i="1">Right-click a packet, Follow, TCP Stream</button>
+<button type="button" class="ad-check__opt" data-i="2">Scrolling the Packet List faster</button>
+<p class="ad-check__note">Follow TCP Stream reassembles a single conversation into one readable window and sets a filter to just that connection. It is the first move when one exchange matters.</p>
 </div>
 
 ### Troubleshooting

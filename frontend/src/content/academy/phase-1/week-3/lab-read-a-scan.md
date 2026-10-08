@@ -71,13 +71,13 @@ Read the list. Some ports connect and some do not. The capture is about to expla
 
 ### Read the Three Answers
 
-Stop the capture in Wireshark. Now look at how each port replied, because a port can answer in three different ways and each one means something.
+Stop the capture in Wireshark. The Info column on each line tells you how a port replied, and a port can answer in three different ways.
 
-* **Open.** The handshake completes. SYN out, SYN-ACK back, ACK. A service is listening and the firewall allows it. Look at port 445 or 389.
-* **Closed.** The domain controller answers the SYN with a RST, a reset. Nothing is listening, but the machine is reachable and says so plainly.
-* **Filtered.** The SYN goes out and nothing comes back at all. Your machine sends it again, and still nothing. A firewall is dropping it in silence rather than refusing it.
+* **Open.** The handshake completes. The Info column reads `[SYN]`, then `[SYN, ACK]` back, then `[ACK]`. A service is listening and the firewall allows it. Look at port 445 or 389.
+* **Closed.** The domain controller answers the SYN with `[RST, ACK]`, a reset. Nothing is listening, but the machine is reachable and says so plainly.
+* **Filtered.** The `[SYN]` goes out and nothing comes back. Wireshark shows the same SYN sent again a second or two later, still with no reply. A firewall is dropping it in silence rather than refusing it.
 
-Find one of each in the capture. The gap between a RST and total silence is the whole point. One tells the scanner a port is simply shut, the other tells them a firewall is in the way.
+Find one of each in the Packet List. The gap between a RST and total silence is the whole point. One tells the scanner a port is simply shut, the other tells them a firewall is in the way.
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -86,9 +86,18 @@ Find one of each in the capture. The gap between a RST and total silence is the 
 </figure>
 </div>
 
-### The Signature of a Scan
+### See the Whole Scan at Once
 
-Step back from the single ports and look at the whole capture. One machine, the Ubuntu box, sent a SYN to eight different ports of the domain controller in a couple of seconds. Most got no useful reply.
+Wireshark can show the shape rather than the single packets. Open Statistics → Conversations and select the TCP tab. Each row is one connection, with its port and how many packets it carried.
+
+One machine opening a row for port after port of the same target, each only a packet or two, is a scan laid out in a table. A normal session would be a few rows with many packets each. This is many rows with almost none.
+
+<div class="ad-shots">
+<figure class="ad-shot">
+<img src="/academy/week-3/PLACEHOLDER-conversations.png" alt="Wireshark Statistics Conversations window showing many short connections from the Ubuntu box to different ports of the domain controller" />
+<figcaption>Screenshot 3. [ADD IMAGE] The scan as a table, one row per port.</figcaption>
+</figure>
+</div>
 
 That shape, one source spraying SYNs across many ports fast, is a scan. It looks nothing like normal traffic, which settles into a few steady conversations. Seeing it in a real capture is often the first sign that someone is mapping a machine before they move on it.
 
