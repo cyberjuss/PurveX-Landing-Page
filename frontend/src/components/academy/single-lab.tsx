@@ -23,6 +23,7 @@ export function SingleLab({
   title,
   phaseSlug,
   entrySlug,
+  entryTitle,
   widget,
   markdown,
 }: {
@@ -30,6 +31,8 @@ export function SingleLab({
   title: string;
   phaseSlug: string;
   entrySlug: string;
+  /** The week that assigns this lab, for the way back to it. */
+  entryTitle?: string;
   widget?: LabWidget;
   markdown?: string | null;
 }) {
@@ -38,7 +41,18 @@ export function SingleLab({
 
   return (
     <div className="sl">
-      <Link href="/range/labs" className="sl__back"><ArrowLeft aria-hidden="true" /> All labs</Link>
+      {/* Two ways back, because there are two ways in. A lab opened from the
+          rail belongs to a week the student may never have seen, and finishing
+          it is what finishes that week, so the week is the more useful of the
+          two and goes first. */}
+      <nav className="sl__backs">
+        {entryTitle && (
+          <Link href={`/range/${phaseSlug}/${entrySlug}`} className="sl__back">
+            <ArrowLeft aria-hidden="true" /> {entryTitle}
+          </Link>
+        )}
+        <Link href="/range/labs" className="sl__back sl__back--alt">All labs</Link>
+      </nav>
 
       {widget ? (
         <>

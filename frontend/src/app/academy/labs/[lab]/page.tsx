@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { loadLesson } from "@/lib/academy-content";
+import { loadLesson, phases } from "@/lib/academy-content";
+import { entriesOf } from "@/lib/academy-entries";
 import { findLab, listLabs } from "@/lib/academy-labs";
 import { extractEssentialQuestion } from "@/lib/markdown";
 import { SingleLab } from "@/components/academy/single-lab";
@@ -21,6 +22,12 @@ export default async function LabPage({ params }: { params: Promise<{ lab: strin
     markdown = raw ? extractEssentialQuestion(raw).rest : null;
   }
 
+  // The week's own title, so the lab can offer a way back to the thing that
+  // assigned it. Labs are no longer tabs on their week, so nothing else on
+  // this page says which week it belongs to.
+  const entryTitle = entriesOf(phases.find((p) => p.slug === lab.phaseSlug) ?? phases[0])
+    .find((e) => e.slug === lab.entrySlug)?.title;
+
   return (
     <div className="rd">
       <SingleLab
@@ -28,6 +35,7 @@ export default async function LabPage({ params }: { params: Promise<{ lab: strin
         title={lab.title}
         phaseSlug={lab.phaseSlug}
         entrySlug={lab.entrySlug}
+        entryTitle={entryTitle}
         widget={lab.widget}
         markdown={markdown}
       />

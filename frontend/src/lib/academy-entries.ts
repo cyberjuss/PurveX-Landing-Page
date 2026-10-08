@@ -29,14 +29,31 @@ export function labSlug(file: string, widget?: string): string {
   return base.replace(/^lab-/, "").replace(/\.md$/, "");
 }
 
+export type LabLink = {
+  slug: string;
+  title: string;
+  /** The week that assigns it. A lab is not finished until its week knows, and
+   *  since labs left the week's tabs this is the only thing tying the two back
+   *  together -- for the done mark in the rail, and for the way back. */
+  phaseSlug: string;
+  entrySlug: string;
+  entryTitle: string;
+};
+
 /** Every hands-on lab across the given phases, in course order, as links. */
-export function labLinksOf(phases: PhaseDef[]): { slug: string; title: string }[] {
-  const out: { slug: string; title: string }[] = [];
+export function labLinksOf(phases: PhaseDef[]): LabLink[] {
+  const out: LabLink[] = [];
   for (const phase of phases) {
     for (const entry of entriesOf(phase)) {
       for (const s of entry.sections) {
         if (!s.label.startsWith("Lab:")) continue;
-        out.push({ slug: labSlug(s.file, s.widget), title: s.label.replace(/^Lab:\s*/, "") });
+        out.push({
+          slug: labSlug(s.file, s.widget),
+          title: s.label.replace(/^Lab:\s*/, ""),
+          phaseSlug: phase.slug,
+          entrySlug: entry.slug,
+          entryTitle: entry.title,
+        });
       }
     }
   }

@@ -6,12 +6,12 @@ import { usePathname } from "next/navigation";
 import { BookMarked, Check, ChevronDown, FlaskConical, Hammer, Lock } from "lucide-react";
 import { type PhaseDef } from "@/lib/academy-content";
 import { entriesOf, labLinksOf } from "@/lib/academy-entries";
-import { useAcademyProgress } from "./academy-progress";
+import { slugify, useAcademyProgress } from "./academy-progress";
 import { isPhaseLocked } from "@/lib/academy-locks";
 
 export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onNavigate?: () => void }) {
   const pathname = usePathname();
-  const { isComplete, isPhaseComplete, requirements, completedCount, totalCount } = useAcademyProgress();
+  const { isComplete, isPhaseComplete, isLabDone, requirements, completedCount, totalCount } = useAcademyProgress();
   // Only the Home Lab group collapses now, so one Set of open slugs is enough.
   const [manualOpen, setManualOpen] = useState<Set<string>>(new Set());
 
@@ -209,6 +209,10 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               <ul className="ax-list flex flex-col overflow-hidden">
                 {phaseLabs.map((lab) => {
                   const href = `/range/labs/${lab.slug}`;
+                  // The same tick a finished week gets. Without it this list,
+                  // which is now the way into every lab, was the one place in
+                  // the rail that said nothing about where a student is.
+                  const labDone = isLabDone(lab.phaseSlug, lab.entrySlug, slugify(lab.title));
                   return (
                     <li key={lab.slug}>
                       <Link
@@ -217,6 +221,9 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                         className={`ax-week${pathname === href ? " ax-week--on" : ""}`}
                       >
                         <span className="ax-week__name truncate">{lab.title}</span>
+                        {labDone && (
+                          <Check className="ax-week__tick h-4 w-4" strokeWidth={2.5} aria-label="Complete" />
+                        )}
                       </Link>
                     </li>
                   );

@@ -1,12 +1,18 @@
 /* A lab on its own page: a back link, then the lab itself. Kept calm and
  * open, no boxed-in rails. */
 .sl { max-width: 52rem; margin: 0 auto; }
+/* The week first, then the gallery. A lab opened from the rail belongs to a
+   week the student may not have opened, and finishing it is what finishes that
+   week, so the week is the one worth the accent. */
+.sl__backs { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1.1rem; margin-bottom: 1.4rem; }
 .sl__back {
-  display: inline-flex; align-items: center; gap: 0.4rem; margin-bottom: 1.4rem;
+  display: inline-flex; align-items: center; gap: 0.4rem;
   font-size: var(--ty-note); font-weight: 650; text-decoration: none;
   color: var(--rd-accent, #5546e0);
 }
 .sl__back svg { width: 15px; height: 15px; }
 .sl__back:hover { text-decoration: underline; text-underline-offset: 3px; }
+.sl__back--alt { font-weight: 600; color: var(--rd-ink-3, #64748b); }
+.sl__back--alt:hover { color: var(--rd-ink-2, #475569); }
 .sl__title { margin: 0 0 1.2rem; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.15; letter-spacing: -0.01em; color: var(--rd-ink, #0f172a); }
 .sl__soon { padding: 2.5rem 1rem; text-align: center; color: var(--rd-ink-2, #475569); }
