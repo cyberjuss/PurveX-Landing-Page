@@ -80,14 +80,15 @@ html[data-academy-theme="dark"] .hl-note,
 
 @keyframes hl-pulse { 50% { opacity: 0.25; } }
 
-/* The two machines, read as a rack listing: role tag, name, size. Tiles put a
-   box round each one and made the card a grid of boxes. */
-.hl .hl__rigs { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; box-shadow: inset 0 1px 0 var(--hl-line), inset 0 -1px 0 var(--hl-line); }
+/* The two machines, read as a rack listing: role tag, name, size. No rules
+   above, below or between them: the role marks already start each row, so the
+   lines were drawing a table nobody needed and cutting the card into bands.
+   Spacing groups them instead. */
+.hl .hl__rigs { display: grid; gap: 3px; margin: 0; padding: 0; list-style: none; }
 .hl .hl__rigs li {
   display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) auto; align-items: baseline; gap: 12px;
-  padding: 11px 2px; font-family: var(--font-mono, ui-monospace, monospace);
+  padding: 7px 2px; font-family: var(--font-mono, ui-monospace, monospace);
 }
-.hl .hl__rigs li + li { box-shadow: inset 0 1px 0 color-mix(in srgb, var(--hl-line) 60%, transparent); }
 .hl .hl__rigs em {
   display: inline-grid; place-items: center; justify-self: start;
   min-width: 4.6rem; padding: 4px 8px;
@@ -188,7 +189,7 @@ html[data-academy-theme="dark"] .hl-note,
 .hl .hl__eta em { flex: none; font-style: normal; }
 
 /* Footer */
-.hl__foot { display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding-top: 14px; border-top: 1px solid color-mix(in srgb, var(--hl-line) 60%, transparent); }
+.hl__foot { display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding-top: 4px; }
 .hl .hl__note { margin: 0; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); line-height: 1.5; color: var(--hl-ink-2); }
 .hl__actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .hl .hl__go,
