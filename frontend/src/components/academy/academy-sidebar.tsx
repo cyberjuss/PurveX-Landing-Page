@@ -295,8 +295,8 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 <ul className="ax-list flex flex-col">
                   {phase.weeks.map(row)}
                 </ul>
-                {labSection}
                 {labsListSection}
+                {labSection}
               </div>
             </div>
           </div>
