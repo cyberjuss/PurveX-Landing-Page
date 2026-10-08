@@ -4516,21 +4516,13 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-segs i { height: 8px; border-radius: 2px; }
 .ax-segs--tight { margin-top: 9px; }
 
-/* A quiet scrollbar for the rail. The platform default is a wide grey channel
-   with stepper arrows, which on a dark panel is the loudest thing in it.
-   Square to match the rest, and it fades up only while the pointer is over
-   the list it belongs to. */
-.ax-scroll { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--rd-ink) 16%, transparent) transparent; }
-.ax-scroll::-webkit-scrollbar { width: 10px; }
-.ax-scroll::-webkit-scrollbar-track { background: transparent; }
-.ax-scroll::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--rd-ink) 14%, transparent);
-  background-clip: content-box;
-  border: 3px solid transparent;
-}
-.ax-scroll:hover::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--rd-ink) 26%, transparent); background-clip: content-box; }
-.ax-scroll::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--rd-accent) 55%, transparent); background-clip: content-box; }
-.ax-scroll::-webkit-scrollbar-button { display: none; }
+/* The course rail scrolls with the wheel and shows no bar for it. The rail is
+   a short list of named places, not a document, so a track running the whole
+   height of the screen was a permanent vertical line beside the one the panel
+   already draws. Scrolling past either end does not then drag the lesson
+   behind it. */
+.ax-scroll { scrollbar-width: none; -ms-overflow-style: none; overscroll-behavior: contain; }
+.ax-scroll::-webkit-scrollbar { width: 0; height: 0; }
 
 /* Course progress. A label, a fraction and one segment per lesson. */
 .ax-prog { padding-bottom: 4px; }
