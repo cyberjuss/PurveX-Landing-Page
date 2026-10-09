@@ -34,6 +34,7 @@ import { generateCtf, generateDaily, responseGrader } from "@/lib/academy-scenar
 import { summarize, type Results } from "@/lib/academy-score";
 import { loadDailyDrill, loadDrills, loadLabLive, loadLabState, loadProfile, loadProgress, saveDailyDrill, saveDrill, touchLabLive } from "@/lib/academy-store";
 import { LIVE_MINUTES, isVerified } from "@/lib/academy-verify";
+import { isRangePro } from "@/lib/range-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -186,6 +187,9 @@ export async function POST(request: Request) {
   }
 
   if (body.action === "start") {
+    // Writing a fresh scenario is a model call per student per day, so it is
+    // Pro. Explore gets the built-in questions, the same ones served with no key.
+    const writerKey = apiKey && (await isRangePro(a.student)) ? apiKey : undefined;
     const mode: DrillMode = body.mode === "timed" ? "timed" : body.mode === "ctf" ? "ctf" : "daily";
     const entries = await loadDrills(userId);
 
@@ -246,16 +250,16 @@ export async function POST(request: Request) {
     const recent = recentPrompts(entries);
 
     let item = null;
-    if (apiKey && mode === "daily") {
+    if (writerKey && mode === "daily") {
       // Aim at the on-the-job task they have shown the least, so the daily drill covers what the job needs.
       const fixable = snapshot ? auditLab(snapshot).filter((f) => f.task) : [];
       const labJobs = snapshot ? new Set(fixable.map((f) => f.job)) : null;
       const target = pickTargetJob(entries, `${userId}:${day}`, labJobs, results, snapshot, aim.prefer);
       const format = swap ? "respond" : pickFormat(`${userId}:${day}`, level, fixable.length > 0, Boolean(target?.lab));
       const targetJob = target ? { id: target.id, label: target.label } : null;
-      item = await generateDaily({ apiKey, userId, day, snapshot, results, level, recent, format, targetJob, examFocus: aim.focus }).catch(() => null);
-    } else if (apiKey && mode === "ctf") {
-      item = await generateCtf({ apiKey, userId, week: keyDay, snapshot, results, level, recent }).catch((err) => {
+      item = await generateDaily({ apiKey: writerKey, userId, day, snapshot, results, level, recent, format, targetJob, examFocus: aim.focus }).catch(() => null);
+    } else if (writerKey && mode === "ctf") {
+      item = await generateCtf({ apiKey: writerKey, userId, week: keyDay, snapshot, results, level, recent }).catch((err) => {
         console.error("ctf: writer failed", err);
         return null;
       });

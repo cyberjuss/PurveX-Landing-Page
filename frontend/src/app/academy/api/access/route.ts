@@ -1,27 +1,21 @@
 import { NextResponse } from "next/server";
 import { setAcademyCookie } from "@/lib/academy-auth";
-import { classesFor, isClassMember } from "@/lib/academy-classes";
-import { isRangePro } from "@/lib/range-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
 
-// Who skips the passcode and gets straight into the portal: Range Pro
-// subscribers and admins (isRangePro), instructors with a class of their own
-// (classesFor), and anyone on a class roster (isClassMember).
+// Signing in is the way in. Every account gets Explore: every lesson, every
+// challenge, the Ticket Queue and the browser labs. What costs money per
+// student (the cloud lab, Coach, the Shift, AI-written drills, a published
+// Proof Profile) asks isRangePro() on its own route, so opening the door here
+// opens nothing that is sold. A class code no longer gates entry; it only
+// puts a student on a class roster, which is what makes their seat Pro.
 //
-// A cohort seat is used for the roster check, not isRangePro, on purpose. A
-// student's Pro runs out 12 weeks after they join (see cohortAccessExpiry), at
-// which point isRangePro goes false, but they keep access to the free Explore
-// tier. Gating the portal on isRangePro would lock an expired cohort student
-// out entirely instead of dropping them to free. Pro features stay gated by
-// isRangePro inside each route; this only decides who can open the portal.
+// This also covers a cohort student whose 12-week seat has run out (see
+// cohortAccessExpiry): isRangePro goes false, and they drop to Explore
+// rather than being sent back to the passcode screen.
 export async function POST(request: Request) {
   const me = await getAcademyStudent(request);
   if (!me) return NextResponse.json({ unlocked: false }, { status: 401 });
-  const allowed =
-    (await isRangePro(me)) ||
-    (await isClassMember(me.id).catch(() => false)) ||
-    (await classesFor(me.email)).length > 0;
-  return NextResponse.json({ unlocked: allowed && (await setAcademyCookie()) });
+  return NextResponse.json({ unlocked: await setAcademyCookie() });
 }

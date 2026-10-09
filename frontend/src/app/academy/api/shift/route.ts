@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { canUseHostedLab, hostedLabStatus } from "@/lib/academy-hosted";
 import { ackIncident, finishShift, getShift, hintIncident, startShift, submitIncident } from "@/lib/academy-shift-run";
+import { isRangePro, proRequired } from "@/lib/range-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -9,16 +10,21 @@ export const maxDuration = 60;
 
 // The Shift: start a 30-minute tour, read its live state, acknowledge and work
 // each incident, buy a hint, submit a response, or end the shift. A shift needs
-// a hosted lab, since incidents are fired into the student's own lab.
+// a hosted lab, since incidents are fired into the student's own lab, so it
+// is Pro like the lab itself.
 
+// Pro is asked first, so a paying student is never told to buy what they have.
 async function student(request: Request) {
-  if (!(await isAcademyUnlocked())) return null;
+  if (!(await isAcademyUnlocked())) return { s: null, denied: "lab" } as const;
   const s = await getAcademyStudent(request);
-  return s && canUseHostedLab(s.email) ? s : null;
+  if (!s) return { s: null, denied: "lab" } as const;
+  if (!(await isRangePro(s))) return { s: null, denied: "pro" } as const;
+  if (!canUseHostedLab(s.email)) return { s: null, denied: "lab" } as const;
+  return { s, denied: null } as const;
 }
 
 export async function GET(request: Request) {
-  const s = await student(request);
+  const { s } = await student(request);
   if (!s) return NextResponse.json({ available: false });
   try {
     const [shift, lab] = await Promise.all([getShift(s.id), hostedLabStatus(s.id).catch(() => null)]);
@@ -30,7 +36,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const s = await student(request);
+  const { s, denied } = await student(request);
+  if (denied === "pro") return NextResponse.json(proRequired("The Shift"), { status: 403 });
   if (!s) return NextResponse.json({ error: "Shifts need a hosted lab." }, { status: 403 });
   let body: { action?: unknown; uid?: unknown; defId?: unknown; diagnosis?: unknown; response?: unknown; escalate?: unknown };
   try {
