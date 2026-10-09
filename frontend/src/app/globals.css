@@ -2837,10 +2837,12 @@ body:has(.lp) {
   background-image: radial-gradient(ellipse 130% 90% at 50% -15%, color-mix(in srgb, var(--rd-accent) 14%, transparent) 0%, color-mix(in srgb, var(--rd-accent) 4%, transparent) 35%, transparent 72%);
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  transform-origin: 50% 0%;
+  animation: academy-blur-breathe 18s ease-in-out infinite;
 }
-@keyframes academy-print-live {
-  0%, 100% { opacity: 0.42; }
-  50% { opacity: 1; }
+@keyframes academy-blur-breathe {
+  0%, 100% { opacity: 0.68; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.06); }
 }
 @media (prefers-reduced-motion: reduce) {
   .academy-bg::before { animation: none; opacity: 0.85; }
@@ -3939,15 +3941,14 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   color: var(--pvrx-text-primary-light);
 }
 .academy-bg[data-academy-theme="dark"]::before {
-  /* A smooth silky black instead of the printed dot grid: one soft sheen at
-     the top fading into pure black, no texture and no pulse, so the page
-     reads like the tour card's surface. */
+  /* The same accent blur as the base rule, a touch stronger on black. It
+     inherits the calm breathe animation from the base; this rule only sets
+     the colour. */
   background-image: radial-gradient(ellipse 130% 90% at 50% -15%, color-mix(in srgb, var(--rd-accent) 18%, transparent) 0%, color-mix(in srgb, var(--rd-accent) 6%, transparent) 35%, transparent 72%);
   background-size: 100% 100%;
   background-repeat: no-repeat;
   mask-image: none;
   -webkit-mask-image: none;
-  animation: none;
   opacity: 1;
 }
 
