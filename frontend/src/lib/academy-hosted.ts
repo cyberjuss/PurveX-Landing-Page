@@ -584,9 +584,16 @@ export async function startHostedLab(userId: string): Promise<void> {
   await chargeSession(userId);
   // Both machines come back together. A student who opens the Ubuntu server and
   // finds it stopped has a broken lab, not half a lab, so the pod starts as one.
+  // A failed resume hands the session's hours back, the same as a failed launch
+  // above, rather than charging for a pod that never came up.
   const ids = podInstanceIds(row);
-  if (ids.length) await ec2().send(new StartInstancesCommand({ InstanceIds: ids })).catch((err) => console.error("pod start failed", err instanceof Error ? err.message : err));
-  await saveHostedLab(userId, { ...row, stopAt: stopAtFromNow() });
+  try {
+    if (ids.length) await ec2().send(new StartInstancesCommand({ InstanceIds: ids }));
+    await saveHostedLab(userId, { ...row, stopAt: stopAtFromNow() });
+  } catch (err) {
+    await refundSession(userId);
+    throw err;
+  }
 }
 
 /** Hibernate suits the domain controller: the student gets their windows back as
