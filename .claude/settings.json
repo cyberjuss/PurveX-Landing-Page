@@ -42,5 +42,12 @@
       "Bash(git rm *)",
       "Bash(rm -f \"frontend/{\" \"frontend/\\({}\\)\\)\" \"frontend/package-Cyberjuss.json\" \"frontend/package-lock-Cyberjuss.json\")"
     ]
+  },
+  "enabledPlugins": {
+    "code-review@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true,
+    "claude-education-skills-library@anthropic-plugin-directory": true,
+    "easedup@anthropic-plugin-directory": true
   }
 }
