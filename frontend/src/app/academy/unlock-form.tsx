@@ -92,7 +92,7 @@ export function UnlockForm() {
       <p className="mt-6 text-center text-sm text-slate-600">
         No code?{" "}
         <Link href="/range/upgrade" className="am-link">
-          Get Pro for $29 a month
+          Get Pro for $49 a month
         </Link>{" "}
         and start on your own.
       </p>

@@ -376,7 +376,7 @@ export function CoachChat() {
           <p className="pc-error">
             PurveX Coach is part of Range Pro.{" "}
             <a href="/range/upgrade" className="pc-error__link">
-              Get Pro for $29 a month
+              Get Pro for $49 a month
             </a>
           </p>
         ) : (
