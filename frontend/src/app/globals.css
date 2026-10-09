@@ -3280,6 +3280,54 @@ body:has(.lp) {
 .academy-prose .ad-code pre { margin: 0; border-radius: 0; }
 .academy-prose .ad-code__pre--tall { max-height: 420px; overflow-y: auto; }
 
+/* "Go deeper": an optional deep dive, framed as one contained block so it reads
+   as a distinct aside rather than loose text. A clear toggle, a padded body,
+   and each #### inside as a tidy sub-section with even rhythm. */
+.academy-prose .academy-deeper {
+  margin: 1.75rem 0;
+  border: 1px solid var(--rd-line);
+  background: color-mix(in srgb, var(--rd-ink) 2.5%, transparent);
+}
+.academy-prose .academy-deeper[open] { padding-bottom: 1.2rem; }
+.academy-prose .academy-deeper > summary {
+  display: flex; align-items: center; gap: 0.55rem;
+  cursor: pointer; list-style: none;
+  padding: 0.85rem 1.15rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--rd-accent);
+  transition: color var(--ax-dur) var(--ax-ease);
+}
+.academy-prose .academy-deeper > summary::-webkit-details-marker { display: none; }
+.academy-prose .academy-deeper > summary::before {
+  content: ""; flex: none;
+  width: 0; height: 0;
+  border-left: 5px solid currentColor;
+  border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+  transition: transform var(--ax-dur) var(--ax-ease);
+}
+.academy-prose .academy-deeper[open] > summary::before { transform: rotate(90deg); }
+.academy-prose .academy-deeper[open] > summary { border-bottom: 1px solid var(--rd-line); }
+.academy-prose .academy-deeper > summary:hover { color: var(--rd-ink); }
+/* The body: everything after the toggle, inset evenly from the frame. */
+.academy-prose .academy-deeper > *:not(summary) { margin-left: 1.15rem; margin-right: 1.15rem; }
+/* Each sub-section heading, with consistent space above and a hairline to set
+   it off from the section before. The first one needs neither. */
+.academy-prose .academy-deeper h4 {
+  margin-top: 1.5rem; margin-bottom: 0.5rem; padding-top: 1.3rem;
+  border-top: 1px solid var(--rd-line-2);
+  font-family: var(--font-display); font-size: var(--ty-lead); font-weight: 650; letter-spacing: -0.01em; color: var(--rd-ink);
+}
+.academy-prose .academy-deeper > summary + h4,
+.academy-prose .academy-deeper h4:first-of-type { margin-top: 1.15rem; padding-top: 0; border-top: none; }
+.academy-prose .academy-deeper p { font-size: var(--ty-note); }
+.academy-prose .academy-deeper ul { margin-top: 0.5rem; }
+.academy-prose .academy-deeper pre { margin-top: 0.6rem; margin-bottom: 0.6rem; }
+/* A smooth reveal on open, from a resting state, honoured off under reduced motion. */
+.academy-prose .academy-deeper[open] > *:not(summary) { animation: deeper-in var(--ax-dur-slow, 320ms) var(--ax-ease) both; }
+@keyframes deeper-in { from { opacity: 0; transform: translateY(5px); } }
+@media (prefers-reduced-motion: reduce) { .academy-prose .academy-deeper[open] > *:not(summary) { animation: none; } }
+
 /* Troubleshooting callout list -- red left-border cards, one per error.
    Each gets a numbered circular badge via CSS counters (scoped to this
    list) instead of relying on the label's own leading "1. " text, so the
