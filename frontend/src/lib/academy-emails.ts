@@ -79,6 +79,27 @@ export function studentNudgeEmail(student: Named, o: string): Built {
   return { subject: "The lab is waiting for you", html };
 }
 
+/** Sent as a cohort student's 12 weeks of free access runs out. `ended` is
+ *  false a week before it lapses and true once it has, which changes only the
+ *  framing. Either way the choice is the same: Range Pro, or stay free. */
+export function cohortEndingEmail(student: Named, ended: boolean, o: string): Built {
+  const url = base(o);
+  const html =
+    pre(ended ? "Keep your lab, or stay on the free plan." : "Your cohort access ends in a week.") +
+    h(ended ? `Your cohort access has ended, ${first(student.name)}` : `Your cohort access ends soon, ${first(student.name)}`) +
+    p(
+      ended
+        ? "Your 12 weeks with the class are up, so your cloud lab, PurveX Coach and Proof Profile publishing are paused for now. You can turn them back on any time."
+        : "You are about a week from the end of your 12 weeks with the class. After that your cloud lab, PurveX Coach and Proof Profile publishing pause unless you continue on Range Pro."
+    ) +
+    p("Range Pro is $49 a month and keeps all of it: your own cloud lab in a browser tab, the coach that reads your lab, and a Proof Profile any employer can verify.") +
+    button(`${url}/range/upgrade`, "Get Range Pro") +
+    p("Prefer to stay free? You keep every lesson, every challenge, the Ticket Queue and the in-browser labs. Nothing you have finished goes away.") +
+    note("Cancel in one click, any time.") +
+    fallback(`${url}/range/upgrade`, "Or open this link:");
+  return { subject: ended ? "Your PurveX cohort access has ended" : "Your PurveX cohort access ends in a week", html };
+}
+
 export type DigestInput = {
   className: string;
   students: number;
