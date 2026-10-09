@@ -7,5 +7,6 @@ export type AcademyStudent = { id: string; email: string | null; name: string | 
 export async function getAcademyStudent(): Promise<AcademyStudent | null> {
   const email = process.env.STUB_STUDENT_EMAIL;
   if (!email) return null;
-  return { id: "00000000-0000-0000-0000-00000000beef", email, name: "Range Check" };
+  // STUB_STUDENT_ID lets a check sign in as two different students.
+  return { id: process.env.STUB_STUDENT_ID || "00000000-0000-0000-0000-00000000beef", email, name: "Range Check" };
 }
