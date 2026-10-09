@@ -12,7 +12,7 @@ import type { User } from "@supabase/supabase-js";
 // Deliberately a real route under /range rather than a page under /academy.
 // next.config.ts rewrites /range/:path* to /academy/:path*, and everything
 // under /academy renders inside AcademyShell, which asks for a class
-// passcode before it shows anything. Someone who wants to pay us $29 should
+// passcode before it shows anything. Someone who wants to pay us $49 should
 // not have to find an instructor first -- a real route wins over the
 // rewrite (same trick as /range/join) and skips that gate entirely.
 
@@ -161,7 +161,7 @@ function UpgradeContent() {
           two unrelated lists with nothing holding them together. */}
       <div className="mt-7 rounded-xl border border-[#e6e7ee] bg-[#fbfbfd]">
         <div className="flex items-baseline gap-2 border-b border-[#eceef4] px-5 py-4">
-          <span className="text-[2rem] font-bold leading-none tracking-tight text-[#10192e]">$29</span>
+          <span className="text-[2rem] font-bold leading-none tracking-tight text-[#10192e]">$49</span>
           <span className="text-sm font-medium text-slate-500">per month</span>
           <span className="ml-auto text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">Range Pro</span>
         </div>

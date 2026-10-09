@@ -10,6 +10,10 @@ export const runtime = "nodejs";
 // Proof Profile) asks isRangePro() on its own route, so opening the door here
 // opens nothing that is sold. A class code no longer gates entry; it only
 // puts a student on a class roster, which is what makes their seat Pro.
+//
+// This also covers a cohort student whose 12-week seat has run out (see
+// cohortAccessExpiry): isRangePro goes false, and they drop to Explore
+// rather than being sent back to the passcode screen.
 export async function POST(request: Request) {
   const me = await getAcademyStudent(request);
   if (!me) return NextResponse.json({ unlocked: false }, { status: 401 });

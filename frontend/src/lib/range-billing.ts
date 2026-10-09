@@ -2,14 +2,14 @@ import "server-only";
 import type Stripe from "stripe";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
-// The Stripe side of Range Pro ($29/month). Writes academy_subscriptions,
+// The Stripe side of Range Pro ($49/month). Writes academy_subscriptions,
 // which lib/range-plan.ts reads on every gated request. Nothing else in the
 // app may write that table -- see range_pro.sql for why.
 //
 // The account sells two different subscriptions: the $99/month self-hosted
 // Platform plan (portal_profiles + a signed license key) and this one. Both
 // arrive on the same webhook endpoint, so every handler here starts by
-// deciding whether the event is even ours -- otherwise a $29 Range renewal
+// deciding whether the event is even ours -- otherwise a $49 Range renewal
 // would trip the Platform's "issue them a license" email, and a $99 Platform
 // sale would hand out a Range Pro seat.
 
@@ -51,7 +51,7 @@ export async function checkoutIsRangePro(stripe: Stripe, session: Stripe.Checkou
   } catch (err) {
     console.error("[range-billing] Could not read checkout line items:", err);
     // Rethrown as "not Range" would hand the session to the Platform
-    // handler and mark a $29 buyer as a $99 licensee. Throwing instead
+    // handler and mark a $49 buyer as a $99 licensee. Throwing instead
     // makes the webhook return 500 and Stripe retry, which is recoverable.
     throw err;
   }

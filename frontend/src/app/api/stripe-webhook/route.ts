@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Two products share this endpoint: the $99/month self-hosted Platform
-  // plan (portal_profiles + a signed license key) and Range Pro at $29/month
+  // plan (portal_profiles + a signed license key) and Range Pro at $49/month
   // (academy_subscriptions, see lib/range-billing.ts). Every branch decides
   // which one it is before doing anything, or a Range sale would trigger
   // license issuance and a Platform sale would hand out a Range Pro seat.

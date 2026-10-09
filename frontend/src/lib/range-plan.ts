@@ -1,5 +1,5 @@
 import "server-only";
-import { isAcademyAdmin, isClassMember } from "@/lib/academy-classes";
+import { cohortAccessExpiry, isAcademyAdmin } from "@/lib/academy-classes";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import type { AcademyStudent } from "@/lib/academy-student";
 
@@ -8,7 +8,7 @@ import type { AcademyStudent } from "@/lib/academy-student";
 // "why can this account do that".
 //
 // Three ways to be Pro, matching the three tiers we sell:
-//   subscription -- paid $29/month themselves (Pro)
+//   subscription -- paid $49/month themselves (Pro)
 //   class        -- on a class roster, so their school pays per seat (Custom)
 //   admin        -- ACADEMY_ADMIN_EMAILS, plus the RANGE_PRO_EMAILS comp list
 //
@@ -89,10 +89,13 @@ export async function rangeEntitlement(student: AcademyStudent | null): Promise<
     };
   }
 
-  // A seat their school bought. Checked last because it is the only one of
-  // the three that always costs a query.
-  if (await isClassMember(student.id).catch(() => false)) {
-    return { plan: "pro", source: "class", until: null, canceled: false };
+  // A cohort seat, which is Pro for 12 weeks from the student's join date, then
+  // runs out. until carries when, so the UI can count it down and the student
+  // drops to free after. Checked last because it is the only one of the three
+  // that always costs a query.
+  const cohortEnds = await cohortAccessExpiry(student.id).catch(() => null);
+  if (cohortEnds && cohortEnds.getTime() > Date.now()) {
+    return { plan: "pro", source: "class", until: cohortEnds.toISOString(), canceled: false };
   }
 
   return FREE;
