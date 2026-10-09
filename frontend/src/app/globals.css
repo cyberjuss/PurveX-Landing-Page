@@ -3752,6 +3752,17 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   line-height: 1;
 }
 .academy-prose .ad-guess__mark { background: #16a34a; color: #fff; }
+.academy-prose .ad-guess__mark svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+/* A live solve: the disc lands with a small overshoot, the check draws in
+   stroke by stroke as it settles, and one soft ring goes out and fades. */
+.academy-prose .ad-guess__win--live .ad-guess__mark { animation: ad-mark-pop 420ms cubic-bezier(.34, 1.56, .64, 1) both, ad-mark-ring 640ms ease-out 180ms both; }
+.academy-prose .ad-guess__win--live .ad-guess__mark path { stroke-dasharray: 20; stroke-dashoffset: 20; animation: ad-check-draw 300ms var(--ax-ease) 170ms forwards; }
+@keyframes ad-mark-pop { from { transform: scale(0.4); opacity: 0 } 60% { opacity: 1 } to { transform: scale(1); opacity: 1 } }
+@keyframes ad-check-draw { to { stroke-dashoffset: 0 } }
+@keyframes ad-mark-ring {
+  from { box-shadow: 0 0 0 0 color-mix(in srgb, #16a34a 45%, transparent) }
+  to { box-shadow: 0 0 0 12px color-mix(in srgb, #16a34a 0%, transparent) }
+}
 .academy-prose .ad-guess__miss {
   background: #e5484d;
   color: #fff;
@@ -3784,7 +3795,9 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 }
 @media (prefers-reduced-motion: reduce) {
   .academy-prose .ad-guess__input--out,
-  .academy-prose .ad-guess__win { animation: none; }
+  .academy-prose .ad-guess__win,
+  .academy-prose .ad-guess__win--live .ad-guess__mark { animation: none; }
+  .academy-prose .ad-guess__win--live .ad-guess__mark path { animation: none; stroke-dashoffset: 0; }
 }
 .academy-prose .ad-close {
   margin: 2rem 0 0;
@@ -3909,6 +3922,24 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 @keyframes ax-enter-back { from { opacity: 0; transform: translate3d(-16px, 0, 0) } to { opacity: 1; transform: none } }
 @keyframes ax-enter-page { from { opacity: 0; transform: translate3d(0, 14px, 0) } to { opacity: 1; transform: none } }
 @keyframes ax-drawer-in { from { transform: translateX(-100%) } to { transform: none } }
+/* Route changes, as a view transition (academy-shell.tsx wraps each page in
+   <ViewTransition enter="ax-page-in" exit="ax-page-out">). The page leaving
+   lifts away quickly; the next one rises in on the portal curve, starting as
+   the old one clears, so the two never sit at full strength together. */
+::view-transition-old(.ax-page-out) { animation: ax-vt-out var(--ax-dur-fast) cubic-bezier(.4, 0, 1, 1) both }
+::view-transition-new(.ax-page-in) { animation: ax-vt-in var(--ax-dur-page) var(--ax-ease) 60ms both }
+@keyframes ax-vt-out { to { opacity: 0; transform: translate3d(0, -6px, 0) } }
+@keyframes ax-vt-in { from { opacity: 0; transform: translate3d(0, 14px, 0) } }
+/* Only the page moves. Without this the browser also cross-fades the whole
+   document, so the header and the course menu would flicker on every click. */
+::view-transition-old(root), ::view-transition-new(root) { animation: none }
+/* A browser that runs the view transition should not also run the page's own
+   entry animation underneath it. The CSS one stays for the first load and for
+   browsers without view transitions. */
+html:active-view-transition .ax-page { animation: none }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important }
+}
 @keyframes ax-scrim-in { from { opacity: 0 } to { opacity: 1 } }
 .ax-enter { animation: ax-enter var(--ax-dur) var(--ax-ease) both }
 .ax-enter-fwd, .academy-slide-in-right { animation: ax-enter-fwd var(--ax-dur) var(--ax-ease) both }
@@ -4699,6 +4730,17 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-week:hover { background: color-mix(in srgb, var(--rd-ink) 5%, transparent); color: var(--rd-ink); }
 .ax-week--on { background: color-mix(in srgb, var(--rd-accent) 11%, transparent); color: var(--rd-ink); font-weight: 650; }
 .ax-week--on::before { transform: scaleY(1); }
+/* The current row's marker is a real element with a view-transition name, so
+   on a route change the browser carries the one bar from the row you left to
+   the row you opened instead of one bar shrinking while another grows. The
+   ::before above stays as the marker wherever the element is not drawn. */
+.ax-week__bar {
+  position: absolute; left: 0; top: -1px; bottom: -1px; width: 3px;
+  background: var(--rd-accent);
+  view-transition-name: ax-rail-mark;
+}
+.ax-week--on:has(.ax-week__bar)::before { transform: scaleY(0); }
+::view-transition-group(ax-rail-mark) { animation-duration: var(--ax-dur-slow); animation-timing-function: var(--ax-ease); }
 @media (prefers-reduced-motion: reduce) {
   .ax-week::before { transition: none; }
 }
@@ -4780,6 +4822,16 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-lesstab:hover { color: var(--rd-ink-2); }
 .ax-lesstab--on { color: var(--rd-ink); font-weight: 650; }
 .ax-lesstab--on::after { background: var(--rd-accent); }
+/* The sliding underline (section-tabs.tsx). Until it has measured its first
+   tab, the tab's own line above shows, so the current tab is never unmarked. */
+.ax-lesstabs { position: relative; }
+.ax-lesstabs__bar {
+  position: absolute; left: 0; bottom: -1px; height: 2px; width: 0;
+  background: var(--rd-accent); pointer-events: none; opacity: 0;
+}
+.ax-lesstabs__bar[data-ready] { opacity: 1; transition: transform var(--ax-dur) var(--ax-ease), width var(--ax-dur) var(--ax-ease); }
+.ax-lesstabs:has(.ax-lesstabs__bar[data-ready]) .ax-lesstab--on::after { background: transparent; }
+@media (prefers-reduced-motion: reduce) { .ax-lesstabs__bar[data-ready] { transition: none; } }
 .ax-lesstab--on i { opacity: 1; color: var(--rd-accent); }
 .ax-lesstab svg { color: var(--rd-accent); opacity: 0.75; }
 .ax-lesstab--on svg { opacity: 1; }
@@ -4932,6 +4984,11 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
    finish line. This says what is left and opens it. */
 .ax-quiz__after { display: grid; justify-items: start; gap: 4px; margin-top: 8px; }
 .ax-quiz__after .ax-quiz__mark { margin: 0; color: var(--rd-good, var(--rd-ink-2)); font-weight: 650; }
+/* The same drawn check a solved challenge gets, drawn in as the pass lands. */
+.ax-quiz__mark--pass { display: inline-flex; align-items: center; gap: 8px; }
+.ax-quiz__mark--pass svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.ax-quiz__mark--pass path { stroke-dasharray: 20; stroke-dashoffset: 20; animation: ad-check-draw 300ms var(--ax-ease) 120ms forwards; }
+@media (prefers-reduced-motion: reduce) { .ax-quiz__mark--pass path { animation: none; stroke-dashoffset: 0; } }
 .ax-quiz__left { margin: 0; font-size: var(--ty-note); color: var(--rd-ink-3); }
 .ax-quiz__go {
   margin-top: 8px; padding: 10px 16px;

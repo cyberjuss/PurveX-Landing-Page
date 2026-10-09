@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Flag, FlaskConical, Wrench } from "lucide-react";
 import { Markdown, splitMarkdownIntoSlides } from "@/lib/markdown";
@@ -142,6 +142,33 @@ export function SectionTabs({
   }, [phaseSlug, entrySlug, current.kind, current.label, labWidget]);
   const prevItem = active > 0 ? items[active - 1] : null;
   const nextItem = active < items.length - 1 ? items[active + 1] : null;
+  // One underline that slides to the tab you pick, rather than one tab's line
+  // switching off as another's switches on. Placed straight on the element, so
+  // a resize or a late font load re-measures without a render.
+  const tabsRef = useRef<HTMLElement>(null);
+  const barRef = useRef<HTMLSpanElement>(null);
+  useLayoutEffect(() => {
+    const nav = tabsRef.current;
+    const bar = barRef.current;
+    if (!nav || !bar) return;
+    const place = () => {
+      const tab = nav.querySelectorAll<HTMLElement>('[role="tab"]')[active];
+      if (!tab) return;
+      // Measured from the boxes rather than offsetLeft/offsetWidth, which round
+      // to whole pixels and left the line a pixel short of the tab's own.
+      const t = tab.getBoundingClientRect();
+      const n = nav.getBoundingClientRect();
+      bar.style.transform = `translateX(${t.left - n.left + nav.scrollLeft + 10}px)`;
+      bar.style.width = `${Math.max(0, t.width - 20)}px`;
+      // The first placement lands without sliding in from the left edge.
+      if (!bar.dataset.ready) requestAnimationFrame(() => (bar.dataset.ready = "1"));
+    };
+    place();
+    const ro = new ResizeObserver(place);
+    ro.observe(nav);
+    return () => ro.disconnect();
+  }, [active, items.length]);
+
   function goTo(i: number) {
     setDir(i >= active ? 1 : -1);
     setActive(i);
@@ -262,7 +289,8 @@ export function SectionTabs({
           already occupies the left of the screen, so a second vertical list
           beside it left the lesson reading in two thirds of the width. */}
       <div className="ax-lesshead">
-        <nav className="ax-lesstabs" role="tablist" aria-label="Sections">
+        <nav ref={tabsRef} className="ax-lesstabs" role="tablist" aria-label="Sections">
+        <span ref={barRef} className="ax-lesstabs__bar" aria-hidden />
         {items.map((item, i) => (
           <button
             key={item.label}

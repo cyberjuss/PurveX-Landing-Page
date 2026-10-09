@@ -148,7 +148,12 @@ export function QuizBlock({
       {submitted && !passed && <p className="ax-quiz__mark">Need {passMark} of {total} to pass.</p>}
       {submitted && passed && (
         <div className="ax-quiz__after">
-          <p className="ax-quiz__mark">Passed.</p>
+          <p className="ax-quiz__mark ax-quiz__mark--pass">
+            <svg viewBox="0 0 24 24" aria-hidden>
+              <path d="M5.5 12.5l4.25 4.25L18.5 8" />
+            </svg>
+            Passed.
+          </p>
           {left.length > 0 ? (
             <>
               <p className="ax-quiz__left">

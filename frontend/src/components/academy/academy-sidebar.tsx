@@ -136,6 +136,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                   onClick={onNavigate}
                   className={`ax-week${active ? " ax-week--on" : ""}${done ? " ax-week--done" : ""}`}
                 >
+                  {active && <span className="ax-week__bar" aria-hidden />}
                   <span className="ax-week__name truncate">{label}</span>
                   {done ? (
                     <Check className="ax-week__tick h-4 w-4" strokeWidth={2.5} aria-label="Complete" />
@@ -239,6 +240,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                         onClick={onNavigate}
                         className={`ax-week${pathname === href ? " ax-week--on" : ""}`}
                       >
+                        {pathname === href && <span className="ax-week__bar" aria-hidden />}
                         <span className="ax-week__name truncate">{lab.title}</span>
                         {labDone && (
                           <Check className="ax-week__tick h-4 w-4" strokeWidth={2.5} aria-label="Complete" />

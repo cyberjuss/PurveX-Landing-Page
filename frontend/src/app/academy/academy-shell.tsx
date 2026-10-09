@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, ViewTransition } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeft, GraduationCap, Home, Loader2, Menu, Moon, Sun, X } from "lucide-react";
@@ -419,7 +419,13 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       const input = guess.querySelector<HTMLInputElement>(".ad-guess__input");
       const face = document.createElement("div");
       face.className = "ad-guess__win";
-      face.innerHTML = '<span class="ad-guess__mark" aria-hidden="true">\u2713</span> Answered right.';
+      // A drawn check rather than a glyph, so a live solve can draw it in.
+      face.innerHTML =
+        '<span class="ad-guess__mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5.5 12.5l4.25 4.25L18.5 8"/></svg></span> Answered right.';
+      const motion = animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      // Only a solve that just happened plays the moment. A solve restored on
+      // page load lands already drawn.
+      if (motion) face.classList.add("ad-guess__win--live");
       let landed = false;
       const land = () => {
         if (landed) return;
@@ -428,7 +434,6 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         else if (!guess.querySelector(".ad-guess__win")) guess.prepend(face);
         guess.classList.add("ad-guess--win");
       };
-      const motion = animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (input && motion) {
         input.classList.add("ad-guess__input--out");
         input.addEventListener("animationend", land, { once: true });
@@ -1288,9 +1293,14 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           <main className={`min-w-0 flex-1 px-4 sm:px-6 lg:px-10 ${isHome ? "py-5" : "py-6"}`}>
             {/* A lesson is wider than the rest: it carries an "On this page"
                 rail beside the reading column, and 4xl left no room for it. */}
-            <div key={pathname} className={`ax-page mx-auto ${isReadiness || isDrill || isLesson ? "max-w-6xl" : "max-w-4xl"}`}>
-              {children}
-            </div>
+            {/* Route changes run as a view transition: the page leaving lifts
+                away fast and the next one rises in, while the header and the
+                course menu stay put (see .ax-page-in / .ax-page-out). */}
+            <ViewTransition key={pathname} enter="ax-page-in" exit="ax-page-out" default="none">
+              <div className={`ax-page mx-auto ${isReadiness || isDrill || isLesson ? "max-w-6xl" : "max-w-4xl"}`}>
+                {children}
+              </div>
+            </ViewTransition>
           </main>
         </div>
         )}
