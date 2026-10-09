@@ -367,3 +367,21 @@ drop policy if exists "Students read their own lab usage" on public.academy_lab_
 create policy "Students read their own lab usage"
   on public.academy_lab_usage for select
   using (auth.uid() = user_id);
+
+-- What a student has in progress that is not a scored result: lesson
+-- checkmarks, quiz passes and answers, finished labs, where they stopped,
+-- and what is typed into each challenge box. One row per student, so leaving
+-- a page or switching device never loses an answer. Shape: src/lib/academy-saved.ts.
+-- Written by the server only.
+create table if not exists public.academy_saved (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  data jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.academy_saved enable row level security;
+
+drop policy if exists "Students read their own saved work" on public.academy_saved;
+create policy "Students read their own saved work"
+  on public.academy_saved for select
+  using (auth.uid() = user_id);

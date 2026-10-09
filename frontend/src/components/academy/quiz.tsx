@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { QUIZ_PASS_PERCENT, quizPassed, type Quiz } from "@/content/academy/quizzes";
 import { confetti } from "@/lib/confetti";
+import { getSaved, subscribeSaved, updateSaved } from "@/lib/academy-saved-client";
 import { useAcademyProgress } from "./academy-progress";
 import { TrailDock, type TrailLink } from "./trail-dock";
 
@@ -24,9 +25,19 @@ export function QuizBlock({
   weekLabs?: { slug: string; title: string }[];
 }) {
   const { recordQuizPass, requirements } = useAcademyProgress();
-  const [answers, setAnswers] = useState<(number | null)[]>(() => quiz.questions.map(() => null));
-  const [submitted, setSubmitted] = useState(false);
-  const [at, setAt] = useState(0);
+  // Picks are saved to the account as they are made, so leaving mid-quiz and
+  // coming back, here or on another device, picks up where the student was.
+  // A saved quiz whose question count no longer matches is ignored.
+  const quizKey = `${quiz.phaseSlug}:${quiz.weekSlug}`;
+  const savedQuiz = () => {
+    const s = getSaved().quizzes[quizKey];
+    return s && s.answers.length === quiz.questions.length ? s : null;
+  };
+  const [answers, setAnswers] = useState<(number | null)[]>(() => savedQuiz()?.answers ?? quiz.questions.map(() => null));
+  const [submitted, setSubmitted] = useState(() => savedQuiz()?.submitted ?? false);
+  const [at, setAt] = useState(() => savedQuiz()?.at ?? 0);
+  // Set once the student does anything here. From then on this screen is the newer copy.
+  const touched = useRef(false);
   const [dir, setDir] = useState<1 | -1>(1);
 
   const total = quiz.questions.length;
@@ -53,7 +64,35 @@ export function QuizBlock({
   const undone = new Set(left.map((r) => plain(r.label)));
   const nextLab = (weekLabs ?? []).find((l) => undone.has(l.title)) ?? (weekLabs ?? [])[0] ?? null;
 
+  // The account's copy can arrive after the quiz is on screen. Use it, unless the student has started.
+  useEffect(
+    () =>
+      subscribeSaved(() => {
+        const s = savedQuiz();
+        if (touched.current || !s) return;
+        setAnswers(s.answers);
+        setSubmitted(s.submitted);
+        setAt(s.at);
+      }),
+    // savedQuiz reads only quizKey and the question count.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [quizKey, quiz.questions.length]
+  );
+
+  useEffect(() => {
+    if (!touched.current) return;
+    const empty = !submitted && answers.every((a) => a === null);
+    updateSaved({ quizzes: { [quizKey]: empty ? null : { answers, submitted, at } } });
+  }, [answers, submitted, at, quizKey]);
+
+  function go(next: number) {
+    touched.current = true;
+    setDir(next > at ? 1 : -1);
+    setAt(next);
+  }
+
   function submit() {
+    touched.current = true;
     setSubmitted(true);
     const correct = answers.filter((a, i) => a === quiz.questions[i].correctIndex).length;
     if (quizPassed(correct, total)) {
@@ -64,10 +103,12 @@ export function QuizBlock({
 
   function selectOption(optionIndex: number) {
     if (submitted) return;
+    touched.current = true;
     setAnswers((prev) => prev.map((a, i) => (i === at ? optionIndex : a)));
   }
 
   function reset() {
+    touched.current = true;
     setAnswers(quiz.questions.map(() => null));
     setSubmitted(false);
     setAt(0);
@@ -94,8 +135,8 @@ export function QuizBlock({
   // screen's job, and it only has to be said once.
   const trail = (
     <TrailDock
-      prev={{ go: () => { setDir(-1); setAt(at - 1); }, disabled: at === 0 }}
-      next={{ go: () => { setDir(1); setAt(at + 1); }, disabled: isLast || (!submitted && selected === null) }}
+      prev={{ go: () => go(at - 1), disabled: at === 0 }}
+      next={{ go: () => go(at + 1), disabled: isLast || (!submitted && selected === null) }}
       center={action}
     />
   );

@@ -6,6 +6,7 @@ import { sanitizeProfile, type RoleBrief, type RoleId, type StudentProfile } fro
 import type { DrillEntry } from "@/lib/academy-drills";
 import { sanitizeLabSnapshot, type LabSnapshot } from "@/lib/academy-lab";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
+import { applyPatch, sanitizeSaved, type Saved, type SavedPatch } from "@/lib/academy-saved";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
 // Supabase when the service role is configured; per-process memory
@@ -20,6 +21,7 @@ const memoryLab = new Map<string, { snapshot: LabSnapshot; uploadedAt: string }>
 const memoryProfiles = new Map<string, StudentProfile>();
 const memoryRoleBriefs = new Map<string, RoleBrief>();
 const memoryActivity = new Map<string, StudentActivity>();
+const memorySaved = new Map<string, Saved>();
 
 function todayStamp() {
   return new Date().toISOString().slice(0, 10);
@@ -43,6 +45,36 @@ export async function saveProgress(userId: string, email: string | null, results
     updated_at: new Date().toISOString(),
   });
   if (error) console.error("academy_progress upsert failed", error.message);
+}
+
+/** Null when the stored copy could not be read, so a caller never mistakes an outage for an empty account. */
+export async function loadSaved(userId: string): Promise<Saved | null> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin.from("academy_saved").select("data").eq("user_id", userId).maybeSingle();
+    if (error) {
+      console.error("academy_saved read failed", error.message);
+      return null;
+    }
+    return sanitizeSaved(data?.data);
+  }
+  return memorySaved.get(userId) ?? sanitizeSaved(null);
+}
+
+/** Applies a change on top of what is stored. Null when it could not be read or written. */
+export async function patchSaved(userId: string, patch: SavedPatch): Promise<Saved | null> {
+  const current = await loadSaved(userId);
+  if (!current) return null;
+  const next = applyPatch(current, patch);
+  if (!supabaseAdmin) {
+    memorySaved.set(userId, next);
+    return next;
+  }
+  const { error } = await supabaseAdmin.from("academy_saved").upsert({ user_id: userId, data: next, updated_at: new Date().toISOString() });
+  if (error) {
+    console.error("academy_saved upsert failed", error.message);
+    return null;
+  }
+  return next;
 }
 
 export async function readUsage(userId: string, day = todayStamp()): Promise<number> {

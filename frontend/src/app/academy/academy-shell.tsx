@@ -10,6 +10,7 @@ import { hasHostedLab, HostedLabButton, startHostedLabNow } from "@/components/a
 import { HelpDialog } from "@/components/academy/get-help";
 import { AcademyIntake } from "@/components/academy/academy-intake";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
+import { clearSavedLocal, forgetLocalUnless, getSaved, SAVED_LOADED_EVENT, updateSaved } from "@/lib/academy-saved-client";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
 import { AcademySignIn } from "@/components/academy/academy-sign-in";
 import { AcademyWelcome, takeAcademyWelcome } from "@/components/academy/academy-welcome";
@@ -129,6 +130,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
     try {
       const owner = window.localStorage.getItem(RESULTS_OWNER_KEY);
       if (owner && owner !== studentId) clearResults();
+      forgetLocalUnless(studentId);
       window.localStorage.setItem(RESULTS_OWNER_KEY, studentId);
     } catch {}
     let cancelled = false;
@@ -199,6 +201,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
   }
 
   async function handleSignOut() {
+    await clearSavedLocal();
     clearResults();
     try {
       window.localStorage.removeItem(RESULTS_OWNER_KEY);
@@ -470,6 +473,10 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       wrap.setAttribute("data-restored", "1");
       parkFeedback(wrap);
       const id = wrap.getAttribute("data-id");
+      // What the student last typed here, saved to their account as they typed.
+      const box = wrap.querySelector<HTMLInputElement>(".ad-guess__input");
+      const draft = id ? getSaved().drafts[id] : undefined;
+      if (box && draft && !box.value) box.value = draft;
       const r = id ? loadResults()[id] : undefined;
       if (!r) {
         labelHintButton(wrap, false);
@@ -1050,6 +1057,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       if (submitBtn) return checkFlag(submitBtn);
       if (target.closest(".ad-score__reset")) {
         clearResults();
+        // A reset starts every challenge over, so its boxes start empty too.
+        updateSaved({ drafts: Object.fromEntries(Object.keys(getSaved().drafts).map((k) => [k, null])) });
         academyFetch("/academy/api/progress", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -1066,6 +1075,13 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       if (hintBtn) return toggleHint(hintBtn);
       const copyBtn = target.closest<HTMLButtonElement>(".ad-code__copy, .ad-cmd__copy");
       if (copyBtn) return copyCode(copyBtn);
+    };
+
+    // Every keystroke in a challenge box is kept, so leaving the page never loses an answer.
+    const onInput = (e: Event) => {
+      const input = e.target instanceof HTMLInputElement && e.target.classList.contains("ad-guess__input") ? e.target : null;
+      const id = input?.closest(".ad-mission[data-id]")?.getAttribute("data-id");
+      if (input && id) updateSaved({ drafts: { [id]: input.value || null } });
     };
 
     // Enter in the answer field submits, same as clicking the button next
@@ -1143,6 +1159,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
 
     document.addEventListener("click", onClick);
     document.addEventListener("keydown", onKeydown);
+    document.addEventListener("input", onInput);
     sync();
 
     // Results were replaced from the server: re-apply them to missions that
@@ -1152,6 +1169,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       sync();
     };
     window.addEventListener(RESULTS_CHANGED_EVENT, onResultsChanged);
+    // The account's saved boxes arrive after the page draws. Fill in any still empty.
+    window.addEventListener(SAVED_LOADED_EVENT, onResultsChanged);
 
     return () => {
       observer.disconnect();
@@ -1160,7 +1179,9 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       window.clearTimeout(revealTimer);
       document.removeEventListener("click", onClick);
       document.removeEventListener("keydown", onKeydown);
+      document.removeEventListener("input", onInput);
       window.removeEventListener(RESULTS_CHANGED_EVENT, onResultsChanged);
+      window.removeEventListener(SAVED_LOADED_EVENT, onResultsChanged);
       document.querySelector(".ad-hint-card")?.remove();
       document.querySelector(".ad-zoom")?.remove();
       document.querySelector(".ad-drawer-root")?.remove();
@@ -1189,7 +1210,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
   const asking = profile === null;
 
   return (
-    <AcademyProgressProvider phases={phases}>
+    <AcademyProgressProvider phases={phases} studentId={student.id}>
       <AcademyAccountProvider student={student}>
       <AcademyGoalsProvider value={{ profile: profile ?? null, editGoals: () => setEditingGoals(true) }}>
       <CoachProvider profile={profile ?? null}>

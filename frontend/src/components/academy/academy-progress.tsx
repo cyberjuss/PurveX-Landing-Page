@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { type PhaseDef, type WeekDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { findQuiz } from "@/content/academy/quizzes";
@@ -8,11 +8,7 @@ import { useResults } from "@/lib/academy-client";
 import { CHALLENGE_PATHS, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
 import type { Results } from "@/lib/academy-score";
 import { isPhaseLocked } from "@/lib/academy-locks";
-
-const STORAGE_KEY = "academy-progress-v1";
-const QUIZ_PASS_KEY = "academy-quiz-pass-v1";
-const LAST_STOP_KEY = "academy-last-stop-v1";
-const LABS_DONE_KEY = "academy-labs-done-v1";
+import { getSaved, openSaved, subscribeSaved, updateSaved } from "@/lib/academy-saved-client";
 
 /** The slug a tab gets in the URL. Section tabs use the same one. */
 export function slugify(label: string) {
@@ -88,7 +84,7 @@ interface AcademyProgressContextValue {
 
 const AcademyProgressContext = createContext<AcademyProgressContextValue | null>(null);
 
-export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef[]; children: React.ReactNode }) {
+export function AcademyProgressProvider({ phases, studentId, children }: { phases: PhaseDef[]; studentId: string; children: React.ReactNode }) {
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [quizPasses, setQuizPasses] = useState<Set<string>>(new Set());
   const [labsDone, setLabsDone] = useState<Set<string>>(new Set());
@@ -96,64 +92,49 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
   const [loaded, setLoaded] = useState(false);
   const results = useResults();
 
+  // Progress is saved to the account (academy-saved-client.ts), with a copy in
+  // this browser for a fast first paint. Whatever arrives is merged in, so a
+  // finished lab that reports in before the saved copy loads is never lost.
+  const appliedRef = useRef("");
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      const passedRaw = window.localStorage.getItem(QUIZ_PASS_KEY);
-      const done = new Set<string>(raw ? JSON.parse(raw) : []);
-      const passed = new Set<string>(passedRaw ? JSON.parse(passedRaw) : []);
+    const apply = () => {
+      const saved = getSaved();
+      // Typing in a challenge box saves too. Only re-render when this provider's own part changed.
+      const mine = JSON.stringify([saved.completed, saved.quizPasses, saved.labsDone, saved.lastStop]);
+      if (mine === appliedRef.current) return;
+      appliedRef.current = mine;
+      const passed = new Set(saved.quizPasses);
+      const done = new Set(saved.completed);
       for (const key of [...done]) {
         const [phaseSlug, entrySlug] = key.split(":");
         if (phaseSlug && entrySlug && findQuiz(phaseSlug, entrySlug) && !passed.has(key)) done.delete(key);
       }
       setCompleted(done);
       setQuizPasses(passed);
-      const labsRaw = window.localStorage.getItem(LABS_DONE_KEY);
-      // Merge, since a finished lab on screen can report in before this runs.
-      const labsSaved: string[] = labsRaw ? JSON.parse(labsRaw) : [];
-      setLabsDone((prev) => new Set([...labsSaved, ...prev]));
-      setLastStopState(parseLastStop(window.localStorage.getItem(LAST_STOP_KEY)));
-    } catch {
-      // Private browsing / blocked storage -- progress just won't persist.
-    } finally {
+      setLabsDone((prev) => new Set([...saved.labsDone, ...prev]));
+      setLastStopState((prev) => prev ?? parseLastStop(saved.lastStop));
       setLoaded(true);
-    }
-  }, []);
+    };
+    const stop = subscribeSaved(apply);
+    void openSaved(studentId);
+    apply();
+    return stop;
+  }, [studentId]);
 
   useEffect(() => {
-    if (!loaded) return;
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify([...completed]));
-    } catch {
-      // Ignore -- nothing to persist to.
-    }
+    if (loaded) updateSaved({ completed: [...completed] });
   }, [completed, loaded]);
 
   useEffect(() => {
-    if (!loaded) return;
-    try {
-      window.localStorage.setItem(QUIZ_PASS_KEY, JSON.stringify([...quizPasses]));
-    } catch {
-      // Ignore -- nothing to persist to.
-    }
+    if (loaded) updateSaved({ quizPasses: [...quizPasses] });
   }, [quizPasses, loaded]);
 
   useEffect(() => {
-    if (!loaded) return;
-    try {
-      window.localStorage.setItem(LABS_DONE_KEY, JSON.stringify([...labsDone]));
-    } catch {
-      // Ignore -- nothing to persist to.
-    }
+    if (loaded) updateSaved({ labsDone: [...labsDone] });
   }, [labsDone, loaded]);
 
   useEffect(() => {
-    if (!loaded) return;
-    try {
-      if (lastStop) window.localStorage.setItem(LAST_STOP_KEY, entryKey(lastStop.phaseSlug, lastStop.entrySlug));
-    } catch {
-      // Ignore -- nothing to persist to.
-    }
+    if (loaded && lastStop) updateSaved({ lastStop: entryKey(lastStop.phaseSlug, lastStop.entrySlug) });
   }, [lastStop, loaded]);
 
   const totalCount = useMemo(() => countEntries(phases), [phases]);
@@ -182,6 +163,9 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
     if (!loaded) return;
     const ready = [...reqs].filter(([key, list]) => list.length > 0 && list.every((r) => r.done) && !completed.has(key)).map(([key]) => key);
     if (ready.length === 0) return;
+    // Unchanged from before progress was saved to the account. It runs once per
+    // newly finished week and stops, since `ready` is empty on the next pass.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCompleted((prev) => new Set([...prev, ...ready]));
   }, [reqs, completed, loaded]);
 
