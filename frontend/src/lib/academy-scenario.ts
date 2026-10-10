@@ -497,13 +497,17 @@ export async function generateChange(params: {
   let question = "Fix this in your lab, then check it.";
 
   // The model only words the finding. It never adds facts, and the checks stay fixed.
-  const system = `You write a finding from a real audit of a trainee's own Active Directory lab at PurveX Financial. The trainee will fix it in that lab.
+  const system = `You word one finding from a real audit of a trainee's own Active Directory lab at PurveX Financial. The trainee will fix it in that lab.
 Rules:
 - Use only the facts given. Do not invent people, tickets, managers, deadlines or systems. Nothing here is a role-play.
 - Refer to people by name or as they/them. Never guess a gender from a name.
-- Write it as an audit finding, in a short paragraph of two to four sentences: what was found and why it matters.${level >= 2 ? " Do not tell them which setting to change or which buttons to press." : ""}
+- Two sentences, three at the most. The first says what was found in this lab. The second says what it lets an attacker do here. Cut anything that is not one of those two.
+- Name the damage, not the category. "Industry standards recommend", "provides no protection" and "best practice" are filler. Say what an attacker gets.
+- Plain sentences. No dashes, no semicolons, no stacked clauses.
+- The title is sentence case and states the problem, not a label for it. Write "Passwords can be as short as 4 characters", never "Domain Password Policy Minimum Length Too Low".${level >= 2 ? "\n- Do not tell them which setting to change or which buttons to press." : ""}
 - The question asks them to fix the finding and check it${level >= 2 ? ". It must not name the exact change, the group, or the button" : ""}.
-Return only JSON: {"title": "3 to 6 words", "story": "...", "question": "one sentence asking them to fix it and then check it"}`;
+The length and tone to match: {"title": "A disabled account kept its admin rights", "story": "The account rnewman is disabled but still sits in Domain Admins. Anyone who turns it back on, by mistake or on purpose, gets full control of the domain without having to grant themselves anything.", "question": "Fix this in your lab, then check it."}
+Return only JSON: {"title": "4 to 8 words, sentence case", "story": "...", "question": "one sentence asking them to fix it and then check it"}`;
   const raw = await ask(params.apiKey, system, `Finding: ${brief.facts}\nLevel: ${level}.`, 600, 15_000, COACH_HAIKU_MODEL).catch(() => null);
   const j = raw ? json(raw) : null;
   if (j) {

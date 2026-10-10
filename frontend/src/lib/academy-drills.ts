@@ -112,6 +112,10 @@ export type DrillReview = {
   answer: string;
   correct: boolean;
   explain: string;
+  /** The fix, one step per entry. Kept as a list rather than folded into
+   *  `explain`: joined into a paragraph it reads as a wall, and the reader is
+   *  about to follow it a step at a time. */
+  steps?: string[];
   runbook?: string[];
   /** The job task this question practiced, for the exam link on the result. */
   job?: string;
@@ -665,10 +669,11 @@ export async function gradeDrill(
     let right: boolean;
     let explain = item.explain;
     let answer = item.answer;
+    let steps: string[] | undefined;
     if (item.kind === "change") {
       right = opts.changePassed === true;
       picked = right ? "Change made and checked in your lab" : "Gave up";
-      if (!right) explain = `${item.explain} Steps: ${(item.task?.guide ?? []).join(" ")}`;
+      if (!right) steps = item.task?.guide;
     } else if (item.kind === "respond") {
       picked = raw && raw.trim() ? raw.trim() : null;
       right = false;
@@ -686,7 +691,7 @@ export async function gradeDrill(
       const said = picked !== null && [item.answer, ...(item.accept ?? [])].some((a) => flat(a) === flat(picked!));
       // A gated CTF also needs the containment change seen in the lab.
       right = item.gate ? said && opts.changePassed === true : said;
-      if (item.gate && !right) explain = `${item.explain} To finish: ${(item.task?.guide ?? []).join(" ")}`;
+      if (item.gate && !right) steps = item.task?.guide;
     } else {
       picked = raw !== null && item.choices.includes(raw) ? raw : null;
       right = picked === item.answer;
@@ -698,6 +703,7 @@ export async function gradeDrill(
       answer,
       correct: !late && right,
       explain,
+      steps: steps?.length ? steps : undefined,
       runbook: item.kind === "change" || item.gate ? item.task?.runbook : undefined,
       job: isJob(item.job) ? item.job : undefined,
     });

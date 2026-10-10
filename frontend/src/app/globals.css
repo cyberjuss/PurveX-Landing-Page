@@ -5748,6 +5748,25 @@ textarea.pc-dock__field {
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-close .ad-close__exam { color: #6ee7b7; }
 .dr-review .dr-review__exam { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-micro); letter-spacing: 0.02em; color: var(--rd-ink-3); }
 
+/* The fix on a missed lab task. It used to be one paragraph of joined steps,
+   which is the hardest possible way to read instructions you are about to
+   follow one at a time. Numbered badges and a line per step instead. No box:
+   the label and the numbers carry it, same as the rest of the drill. */
+.dr-review .dr-fix { margin: 14px 0 0; }
+.dr-review .dr-fix__label { margin: 0 0 9px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rd-ink-3); }
+.dr-review .dr-fix__steps { counter-reset: dr-fix; margin: 0; padding: 0; list-style: none; }
+.dr-review .dr-fix__steps li { counter-increment: dr-fix; position: relative; margin: 0 0 9px; padding-left: 32px; font-size: var(--ty-small); line-height: 1.55; color: var(--rd-ink-2); }
+.dr-review .dr-fix__steps li:last-child { margin-bottom: 0; }
+.dr-review .dr-fix__steps li::before {
+  content: counter(dr-fix);
+  position: absolute; left: 0; top: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 21px; height: 21px; border-radius: 50%;
+  background: var(--rd-none);
+  font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); font-weight: 700; line-height: 1;
+  color: var(--rd-ink-2);
+}
+
 /* iPhone and iPad Safari zoom into any field with text under 16px when it is
    tapped, and stay zoomed, which cuts the page off on the right. On touch
    screens every text field gets at least 16px so the page never jumps. */
