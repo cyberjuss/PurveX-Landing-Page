@@ -22,6 +22,7 @@ import { loadActivity, loadDrills, loadProfile, loadRoleBrief, saveDrill, saveRo
 import { findEntry } from "@/lib/academy-content";
 import { searchLessons } from "@/lib/academy-lessons";
 import { type CoachImage } from "@/lib/academy-coach-media";
+import { correctionLine } from "@/lib/academy-coach-feedback";
 import { ANTHROPIC_MESSAGES_URL, COACH_HAIKU_MODEL, COACH_SONNET_MODEL, webSearchTool } from "@/lib/academy-models";
 import { isStale, ROLE_NOTE_RULES, roleBriefFrom, searchedUrls } from "@/lib/academy-role-research";
 import { findMissionsByQuery, MISSION_CATALOG } from "@/lib/academy-missions";
@@ -962,7 +963,11 @@ export async function runCoachTurn(params: {
   // the lab, so only the prompt itself is worth caching. It is kept apart from
   // the tail rather than concatenated, so the cached prefix is byte-identical on
   // every turn -- one stray character in front of it and the cache misses.
-  const systemTail = `${coachModeInstructions(mode)}${socratic ? `\n\n${socratic}` : ""}\n\n${buildStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results, lab) : "", goals)}`;
+  // What this student has thumbed down lately, as instructions to correct
+  // for. It goes on the tail, not the cached prompt above it, because it is
+  // theirs alone and would otherwise break the shared cached prefix.
+  const correction = params.tools.userId ? await correctionLine(params.tools.userId).catch(() => "") : "";
+  const systemTail = `${coachModeInstructions(mode)}${socratic ? `\n\n${socratic}` : ""}\n\n${buildStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results, lab) : "", goals)}${correction ? `\n\n${correction}` : ""}`;
   // URLs the search returned this turn. A saved note may only cite these.
   const seen = new Map<string, string>();
   const messages: AnthropicMessage[] = [

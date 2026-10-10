@@ -1,8 +1,8 @@
 "use client";
 
 import { Fragment, useEffect, useRef, useState, useSyncExternalStore, type DragEvent, type ReactNode } from "react";
-import { Check, Copy, Mic, RotateCcw, ShieldCheck, Square, X } from "lucide-react";
-import { useCoach } from "@/components/academy/coach-context";
+import { Check, Copy, Mic, RotateCcw, ShieldCheck, Square, ThumbsDown, ThumbsUp, X } from "lucide-react";
+import { useCoach, type CoachMessage, type FeedbackTag } from "@/components/academy/coach-context";
 import { COACH_MODE_LABELS, COACH_MODES, coachStarters, interviewStarters } from "@/lib/academy-coach-mode";
 import { useResults } from "@/lib/academy-client";
 import { filesToCoachImages, imagesFromClipboard } from "@/lib/academy-coach-capture";
@@ -201,8 +201,82 @@ export function CoachHeader({ children }: { children?: ReactNode }) {
   );
 }
 
+// Why a reply was wrong. The same closed set the server keeps in
+// academy-coach-feedback.ts: the student picks one, never types a reason. The
+// note box underneath is free text, and only a human ever reads it.
+const RATE_REASONS: { key: FeedbackTag; label: string }[] = [
+  { key: "wrong", label: "Wrong or made up" },
+  { key: "answer", label: "Gave away the answer" },
+  { key: "long", label: "Too long" },
+  { key: "vague", label: "Too vague" },
+  { key: "missed", label: "Missed what I asked" },
+  { key: "lab", label: "Ignored my lab" },
+];
+
+/** Thumbs under one Coach reply. A thumbs down opens the reasons. */
+function RateReply({
+  message,
+  onRate,
+}: {
+  message: CoachMessage;
+  onRate: (rating: "up" | "down", detail?: { tags?: FeedbackTag[]; note?: string }) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [note, setNote] = useState("");
+  const rated = message.rated;
+  // Nothing to rate against: a reply from before this shipped, or an error.
+  if (!message.receipt) return null;
+
+  const send = (tag?: FeedbackTag) => {
+    onRate("down", { tags: tag ? [tag] : [], note });
+    setOpen(false);
+    setNote("");
+  };
+
+  return (
+    <div className="pc-rate">
+      {rated ? (
+        <p className="pc-rate__done">{rated.rating === "up" ? "Thanks. Noted." : "Thanks. Coach will adjust."}</p>
+      ) : (
+        <div className="pc-rate__row">
+          <span className="pc-rate__ask">Was this helpful?</span>
+          <button type="button" className="pc-rate__btn" aria-label="Helpful" onClick={() => onRate("up")}>
+            <ThumbsUp className="h-4 w-4" aria-hidden="true" />
+          </button>
+          <button type="button" className="pc-rate__btn" aria-label="Not helpful" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+            <ThumbsDown className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+      )}
+
+      {open && !rated && (
+        <div className="pc-rate__why">
+          <p className="pc-rate__label">What went wrong?</p>
+          <div className="pc-rate__tags">
+            {RATE_REASONS.map((r) => (
+              <button key={r.key} type="button" className="pc-rate__tag" onClick={() => send(r.key)}>
+                {r.label}
+              </button>
+            ))}
+          </div>
+          <input
+            className="pc-rate__note"
+            value={note}
+            maxLength={400}
+            placeholder="Anything else? (optional)"
+            onChange={(e) => setNote(e.target.value)}
+          />
+          <button type="button" className="pc-rate__skip" onClick={() => send()}>
+            Send without a reason
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function CoachChat() {
-  const { messages, busy, enabled, locked, remaining, error, send, resetToday, mode, setMode } = useCoach();
+  const { messages, busy, enabled, locked, remaining, error, send, resetToday, mode, setMode, rate } = useCoach();
   const results = useResults();
   const prompts = mode === "interview" ? interviewStarters(results) : coachStarters(results);
   const [input, setInput] = useState("");
@@ -351,6 +425,7 @@ export function CoachChat() {
               <div key={i} className="pc-turn">
                 <p className="pc-reply__who">Coach</p>
                 <CoachText text={m.content} />
+                <RateReply message={m} onRate={(rating, detail) => rate(i, rating, detail)} />
               </div>
             )
           )}

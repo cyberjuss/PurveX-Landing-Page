@@ -5217,6 +5217,45 @@ html:has(.academy-bg[data-academy-theme="dark"]) .pc-backdrop { background: rgba
 .pc-term__copy:hover { color: var(--pc-text); }
 .pc-term pre { margin: 0; padding: 12px; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); line-height: 1.65; color: var(--pc-text); }
 .pc-turn:has(.pc-thinking) .pc-reply__who { color: var(--pc-accent); }
+
+/* Thumbs under a Coach reply. It sits in the thread under every answer, so it
+   has to stay quiet: no box, no fill, muted until hovered. The reasons only
+   appear once a thumbs down is pressed, because asking "what went wrong" of a
+   reply nobody minded is noise. */
+.pc-rate { margin-top: 10px; }
+.pc-rate__row { display: flex; align-items: center; gap: 4px; opacity: 0.55; transition: opacity 0.15s ease; }
+.pc-turn:hover .pc-rate__row,
+.pc-rate__row:focus-within { opacity: 1; }
+.pc-rate__ask { margin-right: 4px; font-size: var(--ty-micro); color: var(--pc-text-3); }
+.pc-rate__btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; padding: 0; border: 0; border-radius: 7px;
+  background: none; color: var(--pc-text-3); cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.pc-rate__btn:hover { background: color-mix(in srgb, var(--pc-accent) 12%, transparent); color: var(--pc-accent); }
+.pc-rate__btn:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 2px; }
+.pc-rate__btn[aria-expanded="true"] { background: color-mix(in srgb, var(--pc-accent) 14%, transparent); color: var(--pc-accent); }
+.pc-rate__done { margin: 0; font-size: var(--ty-micro); color: var(--pc-text-3); }
+
+.pc-rate__why { margin-top: 10px; }
+.pc-rate__label { margin: 0 0 7px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pc-text-3); }
+.pc-rate__tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.pc-rate__tag {
+  padding: 6px 11px; border: 1px solid var(--pc-line); border-radius: 999px;
+  background: none; color: var(--pc-text-2); font-size: var(--ty-small); line-height: 1.3; cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.pc-rate__tag:hover { border-color: var(--pc-accent); background: color-mix(in srgb, var(--pc-accent) 9%, transparent); color: var(--pc-accent); }
+.pc-rate__tag:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 2px; }
+.pc-rate__note {
+  display: block; width: 100%; margin-top: 8px; padding: 8px 11px;
+  border: 1px solid var(--pc-line); border-radius: 9px; background: none;
+  color: var(--pc-text); font: inherit; font-size: var(--ty-small);
+}
+.pc-rate__note:focus-visible { outline: none; border-color: var(--pc-accent); }
+.pc-rate__skip { margin-top: 7px; padding: 0; border: 0; background: none; color: var(--pc-text-3); font-size: var(--ty-micro); text-decoration: underline; cursor: pointer; }
+.pc-rate__skip:hover { color: var(--pc-accent); }
 .pc-thinking { display: flex; align-items: center; gap: 10px; font-size: var(--ty-note); color: var(--pc-text-3); }
 .pc-thinking p { margin: 0; }
 .pc-dots {

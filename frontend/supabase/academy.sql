@@ -367,3 +367,39 @@ drop policy if exists "Students read their own lab usage" on public.academy_lab_
 create policy "Students read their own lab usage"
   on public.academy_lab_usage for select
   using (auth.uid() = user_id);
+
+-- Thumbs up or down on a PurveX Coach reply (see lib/academy-coach-feedback.ts).
+-- The exchange is stored next to the rating so a bad answer becomes a test
+-- case: without the question and the reply, a count of thumbs-down says
+-- something is wrong but never what. `tags` is a closed set the student picks
+-- from; `note` is free text they typed, which is read by a human and never put
+-- into a prompt.
+--
+-- Written by the server only, through the service-role key. The student's own
+-- browser never writes here: it posts a sealed receipt to the feedback route,
+-- which is what proves the reply being rated is one the Coach actually sent.
+create table if not exists public.academy_coach_feedback (
+  user_id uuid not null references auth.users (id) on delete cascade,
+  turn_id text not null,
+  rating text not null check (rating in ('up', 'down')),
+  tags text[] not null default '{}',
+  note text,
+  question text,
+  reply text,
+  model text,
+  mode text,
+  lab text,
+  created_at timestamptz not null default now(),
+  primary key (user_id, turn_id)
+);
+
+-- The review query is "worst first, newest first", so index what it filters on.
+create index if not exists academy_coach_feedback_rating_created
+  on public.academy_coach_feedback (rating, created_at desc);
+-- The correction line reads one student's recent rows on every coach turn.
+create index if not exists academy_coach_feedback_user_created
+  on public.academy_coach_feedback (user_id, created_at desc);
+
+-- RLS on with no anon/authenticated policy: service-role only, same as the
+-- rest of this file. Students rate through the API, never by writing a row.
+alter table public.academy_coach_feedback enable row level security;

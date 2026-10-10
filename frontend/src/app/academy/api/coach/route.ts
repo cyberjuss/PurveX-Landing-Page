@@ -11,6 +11,7 @@ import { LAB_COACH_PER_LAB, LAB_PAUSE_REPLY, runLabCoachTurn } from "@/lib/acade
 import { isRangePro, proRequired } from "@/lib/range-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { cleanDay, coachBonus } from "@/lib/academy-drills";
+import { sealReceipt } from "@/lib/academy-coach-feedback";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -145,7 +146,11 @@ export async function POST(request: Request) {
       const { text, model } = await runLabCoachTurn({ apiKey, lab: place.lab, at: place.at, roles: profile?.roles, history, userMessage: message, images });
       await bumpLabCoachUsage(student.id, place.lab, labUsed, day);
       const remaining = Math.max(0, Math.min(limit, limit - (await bumpUsage(student.id, used, day))));
-      return NextResponse.json({ reply: text, remaining, limit, model, bonus });
+      // The receipt is what the student sends back to thumb this reply up or
+      // down. It carries the exchange sealed, so the rating lands on what Coach
+      // really said rather than whatever the browser claims it said.
+      const receipt = sealReceipt({ userId: student.id, question: message, reply: text, model, mode: "lab", lab: place.lab });
+      return NextResponse.json({ reply: text, remaining, limit, model, bonus, receipt });
     } catch {
       return NextResponse.json({ error: "PurveX Coach is unavailable right now." }, { status: 502 });
     }
@@ -163,7 +168,8 @@ export async function POST(request: Request) {
       tools: { results, userId: student.id, profile, loadLabState: async () => (await loadLabState(student.id))?.snapshot ?? null },
     });
     const remaining = Math.max(0, Math.min(limit, limit - (await bumpUsage(student.id, used, day))));
-    return NextResponse.json({ reply: text, remaining, limit, model, bonus });
+    const receipt = sealReceipt({ userId: student.id, question: message, reply: text, model, mode: String(body.mode ?? ""), lab: place?.lab ?? null });
+    return NextResponse.json({ reply: text, remaining, limit, model, bonus, receipt });
   } catch {
     return NextResponse.json({ error: "PurveX Coach is unavailable right now." }, { status: 502 });
   }
