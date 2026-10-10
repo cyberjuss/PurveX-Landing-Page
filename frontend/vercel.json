@@ -2,6 +2,7 @@
   "crons": [
     { "path": "/api/cron/hosted-labs", "schedule": "0 7 * * *" },
     { "path": "/api/academy/retention", "schedule": "0 14 * * 1" },
-    { "path": "/api/cron/cohort-expiry", "schedule": "0 15 * * *" }
+    { "path": "/api/cron/cohort-expiry", "schedule": "0 15 * * *" },
+    { "path": "/api/cron/dormant", "schedule": "0 16 * * *" }
   ]
 }
