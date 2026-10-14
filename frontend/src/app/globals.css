@@ -5242,23 +5242,40 @@ html:has(.academy-bg[data-academy-theme="dark"]) .pc-backdrop { background: rgba
 .pc-rate__done { margin: 0; font-size: var(--ty-micro); color: var(--pc-text-3); }
 
 .pc-rate__why { margin-top: 10px; }
-.pc-rate__label { margin: 0 0 7px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pc-text-3); }
-.pc-rate__tags { display: flex; flex-wrap: wrap; gap: 6px; }
-.pc-rate__tag {
-  padding: 6px 11px; border: 1px solid var(--pc-line); border-radius: 999px;
-  background: none; color: var(--pc-text-2); font-size: var(--ty-small); line-height: 1.3; cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+.pc-rate__label {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 8px;
+  font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker);
+  font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pc-text-3);
 }
-.pc-rate__tag:hover { border-color: var(--pc-accent); background: color-mix(in srgb, var(--pc-accent) 9%, transparent); color: var(--pc-accent); }
+.pc-rate__label span { flex: none; font-family: var(--font-sans, inherit); font-size: var(--ty-micro); font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--pc-text-3); }
+/* A grid, not a wrap: six reasons of uneven length ragged into rows that were
+   hard to scan and gave the panel no shape. Two even columns on the chat's
+   width, one on a phone. */
+.pc-rate__tags { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 6px; }
+/* Filled rather than outlined. The border token is nearly invisible on black,
+   so six outlined pills read as six faint boxes; a soft fill carries the shape
+   and the accent is kept for the one the pointer is on. */
+.pc-rate__tag {
+  padding: 9px 12px; border: 0; border-radius: 8px;
+  background: color-mix(in srgb, var(--pc-text) 7%, transparent);
+  color: var(--pc-text-2); font: inherit; font-size: var(--ty-small); line-height: 1.3; text-align: left; cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.pc-rate__tag:hover { background: var(--pc-accent-soft); color: var(--pc-accent); }
+.pc-rate__tag:active { background: color-mix(in srgb, var(--pc-accent) 20%, transparent); }
 .pc-rate__tag:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 2px; }
 .pc-rate__note {
-  display: block; width: 100%; margin-top: 8px; padding: 8px 11px;
-  border: 1px solid var(--pc-line); border-radius: 9px; background: none;
+  display: block; width: 100%; margin-top: 6px; padding: 9px 12px;
+  border: 0; border-radius: 8px; background: color-mix(in srgb, var(--pc-text) 7%, transparent);
   color: var(--pc-text); font: inherit; font-size: var(--ty-small);
 }
-.pc-rate__note:focus-visible { outline: none; border-color: var(--pc-accent); }
-.pc-rate__skip { margin-top: 7px; padding: 0; border: 0; background: none; color: var(--pc-text-3); font-size: var(--ty-micro); text-decoration: underline; cursor: pointer; }
+/* text-3 lands at 4.1:1 on this fill, and a placeholder is still text. */
+.pc-rate__note::placeholder { color: var(--pc-text-2); }
+.pc-rate__note:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 0; }
+.pc-rate__foot { display: flex; justify-content: flex-end; margin-top: 6px; }
+.pc-rate__skip { padding: 6px 2px; border: 0; background: none; color: var(--pc-text-3); font: inherit; font-size: var(--ty-micro); cursor: pointer; }
 .pc-rate__skip:hover { color: var(--pc-accent); }
+.pc-rate__skip:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 2px; }
 .pc-thinking { display: flex; align-items: center; gap: 10px; font-size: var(--ty-note); color: var(--pc-text-3); }
 .pc-thinking p { margin: 0; }
 .pc-dots {

@@ -251,7 +251,12 @@ function RateReply({
 
       {open && !rated && (
         <div className="pc-rate__why">
-          <p className="pc-rate__label">What went wrong?</p>
+          <p className="pc-rate__label">
+            What went wrong?
+            {/* Tapping a reason sends it. Nothing said so, and a panel that
+                submits on a tap has to admit it before the tap. */}
+            <span>One tap sends it</span>
+          </p>
           <div className="pc-rate__tags">
             {RATE_REASONS.map((r) => (
               <button key={r.key} type="button" className="pc-rate__tag" onClick={() => send(r.key)}>
@@ -266,9 +271,11 @@ function RateReply({
             placeholder="Anything else? (optional)"
             onChange={(e) => setNote(e.target.value)}
           />
-          <button type="button" className="pc-rate__skip" onClick={() => send()}>
-            Send without a reason
-          </button>
+          <div className="pc-rate__foot">
+            <button type="button" className="pc-rate__skip" onClick={() => send()}>
+              Send without a reason
+            </button>
+          </div>
         </div>
       )}
     </div>
