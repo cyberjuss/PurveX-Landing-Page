@@ -1078,6 +1078,21 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       if (copyBtn) return copyCode(copyBtn);
     };
 
+    // Reaching for the answer box is the earliest honest sign that a submit is
+    // coming. One check now gives a lab that has stopped reporting a head start
+    // on waking up, so the student does not spend that wait watching a spinner.
+    // Once per mission: a gate that is already live needs nothing, and a dead
+    // one is nudged by the check itself.
+    const warmed = new Set<string>();
+    const onFocusIn = (e: FocusEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target?.matches?.(".ad-guess__input")) return;
+      const id = target.closest(".ad-mission")?.getAttribute("data-id") || "";
+      if (!id || warmed.has(id)) return;
+      warmed.add(id);
+      void labGate(id);
+    };
+
     // Enter in the answer field submits, same as clicking the button next
     // to it -- .click() still dispatches a real, bubbling click event, so
     // it's caught by the same delegated onClick above.
@@ -1153,6 +1168,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
 
     document.addEventListener("click", onClick);
     document.addEventListener("keydown", onKeydown);
+    document.addEventListener("focusin", onFocusIn);
     sync();
 
     // Results were replaced from the server: re-apply them to missions that
@@ -1170,6 +1186,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       window.clearTimeout(revealTimer);
       document.removeEventListener("click", onClick);
       document.removeEventListener("keydown", onKeydown);
+      document.removeEventListener("focusin", onFocusIn);
       window.removeEventListener(RESULTS_CHANGED_EVENT, onResultsChanged);
       document.querySelector(".ad-hint-card")?.remove();
       document.querySelector(".ad-zoom")?.remove();
