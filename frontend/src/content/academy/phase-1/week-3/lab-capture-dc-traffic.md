@@ -75,11 +75,25 @@ dig @dc01 purvexfinancial.local
 ldapsearch -x -H ldap://dc01 -s base -b "" namingContexts
 ```
 
-`dig` is a DNS client. The `@dc01` part tells it to ask the domain controller directly rather than whatever resolver Ubuntu would normally use, and `purvexfinancial.local` is the name being asked about. No record type is given, so dig asks for an address record, and the domain controller answers with the address you wrote down earlier. That is one question and one answer over UDP port 53.
+<p class="ad-flags__lead">What the first command asks for</p>
+<ul class="ad-flags" role="list">
+<li><code>dig</code><span>A DNS client. It puts a name question to a server and prints what comes back.</span></li>
+<li><code>@dc01</code><span>Ask that server directly, rather than whatever resolver Ubuntu would normally use.</span></li>
+<li><code>purvexfinancial.local</code><span>The name being asked about. No record type is given, so dig asks for an address record.</span></li>
+<li><em>On the wire</em><span>One question and one answer over UDP port 53. The answer is the address you wrote down earlier.</span></li>
+</ul>
 
-`ldapsearch` is a directory client. `-H ldap://dc01` points it at the directory service on port 389, and `-x` chooses simple authentication, which with no account named means it connects anonymously. `-b ""` together with `-s base` asks for one entry rather than a tree, the rootDSE, which is the record a directory publishes about itself. `namingContexts` is the attribute asked for, and it comes back as the list of directory trees this server holds.
+<p class="ad-flags__lead">What the second command asks for</p>
+<ul class="ad-flags" role="list">
+<li><code>ldapsearch</code><span>A directory client. It queries a directory the way an application would.</span></li>
+<li><code>-H ldap://dc01</code><span>The directory service on dc01, plain LDAP on port 389.</span></li>
+<li><code>-x</code><span>Simple authentication. No account is named, so the connection is anonymous.</span></li>
+<li><code>-s base -b ""</code><span>One entry rather than a tree. The empty name is the rootDSE, the record a directory publishes about itself.</span></li>
+<li><code>namingContexts</code><span>The attribute asked for. It comes back as the directory trees this server holds.</span></li>
+<li><em>On the wire</em><span>A TCP connection, so a handshake opens it before any directory traffic.</span></li>
+</ul>
 
-The pair is deliberate. One is a single exchange over UDP and the other is a conversation over TCP that opens with a handshake, both to the same host, and neither of them is encrypted.
+The pair is deliberate. One is a single exchange over UDP and the other is a conversation over TCP, both to the same host, and neither of them is encrypted.
 
 <div class="ad-shots">
 <figure class="ad-shot">

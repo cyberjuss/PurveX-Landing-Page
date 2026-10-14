@@ -2880,6 +2880,25 @@ body:has(.lp) {
 .academy-prose blockquote p { margin: 0.3rem 0; }
 .academy-prose code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85em; background: var(--pvrx-surface-alt-light); border: 1px solid var(--pvrx-border-light); border-radius: 4px; padding: 0.1em 0.4em; }
 .academy-prose pre { margin: 1rem 0; padding: 0.9rem 1rem; background: #0c1220; border: 1px solid rgba(255,255,255,0.1); overflow-x: auto; }
+/* What a command's parts do, read down the left in one pass. Two columns so
+   the flags line up, and no rules or boxes: the alignment carries it. */
+.academy-prose .ad-flags__lead {
+  margin: 1.1rem 0 0.5rem; font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--pvrx-text-muted-light, #64748b);
+}
+.academy-prose ul.ad-flags { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 0.5rem 1rem; margin: 0 0 1.1rem; padding: 0; list-style: none; }
+.academy-prose ul.ad-flags > li { display: contents; margin: 0; }
+.academy-prose ul.ad-flags > li > code { align-self: start; justify-self: start; white-space: nowrap; }
+.academy-prose ul.ad-flags > li > em {
+  align-self: start; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.78em; font-style: normal;
+  font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pvrx-text-muted-light, #64748b);
+}
+.academy-prose ul.ad-flags > li > span { align-self: start; }
+@media (max-width: 560px) {
+  .academy-prose ul.ad-flags { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
+  .academy-prose ul.ad-flags > li { display: grid; gap: 0.15rem; margin: 0 0 0.6rem; }
+}
 .academy-prose p.ad-cmd { margin: 0.85rem 0; }
 .academy-prose p.ad-cmd > code {
   display: block; box-sizing: border-box; width: 100%;
