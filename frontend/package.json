@@ -15,6 +15,7 @@
     "check:range": "npx -y tsx --tsconfig scripts/range-check/tsconfig.json scripts/range-check/check.ts",
     "check:coach-cache": "npx -y tsx --tsconfig scripts/coach-cache/tsconfig.json scripts/coach-cache/check.ts",
     "check:schema": "node scripts/check-schema.mjs",
+    "check:shift": "npx -y tsx --tsconfig scripts/shift-check/tsconfig.json scripts/shift-check/check.ts",
     "check:range:routes": "node scripts/range-check/routes.mjs",
     "check:range:gates": "npx -y tsx --tsconfig scripts/range-check/tsconfig.json scripts/range-check/gates.ts"
   },

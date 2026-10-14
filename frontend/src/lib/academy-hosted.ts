@@ -918,14 +918,23 @@ async function ssmOnline(instanceId: string): Promise<boolean> {
  * site and runs it. Fetching at run time means an incident fix ships by
  * deploying, with no lab image rebuild. The script name is fixed, server-side.
  */
-/** Render script args as safe PowerShell flags. Values come from our own roster,
- *  so we still allow only account-name characters and commas (for list args). */
+/**
+ * Render script args as safe PowerShell flags.
+ *
+ * Values come from our own roster, so the set stays narrow: account-name
+ * characters, commas for list args, and spaces, which group names have. A space
+ * used to fail the filter and the flag was dropped silently, so the script ran
+ * on its default instead. That was invisible wherever the default happened to
+ * match, and would have fired the wrong scenario the moment one did not.
+ * Everything goes out single-quoted, which is what keeps a value from being
+ * read as more of the command.
+ */
 function argFlags(args?: Record<string, string>): string {
   if (!args) return "";
-  const ok = /^[A-Za-z0-9._,-]+$/;
+  const ok = /^[A-Za-z0-9._, -]+$/;
   return Object.entries(args)
     .filter(([k, v]) => /^[A-Za-z]+$/.test(k) && ok.test(v))
-    .map(([k, v]) => ` -${k} ${v}`)
+    .map(([k, v]) => ` -${k} '${v}'`)
     .join("");
 }
 
