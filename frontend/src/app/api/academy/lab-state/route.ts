@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { compareToBaseline, sanitizeLabSnapshot } from "@/lib/academy-lab";
-import { loadLabLive, resolveLabKey, saveLabLive, saveLabState } from "@/lib/academy-store";
+import { loadLabLive, loadLabState, resolveLabKey, saveLabLive, saveLabState } from "@/lib/academy-store";
 import { isVerified } from "@/lib/academy-verify";
 
 export const runtime = "nodejs";
@@ -56,6 +56,20 @@ export async function POST(request: Request) {
   const snapshot = sanitizeLabSnapshot(raw);
   if (!snapshot) {
     return NextResponse.json({ error: "Snapshot has no lab objects in it." }, { status: 400 });
+  }
+
+  // A fast nudge from the sync loop leaves the security and event keys out so it
+  // does not have to read the 30-day Security log. Keep the digest from the last
+  // full snapshot in that case, rather than overwriting it with the empty
+  // default the sanitizer fills in, so log-analysis challenges still see it.
+  const rawObj = raw as Record<string, unknown>;
+  const omittedHeavy = !("events" in rawObj) || !("security" in rawObj);
+  if (omittedHeavy) {
+    const prior = await loadLabState(userId).catch(() => null);
+    if (prior?.snapshot) {
+      if (!("events" in rawObj)) snapshot.events = prior.snapshot.events;
+      if (!("security" in rawObj)) snapshot.security = prior.snapshot.security;
+    }
   }
 
   try {

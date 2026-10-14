@@ -959,7 +959,10 @@ export async function requestLabSync(userId: string, force = false): Promise<boo
   // Skip quietly when SSM is not ready yet, so a boot-window sync does not throw.
   if (!(await ssmOnline(id))) return false;
   lastSyncAt.set(userId, Date.now());
-  const command = "$ProgressPreference='SilentlyContinue'; $s=Join-Path $env:ProgramData 'PurveX\\Build-Environment.ps1'; if(Test-Path $s){ & $s -SyncOnly }";
+  // -Fast: AD and infra only, no 30-day Security log read, and the digest left
+  // out so the server keeps what it has. The nudge lands in about a second and
+  // does not compete with the sync loop for the domain controller's CPU.
+  const command = "$ProgressPreference='SilentlyContinue'; $s=Join-Path $env:ProgramData 'PurveX\\Build-Environment.ps1'; if(Test-Path $s){ & $s -SyncOnly -Fast }";
   try {
     await ssm().send(
       new SendCommandCommand({

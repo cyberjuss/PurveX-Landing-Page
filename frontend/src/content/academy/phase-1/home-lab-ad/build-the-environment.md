@@ -87,6 +87,7 @@ param(
     [switch]$SyncOnly,
     [switch]$SyncLoop,
     [switch]$Scheduled,
+    [switch]$Fast,
     [switch]$InstallSync,
     [switch]$UninstallSync,
     [string]$PurvexKey = "",
@@ -859,14 +860,18 @@ function Send-PurvexLabSnapshot {
     # A directory change must not wait on the Security log. That read is the slow part.
     # Fast sends reuse the last settings and log digest, however old they are.
     # The once-a-minute heartbeat is what refreshes them.
+    $omitHeavy = $false
     if ($Fast) {
         if ($script:PurvexHeavy) {
             $security = $script:PurvexHeavy.Security
             $events = $script:PurvexHeavy.Events
         }
         else {
-            $security = [ordered]@{}
-            $events = [ordered]@{ windowDays = 30 }
+            # A fresh process, such as the on-demand -SyncOnly -Fast nudge, has no
+            # cached digest. Leave the security and event keys out of the payload
+            # so the server keeps the ones it already has rather than blanking
+            # them with empties. The next full heartbeat refreshes them.
+            $omitHeavy = $true
         }
     }
     else {
@@ -885,9 +890,13 @@ function Send-PurvexLabSnapshot {
         users      = @($users)
         groups     = @($groups)
         computers  = @($computers)
-        security   = $security
-        events     = $events
         infra      = (Get-PurvexInfra -Domain $domain -GpoLinks $gpoLinks)
+    }
+    # Present on a full or cached-fast send, left out on a fresh-process fast
+    # nudge so the server preserves what it already holds.
+    if (-not $omitHeavy) {
+        $snapshot.security = $security
+        $snapshot.events = $events
     }
     $json = $snapshot | ConvertTo-Json -Depth 6 -Compress
 
@@ -971,6 +980,7 @@ function Start-PurvexSyncLoop {
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
     $roots = Get-PurvexWatchRoots -DomainDN $domainDN
     $lastSend = [datetime]::MinValue
+    $lastHeavy = [datetime]::MinValue
     $lastUsn = [int64]-1
     $lastPrint = $null
     $nextPrint = [datetime]::MinValue
@@ -991,13 +1001,23 @@ function Start-PurvexSyncLoop {
                 if ($null -ne $lastPrint -and $print -ne $lastPrint) { $pending = $true }
                 $lastPrint = $print
             }
-            $age = ($now - $lastSend).TotalSeconds
-            $due = $age -ge 60
-            # A short gap folds one edit (create, then add to a group) into a single send.
-            if (($pending -and $age -ge 0.25) -or $due) {
-                Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN -Fast:(-not $due)
+            $sinceSend = ($now - $lastSend).TotalSeconds
+            $sinceHeavy = ($now - $lastHeavy).TotalSeconds
+            # A pending change always goes out fast, reusing the cached digest, so
+            # a directory edit never waits on the Security log read. A short gap
+            # folds one edit (create, then add to a group) into a single send.
+            # The heavy read that refreshes the log digest runs on its own minute
+            # cadence, and only when no change is waiting, so it never blocks one.
+            if ($pending -and $sinceSend -ge 0.25) {
+                Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN -Fast
                 $lastSend = Get-Date
                 $pending = $false
+                $failures = 0
+            }
+            elseif ($sinceHeavy -ge 60) {
+                Send-PurvexLabSnapshot -Key $Key -Url $Url -DomainDN $domainDN
+                $lastSend = Get-Date
+                $lastHeavy = $lastSend
                 $failures = 0
             }
         }
@@ -1080,7 +1100,10 @@ if ($SyncOnly) {
     }
     if ($Scheduled -and -not (Test-PurvexSyncDue -Key $PurvexKey -Url $PurvexUrl)) { return }
     try {
-        Send-PurvexLabSnapshot -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN
+        # -Fast skips the 30-day Security log read and omits the digest, so an
+        # on-demand nudge lands in about a second and the server keeps the log
+        # data it already has. A plain -SyncOnly still does the full read.
+        Send-PurvexLabSnapshot -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN -Fast:$Fast
         Write-Host "Lab snapshot sent to PurveX Coach." -ForegroundColor Green
     }
     catch {
