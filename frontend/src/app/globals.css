@@ -3669,7 +3669,12 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   border-radius: 6px; padding: 0.25rem 0.55rem; cursor: pointer;
 }
 .ad-cmd__copy:hover { background: rgba(255,255,255,0.16); }
+.ad-cmd__copy:focus-visible { outline: 2px solid #e2e8f0; outline-offset: 2px; }
 .academy-prose p.ad-cmd > code { padding-right: 4.4rem; }
+/* A fenced block carries its own button, so it has to be the positioning
+   parent and leave room for it on the first line. */
+.academy-prose pre.ad-pre { position: relative; padding-right: 4.4rem; }
+.academy-prose pre.ad-pre > .ad-cmd__copy { font-family: var(--font-sans, inherit); line-height: 1.2; }
 @media (prefers-reduced-motion: reduce) {
   .ad-hint-card__panel { transition: none; }
 }

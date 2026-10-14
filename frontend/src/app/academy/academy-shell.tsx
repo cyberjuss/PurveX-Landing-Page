@@ -758,6 +758,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       if (body) {
         body.innerHTML = src?.innerHTML ?? "";
         wireCommandCopy(body);
+        wireBlockCopy(body);
       }
       root.dataset.open = "true";
       openHintId = id;
@@ -804,9 +805,25 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       });
     };
 
+    // Fenced blocks are the other half of this. A URL to open, a script to
+    // paste, a filter to type: half of what a lab hands a student arrives in
+    // one of these, and only the single-line form could be copied.
+    const wireBlockCopy = (root: Element) => {
+      root.querySelectorAll("pre").forEach((pre) => {
+        if (!pre.querySelector("code") || pre.querySelector(".ad-cmd__copy")) return;
+        pre.classList.add("ad-pre");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "ad-cmd__copy";
+        btn.textContent = "Copy";
+        pre.appendChild(btn);
+      });
+    };
+
     const copyCode = (btn: HTMLButtonElement) => {
       const code =
         btn.closest(".ad-code")?.querySelector("code")?.innerText ||
+        btn.closest(".ad-pre")?.querySelector("code")?.innerText ||
         btn.closest(".ad-cmd")?.querySelector("code")?.innerText;
       if (!code) return;
       navigator.clipboard.writeText(code);
@@ -1149,6 +1166,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       document.querySelectorAll<HTMLElement>(".ad-mission[data-id]:not([data-restored])").forEach(restoreMission);
       document.querySelectorAll(".academy-prose").forEach((root) => {
         wireCommandCopy(root);
+        wireBlockCopy(root);
         wireZoom(root);
         wireGallery(root);
         wireReveal(root);
