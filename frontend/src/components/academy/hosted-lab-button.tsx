@@ -331,12 +331,14 @@ const PRIMARY: Record<State, string> = { none: "Start", starting: "Starting", re
  * pressing Start and being refused. The cap resets at the start of the UTC
  * month, so the date is built in UTC and shown in their own wording.
  */
-function hoursNote(status: Status): string {
+function hoursNote(status: Status): string | null {
   const limit = status.hoursLimit ?? 0;
   const session = status.sessionHours ?? 3;
   const left = typeof status.hoursLeft === "number" ? status.hoursLeft : null;
-  if (left !== null && left < session) return `Not enough left for a ${session}-hour session. Back to ${limit} on Monday.`;
-  return `${limit} hours a week, back to ${limit} on Monday. The lab stops itself when you walk away.`;
+  // Only when it changes what they can do next. The clock above already says
+  // how much is left, and the briefing explains the week, so a standing
+  // sentence here was something to read past on every open.
+  return left !== null && left < session ? `Not enough left for a ${session}-hour session. Back to ${limit} on Monday.` : null;
 }
 
 /** Hours and minutes, for a meter a twenty-minute session should move. */
@@ -636,7 +638,7 @@ export function HostedLabMenu() {
           </em>
         </p>
       )}
-      {typeof status.hoursLimit === "number" && status.hoursLimit > 0 && <p className="hl__hours__note">{hoursNote(status)}</p>}
+      {typeof status.hoursLimit === "number" && status.hoursLimit > 0 && hoursNote(status) && <p className="hl__hours__note">{hoursNote(status)}</p>}
 
       <div className="hl__links">
         {state !== "none" && (
