@@ -4276,10 +4276,10 @@ html:active-view-transition .ax-page { animation: none }
   --rd-ink-3: #74747e;
   --rd-line: rgba(255, 255, 255, 0.09);
   --rd-line-2: rgba(255, 255, 255, 0.05);
-  /* A clean dark charcoal, a clear step above the pitch-black page so a panel
-     reads as an elevated surface. Solid, not the old translucent white film
-     that looked dusty grey, and not so dark it blends into the background. */
-  --rd-surface: #16141d;
+  /* Black, the same as the page. A panel is drawn by its hairline edge rather
+     than by being a lighter slab: the charcoal that used to sit here read as a
+     grey box on black, which is the one thing this theme keeps chasing out. */
+  --rd-surface: #000000;
   --rd-accent: #9a8cff;
   --rd-good: #34d399;
   --rd-warn: #fbbf24;
