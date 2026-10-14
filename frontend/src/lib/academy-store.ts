@@ -453,6 +453,21 @@ const memoryLabMinutes = new Map<string, { month: string; minutes: number }>();
 
 export const monthStamp = (d = new Date()) => d.toISOString().slice(0, 7);
 
+/** The month's lab minutes could not be read. Charging a session against a
+ *  number we do not have either bills a student twice or hands out free hours,
+ *  so every caller stops here rather than carrying on with a guess. */
+export class LabUsageUnreadableError extends Error {
+  constructor(detail: string) {
+    super("Range cannot read your lab hours right now. Try again in a minute, or email support@purvex.io.");
+    this.name = "LabUsageUnreadableError";
+    this.cause = detail;
+  }
+}
+
+/** PostgREST cannot find the function, or Postgres does not have it: academy.sql
+ *  has not been run on this database yet. */
+const missingFunction = (code?: string) => code === "PGRST202" || code === "42883";
+
 export async function readLabMinutes(userId: string, month = monthStamp()): Promise<number> {
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin
@@ -461,17 +476,43 @@ export async function readLabMinutes(userId: string, month = monthStamp()): Prom
       .eq("user_id", userId)
       .eq("month", month)
       .maybeSingle();
-    if (!error && typeof data?.minutes === "number") return data.minutes;
-    if (error) console.error("academy_lab_usage read failed", error.message);
+    // A failed read used to answer 0, and the write behind it then stored
+    // 0 + the new charge: one blip erased everything the student had spent
+    // this month. The month is now either read or not answered at all.
+    if (error) {
+      console.error("academy_lab_usage read failed", error.code, error.message);
+      throw new LabUsageUnreadableError(error.message);
+    }
+    return typeof data?.minutes === "number" ? data.minutes : 0;
   }
   const row = memoryLabMinutes.get(userId);
   return row && row.month === month ? row.minutes : 0;
 }
 
 export async function addLabMinutes(userId: string, minutes: number, month = monthStamp()): Promise<number> {
-  // Negative minutes give a session back when the start it paid for failed.
+  // Negative minutes give a session back when the start it paid for failed, or
+  // hand back the part of one that was never used.
+  const delta = Math.round(minutes);
+  if (supabaseAdmin) {
+    // Postgres does the arithmetic in one statement, so a charge and a refund
+    // landing together cannot overwrite each other. Read-add-write from here
+    // lost whichever of the two wrote first.
+    const { data, error } = await supabaseAdmin.rpc("academy_add_lab_minutes", { p_user: userId, p_month: month, p_minutes: delta });
+    if (!error && typeof data === "number") {
+      memoryLabMinutes.set(userId, { month, minutes: data });
+      return data;
+    }
+    if (error && !missingFunction(error.code)) {
+      console.error("academy_lab_usage add failed", error.code, error.message);
+      throw new LabUsageUnreadableError(error.message);
+    }
+    // The function is not there yet. Falling back keeps starts working on a
+    // database that has not had academy.sql run, which is the lesser problem:
+    // this is the racy path, not the one to stay on.
+    console.error("academy_add_lab_minutes is missing -- run academy.sql");
+  }
   // Clamped so a refund can never leave a student with a negative month.
-  const next = Math.max(0, (await readLabMinutes(userId, month)) + minutes);
+  const next = Math.max(0, (await readLabMinutes(userId, month)) + delta);
   memoryLabMinutes.set(userId, { month, minutes: next });
   if (supabaseAdmin) {
     const { error } = await supabaseAdmin.from("academy_lab_usage").upsert({
@@ -480,7 +521,10 @@ export async function addLabMinutes(userId: string, minutes: number, month = mon
       minutes: next,
       updated_at: new Date().toISOString(),
     });
-    if (error) console.error("academy_lab_usage upsert failed", error.message);
+    if (error) {
+      console.error("academy_lab_usage upsert failed", error.code, error.message);
+      throw new LabUsageUnreadableError(error.message);
+    }
   }
   return next;
 }

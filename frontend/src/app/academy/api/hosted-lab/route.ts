@@ -16,7 +16,7 @@ import {
   stopDueHostedLabs,
   stopHostedLab,
 } from "@/lib/academy-hosted";
-import { PodSlotsUnreadableError } from "@/lib/academy-store";
+import { LabUsageUnreadableError, PodSlotsUnreadableError } from "@/lib/academy-store";
 import { isRangePro, proRequired } from "@/lib/range-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
 
@@ -151,6 +151,12 @@ export async function POST(request: Request) {
     // them round a loop that cannot end until someone runs academy.sql.
     if (err instanceof PodSlotsUnreadableError) {
       console.error("hosted lab blocked: academy.sql has not been run", err.cause);
+      return NextResponse.json({ error: err.message }, { status: 503 });
+    }
+    // The month could not be read, so the session was never charged. Refusing
+    // is the honest answer: starting anyway hands out hours nothing counts.
+    if (err instanceof LabUsageUnreadableError) {
+      console.error("hosted lab blocked: lab hours unreadable", err.cause);
       return NextResponse.json({ error: err.message }, { status: 503 });
     }
     console.error("hosted lab action failed", action, err instanceof Error ? err.message : err);

@@ -368,6 +368,29 @@ create policy "Students read their own lab usage"
   on public.academy_lab_usage for select
   using (auth.uid() = user_id);
 
+-- Charge and refund in one statement. The server used to read the month, add
+-- its minutes and write the total back: a start and a refund landing in the
+-- same second each wrote their own total and whichever arrived last won. The
+-- clamp keeps a refund from pushing a month below zero, on the insert as well,
+-- since the first thing a new month sees can be a refund.
+create or replace function public.academy_add_lab_minutes(p_user uuid, p_month text, p_minutes integer)
+returns integer
+language sql
+as $func$
+  insert into public.academy_lab_usage (user_id, month, minutes, updated_at)
+  values (p_user, p_month, greatest(0, p_minutes), now())
+  on conflict (user_id, month) do update
+    set minutes = greatest(0, academy_lab_usage.minutes + p_minutes),
+        updated_at = now()
+  returning minutes;
+$func$;
+
+-- Service role only: a student who could call this could grant themselves lab
+-- hours. It runs as its caller, so the service role's own RLS bypass is what
+-- lets it write, not the function.
+revoke all on function public.academy_add_lab_minutes(uuid, text, integer) from public, anon, authenticated;
+grant execute on function public.academy_add_lab_minutes(uuid, text, integer) to service_role;
+
 -- Thumbs up or down on a PurveX Coach reply (see lib/academy-coach-feedback.ts).
 -- The exchange is stored next to the rating so a bad answer becomes a test
 -- case: without the question and the reply, a count of thumbs-down says
