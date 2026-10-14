@@ -141,6 +141,7 @@ html[data-academy-theme="dark"] .hl-note,
 .hl .hl__hours > span:first-child { flex: none; }
 .hl .hl__hours em { flex: none; font-style: normal; letter-spacing: 0.06em; font-variant-numeric: tabular-nums; color: var(--hl-ink-2); }
 .hl .hl__hours em i { font-style: normal; color: var(--hl-ink-3); }
+.hl .hl__hours__note { margin: -10px 0 0; font-size: var(--ty-note); color: var(--hl-ink-3); }
 .hl .hl__meter { display: block; flex: 1; min-width: 0; height: 4px; background: color-mix(in srgb, var(--hl-ink) 14%, transparent); overflow: hidden; }
 .hl .hl__meter i { display: block; height: 100%; background: var(--hl-accent); }
 

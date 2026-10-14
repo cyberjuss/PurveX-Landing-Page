@@ -323,6 +323,24 @@ const LINUX_SPEC = SPECS["t3.medium"];
 
 const PRIMARY: Record<State, string> = { none: "Start", starting: "Starting", ready: "Open", stopping: "Stopping", stopped: "Resume" };
 
+/**
+ * What the meter is a meter of.
+ *
+ * The bar read "20/20" and nothing said over what: a student could only learn
+ * the hours were a calendar month, and that a session has to fit whole, by
+ * pressing Start and being refused. The cap resets at the start of the UTC
+ * month, so the date is built in UTC and shown in their own wording.
+ */
+function hoursNote(status: Status): string {
+  const limit = status.hoursLimit ?? 0;
+  const session = status.sessionHours ?? 3;
+  const left = typeof status.hoursLeft === "number" ? status.hoursLeft : null;
+  const now = new Date();
+  const reset = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1)).toLocaleDateString(undefined, { day: "numeric", month: "long" });
+  if (left !== null && left < session) return `Not enough left for a ${session}-hour session. Back to ${limit} on ${reset}.`;
+  return `${limit} hours a month. Back to ${limit} on ${reset}.`;
+}
+
 /** Seconds since this start, ticking once a second while the lab starts. */
 function useElapsed(startedAt: string | null | undefined, on: boolean): number {
   const [now, setNow] = useState(() => Date.now());
@@ -588,6 +606,7 @@ export function HostedLabMenu() {
           </em>
         </p>
       )}
+      {typeof status.hoursLimit === "number" && status.hoursLimit > 0 && <p className="hl__hours__note">{hoursNote(status)}</p>}
 
       <div className="hl__links">
         {state !== "none" && (
