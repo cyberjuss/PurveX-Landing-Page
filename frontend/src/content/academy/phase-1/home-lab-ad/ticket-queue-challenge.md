@@ -367,14 +367,10 @@
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>purvexfinancial.local</code> and look inside the default folders until you find <code>FIN-LT14</code>.</li>
+<li>A folder that looks empty is usually the view filter. View → Filter Options, show all types of objects.</li>
 <li>Right-click the laptop and choose Move, then select Departments → FinanceAccounting → Workstations.</li>
+<li>Press F5 if the move does not show. The console keeps the view it drew first.</li>
 </ol>
-<p>If a folder looks empty:</p>
-<ul>
-<li>View → Filter Options. Set it to show all types of objects. The funnel icon does the same.</li>
-<li>A filter with computers switched off shows a folder's OUs and nothing else.</li>
-<li>Press F5 after a move. The console keeps the view it drew first.</li>
-</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>(Get-ADComputer FIN-LT14).DistinguishedName</code></li>
