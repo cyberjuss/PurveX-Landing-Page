@@ -68,7 +68,13 @@ export async function GET(request: Request) {
       ? NextResponse.json({ available: false, locked: true, upgrade: "/range/upgrade" })
       : NextResponse.json({ available: false });
   }
-  if (!canUseHostedLab(student.email)) return NextResponse.json({ available: false });
+  // Pro, but this account is not in the pilot allowlist yet. available stays
+  // false so no Start button appears -- it would only 503 -- but notEnabled
+  // rides along so the lab surfaces can say why instead of showing a plain
+  // "Offline" with a Start button that fails. A student left with the silent
+  // version has no way to tell this apart from a lab they simply have not
+  // started, which is how it reached support as "I cannot go online".
+  if (!canUseHostedLab(student.email)) return NextResponse.json({ available: false, notEnabled: true });
   sweep();
   try {
     const [status, hours] = await Promise.all([hostedLabStatus(student.id), labHours(student.id)]);
