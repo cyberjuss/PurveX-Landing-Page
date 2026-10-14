@@ -5,6 +5,7 @@ import {
   extendHostedLab,
   hostedLabLink,
   hostedLabsConfigured,
+  hostedLabIdleStopMinutes,
   hostedLabSessionHours,
   hostedLabStatus,
   labHours,
@@ -73,6 +74,7 @@ async function statusPayload(userId: string) {
     hoursLimit: hours?.limit || null,
     hoursLeft: hours && Number.isFinite(hours.left) ? Math.round(hours.left) : null,
     sessionHours: hostedLabSessionHours(),
+    idleStopMinutes: hostedLabIdleStopMinutes(),
   };
 }
 

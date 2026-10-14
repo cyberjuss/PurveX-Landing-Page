@@ -33,7 +33,7 @@ export const markLabBriefed = (): void => {
 
 type Point = { Icon: LucideIcon; title: string; body: string };
 
-function points(sessionHours: number, weeklyHours: number | null): Point[] {
+function points(sessionHours: number, weeklyHours: number | null, idleStopMinutes: number): Point[] {
   const list: Point[] = [
     {
       Icon: Server,
@@ -53,14 +53,14 @@ function points(sessionHours: number, weeklyHours: number | null): Point[] {
     {
       Icon: Clock,
       title: `It stops itself after ${sessionHours} ${sessionHours === 1 ? "hour" : "hours"}`,
-      body: "It also stops when you walk away from it for twenty minutes. Everything you changed is saved, and Resume picks the lab up where you left it.",
+      body: `It also stops when you leave it alone for ${idleStopMinutes} minutes. Everything you changed is saved, and Resume picks the lab up where you left it.`,
     },
   ];
   if (weeklyHours) {
     list.push({
       Icon: Gauge,
       title: `${weeklyHours} lab hours a week`,
-      body: `They go back to ${weeklyHours} every Monday. Only the time the lab actually runs counts, so stopping early costs you nothing.`,
+      body: `They go back to ${weeklyHours} every Monday, and only the time the lab actually runs counts. A session needs its full ${sessionHours} hours free, so once less than that is left the rest of the week waits for Monday.`,
     });
   }
   list.push({
@@ -74,12 +74,14 @@ function points(sessionHours: number, weeklyHours: number | null): Point[] {
 export function LabBriefing({
   sessionHours,
   weeklyHours,
+  idleStopMinutes,
   onStart,
   onClose,
   starting,
 }: {
   sessionHours: number;
   weeklyHours: number | null;
+  idleStopMinutes: number;
   /** Absent when the briefing is reopened to be read rather than to start a lab. */
   onStart?: () => void;
   onClose: () => void;
@@ -118,7 +120,7 @@ export function LabBriefing({
         </header>
 
         <ul className="lbm__points">
-          {points(sessionHours, weeklyHours).map(({ Icon, title, body }) => (
+          {points(sessionHours, weeklyHours, idleStopMinutes).map(({ Icon, title, body }) => (
             <li key={title}>
               <span className="lbm__mark" aria-hidden>
                 <Icon className="h-[18px] w-[18px]" />

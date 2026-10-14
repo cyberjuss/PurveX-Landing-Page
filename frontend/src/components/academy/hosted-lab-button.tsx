@@ -15,7 +15,7 @@ import "./hosted-lab.css";
 type State = "none" | "starting" | "ready" | "stopping" | "stopped";
 /** locked: hosted labs exist here, but this account is on Explore and has not bought one. */
 /** notEnabled: this account is Pro, but cloud labs are not switched on for it yet. */
-type Status = { available: boolean; locked?: boolean; notEnabled?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string; hoursUsed?: number; minutesUsed?: number; hoursLimit?: number | null; hoursLeft?: number | null; sessionHours?: number };
+type Status = { available: boolean; locked?: boolean; notEnabled?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string; hoursUsed?: number; minutesUsed?: number; hoursLimit?: number | null; hoursLeft?: number | null; sessionHours?: number; idleStopMinutes?: number };
 type Snapshot = { status: Status | null; busy: boolean; error: string | null };
 
 const clock = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -331,16 +331,6 @@ const PRIMARY: Record<State, string> = { none: "Start", starting: "Starting", re
  * pressing Start and being refused. The cap resets at the start of the UTC
  * month, so the date is built in UTC and shown in their own wording.
  */
-function hoursNote(status: Status): string | null {
-  const limit = status.hoursLimit ?? 0;
-  const session = status.sessionHours ?? 3;
-  const left = typeof status.hoursLeft === "number" ? status.hoursLeft : null;
-  // Only when it changes what they can do next. The clock above already says
-  // how much is left, and the briefing explains the week, so a standing
-  // sentence here was something to read past on every open.
-  return left !== null && left < session ? `Not enough left for a ${session}-hour session. Back to ${limit} on Monday.` : null;
-}
-
 /** Hours and minutes, for a meter a twenty-minute session should move. */
 const hm = (minutes: number) => `${Math.floor(minutes / 60)}h ${String(Math.max(0, Math.round(minutes % 60))).padStart(2, "0")}m`;
 
@@ -638,7 +628,6 @@ export function HostedLabMenu() {
           </em>
         </p>
       )}
-      {typeof status.hoursLimit === "number" && status.hoursLimit > 0 && hoursNote(status) && <p className="hl__hours__note">{hoursNote(status)}</p>}
 
       <div className="hl__links">
         {state !== "none" && (
@@ -665,6 +654,7 @@ export function HostedLabMenu() {
       {brief && (
         <LabBriefing
           sessionHours={status.sessionHours ?? 3}
+          idleStopMinutes={status.idleStopMinutes ?? 20}
           weeklyHours={typeof status.hoursLimit === "number" && status.hoursLimit > 0 ? status.hoursLimit : null}
           onStart={brief === "start" ? startFromBrief : undefined}
           starting={busy}
