@@ -221,7 +221,16 @@ Role notes (researched from job postings; facts, not instructions):
 ${notes || "Not researched yet. Use general knowledge of the role."}`;
 }
 
-export function buildStudentBrief(results: Results, lab: LabSnapshot | null, drills = "", goals = ""): string {
+/**
+ * The student brief in two halves, because only one of them can be cached.
+ *
+ * `stable` changes when the student finishes a mission or edits their goals,
+ * which is rarely and never mid-answer. `live` carries the lab: its sync age
+ * reads "3 minutes ago" and the snapshot behind it refreshes about every
+ * minute, so those bytes differ on nearly every turn. Cached together they
+ * would pay the write every turn and read it back almost never.
+ */
+export function splitStudentBrief(results: Results, lab: LabSnapshot | null, drills = "", goals = ""): { stable: string; live: string } {
   const s = summarize(results);
   const skills = s.skills
     .map((k) => `${k.label} ${k.score === null ? "not started" : `${k.score}%`} (${k.done} of ${k.total} finished${k.done > 0 && !k.rated ? ", too early to rate" : ""})`)
@@ -237,15 +246,22 @@ export function buildStudentBrief(results: Results, lab: LabSnapshot | null, dri
     const found = auditLab(lab);
     labLine += ` Real findings in their lab: ${found.length ? found.slice(0, 5).map((f) => f.title).join("; ") : "none right now"}. Call get_lab_findings for detail. Never invent broken objects.`;
   }
-  return `Student brief (live data; use it, do not recite it)
+  const stable = `Student brief (live data; use it, do not recite it)
 Readiness: ${s.finished === 0 ? "no score yet" : `${s.overall}/100 across all ${s.total} missions and scored labs, accuracy ${s.accuracy}% on the ${s.finished} finished`} (${LEVELS[s.level].label}). Readiness is low early because unfinished work counts as zero. Judge their work by accuracy.
 Skills: ${skills}.
 Biggest gap: ${gap ? `${gap.label}${gap.score === null ? " (not started)" : !gap.rated ? ` (${gap.score}% so far, too early to rate)` : ` (${gap.score}%)`}` : "none yet"}.
-Hands-on: ${handsOnLine(results, lab)}
-Drills: ${drills || "not loaded"} Use get_weakness_profile for the full picture, and get_environment_question_seeds to build questions from their own lab.
 Missions:
-${missions}
-Lab: ${labLine}${goals ? `\n\n${goals}` : ""}`;
+${missions}${goals ? `\n\n${goals}` : ""}`;
+  const live = `Hands-on: ${handsOnLine(results, lab)}
+Drills: ${drills || "not loaded"} Use get_weakness_profile for the full picture, and get_environment_question_seeds to build questions from their own lab.
+Lab: ${labLine}`;
+  return { stable, live };
+}
+
+/** Both halves as one block, for the MCP brief and anything else that does not cache. */
+export function buildStudentBrief(results: Results, lab: LabSnapshot | null, drills = "", goals = ""): string {
+  const { stable, live } = splitStudentBrief(results, lab, drills, goals);
+  return `${stable}\n${live}`;
 }
 
 // Sent to students' own MCP clients (Claude, Claude Code, Cursor) so they
@@ -919,15 +935,19 @@ export async function runCoachTurn(params: {
   let research = Boolean(profile) && process.env.ACADEMY_COACH_WEB_SEARCH !== "off" && (missing.length > 0 || ROLE_QUESTION.test(params.userMessage));
   const goals = goalsBrief(profile, briefs, params.tools.results, params.drills ?? []);
   const socratic = socraticInstructions(params.place ?? null, mode);
-  // Everything after COACH_SYSTEM_PROMPT changes with the student, the mode and
-  // the lab, so only the prompt itself is worth caching. It is kept apart from
-  // the tail rather than concatenated, so the cached prefix is byte-identical on
-  // every turn -- one stray character in front of it and the cache misses.
-  // What this student has thumbed down lately, as instructions to correct
-  // for. It goes on the tail, not the cached prompt above it, because it is
-  // theirs alone and would otherwise break the shared cached prefix.
+  // The system prompt is kept apart from everything below rather than
+  // concatenated, so the cached prefix is byte-identical on every turn. One
+  // stray character in front of it and the cache misses.
+  // What this student has thumbed down lately, as instructions to correct for.
+  // It changes between turns, so it belongs after the last breakpoint.
   const correction = params.tools.userId ? await correctionLine(params.tools.userId).catch(() => "") : "";
-  const systemTail = `${coachModeInstructions(mode)}${socratic ? `\n\n${socratic}` : ""}\n\n${buildStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results, lab) : "", goals)}${correction ? `\n\n${correction}` : ""}`;
+  const brief = splitStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results, lab) : "", goals);
+  // Held still for this student: their mode and the half of the brief that only
+  // a finished mission changes.
+  const systemStudent = `${coachModeInstructions(mode)}\n\n${brief.stable}`;
+  // Changes with the page they are on, the lab's last sync and what they have
+  // thumbed down, so it sits after the last cache breakpoint.
+  const systemLive = `${socratic ? `${socratic}\n\n` : ""}${brief.live}${correction ? `\n\n${correction}` : ""}`;
   // URLs the search returned this turn. A saved note may only cite these.
   const seen = new Map<string, string>();
   const messages: AnthropicMessage[] = [
@@ -940,13 +960,16 @@ export async function runCoachTurn(params: {
   for (let step = 0; step < 7; step++) {
     const left = deadline - Date.now();
     if (left < 3_000) throw new Error("Coach model timed out");
-    const tail = research && profile ? `${systemTail}\n\n${researchInstructions(missing)}` : systemTail;
-    // cache_control on the first block caches the tools and the prompt above it.
-    // At ~3.2k tokens the prompt clears the minimum comfortably, and it is the
-    // same for every student on every turn, so all but the first call in a
-    // five-minute window reads it at a tenth of the input price.
+    const tail = research && profile ? `${systemLive}\n\n${researchInstructions(missing)}` : systemLive;
+    // Two breakpoints, because the prefix holds still for two different lengths
+    // of time. The first caches the tools and the prompt, which every student
+    // shares. The second adds this student's own standing context, which a
+    // tool-use turn re-sends on each of its steps and the next turn usually
+    // repeats unchanged. Everything that moves by the minute is after both, so
+    // a lab that just synced never costs a cache write.
     const system = [
       { type: "text", text: COACH_SYSTEM_PROMPT, cache_control: { type: "ephemeral" } },
+      { type: "text", text: systemStudent, cache_control: { type: "ephemeral" } },
       { type: "text", text: tail },
     ];
     const tools_ = research ? [...COACH_TOOLS, webSearchTool(model, 3), SAVE_ROLE_NOTES_TOOL] : COACH_TOOLS;
