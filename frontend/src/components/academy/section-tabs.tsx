@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Flag, FlaskConical, Wrench } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flag, FlaskConical, Wrench } from "lucide-react";
 import { Markdown, splitMarkdownIntoSlides } from "@/lib/markdown";
 import { CHALLENGE_PATHS, MISSION_CATALOG } from "@/lib/academy-missions";
 import { QuizBlock } from "./quiz";
@@ -169,6 +169,52 @@ export function SectionTabs({
     return () => ro.disconnect();
   }, [active, items.length]);
 
+  // Ten sections do not fit across a laptop, so the strip scrolls. Nothing said
+  // so: the last tabs sat past the right edge with no hint and no way to reach
+  // them without a horizontal wheel. The arrows appear on whichever side still
+  // has tabs, and the one you are on is pulled into view when it changes.
+  const [edges, setEdges] = useState({ start: false, end: false });
+  const measure = useCallback(() => {
+    const nav = tabsRef.current;
+    if (!nav) return;
+    const max = nav.scrollWidth - nav.clientWidth;
+    setEdges({ start: nav.scrollLeft > 1, end: nav.scrollLeft < max - 1 });
+  }, []);
+  useEffect(() => {
+    const nav = tabsRef.current;
+    if (!nav) return;
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(nav);
+    nav.addEventListener("scroll", measure, { passive: true });
+    return () => {
+      ro.disconnect();
+      nav.removeEventListener("scroll", measure);
+    };
+  }, [measure, items.length]);
+
+  // Only the strip moves. scrollIntoView would take the page with it, and this
+  // strip is sticky, so the lesson would jump under the reader's eyes.
+  useEffect(() => {
+    const nav = tabsRef.current;
+    const tab = nav?.querySelectorAll<HTMLElement>('[role="tab"]')[active];
+    if (!nav || !tab) return;
+    const pad = 24;
+    const left = tab.offsetLeft - pad;
+    const right = tab.offsetLeft + tab.offsetWidth + pad - nav.clientWidth;
+    const to = nav.scrollLeft > left ? left : nav.scrollLeft < right ? right : null;
+    if (to === null) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    nav.scrollTo({ left: Math.max(0, to), behavior: reduce ? "auto" : "smooth" });
+  }, [active]);
+
+  const roll = (dir: 1 | -1) => {
+    const nav = tabsRef.current;
+    if (!nav) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    nav.scrollBy({ left: dir * Math.max(160, nav.clientWidth * 0.7), behavior: reduce ? "auto" : "smooth" });
+  };
+
   function goTo(i: number) {
     setDir(i >= active ? 1 : -1);
     setActive(i);
@@ -289,6 +335,16 @@ export function SectionTabs({
           already occupies the left of the screen, so a second vertical list
           beside it left the lesson reading in two thirds of the width. */}
       <div className="ax-lesshead">
+        {edges.start && (
+          <button type="button" className="ax-lessroll ax-lessroll--start" aria-label="Earlier sections" onClick={() => roll(-1)}>
+            <ChevronLeft className="h-4 w-4" aria-hidden />
+          </button>
+        )}
+        {edges.end && (
+          <button type="button" className="ax-lessroll ax-lessroll--end" aria-label="Later sections" onClick={() => roll(1)}>
+            <ChevronRight className="h-4 w-4" aria-hidden />
+          </button>
+        )}
         <nav ref={tabsRef} className="ax-lesstabs" role="tablist" aria-label="Sections">
         <span ref={barRef} className="ax-lesstabs__bar" aria-hidden />
         {items.map((item, i) => (

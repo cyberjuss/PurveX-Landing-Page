@@ -4810,7 +4810,21 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   gap: 2px;
   overflow-x: auto;
   scrollbar-width: none;
+  /* No scroll-behavior here on purpose: a CSS smooth overrides the "auto" the
+     roll passes when the reader asked for reduced motion. */
 }
+/* Rolls the section strip when it runs past the edge. Sits over the tabs with
+   the page's own background behind it, so a tab slides under rather than
+   stopping at a hard line. */
+.ax-lessroll {
+  position: absolute; top: 0; bottom: 1px; z-index: 1;
+  display: grid; align-items: center; width: 46px; padding: 0; border: 0;
+  color: var(--rd-ink-2); cursor: pointer;
+}
+.ax-lessroll:hover { color: var(--rd-accent); }
+.ax-lessroll:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: -2px; }
+.ax-lessroll--start { left: 0; justify-items: start; background: linear-gradient(to right, var(--pvrx-bg-light, #fff) 60%, transparent); }
+.ax-lessroll--end { right: 0; justify-items: end; background: linear-gradient(to left, var(--pvrx-bg-light, #fff) 60%, transparent); }
 .ax-lesstabs::-webkit-scrollbar { display: none; }
 .ax-lesstab {
   position: relative;
