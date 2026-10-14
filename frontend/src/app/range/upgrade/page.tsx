@@ -53,9 +53,28 @@ function UpgradeContent() {
   const [plan, setPlan] = useState<Plan | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [billingBusy, setBillingBusy] = useState(false);
+  const [billingError, setBillingError] = useState("");
   // The disabled prop only lands on the next render, so a fast double-click
   // can fire this twice and open two checkout tabs.
   const busyRef = useRef(false);
+
+  // Stripe hosts the whole thing: change the card, read a receipt, cancel. The
+  // session is single use and short lived, so it is minted per click rather
+  // than held in state.
+  const openBilling = useCallback(async () => {
+    setBillingBusy(true);
+    setBillingError("");
+    try {
+      const res = await academyFetch("/academy/api/billing-portal", { method: "POST" });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || !data.url) throw new Error(data.error || "Could not open billing.");
+      window.location.href = data.url;
+    } catch (err) {
+      setBillingError(err instanceof Error ? err.message : "Could not open billing.");
+      setBillingBusy(false);
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -147,6 +166,17 @@ function UpgradeContent() {
         <Link href="/range" className="am-primary mt-7">
           Open Range
         </Link>
+        {/* Only for a subscription they pay for themselves. A class seat and a
+            comped account have no bill of their own to manage, and offering a
+            portal that cannot open is worse than not offering one. */}
+        {plan.source === "subscription" && (
+          <>
+            <button type="button" className="am-legal mt-4 underline underline-offset-4" onClick={openBilling} disabled={billingBusy}>
+              {billingBusy ? "Opening billing…" : "Manage billing or cancel"}
+            </button>
+            {billingError && <p className="am-legal !text-left mt-2 text-red-600">{billingError}</p>}
+          </>
+        )}
       </AuthMinimal>
     );
   }
