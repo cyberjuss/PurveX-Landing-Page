@@ -29,7 +29,8 @@
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open the group whose Description mentions company-wide announcements.</li>
 <li>On the Members tab, add <code>jamie.torres</code> if she is missing and click Apply.</li>
-<li>Count the members and type the number here.</li>
+<li>Reopen the group after Apply and count the Members tab, including Jamie.</li>
+<li>Type that number here.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -69,6 +70,7 @@
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>riley.kwan</code>.</li>
 <li>Open the account and go to the Account tab. Check both Unlock account and Account is disabled.</li>
+<li>The Unlock account box is greyed out when nothing is locked. Read that as a finding and keep going.</li>
 <li>Fix the setting that is blocking her, then submit the cause rather than the word she used.</li>
 </ol>
 <p>In PowerShell:</p>
@@ -112,8 +114,10 @@
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>Departments</code> → <code>IT</code> → <code>Users</code> and create <code>casey.reed</code> there.</li>
+<li>The wizard refuses a simple password, so give Casey a long one with mixed case and a number.</li>
 <li>Open the Members tab of <code>IT Users</code> and open each name that is not a current IT person.</li>
-<li>Copy the ticket number from the intern's Description, then delete the intern and remove the service account from the group.</li>
+<li>Copy the ticket number out of the intern's Description before you delete the account, because deleting it takes the answer with it.</li>
+<li>Delete the intern, then remove the service account from the group without deleting it.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -156,7 +160,8 @@
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Use Find on the domain to locate <code>svc-backup-job</code> and note the folder that holds it.</li>
 <li>Open that OU's Properties and read its Description.</li>
-<li>Write the window into the account's Description on the General tab and click Apply. Then type the same window here.</li>
+<li>Write the window into the account's Description on the General tab and click Apply.</li>
+<li>Copy it exactly as the folder writes it, including the colons and the dash. The lab check reads that line, so a reworded window fails.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -195,6 +200,7 @@
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click <code>taylor.osei</code> and choose Move, then select Departments → Compliance → Users.</li>
+<li>Use Move rather than dragging. A dragged account can land on the folder above the one you meant.</li>
 <li>On the Member Of tab, add <code>Compliance Users</code> and remove <code>Operations Users</code>.</li>
 <li>Open the General tab and type the Title you see, not the department HR named.</li>
 </ol>
@@ -238,6 +244,7 @@
 <li>Right-click the domain and use Find to search for <code>kai.mendes</code>.</li>
 <li>Open the account and read the sponsor in Description on the General tab.</li>
 <li>Remove <code>Operations Users</code> on the Member Of tab. Then right-click the account and choose Disable Account.</li>
+<li>The account icon gains a small down arrow once it is disabled. That is the confirmation.</li>
 </ol>
 <p>In PowerShell:</p>
 <ul>
@@ -283,7 +290,8 @@
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open <code>Server Admins</code>.</li>
 <li>Read Description on the General tab and compare it with what Sam needs.</li>
-<li>Do not add Sam. Type the access level from the Description here.</li>
+<li>Do not add Sam. If you added him while reading the group, remove him again before you submit.</li>
+<li>Type the access level from the Description here.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -323,7 +331,8 @@
 <ol>
 <li>Run the search below in PowerShell on the domain controller.</li>
 <li>Skip the service account and note the person's username.</li>
-<li>Open that account in Active Directory Users and Computers and clear Password never expires on the Account tab. Then click Apply.</li>
+<li>Open that account in Active Directory Users and Computers and go to the Account tab.</li>
+<li>Account options is a list that scrolls. Clear Password never expires there and click Apply.</li>
 </ol>
 <p>In PowerShell:</p>
 <ul>
@@ -414,6 +423,7 @@
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open <code>Finance Reports</code>.</li>
 <li>On the General tab, change Group type from Distribution to Security and click Apply.</li>
+<li>Reopen the group and confirm the General tab now reads Security.</li>
 <li>Count the entries on the Members tab.</li>
 </ol>
 <p>In PowerShell:</p>
@@ -459,6 +469,7 @@
 <li>Run <code>ipconfig</code> to see the domain controller's own IPv4 address.</li>
 <li>Open DNS Manager with Win+R and <code>dnsmgmt.msc</code>, then go to Forward Lookup Zones → <code>purvexfinancial.local</code>.</li>
 <li>Open the <code>files</code> host record and change its address to the domain controller's address.</li>
+<li>Press F5 in DNS Manager, then run <code>Clear-DnsClientCache</code>. The old address sits in the local cache and makes a correct fix look wrong.</li>
 </ol>
 <p>In PowerShell:</p>
 <ul>
@@ -501,7 +512,8 @@
 <ol>
 <li>On the domain controller run <code>Resolve-DnsName payroll</code> and look at how many addresses come back.</li>
 <li>Run <code>ipconfig</code> to find the domain controller's own address, then test the other one with <code>Test-NetConnection</code>.</li>
-<li>Open DNS Manager with Win+R and <code>dnsmgmt.msc</code>, go to Forward Lookup Zones → <code>purvexfinancial.local</code> and delete the stale <code>payroll</code> record.</li>
+<li>Open DNS Manager with Win+R and <code>dnsmgmt.msc</code>, then go to Forward Lookup Zones → <code>purvexfinancial.local</code>.</li>
+<li>Two rows are named payroll. Read the Data column and delete only the one holding the address that no longer answers.</li>
 <li>Clients cache answers, so <code>ipconfig /flushdns</code> clears the old address from a machine that still has it.</li>
 </ol>
 <p>In PowerShell:</p>
@@ -546,6 +558,7 @@
 <li>Open Windows Defender Firewall with Advanced Security with Win+R and <code>wf.msc</code>.</li>
 <li>Select Inbound Rules and sort by Name or Group to find the vendor rule.</li>
 <li>Read its Protocols and Ports and its Scope tabs, then right-click the rule and choose Disable Rule.</li>
+<li>Leave the built-in Remote Desktop rules enabled. Disabling those closes the port you are connected through.</li>
 </ol>
 <p>In PowerShell:</p>
 <ul>
@@ -591,6 +604,7 @@
 <li>Expand Group Policy Objects, select the screen lock GPO and read its Scope tab.</li>
 <li>Right-click the FinanceAccounting OU and choose Link an Existing GPO.</li>
 <li>Under the wrong OU, right-click the GPO's link and choose Delete to remove only the link.</li>
+<li>Delete the link under the OU, never the policy under Group Policy Objects. Deleting the policy removes it everywhere and there is nothing left to link.</li>
 </ol>
 <p>In PowerShell:</p>
 <ul>
@@ -635,6 +649,7 @@
 <li>Open File Explorer and go to <code>C:\PurveX\Shares\Finance</code>.</li>
 <li>On the View menu, turn on File name extensions and compare the files.</li>
 <li>Cut the suspicious file and paste it into <code>C:\PurveX\Quarantine</code> without opening it.</li>
+<li>Use Cut rather than Copy. A copy leaves the file on the share and the ticket stays open.</li>
 </ol>
 <p>In PowerShell:</p>
 <ul>
