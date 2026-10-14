@@ -12,6 +12,7 @@ import {
 import { DescribeInstanceInformationCommand, SendCommandCommand, SSMClient } from "@aws-sdk/client-ssm";
 import {
   addLabMinutes,
+  claimLabSessionEnd,
   claimPodSlot,
   createLabKey,
   deleteHostedLab,
@@ -710,10 +711,11 @@ export async function stopHostedLab(userId: string): Promise<void> {
   const row = await loadHostedLab(userId);
   if (!row) return;
   await stopPod(row);
-  // Clearing stopAt first would lose the only record of how much of the session
-  // was left, and a second stop then refunds nothing because it is already null.
-  await refundUnused(userId, row.stopAt);
-  await saveHostedLab(userId, { ...row, stopAt: null });
+  // Clearing the stop time is the claim on the refund, and it is one
+  // conditional write: whichever stop clears it is the one that hands the hours
+  // back. Reading the time, refunding it and then clearing it meant two stops
+  // fired together both refunded the same session.
+  if (await claimLabSessionEnd(userId, row.stopAt)) await refundUnused(userId, row.stopAt);
 }
 
 export async function extendHostedLab(userId: string): Promise<string | null> {
@@ -734,7 +736,9 @@ export async function resetHostedLab(userId: string): Promise<void> {
   const row = await loadHostedLab(userId);
   if (row) {
     await terminatePod(row);
-    await refundUnused(userId, row.stopAt);
+    // Same claim as a stop: the session's leftover hours go back once, to
+    // whichever call ended it.
+    if (await claimLabSessionEnd(userId, row.stopAt)) await refundUnused(userId, row.stopAt);
     await deleteHostedLab(userId);
   }
   // Same deal as a first start: the session is charged before the lab exists,

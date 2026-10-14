@@ -338,6 +338,41 @@ export async function saveHostedLab(userId: string, row: HostedLabRow) {
   if (error) throw new Error(error.message);
 }
 
+/**
+ * Ends the session by clearing its stop time, and only if that time is still
+ * the one the caller read. Returns whether this call is the one that cleared
+ * it, which is what gives it the right to hand the unused hours back.
+ *
+ * The refund has to ride on a claim like this. Two stops fired together both
+ * read the same stop time and both refunded what was left of it, so a student
+ * could give themselves back more hours than the session ever cost.
+ */
+export async function claimLabSessionEnd(userId: string, stopAt: string | null): Promise<boolean> {
+  if (!stopAt) return false;
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin
+      .from("academy_hosted_labs")
+      .update({ stop_at: null, updated_at: new Date().toISOString() })
+      .eq("user_id", userId)
+      .eq("stop_at", stopAt)
+      .select("user_id");
+    // No refund on a failed claim: losing one is a student's hours back late,
+    // paying one twice is a month of lab nobody is charged for.
+    if (error) {
+      console.error("academy_hosted_labs session end failed", error.code, error.message);
+      return false;
+    }
+    if (!(data ?? []).length) return false;
+    const cached = memoryHosted.get(userId);
+    if (cached) memoryHosted.set(userId, { ...cached, stopAt: null });
+    return true;
+  }
+  const row = memoryHosted.get(userId);
+  if (!row || row.stopAt !== stopAt) return false;
+  memoryHosted.set(userId, { ...row, stopAt: null });
+  return true;
+}
+
 export async function deleteHostedLab(userId: string) {
   memoryHosted.delete(userId);
   if (!supabaseAdmin) return;
