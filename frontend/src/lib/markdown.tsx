@@ -34,8 +34,22 @@ function addHeadingIds(html: string) {
   });
 }
 
+/**
+ * Screenshots that have not been taken yet.
+ *
+ * A lab keeps the figure in its markdown as the note to self, with an
+ * [ADD IMAGE] caption saying what to capture. A student should get neither the
+ * broken image nor the note, so the figure is dropped on the way out, and a
+ * row left holding nothing but placeholders goes with it. Put the file in
+ * place and rename it and the figure comes back on its own.
+ */
+function dropPlaceholderShots(html: string) {
+  const kept = html.replace(/<figure class="ad-shot">[\s\S]*?<\/figure>/gi, (fig) => (fig.includes("PLACEHOLDER") ? "" : fig));
+  return kept.replace(/<div class="ad-shots">([\s\S]*?)<\/div>/gi, (full, inner: string) => (/<figure/i.test(inner) ? full : ""));
+}
+
 export function Markdown({ content, className }: { content: string; className?: string }) {
-  const html = addHeadingIds(markCommandParagraphs(marked.parse(content, { async: false }) as string));
+  const html = dropPlaceholderShots(addHeadingIds(markCommandParagraphs(marked.parse(content, { async: false }) as string)));
   return <div className={`academy-prose ${className ?? ""}`} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
