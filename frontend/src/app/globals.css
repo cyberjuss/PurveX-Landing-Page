@@ -3609,8 +3609,11 @@ body:has(.lp) {
   background: var(--pvrx-surface-alt-light, #f1f5f9); border: 1px solid var(--pvrx-border-light, #e2e8f0);
   border-radius: 4px; padding: 0.08em 0.35em;
 }
+/* 4.4rem everywhere the button appears. The 3.8rem this used to reserve was
+   about a pixel more than the button measures, so any change to its label or
+   font put it back on top of the text. */
 .ad-hint-card__body li.ad-cmd {
-  position: relative; padding-right: 3.8rem;
+  position: relative; padding-right: 4.4rem;
 }
 .ad-hint-card__body li.ad-cmd > code {
   display: inline !important; background: none !important; border: 0 !important;
@@ -3670,7 +3673,18 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 }
 .ad-cmd__copy:hover { background: rgba(255,255,255,0.16); }
 .ad-cmd__copy:focus-visible { outline: 2px solid #e2e8f0; outline-offset: 2px; }
+/* The copy button lands on a paragraph or a list item, so both have to clear
+   the same room for it. The list form never did, and a command written as a
+   bullet had the button drawn over its own text. */
 .academy-prose p.ad-cmd > code { padding-right: 4.4rem; }
+.academy-prose li.ad-cmd { padding-right: 4.4rem; }
+/* And it is a command, not a word in a sentence: no chip, and a long
+   distinguished name wraps instead of running off the side. Same treatment the
+   hint card already gives these. */
+.academy-prose li.ad-cmd > code {
+  background: none; border: 0; padding: 0; border-radius: 0;
+  white-space: pre-wrap; word-break: break-word;
+}
 /* A fenced block carries its own button, so it has to be the positioning
    parent and leave room for it on the first line. */
 .academy-prose pre.ad-pre { position: relative; padding-right: 4.4rem; }
@@ -4141,6 +4155,10 @@ html:active-view-transition .ax-page { animation: none }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission h4 code {
   background: none !important; border: 0 !important; color: inherit;
 }
+/* A command in a list is bare in both themes. The dark rule two lines up
+   outranks the light-mode one on specificity, so it is repeated here rather
+   than left to paint a chip back on. */
+.academy-bg[data-academy-theme="dark"] .academy-prose li.ad-cmd > code { background: none; border: 0; }
 .academy-bg[data-academy-theme="dark"] .academy-prose pre,
 .academy-bg[data-academy-theme="dark"] .academy-prose p.ad-cmd > code,
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission p.ad-cmd > code {
