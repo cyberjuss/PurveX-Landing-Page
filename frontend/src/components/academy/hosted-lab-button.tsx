@@ -15,7 +15,7 @@ import "./hosted-lab.css";
 type State = "none" | "starting" | "ready" | "stopping" | "stopped";
 /** locked: hosted labs exist here, but this account is on Explore and has not bought one. */
 /** notEnabled: this account is Pro, but cloud labs are not switched on for it yet. */
-type Status = { available: boolean; locked?: boolean; notEnabled?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string; hoursUsed?: number; hoursLimit?: number | null; hoursLeft?: number | null; sessionHours?: number };
+type Status = { available: boolean; locked?: boolean; notEnabled?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string; hoursUsed?: number; minutesUsed?: number; hoursLimit?: number | null; hoursLeft?: number | null; sessionHours?: number };
 type Snapshot = { status: Status | null; busy: boolean; error: string | null };
 
 const clock = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -335,10 +335,39 @@ function hoursNote(status: Status): string {
   const limit = status.hoursLimit ?? 0;
   const session = status.sessionHours ?? 3;
   const left = typeof status.hoursLeft === "number" ? status.hoursLeft : null;
-  const now = new Date();
-  const reset = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1)).toLocaleDateString(undefined, { day: "numeric", month: "long" });
-  if (left !== null && left < session) return `Not enough left for a ${session}-hour session. Back to ${limit} on ${reset}.`;
-  return `${limit} hours a month. Back to ${limit} on ${reset}.`;
+  if (left !== null && left < session) return `Not enough left for a ${session}-hour session. Back to ${limit} on Monday.`;
+  return `${limit} hours a week, back to ${limit} on Monday. The lab stops itself when you walk away.`;
+}
+
+/** Hours and minutes, for a meter a twenty-minute session should move. */
+const hm = (minutes: number) => `${Math.floor(minutes / 60)}h ${String(Math.max(0, Math.round(minutes % 60))).padStart(2, "0")}m`;
+
+/**
+ * What this week has actually cost them so far.
+ *
+ * A session is charged whole when it starts and the unused tail is handed back
+ * when it stops, so the stored number reads three hours from the moment a lab
+ * comes up. Taking the live session's remaining time off again shows the
+ * student what they would be billed if they stopped now, which is the number
+ * they can plan with.
+ */
+function spentMinutes(status: Status, state: State, now: number): number {
+  const used = status.minutesUsed ?? Math.round((status.hoursUsed ?? 0) * 60);
+  if (state !== "ready" || !status.stopAt) return used;
+  const session = (status.sessionHours ?? 3) * 60;
+  const left = Math.max(0, Math.min(session, (Date.parse(status.stopAt) - now) / 60_000));
+  return Math.max(0, used - left);
+}
+
+/** Re-renders twice a minute so the hours clock moves while the lab runs. */
+function useMinuteTick(on: boolean): number {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!on) return;
+    const t = window.setInterval(() => setNow(Date.now()), 30_000);
+    return () => window.clearInterval(t);
+  }, [on]);
+  return now;
 }
 
 /** Seconds since this start, ticking once a second while the lab starts. */
@@ -493,6 +522,7 @@ export function HostedLabMenu() {
   // "start" stands in front of the first start; "read" is the same briefing
   // reopened from the footer link once they have been through it.
   const [brief, setBrief] = useState<null | "start" | "read">(null);
+  const now = useMinuteTick(state === "ready");
   if (!status?.available) return null;
   // Nobody should meet a live Windows domain cold. The first start goes
   // through the briefing; every later one does not.
@@ -596,13 +626,13 @@ export function HostedLabMenu() {
             role="progressbar"
             aria-valuemin={0}
             aria-valuemax={status.hoursLimit}
-            aria-valuenow={status.hoursUsed ?? 0}
-            aria-label={`${status.hoursUsed ?? 0} of ${status.hoursLimit} lab hours used this month`}
+            aria-valuenow={Math.round((spentMinutes(status, state, now) / 60) * 10) / 10}
+            aria-label={`${hm(spentMinutes(status, state, now))} of ${status.hoursLimit} lab hours used this week`}
           >
-            <i style={{ width: `${Math.min(100, ((status.hoursUsed ?? 0) / status.hoursLimit) * 100)}%` }} />
+            <i style={{ width: `${Math.min(100, (spentMinutes(status, state, now) / 60 / status.hoursLimit) * 100)}%` }} />
           </span>
           <em>
-            {String(status.hoursUsed ?? 0).padStart(2, "0")}<i>/{status.hoursLimit}</i>
+            {hm(spentMinutes(status, state, now))}<i>/{status.hoursLimit}h</i>
           </em>
         </p>
       )}
@@ -633,7 +663,7 @@ export function HostedLabMenu() {
       {brief && (
         <LabBriefing
           sessionHours={status.sessionHours ?? 3}
-          monthlyHours={typeof status.hoursLimit === "number" && status.hoursLimit > 0 ? status.hoursLimit : null}
+          weeklyHours={typeof status.hoursLimit === "number" && status.hoursLimit > 0 ? status.hoursLimit : null}
           onStart={brief === "start" ? startFromBrief : undefined}
           starting={busy}
           onClose={() => {

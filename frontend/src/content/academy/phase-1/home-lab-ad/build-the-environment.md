@@ -514,6 +514,50 @@ function Get-PurvexLabFiles {
 
 # A cheap fingerprint of the firewall rules and the lab shares, taken every second.
 # DNS and Group Policy changes are caught by the directory watch instead.
+function Get-PurvexLastActivePath {
+    $dir = Join-Path $env:ProgramData "PurveX"
+    if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+    return (Join-Path $dir "last-active.txt")
+}
+
+# Minutes with nobody at the keyboard, so Range can stop a lab the student
+# walked away from and hand the rest of the session back. A task running as
+# SYSTEM cannot read GetLastInputInfo for someone's remote session, so this
+# reads the session table instead: quser reports each session's own idle time.
+# The stamp file carries the answer between sends, which makes a lab that was
+# opened and then closed read as idle from the moment the session ended rather
+# than from zero.
+function Get-PurvexIdleMinutes {
+    $stamp = Get-PurvexLastActivePath
+    $idle = $null
+    try {
+        foreach ($line in @(quser 2>$null)) {
+            if ($line -notmatch '\bActive\b') { continue }
+            $v = ([regex]::Match($line, '\bActive\s+(\S+)')).Groups[1].Value
+            $mins = switch -regex ($v) {
+                '^\.$' { 0; break }
+                '^\d+$' { [int]$v; break }
+                '^(\d+)\+(\d+):(\d+)$' { ([int]$Matches[1]) * 1440 + ([int]$Matches[2]) * 60 + [int]$Matches[3]; break }
+                '^(\d+):(\d+)$' { ([int]$Matches[1]) * 60 + [int]$Matches[2]; break }
+                default { 0 }
+            }
+            if ($null -eq $idle -or $mins -lt $idle) { $idle = $mins }
+        }
+    }
+    catch { }
+    if ($null -ne $idle) {
+        Set-Content -LiteralPath $stamp -Value ((Get-Date).ToUniversalTime().AddMinutes(-$idle).ToString("o")) -ErrorAction SilentlyContinue
+        return [int]$idle
+    }
+    # No session at all: measure from the last one seen, or from boot.
+    $since = $null
+    try { $since = [datetime]::Parse((Get-Content -LiteralPath $stamp -Raw -ErrorAction Stop).Trim(), $null, [Globalization.DateTimeStyles]::RoundtripKind) } catch { }
+    if ($null -eq $since) {
+        try { $since = (Get-CimInstance Win32_OperatingSystem -ErrorAction Stop).LastBootUpTime.ToUniversalTime() } catch { $since = (Get-Date).ToUniversalTime() }
+    }
+    return [int][Math]::Max(0, ((Get-Date).ToUniversalTime() - $since).TotalMinutes)
+}
+
 function Get-PurvexInfraPrint {
     $parts = @()
     try {
@@ -906,6 +950,7 @@ function Send-PurvexLabSnapshot {
     $snapshot = [ordered]@{
         version    = 1
         capturedAt = (Get-Date).ToUniversalTime().ToString("o")
+        idleMinutes = (Get-PurvexIdleMinutes)
         domain     = [ordered]@{ dnsRoot = $domain.DNSRoot; netbios = $domain.NetBIOSName }
         ous        = @($ous)
         users      = @($users)

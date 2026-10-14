@@ -65,6 +65,9 @@ async function statusPayload(userId: string) {
     available: true,
     ...status,
     hoursUsed: hours ? Math.round(hours.used) : 0,
+    // Minutes as well: a twenty-minute session rounds to nothing in hours, and
+    // the panel shows a clock.
+    minutesUsed: hours ? Math.round(hours.minutes) : 0,
     // hoursLeft is Infinity when the cap is off, which JSON turns into null --
     // the page reads null as "no cap to show", not "no hours left".
     hoursLimit: hours?.limit || null,

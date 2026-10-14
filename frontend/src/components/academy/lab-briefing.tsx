@@ -33,7 +33,7 @@ export const markLabBriefed = (): void => {
 
 type Point = { Icon: LucideIcon; title: string; body: string };
 
-function points(sessionHours: number, monthlyHours: number | null): Point[] {
+function points(sessionHours: number, weeklyHours: number | null): Point[] {
   const list: Point[] = [
     {
       Icon: Server,
@@ -53,14 +53,14 @@ function points(sessionHours: number, monthlyHours: number | null): Point[] {
     {
       Icon: Clock,
       title: `It stops itself after ${sessionHours} ${sessionHours === 1 ? "hour" : "hours"}`,
-      body: "Everything you changed is saved. Resume picks the lab up exactly where you left it, so a stop costs you nothing.",
+      body: "It also stops when you walk away from it for twenty minutes. Everything you changed is saved, and Resume picks the lab up where you left it.",
     },
   ];
-  if (monthlyHours) {
+  if (weeklyHours) {
     list.push({
       Icon: Gauge,
-      title: `${monthlyHours} lab hours a month`,
-      body: "Stop the lab yourself when you are done and the rest of that session goes back on your balance. Only the time it is actually running counts.",
+      title: `${weeklyHours} lab hours a week`,
+      body: `They go back to ${weeklyHours} every Monday. Only the time the lab actually runs counts, so stopping early costs you nothing.`,
     });
   }
   list.push({
@@ -73,13 +73,13 @@ function points(sessionHours: number, monthlyHours: number | null): Point[] {
 
 export function LabBriefing({
   sessionHours,
-  monthlyHours,
+  weeklyHours,
   onStart,
   onClose,
   starting,
 }: {
   sessionHours: number;
-  monthlyHours: number | null;
+  weeklyHours: number | null;
   /** Absent when the briefing is reopened to be read rather than to start a lab. */
   onStart?: () => void;
   onClose: () => void;
@@ -118,7 +118,7 @@ export function LabBriefing({
         </header>
 
         <ul className="lbm__points">
-          {points(sessionHours, monthlyHours).map(({ Icon, title, body }) => (
+          {points(sessionHours, weeklyHours).map(({ Icon, title, body }) => (
             <li key={title}>
               <span className="lbm__mark" aria-hidden>
                 <Icon className="h-[18px] w-[18px]" />

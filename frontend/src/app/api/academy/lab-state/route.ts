@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
+import { stopIdleHostedLab } from "@/lib/academy-hosted";
 import { compareToBaseline, sanitizeLabSnapshot } from "@/lib/academy-lab";
 import { loadLabLive, loadLabState, resolveLabKey, saveLabLive, saveLabState } from "@/lib/academy-store";
 import { isVerified } from "@/lib/academy-verify";
@@ -88,6 +89,10 @@ export async function POST(request: Request) {
   // A hosted-lab key only exists inside a machine Range built for this student, so its
   // snapshots already prove the lab is theirs and live. No code to plant. Refreshed hourly.
   if (key.startsWith("pvl_")) {
+    // The lab reports its own idleness every minute, which makes this the
+    // cheapest place to notice one nobody is working in. Best effort, after
+    // the reply: the sync must not wait on EC2.
+    after(() => stopIdleHostedLab(userId, snapshot.idleMinutes).then(() => undefined).catch(() => undefined));
     const live = await loadLabLive(userId).catch(() => null);
     const fresh = live?.verifiedAt && isVerified(live.verifiedAt) && Date.now() - Date.parse(live.verifiedAt) < 3600_000;
     if (!fresh) await saveLabLive(userId, { verifiedAt: new Date().toISOString() }).catch(() => {});

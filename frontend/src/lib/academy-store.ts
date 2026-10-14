@@ -486,7 +486,28 @@ export async function claimPodSlot(userId: string, slots: number): Promise<numbe
 // would collide with the coach's own count on the first of every month.
 const memoryLabMinutes = new Map<string, { month: string; minutes: number }>();
 
-export const monthStamp = (d = new Date()) => d.toISOString().slice(0, 7);
+/**
+ * The window lab hours are counted in: an ISO week, UTC, so it turns over at
+ * midnight UTC on Monday. The usage table's key column is still called `month`
+ * from when this was a calendar month; the value is what changed, and a row
+ * from the old scheme simply stops being read.
+ */
+export const usageWindow = (d = new Date()) => {
+  const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  // ISO weeks belong to the year holding their Thursday.
+  t.setUTCDate(t.getUTCDate() - ((t.getUTCDay() + 6) % 7) + 3);
+  const firstThursday = new Date(Date.UTC(t.getUTCFullYear(), 0, 4));
+  firstThursday.setUTCDate(firstThursday.getUTCDate() - ((firstThursday.getUTCDay() + 6) % 7) + 3);
+  const week = 1 + Math.round((t.getTime() - firstThursday.getTime()) / (7 * 86_400_000));
+  return `${t.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
+};
+
+/** Midnight UTC on the Monday that refills the week. */
+export const usageResetsAt = (d = new Date()) => {
+  const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  t.setUTCDate(t.getUTCDate() + (7 - ((t.getUTCDay() + 6) % 7)));
+  return t.toISOString();
+};
 
 /** The month's lab minutes could not be read. Charging a session against a
  *  number we do not have either bills a student twice or hands out free hours,
@@ -503,7 +524,7 @@ export class LabUsageUnreadableError extends Error {
  *  has not been run on this database yet. */
 const missingFunction = (code?: string) => code === "PGRST202" || code === "42883";
 
-export async function readLabMinutes(userId: string, month = monthStamp()): Promise<number> {
+export async function readLabMinutes(userId: string, month = usageWindow()): Promise<number> {
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin
       .from("academy_lab_usage")
@@ -524,7 +545,7 @@ export async function readLabMinutes(userId: string, month = monthStamp()): Prom
   return row && row.month === month ? row.minutes : 0;
 }
 
-export async function addLabMinutes(userId: string, minutes: number, month = monthStamp()): Promise<number> {
+export async function addLabMinutes(userId: string, minutes: number, month = usageWindow()): Promise<number> {
   // Negative minutes give a session back when the start it paid for failed, or
   // hand back the part of one that was never used.
   const delta = Math.round(minutes);

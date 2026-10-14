@@ -83,6 +83,8 @@ export type LabSnapshot = {
   events?: LabEvents;
   infra?: LabInfra;
   capturedAt: string;
+  /** Minutes the domain controller has gone with nobody at the keyboard. */
+  idleMinutes?: number;
   domain: { dnsRoot: string; netbios: string };
   ous: LabOu[];
   users: LabUser[];
@@ -255,6 +257,7 @@ export function sanitizeLabSnapshot(raw: unknown): LabSnapshot | null {
     events: sanitizeEvents(r.events),
     infra: sanitizeInfra(r.infra),
     capturedAt: date(r.capturedAt) ?? new Date().toISOString(),
+    idleMinutes: typeof r.idleMinutes === "number" && Number.isFinite(r.idleMinutes) ? Math.max(0, Math.min(100_000, Math.round(r.idleMinutes))) : undefined,
     domain: { dnsRoot: str(domain.dnsRoot, 200), netbios: str(domain.netbios, 50) },
     ous: objects(r.ous).map((o) => ({ path: str(o.path), description: str(o.description) })),
     users: objects(r.users)

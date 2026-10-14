@@ -77,10 +77,16 @@ function cfg() {
     secret: e.HOSTED_LAB_SECRET || "",
     syncUrl: (e.HOSTED_LAB_SYNC_URL || "https://purvex.io").replace(/\/+$/, ""),
     sessionHours: Math.min(8, Math.max(1, Number(e.HOSTED_LAB_SESSION_HOURS) || 3)),
-    /** Hours of lab a subscription buys per calendar month. Without one a
-     *  student can restart a session every day indefinitely, and the AWS bill
-     *  for that passes what they pay us. 0 turns the cap off. */
-    monthlyHours: Math.max(0, Number(e.HOSTED_LAB_MONTHLY_HOURS) || 20),
+    /** Hours of lab a subscription buys per week, counted Monday to Monday in
+     *  UTC. Without a cap a student can restart a session every day
+     *  indefinitely, and the AWS bill for that passes what they pay us. 0 turns
+     *  the cap off. The old monthly variable is still read so an environment
+     *  that sets it keeps a cap rather than silently losing one. */
+    weeklyHours: Math.max(0, Number(e.HOSTED_LAB_WEEKLY_HOURS || e.HOSTED_LAB_MONTHLY_HOURS) || 20),
+    /** Minutes with nobody at the keyboard before the pod stops itself. The
+     *  student gets the rest of the session back, so a forgotten lab costs them
+     *  what they used rather than the whole session. 0 turns it off. */
+    idleStopMinutes: Math.max(0, Number(e.HOSTED_LAB_IDLE_STOP_MINUTES) || 20),
     /** Days a lab may sit untouched before it is terminated. Its disks bill
      *  every month whether or not anyone signs in, so a lab nobody has opened
      *  since this long ago is pure cost. 0 turns reclaiming off. */
@@ -99,18 +105,19 @@ export class LabHoursSpentError extends Error {
     const left = Math.max(0, limit - used);
     super(
       left > 0 && session > 0
-        ? `A session needs ${session} hours and only ${left} of your ${limit} are left this month. Hours reset on the 1st. Email support@purvex.io if you need more.`
-        : `All ${limit} lab hours on your plan are used for this month. Hours reset on the 1st. Email support@purvex.io if you need more.`
+        ? `A session needs ${session} hours and only ${left} of your ${limit} are left this week. Hours reset Monday. Email support@purvex.io if you need more.`
+        : `All ${limit} lab hours on your plan are used for this week. Hours reset Monday. Email support@purvex.io if you need more.`
     );
     this.name = "LabHoursSpentError";
   }
 }
 
-/** Hours used and left this month. limit 0 means the cap is off. */
-export async function labHours(userId: string): Promise<{ used: number; limit: number; left: number }> {
-  const limit = cfg().monthlyHours;
-  const used = (await readLabMinutes(userId)) / 60;
-  return { used, limit, left: limit ? Math.max(0, limit - used) : Infinity };
+/** Hours used and left this week. limit 0 means the cap is off. */
+export async function labHours(userId: string): Promise<{ used: number; limit: number; left: number; minutes: number }> {
+  const limit = cfg().weeklyHours;
+  const minutes = await readLabMinutes(userId);
+  const used = minutes / 60;
+  return { used, limit, left: limit ? Math.max(0, limit - used) : Infinity, minutes };
 }
 
 /** Charges one session against the month, or refuses when nothing is left.
@@ -120,7 +127,7 @@ export async function labHours(userId: string): Promise<{ used: number; limit: n
  *  front is deliberate, but it must not bill for a lab that failed to launch. */
 async function refundSession(userId: string): Promise<void> {
   const c = cfg();
-  if (!c.monthlyHours) return;
+  if (!c.weeklyHours) return;
   await addLabMinutes(userId, -c.sessionHours * 60).catch((err) => {
     console.error("session refund failed", err instanceof Error ? err.message : err);
     return 0;
@@ -134,7 +141,7 @@ async function refundSession(userId: string): Promise<void> {
  *  of stopping is the refund. */
 async function refundUnused(userId: string, stopAt: string | null): Promise<void> {
   const c = cfg();
-  if (!c.monthlyHours || !stopAt) return;
+  if (!c.weeklyHours || !stopAt) return;
   const leftMs = Date.parse(stopAt) - Date.now();
   if (!Number.isFinite(leftMs) || leftMs <= 0) return;
   const minutes = Math.min(c.sessionHours * 60, Math.floor(leftMs / 60000));
@@ -147,9 +154,9 @@ async function refundUnused(userId: string, stopAt: string | null): Promise<void
 
 async function chargeSession(userId: string): Promise<void> {
   const c = cfg();
-  if (!c.monthlyHours) return;
+  if (!c.weeklyHours) return;
   const used = (await readLabMinutes(userId)) / 60;
-  if (used + c.sessionHours > c.monthlyHours) throw new LabHoursSpentError(Math.round(used), c.monthlyHours, c.sessionHours);
+  if (used + c.sessionHours > c.weeklyHours) throw new LabHoursSpentError(Math.round(used), c.weeklyHours, c.sessionHours);
   await addLabMinutes(userId, c.sessionHours * 60);
 }
 
@@ -661,6 +668,27 @@ export async function startHostedLab(userId: string): Promise<void> {
     await refundSession(userId);
     throw err;
   }
+}
+
+/**
+ * Stops a lab nobody is working in, and hands back the rest of the session.
+ *
+ * The snapshot carries how long the domain controller has gone without an
+ * active session. A student who starts a lab and walks away used to pay the
+ * whole three hours, and we paid to run it, so both sides lost the same hour.
+ * Routed through stopHostedLab on purpose: that is where the refund claim is.
+ */
+export async function stopIdleHostedLab(userId: string, idleMinutes: number | undefined): Promise<boolean> {
+  const c = cfg();
+  if (!c.idleStopMinutes || typeof idleMinutes !== "number" || idleMinutes < c.idleStopMinutes) return false;
+  const row = await loadHostedLab(userId);
+  // stopAt is null on a lab that is already stopped, so this never fires twice.
+  if (!row?.stopAt) return false;
+  const inst = await describe(row.instanceId).catch(() => null);
+  if (inst?.state !== "running") return false;
+  console.log("hosted lab idle stop", userId, `${Math.round(idleMinutes)} min`);
+  await stopHostedLab(userId);
+  return true;
 }
 
 /** Hibernate suits the domain controller: the student gets their windows back as
