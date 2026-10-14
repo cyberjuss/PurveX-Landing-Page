@@ -50,6 +50,7 @@ param(
     [switch]$SyncLoop,
     [switch]$Scheduled,
     [switch]$Fast,
+    [switch]$RepairOnly,
     [switch]$InstallSync,
     [switch]$UninstallSync,
     [string]$PurvexKey = "",
@@ -540,6 +541,69 @@ function Get-PurvexInfra {
     return $infra
 }
 
+# The ticket objects that are safe to plant at any time: each is created only
+# when it is missing, so a rerun never touches an account, group or file the
+# student has already changed. Shared by the first-boot build and the repair
+# path that heals a lab built before a ticket shipped.
+function Ensure-PurvexTicketObjects {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param(
+        [hashtable]$DeptOUPaths,
+        [string]$DomainDN,
+        [string]$AccessLevelsOU,
+        [string]$ServiceAccountsOU
+    )
+
+    $wmWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $DeptOUPaths["Wealth Management"].DeptOU -Description "Wealth Management department workstation computer objects."
+    Ensure-Computer -Name "WM-WKS07" -OUPath $wmWorkstationsOU -Description "CTF-TICKET-301: Wealth Management workstation named in a 02:00 successful-login alert for alex.rivera."
+    $opsWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $DeptOUPaths["Operations"].DeptOU -Description "Operations department workstation computer objects."
+    Ensure-Computer -Name "OPS-WKS03" -OUPath $opsWorkstationsOU -Description "CTF-TICKET-201: Dormant Operations workstation. Check whether this asset still belongs in scope."
+
+    # Tickets INC-1047 to INC-1051. Each object is planted only the first time, so
+    # running the script again never undoes a ticket the student already worked.
+
+    # INC-1047: a contractor whose engagement has ended, still enabled with access.
+    if (-not (Get-ADUser -Filter "SamAccountName -eq 'kai.mendes'" -ErrorAction SilentlyContinue)) {
+        Ensure-User `
+            -First "Kai" -Last "Mendes" -SamAccountName "kai.mendes" `
+            -Title "Contractor, Settlements Support" -Department "Operations" `
+            -OUPath $DeptOUPaths["Operations"].UsersOU `
+            -Groups @("Operations Users")
+        Ensure-UserDescription -SamAccountName "kai.mendes" -Description "CTF-TICKET-1047: Contractor. Engagement ended 2026-09-30. Sponsor: Taylor Osei."
+    }
+
+    # INC-1049: a staff account whose password was set to never expire.
+    if (-not (Get-ADUser -Filter "SamAccountName -eq 'noah.kim'" -ErrorAction SilentlyContinue)) {
+        Ensure-User `
+            -First "Noah" -Last "Kim" -SamAccountName "noah.kim" `
+            -Title "Portfolio Analyst" -Department "Wealth Management" `
+            -OUPath $DeptOUPaths["Wealth Management"].UsersOU `
+            -Groups @("Wealth Management Users")
+        if ($PSCmdlet.ShouldProcess("noah.kim", "Set password never expires for audit ticket")) {
+            Set-ADUser -Identity "noah.kim" -PasswordNeverExpires $true -ChangePasswordAtLogon $false
+            Write-Host "    ~ noah.kim password set to never expire" -ForegroundColor Green
+        }
+    }
+
+    # INC-1050: a new Finance laptop that landed in the default Computers container.
+    $finWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $DeptOUPaths["Finance and Accounting"].DeptOU -Description "Finance and Accounting department workstation computer objects."
+    if (-not (Get-ADComputer -Filter "Name -eq 'FIN-LT14'" -ErrorAction SilentlyContinue) -and $PSCmdlet.ShouldProcess("FIN-LT14", "Create laptop in the default Computers container")) {
+        New-ADComputer -Name "FIN-LT14" -SAMAccountName "FIN-LT14$" -Path "CN=Computers,$DomainDN" -Description "CTF-TICKET-1050: New Finance laptop for jordan.ellis. Joined to the domain 2026-09-29."
+        Write-Host "  Computer pre-staged: FIN-LT14 (CN=Computers)" -ForegroundColor Green
+    }
+
+    # INC-1051: a distribution group being used to grant access to a share.
+    if (-not (Get-ADGroup -Filter "Name -eq 'Finance Reports'" -ErrorAction SilentlyContinue) -and $PSCmdlet.ShouldProcess("Finance Reports", "Create distribution group")) {
+        New-ADGroup -Name "Finance Reports" -GroupScope Global -GroupCategory Distribution -Path $AccessLevelsOU -Description "CTF-TICKET-1051: Read access to the Finance reports share."
+        Add-ADGroupMember -Identity "Finance Reports" -Members "jordan.ellis", "devon.brooks"
+        Write-Host "  Group created: Finance Reports (Distribution)" -ForegroundColor Green
+    }
+
+    Ensure-InfraTickets -DeptOUPaths $DeptOUPaths
+    Ensure-PodTickets -DeptOUPaths $DeptOUPaths -ServiceAccountsOU $ServiceAccountsOU
+    Ensure-IntegrityTickets
+}
+
 function Ensure-CTFChallengeData {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param(
@@ -598,54 +662,7 @@ function Ensure-CTFChallengeData {
     Ensure-UserDescription -SamAccountName "taylor.osei" -Description "CTF-TICKET-1045: HR transfer notice says Compliance. Account still lives in Operations until someone moves it."
     Ensure-UserDescription -SamAccountName "riley.kwan" -Description "CTF-TICKET-1042: User reports lockout. Check the Account tab before you take the action they named."
 
-    $wmWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $DeptOUPaths["Wealth Management"].DeptOU -Description "Wealth Management department workstation computer objects."
-    Ensure-Computer -Name "WM-WKS07" -OUPath $wmWorkstationsOU -Description "CTF-TICKET-301: Wealth Management workstation named in a 02:00 successful-login alert for alex.rivera."
-    $opsWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $DeptOUPaths["Operations"].DeptOU -Description "Operations department workstation computer objects."
-    Ensure-Computer -Name "OPS-WKS03" -OUPath $opsWorkstationsOU -Description "CTF-TICKET-201: Dormant Operations workstation. Check whether this asset still belongs in scope."
-
-    # Tickets INC-1047 to INC-1051. Each object is planted only the first time, so
-    # running the script again never undoes a ticket the student already worked.
-
-    # INC-1047: a contractor whose engagement has ended, still enabled with access.
-    if (-not (Get-ADUser -Filter "SamAccountName -eq 'kai.mendes'" -ErrorAction SilentlyContinue)) {
-        Ensure-User `
-            -First "Kai" -Last "Mendes" -SamAccountName "kai.mendes" `
-            -Title "Contractor, Settlements Support" -Department "Operations" `
-            -OUPath $DeptOUPaths["Operations"].UsersOU `
-            -Groups @("Operations Users")
-        Ensure-UserDescription -SamAccountName "kai.mendes" -Description "CTF-TICKET-1047: Contractor. Engagement ended 2026-09-30. Sponsor: Taylor Osei."
-    }
-
-    # INC-1049: a staff account whose password was set to never expire.
-    if (-not (Get-ADUser -Filter "SamAccountName -eq 'noah.kim'" -ErrorAction SilentlyContinue)) {
-        Ensure-User `
-            -First "Noah" -Last "Kim" -SamAccountName "noah.kim" `
-            -Title "Portfolio Analyst" -Department "Wealth Management" `
-            -OUPath $DeptOUPaths["Wealth Management"].UsersOU `
-            -Groups @("Wealth Management Users")
-        if ($PSCmdlet.ShouldProcess("noah.kim", "Set password never expires for audit ticket")) {
-            Set-ADUser -Identity "noah.kim" -PasswordNeverExpires $true -ChangePasswordAtLogon $false
-            Write-Host "    ~ noah.kim password set to never expire" -ForegroundColor Green
-        }
-    }
-
-    # INC-1050: a new Finance laptop that landed in the default Computers container.
-    $finWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $DeptOUPaths["Finance and Accounting"].DeptOU -Description "Finance and Accounting department workstation computer objects."
-    if (-not (Get-ADComputer -Filter "Name -eq 'FIN-LT14'" -ErrorAction SilentlyContinue) -and $PSCmdlet.ShouldProcess("FIN-LT14", "Create laptop in the default Computers container")) {
-        New-ADComputer -Name "FIN-LT14" -SAMAccountName "FIN-LT14$" -Path "CN=Computers,$DomainDN" -Description "CTF-TICKET-1050: New Finance laptop for jordan.ellis. Joined to the domain 2026-09-29."
-        Write-Host "  Computer pre-staged: FIN-LT14 (CN=Computers)" -ForegroundColor Green
-    }
-
-    # INC-1051: a distribution group being used to grant access to a share.
-    if (-not (Get-ADGroup -Filter "Name -eq 'Finance Reports'" -ErrorAction SilentlyContinue) -and $PSCmdlet.ShouldProcess("Finance Reports", "Create distribution group")) {
-        New-ADGroup -Name "Finance Reports" -GroupScope Global -GroupCategory Distribution -Path $AccessLevelsOU -Description "CTF-TICKET-1051: Read access to the Finance reports share."
-        Add-ADGroupMember -Identity "Finance Reports" -Members "jordan.ellis", "devon.brooks"
-        Write-Host "  Group created: Finance Reports (Distribution)" -ForegroundColor Green
-    }
-
-    Ensure-InfraTickets -DeptOUPaths $DeptOUPaths
-    Ensure-PodTickets -DeptOUPaths $DeptOUPaths -ServiceAccountsOU $serviceAccountsOU
-    Ensure-IntegrityTickets
+    Ensure-PurvexTicketObjects -DeptOUPaths $DeptOUPaths -DomainDN $DomainDN -AccessLevelsOU $AccessLevelsOU -ServiceAccountsOU $serviceAccountsOU
 }
 
 # Read-only security settings, so PurveX can check the hardening drills. Each
@@ -1070,6 +1087,43 @@ if ($SyncOnly) {
     }
     catch {
         Write-Host "Could not send the lab snapshot: $($_.Exception.Message)" -ForegroundColor Red
+    }
+    return
+}
+
+# Replants only the ticket objects that are missing, for a lab built before a
+# ticket shipped. Every object is created only when absent, so a student's own
+# changes (a disabled account, a removed group member, a moved object) are never
+# touched. It does not run the rest of the build and does not reinstall the sync
+# task. Range runs this over SSM against a freshly downloaded copy, so it reaches
+# a pod whatever the age of the script already on disk.
+if ($RepairOnly) {
+    $deptMap = [ordered]@{
+        "IT"                     = "IT"
+        "Compliance"             = "Compliance"
+        "Wealth Management"      = "WealthManagement"
+        "Operations"             = "Operations"
+        "Finance and Accounting" = "FinanceAccounting"
+    }
+    $paths = @{}
+    foreach ($name in $deptMap.Keys) {
+        $deptOU = "OU=$($deptMap[$name]),OU=Departments,$domainDN"
+        $paths[$name] = @{ DeptOU = $deptOU; UsersOU = "OU=Users,$deptOU" }
+    }
+    $accessLevelsOU = "OU=AccessLevels,$domainDN"
+    $serviceAccountsOU = Ensure-OU -Name "ServiceAccounts" -ParentDN $domainDN -Description "Service accounts, kept separate from real user accounts."
+    # New accounts the repair might create need a starting password. It is rolled
+    # here and kept nowhere: every such account must change it at next logon.
+    $InitialPassword = ConvertTo-SecureString ("Pvx-" + (-join ((48..57) + (65..90) + (97..122) | Get-Random -Count 16 | ForEach-Object { [char]$_ })) + "-9k") -AsPlainText -Force
+    try {
+        Ensure-PurvexTicketObjects -DeptOUPaths $paths -DomainDN $domainDN -AccessLevelsOU $accessLevelsOU -ServiceAccountsOU $serviceAccountsOU
+        Write-Host "Ticket objects repaired." -ForegroundColor Green
+        if ($PurvexKey -and $PurvexUrl) {
+            try { Send-PurvexLabSnapshot -Key $PurvexKey -Url $PurvexUrl -DomainDN $domainDN } catch {}
+        }
+    }
+    catch {
+        Write-Host "Could not repair ticket objects: $($_.Exception.Message)" -ForegroundColor Red
     }
     return
 }

@@ -1,5 +1,5 @@
 import "server-only";
-import { requestLabSync } from "@/lib/academy-hosted";
+import { repairHostedLab, requestLabSync } from "@/lib/academy-hosted";
 import { formatLabAge, labIsLive } from "@/lib/academy-lab";
 import { checkMission, hasMissionObjects, hasTicketObjects, missionGate } from "@/lib/academy-mission-lab";
 import { loadLabState, loadProgress, saveProgress, touchLabLive } from "@/lib/academy-store";
@@ -33,8 +33,14 @@ export async function labGate(student: { id: string; email: string | null }, id:
   }
   if (!gated) return { gated: false, passed: true, syncedAgo };
 
-  // A lab built without -IncludeCTF has none of the ticket objects.
-  if (!hasTicketObjects(lab.snapshot) || !hasMissionObjects(id, lab.snapshot)) return { gated: true, passed: false, noTicketObjects: true, results: [] };
+  // A lab built before this ticket shipped is missing its objects. Ask the pod
+  // to replant what it is missing, so the student is not stuck on a reset, then
+  // report it for this turn. The repair is throttled and only plants what is
+  // absent, so it never touches a change the student already made.
+  if (!hasTicketObjects(lab.snapshot) || !hasMissionObjects(id, lab.snapshot)) {
+    void repairHostedLab(student.id);
+    return { gated: true, passed: false, noTicketObjects: true, results: [] };
+  }
   const checked = checkMission(id, lab.snapshot);
   if (!checked?.passed) await touchLabLive(student.id, LIVE_MINUTES).catch(() => {});
   // The server records that the change was seen. This is the only place labOk is ever set.

@@ -983,6 +983,60 @@ export async function requestLabSync(userId: string, force = false): Promise<boo
   }
 }
 
+const lastRepairAt = new Map<string, number>();
+// A repair plants missing objects against a freshly downloaded script, so it is
+// heavier than a sync. Space it out: a stale lab heals on the first check and
+// then stops qualifying, so this only ever fires a few times per lab.
+const REPAIR_THROTTLE_MS = 120_000;
+
+/**
+ * Heal a hosted lab built before some tickets shipped by replanting only the
+ * objects it is missing. Reaches the pod whatever the age of the script on its
+ * disk, because it downloads the current one and runs it in -RepairOnly, which
+ * creates missing objects only and never touches what the student has changed.
+ * Best effort, throttled. Fired when a gate finds the ticket objects absent.
+ */
+export async function repairHostedLab(userId: string): Promise<boolean> {
+  const last = lastRepairAt.get(userId) ?? 0;
+  if (Date.now() - last < REPAIR_THROTTLE_MS) return false;
+  const id = await runningInstance(userId);
+  if (!id) return false;
+  if (!(await ssmOnline(id))) return false;
+  lastRepairAt.set(userId, Date.now());
+  const url = cfg().syncUrl;
+  const scriptUrl = `${url}/lab-scripts/Build-Environment.ps1`;
+  // Download the current script, read this pod's key out of the linked copy so
+  // pod-only tickets plant, and run the repair only if the download really is
+  // the script (the marker guards against a redirect or error page).
+  const command = [
+    "$ErrorActionPreference='Continue'",
+    "$d=Join-Path $env:TEMP 'pvx-repair'",
+    "New-Item -ItemType Directory -Path $d -Force | Out-Null",
+    "[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12",
+    "$f=Join-Path $d 'Build-Environment.ps1'",
+    `Invoke-WebRequest -Uri '${scriptUrl}' -OutFile $f -UseBasicParsing -TimeoutSec 60`,
+    "$linked=Join-Path $env:ProgramData 'PurveX\\Build-Environment.ps1'",
+    "$key=''",
+    "if(Test-Path $linked){ $sel=Select-String -LiteralPath $linked -Pattern \"'(pvl_[A-Za-z0-9_-]+)'\" | Select-Object -First 1; if($sel){ $key=$sel.Matches[0].Groups[1].Value } }",
+    `if((Get-Content -LiteralPath $f -Raw).Contains('Ensure-PurvexTicketObjects')){ & $f -RepairOnly -PurvexKey $key -PurvexUrl '${url}' }`,
+  ].join("; ");
+  try {
+    await ssm().send(
+      new SendCommandCommand({
+        InstanceIds: [id],
+        DocumentName: "AWS-RunPowerShellScript",
+        Comment: "Range lab ticket repair",
+        TimeoutSeconds: 180,
+        Parameters: { commands: [command] },
+      })
+    );
+    return true;
+  } catch (err) {
+    console.error("repairHostedLab failed", err instanceof Error ? err.message : err);
+    return false;
+  }
+}
+
 // ---- auto-stop ------------------------------------------------------------
 
 /**

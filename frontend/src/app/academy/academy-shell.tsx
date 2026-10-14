@@ -616,7 +616,9 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           return;
         }
         if (gate.noTicketObjects) {
-          feedback.textContent = "The ticket objects are not in your lab yet. Run the script from Build the Environment again and wait a minute. This does not use an attempt.";
+          feedback.textContent = hasHostedLab()
+            ? "This ticket's objects are not in your lab yet. We are adding them now. Wait about half a minute and try again. If they still are not there, reset your lab from the lab menu. This does not use an attempt."
+            : "This ticket's objects are not in your lab yet. Run Build-Environment.ps1 from Build the Environment again and wait a minute. This does not use an attempt.";
           feedback.className = "ad-guess__feedback ad-guess__feedback--err";
           placeMiss(wrap);
           return;
