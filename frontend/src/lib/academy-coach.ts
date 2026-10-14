@@ -125,6 +125,19 @@ Format
 - If you ask a question, ask one, and make it specific ("What does the Member Of tab show for jordan.ellis?"), never generic ("What do you see?").
 - No headings. Bold sparingly.`;
 
+/**
+ * How long ago, to the day.
+ *
+ * This line sits in the half of the brief that is cached, so a minute-grained
+ * age would rewrite the block every turn a student chats after finishing a
+ * mission. Recency to the day is all the Coach reads it for.
+ */
+function dayAge(at: string): string {
+  const days = Math.floor((Date.now() - Date.parse(at)) / 86_400_000);
+  if (!Number.isFinite(days)) return "";
+  return days < 1 ? "today" : days < 2 ? "yesterday" : `${days} days ago`;
+}
+
 function missionLine(results: Results, id: string): string {
   const r = results[id];
   const cat = MISSION_CATALOG[id];
@@ -135,7 +148,7 @@ function missionLine(results: Results, id: string): string {
     r.wrong ? `${r.wrong} wrong ${r.wrong === 1 ? "try" : "tries"}` : "",
     r.hint ? "hint used" : "",
     r.flagged && !r.solved ? "flagged, moved on without solving" : "",
-    r.at ? formatLabAge(r.at).ago : "",
+    r.at ? dayAge(r.at) : "",
   ].filter(Boolean);
   const status = r.solved ? "solved" : points === 0 ? "failed (out of tries)" : "attempted, not solved";
   return `${head}: ${status}${extras.length ? `, ${extras.join(", ")}` : ""}${points !== null ? ` (${points} pts)` : ""}`;
