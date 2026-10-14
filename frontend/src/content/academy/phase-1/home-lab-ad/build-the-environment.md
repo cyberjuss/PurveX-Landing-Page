@@ -561,7 +561,11 @@ function Get-PurvexOuLinks {
 function Get-PurvexInfra {
     param($Domain, [array]$GpoLinks = @())
     $infra = [ordered]@{ v = 2 }
-    try { $infra.planted = @(Get-Content -LiteralPath (Join-Path $PurvexLabRoot "tickets.txt") -ErrorAction Stop | Where-Object { $_ }) } catch { $infra.planted = @() }
+    # "$_" on purpose. Get-Content hands back strings decorated with PSPath,
+    # PSDrive and PSProvider, and ConvertTo-Json serialises those too: seven
+    # ticket ids came to 2.6 MB of provider metadata, which the upload refused
+    # as too large, so the lab never finished linking.
+    try { $infra.planted = @(Get-Content -LiteralPath (Join-Path $PurvexLabRoot "tickets.txt") -ErrorAction Stop | Where-Object { $_ } | ForEach-Object { "$_" }) } catch { $infra.planted = @() }
     $infra.firewall = @(Get-PurvexFirewallRules)
     try {
         $records = @(Get-DnsServerResourceRecord -ZoneName $Domain.DNSRoot -RRType A -ErrorAction Stop)

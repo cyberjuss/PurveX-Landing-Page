@@ -36,13 +36,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid or missing Range key." }, { status: 401 });
   }
 
+  // A refused snapshot is invisible from here: the lab goes on building, the
+  // student watches "Linking to Range" forever, and the only record is a line
+  // in a transcript nobody reads. So say how far over it went, in the log and
+  // in the reply the lab prints.
+  const tooBig = (size: number) => {
+    console.error("lab snapshot refused", userId, `${size} bytes over ${MAX_BYTES}`);
+    return NextResponse.json({ error: `Snapshot is too large: ${size} bytes against a ${MAX_BYTES} limit.` }, { status: 413 });
+  };
   const declared = Number(request.headers.get("content-length") || 0);
-  if (declared > MAX_BYTES) {
-    return NextResponse.json({ error: "Snapshot is too large." }, { status: 413 });
-  }
+  if (declared > MAX_BYTES) return tooBig(declared);
   const text = await request.text();
   if (text.length > MAX_BYTES) {
-    return NextResponse.json({ error: "Snapshot is too large." }, { status: 413 });
+    return tooBig(text.length);
   }
 
   let raw: unknown;
