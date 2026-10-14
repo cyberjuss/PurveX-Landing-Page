@@ -369,7 +369,12 @@
 <li>Expand <code>purvexfinancial.local</code> and look inside the default folders until you find <code>FIN-LT14</code>.</li>
 <li>Right-click the laptop and choose Move, then select Departments → FinanceAccounting → Workstations.</li>
 </ol>
-<p>If a folder looks empty when it should not be, check View → Filter Options and set it to show all types of objects. The funnel icon in the toolbar sets the same thing. With computers filtered out, a folder shows only the OUs inside it and the laptop is invisible. Press F5 after a move: the console keeps the view it drew the first time you opened a folder.</p>
+<p>If a folder looks empty:</p>
+<ul>
+<li>View → Filter Options. Set it to show all types of objects. The funnel icon does the same.</li>
+<li>A filter with computers switched off shows a folder's OUs and nothing else.</li>
+<li>Press F5 after a move. The console keeps the view it drew first.</li>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>(Get-ADComputer FIN-LT14).DistinguishedName</code></li>
