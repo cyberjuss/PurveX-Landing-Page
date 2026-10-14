@@ -248,7 +248,8 @@ function rekeyLines(): string[] {
   ];
 }
 
-/** PowerShell EC2 runs once, on the lab's first boot. Same sync task as a self-hosted lab. */
+/** PowerShell EC2 runs once, on the lab's first boot. Builds PurveX Financial
+ *  and installs the same sync task a self-hosted lab gets. */
 export function firstBootScript(key: string, password: string, url: string): string {
   return [
     "<powershell>",
@@ -258,12 +259,44 @@ export function firstBootScript(key: string, password: string, url: string): str
     "# Active Directory takes a minute or two after boot.",
     "for ($i = 0; $i -lt 60; $i++) { try { Import-Module ActiveDirectory -ErrorAction Stop; Get-ADDomain -ErrorAction Stop | Out-Null; break } catch { Start-Sleep -Seconds 10 } }",
     `Set-ADAccountPassword -Identity Administrator -Reset -NewPassword (ConvertTo-SecureString ${ps(password)} -AsPlainText -Force)`,
-    "# Link the image's build script to this student, the same way the Range download does.",
-    '$text = Get-Content -LiteralPath "$dir\\image\\Build-Environment.ps1" -Raw',
+    // Prefer the script Range serves now over the copy baked into the image. A
+    // ticket added to the script after the image was built is otherwise missing
+    // from every pod cloned from it, with nothing that ever repairs it. The
+    // baked copy stays the fallback, so a lab still gets built when the download
+    // fails.
+    '$build = "$dir\\image\\Build-Environment.ps1"',
+    "[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12",
+    "try {",
+    '  $latest = "$dir\\image\\Build-Environment.latest.ps1"',
+    `  Invoke-WebRequest -Uri ${ps(`${url}/lab-scripts/Build-Environment.ps1`)} -OutFile $latest -UseBasicParsing -TimeoutSec 60`,
+    // A 404 or a redirect saves an HTML page over the script, and a lab built
+    // from that has no objects at all. The marker is a function only the current
+    // script has, so this also refuses a copy too old to plant the tickets.
+    '  if (-not ((Get-Content -LiteralPath $latest -Raw).Contains("Ensure-CTFChallengeData"))) { throw "that download is not Build-Environment.ps1" }',
+    "  $build = $latest",
+    "} catch {",
+    '  Write-Host "using the image build script: $($_.Exception.Message)"',
+    "}",
+    "# Link it to this student, the same way the Range download does.",
+    "$text = Get-Content -LiteralPath $build -Raw",
     `$text = $text.Replace('[string]$PurvexKey = ""', ${ps(`[string]$PurvexKey = ${ps(key)}`)}).Replace('[string]$PurvexUrl = ""', ${ps(`[string]$PurvexUrl = ${ps(url)}`)})`,
     'New-Item -ItemType Directory -Path "$dir\\hosted" -Force | Out-Null',
     'Set-Content -LiteralPath "$dir\\hosted\\Build-Environment.ps1" -Value $text -Encoding UTF8',
-    '& powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$dir\\hosted\\Build-Environment.ps1" -InstallSync',
+    // Build it, rather than -InstallSync. That flag returns before the build, so
+    // a hosted pod held only the objects its image happened to be baked with. A
+    // linked copy plants the ticket objects, sends the first snapshot and installs
+    // the Coach sync task at the end of a normal build, so this one run does what
+    // -InstallSync did and the build besides.
+    //
+    // The lab accounts' initial password is rolled on the machine and kept
+    // nowhere: all nine must change it at next logon and nobody signs in as one.
+    // Shaped so it clears the domain's complexity rule every time.
+    '$labPw = "Pvx-" + (-join ((48..57) + (65..90) + (97..122) | Get-Random -Count 16 | ForEach-Object { [char]$_ })) + "-9k"',
+    "try {",
+    '  & "$dir\\hosted\\Build-Environment.ps1" -IncludeCTF -InitialPassword (ConvertTo-SecureString $labPw -AsPlainText -Force)',
+    "} catch {",
+    '  Write-Host "lab build failed: $($_.Exception.Message)"',
+    "}",
     // Last, so nothing else in first boot runs across a Kerberos key change. The
     // sync that follows talks to Range over HTTPS and does not use Kerberos.
     ...rekeyLines(),

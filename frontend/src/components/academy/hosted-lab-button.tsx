@@ -276,7 +276,12 @@ const FIRST_BOOT = [
   { label: "Starting the server", until: 45 },
   { label: "Booting Windows", until: 110 },
   { label: "Starting Active Directory", until: 160 },
-  { label: "Linking to Range", until: 200 },
+  // First boot builds the firm now rather than trusting whatever the image was
+  // baked with, so the lab reports ready a couple of minutes later than it used
+  // to. The old estimate left the bar sitting on "Almost there" for the whole
+  // build.
+  { label: "Building PurveX Financial", until: 265 },
+  { label: "Linking to Range", until: 300 },
 ];
 const RESUME = [
   { label: "Waking the server", until: 20 },
