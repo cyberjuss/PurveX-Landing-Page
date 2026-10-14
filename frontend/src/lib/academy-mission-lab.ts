@@ -67,6 +67,22 @@ const MISSION_LAB = {
     ],
     { tickets: ["INC-1055"] }
   ),
+  // The wire-capture capstone: the burned service account is contained by
+  // disabling it, which the snapshot reports. Kept, not deleted, so the review
+  // still has it.
+  "cap-06": G(
+    [{ c: { t: "enabled", sam: "svc-settlements", want: false }, label: "svc-settlements is disabled" }],
+    { users: ["svc-settlements"] }
+  ),
+  // The integrity capstone: the unsigned mirror is moved to Quarantine, which
+  // infra.files reports by path. Same shape as tq-19.
+  "cry-06": G(
+    [
+      { c: { t: "file", path: "Shares\\IT\\vpn-client-2.4.1-mirror-b.txt", want: false }, label: "The unsigned mirror is gone from the IT share" },
+      { c: { t: "file", path: "Quarantine\\vpn-client-2.4.1-mirror-b.txt", want: true }, label: "It is kept in C:\\PurveX\\Quarantine" },
+    ],
+    { tickets: ["INC-1058"] }
+  ),
 } as const;
 
 type Gate = { checks: { c: Check; label: string }[]; needs?: Needs };

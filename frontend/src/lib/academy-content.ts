@@ -80,6 +80,7 @@ const phase1Weeks: WeekDef[] = [
       { label: "Lab: The Leaked Password Table", file: "phase-1/week-2/lab-password-table.md", widget: "password-table" },
       { label: "Lab: Hashing and Encryption with CyberChef", file: "phase-1/week-2/lab-tell-them-apart.md" },
       { label: "Lab: Password Hashing and Salting", file: "phase-1/week-2/lab-store-a-password.md" },
+      { label: "Challenge: The Mirror That Does Not Match", file: "phase-1/week-2/challenge-installer-check.md" },
     ],
   },
   {
@@ -95,6 +96,7 @@ const phase1Weeks: WeekDef[] = [
       { label: "SSL/TLS", file: "phase-1/week-3/lesson-tls.md" },
       { label: "Lab: Network Traffic Analysis with Wireshark", file: "phase-1/week-3/lab-capture-dc-traffic.md" },
       { label: "Lab: Port Scan Detection with Wireshark", file: "phase-1/week-3/lab-read-a-scan.md" },
+      { label: "Challenge: The Nightly Settlement Push", file: "phase-1/week-3/challenge-settlement-push.md" },
       { label: "Resources", file: "phase-1/week-3/resources.md" },
     ],
   },

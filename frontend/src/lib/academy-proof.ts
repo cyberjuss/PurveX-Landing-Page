@@ -211,6 +211,26 @@ const CATALOG: Record<string, Entry> = {
       sys: [["a", "Re-scoped"], ["s", "a Group Policy Object"], ["r", "from the wrong OU to the department it was built for."]],
     },
   },
+  "contain-wire-credential": {
+    title: "Recovered a credential from a network capture and contained the account",
+    actions: ["Captured a nightly job and read the service account and password it sent over the network in the clear", "Disabled the exposed account as evidence and identified the encrypted protocol the job should have used"],
+    keywords: ["Network Traffic Analysis", "Wireshark", "Credential Exposure", "Incident Response"],
+    bullets: {
+      soc: [["a", "Captured and analysed"], ["s", "a service account signing in over cleartext LDAP"], ["r", "and contained the exposed credential."]],
+      help: [["a", "Identified"], ["s", "a job sending a password in the clear"], ["a", "and disabled the account while it was fixed."]],
+      sys: [["a", "Traced"], ["s", "a nightly job to an unencrypted directory bind"], ["r", "and recommended LDAPS to protect the credential."]],
+    },
+  },
+  "verify-build-integrity": {
+    title: "Verified a software build against its published checksum",
+    actions: ["Hashed three mirrors of an installer manifest and found the one that failed the published SHA-256 checksum", "Quarantined the unsigned build as evidence and reported that it carried no valid signature"],
+    keywords: ["Cryptographic Hashing (SHA-256)", "File Integrity", "Software Supply Chain", "Incident Response"],
+    bullets: {
+      soc: [["a", "Verified"], ["s", "installer mirrors against a published checksum"], ["r", "and quarantined the altered, unsigned build."]],
+      help: [["a", "Checked"], ["s", "three copies of an update"], ["a", "with SHA-256 and flagged the one that failed."]],
+      sys: [["a", "Validated"], ["s", "a software build's integrity"], ["t", "against its published hash,"], ["r", "catching an unsigned copy before rollout."]],
+    },
+  },
   "quarantine-file": {
     title: "Quarantined a disguised executable on a file share",
     actions: ["Spotted a program named to look like a PDF invoice by showing full file extensions", "Moved it to quarantine without opening it, keeping it as evidence"],
@@ -248,6 +268,8 @@ export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "tq-18": { job: "gpo-scope", label: "Service ticket INC-1054" },
   "tq-19": { job: "quarantine-file", label: "Service ticket INC-1055" },
   "tq-20": { job: "dns-fix", label: "Service ticket INC-1056" },
+  "cap-06": { job: "contain-wire-credential", label: "Service ticket INC-1057" },
+  "cry-06": { job: "verify-build-integrity", label: "Service ticket INC-1058" },
 };
 
 /** Portfolio jobs a live Shift can prove, mapped from the incident that proves each.

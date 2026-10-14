@@ -380,7 +380,7 @@ export function linuxCloudInit(dcIp: string, password: string): string {
     // takes. Installed now so the lab does not depend on apt being reachable.
     "export DEBIAN_FRONTEND=noninteractive",
     "apt-get update -y",
-    "apt-get install -y --no-install-recommends realmd sssd sssd-tools adcli samba-common-bin krb5-user packagekit oddjob oddjob-mkhomedir libnss-sss libpam-sss ldap-utils dnsutils net-tools auditd curl",
+    "apt-get install -y --no-install-recommends realmd sssd sssd-tools adcli samba-common-bin krb5-user packagekit oddjob oddjob-mkhomedir libnss-sss libpam-sss ldap-utils smbclient dnsutils net-tools auditd cron curl",
     // Packet capture for the Week 3 labs. Wireshark asks at install time whether
     // non-root users may capture, and a noninteractive install answers no, which
     // leaves dumpcap without the capability and the tool listing no interfaces.
@@ -388,6 +388,30 @@ export function linuxCloudInit(dcIp: string, password: string): string {
     `echo ${sh("wireshark-common wireshark-common/install-setuid boolean true")} | debconf-set-selections`,
     "apt-get install -y --no-install-recommends tcpdump tshark wireshark",
     "usermod -aG wireshark student",
+    // The nightly settlement job, which is what the Week 3 challenge captures.
+    // It signs in to the directory with an LDAP simple bind, and a simple bind
+    // puts the password on the wire in the clear. It then reads the batch off
+    // the share, which Windows does not encrypt by default, so the file body is
+    // readable too. The account and password are planted to match INC-1057 in
+    // Build-Environment.ps1 and must stay in step with it.
+    //
+    // Root-only so the credentials are not lying in front of the student. sudo
+    // still reads it: this is a lab prop and the capture is the intended route.
+    `echo ${sh("#!/bin/sh")} > /usr/local/bin/settlement-push.sh`,
+    `echo ${sh("DC=dc01")} >> /usr/local/bin/settlement-push.sh`,
+    `echo ${sh("ACCT=svc-settlements")} >> /usr/local/bin/settlement-push.sh`,
+    `echo ${sh("PASS=Autumn2026")} >> /usr/local/bin/settlement-push.sh`,
+    `echo ${sh('ldapsearch -x -H ldap://$DC -D "$ACCT@purvexfinancial.local" -w "$PASS" -b "DC=purvexfinancial,DC=local" "(sAMAccountName=$ACCT)" dn > /dev/null 2>&1')} >> /usr/local/bin/settlement-push.sh`,
+    // -D Finance rather than a path, so no backslash has to survive the shell.
+    `echo ${sh('smbclient //$DC/Shares -U "$ACCT%$PASS" -D Finance -c "get settlement-batch-0930.csv /tmp/settlement-batch-0930.csv" > /dev/null 2>&1')} >> /usr/local/bin/settlement-push.sh`,
+    "chmod 0700 /usr/local/bin/settlement-push.sh",
+    // Every three minutes, so there is always something to catch, and on demand
+    // so nobody has to sit watching an idle capture wait for the timer.
+    `echo ${sh("*/3 * * * * root /usr/local/bin/settlement-push.sh")} > /etc/cron.d/purvex-settlement`,
+    "chmod 0644 /etc/cron.d/purvex-settlement",
+    `echo ${sh("student ALL=(root) NOPASSWD: /usr/local/bin/settlement-push.sh")} > /etc/sudoers.d/purvex-settlement`,
+    "chmod 0440 /etc/sudoers.d/purvex-settlement",
+    "systemctl enable --now cron || true",
     // A member server with nothing to serve is a thin lab, so it has a web server
     // and a database to look after, the way a real one would.
     "apt-get install -y --no-install-recommends nginx",

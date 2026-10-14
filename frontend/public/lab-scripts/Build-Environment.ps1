@@ -292,6 +292,128 @@ function Ensure-InfraTickets {
     }
 }
 
+
+# A hosted pod is two machines, and these tickets need both: the Ubuntu server is
+# the other end of the nightly job and the place the capture runs. A self-hosted
+# lab is one Windows machine, so planting them there would advertise a challenge
+# the student cannot finish. A pvl_ key is issued to a pod, a pvx_ key is a
+# student's own download.
+function Test-PurvexHostedPod {
+    return $PurvexKey -and $PurvexKey.StartsWith("pvl_")
+}
+
+function Ensure-PodTickets {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param([hashtable]$DeptOUPaths, [string]$ServiceAccountsOU)
+
+    if (-not (Test-PurvexHostedPod)) { return }
+    Write-Host "`n== Wire capture ticket ==" -ForegroundColor Cyan
+
+    # INC-1057: the nightly settlement job on web01 still binds to the directory
+    # with an LDAP simple bind and reads the batch off the share without SMB
+    # encryption, so the service account's password and the file both cross the
+    # wire in the clear. The password is planted on purpose: recovering it from
+    # the capture is the point of the challenge. It must match the one the job
+    # uses in linuxCloudInit (academy-hosted.ts).
+    if (-not (Test-PurvexTicketMark "INC-1057") -and $PSCmdlet.ShouldProcess("svc-settlements", "Plant plaintext bind ticket")) {
+        try {
+            if (-not (Get-ADUser -Filter "SamAccountName -eq 'svc-settlements'" -ErrorAction SilentlyContinue)) {
+                New-ADUser -Name "Service Settlements" -SamAccountName "svc-settlements" `
+                    -UserPrincipalName "svc-settlements@$($domain.DNSRoot)" `
+                    -Title "Nightly Settlement Job" -Department "Operations" `
+                    -Path $ServiceAccountsOU `
+                    -AccountPassword (ConvertTo-SecureString "Autumn2026" -AsPlainText -Force) `
+                    -ChangePasswordAtLogon $false -PasswordNeverExpires $true -Enabled $true -ErrorAction Stop
+            }
+            Set-ADUser -Identity "svc-settlements" -Description "CTF-TICKET-1057: Nightly settlement job on web01. Signs in to the directory over LDAP and reads the Finance share."
+            $finance = Join-Path $PurvexLabRoot "Shares\Finance"
+            New-Item -ItemType Directory -Path $finance -Force | Out-Null
+            Set-Content -LiteralPath (Join-Path $finance "settlement-batch-0930.csv") -Encoding ASCII -Value @(
+                "Reference,Account,Settles,Amount",
+                "SB-0930-4417,PVX-WM-00241,2026-09-30,184500.00",
+                "SB-0930-4418,PVX-WM-00318,2026-09-30,96250.00",
+                "SB-0930-4419,PVX-OP-00107,2026-09-30,12400.00"
+            )
+            Add-PurvexTicketMark "INC-1057"
+            Write-Host "  Planted INC-1057: svc-settlements and the settlement batch" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1057: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+}
+
+function Ensure-IntegrityTickets {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param()
+
+    Write-Host "`n== Integrity ticket ==" -ForegroundColor Cyan
+
+    # INC-1058: three mirrors of the same VPN client manifest, one of them altered,
+    # plus an exported password table to practise on. The manifests are text so the
+    # student can read what changed once the hash tells them something did. Nothing
+    # here runs: there is no installer and no payload, only a manifest to compare.
+    #
+    # The published checksum is computed from the genuine file at plant time rather
+    # than written down, so it can never drift from the bytes that actually landed.
+    if (-not (Test-PurvexTicketMark "INC-1058") -and $PSCmdlet.ShouldProcess("$PurvexLabRoot\Shares\IT", "Plant integrity ticket")) {
+        try {
+            $it = Join-Path $PurvexLabRoot "Shares\IT"
+            New-Item -ItemType Directory -Path $it -Force | Out-Null
+            New-Item -ItemType Directory -Path (Join-Path $PurvexLabRoot "Quarantine") -Force | Out-Null
+
+            $genuine = @(
+                "product: PurveX VPN Client",
+                "version: 2.4.1",
+                "published: 2026-09-22",
+                "source: updates.purvexfinancial.local",
+                "package: vpn-client-2.4.1.msi",
+                "signed-by: PurveX Financial IT"
+            )
+            # One line differs: the mirror carries a build nobody signed. That is the
+            # whole finding, so it is the only thing that changes between the copies.
+            $altered = $genuine.Clone()
+            $altered[5] = "signed-by: none, unsigned build"
+
+            Set-Content -LiteralPath (Join-Path $it "vpn-client-2.4.1-mirror-a.txt") -Encoding ASCII -Value $genuine
+            Set-Content -LiteralPath (Join-Path $it "vpn-client-2.4.1-mirror-b.txt") -Encoding ASCII -Value $altered
+            Set-Content -LiteralPath (Join-Path $it "vpn-client-2.4.1-mirror-c.txt") -Encoding ASCII -Value $genuine
+
+            $published = (Get-FileHash -LiteralPath (Join-Path $it "vpn-client-2.4.1-mirror-a.txt") -Algorithm SHA256).Hash.ToLower()
+            Set-Content -LiteralPath (Join-Path $it "checksums.txt") -Encoding ASCII -Value @(
+                "PurveX VPN Client 2.4.1 published checksum",
+                "Issued by PurveX Financial IT on 2026-09-22",
+                "",
+                "SHA256  $published"
+            )
+
+            # SHA-256 of the plaintext with no trailing newline, so the student gets
+            # the same value from Get-FileHash, sha256sum or CyberChef. taylor.osei
+            # and jordan.ellis share one, which is the reuse the challenge asks about.
+            # noah.kim's is not in the wordlist and is meant to stay uncracked.
+            Set-Content -LiteralPath (Join-Path $it "exported-hashes.txt") -Encoding ASCII -Value @(
+                "account,sha256",
+                "taylor.osei,5d2c4f6de7f85dcc139b10980150a5b4e1b2e22328bdac7817aa72c45e41b3b3",
+                "riley.kwan,e66860546f18cdbbcd86b35e18b525bffc67f772c650cedfe3ff7a0026fa1dee",
+                "jordan.ellis,5d2c4f6de7f85dcc139b10980150a5b4e1b2e22328bdac7817aa72c45e41b3b3",
+                "noah.kim,182fab5b9ae430222e015c1023068b78b1ba9d114bbd1c0413ccccb16a2f4a5d"
+            )
+            Set-Content -LiteralPath (Join-Path $it "common-passwords.txt") -Encoding ASCII -Value @(
+                "123456", "password", "qwerty", "letmein", "welcome", "admin",
+                "Summer2025", "Autumn2025", "Winter2025", "Spring2026",
+                "Summer2026", "Autumn2026", "Winter2026", "Spring2025",
+                "Passw0rd!", "P@ssw0rd", "Welcome1", "ChangeMe1",
+                "purvex", "Purvex2026"
+            )
+
+            if (-not (Get-SmbShare -Name "Shares" -ErrorAction SilentlyContinue)) {
+                New-SmbShare -Name "Shares" -Path (Join-Path $PurvexLabRoot "Shares") -ReadAccess "Domain Users" -ErrorAction SilentlyContinue | Out-Null
+            }
+            Add-PurvexTicketMark "INC-1058"
+            Write-Host "  Planted INC-1058: three mirrors, a checksum and a password table" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1058: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+}
+
 # Firewall rules in the PurveX Lab group, read straight from the registry. That
 # takes milliseconds, where the firewall cmdlets need most of a second.
 $PurvexFirewallKey = "HKLM:\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\FirewallRules"
@@ -521,6 +643,8 @@ function Ensure-CTFChallengeData {
     }
 
     Ensure-InfraTickets -DeptOUPaths $DeptOUPaths
+    Ensure-PodTickets -DeptOUPaths $DeptOUPaths -ServiceAccountsOU $serviceAccountsOU
+    Ensure-IntegrityTickets
 }
 
 # Read-only security settings, so PurveX can check the hardening drills. Each

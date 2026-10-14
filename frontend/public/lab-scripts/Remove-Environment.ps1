@@ -57,7 +57,9 @@ if ($laptop -and $laptop.DistinguishedName -like "*,CN=Computers,$domainDN" -and
     Write-Host "  Deleted: $($laptop.DistinguishedName)" -ForegroundColor Green
 }
 
-# Tickets INC-1052 to INC-1055 live outside Active Directory.
+# Tickets INC-1052 to INC-1058 live outside Active Directory. The share folders
+# hold the INC-1057 settlement batch and the INC-1058 installer mirrors, so
+# clearing C:\PurveX\Shares and the Quarantine folder removes them too.
 $zone = (Get-ADDomain).DNSRoot
 if ($PSCmdlet.ShouldProcess("DNS, firewall, Group Policy and share tickets", "Remove")) {
     foreach ($recordName in @("files", "payroll")) {
