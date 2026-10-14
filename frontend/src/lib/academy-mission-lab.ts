@@ -19,7 +19,12 @@ const MISSION_LAB = {
   "tq-03": G([
     { c: { t: "exists", sam: "casey.reed", ou: "OU=Users,OU=IT,OU=Departments" }, label: "casey.reed is in the IT Users folder (Departments, IT, Users)" },
     { c: { t: "member", sam: "casey.reed", group: "IT Users", want: true }, label: "casey.reed exists and is a member of IT Users" },
-    { c: { t: "member", sam: "old.intern", group: "IT Users", want: false }, label: "old.intern is no longer in IT Users" },
+    // The ticket says delete the leftover account, so the check asks for that
+    // rather than for a membership the student could untick. The snapshot
+    // covers the lab OUs only, so an account moved out of them reads as gone
+    // as well, which still means it is out of the staff folders.
+    { c: { t: "gone", sam: "old.intern" }, label: "The leftover intern account is gone" },
+    { c: { t: "member", sam: "svc-backup-job", group: "IT Users", want: false }, label: "svc-backup-job is no longer in IT Users" },
   ]),
   "tq-04": G([{ c: { t: "desc", sam: "svc-backup-job", text: "01:00-03:00" }, label: "svc-backup-job Description has the approved run window" }]),
   "tq-05": G([
