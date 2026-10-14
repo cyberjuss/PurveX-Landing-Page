@@ -160,21 +160,21 @@ const DRILLS: Tour = {
       body: "One scenario written against your own directory. A decision, a write-up, or a real change.",
     },
     {
+      sel: '[data-tour="ctf"]',
+      icon: Flag,
+      title: "This week’s investigation",
+      body: "One hard investigation a week against your own Security log. A new one every Monday.",
+    },
+    {
       sel: '[data-tour="shift"]',
       icon: Clock,
       title: "Shift",
       body: "Thirty minutes on the desk. Real incidents fire into your lab, each with an SLA.",
     },
     {
-      sel: '[data-tour="ctf"]',
-      icon: Flag,
-      title: "Weekly CTF",
-      body: "One hard investigation a week against your own Security log. A new one every Monday.",
-    },
-    {
       sel: '[data-tour="findings"]',
       icon: ShieldAlert,
-      title: "What your lab needs",
+      title: "Open findings in your lab",
       body: "A real audit of your directory, checked inside the lab rather than marked on paper.",
     },
   ],

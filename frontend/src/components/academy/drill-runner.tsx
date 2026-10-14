@@ -262,13 +262,13 @@ function LabFindings({ items }: { items: Finding[] }) {
   return (
     <li data-tour="findings">
       <div className="ax-path__row">
-        <span className="ax-path__n">04</span>
+        <span className="ax-path__n ax-path__n--word">Ongoing</span>
         <span className="ax-path__main">
-          <span className="ax-path__title">What your lab needs</span>
+          <span className="ax-path__title">Open findings in your lab</span>
           <span className="ax-path__body">
             {items.length === 0
-              ? "Nothing is wrong in your lab right now. The daily case will be a judgement case."
-              : "A real audit of your own lab. The daily lab task is one of these and it is checked in the lab."}
+              ? "Nothing is wrong in your lab right now, so today's case is a judgement call instead."
+              : `${items.length} thing${items.length === 1 ? "" : "s"} an auditor would flag in your directory today.`}
           </span>
         </span>
         <span className="ax-path__count">
@@ -947,7 +947,6 @@ export function DrillRunner() {
   const s = status?.stats;
   const week = lastSeven();
   const today = localDay();
-  const caseNo = String((s?.total ?? 0) + 1).padStart(2, "0");
   const nameOf = (e: DrillEntry | null | undefined) => e?.detail?.[0]?.t ?? null;
   return (
     <div className="rd dr dr--floor">
@@ -985,31 +984,65 @@ export function DrillRunner() {
           <ol className="ax-path dr-rows">
             <li data-tour="case">
               <div className="ax-path__row">
-                <span className="ax-path__n">01</span>
+                <span className="ax-path__n ax-path__n--word">Today</span>
                 <span className="ax-path__main">
                   <span className="ax-path__title">
-                    {s.today ? (nameOf(s.today) ?? "Daily scenario") : `Case ${caseNo}`}
+                    {/* The generated name is worth showing once it exists. Before that
+                        the row says what it is, rather than a case number that counts
+                        the student's own history and reads like a catalog id. */}
+                    {s.today ? (nameOf(s.today) ?? "Today’s case") : "Today’s case"}
                     {s.today && <em className={`ax-tag ${s.today.correct ? "ax-tag--good" : ""}`}>{scoreLabel(s.today)}</em>}
                   </span>
                   <span className="ax-path__body">
                     {s.today
-                      ? `Daily scenario · ${clock(s.today.seconds)}. ${streakLine(s)}`
-                      : `A decision, a written case, or a real change in your lab${status.focus ? `, aimed at ${status.focus}` : ""}. It gets a name when you open it.`}
+                      ? `Done in ${clock(s.today.seconds)}. ${streakLine(s)}`
+                      : `One scenario from your own lab, about five minutes${status.focus ? `, on ${status.focus.toLowerCase()}` : ""}. You make a call, write it up, or fix something for real.`}
                   </span>
                   {errorMode === "daily" && error && <span className="ax-path__err">{error}</span>}
                 </span>
                 <span className="ax-path__count">
                   {!s.today && (
                     <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("daily")}>
-                      {starting === "daily" ? "Writing…" : "Open case"} <ArrowRight className="h-4 w-4" />
+                      {starting === "daily" ? "Writing…" : "Start case"} <ArrowRight className="h-4 w-4" />
                     </button>
                   )}
                 </span>
               </div>
             </li>
+            <li data-tour="ctf">
+              <div className="ax-path__row">
+                <span className="ax-path__n ax-path__n--word">This week</span>
+                <span className="ax-path__main">
+                  <span className="ax-path__title">
+                    {status.ctf.entry ? (nameOf(status.ctf.entry) ?? "This week’s investigation") : "This week’s investigation"}
+                    {status.ctf.entry && <em className={`ax-tag ${status.ctf.entry.correct ? "ax-tag--good" : ""}`}>{status.ctf.entry.correct ? "Captured" : "Not captured"}</em>}
+                  </span>
+                  <span className="ax-path__body">
+                    {/* The missing-log case is a prerequisite, not a description of the
+                        work, so it rides on the button instead of the body. */}
+                    {status.ctf.entry
+                      ? "A new one opens Monday."
+                      : "One hard investigation a week, drawn from what actually happened in your lab. Around twenty minutes."}
+                  </span>
+                  {errorMode === "ctf" && error && <span className="ax-path__err">{error}</span>}
+                </span>
+                <span className="ax-path__count">
+                  {!status.ctf.entry &&
+                    (status.lab.events ? (
+                      <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("ctf")}>
+                        {starting === "ctf" ? "Writing…" : "Start investigation"} <ArrowRight className="h-4 w-4" />
+                      </button>
+                    ) : (
+                      <Link className="rd-cta" href="/range/phase-1/home-lab-setup#build-the-environment">
+                        Update your lab script <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    ))}
+                </span>
+              </div>
+            </li>
             <li data-tour="shift">
               <div className="ax-path__row">
-                <span className="ax-path__n">02</span>
+                <span className="ax-path__n ax-path__n--word">Any time</span>
                 <span className="ax-path__main">
                   <span className="ax-path__title">Shift</span>
                   <span className="ax-path__body">
@@ -1026,34 +1059,6 @@ export function DrillRunner() {
                     <a className="rd-cta" href="/range/upgrade">
                       See Range Pro <ArrowRight className="h-4 w-4" />
                     </a>
-                  )}
-                </span>
-              </div>
-            </li>
-            <li data-tour="ctf">
-              <div className="ax-path__row">
-                <span className="ax-path__n">03</span>
-                <span className="ax-path__main">
-                  <span className="ax-path__title">
-                    {status.ctf.entry ? (nameOf(status.ctf.entry) ?? "Weekly CTF") : "Weekly CTF"}
-                    {status.ctf.entry && <em className={`ax-tag ${status.ctf.entry.correct ? "ax-tag--good" : ""}`}>{status.ctf.entry.correct ? "Captured" : "Not captured"}</em>}
-                  </span>
-                  <span className="ax-path__body">
-                    {status.ctf.entry
-                      ? "A new investigation opens Monday."
-                      : `One hard investigation a week, asked about your own Security log. ${
-                          status.lab.events
-                            ? "The lab sent its log so this one is about what really happened in it."
-                            : "Update the lab script from Build the Environment so it can ask about your own Security log."
-                        }`}
-                  </span>
-                  {errorMode === "ctf" && error && <span className="ax-path__err">{error}</span>}
-                </span>
-                <span className="ax-path__count">
-                  {!status.ctf.entry && (
-                    <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("ctf")}>
-                      {starting === "ctf" ? "Writing…" : "Start"} <ArrowRight className="h-4 w-4" />
-                    </button>
                   )}
                 </span>
               </div>
