@@ -52,6 +52,27 @@ function sweep() {
   after(() => stopDueHostedLabs().then(() => undefined).catch(() => undefined));
 }
 
+// One payload for the status read and for every action's reply. An action that
+// answered with the bare lab status dropped the hours meter and the session
+// length off the panel until the next read, so stopping a lab made its own
+// hours disappear.
+async function statusPayload(userId: string) {
+  // The hours meter never decides whether an action worked. It is a reading on
+  // the panel, and a start that succeeded must not report a failure because the
+  // month's minutes could not be read.
+  const [status, hours] = await Promise.all([hostedLabStatus(userId), labHours(userId).catch(() => null)]);
+  return {
+    available: true,
+    ...status,
+    hoursUsed: hours ? Math.round(hours.used) : 0,
+    // hoursLeft is Infinity when the cap is off, which JSON turns into null --
+    // the page reads null as "no cap to show", not "no hours left".
+    hoursLimit: hours?.limit || null,
+    hoursLeft: hours && Number.isFinite(hours.left) ? Math.round(hours.left) : null,
+    sessionHours: hostedLabSessionHours(),
+  };
+}
+
 export async function GET(request: Request) {
   if (!(await isAcademyUnlocked())) return NextResponse.json({ available: false });
   const student = await getAcademyStudent(request);
@@ -77,17 +98,7 @@ export async function GET(request: Request) {
   if (!canUseHostedLab(student.email)) return NextResponse.json({ available: false, notEnabled: true });
   sweep();
   try {
-    const [status, hours] = await Promise.all([hostedLabStatus(student.id), labHours(student.id)]);
-    // hoursLeft is Infinity when the cap is off, which JSON turns into null --
-    // the page reads null as "no cap to show", not "no hours left".
-    return NextResponse.json({
-      available: true,
-      ...status,
-      hoursUsed: Math.round(hours.used),
-      hoursLimit: hours.limit || null,
-      hoursLeft: Number.isFinite(hours.left) ? Math.round(hours.left) : null,
-      sessionHours: hostedLabSessionHours(),
-    });
+    return NextResponse.json(await statusPayload(student.id));
   } catch {
     return NextResponse.json({ available: true, state: "none", error: "Could not reach AWS. Try again in a minute." });
   }
@@ -125,7 +136,7 @@ export async function POST(request: Request) {
       if (!creds) return NextResponse.json({ error: "The Ubuntu machine is not running yet." }, { status: 409 });
       return NextResponse.json(creds);
     } else return NextResponse.json({ error: "Unknown action." }, { status: 400 });
-    return NextResponse.json(await hostedLabStatus(student.id));
+    return NextResponse.json(await statusPayload(student.id));
   } catch (err) {
     // Running out of hours is not a fault, so it does not get the AWS wording
     // or the error log. 429 so the page can tell them apart from a real outage.

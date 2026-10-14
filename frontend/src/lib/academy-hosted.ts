@@ -601,14 +601,23 @@ export async function hostedLabStatus(userId: string): Promise<HostedLabStatus> 
   const none: HostedLabStatus = { state: "none", stopAt: null, startedAt: null, firstBoot: false, instanceType: c.instanceType, linux: false };
   const row = await loadHostedLab(userId);
   if (!row || row.instanceId === POD_RESERVED) return none;
+  // Each start sets the stop time a session ahead, so the start time is one session before it.
+  const startedAt = row.stopAt ? new Date(Date.parse(row.stopAt) - c.sessionHours * 3600_000).toISOString() : null;
   const inst = await describe(row.instanceId).catch(() => null);
-  if (!inst || inst.state === "terminated" || inst.state === "shutting-down") return none;
+  if (!inst || inst.state === "terminated" || inst.state === "shutting-down") {
+    // DescribeInstances lags RunInstances by a few seconds, so the read right
+    // after a launch can find no machine at all. Answering "none" there told a
+    // student their brand-new lab had not started -- and since nothing was
+    // moving, the panel stopped polling and sat on Offline until a reload. A
+    // row this young names a machine that is coming up, not one that is gone.
+    const launching = !inst && Date.now() - Date.parse(row.createdAt) < 5 * 60_000;
+    if (!launching) return none;
+    return { state: "starting", stopAt: row.stopAt, startedAt, firstBoot: true, instanceType: c.instanceType, linux: Boolean(row.linuxInstanceId) };
+  }
   // Ready once the lab has sent a snapshot since it was created: first boot has finished linking it.
   const lab = await loadLabState(userId).catch(() => null);
   const linked = Boolean(lab && Date.parse(lab.uploadedAt) >= Date.parse(row.createdAt));
   const map: Record<string, HostedLabState> = { pending: "starting", running: linked ? "ready" : "starting", stopping: "stopping", stopped: "stopped" };
-  // Each start sets the stop time a session ahead, so the start time is one session before it.
-  const startedAt = row.stopAt ? new Date(Date.parse(row.stopAt) - c.sessionHours * 3600_000).toISOString() : null;
   return { state: map[inst.state] ?? "starting", stopAt: row.stopAt, startedAt, firstBoot: !linked, instanceType: c.instanceType, linux: Boolean(row.linuxInstanceId) };
 }
 

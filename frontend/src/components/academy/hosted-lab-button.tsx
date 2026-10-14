@@ -60,7 +60,14 @@ async function act(action: "start" | "stop" | "extend" | "reset") {
     const r = await academyFetch("/academy/api/hosted-lab", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action }) });
     const data = await r.json();
     if (!r.ok) set({ error: data.error ?? "Something went wrong." });
-    else set({ status: { available: true, ...data } });
+    else {
+      set({ status: { available: true, ...data } });
+      // A start that answers with a lab still sitting at "none" leaves nothing
+      // moving, so nothing polls and the panel goes on showing Offline. One
+      // re-read a few seconds later picks up a machine AWS was not ready to
+      // describe at the moment the start returned.
+      if (action === "start" && snap.status?.state !== "starting" && snap.status?.state !== "ready") window.setTimeout(() => void load(), 5_000);
+    }
   } catch {
     set({ error: "Could not reach Range. Try again." });
   } finally {
@@ -108,7 +115,9 @@ export function useHostedLab() {
   }, []);
   const state: State = s.status?.state ?? "none";
   const moving = state === "starting" || state === "stopping";
-  const primary = () => (state === "ready" ? open() : state === "none" || state === "stopped" ? act("start") : undefined);
+  // Always a promise, so a caller can wait for the start it asked for instead
+  // of guessing when it landed.
+  const primary = (): Promise<void> => (state === "ready" ? open() : state === "none" || state === "stopped" ? act("start") : Promise.resolve());
   return { ...s, state, waiting: s.busy || moving, primary, available: Boolean(s.status?.available), locked: Boolean(s.status?.locked), notEnabled: Boolean(s.status?.notEnabled) };
 }
 
@@ -177,10 +186,15 @@ const labTone = (state: State) => (state === "ready" ? "on" : state === "startin
 
 /** A small status chip in the top bar, on every page. Opens the lab menu. */
 export function HostedLabButton() {
-  const { available, state } = useHostedLab();
+  const { available, state, busy, error } = useHostedLab();
   const { anchor, isOpen, toggle, popover } = useLabMenu<HTMLButtonElement>();
   if (!available) return null;
-  const tone = labTone(state);
+  // A start takes a few seconds to be accepted, and the menu it was pressed in
+  // is often closed by then. Without busy the chip went on reading "Offline"
+  // under a red light while the lab was already starting, so a start that
+  // worked looked like a button that did nothing.
+  const starting = busy && (state === "none" || state === "stopped");
+  const tone = starting ? "wait" : labTone(state);
   return (
     <>
       <button
@@ -189,14 +203,22 @@ export function HostedLabButton() {
         onClick={toggle}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
-        title="Your lab"
+        title={error ?? "Your lab"}
         data-tour="lab"
         className="flex h-9 items-center gap-2 rounded-md border border-[var(--pvrx-border-light)] bg-white px-3 text-sm font-semibold text-slate-600 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
       >
         <span className={`flex hl-lab--${tone}`}>
           <LabMonitorIcon size={20} />
         </span>
-        <span className="hidden sm:inline">{CHIP[state]}</span>
+        <span className="hidden sm:inline">{starting ? "Starting" : CHIP[state]}</span>
+        {/* A start can fail after the menu is closed. The dot is the only thing
+            left on screen that can say so. */}
+        {error && !starting && (
+          <>
+            <span className="hl-chip__bad" aria-hidden="true" />
+            <span className="sr-only">Your lab reported a problem. Open it to read it.</span>
+          </>
+        )}
       </button>
       {popover}
     </>
@@ -460,10 +482,13 @@ export function HostedLabMenu() {
     if (state === "none" && !labBriefed()) setBrief("start");
     else primary();
   };
-  const startFromBrief = () => {
+  // The briefing stays up until the start is accepted, so its own button is
+  // what says "Starting". Closing first left the student watching the box
+  // disappear with nothing in its place, which reads as a dead button.
+  const startFromBrief = async () => {
     markLabBriefed();
+    await primary();
     setBrief(null);
-    primary();
   };
   const spec = SPECS[status.instanceType ?? ""] ?? status.instanceType;
   // No lab yet means the next one is a pod, so describe what they will get.
