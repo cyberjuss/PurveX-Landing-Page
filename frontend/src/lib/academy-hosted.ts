@@ -961,8 +961,11 @@ export async function requestLabSync(userId: string, force = false): Promise<boo
   lastSyncAt.set(userId, Date.now());
   // -Fast: AD and infra only, no 30-day Security log read, and the digest left
   // out so the server keeps what it has. The nudge lands in about a second and
-  // does not compete with the sync loop for the domain controller's CPU.
-  const command = "$ProgressPreference='SilentlyContinue'; $s=Join-Path $env:ProgramData 'PurveX\\Build-Environment.ps1'; if(Test-Path $s){ & $s -SyncOnly -Fast }";
+  // does not compete with the sync loop for the domain controller's CPU. A pod
+  // still on an older script has no -Fast parameter, so fall back to a plain
+  // -SyncOnly there rather than letting the nudge error out.
+  const command =
+    "$ProgressPreference='SilentlyContinue'; $s=Join-Path $env:ProgramData 'PurveX\\Build-Environment.ps1'; if(Test-Path $s){ try { & $s -SyncOnly -Fast } catch { & $s -SyncOnly } }";
   try {
     await ssm().send(
       new SendCommandCommand({
