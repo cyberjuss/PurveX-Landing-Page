@@ -75,7 +75,11 @@ dig @dc01 purvexfinancial.local
 ldapsearch -x -H ldap://dc01 -s base -b "" namingContexts
 ```
 
-Each command produces a short conversation with the domain controller, and Wireshark records both as they happen.
+`dig` is a DNS client. The `@dc01` part tells it to ask the domain controller directly rather than whatever resolver Ubuntu would normally use, and `purvexfinancial.local` is the name being asked about. No record type is given, so dig asks for an address record, and the domain controller answers with the address you wrote down earlier. That is one question and one answer over UDP port 53.
+
+`ldapsearch` is a directory client. `-H ldap://dc01` points it at the directory service on port 389, and `-x` chooses simple authentication, which with no account named means it connects anonymously. `-b ""` together with `-s base` asks for one entry rather than a tree, the rootDSE, which is the record a directory publishes about itself. `namingContexts` is the attribute asked for, and it comes back as the list of directory trees this server holds.
+
+The pair is deliberate. One is a single exchange over UDP and the other is a conversation over TCP that opens with a handshake, both to the same host, and neither of them is encrypted.
 
 <div class="ad-shots">
 <figure class="ad-shot">
