@@ -133,6 +133,11 @@ export function useLabMenu<T extends HTMLElement>() {
     place();
     const onDown = (e: MouseEvent) => {
       const t = e.target as Node;
+      // A modal the menu opened (the lab briefing) portals to the body, so it
+      // is outside both refs. Without this, its own mousedown closed the menu
+      // and tore the briefing down with it before any button inside it could
+      // fire, so the first start just made the box vanish.
+      if (t instanceof Element && t.closest('[aria-modal="true"]')) return;
       if (!anchor.current?.contains(t) && !menu.current?.contains(t)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
