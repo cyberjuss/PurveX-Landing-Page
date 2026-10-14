@@ -344,7 +344,7 @@ const TOURS: Tour[] = [HOME, DRILLS, LABS, REFERENCE, READINESS, PORTFOLIO, SHIF
 
 // One welcome, not one per page. Once the portal has shown the tour the first
 // time, this flag stops any other tour from firing on a first visit to drills,
-// labs, SIEM and the rest. Cleared by a replay.
+// labs and the rest. Cleared by a replay.
 const PORTAL_TOURED = "academy-toured-v1";
 
 /** Storage can throw in a private window, so a failed read means "show it". */
