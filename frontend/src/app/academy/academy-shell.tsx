@@ -684,7 +684,10 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       placeMiss(wrap);
     };
 
-    const hintUnlocked = (wrap: Element) => parseInt(wrap.getAttribute("data-attempts") || "0", 10) >= 2;
+    // Hints are always available. A student who is stuck should be able to read
+    // the hint whenever rather than having to spend two wrong tries first.
+    // Opening one still records hint-used, so it carries its scoring cost.
+    const hintUnlocked = (_wrap: Element) => true;
 
     let openHintId: string | null = null;
 
@@ -759,8 +762,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       labelHintButton(wrap, true);
     };
 
-    // Hint unlocks after two wrong tries, then slides in as a card from the
-    // right. Toggle closes it. Opening once still records hint-used.
+    // The hint slides in as a card from the right. Toggle closes it. Opening
+    // once still records hint-used.
     const toggleHint = (btn: HTMLButtonElement) => {
       const wrap = btn.closest(".ad-mission");
       const id = wrap?.getAttribute("data-id");
