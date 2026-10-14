@@ -1041,6 +1041,39 @@ function Get-PurvexHighestUsn {
 # - A change stays pending until an upload succeeds. A failed upload is retried
 #   after 2, 4, 8 and then 15 seconds, so a network blip never loses a change.
 # - The Security log and settings ride along with a full send once a minute.
+# A pod runs whatever script was on it the day it was built. Every fix to this
+# file after that reached new pods only, and the ones already out there had to
+# be patched by hand, one at a time, over SSM. The loop now looks for a newer
+# copy a few times a day and replaces itself with it.
+#
+# Two guards before anything is written: the marker function first boot also
+# checks, so a 404 or a redirect cannot save an HTML page over the script, and
+# the parser, so a broken deploy cannot leave every pod running a file that
+# will not start.
+function Update-PurvexScript {
+    param([string]$Key, [string]$Url)
+    $dest = Get-PurvexSyncScriptPath
+    $tmp = "$dest.new"
+    try {
+        [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+        Invoke-WebRequest -Uri ($Url.TrimEnd("/") + "/lab-scripts/Build-Environment.ps1") -OutFile $tmp -UseBasicParsing -TimeoutSec 60
+        $text = Get-Content -LiteralPath $tmp -Raw
+        if (-not $text.Contains("Ensure-CTFChallengeData")) { return $false }
+        $errors = $null
+        [void][System.Management.Automation.Language.Parser]::ParseInput($text, [ref]$null, [ref]$errors)
+        if ($errors.Count) { return $false }
+        $text = $text.Replace('[string]$PurvexKey = ""', "[string]`$PurvexKey = '$Key'").Replace('[string]$PurvexUrl = ""', "[string]`$PurvexUrl = '$Url'")
+        $current = ""
+        try { $current = Get-Content -LiteralPath $dest -Raw } catch { }
+        if ($text -eq $current) { return $false }
+        Set-Content -LiteralPath $dest -Value $text -Encoding UTF8
+        Write-Host "Updated the lab script from $Url."
+        return $true
+    }
+    catch { return $false }
+    finally { Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue }
+}
+
 function Start-PurvexSyncLoop {
     param([string]$Key, [string]$Url)
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
@@ -1052,6 +1085,9 @@ function Start-PurvexSyncLoop {
     $nextPrint = [datetime]::MinValue
     $pending = $false
     $failures = 0
+    # Checked a few times a day, and not at once on boot: a pod that has just
+    # downloaded this copy does not need to ask for it again.
+    $nextUpdate = (Get-Date).AddHours(6)
     while ($true) {
         $waitMs = 150
         try {
@@ -1085,6 +1121,12 @@ function Start-PurvexSyncLoop {
                 $lastSend = Get-Date
                 $lastHeavy = $lastSend
                 $failures = 0
+                # Leaving the loop hands over to the task's own one-minute
+                # watchdog, which starts it again on the new file.
+                if ((Get-Date) -ge $nextUpdate) {
+                    $nextUpdate = (Get-Date).AddHours(6)
+                    if (Update-PurvexScript -Key $Key -Url $Url) { return }
+                }
             }
         }
         catch {
