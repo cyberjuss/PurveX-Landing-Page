@@ -1070,12 +1070,14 @@ function Update-PurvexScript {
         # under ProgramData is writable by local accounts, and a copy sitting on
         # disk between the download and the read is a swap waiting to happen.
         $res = Invoke-WebRequest -Uri ($Url.TrimEnd("/") + "/lab-scripts/Build-Environment.ps1") -UseBasicParsing -TimeoutSec 60
-        # A redirect that leaves the host the pod was built with is refused.
-        try {
-            $landed = [uri]$res.BaseResponse.ResponseUri
-            if ($landed -and $landed.Host -ne $home_.Host) { return $false }
-        }
-        catch { }
+        # A redirect that leaves the host the pod was built with is refused, and
+        # so is a response whose final address cannot be read at all: a check
+        # that cannot be made has not passed. ResponseUri is the Windows
+        # PowerShell shape, RequestMessage the PowerShell 7 one.
+        $landed = $null
+        try { $landed = [uri]$res.BaseResponse.ResponseUri } catch { }
+        if (-not $landed) { try { $landed = [uri]$res.BaseResponse.RequestMessage.RequestUri } catch { } }
+        if (-not $landed -or $landed.Scheme -ne "https" -or $landed.Host -ne $home_.Host) { return $false }
         $text = if ($res.Content -is [byte[]]) { [Text.Encoding]::UTF8.GetString($res.Content) } else { [string]$res.Content }
         # Neither of these makes a download trustworthy, and neither is meant to.
         # The marker catches a 404 page saved over the script, and the parser
