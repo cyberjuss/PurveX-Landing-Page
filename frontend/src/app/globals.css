@@ -4616,7 +4616,7 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 }
 /* Cadence rather than sequence: the drill rows are four standing invitations,
    not four steps, so their badge carries a word and sizes to it. */
-.ax-path__n--word { width: auto; min-width: 34px; padding: 0 10px; letter-spacing: 0.06em; text-transform: uppercase; }
+.ax-path__n--word { width: auto; min-width: 34px; padding: 0 10px; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
 .ax-path__title, .ax-curriculum__title { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-family: var(--font-display); font-size: var(--ty-h3); font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }
 .ax-path__body, .ax-curriculum__body { display: block; margin-top: 6px; font-size: var(--ty-body); line-height: 1.55; color: var(--rd-ink-2); }
 .ax-path__count, .ax-curriculum__meta { display: inline-flex; align-items: center; gap: 8px; padding-top: 6px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note); font-weight: 700; color: var(--rd-ink-2); }
@@ -5624,7 +5624,9 @@ textarea.pc-dock__field {
 /* Drills in the report style: ruled rows, no cards */
 .dr-strip { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 10px 18px; margin-top: 24px; padding: 16px 0; border-top: 1px solid var(--rd-line); }
 .dr-rows { margin-top: 0; border-top: 1px solid var(--rd-line); }
-.dr-rows .ax-path__row { align-items: center; grid-template-columns: 44px minmax(0, 1fr) auto; }
+/* The first column held a two-digit number. It now holds a word like THIS WEEK,
+   so it is sized to its content instead of to 44px, which wrapped it. */
+.dr-rows .ax-path__row { align-items: center; grid-template-columns: max-content minmax(0, 1fr) auto; }
 .dr-rows .ax-path__main { min-width: 0; }
 .dr-rows .ax-path__count { justify-self: end; padding-top: 0; }
 .dr-rows .rd-cta { white-space: nowrap; flex-shrink: 0; }

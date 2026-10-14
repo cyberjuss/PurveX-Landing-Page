@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight, Check, ChevronDown, ClipboardList, Flame, Timer, X } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, ClipboardList, Flame, RefreshCw, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { useHostedLab } from "@/components/academy/hosted-lab-button";
 import { academyFetch, localDay, READINESS_PATH } from "@/lib/academy-client";
@@ -413,6 +413,8 @@ function academyChrome() {
 }
 
 function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
+  // A hosted student has no script to run, so the note must not ask for one.
+  const { available: hostedLab } = useHostedLab();
   const { ask } = useCoach();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -472,7 +474,9 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
               <div className="dr-jobsheet__body">
                 {!security && jobs.some((j) => j.security) && (
                   <p className="dr-jobs__note">
-                    Security settings show up here after you run the updated lab script from Build the Environment once on the domain controller.
+                    {hostedLab
+                      ? "Security settings show up here once your lab reports them, which it does on its own."
+                      : "Security settings show up here after you run the updated lab script from Build the Environment once on the domain controller."}
                   </p>
                 )}
                 {done.length === 0 ? (
@@ -1018,11 +1022,14 @@ export function DrillRunner() {
                     {status.ctf.entry && <em className={`ax-tag ${status.ctf.entry.correct ? "ax-tag--good" : ""}`}>{status.ctf.entry.correct ? "Captured" : "Not captured"}</em>}
                   </span>
                   <span className="ax-path__body">
-                    {/* The missing-log case is a prerequisite, not a description of the
-                        work, so it rides on the button instead of the body. */}
+                    {/* A hosted lab sends its Security log on its own, within a minute of
+                        coming online. None of that is the student's job, so the wait is
+                        reported rather than handed to them as a task. */}
                     {status.ctf.entry
                       ? "A new one opens Monday."
-                      : "One hard investigation a week, drawn from what actually happened in your lab. Around twenty minutes."}
+                      : status.lab.events || hostedLab
+                        ? "One hard investigation a week, drawn from what actually happened in your lab. Around twenty minutes."
+                        : "One hard investigation a week, drawn from what actually happened in your lab. Your domain controller has not sent its Security log yet."}
                   </span>
                   {errorMode === "ctf" && error && <span className="ax-path__err">{error}</span>}
                 </span>
@@ -1031,6 +1038,10 @@ export function DrillRunner() {
                     (status.lab.events ? (
                       <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("ctf")}>
                         {starting === "ctf" ? "Writing…" : "Start investigation"} <ArrowRight className="h-4 w-4" />
+                      </button>
+                    ) : hostedLab ? (
+                      <button type="button" className="rd-cta" onClick={load}>
+                        <RefreshCw className="h-4 w-4" /> Waiting for your lab
                       </button>
                     ) : (
                       <Link className="rd-cta" href="/range/phase-1/home-lab-setup#build-the-environment">
