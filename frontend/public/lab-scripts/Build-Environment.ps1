@@ -1012,6 +1012,34 @@ function Get-PurvexHighestUsn {
 # checks, so a 404 or a redirect cannot save an HTML page over the script, and
 # the parser, so a broken deploy cannot leave every pod running a file that
 # will not start.
+# The public half of the key PurveX signs this script with. Public on purpose:
+# it can check a signature and cannot make one. Replacing it is the one edit
+# that would matter, which is why a pod also carries a copy in its image.
+$PurvexSigningKey = '<RSAKeyValue><Modulus>spaboLUY4Af3MndsYQxi2/LVesTGzbfrYB7aa1jbpa18kxMElVG3npT25grP3UWARf+KwqRBxlmev4ZHyqM8Y0WrtHNj4nOeFfmdXmrzFgn6Nfv7obrpbve/4IRPpt82sTHmvBBVAa8W8qwKODhKOk01f5pQoJx101X/T8x0mqv/rRa4OlDQBVNOExoL2qE47gsA5/84xEJJZwTbTszM8VCyLoUVB7fKv/v/f46jtcCwLXu2Uqvy+cRXdYgUww5rhYHAzXZkCcl74Rebwqn/hbDZlg8ELOouIT58qj7TjIST0qkkywD+ToPSToeaSzeNZPmXG+0SACJHYUqtvsNg7Q==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>'
+
+# Is this exactly the script PurveX published? TLS proves a download came from
+# the server answering to a name. It says nothing about who wrote the bytes, so
+# a hijacked deployment, a stolen token or a mis-issued certificate would all
+# serve a file the pod would otherwise run as SYSTEM. A signature moves the
+# trust from the channel to the file.
+function Test-PurvexSignature {
+    param([string]$Text, [string]$Signature)
+    if (-not $Text -or -not $Signature) { return $false }
+    $rsa = $null
+    try {
+        $rsa = New-Object System.Security.Cryptography.RSACryptoServiceProvider
+        $rsa.FromXmlString($PurvexSigningKey)
+        # Normalised to LF before hashing. Git stores this file with LF and
+        # checks it out on Windows with CRLF, so the bytes on a developer's
+        # disk and the bytes the site serves differ. Signing the content
+        # rather than the checkout is what keeps those two in agreement.
+        $bytes = [Text.Encoding]::UTF8.GetBytes(($Text -replace "`r`n", "`n"))
+        return $rsa.VerifyData($bytes, "SHA256", [Convert]::FromBase64String($Signature.Trim()))
+    }
+    catch { return $false }
+    finally { if ($rsa) { $rsa.Dispose() } }
+}
+
 function Update-PurvexScript {
     param([string]$Key, [string]$Url)
     # Hosted pods only. A pod is a machine Range built, and Range already runs
@@ -1041,6 +1069,20 @@ function Update-PurvexScript {
         if (-not $landed) { try { $landed = [uri]$res.BaseResponse.RequestMessage.RequestUri } catch { } }
         if (-not $landed -or $landed.Scheme -ne "https" -or $landed.Host -ne $home_.Host) { return $false }
         $text = if ($res.Content -is [byte[]]) { [Text.Encoding]::UTF8.GetString($res.Content) } else { [string]$res.Content }
+        # The signature, checked before the file is parsed and before the key
+        # and the url are written into it. A missing or stale .sig fails the
+        # same way a forged one does: the pod keeps the copy it already runs,
+        # which is the safe outcome of the two.
+        $sig = Invoke-WebRequest -Uri ($Url.TrimEnd("/") + "/lab-scripts/Build-Environment.ps1.sig") -UseBasicParsing -TimeoutSec 30
+        $sigLanded = $null
+        try { $sigLanded = [uri]$sig.BaseResponse.ResponseUri } catch { }
+        if (-not $sigLanded) { try { $sigLanded = [uri]$sig.BaseResponse.RequestMessage.RequestUri } catch { } }
+        if (-not $sigLanded -or $sigLanded.Scheme -ne "https" -or $sigLanded.Host -ne $home_.Host) { return $false }
+        $sigText = if ($sig.Content -is [byte[]]) { [Text.Encoding]::UTF8.GetString($sig.Content) } else { [string]$sig.Content }
+        if (-not (Test-PurvexSignature -Text $text -Signature $sigText)) {
+            Write-Host "Refused a lab script update: the signature did not check out."
+            return $false
+        }
         # Neither of these makes a download trustworthy, and neither is meant to.
         # The marker catches a 404 page saved over the script, and the parser
         # catches a broken deploy that would leave every pod unable to start.

@@ -14,6 +14,8 @@
     "eval:coach": "npx -y tsx --tsconfig scripts/coach-eval/tsconfig.json scripts/coach-eval/eval.ts",
     "check:range": "npx -y tsx --tsconfig scripts/range-check/tsconfig.json scripts/range-check/check.ts",
     "check:coach-cache": "npx -y tsx --tsconfig scripts/coach-cache/tsconfig.json scripts/coach-cache/check.ts",
+    "sign:lab-script": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/sign-lab-script.ps1",
+    "check:lab-script": "node scripts/check-lab-script.mjs",
     "check:schema": "node scripts/check-schema.mjs",
     "check:shift": "npx -y tsx --tsconfig scripts/shift-check/tsconfig.json scripts/shift-check/check.ts",
     "check:range:routes": "node scripts/range-check/routes.mjs",
