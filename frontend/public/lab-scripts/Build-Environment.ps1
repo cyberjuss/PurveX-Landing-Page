@@ -1014,12 +1014,34 @@ function Get-PurvexHighestUsn {
 # will not start.
 function Update-PurvexScript {
     param([string]$Key, [string]$Url)
+    # Hosted pods only. A pod is a machine Range built, and Range already runs
+    # commands on it as SYSTEM through SSM, so letting it replace its own script
+    # adds no reach we do not already have. A student's own domain controller is
+    # a different matter: it sits on their network, and nothing should let a
+    # vendor push code onto it while they sleep. They update by downloading the
+    # script again from the lesson, which is a decision they make.
+    if (-not $Key.StartsWith("pvl_")) { return $false }
+    $home_ = $null
+    try { $home_ = [uri]$Url } catch { return $false }
+    # Plaintext would put a SYSTEM shell on this box behind anyone on the path.
+    if ($home_.Scheme -ne "https") { return $false }
     $dest = Get-PurvexSyncScriptPath
-    $tmp = "$dest.new"
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-        Invoke-WebRequest -Uri ($Url.TrimEnd("/") + "/lab-scripts/Build-Environment.ps1") -OutFile $tmp -UseBasicParsing -TimeoutSec 60
-        $text = Get-Content -LiteralPath $tmp -Raw
+        # Held in memory rather than written beside the script first. Anything
+        # under ProgramData is writable by local accounts, and a copy sitting on
+        # disk between the download and the read is a swap waiting to happen.
+        $res = Invoke-WebRequest -Uri ($Url.TrimEnd("/") + "/lab-scripts/Build-Environment.ps1") -UseBasicParsing -TimeoutSec 60
+        # A redirect that leaves the host the pod was built with is refused.
+        try {
+            $landed = [uri]$res.BaseResponse.ResponseUri
+            if ($landed -and $landed.Host -ne $home_.Host) { return $false }
+        }
+        catch { }
+        $text = if ($res.Content -is [byte[]]) { [Text.Encoding]::UTF8.GetString($res.Content) } else { [string]$res.Content }
+        # Neither of these makes a download trustworthy, and neither is meant to.
+        # The marker catches a 404 page saved over the script, and the parser
+        # catches a broken deploy that would leave every pod unable to start.
         if (-not $text.Contains("Ensure-CTFChallengeData")) { return $false }
         $errors = $null
         [void][System.Management.Automation.Language.Parser]::ParseInput($text, [ref]$null, [ref]$errors)
@@ -1033,7 +1055,6 @@ function Update-PurvexScript {
         return $true
     }
     catch { return $false }
-    finally { Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue }
 }
 
 function Start-PurvexSyncLoop {
