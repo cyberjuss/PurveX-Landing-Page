@@ -539,6 +539,18 @@ export function DrillRunner() {
   const [hint, setHint] = useState<string | null>(null);
   const finishing = useRef(false);
 
+  // The portfolio links here naming the job it wants done. Read it once, aim
+  // the next start at it, and take it off the URL so a reload is a normal day.
+  const [wantJob, setWantJob] = useState<string | null>(null);
+  useEffect(() => {
+    const job = new URLSearchParams(window.location.search).get("job");
+    if (!job) return;
+    setWantJob(job);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("job");
+    window.history.replaceState(null, "", url.toString());
+  }, []);
+
   const load = useCallback(() => {
     academyFetch(`/academy/api/drill?day=${localDay()}`)
       .then((r) => (r.ok ? r.json() : null))
@@ -614,7 +626,7 @@ export function DrillRunner() {
     }
   }
 
-  async function start(mode: Mode, format?: string) {
+  async function start(mode: Mode, format?: string, job?: string | null) {
     setBusy(true);
     setStarting(mode);
     setError(null);
@@ -626,7 +638,7 @@ export function DrillRunner() {
         method: "POST",
         signal: ctrl.signal,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "start", mode, day: localDay(), format }),
+        body: JSON.stringify({ action: "start", mode, day: localDay(), format, job: job ?? undefined }),
       });
       const text = await res.text();
       let data: { error?: string; done?: boolean; items?: unknown[]; token?: string; limitSeconds?: number; ai?: boolean } | null = null;
@@ -952,6 +964,7 @@ export function DrillRunner() {
   const week = lastSeven();
   const today = localDay();
   const nameOf = (e: DrillEntry | null | undefined) => e?.detail?.[0]?.t ?? null;
+  const aimed = wantJob ? (status?.jobs.find((j) => j.id === wantJob) ?? null) : null;
   return (
     <div className="rd dr dr--floor">
       <header className="dr-mast">
@@ -999,14 +1012,16 @@ export function DrillRunner() {
                   </span>
                   <span className="ax-path__body">
                     {s.today
-                      ? `Done in ${clock(s.today.seconds)}. ${streakLine(s)}`
-                      : `One scenario from your own lab, about five minutes${status.focus ? `, on ${status.focus.toLowerCase()}` : ""}. You make a call, write it up, or fix something for real.`}
+                      ? `Done in ${clock(s.today.seconds)}. ${aimed ? "Open that task again tomorrow and it can be the next one." : streakLine(s)}`
+                      : aimed
+                        ? `Aimed at: ${aimed.label}. About five minutes, from your own lab.`
+                        : `One scenario from your own lab, about five minutes${status.focus ? `, on ${status.focus.toLowerCase()}` : ""}. You make a call, write it up, or fix something for real.`}
                   </span>
                   {errorMode === "daily" && error && <span className="ax-path__err">{error}</span>}
                 </span>
                 <span className="ax-path__count">
                   {!s.today && (
-                    <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("daily")}>
+                    <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("daily", undefined, wantJob)}>
                       {starting === "daily" ? "Writing…" : "Start case"} <ArrowRight className="h-4 w-4" />
                     </button>
                   )}
