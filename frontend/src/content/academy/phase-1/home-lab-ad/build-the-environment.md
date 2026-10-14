@@ -95,6 +95,16 @@ param(
     [string]$PurvexUrl = ""
 )
 
+# Which published copy this is. Bumped by the signing script, and inside the
+# signed content, so it cannot be edited without breaking the signature.
+#
+# A signature says PurveX wrote this file. It does not say this file is the
+# current one, and an old copy of ours is still signed by us. Anyone who can
+# serve bytes to a pod could hand it last month's script -- one missing every
+# fix made since -- and a check that only asks "did PurveX sign this?" would
+# say yes. A pod takes a higher number than the one it is running, and nothing
+# else.
+$PurvexScriptVersion = 4
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -1121,6 +1131,15 @@ function Update-PurvexScript {
             Write-Host "Refused a lab script update: the signature did not check out."
             return $false
         }
+        # Forward only, and read from the verified text rather than the
+        # download, so the number is one PurveX signed. Line-anchored because
+        # this function mentions the same name a few lines down. No version at
+        # all means a copy published before this check existed, which is a
+        # downgrade like any other.
+        $offered = [regex]::Match($text, '(?m)^\$PurvexScriptVersion\s*=\s*(\d+)\s*$')
+        if (-not $offered.Success -or [int]$offered.Groups[1].Value -le $PurvexScriptVersion) {
+            return $false
+        }
         # Neither of these makes a download trustworthy, and neither is meant to.
         # The marker catches a 404 page saved over the script, and the parser
         # catches a broken deploy that would leave every pod unable to start.
@@ -1131,7 +1150,14 @@ function Update-PurvexScript {
         $text = $text.Replace('[string]$PurvexKey = ""', "[string]`$PurvexKey = '$Key'").Replace('[string]$PurvexUrl = ""', "[string]`$PurvexUrl = '$Url'")
         $current = ""
         try { $current = Get-Content -LiteralPath $dest -Raw } catch { }
-        if ($text -eq $current) { return $false }
+        # Compared with the line endings and the last newline normalised away.
+        # Set-Content adds a trailing newline that the download does not have,
+        # so a straight comparison never matched: a pod rewrote a file identical
+        # to the one it had, and announced it, every few hours. The version
+        # floor already refuses anything but a newer copy, so this guard only
+        # saves a pointless write.
+        $same = ($text -replace "`r`n", "`n").TrimEnd("`n") -eq ($current -replace "`r`n", "`n").TrimEnd("`n")
+        if ($same) { return $false }
         Set-Content -LiteralPath $dest -Value $text -Encoding UTF8
         Write-Host "Updated the lab script from $Url."
         return $true

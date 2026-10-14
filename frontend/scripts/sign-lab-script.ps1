@@ -38,6 +38,24 @@ if (-not (Test-Path -LiteralPath $script)) { Write-Host "No script at $script." 
 # CRLF, so a signature over the bytes on disk would not match the bytes the
 # site serves. The pod normalises the same way before it verifies.
 $text = (Get-Content -LiteralPath $script -Raw) -replace "`r`n", "`n"
+
+# The version goes up on every signature, and it goes up here rather than by
+# hand. A pod only takes a higher number than the one it runs, which is what
+# stops an old signed copy being served back to it -- so a new signature over
+# the same number would be refused by every pod and nothing would say why.
+# Spending a number on a re-sign that changed nothing costs nothing.
+$versionRx = [regex]'(?m)^\$PurvexScriptVersion\s*=\s*(\d+)\s*$'
+$found = $versionRx.Match($text)
+if (-not $found.Success) {
+    Write-Host "The script has no `$PurvexScriptVersion line, so a pod cannot tell this copy from an older one." -ForegroundColor Red
+    exit 1
+}
+$was = [int]$found.Groups[1].Value
+$now = $was + 1
+$text = $versionRx.Replace($text, "`$PurvexScriptVersion = $now", 1)
+# Written back LF, the way git stores it. The .sig covers this text.
+[IO.File]::WriteAllText($script, $text, (New-Object Text.UTF8Encoding $false))
+
 $bytes = [Text.Encoding]::UTF8.GetBytes($text)
 
 $rsa = New-Object System.Security.Cryptography.RSACryptoServiceProvider
@@ -57,5 +75,29 @@ finally { $rsa.Dispose() }
 # along into the base64 and break the decode.
 [IO.File]::WriteAllText($out, $sig, (New-Object Text.UTF8Encoding $false))
 
-Write-Host "Signed $([IO.Path]::GetFileName($script)) ($($bytes.Length) bytes, LF)." -ForegroundColor Green
+# The lesson pastes this whole script into a <pre> block, because a student
+# building their own domain controller has no Range download to get it from.
+# Kept in step here rather than by hand: the two have drifted before, and a
+# lesson teaching a script nobody signed or tested is the worst of the three
+# outcomes. check-lab-script.mjs fails if they ever part company again.
+$lesson = Join-Path $root "frontend/src/content/academy/phase-1/home-lab-ad/build-the-environment.md"
+if (Test-Path -LiteralPath $lesson) {
+    $md = (Get-Content -LiteralPath $lesson -Raw) -replace "`r`n", "`n"
+    $escaped = $text.TrimEnd("`n").Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;")
+    $block = '<pre class="ad-code__pre--tall"><code>' + $escaped + '</code></pre>'
+    $rx = [regex]'(?s)<pre class="ad-code__pre--tall"><code>.*?</code></pre>'
+    if (-not $rx.IsMatch($md)) {
+        Write-Host "The lesson has no ad-code__pre--tall block to paste into. Left it alone." -ForegroundColor Yellow
+    }
+    else {
+        $updated = $rx.Replace($md, [System.Text.RegularExpressions.MatchEvaluator] { param($m) $block }, 1)
+        if ($updated -ne $md) {
+            [IO.File]::WriteAllText($lesson, $updated, (New-Object Text.UTF8Encoding $false))
+            Write-Host "Updated the copy in the Build the Environment lesson."
+        }
+    }
+}
+
+Write-Host "Signed version $now of $([IO.Path]::GetFileName($script)) ($($bytes.Length) bytes, LF), up from $was." -ForegroundColor Green
 Write-Host "Wrote $out"
+Write-Host "Commit both, and the lesson copy if the script changed."
