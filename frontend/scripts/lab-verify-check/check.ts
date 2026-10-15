@@ -20,7 +20,7 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { firstBootScript, verifyDownloaded } from "@/lib/academy-hosted";
+import { firstBootScript, shouldStopIdle, verifyDownloaded } from "@/lib/academy-hosted";
 import { LAB_SCRIPT_HASHES } from "@/lib/lab-script-hashes";
 
 const root = join(import.meta.dirname, "..", "..");
@@ -139,14 +139,9 @@ try {
   const idleLines = readFileSync(join(root, "src", "lib", "academy-hosted.ts"), "utf8");
   t(
     "the idle stop measures the session from stopAt, not from createdAt",
-    /const started = Date\.parse\(row\.stopAt\) - c\.sessionHours \* 3600_000;/.test(idleLines),
+    /sessionStartedMs: Date\.parse\(row\.stopAt\) - c\.sessionHours \* 3600_000/.test(idleLines),
     "a restart leaves createdAt where it was"
   );
-  t(
-    "a session gets the idle window plus a build before it can be idle-stopped",
-    /Date\.now\(\) - started < \(c\.idleStopMinutes \+ IDLE_BUILD_GRACE_MINUTES\) \* 60_000\) return false;/.test(idleLines)
-  );
-  t("the build grace is at least as long as a slow build", /const IDLE_BUILD_GRACE_MINUTES = (?:[3-9]\d|\d{3,});/.test(idleLines));
 
   // And the pod's half: the clock is restarted when the sync loop starts, so
   // neither a first boot nor a restart counts the build as idle time.
@@ -154,6 +149,38 @@ try {
   const loopAt = buildPs.indexOf("function Start-PurvexSyncLoop");
   const stampAt = buildPs.indexOf("Set-Content -LiteralPath (Get-PurvexLastActivePath)", loopAt);
   t("the sync loop restarts the idle clock when the lab is ready", loopAt >= 0 && stampAt > loopAt && stampAt - loopAt < 1200);
+
+  // --- the idle decision, case by case ------------------------------------
+  // This rule has been wrong twice and both times a student lost a paid
+  // session to it, so it is tested as a table rather than by reading it.
+  const MIN = 60_000;
+  const base = { idleStopMinutes: 20, unopenedStopMinutes: 45, buildGraceMinutes: 30, now: 0 };
+  const at = (sessionAgeMin: number) => ({ ...base, now: sessionAgeMin * MIN, sessionStartedMs: 0 });
+  const cases: { name: string; args: Parameters<typeof shouldStopIdle>[0]; stop: boolean }[] = [
+    // The bug that started all this: a pod's very first report, counting its
+    // own build as idle time, on a session less than an hour old.
+    { name: "a brand new pod reporting 20 idle minutes is left alone", args: { ...at(21), idleMinutes: 20, everConnected: false }, stop: false },
+    { name: "a brand new pod reporting 46 idle minutes is still left alone", args: { ...at(51), idleMinutes: 46, everConnected: false }, stop: false },
+    // Never opened: the longer window, and only after the build grace.
+    { name: "never opened, 44 minutes, stays up", args: { ...at(120), idleMinutes: 44, everConnected: false }, stop: false },
+    { name: "never opened, 45 minutes, stops", args: { ...at(120), idleMinutes: 45, everConnected: false }, stop: true },
+    { name: "never opened, 45 minutes but inside the grace, stays up", args: { ...at(60), idleMinutes: 45, everConnected: false }, stop: false },
+    // Worked in and walked away: the short window, which is the point of it.
+    { name: "worked in, 19 minutes idle, stays up", args: { ...at(120), idleMinutes: 19, everConnected: true }, stop: false },
+    { name: "worked in, 20 minutes idle, stops", args: { ...at(120), idleMinutes: 20, everConnected: true }, stop: true },
+    { name: "worked in, 20 minutes idle, inside the grace, stays up", args: { ...at(40), idleMinutes: 20, everConnected: true }, stop: false },
+    // A pod on an older script says nothing, and keeps the old short window.
+    { name: "an older pod with no flag keeps the 20 minute window", args: { ...at(120), idleMinutes: 20, everConnected: undefined }, stop: true },
+    { name: "an older pod under 20 minutes stays up", args: { ...at(120), idleMinutes: 5, everConnected: undefined }, stop: false },
+    // Nothing reported, nothing done.
+    { name: "a pod that reported no idleness is left alone", args: { ...at(999), idleMinutes: undefined, everConnected: true }, stop: false },
+    { name: "an unreadable session start is left alone", args: { ...base, idleMinutes: 999, everConnected: true, sessionStartedMs: NaN, now: 0 }, stop: false },
+    { name: "the stop switched off leaves everything up", args: { ...at(999), idleStopMinutes: 0, unopenedStopMinutes: 0, idleMinutes: 999, everConnected: true }, stop: false },
+  ];
+  for (const c of cases) {
+    const got = shouldStopIdle(c.args);
+    t(c.name, got.stop === c.stop, got.why);
+  }
 
   // A script we never published must not produce a command at all.
   let threw = false;

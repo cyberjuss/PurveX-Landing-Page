@@ -8,16 +8,16 @@
 //
 // npm run check:lab-script fails if this file and the scripts disagree.
 
-export const LAB_SCRIPT_VERSION = 7;
+export const LAB_SCRIPT_VERSION = 8;
 
 export const LAB_SCRIPT_HASHES: Record<string, string> = {
-  "Build-Environment.ps1": "71d9ca0b019a50be73ec5379ed7d12e7c82453da1cdc7261e5c30fd9ac233c9d",
+  "Build-Environment.ps1": "faf1c0c399f4c2763122a947f6b7bacc42c561912c3b667aaf8984f4d86e04ac",
   "incidents/Incident-AccessRequest.ps1": "e00bbcd8721e003b150d2a27ec056e4421002ff227be40cad20080e348938bff",
   "incidents/Incident-AdminPSO.ps1": "e9b341b0c36a2145e51d171148ffbdfe00363931a5232e1a9381023aaf40f7ce",
   "incidents/Incident-ApprovedChange.ps1": "7eb8bc783800c18afa8df14249a36b788493ad7ecc288466bb0d8b86bd478db4",
   "incidents/Incident-BackdoorAccount.ps1": "613fc10b12b81c1fce47b3024bce4560821de52933e895aae814cc9f58f3bdf0",
   "incidents/Incident-BruteForce.ps1": "b4cb2ada2ecc4d729582565a0bd0abe011000763e6852ace2cd567d5aa0a379b",
-  "incidents/Incident-Common.ps1": "42ad6b136a415c3db5897ed11b7fe756e688053bd6e1a920ccf853676bf81ef9",
+  "incidents/Incident-Common.ps1": "5732fc7ae0ea60186b1078904eb6509d36c2edc7839909b21f28ac86d0b5c01a",
   "incidents/Incident-Compromise.ps1": "2e0e7097a3fee304f9de9008db07e6fd3d57aef8273dd2509225b63be51b39fe",
   "incidents/Incident-Delegation.ps1": "0e04f15f87ad22563c41568b5397755660acc7c10e3497cd0c5011de9658898c",
   "incidents/Incident-DeptTransfer.ps1": "56d0d1970b86e7b901d2b54696c25658ea7d95f20dff5ca1f1156f4ba0d93da3",
@@ -25,7 +25,7 @@ export const LAB_SCRIPT_HASHES: Record<string, string> = {
   "incidents/Incident-DisableAudit.ps1": "3008623d2f58dff1cb64ebef2858304892fcacc6f086bd70d1476d8070858ca9",
   "incidents/Incident-DomainAdmins.ps1": "2d4859c098eba40e1288227ed8ff804db6f9776c08d739eafdafa0e751ad03ea",
   "incidents/Incident-Kerberoast.ps1": "f32400aa0872656f7855452ac4c465f5c5719205ba1760a756ed9a46e69cd16a",
-  "incidents/Incident-Lockout.ps1": "ae2bd4d321d326795acc79b73225f8a87f2bbd3040b935807b36661fc31b4304",
+  "incidents/Incident-Lockout.ps1": "aa3bf7d0ba101db06483814ade12323b7409b1ef3ed012822131a93192b7c53f",
   "incidents/Incident-NoExpire.ps1": "204da40db775e154fd9ee2d7c33f3e4e60f95c07838d7c81eac99f271c55429e",
   "incidents/Incident-Offboarding.ps1": "cf58812c4927d5e98a2ad4f99706329cdf38787fd6f470de57813f2fd0b23f2e",
   "incidents/Incident-PreAuth.ps1": "2b8c8d0bee7a27dd4e98f7e46659d3f8488738f583d3418a0e58612aca19accd",
@@ -34,7 +34,7 @@ export const LAB_SCRIPT_HASHES: Record<string, string> = {
   "incidents/Incident-Reversible.ps1": "bfd47b2ac14e580a20ca34942ad8575d6f98183408ebb9742f87cd90261d0e76",
   "incidents/Incident-RogueAdmin.ps1": "0988726a5b1678725e5bf36640e7fca147620290694c21f29b2e28253b16e58a",
   "incidents/Incident-RogueComputer.ps1": "996ee1b3ca547afa163c0d67037bbe8e4740428f2687c45903e89653f8dead8c",
-  "incidents/Incident-Spray.ps1": "12abf61ee6f27f350ea6c742a78a8f6da9129439bc0e8e7d51d2ae41e85f9e49",
+  "incidents/Incident-Spray.ps1": "99e703a4d166d814e71c450b8f5b99ad4a4c1f221a4c9c42af357fffde185d15",
   "incidents/Incident-WeakPolicy.ps1": "c79d67ff9f69749ed7b8c1a3be0aabe4a6525d1f1b9d64bf52575b6a0dbc8a98",
   "incidents/Incident-WrongOU.ps1": "b646654df9f4aee801d583d3dda18f94b529653f7f0ddc604b7e9311200e1c60",
   "Install-Forest.ps1": "2e8adf2af2f66468d976e4e3db4c68dcaadd0a902cff1a8bdfdb49f150ec4234",

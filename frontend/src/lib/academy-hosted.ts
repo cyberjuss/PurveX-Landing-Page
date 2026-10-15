@@ -88,6 +88,11 @@ function cfg() {
      *  student gets the rest of the session back, so a forgotten lab costs them
      *  what they used rather than the whole session. 0 turns it off. */
     idleStopMinutes: Math.max(0, Number(e.HOSTED_LAB_IDLE_STOP_MINUTES) || 20),
+    /** Minutes a lab the student has never opened may sit before it stops
+     *  itself. Longer than the idle window on purpose: somebody reading the
+     *  brief before they connect has not abandoned anything, and the old code
+     *  could not tell the two apart so it stopped them at twenty minutes. */
+    unopenedStopMinutes: Math.max(0, Number(e.HOSTED_LAB_UNOPENED_STOP_MINUTES) || 45),
     /** Days a lab may sit untouched before it is terminated. Its disks bill
      *  every month whether or not anyone signs in, so a lab nobody has opened
      *  since this long ago is pure cost. 0 turns reclaiming off. */
@@ -761,36 +766,79 @@ export async function startHostedLab(userId: string): Promise<void> {
 const IDLE_BUILD_GRACE_MINUTES = 30;
 
 /**
+ * Should a lab be stopped for want of anyone using it?
+ *
+ * Pulled out of stopIdleHostedLab because the rule has been wrong twice and
+ * both times it cost a student their session. It takes numbers and returns a
+ * decision, so check:lab-verify can put the awkward cases through it without
+ * an AWS account.
+ *
+ * `idleMinutes` is what the pod reports: minutes since anyone was last at the
+ * keyboard, counted from when the lab came up if nobody ever has been.
+ * `everConnected` is how to read that number, and is undefined on a pod still
+ * running an older script.
+ */
+export function shouldStopIdle(args: {
+  idleMinutes: number | undefined;
+  everConnected: boolean | undefined;
+  sessionStartedMs: number;
+  now: number;
+  idleStopMinutes: number;
+  unopenedStopMinutes: number;
+  buildGraceMinutes: number;
+}): { stop: boolean; why: string } {
+  const { idleMinutes, everConnected, sessionStartedMs, now } = args;
+  if (typeof idleMinutes !== "number") return { stop: false, why: "the pod did not report its idleness" };
+  // Two different things wearing one number. A student reading the brief for
+  // half an hour before they open the window looks exactly like one who
+  // walked away, and they used to be treated the same: the lab stopped itself
+  // at twenty minutes, before it had been used once. Undefined means a pod on
+  // an older script, which keeps the old shorter window rather than quietly
+  // handing every stale pod the longer one.
+  const opened = everConnected !== false;
+  const after = opened ? args.idleStopMinutes : args.unopenedStopMinutes;
+  if (!after) return { stop: false, why: "the idle stop is switched off" };
+  if (idleMinutes < after) return { stop: false, why: `${Math.round(idleMinutes)} of ${after} minutes` };
+  // A lab nobody has had the chance to use yet is not an idle lab. A pod used
+  // to count its whole build as idle time, so a lab was stopped by its own
+  // first report: charged for, never seen. The pod no longer counts the
+  // build, and this makes a third mistake like it cost nothing.
+  if (!Number.isFinite(sessionStartedMs)) return { stop: false, why: "the session start could not be read" };
+  const sessionMinutes = (now - sessionStartedMs) / 60_000;
+  if (sessionMinutes < after + args.buildGraceMinutes) {
+    return { stop: false, why: `the session is ${Math.round(sessionMinutes)} minutes old, inside the build grace` };
+  }
+  return { stop: true, why: opened ? `idle ${Math.round(idleMinutes)} minutes` : `never opened, ${Math.round(idleMinutes)} minutes` };
+}
+
+/**
  * Stops a lab nobody is working in, and hands back the rest of the session.
  *
- * The snapshot carries how long the domain controller has gone without an
- * active session. A student who starts a lab and walks away used to pay the
- * whole three hours, and we paid to run it, so both sides lost the same hour.
- * Routed through stopHostedLab on purpose: that is where the refund claim is.
+ * A student who starts a lab and walks away used to pay the whole three
+ * hours, and we paid to run it, so both sides lost the same hour. Routed
+ * through stopHostedLab on purpose: that is where the refund claim is.
  */
-export async function stopIdleHostedLab(userId: string, idleMinutes: number | undefined): Promise<boolean> {
+export async function stopIdleHostedLab(userId: string, idleMinutes: number | undefined, everConnected?: boolean): Promise<boolean> {
   const c = cfg();
-  if (!c.idleStopMinutes || typeof idleMinutes !== "number" || idleMinutes < c.idleStopMinutes) return false;
   const row = await loadHostedLab(userId);
   // stopAt is null on a lab that is already stopped, so this never fires twice.
   if (!row?.stopAt) return false;
-  // A lab nobody has had the chance to use yet is not an idle lab. The pod
-  // measures its own idleness and a fresh one used to count the whole build
-  // as idle time, so a lab that took twenty minutes to come up was stopped by
-  // its own first report -- charged for, never seen. The pod no longer counts
-  // the build, and this makes a second mistake like it cost nothing: a
-  // session is given at least the idle window plus the build before anything
-  // here can end it.
-  //
-  // Measured from when this session started rather than when the pod was
-  // first built, because a restart boots and builds again and createdAt stays
-  // where it was. stopAt is set to now plus the session length on every start,
-  // so working backwards from it gives the start of the session in hand.
-  const started = Date.parse(row.stopAt) - c.sessionHours * 3600_000;
-  if (!Number.isFinite(started) || Date.now() - started < (c.idleStopMinutes + IDLE_BUILD_GRACE_MINUTES) * 60_000) return false;
+  // stopAt is set to now plus the session length on every start, so working
+  // back from it gives the start of the session in hand. createdAt would not:
+  // a restart boots and builds again and leaves createdAt where it was.
+  const verdict = shouldStopIdle({
+    idleMinutes,
+    everConnected,
+    sessionStartedMs: Date.parse(row.stopAt) - c.sessionHours * 3600_000,
+    now: Date.now(),
+    idleStopMinutes: c.idleStopMinutes,
+    unopenedStopMinutes: c.unopenedStopMinutes,
+    buildGraceMinutes: IDLE_BUILD_GRACE_MINUTES,
+  });
+  if (!verdict.stop) return false;
   const inst = await describe(row.instanceId).catch(() => null);
   if (inst?.state !== "running") return false;
-  console.log("hosted lab idle stop", userId, `${Math.round(idleMinutes)} min`);
+  console.log("hosted lab idle stop", userId, verdict.why);
   await stopHostedLab(userId);
   return true;
 }
@@ -1034,7 +1082,14 @@ function argFlags(args?: Record<string, string>): string {
   const ok = /^[A-Za-z0-9._, -]+$/;
   return Object.entries(args)
     .filter(([k, v]) => /^[A-Za-z]+$/.test(k) && ok.test(v))
-    .map(([k, v]) => ` -${k} '${v}'`)
+    // A comma means a list, which is the only reason the pattern above allows
+    // one. Quoting the whole value instead handed a [string[]] parameter a
+    // single string with commas in it: the password spray looked up one
+    // account called "priya.nair,devon.brooks", found nobody, and locked
+    // nobody out, so the student was handed the incident already solved and
+    // nothing anywhere said why. Each item is quoted on its own, so the shell
+    // still cannot read a value as more of the command.
+    .map(([k, v]) => ` -${k} ${v.split(",").map((x) => x.trim()).filter(Boolean).map((x) => `'${x}'`).join(",")}`)
     .join("");
 }
 

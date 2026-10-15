@@ -8,15 +8,14 @@ if (-not (Confirm-User $sam)) { return }
 
 if ($Undo) {
     Unlock-ADAccount -Identity $sam -ErrorAction SilentlyContinue
+    Restore-IncidentLockoutPolicy
     return
 }
 
-# Make sure a lockout threshold exists so the bad sign-ins actually lock the account.
-try {
-    $p = Get-ADDefaultDomainPasswordPolicy
-    if ($p.LockoutThreshold -eq 0) { Set-ADDefaultDomainPasswordPolicy -Identity (Get-ADDomain).DistinguishedName -LockoutThreshold 5 -LockoutDuration "00:30:00" -LockoutObservationWindow "00:30:00" }
-    $threshold = (Get-ADDefaultDomainPasswordPolicy).LockoutThreshold
-}
+# A lockout threshold has to exist before bad sign-ins can lock anything.
+Set-IncidentLockoutPolicy
+try { $threshold = (Get-ADDefaultDomainPasswordPolicy).LockoutThreshold }
 catch { $threshold = 5 }
+if ($threshold -le 0) { $threshold = 5 }
 
 Invoke-BadSignIn -Sam $sam -Times ([Math]::Max(6, $threshold + 1))

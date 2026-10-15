@@ -66,7 +66,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 7
+$PurvexScriptVersion = 8
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -492,6 +492,17 @@ function Get-PurvexLastActivePath {
     return (Join-Path $dir "last-active.txt")
 }
 
+# Has anyone signed in since this lab came up? A file rather than a variable,
+# because the answer has to survive leaving this process: the sync loop runs
+# for hours but an on-demand sync is its own short-lived run, and in that one
+# a variable would always start false and report a lab in active use as one
+# nobody has opened. Dropped when the loop starts, so it means this boot.
+function Get-PurvexConnectedPath {
+    $dir = Join-Path $env:ProgramData "PurveX"
+    if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+    return (Join-Path $dir "connected.txt")
+}
+
 # Minutes with nobody at the keyboard, so Range can stop a lab the student
 # walked away from and hand the rest of the session back. A task running as
 # SYSTEM cannot read GetLastInputInfo for someone's remote session, so this
@@ -519,9 +530,15 @@ function Get-PurvexIdleMinutes {
     catch { }
     if ($null -ne $idle) {
         Set-Content -LiteralPath $stamp -Value ((Get-Date).ToUniversalTime().AddMinutes(-$idle).ToString("o")) -ErrorAction SilentlyContinue
+        Set-Content -LiteralPath (Get-PurvexConnectedPath) -Value ((Get-Date).ToUniversalTime().ToString("o")) -ErrorAction SilentlyContinue
         return [int]$idle
     }
-    # No session at all: measure from the last one seen, or from boot.
+    # Nobody is signed in now. That is only idleness if somebody was earlier:
+    # a lab the student has started and not opened yet looks exactly the same
+    # from here, and it is not idle, it is new. The flag goes with the number
+    # so the server can tell the two apart and wait longer for the second.
+    # A sign-in seen earlier in this run keeps the flag, since the student may
+    # simply have closed the window.
     $since = $null
     try { $since = [datetime]::Parse((Get-Content -LiteralPath $stamp -Raw -ErrorAction Stop).Trim(), $null, [Globalization.DateTimeStyles]::RoundtripKind) } catch { }
     if ($null -eq $since) {
@@ -923,6 +940,7 @@ function Send-PurvexLabSnapshot {
         version    = 1
         capturedAt = (Get-Date).ToUniversalTime().ToString("o")
         idleMinutes = (Get-PurvexIdleMinutes)
+        everConnected = (Test-Path -LiteralPath (Get-PurvexConnectedPath))
         domain     = [ordered]@{ dnsRoot = $domain.DNSRoot; netbios = $domain.NetBIOSName }
         ous        = @($ous)
         users      = @($users)
@@ -1148,6 +1166,10 @@ function Start-PurvexSyncLoop {
     # restart lands here too, which is right: a lab that just came back is
     # not idle either.
     Set-Content -LiteralPath (Get-PurvexLastActivePath) -Value ((Get-Date).ToUniversalTime().ToString("o")) -ErrorAction SilentlyContinue
+    # And nobody has opened this one yet, whatever the last boot did. Without
+    # this a restarted pod inherits the old marker and gets the short idle
+    # window again before the student has had a chance to connect.
+    Remove-Item -LiteralPath (Get-PurvexConnectedPath) -Force -ErrorAction SilentlyContinue
     $roots = Get-PurvexWatchRoots -DomainDN $domainDN
     $lastSend = [datetime]::MinValue
     $lastHeavy = [datetime]::MinValue

@@ -92,7 +92,7 @@ export async function POST(request: Request) {
     // The lab reports its own idleness every minute, which makes this the
     // cheapest place to notice one nobody is working in. Best effort, after
     // the reply: the sync must not wait on EC2.
-    after(() => stopIdleHostedLab(userId, snapshot.idleMinutes).then(() => undefined).catch(() => undefined));
+    after(() => stopIdleHostedLab(userId, snapshot.idleMinutes, snapshot.everConnected).then(() => undefined).catch(() => undefined));
     const live = await loadLabLive(userId).catch(() => null);
     const fresh = live?.verifiedAt && isVerified(live.verifiedAt) && Date.now() - Date.parse(live.verifiedAt) < 3600_000;
     if (!fresh) await saveLabLive(userId, { verifiedAt: new Date().toISOString() }).catch(() => {});

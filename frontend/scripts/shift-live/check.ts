@@ -85,7 +85,7 @@ async function main() {
     process.exit(1);
   }
 
-  const list: IncidentDef[] = only ? INCIDENTS.filter((i) => i.id.includes(only)) : INCIDENTS;
+  const list: IncidentDef[] = only ? INCIDENTS.filter((i) => only.split(",").some((o) => i.id.includes(o.trim()))) : INCIDENTS;
   console.log(`Lab is ready. Firing ${list.length} incident(s) at it, one at a time.\n`);
   const rows: Row[] = [];
 
@@ -96,6 +96,15 @@ async function main() {
     rows.push(row);
     process.stdout.write(`${def.id.padEnd(22)} `);
 
+    // How the lab reads before anything is fired. The undo is judged against
+    // this rather than against an assumption, and an incident whose checks
+    // already fail here cannot tell us whether it landed.
+    const answer = eff.diagnosis.accept[0] ?? "";
+    const before = await loadLabState(userId).catch(() => null);
+    const gradeBefore = before ? gradeIncidentLab({ ...eff, evidence: undefined }, before.snapshot, answer) : null;
+    const wasResolved = gradeBefore?.resolved ?? false;
+    const hadNoHarm = gradeBefore?.noHarm ?? true;
+
     row.fired = await injectIncident(userId, def.script, args);
     if (!row.fired) {
       row.notes.push("injectIncident returned false");
@@ -105,11 +114,14 @@ async function main() {
 
     // Landed: the student has done nothing, so the resolve checks must fail.
     // The diagnosis is handed in correct on purpose; this is the lab half.
-    const answer = eff.diagnosis.accept[0] ?? "";
     const damaged = (s: Awaited<ReturnType<typeof loadLabState>>) =>
       Boolean(s) && gradeIncidentLab({ ...eff, evidence: undefined }, s!.snapshot, answer).resolved === false;
-    row.landedSec = await waitFor(damaged, LAND_WAIT_MS);
-    if (row.landedSec === null) row.notes.push("the damage never reached the snapshot, so the student is handed it already resolved");
+    if (!wasResolved) {
+      row.notes.push("its checks already failed before it fired, so this run cannot say whether it landed");
+    } else {
+      row.landedSec = await waitFor(damaged, LAND_WAIT_MS);
+      if (row.landedSec === null) row.notes.push("the damage never reached the snapshot, so the student is handed it already resolved");
+    }
 
     // Evidence: only arrives on a heavy snapshot, so this is the real delay.
     if (eff.evidence) {
@@ -117,15 +129,20 @@ async function main() {
       if (row.evidenceSec === null) row.notes.push("evidence() never saw the attack, so the incident can never be closed");
     }
 
-    // Undo: the lab goes back, the way the end of a shift puts it back.
+    // Undo: the lab goes back to how it was, which is not the same as the
+    // resolve checks passing. Plenty of incidents are closed by work the
+    // student does -- adding a member, disabling an account -- so their
+    // checks read false before the incident fires and still read false after
+    // it is undone. Asking for "resolved" here called seven good undos
+    // failures. The question is whether the lab reads as it did before.
     await cleanupShiftLab(userId, [{ script: def.script, args }]);
-    const restored = (s: Awaited<ReturnType<typeof loadLabState>>) => {
+    const sameAsBefore = (s: Awaited<ReturnType<typeof loadLabState>>) => {
       if (!s) return false;
       const g = gradeIncidentLab({ ...eff, evidence: undefined }, s.snapshot, answer);
-      return g.resolved && g.noHarm;
+      return g.resolved === wasResolved && g.noHarm === hadNoHarm;
     };
-    row.undoneSec = await waitFor(restored, UNDO_WAIT_MS);
-    if (row.undoneSec === null) row.notes.push("-Undo did not put the lab back, so the next shift starts dirty");
+    row.undoneSec = await waitFor(sameAsBefore, UNDO_WAIT_MS);
+    if (row.undoneSec === null) row.notes.push("-Undo left the lab different from how it found it, so the next shift starts dirty");
 
     const n = (v: number | null, skip = "  -") => (v === null ? "FAIL" : `${v}s`.padStart(4));
     console.log(`fired  landed ${n(row.landedSec)}  evidence ${eff.evidence ? n(row.evidenceSec) : "  - "}  undone ${n(row.undoneSec)}${row.notes.length ? "   <-- " + row.notes[0] : ""}`);
