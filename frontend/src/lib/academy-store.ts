@@ -25,6 +25,10 @@ function todayStamp() {
   return new Date().toISOString().slice(0, 10);
 }
 
+// A Postgres function this code calls that the database has not got yet,
+// because academy.sql has not been run against it.
+const missingFunction = (code?: string) => code === "PGRST202" || code === "42883";
+
 export async function loadProgress(userId: string): Promise<Results> {
   if (supabaseAdmin) {
     const { data } = await supabaseAdmin.from("academy_progress").select("results").eq("user_id", userId).maybeSingle();
@@ -71,50 +75,84 @@ export async function resetUsage(userId: string, day = todayStamp()) {
   if (error) console.error("academy_coach_usage reset failed", error.message);
 }
 
-export async function bumpUsage(userId: string, current: number, day = todayStamp()): Promise<number> {
-  const next = current + 1;
-  memoryUsage.set(userId, { day, count: next });
+/**
+ * Claim one Coach question for today, or null when the student is at the cap.
+ *
+ * The cap has to be decided in the same statement that spends the question.
+ * Read-check-call-write left the model call inside the window, so a handful of
+ * requests fired together all read the same count, all passed, and all wrote
+ * the same total: the daily limit held for one request at a time and for
+ * nothing else. Postgres decides it now, under a row lock.
+ *
+ * `limit` is the base allowance plus today's drill bonus, so it is passed in.
+ */
+export async function claimCoachQuestion(userId: string, limit: number, day = todayStamp()): Promise<number | null> {
+  if (limit <= 0) return null;
   if (supabaseAdmin) {
-    const { error } = await supabaseAdmin.from("academy_coach_usage").upsert({
-      user_id: userId,
-      day,
-      count: next,
-      updated_at: new Date().toISOString(),
-    });
-    if (error) console.error("academy_coach_usage upsert failed", error.message);
+    const { data, error } = await supabaseAdmin.rpc("academy_claim_coach_question", { p_user: userId, p_day: day, p_limit: limit });
+    if (!error) {
+      // null is the cap, not a failure: the conflict update was skipped.
+      if (data === null) return null;
+      if (typeof data === "number") {
+        memoryUsage.set(userId, { day, count: data });
+        return data;
+      }
+    }
+    if (error && !missingFunction(error.code)) {
+      console.error("academy_coach_usage claim failed", error.code, error.message);
+      // Refusing would close Coach on a database hiccup. The per-process count
+      // below still caps a single instance, which is the lesser problem.
+    }
   }
-  return next;
+  // No database, or academy.sql has not been run. One process, one counter:
+  // loose across instances, but it still refuses once it sees the cap.
+  const row = memoryUsage.get(userId);
+  const used = row && row.day === day ? row.count : 0;
+  if (used >= limit) return null;
+  memoryUsage.set(userId, { day, count: used + 1 });
+  return used + 1;
 }
 
-/** Coach questions asked inside one browser lab today. */
-export async function readLabCoachUsage(userId: string, lab: string, day = todayStamp()): Promise<number> {
+/** Hand a claimed question back after a failed model call. */
+export async function releaseCoachQuestion(userId: string, day = todayStamp()): Promise<void> {
+  const row = memoryUsage.get(userId);
+  if (row && row.day === day) memoryUsage.set(userId, { day, count: Math.max(0, row.count - 1) });
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin.rpc("academy_release_coach_question", { p_user: userId, p_day: day });
+  if (error && !missingFunction(error.code)) console.error("academy_coach_usage release failed", error.code, error.message);
+}
+
+/** The same claim for the per-lab cap, so one browser lab cannot spend the day. */
+export async function claimLabCoachQuestion(userId: string, lab: string, limit: number, day = todayStamp()): Promise<number | null> {
+  if (limit <= 0) return null;
+  const key = `${userId}|${lab}`;
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin.rpc("academy_claim_lab_coach_question", { p_user: userId, p_day: day, p_lab: lab, p_limit: limit });
+    if (!error) {
+      if (data === null) return null;
+      if (typeof data === "number") {
+        memoryLabCoach.set(key, { day, count: data });
+        return data;
+      }
+    }
+    if (error && !missingFunction(error.code)) {
+      console.error("academy_lab_coach_usage claim failed", error.code, error.message);
+    }
+  }
+  const row = memoryLabCoach.get(key);
+  const used = row && row.day === day ? row.count : 0;
+  if (used >= limit) return null;
+  memoryLabCoach.set(key, { day, count: used + 1 });
+  return used + 1;
+}
+
+export async function releaseLabCoachQuestion(userId: string, lab: string, day = todayStamp()): Promise<void> {
   const key = `${userId}|${lab}`;
   const row = memoryLabCoach.get(key);
-  const local = row && row.day === day ? row.count : 0;
-  if (supabaseAdmin) {
-    const { data, error } = await supabaseAdmin
-      .from("academy_lab_coach_usage")
-      .select("count")
-      .eq("user_id", userId)
-      .eq("day", day)
-      .eq("lab", lab)
-      .maybeSingle();
-    // Until academy.sql adds the table, the per-process count stands in.
-    if (!error && typeof data?.count === "number") return Math.max(data.count, local);
-  }
-  return local;
-}
-
-export async function bumpLabCoachUsage(userId: string, lab: string, current: number, day = todayStamp()): Promise<number> {
-  const next = current + 1;
-  memoryLabCoach.set(`${userId}|${lab}`, { day, count: next });
-  if (supabaseAdmin) {
-    const { error } = await supabaseAdmin
-      .from("academy_lab_coach_usage")
-      .upsert({ user_id: userId, day, lab, count: next, updated_at: new Date().toISOString() });
-    if (error) console.error("academy_lab_coach_usage upsert failed", error.message);
-  }
-  return next;
+  if (row && row.day === day) memoryLabCoach.set(key, { day, count: Math.max(0, row.count - 1) });
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin.rpc("academy_release_lab_coach_question", { p_user: userId, p_day: day, p_lab: lab });
+  if (error && !missingFunction(error.code)) console.error("academy_lab_coach_usage release failed", error.code, error.message);
 }
 
 export async function loadLabState(userId: string): Promise<{ snapshot: LabSnapshot; uploadedAt: string } | null> {
@@ -522,8 +560,6 @@ export class LabUsageUnreadableError extends Error {
 
 /** PostgREST cannot find the function, or Postgres does not have it: academy.sql
  *  has not been run on this database yet. */
-const missingFunction = (code?: string) => code === "PGRST202" || code === "42883";
-
 export async function readLabMinutes(userId: string, month = usageWindow()): Promise<number> {
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin

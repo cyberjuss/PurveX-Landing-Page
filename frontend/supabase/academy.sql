@@ -426,3 +426,100 @@ create index if not exists academy_coach_feedback_user_created
 -- RLS on with no anon/authenticated policy: service-role only, same as the
 -- rest of this file. Students rate through the API, never by writing a row.
 alter table public.academy_coach_feedback enable row level security;
+
+-- Claim one Coach question, cap and all, in a single statement.
+--
+-- The server used to read the day's count, compare it to the cap, call the
+-- model, and then write count + 1. The model call sits in the middle of that,
+-- so every request sent at once read the same number, every one passed the
+-- cap, and every one wrote the same total back. The cap was a suggestion, and
+-- the bill was not.
+--
+-- The conflict target takes a row lock, so concurrent claims queue behind each
+-- other rather than racing. When the WHERE fails the update is skipped, the
+-- statement returns no row, and the function returns null: that is "no, you
+-- are at the cap", and it is the same answer whether one request asked or two
+-- hundred did.
+--
+-- The cap is passed in rather than stored, because it is the base allowance
+-- plus whatever drills earned today, and that belongs with the code that
+-- knows about drills.
+create or replace function public.academy_claim_coach_question(p_user uuid, p_day date, p_limit integer)
+returns integer
+language plpgsql
+as $func$
+declare
+  v_count integer;
+begin
+  if p_limit <= 0 then
+    return null;
+  end if;
+  insert into public.academy_coach_usage (user_id, day, count, updated_at)
+  values (p_user, p_day, 1, now())
+  on conflict (user_id, day) do update
+    set count = academy_coach_usage.count + 1,
+        updated_at = now()
+    where academy_coach_usage.count < p_limit
+  returning count into v_count;
+  return v_count;
+end;
+$func$;
+
+-- Hand a claimed question back when the model call failed. A student should not
+-- lose a question to our outage. Floored at zero, so a stray release cannot
+-- mint questions.
+create or replace function public.academy_release_coach_question(p_user uuid, p_day date)
+returns integer
+language sql
+as $func$
+  update public.academy_coach_usage
+    set count = greatest(0, count - 1),
+        updated_at = now()
+  where user_id = p_user and day = p_day
+  returning count;
+$func$;
+
+-- The same pair for the per-lab cap, which exists so one browser lab cannot
+-- spend the whole day's allowance.
+create or replace function public.academy_claim_lab_coach_question(p_user uuid, p_day date, p_lab text, p_limit integer)
+returns integer
+language plpgsql
+as $func$
+declare
+  v_count integer;
+begin
+  if p_limit <= 0 then
+    return null;
+  end if;
+  insert into public.academy_lab_coach_usage (user_id, day, lab, count, updated_at)
+  values (p_user, p_day, p_lab, 1, now())
+  on conflict (user_id, day, lab) do update
+    set count = academy_lab_coach_usage.count + 1,
+        updated_at = now()
+    where academy_lab_coach_usage.count < p_limit
+  returning count into v_count;
+  return v_count;
+end;
+$func$;
+
+create or replace function public.academy_release_lab_coach_question(p_user uuid, p_day date, p_lab text)
+returns integer
+language sql
+as $func$
+  update public.academy_lab_coach_usage
+    set count = greatest(0, count - 1),
+        updated_at = now()
+  where user_id = p_user and day = p_day and lab = p_lab
+  returning count;
+$func$;
+
+-- Service role only, like academy_add_lab_minutes: a student who could call
+-- the release functions could hand themselves back every question they spent.
+revoke all on function public.academy_claim_coach_question(uuid, date, integer) from public, anon, authenticated;
+revoke all on function public.academy_release_coach_question(uuid, date) from public, anon, authenticated;
+revoke all on function public.academy_claim_lab_coach_question(uuid, date, text, integer) from public, anon, authenticated;
+revoke all on function public.academy_release_lab_coach_question(uuid, date, text) from public, anon, authenticated;
+grant execute on function public.academy_claim_coach_question(uuid, date, integer) to service_role;
+grant execute on function public.academy_release_coach_question(uuid, date) to service_role;
+grant execute on function public.academy_claim_lab_coach_question(uuid, date, text, integer) to service_role;
+grant execute on function public.academy_release_lab_coach_question(uuid, date, text) to service_role;
