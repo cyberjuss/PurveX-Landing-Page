@@ -932,6 +932,13 @@ export async function runCoachTurn(params: {
   place?: CoachPlace | null;
   tools: CoachToolContext;
   drills?: DrillEntry[];
+  // Set to true as soon as a model call has been answered, and readable by the
+  // caller whether this returns or throws. A turn is a tool loop: it can make
+  // several calls and then fail on a later one, and a caller that refunds the
+  // student's question on any failure would be handing back something already
+  // spent. Asking for a turn that fails late is then a way to ask for nothing
+  // but free model calls.
+  charged?: { any: boolean };
 }): Promise<{ text: string; model: string }> {
   const images = params.images?.slice(0, 2) ?? [];
   let model = pickCoachModel(params.userMessage, images.length > 0);
@@ -1028,6 +1035,9 @@ export async function runCoachTurn(params: {
       }
       throw new Error(err);
     }
+    // Answered, so it is on the bill. Set after the retries above, since a
+    // refused request is not charged for.
+    if (params.charged) params.charged.any = true;
 
     const content = body.content || [];
     searchedUrls(content, seen);

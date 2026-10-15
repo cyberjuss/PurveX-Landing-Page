@@ -142,7 +142,8 @@ export async function POST(request: Request) {
   // read the count, checked it, spent several seconds on the model and then
   // wrote count + 1, so every request sent at once read the same number and
   // every one passed. The claim is one statement in Postgres, and it answers
-  // null at the cap. A failed turn hands the question back below.
+  // null at the cap. A turn that failed without spending anything hands the
+  // question back below.
   const used = await claimCoachQuestion(student.id, limit, day);
   if (used === null) {
     return NextResponse.json(
@@ -176,8 +177,15 @@ export async function POST(request: Request) {
     }
   }
 
+  // A turn is a tool loop, so it can make several model calls and then fail on
+  // a later one. Refunding every failure would make a late failure the cheapest
+  // way to buy model calls, so the refund below asks whether anything was
+  // actually spent. The in-lab turn is a single call, so a failure there has
+  // always cost nothing and is always refunded.
+  const charged = { any: false };
   try {
     const { text, model } = await runCoachTurn({
+      charged,
       apiKey,
       history,
       userMessage: message,
@@ -190,7 +198,7 @@ export async function POST(request: Request) {
     const receipt = sealReceipt({ userId: student.id, question: message, reply: text, model, mode: String(body.mode ?? ""), lab: place?.lab ?? null });
     return NextResponse.json({ reply: text, remaining: left, limit, model, bonus, receipt });
   } catch {
-    await releaseCoachQuestion(student.id, day);
+    if (!charged.any) await releaseCoachQuestion(student.id, day);
     return NextResponse.json({ error: "PurveX Coach is unavailable right now." }, { status: 502 });
   }
 }
