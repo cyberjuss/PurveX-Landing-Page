@@ -1164,7 +1164,7 @@ const SYNC_THROTTLE_MS = 2500;
  * command was sent. Best effort: false when there is no running hosted lab, SSM
  * is not set up, or a sync was just requested.
  */
-export async function requestLabSync(userId: string, force = false): Promise<boolean> {
+export async function requestLabSync(userId: string, force = false, withEvidence = false): Promise<boolean> {
   if (!force) {
     const last = lastSyncAt.get(userId) ?? 0;
     if (Date.now() - last < SYNC_THROTTLE_MS) return false;
@@ -1179,8 +1179,16 @@ export async function requestLabSync(userId: string, force = false): Promise<boo
   // does not compete with the sync loop for the domain controller's CPU. A pod
   // still on an older script has no -Fast parameter, so fall back to a plain
   // -SyncOnly there rather than letting the nudge error out.
+  // Except when the answer depends on the Security log. An incident that
+  // proves itself from the log can only be closed once a fresh digest
+  // lands, and -Fast never carries one. Grading on it told a student who
+  // had fixed the problem correctly that the incident had not landed, for
+  // up to a minute, until the heartbeat came round. Grading asks for the
+  // whole thing and waits the extra second. The older-script fallback is
+  // a plain -SyncOnly, which is the heavy one anyway.
+  const mode = withEvidence ? "-SyncOnly" : "-SyncOnly -Fast";
   const command =
-    "$ProgressPreference='SilentlyContinue'; $s=Join-Path $env:ProgramData 'PurveX\\Build-Environment.ps1'; if(Test-Path $s){ try { & $s -SyncOnly -Fast } catch { & $s -SyncOnly } }";
+    `$ProgressPreference='SilentlyContinue'; $s=Join-Path $env:ProgramData 'PurveX\\Build-Environment.ps1'; if(Test-Path $s){ try { & $s ${mode} } catch { & $s -SyncOnly } }`;
   try {
     await ssm().send(
       new SendCommandCommand({

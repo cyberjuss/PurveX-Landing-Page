@@ -27,7 +27,9 @@
  */
 import { INCIDENTS, effectiveIncident, gradeIncidentLab, type IncidentDef } from "@/lib/academy-shift";
 import { injectIncident, cleanupShiftLab, requestLabSync, hostedLabStatus } from "@/lib/academy-hosted";
-import { loadLabState } from "@/lib/academy-store";
+import { loadHostedLab, loadLabState } from "@/lib/academy-store";
+import { remediate } from "./remediate";
+import { SSMClient, SendCommandCommand, GetCommandInvocationCommand } from "@aws-sdk/client-ssm";
 
 const userId = process.argv[2];
 const only = process.argv[3];
@@ -40,9 +42,70 @@ const LAND_WAIT_MS = 120_000;
 const UNDO_WAIT_MS = 120_000;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-// A fixed picker, so a rerun fires the same victims and a failure can be
-// reproduced. The real shift picks at random; the shape is identical.
-const pick = <T,>(arr: T[]): T => arr[0];
+// Deterministic, so a rerun fires the same victims and a failure can be
+// reproduced, but rotated per incident rather than always taking the first.
+// Always picking arr[0] pointed all seventeen rotating incidents at the same
+// person, so each one inherited the state the last one's fix had left on her:
+// half the run reported "its checks already failed before it fired" when the
+// only thing wrong was that they were queueing for one account. The real
+// shift picks at random and never sees this.
+let victimOffset = 0;
+const pick = <T,>(arr: T[]): T => arr[victimOffset % arr.length];
+
+/**
+ * Plays the student: runs the fix the resolve checks describe.
+ *
+ * Firing an incident proves the damage appears. It says nothing about whether
+ * doing the right thing closes it, and that is the half a paying student
+ * meets. It is also the only way to test the four ticket-kind incidents at
+ * all, because they plant no damage -- they ask for work.
+ */
+const ssm = new SSMClient({
+  region: process.env.HOSTED_LAB_REGION || "us-east-1",
+  credentials: {
+    accessKeyId: process.env.HOSTED_LAB_AWS_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.HOSTED_LAB_AWS_SECRET_ACCESS_KEY || "",
+  },
+});
+
+async function runOnPod(instanceId: string, lines: string[]): Promise<string> {
+  const out = await ssm.send(
+    new SendCommandCommand({
+      InstanceIds: [instanceId],
+      DocumentName: "AWS-RunPowerShellScript",
+      Comment: "Range live shift test: remediation",
+      TimeoutSeconds: 240,
+      Parameters: { commands: ["$ErrorActionPreference='Continue'", "$d = Get-ADDomain", ...lines] },
+    })
+  );
+  const id = out.Command?.CommandId;
+  if (!id) return "no command id";
+  for (let i = 0; i < 40; i += 1) {
+    await sleep(3000);
+    const inv = await ssm.send(new GetCommandInvocationCommand({ CommandId: id, InstanceId: instanceId })).catch(() => null);
+    if (inv && inv.Status !== "InProgress" && inv.Status !== "Pending") return `${inv.Status}: ${(inv.StandardErrorContent ?? "").slice(0, 200)}`;
+  }
+  return "timed out";
+}
+
+/**
+ * Everything an incident could plausibly change, as one string.
+ *
+ * "Did it land" cannot be read from the resolve checks alone. A ticket-kind
+ * incident plants no damage alarm -- it asks for work -- and an incident that
+ * creates an account has a check that reads false both before it fires and
+ * after, because a missing account is not a disabled one. Comparing the lab
+ * to itself answers the question for every kind.
+ */
+function fingerprint(s: { snapshot: import("@/lib/academy-lab").LabSnapshot } | null): string {
+  if (!s) return "";
+  const u = s.snapshot.users
+    .map((x) => [x.sam, x.enabled, x.lockedOut, x.passwordNeverExpires, x.passwordExpired, x.pwdNotRequired, x.noPreAuth, x.delegation, x.spns, x.container, x.description, (x.memberOf ?? []).join("|")].join(","))
+    .sort();
+  const g = s.snapshot.groups.map((x) => [x.name, x.category, (x.members ?? []).join("|")].join(",")).sort();
+  const c = s.snapshot.computers.map((x) => [x.name, x.enabled, x.container].join(",")).sort();
+  return JSON.stringify([u, g, c, s.snapshot.security?.passwordPolicy ?? null, s.snapshot.security?.audit ?? null, s.snapshot.security?.psos ?? null]);
+}
 
 type Row = {
   id: string;
@@ -50,6 +113,7 @@ type Row = {
   fired: boolean;
   landedSec: number | null;
   evidenceSec: number | null;
+  solvedSec: number | null;
   undoneSec: number | null;
   notes: string[];
 };
@@ -85,14 +149,19 @@ async function main() {
     process.exit(1);
   }
 
+  // The pod to run the student's half on, read the same way the app reads it.
+  const instanceId = (await loadHostedLab(userId))?.instanceId ?? null;
+  if (!instanceId) console.log("No running pod found, so solvability will not be tested.");
+
   const list: IncidentDef[] = only ? INCIDENTS.filter((i) => only.split(",").some((o) => i.id.includes(o.trim()))) : INCIDENTS;
   console.log(`Lab is ready. Firing ${list.length} incident(s) at it, one at a time.\n`);
   const rows: Row[] = [];
 
-  for (const def of list) {
+  for (const [n, def] of list.entries()) {
+    victimOffset = n;
     const eff = effectiveIncident(def, { bind: def.bind?.(pick) });
     const args = eff.args;
-    const row: Row = { id: def.id, script: def.script, fired: false, landedSec: null, evidenceSec: null, undoneSec: null, notes: [] };
+    const row: Row = { id: def.id, script: def.script, fired: false, landedSec: null, evidenceSec: null, solvedSec: null, undoneSec: null, notes: [] };
     rows.push(row);
     process.stdout.write(`${def.id.padEnd(22)} `);
 
@@ -100,8 +169,8 @@ async function main() {
     // this rather than against an assumption, and an incident whose checks
     // already fail here cannot tell us whether it landed.
     const answer = eff.diagnosis.accept[0] ?? "";
-    const before = await loadLabState(userId).catch(() => null);
-    const gradeBefore = before ? gradeIncidentLab({ ...eff, evidence: undefined }, before.snapshot, answer) : null;
+    const beforeLab = await loadLabState(userId).catch(() => null);
+    const gradeBefore = beforeLab ? gradeIncidentLab({ ...eff, evidence: undefined }, beforeLab.snapshot, answer) : null;
     const wasResolved = gradeBefore?.resolved ?? false;
     const hadNoHarm = gradeBefore?.noHarm ?? true;
 
@@ -112,21 +181,51 @@ async function main() {
       continue;
     }
 
-    // Landed: the student has done nothing, so the resolve checks must fail.
-    // The diagnosis is handed in correct on purpose; this is the lab half.
-    const damaged = (s: Awaited<ReturnType<typeof loadLabState>>) =>
-      Boolean(s) && gradeIncidentLab({ ...eff, evidence: undefined }, s!.snapshot, answer).resolved === false;
-    if (!wasResolved) {
-      row.notes.push("its checks already failed before it fired, so this run cannot say whether it landed");
-    } else {
-      row.landedSec = await waitFor(damaged, LAND_WAIT_MS);
-      if (row.landedSec === null) row.notes.push("the damage never reached the snapshot, so the student is handed it already resolved");
+    // Landed: the lab is different from how it was. This has to be waited for
+    // whatever else is measured, because the student's fix below goes out as
+    // its own command: skipping the wait raced the two, and an incident whose
+    // job is to remove somebody from a group simply removed them again after
+    // the fix had put them back.
+    const before = fingerprint(beforeLab);
+    row.landedSec = await waitFor((sn) => fingerprint(sn) !== before, LAND_WAIT_MS);
+    if (row.landedSec === null) {
+      // A ticket is a request, not an attack. Its script only guarantees the
+      // starting state -- access-request makes sure the person is out of the
+      // group they are asking for -- so on a clean lab it has nothing to
+      // change, and that is the design rather than a fault. Whether doing the
+      // work closes it is the real test for these, and that is measured
+      // below.
+      if (def.kind !== "ticket") row.notes.push("firing it changed nothing in the lab at all");
+    } else if (wasResolved) {
+      // It also has to leave its own checks failing, or the student is handed
+      // it already resolved and it closes on their first click.
+      const damaged = (sn: Awaited<ReturnType<typeof loadLabState>>) =>
+        Boolean(sn) && gradeIncidentLab({ ...eff, evidence: undefined }, sn!.snapshot, answer).resolved === false;
+      if ((await waitFor(damaged, 30_000)) === null) {
+        row.notes.push("the damage never reached its own checks, so the student is handed it already resolved");
+      }
     }
 
     // Evidence: only arrives on a heavy snapshot, so this is the real delay.
     if (eff.evidence) {
       row.evidenceSec = await waitFor((s) => Boolean(eff.evidence!(s?.snapshot.events)), LAND_WAIT_MS);
       if (row.evidenceSec === null) row.notes.push("evidence() never saw the attack, so the incident can never be closed");
+    }
+
+    // Solved: play the student and do what the checks ask for. This is the
+    // half that matters -- a student does not care that the damage appeared,
+    // they care that fixing it closes the incident -- and it is the only way
+    // to test an incident that plants no damage at all.
+    const fixes = eff.resolve.map((r) => remediate(r.c));
+    if (fixes.some((f) => f === null)) {
+      row.notes.push(`no scripted fix for ${eff.resolve.filter((_, i) => fixes[i] === null).map((r) => r.c.t).join("/")}, so solvability is untested`);
+    } else if (instanceId) {
+      const ran = await runOnPod(instanceId, fixes as string[]);
+      if (!ran.startsWith("Success")) row.notes.push(`the fix would not run on the pod (${ran})`);
+      const solved = (sn: Awaited<ReturnType<typeof loadLabState>>) =>
+        Boolean(sn) && gradeIncidentLab(eff, sn!.snapshot, answer).resolved;
+      row.solvedSec = await waitFor(solved, LAND_WAIT_MS);
+      if (row.solvedSec === null) row.notes.push("doing exactly what the checks ask for does not close it");
     }
 
     // Undo: the lab goes back to how it was, which is not the same as the
@@ -144,8 +243,11 @@ async function main() {
     row.undoneSec = await waitFor(sameAsBefore, UNDO_WAIT_MS);
     if (row.undoneSec === null) row.notes.push("-Undo left the lab different from how it found it, so the next shift starts dirty");
 
-    const n = (v: number | null, skip = "  -") => (v === null ? "FAIL" : `${v}s`.padStart(4));
-    console.log(`fired  landed ${n(row.landedSec)}  evidence ${eff.evidence ? n(row.evidenceSec) : "  - "}  undone ${n(row.undoneSec)}${row.notes.length ? "   <-- " + row.notes[0] : ""}`);
+    const fmt = (v: number | null) => (v === null ? "FAIL" : `${v}s`.padStart(4));
+    console.log(
+      `fired  landed ${fmt(row.landedSec)}  evidence ${eff.evidence ? fmt(row.evidenceSec) : "  - "}  solved ${fmt(row.solvedSec)}  undone ${fmt(row.undoneSec)}` +
+        (row.notes.length ? "   <-- " + row.notes[0] : "")
+    );
   }
 
   console.log("\n--- summary ---");

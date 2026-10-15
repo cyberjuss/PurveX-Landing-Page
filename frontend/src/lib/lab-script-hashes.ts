@@ -8,13 +8,13 @@
 //
 // npm run check:lab-script fails if this file and the scripts disagree.
 
-export const LAB_SCRIPT_VERSION = 8;
+export const LAB_SCRIPT_VERSION = 9;
 
 export const LAB_SCRIPT_HASHES: Record<string, string> = {
-  "Build-Environment.ps1": "faf1c0c399f4c2763122a947f6b7bacc42c561912c3b667aaf8984f4d86e04ac",
+  "Build-Environment.ps1": "c7de05715e2891aed86f048cc2c6d2e2e28b6f6dc62f9abbfd383aa3dd27d694",
   "incidents/Incident-AccessRequest.ps1": "e00bbcd8721e003b150d2a27ec056e4421002ff227be40cad20080e348938bff",
   "incidents/Incident-AdminPSO.ps1": "e9b341b0c36a2145e51d171148ffbdfe00363931a5232e1a9381023aaf40f7ce",
-  "incidents/Incident-ApprovedChange.ps1": "7eb8bc783800c18afa8df14249a36b788493ad7ecc288466bb0d8b86bd478db4",
+  "incidents/Incident-ApprovedChange.ps1": "798d3f544fb6df3805b8380995d8accfe5c81f38c2e43670332768a5b4f2db1a",
   "incidents/Incident-BackdoorAccount.ps1": "613fc10b12b81c1fce47b3024bce4560821de52933e895aae814cc9f58f3bdf0",
   "incidents/Incident-BruteForce.ps1": "b4cb2ada2ecc4d729582565a0bd0abe011000763e6852ace2cd567d5aa0a379b",
   "incidents/Incident-Common.ps1": "5732fc7ae0ea60186b1078904eb6509d36c2edc7839909b21f28ac86d0b5c01a",

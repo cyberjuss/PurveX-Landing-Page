@@ -321,24 +321,33 @@ export async function submitIncident(
 
   // Push a fresh snapshot from the lab now and wait briefly for it, so a change
   // the student just made is graded on this click instead of the next one.
+  const eff = effectiveIncident(def, inc);
+  // An incident that proves itself from the Security log cannot be closed
+  // until a digest arrives, and only a heavy sync carries one. Asking for a
+  // light one and then grading told a student who had fixed the problem
+  // correctly that it had not landed yet.
+  const needsEvidence = Boolean(eff.evidence);
   const before = await loadLabState(userId);
-  const beforeAt = before ? Date.parse(before.uploadedAt) : 0;
+  let seenAt = before ? Date.parse(before.uploadedAt) : 0;
   let lab = before;
-  // The lab's own change-watch loop pushes a fresh snapshot within a fraction of a
-  // second of the fix; also force one over SSM for changes it doesn't watch. Poll
-  // tightly and take whichever fresher snapshot lands first.
-  void requestLabSync(userId, true);
-  const deadline = Date.now() + 8000;
+  void requestLabSync(userId, true, needsEvidence);
+  // The heavy sync reads the log, so give it longer than a nudge needs.
+  const deadline = Date.now() + (needsEvidence ? 20_000 : 8_000);
   while (Date.now() < deadline) {
     await new Promise((r) => setTimeout(r, 200));
     const next = await loadLabState(userId);
-    if (next && Date.parse(next.uploadedAt) > beforeAt) {
-      lab = next;
-      break;
-    }
+    if (!next || Date.parse(next.uploadedAt) <= seenAt) continue;
+    lab = next;
+    seenAt = Date.parse(next.uploadedAt);
+    // The change-watch loop pushes its own snapshot within a fraction of a
+    // second of the fix, and that one carries no digest. Taking the first
+    // thing to arrive meant grading the fix against last minute's evidence,
+    // so when evidence is what is missing, keep waiting for a snapshot that
+    // actually shows the attack.
+    if (!needsEvidence || eff.evidence!(next.snapshot.events)) break;
   }
 
-  const graded = gradeIncidentLab(effectiveIncident(def, inc), lab?.snapshot ?? null, inc.diagnosis);
+  const graded = gradeIncidentLab(eff, lab?.snapshot ?? null, inc.diagnosis);
   const fresh = Boolean(lab && Date.parse(lab.uploadedAt) >= Date.parse(run.startedAt));
   // An incident closes only when the lab shows the fix AND the finding is answered
   // correctly. A correct fix with a wrong or blank finding stays open with a nudge.
