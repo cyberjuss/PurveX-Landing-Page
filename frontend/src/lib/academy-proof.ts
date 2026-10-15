@@ -290,23 +290,40 @@ const SHIFT_JOBS = new Set(Object.values(SHIFT_JOB));
 
 export type OpenTask = { job: string; title: string; where: string; href: string; locked: boolean };
 
-/** Tasks the portfolio can show that the student has not done yet, and where to do each one.
- *  A task a Shift can prove is locked: it only joins the portfolio once resolved in a Shift. */
+/**
+ * Tasks the portfolio can show that the student has not done yet, and where to
+ * do each one. A task a Shift can prove is locked: it only joins the portfolio
+ * once resolved in a Shift.
+ *
+ * A ticket or a shift only. Every other job used to be offered as a daily
+ * drill, which filled this list with seven rows telling a student to go and
+ * answer a quiz question. A drill is not portfolio work: there is no ticket to
+ * point an employer at and nothing to photograph, because nothing has been
+ * done yet. Those jobs still join the portfolio the moment the lab confirms
+ * the change, so nothing is lost but the suggestion.
+ */
 export function openTasks(done: string[]): OpenTask[] {
   const have = new Set(done);
   const ticketFor = new Map(Object.entries(PROOF_TICKETS).map(([id, t]) => [t.job, { id, label: t.label }]));
   return Object.entries(CATALOG)
     .filter(([job]) => !have.has(job))
-    .map(([job, e]) => {
+    .flatMap(([job, e]) => {
       if (SHIFT_JOBS.has(job)) {
-        return { job, title: e.title, where: "Live shift", href: "/range/shift", locked: true };
+        return [{ job, title: e.title, where: "Live shift", href: "/range/shift", locked: true }];
       }
       const t = ticketFor.get(job);
-      return t
-        ? { job, title: e.title, where: `Ticket Queue · ${t.label.replace("Service ticket ", "")}`, href: `/range/phase-1/home-lab-challenges#${t.id}`, locked: false }
-        : { job, title: e.title, where: "Daily drill", href: `/range/drill?job=${encodeURIComponent(job)}`, locked: false };
+      if (!t) return [];
+      return [
+        {
+          job,
+          title: e.title,
+          where: `Ticket Queue · ${t.label.replace("Service ticket ", "")}`,
+          href: `/range/phase-1/home-lab-challenges#${t.id}`,
+          locked: false,
+        },
+      ];
     })
-    .sort((a, b) => Number(a.locked) - Number(b.locked) || Number(b.where !== "Daily drill") - Number(a.where !== "Daily drill"));
+    .sort((a, b) => Number(a.locked) - Number(b.locked));
 }
 
 export type WorkItem = {
