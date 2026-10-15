@@ -3,7 +3,7 @@ import { createHash, randomBytes } from "crypto";
 import { sanitizeActivityPlace, type ActivityPlace, type StudentActivity } from "@/lib/academy-activity";
 import type { ShiftRun } from "@/lib/academy-shift";
 import { sanitizeProfile, type RoleBrief, type RoleId, type StudentProfile } from "@/lib/academy-certs";
-import type { DrillEntry } from "@/lib/academy-drills";
+import type { DrillEntry, EntryMode } from "@/lib/academy-drills";
 import { sanitizeLabSnapshot, type LabSnapshot } from "@/lib/academy-lab";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
 import { supabaseAdmin } from "@/lib/supabase-admin";
@@ -670,7 +670,20 @@ export async function clearShift(userId: string) {
 
 // Drill history: one row per finished drill, newest last. The daily drill
 // keeps its first result for the day; a timed run is always its own row.
-const MODES = ["daily", "timed", "ctf", "coach"] as const;
+// Every value EntryMode allows. A mode missing from this list does not fail
+// loudly, it falls through to "daily" below -- and "shift" was missing, so
+// every shift a student finished came back out of the database as that day's
+// daily drill. It took their drill, titled itself after its first incident,
+// joined their streak, and because buildWorkItems asks for mode === "shift"
+// to credit shift work, no incident resolved in a shift has ever reached a
+// portfolio. The six jobs the portfolio locks behind a live shift could not
+// be earned at all.
+const MODES = ["daily", "timed", "ctf", "coach", "shift"] as const;
+// And the compiler now says so. Without this the list and the type drift in
+// silence: the type is what the code believes, the list is what survives a
+// round trip through the database, and only the second one is load bearing.
+const MODE_COVERAGE: Record<EntryMode, true> = { daily: true, timed: true, ctf: true, coach: true, shift: true };
+void MODE_COVERAGE;
 
 // Databases that have not run the level/detail migration keep the question
 // detail inside the misses column, so missed questions are never lost.

@@ -520,7 +520,10 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
 
 export function DrillRunner() {
   const { ask } = useCoach();
-  const { available: hostedLab } = useHostedLab();
+  // The lab's own state as well as whether they have one. A stopped lab is
+  // never going to send anything, so "waiting for your lab" is a lie told to
+  // somebody who only needs to be handed the start button.
+  const { available: hostedLab, state: labState, primary: startLab, waiting: labBusy } = useHostedLab();
   // Which row is working, and which row failed. A single flag made every button
   // say "Writing…" at once, and a single error landed under all four rows
   // rather than against the one the person had just pressed.
@@ -1042,9 +1045,13 @@ export function DrillRunner() {
                         reported rather than handed to them as a task. */}
                     {status.ctf.entry
                       ? "A new one opens Monday."
-                      : status.lab.events || hostedLab
+                      : status.lab.events
                         ? "One hard investigation a week, drawn from what actually happened in your lab. Around twenty minutes."
-                        : "One hard investigation a week, drawn from what actually happened in your lab. Your domain controller has not sent its Security log yet."}
+                        : hostedLab && labState !== "ready" && labState !== "starting"
+                          ? "One hard investigation a week, drawn from what actually happened in your lab. Your lab is off, so there is nothing to draw from yet."
+                          : hostedLab
+                            ? "One hard investigation a week, drawn from what actually happened in your lab. Around twenty minutes."
+                            : "One hard investigation a week, drawn from what actually happened in your lab. Your domain controller has not sent its Security log yet."}
                   </span>
                   {errorMode === "ctf" && error && <span className="ax-path__err">{error}</span>}
                 </span>
@@ -1054,9 +1061,16 @@ export function DrillRunner() {
                       <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("ctf")}>
                         {starting === "ctf" ? "Writing…" : "Start investigation"} <ArrowRight className="h-4 w-4" />
                       </button>
-                    ) : hostedLab ? (
+                    ) : hostedLab && (labState === "ready" || labState === "starting") ? (
+                      // Up, and the Security log is on its way by itself.
                       <button type="button" className="rd-cta" onClick={load}>
                         <RefreshCw className="h-4 w-4" /> Waiting for your lab
+                      </button>
+                    ) : hostedLab ? (
+                      // Off. Waiting would have been forever, and the button
+                      // only re-read a status that could not change.
+                      <button type="button" className="rd-cta" disabled={labBusy} onClick={() => void startLab()}>
+                        {labBusy ? "Starting…" : "Start your lab"} <ArrowRight className="h-4 w-4" />
                       </button>
                     ) : (
                       <Link className="rd-cta" href="/range/phase-1/home-lab-setup#build-the-environment">
