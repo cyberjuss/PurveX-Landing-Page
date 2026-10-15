@@ -732,6 +732,12 @@ export async function startHostedLab(userId: string): Promise<void> {
   }
 }
 
+// How long a pod is allowed to spend becoming usable before the idle clock
+// means anything. A Windows domain controller boots, waits for Active
+// Directory, builds the forest and plants the tickets, and nobody is signed
+// in for any of it.
+const IDLE_BUILD_GRACE_MINUTES = 30;
+
 /**
  * Stops a lab nobody is working in, and hands back the rest of the session.
  *
@@ -746,6 +752,20 @@ export async function stopIdleHostedLab(userId: string, idleMinutes: number | un
   const row = await loadHostedLab(userId);
   // stopAt is null on a lab that is already stopped, so this never fires twice.
   if (!row?.stopAt) return false;
+  // A lab nobody has had the chance to use yet is not an idle lab. The pod
+  // measures its own idleness and a fresh one used to count the whole build
+  // as idle time, so a lab that took twenty minutes to come up was stopped by
+  // its own first report -- charged for, never seen. The pod no longer counts
+  // the build, and this makes a second mistake like it cost nothing: a
+  // session is given at least the idle window plus the build before anything
+  // here can end it.
+  //
+  // Measured from when this session started rather than when the pod was
+  // first built, because a restart boots and builds again and createdAt stays
+  // where it was. stopAt is set to now plus the session length on every start,
+  // so working backwards from it gives the start of the session in hand.
+  const started = Date.parse(row.stopAt) - c.sessionHours * 3600_000;
+  if (!Number.isFinite(started) || Date.now() - started < (c.idleStopMinutes + IDLE_BUILD_GRACE_MINUTES) * 60_000) return false;
   const inst = await describe(row.instanceId).catch(() => null);
   if (inst?.state !== "running") return false;
   console.log("hosted lab idle stop", userId, `${Math.round(idleMinutes)} min`);

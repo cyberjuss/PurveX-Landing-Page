@@ -127,6 +127,34 @@ try {
     t(`[string]$${name} = "" appears once in the script`, hits === 1, `${hits} line(s)`);
   }
 
+  // --- the idle clock, which stopped a lab the moment it came up -----------
+  // The pod reports how long it has gone without an active session, and with
+  // nobody ever signed in it used to measure from boot. A pod spends its first
+  // twenty minutes building a domain, so its very first report said "idle for
+  // twenty minutes" and the lab was stopped before the student saw it: three
+  // hours charged, nothing delivered.
+  //
+  // The pod now starts that clock when the lab is ready. This checks the
+  // second guard, the one that does not depend on the pod being right.
+  const idleLines = readFileSync(join(root, "src", "lib", "academy-hosted.ts"), "utf8");
+  t(
+    "the idle stop measures the session from stopAt, not from createdAt",
+    /const started = Date\.parse\(row\.stopAt\) - c\.sessionHours \* 3600_000;/.test(idleLines),
+    "a restart leaves createdAt where it was"
+  );
+  t(
+    "a session gets the idle window plus a build before it can be idle-stopped",
+    /Date\.now\(\) - started < \(c\.idleStopMinutes \+ IDLE_BUILD_GRACE_MINUTES\) \* 60_000\) return false;/.test(idleLines)
+  );
+  t("the build grace is at least as long as a slow build", /const IDLE_BUILD_GRACE_MINUTES = (?:[3-9]\d|\d{3,});/.test(idleLines));
+
+  // And the pod's half: the clock is restarted when the sync loop starts, so
+  // neither a first boot nor a restart counts the build as idle time.
+  const buildPs = readFileSync(join(scripts, "Build-Environment.ps1"), "utf8");
+  const loopAt = buildPs.indexOf("function Start-PurvexSyncLoop");
+  const stampAt = buildPs.indexOf("Set-Content -LiteralPath (Get-PurvexLastActivePath)", loopAt);
+  t("the sync loop restarts the idle clock when the lab is ready", loopAt >= 0 && stampAt > loopAt && stampAt - loopAt < 1200);
+
   // A script we never published must not produce a command at all.
   let threw = false;
   try {

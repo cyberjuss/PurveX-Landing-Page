@@ -104,7 +104,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 6
+$PurvexScriptVersion = 7
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -1177,6 +1177,15 @@ function Update-PurvexScript {
 function Start-PurvexSyncLoop {
     param([string]$Key, [string]$Url)
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    # The idle clock starts here, when the lab is ready, and not at boot.
+    # A pod spends its first ten or twenty minutes building a domain with
+    # nobody signed in, and quser has no session to report until someone
+    # connects. Measuring from boot meant a lab that took twenty minutes to
+    # come up was already twenty minutes idle the moment it first reported,
+    # so it was stopped for idleness before the student ever saw it. A
+    # restart lands here too, which is right: a lab that just came back is
+    # not idle either.
+    Set-Content -LiteralPath (Get-PurvexLastActivePath) -Value ((Get-Date).ToUniversalTime().ToString("o")) -ErrorAction SilentlyContinue
     $roots = Get-PurvexWatchRoots -DomainDN $domainDN
     $lastSend = [datetime]::MinValue
     $lastHeavy = [datetime]::MinValue
