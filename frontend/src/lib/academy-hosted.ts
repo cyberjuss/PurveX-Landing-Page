@@ -113,10 +113,32 @@ export class LabHoursSpentError extends Error {
   }
 }
 
-/** Hours used and left this week. limit 0 means the cap is off. */
+/**
+ * Hours used and left this week. limit 0 means the cap is off.
+ *
+ * Net of the running session's unused remainder, which is the number a student
+ * means by "hours I have used". A session is charged in full the moment it
+ * starts, so a lab five minutes old had already taken three hours off the
+ * meter and the panel said so: start a lab, glance at the meter, and it reads
+ * as though an afternoon is gone. The remainder comes back when the session
+ * ends, so counting it as spent while it is still in hand is just wrong, and
+ * it is wrong by the largest amount at the moment someone is most likely to
+ * look.
+ *
+ * Taken off here and nowhere else. The charge stays whole in the database,
+ * because a lab that is never stopped cleanly has to have cost something, and
+ * chargeSession still reserves against the full figure so the cap cannot be
+ * oversubscribed by a session already running.
+ */
 export async function labHours(userId: string): Promise<{ used: number; limit: number; left: number; minutes: number }> {
   const limit = cfg().weeklyHours;
-  const minutes = await readLabMinutes(userId);
+  const charged = await readLabMinutes(userId);
+  // The same quantity refundUnused would hand back if the lab stopped now, so
+  // the meter does not move when a session ends.
+  const row = await loadHostedLab(userId).catch(() => null);
+  const leftMs = row?.stopAt ? Date.parse(row.stopAt) - Date.now() : 0;
+  const held = Number.isFinite(leftMs) && leftMs > 0 ? Math.min(cfg().sessionHours * 60, Math.floor(leftMs / 60000)) : 0;
+  const minutes = Math.max(0, charged - held);
   const used = minutes / 60;
   return { used, limit, left: limit ? Math.max(0, limit - used) : Infinity, minutes };
 }
