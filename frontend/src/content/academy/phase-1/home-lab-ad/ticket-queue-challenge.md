@@ -677,3 +677,226 @@
 </div>
 </div>
 </div>
+
+<div class="ad-mission" data-id="tq-21" data-attempts="0">
+<span class="ad-mission__num">Ticket 16 · INC-1059 · High</span>
+<h4>Nothing Stops Password Guessing</h4>
+<p><strong>Priya Nair · IT · 9:40 AM</strong><br>Our insurer sent over a security questionnaire and one question is whether accounts lock after repeated failed sign-ins. I checked and I do not think ours do at all. Can you confirm and sort it if not?</p>
+<p><strong>Task:</strong> Set a domain lockout policy that locks an account after 10 wrong passwords or fewer, for at least 15 minutes, with the count resetting no sooner than 15 minutes. Then report the event ID a domain controller writes when an account is locked out.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for Nothing Stops Password Guessing" placeholder="an event ID" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{4740}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Account lockout lives in the Default Domain Policy, not on individual accounts.</p>
+<ol>
+<li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>.</li>
+<li>Expand the domain, right-click <code>Default Domain Policy</code> and choose Edit.</li>
+<li>Go to Computer Configuration, Policies, Windows Settings, Security Settings, Account Policies, Account Lockout Policy.</li>
+<li>Set the threshold to 10 or fewer, and both the duration and the reset counter to 15 minutes or more.</li>
+<li>Run <code>gpupdate /force</code>, then confirm with <code>Get-ADDefaultDomainPasswordPolicy</code>.</li>
+</ol>
+<p>A duration of 0 means an administrator must unlock the account by hand. That is stricter, but this ticket wants a number of minutes, so use 15 or more.</p>
+<p>In PowerShell:</p>
+<ul>
+<li><code>Set-ADDefaultDomainPasswordPolicy -Identity purvexfinancial.local -LockoutThreshold 10 -LockoutDuration 00:15:00 -LockoutObservationWindow 00:15:00</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="4625">4625 is a failed sign-in. The lockout itself has its own event.</div>
+<div class="ad-miss" data-guess="4624|4767">4624 is a successful sign-in and 4767 is an unlock. Look for the event written when the account is locked.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{4740}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Without a lockout an attacker can try passwords against one account forever, and nothing stops them or says it happened. Most accounts broken into this way had passwords that fall in a few thousand guesses, which takes minutes.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Set a threshold that stops guessing without locking out real people on a bad morning. Ten tries with a fifteen minute lock is the usual balance. Then watch for 4740 so a lockout storm is visible as it starts.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="tq-22" data-attempts="0">
+<span class="ad-mission__num">Ticket 17 · INC-1060 · High</span>
+<h4>No Record of What Ran</h4>
+<p><strong>Devon Brooks · Compliance · 2:15 PM</strong><br>We were asked which programs ran on the domain controller last Tuesday and nobody can answer. I was told the information is simply not being collected. If that is right we need it turned on before the next review.</p>
+<p><strong>Task:</strong> Turn on auditing so the domain controller records every process that starts. Then report the event ID that records a new process.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for No Record of What Ran" placeholder="an event ID" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{4688}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>This is an advanced audit subcategory, not one of the nine basic categories.</p>
+<ol>
+<li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>, then edit <code>Default Domain Controllers Policy</code>.</li>
+<li>Go to Computer Configuration, Policies, Windows Settings, Security Settings, Advanced Audit Policy Configuration, Audit Policies, Detailed Tracking.</li>
+<li>Open <strong>Audit Process Creation</strong>, tick Configure, and tick Success.</li>
+<li>Run <code>gpupdate /force</code>, then confirm with <code>auditpol /get /subcategory:"Process Creation"</code>.</li>
+<li>Start any program and look for the new event in the Security log.</li>
+</ol>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="4689">4689 is a process ending. This ticket is about one starting.</div>
+<div class="ad-miss" data-guess="4624|4625">Those are sign-ins. Detailed Tracking records programs, not logons.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{4688}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Without process auditing an investigation can see that someone signed in but not what they then ran, which is the half that says whether anything bad happened. Turning it on after the incident does not recover the week you needed.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Turn on Process Creation for success and keep it on. Adding the command line to the event is a second setting worth asking about, because a process name without its arguments often hides what actually ran.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="tq-23" data-attempts="0">
+<span class="ad-mission__num">Ticket 18 · INC-1061 · Medium</span>
+<h4>The Security Log Runs Out</h4>
+<p><strong>Priya Nair · IT · 4:05 PM</strong><br>I went looking for a sign-in from last week and the Security log does not go back that far any more. It seems to be overwriting itself after a couple of days.</p>
+<p><strong>Task:</strong> Raise the Security log maximum size on the domain controller to at least 512 MB. Then report the size in MB it was set to before you changed it.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for The Security Log Runs Out" placeholder="a number of MB" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{128}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Read the old size before you change it. Once it is raised the original is gone.</p>
+<ol>
+<li>Open Event Viewer with Win+R and <code>eventvwr.msc</code>.</li>
+<li>Expand Windows Logs, right-click <strong>Security</strong> and choose Properties.</li>
+<li>Note the current maximum log size, then raise it to 524288 KB or more.</li>
+<li>Leave the policy as overwrite as needed, so the log never stops accepting events.</li>
+</ol>
+<p>In PowerShell, which reports bytes:</p>
+<ul>
+<li><code>Get-WinEvent -ListLog Security | Select-Object MaximumSizeInBytes</code></li>
+<li><code>Limit-EventLog -LogName Security -MaximumSize 512MB</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="512|1024">That is the size you set it to. The ticket asks what it was before.</div>
+<div class="ad-miss" data-guess="134217728|131072">Convert it to whole megabytes and report the number on its own.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{128}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A busy domain controller fills 128 MB in a day or two, so the log quietly destroys its own oldest evidence. Most intrusions are found weeks after they start, by which point the record of the first day has already been overwritten.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Raise the size, and treat that as a stopgap. The real answer is shipping events off the machine as they happen, because a log that lives only on the host is also a log an attacker can clear.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="tq-24" data-attempts="0">
+<span class="ad-mission__num">Ticket 19 · INC-1062 · High</span>
+<h4>Admins Under the Same Rules as Everyone</h4>
+<p><strong>Alex Rivera · IT · 10:20 AM</strong><br>The audit flagged that our administrator accounts follow the same password rules as every other user. They want the accounts that can change the domain held to something stronger.</p>
+<p><strong>Task:</strong> Apply a fine-grained password policy of at least 16 characters, locking after 5 wrong passwords or fewer, to the IT administrators group. Then report the name of the group you applied it to.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for Admins Under the Same Rules as Everyone" placeholder="a group name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{IT Admins}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The domain password policy applies to everyone. A second, stricter policy for one group is a Password Settings Object.</p>
+<ol>
+<li>Open Active Directory Administrative Center with Win+R and <code>dsac.exe</code>.</li>
+<li>Go to System, then Password Settings Container, then New, then Password Settings.</li>
+<li>Give it a name and a precedence, set the minimum length to 16, and set the lockout threshold to 5 or fewer.</li>
+<li>Under Directly Applies To, add the group holding the IT administrators.</li>
+<li>Confirm with <code>Get-ADFineGrainedPasswordPolicy -Filter *</code>.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>New-ADFineGrainedPasswordPolicy -Name "Admin Password Policy" -Precedence 10 -MinPasswordLength 16 -LockoutThreshold 5 -LockoutDuration 00:30:00 -LockoutObservationWindow 00:30:00</code></li>
+<li><code>Add-ADFineGrainedPasswordPolicySubject "Admin Password Policy" -Subjects "IT Admins"</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="domain admins|server admins">That group exists, but this ticket asks for the IT administrators group in this domain. Check the AccessLevels folder.</div>
+<div class="ad-miss" data-guess="it users">IT Users is the standard access group for the department. The ticket is about the elevated one.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{IT Admins}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>An administrator account that falls to a guessed password hands over the whole domain rather than one mailbox. Holding those accounts to the same rules as everyone else prices the most valuable accounts at the same cost to break.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Apply a stricter policy to the admin group, then check it took effect by reading the resultant policy on one of those accounts. A policy that exists but applies to nobody is the common mistake here.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="tq-25" data-attempts="0">
+<span class="ad-mission__num">Ticket 20 · INC-1063 · Low</span>
+<h4>A Workstation Nobody Uses</h4>
+<p><strong>Morgan Lee · Operations · 1:30 PM</strong><br>We are tidying up our asset list. One of the Operations machines in the directory went back to the leasing company months ago, but it still looks active to us. Can you close it off properly?</p>
+<p><strong>Task:</strong> Find the dormant Operations workstation, read its Description, and disable the computer object without deleting it. Then report the ticket number written in the Description.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for A Workstation Nobody Uses" placeholder="a ticket number" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{CTF-TICKET-201}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Computers live in OUs the way users do. This one is in the Operations department Workstations folder.</p>
+<ol>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Expand Departments, Operations, Workstations.</li>
+<li>Open the computer Properties and read the Description on the General tab.</li>
+<li>Right-click it and choose Disable Account. Do not delete it.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>Get-ADComputer OPS-WKS03 -Properties Description,LastLogonDate | Select-Object Name,Description,LastLogonDate,Enabled</code></li>
+<li><code>Disable-ADComputer -Identity OPS-WKS03</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="ops-wks03">That is the computer name. The ticket number is written in its Description.</div>
+<div class="ad-miss" data-guess="wm-wks07">WM-WKS07 belongs to Wealth Management and is still in use. Look in the Operations Workstations folder.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{CTF-TICKET-201}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A computer object nobody uses keeps its place in the domain, and a machine that left the building still has an account that can authenticate. Old objects are also how an attacker hides: a name on the list nobody questions because it has always been there.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Disable it rather than deleting it, so the record survives if someone later asks what happened to the asset. Delete only after a waiting period, once you are sure nothing depended on it.</p>
+</div>
+</div>
+</div>
+</div>

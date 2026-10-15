@@ -158,6 +158,44 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Staff can reach the file share by IP address but not by the name files. Find what the name resolves to, point it back at the domain controller, and report the wrong address.",
     skill: "troubleshooting",
   },
+  // The hardening tickets. Unlike the others nothing is planted for these:
+  // the domain ships this way, which is the point. A real estate is not
+  // broken, it is unfinished, and the work is noticing that and closing it.
+  "tq-21": {
+    id: "tq-21",
+    challenge: "ticket-queue",
+    title: "Nothing Stops Password Guessing (INC-1059)",
+    prompt: "Security found the domain never locks an account, however many times a password is wrong. Set a lockout policy of 10 tries or fewer with a lock of at least 15 minutes, then report the event ID a domain controller writes when an account is locked out.",
+    skill: "security",
+  },
+  "tq-22": {
+    id: "tq-22",
+    challenge: "ticket-queue",
+    title: "No Record of What Ran (INC-1060)",
+    prompt: "An investigation stalled because nothing on the domain controller records which programs were started. Turn on auditing for process creation, then report the event ID that records a new process.",
+    skill: "security",
+  },
+  "tq-23": {
+    id: "tq-23",
+    challenge: "ticket-queue",
+    title: "The Security Log Runs Out (INC-1061)",
+    prompt: "The Security log is overwriting itself within days, so last week's sign-ins are already gone. Raise its maximum size to at least 512 MB, then report the size in MB it was set to before you changed it.",
+    skill: "security",
+  },
+  "tq-24": {
+    id: "tq-24",
+    challenge: "ticket-queue",
+    title: "Admins Under the Same Rules as Everyone (INC-1062)",
+    prompt: "Accounts that can change the domain are held to the same password rules as everyone else. Apply a fine-grained password policy of at least 16 characters, locking after 5 tries or fewer, to the IT administrators group. Then report the group you applied it to.",
+    skill: "security",
+  },
+  "tq-25": {
+    id: "tq-25",
+    challenge: "ticket-queue",
+    title: "A Workstation Nobody Uses (INC-1063)",
+    prompt: "Operations says a workstation in their folder was decommissioned and never retired in the directory. Find it, read its Description, disable it without deleting it, and report the ticket number written there.",
+    skill: "directory",
+  },
   "tq-20": {
     id: "tq-20",
     challenge: "ticket-queue",
@@ -322,7 +360,7 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
 }
 
 /** Tickets that need a real change in the student's lab before they can answer. */
-export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "cap-06", "cry-06"];
+export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25", "cap-06", "cry-06"];
 
 /** The on-the-job task each mission practices. A gated ticket seen in the lab counts as proven. */
 export const MISSION_JOBS: Record<string, string> = {

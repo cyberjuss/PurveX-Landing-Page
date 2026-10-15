@@ -6,7 +6,7 @@ import type { LabSnapshot } from "@/lib/academy-lab";
 // the answer until their own lab shows the change.
 
 /** Objects a ticket needs in the snapshot. A lab built before the ticket existed lacks them. */
-type Needs = { users?: string[]; groups?: string[]; ous?: string[]; tickets?: string[] };
+type Needs = { users?: string[]; groups?: string[]; ous?: string[]; computers?: string[]; tickets?: string[] };
 
 const G = (checks: { c: Check; label: string }[], needs?: Needs) => ({ checks, needs });
 
@@ -52,6 +52,22 @@ const MISSION_LAB = {
     { ous: ["OU=Workstations,OU=FinanceAccounting,OU=Departments"] }
   ),
   "tq-15": G([{ c: { t: "group", name: "Finance Reports", category: "Security" }, label: "Finance Reports is a Security group" }], { groups: ["Finance Reports"] }),
+  // Hardening tickets. Nothing is planted for these: the domain ships this
+  // way. The checks read the policy the student set rather than an object
+  // they moved, which is the same shape the lab audit already uses.
+  // A lock time of 0 means an administrator must unlock the account by hand,
+  // which is stricter than 15 minutes rather than weaker. evalCheck compares
+  // numerically and would read 0 as a failure, so the ticket asks for a real
+  // number of minutes and the hint says so.
+  "tq-21": G([
+    { c: { t: "policy", key: "lockoutThreshold", min: 1, max: 10 }, label: "Accounts lock after 10 wrong passwords or fewer" },
+    { c: { t: "policy", key: "lockoutDurationMin", min: 15 }, label: "A locked account stays locked for at least 15 minutes" },
+    { c: { t: "policy", key: "lockoutWindowMin", min: 15 }, label: "The count of wrong passwords resets no sooner than 15 minutes" },
+  ]),
+  "tq-22": G([{ c: { t: "audit", sub: "Process Creation", need: "Success" }, label: "Process creation is audited for success" }]),
+  "tq-23": G([{ c: { t: "logsize", minMB: 512 }, label: "The Security log holds at least 512 MB" }]),
+  "tq-24": G([{ c: { t: "pso", minLength: 16, appliesTo: "IT Admins", maxLockout: 5 }, label: "A 16-character policy locking after 5 tries applies to IT Admins" }]),
+  "tq-25": G([{ c: { t: "computer", name: "OPS-WKS03", enabled: false }, label: "OPS-WKS03 is disabled" }], { computers: ["OPS-WKS03"] }),
   "tq-16": G([{ c: { t: "dnsToDc", name: "files" }, label: "files resolves to the domain controller" }], { tickets: ["INC-1052"] }),
   "tq-20": G([{ c: { t: "dnsToDc", name: "payroll" }, label: "payroll resolves only to the domain controller" }], { tickets: ["INC-1056"] }),
   "tq-17": G([{ c: { t: "fwRuleOff", name: "PurveX Temp - Vendor RDP" }, label: "The vendor RDP rule is disabled or removed" }], { tickets: ["INC-1053"] }),
@@ -105,6 +121,7 @@ export function hasMissionObjects(id: string, s: LabSnapshot) {
     has(needs.users, s.users.map((u) => u.sam.toLowerCase())) &&
     has(needs.groups, s.groups.map((g) => g.name.toLowerCase())) &&
     has(needs.ous, s.ous.map((o) => o.path.toLowerCase())) &&
+    has(needs.computers, s.computers.map((c) => c.name.toLowerCase())) &&
     has(needs.tickets, (s.infra?.planted ?? []).map((t) => t.toLowerCase()))
   );
 }
