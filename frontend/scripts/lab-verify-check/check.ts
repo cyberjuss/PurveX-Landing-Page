@@ -84,8 +84,48 @@ try {
 
   // The first-boot script is built from the same emitter, so the hash has to
   // reach it. A pod that silently skipped the check would look identical.
-  const boot = firstBootScript("pvl_test", "Passw0rd!", "https://purvex.io");
+  const boot = firstBootScript("pvl_testkey123", "P@ssw0rd!x", "https://purvex.io");
   t("the first-boot script carries the build script's hash", boot.includes(LAB_SCRIPT_HASHES[published]));
+
+  // --- linking, which is where a pod actually broke -------------------------
+  // First boot writes the student's key into the downloaded script and runs
+  // what comes out. The needle it searches for also sat inside the script's
+  // own updater, so Replace rewrote that line too and every pod wrote itself a
+  // file PowerShell would not parse. Nothing caught it: the key really was in
+  // there, the download really was ours, and the only symptom was a pod stuck
+  // on "Linking to Range" until its hours ran out.
+  //
+  // So the real first-boot script is emitted, its linking lines are run in
+  // real PowerShell against the real script, and the result is parsed.
+  const lines = boot.split("\n");
+  const from = lines.findIndex((l) => l.startsWith("$keyNeedle ="));
+  const to = lines.findIndex((l) => l.startsWith("$text = & $link $build"));
+  t("the first-boot script still has a linking step to test", from >= 0 && to > from);
+  if (from >= 0 && to > from) {
+    const out = join(dir, "linked.ps1");
+    const run = [
+      `$build = ${JSON.stringify(join(scripts, "Build-Environment.ps1"))}`,
+      ...lines.slice(from, to + 1),
+      `[IO.File]::WriteAllText(${JSON.stringify(out)}, $text)`,
+      "$e = $null",
+      `[void][System.Management.Automation.Language.Parser]::ParseInput($text, [ref]$null, [ref]$e)`,
+      'if ($e.Count) { "PARSE-ERRORS " + $e.Count; $e[0].Message } else { "LINKED-OK" }',
+      '"KEYS " + ([regex]::Matches($text, [regex]::Escape("' + "'pvl_testkey123'" + '"))).Count',
+      '"URLS " + ([regex]::Matches($text, [regex]::Escape("' + "'https://purvex.io'" + '"))).Count',
+    ].join("\n");
+    const res = execFileSync("powershell", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", run], { encoding: "utf8" });
+    t("the linked copy parses", res.includes("LINKED-OK"), res.split("\n")[0]?.trim());
+    // Exactly one, because a second was the bug: the updater's own needle.
+    t("the key is written in exactly once", /KEYS 1\b/.test(res), (res.match(/KEYS \d+/) ?? [""])[0]);
+    t("the url is written in exactly once", /URLS 1\b/.test(res), (res.match(/URLS \d+/) ?? [""])[0]);
+  }
+
+  // The needle must match the param default and nothing else in the file.
+  const buildSrc = readFileSync(join(scripts, "Build-Environment.ps1"), "utf8");
+  for (const name of ["PurvexKey", "PurvexUrl"]) {
+    const hits = buildSrc.split("\n").filter((l) => l.includes(`[string]$${name} = ""`)).length;
+    t(`[string]$${name} = "" appears once in the script`, hits === 1, `${hits} line(s)`);
+  }
 
   // A script we never published must not produce a command at all.
   let threw = false;

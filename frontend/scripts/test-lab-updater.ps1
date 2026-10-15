@@ -89,6 +89,19 @@ $running = $PurvexScriptVersion
 Reset ($running + 1)
 T "a newer signed version is taken" $true (Update-PurvexScript -Key "pvl_test" -Url "https://purvex.io")
 T "  and it landed on disk with the key written in" $true ((Test-Path $dest) -and (Get-Content $dest -Raw).Contains("'pvl_test'"))
+# The check this test was missing. Writing the key in is half the job; the
+# other half is that the file still runs afterwards. The needle the linking
+# step searches for also appeared inside the updater, so Replace rewrote that
+# line too and every pod wrote itself a script PowerShell could not parse.
+# Nothing noticed, because the key really was in there.
+$written = $null
+if (Test-Path $dest) {
+    $werr = $null
+    [void][System.Management.Automation.Language.Parser]::ParseFile($dest, [ref]$null, [ref]$werr)
+    $written = $werr.Count
+}
+T "  and what it wrote still parses" $true ($written -eq 0) 
+T "  and the linked copy has exactly one key" $true (([regex]::Matches((Get-Content $dest -Raw), [regex]::Escape("'pvl_test'"))).Count -eq 1)
 
 Reset ($running + 1)
 $null = Update-PurvexScript -Key "pvl_test" -Url "https://purvex.io"

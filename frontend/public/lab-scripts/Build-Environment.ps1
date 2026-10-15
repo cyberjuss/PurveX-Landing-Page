@@ -66,7 +66,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 5
+$PurvexScriptVersion = 6
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -1109,7 +1109,16 @@ function Update-PurvexScript {
         $errors = $null
         [void][System.Management.Automation.Language.Parser]::ParseInput($text, [ref]$null, [ref]$errors)
         if ($errors.Count) { return $false }
-        $text = $text.Replace('[string]$PurvexKey = ""', "[string]`$PurvexKey = '$Key'").Replace('[string]$PurvexUrl = ""', "[string]`$PurvexUrl = '$Url'")
+        # The needles are built from pieces, and that is the whole point. They
+        # name the two param defaults at the top of this file, and Replace has
+        # no idea which line it is looking at: a literal copy of either needle
+        # written here would be a second match, so linking a script rewrote
+        # this line as well and left a file PowerShell could not parse. A pod
+        # then built nothing and sat on "Linking to Range" forever. Split in
+        # two, the needle exists only when the strings are joined.
+        $keyNeedle = '[string]$PurvexKey = ' + '""'
+        $urlNeedle = '[string]$PurvexUrl = ' + '""'
+        $text = $text.Replace($keyNeedle, "[string]`$PurvexKey = '$Key'").Replace($urlNeedle, "[string]`$PurvexUrl = '$Url'")
         $current = ""
         try { $current = Get-Content -LiteralPath $dest -Raw } catch { }
         # Compared with the line endings and the last newline normalised away.

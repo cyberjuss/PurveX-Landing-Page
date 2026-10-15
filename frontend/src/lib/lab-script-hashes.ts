@@ -8,10 +8,10 @@
 //
 // npm run check:lab-script fails if this file and the scripts disagree.
 
-export const LAB_SCRIPT_VERSION = 5;
+export const LAB_SCRIPT_VERSION = 6;
 
 export const LAB_SCRIPT_HASHES: Record<string, string> = {
-  "Build-Environment.ps1": "53c2fc04944051aac8026934ad104996daa418fbb70fbf4da7e8faacb0194e57",
+  "Build-Environment.ps1": "02e481d419827fe093a7f3b63710994d6aa1bec12cd113a4d61683b04bbe2181",
   "incidents/Incident-AccessRequest.ps1": "e00bbcd8721e003b150d2a27ec056e4421002ff227be40cad20080e348938bff",
   "incidents/Incident-AdminPSO.ps1": "e9b341b0c36a2145e51d171148ffbdfe00363931a5232e1a9381023aaf40f7ce",
   "incidents/Incident-ApprovedChange.ps1": "7eb8bc783800c18afa8df14249a36b788493ad7ecc288466bb0d8b86bd478db4",

@@ -332,8 +332,24 @@ export function firstBootScript(key: string, password: string, url: string): str
     '  Write-Host "using the image build script: $($_.Exception.Message)"',
     "}",
     "# Link it to this student, the same way the Range download does.",
-    "$text = Get-Content -LiteralPath $build -Raw",
-    `$text = $text.Replace('[string]$PurvexKey = ""', ${ps(`[string]$PurvexKey = ${ps(key)}`)}).Replace('[string]$PurvexUrl = ""', ${ps(`[string]$PurvexUrl = ${ps(url)}`)})`,
+    // The needles are named once and used twice, because the fallback has to
+    // link the same way the first attempt did.
+    `$keyNeedle = ${ps(`[string]$PurvexKey = ""`)}`,
+    `$urlNeedle = ${ps(`[string]$PurvexUrl = ""`)}`,
+    `$keyValue = ${ps(`[string]$PurvexKey = ${ps(key)}`)}`,
+    `$urlValue = ${ps(`[string]$PurvexUrl = ${ps(url)}`)}`,
+    "$link = { param($p) (Get-Content -LiteralPath $p -Raw).Replace($keyNeedle, $keyValue).Replace($urlNeedle, $urlValue) }",
+    "$text = & $link $build",
+    // Parsed after the key is written in, not only after the download. The
+    // marker above says the right file arrived; this says linking did not
+    // break it on the way past. It did once, quietly: the needle Replace
+    // looks for also sat inside the script's own updater, so a pod wrote
+    // itself a file PowerShell refused, built nothing, and sat on "Linking
+    // to Range" until its hours ran out. The image's copy builds an older
+    // lab, which beats building none.
+    "$lerr = $null",
+    "[void][System.Management.Automation.Language.Parser]::ParseInput($text, [ref]$null, [ref]$lerr)",
+    'if ($lerr.Count) { Write-Host "the linked copy will not parse, so falling back to the image script"; $text = & $link "$dir\\image\\Build-Environment.ps1" }',
     'New-Item -ItemType Directory -Path "$dir\\hosted" -Force | Out-Null',
     'Set-Content -LiteralPath "$dir\\hosted\\Build-Environment.ps1" -Value $text -Encoding UTF8',
     // Build it, rather than -InstallSync. That flag returns before the build, so
