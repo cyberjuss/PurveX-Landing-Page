@@ -18,8 +18,8 @@
 //
 // Signing is `npm run sign:lab-script`, which bumps the version itself.
 
-import { createPublicKey, createVerify } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { createHash, createPublicKey, createVerify } from "node:crypto";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -28,6 +28,15 @@ const SCRIPT = join(here, "..", "public", "lab-scripts", "Build-Environment.ps1"
 const SIG = `${SCRIPT}.sig`;
 const LESSON = join(here, "..", "src", "content", "academy", "phase-1", "home-lab-ad", "build-the-environment.md");
 const LIVE = "https://purvex.io/lab-scripts/Build-Environment.ps1";
+const HASHES = join(here, "..", "src", "lib", "lab-script-hashes.ts");
+
+// Every .ps1 the site publishes, by the path the hash file keys on.
+const globScripts = (dir, prefix = "") =>
+  readdirSync(dir).flatMap((f) => {
+    const full = join(dir, f);
+    if (statSync(full).isDirectory()) return globScripts(full, `${prefix}${f}/`);
+    return f.endsWith(".ps1") ? [`${prefix}${f}`] : [];
+  });
 
 // The same line-anchored shape the pod matches with. Indented mentions inside
 // the updater must not count.
@@ -155,6 +164,36 @@ if (!localVersion) {
       );
     }
   }
+}
+
+// --- 5: the hashes the SSM commands carry -----------------------------------
+// First boot, ticket repair and every incident download a script and run it as
+// SYSTEM, checking it against the hash Range puts in the command. A stale hash
+// there does not fail safe in a useful way: the pod refuses a script that is
+// perfectly good, and a shift stops firing with nothing to say why.
+const hashes = read(HASHES);
+if (hashes === null) {
+  fail("src/lib/lab-script-hashes.ts is missing.", "Run: npm run sign:lab-script");
+} else {
+  const listed = [...hashes.matchAll(/"([^"]+)":\s*"([0-9a-f]{64})"/g)].map((m) => [m[1], m[2]]);
+  const files = globScripts(join(here, "..", "public", "lab-scripts"));
+  const stale = [];
+  const gone = [];
+  for (const [name, want] of listed) {
+    const body = read(join(here, "..", "public", "lab-scripts", name));
+    if (body === null) gone.push(name);
+    else if (createHash("sha256").update(Buffer.from(body.replace(/\r\n/g, "\n"), "utf8")).digest("hex") !== want) stale.push(name);
+  }
+  const unlisted = files.filter((f) => !listed.some(([n]) => n === f));
+  const version = hashes.match(/LAB_SCRIPT_VERSION = (\d+)/);
+  const scriptVersion = script.match(VERSION_RX);
+
+  if (stale.length) fail(`${stale.length} hash(es) no longer match the script: ${stale.join(", ")}`, "Run: npm run sign:lab-script");
+  else if (gone.length) fail(`${gone.length} hash(es) point at a script that is gone: ${gone.join(", ")}`, "Run: npm run sign:lab-script");
+  else if (unlisted.length) fail(`${unlisted.length} published script(s) have no hash: ${unlisted.join(", ")}`, "A pod cannot be told to run one. Run: npm run sign:lab-script");
+  else if (!version || !scriptVersion || version[1] !== scriptVersion[1]) {
+    fail(`The hash file says version ${version?.[1] ?? "none"} and the script says ${scriptVersion?.[1] ?? "none"}.`, "Run: npm run sign:lab-script");
+  } else pass(`All ${listed.length} script hashes match, at version ${version[1]}.`);
 }
 
 if (process.exitCode) console.error("\nThe lab script is not ready to ship.");

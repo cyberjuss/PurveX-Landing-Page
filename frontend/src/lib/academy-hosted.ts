@@ -10,6 +10,7 @@ import {
   TerminateInstancesCommand,
 } from "@aws-sdk/client-ec2";
 import { DescribeInstanceInformationCommand, SendCommandCommand, SSMClient } from "@aws-sdk/client-ssm";
+import { LAB_SCRIPT_HASHES } from "@/lib/lab-script-hashes";
 import {
   addLabMinutes,
   claimLabSessionEnd,
@@ -260,6 +261,42 @@ function rekeyLines(): string[] {
   ];
 }
 
+/**
+ * PowerShell that refuses a downloaded lab script we did not publish.
+ *
+ * Three paths put a file on a pod and run it as SYSTEM: the build script on
+ * first boot, the ticket repair, and each Incident-*.ps1 that Shift fires.
+ * All three download from the site over TLS, which proves only that the bytes
+ * came from the server answering to the name. A hijacked deployment, a leaked
+ * token or a mis-issued certificate would each serve a file a pod would run.
+ *
+ * Build-Environment.ps1 solves this for its own self-update with a signature,
+ * because the pod has to judge the download on its own. Here it does not: the
+ * command comes from Range through SSM, on a channel AWS authenticates with
+ * our credentials, so the expected hash can travel inside the command. Nobody
+ * who controls what the web server serves can reach it.
+ *
+ * Hashed over LF-normalised UTF-8, like the signature, because the checkout a
+ * hash was generated from may have CRLF where the site serves LF.
+ *
+ * `pathVar` is the PowerShell variable already holding the downloaded file's
+ * path. `published` is the path under public/lab-scripts, which is the key
+ * npm run sign:lab-script writes.
+ */
+export function verifyDownloaded(pathVar: string, published: string): string {
+  const want = LAB_SCRIPT_HASHES[published];
+  // A script with no published hash is a deploy mistake, not a pod's problem.
+  // Throwing here fails the action with a line in our log, rather than sending
+  // a command that can never pass.
+  if (!want) throw new Error(`no published hash for lab-scripts/${published}; run npm run sign:lab-script`);
+  return [
+    `$t=[Text.Encoding]::UTF8.GetString([IO.File]::ReadAllBytes(${pathVar})) -replace "\`r\`n","\`n"`,
+    "$sha=[Security.Cryptography.SHA256]::Create()",
+    'try { $h=[BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($t))).Replace("-","").ToLower() } finally { $sha.Dispose() }',
+    `if($h -ne '${want}'){ throw "${published} is not the published copy (got $h)" }`,
+  ].join("; ");
+}
+
 /** PowerShell EC2 runs once, on the lab's first boot. Builds PurveX Financial
  *  and installs the same sync task a self-hosted lab gets. */
 export function firstBootScript(key: string, password: string, url: string): string {
@@ -284,6 +321,11 @@ export function firstBootScript(key: string, password: string, url: string): str
     // A 404 or a redirect saves an HTML page over the script, and a lab built
     // from that has no objects at all. The marker is a function only the current
     // script has, so this also refuses a copy too old to plant the tickets.
+    // The hash first: anything that is not the copy this deployment published
+    // throws, and the catch below falls back to the image's own script. The
+    // marker stays too, because it is what says a fallback copy is new enough
+    // to plant the tickets.
+    `  ${verifyDownloaded("$latest", "Build-Environment.ps1")}`,
     '  if (-not ((Get-Content -LiteralPath $latest -Raw).Contains("Ensure-CTFChallengeData"))) { throw "that download is not Build-Environment.ps1" }',
     "  $build = $latest",
     "} catch {",
@@ -947,7 +989,13 @@ function incidentCommand(script: string, undo: boolean, args?: Record<string, st
     "New-Item -ItemType Directory -Path $d -Force | Out-Null",
     "[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12",
     `Invoke-WebRequest -Uri '${base}/Incident-Common.ps1' -OutFile "$d\\Incident-Common.ps1" -UseBasicParsing`,
+    // Both files, before either one runs. The incident dot-sources the helper,
+    // so checking only the incident would be checking the wrong half.
+    `$f="$d\\Incident-Common.ps1"`,
+    verifyDownloaded("$f", "incidents/Incident-Common.ps1"),
     `Invoke-WebRequest -Uri '${base}/${script}' -OutFile "$d\\${script}" -UseBasicParsing`,
+    `$f="$d\\${script}"`,
+    verifyDownloaded("$f", `incidents/${script}`),
     `& "$d\\${script}"${arg}`,
   ].join("; ");
 }
@@ -1069,6 +1117,7 @@ export async function repairHostedLab(userId: string): Promise<boolean> {
     "[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12",
     "$f=Join-Path $d 'Build-Environment.ps1'",
     `Invoke-WebRequest -Uri '${scriptUrl}' -OutFile $f -UseBasicParsing -TimeoutSec 60`,
+    verifyDownloaded("$f", "Build-Environment.ps1"),
     "$linked=Join-Path $env:ProgramData 'PurveX\\Build-Environment.ps1'",
     "$key=''",
     "if(Test-Path $linked){ $sel=Select-String -LiteralPath $linked -Pattern \"'(pvl_[A-Za-z0-9_-]+)'\" | Select-Object -First 1; if($sel){ $key=$sel.Matches[0].Groups[1].Value } }",
