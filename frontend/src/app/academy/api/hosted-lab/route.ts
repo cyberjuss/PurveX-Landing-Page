@@ -15,6 +15,7 @@ import {
   resetHostedLab,
   startHostedLab,
   stopDueHostedLabs,
+  stopOrphanedHostedLabs,
   stopHostedLab,
 } from "@/lib/academy-hosted";
 import { LabUsageUnreadableError, PodSlotsUnreadableError } from "@/lib/academy-store";
@@ -50,7 +51,11 @@ let lastSweep = 0;
 function sweep() {
   if (Date.now() - lastSweep < 5 * 60_000) return;
   lastSweep = Date.now();
-  after(() => stopDueHostedLabs().then(() => undefined).catch(() => undefined));
+  after(() =>
+    Promise.all([stopDueHostedLabs(), stopOrphanedHostedLabs()])
+      .then(() => undefined)
+      .catch(() => undefined)
+  );
 }
 
 // One payload for the status read and for every action's reply. An action that

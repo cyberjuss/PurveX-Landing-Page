@@ -13,6 +13,7 @@ import { DescribeInstanceInformationCommand, SendCommandCommand, SSMClient } fro
 import { LAB_SCRIPT_HASHES } from "@/lib/lab-script-hashes";
 import {
   addLabMinutes,
+  hostedLabsWithNoSession,
   claimLabSessionEnd,
   claimPodSlot,
   createLabKey,
@@ -89,10 +90,13 @@ function cfg() {
      *  what they used rather than the whole session. 0 turns it off. */
     idleStopMinutes: Math.max(0, Number(e.HOSTED_LAB_IDLE_STOP_MINUTES) || 20),
     /** Minutes a lab the student has never opened may sit before it stops
-     *  itself. Longer than the idle window on purpose: somebody reading the
-     *  brief before they connect has not abandoned anything, and the old code
-     *  could not tell the two apart so it stopped them at twenty minutes. */
-    unopenedStopMinutes: Math.max(0, Number(e.HOSTED_LAB_UNOPENED_STOP_MINUTES) || 45),
+     *  itself. The same as the idle window unless it is set, because the
+     *  panel promises one number and a lab that outlives it reads as broken.
+     *  It was briefly longer, to protect a pod still building -- but the
+     *  build is protected properly now, by the pod starting its own clock
+     *  when the lab is ready and by the grace below, so a second number
+     *  bought nothing and contradicted the screen. */
+    unopenedStopMinutes: Math.max(0, Number(e.HOSTED_LAB_UNOPENED_STOP_MINUTES) || Number(e.HOSTED_LAB_IDLE_STOP_MINUTES) || 20),
     /** Days a lab may sit untouched before it is terminated. Its disks bill
      *  every month whether or not anyone signs in, so a lab nobody has opened
      *  since this long ago is pure cost. 0 turns reclaiming off. */
@@ -567,7 +571,11 @@ export function linuxCloudInit(dcIp: string, password: string): string {
 async function describe(instanceId: string) {
   const out = await ec2().send(new DescribeInstancesCommand({ InstanceIds: [instanceId] }));
   const inst = out.Reservations?.[0]?.Instances?.[0];
-  return inst ? { state: inst.State?.Name ?? "unknown", privateIp: inst.PrivateIpAddress ?? null } : null;
+  // LaunchTime is when this machine last started, which is the only clock an
+  // orphan sweep can trust: the row it is judging is the row that is wrong.
+  return inst
+    ? { state: inst.State?.Name ?? "unknown", privateIp: inst.PrivateIpAddress ?? null, startedAt: inst.LaunchTime ? inst.LaunchTime.getTime() : null }
+    : null;
 }
 
 const stopAtFromNow = () => new Date(Date.now() + cfg().sessionHours * 3600_000).toISOString();
@@ -1290,6 +1298,44 @@ export async function reapIdleHostedLabs(): Promise<number> {
 }
 
 /** Stops every lab past its stop time. Run by the cron route. */
+// How long a machine may be up before it needs a session to account for it.
+// Long enough that a launch in progress is never mistaken for an orphan.
+const ORPHAN_GRACE_MINUTES = 20;
+
+/**
+ * Stops machines that are running with nobody accountable for them.
+ *
+ * Every other stop keys off stopAt, the end of the session a student paid
+ * for. A lab that is up without one is invisible to all of them: the idle
+ * stop refuses the row, and the due sweep asks for a stop time in the past,
+ * which a NULL never is. One of these ran for seven and a half hours
+ * reporting itself idle the whole time, and nothing was ever going to stop
+ * it, because nothing was looking.
+ *
+ * A row says stopped and the machine says running, so the machine is wrong.
+ * No refund: there is no session to refund, and the hours were never charged.
+ */
+export async function stopOrphanedHostedLabs(): Promise<number> {
+  let stopped = 0;
+  for (const { userId, row } of await hostedLabsWithNoSession()) {
+    if (row.instanceId === POD_RESERVED) continue;
+    try {
+      const inst = await describe(row.instanceId).catch(() => null);
+      if (inst?.state !== "running") continue;
+      // A launch writes the row a moment after the machine starts, so a pod
+      // that has only just come up looks orphaned for a few seconds. Stopping
+      // one mid-launch would be a worse bug than the one this fixes.
+      const age = inst.startedAt ? Date.now() - inst.startedAt : 0;
+      if (age < ORPHAN_GRACE_MINUTES * 60_000) continue;
+      console.error("hosted lab running with no session, stopping it", userId, row.instanceId, `${Math.round(age / 60_000)} min old`);
+      if (await stopPod(row)) stopped += 1;
+    } catch (err) {
+      console.error("orphan stop failed", row.instanceId, err instanceof Error ? err.message : err);
+    }
+  }
+  return stopped;
+}
+
 export async function stopDueHostedLabs(): Promise<number> {
   let stopped = 0;
   for (const { userId, row } of await hostedLabsDueToStop()) {

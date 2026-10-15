@@ -441,6 +441,26 @@ export async function hostedLabsIdleSince(before: Date): Promise<{ userId: strin
   return (data ?? []).map((d) => ({ userId: d.user_id, row: hostedRow(d) }));
 }
 
+/**
+ * Labs with no session running against them.
+ *
+ * stopAt is the end of the session a student paid for, and it is null once a
+ * lab has been stopped. Both safety nets key off it -- the idle stop refuses
+ * a row without one, and the due sweep asks for stop_at <= now, which a NULL
+ * never matches. So a machine that is somehow up with no session is invisible
+ * to both and runs until somebody notices the bill. That happens when a stop
+ * half fails, or when a pod is started outside the app.
+ */
+export async function hostedLabsWithNoSession(): Promise<{ userId: string; row: HostedLabRow }[]> {
+  if (!supabaseAdmin) return [];
+  const { data, error } = await supabaseAdmin.from("academy_hosted_labs").select("*").is("stop_at", null);
+  if (error) {
+    console.error("academy_hosted_labs orphan read failed", error.message);
+    return [];
+  }
+  return (data ?? []).map((d) => ({ userId: d.user_id, row: hostedRow(d) }));
+}
+
 /** Marks a reserved-but-not-yet-built pod. Overwritten seconds later with the
  *  real instance ids; if the launch dies first, the next Start reuses the slot. */
 export const POD_RESERVED = "reserved";
