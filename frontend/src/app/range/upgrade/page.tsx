@@ -195,6 +195,9 @@ function UpgradeContent() {
           <span className="text-sm font-medium text-slate-500">per month</span>
           <span className="ml-auto text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">Range Pro</span>
         </div>
+        <p className="border-b border-[#eceef4] px-5 py-2 text-[0.8rem] font-semibold text-[#6a5cff]">
+          Free for your first 3 days
+        </p>
         <ul className="flex flex-col gap-2.5 px-5 py-4">
           {PERKS.map((perk) => (
             <li key={perk} className="flex items-start gap-2.5 text-[0.93rem] leading-snug text-[#39415a]">
@@ -217,7 +220,7 @@ function UpgradeContent() {
             <Loader2 className="h-4 w-4 animate-spin" /> Opening checkout...
           </>
         ) : (
-          "Continue to checkout"
+          "Start your free trial"
         )}
       </button>
 
@@ -229,7 +232,9 @@ function UpgradeContent() {
 
       {/* Left aligned like everything above it. .am-legal centres itself, which
           suits the sign-in screens and left this page looking half-justified. */}
-      <p className="am-legal !text-left">Billed monthly through Stripe and you can cancel any time.</p>
+      <p className="am-legal !text-left">
+        Free for 3 days, then $49 billed monthly through Stripe. Cancel any time, including before the trial ends.
+      </p>
       <p className="mt-5 border-t border-[#eceef4] pt-4 text-sm text-slate-500">
         Not now?{" "}
         <Link href="/range" className="am-link">
