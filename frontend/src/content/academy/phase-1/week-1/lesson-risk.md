@@ -27,3 +27,9 @@ Before you escalate anything, name all three parts:
 - the impact
 
 An escalation that supplies all three gives the person receiving it everything they need to decide. One that says only that something looks bad sends them back to do the work you have already done.
+
+```sort
+prompt: Does each control lower the likelihood, or the impact when something gets through?
+Lowers likelihood: Patching the software | Closing a port nobody needs | Strengthening the password policy
+Lowers impact: Tested backups | Network segmentation
+```

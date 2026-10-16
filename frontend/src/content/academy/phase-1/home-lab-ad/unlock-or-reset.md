@@ -68,3 +68,10 @@ Check the Account tab before you change anything. If **Account is disabled** is 
   .ad-decision__q, .ad-decision__branch { animation: none; opacity: 1; }
 }
 </style>
+
+```sort
+prompt: Riley Kwan calls in. Which fix fits?
+Unlock the account: She remembers her password but mistyped it three times
+Reset and force a change: She has forgotten her password
+Neither, it is disabled: The Account tab shows Account is disabled ticked
+```

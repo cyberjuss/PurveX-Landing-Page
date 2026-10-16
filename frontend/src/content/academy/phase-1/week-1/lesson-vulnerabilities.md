@@ -16,3 +16,11 @@ This is the part that takes getting used to: **a vulnerability on its own causes
 Understanding that changes how you read a scanner report. A scan returns every weakness it can find, often hundreds of them, with no sense of which ones anything can actually reach. Treating that output as a queue of emergencies will consume a team indefinitely. The useful question about any single finding is therefore not how serious the weakness looks on its own, but whether anything is in a position to exploit it and what it would cost if something did.
 
 Vulnerabilities are also the part of the picture you have the most power over. You generally cannot remove the things that would attack you. You can patch the software, correct the configuration, strengthen the password policy and close the port. That is why most of the day to day work of a security team is spent here.
+
+```match
+prompt: Match each fix to the weakness it closes.
+Patch the software = Unpatched software
+Correct the configuration = A misconfigured firewall
+Strengthen the password policy = Weak passwords
+Close the port = A port left open that nobody needs
+```

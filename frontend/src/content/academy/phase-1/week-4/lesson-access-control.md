@@ -28,6 +28,13 @@ This is why hiding a button is not access control, and it is worth being blunt a
 - **Forced browsing:** requesting a page the user was never shown, such as `/admin`.
 - **Parameter tampering:** sending a value the server should set itself, such as a role or account ID. This week's lab uses this flaw.
 
+```sort
+prompt: Name the flaw.
+IDOR: Changing an ID in a request returns someone else's record
+Forced browsing: Requesting /admin, a page the user was never shown
+Parameter tampering: Sending a role the server should set itself
+```
+
 ### Fixes
 
 The fixes all follow from that rule:

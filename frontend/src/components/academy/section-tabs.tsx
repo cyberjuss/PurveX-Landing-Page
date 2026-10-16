@@ -8,6 +8,8 @@ import { CHALLENGE_PATHS, MISSION_CATALOG } from "@/lib/academy-missions";
 import { QuizBlock } from "./quiz";
 import { LabCarousel } from "./lab-carousel";
 import { MissionPager } from "./mission-pager";
+import { LessonDeck } from "./lesson-deck";
+import { isDeckable } from "@/lib/lesson-deck";
 import { TrailDock, type TrailLink } from "./trail-dock";
 import { labSpot, useCoach } from "./coach-context";
 import { HostedLabSetupNote } from "./hosted-lab-button";
@@ -96,7 +98,14 @@ export function SectionTabs({
   const [quizFoot, setQuizFoot] = useState<HTMLElement | null>(null);
   const [labFoot, setLabFoot] = useState<HTMLElement | null>(null);
   const [challengeFoot, setChallengeFoot] = useState<HTMLElement | null>(null);
+  const [deckFoot, setDeckFoot] = useState<HTMLElement | null>(null);
+  // Set only by Previous, so stepping back out of a section lands on the last
+  // slide of the one before it. Clicking a tab still opens at the first.
+  const [fromNext, setFromNext] = useState(false);
   const current = items[active];
+  // Reading sections show as slides. Challenges page their own tickets, and
+  // a resources list reads better as one list than split across slides.
+  const asDeck = current.kind === "section" && current.label !== "Resources" && isDeckable(current.markdown);
   const { setPlace } = useCoach();
   const { recordLabDone, isLabDone } = useAcademyProgress();
   const labSlug = current.kind === "lab" ? slugify(current.label) : "";
@@ -169,7 +178,8 @@ export function SectionTabs({
     return () => ro.disconnect();
   }, [active, items.length]);
 
-  function goTo(i: number) {
+  function goTo(i: number, atEnd = false) {
+    setFromNext(atEnd);
     setDir(i >= active ? 1 : -1);
     setActive(i);
     // Keep the tab in the URL so a refresh or shared link reopens it.
@@ -178,7 +188,7 @@ export function SectionTabs({
   }
 
   const prevTrail: TrailLink | null = prevItem
-    ? { label: prevItem.label, go: () => goTo(active - 1) }
+    ? { label: prevItem.label, go: () => goTo(active - 1, true) }
     : prevWeek
       ? { label: prevWeek.label, go: () => router.push(prevWeek.href) }
       : null;
@@ -272,6 +282,18 @@ export function SectionTabs({
     ) : (
       <>
         {current.kind === "section" && HOSTED_SETUP_TABS.has(current.label) && <HostedLabSetupNote />}
+        {asDeck ? (
+          <LessonDeck
+            key={current.label}
+            label={current.label}
+            markdown={current.markdown}
+            storageKey={current.label}
+            startAtEnd={fromNext}
+            actionHost={deckFoot}
+            prevBeyond={prevTrail}
+            nextBeyond={nextTrail}
+          />
+        ) : (
         <MissionPager
           key={current.label}
           prevSection={prevTrail}
@@ -280,6 +302,7 @@ export function SectionTabs({
         >
           <Markdown content={current.markdown} />
         </MissionPager>
+        )}
       </>
     );
 
@@ -333,6 +356,8 @@ export function SectionTabs({
           <div ref={setLabFoot} />
         ) : current.kind === "challenge" ? (
           <div ref={setChallengeFoot} />
+        ) : asDeck ? (
+          <div ref={setDeckFoot} />
         ) : (
           <TrailDock
             prev={prevTrail ? { go: prevTrail.go } : null}

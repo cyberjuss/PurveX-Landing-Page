@@ -18,6 +18,12 @@ A system should store a **salted, slow hash** of each password rather than the p
 
 Without both of those, identical passwords produce identical stored values and the whole table can be attacked as a single unit rather than one account at a time. Tools such as Hashcat and John the Ripper are built for exactly this, and against a fast unsalted hash they work through common passwords at a rate that makes the exercise trivial. That is precisely what happened to LinkedIn in 2012, and it is why the age of a breach tells you very little about how exposed its users were.
 
+```match
+prompt: Both halves of good password storage. Match them.
+Salt = A random value added per user, so two people with the same password get different hashes
+Slow hash = Argon2id or bcrypt, so each guess costs far more time
+```
+
 ### Why their breach is your problem
 
 The reason a vendor's breach lands on your desk is that people reuse passwords across services, and they do so in large numbers regardless of what any policy says. Attackers know this, so a leaked set of email and password pairs is immediately tried against other sign-in pages to see where else the same combination works. This is called **credential stuffing**, and it requires no skill and no knowledge of your organization at all.
@@ -31,6 +37,13 @@ The defense that actually holds here is **MFA**, because it changes what a stole
 3. Turn on MFA for those accounts, and watch their sign-ins.
 
 Two things to avoid while doing this. **Never** test leaked passwords against real accounts to see which ones work. You will generate exactly the sign-in pattern a credential-stuffing attack produces, and you may lock out the people you are trying to protect. And never send anybody their password by email, which puts a working credential into a mailbox and a mail server you do not control.
+
+```order
+prompt: A vendor was breached. Put your first moves in order.
+Find out how the passwords were stored
+Force resets for affected staff, confirmed exposures first
+Turn on MFA for those accounts and watch their sign-ins
+```
 
 <details class="academy-deeper">
 <summary>Go deeper</summary>

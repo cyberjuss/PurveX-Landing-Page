@@ -29,3 +29,11 @@ SMTP, POP3 and IMAP are the protocols behind email, and they divide the work in 
 What matters for an analyst is which machines ought to be speaking these protocols at all, and the answer is a short list: mail servers, and the clients of the people who read mail. So SMTP coming from a host with no reason to handle mail is worth following up, because one of the more common uses of a compromised machine is to send messages from it. That traffic looks perfectly ordinary in isolation while being entirely out of place on that particular host.
 
 A later section puts all of this to work. You will open Wireshark with a real capture and use ports and protocols together to separate the ordinary traffic from the traffic that does not belong, which is the point everything in this week has been building towards.
+
+```sort
+prompt: Match each job to the protocol that does it.
+DNS: Turns a name like google.com into an IP address
+DHCP: Hands an address to a laptop joining the Wi-Fi
+SMTP: Carries mail outward toward its destination
+IMAP: Lets a mail client pull messages down from a server
+```

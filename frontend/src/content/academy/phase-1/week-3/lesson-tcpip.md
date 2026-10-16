@@ -15,3 +15,9 @@ The split is worth committing to memory, because it tells you where to look when
 
 - A packet that **never found the host** is an addressing or routing problem.
 - A host that **never confirmed receipt** is a different problem, with a different cause and a different set of people who need to know.
+
+```sort
+prompt: Whose job is it, IP or TCP?
+IP: Giving every device an address | Moving data from one address to another | A packet that never found the host
+TCP: Making sure data arrives complete and in order | Numbering what it sends and waiting for confirmation | Resending anything that goes unacknowledged
+```

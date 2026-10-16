@@ -16,3 +16,10 @@ When you are working through a capture, look for all three steps before you trus
 
 - A **SYN with no SYN-ACK** means the far side did not agree to talk. A long run of those across many addresses or ports is a recognizable pattern, not a network fault.
 - **Data with no handshake in front of it** means the capture does not show you a completed TCP session. Whatever you conclude from that data rests on an assumption you have not checked.
+
+```order
+prompt: Put the TCP handshake in order.
+SYN: the computer opening the connection asks to connect
+SYN-ACK: the computer being contacted accepts
+ACK: the opener confirms it got the reply
+```

@@ -19,3 +19,10 @@ In each of those the damage is done at the moment of reading, and there is no un
 - **Encryption** makes the data unreadable to anyone who gets hold of it by another route.
 
 Each one covers a gap the others leave open, which is why they are used together rather than chosen between. Of the three, encryption is the one people most often assume is already in place when it is not. Data sent without it can be read by anyone sitting on the network path between the two ends, and that path involves far more equipment than most people picture. So when somebody asks whether a system is safe to send something through, the question underneath is usually whether the traffic is encrypted in transit.
+
+```match
+prompt: Match each control to the gap it covers.
+Authentication = Establishes who somebody is
+Access control = Decides what that person is allowed to reach
+Encryption = Makes the data unreadable to anyone who gets it by another route
+```

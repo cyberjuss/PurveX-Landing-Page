@@ -42,6 +42,13 @@ Encrypt the same thing twice with the same key and good encryption gives two dif
 
 </details>
 
+```sort
+prompt: Encoding, encryption or hashing? Sort each clue.
+Encoding: Letters, digits, + and /, often ending in = | Anyone can get it back in one step
+Encryption: Random characters that grow with the input | Only the key holder can get it back
+Hashing: Always the same length, 64 characters for SHA-256 | Nobody can ever get it back
+```
+
 ### Check yourself
 
 A log shows `powershell.exe -enc` and 400 characters of Base64 on a Finance laptop at 2:14 in the morning. Is the command hidden from you? What do you do first?

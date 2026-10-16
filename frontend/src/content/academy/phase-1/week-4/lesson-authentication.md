@@ -19,6 +19,13 @@ It is a mistake, though, to treat MFA as a single thing that is either present o
 - **Text and app codes** can be captured by a convincing fake sign-in page and replayed within seconds, because the user hands the code over willingly.
 - **Security keys and passkeys** check the real address of the site before responding, so a fake page receives nothing it can use.
 
+```sort
+prompt: Which kind of factor is each one?
+Something you know: A password | A PIN
+Something you have: A phone with an authenticator app | A security key | A smart card
+Something you are: A fingerprint | Your face
+```
+
 ### Account states
 
 | State | Meaning | Typical cause |
@@ -34,6 +41,13 @@ Unlock-ADAccount jamie.torres
 ```
 
 Do not re-enable a disabled account on request. Find out who disabled it and why.
+
+```sort
+prompt: Match each cause to the account state it produces.
+Locked out: A device still using an old password | Someone guessing
+Disabled: The person left | The account is under investigation
+Password expired: Policy requires a new password
+```
 
 ### Resets
 

@@ -269,3 +269,41 @@ reasoning.
 Every lesson should leave the student able to say: "I know what this is, I
 know how to troubleshoot it, I know how to administer it, and I understand
 how it can become a security issue."
+
+## Slides, drawings and drag-and-drop
+
+Lesson tabs show as slides. Every `###` heading starts a slide, and a long
+heading breaks at a paragraph past about 110 words. A slide with no picture
+of its own gets an animated drawing chosen from its heading. To pick one
+yourself, put a note on the line after the heading:
+
+```
+### The Three-Way Handshake
+<!-- art: handshake -->
+```
+
+Drawings: `lock`, `scan`, `server`, `bug`, `radar`, `gauge`, `search`,
+`people`, `tree`, `network`, `terminal`, `handshake`, `ports`, `tls`,
+`layers`, `transform`, `badge`, `keys`, `door`, `ticket`, `move`, `deck`.
+
+A `sort` block becomes a slide where the student drags cards into boxes.
+One line per box: the box name, a colon, then its cards split by `|`.
+
+```sort
+prompt: Weakness or actor? Sort each one.
+Vulnerability: Unpatched software | A port open that nobody needs
+Threat: Malware | An insider
+```
+
+An `order` block becomes a slide where the student puts steps in order.
+List them in the right order. The slide shuffles them.
+
+```order
+prompt: Put the TCP handshake in order.
+SYN
+SYN-ACK
+ACK
+```
+
+Cards follow the same rule as the prose: every one must come from the
+lesson it sits in. Keep each card short enough to read at a glance.

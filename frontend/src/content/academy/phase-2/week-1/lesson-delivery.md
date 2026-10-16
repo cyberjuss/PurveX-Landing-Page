@@ -4,10 +4,10 @@ Malware almost never appears from nowhere. It arrives through a delivery path, a
 
 The paths you will see most are:
 
-Phishing
-Malicious downloads
-Removable media
-Exploited software
+- Phishing
+- Malicious downloads
+- Removable media
+- Exploited software
 
 As you read, notice that most of these depend on a person or an unpatched weakness. Those are exactly what a SOC watches for.
 
@@ -36,3 +36,11 @@ Unpatched software can be attacked directly over the network, with no user actio
 This is why patching is a security control, not just maintenance. An infection with no user action points here, and it raises the question of what else on the network shares the same flaw.
 
 Whatever the path, closing it is part of the fix. Cleaning one machine without closing the way in leaves the next infection waiting.
+
+```sort
+prompt: Which path did it come in through?
+Phishing: An email tricks the user into opening an attachment
+Malicious downloads: A normal-looking installer from a cracked-software site
+Removable media: A USB drive on a machine with no internet access
+Exploited software: An infection with no user action at all
+```

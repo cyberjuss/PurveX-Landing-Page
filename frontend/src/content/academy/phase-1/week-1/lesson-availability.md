@@ -18,3 +18,17 @@ A payment page that will not load is losing money for every minute it stays down
 - **Patching** closes the defects that would otherwise be used to bring a service down deliberately.
 
 Those three answer different causes. A service can become unavailable through hardware failure, through a mistake in a change, or through somebody attacking it on purpose. That last cause is worth recognizing by name. A **distributed denial of service** attack targets availability directly, flooding a service with more requests than it can answer until genuine users cannot get through. Nothing is stolen and nothing is altered, so the attack succeeds purely by making the service unreachable. That makes it a useful reminder that a security incident does not have to involve data leaving the building.
+
+```match
+prompt: Match each control to what it does.
+Backups = Let you rebuild after something is lost
+Redundancy = Keeps a second path open when the first one fails
+Patching = Closes the defects that would be used to bring a service down
+```
+
+```sort
+prompt: A leak, a lie or a lockout? Sort each failure by the part of the triad that broke.
+Confidentiality: A leaked password | Salaries seen by someone never meant to see them | Medical records read by the wrong person
+Integrity: A payroll figure that changed overnight | A firewall rule changed to allow traffic that used to be blocked | An altered medication dose
+Availability: A site that will not load | A DDoS flood makes the service unreachable | The time clock is unreachable at shift change
+```

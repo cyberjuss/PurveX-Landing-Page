@@ -22,3 +22,18 @@ In Active Directory, every department gets its own folder and its own group of u
 - Group in the directory
 
 If those three disagree, stop before you change anything. The chart is the baseline. The directory shows what is true right now.
+
+```sort
+prompt: Which departments are marked critical?
+Critical: Compliance | Wealth Management | Finance and Accounting
+Not critical: IT | Operations
+```
+
+```match
+prompt: Match each department to what it does.
+IT = Runs and supports the company's technology
+Compliance = Ensures the firm follows GLBA and SOX
+Wealth Management = Client-facing financial planning for private investors
+Operations = Settlements and the internal processes behind the other departments
+Finance and Accounting = The firm's own internal finances
+```

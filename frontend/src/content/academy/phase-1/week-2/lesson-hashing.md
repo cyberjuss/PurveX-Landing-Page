@@ -25,6 +25,13 @@ The two inputs above differ by one character, and the resulting hashes have noth
 
 **If it does not match:** do not run it and do not delete it. Put both hashes in the ticket and escalate. Deleting destroys the evidence.
 
+```order
+prompt: Put the verification in order.
+Take the reference hash from the vendor's own site
+Hash your copy of the file
+Let the tool compare the two hashes
+```
+
 ### What a hash cannot prove
 
 It is just as important to know what the check does not establish. A match proves that your file is identical to the reference you compared it against. It says nothing at all about whether that reference was safe to begin with, because the hash only ever describes what the vendor shipped, not whether what the vendor shipped was trustworthy.

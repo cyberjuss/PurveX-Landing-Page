@@ -1,0 +1,864 @@
+/* A lesson section as a slide deck. A framed 16:9-ish surface with the
+   title across the top, an icon tile beside the text, and segments along
+   the top edge that both show progress and jump to a slide. */
+.lk { scroll-margin-top: calc(var(--ax-chrome, 65px) + 16px); }
+
+.lk__frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: clamp(360px, 58vh, 620px);
+  border: 1px solid var(--rd-line);
+  background:
+    radial-gradient(120% 80% at 100% 0%, color-mix(in srgb, var(--rd-accent) 9%, transparent), transparent 60%),
+    var(--rd-surface);
+  outline: none;
+  overflow: hidden;
+}
+.lk__frame:focus-visible { border-color: color-mix(in srgb, var(--rd-accent) 60%, transparent); }
+
+.lk__progress { display: flex; gap: 4px; padding: 14px clamp(20px, 4vw, 48px) 0; }
+.lk__progress button {
+  flex: 1 1 0;
+  height: 4px;
+  padding: 0;
+  border: 0;
+  background: var(--rd-none);
+  cursor: pointer;
+  transition: background var(--ax-dur, 220ms) var(--ax-ease, ease);
+}
+.lk__progress button.is-past { background: color-mix(in srgb, var(--rd-accent) 45%, transparent); }
+.lk__progress button.is-here { background: var(--rd-accent); }
+.lk__progress button:hover:not(.is-here) { background: color-mix(in srgb, var(--rd-accent) 65%, transparent); }
+
+.lk__slide {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(22px, 3.5vw, 44px) clamp(20px, 4vw, 48px) clamp(26px, 4vw, 48px);
+}
+
+.lk__head { display: flex; flex-direction: column; gap: 8px; margin-bottom: clamp(18px, 3vw, 32px); }
+.lk__head .rd-kicker { color: var(--rd-accent); }
+.lk__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3.2vw, 38px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+  color: var(--rd-ink);
+}
+.lk__cont { font-weight: 500; font-size: 0.55em; letter-spacing: 0; color: var(--rd-ink-3); }
+
+.lk__body {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: minmax(150px, 250px) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: center;
+}
+.lk__slide--media .lk__body { grid-template-columns: minmax(0, 1fr); align-items: start; }
+
+/* The drawing sits on a stage: a dot grid, a slow glow that breathes, and a
+   ring that turns behind it. */
+.lk__art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid color-mix(in srgb, var(--rd-accent) 28%, transparent);
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--rd-accent) 22%, transparent) 1px, transparent 1.5px) 0 0 / 14px 14px,
+    radial-gradient(circle at 30% 25%, color-mix(in srgb, var(--rd-accent) 22%, transparent), transparent 70%),
+    color-mix(in srgb, var(--rd-accent) 7%, transparent);
+  color: var(--rd-accent);
+}
+.lk__art::before {
+  content: "";
+  position: absolute;
+  inset: 12%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--rd-accent) 26%, transparent), transparent 68%);
+  animation: lk-breathe 4.5s ease-in-out infinite;
+}
+.lk__art::after {
+  content: "";
+  position: absolute;
+  inset: 6%;
+  z-index: -1;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 70%, color-mix(in srgb, var(--rd-accent) 35%, transparent) 85%, transparent 100%);
+  mask: radial-gradient(circle, transparent 64%, #000 65%, #000 67%, transparent 68%);
+  animation: lka-spin 9s linear infinite;
+}
+@keyframes lk-breathe { 0%, 100% { transform: scale(0.85); opacity: 0.6; } 50% { transform: scale(1.08); opacity: 1; } }
+
+/* The prose reads larger than a scrolling page, the way a slide would. */
+.lk__prose { max-width: 68ch; font-size: clamp(16px, 1.25vw, 18.5px); line-height: 1.6; }
+.lk__prose > :first-child { margin-top: 0; }
+.lk__prose > :last-child { margin-bottom: 0; }
+.lk__slide--media .lk__prose { max-width: none; }
+.lk__slide--media .lk__prose > p,
+.lk__slide--media .lk__prose > ul,
+.lk__slide--media .lk__prose > ol { max-width: 68ch; }
+
+@media (max-width: 640px) {
+  .lk__frame { min-height: 0; }
+  .lk__body { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .lk__art { width: 96px; aspect-ratio: 1; }
+}
+
+/* ---- Animated slide art (slide-art.tsx) ----
+   Every shape's resting style is the finished picture; the keyframes only
+   move between frames of it, so reduced motion just stops them in place. */
+.lk__art .lka { width: 82%; height: 82%; overflow: visible; }
+.lka * { transform-box: fill-box; transform-origin: center; }
+.lka-line { fill: none; stroke: currentColor; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+.lka-faint { opacity: 0.35; stroke-width: 3; }
+.lka-solid { fill: currentColor; }
+.lka-hole { fill: var(--rd-surface); }
+.lka-text { fill: currentColor; opacity: 0.35; }
+.lka-node { fill: color-mix(in srgb, currentColor 22%, transparent); stroke: currentColor; stroke-width: 3; }
+
+@keyframes lka-in { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
+@keyframes lka-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+/* Lock: data streams in, comes out scrambled, the shackle snaps shut. */
+.lka-bit { fill: currentColor; animation: lka-bit 2.4s linear infinite; }
+@keyframes lka-bit { 0% { transform: translateX(0); opacity: 0; } 15% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateX(46px); opacity: 0; } }
+.lka-cipher { fill: var(--rd-ink-3); animation: lka-cipher 2.4s linear infinite; }
+@keyframes lka-cipher { 0% { transform: translateX(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(40px); opacity: 0; } }
+.lka-shackle { animation: lka-shackle 2.4s cubic-bezier(.5, 0, .2, 1) infinite; }
+@keyframes lka-shackle { 0%, 15% { transform: translateY(-10px); } 30%, 100% { transform: none; } }
+
+/* Integrity: a scan line reads the file, then a check lands. */
+.lka-scanbar { fill: currentColor; opacity: 0.8; filter: drop-shadow(0 0 6px currentColor); animation: lka-scan 3s ease-in-out infinite; }
+@keyframes lka-scan { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: 0.8; } 60% { transform: translateY(120px); opacity: 0.8; } 70%, 100% { transform: translateY(120px); opacity: 0; } }
+.lka-ok circle { fill: var(--rd-good); }
+.lka-ok path { fill: none; stroke: var(--rd-surface); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.lka-ok { animation: lka-ok 3s ease infinite; }
+@keyframes lka-ok { 0%, 58% { opacity: 0; transform: scale(0.4); } 68% { opacity: 1; transform: scale(1.12); } 74%, 100% { opacity: 1; transform: none; } }
+
+/* Availability: lights blink, a heartbeat runs under the rack. */
+.lka-led { fill: var(--rd-good); animation: lka-blink 1.4s ease-in-out infinite; }
+.lka-pulse { stroke-dasharray: 300; animation: lka-pulse 2.6s linear infinite; }
+@keyframes lka-pulse { 0% { stroke-dashoffset: 300; } 70%, 100% { stroke-dashoffset: 0; } }
+
+/* Vulnerability: the crack throbs and a bug creeps toward it. */
+.lka-crack { fill: none; stroke: var(--rd-bad); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; animation: lka-blink 1.8s ease-in-out infinite; }
+.lka--bug .lka-bugbody { color: var(--rd-bad); animation: lka-creep 3.2s ease-in-out infinite; }
+.lka--bug .lka-bugbody .lka-line { stroke-width: 3; }
+@keyframes lka-creep { 0%, 100% { transform: translate(0, 0) rotate(0); } 25% { transform: translate(-8px, -6px) rotate(-12deg); } 50% { transform: translate(-14px, -14px) rotate(6deg); } 75% { transform: translate(-6px, -6px) rotate(-6deg); } }
+
+/* Threats: a radar sweep, and contacts light up as it passes. */
+.lka-sweep { fill: currentColor; opacity: 0.28; transform-box: view-box; transform-origin: 100px 100px; animation: lka-spin 4s linear infinite; }
+@keyframes lka-spin { to { transform: rotate(360deg); } }
+.lka-blip { fill: var(--rd-bad); animation: lka-blip 4s ease-out infinite; }
+@keyframes lka-blip { 0%, 8% { opacity: 0; transform: scale(0.4); } 14% { opacity: 1; transform: scale(1.4); } 22% { transform: none; } 60% { opacity: 1; } 80%, 100% { opacity: 0; } }
+
+/* Risk: the needle swings up into the red, eases back, swings again. */
+.lka-arc { fill: none; stroke-width: 12; stroke-linecap: round; }
+.lka-arc--good { stroke: var(--rd-good); }
+.lka-arc--warn { stroke: var(--rd-warn); }
+.lka-arc--bad { stroke: var(--rd-bad); }
+.lka-needle { transform-box: view-box; transform-origin: 100px 140px; transform: rotate(48deg); animation: lka-needle 4s cubic-bezier(.4, 1.6, .5, 1) infinite; }
+@keyframes lka-needle { 0%, 100% { transform: rotate(-62deg); } 30%, 55% { transform: rotate(48deg); } 75% { transform: rotate(-10deg); } }
+
+/* Search: the glass runs down the list and stops on the match. */
+.lka-row { fill: color-mix(in srgb, currentColor 14%, transparent); }
+.lka-row--hit { fill: color-mix(in srgb, currentColor 55%, transparent); animation: lka-hit 3.6s ease infinite; }
+@keyframes lka-hit { 0%, 45% { fill: color-mix(in srgb, currentColor 14%, transparent); } 55%, 90% { fill: color-mix(in srgb, currentColor 55%, transparent); } 100% { fill: color-mix(in srgb, currentColor 14%, transparent); } }
+.lka-glass { transform-box: view-box; transform: translate(-10px, 60px); animation: lka-glass 3.6s cubic-bezier(.5, 0, .3, 1) infinite; }
+@keyframes lka-glass { 0% { transform: translate(-10px, 0); } 20% { transform: translate(-10px, 30px); } 40%, 90% { transform: translate(-10px, 60px); } 100% { transform: translate(-10px, 0); } }
+
+/* People: links draw out from the hub one at a time; the hub pulses. */
+.lka-link { stroke-dasharray: 80; stroke-width: 3; animation: lka-link 3s ease infinite; }
+@keyframes lka-link { 0% { stroke-dashoffset: 80; } 30%, 85% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 80; } }
+.lka--people .lka-node { animation: lka-in 0.5s ease both; }
+.lka-hub { animation: lka-hub 2s ease-in-out infinite; }
+@keyframes lka-hub { 0%, 100% { transform: none; } 50% { transform: scale(1.18); } }
+
+/* Tree: the units grow out of the root. */
+.lka-pop { animation: lka-pop 4s ease infinite; }
+@keyframes lka-pop { 0% { opacity: 0; transform: scale(0.5); } 12%, 88% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+.lka-branch { stroke-width: 3; stroke-dasharray: 240; animation: lka-branch 4s ease infinite; }
+@keyframes lka-branch { 0% { stroke-dashoffset: 240; } 25%, 88% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 240; opacity: 0; } }
+
+/* Network: packets cross both ways between the computer and the server. */
+.lka-packet { fill: currentColor; animation: lka-packet 2s ease-in-out infinite; }
+.lka-packet--back { fill: var(--rd-good); animation-name: lka-packet-back; }
+@keyframes lka-packet { 0% { transform: translateX(0); opacity: 0; } 15%, 85% { opacity: 1; } 100% { transform: translateX(44px); opacity: 0; } }
+@keyframes lka-packet-back { 0% { transform: translateX(0); opacity: 0; } 15%, 85% { opacity: 1; } 100% { transform: translateX(-44px); opacity: 0; } }
+
+/* Terminal: commands type out line by line; the cursor blinks. */
+.lka-type { fill: currentColor; opacity: 0.6; transform-origin: left center; animation: lka-type 3.6s steps(12) infinite; }
+@keyframes lka-type { 0% { transform: scaleX(0); } 30%, 92% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
+.lka-cursor { fill: currentColor; animation: lka-blink 1s steps(1) infinite; }
+.lka-dot { fill: var(--rd-ink-3); }
+
+/* Default: the top slide floats, a spark twinkles. */
+.lka-float { animation: lka-float 3.4s ease-in-out infinite; }
+@keyframes lka-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px) rotate(-1.5deg); } }
+.lka-spark { fill: currentColor; animation: lka-blink 1.6s ease-in-out infinite; }
+
+/* The tile itself rises in with the slide. */
+.lk__art { animation: lka-in 0.5s var(--ax-ease, ease) both; }
+
+.lka-label { font: 700 11px var(--font-mono, ui-monospace, monospace); fill: currentColor; }
+.lka-label--sm { font-size: 9.5px; }
+.lka-label--inv { fill: var(--rd-surface); }
+
+/* Handshake: SYN, SYN-ACK, ACK cross in turn, then both ends light up. */
+.lka-msg { animation: lka-msg 4.5s ease infinite both; }
+.lka-msg--back { animation-name: lka-msg-back; }
+@keyframes lka-msg { 0% { opacity: 0; transform: translateX(-10px); } 10%, 85% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+@keyframes lka-msg-back { 0% { opacity: 0; transform: translateX(10px); } 10%, 85% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+.lka-linkup { fill: var(--rd-good); animation: lka-linkup 4.5s ease infinite; }
+@keyframes lka-linkup { 0%, 50% { opacity: 0.15; transform: scale(0.6); } 58% { opacity: 1; transform: scale(1.4); } 64%, 88% { opacity: 1; transform: none; } 100% { opacity: 0.15; } }
+
+/* Ports: a packet knocks and one door at a time answers. */
+.lka-port { fill: color-mix(in srgb, currentColor 12%, transparent); stroke: currentColor; stroke-width: 2; animation: lka-port 3.2s ease infinite; }
+@keyframes lka-port { 0%, 30%, 100% { fill: color-mix(in srgb, currentColor 12%, transparent); } 8%, 22% { fill: color-mix(in srgb, currentColor 50%, transparent); } }
+.lka-packet--port { transform-box: view-box; animation: lka-knock 3.2s steps(4, jump-none) infinite; }
+@keyframes lka-knock { from { transform: translateY(0); } to { transform: translateY(108px); } }
+
+/* TLS: packets ride a sealed tube; the onlooker sees nothing. */
+.lka-tube { stroke-width: 3; }
+.lka-tlspkt { fill: currentColor; animation: lka-tlspkt 2.1s linear infinite; }
+@keyframes lka-tlspkt { 0% { transform: translateX(0); opacity: 0; } 10%, 90% { opacity: 1; } 100% { transform: translateX(90px); opacity: 0; } }
+.lka-bob { animation: lka-float 2.8s ease-in-out infinite; }
+.lka-pupil { animation: lka-look 3s ease-in-out infinite; }
+@keyframes lka-look { 0%, 100% { transform: translateX(-6px); } 50% { transform: translateX(6px); } }
+
+/* Layers: a packet drops down the stack, lighting each layer it crosses. */
+.lka-slab { fill: color-mix(in srgb, currentColor 12%, transparent); stroke: currentColor; stroke-width: 2; animation: lka-slab 2.4s ease infinite; }
+@keyframes lka-slab { 0%, 40%, 100% { fill: color-mix(in srgb, currentColor 12%, transparent); } 10%, 25% { fill: color-mix(in srgb, currentColor 45%, transparent); } }
+.lka-drop { transform-box: view-box; animation: lka-drop 2.4s cubic-bezier(.5, 0, .5, 1) infinite; }
+@keyframes lka-drop { 0% { transform: translateY(0); opacity: 0; } 8% { opacity: 1; } 85% { transform: translateY(102px); opacity: 1; } 100% { transform: translateY(102px); opacity: 0; } }
+
+/* Encoding, encryption, hashing: one input, three very different outputs. */
+.lka-wire { stroke-width: 3; stroke-dasharray: 90; animation: lka-wire 4.2s ease infinite; }
+@keyframes lka-wire { 0% { stroke-dashoffset: 90; } 20%, 88% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 90; } }
+
+/* Authentication: the badge is scanned, the code arrives, the check lands. */
+.lka-cardscan { fill: currentColor; opacity: 0.8; filter: drop-shadow(0 0 6px currentColor); animation: lka-cardscan 3s ease-in-out infinite; }
+@keyframes lka-cardscan { 0% { transform: translateY(0); opacity: 0; } 8% { opacity: 0.8; } 40% { transform: translateY(68px); opacity: 0.8; } 48%, 100% { transform: translateY(68px); opacity: 0; } }
+.lka-code { fill: currentColor; animation: lka-code 3s ease infinite; }
+@keyframes lka-code { 0%, 20% { opacity: 0.15; } 30%, 90% { opacity: 1; } 100% { opacity: 0.15; } }
+
+/* Authorization: one key, two doors open, the third stays shut. */
+.lka-panel { fill: color-mix(in srgb, currentColor 30%, var(--rd-surface)); stroke: currentColor; stroke-width: 2; transform-origin: left center; }
+.lka-open { transform: scaleX(0.25); animation: lka-open 4.5s ease infinite; }
+.lka-open--2 { animation-name: lka-open-2; }
+@keyframes lka-open { 0%, 15% { transform: none; } 25%, 90% { transform: scaleX(0.25); } 100% { transform: none; } }
+@keyframes lka-open-2 { 0%, 45% { transform: none; } 55%, 90% { transform: scaleX(0.25); } 100% { transform: none; } }
+.lka-deny { fill: none; stroke: var(--rd-bad); stroke-width: 5; stroke-linecap: round; animation: lka-deny 4.5s ease infinite; }
+@keyframes lka-deny { 0%, 72% { opacity: 0; transform: scale(0.4); } 80% { opacity: 1; transform: scale(1.2); } 85%, 95% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+.lka-key { transform-box: view-box; transform: translateX(116px); animation: lka-key 4.5s cubic-bezier(.5, 0, .3, 1) infinite; }
+@keyframes lka-key { 0%, 8% { transform: translateX(0); } 38% { transform: translateX(58px); } 68%, 95% { transform: translateX(116px); } 100% { transform: translateX(0); } }
+
+/* Broken access control: one digit changes and the door swings open anyway. */
+.lka-id-a { opacity: 0; animation: lka-id-a 4s steps(1) infinite; }
+.lka-id-b { fill: var(--rd-bad); animation: lka-id-b 4s steps(1) infinite; }
+@keyframes lka-id-a { 0% { opacity: 1; } 35%, 100% { opacity: 0; } }
+@keyframes lka-id-b { 0% { opacity: 0; } 35%, 100% { opacity: 1; } }
+.lka-beam { fill: color-mix(in srgb, var(--rd-warn) 35%, transparent); }
+.lka-swing { transform: scaleX(0.3); animation: lka-swing 4s ease infinite; }
+@keyframes lka-swing { 0%, 40% { transform: none; } 55%, 92% { transform: scaleX(0.3); } 100% { transform: none; } }
+.lka-warnmark circle { fill: var(--rd-bad); }
+.lka-warnmark path { stroke: var(--rd-surface); stroke-width: 4; stroke-linecap: round; }
+.lka--door .lka-warnmark { animation: lka-ok 4s ease infinite; animation-delay: 0.4s; }
+
+/* Ticket: it slides in open, the status flips, the check lands. */
+.lka-slidein { animation: lka-slidein 3.4s ease infinite; }
+@keyframes lka-slidein { 0% { transform: translateY(-16px); opacity: 0; } 12%, 92% { transform: none; opacity: 1; } 100% { opacity: 0; } }
+.lka-status { fill: var(--rd-good); animation: lka-status 3.4s steps(1) infinite; }
+@keyframes lka-status { 0% { fill: var(--rd-warn); } 55%, 100% { fill: var(--rd-good); } }
+.lka--ticket .lka-ok { animation-duration: 3.4s; }
+
+/* Move: the account hops from one folder to the other. */
+.lka-hop { transform-box: view-box; transform: translateX(102px); animation: lka-hop 3.6s cubic-bezier(.5, 0, .3, 1) infinite; }
+@keyframes lka-hop { 0%, 15% { transform: translate(0, 0); } 45% { transform: translate(51px, -44px); } 70%, 92% { transform: translate(102px, 0); } 100% { transform: translate(0, 0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .lka *, .lk__art { animation: none !important; }
+  .lka-scanbar, .lka-cardscan, .lka-bit, .lka-cipher, .lka-packet, .lka-tlspkt, .lka-drop { opacity: 0; }
+}
+
+/* ---- Drag-and-drop activities (drag-activity.tsx) ---- */
+.lk__slide--activity .lk__body { grid-template-columns: minmax(0, 1fr); align-items: start; }
+.lkd { display: flex; flex-direction: column; gap: 14px; }
+.lkd__prompt { margin: 0; font-family: var(--font-display); font-size: clamp(18px, 1.6vw, 22px); font-weight: 600; color: var(--rd-ink); }
+.lkd__how { margin: -8px 0 0; font-size: var(--ty-note, 13px); color: var(--rd-ink-3); }
+
+.lkd__pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 56px;
+  padding: 12px;
+  border: 1px dashed var(--rd-line);
+  background: color-mix(in srgb, var(--rd-ink) 3%, transparent);
+}
+.lkd__pool.is-empty { align-items: center; border-style: solid; border-color: color-mix(in srgb, var(--rd-good) 40%, transparent); }
+
+.lkd__card {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 12px 9px 8px;
+  border: 1px solid color-mix(in srgb, var(--rd-accent) 35%, var(--rd-line));
+  background: var(--rd-surface);
+  color: var(--rd-ink);
+  font-size: 14.5px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition: border-color 160ms, box-shadow 160ms, background 160ms;
+}
+button.lkd__card:hover { border-color: var(--rd-accent); }
+.lkd__card.is-picked { border-color: var(--rd-accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--rd-accent) 45%, transparent); }
+.lkd__card.is-dragging { z-index: 20; cursor: grabbing; box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28); }
+.lkd__card.is-miss { border-color: var(--rd-bad); animation: lkd-shake 0.4s ease; }
+@keyframes lkd-shake { 20%, 60% { translate: -6px 0; } 40%, 80% { translate: 6px 0; } }
+.lkd__grip { width: 14px; height: 14px; flex: none; color: var(--rd-ink-3); }
+
+.lkd__buckets { display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); gap: 10px; }
+.lkd__bucket {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 120px;
+  padding: 12px;
+  border: 1px solid var(--rd-line);
+  background: color-mix(in srgb, var(--rd-accent) 4%, transparent);
+  transition: border-color 160ms, background 160ms;
+  outline: none;
+}
+.lkd__bucket.is-ready { cursor: pointer; border-style: dashed; border-color: color-mix(in srgb, var(--rd-accent) 50%, transparent); }
+.lkd__bucket.is-over, .lkd__bucket.is-ready:hover, .lkd__bucket:focus-visible {
+  border-color: var(--rd-accent);
+  background: color-mix(in srgb, var(--rd-accent) 12%, transparent);
+}
+.lkd__bucketname { font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-accent); }
+.lkd__placed { display: flex; flex-direction: column; gap: 6px; }
+.lkd__card--in { cursor: default; font-size: 13.5px; border-color: color-mix(in srgb, var(--rd-good) 45%, transparent); animation: lka-in 0.3s ease both; }
+.lkd__card--in svg { color: var(--rd-good); flex: none; }
+
+.lkd__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.lkd__step {
+  display: grid;
+  grid-template-columns: 28px 22px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--rd-line);
+  background: var(--rd-surface);
+  transition: border-color 160ms, background 160ms, box-shadow 160ms;
+}
+.lkd__step.is-dragging { border-color: var(--rd-accent); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22); background: color-mix(in srgb, var(--rd-accent) 10%, var(--rd-surface)); }
+.lkd__step.is-right { border-color: color-mix(in srgb, var(--rd-good) 60%, transparent); }
+.lkd__step.is-wrong { border-color: color-mix(in srgb, var(--rd-bad) 60%, transparent); }
+.lkd__num { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; font-weight: 700; color: var(--rd-ink-3); text-align: center; }
+.lkd__step.is-right .lkd__num { color: var(--rd-good); }
+.lkd__step.is-wrong .lkd__num { color: var(--rd-bad); }
+.lkd__handle { display: grid; place-items: center; height: 28px; color: var(--rd-ink-3); cursor: grab; touch-action: none; }
+.lkd__step.is-dragging .lkd__handle { cursor: grabbing; }
+.lkd__text { font-size: 14.5px; line-height: 1.4; color: var(--rd-ink); }
+.lkd__arrows { display: flex; gap: 4px; }
+.lkd__arrows button { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid var(--rd-line); background: transparent; color: var(--rd-ink-2); cursor: pointer; }
+.lkd__arrows button:hover:not(:disabled) { border-color: var(--rd-accent); color: var(--rd-accent); }
+.lkd__arrows button:disabled { opacity: 0.35; cursor: default; }
+
+.lkd__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 36px; flex-wrap: wrap; }
+.lkd__note { font-size: var(--ty-note, 13px); color: var(--rd-ink-2); }
+.lkd__done { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--rd-good); }
+.lkd__reset { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; padding: 4px 0; font-size: var(--ty-note, 13px); color: var(--rd-ink-3); cursor: pointer; }
+.lkd__reset:hover { color: var(--rd-accent); }
+
+@media (max-width: 640px) {
+  .lkd__buckets { grid-template-columns: minmax(0, 1fr); }
+  .lkd__bucket { min-height: 72px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lkd__card.is-miss, .lkd__card--in { animation: none; }
+}
+
+/* ---- More drawings (firewall, ddos, logs, mail, dns, backup) ---- */
+.lka-brick { fill: color-mix(in srgb, currentColor 35%, transparent); stroke: currentColor; stroke-width: 1.5; }
+.lka-bounce { fill: var(--rd-bad); transform-box: view-box; animation: lka-bounce 2.4s ease-in-out infinite; }
+@keyframes lka-bounce { 0% { transform: translateX(0); opacity: 0; } 10% { opacity: 1; } 45% { transform: translateX(58px); } 55% { transform: translateX(58px) scale(1.3); } 90% { transform: translateX(0); opacity: 1; } 100% { opacity: 0; } }
+.lka-pass { fill: var(--rd-good); transform-box: view-box; animation: lka-pass 2.4s linear infinite; }
+@keyframes lka-pass { 0% { transform: translateX(0); opacity: 0; } 10%, 88% { opacity: 1; } 100% { transform: translateX(170px); opacity: 0; } }
+
+.lka-swarm { fill: var(--rd-bad); transform-box: view-box; animation: lka-swarm 1.5s ease-in infinite; }
+@keyframes lka-swarm { 0% { transform: translate(0, 0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translate(122px, var(--dy, 0)); opacity: 0.2; } }
+.lka-strain { animation: lka-strain 0.3s linear infinite; }
+@keyframes lka-strain { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(1.5px); } }
+.lka-led--bad { fill: var(--rd-bad); animation-duration: 0.6s; }
+
+.lka-scroll { transform-box: view-box; animation: lka-scroll 6s linear infinite; }
+@keyframes lka-scroll { from { transform: translateY(0); } to { transform: translateY(-112px); } }
+.lka-logbad { fill: var(--rd-bad); }
+.lka-glass--log { transform: none; animation: lka-float 3s ease-in-out infinite; }
+
+.lka-fly { transform-box: view-box; animation: lka-fly 3s cubic-bezier(.4, 0, .3, 1) infinite; }
+@keyframes lka-fly { 0% { transform: translate(0, 0); opacity: 0; } 10% { opacity: 1; } 50% { transform: translate(70px, -60px) rotate(-8deg); } 80% { transform: translate(140px, -24px) scale(0.6); opacity: 1; } 90%, 100% { transform: translate(140px, -24px) scale(0.4); opacity: 0; } }
+.lka-flap { fill: none; stroke: var(--rd-surface); stroke-width: 3; stroke-linejoin: round; }
+.lka-trail { stroke-dasharray: 4 8; }
+.lka-arrive { fill: var(--rd-good); animation: lka-ok 3s ease infinite; }
+
+.lka-meridian { animation: lka-meridian 3s ease-in-out infinite; }
+@keyframes lka-meridian { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0.15); } }
+.lka-globe { animation: lka-float 4s ease-in-out infinite; }
+
+.lka-fill { fill: color-mix(in srgb, currentColor 40%, transparent); transform-origin: center bottom; animation: lka-fill 4.2s ease infinite; }
+@keyframes lka-fill { 0% { transform: scaleY(0.05); } 80%, 95% { transform: scaleY(1); } 100% { transform: scaleY(0.05); } }
+.lka-copy { fill: currentColor; transform-box: view-box; animation: lka-copy 2.1s ease-in-out infinite; }
+@keyframes lka-copy { 0% { transform: translateX(-30px); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateX(80px); opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .lk__art::before, .lk__art::after { animation: none; }
+  .lka-swarm, .lka-bounce, .lka-pass, .lka-copy, .lka-fly { opacity: 1; animation: none !important; }
+}
+
+/* ---- Slide body: build-in, icon tiles, icon cards, steps (slide-body.tsx) ---- */
+.lk__flow { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.lk__flow .lk__prose p { margin: 0; }
+.lk-build { animation: lk-build 0.5s var(--ax-ease, ease) both; animation-delay: calc(var(--i, 0) * 110ms + 120ms); }
+@keyframes lk-build { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+.lk-tiles, .lk-cards, .lk-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.lk-tiles { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.lk-cards { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.lk-tiles > li, .lk-cards > li {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--rd-line);
+  background: color-mix(in srgb, var(--rd-accent) 4%, var(--rd-surface));
+  animation: lk-pop 0.45s cubic-bezier(.3, 1.4, .5, 1) both;
+  animation-delay: calc(var(--i, 0) * 110ms + var(--j, 0) * 80ms + 220ms);
+  transition: border-color 160ms, transform 160ms;
+}
+.lk-tiles > li:hover, .lk-cards > li:hover { border-color: color-mix(in srgb, var(--rd-accent) 55%, transparent); transform: translateY(-2px); }
+.lk-tiles > li { flex-direction: column; align-items: flex-start; }
+@keyframes lk-pop { from { opacity: 0; transform: translateY(12px) scale(0.94); } to { opacity: 1; transform: none; } }
+
+.lk-ico {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  color: var(--rd-accent);
+  background: color-mix(in srgb, var(--rd-accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rd-accent) 30%, transparent);
+}
+.lk-ico svg { width: 20px; height: 20px; }
+.lk-tiles > li:hover .lk-ico svg, .lk-cards > li:hover .lk-ico svg { animation: lk-wiggle 0.5s ease; }
+@keyframes lk-wiggle { 25% { transform: rotate(-12deg) scale(1.1); } 60% { transform: rotate(8deg) scale(1.1); } }
+.lk-tiles__text { font-size: 15px; line-height: 1.4; color: var(--rd-ink); }
+.lk-cards__text { display: flex; flex-direction: column; gap: 4px; font-size: 14.5px; line-height: 1.5; color: var(--rd-ink-2); }
+.lk-cards__text strong { font-family: var(--font-display); font-size: 16px; color: var(--rd-ink); }
+
+.lk-steps { counter-reset: none; }
+.lk-steps > li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rd-line);
+  animation: lk-build 0.45s var(--ax-ease, ease) both;
+  animation-delay: calc(var(--i, 0) * 110ms + var(--j, 0) * 120ms + 220ms);
+}
+.lk-steps > li:last-child { border-bottom: 0; }
+.lk-steps__n {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rd-surface);
+  background: var(--rd-accent);
+}
+.lk-steps__text { padding-top: 4px; font-size: 15.5px; line-height: 1.5; color: var(--rd-ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .lk-build, .lk-tiles > li, .lk-cards > li, .lk-steps > li { animation: none; }
+  .lk-tiles > li:hover .lk-ico svg, .lk-cards > li:hover .lk-ico svg { animation: none; }
+}
+
+/* Malware: the germ hops from host to host, each one turning red. */
+.lka-host { fill: color-mix(in srgb, currentColor 14%, transparent); stroke: currentColor; stroke-width: 3; animation: lka-host 3.3s ease infinite; }
+@keyframes lka-host { 0%, 8% { fill: color-mix(in srgb, currentColor 14%, transparent); stroke: currentColor; } 18%, 90% { fill: color-mix(in srgb, var(--rd-bad) 35%, transparent); stroke: var(--rd-bad); } 100% { fill: color-mix(in srgb, currentColor 14%, transparent); stroke: currentColor; } }
+.lka-germ { color: var(--rd-bad); transform-box: view-box; animation: lka-germ 3.3s cubic-bezier(.5, 0, .3, 1) infinite; }
+.lka-germ circle { fill: currentColor; }
+.lka-germ path { stroke: currentColor; stroke-width: 3; stroke-linecap: round; }
+@keyframes lka-germ { 0%, 15% { transform: translate(0, 0); } 33%, 48% { transform: translate(-52px, 82px); } 66%, 85% { transform: translate(52px, 82px); } 100% { transform: translate(0, 0); } }
+
+/* Contain: the cable is cut and a ring closes around the host. */
+.lka-germ-dot { fill: var(--rd-bad); animation: lka-blink 1.2s ease-in-out infinite; }
+.lka-cable-b { transform-box: view-box; transform: translateX(10px); animation: lka-cut 3.2s ease infinite; }
+@keyframes lka-cut { 0%, 25% { transform: translateX(-22px); } 40%, 92% { transform: translateX(10px); } 100% { transform: translateX(-22px); } }
+.lka-snip { animation: lka-ok 3.2s ease infinite; }
+.lka-ring { stroke-dasharray: 340; stroke: var(--rd-good); opacity: 0.8; animation: lka-ring 3.2s ease infinite; }
+@keyframes lka-ring { 0%, 35% { stroke-dashoffset: 340; } 70%, 92% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 340; } }
+
+/* ---- Cartoon people (cartoon-art.tsx) ---- */
+.lka [class^="lkc-"], .lka [class*=" lkc-"] { transform-box: view-box; }
+.lkc-eyes { transform-box: fill-box !important; transform-origin: center; animation: lkc-blink 4.2s ease infinite; }
+@keyframes lkc-blink { 0%, 90%, 100% { transform: scaleY(1); } 93% { transform: scaleY(0.1); } }
+.lkc-desk { fill: color-mix(in srgb, var(--rd-ink) 28%, transparent); }
+.lkc-key { fill: color-mix(in srgb, var(--rd-ink) 45%, transparent); }
+.lkc-screen { fill: #1f2340; stroke: currentColor; stroke-width: 3; }
+.lkc-scr-line { fill: currentColor; opacity: 0.55; }
+.lkc-line { fill: none; stroke: var(--rd-ink); stroke-width: 2.5; stroke-linecap: round; }
+.lkc-line--thick { stroke-width: 5; }
+.lkc-board { fill: var(--rd-surface); stroke: color-mix(in srgb, var(--rd-ink) 35%, transparent); stroke-width: 2; }
+.lkc-door { fill: color-mix(in srgb, var(--rd-warn) 22%, transparent); stroke: color-mix(in srgb, var(--rd-ink) 45%, transparent); stroke-width: 3; }
+.lkc-lens { fill: color-mix(in srgb, #7dd3fc 30%, transparent); stroke: var(--rd-ink); stroke-width: 5; }
+.lkc-clue { fill: color-mix(in srgb, var(--rd-ink) 30%, transparent); animation: lkc-clue 3s ease infinite; }
+@keyframes lkc-clue { 0%, 40%, 100% { fill: color-mix(in srgb, var(--rd-ink) 30%, transparent); } 55%, 75% { fill: var(--rd-warn); } }
+
+.lkc-alert circle { fill: var(--rd-bad); }
+.lkc-alert path { stroke: #fff; stroke-width: 3.5; stroke-linecap: round; }
+.lkc-alert { transform-box: fill-box !important; transform-origin: center; animation: lkc-alert 3s ease infinite; }
+@keyframes lkc-alert { 0%, 30% { transform: scale(0); } 40% { transform: scale(1.3); } 48%, 90% { transform: scale(1); } 100% { transform: scale(0); } }
+
+.lkc-type { animation: lkc-type 0.32s ease-in-out infinite alternate; }
+.lkc-type--b { animation-delay: 0.16s; }
+@keyframes lkc-type { from { transform: rotate(-3deg); } to { transform: rotate(4deg); } }
+.lkc-lean { animation: lkc-lean 3s ease infinite; }
+@keyframes lkc-lean { 0%, 35%, 100% { transform: none; } 45%, 85% { transform: rotate(4deg) translateX(3px); } }
+
+.lkc-glow { animation: lkc-glow 2.2s ease-in-out infinite; }
+@keyframes lkc-glow { 0%, 100% { opacity: 1; } 45% { opacity: 0.35; } 50% { opacity: 1; } }
+.lkc-rise { font: 700 13px var(--font-mono, ui-monospace, monospace); fill: #4ade80; animation: lkc-rise 2.1s ease-out infinite; }
+@keyframes lkc-rise { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-70px); opacity: 0; } }
+
+.lkc-wave { animation: lkc-wave 1.6s ease-in-out infinite; }
+@keyframes lkc-wave { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-14deg); } }
+.lkc-bubble-box { fill: var(--rd-surface); stroke: currentColor; stroke-width: 2.5; stroke-linejoin: round; }
+.lkc-bubble { animation: lka-float 3s ease-in-out infinite; }
+.lkc-q { font: 800 30px var(--font-display, sans-serif); fill: var(--rd-warn); animation: lkc-swap-a 4s steps(1) infinite; }
+.lkc-a { fill: none; stroke: var(--rd-good); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; animation: lkc-swap-b 4s steps(1) infinite; }
+@keyframes lkc-swap-a { 0% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes lkc-swap-b { 0% { opacity: 0; } 50%, 100% { opacity: 1; } }
+
+.lkc-dangle { animation: lkc-dangle 2.4s ease-in-out infinite; }
+@keyframes lkc-dangle { 0%, 100% { transform: rotate(7deg); } 50% { transform: rotate(-7deg); } }
+
+.lkc-walk { animation: lkc-walk 3.6s ease-in-out infinite; }
+@keyframes lkc-walk { 0% { transform: translateX(-14px); } 50% { transform: translateX(26px) translateY(-2px); } 100% { transform: translateX(-14px); } }
+.lkc-leg { animation: lkc-leg 0.45s ease-in-out infinite alternate; }
+.lkc-leg--b { animation-direction: alternate-reverse; }
+@keyframes lkc-leg { from { transform: rotate(-14deg); } to { transform: rotate(14deg); } }
+
+.lkc-bar { transform-box: fill-box !important; transform-origin: center bottom; animation: lkc-bar 4s cubic-bezier(.3, 1.4, .5, 1) infinite both; }
+@keyframes lkc-bar { 0% { transform: scaleY(0); } 15%, 90% { transform: scaleY(1); } 100% { transform: scaleY(0); } }
+.lkc-point { animation: lkc-point 4s ease-in-out infinite; }
+@keyframes lkc-point { 0%, 100% { transform: rotate(8deg); } 25% { transform: rotate(0); } 50% { transform: rotate(-8deg); } 75% { transform: rotate(-14deg); } }
+
+.lkc-sweep { animation: lkc-sweep 3s ease-in-out infinite; }
+@keyframes lkc-sweep { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(16deg); } }
+
+/* ---- Colorful icon cards ---- */
+.lk-tiles { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+.lk-cards { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.lk-c0 { --hue: #7c6cf0; } .lk-c1 { --hue: #0ea5e9; } .lk-c2 { --hue: #10b981; } .lk-c3 { --hue: #f59e0b; }
+.lk-c4 { --hue: #f43f5e; } .lk-c5 { --hue: #14b8a6; } .lk-c6 { --hue: #f97316; } .lk-c7 { --hue: #6366f1; }
+.lk-tiles > li, .lk-cards > li {
+  position: relative;
+  padding: 16px;
+  border-color: color-mix(in srgb, var(--hue, var(--rd-accent)) 30%, var(--rd-line));
+  border-top: 3px solid var(--hue, var(--rd-accent));
+  background: linear-gradient(160deg, color-mix(in srgb, var(--hue, var(--rd-accent)) 12%, transparent), transparent 70%), var(--rd-surface);
+}
+.lk-tiles > li:hover, .lk-cards > li:hover { border-color: var(--hue); transform: translateY(-3px); box-shadow: 0 10px 24px color-mix(in srgb, var(--hue) 22%, transparent); }
+.lk-ico {
+  width: 54px;
+  height: 54px;
+  color: var(--hue, var(--rd-accent));
+  border: 0;
+  background: radial-gradient(circle at 30% 25%, color-mix(in srgb, var(--hue, var(--rd-accent)) 38%, transparent), color-mix(in srgb, var(--hue, var(--rd-accent)) 12%, transparent) 70%);
+  border-radius: 16px;
+}
+.lk-ico svg { width: 28px; height: 28px; }
+.lk-tiles__text { font-weight: 600; }
+
+/* Four idle motions, handed out in turn so neighbours never move alike. */
+.lk-m0 .lk-ico svg { animation: lk-idle-float 3.2s ease-in-out infinite; }
+.lk-m1 .lk-ico svg { animation: lk-idle-pulse 2.6s ease-in-out infinite; }
+.lk-m2 .lk-ico svg { animation: lk-idle-tilt 3.6s ease-in-out infinite; }
+.lk-m3 .lk-ico svg { animation: lk-idle-bob 2.9s ease-in-out infinite; }
+@keyframes lk-idle-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes lk-idle-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.14); } }
+@keyframes lk-idle-tilt { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+@keyframes lk-idle-bob { 0%, 100% { transform: translate(0, 0); } 30% { transform: translate(2px, -3px); } 60% { transform: translate(-2px, 1px); } }
+.lk-tiles > li:hover .lk-ico svg, .lk-cards > li:hover .lk-ico svg { animation: lk-wiggle 0.5s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lka [class^="lkc-"], .lka [class*=" lkc-"] { animation: none !important; }
+  .lk-ico svg { animation: none !important; }
+}
+
+/* ==== Polish pass, held to docs/design-guideline.md ====
+   Square marks, no colour strips, depth from an inset hairline and a tint,
+   the one motion scale, staggers 60ms apart capped at four steps, and idle
+   motion that plays as a thing arrives and on hover rather than forever. */
+
+/* Card colours: a set per theme that clears 3:1 for icons. The light set is
+   the -700 end of each hue, the dark set the -400 end. */
+.lk-c0 { --hue: #5546e0; } .lk-c1 { --hue: #0369a1; } .lk-c2 { --hue: #047857; } .lk-c3 { --hue: #b45309; }
+.lk-c4 { --hue: #be123c; } .lk-c5 { --hue: #0f766e; } .lk-c6 { --hue: #c2410c; } .lk-c7 { --hue: #4338ca; }
+.academy-bg[data-academy-theme="dark"] .lk-c0 { --hue: #9a8cff; }
+.academy-bg[data-academy-theme="dark"] .lk-c1 { --hue: #38bdf8; }
+.academy-bg[data-academy-theme="dark"] .lk-c2 { --hue: #34d399; }
+.academy-bg[data-academy-theme="dark"] .lk-c3 { --hue: #fbbf24; }
+.academy-bg[data-academy-theme="dark"] .lk-c4 { --hue: #fb7185; }
+.academy-bg[data-academy-theme="dark"] .lk-c5 { --hue: #2dd4bf; }
+.academy-bg[data-academy-theme="dark"] .lk-c6 { --hue: #fb923c; }
+.academy-bg[data-academy-theme="dark"] .lk-c7 { --hue: #818cf8; }
+
+/* Cards: hairline and a quiet tint of their own hue, no top strip, no drop shadow. */
+.lk-tiles > li, .lk-cards > li {
+  border: 0;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--hue) 22%, var(--sf-line, var(--rd-line)));
+  background: linear-gradient(165deg, color-mix(in srgb, var(--hue) 9%, transparent), transparent 65%), var(--rd-surface);
+  transition: box-shadow var(--ax-dur-fast) var(--ax-ease), background var(--ax-dur-fast) var(--ax-ease), transform var(--ax-dur) var(--ax-ease);
+  animation: lk-pop var(--ax-dur-slow) var(--ax-ease) both;
+  animation-delay: calc(min(var(--i, 0), 3) * 60ms + min(var(--j, 0), 3) * 60ms + 120ms);
+}
+.lk-tiles > li:hover, .lk-cards > li:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--hue) 60%, transparent);
+  background: linear-gradient(165deg, color-mix(in srgb, var(--hue) 16%, transparent), transparent 70%), var(--rd-surface);
+}
+@keyframes lk-pop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* The icon is a mark: tinted square, inset hairline. */
+.lk-ico {
+  border-radius: 0;
+  background: color-mix(in srgb, var(--hue) var(--sf-mark-fill, 14%), transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--hue) var(--sf-mark-line, 30%), transparent);
+}
+
+/* Idle motion runs twice as the card lands, then rests; hover plays it again. */
+.lk-m0 .lk-ico svg, .lk-m1 .lk-ico svg, .lk-m2 .lk-ico svg, .lk-m3 .lk-ico svg {
+  animation-iteration-count: 2;
+  animation-delay: calc(min(var(--j, 0), 3) * 60ms + 420ms);
+}
+.lk-tiles > li:hover .lk-ico svg, .lk-cards > li:hover .lk-ico svg { animation: lk-wiggle var(--ax-dur-slow) var(--ax-ease); }
+@keyframes lk-wiggle { 30% { transform: rotate(-10deg) scale(1.12); } 70% { transform: rotate(6deg) scale(1.06); } }
+
+/* Paragraphs and steps build in on the scale too. */
+.lk-build { animation: lk-build var(--ax-dur-slow) var(--ax-ease) both; animation-delay: calc(min(var(--i, 0), 3) * 60ms + 80ms); }
+.lk-steps > li { animation: lk-build var(--ax-dur-slow) var(--ax-ease) both; animation-delay: calc(min(var(--i, 0), 3) * 60ms + min(var(--j, 0), 3) * 60ms + 120ms); }
+.lk-steps__n { background: color-mix(in srgb, var(--rd-accent) var(--sf-mark-fill, 14%), transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) var(--sf-mark-line, 30%), transparent); color: var(--rd-accent); }
+
+/* The stage: the slow ring keeps turning (a sweep, so linear), the tile
+   lands on the motion scale, and the drawing replays on a tap. */
+.lk__art { animation: lka-in var(--ax-dur-slow) var(--ax-ease) both; cursor: pointer; transition: box-shadow var(--ax-dur-fast) var(--ax-ease); }
+.lk__art::after { animation-duration: 16s; }
+.lk__art:hover { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 60%, transparent); }
+.lk__art:active .lka { transform: scale(0.97); }
+.lk__art .lka { transition: transform var(--ax-dur-fast) var(--ax-ease); }
+.lk__replay {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  font: 700 10px var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rd-ink-3);
+  opacity: 0;
+  transition: opacity var(--ax-dur-fast) var(--ax-ease);
+}
+.lk__art:hover .lk__replay, .lk__art:focus-visible .lk__replay { opacity: 1; }
+
+/* Cartoons stand on the floor and breathe. */
+.lka .lkc-shadow { fill: color-mix(in srgb, var(--rd-ink) 14%, transparent); transform-box: fill-box; transform-origin: center; animation: lkc-shadow 3.4s ease-in-out infinite; }
+@keyframes lkc-shadow { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0.92); } }
+.lkc-body { transform-box: view-box; transform-origin: 100px 190px; animation: lkc-breathe 3.4s ease-in-out infinite; }
+@keyframes lkc-breathe { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.012); } }
+
+/* Progress segments keep a 4px bar but a full-height tap target. */
+.lk__progress { gap: 4px; padding-top: 4px; }
+.lk__progress button { height: auto; padding: 10px 0; background: none; background-clip: content-box; position: relative; }
+.lk__progress button::before { content: ""; display: block; height: 4px; background: var(--rd-none); transition: background var(--ax-dur-fast) var(--ax-ease); }
+.lk__progress button.is-past::before { background: color-mix(in srgb, var(--rd-accent) 45%, transparent); }
+.lk__progress button.is-here::before { background: var(--rd-accent); }
+.lk__progress button:hover:not(.is-here)::before { background: color-mix(in srgb, var(--rd-accent) 65%, transparent); }
+.lk__progress button.is-past, .lk__progress button.is-here, .lk__progress button:hover:not(.is-here) { background: none; }
+@media (pointer: coarse) { .lk__progress button { padding: 20px 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .lk-tiles > li, .lk-cards > li, .lk-build, .lk-steps > li, .lk__art, .lkc-shadow, .lkc-body { animation: none !important; }
+  .lk-tiles > li:hover, .lk-cards > li:hover { transform: none; }
+}
+button.lk__art { padding: 0; width: 100%; font: inherit; color: var(--rd-accent); appearance: none; }
+@media (max-width: 640px) { button.lk__art { width: 96px; } }
+
+/* ==== Short paragraphs ====
+   A long paragraph arrives as two or three lines at a time. Each piece is
+   its own build step, and bold terms carry a soft marker so the eye lands
+   on them first. */
+.lk__flow { gap: 12px; }
+.lk__flow .lk__prose { max-width: 62ch; font-size: clamp(16.5px, 1.3vw, 19px); line-height: 1.6; }
+.lk__flow > .lk-build:first-child .lk__prose { font-size: clamp(17.5px, 1.45vw, 21px); color: var(--rd-ink); }
+.lk__prose strong {
+  color: var(--rd-ink);
+  background: linear-gradient(transparent 58%, color-mix(in srgb, var(--rd-accent) 22%, transparent) 58%);
+  padding: 0 1px;
+}
+
+/* ==== Match rows (drag-activity.tsx, layout "match") ==== */
+.lkd__rows { display: flex; flex-direction: column; gap: 8px; }
+.lkd__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 34%);
+  align-items: center;
+  gap: 12px;
+  padding: 10px 10px 10px 14px;
+  box-shadow: inset 0 0 0 1px var(--rd-line);
+  background: var(--rd-surface);
+  outline: none;
+  transition: box-shadow var(--ax-dur-fast) var(--ax-ease), background var(--ax-dur-fast) var(--ax-ease);
+}
+.lkd__rowtext { font-size: 15px; line-height: 1.45; color: var(--rd-ink); }
+.lkd__slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--rd-accent) 5%, transparent);
+  background-image: repeating-linear-gradient(135deg, transparent 0 6px, color-mix(in srgb, var(--rd-accent) 7%, transparent) 6px 7px);
+}
+.lkd__slotempty { font: 700 10.5px var(--font-mono, ui-monospace, monospace); letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
+.lkd__row.is-ready { cursor: pointer; }
+.lkd__row.is-ready .lkd__slot, .lkd__row.is-over .lkd__slot { box-shadow: inset 0 0 0 2px var(--rd-accent); background: color-mix(in srgb, var(--rd-accent) 14%, transparent); }
+.lkd__row.is-over { box-shadow: inset 0 0 0 1px var(--rd-accent); }
+.lkd__row:focus-visible { box-shadow: inset 0 0 0 2px var(--rd-accent); }
+.lkd__row.is-done { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-good) 45%, transparent); background: color-mix(in srgb, var(--rd-good) 6%, var(--rd-surface)); }
+.lkd__row.is-done .lkd__slot { box-shadow: none; background: none; }
+.lkd__slot .lkd__card--in { width: 100%; justify-content: center; }
+@media (max-width: 640px) { .lkd__row { grid-template-columns: minmax(0, 1fr); } }
+
+/* Cards in the pool: a grip, a lift while held, square throughout. */
+.lkd__card { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 35%, var(--rd-line)); border: 0; font-weight: 600; }
+.lkd__card.is-dragging { box-shadow: inset 0 0 0 1px var(--rd-accent), 0 18px 34px -12px rgba(0, 0, 0, 0.45); transform-origin: center; rotate: -2deg; }
+.lkd__card--in { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-good) 45%, transparent); }
+
+/* ==== Tiles follow the pointer: a glow of their own hue, a slight tilt ==== */
+.lk-tiles > li, .lk-flip {
+  --rx: 0deg;
+  --ry: 0deg;
+  transform-style: preserve-3d;
+}
+.lk-tiles > li { overflow: hidden; }
+.lk-tiles > li::before, .lk-flip__face::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(180px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--hue) 22%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity var(--ax-dur) var(--ax-ease);
+}
+.lk-tiles > li:hover::before, .lk-flip:hover .lk-flip__face::before { opacity: 1; }
+.lk-tiles > li:hover { transform: perspective(700px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-3px); }
+.lk-tiles > li > * { position: relative; }
+
+/* ==== Flip cards ==== */
+.lk-flipwrap { display: flex; flex-direction: column; gap: 10px; }
+.lk-fliphead { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: var(--ty-note, 13px); color: var(--rd-ink-3); }
+.lk-fliphead button {
+  border: 0;
+  padding: 6px 10px;
+  font: 700 11px var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rd-accent);
+  background: color-mix(in srgb, var(--rd-accent) var(--sf-mark-fill, 14%), transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) var(--sf-mark-line, 30%), transparent);
+  cursor: pointer;
+}
+.lk-cards > li { padding: 0; box-shadow: none; background: none; perspective: 900px; }
+.lk-cards > li:hover { transform: none; box-shadow: none; background: none; }
+.lk-flip {
+  display: grid;
+  width: 100%;
+  min-height: 150px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform var(--ax-dur-slow) var(--ax-ease);
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+}
+.lk-flip.is-open { transform: rotateX(var(--rx)) rotateY(calc(180deg + var(--ry))); }
+.lk-flip__face {
+  grid-area: 1 / 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px;
+  backface-visibility: hidden;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--hue) 28%, var(--sf-line, var(--rd-line)));
+  background: linear-gradient(165deg, color-mix(in srgb, var(--hue) 11%, transparent), transparent 65%), var(--rd-surface);
+}
+.lk-flip__front { justify-content: center; align-items: flex-start; }
+.lk-flip__front strong { font-family: var(--font-display); font-size: 19px; line-height: 1.2; color: var(--rd-ink); }
+.lk-flip__hint { margin-top: auto; font: 700 10px var(--font-mono, ui-monospace, monospace); letter-spacing: 0.12em; text-transform: uppercase; color: var(--hue); }
+.lk-flip__back { transform: rotateY(180deg); font-size: 15px; line-height: 1.5; color: var(--rd-ink-2); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--hue) 55%, transparent); }
+.lk-flip__back strong { font-family: var(--font-display); font-size: 15px; color: var(--hue); }
+.lk-flip:hover .lk-flip__face { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--hue) 60%, transparent); }
+.lk-flip:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 2px; }
+.lk-cards > li { animation: lk-pop var(--ax-dur-slow) var(--ax-ease) both; animation-delay: calc(min(var(--i, 0), 3) * 60ms + min(var(--j, 0), 3) * 60ms + 120ms); }
+
+@media (prefers-reduced-motion: reduce) {
+  .lk-flip, .lk-flip.is-open { transform: none; transition: none; }
+  .lk-flip__back { transform: none; visibility: hidden; }
+  .lk-flip.is-open .lk-flip__back { visibility: visible; }
+  .lk-flip.is-open .lk-flip__front { visibility: hidden; }
+  .lk-tiles > li:hover { transform: none; }
+}
+
+/* ==== The closing recap ====
+   One wash of accent behind it, like the portal's other hero surfaces, a
+   row of three numbers for what the section covered, then the terms as
+   flip cards to recall before turning. */
+.lk__slide--recap { background: radial-gradient(120% 70% at 0% 0%, color-mix(in srgb, var(--rd-accent) 12%, transparent), transparent 60%); }
+.lk__slide--recap .lk__title { font-size: clamp(22px, 2.8vw, 34px); }
+.lk-recap { display: flex; flex-direction: column; gap: 16px; }
+.lk-recap__stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+.lk-recap__stats span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 8px 12px;
+  font: 700 11px var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rd-ink-2);
+  background: color-mix(in srgb, var(--rd-accent) var(--sf-mark-fill, 14%), transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) var(--sf-mark-line, 30%), transparent);
+}
+.lk-recap__stats b { font-family: var(--font-display); font-size: 20px; letter-spacing: -0.02em; color: var(--rd-accent); }
+.lk-recap .lk-flip { min-height: 130px; }

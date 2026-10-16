@@ -34,6 +34,12 @@ That table is the whole distinction between encryption and the other two methods
 
 HTTPS shows how the two work together rather than in competition. The browser and the website use their key pairs to agree on a fresh shared key for that one session, usually AES, and everything sent afterwards is protected by that shared key. The slow method solves the problem of agreeing on a secret in public, and the fast method does the actual work.
 
+```match
+prompt: Match each kind of encryption to how it works.
+Symmetric = One shared key both locks and unlocks, so it is fast
+Asymmetric = A pair of keys, where anything locked with one opens only with the other
+```
+
 ### Back to Sam: the recovery key call
 
 With that in place, Sam's situation becomes straightforward to explain. BitLocker keeps the drive key inside the laptop's TPM, a dedicated security chip on the motherboard, and the TPM is deliberately fussy about when it hands that key over. It releases the key only when the machine's startup process looks the same as it did the last time, on the reasoning that a changed startup could mean somebody is trying to boot the drive in a way its owner never intended.
@@ -97,6 +103,13 @@ The first shows whether the drive is encrypted. The second lists its key protect
 - Phishing emails often carry an encrypted ZIP with the password in the email body. Mail scanners cannot look inside the ZIP, and attackers rely on that.
 
 </details>
+
+```match
+prompt: Where is the data, and what protects it?
+At rest = A laptop's drive, protected by BitLocker
+In transit = Signing in to a web portal, protected by HTTPS or a VPN
+In use = A file open in an app, protected by access control and endpoint security
+```
 
 ### Check yourself
 

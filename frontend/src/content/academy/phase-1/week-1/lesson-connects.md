@@ -11,6 +11,14 @@ Work through it in that order when something lands in front of you:
 
 Taking the steps in sequence stops you jumping to a conclusion from a single frightening detail, and it produces a description somebody else can act on without repeating your work.
 
+```order
+prompt: Put the chain in the order you work through it.
+The vulnerability
+The threat that could use it
+The CIA property that would fail
+The impact of that failure
+```
+
 ### Trade-offs
 
 The three properties are not independent of one another, and in practice they compete:

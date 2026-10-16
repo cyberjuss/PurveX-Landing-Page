@@ -4,12 +4,12 @@ Malware is grouped by how it spreads and what it does once it lands. Naming the 
 
 The main types you will see include:
 
-Virus
-Worm
-Trojan
-Ransomware
-Spyware and infostealers
-Rootkit
+- Virus
+- Worm
+- Trojan
+- Ransomware
+- Spyware and infostealers
+- Rootkit
 
 As you read, note what makes each one different because the response changes with the type.
 
@@ -48,3 +48,22 @@ The danger is quiet: no files are locked, so it can run for weeks. When you susp
 A rootkit hides an attacker's presence by tampering with the operating system itself, so normal tools may report that nothing is wrong. It is often what keeps other malware hidden.
 
 A suspected rootkit is beyond a tier-1 fix. Preserve the machine and do not trust its own output. Escalate to a team that can inspect it from outside the running system.
+
+```sort
+prompt: Match each behavior to its type.
+Virus: Attaches to a file and runs when that file is opened
+Worm: Spreads across a network with no one opening anything
+Trojan: Hides inside a cracked app or a fake installer
+Ransomware: Encrypts files and demands payment for the key
+Spyware and infostealers: Grabs passwords and session cookies
+Rootkit: Tampers with the operating system so normal tools report nothing wrong
+```
+
+```match
+prompt: An alert names the type. Match the first move.
+Worm = Assume others are next and contain it right away
+Ransomware = Isolate affected hosts immediately and escalate at once
+Trojan = Remove the program and reset the account that ran it
+Rootkit = Preserve the machine, do not trust its output, and escalate
+Spyware = Treat the account's credentials and sessions as compromised
+```

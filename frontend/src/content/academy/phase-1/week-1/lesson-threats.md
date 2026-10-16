@@ -20,3 +20,9 @@ What you can control is:
 That is why a threat and a weakness matter in combination rather than separately. The same threat meets a well-patched system and a neglected one with entirely different results, and the difference is the part you built.
 
 Knowing which threats are realistic for your own organization also keeps the work proportionate. A regional accounting firm and a defense contractor face genuinely different sets of actors. Treating every organization as though a nation-state group were about to arrive spends effort better aimed at what is far more likely to turn up.
+
+```sort
+prompt: Weakness or actor? Sort each one.
+Vulnerability: Unpatched software on a web server | A firewall left misconfigured | A policy that allows weak passwords | A port open that nobody needs
+Threat: A criminal group | Malware | An insider | A flood that takes out a data center | A nation-state group
+```

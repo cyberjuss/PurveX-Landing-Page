@@ -10,6 +10,13 @@ Three principles shape almost every authorization decision you will make, and th
 - **Need to know.** Access to specific data only while a task genuinely requires it, rather than permanently because somebody once asked.
 - **Separation of duties.** No single person controls an entire sensitive process end to end, such as both editing what clients are billed and approving those same changes. It removes the possibility of one person acting alone.
 
+```match
+prompt: Match each principle to what it means.
+Least privilege = Each account gets only the access its job requires
+Need to know = Access to specific data only while a task requires it
+Separation of duties = No single person controls a sensitive process end to end
+```
+
 ### Role-based access control
 
 In practice permissions are almost never assigned to people directly. They are granted to **security groups** instead, and people are added to those groups, so the group stands in for the role. That indirection buys you two things:
@@ -26,6 +33,13 @@ Administrative power is deliberately split into three levels rather than granted
 | Level 1, Domain Admin | The domain controller and Active Directory | Nothing above it |
 | Level 2, Server Admin | Application and file servers | The domain controller |
 | Level 3, Helpdesk | Workstations, password resets, local support | Servers or the domain controller |
+
+```sort
+prompt: Which access level controls each one?
+Level 1 · Domain Admin: The domain controller | Active Directory
+Level 2 · Server Admin: Application servers | File servers
+Level 3 · Helpdesk: Workstations | Password resets | Local support
+```
 
 ### Reading access
 
@@ -49,6 +63,14 @@ The failures below account for most of the authorization problems you will encou
 - **Admin accounts for daily work.** Every routine action becomes a privileged one. An administrator should hold a normal account for day to day use and a separate admin account for admin tasks.
 - **Over-privileged service accounts.** `svc-backup-job` needs to read the data it backs up and nothing else. It has no business signing in interactively or holding Domain Admin.
 - **Unreviewed groups.** The condition that lets all of the above persist. Periodic access reviews, where each manager confirms who should still be in which group, catch what individual tickets miss.
+
+```match
+prompt: Name the failure in each scenario.
+Privilege creep = Someone changed roles and kept the groups from the old one
+Stale account = An account still active for someone who has left
+Admin account for daily work = Every routine action an administrator takes is a privileged one
+Over-privileged service account = svc-backup-job signs in interactively and holds Domain Admin
+```
 
 ### Logs
 

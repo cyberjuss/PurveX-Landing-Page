@@ -25,6 +25,12 @@ That is why the build script puts every account in a real OU. No OU-linked Group
 
 If you find someone in a default folder, that account is not where it belongs. Never treat the default folders as a department.
 
+```sort
+prompt: Organizational Unit or Container?
+Organizational Unit: A GPO can link to it | It can hold sub-OUs | OU=Compliance
+Container: Windows builds it and you cannot make your own | CN=Computers | CN=Users
+```
+
 ### Security Groups
 
 A **Security Group** is a list of accounts. You use it to grant permissions or apply Group Policy to exactly the people who need them, whatever OU they live in.

@@ -25,6 +25,20 @@ What makes this worth a full week is how most real breaches actually begin. The 
 
 The pattern in that table is worth sitting with for a moment, because none of these required an unknown vulnerability or a sophisticated piece of tooling. In two cases a valid credential was used by the wrong person, and in the third the application simply never asked whether the visitor was entitled to the document it was handing over. Nor is that a historical accident. Since 2021 broken access control has sat at number one on the OWASP Top 10 list of web application risks, above every category of injection and every category of misconfiguration.
 
+```match
+prompt: Match each word to its job.
+Authentication = Proves somebody is who they claim to be
+Authorization = Decides what an established identity may reach
+Access control = Enforces that decision on every single request
+```
+
+```match
+prompt: Match each breach to the way in.
+Colonial Pipeline = A VPN account with a leaked password and no MFA
+MGM Resorts = A caller talked the help desk into resetting an employee's MFA
+First American Financial = Changing one number in a web address, with no check on the visitor
+```
+
 ### Where you meet this on the job
 
 This material reaches you differently depending on where you sit, and you will likely occupy each seat at some stage:

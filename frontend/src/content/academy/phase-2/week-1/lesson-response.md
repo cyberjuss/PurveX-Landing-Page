@@ -4,10 +4,10 @@ When an endpoint alert fires, the goal is not to remove the malware yourself. It
 
 A tier-1 response runs in this order:
 
-Verify
-Contain
-Preserve
-Escalate
+1. Verify
+2. Contain
+3. Preserve
+4. Escalate
 
 As you read, notice that containment comes before cleanup and that evidence is never destroyed.
 
@@ -39,3 +39,11 @@ Hand the incident up with what you found:
  Note what you already contained.
 
 A good escalation lets the next analyst start work instead of re-gathering basics. That write-up is the deliverable of a tier-1 malware response, as much as the containment itself.
+
+```order
+prompt: Put the tier-1 response in order.
+Verify: confirm the alert is real
+Contain: isolate the host from the network
+Preserve: do not wipe or rebuild it yet
+Escalate: hand it up with what you found
+```

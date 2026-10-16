@@ -27,3 +27,11 @@ What encryption does not hide is almost everything else. You can still see:
 - that a TLS handshake took place at all
 
 In practice that is frequently enough to decide whether the conversation belongs there, which is the decision you were trying to make. Analysts work from this outside information far more often than they read payloads.
+
+```match
+prompt: Match each one to what it does.
+TCP's handshake = Sets up the connection
+TLS's handshake = Sets up the privacy
+HTTP = Anyone watching the wire can read the data
+HTTPS = The data is encrypted and watchers see only gibberish
+```
