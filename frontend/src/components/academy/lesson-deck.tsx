@@ -73,18 +73,29 @@ export function LessonDeck({
   const back = () => (index === 0 ? prevBeyond?.go() : go(index - 1));
   const forward = () => (index === total - 1 ? nextBeyond?.go() : go(index + 1));
 
-  function onKeyDown(e: React.KeyboardEvent) {
-    const target = e.target as HTMLElement;
-    if (target.closest("input, textarea, select, [contenteditable], .lkd")) return;
-    if (e.key === "ArrowRight" || e.key === "PageDown") {
+  // Left and right arrows turn the slide from anywhere on the page, not only
+  // once the slide has focus. They stand down while the student is typing,
+  // working an activity, holding a modifier (Alt+Left is the browser's Back),
+  // or looking at a screenshot or any other dialog, which use the arrows
+  // themselves.
+  const keys = useRef({ back, forward });
+  keys.current = { back, forward };
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      const right = e.key === "ArrowRight" || e.key === "PageDown";
+      const left = e.key === "ArrowLeft" || e.key === "PageUp";
+      if (!right && !left) return;
+      const target = e.target as HTMLElement | null;
+      if (target?.closest?.("input, textarea, select, [contenteditable], .lkd, [role='dialog'], [aria-modal='true']")) return;
+      if (document.querySelector(".ad-zoom, [aria-modal='true']")) return;
       e.preventDefault();
-      forward();
-    }
-    if (e.key === "ArrowLeft" || e.key === "PageUp") {
-      e.preventDefault();
-      back();
-    }
-  }
+      if (right) keys.current.forward();
+      else keys.current.back();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   if (total === 0) return null;
   const slide = slides[Math.min(index, total - 1)];
@@ -110,7 +121,6 @@ export function LessonDeck({
         aria-roledescription="slide"
         aria-label={`${label}, slide ${index + 1} of ${total}`}
         tabIndex={0}
-        onKeyDown={onKeyDown}
         // A drag inside an activity is not a swipe to the next slide.
         onTouchStart={(e) => (touchX.current = (e.target as HTMLElement).closest(".lkd") ? null : e.touches[0].clientX)}
         onTouchEnd={(e) => {
