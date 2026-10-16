@@ -100,12 +100,38 @@ export async function claimCoachQuestion(userId: string, limit: number, day = to
     }
     if (error && !missingFunction(error.code)) {
       console.error("academy_coach_usage claim failed", error.code, error.message);
-      // Refusing would close Coach on a database hiccup. The per-process count
-      // below still caps a single instance, which is the lesser problem.
+      // Refusing would close Coach on a database hiccup.
+    }
+    // The function is not there yet. Read, check, write -- which is what this
+    // did before the function existed: two requests landing together can both
+    // pass, but the count survives the request, and that is the part that
+    // matters. Counting in memory alone meant nothing was written at all, and
+    // since a serverless process is replaced constantly the count went back
+    // to zero every few minutes and the day's limit never arrived.
+    const { data: row, error: readErr } = await supabaseAdmin
+      .from("academy_coach_usage")
+      .select("count")
+      .eq("user_id", userId)
+      .eq("day", day)
+      .maybeSingle();
+    if (!readErr) {
+      const used = typeof row?.count === "number" ? row.count : 0;
+      if (used >= limit) return null;
+      const next = used + 1;
+      const { error: writeErr } = await supabaseAdmin
+        .from("academy_coach_usage")
+        .upsert({ user_id: userId, day, count: next, updated_at: new Date().toISOString() });
+      if (!writeErr) {
+        memoryUsage.set(userId, { day, count: next });
+        return next;
+      }
+      console.error("academy_coach_usage upsert failed", writeErr.message);
+    } else {
+      console.error("academy_coach_usage read failed", readErr.message);
     }
   }
-  // No database, or academy.sql has not been run. One process, one counter:
-  // loose across instances, but it still refuses once it sees the cap.
+  // No database at all. One process, one counter: it goes when the process
+  // does, which is why it is the last resort rather than the fallback.
   const row = memoryUsage.get(userId);
   const used = row && row.day === day ? row.count : 0;
   if (used >= limit) return null;
@@ -119,7 +145,15 @@ export async function releaseCoachQuestion(userId: string, day = todayStamp()): 
   if (row && row.day === day) memoryUsage.set(userId, { day, count: Math.max(0, row.count - 1) });
   if (!supabaseAdmin) return;
   const { error } = await supabaseAdmin.rpc("academy_release_coach_question", { p_user: userId, p_day: day });
-  if (error && !missingFunction(error.code)) console.error("academy_coach_usage release failed", error.code, error.message);
+  if (!error) return;
+  if (!missingFunction(error.code)) console.error("academy_coach_usage release failed", error.code, error.message);
+  // Without the function, hand it back the long way, or a failed turn would
+  // keep costing a question it never spent.
+  const { data: stored } = await supabaseAdmin.from("academy_coach_usage").select("count").eq("user_id", userId).eq("day", day).maybeSingle();
+  if (typeof stored?.count !== "number") return;
+  await supabaseAdmin
+    .from("academy_coach_usage")
+    .upsert({ user_id: userId, day, count: Math.max(0, stored.count - 1), updated_at: new Date().toISOString() });
 }
 
 /** The same claim for the per-lab cap, so one browser lab cannot spend the day. */
@@ -138,6 +172,31 @@ export async function claimLabCoachQuestion(userId: string, lab: string, limit: 
     if (error && !missingFunction(error.code)) {
       console.error("academy_lab_coach_usage claim failed", error.code, error.message);
     }
+    // Same read-check-write as the daily claim while the function is missing,
+    // and for the same reason: a count that lives only in a process that gets
+    // replaced is a count that is always nearly zero.
+    const { data: row, error: readErr } = await supabaseAdmin
+      .from("academy_lab_coach_usage")
+      .select("count")
+      .eq("user_id", userId)
+      .eq("day", day)
+      .eq("lab", lab)
+      .maybeSingle();
+    if (!readErr) {
+      const used = typeof row?.count === "number" ? row.count : 0;
+      if (used >= limit) return null;
+      const next = used + 1;
+      const { error: writeErr } = await supabaseAdmin
+        .from("academy_lab_coach_usage")
+        .upsert({ user_id: userId, day, lab, count: next, updated_at: new Date().toISOString() });
+      if (!writeErr) {
+        memoryLabCoach.set(key, { day, count: next });
+        return next;
+      }
+      console.error("academy_lab_coach_usage upsert failed", writeErr.message);
+    } else {
+      console.error("academy_lab_coach_usage read failed", readErr.message);
+    }
   }
   const row = memoryLabCoach.get(key);
   const used = row && row.day === day ? row.count : 0;
@@ -152,7 +211,19 @@ export async function releaseLabCoachQuestion(userId: string, lab: string, day =
   if (row && row.day === day) memoryLabCoach.set(key, { day, count: Math.max(0, row.count - 1) });
   if (!supabaseAdmin) return;
   const { error } = await supabaseAdmin.rpc("academy_release_lab_coach_question", { p_user: userId, p_day: day, p_lab: lab });
-  if (error && !missingFunction(error.code)) console.error("academy_lab_coach_usage release failed", error.code, error.message);
+  if (!error) return;
+  if (!missingFunction(error.code)) console.error("academy_lab_coach_usage release failed", error.code, error.message);
+  const { data: stored } = await supabaseAdmin
+    .from("academy_lab_coach_usage")
+    .select("count")
+    .eq("user_id", userId)
+    .eq("day", day)
+    .eq("lab", lab)
+    .maybeSingle();
+  if (typeof stored?.count !== "number") return;
+  await supabaseAdmin
+    .from("academy_lab_coach_usage")
+    .upsert({ user_id: userId, day, lab, count: Math.max(0, stored.count - 1), updated_at: new Date().toISOString() });
 }
 
 export async function loadLabState(userId: string): Promise<{ snapshot: LabSnapshot; uploadedAt: string } | null> {
