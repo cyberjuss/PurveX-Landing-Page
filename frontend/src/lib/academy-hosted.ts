@@ -179,6 +179,25 @@ async function chargeElapsed(userId: string, row: HostedLabRow): Promise<void> {
 }
 
 /**
+ * Ends the session a row is in, and bills it, exactly once.
+ *
+ * Every way a lab stops has to come through here, because clearing the stop
+ * time is what ends a session and billing is what paid for it. They were
+ * separate: stopHostedLab did both, and the sweep that stops a lab at the end
+ * of its own session just wrote stopAt null -- so the most ordinary stop
+ * there is, a session reaching its own end, cost nothing at all.
+ *
+ * The claim is one conditional write, so two stops landing together cannot
+ * bill the same session twice. Charged from the row as it was read, because
+ * winning the claim moves updatedAt, which is the start the charge measures
+ * from.
+ */
+async function endSession(userId: string, row: HostedLabRow): Promise<void> {
+  if (!row.stopAt) return;
+  if (await claimLabSessionEnd(userId, row.stopAt)) await chargeElapsed(userId, row);
+}
+
+/**
  * Refuses a start when the week is spent, and says how long the session may
  * run for. A student with forty minutes left gets forty minutes, not a
  * three-hour session they cannot pay for.
@@ -751,6 +770,10 @@ export async function startHostedLab(userId: string): Promise<void> {
   // so pressing Start again is a no-op. Resetting the stop time here instead
   // would hand out free hours to anyone who kept pressing it.
   if (inst.state === "running" && row.stopAt && Date.parse(row.stopAt) > Date.now()) return;
+  // The machine is not running, but the row may still think a session is
+  // open -- a stop that half failed, or one made outside the app. Writing a
+  // new stop time over it would lose the old session without billing it.
+  await endSession(userId, row);
   const length = await sessionLengthMs(userId);
   // Both machines come back together. A student who opens the Ubuntu server and
   // finds it stopped has a broken lab, not half a lab, so the pod starts as one.
@@ -902,10 +925,7 @@ export async function stopHostedLab(userId: string): Promise<void> {
   // conditional write: whichever stop clears it is the one that hands the hours
   // back. Reading the time, refunding it and then clearing it meant two stops
   // fired together both refunded the same session.
-  // The claim is one conditional write, so whichever stop clears the stop time
-  // is the one that bills the session. Charged from the row read before the
-  // claim, because claiming it moves updatedAt.
-  if (await claimLabSessionEnd(userId, row.stopAt)) await chargeElapsed(userId, row);
+  await endSession(userId, row);
 }
 
 export async function extendHostedLab(userId: string): Promise<string | null> {
@@ -1016,8 +1036,7 @@ export async function resetHostedLab(userId: string): Promise<void> {
   const length = await sessionLengthMs(userId);
   if (row) {
     await terminatePod(row);
-    // Same claim as a stop: whichever call ends the session bills it.
-    if (await claimLabSessionEnd(userId, row.stopAt)) await chargeElapsed(userId, row);
+    await endSession(userId, row);
     await deleteHostedLab(userId);
   }
   await launch(userId, length);
@@ -1046,6 +1065,7 @@ async function resetInPlace(userId: string, row: HostedLabRow): Promise<boolean>
       // given a stop time exactly as a Start would, or Reset would have been
       // a way to run a lab for nothing -- and a pod with no stop time is one
       // no session sweep can see.
+      await endSession(userId, row);
       const length = await sessionLengthMs(userId);
       await ec2().send(new StartInstancesCommand({ InstanceIds: podInstanceIds(row) }));
       await saveHostedLab(userId, { ...row, stopAt: new Date(Date.now() + length).toISOString() });
@@ -1450,6 +1470,9 @@ export async function reapIdleHostedLabs(): Promise<number> {
     try {
       const ids = podInstanceIds(row);
       if (ids.length) await ec2().send(new TerminateInstancesCommand({ InstanceIds: ids }));
+      // A lab untouched for weeks has no session open, but if one somehow is,
+      // deleting the row would take the charge with it.
+      await endSession(userId, row);
       // Deleting the row is what frees the pod's security group for someone else.
       await deleteHostedLab(userId);
       reaped++;
@@ -1504,7 +1527,10 @@ export async function stopDueHostedLabs(): Promise<number> {
   for (const { userId, row } of await hostedLabsDueToStop()) {
     try {
       if (await stopPod(row)) stopped++;
-      await saveHostedLab(userId, { ...row, stopAt: null });
+      // Through endSession, not a bare write. Clearing the stop time here and
+      // billing nowhere made a session that ran to its own end -- the most
+      // ordinary stop there is -- free.
+      await endSession(userId, row);
     } catch (err) {
       console.error("hosted lab auto-stop failed", row.instanceId, err instanceof Error ? err.message : err);
     }

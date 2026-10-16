@@ -253,6 +253,22 @@ try {
   t("an unreadable start costs nothing", sessionMinutes({ ...row(10), updatedAt: "not a date" }) === 0);
 
 
+  // --- every stop bills, and only once -----------------------------------
+  // Clearing the stop time is what ends a session, and billing is what paid
+  // for it. They were two separate acts in five places, and the sweep that
+  // stops a lab at the end of its own session did the first without the
+  // second -- so the most ordinary stop there is cost nothing. One helper
+  // owns both now, and these keep it that way.
+  const claims = (idleLines.match(/claimLabSessionEnd\(/g) ?? []).length;
+  t("only one place ends a session", claims === 1, `${claims} call(s) to claimLabSessionEnd`);
+  // Writing a row with the stop time cleared ends a session behind
+  // endSession's back. Only a row write counts -- the status payload has a
+  // stopAt of its own and says null when there is no session, which is fine.
+  const bareClears = (idleLines.match(/\.\.\.row,[^}]*stopAt: null/g) ?? []).length;
+  t("nothing clears the stop time by hand", bareClears === 0, `${bareClears} row write(s) clearing stopAt`);
+  const endsSession = (idleLines.match(/await endSession\(/g) ?? []).length;
+  t("every stop path routes through it", endsSession >= 5, `${endsSession} call site(s)`);
+
   // A script we never published must not produce a command at all.
   let threw = false;
   try {
