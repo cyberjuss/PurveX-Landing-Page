@@ -4575,9 +4575,6 @@ html:active-view-transition .ax-page { animation: none }
 .ax-home .ax-titleblock p { margin-top: 10px; font-size: var(--ty-lead); line-height: 1.5; }
 .ax-home .ax-welcome .ax-status__score { padding-top: 6px; }
 .ax-home .ax-welcome .ax-status__score strong { font-size: var(--ty-h2); }
-.ax-home .ax-status { margin-top: 16px; padding: 16px 0 18px; }
-.ax-home .ax-status__next { gap: 4px; }
-.ax-home .ax-status__next strong { font-size: var(--ty-h4); }
 .ax-home .ax-path {
   flex: 1 1 auto;
   display: flex;
@@ -4607,7 +4604,7 @@ html:active-view-transition .ax-page { animation: none }
 .ax-home .ax-path__body { margin-top: 4px; font-size: var(--ty-body); }
 .ax-home .ax-segs { margin-top: 10px; }
 .ax-home .ax-segs i { height: 6px; }
-.ax-home .dr-home { margin-top: 0; padding: 18px 20px; }
+.ax-home .dr-home { margin-top: 26px; padding: 18px 20px; }
 @media (max-height: 820px) {
   .ax-home { min-height: 0; }
   .ax-home .ax-titleblock p { display: none; }
@@ -4615,7 +4612,7 @@ html:active-view-transition .ax-page { animation: none }
   .ax-home .ax-path > li { flex: 0 0 auto; }
   .ax-home .ax-path > li:not(:last-child)::after { display: none; }
   .ax-home .ax-path__row { padding: 10px 0; border-bottom: 1px solid var(--rd-line); }
-  .ax-home .ax-status { margin-top: 8px; padding: 10px 0 12px; }
+  .ax-home .dr-home { margin-top: 14px; }
 }
 
 .ax-welcome { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px 40px; }
@@ -4642,42 +4639,6 @@ html:active-view-transition .ax-page { animation: none }
   .ax-entryhead .ax-titleblock { flex: none; width: 100%; }
 }
 .ax-entryhead .ax-titleblock p { margin-top: 18px; }
-.ax-status {
-  display: block;
-  margin-top: 28px; padding: 22px 0 26px; border-top: 1px solid var(--rd-line);
-}
-.ax-status__next {
-  position: relative;
-  overflow: hidden;
-  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
-  padding: 20px 22px;
-  background: color-mix(in srgb, var(--rd-accent) 7%, transparent);
-  border: 1px solid var(--sf-line);
-  box-shadow: var(--sf-lift);
-  transition: background var(--ax-dur-fast), border-color var(--ax-dur-fast);
-}
-/* The page's one wash. It belongs to the thing you are meant to click, and
-   putting it on every row below would make none of them read as the next
-   step. */
-.ax-status__next::before {
-  content: "";
-  position: absolute;
-  top: -40%; left: 50%;
-  width: 150%; height: 90%;
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse at 50% 0%,
-    color-mix(in srgb, var(--rd-accent) var(--sf-wash-strength), transparent),
-    transparent var(--sf-wash-stop));
-  pointer-events: none;
-}
-.ax-status__next > * { position: relative; }
-a.ax-status__next:hover { background: color-mix(in srgb, var(--rd-accent) 13%, transparent); border-color: color-mix(in srgb, var(--rd-accent) 42%, transparent); }
-.ax-status__next .rd-kicker { color: var(--rd-accent); opacity: 0.9; }
-.ax-status__next strong {
-  display: inline-flex; align-items: center; gap: 10px;
-  font-family: var(--font-display); font-size: var(--ty-h2); font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink);
-}
-.ax-status__next svg { color: var(--rd-accent); }
 .ax-status__score { display: flex; align-items: baseline; gap: 12px; }
 .ax-status__score strong { font-family: var(--font-display); font-size: var(--ty-stat); font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: var(--rd-accent); }
 .ax-status__score em { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-micro); font-style: normal; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rd-ink-3); }
@@ -4692,18 +4653,18 @@ a.ax-status__next:hover { background: color-mix(in srgb, var(--rd-accent) 13%, t
   border-bottom: none;
 }
 .ax-path__title, .ax-curriculum__title { transition: color var(--ax-dur) var(--ax-ease); }
-.ax-path__count svg, .ax-status__next svg { transition: transform var(--ax-dur) var(--ax-ease); }
+.ax-path__count svg, .dr-home > svg { transition: transform var(--ax-dur) var(--ax-ease); }
 .ax-path__row:hover .ax-path__title, .ax-curriculum__row:hover .ax-curriculum__title { color: var(--rd-accent); }
-.ax-path__row:hover .ax-path__count svg, .ax-status__next:hover svg { transform: translateX(3px); }
+.ax-path__row:hover .ax-path__count svg, .dr-home:hover > svg { transform: translateX(3px); }
 /* Premium hover-lift on the clickable cards, on the shared easing. */
-a.ax-path__row, a.ax-curriculum__row, a.ax-status__next, a.dr-home {
+a.ax-path__row, a.ax-curriculum__row, a.dr-home {
   transition: transform var(--ax-dur) var(--ax-ease), border-color var(--ax-dur) var(--ax-ease), background var(--ax-dur) var(--ax-ease), box-shadow var(--ax-dur) var(--ax-ease);
 }
-a.ax-path__row:hover, a.ax-curriculum__row:hover, a.ax-status__next:hover, a.dr-home:hover { transform: translateY(-2px); }
-a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.dr-home:active { transform: translateY(0); transition-duration: 80ms; }
+a.ax-path__row:hover, a.ax-curriculum__row:hover, a.dr-home:hover { transform: translateY(-2px); }
+a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform: translateY(0); transition-duration: 80ms; }
 @media (prefers-reduced-motion: reduce) {
-  a.ax-path__row, a.ax-curriculum__row, a.ax-status__next, a.dr-home { transition: none; }
-  a.ax-path__row:hover, a.ax-curriculum__row:hover, a.ax-status__next:hover, a.dr-home:hover, a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.dr-home:active { transform: none; }
+  a.ax-path__row, a.ax-curriculum__row, a.dr-home { transition: none; }
+  a.ax-path__row:hover, a.ax-curriculum__row:hover, a.dr-home:hover, a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform: none; }
 }
 .ax-path__row--soon, .ax-curriculum__row--soon { opacity: 0.55; cursor: default; }
 .ax-path__row--soon:hover .ax-path__title, .ax-curriculum__row--soon:hover .ax-curriculum__title { color: inherit; }
@@ -5539,8 +5500,36 @@ textarea.pc-dock__field {
 .dr-review .is-right .dr-review__mark { background: var(--rd-good); }
 .dr-review .is-wrong .dr-review__mark { background: var(--rd-bad); }
 
-.dr-home { display: flex; align-items: center; gap: 18px; margin-top: 8px; padding: 20px 22px; border: 1px solid var(--sf-line); background: var(--rd-surface); color: var(--rd-ink); box-shadow: var(--sf-lift); transition: border-color var(--ax-dur-fast); }
-.dr-home:hover { border-color: var(--rd-accent); }
+.dr-home {
+  position: relative;
+  overflow: hidden;
+  display: flex; align-items: center; gap: 18px;
+  margin-top: 8px; padding: 20px 22px;
+  background: color-mix(in srgb, var(--rd-accent) 7%, transparent);
+  border: 1px solid var(--sf-line);
+  color: var(--rd-ink);
+  box-shadow: var(--sf-lift);
+  transition: background var(--ax-dur-fast), border-color var(--ax-dur-fast);
+}
+/* The page's one wash. It belongs to the thing you are meant to click, and
+   putting it on every row below would make none of them read as the next
+   step. */
+.dr-home::before {
+  content: "";
+  position: absolute;
+  top: -40%; left: 50%;
+  width: 150%; height: 90%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 0%,
+    color-mix(in srgb, var(--rd-accent) var(--sf-wash-strength), transparent),
+    transparent var(--sf-wash-stop));
+  pointer-events: none;
+}
+.dr-home > * { position: relative; }
+a.dr-home:hover { background: color-mix(in srgb, var(--rd-accent) 13%, transparent); border-color: color-mix(in srgb, var(--rd-accent) 42%, transparent); }
+.dr-home .rd-kicker { color: var(--rd-accent); opacity: 0.9; }
+/* The arrow only. The flame keeps the amber it sets on its own box. */
+.dr-home > svg { color: var(--rd-accent); }
 .dr-home__flame {
   display: inline-grid; place-items: center; gap: 1px;
   width: 52px; height: 52px; flex: none;

@@ -5,12 +5,11 @@ import { ArrowRight } from "lucide-react";
 import { type PhaseDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { READINESS_PATH, useResults } from "@/lib/academy-client";
-import { CHALLENGE_LABELS, challengeHref, lastTouchedMission } from "@/lib/academy-missions";
 import { LEVELS, summarize } from "@/lib/academy-score";
 import { DrillCard } from "./drill-card";
 import { preferredFirstName, useAcademyAccount, useAcademyGoals } from "./academy-account";
 import { useAcademyProgress } from "./academy-progress";
-import { isLockedHref, isPhaseLocked } from "@/lib/academy-locks";
+import { isPhaseLocked } from "@/lib/academy-locks";
 
 const PHASE_COPY: { slug: string; href: string; title: string; body: string }[] = [
   {
@@ -44,8 +43,6 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
   const firstName = preferredFirstName(useAcademyAccount(), useAcademyGoals().profile);
   const returning = Boolean(lastStop || completedCount > 0 || readiness.finished > 0);
   const greeting = returning ? "Welcome back" : "Welcome";
-  const touched = lastTouchedMission(results);
-  const lastMission = touched && !isLockedHref(challengeHref(touched.challenge, results)) ? touched : null;
 
   let firstOpen: { href: string; title: string; phaseSlug: string; entrySlug: string } | null = null;
   for (const copy of PHASE_COPY) {
@@ -88,24 +85,6 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
       : lastEntry && lastPhase
         ? { href: `/range/${lastPhase.slug}/${lastEntry.slug}`, title: lastEntry.title, phaseSlug: lastPhase.slug, entrySlug: lastEntry.slug, kind: "last" as const }
         : null;
-  // Where they were beats what they last answered.
-  //
-  // The last answered mission used to win. It is a different thing: answer a
-  // ticket, then spend half an hour reading week 1, and the card still named
-  // the ticket. It was also labelled by its challenge rather than its place,
-  // so it read "Ticket Queue" wherever they actually were. The account's own
-  // record of the tab they had open is the thing being asked for, and the
-  // last answer is the fallback for an account that has no record yet.
-  // Three answers in order: where the account says they were, then what they
-  // last answered, then where to start. pin already carries "start here" as
-  // its own fallback, so it has to be asked for the real stop first or it
-  // would answer "start here" over a perfectly good last answer.
-  const resume =
-    (pin?.kind === "last" ? pin : null) ??
-    (lastMission
-      ? { href: challengeHref(lastMission.challenge, results), title: CHALLENGE_LABELS[lastMission.challenge], kind: "last" as const }
-      : null) ??
-    pin;
 
   return (
     <div className="rd ax-home">
@@ -124,24 +103,9 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
             <em>{LEVELS[readiness.level].label}</em>
           </Link>
         </div>
-        <div className="ax-status ax-rise" style={{ ["--ax-i" as string]: 0 }}>
-          {resume ? (
-            <Link href={resume.href} className="ax-status__next" data-tour="next">
-              <span className="rd-kicker">{resume.kind === "last" ? "Last stop" : "Start here"}</span>
-              <strong>
-                {resume.title} <ArrowRight className="h-4 w-4" />
-              </strong>
-            </Link>
-          ) : (
-            <div className="ax-status__next">
-              <span className="rd-kicker">Course</span>
-              <strong>Published lessons complete</strong>
-            </div>
-          )}
-        </div>
       </header>
 
-      <div className="ax-rise" style={{ ["--ax-i" as string]: 1 }} data-tour="drills">
+      <div className="ax-rise" style={{ ["--ax-i" as string]: 0 }} data-tour="drills">
         <DrillCard />
       </div>
 
@@ -197,7 +161,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
             </>
           );
           return (
-            <li key={copy.slug} className="ax-rise" style={{ ["--ax-i" as string]: i + 2 }}>
+            <li key={copy.slug} className="ax-rise" style={{ ["--ax-i" as string]: i + 1 }}>
               {soon ? (
                 <div className="ax-path__row ax-path__row--soon">{row}</div>
               ) : (

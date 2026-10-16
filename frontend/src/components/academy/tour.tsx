@@ -70,12 +70,6 @@ const HOME: Tour = {
   title: "Range",
   tiles: [
     {
-      sel: '[data-tour="next"]',
-      icon: PlayCircle,
-      title: "Next",
-      body: "Always names the next thing to do, and moves on its own as you finish.",
-    },
-    {
       sel: '[data-tour="readiness"]',
       icon: Gauge,
       title: "Readiness",
