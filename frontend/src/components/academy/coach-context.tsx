@@ -73,6 +73,27 @@ export function useOptionalCoach() {
   return useContext(CoachContext);
 }
 
+/**
+ * Lets something outside React ask the coach a question.
+ *
+ * The hint card is built from raw DOM by the shell, and the shell renders
+ * CoachProvider rather than living inside it, so it cannot call ask()
+ * itself. It fires an event; this is what hears it. Mounted inside the
+ * provider, which is the only place ask() exists.
+ */
+export function AskCoachBridge() {
+  const { ask } = useCoach();
+  useEffect(() => {
+    const onAsk = (e: Event) => {
+      const question = (e as CustomEvent<{ question?: string }>).detail?.question;
+      if (question) ask(question);
+    };
+    window.addEventListener("academy:ask-coach", onAsk);
+    return () => window.removeEventListener("academy:ask-coach", onAsk);
+  }, [ask]);
+  return null;
+}
+
 export function useCoach() {
   const ctx = useContext(CoachContext);
   if (!ctx) throw new Error("useCoach must be used inside CoachProvider");

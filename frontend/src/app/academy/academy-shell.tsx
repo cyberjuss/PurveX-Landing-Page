@@ -14,7 +14,7 @@ import { AcademySidebar } from "@/components/academy/academy-sidebar";
 import { AcademySignIn } from "@/components/academy/academy-sign-in";
 import { AcademyWelcome, takeAcademyWelcome } from "@/components/academy/academy-welcome";
 import { UnlockForm } from "./unlock-form";
-import { CoachProvider } from "@/components/academy/coach-context";
+import { AskCoachBridge, CoachProvider } from "@/components/academy/coach-context";
 import { GoalsPanel } from "@/components/academy/goals-panel";
 import { ProofPrompt } from "@/components/academy/proof-prompt";
 import { PurvexCoach } from "@/components/academy/purvex-coach";
@@ -731,6 +731,13 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         '<div class="ad-hint-card__head"><span>Hint</span><button type="button" class="ad-hint-card__close">Close</button></div>' +
         '<p class="ad-hint-card__kicker"></p>' +
         '<div class="ad-hint-card__body"></div>' +
+        // A hint says the same thing to everybody. Somebody still stuck after
+        // reading it needs to ask about their own lab, and the way out was to
+        // close this, find the coach and describe where they were from memory.
+        '<div class="ad-hint-card__foot">' +
+        '<button type="button" class="ad-hint-card__coach">Ask the coach about this</button>' +
+        '<span class="ad-hint-card__foot-note">It can see your lab. It will not hand you the answer.</span>' +
+        "</div>" +
         "</aside>";
       document.body.appendChild(root);
       return root;
@@ -770,6 +777,9 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         wireBlockCopy(body);
       }
       root.dataset.open = "true";
+      // The coach button needs the ticket's name, and the card outlives the
+      // element it was opened from.
+      root.dataset.mission = wrap.querySelector("h4")?.textContent?.trim() || "";
       openHintId = id;
       labelHintButton(wrap, true);
     };
@@ -1095,6 +1105,18 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           .finally(() => window.location.reload());
         return;
       }
+      if (target.closest(".ad-hint-card__coach")) {
+        // The shell renders CoachProvider rather than living inside it, so it
+        // cannot call the coach directly. AskCoachBridge is listening.
+        const title = document.querySelector<HTMLElement>(".ad-hint-card")?.dataset.mission || "this ticket";
+        closeHintCard();
+        window.dispatchEvent(
+          new CustomEvent("academy:ask-coach", {
+            detail: { question: `I read the hint for "${title}" and I am still stuck. Walk me through what to look at next, without telling me the answer.` },
+          })
+        );
+        return;
+      }
       if (target.closest(".ad-hint-card__close") || target.closest(".ad-hint-card__scrim")) {
         return closeHintCard();
       }
@@ -1247,6 +1269,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       <AcademyAccountProvider student={student}>
       <AcademyGoalsProvider value={{ profile: profile ?? null, editGoals: () => setEditingGoals(true) }}>
       <CoachProvider profile={profile ?? null}>
+        <AskCoachBridge />
       <div className="academy-bg min-h-dvh" data-academy-theme={theme}>
         <header
           ref={headerRef}
