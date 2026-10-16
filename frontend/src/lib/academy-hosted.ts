@@ -21,6 +21,7 @@ import {
   deleteHostedLab,
   hostedLabsDueToStop,
   hostedLabsIdleSince,
+  hostedLabsRunning,
   loadHostedLab,
   loadLabState,
   POD_RESERVED,
@@ -28,6 +29,8 @@ import {
   saveHostedLab,
   type HostedLabRow,
 } from "@/lib/academy-store";
+import { isRangePro } from "@/lib/range-plan";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 // Hosted labs: each student's own two-machine pod in AWS. A Windows domain
 // controller cloned from the image lab-environment/hosted builds, and an Ubuntu
@@ -1517,6 +1520,53 @@ export async function stopOrphanedHostedLabs(): Promise<number> {
       if (await stopPod(row)) stopped += 1;
     } catch (err) {
       console.error("orphan stop failed", row.instanceId, err instanceof Error ? err.message : err);
+    }
+  }
+  return stopped;
+}
+
+/** A running pod's owner, looked up fresh since the lab row itself carries no
+ *  email -- the one thing isRangePro needs beyond the user id, for the admin
+ *  and comp-list checks a subscription lookup alone cannot answer. */
+async function emailFor(userId: string): Promise<string | null> {
+  if (!supabaseAdmin) return null;
+  const { data } = await supabaseAdmin.auth.admin.getUserById(userId).catch(() => ({ data: null }));
+  return data?.user?.email ?? null;
+}
+
+/** Stops one student's running lab if they are not Pro right now, through
+ *  whichever of the three paths (subscription, class, admin) is checked --
+ *  cancelling one does not mean losing the lab if another still grants it. */
+async function stopIfNotPro(userId: string, row: HostedLabRow): Promise<boolean> {
+  const pro = await isRangePro({ id: userId, email: await emailFor(userId), name: null });
+  if (pro) return false;
+  console.error("hosted lab running for an account that is not Pro, stopping it", userId, row.instanceId);
+  const stopped = await stopPod(row);
+  await endSession(userId, row);
+  return stopped;
+}
+
+/** Called right after a subscription stops granting Pro (cancelled, lapsed,
+ *  payment failed), so a lab is stopped within the same request instead of
+ *  waiting for the next daily sweep. A no-op if nothing is running. */
+export async function stopHostedLabIfLapsed(userId: string): Promise<void> {
+  const row = await loadHostedLab(userId);
+  if (!row || !row.stopAt) return;
+  await stopIfNotPro(userId, row).catch((err) =>
+    console.error("lapsed-pro stop failed", userId, err instanceof Error ? err.message : err)
+  );
+}
+
+/** The daily safety net: every lab with a session running, checked against
+ *  billing. Catches what stopHostedLabIfLapsed cannot -- a cohort seat
+ *  running out is a clock, not an event, so nothing ever calls it for one. */
+export async function stopHostedLabsForLapsedPro(): Promise<number> {
+  let stopped = 0;
+  for (const { userId, row } of await hostedLabsRunning()) {
+    try {
+      if (await stopIfNotPro(userId, row)) stopped++;
+    } catch (err) {
+      console.error("lapsed-pro sweep failed", row.instanceId, err instanceof Error ? err.message : err);
     }
   }
   return stopped;

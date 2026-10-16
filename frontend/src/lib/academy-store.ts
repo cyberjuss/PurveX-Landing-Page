@@ -557,6 +557,21 @@ export async function hostedLabsWithNoSession(): Promise<{ userId: string; row: 
   return (data ?? []).map((d) => ({ userId: d.user_id, row: hostedRow(d) }));
 }
 
+/** Labs with a session actively running against them -- the inverse of
+ *  hostedLabsWithNoSession. Pro entitlement can lapse (a cancelled
+ *  subscription, a cohort seat running out) without the lab itself knowing,
+ *  since nothing about the running pod changes; this is what the lapsed-Pro
+ *  sweep checks against the billing state instead of a stop time. */
+export async function hostedLabsRunning(): Promise<{ userId: string; row: HostedLabRow }[]> {
+  if (!supabaseAdmin) return [];
+  const { data, error } = await supabaseAdmin.from("academy_hosted_labs").select("*").not("stop_at", "is", null);
+  if (error) {
+    console.error("academy_hosted_labs running read failed", error.message);
+    return [];
+  }
+  return (data ?? []).map((d) => ({ userId: d.user_id, row: hostedRow(d) }));
+}
+
 /** Marks a reserved-but-not-yet-built pod. Overwritten seconds later with the
  *  real instance ids; if the launch dies first, the next Start reuses the slot. */
 export const POD_RESERVED = "reserved";

@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
-import { hostedLabsConfigured, reapIdleHostedLabs, stopDueHostedLabs, stopOrphanedHostedLabs } from "@/lib/academy-hosted";
+import {
+  hostedLabsConfigured,
+  reapIdleHostedLabs,
+  stopDueHostedLabs,
+  stopHostedLabsForLapsedPro,
+  stopOrphanedHostedLabs,
+} from "@/lib/academy-hosted";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -28,5 +34,12 @@ export async function GET(request: Request) {
     console.error("idle reclaim failed", err instanceof Error ? err.message : err);
     return 0;
   });
-  return NextResponse.json({ stopped, orphans, reaped });
+  // Belt to the webhook's suspenders: a cancelled subscription stops its lab
+  // the moment Stripe says so, but a cohort seat running out is a clock no
+  // webhook ever fires for, so this is the only thing that ever catches it.
+  const lapsed = await stopHostedLabsForLapsedPro().catch((err) => {
+    console.error("lapsed-pro sweep failed", err instanceof Error ? err.message : err);
+    return 0;
+  });
+  return NextResponse.json({ stopped, orphans, reaped, lapsed });
 }
