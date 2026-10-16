@@ -5512,8 +5512,18 @@ textarea.pc-dock__field {
 .dr-choice { display: flex; align-items: center; width: 100%; padding: 14px 16px; border: 1.5px solid var(--rd-line); background: transparent; text-align: left; font-size: var(--ty-lead); line-height: 1.4; color: var(--rd-ink); cursor: pointer; transition: border-color var(--ax-dur-fast), background var(--ax-dur-fast); }
 .dr-choice:hover { border-color: var(--rd-accent); }
 .dr-choice--on { border-color: var(--rd-accent); background: rgba(85, 70, 224, 0.08); box-shadow: inset 3px 0 0 var(--rd-accent); }
-.dr-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--rd-line); }
-.dr-actions--result .dr-link { margin-left: auto; }
+/* Top aligned, not centred. The left side is a column -- Exit, then the
+   ways out of a task -- and centring the button against it left it halfway
+   down, lined up with nothing. It sits on the same line as Exit now. */
+.dr-actions { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px 16px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--rd-line); }
+/* One row, so centring is the right answer there. */
+.dr-actions--result { align-items: center; }
+/* The primary stays left and everything else goes right. Both it and the
+   first link asked for margin-left:auto, so the row had two of them and the
+   free space was split between the two -- which is why Done sat a third of
+   the way across, pinned to nothing. */
+.dr-actions.dr-actions--result > .rd-cta { margin-left: 0; margin-right: auto; }
+.dr-actions--result .dr-link { margin-left: 0; }
 .dr-actions--result .dr-link + .dr-link { margin-left: 0; }
 
 .dr-score { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 20px; margin-top: 8px; }
@@ -5817,7 +5827,12 @@ textarea.pc-dock__field {
 .dr-checks li.is-ok span { color: var(--rd-good); }
 .dr-checks li.is-bad span { color: var(--rd-bad); }
 .dr-checks__stale { padding: 12px 14px; background: rgba(196, 130, 14, 0.12); color: var(--rd-ink) !important; }
-.dr-actions__side { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+/* Exit is a bordered control and the ways out are plain links, so they are
+   spaced apart from it and tucked together under it rather than sitting in
+   one evenly spaced stack of three unrelated-looking things. */
+.dr-actions__side { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.dr-actions__side > .dr-exit + .dr-link { margin-top: 6px; }
+.dr-actions__side > .dr-link { font-size: var(--ty-note); }
 .dr-actions > .rd-cta { margin-left: auto; }
 .dr-earned { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-good); }
 
