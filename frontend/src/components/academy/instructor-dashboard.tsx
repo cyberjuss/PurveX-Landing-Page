@@ -37,7 +37,6 @@ type Individuals = {
   free: number;
   proTrialing: number;
   proSubscription: number;
-  proClass: number;
   proAdmin: number;
   newLast7Days: number;
 };
@@ -638,7 +637,6 @@ function NewClassForm({ onCreated }: { onCreated: () => void }) {
 // actually moves when a post or a channel push outside the product works,
 // which nothing in the product showed anywhere until now.
 function IndividualsPanel({ n }: { n: Individuals }) {
-  const comped = n.proClass + n.proAdmin;
   return (
     <section className="rd-sec ov-individuals">
       <div className="rd-sec__head">
@@ -668,10 +666,10 @@ function IndividualsPanel({ n }: { n: Individuals }) {
           <dd>{n.newLast7Days}</dd>
         </div>
       </dl>
-      {comped > 0 && (
+      {n.proAdmin > 0 && (
         <p className="iv-note">
-          Plus {comped} comped ({n.proClass} on a class seat, {n.proAdmin} admin). Neither is a self-serve sale, so neither
-          counts above.
+          Plus {n.proAdmin} comped admin account{n.proAdmin === 1 ? "" : "s"}, not counted above. Class seats are excluded
+          from this panel entirely, not just from these numbers.
         </p>
       )}
     </section>

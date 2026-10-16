@@ -1,4 +1,5 @@
 import "server-only";
+import { allClassMembers } from "@/lib/academy-classes";
 import { rangeEntitlement } from "@/lib/range-plan";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
@@ -8,6 +9,12 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 // is the number that actually moves when an outside post or a channel push
 // works. Counted fresh on each load rather than cached, since the owner is
 // the only one who ever sees it.
+//
+// Anyone who has ever joined a class is excluded entirely, not just folded
+// into a side note. A class seat is a school's sale, not a self-serve one,
+// and counting that person here even while their cohort access has lapsed
+// (so rangeEntitlement reads them as free) would quietly inflate "free" with
+// people who were never prospects for this funnel at all.
 
 const DAY = 86_400_000;
 
@@ -16,10 +23,8 @@ export type IndividualsSummary = {
   free: number;
   proTrialing: number;
   proSubscription: number;
-  /** Comped through a class seat or an admin/comp-list email. Counted
-   *  separately because neither reflects the self-serve funnel -- a class
-   *  seat means a school already paid, an admin account is never a sale. */
-  proClass: number;
+  /** Comped through the admin/comp-list email, not a sale. Shown separately
+   *  so it never gets counted as a conversion. */
   proAdmin: number;
   newLast7Days: number;
 };
@@ -45,7 +50,9 @@ async function allAuthUsers(): Promise<AuthUser[]> {
 }
 
 export async function individualsSummary(): Promise<IndividualsSummary> {
-  const users = await allAuthUsers();
+  const [allUsers, members] = await Promise.all([allAuthUsers(), allClassMembers()]);
+  const inClass = new Set(members.map((m) => m.userId));
+  const users = allUsers.filter((u) => !inClass.has(u.id));
   const since = Date.now() - 7 * DAY;
 
   // One bulk read instead of one query per user. rangeEntitlement answers
@@ -63,14 +70,15 @@ export async function individualsSummary(): Promise<IndividualsSummary> {
     free: 0,
     proTrialing: 0,
     proSubscription: 0,
-    proClass: 0,
     proAdmin: 0,
     newLast7Days: 0,
   };
 
   // rangeEntitlement is the one place this is decided -- reusing it here
   // instead of re-deriving the same three-way check keeps this count honest
-  // with what the account can actually do, not a second opinion of it.
+  // with what the account can actually do, not a second opinion of it. Its
+  // "class" source can never land here: everyone it would apply to was
+  // already filtered out above.
   await Promise.all(
     users.map(async (u) => {
       if (Date.parse(u.created_at) >= since) summary.newLast7Days++;
@@ -80,7 +88,6 @@ export async function individualsSummary(): Promise<IndividualsSummary> {
         return;
       }
       if (entitlement.source === "admin") summary.proAdmin++;
-      else if (entitlement.source === "class") summary.proClass++;
       else if (statusByUser.get(u.id) === "trialing") summary.proTrialing++;
       else summary.proSubscription++;
     })
