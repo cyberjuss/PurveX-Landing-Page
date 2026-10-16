@@ -4474,7 +4474,7 @@ html:active-view-transition .ax-page { animation: none }
 .ax-home .ax-titleblock p { margin-top: 10px; font-size: var(--ty-lead); line-height: 1.5; }
 .ax-home .ax-welcome .ax-status__score { padding-top: 6px; }
 .ax-home .ax-welcome .ax-status__score strong { font-size: var(--ty-h2); }
-.ax-home .ax-status { margin-top: 16px; padding: 16px 0 18px; }
+.ax-home .ax-status { margin-top: 24px; padding: 16px 0 24px; }
 .ax-home .ax-status__next { gap: 4px; }
 .ax-home .ax-status__next strong { font-size: var(--ty-h4); }
 .ax-home .ax-path {
@@ -4482,7 +4482,7 @@ html:active-view-transition .ax-page { animation: none }
   display: flex;
   flex-direction: column;
   justify-content: stretch;
-  margin-top: 4px;
+  margin-top: 20px;
 }
 .ax-home .ax-path > li {
   flex: 1 1 0;
@@ -4490,7 +4490,7 @@ html:active-view-transition .ax-page { animation: none }
   flex-direction: column;
   justify-content: center;
   position: relative;
-  min-height: 0;
+  padding: 32px 0;
 }
 .ax-home .ax-path > li:not(:last-child)::after {
   content: "";
@@ -4503,19 +4503,10 @@ html:active-view-transition .ax-page { animation: none }
 }
 .ax-home .ax-path__row { padding: 0; border-bottom: none; }
 .ax-home .ax-path__title { font-size: var(--ty-h4); }
-.ax-home .ax-path__body { margin-top: 4px; font-size: var(--ty-body); }
-.ax-home .ax-segs { margin-top: 10px; }
+.ax-home .ax-path__body { margin-top: 8px; font-size: var(--ty-body); }
+.ax-home .ax-segs { margin-top: 16px; }
 .ax-home .ax-segs i { height: 6px; }
 .ax-home .dr-home { margin-top: 0; padding: 18px 20px; }
-@media (max-height: 820px) {
-  .ax-home { min-height: 0; }
-  .ax-home .ax-titleblock p { display: none; }
-  .ax-home .ax-path { justify-content: flex-start; }
-  .ax-home .ax-path > li { flex: 0 0 auto; }
-  .ax-home .ax-path > li:not(:last-child)::after { display: none; }
-  .ax-home .ax-path__row { padding: 10px 0; border-bottom: 1px solid var(--rd-line); }
-  .ax-home .ax-status { margin-top: 8px; padding: 10px 0 12px; }
-}
 
 .ax-welcome { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px 40px; }
 .ax-welcome .ax-titleblock { flex: 1; min-width: 0; }
