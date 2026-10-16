@@ -3627,11 +3627,12 @@ body:has(.lp) {
   background: var(--pvrx-surface-alt-light, #f1f5f9); border: 1px solid var(--pvrx-border-light, #e2e8f0);
   border-radius: 4px; padding: 0.08em 0.35em;
 }
-/* 4.4rem everywhere the button appears. The 3.8rem this used to reserve was
-   about a pixel more than the button measures, so any change to its label or
-   font put it back on top of the text. */
+/* 2.9rem everywhere the button appears: a 28px square, its 7px of offset,
+   and room to spare. It was 4.4rem when the button said "Copy", and the
+   lesson from that round still holds -- reserve more than the button
+   measures, or any change to it puts it back on top of the text. */
 .ad-hint-card__body li.ad-cmd {
-  position: relative; padding-right: 4.4rem;
+  position: relative; padding-right: 2.9rem;
 }
 .ad-hint-card__body li.ad-cmd > code {
   display: inline !important; background: none !important; border: 0 !important;
@@ -3643,7 +3644,7 @@ body:has(.lp) {
 .ad-hint-card__body p.ad-cmd > code {
   display: block !important; box-sizing: border-box; width: 100%;
   background: #0c1220 !important; border: 1px solid rgba(255,255,255,0.1) !important;
-  padding: 0.85rem 4.4rem 0.85rem 1rem !important;
+  padding: 0.85rem 2.9rem 0.85rem 0.9rem !important;
   color: #e8eef8 !important; font-weight: 500; font-size: 0.8125rem;
   overflow-x: auto; white-space: pre-wrap !important; word-break: break-word;
 }
@@ -3683,19 +3684,29 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body p.ad-cmd > 
   background: #050508 !important; border-color: rgba(255, 255, 255, 0.18) !important; color: #e8eef8 !important;
 }
 p.ad-cmd, li.ad-cmd { position: relative; }
+/* A square the size of the text, not a chip with a word in it. The word was
+   the widest thing in the box and the command wrapped early to clear it. */
 .ad-cmd__copy {
-  position: absolute; top: 8px; right: 8px; z-index: 1;
-  font-size: var(--ty-small); font-weight: 650; color: #e2e8f0;
-  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 6px; padding: 0.25rem 0.55rem; cursor: pointer;
+  position: absolute; top: 7px; right: 7px; z-index: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; padding: 0; cursor: pointer;
+  color: #cbd5e1;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 7px;
 }
-.ad-cmd__copy:hover { background: rgba(255,255,255,0.16); }
+.ad-cmd__copy:hover { background: rgba(255,255,255,0.16); color: #fff; }
+.ad-cmd__i { display: block; }
+/* One icon at a time: the tick replaces the sheets rather than joining them. */
+.ad-cmd__i--done { display: none; }
+.ad-cmd__copy.is-copied { color: #4ade80; border-color: rgba(74, 222, 128, 0.45); }
+.ad-cmd__copy.is-copied .ad-cmd__i { display: none; }
+.ad-cmd__copy.is-copied .ad-cmd__i--done { display: block; }
 .ad-cmd__copy:focus-visible { outline: 2px solid #e2e8f0; outline-offset: 2px; }
 /* The copy button lands on a paragraph or a list item, so both have to clear
    the same room for it. The list form never did, and a command written as a
    bullet had the button drawn over its own text. */
-.academy-prose p.ad-cmd > code { padding-right: 4.4rem; }
-.academy-prose li.ad-cmd { padding-right: 4.4rem; }
+.academy-prose p.ad-cmd > code { padding-right: 2.9rem; }
+.academy-prose li.ad-cmd { padding-right: 2.9rem; }
 /* And it is a command, not a word in a sentence: no chip, and a long
    distinguished name wraps instead of running off the side. Same treatment the
    hint card already gives these. */

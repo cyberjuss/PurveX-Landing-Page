@@ -824,6 +824,13 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       return /^(Get|Set|New|Remove|Add|Enable|Disable|Search|Unlock|Move)-/i.test(t);
     };
 
+    const COPY_ICON =
+      `<svg class="ad-cmd__i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">` +
+      `<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+    const TICK_ICON =
+      `<svg class="ad-cmd__i ad-cmd__i--done" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">` +
+      `<path d="M20 6 9 17l-5-5"/></svg>`;
+
     const wireCommandCopy = (root: Element) => {
       root.querySelectorAll("p, li").forEach((el) => {
         const code = el.querySelector(":scope > code");
@@ -838,7 +845,11 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "ad-cmd__copy";
-        btn.textContent = "Copy";
+        // An icon, not the word. The word needed four and a half rems held
+        // clear of a command that is already long enough to wrap, and it was
+        // the biggest thing in the box.
+        btn.setAttribute("aria-label", "Copy command");
+        btn.innerHTML = COPY_ICON + TICK_ICON;
         el.appendChild(btn);
       });
     };
@@ -865,6 +876,17 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         btn.closest(".ad-cmd")?.querySelector("code")?.innerText;
       if (!code) return;
       navigator.clipboard.writeText(code);
+      // The command button says it with a tick; the block buttons still have
+      // room for the word.
+      if (btn.classList.contains("ad-cmd__copy")) {
+        btn.classList.add("is-copied");
+        btn.setAttribute("aria-label", "Copied");
+        setTimeout(() => {
+          btn.classList.remove("is-copied");
+          btn.setAttribute("aria-label", "Copy command");
+        }, 1500);
+        return;
+      }
       const original = btn.textContent;
       btn.textContent = "Copied";
       setTimeout(() => {
