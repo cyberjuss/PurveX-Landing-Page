@@ -70,6 +70,25 @@ async function main() {
     t("a release gives one back in the database", (await stored()) === CAP - 1, `stored ${await stored()}`);
     const again = await claimCoachQuestion(userId, CAP, DAY);
     t("and the freed question can be spent", again === CAP, String(again));
+    // The one the review was about. Without the stored function this is the
+    // path every request takes, so if the cap only holds one request at a
+    // time it does not hold. Compare-and-set means of two arriving together
+    // exactly one lands.
+    await wipe();
+    const BURST = 25;
+    const burst = await Promise.all(Array.from({ length: BURST }, () => claimCoachQuestion(userId, CAP, DAY)));
+    const won = burst.filter((v): v is number => v !== null);
+    t(`${BURST} at once against a cap of ${CAP}: exactly ${CAP} win`, won.length === CAP, `${won.length} won`);
+    t(
+      "and they are numbered 1 to the cap with no repeats",
+      JSON.stringify([...won].sort((a, b) => a - b)) === JSON.stringify(Array.from({ length: CAP }, (_, i) => i + 1)),
+      won.join(",")
+    );
+    t("the database agrees", (await stored()) === CAP, `stored ${await stored()}`);
+
+    // Releases racing each other must not each write the same lower number.
+    await Promise.all([releaseCoachQuestion(userId, DAY), releaseCoachQuestion(userId, DAY)]);
+    t("two releases at once give back two, not one", (await stored()) === CAP - 2, `stored ${await stored()}`);
   } finally {
     await wipe();
   }
