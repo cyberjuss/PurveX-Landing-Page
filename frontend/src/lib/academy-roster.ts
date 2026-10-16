@@ -123,22 +123,37 @@ export async function classReport(cls: AcademyClass, members: ClassMember[]): Pr
   const students = members
     .map((m) => studentRow(m, raw.get(m.userId)!))
     .sort((a, b) => (b.lastActive ?? "").localeCompare(a.lastActive ?? ""));
-  const weekAgo = Date.now() - WEEK;
+  return { class: cls, students, summary: rollUp(students) };
+}
+
+/**
+ * The numbers an instructor reads about a whole class.
+ *
+ * Pulled out of classReport so it can be checked without a database. It is
+ * the only view of a class anybody gets, and it was not covered by anything.
+ *
+ * Two deliberate choices worth knowing. A student who has finished nothing is
+ * left out of the average rather than counted as a zero, so a class of
+ * fifteen with two who have not started is not reported as failing. And the
+ * weakest skills are averaged per student, so somebody who has done one
+ * mission in a skill counts as much as somebody who has done all of them --
+ * which is what an instructor means by "the class is weak on logs", but it
+ * does mean one student's single answer can name the weakest skill in a
+ * small class.
+ */
+export function rollUp(students: RosterStudent[], now = Date.now()): ClassReport["summary"] {
+  const weekAgo = now - WEEK;
   const scored = students.filter((s) => s.readiness.overall !== null);
   const skillAvg = new Map<string, number[]>();
   for (const s of students) for (const k of s.skills) if (k.score !== null) skillAvg.set(k.label, [...(skillAvg.get(k.label) ?? []), k.score]);
   return {
-    class: cls,
-    students,
-    summary: {
-      students: students.length,
-      activeThisWeek: students.filter((s) => s.lastActive && Date.parse(s.lastActive) >= weekAgo).length,
-      stuck: students.filter((s) => s.stuck.length > 0).length,
-      avgReadiness: scored.length ? Math.round(scored.reduce((sum, s) => sum + (s.readiness.overall ?? 0), 0) / scored.length) : null,
-      weakest: [...skillAvg.entries()]
-        .map(([label, v]) => ({ label, avg: Math.round(v.reduce((a, b) => a + b, 0) / v.length) }))
-        .sort((a, b) => a.avg - b.avg)
-        .slice(0, 2),
-    },
+    students: students.length,
+    activeThisWeek: students.filter((s) => s.lastActive && Date.parse(s.lastActive) >= weekAgo).length,
+    stuck: students.filter((s) => s.stuck.length > 0).length,
+    avgReadiness: scored.length ? Math.round(scored.reduce((sum, s) => sum + (s.readiness.overall ?? 0), 0) / scored.length) : null,
+    weakest: [...skillAvg.entries()]
+      .map(([label, v]) => ({ label, avg: Math.round(v.reduce((a, b) => a + b, 0) / v.length) }))
+      .sort((a, b) => a.avg - b.avg)
+      .slice(0, 2),
   };
 }
