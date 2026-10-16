@@ -860,8 +860,13 @@ async function stopInstance(instanceId: string, hibernate: boolean) {
   }
   try {
     await ec2().send(new StopInstancesCommand({ InstanceIds: [instanceId], Hibernate: true }));
-  } catch {
-    // Hibernation is not ready for a few minutes after launch. A plain stop still keeps the disk.
+  } catch (err) {
+    // Hibernation is not ready for a few minutes after launch, so falling back
+    // is right. Saying so is new: a hibernated lab resumes in about half a
+    // minute and a plain-stopped one takes five, and this was a silent catch.
+    // If hibernation ever stopped working, every student would quietly get the
+    // five-minute start and nothing anywhere would mention it.
+    console.error("hibernate refused, falling back to a plain stop", instanceId, err instanceof Error ? err.message : err);
     await ec2().send(new StopInstancesCommand({ InstanceIds: [instanceId] }));
   }
 }

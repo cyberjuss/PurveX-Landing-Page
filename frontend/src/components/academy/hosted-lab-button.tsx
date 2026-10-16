@@ -26,15 +26,38 @@ let snap: Snapshot = { status: null, busy: false, error: null };
 const listeners = new Set<() => void>();
 let loading: Promise<void> | null = null;
 let poll = 0;
+let movingSince = 0;
+
+// A hibernated lab is back in about half a minute, so asking every ten
+// seconds spent a third of the wait showing a stale answer. Ask quickly while
+// that is the likely case, then back off for the cold boot, which takes
+// minutes and does not reward impatience.
+const POLL_FAST_MS = 2_500;
+const POLL_SLOW_MS = 10_000;
+const FAST_WINDOW_MS = 60_000;
+
+function schedulePoll() {
+  if (poll) window.clearInterval(poll);
+  const fast = Date.now() - movingSince < FAST_WINDOW_MS;
+  poll = window.setInterval(() => {
+    void load();
+    // Crossing out of the fast window re-arms the slower one.
+    if (fast && Date.now() - movingSince >= FAST_WINDOW_MS) schedulePoll();
+  }, fast ? POLL_FAST_MS : POLL_SLOW_MS);
+}
 
 function set(patch: Partial<Snapshot>) {
   snap = { ...snap, ...patch };
   listeners.forEach((l) => l());
   const moving = snap.status?.state === "starting" || snap.status?.state === "stopping";
-  if (moving && !poll) poll = window.setInterval(() => void load(), 10_000);
+  if (moving && !poll) {
+    movingSince = Date.now();
+    schedulePoll();
+  }
   if (!moving && poll) {
     window.clearInterval(poll);
     poll = 0;
+    movingSince = 0;
   }
 }
 
