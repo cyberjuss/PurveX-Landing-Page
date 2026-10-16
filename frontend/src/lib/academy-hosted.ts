@@ -9,7 +9,7 @@ import {
   StopInstancesCommand,
   TerminateInstancesCommand,
 } from "@aws-sdk/client-ec2";
-import { DescribeInstanceInformationCommand, SendCommandCommand, SSMClient } from "@aws-sdk/client-ssm";
+import { DescribeInstanceInformationCommand, GetCommandInvocationCommand, SendCommandCommand, SSMClient } from "@aws-sdk/client-ssm";
 import { LAB_SCRIPT_HASHES } from "@/lib/lab-script-hashes";
 import {
   addLabMinutes,
@@ -920,13 +920,95 @@ export async function extendHostedLab(userId: string): Promise<string | null> {
   return stopAt;
 }
 
+/**
+ * PowerShell that puts the lab's contents back without replacing the machine.
+ *
+ * A reset used to terminate the pod and build a new one, which is the slowest
+ * thing the product does: five minutes, three of them Windows booting, to
+ * undo changes to a few dozen directory objects. The machine was never the
+ * problem -- the objects on it were.
+ *
+ * Deleting the three lab OUs and running the build again recreates every
+ * user, group, OU and computer from scratch. tickets.txt goes too, because it
+ * is the record of which non-directory tickets have been planted, and without
+ * clearing it the DNS record, the firewall rule, the Group Policy link and
+ * the file on the share would all stay as the student left them.
+ */
+function inPlaceResetCommand(url: string): string {
+  const dir = "C:/ProgramData/PurveX";
+  return [
+    "$ErrorActionPreference='Stop'",
+    `$s='${dir}/Build-Environment.ps1'`,
+    "if (-not (Test-Path $s)) { throw 'no lab script on this pod' }",
+    // Fresh from the site, linked with this pod's own key, so a reset also
+    // brings the lab up to the current script.
+    "[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12",
+    "$tmp=Join-Path $env:TEMP 'pvx-reset'",
+    "New-Item -ItemType Directory -Path $tmp -Force | Out-Null",
+    `Invoke-WebRequest -Uri '${url}/lab-scripts/Remove-Environment.ps1' -OutFile (Join-Path $tmp 'Remove-Environment.ps1') -UseBasicParsing -TimeoutSec 60`,
+    "& (Join-Path $tmp 'Remove-Environment.ps1') -Force -Confirm:$false",
+    // The planted-ticket record, so the infrastructure tickets plant again.
+    "Remove-Item -LiteralPath 'C:/PurveX/tickets.txt' -Force -ErrorAction SilentlyContinue",
+    // Same shape as first boot: a password nobody keeps, rolled on the machine.
+    '$labPw = "Pvx-" + (-join ((48..57) + (65..90) + (97..122) | Get-Random -Count 16 | ForEach-Object { [char]$_ })) + "-9k"',
+    "& $s -IncludeCTF -InitialPassword (ConvertTo-SecureString $labPw -AsPlainText -Force)",
+    "Write-Output 'reset done'",
+  ].join("; ");
+}
+
+/**
+ * True once the lab is a whole lab again.
+ *
+ * Counting the baseline staff is not enough. The build plants the challenge
+ * objects after them and the directory watch sends a snapshot as soon as the
+ * first ones appear, so a count of nine users was reached while the build was
+ * still running -- and the reset reported itself finished against a lab that
+ * had no challenge accounts, one computer and no infrastructure tickets.
+ * Those are the last things the build does, so they are what to wait for.
+ */
+async function resetLanded(userId: string, after: number): Promise<boolean> {
+  const lab = await loadLabState(userId).catch(() => null);
+  if (!lab || Date.parse(lab.uploadedAt) <= after) return false;
+  const s = lab.snapshot;
+  const sams = new Set(s.users.map((u) => u.sam.toLowerCase()));
+  return (
+    s.ous.length >= 5 &&
+    s.groups.length >= 8 &&
+    ["old.intern", "svc-backup-job", "kai.mendes", "noah.kim"].every((u) => sams.has(u)) &&
+    s.computers.length >= 3 &&
+    (s.infra?.planted?.length ?? 0) > 0
+  );
+}
+
+/** Waits for one SSM command to finish, and says whether it succeeded. */
+async function ssmFinished(commandId: string, instanceId: string, budgetMs: number): Promise<boolean> {
+  const until = Date.now() + budgetMs;
+  while (Date.now() < until) {
+    await new Promise((r) => setTimeout(r, 4_000));
+    const inv = await ssm()
+      .send(new GetCommandInvocationCommand({ CommandId: commandId, InstanceId: instanceId }))
+      .catch(() => null);
+    if (!inv || inv.Status === "InProgress" || inv.Status === "Pending" || inv.Status === "Delayed") continue;
+    if (inv.Status !== "Success") console.error("lab reset command ended", inv.Status, (inv.StandardErrorContent ?? "").slice(0, 300));
+    return inv.Status === "Success";
+  }
+  return false;
+}
+
 /** A clean pod from the image. The old machines and everything the student
  *  changed in them are gone. The pod slot goes back to the pool and is claimed
  *  again by the new pod, so resetting does not use slots up. */
 export async function resetHostedLab(userId: string): Promise<void> {
-  // A reset boots a fresh lab, which is a new session like any other.
-  await chargeSession(userId);
   const row = await loadHostedLab(userId);
+  // The machine was never what needed replacing. If the pod is still there,
+  // put its contents back on it: the objects are recreated in about a minute
+  // against a machine that is already up, instead of five spent terminating
+  // one and booting another, three of which are Windows starting.
+  if (row && row.instanceId !== POD_RESERVED && (await resetInPlace(userId, row))) return;
+
+  // Whatever is left cannot be reset where it stands, so it is replaced, and
+  // that is a new lab and a new session like any other.
+  await chargeSession(userId);
   if (row) {
     await terminatePod(row);
     // Same claim as a stop: the session's leftover hours go back once, to
@@ -941,6 +1023,74 @@ export async function resetHostedLab(userId: string): Promise<void> {
   } catch (err) {
     await refundSession(userId);
     throw err;
+  }
+}
+
+/**
+ * Resets the lab on the machine it is already on. False if that cannot be
+ * done, and the caller replaces the pod instead.
+ *
+ * Nothing here is charged. A reset in place does not start a session: a
+ * running lab is already inside the one it is paying for, and a stopped one
+ * is resumed only long enough to put itself back, which the stop clock it
+ * already has still governs.
+ *
+ * The lab is read back before this reports success. A reset that half worked
+ * is worse than a slow one, so a lab that does not look like a lab again
+ * falls through to being replaced.
+ */
+async function resetInPlace(userId: string, row: HostedLabRow): Promise<boolean> {
+  const c = cfg();
+  try {
+    const inst = await describe(row.instanceId).catch(() => null);
+    if (!inst || inst.state === "terminated" || inst.state === "shutting-down") return false;
+    if (inst.state === "stopped") {
+      await ec2().send(new StartInstancesCommand({ InstanceIds: podInstanceIds(row) }));
+    } else if (inst.state !== "running") {
+      // Mid-flight in some other direction. Replacing is the safe answer.
+      return false;
+    }
+    // Wait for the agent rather than guessing: a resumed pod answers in about
+    // half a minute, a cold one in a few minutes, and neither is worth a
+    // fixed sleep.
+    const ready = Date.now() + 6 * 60_000;
+    while (Date.now() < ready) {
+      if (await ssmOnline(row.instanceId)) break;
+      await new Promise((r) => setTimeout(r, 5_000));
+    }
+    if (!(await ssmOnline(row.instanceId))) return false;
+
+    // No key is passed in. The script already on the pod carries this pod's
+    // own key, so running it syncs as itself -- and a key written from out
+    // here is a key that can be the wrong one.
+    const before = await loadLabState(userId).catch(() => null);
+    const since = before ? Date.parse(before.uploadedAt) : 0;
+    const sent = await ssm().send(
+      new SendCommandCommand({
+        InstanceIds: [row.instanceId],
+        DocumentName: "AWS-RunPowerShellScript",
+        Comment: "Range lab reset",
+        TimeoutSeconds: 600,
+        Parameters: { commands: [inPlaceResetCommand(c.syncUrl)] },
+      })
+    );
+    const commandId = sent.Command?.CommandId;
+    // Wait for the command, not for the lab to start looking right. The
+    // directory watch sends a snapshot the moment objects appear, so judging
+    // by the snapshot alone declared victory halfway through the build.
+    if (!commandId || !(await ssmFinished(commandId, row.instanceId, 8 * 60_000))) return false;
+    // And then check it really is whole, because a command can succeed with
+    // half a lab behind it.
+    const done = Date.now() + 90_000;
+    while (Date.now() < done) {
+      if (await resetLanded(userId, since)) return true;
+      await new Promise((r) => setTimeout(r, 3_000));
+    }
+    console.error("lab reset ran but the lab is not whole, replacing the pod", userId);
+    return false;
+  } catch (err) {
+    console.error("lab reset in place failed, replacing the pod", userId, err instanceof Error ? err.message : err);
+    return false;
   }
 }
 

@@ -333,10 +333,13 @@ const FIRST_BOOT = [
   { label: "Building PurveX Financial", until: 265 },
   { label: "Linking to Range", until: 300 },
 ];
+// Measured, not guessed: a hibernated pod is running at thirteen seconds and
+// answering at twenty-six, because hibernation brings the sync loop back with
+// it. The old eighty made a half-minute resume read as though it had stalled.
 const RESUME = [
-  { label: "Waking the server", until: 20 },
-  { label: "Resuming Windows", until: 50 },
-  { label: "Reconnecting to Range", until: 80 },
+  { label: "Waking the server", until: 12 },
+  { label: "Resuming Windows", until: 22 },
+  { label: "Reconnecting to Range", until: 32 },
 ];
 
 const SPECS: Record<string, string> = { "t3.small": "2 vCPU · 2 GB", "t3.medium": "2 vCPU · 4 GB", "t3.large": "2 vCPU · 8 GB", "t3.xlarge": "4 vCPU · 16 GB" };
@@ -399,7 +402,8 @@ function useElapsed(startedAt: string | null | undefined, on: boolean): number {
 }
 
 function StartTracker({ status }: { status: Status }) {
-  const steps = status.firstBoot ? FIRST_BOOT : RESUME;
+  const first = status.firstBoot;
+  const steps = first ? FIRST_BOOT : RESUME;
   const elapsed = useElapsed(status.startedAt, true);
   const total = steps[steps.length - 1].until;
   const next = steps.findIndex((s) => s.until > elapsed);
@@ -411,7 +415,12 @@ function StartTracker({ status }: { status: Status }) {
     <div className="hl__track" aria-live="polite">
       <p className="hl__eta">
         <span>{steps[current].label}</span>
-        <em>{elapsed > total ? "Almost there" : `About ${left} min left`}</em>
+        {/* Past the estimate, say so. A first build is usually about five
+            minutes, but Active Directory can take its time coming up and the
+            whole thing can run to twenty. "Almost there" for a quarter of an
+            hour reads as broken, and the student has no way to tell whether
+            it is. */}
+        <em>{elapsed <= total ? `About ${left} min left` : first ? "Taking longer than usual. A first build can run to 20 minutes." : "Almost there"}</em>
       </p>
       {/* A 4px rule with a 5% fill read as a stray dash, so the empty part of
           the track is drawn and the fill never shrinks below a visible stub. */}
