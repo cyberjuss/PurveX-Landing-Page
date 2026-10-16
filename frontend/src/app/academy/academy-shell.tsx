@@ -576,7 +576,14 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       }
 
       const missionId = wrap.getAttribute("data-id") || "";
+      // Busy, not broken. Checking a lab asks the pod for a fresh snapshot
+      // and waits for the change to appear in it, which can run to the best
+      // part of a minute. A greyed-out button is what a dead one looks like
+      // too, so it says what it is doing and spins while it does it.
+      const label = btn.textContent;
       btn.disabled = true;
+      btn.classList.add("ad-guess__submit--busy");
+      btn.textContent = "Checking";
       feedback.textContent = "Checking your lab…";
       feedback.className = "ad-guess__feedback";
       let gate: Awaited<ReturnType<typeof labGate>> = null;
@@ -645,6 +652,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         }
       } finally {
         btn.disabled = false;
+        btn.classList.remove("ad-guess__submit--busy");
+        if (label !== null) btn.textContent = label;
       }
 
       if (reply.result) storeResult(missionId, reply.result);
