@@ -183,6 +183,25 @@ async function main() {
     /autoCheckout\s*&&\s*goToStripe\(\)|goToStripe\(\)/.test(upgradeSrc) && upgradeSrc.includes("autoCheckout"),
     "nothing forwards a returning buyer to Stripe automatically"
   );
+
+  console.log("\nSigning in with nowhere to land still gets you to Range");
+  // The login page hides its whole form until a browser-only check decides
+  // whether to bounce straight to signup, so nothing server-rendered ever
+  // shows the "Create an account" link -- the HTTP suite used to assert it
+  // was there and failed on every run, not because `next` was ever dropped.
+  // Read the source instead, the same way as the pair above.
+  const loginSrc = readFileSync("src/app/account/login/page.tsx", "utf8");
+  const NEXT_LINK = "`/account/signup?next=${encodeURIComponent(next)}`";
+  check(
+    "a first-time visitor is bounced to signup with the destination intact",
+    loginSrc.includes(`router.replace(${NEXT_LINK})`),
+    "the auto-redirect to signup drops `next`, so a new visitor lands on /pricing"
+  );
+  check(
+    "a returning visitor's Create an account link carries the destination",
+    loginSrc.includes(`href={${NEXT_LINK}}`),
+    "the Create an account link dropped `next`, so signup would land on /pricing"
+  );
   // The one case that must never auto-charge: someone who already pays. The
   // match is pinned to the goToStripe call rather than the plan comparison
   // alone, which also appears in the JSX below and made this pass with the
