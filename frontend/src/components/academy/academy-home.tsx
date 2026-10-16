@@ -75,17 +75,37 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
   // The tab too, so they land on what they were reading rather than the top
   // of the page it was on.
   const lastHash = lastStop?.tabSlug ? `#${lastStop.tabSlug}` : "";
+  // Name the place, not the kind of thing it is. The tab on its own said
+  // "Ticket Queue", which is a category and could be any of fifteen tickets
+  // in any of three lessons; the lesson on its own does not say which tab
+  // they had open. Both, when they differ.
+  const lastTab = lastStop?.tabLabel;
+  const pinTitle = resumeEntry ? (lastTab && lastTab !== resumeEntry.title ? `${resumeEntry.title} · ${lastTab}` : resumeEntry.title) : "";
   const pin = resumeEntry && lastPhase
-    ? { href: `/range/${lastPhase.slug}/${resumeEntry.slug}${lastHash}`, title: resumeEntry.title, phaseSlug: lastPhase.slug, entrySlug: resumeEntry.slug, kind: "last" as const }
+    ? { href: `/range/${lastPhase.slug}/${resumeEntry.slug}${lastHash}`, title: pinTitle, phaseSlug: lastPhase.slug, entrySlug: resumeEntry.slug, kind: "last" as const }
     : firstOpen
       ? { ...firstOpen, kind: "start" as const }
       : lastEntry && lastPhase
         ? { href: `/range/${lastPhase.slug}/${lastEntry.slug}`, title: lastEntry.title, phaseSlug: lastPhase.slug, entrySlug: lastEntry.slug, kind: "last" as const }
         : null;
-  // The card names the place it links to: an open challenge wins over the last lesson tab.
-  const resume = lastMission
-    ? { href: challengeHref(lastMission.challenge, results), title: CHALLENGE_LABELS[lastMission.challenge], kind: "last" as const }
-    : pin;
+  // Where they were beats what they last answered.
+  //
+  // The last answered mission used to win. It is a different thing: answer a
+  // ticket, then spend half an hour reading week 1, and the card still named
+  // the ticket. It was also labelled by its challenge rather than its place,
+  // so it read "Ticket Queue" wherever they actually were. The account's own
+  // record of the tab they had open is the thing being asked for, and the
+  // last answer is the fallback for an account that has no record yet.
+  // Three answers in order: where the account says they were, then what they
+  // last answered, then where to start. pin already carries "start here" as
+  // its own fallback, so it has to be asked for the real stop first or it
+  // would answer "start here" over a perfectly good last answer.
+  const resume =
+    (pin?.kind === "last" ? pin : null) ??
+    (lastMission
+      ? { href: challengeHref(lastMission.challenge, results), title: CHALLENGE_LABELS[lastMission.challenge], kind: "last" as const }
+      : null) ??
+    pin;
 
   return (
     <div className="rd ax-home">

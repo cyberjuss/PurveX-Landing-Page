@@ -63,6 +63,9 @@ export type LastStop = {
    *  knows this -- the browser's own note never recorded it -- so a resume
    *  lands on the page they were reading rather than the top of it. */
   tabSlug?: string;
+  /** And how that tab is written, so the card can name the place rather
+   *  than the kind of thing it is. */
+  tabLabel?: string;
 };
 
 function parseLastStop(raw: string | null): LastStop | null {
@@ -143,9 +146,12 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
         const entrySlug = d?.place?.entry;
         if (cancelled || !phaseSlug || !entrySlug) return;
         // The tab is stored by the same label the hash is built from.
-        const tabSlug = d?.place?.tab ? slugify(d.place.tab) : undefined;
+        const tabLabel = d?.place?.tab || undefined;
+        const tabSlug = tabLabel ? slugify(tabLabel) : undefined;
         setLastStopState((prev) =>
-          prev?.phaseSlug === phaseSlug && prev.entrySlug === entrySlug && prev.tabSlug === tabSlug ? prev : { phaseSlug, entrySlug, tabSlug }
+          prev?.phaseSlug === phaseSlug && prev.entrySlug === entrySlug && prev.tabSlug === tabSlug
+            ? prev
+            : { phaseSlug, entrySlug, tabSlug, tabLabel }
         );
       })
       .catch(() => {});
