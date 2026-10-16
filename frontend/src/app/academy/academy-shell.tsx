@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeft, GraduationCap, Home, Loader2, Menu, Moon, Sun, X } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
-import { AcademyAccountProvider, AcademyGoalsProvider, AcademyProfileMenu, type AcademyStudent } from "@/components/academy/academy-account";
+import { AcademyAccountProvider, AcademyGoalsProvider, AcademyProfileMenu, accountFirstName, type AcademyStudent } from "@/components/academy/academy-account";
 import { hasHostedLab, HostedLabButton, startHostedLabNow } from "@/components/academy/hosted-lab-button";
 import { HelpDialog } from "@/components/academy/get-help";
 import { AcademyIntake } from "@/components/academy/academy-intake";
@@ -1373,6 +1373,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         {editingGoals && profile && (
           <GoalsPanel
             profile={profile}
+            accountName={accountFirstName(student)}
             onClose={() => setEditingGoals(false)}
             onSaved={(next) => {
               if (studentId) saveCachedProfile(studentId, next);
@@ -1381,7 +1382,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
             }}
           />
         )}
-        {hello && <AcademyWelcome student={student} onDone={() => setHello(false)} />}
+        {hello && <AcademyWelcome student={student} callMe={profile?.callMe ?? null} onDone={() => setHello(false)} />}
         <LabSetupScreen />
       </div>
       </CoachProvider>

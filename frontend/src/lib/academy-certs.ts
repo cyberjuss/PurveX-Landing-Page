@@ -248,6 +248,11 @@ export type StudentProfile = {
   roles: RoleId[];
   start: StartLevel;
   background: string;
+  /** What to call them. Range greets people by a name taken from the
+   *  account they signed up with, and that is whatever the sign-up form or
+   *  the email address happened to say -- nothing in the product could
+   *  change it. Empty means keep using the account's. */
+  callMe: string;
   updatedAt: string;
 };
 
@@ -278,6 +283,7 @@ export function sanitizeProfile(raw: unknown): StudentProfile | null {
     roles,
     start,
     background: clip(r.background, 280),
+    callMe: clip(r.callMe, 40),
     updatedAt: typeof r.updatedAt === "string" ? r.updatedAt.slice(0, 40) : new Date().toISOString(),
   };
 }

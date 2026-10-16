@@ -49,6 +49,20 @@ function titleCase(value: string) {
 
 const GENERIC = /^(test|user|demo|tmp|admin|dev|coach)$/i;
 
+/**
+ * What to call this student, preferring what they asked to be called.
+ *
+ * The account name is whatever the sign-up form or the email address
+ * happened to say, and nothing in the product could change it, so somebody
+ * greeted by the wrong name was stuck with it. Goals asks, and that answer
+ * wins here.
+ */
+export function preferredFirstName(student: AcademyStudent | null, profile: { callMe?: string } | null): string | null {
+  const asked = profile?.callMe?.trim();
+  if (asked) return titleCase(firstToken(asked));
+  return accountFirstName(student);
+}
+
 export function accountFirstName(student: AcademyStudent | null): string | null {
   if (!student) return null;
   const fromName = student.name ? firstToken(student.name) : "";
@@ -86,7 +100,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
   const [pos, setPos] = useState({ top: 72, right: 16 });
   const root = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
-  const firstName = accountFirstName(student);
+  const firstName = preferredFirstName(student, profile);
   const initials = accountInitials(student);
 
   useEffect(() => setMounted(true), []);
