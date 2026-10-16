@@ -330,6 +330,10 @@ export type HostedLabRow = {
   passwordEnc: string;
   stopAt: string | null;
   createdAt: string;
+  /** Last write to this row, which is when the session in hand began: a start
+   *  and an extend both write it, and nothing else touches the row until the
+   *  lab stops. Lab hours are counted from it. */
+  updatedAt: string;
   linuxInstanceId: string | null;
   linuxPasswordEnc: string | null;
   podSlot: number | null;
@@ -344,6 +348,7 @@ function hostedRow(d: Record<string, unknown>): HostedLabRow {
     passwordEnc: d.password_enc as string,
     stopAt: (d.stop_at as string | null) ?? null,
     createdAt: d.created_at as string,
+    updatedAt: (d.updated_at as string | null) ?? (d.created_at as string),
     linuxInstanceId: (d.linux_instance_id as string | null) ?? null,
     linuxPasswordEnc: (d.linux_password_enc as string | null) ?? null,
     podSlot: d.pod_slot === null || d.pod_slot === undefined ? null : Number(d.pod_slot),

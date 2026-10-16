@@ -109,9 +109,9 @@ function cfg() {
 /** Thrown when a student has spent their month. The route turns it into a 429
  *  with this message, which is written for the student rather than the log. */
 export class LabHoursSpentError extends Error {
-  // The test is whether a whole session still fits, so someone with 2 hours
-  // left is refused while having spent 18 of 20. Saying they used all 20 was
-  // both wrong and unactionable.
+  // Only thrown when the week is actually gone. A session no longer reserves
+  // its hours, it just runs for whatever is left, so there is no "a session
+  // needs three hours and you have two" case any more.
   constructor(public readonly used: number, public readonly limit: number, session = 0) {
     const left = Math.max(0, limit - used);
     super(
@@ -124,31 +124,19 @@ export class LabHoursSpentError extends Error {
 }
 
 /**
- * Hours used and left this week. limit 0 means the cap is off.
- *
- * Net of the running session's unused remainder, which is the number a student
- * means by "hours I have used". A session is charged in full the moment it
- * starts, so a lab five minutes old had already taken three hours off the
- * meter and the panel said so: start a lab, glance at the meter, and it reads
- * as though an afternoon is gone. The remainder comes back when the session
- * ends, so counting it as spent while it is still in hand is just wrong, and
- * it is wrong by the largest amount at the moment someone is most likely to
- * look.
- *
- * Taken off here and nowhere else. The charge stays whole in the database,
- * because a lab that is never stopped cleanly has to have cost something, and
- * chargeSession still reserves against the full figure so the cap cannot be
- * oversubscribed by a session already running.
+ * Hours used and left this week: what finished sessions cost, plus what the
+ * one in hand has run so far. The number counts up while the lab is on and
+ * stops when it stops, which is the only reading a student ever tried to
+ * read off it.
  */
 export async function labHours(userId: string): Promise<{ used: number; limit: number; left: number; minutes: number }> {
   const limit = cfg().weeklyHours;
-  const charged = await readLabMinutes(userId);
-  // The same quantity refundUnused would hand back if the lab stopped now, so
-  // the meter does not move when a session ends.
+  const closed = await readLabMinutes(userId);
   const row = await loadHostedLab(userId).catch(() => null);
-  const leftMs = row?.stopAt ? Date.parse(row.stopAt) - Date.now() : 0;
-  const held = Number.isFinite(leftMs) && leftMs > 0 ? Math.min(cfg().sessionHours * 60, Math.floor(leftMs / 60000)) : 0;
-  const minutes = Math.max(0, charged - held);
+  // stopAt is null on a lab that is not in a session, so there is nothing
+  // running to add.
+  const live = row?.stopAt ? sessionMinutes(row) : 0;
+  const minutes = closed + live;
   const used = minutes / 60;
   return { used, limit, left: limit ? Math.max(0, limit - used) : Infinity, minutes };
 }
@@ -156,41 +144,52 @@ export async function labHours(userId: string): Promise<{ used: number; limit: n
 /** Charges one session against the month, or refuses when nothing is left.
  *  Charged when a session starts rather than when it ends: a lab that is never
  *  stopped cleanly would otherwise cost us the hours and never record them. */
-/** Hand a session back when the start it paid for never happened. Charging up
- *  front is deliberate, but it must not bill for a lab that failed to launch. */
-async function refundSession(userId: string): Promise<void> {
-  const c = cfg();
-  if (!c.weeklyHours) return;
-  await addLabMinutes(userId, -c.sessionHours * 60).catch((err) => {
-    console.error("session refund failed", err instanceof Error ? err.message : err);
-    return 0;
-  });
+/**
+ * Minutes this session has been up, which is what a lab costs.
+ *
+ * Hours used to be reserved: a session took its three hours the moment it
+ * started and handed back whatever was left when it stopped. It was honest
+ * arithmetic and nobody could read it. The meter jumped three hours on Start,
+ * the number on the panel was not hours anybody had spent, and a session that
+ * ended badly left the reservation behind.
+ *
+ * Now a lab costs the time it was actually up. updatedAt is the last write to
+ * the row, and nothing writes it between a start and a stop, so it is when
+ * this session began. Capped at a session's length, because a row that was
+ * somehow never closed should not bill a week.
+ */
+export function sessionMinutes(row: HostedLabRow, now = Date.now()): number {
+  const from = Date.parse(row.updatedAt);
+  if (!Number.isFinite(from)) return 0;
+  return Math.max(0, Math.min(cfg().sessionHours * 60, Math.round((now - from) / 60_000)));
 }
 
-/** Give back the part of a session that was never used. The charge is taken up
- *  front so a lab that is never stopped cleanly still counts against the month,
- *  but that means stopping after ten minutes spent three hours. stopAt is the
- *  end of the session that was paid for, so whatever is left of it at the moment
- *  of stopping is the refund. */
-async function refundUnused(userId: string, stopAt: string | null): Promise<void> {
-  const c = cfg();
-  if (!c.weeklyHours || !stopAt) return;
-  const leftMs = Date.parse(stopAt) - Date.now();
-  if (!Number.isFinite(leftMs) || leftMs <= 0) return;
-  const minutes = Math.min(c.sessionHours * 60, Math.floor(leftMs / 60000));
+/**
+ * Charges what this session used. Called behind claimLabSessionEnd, so two
+ * stops landing together cannot bill the same session twice.
+ */
+async function chargeElapsed(userId: string, row: HostedLabRow): Promise<void> {
+  if (!cfg().weeklyHours) return;
+  const minutes = sessionMinutes(row);
   if (minutes <= 0) return;
-  await addLabMinutes(userId, -minutes).catch((err) => {
-    console.error("session reconcile failed", err instanceof Error ? err.message : err);
+  await addLabMinutes(userId, minutes).catch((err) => {
+    console.error("lab hours charge failed", err instanceof Error ? err.message : err);
     return 0;
   });
 }
 
-async function chargeSession(userId: string): Promise<void> {
+/**
+ * Refuses a start when the week is spent, and says how long the session may
+ * run for. A student with forty minutes left gets forty minutes, not a
+ * three-hour session they cannot pay for.
+ */
+async function sessionLengthMs(userId: string): Promise<number> {
   const c = cfg();
-  if (!c.weeklyHours) return;
-  const used = (await readLabMinutes(userId)) / 60;
-  if (used + c.sessionHours > c.weeklyHours) throw new LabHoursSpentError(Math.round(used), c.weeklyHours, c.sessionHours);
-  await addLabMinutes(userId, c.sessionHours * 60);
+  const full = c.sessionHours * 3600_000;
+  if (!c.weeklyHours) return full;
+  const { used, limit } = await labHours(userId);
+  if (used >= limit) throw new LabHoursSpentError(Math.round(used), limit);
+  return Math.min(full, Math.max(5 * 60_000, (limit - used) * 3600_000));
 }
 
 /** How long one session runs before the lab stops itself. The briefing and the
@@ -579,8 +578,6 @@ async function describe(instanceId: string) {
     : null;
 }
 
-const stopAtFromNow = () => new Date(Date.now() + cfg().sessionHours * 3600_000).toISOString();
-
 /**
  * Builds a student's pod: their domain controller, then the Ubuntu server beside
  * it in the same security group.
@@ -590,7 +587,7 @@ const stopAtFromNow = () => new Date(Date.now() + cfg().sessionHours * 3600_000)
  * EC2 instance nothing in the database knows about. A pod with no Ubuntu server
  * is what every pod was before, and the rest of this file treats it that way.
  */
-async function launch(userId: string): Promise<HostedLabRow> {
+async function launch(userId: string, sessionMs: number): Promise<HostedLabRow> {
   const c = cfg();
 
   // The slot picks the security group that isolates this pod. Without a pool
@@ -638,7 +635,11 @@ async function launch(userId: string): Promise<HostedLabRow> {
   const row: HostedLabRow = {
     instanceId,
     passwordEnc: sealPassword(password),
-    stopAt: stopAtFromNow(),
+    // However much of the week is left, up to a session. A student with forty
+    // minutes gets forty minutes rather than a three-hour window they cannot
+    // pay for and a stop that arrives early with no explanation.
+    stopAt: new Date(Date.now() + sessionMs).toISOString(),
+    updatedAt: new Date().toISOString(),
     createdAt: new Date().toISOString(),
     linuxInstanceId: null,
     // Both set together once the Ubuntu server is up. A password with no machine
@@ -740,32 +741,24 @@ export async function startHostedLab(userId: string): Promise<void> {
     // take it down first. A machine nothing in the database names is a machine
     // no stop button and no reaper can ever reach again.
     if (row) await terminatePod(row);
-    await chargeSession(userId);
-    try {
-      await launch(userId);
-    } catch (err) {
-      await refundSession(userId);
-      throw err;
-    }
+    // Nothing is charged up front any more. sessionLengthMs refuses the start
+    // when the week is spent, and the lab bills for the time it is actually
+    // up, so a launch that dies costs the student nothing and needs no refund.
+    await launch(userId, await sessionLengthMs(userId));
     return;
   }
   // A running lab still inside its window is the session they already paid for,
   // so pressing Start again is a no-op. Resetting the stop time here instead
   // would hand out free hours to anyone who kept pressing it.
   if (inst.state === "running" && row.stopAt && Date.parse(row.stopAt) > Date.now()) return;
-  await chargeSession(userId);
+  const length = await sessionLengthMs(userId);
   // Both machines come back together. A student who opens the Ubuntu server and
   // finds it stopped has a broken lab, not half a lab, so the pod starts as one.
-  // A failed resume hands the session's hours back, the same as a failed launch
-  // above, rather than charging for a pod that never came up.
   const ids = podInstanceIds(row);
-  try {
-    if (ids.length) await ec2().send(new StartInstancesCommand({ InstanceIds: ids }));
-    await saveHostedLab(userId, { ...row, stopAt: stopAtFromNow() });
-  } catch (err) {
-    await refundSession(userId);
-    throw err;
-  }
+  if (ids.length) await ec2().send(new StartInstancesCommand({ InstanceIds: ids }));
+  // Written last, and this write is the session's start: hours are counted
+  // from it, so it must not be set before the machines are actually coming up.
+  await saveHostedLab(userId, { ...row, stopAt: new Date(Date.now() + length).toISOString() });
 }
 
 // How long a pod is allowed to spend becoming usable before the idle clock
@@ -909,14 +902,20 @@ export async function stopHostedLab(userId: string): Promise<void> {
   // conditional write: whichever stop clears it is the one that hands the hours
   // back. Reading the time, refunding it and then clearing it meant two stops
   // fired together both refunded the same session.
-  if (await claimLabSessionEnd(userId, row.stopAt)) await refundUnused(userId, row.stopAt);
+  // The claim is one conditional write, so whichever stop clears the stop time
+  // is the one that bills the session. Charged from the row read before the
+  // claim, because claiming it moves updatedAt.
+  if (await claimLabSessionEnd(userId, row.stopAt)) await chargeElapsed(userId, row);
 }
 
 export async function extendHostedLab(userId: string): Promise<string | null> {
   const row = await loadHostedLab(userId);
   if (!row) return null;
-  await chargeSession(userId);
-  const stopAt = stopAtFromNow();
+  // Bank what has run so far before the clock is reset, or extending would
+  // wipe the start the charge is measured from and the first stretch would be
+  // free.
+  await chargeElapsed(userId, row);
+  const stopAt = new Date(Date.now() + (await sessionLengthMs(userId))).toISOString();
   await saveHostedLab(userId, { ...row, stopAt });
   return stopAt;
 }
@@ -1014,22 +1013,14 @@ export async function resetHostedLab(userId: string): Promise<void> {
 
   // Whatever is left cannot be reset where it stands, so it is replaced, and
   // that is a new lab and a new session like any other.
-  await chargeSession(userId);
+  const length = await sessionLengthMs(userId);
   if (row) {
     await terminatePod(row);
-    // Same claim as a stop: the session's leftover hours go back once, to
-    // whichever call ended it.
-    if (await claimLabSessionEnd(userId, row.stopAt)) await refundUnused(userId, row.stopAt);
+    // Same claim as a stop: whichever call ends the session bills it.
+    if (await claimLabSessionEnd(userId, row.stopAt)) await chargeElapsed(userId, row);
     await deleteHostedLab(userId);
   }
-  // Same deal as a first start: the session is charged before the lab exists,
-  // so a launch that throws must hand the hours back.
-  try {
-    await launch(userId);
-  } catch (err) {
-    await refundSession(userId);
-    throw err;
-  }
+  await launch(userId, length);
 }
 
 /**
@@ -1055,14 +1046,10 @@ async function resetInPlace(userId: string, row: HostedLabRow): Promise<boolean>
       // given a stop time exactly as a Start would, or Reset would have been
       // a way to run a lab for nothing -- and a pod with no stop time is one
       // no session sweep can see.
-      await chargeSession(userId);
-      try {
-        await ec2().send(new StartInstancesCommand({ InstanceIds: podInstanceIds(row) }));
-        await saveHostedLab(userId, { ...row, stopAt: stopAtFromNow() });
-      } catch (err) {
-        await refundSession(userId);
-        throw err;
-      }
+      const length = await sessionLengthMs(userId);
+      await ec2().send(new StartInstancesCommand({ InstanceIds: podInstanceIds(row) }));
+      await saveHostedLab(userId, { ...row, stopAt: new Date(Date.now() + length).toISOString() });
+      row = { ...row, stopAt: new Date(Date.now() + length).toISOString(), updatedAt: new Date().toISOString() };
     } else if (inst.state !== "running") {
       // Mid-flight in some other direction. Replacing is the safe answer.
       return false;

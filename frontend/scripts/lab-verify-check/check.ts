@@ -20,7 +20,7 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { firstBootScript, shouldStopIdle, verifyDownloaded } from "@/lib/academy-hosted";
+import { firstBootScript, sessionMinutes, shouldStopIdle, verifyDownloaded } from "@/lib/academy-hosted";
 import { LAB_SCRIPT_HASHES } from "@/lib/lab-script-hashes";
 
 const root = join(import.meta.dirname, "..", "..");
@@ -223,6 +223,35 @@ try {
     fetches > 0 && checks >= fetches,
     checks < fetches ? `${fetches - checks} download(s) run without a check` : ""
   );
+
+  // --- what a lab costs ---------------------------------------------------
+  // Hours used to be reserved and refunded, which was correct arithmetic that
+  // nobody could read: the meter jumped three hours on Start and the number
+  // on it was not hours anyone had spent. A lab costs the time it was up now,
+  // and this is billing, so it is a table rather than a reading.
+  const MINUTE = 60_000;
+  const row = (agoMinutes: number): Parameters<typeof sessionMinutes>[0] => ({
+    instanceId: "i-test",
+    passwordEnc: "",
+    stopAt: new Date().toISOString(),
+    createdAt: new Date(Date.now() - 86_400_000).toISOString(),
+    updatedAt: new Date(Date.now() - agoMinutes * MINUTE).toISOString(),
+    linuxInstanceId: null,
+    linuxPasswordEnc: null,
+    podSlot: 0,
+  });
+  for (const [mins, want, name] of [
+    [0, 0, "a session that just started costs nothing"],
+    [1, 1, "a minute costs a minute"],
+    [47, 47, "forty-seven minutes cost forty-seven"],
+    [180, 180, "a full session costs its three hours"],
+    [5000, 180, "a session nothing ever closed is capped at one session"],
+  ] as [number, number, string][]) {
+    const got = sessionMinutes(row(mins));
+    t(name, got === want, `${got} minutes`);
+  }
+  t("an unreadable start costs nothing", sessionMinutes({ ...row(10), updatedAt: "not a date" }) === 0);
+
 
   // A script we never published must not produce a command at all.
   let threw = false;
