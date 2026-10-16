@@ -32,7 +32,17 @@ type Report = {
   students: Student[];
   summary: { students: number; activeThisWeek: number; stuck: number; avgReadiness: number | null; weakest: { label: string; avg: number }[] };
 };
-type Data = { admin: boolean; classes: Report[] };
+type Individuals = {
+  total: number;
+  free: number;
+  proTrialing: number;
+  proSubscription: number;
+  proClass: number;
+  proAdmin: number;
+  newLast7Days: number;
+};
+
+type Data = { admin: boolean; classes: Report[]; individuals?: Individuals };
 
 const DAY = 864e5;
 const QUIET_DAYS = 7;
@@ -623,6 +633,51 @@ function NewClassForm({ onCreated }: { onCreated: () => void }) {
   );
 }
 
+// Everyone who signed up on their own, not through a class. The roster below
+// already answers "how is this class doing" -- this is the number that
+// actually moves when a post or a channel push outside the product works,
+// which nothing in the product showed anywhere until now.
+function IndividualsPanel({ n }: { n: Individuals }) {
+  const comped = n.proClass + n.proAdmin;
+  return (
+    <section className="rd-sec ov-individuals">
+      <div className="rd-sec__head">
+        <span className="rd-sec__n">{String(n.total).padStart(2, "0")}</span>
+        <h2>Individuals</h2>
+        <p>Everyone who signed up on their own, free or Pro, outside any class.</p>
+      </div>
+      <dl className="ov-class__stats ov-individuals__stats">
+        <div>
+          <dt>Total</dt>
+          <dd>{n.total}</dd>
+        </div>
+        <div>
+          <dt>Free</dt>
+          <dd>{n.free}</dd>
+        </div>
+        <div>
+          <dt>Trial</dt>
+          <dd>{n.proTrialing}</dd>
+        </div>
+        <div>
+          <dt>Paying</dt>
+          <dd className={n.proSubscription ? "rd-text-good" : ""}>{n.proSubscription}</dd>
+        </div>
+        <div>
+          <dt>New, 7 days</dt>
+          <dd>{n.newLast7Days}</dd>
+        </div>
+      </dl>
+      {comped > 0 && (
+        <p className="iv-note">
+          Plus {comped} comped ({n.proClass} on a class seat, {n.proAdmin} admin). Neither is a self-serve sale, so neither
+          counts above.
+        </p>
+      )}
+    </section>
+  );
+}
+
 // The owner's view: create a class, assign its instructor, and keep the list.
 // The instructor runs the class and tracks students; the owner just sets it up.
 function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
@@ -651,6 +706,8 @@ function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
         <h1 className="iv-title">Classes</h1>
         <p className="ov-lede">Create a class and assign an instructor to run it.</p>
       </header>
+
+      {data.individuals && <IndividualsPanel n={data.individuals} />}
 
       <NewClassForm onCreated={reload} />
 

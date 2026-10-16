@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { classesFor, classMembers, createClass, deleteClass, isAcademyAdmin } from "@/lib/academy-classes";
+import { individualsSummary } from "@/lib/academy-owner-metrics";
 import { classReport } from "@/lib/academy-roster";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { sendEmail } from "@/lib/email";
@@ -27,7 +28,11 @@ export async function GET(request: Request) {
   }
   if (!admin && !classes.length) return NextResponse.json({ error: "No classes for this account." }, { status: 403 });
   const reports = await Promise.all(classes.map(async (c) => classReport(c, await classMembers(c.id))));
-  return NextResponse.json({ admin, classes: reports });
+  // Only the owner sees every account, not just one class's worth -- an
+  // instructor asking "how are my students doing" has no reason to see the
+  // whole platform's signup count.
+  const individuals = admin ? await individualsSummary() : undefined;
+  return NextResponse.json({ admin, classes: reports, individuals });
 }
 
 export async function POST(request: Request) {
