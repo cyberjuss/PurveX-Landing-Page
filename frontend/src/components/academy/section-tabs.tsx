@@ -98,7 +98,7 @@ export function SectionTabs({
   const [challengeFoot, setChallengeFoot] = useState<HTMLElement | null>(null);
   const current = items[active];
   const { setPlace } = useCoach();
-  const { recordLabDone, isLabDone } = useAcademyProgress();
+  const { recordLabDone, isLabDone, setLastStop } = useAcademyProgress();
   const labSlug = current.kind === "lab" ? slugify(current.label) : "";
   const labDone = useCallback(() => {
     if (labSlug) recordLabDone(phaseSlug, entrySlug, labSlug);
@@ -109,6 +109,13 @@ export function SectionTabs({
     setPlace(kind ? { kind, title: current.label, ...(labWidget ? { lab: labWidget } : {}) } : null);
     return () => setPlace(null);
   }, [current.kind, current.label, labWidget, setPlace]);
+  // The same tab, told to the progress store, so the home page's last stop
+  // is the tab and not just the page it was on. The account hears about it
+  // below; this is so it is right before the next reload too.
+  useEffect(() => {
+    setLastStop(phaseSlug, entrySlug, current.label);
+  }, [phaseSlug, entrySlug, current.label, setLastStop]);
+
   // Report the open tab, and the lab step when they switch away (often to
   // their own AI assistant), so Coach and MCP clients know where they are.
   useEffect(() => {

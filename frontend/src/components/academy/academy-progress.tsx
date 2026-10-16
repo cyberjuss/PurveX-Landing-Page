@@ -91,7 +91,7 @@ interface AcademyProgressContextValue {
   recordQuizPass: (phaseSlug: string, entrySlug: string) => void;
   toggleComplete: (phaseSlug: string, entrySlug: string) => void;
   lastStop: LastStop | null;
-  setLastStop: (phaseSlug: string, entrySlug: string) => void;
+  setLastStop: (phaseSlug: string, entrySlug: string, tabLabel?: string) => void;
   completedCount: number;
   totalCount: number;
 }
@@ -275,10 +275,22 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
         });
       },
       lastStop,
-      setLastStop: (phaseSlug, entrySlug) => {
-        setLastStopState((prev) =>
-          prev?.phaseSlug === phaseSlug && prev.entrySlug === entrySlug ? prev : { phaseSlug, entrySlug }
-        );
+      // The tab is part of where they were, and the switcher is what knows
+      // it. Recording the entry alone meant opening a lesson overwrote the
+      // tab the account had reported a moment earlier, so within a session
+      // the last stop always decayed to the top of a page.
+      setLastStop: (phaseSlug, entrySlug, tabLabel) => {
+        setLastStopState((prev) => {
+          const same = prev?.phaseSlug === phaseSlug && prev.entrySlug === entrySlug;
+          // Two things record this: the entry page, which knows the page, and
+          // the tab switcher, which also knows the tab. A caller with no tab
+          // must not wipe one already known for the same page, or the answer
+          // would depend on which effect happened to run last.
+          const nextLabel = tabLabel ?? (same ? prev?.tabLabel : undefined);
+          const tabSlug = nextLabel ? slugify(nextLabel) : undefined;
+          if (same && prev?.tabSlug === tabSlug) return prev;
+          return { phaseSlug, entrySlug, tabSlug, tabLabel: nextLabel };
+        });
       },
       completedCount: [...completed].filter((key) => !isPhaseLocked(key.split(":")[0])).length,
       totalCount,
@@ -295,10 +307,10 @@ export function useAcademyProgress() {
   return ctx;
 }
 
-export function RecordLastStop({ phaseSlug, entrySlug }: { phaseSlug: string; entrySlug: string }) {
+export function RecordLastStop({ phaseSlug, entrySlug, tabLabel }: { phaseSlug: string; entrySlug: string; tabLabel?: string }) {
   const { setLastStop } = useAcademyProgress();
   useEffect(() => {
-    setLastStop(phaseSlug, entrySlug);
-  }, [phaseSlug, entrySlug, setLastStop]);
+    setLastStop(phaseSlug, entrySlug, tabLabel);
+  }, [phaseSlug, entrySlug, tabLabel, setLastStop]);
   return null;
 }
