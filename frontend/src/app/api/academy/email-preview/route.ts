@@ -9,6 +9,7 @@ import {
   studentMilestoneEmail,
   studentNudgeEmail,
   studentWelcomeEmail,
+  trialEndingEmail,
 } from "@/lib/academy-emails";
 
 export const runtime = "nodejs";
@@ -34,6 +35,7 @@ export async function GET(request: Request) {
     joined: () => studentJoinedEmail("Govtech Academy", "Justin Duru", o),
     signup: () => signupConfirmEmail(`${o}/academy`),
     reset: () => passwordResetEmail(`${o}/reset-password`),
+    trial: () => trialEndingEmail(student, new Date(Date.now() + 36 * 3_600_000), o),
     digest: () =>
       instructorDigestEmail(
         {
