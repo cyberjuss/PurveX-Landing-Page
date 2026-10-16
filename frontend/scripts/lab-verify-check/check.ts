@@ -204,6 +204,26 @@ try {
   const cronSrc = readFileSync(join(root, "src", "app", "api", "cron", "hosted-labs", "route.ts"), "utf8");
   t("the nightly cron runs it", /stopOrphanedHostedLabs/.test(cronSrc));
 
+  // --- every download that runs is a download that was checked -----------
+  // The hash check only protects the paths that call it, and a new path gets
+  // written by somebody thinking about something else. A reset added a fifth
+  // download -- of the script that deletes three OUs and everything in them
+  // -- and ran it on trust, on the same day the checking was built. So the
+  // rule is counted rather than remembered.
+  //
+  // Counted rather than matched by name because two of the five build their
+  // URL from a variable, so the filename is not on the line that fetches it.
+  const fetches = (idleLines.match(/Invoke-WebRequest/g) ?? []).length;
+  // Minus its own declaration, which the pattern also matches -- counting
+  // that made five checks look like six and hid a missing one.
+  const checks =
+    (idleLines.match(/verifyDownloaded\(/g) ?? []).length - (idleLines.match(/function verifyDownloaded\(/g) ?? []).length;
+  t(
+    `every lab-script download is hash-checked (${fetches} fetched, ${checks} checked)`,
+    fetches > 0 && checks >= fetches,
+    checks < fetches ? `${fetches - checks} download(s) run without a check` : ""
+  );
+
   // A script we never published must not produce a command at all.
   let threw = false;
   try {

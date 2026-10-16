@@ -14,6 +14,7 @@ import { LAB_SCRIPT_HASHES } from "@/lib/lab-script-hashes";
 import {
   addLabMinutes,
   hostedLabsWithNoSession,
+  LabUsageUnreadableError,
   claimLabSessionEnd,
   claimPodSlot,
   createLabKey,
@@ -946,7 +947,12 @@ function inPlaceResetCommand(url: string): string {
     "$tmp=Join-Path $env:TEMP 'pvx-reset'",
     "New-Item -ItemType Directory -Path $tmp -Force | Out-Null",
     `Invoke-WebRequest -Uri '${url}/lab-scripts/Remove-Environment.ps1' -OutFile (Join-Path $tmp 'Remove-Environment.ps1') -UseBasicParsing -TimeoutSec 60`,
-    "& (Join-Path $tmp 'Remove-Environment.ps1') -Force -Confirm:$false",
+    // Checked before it runs, like every other script a pod downloads. This
+    // one deletes three OUs and everything in them, so it is the last thing
+    // that should run on trust.
+    "$f = Join-Path $tmp 'Remove-Environment.ps1'",
+    verifyDownloaded("$f", "Remove-Environment.ps1"),
+    "& $f -Force -Confirm:$false",
     // The planted-ticket record, so the infrastructure tickets plant again.
     "Remove-Item -LiteralPath 'C:/PurveX/tickets.txt' -Force -ErrorAction SilentlyContinue",
     // Same shape as first boot: a password nobody keeps, rolled on the machine.
@@ -1045,7 +1051,18 @@ async function resetInPlace(userId: string, row: HostedLabRow): Promise<boolean>
     const inst = await describe(row.instanceId).catch(() => null);
     if (!inst || inst.state === "terminated" || inst.state === "shutting-down") return false;
     if (inst.state === "stopped") {
-      await ec2().send(new StartInstancesCommand({ InstanceIds: podInstanceIds(row) }));
+      // Starting it is starting it, whatever button was pressed. Charged and
+      // given a stop time exactly as a Start would, or Reset would have been
+      // a way to run a lab for nothing -- and a pod with no stop time is one
+      // no session sweep can see.
+      await chargeSession(userId);
+      try {
+        await ec2().send(new StartInstancesCommand({ InstanceIds: podInstanceIds(row) }));
+        await saveHostedLab(userId, { ...row, stopAt: stopAtFromNow() });
+      } catch (err) {
+        await refundSession(userId);
+        throw err;
+      }
     } else if (inst.state !== "running") {
       // Mid-flight in some other direction. Replacing is the safe answer.
       return false;
@@ -1089,6 +1106,10 @@ async function resetInPlace(userId: string, row: HostedLabRow): Promise<boolean>
     console.error("lab reset ran but the lab is not whole, replacing the pod", userId);
     return false;
   } catch (err) {
+    // Out of hours is the student's answer, not a reason to go and build them
+    // a pod instead -- the slow path would only charge them again and fail
+    // the same way.
+    if (err instanceof LabHoursSpentError || err instanceof LabUsageUnreadableError) throw err;
     console.error("lab reset in place failed, replacing the pod", userId, err instanceof Error ? err.message : err);
     return false;
   }
