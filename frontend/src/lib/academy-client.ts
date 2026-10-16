@@ -69,6 +69,11 @@ export function recordLabResult(id: LabPassId, passed: boolean, pts: number) {
   }).catch(() => {});
 }
 
+// Local preview: `npm run dev` with no Supabase keys opens the portal as a
+// stand-in student instead of a sign-in form nobody can get past. A
+// production build always has NODE_ENV=production, so it never ships.
+export const DEV_PREVIEW = process.env.NODE_ENV === "development" && !supabase;
+
 export async function academyFetch(path: string, init: RequestInit = {}) {
   const token = supabase ? (await supabase.auth.getSession()).data.session?.access_token : undefined;
   const headers = new Headers(init.headers);

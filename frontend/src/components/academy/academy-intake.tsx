@@ -7,6 +7,7 @@ import {
   CERTS,
   MAX_ROLES,
   ROLES,
+  sanitizeProfile,
   START_LEVELS,
   type CertGoal,
   type CertId,
@@ -15,7 +16,7 @@ import {
   type StartLevel,
   type StudentProfile,
 } from "@/lib/academy-certs";
-import { academyFetch } from "@/lib/academy-client";
+import { academyFetch, DEV_PREVIEW } from "@/lib/academy-client";
 import { updateDisplayName } from "@/lib/portal-auth";
 // Imported here, not in globals.css, so the styles always arrive with the component.
 import "./academy-intake.css";
@@ -86,6 +87,12 @@ export function AcademyIntake({
       // stored even if the profile save then fails and they retry.
       const name = firstName.trim();
       if (name) await updateDisplayName(name);
+      // No account to save to in a local preview, so the answers stay in this browser.
+      const local = DEV_PREVIEW ? sanitizeProfile({ certs, otherCerts: initial?.otherCerts ?? "", roles, start, background }) : null;
+      if (local) {
+        onSaved(local);
+        return;
+      }
       const res = await academyFetch("/academy/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

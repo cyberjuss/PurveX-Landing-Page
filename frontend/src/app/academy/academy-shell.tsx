@@ -24,6 +24,7 @@ import { askForProofShot, PROOF_TICKETS } from "@/lib/academy-proof";
 import { examLinks, roleLabel, sanitizeProfile, type RoleId, type StudentProfile } from "@/lib/academy-certs";
 import {
   academyFetch,
+  DEV_PREVIEW,
   downloadLinkedBuildScript,
   loadCachedProfile,
   LINKED_SCRIPT_PATH,
@@ -40,6 +41,8 @@ import { signOut } from "@/lib/portal-auth";
 import { supabase } from "@/lib/supabase";
 
 type Student = AcademyStudent;
+
+const PREVIEW_STUDENT: Student = { id: "dev-preview", email: "preview@localhost", name: "Preview" };
 /** What the server says about a submitted answer. blocked: the lab does not show the change yet. */
 type AnswerReply = { correct?: boolean; blocked?: boolean; result?: MissionResult; reveal?: string | null; feedback?: string | null };
 
@@ -64,7 +67,9 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
   const [scrolled, setScrolled] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   // undefined while the stored Supabase session is still being read.
-  const [student, setStudent] = useState<Student | null | undefined>(supabase ? undefined : null);
+  const [student, setStudent] = useState<Student | null | undefined>(
+    DEV_PREVIEW ? PREVIEW_STUDENT : supabase ? undefined : null
+  );
   const [hello, setHello] = useState(false);
   // The intake answers. undefined while loading, null until the student has answered.
   const [profile, setProfileState] = useState<StudentProfile | null | undefined>(undefined);
@@ -1186,7 +1191,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
 
   // Signed in but no class passcode yet: now ask for it. A student who arrived
   // from a join link is already unlocked and skips this.
-  if (!unlocked) {
+  if (!unlocked && !DEV_PREVIEW) {
     return <UnlockForm />;
   }
 
