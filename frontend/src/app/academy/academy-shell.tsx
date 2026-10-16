@@ -756,7 +756,6 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         // close this, find the coach and describe where they were from memory.
         '<div class="ad-hint-card__foot">' +
         '<button type="button" class="ad-hint-card__coach">Ask the coach about this</button>' +
-        '<span class="ad-hint-card__foot-note">It can see your lab. It will not hand you the answer.</span>' +
         "</div>" +
         "</aside>";
       document.body.appendChild(root);

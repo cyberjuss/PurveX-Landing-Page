@@ -3608,7 +3608,7 @@ body:has(.lp) {
 .ad-hint-card__foot {
   flex: 0 0 auto; padding: 14px 20px 18px;
   border-top: 1px solid var(--rd-line, #e2e8f0);
-  display: flex; flex-direction: column; gap: 7px;
+  display: flex;
 }
 .ad-hint-card__coach {
   appearance: none; -webkit-appearance: none; width: 100%;
@@ -3618,13 +3618,8 @@ body:has(.lp) {
   color: #fff; background: var(--rd-accent, #6a5cff); border: 1px solid transparent;
 }
 .ad-hint-card__coach:hover { opacity: 0.9; }
-.ad-hint-card__foot-note {
-  font-size: 0.72rem; line-height: 1.4; text-align: center;
-  color: var(--pvrx-text-secondary-light, #64748b);
-}
 /* The panel is white in both themes except when the shell says dark. */
 .ad-hint-card[data-academy-theme="dark"] .ad-hint-card__foot { border-top-color: var(--rd-line-dark, #223047); }
-.ad-hint-card[data-academy-theme="dark"] .ad-hint-card__foot-note { color: var(--rd-ink-3, #8a94a8); }
 .ad-hint-card__body ul, .ad-hint-card__body ol { margin: 0.4rem 0 0; padding-left: 1.2rem; }
 .ad-hint-card__body li { margin: 0.32rem 0; }
 .ad-hint-card__body code {
