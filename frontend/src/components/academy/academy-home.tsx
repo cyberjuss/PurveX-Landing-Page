@@ -62,14 +62,21 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
 
   const lastPhase = lastStop && !isPhaseLocked(lastStop.phaseSlug) ? phases.find((p) => p.slug === lastStop.phaseSlug) : undefined;
   const lastEntry = lastPhase ? entriesOf(lastPhase).find((e) => e.slug === lastStop?.entrySlug && e.sections.length > 0) : undefined;
-  // Opening something is not the same as getting anywhere. Until a student has
-  // finished an entry or a mission, the last place they clicked is not where
-  // they "left off" -- someone who looked at the home lab once and bounced was
-  // being sent back to it forever, with the course still reading 0/5 and week 1
-  // never offered. Once there is real progress, the last stop wins again.
-  const resumeEntry = completedCount > 0 || readiness.finished > 0 ? lastEntry : undefined;
+  // The last stop is where they stopped, and it wins.
+  //
+  // It used to be ignored until a student had finished something, because
+  // the stop was a localStorage note of the last link clicked in this
+  // browser -- a drive-by click counted, and someone who glanced at the
+  // home lab once was sent back to it forever with week 1 never offered.
+  // It now comes from the account, written after a tab has been open a
+  // second and a half, so it is somewhere they actually were. Sending them
+  // back to it is the point.
+  const resumeEntry = lastEntry;
+  // The tab too, so they land on what they were reading rather than the top
+  // of the page it was on.
+  const lastHash = lastStop?.tabSlug ? `#${lastStop.tabSlug}` : "";
   const pin = resumeEntry && lastPhase
-    ? { href: `/range/${lastPhase.slug}/${resumeEntry.slug}`, title: resumeEntry.title, phaseSlug: lastPhase.slug, entrySlug: resumeEntry.slug, kind: "last" as const }
+    ? { href: `/range/${lastPhase.slug}/${resumeEntry.slug}${lastHash}`, title: resumeEntry.title, phaseSlug: lastPhase.slug, entrySlug: resumeEntry.slug, kind: "last" as const }
     : firstOpen
       ? { ...firstOpen, kind: "start" as const }
       : lastEntry && lastPhase

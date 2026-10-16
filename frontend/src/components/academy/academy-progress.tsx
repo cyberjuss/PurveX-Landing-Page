@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { type PhaseDef, type WeekDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { findQuiz } from "@/content/academy/quizzes";
-import { useResults } from "@/lib/academy-client";
+import { academyFetch, useResults } from "@/lib/academy-client";
 import { CHALLENGE_PATHS, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
 import type { Results } from "@/lib/academy-score";
 import { isPhaseLocked } from "@/lib/academy-locks";
@@ -56,7 +56,14 @@ function entryKey(phaseSlug: string, entrySlug: string) {
   return `${phaseSlug}:${entrySlug}`;
 }
 
-export type LastStop = { phaseSlug: string; entrySlug: string };
+export type LastStop = {
+  phaseSlug: string;
+  entrySlug: string;
+  /** The tab they had open, as the URL hash spells it. Only the account
+   *  knows this -- the browser's own note never recorded it -- so a resume
+   *  lands on the page they were reading rather than the top of it. */
+  tabSlug?: string;
+};
 
 function parseLastStop(raw: string | null): LastStop | null {
   if (!raw) return null;
@@ -113,11 +120,38 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
       const labsSaved: string[] = labsRaw ? JSON.parse(labsRaw) : [];
       setLabsDone((prev) => new Set([...labsSaved, ...prev]));
       setLastStopState(parseLastStop(window.localStorage.getItem(LAST_STOP_KEY)));
+      // Seeded from this browser, then corrected from the account below.
     } catch {
       // Private browsing / blocked storage -- progress just won't persist.
     } finally {
       setLoaded(true);
     }
+  }, []);
+
+  // Where the account says they were, which beats where this browser says.
+  //
+  // The last stop lived only in localStorage, so it was lost on another
+  // browser, another machine, or a cleared cache -- while everything else
+  // about their progress followed the account. The server has known all
+  // along: a row is written every time they open a tab. Nothing read it.
+  useEffect(() => {
+    let cancelled = false;
+    academyFetch("/academy/api/activity", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { place?: { phase?: string; entry?: string; tab?: string } } | null) => {
+        const phaseSlug = d?.place?.phase;
+        const entrySlug = d?.place?.entry;
+        if (cancelled || !phaseSlug || !entrySlug) return;
+        // The tab is stored by the same label the hash is built from.
+        const tabSlug = d?.place?.tab ? slugify(d.place.tab) : undefined;
+        setLastStopState((prev) =>
+          prev?.phaseSlug === phaseSlug && prev.entrySlug === entrySlug && prev.tabSlug === tabSlug ? prev : { phaseSlug, entrySlug, tabSlug }
+        );
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
