@@ -3791,6 +3791,15 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 .academy-prose p.ad-guess__feedback:empty { display: none !important; margin: 0 !important; }
 .academy-prose .ad-guess__feedback--ok { color: #16a34a; }
 .academy-prose .ad-guess__feedback--err { color: #e5484d; }
+/* The same reassurance follows every miss, so it reads as a footnote on the
+   message rather than another clause in it. Inside the sentence it made a
+   line read at a glance run to three. */
+.academy-prose .ad-guess__free {
+  font-size: 0.78em; font-weight: 500; opacity: 0.75;
+  color: var(--pvrx-text-secondary-light, #64748b);
+  white-space: nowrap;
+}
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__free { color: var(--rd-ink-3, #8a94a8); }
 .academy-prose .ad-guess__feedback--tip { color: #475569; }
 .academy-prose .ad-guess__feedback--tip strong { color: #b42318; font-weight: 600; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--tip { color: #c3cddb; }

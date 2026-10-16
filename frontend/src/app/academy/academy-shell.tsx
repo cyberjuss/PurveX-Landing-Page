@@ -527,6 +527,24 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
     };
 
     // A hosted student's lab is off: say so, with a button that starts it.
+    /**
+     * A miss that cost nothing: one sentence, and the reassurance on its own.
+     *
+     * Every one of these carried "This does not use an attempt" inside the
+     * sentence, so a line read in a glance ran to three. It is the same
+     * sentence every time, which is exactly the kind of thing that belongs
+     * beside the message rather than inside it.
+     */
+    const missNote = (feedback: HTMLElement, text: string) => {
+      feedback.textContent = "";
+      feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+      feedback.append(text + " ");
+      const note = document.createElement("span");
+      note.className = "ad-guess__free";
+      note.textContent = "No attempt used.";
+      feedback.appendChild(note);
+    };
+
     const labOffNote = (feedback: HTMLElement, text: string) => {
       feedback.textContent = `${text} `;
       feedback.className = "ad-guess__feedback ad-guess__feedback--err";
@@ -600,8 +618,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           gate = await labGate(missionId);
         }
         if (!gate) {
-          feedback.textContent = "Could not check your lab. Try submit again. This does not use an attempt.";
-          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          missNote(feedback, "Could not check your lab, so try submit again.");
           placeMiss(wrap);
           return;
         }
@@ -611,31 +628,34 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           return;
         }
         if (gate.noLab) {
-          feedback.textContent = "No lab has reported yet. Download the script from Build the Environment, run it once as Administrator, and look for Lab snapshot sent. This does not use an attempt.";
-          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          missNote(feedback, "No lab has reported yet, so run Build-Environment.ps1 once as Administrator and look for Lab snapshot sent.");
           placeMiss(wrap);
           return;
         }
         if (gate.stale) {
-          feedback.textContent = `The lab is not live${gate.syncedAgo ? ` (it last reported ${gate.syncedAgo})` : ""}. Turn the domain controller on and wait for the lab light to go green. If it stays grey, run Build-Environment.ps1 -SyncOnly as Administrator. This does not use an attempt.`;
-          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          missNote(
+            feedback,
+            `Your lab is not live${gate.syncedAgo ? ` (it last reported ${gate.syncedAgo})` : ""}, so turn the domain controller on and wait for the lab light to go green.`
+          );
           placeMiss(wrap);
           return;
         }
         if (gate.noTicketObjects) {
-          feedback.textContent = hasHostedLab()
-            ? "This ticket's objects are not in your lab yet. We are adding them now. Wait about half a minute and try again. If they still are not there, reset your lab from the lab menu. This does not use an attempt."
-            : "This ticket's objects are not in your lab yet. Run Build-Environment.ps1 from Build the Environment again and wait a minute. This does not use an attempt.";
-          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          missNote(
+            feedback,
+            hasHostedLab()
+              ? "This ticket's objects are not in your lab yet, and we are adding them now, so give it half a minute."
+              : "This ticket's objects are not in your lab yet, so run Build-Environment.ps1 again and give it a minute."
+          );
           placeMiss(wrap);
           return;
         }
         if (!gate.passed) {
           const missing = (gate.results ?? []).filter((r) => !r.ok).map((r) => r.label).join("; ");
-          feedback.textContent = missing
-            ? `The lab does not show this change yet: ${missing}. Make the change and submit again. This does not use an attempt.`
-            : "The lab does not show this change yet. Make it and submit again. This does not use an attempt.";
-          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          // The checks already name what is missing, so the sentence does not
+          // also have to say "make the change and submit again" -- that is the
+          // only thing left to do.
+          missNote(feedback, missing ? `Not in your lab yet: ${missing}.` : "Your lab does not show this change yet.");
           placeMiss(wrap);
           return;
         }
@@ -643,10 +663,10 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         feedback.textContent = "Checking your answer…";
         reply = await sendAnswer(missionId, guess);
         if (!reply || reply.blocked) {
-          feedback.textContent = reply?.blocked
-            ? "The lab does not show this change yet. Make it and submit again. This does not use an attempt."
-            : "Could not check your answer. Try submit again. This does not use an attempt.";
-          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          missNote(
+            feedback,
+            reply?.blocked ? "Your lab does not show this change yet." : "Could not check your answer, so try submit again."
+          );
           placeMiss(wrap);
           return;
         }
