@@ -119,6 +119,15 @@ function ShiftConsoleInner() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const finishing = useRef(false);
+  // The hosted-lab store leads the shift route by a few seconds after a start,
+  // so it decides whether the lab is up.
+  const lab = useHostedLab();
+  const labNow: LabState = lab.status ? lab.state : labState;
+  // A shift asked for while the lab is down waits for it: "Start another
+  // shift" on the report, or "Start my lab" on the intro, starts the lab and
+  // then the shift on its own the moment the lab is Online.
+  const [queued, setQueued] = useState(false);
+  const [leftReport, setLeftReport] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -144,7 +153,7 @@ function ShiftConsoleInner() {
   const now = useNow(active);
 
   // Poll while active for new arrivals, and on the intro to catch the lab coming Online.
-  const polling = active || (available === true && shift?.status !== "done");
+  const polling = active || (available === true && (shift?.status !== "done" || queued));
   useEffect(() => {
     if (!polling) return;
     const t = window.setInterval(() => void load(), 5000);
@@ -192,6 +201,31 @@ function ShiftConsoleInner() {
 
   const theme = useAcademyTheme();
 
+  // The lab is started once per queued shift, and only from a state AWS will
+  // start from: a lab still stopping (hibernating) is waited out first, since
+  // starting it mid-stop is refused.
+  const kicked = useRef(false);
+  const queueShift = useCallback(async () => {
+    kicked.current = false;
+    setQueued(true);
+    setLeftReport(true);
+    void load();
+  }, [load]);
+  useEffect(() => {
+    if (!queued || kicked.current || (labNow !== "stopped" && labNow !== "none")) return;
+    kicked.current = true;
+    void startHostedLabNow().then(() => load());
+  }, [queued, labNow, load]);
+  const again = useCallback(() => {
+    if (labNow === "ready") void post({ action: "start" });
+    else void queueShift();
+  }, [labNow, post, queueShift]);
+  useEffect(() => {
+    if (!queued || labNow !== "ready" || busy) return;
+    setQueued(false);
+    void post({ action: "start" });
+  }, [queued, labNow, busy, post]);
+
   if (available === null)
     return (
       <div className="shift-app shift-app--center" data-academy-theme={theme}>
@@ -209,15 +243,15 @@ function ShiftConsoleInner() {
       </div>
     );
 
-  if (shift?.status === "done" && shift.report) return <ShiftReport theme={theme} report={shift.report} onAgain={() => post({ action: "start" })} busy={busy} error={error} />;
+  if (shift?.status === "done" && shift.report && !leftReport) return <ShiftReport theme={theme} report={shift.report} onAgain={again} busy={busy} error={error} />;
   if (active && shift) return <ActiveShift theme={theme} shift={shift} now={now} busy={busy} error={error} post={post} />;
 
-  return <ShiftIntro theme={theme} labState={labState} busy={busy} error={error} onStart={() => post({ action: "start" })} onRefresh={load} />;
+  return <ShiftIntro theme={theme} labState={labState} busy={busy} error={error} queued={queued} onStart={() => post({ action: "start" })} onStartLab={queueShift} onRefresh={load} />;
 }
 
 // ---- intro (with the lab-online gate) -------------------------------------
 
-function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { theme: "light" | "dark"; labState: LabState; busy: boolean; error: string | null; onStart: () => void; onRefresh: () => void }) {
+function ShiftIntro({ theme, labState, busy, error, queued, onStart, onStartLab, onRefresh }: { theme: "light" | "dark"; labState: LabState; busy: boolean; error: string | null; queued: boolean; onStart: () => void; onStartLab: () => void; onRefresh: () => void }) {
   // Both the shift route and the hosted-lab store know the lab's state, and
   // they disagree for a few seconds after a start. The store leads because it
   // updates the moment a start is accepted; the shift route's copy covers the
@@ -231,10 +265,8 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
   // start that is denied has to be read from there. Without this the button
   // silently did nothing and the reason was never shown.
   const shown = error ?? lab.error;
-  async function startLab() {
-    await startHostedLabNow();
-    onRefresh();
-  }
+  // Starting the lab here also queues the shift, so one click opens the desk.
+  const startLab = onStartLab;
   return (
     <div className="shift-app shift-app--center" data-academy-theme={theme}>
       <Link href="/range" className="sh-corner-home" aria-label="Back to Range"><ArrowLeft className="h-4 w-4" /></Link>
@@ -279,7 +311,11 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
             {online
               ? "The desk is ready. Tickets start arriving the moment you begin."
               : starting
-                ? "First boot takes a couple of minutes. This updates on its own."
+                ? queued
+                  ? "Your shift starts on its own the moment the lab is Online. First boot takes a couple of minutes."
+                  : "First boot takes a couple of minutes. This updates on its own."
+                : state === "stopping" && queued
+                  ? "Your lab is still saving from its last stop. It starts again as soon as that finishes, then your shift begins."
                 : lab.locked
                   ? "Shifts need a hosted lab and that comes with Range Pro."
                   : lab.notEnabled
