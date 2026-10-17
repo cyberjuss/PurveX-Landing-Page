@@ -40,14 +40,16 @@
       "Bash(npx vercel *)",
       "Bash(grep -vE \"node_modules|^\\\\.$|^\\\\.\\\\.$\")",
       "Bash(git rm *)",
-      "Bash(rm -f \"frontend/{\" \"frontend/\\({}\\)\\)\" \"frontend/package-Cyberjuss.json\" \"frontend/package-lock-Cyberjuss.json\")"
+      "Bash(rm -f \"frontend/{\" \"frontend/\\({}\\)\\)\" \"frontend/package-Cyberjuss.json\" \"frontend/package-lock-Cyberjuss.json\")",
+      "mcp__claude_ai_Vercel__list_projects",
+      "mcp__claude_ai_Vercel__get_project",
+      "mcp__claude_ai_Vercel__list_deployments",
+      "mcp__claude_ai_Vercel__filter_project_envs",
+      "mcp__claude_ai_Vercel__list_project_domains",
+      "Bash(git fetch *)",
+      "Bash(git pull *)",
+      "Bash(git restore *)",
+      "Bash(npm install *)"
     ]
-  },
-  "enabledPlugins": {
-    "code-review@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true,
-    "security-guidance@claude-plugins-official": true,
-    "claude-education-skills-library@anthropic-plugin-directory": true,
-    "easedup@anthropic-plugin-directory": true
   }
 }
