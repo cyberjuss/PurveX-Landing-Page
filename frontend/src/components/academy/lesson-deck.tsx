@@ -100,7 +100,7 @@ export function LessonDeck({
   useEffect(() => {
     if (!help) return;
     const close = (e: PointerEvent) => {
-      if (!(e.target as HTMLElement).closest?.(".lk__fab")) setHelp(false);
+      if (!(e.target as HTMLElement).closest?.(".lk__keyswrap")) setHelp(false);
     };
     window.addEventListener("pointerdown", close);
     return () => window.removeEventListener("pointerdown", close);
@@ -232,9 +232,13 @@ export function LessonDeck({
         </div>
         </div>
       </div>
-      {/* The keys button floats in the screen's bottom-right corner while a
-          lesson is open, out of the slide's way, and its list opens upward. */}
-      <div className="lk__fab">
+      {/* A slim bar under the slide: how to move on the left, the keys button
+          on the right. It sits in the flow, so it never covers the lesson. */}
+      <div className="lk__foot">
+        <span className="lk__foothint" aria-hidden>
+          <kbd>Space</kbd> next <span className="lk__footsep">·</span> <kbd>Shift</kbd> + <kbd>Space</kbd> back
+        </span>
+        <div className="lk__keyswrap">
             <button
               type="button"
               className={`lk__keys${help ? " is-open" : ""}`}
@@ -278,6 +282,7 @@ export function LessonDeck({
                 </p>
               </div>
             )}
+        </div>
       </div>
     </div>
   );

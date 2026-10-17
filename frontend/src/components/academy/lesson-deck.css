@@ -1193,42 +1193,39 @@ button.lk__art { padding: 0; width: 100%; font: inherit; color: var(--rd-accent)
   .lk__head { padding-right: 0; }
 }
 
-/* ==== The keys button, floating in the screen's bottom-right corner ====
-   Bigger than a mark so it reads as the place to ask "how do I move?",
-   solid accent, square like every portal surface, and below the drawers
-   (Coach, hints) so they still cover it when open. Its list opens upward. */
-.lk__fab {
-  position: fixed;
-  right: calc(24px + env(safe-area-inset-right));
-  bottom: calc(24px + env(safe-area-inset-bottom));
-  z-index: 30;
+/* ==== The bar under the slide ====
+   How to move on the left, the keys button on the right. It is part of the
+   deck, attached under the frame, so it never sits on top of the lesson the
+   way a floating button did. The list of keys opens upward from the button. */
+.lk__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px clamp(16px, 3vw, 28px);
+  border: 1px solid var(--rd-line);
+  border-top: 0;
+  background: color-mix(in srgb, var(--rd-accent) 4%, var(--rd-surface));
 }
-.lk__fab .lk__keys {
-  width: 56px;
-  height: 56px;
-  color: #fff;
-  background: var(--rd-accent);
-  box-shadow: 0 14px 30px -10px color-mix(in srgb, var(--rd-accent) 70%, transparent), inset 0 0 0 1px rgba(255, 255, 255, 0.14);
-  animation: lk-fab-in var(--ax-dur-slow) var(--ax-ease) 400ms both;
-  transition: transform var(--ax-dur) var(--ax-ease), box-shadow var(--ax-dur-fast) var(--ax-ease), background var(--ax-dur-fast) var(--ax-ease);
+.lk__foothint { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12.5px; color: var(--rd-ink-3); }
+.lk__foothint kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  font: 700 10.5px var(--font-mono, ui-monospace, monospace);
+  color: var(--rd-ink-2);
+  background: color-mix(in srgb, var(--rd-ink) 6%, transparent);
+  box-shadow: inset 0 0 0 1px var(--rd-line), inset 0 -2px 0 color-mix(in srgb, var(--rd-ink) 16%, transparent);
 }
-.academy-bg[data-academy-theme="dark"] .lk__fab .lk__keys { color: #0b0a12; }
-.lk__fab .lk__keys svg { width: 26px; height: 26px; }
-.lk__fab .lk__keys:hover, .lk__fab .lk__keys.is-open {
-  transform: translateY(-2px);
-  background: color-mix(in srgb, var(--rd-accent) 88%, var(--rd-ink));
-  box-shadow: 0 18px 34px -10px color-mix(in srgb, var(--rd-accent) 80%, transparent);
-}
-@keyframes lk-fab-in { from { opacity: 0; transform: translateY(14px) scale(0.9); } to { opacity: 1; transform: none; } }
-
-.lk__fab .lk__help { top: auto; bottom: calc(100% + 12px); right: 0; transform-origin: bottom right; }
+.lk__footsep { padding: 0 2px; opacity: 0.6; }
+.lk__keyswrap { position: relative; flex: none; }
+.lk__keyswrap .lk__keys { width: 44px; height: 40px; }
+.lk__keyswrap .lk__keys svg { width: 22px; height: 22px; }
+.lk__keyswrap .lk__help { top: auto; bottom: calc(100% + 10px); right: 0; z-index: 5; }
 @keyframes lk-help-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-
-@media (max-width: 640px) {
-  .lk__fab { right: calc(14px + env(safe-area-inset-right)); bottom: calc(14px + env(safe-area-inset-bottom)); }
-  .lk__fab .lk__keys { width: 50px; height: 50px; }
-}
-@media (prefers-reduced-motion: reduce) { .lk__fab .lk__keys { animation: none; } }
+@media (pointer: coarse) { .lk__foothint { display: none; } .lk__foot { justify-content: flex-end; } }
 
 /* ==== Performance pass ====
    The slides felt slow to arrive. Three causes, three fixes:

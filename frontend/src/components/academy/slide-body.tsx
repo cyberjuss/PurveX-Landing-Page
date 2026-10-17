@@ -179,8 +179,18 @@ const ITEM_ICONS: [RegExp, LucideIcon][] = [
   [/\?$/, CircleHelp],
 ];
 
-export function iconForItem(text: string): LucideIcon {
-  return ITEM_ICONS.find(([re]) => re.test(text))?.[1] ?? ArrowRight;
+/**
+ * The icon for one card or tile. The card's own term decides first, so
+ * "Hashing" gets the hash mark even when its description talks about
+ * reversing; the description is only consulted after. Icons already used in
+ * the same grid are skipped, so a grid never shows one icon twice.
+ */
+export function iconForItem(text: string, lead = "", taken?: Set<LucideIcon>): LucideIcon {
+  const fits = (s: string) => (s ? ITEM_ICONS.filter(([re]) => re.test(s)).map(([, icon]) => icon) : []);
+  const options = [...fits(lead), ...fits(text)];
+  const pick = options.find((icon) => !taken?.has(icon)) ?? options[0] ?? ArrowRight;
+  taken?.add(pick);
+  return pick;
 }
 
 const OPEN_TAG = /<(div|details|figure|section|aside|table)\b/gi;
@@ -432,6 +442,11 @@ export function Recap({ items, slides, activities, where }: { items: RecapItem[]
 function FlipCards({ items, i, onReveal }: { items: Card[]; i: number; onReveal?: (j: number) => void }) {
   const [open, setOpen] = useState<Set<number>>(() => new Set());
   const all = open.size === items.length;
+  // One icon per card, chosen once, never repeated within the grid.
+  const icons = useMemo(() => {
+    const taken = new Set<LucideIcon>();
+    return items.map((c) => iconForItem(plain(c.text), c.lead ?? "", taken));
+  }, [items]);
   const toggle = (j: number) => {
     const next = new Set(open);
     if (next.has(j)) next.delete(j);
@@ -454,7 +469,7 @@ function FlipCards({ items, i, onReveal }: { items: Card[]; i: number; onReveal?
       </div>
       <ul className="lk-cards">
         {items.map((c, j) => {
-          const Icon = iconForItem(`${c.lead ?? ""} ${plain(c.text)}`);
+          const Icon = icons[j];
           const shown = open.has(j);
           return (
             <li key={j} className={`lk-c${(i + j) % 8} lk-m${j % 4}`} style={{ ["--j" as string]: j }}>
@@ -518,10 +533,11 @@ export function SlideBody({ markdown }: { markdown: string }) {
           );
         }
         if (b.kind === "cards") return <FlipCards key={i} items={b.items} i={i} />;
+        const taken = new Set<LucideIcon>();
         return (
           <ul key={i} className="lk-tiles lk-build" style={style}>
             {b.items.map((c, j) => {
-              const Icon = iconForItem(plain(c.text));
+              const Icon = iconForItem(plain(c.text), "", taken);
               return (
                 // Each tile takes the next color and the next idle motion, so a
                 // grid never reads as one icon stamped five times.
