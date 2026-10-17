@@ -1350,3 +1350,28 @@ button.lk__art { padding: 0; width: 100%; font: inherit; color: var(--rd-accent)
 }
 .lk-question__hint { margin: 6px 0 0; font-size: var(--ty-note, 13px); color: var(--rd-ink-3); animation: lk-build var(--ax-dur) var(--ax-ease) 420ms both; }
 @media (prefers-reduced-motion: reduce) { .lk-question__mark, .lk-question .rd-kicker, .lk-question__text, .lk-question__hint { animation: none; } }
+
+/* ==== Layout and stage polish (from looking at the real page) ====
+   The drawing sat centred against a long text column, so on a full slide it
+   dropped to the bottom left and left an empty block under the title. It
+   now starts level with the text and stays in view while the reader
+   scrolls a long slide. The frame gets a lit top edge, so the slide reads
+   as a stage rather than a flat box. */
+.lk__body { align-items: start; }
+.lk__body > .lk__art { position: sticky; top: calc(var(--ax-chrome, 65px) + 72px); }
+.lk__slide { padding-top: clamp(16px, 2.6vw, 32px); }
+.lk__head { margin-bottom: clamp(16px, 2.4vw, 28px); }
+
+.lk__frame::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  z-index: 1;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--rd-accent) 70%, transparent) 30%, color-mix(in srgb, var(--rd-accent) 70%, transparent) 70%, transparent);
+  pointer-events: none;
+}
+.lk__frame {
+  box-shadow: 0 30px 60px -40px color-mix(in srgb, var(--rd-accent) 45%, transparent);
+}
+@media (max-width: 640px) { .lk__body > .lk__art { position: static; } }

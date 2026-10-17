@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Keyboard } from "lucide-react";
 import { Recap, SlideBody } from "./slide-body";
 import { splitLessonIntoDeck } from "@/lib/lesson-deck";
+import { curlyQuotes } from "@/lib/typography";
 import type { TrailLink } from "./trail-dock";
 import { SlideArt, pickScenes, type Scene } from "./slide-art";
 import { DragActivity } from "./drag-activity";
@@ -215,7 +216,7 @@ export function LessonDeck({
                 ?
               </span>
               <span className="rd-kicker">Essential question</span>
-              <p className="lk-question__text">{slide.question}</p>
+              <p className="lk-question__text">{curlyQuotes(slide.question)}</p>
               <p className="lk-question__hint">Keep it in mind as you go. This week answers it</p>
             </div>
           )}
@@ -228,7 +229,7 @@ export function LessonDeck({
               slide.title !== label && <span className="rd-kicker">{label}</span>
             )}
             <h2 className="lk__title">
-              {slide.recap ? `What ${label} taught you` : slide.activity ? label : slide.title}
+              {curlyQuotes(slide.recap ? `What ${label} taught you` : slide.activity ? label : slide.title)}
               {slide.cont ? <span className="lk__cont"> (cont.)</span> : null}
             </h2>
           </header>

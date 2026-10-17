@@ -3,6 +3,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, Check, Flame, GripVertical, RotateCcw } from "lucide-react";
 import { confettiFrom } from "@/lib/confetti";
+import { curlyQuotes } from "@/lib/typography";
 import { dropLonePeriod } from "@/lib/lone-period";
 import type { DeckActivity } from "@/lib/lesson-deck";
 
@@ -148,7 +149,7 @@ function SortActivity({ activity }: { activity: Extract<DeckActivity, { kind: "s
 
   return (
     <div className="lkd" ref={rootRef}>
-      <p className="lkd__prompt">{dropLonePeriod(activity.prompt)}</p>
+      <p className="lkd__prompt">{curlyQuotes(dropLonePeriod(activity.prompt))}</p>
       <p className="lkd__how">
         {match ? "Drag each term onto the line it matches, or tap a term and then a line" : "Drag each card into a box, or tap a card and then a box"}
       </p>
@@ -312,7 +313,7 @@ function OrderActivity({ activity }: { activity: Extract<DeckActivity, { kind: "
 
   return (
     <div className="lkd" ref={rootRef}>
-      <p className="lkd__prompt">{dropLonePeriod(activity.prompt)}</p>
+      <p className="lkd__prompt">{curlyQuotes(dropLonePeriod(activity.prompt))}</p>
       <p className="lkd__how">Drag the steps into order or use the arrows, then check</p>
       <ol className="lkd__list">
         {order.map((item, pos) => {
@@ -464,7 +465,7 @@ function ConnectActivity({ activity }: { activity: Extract<DeckActivity, { kind:
 
   return (
     <div className="lkd">
-      <p className="lkd__prompt">{dropLonePeriod(activity.prompt)}</p>
+      <p className="lkd__prompt">{curlyQuotes(dropLonePeriod(activity.prompt))}</p>
       <p className="lkd__how">Draw a line from each idea to what it connects to, or tap one and then the other</p>
       <div className="lkn-board" ref={boardRef} onPointerMove={onMove}>
         <svg className="lkn-wires" aria-hidden>
