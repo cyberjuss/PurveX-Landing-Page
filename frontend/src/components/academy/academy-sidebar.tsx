@@ -3,7 +3,7 @@
 import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookMarked, Check, ChevronDown, FlaskConical, Hammer, Lock } from "lucide-react";
+import { ArrowUpRight, BookMarked, Check, ChevronDown, FlaskConical, Hammer, Lock } from "lucide-react";
 import { type PhaseDef } from "@/lib/academy-content";
 import { entriesOf, labLinksOf } from "@/lib/academy-entries";
 import { slugify, useAcademyProgress } from "./academy-progress";
@@ -12,17 +12,21 @@ import { isPhaseLocked } from "@/lib/academy-locks";
 export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onNavigate?: () => void }) {
   const pathname = usePathname();
   const { isComplete, isPhaseComplete, isLabDone, requirements, completedCount, totalCount } = useAcademyProgress();
-  // Only the Home Lab group collapses now, so one Set of open slugs is enough.
-  const [manualOpen, setManualOpen] = useState<Set<string>>(new Set());
-
-
-  const toggleManualOpen = (slug: string) =>
-    setManualOpen((prev) => {
-      const next = new Set(prev);
-      if (next.has(slug)) next.delete(slug);
-      else next.add(slug);
-      return next;
-    });
+  // What the reader chose for each group (a phase, a Home Lab list, a Labs
+  // list): open or closed. A group with no choice follows the page, open when
+  // you are inside it. This used to store "the opposite of the default", so a
+  // phase opened by hand from elsewhere flipped shut the moment you went into
+  // it. Now a choice is a plain open or closed.
+  const [chosen, setChosen] = useState<Record<string, boolean>>({});
+  const openOf = (key: string, inside: boolean) => (key in chosen ? chosen[key] : inside);
+  const toggle = (key: string, isOpen: boolean) => setChosen((prev) => ({ ...prev, [key]: !isOpen }));
+  // Moving to another page keeps what you opened, and forgets what you closed,
+  // so the section you just went into is never left shut.
+  const [seenPath, setSeenPath] = useState(pathname);
+  if (seenPath !== pathname) {
+    setSeenPath(pathname);
+    setChosen((prev) => Object.fromEntries(Object.entries(prev).filter(([, open]) => open)));
+  }
 
   return (
     <nav className="ax-scroll flex h-full flex-col gap-6 overflow-y-auto px-5 py-6">
@@ -66,7 +70,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         // The chevron flips whichever default applies, so the phase you are in
         // can be closed and one you are not in can be opened. ORing the two
         // meant the phase you were reading could never be collapsed.
-        const phaseOpen = manualOpen.has(phase.slug) ? !phaseActive : phaseActive;
+        const phaseOpen = openOf(phase.slug, phaseActive);
         const phaseDone = isPhaseComplete(phase.slug);
         const headerContent = (
           <span className="flex min-w-0 items-center gap-1.5">
@@ -87,7 +91,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
             className="ax-phasecaret"
             aria-expanded={phaseOpen}
             aria-label={`${phaseOpen ? "Collapse" : "Expand"} ${phase.label}`}
-            onClick={() => toggleManualOpen(phase.slug)}
+            onClick={() => toggle(phase.slug, phaseOpen)}
           >
             <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${phaseOpen ? "" : "-rotate-90"}`} />
           </button>
@@ -108,9 +112,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         const labsKey = `${phase.slug}:labs`;
         // Open when you are inside one of them, or when you have opened it by
         // hand. Collapsed otherwise, so four sittings do not crowd the weeks.
-        const labsOpen = manualOpen.has(labsKey)
-          ? !labs.some((l) => pathname === `/range/${phase.slug}/${l.slug}`)
-          : labs.some((l) => pathname === `/range/${phase.slug}/${l.slug}`);
+        const labsOpen = openOf(labsKey, labs.some((l) => pathname === `/range/${phase.slug}/${l.slug}`));
         const row = (entry: PhaseDef["weeks"][number]) => {
           const href = `/range/${phase.slug}/${entry.slug}`;
           // Each sitting is titled "Home Lab — X". The group heading carries
@@ -154,7 +156,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           <div>
             <button
               type="button"
-              onClick={() => toggleManualOpen(labsKey)}
+              onClick={() => toggle(labsKey, labsOpen)}
               aria-expanded={labsOpen}
               className={`ax-subhead flex w-full items-center justify-between gap-2 font-mono text-[length:var(--ty-small)] font-bold uppercase tracking-[0.1em] transition ${
                 labsOpen ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
@@ -194,14 +196,12 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           else labWeeks.push({ entrySlug: lab.entrySlug, label: lab.entryTitle.split("—")[0].trim() || lab.entryTitle, labs: [lab] });
         }
         const labsListKey = `${phase.slug}:labslist`;
-        const labsListOpen = manualOpen.has(labsListKey)
-          ? !phaseLabs.some((l) => pathname === `/range/labs/${l.slug}`)
-          : phaseLabs.some((l) => pathname === `/range/labs/${l.slug}`);
+        const labsListOpen = openOf(labsListKey, phaseLabs.some((l) => pathname === `/range/labs/${l.slug}`));
         const labsListSection = phaseLabs.length > 0 && (
           <div>
             <button
               type="button"
-              onClick={() => toggleManualOpen(labsListKey)}
+              onClick={() => toggle(labsListKey, labsListOpen)}
               aria-expanded={labsListOpen}
               className={`ax-subhead flex w-full items-center justify-between gap-2 font-mono text-[length:var(--ty-small)] font-bold uppercase tracking-[0.1em] transition ${
                 labsListOpen ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
@@ -260,25 +260,30 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           <Fragment key={phase.slug}>
           <div>
             <span className="ax-phaserow">
-              {hasDestination ? (
+              {/* The name opens and closes the phase, the way a panel is
+                  expected to. It used to be a link, so clicking it to expand
+                  took the reader to another page. The phase page is still
+                  one small arrow away. */}
+              <button
+                type="button"
+                onClick={() => toggle(phase.slug, phaseOpen)}
+                aria-expanded={phaseOpen}
+                className={`flex min-w-0 flex-1 items-center gap-2 text-left font-mono text-[length:var(--ty-body)] font-bold uppercase tracking-[0.08em] transition ${
+                  phaseActive ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
+                }`}
+              >
+                {headerContent}
+              </button>
+              {hasDestination && (
                 <Link
                   href={`/range/${phase.slug}`}
                   onClick={onNavigate}
-                  className={`flex min-w-0 flex-1 items-center gap-2 font-mono text-[length:var(--ty-body)] font-bold uppercase tracking-[0.08em] transition ${
-                    phaseActive ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
-                  }`}
+                  className="ax-phasego"
+                  aria-label={`Open the ${phase.label} overview`}
+                  title={`${phase.label} overview`}
                 >
-                  {headerContent}
+                  <ArrowUpRight className="h-3 w-3" />
                 </Link>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => toggleManualOpen(phase.slug)}
-                  aria-expanded={phaseOpen}
-                  className="flex min-w-0 flex-1 items-center gap-2 font-mono text-[length:var(--ty-body)] font-bold uppercase tracking-[0.08em] text-[var(--rd-ink-3)] transition hover:text-[var(--rd-ink-2)]"
-                >
-                  {headerContent}
-                </button>
               )}
               {phaseCaret}
             </span>

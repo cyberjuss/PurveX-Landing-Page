@@ -4726,6 +4726,11 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform
 .ax-phasecaret { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border: 0; background: none; color: var(--rd-ink-3); cursor: pointer; transition: color var(--ax-dur-fast); }
 .ax-phasecaret:hover { color: var(--rd-accent); }
 .ax-phasecaret:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 1px; }
+/* The small arrow beside a phase name: the way to its overview page, now that
+   the name itself opens and closes the phase. */
+.ax-phasego { flex: none; display: grid; place-items: center; width: 26px; height: 26px; color: var(--rd-ink-3); transition: color var(--ax-dur-fast); }
+.ax-phasego:hover { color: var(--rd-accent); }
+.ax-phasego:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 1px; }
 
 .ax-list {
   display: flex;
