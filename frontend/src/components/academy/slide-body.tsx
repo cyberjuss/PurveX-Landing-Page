@@ -414,9 +414,9 @@ export function Recap({ items, slides, activities, where }: { items: RecapItem[]
         </span>
         {collected !== null && (
           <span className="lk-recap__total">
-            <b key={collected}>{collected}</b> concepts to keep
+            <b key={`count-${collected}`}>{collected}</b> in your review deck
             {fresh > 0 && (
-              <em key={fresh} className="lk-recap__plus">
+              <em key={`plus-${fresh}`} className="lk-recap__plus">
                 +1
               </em>
             )}
