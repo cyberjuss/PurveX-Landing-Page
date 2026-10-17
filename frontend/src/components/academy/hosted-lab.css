@@ -268,3 +268,6 @@ html[data-academy-theme="dark"] .hl-chip__bad { background: #f87171; }
 @media (prefers-reduced-motion: reduce) {
   .hl-pop, .hl-lab--wait svg, .hl .hl__steps li.is-now i { animation: none; }
 }
+
+/* The note under the stopping bar: what the wait is, and that it costs nothing. */
+.hl .hl__stopnote { margin: 0; font-size: var(--ty-note); line-height: 1.45; color: var(--hl-ink-3); }

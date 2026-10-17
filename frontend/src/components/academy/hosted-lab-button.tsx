@@ -439,6 +439,36 @@ function StartTracker({ status }: { status: Status }) {
   );
 }
 
+// Stopping hibernates the domain controller: its memory is written to disk so
+// the next Resume takes about half a minute instead of five. That write is
+// what takes a few minutes, and a bar with no words read as stuck. This says
+// what is happening, how long it has been, and that it is no longer costing
+// them anything: the session, and the hours, ended when they pressed Stop.
+function StopTracker() {
+  const elapsed = useElapsed(null, true);
+  const m = Math.floor(elapsed / 60);
+  const sec = String(Math.floor(elapsed % 60)).padStart(2, "0");
+  const long = elapsed > 10 * 60;
+  return (
+    <div className="hl__track" aria-live="polite">
+      <p className="hl__eta">
+        <span>Saving your lab as you left it</span>
+        <em>
+          {m}:{sec}
+        </em>
+      </p>
+      <div className="hl__bar hl__bar--idle" role="progressbar" aria-label="Stopping your lab">
+        <span />
+      </div>
+      <p className="hl__stopnote">
+        {long
+          ? "Taking longer than usual. It finishes on its own, and no hours are being used."
+          : "This takes a few minutes. Your hours stopped when you pressed Stop, so you can close this."}
+      </p>
+    </div>
+  );
+}
+
 /** The lab menu the lab icon opens on each mission: status, open, stop, start. */
 /**
  * The Ubuntu box's local sign-in.
@@ -614,11 +644,7 @@ export function HostedLabMenu() {
       )}
 
       {state === "starting" && <StartTracker status={status} />}
-      {state === "stopping" && (
-        <div className="hl__bar hl__bar--idle" role="progressbar" aria-label="Stopping your lab">
-          <span />
-        </div>
-      )}
+      {state === "stopping" && <StopTracker />}
 
       <div className="hl__foot">
         {note && <p className="hl__note">{note}</p>}
