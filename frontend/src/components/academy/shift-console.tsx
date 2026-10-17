@@ -492,6 +492,18 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   }, [placeTitle, setPlace]);
   useEffect(() => () => setPlace(null), [setPlace]);
 
+  // The tab title, so the shift can be watched from the lab's window.
+  const tabTitle = `${openBy.P1 ? `(${openBy.P1} P1) ` : ""}${clock(left)} · Shift`;
+  useEffect(() => {
+    const before = document.title;
+    return () => {
+      document.title = before;
+    };
+  }, []);
+  useEffect(() => {
+    document.title = tabTitle;
+  }, [tabTitle]);
+
   return (
     <div className="shift-app" data-academy-theme={theme}>
       <header className="sh-top">
@@ -539,7 +551,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
             {nextUp && <b className={`sh-next__sev is-${nextUp.severity.toLowerCase()}`}>{nextUp.severity}</b>}
             <kbd>N</kbd>
           </button>
-          <div className={`sh-clock ${left <= 60 ? "sh-clock--low" : ""}`}>
+          <div className={`sh-clock ${left <= 60 ? "sh-clock--low" : left <= 300 ? "sh-clock--warn" : ""}`}>
             <span className="sh-clock__label">Shift ends in</span>
             <span className="sh-clock__time">{clock(left)}</span>
           </div>
@@ -563,7 +575,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
           </button>
         </div>
         <div className="sh-prog" aria-hidden="true">
-          <div className={`sh-prog__fill ${left <= 60 ? "sh-prog__fill--low" : ""}`} style={{ width: `${elapsedPct}%` }} />
+          <div className={`sh-prog__fill ${left <= 60 ? "sh-prog__fill--low" : left <= 300 ? "sh-prog__fill--warn" : ""}`} style={{ width: `${elapsedPct}%` }} />
         </div>
       </header>
 
@@ -725,8 +737,30 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
 type SubmitResult = { resolved: boolean; escalated?: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[]; needFinding?: boolean; evidencePending?: boolean; answerRight?: boolean | null };
 
 function IncidentDetail({ inc, no, age, busy, post, lead, after }: { inc: Incident; no: string; age: string; lead?: React.ReactNode; after?: React.ReactNode; busy: boolean; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
-  const [diagnosis, setDiagnosis] = useState(inc.diagnosis);
-  const [response, setResponse] = useState("");
+  // What they typed is kept per incident, so opening another one and coming
+  // back does not lose it. Session storage only: it is a draft, not a record.
+  const draftKey = `shift-draft:${inc.uid}`;
+  const draft = (() => {
+    try {
+      return JSON.parse(window.sessionStorage.getItem(draftKey) || "null") as { d?: string; r?: string } | null;
+    } catch {
+      return null;
+    }
+  })();
+  const [diagnosis, setDiagnosis] = useState(draft?.d ?? inc.diagnosis);
+  const [response, setResponse] = useState(draft?.r ?? "");
+  useEffect(() => {
+    try {
+      window.sessionStorage.setItem(draftKey, JSON.stringify({ d: diagnosis, r: response }));
+    } catch {}
+  }, [draftKey, diagnosis, response]);
+  // Ctrl or Cmd + Enter submits from either box.
+  const submitKey = (e: React.KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !busy) {
+      e.preventDefault();
+      void submit(false);
+    }
+  };
   const [result, setResult] = useState<SubmitResult | null>(null);
   const hints = inc.shownHints;
   // Escalating closes the incident for good, so it asks once instead of firing
@@ -868,12 +902,12 @@ function IncidentDetail({ inc, no, age, busy, post, lead, after }: { inc: Incide
           <label className="sh-q">
             <span className="sh-q__k">The question</span>
             <span className="sh-q__p">{inc.diagnosisPrompt}</span>
-            <input value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} placeholder="Your answer" autoComplete="off" />
+            <input value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} onKeyDown={submitKey} placeholder="Your answer" autoComplete="off" />
           </label>
 
           <label className="sh-field">
             <span><FileText className="h-3.5 w-3.5" /> Closing note</span>
-            <textarea value={response} onChange={(e) => setResponse(e.target.value)} rows={3} placeholder="What happened, what you changed, and what the next person should check." />
+            <textarea value={response} onChange={(e) => setResponse(e.target.value)} onKeyDown={submitKey} rows={3} placeholder="What happened, what you changed, and what the next person should check." />
           </label>
 
           {hints.length > 0 && (
@@ -937,7 +971,15 @@ function IncidentDetail({ inc, no, age, busy, post, lead, after }: { inc: Incide
           ) : (
             <div className="sh-actions">
               <button type="button" className="sh-submit" disabled={busy} onClick={() => submit(false)}>
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />} Submit and check
+                {busy ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> Checking your lab…
+                  </>
+                ) : (
+                  <>
+                    <Check className="h-4 w-4" /> Submit and check <kbd className="sh-submit__kbd">Ctrl ↵</kbd>
+                  </>
+                )}
               </button>
               {/* Nothing to hand up without a finding, so the button says so rather
                   than failing on the server after the click. */}
