@@ -386,3 +386,7 @@
 .sh-verdict li svg { flex: none; }
 .sh-verdict li.is-ok svg { color: var(--rd-good); }
 .sh-verdict li.is-no svg { color: var(--rd-warn); }
+
+/* No per-ticket timer: a new ticket says so, and the detail names its priority. */
+.sh-li__new { margin-left: auto; font-family: ui-monospace, monospace; font-size: var(--ty-micro); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rd-accent); }
+.sh-detail__left { color: var(--rd-ink-2); background: color-mix(in srgb, var(--rd-ink) 6%, transparent); font-family: inherit; font-weight: 600; }

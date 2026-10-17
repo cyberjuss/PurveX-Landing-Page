@@ -279,7 +279,7 @@ function ShiftIntro({ theme, labState, busy, error, queued, onStart, onStartLab,
           </div>
         </div>
         <p className="sh-lede">
-          You are on the desk for 30 minutes. Real attacks and tickets fire into your own lab on their own. Investigate each, fix it, and close it before its SLA runs out.
+          You are on the desk for 20 minutes. Real attacks and tickets fire into your own lab on their own. Work them highest priority first, and close as many as you can before the shift ends.
         </p>
 
         <ul className="sh-rules">
@@ -290,8 +290,8 @@ function ShiftIntro({ theme, labState, busy, error, queued, onStart, onStartLab,
           </li>
           <li>
             <span className="sh-rules__ic"><Clock className="h-4 w-4" /></span>
-            <strong>Every ticket has a clock</strong>
-            <small>P1 five minutes · P2 eight minutes · P3 twelve minutes. Miss it and it closes late.</small>
+            <strong>One 20-minute window, worked by priority</strong>
+            <small>No ticket has its own timer. P1 before P2 before P3. Anything still open when the shift ends scores nothing.</small>
           </li>
           <li>
             <span className="sh-rules__ic"><LifeBuoy className="h-4 w-4" /></span>
@@ -354,6 +354,13 @@ function ShiftIntro({ theme, labState, busy, error, queued, onStart, onStartLab,
 
 // ---- active shift: the queue ----------------------------------------------
 
+/** What each priority means on the desk, shown where a per-ticket timer used to be. */
+const PRIORITY_NOTE: Record<"P1" | "P2" | "P3", string> = {
+  P1: "Critical · work it first",
+  P2: "High · after any P1",
+  P3: "Routine · when the queue allows",
+};
+
 const SEV_CLASS: Record<Sev, string> = { P1: "sh-sev--p1", P2: "sh-sev--p2", P3: "sh-sev--p3" };
 
 // A cyber/tech glyph per incident type, same lucide family as the labs and drills,
@@ -396,7 +403,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
 
   const total = shift.incidents.length;
   const handled = shift.incidents.filter((i) => i.resolved || i.escalated).length;
-  const withinSla = shift.incidents.filter((i) => (i.resolved ? i.onTime : i.escalated ? true : !i.overdue)).length;
+  const stillOpen = total - handled;
   const escalated = shift.incidents.filter((i) => i.escalated).length;
 
   // Stable incident numbers follow the server's creation order.
@@ -471,8 +478,8 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
               <span className="sh-stat__label">Closed</span>
             </div>
             <div className="sh-stat">
-              <span className="sh-stat__num">{withinSla}</span>
-              <span className="sh-stat__label">Within SLA</span>
+              <span className="sh-stat__num">{stillOpen}</span>
+              <span className="sh-stat__label">Open</span>
             </div>
             <div className="sh-stat">
               <span className="sh-stat__num">{escalated}</span>
@@ -485,9 +492,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
           ) : (
             <ul className="sh-list" role="tablist" aria-label="Incident queue">
               {queue.map((inc) => {
-                const deadlineAt = start + (inc.arriveSec + inc.deadlineSec) * 1000;
                 const closed = inc.resolved || inc.escalated;
-                const secs = closed ? null : Math.max(0, Math.round((deadlineAt - now) / 1000));
                 const isSel = selected?.uid === inc.uid;
                 const urgent = !closed && !inc.acknowledged && inc.severity === "P1";
                 const cls = ["sh-li", `sh-li--sev-${inc.severity.toLowerCase()}`, isSel && "sh-li--on", closed && "sh-li--done", urgent && "sh-li--urgent"].filter(Boolean).join(" ");
@@ -507,8 +512,8 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
                           <span className="sh-status sh-status--done">Solved</span>
                         ) : inc.escalated ? (
                           <span className="sh-status sh-status--up">Escalated</span>
-                        ) : secs !== null ? (
-                          <span className={`sh-li__timer ${secs <= 60 ? "sh-li__timer--low" : ""}`}>{clock(secs)} left</span>
+                        ) : !inc.acknowledged ? (
+                          <span className="sh-li__new">New</span>
                         ) : null}
                       </span>
                       <span className="sh-li__title">{inc.title}</span>
@@ -525,7 +530,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
           {error && <p className="sh-error">{error}</p>}
           <DeskLayer desk={shift.desk ?? []} now={now} busy={busy} post={post} />
           {selected ? (
-            <IncidentDetail key={selected.uid} inc={selected} no={numOf.get(selected.uid) ?? ""} start={start} now={now} busy={busy} post={post} />
+            <IncidentDetail key={selected.uid} inc={selected} no={numOf.get(selected.uid) ?? ""} busy={busy} post={post} />
           ) : (
             <p className="sh-waiting sh-waiting--big"><Loader2 className="h-4 w-4 animate-spin" /> The first incident will land shortly.</p>
           )}
@@ -537,7 +542,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
 
 type SubmitResult = { resolved: boolean; escalated?: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[]; needFinding?: boolean; answerRight?: boolean | null };
 
-function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no: string; start: number; now: number; busy: boolean; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
+function IncidentDetail({ inc, no, busy, post }: { inc: Incident; no: string; busy: boolean; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
   const [diagnosis, setDiagnosis] = useState(inc.diagnosis);
   const [response, setResponse] = useState("");
   const [result, setResult] = useState<SubmitResult | null>(null);
@@ -548,9 +553,6 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
   const hasFinding = diagnosis.trim().length > 0;
   const { ask } = useCoach();
 
-  const deadlineAt = start + (inc.arriveSec + inc.deadlineSec) * 1000;
-  const left = inc.resolved ? null : Math.max(0, Math.round((deadlineAt - now) / 1000));
-  const late = left === 0 && !inc.resolved;
   const s = sender(inc);
 
   // Opening an incident acknowledges it (starts the "working" state). No button; matches the desk.
@@ -587,9 +589,7 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
         ) : inc.escalated ? (
           <span className="sh-status sh-status--up"><ArrowUpRight className="h-3.5 w-3.5" /> Escalated</span>
         ) : (
-          <span className={`sh-detail__left ${late ? "sh-detail__left--late" : left !== null && left <= 60 ? "sh-detail__left--low" : ""}`}>
-            {late ? "SLA breached" : `${clock(left ?? 0)} left`}
-          </span>
+          <span className="sh-detail__left">{PRIORITY_NOTE[inc.severity]}</span>
         )}
       </div>
 
@@ -632,7 +632,7 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
       ) : inc.escalated ? (
         <div className="sh-handoff">
           <p className="sh-handoff__head"><ArrowUpRight className="h-4 w-4" /> Handed to tier 2</p>
-          <p>Tier 2 owns this now and the SLA clock has stopped. Your finding and your note went up with it.</p>
+          <p>Tier 2 owns this now and it is off your queue. Your finding and your note went up with it.</p>
           <p className="sh-handoff__cost">It scores as a handoff, not a fix: you keep the credit for the finding, the write-up and leaving the rest alone, and you give up the points for resolving it.</p>
         </div>
       ) : (
@@ -686,10 +686,10 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
           {confirming ? (
             <div className="sh-confirm">
               <p className="sh-confirm__head"><ArrowUpRight className="h-4 w-4" /> Hand this to tier 2?</p>
-              <p>They take the incident over and the SLA clock stops, so nothing else on your queue is at risk while it sits.</p>
+              <p>The senior analysts above you take the incident over and it comes off your queue, so you can move on to the next one.</p>
               <p className="sh-confirm__cost">
                 It closes for you at that point. You keep the credit for your finding, your closing note and for leaving the
-                accounts that were fine alone, and you give up the points for fixing it and for being on time.
+                accounts that were fine alone, and you give up the points for fixing it.
               </p>
               <div className="sh-confirm__btns">
                 <button type="button" className="sh-escalate sh-escalate--go" disabled={busy} onClick={() => submit(true)}>
@@ -761,7 +761,7 @@ function ShiftReport({ theme, report, onAgain, busy, error }: { theme: "light" |
             <p className="sh-report__headline">{report.headline}</p>
             <p className="sh-report__score"><b>{report.totalScore}</b> of {report.maxScore} points</p>
             <p className="sh-report__sub">
-                {report.resolvedCount} of {report.incidents.length} closed · {report.onTimeCount} within SLA
+                {report.resolvedCount} of {report.incidents.length} closed
                 {report.escalatedCount ? ` · ${report.escalatedCount} escalated` : ""}
               </p>
           </div>
@@ -774,7 +774,6 @@ function ShiftReport({ theme, report, onAgain, busy, error }: { theme: "light" |
               <span className="sh-rep__title">{i.title}</span>
               <span className="sh-rep__tags">
                 <em className={i.resolved ? "ok" : i.escalated ? "up" : "no"}>{i.resolved ? "Solved" : i.escalated ? "Escalated" : i.touched ? "Missed" : "Not worked"}</em>
-                {i.resolved && <em className={i.onTime ? "ok" : "no"}>{i.onTime ? "On time" : "Late"}</em>}
                 {i.touched && !i.noHarm && <em className="no">Collateral</em>}
                 {i.resolved && !i.diagnosisRight && <em className="no">Weak diagnosis</em>}
                 {i.hintsUsed > 0 && <em className="hint">{i.hintsUsed} hint{i.hintsUsed === 1 ? "" : "s"}</em>}
@@ -788,7 +787,7 @@ function ShiftReport({ theme, report, onAgain, busy, error }: { theme: "light" |
           <DeskSummary
             r={{ metrics: report.metrics, triage: report.triage, desk: report.desk, timeline: report.timeline }}
             headline={report.headline}
-            totals={`${report.totalScore} of ${report.maxScore} points, ${report.resolvedCount} of ${report.incidents.length} closed, ${report.onTimeCount} within SLA`}
+            totals={`${report.totalScore} of ${report.maxScore} points, ${report.resolvedCount} of ${report.incidents.length} closed`}
           />
         )}
 

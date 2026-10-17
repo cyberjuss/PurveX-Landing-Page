@@ -102,7 +102,7 @@ export const DESK_EVENTS: DeskDef[] = [
     windowSec: 120,
     points: 10,
     lesson: "Severity decides the order, not volume or rank. Acknowledge the person, give an honest time, log it, and go back to the P1.",
-    source: "Shift rules: P1 five minutes, P3 twelve · the queue is worked by severity",
+    source: "Shift rules: the queue is worked by severity, P1 first",
     build: (who) => ({
       from: `${who.name} · ${who.dept}`,
       title: "URGENT: the conference room screen won't connect",
@@ -112,7 +112,7 @@ export const DESK_EVENTS: DeskDef[] = [
           id: "drop",
           text: "Leave the open P1 and go to Room 4 now",
           correct: false,
-          why: "A P1 is on a five-minute clock because it can hurt the whole firm. A meeting room screen cannot. Walking away from the P1 is how a small breach becomes a big one.",
+          why: "A P1 comes first because it can hurt the whole firm. A meeting room screen cannot. Walking away from the P1 is how a small breach becomes a big one.",
         },
         {
           id: "ignore",
@@ -350,8 +350,8 @@ export function triage(incidents: IncidentRun[]): { misses: TriageMiss[]; score:
  * Timing, defined here rather than borrowed: vendors disagree on where these
  * clocks start and stop. Time to acknowledge is arrival to first opening.
  * Time to resolve is arrival to the lab showing the fix (escalations excluded,
- * they are a handoff). A breach is an incident that arrived and was not closed
- * inside its deadline.
+ * they are a handoff). There is one window, the shift: a breach is an
+ * incident that arrived and was still open when the shift ended.
  */
 export function shiftMetrics(incidents: IncidentRun[], elapsedEnd: number) {
   const arrived = incidents.filter((i) => i.arriveSec <= elapsedEnd);
@@ -376,12 +376,11 @@ export function shiftTimeline(incidents: IncidentRun[], desk: DeskRun[], titleOf
     out.push({ atSec: i.arriveSec, text: `${name} arrived`, tone: "info" });
     if (i.ackedAtSec !== null) out.push({ atSec: i.ackedAtSec, text: `You opened ${name}`, tone: "info" });
     if (i.resolvedAtSec !== null) {
-      const late = i.resolvedAtSec - i.arriveSec > i.deadlineSec;
-      out.push({ atSec: i.resolvedAtSec, text: `${name} fixed${late ? ", after its deadline" : ""}`, tone: late ? "bad" : "good" });
+      out.push({ atSec: i.resolvedAtSec, text: `${name} fixed`, tone: "good" });
     } else if (i.escalatedAtSec != null) {
       out.push({ atSec: i.escalatedAtSec, text: `${name} handed to tier 2`, tone: "info" });
     } else {
-      out.push({ atSec: Math.min(elapsedEnd, i.arriveSec + i.deadlineSec), text: `${name} passed its deadline unresolved`, tone: "bad" });
+      out.push({ atSec: Math.min(elapsedEnd, i.arriveSec + i.deadlineSec), text: `${name} was still open when the shift ended`, tone: "bad" });
     }
   }
   for (const d of desk) {

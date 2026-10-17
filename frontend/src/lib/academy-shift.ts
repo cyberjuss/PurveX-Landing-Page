@@ -3,19 +3,18 @@ import type { RoleId } from "@/lib/academy-certs";
 import { evalCheck, seeded, shuffle, type Check } from "@/lib/academy-drills";
 import type { LabEvents, LabSnapshot } from "@/lib/academy-lab";
 
-// Shift: a 15-minute tour on the PurveX Financial desk. Real incidents fire
+// Shift: a 20-minute tour on the PurveX Financial desk. Real incidents fire
 // inside the student's own hosted lab on a timer (see academy-hosted.ts, which
 // runs the matching Incident-*.ps1 scripts through SSM). The student
-// investigates in the lab, acts, and writes up each one before its deadline.
+// investigates in the lab, acts, and writes up each one, highest priority
+// first, inside one window: the shift. Incidents carry a priority, not a clock.
 // Grading reads the lab the same way missions do: real end state, real events.
 // Nothing here is faked. Difficulty rises with the student's phase and level.
 
-export const SHIFT_MINUTES = 30;
+export const SHIFT_MINUTES = 20;
 export const SHIFT_SECONDS = SHIFT_MINUTES * 60;
 
 export type Severity = "P1" | "P2" | "P3";
-/** Response deadline from the moment an incident arrives. */
-const DEADLINE_SEC: Record<Severity, number> = { P1: 300, P2: 480, P3: 720 };
 /** What each hint rung costs, as a fraction of the incident's points. */
 export const HINT_COST = [0.1, 0.2, 0.4];
 
@@ -978,6 +977,145 @@ const WHY: Record<string, string> = {
 };
 for (const def of INCIDENTS) def.why = WHY[def.id];
 
+// ---- question pools ---------------------------------------------------------
+// Each incident has several questions, and a shift asks one of them, picked
+// with the shift's seed. The template's own question is always in the pool.
+// Every answer below comes from what the incident's script really plants in
+// the lab (see public/lab-scripts/incidents), so it can be found there, and
+// none is given away by the incident's brief. Windows event IDs per Microsoft
+// Learn's Security auditing reference: 4625 failed logon, 4624 logon, 4740
+// lockout, 4720 user created, 4722/4725 enabled/disabled, 4724 password reset,
+// 4728/4729 member added/removed (global group; every lab group is global),
+// 4738 user changed, 4739 domain policy changed, 4719 audit policy changed,
+// 4741 computer created, 4672 special privileges at logon (Special Logon).
+
+export type Question = { prompt: string; accept: string[] };
+
+type AskCtx = { v: Staff | null; args: Record<string, string> };
+
+const ASK: Record<string, (x: AskCtx) => Question[]> = {
+  "lockout-ticket": () => [
+    { prompt: "Which event ID did the domain controller write when the account locked?", accept: ["4740"] },
+    { prompt: "Which event ID records each wrong password?", accept: ["4625"] },
+    { prompt: "Unlock the account or reset its password? Answer the one this ticket needs.", accept: ["unlock"] },
+  ],
+  spray: () => [
+    { prompt: "Which event ID marks the lockouts?", accept: ["4740"] },
+    { prompt: "What logon type do the failed sign-ins show?", accept: ["3", "network"] },
+    { prompt: "Password spray or targeted brute force?", accept: ["spray"] },
+  ],
+  "rogue-admin": () => [
+    { prompt: "Which account was added to IT Admins?", accept: ["svc.helpdesk", "svc helpdesk", "helpdesk"] },
+    { prompt: "Remove it from the group or delete the account?", accept: ["remove"] },
+    { prompt: "Which event ID will record you taking it out of the group?", accept: ["4729"] },
+  ],
+  "false-alarm": () => [
+    { prompt: "Which account's group membership changed?", accept: ["morgan.lee", "morgan lee"] },
+    { prompt: "Which group was the account added to?", accept: ["compliance users"] },
+    { prompt: "Which event ID records the addition?", accept: ["4728"] },
+  ],
+  "compromised-account": () => [
+    { prompt: "Which event ID records the failed attempts before the success?", accept: ["4625"] },
+    { prompt: "What logon type did the sign-ins use?", accept: ["3", "network"] },
+    { prompt: "Disable the account or only reset its password?", accept: ["disable"] },
+  ],
+  "weak-policy": () => [
+    { prompt: "What minimum password length was the policy set to?", accept: ["4", "four"] },
+    { prompt: "What lockout threshold was the policy set to?", accept: ["0", "zero", "none", "no lockout", "never"] },
+    { prompt: "Was password complexity left on or turned off?", accept: ["off", "disabled"] },
+  ],
+  "wrong-disable": () => [
+    { prompt: "Which event ID records an account being disabled?", accept: ["4725"] },
+    { prompt: "Unlock, enable or reset: which one gives access back here?", accept: ["enable"] },
+    { prompt: "Which event ID will record you turning the account back on?", accept: ["4722"] },
+  ],
+  "preauth-exposure": () => [
+    { prompt: "Which attack does this setting expose the account to?", accept: ["as-rep", "asrep", "as rep"] },
+    { prompt: "Which account option is checked? Give its name.", accept: ["not require kerberos", "preauth", "pre-auth", "preauthentication"] },
+    { prompt: "Which event ID records the change to the account?", accept: ["4738"] },
+  ],
+  "access-request": () => [
+    { prompt: "On which tab in Active Directory Users and Computers do you add the group?", accept: ["member of", "memberof"] },
+    { prompt: "Which event ID will record the user being added?", accept: ["4728"] },
+  ],
+  offboarding: () => [
+    { prompt: "Disable or delete a leaver's account?", accept: ["disable"] },
+    { prompt: "Which event ID will record the account being disabled?", accept: ["4725"] },
+  ],
+  "pwd-notreqd": () => [
+    { prompt: "Which event ID records the change to the account?", accept: ["4738"] },
+    { prompt: "Which Get-ADUser property finds every account with this flag?", accept: ["passwordnotrequired"] },
+  ],
+  delegation: () => [
+    { prompt: "Unconstrained or constrained delegation?", accept: ["unconstrained"] },
+    { prompt: "Which userAccountControl flag is set?", accept: ["trusted_for_delegation", "trusted for delegation"] },
+    { prompt: "Which event ID records the change to the account?", accept: ["4738"] },
+  ],
+  "pwd-expired": () => [
+    { prompt: "Which attribute was set to 0 to force the expiry?", accept: ["pwdlastset", "pwd last set", "password last set"] },
+    { prompt: "Which Account tab option does a pwdLastSet of 0 show as checked?", accept: ["next logon", "must change", "change password at next"] },
+    { prompt: "Which event ID records an admin resetting the password?", accept: ["4724"] },
+  ],
+  "wrong-ou": ({ v, args }) => [
+    { prompt: "Which OU is the account sitting in now?", accept: ["departments"] },
+    { prompt: "Which department's Users OU should it be in?", accept: [args.OU ?? "Compliance", v?.dept ?? "Compliance"].map((s) => s.toLowerCase()) },
+    { prompt: "What note was left in the account's Notes field?", accept: ["ou review pending", "review pending"] },
+  ],
+  "never-expires": () => [
+    { prompt: "Which event ID records the change to the account?", accept: ["4738"] },
+    { prompt: "Which Get-ADUser property finds every account with this flag?", accept: ["passwordneverexpires"] },
+  ],
+  "rogue-computer": () => [
+    { prompt: "Which OU did the machine appear in?", accept: ["workstations"] },
+    { prompt: "What does the machine's description say?", accept: ["asset record", "unregistered"] },
+    { prompt: "Which event ID records a computer account being created?", accept: ["4741"] },
+  ],
+  "audit-disabled": () => [
+    { prompt: "Which command shows the current audit policy?", accept: ["auditpol"] },
+    { prompt: "Which event ID does Special Logon write when an admin signs in?", accept: ["4672"] },
+  ],
+  "reversible-enc": () => [
+    { prompt: "Does turning the setting off clear passwords already stored that way? Answer yes or no.", accept: ["no"] },
+    { prompt: "Which policy holds this setting for the whole domain?", accept: ["default domain policy", "default domain password policy", "addefaultdomainpasswordpolicy"] },
+  ],
+  kerberoast: () => [
+    { prompt: "What is the SPN value on the account?", accept: ["http/purvex-reports"] },
+    { prompt: "Which command lists an account's SPNs?", accept: ["setspn"] },
+  ],
+  "domain-admins": () => [
+    { prompt: "Remove it from the group or delete the account?", accept: ["remove"] },
+    { prompt: "Which event ID will record you taking it out of Domain Admins?", accept: ["4729"] },
+  ],
+  "backdoor-account": () => [
+    { prompt: "Which event ID records a new user account?", accept: ["4720"] },
+    { prompt: "What does the account's description say?", accept: ["no hr record", "unmanaged"] },
+  ],
+  "targeted-bruteforce": () => [
+    { prompt: "Which event ID marks the lockout?", accept: ["4740"] },
+    { prompt: "How many accounts were targeted?", accept: ["1", "one", "single"] },
+    { prompt: "Which event ID records each failed guess?", accept: ["4625"] },
+  ],
+  "admin-pso": () => [
+    { prompt: "When two PSOs apply, does the lower or higher precedence number win?", accept: ["lower", "lowest"] },
+    { prompt: "Which console creates a PSO without PowerShell?", accept: ["administrative center", "adac"] },
+  ],
+  "dept-transfer": () => [
+    { prompt: "On which tab in Active Directory Users and Computers do you see their groups?", accept: ["member of", "memberof"] },
+    { prompt: "Which event ID will record the old group coming off?", accept: ["4729"] },
+  ],
+  "threat-hunt-spn": () => [
+    { prompt: "What is the SPN value on the account you found?", accept: ["http/purvex-reports"] },
+    { prompt: "Which Get-ADUser property do you filter on?", accept: ["serviceprincipalname"] },
+  ],
+};
+
+/** Every question an incident can ask this shift: the template's own, then its pool. */
+export function questionsFor(def: IncidentDef, bind?: Bind): Question[] {
+  const args = bind?.args ?? {};
+  const v = ROSTER.find((s) => s.sam === args.Sam) ?? null;
+  return [bind?.diagnosis ?? def.diagnosis, ...(ASK[def.id]?.({ v, args }) ?? [])];
+}
+
 const byId = new Map(INCIDENTS.map((i) => [i.id, i]));
 export const incidentDef = (id: string) => byId.get(id) ?? null;
 
@@ -993,11 +1131,13 @@ export type ShiftIncident = {
   deadlineSec: number;
   /** The victim-specific specifics for this shift, if the incident rotates them. */
   bind?: Bind;
+  /** The question this shift asks, picked from the incident's pool. */
+  question?: Question;
 };
 
 /** When each incident arrives. The first few land fast so the queue has a real
  *  backlog from the start, then the rest keep coming across the shift. The last
- *  lands with a buffer so even a P1 that arrives late still has its full SLA. */
+ *  lands five minutes before the end, so there is still time to work it. */
 function arrivalsFor(n: number): number[] {
   if (n <= 1) return [0];
   const head = [0, 40, 90].slice(0, Math.min(n, 3));
@@ -1009,10 +1149,11 @@ function arrivalsFor(n: number): number[] {
   return [...head, ...tail];
 }
 
-/** How many incidents a shift has, from phase and level. A 30-minute shift runs
- *  a busy queue — more than a beginner clears — so work keeps arriving. */
+/** How many incidents a shift has, from phase and level. A 20-minute shift runs
+ *  a busy queue (more than a beginner clears) so work keeps arriving and the
+ *  order they take it in matters. */
 export function shiftSize(phase: number, level: number): number {
-  return Math.min(10, 6 + level + (phase >= 2 ? 1 : 0));
+  return Math.min(8, 4 + level + (phase >= 2 ? 1 : 0));
 }
 
 /**
@@ -1093,27 +1234,39 @@ export function pickShift(seed: string, phase: number, level: number, roles: Rol
     if (key !== null) usedTargets.add(key);
     return picked;
   };
-  return chosen.map((def, n) => ({
-    uid: `${def.id}-${n}`,
-    defId: def.id,
-    severity: def.severity,
-    arriveSec: arrivals[n],
-    deadlineSec: DEADLINE_SEC[def.severity],
-    bind: def.bind?.(pickOne),
-  }));
+  // One question per incident from its pool. A prompt already asked this shift
+  // is passed over while another is left, so two incidents rarely ask alike.
+  const asked = new Set<string>();
+  return chosen.map((def, n) => {
+    const bind = def.bind?.(pickOne);
+    const pool = shuffle(r, questionsFor(def, bind));
+    const question = pool.find((q) => !asked.has(q.prompt)) ?? pool[0];
+    asked.add(question.prompt);
+    return {
+      uid: `${def.id}-${n}`,
+      defId: def.id,
+      severity: def.severity,
+      arriveSec: arrivals[n],
+      // One window for the whole shift: an incident is on time when it is
+      // closed before the shift ends. Severity sets the order, not a clock.
+      deadlineSec: Math.max(0, SHIFT_SECONDS - arrivals[n]),
+      bind,
+      question,
+    };
+  });
 }
 
 /** The specifics grading and injection should use for a run incident: the shift's
  *  bound victim when the incident rotates, otherwise the template. */
 export function effectiveIncident(
   def: IncidentDef,
-  inc: { bind?: Bind }
+  inc: { bind?: Bind; question?: Question }
 ): { resolve: IncidentDef["resolve"]; noHarm: IncidentDef["noHarm"]; diagnosis: IncidentDef["diagnosis"]; brief: string; args?: Record<string, string>; evidence?: (events?: LabEvents) => boolean } {
   const b = inc.bind;
   return {
     resolve: b?.resolve ?? def.resolve,
     noHarm: b?.noHarm ?? def.noHarm,
-    diagnosis: b?.diagnosis ?? def.diagnosis,
+    diagnosis: inc.question ?? b?.diagnosis ?? def.diagnosis,
     brief: b?.brief ?? def.brief,
     args: b?.args,
     evidence: b?.evidence ?? def.evidence,
@@ -1121,6 +1274,25 @@ export function effectiveIncident(
 }
 
 // ---- grading one incident -------------------------------------------------
+
+/**
+ * Does the answer contain an accepted term? Short terms and numbers must stand
+ * as their own word, so "4" does not pass inside "4625", "no" inside "not", or
+ * "ou" inside "you". Longer terms match anywhere, so "disabled" passes "disable".
+ */
+export function answerMatches(answer: string, accept: string[]): boolean {
+  const g = answer.trim().toLowerCase();
+  if (!g) return false;
+  return accept.some((raw) => {
+    const a = raw.toLowerCase();
+    if (!a) return false;
+    if (/^\d+$/.test(a) || a.length <= 3) {
+      const esc = a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return new RegExp(`(^|[^a-z0-9])${esc}($|[^a-z0-9])`).test(g);
+    }
+    return g.includes(a);
+  });
+}
 
 /** The lab-and-diagnosis parts. Write-up and on-time are added by the caller. */
 export function gradeIncidentLab(
@@ -1149,8 +1321,7 @@ export function gradeIncidentLab(
       if (!ok) noHarm = false;
     }
   }
-  const g = diagnosis.trim().toLowerCase();
-  const diagnosisRight = def.diagnosis.accept.some((a) => g.includes(a.toLowerCase()));
+  const diagnosisRight = answerMatches(diagnosis, def.diagnosis.accept);
   return { resolved, noHarm, diagnosisRight, results };
 }
 
@@ -1213,6 +1384,8 @@ export type IncidentRun = {
   bind?: Bind;
   /** Fresh wording Claude wrote for this shift, so no two read alike. Falls back to the template. */
   text?: { from: string; title: string; brief: string };
+  /** The question this shift asks. Absent on a run saved before pools existed. */
+  question?: Question;
   hintsUsed: number;
   diagnosis: string;
   response: string;
@@ -1268,7 +1441,7 @@ export function newShiftRun(seed: string, phase: number, level: number, roles: R
 /** Seconds elapsed since the shift started. */
 export const shiftElapsed = (run: ShiftRun, now = Date.now()) => Math.max(0, Math.floor((now - Date.parse(run.startedAt)) / 1000));
 
-/** True once the 15 minutes are up. */
+/** True once the shift's window is up. */
 export const shiftOver = (run: ShiftRun, now = Date.now()) => now >= Date.parse(run.endsAt);
 
 /** An incident is on the queue once its arrival time has passed. */
