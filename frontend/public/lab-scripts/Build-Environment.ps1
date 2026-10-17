@@ -424,6 +424,32 @@ function Ensure-IntegrityTickets {
         }
         catch { Write-Host "  Could not plant INC-1058: $($_.Exception.Message)" -ForegroundColor Yellow }
     }
+
+    # Synthetic client records for training. Every value is one that cannot
+    # belong to a real person: SSNs in the never-issued 900 range, phone numbers
+    # in the 555-0100 to 555-0199 block reserved for fiction, example.com email,
+    # and names marked SAMPLE. The file says so in its first line.
+    if (-not (Test-PurvexTicketMark "DATA-SAMPLE") -and $PSCmdlet.ShouldProcess("$PurvexLabRoot\Shares\Clients", "Plant synthetic client records")) {
+        try {
+            $clients = Join-Path $PurvexLabRoot "Shares\Clients"
+            New-Item -ItemType Directory -Path $clients -Force | Out-Null
+            Set-Content -LiteralPath (Join-Path $clients "client-register-SAMPLE.csv") -Encoding ASCII -Value @(
+                "# SYNTHETIC TRAINING DATA - NOT REAL PEOPLE - PurveX Financial lab",
+                "client_id,name,ssn,phone,email,advisor",
+                "C-1001,Avery SAMPLE,900-01-0001,555-0101,avery.sample@example.com,sam.whitfield",
+                "C-1002,Blake SAMPLE,900-01-0002,555-0102,blake.sample@example.com,jamie.torres",
+                "C-1003,Casey SAMPLE,900-01-0003,555-0103,casey.sample@example.com,sam.whitfield",
+                "C-1004,Drew SAMPLE,900-01-0004,555-0104,drew.sample@example.com,jamie.torres",
+                "C-1005,Emery SAMPLE,900-01-0005,555-0105,emery.sample@example.com,sam.whitfield"
+            )
+            if (-not (Get-SmbShare -Name "Shares" -ErrorAction SilentlyContinue)) {
+                New-SmbShare -Name "Shares" -Path (Join-Path $PurvexLabRoot "Shares") -ReadAccess "Domain Users" -ErrorAction SilentlyContinue | Out-Null
+            }
+            Add-PurvexTicketMark "DATA-SAMPLE"
+            Write-Host "  Planted synthetic client records on Shares\Clients" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant synthetic client records: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
 }
 
 # Firewall rules in the PurveX Lab group, read straight from the registry. That
