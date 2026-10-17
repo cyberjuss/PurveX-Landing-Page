@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { marked, type Token, type Tokens } from "marked";
 import {
   Activity,
@@ -86,6 +86,8 @@ import {
 } from "lucide-react";
 import { Markdown } from "@/lib/markdown";
 import type { RecapItem } from "@/lib/lesson-deck";
+import { collect, has, loadDeck } from "@/lib/concept-review";
+import { confettiFrom } from "@/lib/confetti";
 
 // First match wins, so the narrower words sit above the broader ones. Matched
 // against the plain text of one list item.
@@ -305,73 +307,114 @@ function settle(e: React.PointerEvent<HTMLElement>) {
 // back. Recalling the meaning before turning the card is the point, so they
 // start face down, and one control turns them all over.
 /** The closing recap: every key term face down, the sentence that taught it on the back. */
-// Every recap card a student turns over joins their collection of concepts,
-// kept in this browser. The count grows lesson by lesson, so coming back to a
-// recap has a visible payoff. Storage can throw in a private window; then the
-// collection simply does not persist.
-const COLLECTION_KEY = "academy-concepts";
-function readCollection(): Set<string> {
-  try {
-    const raw = window.localStorage.getItem(COLLECTION_KEY);
-    return new Set(raw ? (JSON.parse(raw) as string[]) : []);
-  } catch {
-    return new Set();
-  }
-}
-function saveCollection(all: Set<string>) {
-  try {
-    window.localStorage.setItem(COLLECTION_KEY, JSON.stringify([...all]));
-  } catch {}
+// Numbers that count up from zero as they arrive, the way a score does.
+function CountUp({ to }: { to: number }) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    // With reduced motion the first frame lands on the final number.
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let raf = 0;
+    const start = performance.now();
+    const tick = (t: number) => {
+      const p = reduce ? 1 : Math.min(1, (t - start) / 700);
+      setN(Math.round(to * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [to]);
+  return <>{n}</>;
 }
 
-/** The closing recap: every key term face down, the sentence that taught it on the back. */
-export function Recap({ items, slides, activities }: { items: RecapItem[]; slides: number; activities: number }) {
+// The first time a student reaches a section's recap is a finish line, so it
+// gets one: a ring that closes, the counts ticking up, and confetti. After
+// that the recap opens quietly. Remembered per browser.
+const FINISHED_KEY = "academy-sections-finished";
+function firstFinish(where: string): boolean {
+  try {
+    const done = new Set<string>(JSON.parse(window.localStorage.getItem(FINISHED_KEY) || "[]"));
+    if (done.has(where)) return false;
+    done.add(where);
+    window.localStorage.setItem(FINISHED_KEY, JSON.stringify([...done]));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * The closing recap: every key term face down, the sentence that taught it on
+ * the back. Each card a student turns over joins their review deck, and comes
+ * back on the home page when it is due.
+ */
+export function Recap({ items, slides, activities, where }: { items: RecapItem[]; slides: number; activities: number; where: string }) {
   const cards = useMemo(
     () => items.map((r) => ({ lead: r.term, html: marked.parseInline(r.sentence, { async: false }) as string, text: r.sentence })),
     [items]
   );
+  const rootRef = useRef<HTMLDivElement>(null);
   const [collected, setCollected] = useState<number | null>(null);
   const [fresh, setFresh] = useState(0);
   const [mine, setMine] = useState<Set<string>>(() => new Set());
-  // Storage is only readable in the browser, so the count arrives after the
+  const [finish, setFinish] = useState(false);
+  // Storage is only readable in the browser, so the counts arrive after the
   // first paint rather than mismatching the server render.
   useEffect(() => {
-    const all = readCollection();
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setCollected(all.size);
-    setMine(new Set(items.map((r) => r.term.toLowerCase()).filter((t) => all.has(t))));
-  }, [items]);
+    setCollected(Object.keys(loadDeck()).length);
+    setMine(new Set(items.map((r) => r.term.toLowerCase()).filter((t) => has(t))));
+    if (firstFinish(where)) {
+      setFinish(true);
+      const t = window.setTimeout(() => confettiFrom(rootRef.current, 60), 450);
+      return () => window.clearTimeout(t);
+    }
+  }, [items, where]);
   const reveal = (j: number) => {
-    const key = items[j]?.term.toLowerCase();
-    if (!key) return;
-    const all = readCollection();
-    if (all.has(key)) return;
-    all.add(key);
-    saveCollection(all);
-    setCollected(all.size);
-    setMine((prev) => new Set(prev).add(key));
+    const item = items[j];
+    if (!item || !collect(item.term, item.sentence, where)) return;
+    setCollected(Object.keys(loadDeck()).length);
+    setMine((prev) => new Set(prev).add(item.term.toLowerCase()));
     setFresh((n) => n + 1);
   };
   return (
-    <div className="lk-recap">
+    <div className="lk-recap" ref={rootRef}>
+      {finish && (
+        <div className="lk-finish" role="status">
+          <svg className="lk-finish__ring" viewBox="0 0 44 44" aria-hidden>
+            <circle cx="22" cy="22" r="19" className="lk-finish__track" />
+            <circle cx="22" cy="22" r="19" className="lk-finish__fill" />
+            <path d="M14 22.5 l5.5 5.5 l11 -12" className="lk-finish__tick" />
+          </svg>
+          <span>
+            <strong>Section complete.</strong> Flip each card to add it to your review deck. They come back when it is time to
+            practise.
+          </span>
+        </div>
+      )}
       <p className="lk-recap__stats lk-build">
         <span>
-          <b>{slides}</b> slides
+          <b>
+            <CountUp to={slides} />
+          </b>{" "}
+          slides
         </span>
         {activities > 0 && (
           <span>
-            <b>{activities}</b> {activities === 1 ? "activity" : "activities"}
+            <b>
+              <CountUp to={activities} />
+            </b>{" "}
+            {activities === 1 ? "activity" : "activities"}
           </span>
         )}
         <span>
           <b>
             {mine.size}/{items.length}
           </b>{" "}
-          collected here
+          in your deck
         </span>
         {collected !== null && (
           <span className="lk-recap__total">
-            <b key={collected}>{collected}</b> concepts in your collection
+            <b key={collected}>{collected}</b> concepts to keep
             {fresh > 0 && (
               <em key={fresh} className="lk-recap__plus">
                 +1

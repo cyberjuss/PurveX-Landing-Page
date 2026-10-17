@@ -1146,3 +1146,49 @@ button.lk__art { padding: 0; width: 100%; font: inherit; color: var(--rd-accent)
   .lk__help li { grid-template-columns: 120px minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) { .lk__help { animation: none; } }
+
+/* ==== Section complete ====
+   The first arrival at a recap: the ring draws closed, the tick lands, then
+   the line about the review deck. Played once per section per browser. */
+.lk-finish {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-good) 45%, transparent);
+  background: color-mix(in srgb, var(--rd-good) 8%, var(--rd-surface));
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--rd-ink-2);
+  animation: lk-pop var(--ax-dur-slow) var(--ax-ease) both;
+}
+.lk-finish strong { color: var(--rd-ink); }
+.lk-finish__ring { flex: none; width: 46px; height: 46px; transform: rotate(-90deg); }
+.lk-finish__track { fill: none; stroke: color-mix(in srgb, var(--rd-good) 20%, transparent); stroke-width: 4; }
+.lk-finish__fill { fill: none; stroke: var(--rd-good); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 120; stroke-dashoffset: 0; animation: lk-ring-close 900ms var(--ax-ease) 150ms both; }
+@keyframes lk-ring-close { from { stroke-dashoffset: 120; } }
+.lk-finish__tick { fill: none; stroke: var(--rd-good); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 30; transform: rotate(90deg); transform-origin: 22px 22px; animation: lk-tick 380ms var(--ax-ease) 950ms both; }
+@keyframes lk-tick { from { stroke-dashoffset: 30; } to { stroke-dashoffset: 0; } }
+
+/* ==== The current progress segment shimmers, so the bar reads as alive ==== */
+.lk__progress button.is-here::before {
+  background: linear-gradient(90deg, var(--rd-accent) 0%, color-mix(in srgb, var(--rd-accent) 45%, #fff) 50%, var(--rd-accent) 100%) 0 0 / 200% 100%;
+  animation: lk-shimmer 2.2s linear infinite;
+}
+@keyframes lk-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .lk-finish, .lk-finish__fill, .lk-finish__tick, .lk__progress button.is-here::before { animation: none; }
+}
+
+/* ==== Top row: progress, count and keys in one line ====
+   The count and the keys button used to float over the bar's right end.
+   They now sit after it on the same row, so nothing overlaps. */
+.lk__topbar { display: flex; align-items: center; gap: 14px; padding: 12px clamp(20px, 4vw, 48px) 0; }
+.lk__topbar .lk__progress { flex: 1; min-width: 0; padding: 0; }
+.lk__topbar .lk__corner { position: relative; top: auto; right: auto; flex: none; }
+.lk__head { padding-right: 0; }
+@media (max-width: 640px) {
+  .lk__topbar { gap: 10px; padding-inline: 14px; }
+  .lk__head { padding-right: 0; }
+}

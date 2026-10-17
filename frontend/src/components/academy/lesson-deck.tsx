@@ -148,6 +148,8 @@ export function LessonDeck({
           if (Math.abs(delta) >= 48) (delta < 0 ? forward : back)();
         }}
       >
+        {/* One row across the top: the progress bar, then the count and the keys button at its end. */}
+        <div className="lk__topbar">
         {total > 1 && (
           <div className="lk__progress" role="tablist" aria-label="Slides">
             {slides.map((s, i) => (
@@ -211,6 +213,7 @@ export function LessonDeck({
             </div>
           )}
         </div>
+        </div>
         <div className="lk__stage">
         <div
           key={index}
@@ -233,7 +236,7 @@ export function LessonDeck({
           </header>
           <div className="lk__body">
             {slide.recap ? (
-              <Recap items={slide.recap} slides={total - 1} activities={slides.filter((s) => s.activity).length} />
+              <Recap items={slide.recap} slides={total - 1} activities={slides.filter((s) => s.activity).length} where={label} />
             ) : slide.activity ? (
               <DragActivity activity={slide.activity} />
             ) : (

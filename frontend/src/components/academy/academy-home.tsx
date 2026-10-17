@@ -8,6 +8,7 @@ import { READINESS_PATH, useResults } from "@/lib/academy-client";
 import { CHALLENGE_LABELS, challengeHref, lastTouchedMission } from "@/lib/academy-missions";
 import { LEVELS, summarize } from "@/lib/academy-score";
 import { DrillCard } from "./drill-card";
+import { ReviewCard } from "./review-card";
 import { accountFirstName, useAcademyAccount } from "./academy-account";
 import { useAcademyProgress } from "./academy-progress";
 import { isLockedHref, isPhaseLocked } from "@/lib/academy-locks";
@@ -116,6 +117,10 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
 
       <div className="ax-rise" style={{ ["--ax-i" as string]: 1 }} data-tour="drills">
         <DrillCard />
+      </div>
+
+      <div className="ax-rise" style={{ ["--ax-i" as string]: 1 }}>
+        <ReviewCard />
       </div>
 
       <ol className="ax-path" data-tour="path">
