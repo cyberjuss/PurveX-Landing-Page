@@ -189,3 +189,13 @@ body:has(.shift-app) [data-pc-root] { z-index: 80 !important; }
 .sh-work .sh-actions .sh-submit { grid-column: 1 / -1; justify-content: center; }
 .sh-work .sh-actions .sh-escalate, .sh-work .sh-actions .sh-coach { justify-content: center; margin: 0; }
 .sh-work .sh-actions .sh-actions__why { grid-column: 1 / -1; }
+
+/* Tier 2's review of an escalation, under its row in the shift report. */
+.sh-rep .sh-review { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; margin-top: 6px; padding: 12px 14px; font-size: 13.5px; line-height: 1.55; color: var(--rd-ink-2); background: color-mix(in srgb, var(--rd-accent) 6%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 25%, transparent); }
+.sh-review p { margin: 0; }
+.sh-review strong { color: var(--rd-ink); font-weight: 650; }
+.sh-review__head { display: flex; align-items: center; gap: 6px; font: 700 11px var(--font-mono, ui-monospace, monospace); letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-accent); }
+.sh-review__grade { margin-left: auto; padding: 2px 8px; font-size: 11px; letter-spacing: 0.06em; color: var(--rd-ink-2); box-shadow: inset 0 0 0 1px var(--rd-line); }
+.sh-review__grade.is-3 { color: var(--rd-good); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-good) 50%, transparent); }
+.sh-review__grade.is-2 { color: var(--rd-accent); }
+.sh-review__grade.is-1, .sh-review__grade.is-0 { color: var(--rd-bad); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-bad) 45%, transparent); }

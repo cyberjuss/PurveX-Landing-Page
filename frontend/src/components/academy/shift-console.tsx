@@ -40,7 +40,11 @@ type Incident = {
   shownHints: string[];
   diagnosis: string;
   responseSaved: boolean;
+  submitted?: boolean;
 };
+/** Tier 2's read of an escalation (Coach as the tier 2 lead), from the shift report. */
+type Review = { score: number; grade: string; handoff: string; couldHave: string; by: "coach" | "facts" };
+
 type Report = {
   totalScore: number;
   maxScore: number;
@@ -49,7 +53,7 @@ type Report = {
   headline: string;
   habit: string;
   escalatedCount: number;
-  incidents: { title: string; severity: string; resolved: boolean; escalated: boolean; touched: boolean; onTime: boolean; noHarm: boolean; diagnosisRight: boolean; hintsUsed: number; score: number; max: number }[];
+  incidents: { title: string; severity: string; resolved: boolean; escalated: boolean; touched: boolean; onTime: boolean; noHarm: boolean; diagnosisRight: boolean; hintsUsed: number; score: number; max: number; review?: Review | null }[];
 } & Partial<DeskReport>;
 type Shift = {
   id: string;
@@ -555,6 +559,12 @@ function IncidentDetail({ inc, no, busy, post }: { inc: Incident; no: string; bu
   // on the first click.
   const [confirming, setConfirming] = useState(false);
   const hasFinding = diagnosis.trim().length > 0;
+  // Escalating is for what tier 1 tried and could not close: one Submit and
+  // check, a finding and a closing note, all of which tier 2 reads.
+  const submitted = Boolean(inc.submitted) || result !== null;
+  const hasNote = response.trim().length > 0;
+  const canEscalate = submitted && hasFinding && hasNote;
+  const escalateNeeds = [!submitted && "press Submit and check once", !hasFinding && "answer the question", !hasNote && "write a closing note"].filter(Boolean) as string[];
   const { ask } = useCoach();
 
   const s = sender(inc);
@@ -636,7 +646,7 @@ function IncidentDetail({ inc, no, busy, post }: { inc: Incident; no: string; bu
       ) : inc.escalated ? (
         <div className="sh-handoff">
           <p className="sh-handoff__head"><ArrowUpRight className="h-4 w-4" /> Handed to tier 2</p>
-          <p>Tier 2 owns this now and it is off your queue. Your finding and your note went up with it.</p>
+          <p>Tier 2 owns this now and it is off your queue. Coach, as the tier 2 lead, has your finding and your closing note, and reviews the handoff in your shift report: what tier 2 could use, and what you could have done yourself.</p>
           <p className="sh-handoff__cost">It scores as a handoff, not a fix: you keep the credit for the finding, the write-up and leaving the rest alone, and you give up the points for resolving it.</p>
         </div>
       ) : (
@@ -704,7 +714,7 @@ function IncidentDetail({ inc, no, busy, post }: { inc: Incident; no: string; bu
           {confirming ? (
             <div className="sh-confirm">
               <p className="sh-confirm__head"><ArrowUpRight className="h-4 w-4" /> Hand this to tier 2?</p>
-              <p>The senior analysts above you take the incident over and it comes off your queue, so you can move on to the next one.</p>
+              <p>Coach, as the tier 2 lead, takes the incident with your finding and closing note, and it comes off your queue. After the shift, Coach grades the handoff and tells you what you could have done yourself.</p>
               <p className="sh-confirm__cost">
                 It closes for you at that point. You keep the credit for your finding, your closing note and for leaving the
                 accounts that were fine alone, and you give up the points for fixing it.
@@ -728,8 +738,8 @@ function IncidentDetail({ inc, no, busy, post }: { inc: Incident; no: string; bu
               <button
                 type="button"
                 className="sh-escalate"
-                disabled={busy || !hasFinding}
-                title={hasFinding ? "Hand this incident to the tier 2 team, the senior analysts above you" : "Answer the question above first"}
+                disabled={busy || !canEscalate}
+                title={canEscalate ? "Hand this incident to tier 2 with your finding and closing note" : `To escalate, ${escalateNeeds.join(", ")}`}
                 onClick={() => setConfirming(true)}
               >
                 <ArrowUpRight className="h-4 w-4" /> Escalate to tier 2
@@ -745,7 +755,9 @@ function IncidentDetail({ inc, no, busy, post }: { inc: Incident; no: string; bu
               >
                 <LifeBuoy className="h-3.5 w-3.5" /> Think it through
               </button>
-              {!hasFinding && <p className="sh-actions__why">Escalating needs your finding: tier 2 gets what you saw, not a blank ticket.</p>}
+              {!canEscalate && (
+                <p className="sh-actions__why">To escalate to tier 2, {escalateNeeds.join(", then ")}. Tier 2 takes what you tried, not a blank ticket.</p>
+              )}
             </div>
           )}
         </div>
@@ -797,6 +809,16 @@ function ShiftReport({ theme, report, onAgain, busy, error }: { theme: "light" |
                 {i.hintsUsed > 0 && <em className="hint">{i.hintsUsed} hint{i.hintsUsed === 1 ? "" : "s"}</em>}
               </span>
               <span className="sh-rep__score">{i.score}<small>/{i.max}</small></span>
+              {i.review && (
+                <div className="sh-review">
+                  <p className="sh-review__head">
+                    <ArrowUpRight className="h-3.5 w-3.5" /> Tier 2 review{i.review.by === "coach" ? " from Coach" : ""}
+                    <b className={`sh-review__grade is-${i.review.score}`}>{i.review.grade}</b>
+                  </p>
+                  <p><strong>Your handoff.</strong> {i.review.handoff}</p>
+                  <p><strong>What you could have done.</strong> {i.review.couldHave}</p>
+                </div>
+              )}
             </div>
           ))}
         </div>

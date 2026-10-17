@@ -1438,6 +1438,10 @@ export type IncidentRun = {
   text?: { from: string; title: string; brief: string };
   /** The question this shift asks. Absent on a run saved before pools existed. */
   question?: Question;
+  /** How many times they pressed Submit and check. Escalating needs at least one. */
+  submits?: number;
+  /** Tier 2's review of the handoff, written when the shift is graded. */
+  review?: import("@/lib/academy-scenario").HandoffReview;
   hintsUsed: number;
   diagnosis: string;
   response: string;

@@ -1,5 +1,5 @@
 import "server-only";
-import { responseGrader, shiftNarrator } from "@/lib/academy-scenario";
+import { HANDOFF_GRADES, handoffReviewer, responseGrader, shiftNarrator, type HandoffReview } from "@/lib/academy-scenario";
 import { cleanupShiftLab, hostedLabStatus, injectIncident, requestLabSync } from "@/lib/academy-hosted";
 import { roleLabel } from "@/lib/academy-certs";
 import { levelFor, type DrillEntry, type Item } from "@/lib/academy-drills";
@@ -73,6 +73,8 @@ export type PublicIncident = {
   shownHints: string[];
   diagnosis: string;
   responseSaved: boolean;
+  /** They have pressed Submit and check at least once, which escalating needs. */
+  submitted: boolean;
 };
 
 export type IncidentReport = {
@@ -88,6 +90,8 @@ export type IncidentReport = {
   hintsUsed: number;
   score: number;
   max: number;
+  /** Tier 2's review, on an escalated incident. */
+  review: HandoffReview | null;
 };
 
 export type ShiftReport = {
@@ -166,6 +170,7 @@ function toPublic(run: ShiftRun, inc: IncidentRun, elapsed: number): PublicIncid
     shownHints: def.hints.slice(0, inc.hintsUsed),
     diagnosis: inc.diagnosis,
     responseSaved: inc.response.trim().length > 0,
+    submitted: (inc.submits ?? 0) > 0,
   };
 }
 
@@ -350,11 +355,17 @@ export async function submitIncident(
   inc.response = response.slice(0, 4000);
 
   if (escalate) {
+    // Tier 2 takes what tier 1 tried, not a first look: one Submit and check,
+    // a finding and a closing note before it can go up.
+    if (!(inc.submits ?? 0)) return { error: "Submit and check first. Tier 2 takes an incident after you have tried it." };
     if (!inc.diagnosis.trim()) return { error: "Answer the question before you hand this to tier 2." };
+    if (!inc.response.trim()) return { error: "Write a closing note first. It is what tier 2 reads." };
     if (inc.escalatedAtSec == null && inc.resolvedAtSec === null) inc.escalatedAtSec = elapsed;
     await saveShift(userId, run);
     return { resolved: false, escalated: true, onTime: false, results: [], waiting: false, needFinding: false, answerRight: null };
   }
+
+  inc.submits = (inc.submits ?? 0) + 1;
 
   // Push a fresh snapshot from the lab now and wait briefly for it, so a change
   // the student just made is graded on this click instead of the next one.
@@ -453,11 +464,31 @@ export async function answerDesk(userId: string, uid: string, choice: string, te
 
 // ---- grading at the end ---------------------------------------------------
 
+/**
+ * Tier 2's review when Coach cannot be reached: graded from the facts alone.
+ * A note that names the right finding and says what was tried is usable; the
+ * fix is stated from the incident's own resolve checks and guidance.
+ */
+function factReview(c: { finding: string; note: string; fix: string[]; path: string[] }, findingRight: boolean): HandoffReview {
+  const words = c.note.trim().split(/\s+/).filter(Boolean).length;
+  const score = Math.min(3, (findingRight ? 1 : 0) + (words >= 15 ? 1 : 0) + (words >= 40 ? 1 : 0));
+  return {
+    score,
+    grade: HANDOFF_GRADES[score],
+    handoff: findingRight
+      ? `Your finding was right${words < 15 ? ", but the note was too short for tier 2 to act on without calling you back" : ", and tier 2 had a note to work from"}.`
+      : "Your finding did not answer the question, so tier 2 would start the investigation again.",
+    couldHave: `What would have closed it at tier 1: ${c.fix.join("; ")}. ${c.path[c.path.length - 1] ?? ""}`.trim(),
+    by: "facts",
+  };
+}
+
 async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
   const lab = await loadLabState(userId);
   const snapshot = lab?.snapshot ?? null;
   const apiKey = process.env.ANTHROPIC_API_KEY;
   const grade = apiKey ? responseGrader(apiKey) : null;
+  const review = apiKey ? handoffReviewer(apiKey) : null;
 
   for (const inc of run.incidents) {
     const def = incidentDef(inc.defId);
@@ -475,7 +506,22 @@ async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
     const onTime = inc.resolvedAtSec !== null && resolvedOnTime(inc);
 
     let writeUp: number | null = null;
-    if (grade && inc.response.trim()) {
+    if (escalated) {
+      // Tier 2 reads the handoff, and its grade is the write-up score.
+      const c = {
+        title: inc.text?.title ?? def.title,
+        brief: inc.text?.brief ?? eff.brief,
+        question: eff.diagnosis.prompt,
+        answer: eff.diagnosis.accept[0] ?? "",
+        fix: eff.resolve.map((r) => r.label),
+        path: def.hints,
+        rubric: def.rubric,
+        finding: inc.diagnosis,
+        note: inc.response,
+      };
+      inc.review = (review ? await review(c).catch(() => null) : null) ?? factReview(c, lg.diagnosisRight);
+      writeUp = inc.review.score / 3;
+    } else if (grade && inc.response.trim()) {
       const item = { title: def.title, story: eff.brief, prompt: eff.diagnosis.prompt, rubric: def.rubric } as unknown as Item;
       const marked = await grade(item, inc.response).catch(() => null);
       if (marked) writeUp = marked.total ? marked.hits / marked.total : null;
@@ -521,6 +567,7 @@ function buildReport(run: ShiftRun): ShiftReport {
       hintsUsed: inc.hintsUsed,
       score: inc.score ?? 0,
       max: def?.points ?? 0,
+      review: inc.escalated ? (inc.review ?? null) : null,
     };
   });
   const resolvedCount = incidents.filter((i) => i.resolved).length;
