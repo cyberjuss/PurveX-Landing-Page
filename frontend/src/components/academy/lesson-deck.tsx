@@ -273,8 +273,8 @@ export function LessonDeck({
                   {index < total - 1
                     ? `Next up: ${slides[index + 1].title}`
                     : nextBeyond
-                      ? `The next slide moves on to ${nextBeyond.label}.`
-                      : "This is the last slide."}
+                      ? `The next slide moves on to ${nextBeyond.label}`
+                      : "This is the last slide"}
                 </p>
               </div>
             )}

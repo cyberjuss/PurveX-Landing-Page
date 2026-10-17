@@ -3,6 +3,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, Check, Flame, GripVertical, RotateCcw } from "lucide-react";
 import { confettiFrom } from "@/lib/confetti";
+import { dropLonePeriod } from "@/lib/lone-period";
 import type { DeckActivity } from "@/lib/lesson-deck";
 
 // Same shuffle on the server and in the browser, so the first paint matches
@@ -147,15 +148,15 @@ function SortActivity({ activity }: { activity: Extract<DeckActivity, { kind: "s
 
   return (
     <div className="lkd" ref={rootRef}>
-      <p className="lkd__prompt">{activity.prompt}</p>
+      <p className="lkd__prompt">{dropLonePeriod(activity.prompt)}</p>
       <p className="lkd__how">
-        {match ? "Drag each term onto the line it matches, or tap a term and then a line." : "Drag each card into a box, or tap a card and then a box."}
+        {match ? "Drag each term onto the line it matches, or tap a term and then a line" : "Drag each card into a box, or tap a card and then a box"}
       </p>
 
       <div className={`lkd__pool${done ? " is-empty" : ""}`} aria-label="Cards to sort">
         {done ? (
           <span className="lkd__done">
-            <Check className="h-4 w-4" /> {match ? "All matched" : "All sorted"}{mistakes ? `, ${mistakes} ${mistakes === 1 ? "miss" : "misses"} on the way` : " on the first try"}.
+            <Check className="h-4 w-4" /> {match ? "All matched" : "All sorted"}{mistakes ? `, ${mistakes} ${mistakes === 1 ? "miss" : "misses"} on the way` : " on the first try"}
           </span>
         ) : (
           left.map((c) => (
@@ -311,8 +312,8 @@ function OrderActivity({ activity }: { activity: Extract<DeckActivity, { kind: "
 
   return (
     <div className="lkd" ref={rootRef}>
-      <p className="lkd__prompt">{activity.prompt}</p>
-      <p className="lkd__how">Drag the steps into order, or use the arrows. Then check.</p>
+      <p className="lkd__prompt">{dropLonePeriod(activity.prompt)}</p>
+      <p className="lkd__how">Drag the steps into order or use the arrows, then check</p>
       <ol className="lkd__list">
         {order.map((item, pos) => {
           const state = checked ? (item === pos ? " is-right" : " is-wrong") : "";
@@ -344,8 +345,8 @@ function OrderActivity({ activity }: { activity: Extract<DeckActivity, { kind: "
         <span className="lkd__note" aria-live="polite">
           {solved
             ? tries === 1
-              ? "In order on the first try."
-              : "In order."
+              ? "In order on the first try"
+              : "In order"
             : checked
               ? `${order.filter((v, i) => v === i).length} of ${order.length} in the right place. Move the red ones.`
               : ""}
@@ -463,8 +464,8 @@ function ConnectActivity({ activity }: { activity: Extract<DeckActivity, { kind:
 
   return (
     <div className="lkd">
-      <p className="lkd__prompt">{activity.prompt}</p>
-      <p className="lkd__how">Draw a line from each idea to what it connects to, or tap one and then the other.</p>
+      <p className="lkd__prompt">{dropLonePeriod(activity.prompt)}</p>
+      <p className="lkd__how">Draw a line from each idea to what it connects to, or tap one and then the other</p>
       <div className="lkn-board" ref={boardRef} onPointerMove={onMove}>
         <svg className="lkn-wires" aria-hidden>
           {[...links].map((i) =>
@@ -520,7 +521,7 @@ function ConnectActivity({ activity }: { activity: Extract<DeckActivity, { kind:
         <span className="lkd__note" aria-live="polite">
           {done ? (
             <span className="lkd__done">
-              <Check className="h-4 w-4" /> Every dot connected{mistakes ? `, ${mistakes} ${mistakes === 1 ? "miss" : "misses"} on the way` : " on the first try"}.
+              <Check className="h-4 w-4" /> Every dot connected{mistakes ? `, ${mistakes} ${mistakes === 1 ? "miss" : "misses"} on the way` : " on the first try"}
             </span>
           ) : (
             `${links.size} of ${activity.buckets.length} connected`

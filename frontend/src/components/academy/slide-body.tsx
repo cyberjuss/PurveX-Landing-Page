@@ -85,6 +85,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Markdown } from "@/lib/markdown";
+import { dropLonePeriod } from "@/lib/lone-period";
 import type { RecapItem } from "@/lib/lesson-deck";
 import { collect, has, loadDeck } from "@/lib/concept-review";
 import { confettiFrom } from "@/lib/confetti";
@@ -201,11 +202,11 @@ function toCard(item: Tokens.ListItem): Card | null {
   if (lead && lead[2]) {
     return {
       lead: plain(lead[1]).replace(/[.:]$/, ""),
-      html: marked.parseInline(lead[2].replace(/^[-–:]\s*/, ""), { async: false }) as string,
+      html: dropLonePeriod(marked.parseInline(lead[2].replace(/^[-–:]\s*/, ""), { async: false }) as string),
       text,
     };
   }
-  return { lead: null, html: marked.parseInline(text, { async: false }) as string, text };
+  return { lead: null, html: dropLonePeriod(marked.parseInline(text, { async: false }) as string), text };
 }
 
 const wordCount = (s: string) => plain(s).split(/\s+/).filter(Boolean).length;
@@ -349,7 +350,7 @@ function firstFinish(where: string): boolean {
  */
 export function Recap({ items, slides, activities, where }: { items: RecapItem[]; slides: number; activities: number; where: string }) {
   const cards = useMemo(
-    () => items.map((r) => ({ lead: r.term, html: marked.parseInline(r.sentence, { async: false }) as string, text: r.sentence })),
+    () => items.map((r) => ({ lead: r.term, html: dropLonePeriod(marked.parseInline(r.sentence, { async: false }) as string), text: r.sentence })),
     [items]
   );
   const rootRef = useRef<HTMLDivElement>(null);
@@ -443,7 +444,7 @@ function FlipCards({ items, i, onReveal }: { items: Card[]; i: number; onReveal?
   return (
     <div className="lk-flipwrap lk-build" style={{ ["--i" as string]: i }}>
       <div className="lk-fliphead">
-        <span>Say what each one means, then flip it.</span>
+        <span>Say what each one means, then flip it</span>
         <button type="button" onClick={() => {
             if (!all) items.forEach((_, j) => onReveal?.(j));
             setOpen(all ? new Set() : new Set(items.map((_, j) => j)));

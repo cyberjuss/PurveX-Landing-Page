@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { marked } from "marked";
 import { Brain, Check, RotateCcw, X } from "lucide-react";
 import { deckStats, dueNow, gapDays, grade, loadDeck, REVIEW_EVENT, type Concept } from "@/lib/concept-review";
+import { dropLonePeriod } from "@/lib/lone-period";
 import { confettiFrom } from "@/lib/confetti";
 import "./review-card.css";
 
@@ -167,7 +168,7 @@ function ReviewSession({ onClose }: { onClose: () => void }) {
               </span>
               <span className="rv-face rv-back">
                 <strong>{card.term}</strong>
-                <span dangerouslySetInnerHTML={{ __html: marked.parseInline(card.sentence, { async: false }) as string }} />
+                <span dangerouslySetInnerHTML={{ __html: dropLonePeriod(marked.parseInline(card.sentence, { async: false }) as string) }} />
               </span>
             </button>
             <div className={`rv-answer${shown ? " is-on" : ""}`}>

@@ -55,7 +55,7 @@ export function ExplainerArt({ scene }: { scene: Explainer }) {
           </g>
           <Doc x={28} y={62} className="lkx-copy" />
           <Hood x={162} y={86} />
-          <Caption>The original never moved.</Caption>
+          <Caption>The original never moved</Caption>
         </>
       );
 
@@ -71,7 +71,7 @@ export function ExplainerArt({ scene }: { scene: Explainer }) {
           <text className="lkx-tagtext lkx-before" x="100" y="131" textAnchor="middle">hash 15aebe14… ✓</text>
           <rect className="lkx-tag lkx-tag--bad lkx-after" x="30" y="114" width="140" height="26" rx="13" />
           <text className="lkx-tagtext lkx-after" x="100" y="131" textAnchor="middle">hash 9268d0f3… ✗</text>
-          <Caption>It still looks normal.</Caption>
+          <Caption>It still looks normal</Caption>
         </>
       );
 
@@ -94,7 +94,7 @@ export function ExplainerArt({ scene }: { scene: Explainer }) {
               <text className="lkx-q" x="36" y={64 + i * 30}>?</text>
             </g>
           ))}
-          <Caption>Nothing stolen. Work stopped.</Caption>
+          <Caption>Nothing stolen, work stopped</Caption>
         </>
       );
 
@@ -142,7 +142,7 @@ export function ExplainerArt({ scene }: { scene: Explainer }) {
           <text className="lkx-mono lkx-mono--sm" x="164" y="56" textAnchor="middle">2cf24d…</text>
           <rect className="lkx-out lkx-out--b lkx-row2" x="134" y="118" width="60" height="26" rx="4" />
           <text className="lkx-mono lkx-mono--sm lkx-row2" x="164" y="136" textAnchor="middle">04a6f5…</text>
-          <Caption>One letter. A different hash.</Caption>
+          <Caption>One letter, a different hash</Caption>
         </>
       );
 
@@ -170,7 +170,7 @@ export function ExplainerArt({ scene }: { scene: Explainer }) {
             </g>
           ))}
           <text className="lkx-small" x="43" y="90" textAnchor="middle">same password</text>
-          <Caption>Different salt. Different hash.</Caption>
+          <Caption>Different salt, different hash</Caption>
         </>
       );
 
@@ -192,7 +192,7 @@ export function ExplainerArt({ scene }: { scene: Explainer }) {
             <path d="M32 110 H76 M58 110 v9 M70 110 v6" />
           </g>
           <path className="lkx-x" d="M132 142 l20 20 M152 142 l-20 20" />
-          <Caption>Close is not enough.</Caption>
+          <Caption>Close is not enough</Caption>
         </>
       );
 
@@ -215,7 +215,7 @@ export function ExplainerArt({ scene }: { scene: Explainer }) {
             <circle className="lkx-deny" cx="114" cy="58" r="10" />
             <path className="lkx-denyx" d="M109 53 l10 10 M119 53 l-10 10" />
           </g>
-          <Caption>Password stolen. Still locked out.</Caption>
+          <Caption>Password stolen, still locked out</Caption>
         </>
       );
   }
