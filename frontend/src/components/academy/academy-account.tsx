@@ -10,6 +10,7 @@ import type { StudentProfile } from "@/lib/academy-certs";
 import { academyFetch, READINESS_PATH, useResults } from "@/lib/academy-client";
 import { passedExamDates } from "@/lib/academy-goals";
 import { LEVELS, summarize } from "@/lib/academy-score";
+import { useMounted } from "@/lib/use-mounted";
 
 export type AcademyStudent = { id: string; email: string | null; name: string | null };
 
@@ -96,14 +97,13 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
   const { profile, editGoals } = useAcademyGoals();
   const needsUpdate = passedExamDates(profile).length > 0;
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const [pos, setPos] = useState({ top: 72, right: 16 });
   const root = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const firstName = preferredFirstName(student, profile);
   const initials = accountInitials(student);
 
-  useEffect(() => setMounted(true), []);
 
   // Instructors and admins get a link to their classes. Asked once, the first time the menu opens.
   const [teaches, setTeaches] = useState(false);

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { preferredFirstName, type AcademyStudent } from "./academy-account";
+import { useMounted } from "@/lib/use-mounted";
 
 const WELCOME_PENDING = "academy-welcome-pending";
 
@@ -37,12 +38,11 @@ export function AcademyWelcome({
   callMe?: string | null;
   onDone: () => void;
 }) {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const [clock, setClock] = useState(clockNow);
   const name = preferredFirstName(student, callMe ? { callMe } : null);
   const desk = (student.id || "desk").slice(0, 4).toUpperCase();
 
-  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     const tick = window.setInterval(() => setClock(clockNow()), 1000);

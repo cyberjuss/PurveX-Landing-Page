@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { CoachChat, CoachHeader } from "@/components/academy/coach-chat";
 import { useCoach } from "@/components/academy/coach-context";
+import { useMounted } from "@/lib/use-mounted";
 
 function academyChrome() {
   const root = document.querySelector(".academy-bg");
@@ -17,10 +18,9 @@ function academyChrome() {
 
 export function PurvexCoach() {
   const { modalOpen, setModalOpen } = useCoach();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const [, setLayout] = useState(0);
 
-  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!modalOpen) return;

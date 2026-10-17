@@ -53,10 +53,13 @@ export function LabSetupScreen() {
   const [hidden, setHidden] = useState(false);
   const starting = state === "starting";
 
-  // Show again the next time a lab starts.
-  useEffect(() => {
+  // Show again the next time a lab starts: reset when a start ends, during
+  // render rather than in an effect, so it costs no extra render.
+  const [wasStarting, setWasStarting] = useState(starting);
+  if (wasStarting !== starting) {
+    setWasStarting(starting);
     if (!starting) setHidden(false);
-  }, [starting]);
+  }
 
   const [now, setNow] = useState(() => Date.now());
   const [seenAt] = useState(() => Date.now());

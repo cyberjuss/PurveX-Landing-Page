@@ -9,6 +9,7 @@ import { useHostedLab } from "@/components/academy/hosted-lab-button";
 import { academyFetch, localDay, READINESS_PATH } from "@/lib/academy-client";
 import { askForProofShot } from "@/lib/academy-proof";
 import { SKILLS, type Skill } from "@/lib/academy-score";
+import { useMounted } from "@/lib/use-mounted";
 
 // A lab fix the check just confirmed can go on the Proof Profile with a screenshot.
 function offerProofShot(entry: DrillEntry) {
@@ -417,10 +418,9 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
   const { available: hostedLab } = useHostedLab();
   const { ask } = useCoach();
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const [, setLayout] = useState(0);
   const done = jobs.filter((j) => j.status === "proven" && j.lab);
-  useEffect(() => setMounted(true), []);
   useEffect(() => {
     if (!open) return;
     const sync = () => setLayout((n) => n + 1);
