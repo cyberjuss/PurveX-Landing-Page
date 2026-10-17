@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight, Brain, Sparkles } from "lucide-react";
+import { ArrowRight, Brain } from "lucide-react";
 import { deckStats, REVIEW_EVENT } from "@/lib/concept-review";
 import { ReviewSession } from "./review-card";
 import "./today.css";
@@ -18,19 +18,7 @@ export type TodayPin = {
   doneKey: string;
 };
 
-type Stats = ReturnType<typeof deckStats> & { sections: number; weekDone: number };
-
-/** Sections read to the end, across every week, from the tab strip's record. */
-function countFinished(): number {
-  let n = 0;
-  try {
-    for (let i = 0; i < window.localStorage.length; i++) {
-      const k = window.localStorage.key(i);
-      if (k?.startsWith("academy-tabs-done:")) n += (JSON.parse(window.localStorage.getItem(k) || "[]") as string[]).length;
-    }
-  } catch {}
-  return n;
-}
+type Stats = ReturnType<typeof deckStats> & { weekDone: number };
 
 function weekFinished(pin: TodayPin | null): number {
   if (!pin) return 0;
@@ -48,26 +36,8 @@ function inDays(at: number | null) {
   return days === 1 ? "tomorrow" : `in ${days} days`;
 }
 
-/** A number that counts up when it first appears. */
-function Count({ to }: { to: number }) {
-  const [n, setN] = useState(0);
-  useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let raf = 0;
-    const start = performance.now();
-    const tick = (t: number) => {
-      const p = reduce ? 1 : Math.min(1, (t - start) / 800);
-      setN(Math.round(to * (1 - Math.pow(1 - p, 3))));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [to]);
-  return <>{n}</>;
-}
-
-// The home page's "Today" row: the three reasons to be here right now. Where
-// they left off, what is due for review, and what they have built up so far.
+// The home page's "Today" cards: the two reasons to be here right now, where
+// they left off and what is due for review, stacked one above the other.
 // Everything in it changes from one visit to the next, so the page is never
 // the same list of phases twice.
 export function Today({ pin }: { pin: TodayPin | null }) {
@@ -75,7 +45,7 @@ export function Today({ pin }: { pin: TodayPin | null }) {
   const [reviewing, setReviewing] = useState(false);
 
   useEffect(() => {
-    const read = () => setStats({ ...deckStats(), sections: countFinished(), weekDone: weekFinished(pin) });
+    const read = () => setStats({ ...deckStats(), weekDone: weekFinished(pin) });
     read();
     window.addEventListener(REVIEW_EVENT, read);
     window.addEventListener("focus", read);
@@ -139,26 +109,6 @@ export function Today({ pin }: { pin: TodayPin | null }) {
         </span>
         {Boolean(stats?.due) && <span className="td-go td-go--small">Start</span>}
       </button>
-
-      <div className="td-card td-card--stats">
-        <span className="rd-kicker">
-          <Sparkles aria-hidden /> What you have built
-        </span>
-        <dl>
-          <div>
-            <dt>Concepts kept</dt>
-            <dd>{stats ? <Count to={stats.total} /> : 0}</dd>
-          </div>
-          <div>
-            <dt>Sections read</dt>
-            <dd>{stats ? <Count to={stats.sections} /> : 0}</dd>
-          </div>
-          <div>
-            <dt>Known well</dt>
-            <dd>{stats ? <Count to={stats.strong} /> : 0}</dd>
-          </div>
-        </dl>
-      </div>
 
       {reviewing && createPortal(<ReviewSession onClose={() => setReviewing(false)} />, document.body)}
     </section>
