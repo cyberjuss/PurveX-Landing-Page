@@ -779,3 +779,8 @@
 .sh-toasts, .sh-toasts[class] { left: 12px; right: auto; bottom: 58px; width: 276px; }
 .sh-toast__go { display: none; }
 @media (max-width: 820px) { .sh-toasts, .sh-toasts[class] { left: 16px; width: calc(100vw - 32px); bottom: 16px; } }
+
+/* Docked, the footer stacks, and the source line's 180px basis became 180px of
+   empty height between it and the Coach button. */
+.sdk--inline .sdk__foot { gap: 10px; }
+.sdk--inline .sdk__foot .sdk__source { flex: none; }
