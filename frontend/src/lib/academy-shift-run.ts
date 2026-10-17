@@ -27,6 +27,7 @@ import {
   HINT_COST,
   incidentArrived,
   incidentDef,
+  canAlternate,
   newShiftRun,
   resolvedOnTime,
   scoreIncident,
@@ -35,6 +36,7 @@ import {
   SHIFT_SECONDS,
   type IncidentDef,
   type IncidentRun,
+  type ShiftMix,
   type ShiftRun,
 } from "@/lib/academy-shift";
 
@@ -111,6 +113,7 @@ export type PublicShift = {
   secondsLeft: number;
   phase: number;
   level: number;
+  mix: ShiftMix | null;
   status: "active" | "done";
   incidents: PublicIncident[];
   desk: PublicDesk[];
@@ -175,6 +178,7 @@ function publicShift(run: ShiftRun, now = Date.now()): PublicShift {
     secondsLeft: Math.max(0, SHIFT_SECONDS - elapsed),
     phase: run.phase,
     level: run.level,
+    mix: run.mix ?? null,
     status: run.status,
     incidents: run.incidents.map((inc) => toPublic(run, inc, elapsed)).filter((x): x is PublicIncident => x !== null),
     desk: (run.desk ?? []).map((d) => toPublicDesk(d, elapsed)).filter((x): x is PublicDesk => x !== null),
@@ -256,7 +260,13 @@ export async function startShift(userId: string): Promise<{ shift?: PublicShift;
   }
   const [entries, results, profile] = await Promise.all([loadDrills(userId), loadProgress(userId), loadProfile(userId)]);
   const roles = profile?.roles ?? [];
-  const run = newShiftRun(`${userId}:${Date.now()}`, phaseFor(results), levelFor(entries), roles);
+  // Alternate the lean: the shift after a ticket night is an alert night, and
+  // the other way round. A first shift leans on alerts. A beginner with too few
+  // incidents of one kind gets a plain mixed shift instead.
+  const phase = phaseFor(results);
+  const level = levelFor(entries);
+  const mix: ShiftMix | undefined = canAlternate(phase, level) ? (existing?.mix === "alerts" ? "tickets" : "alerts") : undefined;
+  const run = newShiftRun(`${userId}:${Date.now()}`, phase, level, roles, Date.now(), mix);
   run.desk = planDesk(run.id, run.level, run.incidents);
   // Composing the shift (Claude's wording) takes a few seconds; don't let that
   // eat the clock. Stamp the start once setup is done, so the timer begins when

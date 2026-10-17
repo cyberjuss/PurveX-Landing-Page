@@ -5,7 +5,7 @@
  *
  *   npm run check:shift
  */
-import { INCIDENTS, pickShift, questionsFor, answerMatches, effectiveIncident, SHIFT_SECONDS, incidentDef } from "@/lib/academy-shift";
+import { INCIDENTS, pickShift, canAlternate, incidentDef as defOf, questionsFor, answerMatches, effectiveIncident, SHIFT_SECONDS, incidentDef } from "@/lib/academy-shift";
 
 let fail = 0;
 const ok = (c: boolean, m: string) => {
@@ -72,6 +72,21 @@ const cases: [string, string[], boolean][] = [
   ["none", ["one"], false],
 ];
 for (const [a, acc, want] of cases) ok(answerMatches(a, acc) === want, `match "${a}" ${acc} want ${want}`);
+
+// Alternating lean: a ticket night is mostly tickets, an alert night mostly alerts.
+ok(!canAlternate(1, 1), "a phase 1, level 1 student has only one alert, so no lean");
+for (const [phase, level] of [[1, 2], [1, 3], [2, 3], [2, 4]]) {
+  ok(canAlternate(phase, level), `should alternate at ${phase}/${level}`);
+  const kinds = (mix: "tickets" | "alerts") => {
+    let t = 0, a = 0;
+    for (let k = 0; k < 50; k++) for (const i of pickShift(`m-${k}`, phase, level, [], mix)) { if (defOf(i.defId)!.kind === "ticket") t++; else a++; }
+    return { t, a };
+  };
+  const tn = kinds("tickets"), an = kinds("alerts");
+  console.log(`phase ${phase} level ${level}: ticket night ${tn.t}t/${tn.a}a · alert night ${an.t}t/${an.a}a`);
+  ok(tn.t > tn.a, `ticket night not ticket-heavy at ${phase}/${level}`);
+  ok(an.a > an.t, `alert night not alert-heavy at ${phase}/${level}`);
+}
 
 console.log(fail ? `${fail} failed` : "all passed");
 process.exit(fail ? 1 : 0);

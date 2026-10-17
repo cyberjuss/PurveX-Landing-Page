@@ -1163,7 +1163,21 @@ export function shiftSize(phase: number, level: number): number {
  * filling, victim-rotating incidents repeat (each hitting a different person).
  * Deterministic per seed.
  */
-export function pickShift(seed: string, phase: number, level: number, roles: RoleId[] = []): ShiftIncident[] {
+/** Which kind a shift leans on. Shifts alternate, so one night is mostly
+ *  tickets from staff and the next mostly alerts from the SIEM. */
+export type ShiftMix = "tickets" | "alerts";
+/** Share of the queue the leaning kind gets. The rest is the other kind. */
+const MIX_SHARE = 0.7;
+
+/** Shifts only alternate once the student's phase and level unlock at least
+ *  three different incidents of each kind. Below that a lean would mean the
+ *  same incident over and over, so the shift is simply mixed. */
+export function canAlternate(phase: number, level: number): boolean {
+  const open = INCIDENTS.filter((i) => i.minPhase <= phase && i.minLevel <= level);
+  return open.filter((i) => i.kind === "ticket").length >= 3 && open.filter((i) => i.kind === "alert").length >= 3;
+}
+
+export function pickShift(seed: string, phase: number, level: number, roles: RoleId[] = [], mix?: ShiftMix): ShiftIncident[] {
   const r = seeded(seed);
   const eligible = INCIDENTS.filter((i) => i.minPhase <= phase && i.minLevel <= level);
   const real = eligible.filter((i) => !i.falseAlarm);
@@ -1189,10 +1203,17 @@ export function pickShift(seed: string, phase: number, level: number, roles: Rol
     if (i.exclusiveGroup) usedGroups.add(i.exclusiveGroup);
   };
   for (const i of chosen) mark(i);
-  // First the distinct incidents, most relevant first.
+  // The shift's lean: most of the queue is one kind, the rest the other. With
+  // no lean, each kind may take the whole queue.
+  const lead = mix === "tickets" ? "ticket" : mix === "alerts" ? "alert" : null;
+  const leadCap = lead ? Math.ceil(size * MIX_SHARE) : size;
+  const quota = (k: IncidentDef["kind"]) => (!lead ? size : k === lead ? leadCap : size - leadCap);
+  const count = (k: IncidentDef["kind"]) => chosen.filter((c) => c.kind === k).length;
+  const room = (i: IncidentDef) => count(i.kind) < quota(i.kind);
+  // First the distinct incidents, most relevant first, inside each kind's share.
   for (const i of weighted) {
     if (chosen.length >= size) break;
-    if (!chosen.includes(i) && takes(i)) {
+    if (!chosen.includes(i) && takes(i) && room(i)) {
       chosen.push(i);
       mark(i);
     }
@@ -1205,6 +1226,29 @@ export function pickShift(seed: string, phase: number, level: number, roles: Rol
     if (!i.bind) continue;
     if (i.exclusiveGroup && (usedGroups.has(i.exclusiveGroup) || repeatable.some((x) => x.exclusiveGroup === i.exclusiveGroup))) continue;
     repeatable.push(i);
+  }
+  // Repeats keep to the shift's lean too, and only overflow when one kind has
+  // nothing left to repeat.
+  // No incident shows up more than twice while there is anything else to
+  // give: a beginner's alert night would otherwise be five sprays in a row.
+  const times = (i: IncidentDef) => chosen.filter((c) => c === i).length;
+  const fits = repeatable.filter((i) => room(i));
+  for (let k = 0; chosen.length < size && fits.length && k < size * 4; k++) {
+    const i = fits[k % fits.length];
+    if (room(i) && times(i) < 2) chosen.push(i);
+  }
+  // If one kind has nothing left at all, the other fills the gap: first new
+  // incidents, then repeats.
+  for (const i of weighted) {
+    if (chosen.length >= size) break;
+    if (!chosen.includes(i) && takes(i)) {
+      chosen.push(i);
+      mark(i);
+    }
+  }
+  for (let k = 0; chosen.length < size && repeatable.length && k < size * 4; k++) {
+    const i = repeatable[k % repeatable.length];
+    if (times(i) < 2) chosen.push(i);
   }
   for (let k = 0; chosen.length < size && repeatable.length; k++) {
     chosen.push(repeatable[k % repeatable.length]);
@@ -1410,6 +1454,8 @@ export type ShiftRun = {
   /** The desk around the incidents: a caller, a status request, an urgent ask.
    *  Optional so a run saved before the desk existed still loads. */
   desk?: import("@/lib/academy-shift-desk").DeskRun[];
+  /** What this shift leaned on. Absent on runs saved before shifts alternated. */
+  mix?: ShiftMix;
   status: "active" | "done";
   finishedAt?: string;
   totalScore?: number;
@@ -1417,14 +1463,15 @@ export type ShiftRun = {
 };
 
 /** Build a fresh shift for this student. The caller persists it and injects the incidents. */
-export function newShiftRun(seed: string, phase: number, level: number, roles: RoleId[] = [], now = Date.now()): ShiftRun {
-  const picked = pickShift(seed, phase, level, roles);
+export function newShiftRun(seed: string, phase: number, level: number, roles: RoleId[] = [], now = Date.now(), mix?: ShiftMix): ShiftRun {
+  const picked = pickShift(seed, phase, level, roles, mix);
   return {
     id: `shift-${now.toString(36)}`,
     startedAt: new Date(now).toISOString(),
     endsAt: new Date(now + SHIFT_SECONDS * 1000).toISOString(),
     phase,
     level,
+    mix,
     status: "active",
     incidents: picked.map((p) => ({
       ...p,

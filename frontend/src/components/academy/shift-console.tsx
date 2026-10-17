@@ -57,6 +57,7 @@ type Shift = {
   endsAt: string;
   phase: number;
   level: number;
+  mix?: "tickets" | "alerts" | null;
   status: "active" | "done";
   incidents: Incident[];
   /** Calls, status requests and urgent asks that have arrived. */
@@ -438,7 +439,10 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
           <span className="sh-logo">P</span>
           <div className="sh-top__title">
             <p className="sh-top__name">Night shift · PurveX Financial</p>
-            <p className="sh-top__sub">Help desk and SOC tier 1 · Level {shift.level}</p>
+            <p className="sh-top__sub">
+              Help desk and SOC tier 1 · Level {shift.level}
+              {shift.mix ? ` · ${shift.mix === "tickets" ? "Heavy on tickets tonight" : "Heavy on alerts tonight"}` : ""}
+            </p>
           </div>
         </div>
         <div className="sh-top__right">
