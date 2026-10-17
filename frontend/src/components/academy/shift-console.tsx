@@ -857,6 +857,20 @@ function IncidentDetail({ inc, no, age, busy, post }: { inc: Incident; no: strin
 
       <h2 className="sh-detail__title">{inc.title}</h2>
 
+      {!inc.resolved && !inc.escalated && (
+        <div className="sh-howto">
+          {/* The same four moves on every incident, as one line rather than a
+              paragraph repeated on each: the question below is what changes. */}
+          <ol className="sh-steps" aria-label="How to close it">
+            <li><Search className="h-3.5 w-3.5" /> Investigate</li>
+            <li><Wrench className="h-3.5 w-3.5" /> Fix in your lab</li>
+            <li><FileText className="h-3.5 w-3.5" /> Answer and note</li>
+            <li><Check className="h-3.5 w-3.5" /> Submit and check</li>
+          </ol>
+          <p className="sh-work__note">Range marks your answer and reads your live lab. Both have to be right to close it.</p>
+        </div>
+      )}
+
       <div className="sh-split">
         <div className="sh-col">
       <div className="sh-msg">
@@ -907,16 +921,6 @@ function IncidentDetail({ inc, no, age, busy, post }: { inc: Incident; no: strin
       ) : (
         <div className="sh-work">
           <p className="sh-work__head">Your response</p>
-          {/* The same four moves on every incident, as one line rather than a
-              paragraph repeated on each: the question below is what changes. */}
-          <ol className="sh-steps" aria-label="How to close it">
-            <li><Search className="h-3.5 w-3.5" /> Investigate</li>
-            <li><Wrench className="h-3.5 w-3.5" /> Fix in your lab</li>
-            <li><FileText className="h-3.5 w-3.5" /> Answer and note</li>
-            <li><Check className="h-3.5 w-3.5" /> Submit and check</li>
-          </ol>
-          <p className="sh-work__note">Range marks your answer and reads your live lab. Both have to be right to close it.</p>
-
           <label className="sh-q">
             <span className="sh-q__k">The question</span>
             <span className="sh-q__p">{inc.diagnosisPrompt}</span>
