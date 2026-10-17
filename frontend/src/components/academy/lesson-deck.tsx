@@ -87,7 +87,7 @@ export function LessonDeck({
   useEffect(() => {
     if (!help) return;
     const close = (e: PointerEvent) => {
-      if (!(e.target as HTMLElement).closest?.(".lk__corner")) setHelp(false);
+      if (!(e.target as HTMLElement).closest?.(".lk__fab")) setHelp(false);
     };
     window.addEventListener("pointerdown", close);
     return () => window.removeEventListener("pointerdown", close);
@@ -169,49 +169,6 @@ export function LessonDeck({
           <span className="lk__count" aria-hidden>
             {count}
           </span>
-          <button
-            type="button"
-            className={`lk__keys${help ? " is-open" : ""}`}
-            aria-expanded={help}
-            aria-controls="lk-help"
-            aria-label="How to move through the slides"
-            title="Keys (?)"
-            onClick={() => setHelp((h) => !h)}
-          >
-            <Keyboard aria-hidden />
-          </button>
-          {help && (
-            <div id="lk-help" className="lk__help" role="note">
-              <p className="lk__helptitle">Moving through the slides</p>
-              <ul>
-                <li>
-                  <span><kbd>Space</kbd> or <kbd>→</kbd></span> Next slide
-                </li>
-                <li>
-                  <span><kbd>Shift</kbd> + <kbd>Space</kbd> or <kbd>←</kbd></span> Previous slide
-                </li>
-                <li>
-                  <span>Bar at the top</span> Jump to any slide
-                </li>
-                <li>
-                  <span>Swipe</span> Next or previous, on a phone
-                </li>
-                <li>
-                  <span>Tap the drawing</span> Play it again
-                </li>
-                <li>
-                  <span><kbd>?</kbd></span> Show or hide this list
-                </li>
-              </ul>
-              <p className="lk__helpnote">
-                {index < total - 1
-                  ? `Next up: ${slides[index + 1].title}`
-                  : nextBeyond
-                    ? `The next slide moves on to ${nextBeyond.label}.`
-                    : "This is the last slide."}
-              </p>
-            </div>
-          )}
         </div>
         </div>
         <div className="lk__stage">
@@ -261,6 +218,53 @@ export function LessonDeck({
           </div>
         </div>
         </div>
+      </div>
+      {/* The keys button floats in the screen's bottom-right corner while a
+          lesson is open, out of the slide's way, and its list opens upward. */}
+      <div className="lk__fab">
+            <button
+              type="button"
+              className={`lk__keys${help ? " is-open" : ""}`}
+              aria-expanded={help}
+              aria-controls="lk-help"
+              aria-label="How to move through the slides"
+              title="Keys (?)"
+              onClick={() => setHelp((h) => !h)}
+            >
+              <Keyboard aria-hidden />
+            </button>
+            {help && (
+              <div id="lk-help" className="lk__help" role="note">
+                <p className="lk__helptitle">Moving through the slides</p>
+                <ul>
+                  <li>
+                    <span><kbd>Space</kbd> or <kbd>→</kbd></span> Next slide
+                  </li>
+                  <li>
+                    <span><kbd>Shift</kbd> + <kbd>Space</kbd> or <kbd>←</kbd></span> Previous slide
+                  </li>
+                  <li>
+                    <span>Bar at the top</span> Jump to any slide
+                  </li>
+                  <li>
+                    <span>Swipe</span> Next or previous, on a phone
+                  </li>
+                  <li>
+                    <span>Tap the drawing</span> Play it again
+                  </li>
+                  <li>
+                    <span><kbd>?</kbd></span> Show or hide this list
+                  </li>
+                </ul>
+                <p className="lk__helpnote">
+                  {index < total - 1
+                    ? `Next up: ${slides[index + 1].title}`
+                    : nextBeyond
+                      ? `The next slide moves on to ${nextBeyond.label}.`
+                      : "This is the last slide."}
+                </p>
+              </div>
+            )}
       </div>
     </div>
   );
