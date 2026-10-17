@@ -81,7 +81,7 @@ export function ReviewCard() {
 
 // One concept at a time: recall it, turn it over, say honestly whether you
 // knew it. Known ones go further out; missed ones come back tomorrow.
-function ReviewSession({ onClose }: { onClose: () => void }) {
+export function ReviewSession({ onClose }: { onClose: () => void }) {
   const [queue] = useState<Concept[]>(() => dueNow().slice(0, 12));
   const [at, setAt] = useState(0);
   const [shown, setShown] = useState(false);

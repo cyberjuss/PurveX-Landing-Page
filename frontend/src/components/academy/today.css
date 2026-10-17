@@ -1,0 +1,144 @@
+/* The home page's Today row (today.tsx): continue, review, what you built.
+   The continue card is the page's one hero, so it alone carries the wash of
+   accent; the other two are rows of the page with the hairline and a mark.
+   Square corners, the one motion scale, and a stagger that stops at three. */
+
+.td {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.td-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding: 18px 20px;
+  border: 0;
+  font: inherit;
+  text-align: left;
+  color: var(--rd-ink);
+  background: var(--rd-surface);
+  box-shadow: inset 0 0 0 1px var(--rd-line);
+  overflow: hidden;
+  animation: td-in var(--ax-dur-slow) var(--ax-ease) both;
+  transition: box-shadow var(--ax-dur-fast) var(--ax-ease), transform var(--ax-dur) var(--ax-ease);
+}
+.td-card:nth-child(2) { animation-delay: 60ms; }
+.td-card:nth-child(3) { animation-delay: 120ms; }
+@keyframes td-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+.td-card__main { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }
+.td-card__main .rd-kicker { color: var(--rd-accent); }
+.td-card__main strong {
+  font-family: var(--font-display);
+  font-size: var(--ty-h4, 18px);
+  font-weight: 650;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.td-card__sub { font-size: var(--ty-note, 13px); color: var(--rd-ink-3); }
+
+/* Continue: the hero. */
+.td-card--go {
+  background:
+    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--rd-accent) 20%, transparent), transparent 60%),
+    var(--rd-surface);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 40%, transparent);
+}
+.td-card--go::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--rd-accent), transparent);
+  opacity: 0.8;
+}
+.td-card--go:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1px var(--rd-accent), 0 22px 40px -26px color-mix(in srgb, var(--rd-accent) 60%, transparent); }
+.td-card--go:hover .td-go svg { transform: translateX(3px); }
+
+/* A ring that fills with how much of the week has been read. */
+.td-ring {
+  --pct: 0;
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: conic-gradient(var(--rd-accent) calc(var(--pct) * 1%), color-mix(in srgb, var(--rd-accent) 16%, transparent) 0);
+  animation: td-ring var(--ax-dur-page, 420ms) var(--ax-ease) both;
+}
+/* A solid centre: the light theme's surface is a translucent tint, which let
+   the ring show through as a pie. */
+.td-ring::after { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: #fff; }
+.academy-bg[data-academy-theme="dark"] .td-ring::after { background: #16141d; }
+.td-ring b { position: relative; z-index: 1; font: 700 12px var(--font-mono, ui-monospace, monospace); color: var(--rd-ink); }
+@keyframes td-ring { from { transform: rotate(-90deg) scale(0.8); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.td-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  padding: 10px 14px;
+  font: 700 12px var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--rd-accent);
+}
+.academy-bg[data-academy-theme="dark"] .td-go { color: #0b0a12; }
+.td-go svg { width: 15px; height: 15px; transition: transform var(--ax-dur) var(--ax-ease); }
+.td-go--small { padding: 8px 12px; }
+
+/* Review: a mark, and an accent outline when something is due. */
+.td-card--review { cursor: default; }
+.td-card--review:disabled { opacity: 1; }
+.td-card--review.is-due { cursor: pointer; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 45%, transparent); }
+.td-card--review.is-due:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1px var(--rd-accent); }
+.td-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 46px;
+  height: 46px;
+  color: var(--rd-accent);
+  background: color-mix(in srgb, var(--rd-accent) var(--sf-mark-fill, 14%), transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) var(--sf-mark-line, 30%), transparent);
+}
+.td-icon svg { width: 22px; height: 22px; fill: color-mix(in srgb, var(--rd-accent) 18%, transparent); }
+.td-card--review.is-due .td-icon svg { animation: td-think 2.4s ease-in-out infinite; }
+@keyframes td-think { 50% { transform: scale(1.12); } }
+.td-num { color: var(--rd-accent); }
+
+/* What you have built: three numbers that count up. */
+.td-card--stats { flex-direction: column; align-items: stretch; gap: 12px; }
+.td-card--stats .rd-kicker { display: inline-flex; align-items: center; gap: 6px; color: var(--rd-accent); }
+.td-card--stats .rd-kicker svg { width: 13px; height: 13px; }
+.td-card--stats dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.td-card--stats dl div { display: flex; flex-direction: column-reverse; gap: 2px; }
+.td-card--stats dt { font-size: 11.5px; line-height: 1.3; color: var(--rd-ink-3); }
+.td-card--stats dd { margin: 0; font-family: var(--font-display); font-size: 28px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; color: var(--rd-ink); font-variant-numeric: tabular-nums; }
+
+@media (max-width: 1100px) {
+  .td { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .td-card--go { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .td { grid-template-columns: minmax(0, 1fr); }
+  .td-card { padding: 16px; }
+  .td-card--go .td-go { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .td-card, .td-ring, .td-card--review.is-due .td-icon svg { animation: none; }
+  .td-card--go:hover, .td-card--review.is-due:hover { transform: none; }
+}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { type PhaseDef } from "@/lib/academy-content";
@@ -7,7 +8,7 @@ import { entriesOf } from "@/lib/academy-entries";
 import { READINESS_PATH, useResults } from "@/lib/academy-client";
 import { LEVELS, summarize } from "@/lib/academy-score";
 import { DrillCard } from "./drill-card";
-import { ReviewCard } from "./review-card";
+import { Today, partOfDay, type TodayPin } from "./today";
 import { preferredFirstName, useAcademyAccount, useAcademyGoals } from "./academy-account";
 import { useAcademyProgress } from "./academy-progress";
 import { isPhaseLocked } from "@/lib/academy-locks";
@@ -43,7 +44,12 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
   const readiness = summarize(results);
   const firstName = preferredFirstName(useAcademyAccount(), useAcademyGoals().profile);
   const returning = Boolean(lastStop || completedCount > 0 || readiness.finished > 0);
-  const greeting = returning ? "Welcome back" : "Welcome";
+  // A returning student is greeted by the time of day on their own clock,
+  // read after the page arrives so the server's clock never shows through.
+  const [dayPart, setDayPart] = useState<string | null>(null);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setDayPart(partOfDay()), []);
+  const greeting = returning ? (dayPart ? `Good ${dayPart}` : "Welcome back") : "Welcome";
 
   let firstOpen: { href: string; title: string; phaseSlug: string; entrySlug: string } | null = null;
   for (const copy of PHASE_COPY) {
@@ -87,12 +93,30 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
         ? { href: `/range/${lastPhase.slug}/${lastEntry.slug}`, title: lastEntry.title, phaseSlug: lastPhase.slug, entrySlug: lastEntry.slug, kind: "last" as const }
         : null;
 
+  // What the Today row needs about the pinned week: its slide tabs (the ones
+  // the tab strip ticks off) and where those ticks are kept.
+  const pinPhase = pin ? phases.find((p) => p.slug === pin.phaseSlug) : undefined;
+  const pinEntry = pinPhase ? entriesOf(pinPhase).find((e) => e.slug === pin?.entrySlug) : undefined;
+  const todayPin: TodayPin | null =
+    pin && pinPhase && pinEntry
+      ? {
+          href: pin.href,
+          title: pin.title,
+          kind: pin.kind,
+          phaseLabel: `${pinPhase.label} · ${pinPhase.title}`,
+          tabs: pinEntry.sections
+            .map((sec) => sec.label)
+            .filter((l) => !/^(Lab|Challenge|Troubleshooting):/.test(l) && l !== "Resources"),
+          doneKey: `academy-tabs-done:${pinPhase.slug}/${pinEntry.slug}`,
+        }
+      : null;
+
   return (
     <div className="rd ax-home">
       <header className="rd-mast">
         <div className="ax-welcome">
           <div className="ax-titleblock">
-            <h1>{firstName ? `${greeting} ${firstName}` : greeting}</h1>
+            <h1>{firstName ? `${greeting}${dayPart && returning ? "," : ""} ${firstName}` : greeting}</h1>
             <p>Work the same problems a new hire sees. Fundamentals first then a live directory then alerts and logs.</p>
           </div>
           <Link href={READINESS_PATH} className="ax-status__score" data-tour="readiness">
@@ -111,7 +135,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
       </div>
 
       <div className="ax-rise" style={{ ["--ax-i" as string]: 1 }}>
-        <ReviewCard />
+        <Today pin={todayPin} />
       </div>
 
       <ol className="ax-path" data-tour="path">
