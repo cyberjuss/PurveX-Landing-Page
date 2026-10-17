@@ -1171,6 +1171,9 @@ export type ShiftIncident = {
  *  lands five minutes before the end, so there is still time to work it. */
 function arrivalsFor(n: number): number[] {
   if (n <= 1) return [0];
+  // A short queue is spread across the shift rather than landing at once: one
+  // to start, the next while the first is being worked, the last mid-shift.
+  if (n <= 3) return [0, 240, 540].slice(0, n);
   const head = [0, 40, 90].slice(0, Math.min(n, 3));
   if (n <= head.length) return head;
   const rest = n - head.length;
@@ -1180,11 +1183,13 @@ function arrivalsFor(n: number): number[] {
   return [...head, ...tail];
 }
 
-/** How many incidents a shift has, from phase and level. A 30-minute shift runs
- *  a busy queue (more than a beginner clears) so work keeps arriving and the
- *  order they take it in matters. */
+/** How many incidents a shift has: three, each worked properly, spread over
+ *  the shift so they overlap and the order still matters. */
+export const MAX_INCIDENTS = 3;
 export function shiftSize(phase: number, level: number): number {
-  return Math.min(10, 6 + level + (phase >= 2 ? 1 : 0));
+  void phase;
+  void level;
+  return MAX_INCIDENTS;
 }
 
 /**
@@ -1237,7 +1242,8 @@ export function pickShift(seed: string, phase: number, level: number, roles: Rol
   // The shift's lean: most of the queue is one kind, the rest the other. With
   // no lean, each kind may take the whole queue.
   const lead = mix === "tickets" ? "ticket" : mix === "alerts" ? "alert" : null;
-  const leadCap = lead ? Math.ceil(size * MIX_SHARE) : size;
+  // At least one of the other kind, so a three-incident night is two and one.
+  const leadCap = lead ? Math.min(size - 1, Math.ceil(size * MIX_SHARE)) : size;
   const quota = (k: IncidentDef["kind"]) => (!lead ? size : k === lead ? leadCap : size - leadCap);
   const count = (k: IncidentDef["kind"]) => chosen.filter((c) => c.kind === k).length;
   const room = (i: IncidentDef) => count(i.kind) < quota(i.kind);

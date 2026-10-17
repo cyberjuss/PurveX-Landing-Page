@@ -7,7 +7,7 @@ import {
   AlertTriangle, ArrowLeft, ArrowRight, Check, Clock, Loader2, LifeBuoy, Power, RefreshCw, ShieldAlert,
   Lock, Unlock, KeyRound, UserPlus, UserMinus, UserX, UserCog, ArrowLeftRight, FolderTree, SprayCan, Target,
   Crown, DoorOpen, BellOff, ShieldOff, ShieldCheck, ShieldX, Ticket, Search, Share2, Server, EyeOff, Infinity as InfinityIcon,
-  Wrench, Info, ArrowUpRight, FileText, X, Zap, Inbox, CheckCircle2, Radar, Hash, GraduationCap, Mail, Activity,
+  Wrench, Info, ArrowUpRight, FileText, X, Zap, Inbox, CheckCircle2, Radar, Hash, GraduationCap, Mail,
 } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { startHostedLabNow, useHostedLab } from "@/components/academy/hosted-lab-button";
@@ -479,34 +479,11 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   }, [fresh]);
   const freshIds = new Set(fresh.map((f) => f.uid));
 
-  // The live feed: everything that has landed, newest first, stamped with the
-  // shift's own clock, and how each one stands now.
-  const stamp = (sec: number) => `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
   const unread = (shift.desk ?? []).filter((d) => !d.answered && !d.lapsed).length;
-  const feed = [
-    ...shift.incidents.map((i) => ({
-      key: i.uid,
-      sec: i.arriveSec,
-      at: stamp(i.arriveSec),
-      uid: i.uid,
-      tone: i.resolved ? "good" : i.escalated ? "up" : i.severity === "P1" ? "p1" : i.severity === "P2" ? "p2" : "p3",
-      text: i.resolved ? `${i.severity} closed` : i.escalated ? `${i.severity} with tier 2` : `${i.severity} ${i.kind} landed`,
-      title: i.title,
-    })),
-    ...(shift.desk ?? []).map((d) => ({
-      key: d.uid,
-      sec: d.arriveSec,
-      at: stamp(d.arriveSec),
-      uid: null as string | null,
-      tone: d.answered ? "good" : "mail",
-      text: d.answered ? "Email answered" : "Email arrived",
-      title: d.title,
-    })),
-  ].sort((a, b) => b.sec - a.sec);
 
   // Coach knows which incident is open, so "help me" means this one, and it
   // coaches as the senior analyst at the next desk without doing the work.
-  const { setPlace, ask } = useCoach();
+  const { setPlace } = useCoach();
   const placeTitle = selected ? `${selected.severity} ${selected.title}` : "the queue";
   useEffect(() => {
     setPlace({ kind: "shift", title: placeTitle, at: `${handled} of ${total} closed, ${clock(left)} left on the shift` });
@@ -696,84 +673,50 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
           </p>
         </aside>
 
-        <main className="sh-main">
-          {error && <p className="sh-error">{error}</p>}
-          {/* Below the three-pane width the email floats over the work as before. */}
-          <div className="sh-deskfloat">
-            <DeskLayer desk={shift.desk ?? []} now={now} busy={busy} post={post} />
-          </div>
-          {selected ? (
-            <IncidentDetail key={selected.uid} inc={selected} no={numOf.get(selected.uid) ?? ""} age={ageOf(selected)} busy={busy} post={post} />
-          ) : (
-            <div className="sh-empty">
-              <span className="sh-empty__radar" aria-hidden>
-                <Radar className="h-8 w-8" />
-              </span>
-              <p>The first incident will land shortly.</p>
-              <small>Keep your lab open. Alerts and tickets arrive on their own.</small>
-            </div>
-          )}
-        </main>
+        {selected ? (
+          <IncidentDetail
+            key={selected.uid}
+            inc={selected}
+            no={numOf.get(selected.uid) ?? ""}
+            age={ageOf(selected)}
+            busy={busy}
+            post={post}
+            lead={error ? <p className="sh-error">{error}</p> : null}
+            after={<section className="sh-inbox-sec" aria-label="Inbox">
+                  <p className="sh-rail__head">
+                    <Mail className="h-3.5 w-3.5" /> Inbox
+                    {unread > 0 && <b className="sh-rail__badge">{unread}</b>}
+                  </p>
+                  <div className="sh-inbox">
+                    <DeskLayer desk={shift.desk ?? []} now={now} busy={busy} post={post} inline />
+                  </div>
+                </section>}
+          />
+        ) : (
+          <>
+            <main className="sh-main">
+              {error && <p className="sh-error">{error}</p>}
+              <div className="sh-empty">
+                <span className="sh-empty__radar" aria-hidden>
+                  <Radar className="h-8 w-8" />
+                </span>
+                <p>The first incident will land shortly.</p>
+                <small>Keep your lab open. Alerts and tickets arrive on their own.</small>
+              </div>
 
-        {/* The rail: what is coming in and who can help, beside the work
-            instead of on top of it. */}
-        <aside className="sh-rail" aria-label="Inbox, live feed and Coach">
-          <section className="sh-rail__sec">
-            <p className="sh-rail__head">
-              <Mail className="h-3.5 w-3.5" /> Inbox
-              {unread > 0 && <b className="sh-rail__badge">{unread}</b>}
-            </p>
-            <div className="sh-inbox">
-              <DeskLayer desk={shift.desk ?? []} now={now} busy={busy} post={post} inline />
-            </div>
-          </section>
-
-          <section className="sh-rail__sec sh-coachcard">
-            <p className="sh-rail__head">
-              <LifeBuoy className="h-3.5 w-3.5" /> Coach
-            </p>
-            <p className="sh-coachcard__text">Stuck on {selected ? `${selected.severity} ${selected.title}` : "the queue"}? Coach asks the questions a senior would, and never hands you the answer.</p>
-            <button
-              type="button"
-              className="sh-coachcard__go"
-              onClick={() =>
-                ask(
-                  selected
-                    ? `I'm on shift working ${selected.severity} "${selected.title}". ${selected.brief} Help me decide what to check next, without giving me the answer.`
-                    : "I'm on shift and the queue is quiet. What should I be checking while I wait?"
-                )
-              }
-            >
-              Think it through <ArrowRight className="h-3.5 w-3.5" />
-            </button>
-          </section>
-          <section className="sh-rail__sec sh-rail__sec--grow">
-            <p className="sh-rail__head">
-              <Activity className="h-3.5 w-3.5" /> Live
-              <span className="sh-rail__live" aria-hidden />
-            </p>
-            <ol className="sh-feed">
-              {feed.map((f) => (
-                <li key={f.key} className={`sh-feed__item is-${f.tone}`}>
-                  <time>{f.at}</time>
-                  <span className="sh-feed__dot" aria-hidden />
-                  {f.uid ? (
-                    <button type="button" onClick={() => setSelectedId(f.uid!)}>
-                      <span>{f.text}</span>
-                      <strong>{f.title}</strong>
-                    </button>
-                  ) : (
-                    <p>
-                      <span>{f.text}</span>
-                      <strong>{f.title}</strong>
-                    </p>
-                  )}
-                </li>
-              ))}
-            </ol>
-          </section>
-
-        </aside>
+              <section className="sh-inbox-sec" aria-label="Inbox">
+                <p className="sh-rail__head">
+                  <Mail className="h-3.5 w-3.5" /> Inbox
+                  {unread > 0 && <b className="sh-rail__badge">{unread}</b>}
+                </p>
+                <div className="sh-inbox">
+                  <DeskLayer desk={shift.desk ?? []} now={now} busy={busy} post={post} inline />
+                </div>
+              </section>
+            </main>
+            <aside className="sh-right" aria-label="Your response" />
+          </>
+        )}
       </div>
     </div>
   );
@@ -781,7 +724,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
 
 type SubmitResult = { resolved: boolean; escalated?: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[]; needFinding?: boolean; evidencePending?: boolean; answerRight?: boolean | null };
 
-function IncidentDetail({ inc, no, age, busy, post }: { inc: Incident; no: string; age: string; busy: boolean; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
+function IncidentDetail({ inc, no, age, busy, post, lead, after }: { inc: Incident; no: string; age: string; lead?: React.ReactNode; after?: React.ReactNode; busy: boolean; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
   const [diagnosis, setDiagnosis] = useState(inc.diagnosis);
   const [response, setResponse] = useState("");
   const [result, setResult] = useState<SubmitResult | null>(null);
@@ -818,7 +761,12 @@ function IncidentDetail({ inc, no, age, busy, post }: { inc: Incident; no: strin
     setConfirming(false);
   }
 
+  // Two panes, placed straight into the console's grid: the incident in the
+  // middle with the inbox under it, and the response down the right side.
   return (
+    <>
+    <main className="sh-main">
+    {lead}
     <div className={`sh-detail ${inc.resolved ? "sh-detail--done" : ""}`}>
       <div className="sh-detail__crumbs">
         <span className={`sh-pill sh-pill--${inc.severity.toLowerCase()}`}>
@@ -857,22 +805,7 @@ function IncidentDetail({ inc, no, age, busy, post }: { inc: Incident; no: strin
 
       <h2 className="sh-detail__title">{inc.title}</h2>
 
-      {!inc.resolved && !inc.escalated && (
-        <div className="sh-howto">
-          {/* The same four moves on every incident, as one line rather than a
-              paragraph repeated on each: the question below is what changes. */}
-          <ol className="sh-steps" aria-label="How to close it">
-            <li><Search className="h-3.5 w-3.5" /> Investigate</li>
-            <li><Wrench className="h-3.5 w-3.5" /> Fix in your lab</li>
-            <li><FileText className="h-3.5 w-3.5" /> Answer and note</li>
-            <li><Check className="h-3.5 w-3.5" /> Submit and check</li>
-          </ol>
-          <p className="sh-work__note">Range marks your answer and reads your live lab. Both have to be right to close it.</p>
-        </div>
-      )}
 
-      <div className="sh-split">
-        <div className="sh-col">
       <div className="sh-msg">
         <span className={`sh-msg__avatar ${inc.kind === "alert" ? "sh-msg__avatar--alert" : ""}`}>
           {inc.kind === "alert" ? <AlertTriangle className="h-4 w-4" /> : initials(s.name)}
@@ -900,9 +833,11 @@ function IncidentDetail({ inc, no, age, busy, post }: { inc: Incident; no: strin
         </div>
       </div>
 
-        </div>
+    </div>
+    {after}
+    </main>
 
-        <div className="sh-col">
+    <aside className="sh-right" aria-label="Your response">
       {inc.resolved ? (
         <div className="sh-resolved">
           <span className="sh-resolved__seal" aria-hidden>
@@ -921,6 +856,15 @@ function IncidentDetail({ inc, no, age, busy, post }: { inc: Incident; no: strin
       ) : (
         <div className="sh-work">
           <p className="sh-work__head">Your response</p>
+          {/* The same four moves on every incident, as one line rather than a
+              paragraph repeated on each: the question below is what changes. */}
+          <ol className="sh-steps" aria-label="How to close it">
+            <li><Search className="h-3.5 w-3.5" /> Investigate</li>
+            <li><Wrench className="h-3.5 w-3.5" /> Fix in your lab</li>
+            <li><FileText className="h-3.5 w-3.5" /> Answer and note</li>
+            <li><Check className="h-3.5 w-3.5" /> Submit and check</li>
+          </ol>
+          <p className="sh-work__note">Range marks your answer and reads your live lab. Both have to be right to close it.</p>
           <label className="sh-q">
             <span className="sh-q__k">The question</span>
             <span className="sh-q__p">{inc.diagnosisPrompt}</span>
@@ -1024,9 +968,8 @@ function IncidentDetail({ inc, no, age, busy, post }: { inc: Incident; no: strin
           )}
         </div>
       )}
-        </div>
-      </div>
-    </div>
+    </aside>
+    </>
   );
 }
 

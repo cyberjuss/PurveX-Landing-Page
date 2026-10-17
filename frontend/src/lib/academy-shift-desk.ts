@@ -634,7 +634,8 @@ export function planDesk(seed: string, level: number, incidents: Pick<IncidentRu
   const pick = pool.length ? pool[Math.floor(r() * pool.length)] : null;
   if (pick) {
     const p1 = incidents.filter((i) => i.severity === "P1").sort((a, b) => a.arriveSec - b.arriveSec)[0];
-    add(pick.id, pick.id === "urgent-screen-email" && p1 ? p1.arriveSec + 25 : at(0.4, 300), 0);
+    // Early enough to be seen while the first incident is being worked.
+    add(pick.id, pick.id === "urgent-screen-email" && p1 ? p1.arriveSec + 25 : at(0.08, 60), 0);
   }
   return out.sort((a, b) => a.arriveSec - b.arriveSec);
 }
