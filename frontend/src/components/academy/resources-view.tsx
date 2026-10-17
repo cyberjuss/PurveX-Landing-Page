@@ -31,7 +31,7 @@ function kindOf(url: string) {
   if (u.endsWith(".pdf") || u.includes("nvlpubs.nist.gov") || u.includes("rfc-editor.org") || u.includes("csrc.nist.gov")) return { Icon: FileText, label: "Standard" };
   if (u.includes("github.com")) return { Icon: Code2, label: "Code" };
   if (u.includes("youtube.com") || u.includes("youtu.be")) return { Icon: PlayCircle, label: "Video" };
-  if (u.includes("cyberchef") || u.includes("zaproxy") || u.includes("wireshark.org") || u.includes("hashcat.net/wiki")) return { Icon: Wrench, label: "Tool" };
+  if (u.includes("cyberchef") || u.includes("/calculator") || u.includes("zaproxy") || u.includes("wireshark.org") || u.includes("hashcat.net/wiki")) return { Icon: Wrench, label: "Tool" };
   if (u.includes("cheatsheet") || u.includes("cheat-sheet") || u.includes("learn.microsoft.com") || u.includes("portswigger.net")) return { Icon: BookOpen, label: "Guide" };
   return { Icon: Globe, label: "Article" };
 }
