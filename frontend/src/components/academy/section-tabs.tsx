@@ -2,13 +2,13 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Flag, FlaskConical, Wrench } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Flag, FlaskConical, Wrench } from "lucide-react";
 import { Markdown, splitMarkdownIntoSlides } from "@/lib/markdown";
 import { CHALLENGE_PATHS, MISSION_CATALOG } from "@/lib/academy-missions";
 import { QuizBlock } from "./quiz";
 import { LabCarousel } from "./lab-carousel";
 import { MissionPager } from "./mission-pager";
-import { LessonDeck } from "./lesson-deck";
+import { DECK_PROGRESS_EVENT, LessonDeck } from "./lesson-deck";
 import { isDeckable } from "@/lib/lesson-deck";
 import { weekScenes } from "./slide-art";
 import { TrailDock, type TrailLink } from "./trail-dock";
@@ -106,6 +106,35 @@ export function SectionTabs({
   // Reading sections show as slides. Challenges page their own tickets, and
   // a resources list reads better as one list than split across slides.
   const asDeck = current.kind === "section" && current.label !== "Resources" && isDeckable(current.markdown);
+  // How far into the current deck the reader is (0 to 1), for the active
+  // tab's underline, and which sections they have read to the end, for the
+  // ticks. Finished sections are remembered per week in this browser.
+  const doneKey = `academy-tabs-done:${phaseSlug}/${entrySlug}`;
+  const [fill, setFill] = useState(0);
+  const [done, setDone] = useState<Set<string>>(() => new Set());
+  useEffect(() => {
+    try {
+      setDone(new Set(JSON.parse(window.localStorage.getItem(doneKey) || "[]") as string[]));
+    } catch {}
+  }, [doneKey]);
+  useEffect(() => {
+    const onProgress = (e: Event) => {
+      const { label, index, total } = (e as CustomEvent<{ label: string; index: number; total: number }>).detail;
+      setFill(total > 1 ? (index + 1) / total : 1);
+      if (index < total - 1) return;
+      setDone((prev) => {
+        if (prev.has(label)) return prev;
+        const next = new Set(prev).add(label);
+        try {
+          window.localStorage.setItem(doneKey, JSON.stringify([...next]));
+        } catch {}
+        return next;
+      });
+    };
+    window.addEventListener(DECK_PROGRESS_EVENT, onProgress);
+    return () => window.removeEventListener(DECK_PROGRESS_EVENT, onProgress);
+  }, [doneKey]);
+
   // Drawings for every slide tab in the week, chosen in tab order with one
   // memory, so a picture shown in one tab does not come back in the next.
   const deckTabs = useMemo(() => sections.filter((s) => s.label !== "Resources" && isDeckable(s.markdown)), [sections]);
@@ -377,7 +406,7 @@ export function SectionTabs({
       {/* One horizontal strip instead of a column of its own. The course rail
           already occupies the left of the screen, so a second vertical list
           beside it left the lesson reading in two thirds of the width. */}
-      <div className="ax-lesshead">
+      <div className={`ax-lesshead${edges.start ? " has-start" : ""}${edges.end ? " has-end" : ""}`}>
         {edges.start && (
           <button type="button" className="ax-lessroll ax-lessroll--start" aria-label="Earlier sections" onClick={() => roll(-1)}>
             <ChevronLeft className="h-4 w-4" aria-hidden />
@@ -389,7 +418,12 @@ export function SectionTabs({
           </button>
         )}
         <nav ref={tabsRef} className="ax-lesstabs" role="tablist" aria-label="Sections">
-        <span ref={barRef} className="ax-lesstabs__bar" aria-hidden />
+        <span
+          ref={barRef}
+          className="ax-lesstabs__bar"
+          aria-hidden
+          style={{ ["--fill" as string]: current.kind === "section" && asDeck ? fill : 1 }}
+        />
         {items.map((item, i) => (
           <button
             key={item.label}
@@ -397,7 +431,8 @@ export function SectionTabs({
             role="tab"
             aria-selected={active === i}
             onClick={() => goTo(i)}
-            className={`ax-lesstab ${active === i ? "ax-lesstab--on" : ""}`}
+            className={`ax-lesstab ${active === i ? "ax-lesstab--on" : ""}${done.has(item.label) ? " is-done" : ""}`}
+            aria-label={done.has(item.label) ? `${item.label}, finished` : undefined}
           >
             {item.kind === "lab" ? (
               <FlaskConical className="h-3.5 w-3.5 shrink-0" aria-hidden />
@@ -406,7 +441,7 @@ export function SectionTabs({
             ) : item.kind === "troubleshooting" ? (
               <Wrench className="h-3.5 w-3.5 shrink-0" aria-hidden />
             ) : (
-              <i aria-hidden>{pad(i + 1)}</i>
+              <i aria-hidden>{done.has(item.label) && active !== i ? <Check strokeWidth={3} /> : pad(i + 1)}</i>
             )}
             <span>{item.label}</span>
           </button>

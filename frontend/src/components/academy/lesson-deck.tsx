@@ -9,6 +9,9 @@ import { SlideArt, pickScenes, type Scene } from "./slide-art";
 import { DragActivity } from "./drag-activity";
 import "./lesson-deck.css";
 
+/** Fired as the reader moves through a deck: { label, index, total }. */
+export const DECK_PROGRESS_EVENT = "lesson-deck-progress";
+
 // A lesson section shown as a slide deck: one idea per slide, a title on
 // each, an animated drawing or the section's own screenshot beside the text, and the
 // same Previous / Next dock the rest of the lesson uses. At either end the
@@ -85,6 +88,12 @@ export function LessonDeck({
   // working an activity, holding a modifier (Alt+Left is the browser's Back),
   // or looking at a screenshot or any other dialog, which use the arrows
   // themselves.
+  // Tell the section tabs where the reader is, so the current tab's underline
+  // can fill as the slides go by and the tab can be ticked off at the end.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent(DECK_PROGRESS_EVENT, { detail: { label, index, total } }));
+  }, [label, index, total]);
+
   // The drawings loop, and a loop nobody can see still costs a repaint every
   // frame. While the deck is scrolled out of view they hold still.
   useEffect(() => {

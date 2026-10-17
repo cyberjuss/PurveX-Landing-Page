@@ -4907,6 +4907,75 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform
 .ax-lesstab--on svg { opacity: 1; }
 .ax-lesstab:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: -4px; }
 
+/* The section strip, refined. Each section gets a numbered mark: filled in
+   the accent for the one you are on, a green tick once you have read it to
+   the end. The underline under the current section fills as its slides go
+   by. Where the strip scrolls, its ends fade instead of cutting a label in
+   half, and the roll buttons sit as small marks over the fade. */
+.ax-lesshead { margin-bottom: 22px; }
+.ax-lesstabs { gap: 2px; padding-top: 4px; }
+.ax-lesshead.has-start .ax-lesstabs { -webkit-mask-image: linear-gradient(to right, transparent, #000 64px); mask-image: linear-gradient(to right, transparent, #000 64px); }
+.ax-lesshead.has-end .ax-lesstabs { -webkit-mask-image: linear-gradient(to left, transparent, #000 64px); mask-image: linear-gradient(to left, transparent, #000 64px); }
+.ax-lesshead.has-start.has-end .ax-lesstabs {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 64px, #000 calc(100% - 64px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 64px, #000 calc(100% - 64px), transparent);
+}
+.ax-lessroll { width: 40px; background: none !important; color: var(--rd-ink-2); }
+.ax-lessroll svg {
+  box-sizing: content-box;
+  padding: 6px;
+  background: var(--rd-surface);
+  box-shadow: inset 0 0 0 1px var(--rd-line);
+  transition: box-shadow var(--ax-dur-fast) var(--ax-ease), color var(--ax-dur-fast) var(--ax-ease);
+}
+.ax-lessroll:hover svg { box-shadow: inset 0 0 0 1px var(--rd-accent); }
+
+.ax-lesstab {
+  gap: 10px;
+  padding: 12px 12px 15px;
+  font-weight: 500;
+  color: var(--rd-ink-3);
+  transition: color var(--ax-dur-fast) var(--ax-ease), background var(--ax-dur-fast) var(--ax-ease);
+}
+.ax-lesstab:hover { color: var(--rd-ink); background: color-mix(in srgb, var(--rd-accent) 5%, transparent); }
+.ax-lesstab i {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 5px;
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 1;
+  color: var(--rd-ink-3);
+  background: color-mix(in srgb, var(--rd-ink) 5%, transparent);
+  box-shadow: inset 0 0 0 1px var(--rd-line);
+  transition: color var(--ax-dur-fast) var(--ax-ease), background var(--ax-dur-fast) var(--ax-ease);
+}
+.ax-lesstab i svg { width: 13px; height: 13px; }
+.ax-lesstab--on { color: var(--rd-ink); font-weight: 600; }
+.ax-lesstab--on i { color: #fff; background: var(--rd-accent); box-shadow: none; }
+.academy-bg[data-academy-theme="dark"] .ax-lesstab--on i { color: #0b0a12; }
+.ax-lesstab.is-done:not(.ax-lesstab--on) { color: var(--rd-ink-2); }
+.ax-lesstab.is-done:not(.ax-lesstab--on) i {
+  color: var(--rd-good);
+  background: color-mix(in srgb, var(--rd-good) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-good) 35%, transparent);
+}
+
+/* The underline is a track with a fill: the track shows the whole section,
+   the fill how far into its slides the reader has come. */
+.ax-lesstabs__bar { height: 3px; background: color-mix(in srgb, var(--rd-accent) 25%, transparent); }
+.ax-lesstabs__bar::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--fill, 1) * 100%);
+  background: var(--rd-accent);
+  transition: width var(--ax-dur-slow) var(--ax-ease);
+}
+@media (prefers-reduced-motion: reduce) { .ax-lesstabs__bar::after { transition: none; } }
+
 .ax-index__toggle { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); border: none; }
 .ax-tab {
   display: flex; align-items: baseline; gap: 8px; width: 100%; padding: 8px 0;
