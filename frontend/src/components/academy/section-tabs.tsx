@@ -73,6 +73,7 @@ export function SectionTabs({
   troubleshooting,
   prevWeek,
   nextWeek,
+  essentialQuestion,
 }: {
   phaseSlug: string;
   entrySlug: string;
@@ -84,6 +85,8 @@ export function SectionTabs({
   troubleshooting?: TabSection[];
   prevWeek?: WeekLink | null;
   nextWeek?: WeekLink | null;
+  /** The week's essential question. It opens the first section's slides. */
+  essentialQuestion?: string | null;
 }) {
   const numberedItems: Item[] = [
     ...sections.map((s): Item => ({ kind: "section", label: s.label, markdown: s.markdown })),
@@ -380,6 +383,7 @@ export function SectionTabs({
         {asDeck ? (
           <LessonDeck
             weekScenes={tabScenes}
+            question={active === 0 ? essentialQuestion ?? undefined : undefined}
             key={current.label}
             label={current.label}
             markdown={current.markdown}

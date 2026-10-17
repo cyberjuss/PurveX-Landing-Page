@@ -25,6 +25,7 @@ export function LessonDeck({
   prevBeyond,
   nextBeyond,
   weekScenes,
+  question,
 }: {
   label: string;
   markdown: string;
@@ -35,14 +36,22 @@ export function LessonDeck({
   nextBeyond?: TrailLink | null;
   /** Drawings picked across the whole week, so no tab repeats another's. */
   weekScenes?: Scene[];
+  /** The week's essential question, to open the deck. */
+  question?: string;
 }) {
-  const slides = useMemo(() => splitLessonIntoDeck(markdown, label), [markdown, label]);
+  const lesson = useMemo(() => splitLessonIntoDeck(markdown, label), [markdown, label]);
+  // The week opens on its essential question, as a slide of its own before
+  // the first lesson slide, so it is the first thing a student reads.
+  const slides = useMemo(
+    () => (question ? [{ title: "Essential question", cont: false, markdown: "", visual: false, question }, ...lesson] : lesson),
+    [lesson, question]
+  );
   // A slide that carries on a heading keeps the drawing that heading started
   // with, rather than switching because its own paragraph mentions something else.
-  const scenes = useMemo(
-    () => (weekScenes && weekScenes.length === slides.length ? weekScenes : pickScenes(slides, label)),
-    [weekScenes, slides, label]
-  );
+  const scenes = useMemo(() => {
+    const picked = weekScenes && weekScenes.length === lesson.length ? weekScenes : pickScenes(lesson, label);
+    return question ? (["deck", ...picked] as Scene[]) : picked;
+  }, [weekScenes, lesson, label, question]);
   const total = slides.length;
   const [index, setIndex] = useState(() => (startAtEnd ? Math.max(0, total - 1) : 0));
   const [dir, setDir] = useState<1 | -1>(1);
@@ -198,8 +207,18 @@ export function LessonDeck({
           key={index}
           className={`lk__slide${slide.visual ? " lk__slide--media" : ""}${slide.activity || slide.recap ? " lk__slide--activity" : ""}${
             slide.recap ? " lk__slide--recap" : ""
-          }${moved.current ? (dir === 1 ? " ax-enter-fwd" : " ax-enter-back") : ""}`}
+          }${slide.question ? " lk__slide--question" : ""}${moved.current ? (dir === 1 ? " ax-enter-fwd" : " ax-enter-back") : ""}`}
         >
+          {slide.question && (
+            <div className="lk-question">
+              <span className="lk-question__mark" aria-hidden>
+                ?
+              </span>
+              <span className="rd-kicker">Essential question</span>
+              <p className="lk-question__text">{slide.question}</p>
+              <p className="lk-question__hint">Keep it in mind as you go. This week answers it</p>
+            </div>
+          )}
           <header className="lk__head">
             {slide.recap ? (
               <span className="rd-kicker">In 30 seconds</span>

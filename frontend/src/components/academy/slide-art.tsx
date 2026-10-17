@@ -143,7 +143,7 @@ export function sceneFor(...texts: string[]): Scene {
  * option is spent. An author's <!-- art --> pick always wins.
  */
 export function pickScenes(
-  slides: { title: string; markdown: string; art?: string; visual?: boolean; activity?: unknown; recap?: unknown }[],
+  slides: { title: string; markdown: string; art?: string; visual?: boolean; activity?: unknown; recap?: unknown; question?: unknown }[],
   label: string,
   /** Drawings already shown earlier in the week, so a later tab does not repeat them. */
   used: Set<Scene> = new Set<Scene>(),
@@ -152,7 +152,7 @@ export function pickScenes(
 ): Scene[] {
   return slides.map((s) => {
     // A screenshot or an activity fills the slide, so it does not spend a drawing.
-    if (s.visual || s.activity || s.recap) return "deck";
+    if (s.visual || s.activity || s.recap || s.question) return "deck";
     if (isScene(s.art)) {
       used.add(s.art);
       return s.art;

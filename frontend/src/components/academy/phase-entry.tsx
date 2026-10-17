@@ -6,6 +6,7 @@ import { entriesOf, labSlug } from "@/lib/academy-entries";
 import { findQuiz } from "@/content/academy/quizzes";
 import { extractEssentialQuestion } from "@/lib/markdown";
 import { SectionTabs } from "./section-tabs";
+import { isDeckable } from "@/lib/lesson-deck";
 import { MarkCompleteButton } from "./mark-complete-button";
 import { ComingSoon } from "./coming-soon";
 import { RecordLastStop } from "./academy-progress";
@@ -79,7 +80,9 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
         </div>
       </header>
 
-      {essentialQuestion && (
+      {/* When the first tab is a slide deck, the question opens it as its own
+          slide instead (see LessonDeck). Otherwise it stays here. */}
+      {essentialQuestion && !(otherSections[0] && isDeckable(otherSections[0].markdown ?? "") && otherSections[0].label !== "Resources") && (
         <blockquote className="ax-question">
           <span className="rd-kicker">Essential question</span>
           <p>{essentialQuestion}</p>
@@ -128,6 +131,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
                 troubleshooting={troubleshootingSections.map((s) => ({ label: s.label.replace(/^Troubleshooting:\s*/, ""), markdown: s.markdown! }))}
                 prevWeek={prevEntry ? { label: prevEntry.title, href: `/range/${phase.slug}/${prevEntry.slug}` } : null}
                 nextWeek={nextEntry ? { label: nextEntry.title, href: `/range/${phase.slug}/${nextEntry.slug}` } : null}
+                essentialQuestion={essentialQuestion}
               />
             </div>
           )}

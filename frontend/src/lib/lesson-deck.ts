@@ -19,6 +19,8 @@ export interface DeckSlide {
   activity?: DeckActivity;
   /** The closing recap: each key term with the sentence that taught it. */
   recap?: RecapItem[];
+  /** The week's essential question, shown as the deck's opening slide. */
+  question?: string;
 }
 
 export type RecapItem = { term: string; sentence: string };
