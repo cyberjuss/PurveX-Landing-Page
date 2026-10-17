@@ -3716,8 +3716,7 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 }
 /* A fenced block carries its own button, so it has to be the positioning
    parent and leave room for it on the first line. */
-.academy-prose pre.ad-pre { position: relative; padding-right: 4.4rem; }
-.academy-prose pre.ad-pre > .ad-cmd__copy { font-family: var(--font-sans, inherit); line-height: 1.2; }
+.academy-prose pre.ad-pre { position: relative; padding-right: 2.9rem; }
 @media (prefers-reduced-motion: reduce) {
   .ad-hint-card__panel { transition: none; }
 }

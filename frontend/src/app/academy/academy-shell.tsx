@@ -869,7 +869,10 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "ad-cmd__copy";
-        btn.textContent = "Copy";
+        // The same icon as a command: the word did not fit the square and
+        // spilled out of it.
+        btn.setAttribute("aria-label", "Copy code");
+        btn.innerHTML = COPY_ICON + TICK_ICON;
         pre.appendChild(btn);
       });
     };
@@ -885,10 +888,11 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       // room for the word.
       if (btn.classList.contains("ad-cmd__copy")) {
         btn.classList.add("is-copied");
+        const label = btn.getAttribute("aria-label") || "Copy command";
         btn.setAttribute("aria-label", "Copied");
         setTimeout(() => {
           btn.classList.remove("is-copied");
-          btn.setAttribute("aria-label", "Copy command");
+          btn.setAttribute("aria-label", label);
         }, 1500);
         return;
       }
