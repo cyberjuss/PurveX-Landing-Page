@@ -70,6 +70,14 @@ type Shift = {
 };
 type LabState = "none" | "starting" | "ready" | "stopping" | "stopped";
 
+/** First letter up: "work it first" reads as a label, "Work it first". */
+const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+
+/** "now", "45s", "4m": how long ago, short enough for a queue row. */
+const ago = (ms: number) => {
+  const s = Math.floor(ms / 1000);
+  return s < 10 ? "now" : s < 60 ? `${s}s` : `${Math.floor(s / 60)}m`;
+};
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 const skillOf = (kind: "alert" | "ticket") => (kind === "ticket" ? "troubleshooting" : "security");
 const incNo = (idx: number) => `INC-${2101 + idx}`;
@@ -408,7 +416,11 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
 
   const total = shift.incidents.length;
   const handled = shift.incidents.filter((i) => i.resolved || i.escalated).length;
-  const stillOpen = total - handled;
+  // What is still open, by priority: the pressure the header shows.
+  const openBy = { P1: 0, P2: 0, P3: 0 };
+  for (const i of shift.incidents) if (!i.resolved && !i.escalated) openBy[i.severity] += 1;
+  // How long ago each incident landed, from the shift's own clock.
+  const ageOf = (inc: Incident) => ago(Math.max(0, now - start - inc.arriveSec * 1000));
   const escalated = shift.incidents.filter((i) => i.escalated).length;
 
   // Stable incident numbers follow the server's creation order.
@@ -449,6 +461,24 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
             </p>
           </div>
         </div>
+        <div className="sh-pressure" aria-label="What is open on the queue">
+          {(["P1", "P2", "P3"] as const).map((sev) => (
+            <span key={sev} className={`sh-pressure__sev is-${sev.toLowerCase()}${openBy[sev] ? "" : " is-zero"}`} title={`${openBy[sev]} ${sev} open`}>
+              <i aria-hidden />
+              {sev}
+              <b>{openBy[sev]}</b>
+            </span>
+          ))}
+          <span className="sh-pressure__sep" aria-hidden />
+          <span className="sh-pressure__stat">
+            <b>{handled}</b>/{total} closed
+          </span>
+          {escalated > 0 && (
+            <span className="sh-pressure__stat">
+              <b>{escalated}</b> escalated
+            </span>
+          )}
+        </div>
         <div className="sh-top__right">
           <div className={`sh-clock ${left <= 60 ? "sh-clock--low" : ""}`}>
             <span className="sh-clock__label">Shift ends in</span>
@@ -480,57 +510,71 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
 
       <div className="sh-body">
         <aside className="sh-side">
-          <div className="sh-stats">
-            <div className="sh-stat">
-              <span className="sh-stat__num">{handled}/{total}</span>
-              <span className="sh-stat__label">Closed</span>
-            </div>
-            <div className="sh-stat">
-              <span className="sh-stat__num">{stillOpen}</span>
-              <span className="sh-stat__label">Open</span>
-            </div>
-            <div className="sh-stat">
-              <span className="sh-stat__num">{escalated}</span>
-              <span className="sh-stat__label">Escalated</span>
-            </div>
-          </div>
-
           {queue.length === 0 ? (
             <p className="sh-waiting"><Loader2 className="h-4 w-4 animate-spin" /> Watching the queue…</p>
           ) : (
-            <ul className="sh-list" role="tablist" aria-label="Incident queue">
-              {queue.map((inc) => {
-                const closed = inc.resolved || inc.escalated;
-                const isSel = selected?.uid === inc.uid;
-                const urgent = !closed && !inc.acknowledged && inc.severity === "P1";
-                const cls = ["sh-li", `sh-li--sev-${inc.severity.toLowerCase()}`, isSel && "sh-li--on", closed && "sh-li--done", urgent && "sh-li--urgent"].filter(Boolean).join(" ");
-                const Icon = iconFor(inc.defId);
-                return (
-                  <li key={inc.uid}>
-                    <button type="button" role="tab" aria-selected={isSel} className={cls} onClick={() => setSelectedId(inc.uid)}>
-                      <span className="sh-li__top">
-                        <span className="sh-li__icon"><Icon className="h-4 w-4" /></span>
-                        <span className={`sh-tag sh-tag--${inc.kind}`}>{inc.kind}</span>
-                        {/* Severity is drawn as a coloured bar down the left of
-                            this row; stated here too so it does not rest on
-                            colour alone. */}
-                        <span className="sh-li__sev">{inc.severity}</span>
-                        <span className="sh-li__no">{numOf.get(inc.uid)}</span>
-                        {inc.resolved ? (
-                          <span className="sh-status sh-status--done">Solved</span>
-                        ) : inc.escalated ? (
-                          <span className="sh-status sh-status--up">Escalated</span>
-                        ) : !inc.acknowledged ? (
-                          <span className="sh-li__new">New</span>
-                        ) : null}
-                      </span>
-                      <span className="sh-li__title">{inc.title}</span>
-                      <span className="sh-li__from">{sender(inc).name}{sender(inc).role ? ` · ${sender(inc).role}` : ""}</span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+            <div className="sh-queue" role="tablist" aria-label="Incident queue">
+              {[
+                { label: "Open", rows: queue.filter((i) => !done(i)) },
+                { label: "Closed", rows: queue.filter((i) => done(i)) },
+              ].map(
+                (group) =>
+                  group.rows.length > 0 && (
+                    <section key={group.label} className="sh-qgroup">
+                      <p className="sh-qgroup__head">
+                        {group.label}
+                        <b>{group.rows.length}</b>
+                      </p>
+                      <ul className="sh-list">
+                        {group.rows.map((inc) => {
+                          const closed = inc.resolved || inc.escalated;
+                          const isSel = selected?.uid === inc.uid;
+                          const urgent = !closed && !inc.acknowledged && inc.severity === "P1";
+                          const cls = ["sh-li", `sh-li--sev-${inc.severity.toLowerCase()}`, isSel && "sh-li--on", closed && "sh-li--done", urgent && "sh-li--urgent"].filter(Boolean).join(" ");
+                          const Icon = iconFor(inc.defId);
+                          return (
+                            <li key={inc.uid}>
+                              <button type="button" role="tab" aria-selected={isSel} className={cls} onClick={() => setSelectedId(inc.uid)}>
+                                <span className="sh-li__top">
+                                  {/* Severity is the coloured bar down the left; stated in text too, so it does not rest on colour alone. */}
+                                  <span className="sh-li__sev">{inc.severity}</span>
+                                  <span className="sh-li__icon">
+                                    <Icon className="h-3.5 w-3.5" />
+                                  </span>
+                                  <span className="sh-li__no">{numOf.get(inc.uid)}</span>
+                                  <span className="sh-li__kind">{inc.kind}</span>
+                                  <span className="sh-li__end">
+                                    {inc.resolved ? (
+                                      <span className="sh-li__state is-done">
+                                        <Check className="h-3 w-3" /> Solved
+                                      </span>
+                                    ) : inc.escalated ? (
+                                      <span className="sh-li__state is-up">
+                                        <ArrowUpRight className="h-3 w-3" /> Tier 2
+                                      </span>
+                                    ) : !inc.acknowledged ? (
+                                      <span className="sh-li__state is-new">
+                                        <i aria-hidden /> New · {ageOf(inc)}
+                                      </span>
+                                    ) : (
+                                      <span className="sh-li__state">{ageOf(inc)}</span>
+                                    )}
+                                  </span>
+                                </span>
+                                <span className="sh-li__title">{inc.title}</span>
+                                <span className="sh-li__from">
+                                  {sender(inc).name}
+                                  {sender(inc).role ? ` · ${sender(inc).role}` : ""}
+                                </span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </section>
+                  )
+              )}
+            </div>
           )}
         </aside>
 
@@ -538,7 +582,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
           {error && <p className="sh-error">{error}</p>}
           <DeskLayer desk={shift.desk ?? []} now={now} busy={busy} post={post} />
           {selected ? (
-            <IncidentDetail key={selected.uid} inc={selected} no={numOf.get(selected.uid) ?? ""} busy={busy} post={post} />
+            <IncidentDetail key={selected.uid} inc={selected} no={numOf.get(selected.uid) ?? ""} age={ageOf(selected)} busy={busy} post={post} />
           ) : (
             <p className="sh-waiting sh-waiting--big"><Loader2 className="h-4 w-4 animate-spin" /> The first incident will land shortly.</p>
           )}
@@ -550,7 +594,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
 
 type SubmitResult = { resolved: boolean; escalated?: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[]; needFinding?: boolean; evidencePending?: boolean; answerRight?: boolean | null };
 
-function IncidentDetail({ inc, no, busy, post }: { inc: Incident; no: string; busy: boolean; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
+function IncidentDetail({ inc, no, age, busy, post }: { inc: Incident; no: string; age: string; busy: boolean; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
   const [diagnosis, setDiagnosis] = useState(inc.diagnosis);
   const [response, setResponse] = useState("");
   const [result, setResult] = useState<SubmitResult | null>(null);
@@ -590,20 +634,30 @@ function IncidentDetail({ inc, no, busy, post }: { inc: Incident; no: string; bu
   return (
     <div className={`sh-detail ${inc.resolved ? "sh-detail--done" : ""}`}>
       <div className="sh-detail__crumbs">
+        <span className={`sh-pill sh-pill--${inc.severity.toLowerCase()}`}>
+          {inc.severity} · {PRIORITY_NOTE[inc.severity].split(" · ")[0]}
+        </span>
         {(() => {
           const Icon = iconFor(inc.defId);
-          return <span className="sh-detail__icon"><Icon className="h-4 w-4" /></span>;
+          return (
+            <span className="sh-meta">
+              <Icon className="h-3.5 w-3.5" /> {inc.kind === "alert" ? "Alert" : "Ticket"}
+            </span>
+          );
         })()}
-        <span className={`sh-tag sh-tag--${inc.kind}`}>{inc.kind}</span>
-        <span className="sh-detail__no">{no}</span>
-        <span className="sh-detail__skill">Skill: {skillOf(inc.kind)}</span>
-        <span className={`sh-sev ${SEV_CLASS[inc.severity]}`}>{inc.severity}</span>
+        <span className="sh-meta sh-meta--mono">{no}</span>
+        <span className="sh-meta">Arrived {age} ago</span>
+        <span className="sh-meta">Skill: {skillOf(inc.kind)}</span>
         {inc.resolved ? (
-          <span className="sh-status sh-status--done"><Check className="h-3.5 w-3.5" /> Solved</span>
+          <span className="sh-status sh-status--done">
+            <Check className="h-3.5 w-3.5" /> Solved
+          </span>
         ) : inc.escalated ? (
-          <span className="sh-status sh-status--up"><ArrowUpRight className="h-3.5 w-3.5" /> Escalated</span>
+          <span className="sh-status sh-status--up">
+            <ArrowUpRight className="h-3.5 w-3.5" /> With tier 2
+          </span>
         ) : (
-          <span className="sh-detail__left">{PRIORITY_NOTE[inc.severity]}</span>
+          <span className="sh-detail__left">{cap(PRIORITY_NOTE[inc.severity].split(" · ")[1])}</span>
         )}
       </div>
 
@@ -651,19 +705,22 @@ function IncidentDetail({ inc, no, busy, post }: { inc: Incident; no: string; bu
         </div>
       ) : (
         <div className="sh-work">
-          <div className="sh-lab">
-            <p className="sh-lab__head"><Wrench className="h-3.5 w-3.5" /> In your lab</p>
-            <ul className="sh-lab__steps">
-              <li>Investigate in Event Viewer and Active Directory Users and Computers.</li>
-              <li>Make the fix on your domain controller.</li>
-              <li>Record your finding and a closing note below.</li>
-              <li>Select <strong>Submit and check</strong>. Range marks your answer and reads your live lab for the fix. Both have to be right to close it.</li>
-            </ul>
-            <label className="sh-field">
-              <span><Search className="h-3.5 w-3.5" /> {inc.diagnosisPrompt}</span>
-              <input value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} placeholder="Your finding" autoComplete="off" />
-            </label>
-          </div>
+          <p className="sh-work__head">Your response</p>
+          {/* The same four moves on every incident, as one line rather than a
+              paragraph repeated on each: the question below is what changes. */}
+          <ol className="sh-steps" aria-label="How to close it">
+            <li><Search className="h-3.5 w-3.5" /> Investigate</li>
+            <li><Wrench className="h-3.5 w-3.5" /> Fix in your lab</li>
+            <li><FileText className="h-3.5 w-3.5" /> Answer and note</li>
+            <li><Check className="h-3.5 w-3.5" /> Submit and check</li>
+          </ol>
+          <p className="sh-work__note">Range marks your answer and reads your live lab. Both have to be right to close it.</p>
+
+          <label className="sh-q">
+            <span className="sh-q__k">The question</span>
+            <span className="sh-q__p">{inc.diagnosisPrompt}</span>
+            <input value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} placeholder="Your answer" autoComplete="off" />
+          </label>
 
           <label className="sh-field">
             <span><FileText className="h-3.5 w-3.5" /> Closing note</span>
