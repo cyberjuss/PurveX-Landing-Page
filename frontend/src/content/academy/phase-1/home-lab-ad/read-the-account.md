@@ -16,6 +16,8 @@ The most useful new tab is **Attribute Editor**. It shows every raw attribute on
 
 With them you can replace a hunch with a real time or group list. With more than one domain controller, `lastLogon` is kept per controller. `lastLogonTimestamp` is shared but can lag by up to 14 days. Do not guess from the display name when the Attribute Editor can show you the time.
 
+Source: [Microsoft Learn: Last-Logon-Timestamp attribute](https://learn.microsoft.com/en-us/windows/win32/adschema/a-lastlogontimestamp)
+
 Filter the Attribute Editor to **Show only attributes that have values** so you are not scrolling past blank fields.
 
 Open the object from the tree, not from the Find dialog. An object opened from Find results does not show the Attribute Editor tab.

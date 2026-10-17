@@ -324,3 +324,13 @@ when the heading does not name the idea.
 
 Cards follow the same rule as the prose: every one must come from the
 lesson it sits in. Keep each card short enough to read at a glance.
+
+## Sources for specific facts
+
+A named breach, a date, a figure, a standard or a version needs a source a
+student can open. Keep the lesson prose free of links and list the source in
+that week's Resources tab under "Sources for this week's facts", one line per
+claim: the claim in bold, then the link. A Home Lab lesson has no Resources
+tab, so its source goes on its own line straight after the paragraph that
+makes the claim. Prefer the primary record (the vendor, the standards body,
+the government report) and check that the page itself states the fact.
