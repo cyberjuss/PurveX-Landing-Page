@@ -1,19 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, LifeBuoy, Loader2, MessageSquare, Phone, Siren, X } from "lucide-react";
+import { Check, LifeBuoy, Loader2, Mail, X } from "lucide-react";
 import { useCoach } from "./coach-context";
 import "./shift-desk.css";
 
-// The desk around the incidents, in the console: a call, a status request, an
-// urgent ask. One card at a time slides in over the work, with its own clock.
+// The desk around the incidents, in the console: one email a shift, from a
+// pool (phishing, a request to skip the process, a status ask). It slides in
+// over the work and waits there until it is answered; it has no clock of its own.
 // Once answered it turns into Coach's feedback: what each option would have
 // done, the principle, and where that principle comes from. Grading is all on
 // the server (academy-shift-desk.ts); this only shows it.
 
 export type DeskEvent = {
   uid: string;
-  kind: "call" | "ping" | "noise";
+  kind: "email" | "reply";
   from: string;
   title: string;
   body: string;
@@ -40,8 +41,8 @@ export type DeskEvent = {
 type Post = (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null>;
 
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
-const ICON = { call: Phone, ping: MessageSquare, noise: Siren } as const;
-const KIND = { call: "Incoming call", ping: "Message", noise: "Walk-up request" } as const;
+const ICON = { email: Mail, reply: Mail } as const;
+const KIND = { email: "New email", reply: "New email" } as const;
 
 /** Shows the oldest desk event that still wants something from the student. */
 export function DeskLayer({ desk, now, busy, post }: { desk: DeskEvent[]; now: number; busy: boolean; post: Post }) {
@@ -99,7 +100,7 @@ function DeskCard({ ev, now, busy, post, onDone }: { ev: DeskEvent; now: number;
       {!v ? (
         <>
           <p className="sdk__body">{ev.body}</p>
-          {ev.kind === "ping" ? (
+          {ev.kind === "reply" ? (
             <form
               className="sdk__reply"
               onSubmit={(e) => {
@@ -138,7 +139,7 @@ function DeskCard({ ev, now, busy, post, onDone }: { ev: DeskEvent; now: number;
               {v.score}/{v.max}
             </b>
           </p>
-          {ev.kind === "ping" ? (
+          {ev.kind === "reply" ? (
             <>
               {v.text && <p className="sdk__said">“{v.text}”</p>}
               <ul className="sdk__checks">

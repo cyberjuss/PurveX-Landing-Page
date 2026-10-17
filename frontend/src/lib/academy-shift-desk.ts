@@ -2,11 +2,13 @@ import "server-only";
 import { seeded, shuffle } from "@/lib/academy-drills";
 import { ROSTER, SHIFT_SECONDS, type IncidentRun, type Severity, type Staff } from "@/lib/academy-shift";
 
-// The desk around the incidents. A real shift is not only alerts: people call,
-// managers ask for status, and someone always has an "urgent" request that is
-// not. These desk events arrive on the shift's clock, are answered in the
-// console, and are graded here, deterministically, against reasoning that is
-// written down with its source. Nothing in this file touches the lab.
+// The desk around the incidents. A real shift is not only alerts: the inbox
+// keeps filling, with phishing, a manager wanting status, a request to skip the
+// process. One email lands per shift, picked from the pool below, and is
+// answered in the console and graded here, deterministically, against
+// reasoning that is written down with its source. Nothing in this file touches
+// the lab. Like the incidents, an email has no timer of its own: it waits in
+// the inbox until it is answered or the shift ends.
 //
 // Sources the reasoning rests on:
 // - CISA and FBI advisory AA23-320A (Scattered Spider): the actors "conduct
@@ -16,11 +18,17 @@ import { ROSTER, SHIFT_SECONDS, type IncidentRun, type Severity, type Staff } fr
 //   the claimant's identity is consistent with the previously established
 //   account", and a recovery "SHALL cause a notification to be sent to the
 //   subscriber" at the addresses already stored in the account.
+// - CISA, Avoiding Social Engineering and Phishing Attacks (ST04-014): check
+//   the sender and the real link destination, and report rather than reply.
+// - FBI IC3 business email compromise announcements: urgency, secrecy, gift
+//   cards and changed bank details, verified out of band.
+// - NIST SP 800-53 Rev. 5, AC-6 (least privilege) and CM-3 (change control).
 // - The lessons themselves: Week 2 "verify the caller with a callback to the
-//   number on file, never a number they give you"; Week 4 on resets and
-//   escalation; the Shift rule that P1s are worked first.
+//   number on file, never a number they give you"; Week 4, "do not skip steps
+//   for urgency or seniority"; the Shift rule that P1s are worked first.
 
-export type DeskKind = "call" | "ping" | "noise";
+/** An email with choices, or one that asks for a written reply. */
+export type DeskKind = "email" | "reply";
 
 type Choice = { id: string; text: string; correct: boolean; why: string };
 
@@ -29,8 +37,6 @@ export type DeskDef = {
   kind: DeskKind;
   /** Earliest drill level (1-4) this can appear at. */
   minLevel: number;
-  /** Seconds from arrival to answer before it lapses (the caller hangs up). */
-  windowSec: number;
   points: number;
   /** One line Coach says after it is answered, whatever the answer. */
   lesson: string;
@@ -41,90 +47,249 @@ export type DeskDef = {
 
 export const DESK_EVENTS: DeskDef[] = [
   {
-    id: "mfa-call",
-    kind: "call",
+    id: "mfa-reset-email",
+    kind: "email",
     minLevel: 1,
-    windowSec: 120,
     points: 15,
     lesson: "Urgency and inside details are what a social engineer brings. Verify through what the account already has on file, then reset, and the owner is told.",
     source: "CISA AA23-320A · NIST SP 800-63B-4 §4.2, §4.6 · Week 2, Storing Passwords",
     build: (who) => ({
-      from: `Caller · says they are ${who.name}, ${who.dept}`,
-      title: "Phone: an MFA reset, right now",
-      body: `"Hi, it's ${who.name.split(" ")[0]} from ${who.dept}. I got a new phone and my authenticator didn't come across. I'm about to board a flight and I have to approve a payment before we take off. Can you reset my MFA so I can enroll the new phone? I can give you my employee number."`,
+      from: `${who.name} <${who.sam}@purvex-mail.com>`,
+      title: "Lost my phone, need MFA reset ASAP",
+      body: `"Hi, it's ${who.name.split(" ")[0]} from ${who.dept}. My phone was stolen at the airport and my authenticator went with it. I have to approve a payment before my flight boards. Please reset my MFA and send the new enrollment link to this address. I can reply with my employee number."`,
       choices: [
         {
           id: "reset",
-          text: "Reset it now. They know their department and it is time-critical",
+          text: "Reset it and send the link to this address. They know their department and it is time-critical",
           correct: false,
-          why: "Knowing a name and a department is exactly what an attacker gathers first, and the deadline is there to rush you. This is the call CISA describes help desks receiving.",
+          why: "The reply-to is an outside address, not the company's, and the deadline is there to rush you. Sending enrollment to an address the requester controls hands the account over.",
         },
         {
           id: "kba",
-          text: "Take their employee number and date of birth, then reset it",
+          text: "Ask for their employee number and date of birth by email, then reset",
           correct: false,
-          why: "Facts a caller can recite prove only that they found them. They do not show the person on the phone owns the account.",
-        },
-        {
-          id: "their-number",
-          text: "Ask for a number to call them back on, then call it and reset",
-          correct: false,
-          why: "A number the caller gives you is a number the caller controls. The callback has to go to contact details the account already holds.",
+          why: "Facts someone can type into an email prove only that they found them. They do not show the sender owns the account.",
         },
         {
           id: "verify",
-          text: "Change nothing on this call. Call back on the number already in the directory, reset only if that checks out, and make sure the owner is notified",
+          text: "Change nothing from this email. Call the number already in the directory, reset only if that checks out, and notify the owner",
           correct: true,
-          why: "Recovery has to confirm the caller matches the account as it was established, through details already on file, and the owner gets a notification on a channel separate from the request.",
+          why: "Recovery has to confirm the requester matches the account as it was established, through contact details already on file, and the owner is told on a channel separate from the request.",
+        },
+        {
+          id: "ignore",
+          text: "Delete it. MFA resets are never done for travelling staff",
+          correct: false,
+          why: "Real people do lose phones. Refusing outright leaves a colleague locked out; the job is to verify and then help, and to report the email if it does not check out.",
         },
       ],
     }),
   },
   {
-    id: "status-ping",
-    kind: "ping",
+    id: "lookalike-phish",
+    kind: "email",
     minLevel: 1,
-    windowSec: 90,
+    points: 15,
+    lesson: "Read the sender's domain and where a link really goes before anything else. A lookalike domain is a report, not a reply.",
+    source: "CISA, Avoiding Social Engineering and Phishing Attacks (ST04-014) · Week 4, Authentication: pressure is the most common social engineering move",
+    build: () => ({
+      from: "IT Service Desk <helpdesk@purvex-support.co>",
+      title: "Action required: your admin password expires today",
+      body: `"Your privileged account password expires in 2 hours. To avoid losing access to the domain controller, re-validate now at https://purvex-support.co/sso/renew. This mailbox is not monitored."`,
+      choices: [
+        {
+          id: "click",
+          text: "Open the link and re-validate. Losing admin access mid-shift would be worse",
+          correct: false,
+          why: "purvex-support.co is not the company's domain. A fake sign-in page for an admin account is the most valuable thing a phisher can catch.",
+        },
+        {
+          id: "reply",
+          text: "Reply and ask whether the email is genuine",
+          correct: false,
+          why: "Replying asks the sender to vouch for themselves, and confirms your address is live. Verify through a channel you already trust.",
+        },
+        {
+          id: "report",
+          text: "Do not click. Report it to security as phishing with the sender's domain and the link, and check your account directly if you are worried",
+          correct: true,
+          why: "The domain is a lookalike and the clock is pressure. Reporting it lets security block the domain and warn everyone else who got it.",
+        },
+        {
+          id: "forward",
+          text: "Forward it to the team chat so everyone knows to ignore it",
+          correct: false,
+          why: "Forwarding spreads the live link to more people. Report it once, to security, and let them warn the company.",
+        },
+      ],
+    }),
+  },
+  {
+    id: "exec-gift-cards",
+    kind: "email",
+    minLevel: 1,
+    points: 15,
+    lesson: "A request for money or gift cards that skips the normal process, from an address you cannot verify, is business email compromise until proven otherwise.",
+    source: "FBI IC3, Business Email Compromise public service announcements · Week 4, Authentication: pressure is the most common social engineering move",
+    build: () => ({
+      from: "Dana Whitmore (CEO) <dana.whitmore.ceo@gmail.com>",
+      title: "Quick favour, keep this between us",
+      body: `"Are you at your desk? I need six $200 gift cards for a client thank-you before the board call. I'm stuck in meetings and can't talk. Buy them, scratch the backs, and email me the codes. I'll make sure you're reimbursed today."`,
+      choices: [
+        {
+          id: "buy",
+          text: "Buy them. It is the CEO and it is a small amount",
+          correct: false,
+          why: "Gift cards are untraceable once the codes are sent, which is why fraudsters ask for them. Seniority and secrecy are the pressure, not proof.",
+        },
+        {
+          id: "reply",
+          text: "Reply to the email and ask them to confirm it is really them",
+          correct: false,
+          why: "The answer will come from whoever controls that personal address. Verification has to go through a channel the company already holds.",
+        },
+        {
+          id: "verify",
+          text: "Do nothing it asks. Report it to security, and if you want to check, contact the CEO's office through the directory, not this email",
+          correct: true,
+          why: "A personal address, secrecy, urgency and gift cards are the classic marks of business email compromise. Security needs it so others are warned.",
+        },
+        {
+          id: "ignore",
+          text: "Ignore it and carry on with the queue",
+          correct: false,
+          why: "Ignoring it protects you but nobody else. The same email has likely gone to other staff, and reporting it lets security warn them.",
+        },
+      ],
+    }),
+  },
+  {
+    id: "admin-request-email",
+    kind: "email",
+    minLevel: 2,
+    points: 15,
+    lesson: "Privileged access needs a change ticket and an approver, not a convincing email. Least privilege is a process, not a favour.",
+    source: "NIST SP 800-53 Rev. 5, AC-6 Least Privilege and CM-3 Configuration Change Control · Week 4, Authorization",
+    build: (who) => ({
+      from: `${who.name} <${who.sam}@purvex.local>`,
+      title: "Add me to Domain Admins for the afternoon?",
+      body: `"Hi, I'm installing the new reporting tool and the installer keeps failing on permissions. Could you add me to Domain Admins just for today? I'll tell you when I'm done and you can take me out. No need for a ticket, it's only a few hours."`,
+      choices: [
+        {
+          id: "add",
+          text: "Add them now and set a reminder to remove it at the end of the day",
+          correct: false,
+          why: "Domain Admins is full control of the domain. Temporary admin with no ticket is how standing access and untracked changes start, and reminders get missed.",
+        },
+        {
+          id: "itadmins",
+          text: "Add them to IT Admins instead, since it is less than Domain Admins",
+          correct: false,
+          why: "Picking a smaller privileged group still grants admin rights with no approval. The fix is the process, not a different group.",
+        },
+        {
+          id: "ticket",
+          text: "Change nothing. Ask them to raise a change ticket with what the installer needs, so it can be approved and done with the least access that works",
+          correct: true,
+          why: "An approved change records who asked, who approved and why, and the installer usually needs one specific right, not the whole domain.",
+        },
+        {
+          id: "share",
+          text: "Run the installer for them with your own admin account",
+          correct: false,
+          why: "That uses your privileges for someone else's unapproved change, and the audit trail now says you did it.",
+        },
+      ],
+    }),
+  },
+  {
+    id: "vendor-bank-change",
+    kind: "email",
+    minLevel: 2,
+    points: 15,
+    lesson: "A change to where money goes is verified by calling the vendor on a number you already have, never one in the email.",
+    source: "FBI IC3, Business Email Compromise public service announcements · Week 4, Authentication: pressure is the most common social engineering move",
+    build: (who) => ({
+      from: `${who.name} <${who.sam}@purvex.local>`,
+      title: "FW: Updated bank details for LedgerLine invoices",
+      body: `"Forwarding this from LedgerLine. They've moved banks and want this month's payment to the new account below. Can IT update the vendor record in the payments system? Their accounts team says it's urgent so the invoice isn't late. New details and a phone number to confirm are in their message."`,
+      choices: [
+        {
+          id: "update",
+          text: "Update the record. It came from a colleague, so it is trusted",
+          correct: false,
+          why: "Your colleague is trusted; the forwarded message is not. Vendor bank changes are one of the most common business email compromise frauds.",
+        },
+        {
+          id: "their-number",
+          text: "Call the number in the vendor's message to confirm, then update it",
+          correct: false,
+          why: "A number in the suspicious message reaches whoever wrote it. The check has to go to contact details you already hold for the vendor.",
+        },
+        {
+          id: "verify",
+          text: "Change nothing. Tell your colleague to have Finance confirm with LedgerLine on the number already on file, and report the message to security",
+          correct: true,
+          why: "Payment changes need verification out of band, by the team that owns them. If the vendor's mail was compromised, security needs to know.",
+        },
+        {
+          id: "not-mine",
+          text: "Reply that it is not an IT task and close it",
+          correct: false,
+          why: "It is not yours to change, but it is yours to flag. Closing it silently leaves the fraud in play.",
+        },
+      ],
+    }),
+  },
+  {
+    id: "status-email",
+    kind: "reply",
+    minLevel: 1,
     points: 10,
     lesson: "A good status is one line a manager can repeat: which incident, where it stands, and what you do next.",
     source: "Shift practice · Week 4 and Phase 2 escalation guidance",
     build: () => ({
-      from: "Desk lead · Chat",
-      title: "Quick status?",
-      body: "\"Leadership is asking. One line: what are you on, where is it, what's next?\"",
-      prompt: "Your one-line status",
+      from: "Desk lead <desk.lead@purvex.local>",
+      title: "Status for leadership?",
+      body: "\"Leadership is asking. One line please: what are you on, where is it, what's next?\"",
+      prompt: "Your one-line reply",
     }),
   },
   {
-    id: "urgent-ask",
-    kind: "noise",
+    id: "urgent-screen-email",
+    kind: "email",
     minLevel: 2,
-    windowSec: 120,
     points: 10,
-    lesson: "Severity decides the order, not volume or rank. Acknowledge the person, give an honest time, log it, and go back to the P1.",
-    source: "Shift rules: the queue is worked by severity, P1 first",
+    lesson: "Priority decides the order, not volume or rank. Acknowledge the person, give an honest time, log it, and go back to the highest priority.",
+    source: "Shift rules: the queue is worked by priority, P1 first",
     build: (who) => ({
-      from: `${who.name} · ${who.dept}`,
-      title: "URGENT: the conference room screen won't connect",
+      from: `${who.name} <${who.sam}@purvex.local>`,
+      title: "URGENT!!! Conference room screen not working",
       body: `"The client presentation starts in ten minutes and the screen in Room 4 won't connect to my laptop. This is URGENT, please come now."`,
       choices: [
         {
           id: "drop",
-          text: "Leave the open P1 and go to Room 4 now",
+          text: "Leave the incident you are on and go to Room 4 now",
           correct: false,
-          why: "A P1 comes first because it can hurt the whole firm. A meeting room screen cannot. Walking away from the P1 is how a small breach becomes a big one.",
+          why: "A security incident comes first because it can hurt the whole firm. A meeting room screen cannot. Walking away is how a small breach becomes a big one.",
         },
         {
           id: "ignore",
-          text: "Ignore it until the P1 is closed",
+          text: "Leave it unanswered until the queue is clear",
           correct: false,
-          why: "Silence makes people escalate around you. A ten-second reply keeps their trust and costs the P1 nothing.",
+          why: "Silence makes people escalate around you. A ten-second reply keeps their trust and costs the incident nothing.",
         },
         {
           id: "ack-log",
-          text: "Reply that you are on a priority incident, log a ticket for the screen with an honest time, and stay on the P1",
+          text: "Reply that you are on a priority incident, log a ticket for the screen with an honest time, and stay on the incident",
           correct: true,
-          why: "It is real work, just not the most urgent. Acknowledged, logged and timed, it gets done without the P1 paying for it.",
+          why: "It is real work, just not the most urgent. Acknowledged, logged and timed, it gets done without the incident paying for it.",
+        },
+        {
+          id: "password",
+          text: "Reply with the room's admin password so they can fix it themselves",
+          correct: false,
+          why: "Sharing a credential by email fixes today and leaves a password in a mailbox for good. It is never the shortcut.",
         },
       ],
     }),
@@ -155,10 +320,9 @@ export type DeskRun = {
 };
 
 /**
- * Which desk events a shift gets and when. Level 1 and 2 get the call and the
- * status request; from level 2 the urgent ask lands right after a P1 arrives,
- * so it competes with it. The call comes while the queue is busy, the status
- * request about halfway. Deterministic per seed.
+ * The one email a shift gets, and when. Picked from the pool for the student's
+ * level, so shifts differ; the urgent one lands just after the first P1, so it
+ * competes with it, and the rest while the queue is busy. Deterministic per seed.
  */
 export function planDesk(seed: string, level: number, incidents: Pick<IncidentRun, "uid" | "severity" | "arriveSec" | "bind">[]): DeskRun[] {
   const r = seeded(`${seed}:desk`);
@@ -173,27 +337,30 @@ export function planDesk(seed: string, level: number, incidents: Pick<IncidentRu
   const people = shuffle(r, ROSTER.filter((s) => s.sam !== "alex.rivera" && !taken.has(s.sam)));
   const who = (k: number) => (people.length ? people[k % people.length] : ROSTER[1]);
   const at = (frac: number, jitter: number) => Math.round(SHIFT_SECONDS * frac + (r() - 0.5) * jitter);
+  // No reply clock: it waits until the shift ends, so it lapses only then.
+  const window = (arriveSec: number) => SHIFT_SECONDS - arriveSec;
 
   const out: DeskRun[] = [];
   const add = (defId: string, arriveSec: number, k: number) => {
     const def = deskDef(defId)!;
     const order = def.build(who(k)).choices?.map((c) => c.id);
+    const when = Math.max(90, Math.min(SHIFT_SECONDS - 300, arriveSec));
     out.push({
       uid: `${defId}-${out.length}`,
       defId,
       kind: def.kind,
-      arriveSec: Math.max(60, Math.min(SHIFT_SECONDS - def.windowSec - 30, arriveSec)),
-      windowSec: def.windowSec,
+      arriveSec: when,
+      windowSec: window(when),
       who: who(k).sam,
       order: order ? shuffle(r, order) : undefined,
       answeredAtSec: null,
     });
   };
-  add("mfa-call", at(0.3, 120), 0);
-  add("status-ping", at(0.55, 90), 1);
-  if (level >= 2) {
+  const pool = DESK_EVENTS.filter((d) => d.minLevel <= level);
+  const pick = pool.length ? pool[Math.floor(r() * pool.length)] : null;
+  if (pick) {
     const p1 = incidents.filter((i) => i.severity === "P1").sort((a, b) => a.arriveSec - b.arriveSec)[0];
-    add("urgent-ask", p1 ? p1.arriveSec + 25 : at(0.7, 60), 2);
+    add(pick.id, pick.id === "urgent-screen-email" && p1 ? p1.arriveSec + 25 : at(0.4, 300), 0);
   }
   return out.sort((a, b) => a.arriveSec - b.arriveSec);
 }
@@ -253,7 +420,8 @@ export function toPublicDesk(d: DeskRun, elapsed: number): PublicDesk | null {
     prompt: view.prompt ?? null,
     choices: ordered.map((c) => ({ id: c.id, text: c.text })),
     arriveSec: d.arriveSec,
-    secondsLeft: answered || lapsed ? null : Math.max(0, d.arriveSec + d.windowSec - elapsed),
+    // Emails have no reply clock of their own; the shift's clock is the only one.
+    secondsLeft: null,
     lapsed,
     answered,
     verdict:
@@ -308,7 +476,7 @@ export function gradeStatus(text: string, open: { title: string; severity: Sever
   ];
   const hits = checks.filter(([ok]) => ok).map(([, l]) => l);
   const misses = checks.filter(([ok]) => !ok).map(([, l]) => l);
-  return { score: Math.round((hits.length / 3) * (deskDef("status-ping")?.points ?? 10)), hits, misses };
+  return { score: Math.round((hits.length / 3) * (deskDef("status-email")?.points ?? 10)), hits, misses };
 }
 
 // ---- triage, timing and the after-action timeline --------------------------

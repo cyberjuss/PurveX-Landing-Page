@@ -1001,20 +1001,41 @@ export type Question = { prompt: string; accept: string[] };
 
 type AskCtx = { v: Staff | null; args: Record<string, string> };
 
+/** Each person's job title as Build-Environment.ps1 sets it, read on the
+ *  account's Organization tab. Asking for it makes a ticket confirm who it is
+ *  about in the directory rather than trusting the name in the request. */
+const TITLE: Record<string, string> = {
+  "alex.rivera": "IT Systems Administrator",
+  "priya.nair": "Help Desk Technician",
+  "devon.brooks": "Compliance Officer",
+  "morgan.lee": "Regulatory Analyst",
+  "sam.whitfield": "Senior Financial Advisor",
+  "jamie.torres": "Client Relationship Manager",
+  "taylor.osei": "Operations Analyst",
+  "riley.kwan": "Settlements Coordinator",
+  "jordan.ellis": "Staff Accountant",
+};
+const titleQ = (v: Staff | null, fallback: string): Question => {
+  const p = v ?? ROSTER.find((s) => s.sam === fallback)!;
+  return { prompt: `What is ${p.name}'s job title in Active Directory?`, accept: [TITLE[p.sam].toLowerCase()] };
+};
+
+/** Template questions answerable without opening the lab: dropped from the pool. */
+const FROM_MEMORY = new Set(["offboarding", "dept-transfer", "access-request"]);
+
 const ASK: Record<string, (x: AskCtx) => Question[]> = {
-  "lockout-ticket": () => [
+  "lockout-ticket": ({ v }) => [
     { prompt: "Which event ID did the domain controller write when the account locked?", accept: ["4740"] },
     { prompt: "Which event ID records each wrong password?", accept: ["4625"] },
-    { prompt: "Unlock the account or reset its password? Answer the one this ticket needs.", accept: ["unlock"] },
+    titleQ(v, "riley.kwan"),
   ],
   spray: () => [
     { prompt: "Which event ID marks the lockouts?", accept: ["4740"] },
     { prompt: "What logon type do the failed sign-ins show?", accept: ["3", "network"] },
-    { prompt: "Password spray or targeted brute force?", accept: ["spray"] },
+    { prompt: "From the log: password spray or targeted brute force?", accept: ["spray"] },
   ],
   "rogue-admin": () => [
     { prompt: "Which account was added to IT Admins?", accept: ["svc.helpdesk", "svc helpdesk", "helpdesk"] },
-    { prompt: "Remove it from the group or delete the account?", accept: ["remove"] },
     { prompt: "Which event ID will record you taking it out of the group?", accept: ["4729"] },
   ],
   "false-alarm": () => [
@@ -1025,53 +1046,54 @@ const ASK: Record<string, (x: AskCtx) => Question[]> = {
   "compromised-account": () => [
     { prompt: "Which event ID records the failed attempts before the success?", accept: ["4625"] },
     { prompt: "What logon type did the sign-ins use?", accept: ["3", "network"] },
-    { prompt: "Disable the account or only reset its password?", accept: ["disable"] },
+    { prompt: "How many failed sign-ins came before the success?", accept: ["4", "four"] },
   ],
   "weak-policy": () => [
     { prompt: "What minimum password length was the policy set to?", accept: ["4", "four"] },
     { prompt: "What lockout threshold was the policy set to?", accept: ["0", "zero", "none", "no lockout", "never"] },
     { prompt: "Was password complexity left on or turned off?", accept: ["off", "disabled"] },
   ],
-  "wrong-disable": () => [
-    { prompt: "Which event ID records an account being disabled?", accept: ["4725"] },
-    { prompt: "Unlock, enable or reset: which one gives access back here?", accept: ["enable"] },
+  "wrong-disable": ({ v }) => [
+    { prompt: "Which event ID records the account being disabled?", accept: ["4725"] },
     { prompt: "Which event ID will record you turning the account back on?", accept: ["4722"] },
+    titleQ(v, "taylor.osei"),
   ],
   "preauth-exposure": () => [
-    { prompt: "Which attack does this setting expose the account to?", accept: ["as-rep", "asrep", "as rep"] },
     { prompt: "Which account option is checked? Give its name.", accept: ["not require kerberos", "preauth", "pre-auth", "preauthentication"] },
     { prompt: "Which event ID records the change to the account?", accept: ["4738"] },
   ],
-  "access-request": () => [
-    { prompt: "On which tab in Active Directory Users and Computers do you add the group?", accept: ["member of", "memberof"] },
+  "access-request": ({ v }) => [
     { prompt: "Which event ID will record the user being added?", accept: ["4728"] },
+    { prompt: "What is the Compliance Users group's scope?", accept: ["global"] },
+    titleQ(v, "priya.nair"),
   ],
-  offboarding: () => [
-    { prompt: "Disable or delete a leaver's account?", accept: ["disable"] },
+  offboarding: ({ v }) => [
     { prompt: "Which event ID will record the account being disabled?", accept: ["4725"] },
+    { prompt: "Which OU is the leaver's account in? Name the department OU.", accept: [DEPT_OU[(v ?? ROSTER.find((s) => s.sam === "jordan.ellis")!).dept].toLowerCase(), (v ?? ROSTER.find((s) => s.sam === "jordan.ellis")!).dept.toLowerCase()] },
+    titleQ(v, "jordan.ellis"),
   ],
-  "pwd-notreqd": () => [
+  "pwd-notreqd": ({ v }) => [
     { prompt: "Which event ID records the change to the account?", accept: ["4738"] },
-    { prompt: "Which Get-ADUser property finds every account with this flag?", accept: ["passwordnotrequired"] },
+    titleQ(v, "priya.nair"),
   ],
   delegation: () => [
-    { prompt: "Unconstrained or constrained delegation?", accept: ["unconstrained"] },
+    { prompt: "On the Delegation tab: unconstrained or constrained delegation?", accept: ["unconstrained"] },
     { prompt: "Which userAccountControl flag is set?", accept: ["trusted_for_delegation", "trusted for delegation"] },
     { prompt: "Which event ID records the change to the account?", accept: ["4738"] },
   ],
-  "pwd-expired": () => [
+  "pwd-expired": ({ v }) => [
     { prompt: "Which attribute was set to 0 to force the expiry?", accept: ["pwdlastset", "pwd last set", "password last set"] },
-    { prompt: "Which Account tab option does a pwdLastSet of 0 show as checked?", accept: ["next logon", "must change", "change password at next"] },
-    { prompt: "Which event ID records an admin resetting the password?", accept: ["4724"] },
+    { prompt: "Which event ID will record you resetting the password?", accept: ["4724"] },
+    titleQ(v, "jordan.ellis"),
   ],
   "wrong-ou": ({ v, args }) => [
     { prompt: "Which OU is the account sitting in now?", accept: ["departments"] },
     { prompt: "Which department's Users OU should it be in?", accept: [args.OU ?? "Compliance", v?.dept ?? "Compliance"].map((s) => s.toLowerCase()) },
     { prompt: "What note was left in the account's Notes field?", accept: ["ou review pending", "review pending"] },
   ],
-  "never-expires": () => [
+  "never-expires": ({ v }) => [
     { prompt: "Which event ID records the change to the account?", accept: ["4738"] },
-    { prompt: "Which Get-ADUser property finds every account with this flag?", accept: ["passwordneverexpires"] },
+    titleQ(v, "sam.whitfield"),
   ],
   "rogue-computer": () => [
     { prompt: "Which OU did the machine appear in?", accept: ["workstations"] },
@@ -1079,20 +1101,19 @@ const ASK: Record<string, (x: AskCtx) => Question[]> = {
     { prompt: "Which event ID records a computer account being created?", accept: ["4741"] },
   ],
   "audit-disabled": () => [
-    { prompt: "Which command shows the current audit policy?", accept: ["auditpol"] },
+    { prompt: "What is Special Logon auditing set to now?", accept: ["no auditing", "none", "off", "disabled"] },
     { prompt: "Which event ID does Special Logon write when an admin signs in?", accept: ["4672"] },
   ],
   "reversible-enc": () => [
-    { prompt: "Does turning the setting off clear passwords already stored that way? Answer yes or no.", accept: ["no"] },
     { prompt: "Which policy holds this setting for the whole domain?", accept: ["default domain policy", "default domain password policy", "addefaultdomainpasswordpolicy"] },
   ],
   kerberoast: () => [
     { prompt: "What is the SPN value on the account?", accept: ["http/purvex-reports"] },
-    { prompt: "Which command lists an account's SPNs?", accept: ["setspn"] },
+    { prompt: "Which service class does the SPN use?", accept: ["http"] },
   ],
-  "domain-admins": () => [
-    { prompt: "Remove it from the group or delete the account?", accept: ["remove"] },
+  "domain-admins": ({ v }) => [
     { prompt: "Which event ID will record you taking it out of Domain Admins?", accept: ["4729"] },
+    titleQ(v, "taylor.osei"),
   ],
   "backdoor-account": () => [
     { prompt: "Which event ID records a new user account?", accept: ["4720"] },
@@ -1100,28 +1121,30 @@ const ASK: Record<string, (x: AskCtx) => Question[]> = {
   ],
   "targeted-bruteforce": () => [
     { prompt: "Which event ID marks the lockout?", accept: ["4740"] },
-    { prompt: "How many accounts were targeted?", accept: ["1", "one", "single"] },
+    { prompt: "From the log: how many accounts were targeted?", accept: ["1", "one", "single"] },
     { prompt: "Which event ID records each failed guess?", accept: ["4625"] },
   ],
   "admin-pso": () => [
-    { prompt: "When two PSOs apply, does the lower or higher precedence number win?", accept: ["lower", "lowest"] },
-    { prompt: "Which console creates a PSO without PowerShell?", accept: ["administrative center", "adac"] },
+    { prompt: "Which group did you apply the PSO to?", accept: ["it admins"] },
   ],
-  "dept-transfer": () => [
-    { prompt: "On which tab in Active Directory Users and Computers do you see their groups?", accept: ["member of", "memberof"] },
+  "dept-transfer": ({ v }) => [
     { prompt: "Which event ID will record the old group coming off?", accept: ["4729"] },
+    { prompt: "Which event ID will record the new group going on?", accept: ["4728"] },
+    titleQ(v, "devon.brooks"),
   ],
   "threat-hunt-spn": () => [
     { prompt: "What is the SPN value on the account you found?", accept: ["http/purvex-reports"] },
-    { prompt: "Which Get-ADUser property do you filter on?", accept: ["serviceprincipalname"] },
+    { prompt: "Which service class does the SPN use?", accept: ["http"] },
   ],
 };
 
-/** Every question an incident can ask this shift: the template's own, then its pool. */
+/** Every question an incident can ask this shift: its own (unless it can be
+ *  answered from memory), then its pool. All of them are read off the lab. */
 export function questionsFor(def: IncidentDef, bind?: Bind): Question[] {
   const args = bind?.args ?? {};
   const v = ROSTER.find((s) => s.sam === args.Sam) ?? null;
-  return [bind?.diagnosis ?? def.diagnosis, ...(ASK[def.id]?.({ v, args }) ?? [])];
+  const own = FROM_MEMORY.has(def.id) ? [] : [bind?.diagnosis ?? def.diagnosis];
+  return [...own, ...(ASK[def.id]?.({ v, args }) ?? [])];
 }
 
 const byId = new Map(INCIDENTS.map((i) => [i.id, i]));

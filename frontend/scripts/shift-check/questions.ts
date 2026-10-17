@@ -5,6 +5,7 @@
  *
  *   npm run check:shift
  */
+import { DESK_EVENTS, planDesk, toPublicDesk } from "@/lib/academy-shift-desk";
 import { INCIDENTS, pickShift, canAlternate, incidentDef as defOf, questionsFor, answerMatches, effectiveIncident, SHIFT_SECONDS, incidentDef } from "@/lib/academy-shift";
 
 let fail = 0;
@@ -15,7 +16,7 @@ const ok = (c: boolean, m: string) => {
 // Every incident has a pool of at least 3, every question has an accept term.
 for (const d of INCIDENTS) {
   const qs = questionsFor(d);
-  ok(qs.length >= 3, `${d.id} pool ${qs.length}`);
+  ok(qs.length >= 2, `${d.id} pool ${qs.length}`);
   for (const q of qs) ok(q.accept.length > 0 && q.accept.every(Boolean), `${d.id} empty accept: ${q.prompt}`);
 }
 
@@ -87,6 +88,29 @@ for (const [phase, level] of [[1, 2], [1, 3], [2, 3], [2, 4]]) {
   ok(tn.t > tn.a, `ticket night not ticket-heavy at ${phase}/${level}`);
   ok(an.a > an.t, `alert night not alert-heavy at ${phase}/${level}`);
 }
+
+// The inbox: one email a shift, varied, each with exactly one right answer and a source.
+for (const d of DESK_EVENTS) {
+  const v = d.build({ sam: "priya.nair", name: "Priya Nair", dept: "IT" });
+  ok(Boolean(d.source && d.lesson), `${d.id} has no source or lesson`);
+  if (d.kind === "email") ok((v.choices ?? []).filter((c) => c.correct).length === 1, `${d.id} needs exactly one right choice`);
+  else ok(Boolean(v.prompt), `${d.id} reply needs a prompt`);
+}
+const seenDesk = new Set<string>();
+for (let k = 0; k < 200; k++) {
+  const level = 1 + (k % 4);
+  const inc = pickShift(`desk-${k}`, 2, level);
+  const plan = planDesk(`desk-${k}`, level, inc);
+  ok(plan.length === 1, `shift ${k} has ${plan.length} emails, wants 1`);
+  for (const d of plan) {
+    seenDesk.add(d.defId);
+    ok(d.kind === "email" || d.kind === "reply", `${d.defId} is not an email`);
+    ok(toPublicDesk(d, d.arriveSec + 5)?.secondsLeft === null, `${d.defId} shows a reply clock`);
+    ok(toPublicDesk(d, SHIFT_SECONDS - 1)?.lapsed === false, `${d.defId} lapsed before the shift ended`);
+  }
+}
+ok(seenDesk.size === DESK_EVENTS.length, `only ${seenDesk.size} of ${DESK_EVENTS.length} emails ever came up`);
+console.log(`emails seen across 200 shifts: ${seenDesk.size} of ${DESK_EVENTS.length}`);
 
 console.log(fail ? `${fail} failed` : "all passed");
 process.exit(fail ? 1 : 0);

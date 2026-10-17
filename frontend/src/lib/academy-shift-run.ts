@@ -441,7 +441,7 @@ export async function answerDesk(userId: string, uid: string, choice: string, te
   if (d.answeredAtSec !== null) return { error: "You already answered that." };
   if (deskLapsed(d, elapsed)) return { error: "Too late, they have moved on." };
 
-  if (d.kind === "ping") {
+  if (d.kind === "reply") {
     const line = text.replace(/\s+/g, " ").trim().slice(0, 280);
     if (!line) return { error: "Write your one-line status first." };
     const open = run.incidents
@@ -599,9 +599,10 @@ function buildReport(run: ShiftRun): ShiftReport {
   });
   // Said last, so a desk mistake outranks the generic advice: these are the
   // habits that cost most on a real desk and never show up in a lab check.
-  const callWrong = deskRuns.find((d) => d.defId === "mfa-call" && d.answeredAtSec !== null && (d.score ?? 0) === 0);
+  const emailWrong = deskRuns.find((d) => d.kind === "email" && d.answeredAtSec !== null && (d.score ?? 0) === 0);
   if (order.misses.length) habit = "You opened lower-severity work while a higher one waited. Scan the queue and open the P1 first, every time.";
-  if (callWrong) habit = "A caller talked you into the wrong move. Never change MFA or a password on an inbound call: call back on the number already on file.";
+  // The email's own lesson is the habit: it is the one thing the inbox taught.
+  if (emailWrong) habit = `The email talked you into the wrong move. ${toPublicDesk(emailWrong, end)?.verdict?.lesson ?? "Verify through what is already on file before you act on a request."}`;
   return {
     totalScore: run.totalScore ?? 0,
     maxScore: run.maxScore ?? 0,
