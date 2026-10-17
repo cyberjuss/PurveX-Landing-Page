@@ -1234,6 +1234,9 @@ export type ShiftRun = {
   phase: number;
   level: number;
   incidents: IncidentRun[];
+  /** The desk around the incidents: a caller, a status request, an urgent ask.
+   *  Optional so a run saved before the desk existed still loads. */
+  desk?: import("@/lib/academy-shift-desk").DeskRun[];
   status: "active" | "done";
   finishedAt?: string;
   totalScore?: number;

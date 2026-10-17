@@ -37,18 +37,19 @@ export function modeFromReport(results: Results): CoachMode {
  * The lab or challenge tab the student has open, if any. A browser lab also
  * names its widget, and "at" says where in it they are (step, card, task).
  */
-export type CoachPlace = { kind: "lab" | "challenge"; title: string; lab?: LabWidget; at?: string };
+export type CoachPlace = { kind: "lab" | "challenge" | "shift"; title: string; lab?: LabWidget; at?: string };
 
 const clean = (v: string, max: number) => v.replace(/\s+/g, " ").trim().slice(0, max);
 
 export function parseCoachPlace(value: unknown): CoachPlace | null {
   const v = value as Partial<CoachPlace> | null;
-  if (!v || (v.kind !== "lab" && v.kind !== "challenge") || typeof v.title !== "string") return null;
+  if (!v || (v.kind !== "lab" && v.kind !== "challenge" && v.kind !== "shift") || typeof v.title !== "string") return null;
   const title = clean(v.title, 120);
   if (!title) return null;
   const place: CoachPlace = { kind: v.kind, title };
   if (v.kind === "lab" && isBrowserLab(v.lab)) place.lab = v.lab;
   if (place.lab && typeof v.at === "string" && clean(v.at, 200)) place.at = clean(v.at, 200);
+  if (place.kind === "shift" && typeof v.at === "string" && clean(v.at, 200)) place.at = clean(v.at, 200);
   return place;
 }
 
@@ -57,6 +58,7 @@ export function parseCoachPlace(value: unknown): CoachPlace | null {
 // interviewer role.
 export function socraticInstructions(place: CoachPlace | null, mode: CoachMode): string {
   if (!place || mode === "interview") return "";
+  if (place.kind === "shift") return shiftInstructions(place);
   return `Where they are: the ${place.kind} "${place.title}".
 ${socraticRules(`this ${place.kind}`)}`;
 }
@@ -235,4 +237,22 @@ export function interviewStarters(results: Results): CoachStarter[] {
     });
   }
   return lines.slice(0, 4);
+}
+
+/**
+ * On Shift the Coach is the senior analyst at the next desk: on the student's
+ * side, short with them because the clock is running, and never doing the
+ * work for them. A live incident is graded on what they find, so the answer
+ * stays theirs. A desk event (a caller, a status request) is coached on the
+ * principle, not the option to click.
+ */
+function shiftInstructions(place: CoachPlace): string {
+  return `Where they are: on a live Shift, working "${place.title}"${place.at ? ` (${place.at})` : ""}. A real clock is running.
+You are the senior analyst at the next desk. Be brief: 2 to 4 short paragraphs at most.
+- Help them decide what to look at next: the queue order (P1 before P2 before P3), which console, which event ID or attribute.
+- Never state an open incident's finding (the account, the count, the group, the event) or do the fix for them. Name where to look and ask what they see.
+- If they ask about a caller asking for a password or MFA reset: the rule is never to change it on an inbound call; verify through contact details already on the account, and the owner is notified. Coach the principle, do not pick an option for them.
+- If they ask about a status update: one line, naming the incident, where it stands and what is next.
+- If they are stuck on whether to escalate: escalate what is above their access or needs another team, with what they found, who and what is affected, and what they already contained.
+- End with the single next thing to check.`;
 }

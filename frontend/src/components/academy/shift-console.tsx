@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { startHostedLabNow, useHostedLab } from "@/components/academy/hosted-lab-button";
+import { DeskLayer, DeskSummary, type DeskEvent, type DeskReport } from "./shift-desk";
+import { useCoach } from "./coach-context";
 import "./shift.css";
 
 type Sev = "P1" | "P2" | "P3";
@@ -48,7 +50,7 @@ type Report = {
   habit: string;
   escalatedCount: number;
   incidents: { title: string; severity: string; resolved: boolean; escalated: boolean; touched: boolean; onTime: boolean; noHarm: boolean; diagnosisRight: boolean; hintsUsed: number; score: number; max: number }[];
-};
+} & Partial<DeskReport>;
 type Shift = {
   id: string;
   startedAt: string;
@@ -57,6 +59,8 @@ type Shift = {
   level: number;
   status: "active" | "done";
   incidents: Incident[];
+  /** Calls, status requests and urgent asks that have arrived. */
+  desk?: DeskEvent[];
   report: Report | null;
 };
 type LabState = "none" | "starting" | "ready" | "stopping" | "stopped";
@@ -370,6 +374,17 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = queue.find((i) => i.uid === selectedId) ?? queue.find((i) => !done(i)) ?? queue[0] ?? null;
 
+  // Coach knows which incident is open, so "help me" means this one, and it
+  // coaches as the senior analyst at the next desk without doing the work.
+  const { setPlace } = useCoach();
+  const placeTitle = selected ? `${selected.severity} ${selected.title}` : "the queue";
+  useEffect(() => {
+    setPlace({ kind: "shift", title: placeTitle, at: `${handled} of ${total} closed, ${clock(left)} left on the shift` });
+    // Only the incident in focus changes what Coach should know; the clock is context.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [placeTitle, setPlace]);
+  useEffect(() => () => setPlace(null), [setPlace]);
+
   return (
     <div className="shift-app" data-academy-theme={theme}>
       <header className="sh-top">
@@ -472,6 +487,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
 
         <main className="sh-main">
           {error && <p className="sh-error">{error}</p>}
+          <DeskLayer desk={shift.desk ?? []} now={now} busy={busy} post={post} />
           {selected ? (
             <IncidentDetail key={selected.uid} inc={selected} no={numOf.get(selected.uid) ?? ""} start={start} now={now} busy={busy} post={post} />
           ) : (
@@ -494,6 +510,7 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
   // on the first click.
   const [confirming, setConfirming] = useState(false);
   const hasFinding = diagnosis.trim().length > 0;
+  const { ask } = useCoach();
 
   const deadlineAt = start + (inc.arriveSec + inc.deadlineSec) * 1000;
   const left = inc.resolved ? null : Math.max(0, Math.round((deadlineAt - now) / 1000));
@@ -659,6 +676,17 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
               >
                 <ArrowUpRight className="h-4 w-4" /> Escalate
               </button>
+              <button
+                type="button"
+                className="sh-coach sh-coach--talk"
+                onClick={() =>
+                  ask(
+                    `I'm on shift working ${inc.severity} "${inc.title}". ${inc.brief} ${diagnosis.trim() ? `So far I think: ${diagnosis.trim()}.` : "I haven't found the evidence yet."} Help me decide what to check next, without giving me the answer.`
+                  )
+                }
+              >
+                Talk it through
+              </button>
               {inc.nextHintCostPct !== null && (
                 <button type="button" className="sh-coach" disabled={busy} onClick={coach}>
                   <LifeBuoy className="h-3.5 w-3.5" /> Ask Coach (−{inc.nextHintCostPct}%)
@@ -720,6 +748,14 @@ function ShiftReport({ theme, report, onAgain, busy, error }: { theme: "light" |
             </div>
           ))}
         </div>
+
+        {report.metrics && report.triage && report.desk && report.timeline && (
+          <DeskSummary
+            r={{ metrics: report.metrics, triage: report.triage, desk: report.desk, timeline: report.timeline }}
+            headline={report.headline}
+            totals={`${report.totalScore} of ${report.maxScore} points, ${report.resolvedCount} of ${report.incidents.length} closed, ${report.onTimeCount} within SLA`}
+          />
+        )}
 
         <p className="sh-report__habit"><strong>One habit to work on:</strong> {report.habit}</p>
         <div className="sh-report__actions">

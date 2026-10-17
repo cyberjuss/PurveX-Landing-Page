@@ -7,6 +7,21 @@ import type { Results, Skill } from "@/lib/academy-score";
 import { loadDrills, loadLabState, loadProfile, loadProgress, loadShift, saveDrill, saveShift } from "@/lib/academy-store";
 import { SHIFT_JOB } from "@/lib/academy-proof";
 import {
+  deskArrived,
+  deskLapsed,
+  deskMax,
+  deskScore,
+  gradeChoice,
+  gradeStatus,
+  planDesk,
+  shiftMetrics,
+  shiftTimeline,
+  toPublicDesk,
+  triage,
+  type PublicDesk,
+  type TimelineItem,
+} from "@/lib/academy-shift-desk";
+import {
   effectiveIncident,
   gradeIncidentLab,
   HINT_COST,
@@ -82,6 +97,11 @@ export type ShiftReport = {
   incidents: IncidentReport[];
   headline: string;
   habit: string;
+  /** The desk around the incidents, triage order, timing and the replay. */
+  desk: { title: string; correct: boolean; score: number; max: number; lesson: string }[];
+  triage: { score: number; max: number; misses: { opened: string; waiting: string; atSec: number }[] };
+  metrics: { timeToAckSec: number | null; timeToResolveSec: number | null; breaches: number; arrived: number };
+  timeline: TimelineItem[];
 };
 
 export type PublicShift = {
@@ -93,6 +113,7 @@ export type PublicShift = {
   level: number;
   status: "active" | "done";
   incidents: PublicIncident[];
+  desk: PublicDesk[];
   report: ShiftReport | null;
 };
 
@@ -156,6 +177,7 @@ function publicShift(run: ShiftRun, now = Date.now()): PublicShift {
     level: run.level,
     status: run.status,
     incidents: run.incidents.map((inc) => toPublic(run, inc, elapsed)).filter((x): x is PublicIncident => x !== null),
+    desk: (run.desk ?? []).map((d) => toPublicDesk(d, elapsed)).filter((x): x is PublicDesk => x !== null),
     report: run.status === "done" ? buildReport(run) : null,
   };
 }
@@ -235,6 +257,7 @@ export async function startShift(userId: string): Promise<{ shift?: PublicShift;
   const [entries, results, profile] = await Promise.all([loadDrills(userId), loadProgress(userId), loadProfile(userId)]);
   const roles = profile?.roles ?? [];
   const run = newShiftRun(`${userId}:${Date.now()}`, phaseFor(results), levelFor(entries), roles);
+  run.desk = planDesk(run.id, run.level, run.incidents);
   // Composing the shift (Claude's wording) takes a few seconds; don't let that
   // eat the clock. Stamp the start once setup is done, so the timer begins when
   // the student actually sees the queue.
@@ -366,6 +389,45 @@ export async function submitIncident(
   };
 }
 
+// ---- the desk: calls, status requests, urgent asks -------------------------
+
+/**
+ * Answer a desk event. A call or an urgent ask takes a choice; a status
+ * request takes a line of text, graded against the incidents open right now.
+ * One answer each, and only while it is open: a caller who has hung up has
+ * hung up. Returns the shift, whose desk entry now carries the verdict and the
+ * reasoning behind every option.
+ */
+export async function answerDesk(userId: string, uid: string, choice: string, text: string): Promise<PublicShift | { error: string }> {
+  const run = await loadShift(userId);
+  if (!run || run.status !== "active" || shiftOver(run)) return { error: "Your shift is not running." };
+  const d = (run.desk ?? []).find((x) => x.uid === uid);
+  const elapsed = shiftElapsed(run);
+  if (!d || !deskArrived(d, elapsed)) return { error: "That has not come in yet." };
+  if (d.answeredAtSec !== null) return { error: "You already answered that." };
+  if (deskLapsed(d, elapsed)) return { error: "Too late, they have moved on." };
+
+  if (d.kind === "ping") {
+    const line = text.replace(/\s+/g, " ").trim().slice(0, 280);
+    if (!line) return { error: "Write your one-line status first." };
+    const open = run.incidents
+      .filter((i) => incidentArrived(i, elapsed) && i.resolvedAtSec === null && i.escalatedAtSec == null)
+      .map((i) => {
+        const def = incidentDef(i.defId);
+        const who = i.bind?.args ? Object.values(i.bind.args).map(String).find((v) => v.includes(".")) : undefined;
+        return { title: i.text?.title ?? def?.title ?? i.defId, severity: i.severity, who };
+      });
+    const g = gradeStatus(line, open);
+    Object.assign(d, { text: line, score: g.score, hits: g.hits, misses: g.misses, answeredAtSec: elapsed });
+  } else {
+    const g = gradeChoice(d.defId, d.who, choice);
+    if (!g) return { error: "Pick one of the options." };
+    Object.assign(d, { choice, score: g.score, answeredAtSec: elapsed });
+  }
+  await saveShift(userId, run);
+  return publicShift(run);
+}
+
 // ---- grading at the end ---------------------------------------------------
 
 async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
@@ -410,8 +472,12 @@ async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
     inc.score = scoreIncident(def, { resolved: closed, onTime, noHarm: lg.noHarm, diagnosisRight: lg.diagnosisRight, writeUp, touched }, inc.hintsUsed);
   }
 
-  run.totalScore = run.incidents.reduce((s, i) => s + (i.score ?? 0), 0);
-  run.maxScore = run.incidents.reduce((s, i) => s + (incidentDef(i.defId)?.points ?? 0), 0);
+  // The desk and the order of work count too: the call handled right, the
+  // status given, and the P1 worked before the P3.
+  const desk = run.desk ?? [];
+  const order = triage(run.incidents);
+  run.totalScore = run.incidents.reduce((s, i) => s + (i.score ?? 0), 0) + deskScore(desk) + (run.incidents.length ? order.score : 0);
+  run.maxScore = run.incidents.reduce((s, i) => s + (incidentDef(i.defId)?.points ?? 0), 0) + deskMax(desk) + (run.incidents.length ? order.max : 0);
   run.status = "done";
   run.finishedAt = new Date().toISOString();
   return run;
@@ -452,7 +518,42 @@ function buildReport(run: ShiftRun): ShiftReport {
   const workedCount = incidents.filter((i) => i.touched).length;
   if (!workedCount && incidents.length) habit = "Nothing on the queue was worked. Open the top incident, find the evidence, and write what you found before the clock runs out.";
   else if (workedCount < incidents.length / 2) habit = "Most of the queue went untouched. Work them in severity order and put a finding against each one, even the ones you hand up.";
-  return { totalScore: run.totalScore ?? 0, maxScore: run.maxScore ?? 0, resolvedCount, escalatedCount, onTimeCount, incidents, headline, habit };
+  const end = run.finishedAt ? shiftElapsed(run, Date.parse(run.finishedAt)) : SHIFT_SECONDS;
+  const titleOf = (inc: IncidentRun) => inc.text?.title ?? incidentDef(inc.defId)?.title ?? inc.defId;
+  const byUid = new Map(run.incidents.map((i) => [i.uid, i]));
+  const order = triage(run.incidents);
+  const deskRuns = run.desk ?? [];
+  const desk = deskRuns.map((d) => {
+    const pub = toPublicDesk(d, end);
+    return { title: pub?.title ?? d.defId, correct: Boolean(pub?.verdict?.correct), score: d.score ?? 0, max: pub?.verdict?.max ?? 0, lesson: pub?.verdict?.lesson ?? "" };
+  });
+  // Said last, so a desk mistake outranks the generic advice: these are the
+  // habits that cost most on a real desk and never show up in a lab check.
+  const callWrong = deskRuns.find((d) => d.defId === "mfa-call" && d.answeredAtSec !== null && (d.score ?? 0) === 0);
+  if (order.misses.length) habit = "You opened lower-severity work while a higher one waited. Scan the queue and open the P1 first, every time.";
+  if (callWrong) habit = "A caller talked you into the wrong move. Never change MFA or a password on an inbound call: call back on the number already on file.";
+  return {
+    totalScore: run.totalScore ?? 0,
+    maxScore: run.maxScore ?? 0,
+    resolvedCount,
+    escalatedCount,
+    onTimeCount,
+    incidents,
+    headline,
+    habit,
+    desk,
+    triage: {
+      score: run.incidents.length ? order.score : 0,
+      max: run.incidents.length ? order.max : 0,
+      misses: order.misses.map((m) => ({
+        opened: `${m.opened} ${titleOf(byUid.get(m.openedUid)!)}`,
+        waiting: `${m.waiting} ${titleOf(byUid.get(m.waitingUid)!)}`,
+        atSec: m.atSec,
+      })),
+    },
+    metrics: shiftMetrics(run.incidents, end),
+    timeline: shiftTimeline(run.incidents, deskRuns, titleOf, end),
+  };
 }
 
 async function recordAndClose(userId: string, run: ShiftRun) {

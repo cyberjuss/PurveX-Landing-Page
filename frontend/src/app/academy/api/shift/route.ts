@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { canUseHostedLab, hostedLabStatus } from "@/lib/academy-hosted";
-import { ackIncident, finishShift, getShift, hintIncident, startShift, submitIncident } from "@/lib/academy-shift-run";
+import { ackIncident, answerDesk, finishShift, getShift, hintIncident, startShift, submitIncident } from "@/lib/academy-shift-run";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const s = await student(request);
   if (!s) return NextResponse.json({ error: "Shifts need a hosted lab." }, { status: 403 });
-  let body: { action?: unknown; uid?: unknown; defId?: unknown; diagnosis?: unknown; response?: unknown; escalate?: unknown };
+  let body: { action?: unknown; uid?: unknown; defId?: unknown; diagnosis?: unknown; response?: unknown; escalate?: unknown; choice?: unknown; text?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -57,6 +57,10 @@ export async function POST(request: Request) {
       const r = await submitIncident(s.id, uid, String(body.diagnosis || ""), String(body.response || ""), body.escalate === true);
       if ("error" in r) return NextResponse.json({ error: r.error }, { status: 409 });
       return NextResponse.json({ result: r, shift: await getShift(s.id) });
+    }
+    if (action === "desk") {
+      const r = await answerDesk(s.id, uid, String(body.choice || ""), String(body.text || ""));
+      return "error" in r ? NextResponse.json({ error: r.error }, { status: 409 }) : NextResponse.json({ shift: r });
     }
     if (action === "finish") {
       const r = await finishShift(s.id);
