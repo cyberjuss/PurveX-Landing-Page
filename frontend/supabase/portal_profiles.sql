@@ -143,3 +143,15 @@ alter table public.license_issuance_queue enable row level security;
 create index if not exists license_issuance_queue_pending_idx
   on public.license_issuance_queue (created_at)
   where processed_at is null;
+
+-- Users may write only the columns that record their own choice of plan.
+-- The policies above let a signed-in user insert and update their own row,
+-- which on their own cover every column: payment confirmation, Stripe ids,
+-- the issued license key. Those are the server's to write (the Stripe webhook,
+-- through the service role, which these grants do not touch). Column grants
+-- narrow what the policies allow without changing who the row belongs to.
+-- user_id stays updatable because an upsert sets it, and the policy's check
+-- still pins it to the caller.
+revoke insert, update on public.portal_profiles from anon, authenticated;
+grant insert (user_id, email, plan, stripe_checkout_reference, updated_at) on public.portal_profiles to authenticated;
+grant update (user_id, email, plan, stripe_checkout_reference, updated_at) on public.portal_profiles to authenticated;

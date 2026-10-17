@@ -18,6 +18,14 @@ export const runtime = "nodejs";
 // be reviewed without sending. Visit /api/academy/email-preview?t=welcome
 // with any key from the `templates` map below. Sample data only, nothing real.
 export async function GET(request: Request) {
+  // Open in development; elsewhere only with the cron secret, so production
+  // does not publish every template the site can send.
+  if (process.env.NODE_ENV === "production") {
+    const secret = process.env.CRON_SECRET?.trim();
+    if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
+      return new Response("Not found", { status: 404 });
+    }
+  }
   const url = new URL(request.url);
   const t = url.searchParams.get("t") ?? "welcome";
   const o = url.origin;
