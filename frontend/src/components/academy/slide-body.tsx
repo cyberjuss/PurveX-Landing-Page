@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { marked, type Token, type Tokens } from "marked";
 import {
   Activity,
@@ -89,6 +89,7 @@ import { dropLonePeriod } from "@/lib/lone-period";
 import type { RecapItem } from "@/lib/lesson-deck";
 import { collect, has, loadDeck } from "@/lib/concept-review";
 import { confettiFrom } from "@/lib/confetti";
+import { drawOn } from "@/lib/draw-on";
 
 // First match wins, so the narrower words sit above the broader ones. Matched
 // against the plain text of one list item.
@@ -506,8 +507,15 @@ function FlipCards({ items, i, onReveal }: { items: Card[]; i: number; onReveal?
 // and card grid rises in a beat after the one before it.
 export function SlideBody({ markdown }: { markdown: string }) {
   const blocks = useMemo(() => toBlocks(markdown), [markdown]);
+  // Each card's icon draws itself in as its card arrives, in card order.
+  const flowRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    flowRef.current?.querySelectorAll(".lk-ico svg").forEach((svg, k) =>
+      drawOn(svg, { delay: 180 + Math.min(k, 6) * 70, stroke: 460, stagger: 60, budget: 240 })
+    );
+  }, [blocks]);
   return (
-    <div className="lk__flow">
+    <div className="lk__flow" ref={flowRef}>
       {blocks.map((b, i) => {
         const style = { ["--i" as string]: i };
         if (b.kind === "md") {

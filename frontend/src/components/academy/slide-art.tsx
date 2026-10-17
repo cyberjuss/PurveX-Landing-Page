@@ -6,7 +6,9 @@
 
 import { CARTOON_NAMES, CartoonArt, type Cartoon } from "./cartoon-art";
 import { EXPLAINER_NAMES, ExplainerArt, type Explainer } from "./explainer-art";
+import { useLayoutEffect, useRef } from "react";
 import { splitLessonIntoDeck } from "@/lib/lesson-deck";
+import { drawOn } from "@/lib/draw-on";
 
 export const SCENE_NAMES = [
   "lock",
@@ -169,8 +171,12 @@ export function pickScenes(
 const delay = (s: number) => ({ animationDelay: `${s}s` });
 
 export function SlideArt({ scene }: { scene: Scene }) {
+  // Each time a drawing appears (a new slide, or a replay) it sketches
+  // itself in before its loop takes over.
+  const ref = useRef<SVGSVGElement>(null);
+  useLayoutEffect(() => drawOn(ref.current, { delay: 120 }), [scene]);
   return (
-    <svg viewBox="0 0 200 200" className={`lka lka--${scene}`} aria-hidden focusable="false">
+    <svg ref={ref} viewBox="0 0 200 200" className={`lka lka--${scene}`} aria-hidden focusable="false">
       {isExplainer(scene) && <ExplainerArt scene={scene} />}
       {isCartoon(scene) && (
         <>

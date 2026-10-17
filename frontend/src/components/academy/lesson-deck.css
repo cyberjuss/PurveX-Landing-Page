@@ -1284,3 +1284,26 @@ button.lk__art { padding: 0; width: 100%; font: inherit; color: var(--rd-accent)
 .lk__progress button:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 1px; }
 @media (pointer: coarse) { .lk__progress button { width: 24px; padding: 18px 0; } .lk__progress button.is-here { width: 34px; } }
 @media (prefers-reduced-motion: reduce) { .lk__progress button::before { transition: none; } }
+
+/* ==== Duotone icons ====
+   Each card icon carries a soft fill of its own hue behind its outline, so
+   it reads as a small illustration rather than a line glyph. The fill
+   arrives as the outline finishes drawing (draw-on.ts). */
+.lk-ico svg { fill: color-mix(in srgb, var(--hue, var(--rd-accent)) 20%, transparent); }
+
+/* ==== Faces that react ====
+   Eyebrows move on the scene's beat: the analyst's shoot up when the alert
+   pops, the help desk tech's lift as the answer lands, the phished user
+   flinches as the hook swings in, the detective's rise on the clue. */
+.lkc-brows--alert { animation: lkc-brow-alert 3s ease infinite; }
+@keyframes lkc-brow-alert { 0%, 32%, 92%, 100% { transform: none; } 40%, 84% { transform: translateY(-3.5px); } }
+.lkc-brows--nod { animation: lkc-brow-nod 4s ease infinite; }
+@keyframes lkc-brow-nod { 0%, 48%, 92%, 100% { transform: none; } 54%, 86% { transform: translateY(-2.5px); } }
+.lkc-brows--start { animation: lkc-brow-start 3s ease infinite; animation-delay: 0.6s; }
+@keyframes lkc-brow-start { 0%, 30%, 100% { transform: none; } 38% { transform: translateY(-4px); } 46%, 88% { transform: translateY(-2.5px); } }
+.lkc-brows--clue { animation: lkc-brow-clue 3s ease infinite; }
+@keyframes lkc-brow-clue { 0%, 45%, 85%, 100% { transform: none; } 55%, 75% { transform: translateY(-3px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .lkc-brows--alert, .lkc-brows--nod, .lkc-brows--start, .lkc-brows--clue { animation: none; }
+}

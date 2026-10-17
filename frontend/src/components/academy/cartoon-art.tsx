@@ -22,6 +22,8 @@ function Face({
   long,
   look = 0,
   mouth = "smile",
+  brows = "calm",
+  browClass,
 }: {
   x: number;
   y: number;
@@ -30,12 +32,30 @@ function Face({
   long?: boolean;
   look?: number;
   mouth?: "smile" | "o" | "flat";
+  /** The eyebrows carry most of a face's feeling. */
+  brows?: "calm" | "up" | "worry" | "sly" | "focus";
+  /** An animation class, so a brow can react on the scene's beat. */
+  browClass?: string;
 }) {
+  const b = x + look;
+  const BROWS = {
+    calm: [`M${b - 9} ${y - 7} q3 -2.5 6 0`, `M${b + 3} ${y - 7} q3 -2.5 6 0`],
+    up: [`M${b - 9} ${y - 10} q3 -3 6 -0.5`, `M${b + 3} ${y - 10.5} q3 -2.5 6 0.5`],
+    worry: [`M${b - 9} ${y - 7} l6 -3`, `M${b + 3} ${y - 10} l6 3`],
+    sly: [`M${b - 9} ${y - 8} l6 1.5`, `M${b + 3} ${y - 10} q3 -2 6 0.5`],
+    focus: [`M${b - 9} ${y - 9} l6 2.5`, `M${b + 3} ${y - 6.5} l6 -2.5`],
+  }[brows];
   return (
     <g>
       {long && <path d={`M${x - 18} ${y - 2} q-2 28 6 34 h24 q8 -6 6 -34 z`} fill={hair} />}
       <circle cx={x} cy={y} r="16" fill={skin} />
       <path d={`M${x - 16} ${y - 2} a16 16 0 0 1 32 0 q-8 -9 -16 -7 q-8 -2 -16 7 z`} fill={hair} />
+      <path d={`M${x - 10} ${y - 11} q6 -5 13 -3.5`} stroke="#fff" strokeOpacity="0.28" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <g className={`lkc-brows${browClass ? ` ${browClass}` : ""}`}>
+        <path d={BROWS[0]} stroke={INK} strokeWidth="2" fill="none" strokeLinecap="round" />
+        <path d={BROWS[1]} stroke={INK} strokeWidth="2" fill="none" strokeLinecap="round" />
+      </g>
+      <path d={`M${b - 1.5} ${y + 3} q1.5 2 3 0`} stroke={INK} strokeOpacity="0.45" strokeWidth="1.5" fill="none" strokeLinecap="round" />
       <g className="lkc-eyes">
         <ellipse cx={x - 6 + look} cy={y + 1} rx="2" ry="2.6" fill={INK} />
         <ellipse cx={x + 6 + look} cy={y + 1} rx="2" ry="2.6" fill={INK} />
@@ -59,7 +79,13 @@ function Face({
 
 /** Shoulders and chest, from the neck down to `bottom`. */
 function Torso({ x, y, shirt, bottom }: { x: number; y: number; shirt: string; bottom: number }) {
-  return <path d={`M${x - 24} ${bottom} V${y + 40} q0 -22 24 -22 q24 0 24 22 V${bottom} z`} fill={shirt} />;
+  const d = `M${x - 24} ${bottom} V${y + 40} q0 -22 24 -22 q24 0 24 22 V${bottom} z`;
+  return (
+    <g>
+      <path d={d} fill={shirt} />
+      <path d={d} fill="url(#lkc-sheen)" />
+    </g>
+  );
 }
 
 function Arm({ d, shirt, hand, skin, className, style }: { d: string; shirt: string; hand: [number, number]; skin: string; className?: string; style?: React.CSSProperties }) {
@@ -72,6 +98,20 @@ function Arm({ d, shirt, hand, skin, className, style }: { d: string; shirt: str
 }
 
 export function CartoonArt({ scene }: { scene: Cartoon }) {
+  return (
+    <>
+      <defs>
+        <linearGradient id="lkc-sheen" x1="0" y1="0" x2="0.35" y2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity="0.3" />
+          <stop offset="0.55" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <Scene scene={scene} />
+    </>
+  );
+}
+
+function Scene({ scene }: { scene: Cartoon }) {
   switch (scene) {
     case "analyst":
       return (
@@ -90,7 +130,7 @@ export function CartoonArt({ scene }: { scene: Cartoon }) {
           </g>
           <g className="lkc-lean" style={pivot(60, 140)}>
             <Torso x={60} y={86} shirt="#7c6cf0" bottom={146} />
-            <Face x={60} y={86} skin={SKIN.tan} hair={HAIR.dark} look={2} />
+            <Face x={60} y={86} skin={SKIN.tan} hair={HAIR.dark} look={2} brows="focus" browClass="lkc-brows--alert" />
           </g>
           <rect className="lkc-key" x="92" y="138" width="44" height="6" rx="2" />
           <Arm className="lkc-type" style={pivot(78, 116)} d="M78 116 L100 136" shirt="#6a5ae0" hand={[100, 136]} skin={SKIN.tan} />
@@ -128,7 +168,7 @@ export function CartoonArt({ scene }: { scene: Cartoon }) {
         <>
           <rect className="lkc-desk" x="14" y="158" width="176" height="8" rx="3" />
           <Torso x={66} y={96} shirt="#0ea5e9" bottom={158} />
-          <Face x={66} y={96} skin={SKIN.brown} hair={HAIR.black} long look={2} />
+          <Face x={66} y={96} skin={SKIN.brown} hair={HAIR.black} long look={2} brows="calm" browClass="lkc-brows--nod" />
           <path d="M49 94 a17 17 0 0 1 34 0" stroke={INK} strokeWidth="3.5" fill="none" />
           <rect x="46" y="90" width="7" height="12" rx="3" fill={INK} />
           <path d="M50 102 q0 12 14 12" stroke={INK} strokeWidth="2.5" fill="none" strokeLinecap="round" />
@@ -148,7 +188,7 @@ export function CartoonArt({ scene }: { scene: Cartoon }) {
         <>
           <rect className="lkc-desk" x="14" y="160" width="176" height="8" rx="3" />
           <Torso x={58} y={100} shirt="#f59e0b" bottom={160} />
-          <Face x={58} y={100} skin={SKIN.light} hair={HAIR.auburn} look={3} mouth="o" />
+          <Face x={58} y={100} skin={SKIN.light} hair={HAIR.auburn} look={3} mouth="o" brows="worry" browClass="lkc-brows--start" />
           <rect className="lkc-screen" x="96" y="112" width="58" height="40" rx="4" />
           <path d="M104 120 h42 v24 h-42 z M104 120 l21 14 l21 -14" fill="none" stroke="#fde68a" strokeWidth="2.5" strokeLinejoin="round" />
           <rect className="lkc-desk" x="118" y="152" width="12" height="8" />
@@ -174,8 +214,7 @@ export function CartoonArt({ scene }: { scene: Cartoon }) {
             <path className="lkc-leg" style={pivot(70, 140)} d="M70 140 L66 168" stroke="#334155" strokeWidth="9" strokeLinecap="round" />
             <path className="lkc-leg lkc-leg--b" style={pivot(84, 140)} d="M84 140 L88 168" stroke="#334155" strokeWidth="9" strokeLinecap="round" />
             <rect x="54" y="92" width="46" height="52" rx="14" fill="#14b8a6" />
-            <Face x={77} y={74} skin={SKIN.deep} hair={HAIR.dark} look={-4} mouth="flat" />
-            <path d={`M64 64 l8 3 M90 64 l-8 3`} stroke={INK} strokeWidth="2" strokeLinecap="round" />
+            <Face x={77} y={74} skin={SKIN.deep} hair={HAIR.dark} look={-4} mouth="flat" brows="sly" />
             <rect x="92" y="104" width="32" height="26" rx="2" fill="#f59e0b" />
             <rect x="103" y="113" width="10" height="9" rx="1.5" fill={INK} />
             <path d="M105 113 v-3 a3 3 0 0 1 6 0 v3" stroke={INK} strokeWidth="2" fill="none" />
@@ -207,7 +246,7 @@ export function CartoonArt({ scene }: { scene: Cartoon }) {
           ))}
           <rect className="lkc-desk" x="132" y="114" width="6" height="56" />
           <Torso x={50} y={98} shirt="#10b981" bottom={176} />
-          <Face x={50} y={98} skin={SKIN.light} hair={HAIR.brown} long look={3} />
+          <Face x={50} y={98} skin={SKIN.light} hair={HAIR.brown} long look={3} brows="up" />
           <g className="lkc-point" style={pivot(68, 128)}>
             <path d="M68 128 L90 108" stroke="#059669" strokeWidth="9" strokeLinecap="round" />
             <path className="lkc-line" d="M92 106 L124 76" />
@@ -228,7 +267,7 @@ export function CartoonArt({ scene }: { scene: Cartoon }) {
           ))}
           <Torso x={64} y={100} shirt="#b08d57" bottom={180} />
           <path d="M64 124 v56" stroke="#8a6a3e" strokeWidth="3" />
-          <Face x={64} y={100} skin={SKIN.tan} hair={HAIR.brown} look={4} mouth="flat" />
+          <Face x={64} y={100} skin={SKIN.tan} hair={HAIR.brown} look={4} mouth="flat" brows="focus" browClass="lkc-brows--clue" />
           <ellipse cx="64" cy="86" rx="26" ry="5" fill="#5b4632" />
           <path d="M48 86 q2 -20 16 -20 q14 0 16 20 z" fill="#5b4632" />
           <rect x="48" y="80" width="32" height="4" fill="#2b2233" />
