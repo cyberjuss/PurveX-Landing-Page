@@ -2,7 +2,7 @@ import type { Results, Skill } from "@/lib/academy-score";
 
 export type MissionCatalogEntry = {
   id: string;
-  challenge: "day-one" | "ticket-queue" | "alert-queue" | "wire" | "crypto";
+  challenge: "day-one" | "ticket-queue" | "alert-queue" | "wire" | "crypto" | "client-data";
   title: string;
   prompt: string;
   skill: Skill;
@@ -271,6 +271,13 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "cry-04": { id: "cry-04", challenge: "crypto", title: "Cracking a Weak Hash", prompt: "Recover a password from its hash using the common-password list.", skill: "security" },
   "cry-05": { id: "cry-05", challenge: "crypto", title: "The Hash That Repeats", prompt: "Name the other account that reused the same password.", skill: "security" },
   "cry-06": { id: "cry-06", challenge: "crypto", title: "Containing the Unsigned Mirror", prompt: "Quarantine the unsigned mirror and name what a trustworthy build carries.", skill: "security" },
+  "cd-01": { id: "cd-01", challenge: "client-data", title: "Where the Numbers Live", prompt: "Find the file on the shares that holds client Social Security numbers.", skill: "security" },
+  "cd-02": { id: "cd-02", challenge: "client-data", title: "Counting the Book", prompt: "Count the clients in the client register.", skill: "security" },
+  "cd-03": { id: "cd-03", challenge: "client-data", title: "Waiting on Paperwork", prompt: "Count the KYC reviews still awaiting documents.", skill: "security" },
+  "cd-04": { id: "cd-04", challenge: "client-data", title: "One Signature on Every Payment", prompt: "Find who approved the vendor payments.", skill: "security" },
+  "cd-05": { id: "cd-05", challenge: "client-data", title: "The Batch That Did Not Balance", prompt: "Find the settlement batch that did not reconcile.", skill: "security" },
+  "cd-06": { id: "cd-06", challenge: "client-data", title: "Fingerprint the Register", prompt: "Take the SHA-256 hash of the client register.", skill: "security" },
+  "cd-07": { id: "cd-07", challenge: "client-data", title: "Who Can Read the Register", prompt: "Build a least-privilege reader group and name the group the share lets read it today.", skill: "accounts" },
 };
 
 export const CHALLENGE_PATHS: Record<
@@ -282,6 +289,7 @@ export const CHALLENGE_PATHS: Record<
   "alert-queue": { href: "/range/phase-2/week-2", tab: "the-2-am-login" },
   "wire": { href: "/range/phase-1/week-3", tab: "the-nightly-settlement-push" },
   "crypto": { href: "/range/phase-1/week-2", tab: "the-mirror-that-does-not-match" },
+  "client-data": { href: "/range/phase-1/home-lab-challenges", tab: "the-client-data-review" },
 };
 
 export function missionHref(id: string): string {
@@ -301,6 +309,7 @@ export function challengeFromMission(id: string): MissionCatalogEntry["challenge
   if (id.startsWith("tq-")) return "alert-queue";
   if (id.startsWith("cap-")) return "wire";
   if (id.startsWith("cry-")) return "crypto";
+  if (id.startsWith("cd-")) return "client-data";
   return MISSION_CATALOG[id]?.challenge ?? null;
 }
 
@@ -329,6 +338,7 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "alert-queue": "The 2 AM Login",
   "wire": "The Nightly Settlement Push",
   "crypto": "The Mirror That Does Not Match",
+  "client-data": "The Client Data Review",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {

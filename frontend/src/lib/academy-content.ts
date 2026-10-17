@@ -167,10 +167,11 @@ const phase1HomeLabs: HomeLabDef[] = [
   {
     slug: "home-lab-challenges",
     title: "Home Lab — Challenges",
-    summary: "A first day on the desk and a full ticket queue, graded against your own lab.",
+    summary: "A first day on the desk, a full ticket queue and a client data review, graded against your own lab.",
     sections: [
       { label: "Challenge: Operation Day One", file: "phase-1/home-lab-ad/ctf-challenge.md" },
       { label: "Challenge: Ticket Queue", file: "phase-1/home-lab-ad/ticket-queue-challenge.md" },
+      { label: "Challenge: The Client Data Review", file: "phase-1/home-lab-ad/client-data-challenge.md" },
     ],
   },
 ];
