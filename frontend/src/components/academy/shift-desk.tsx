@@ -45,16 +45,16 @@ const ICON = { email: Mail, reply: Mail } as const;
 const KIND = { email: "New email", reply: "New email" } as const;
 
 /** Shows the oldest desk event that still wants something from the student. */
-export function DeskLayer({ desk, now, busy, post }: { desk: DeskEvent[]; now: number; busy: boolean; post: Post }) {
+export function DeskLayer({ desk, now, busy, post, inline = false }: { desk: DeskEvent[]; now: number; busy: boolean; post: Post; inline?: boolean }) {
   const [seen, setSeen] = useState<Set<string>>(() => new Set());
   // The list holds only what has arrived, oldest first. One that lapsed before
   // the student saw it still shows, as Coach's note on what it was.
   const live = desk.find((d) => !seen.has(d.uid));
   if (!live) return null;
-  return <DeskCard key={live.uid} ev={live} now={now} busy={busy} post={post} onDone={() => setSeen((s) => new Set(s).add(live.uid))} />;
+  return <DeskCard key={live.uid} ev={live} now={now} busy={busy} post={post} inline={inline} onDone={() => setSeen((s) => new Set(s).add(live.uid))} />;
 }
 
-function DeskCard({ ev, now, busy, post, onDone }: { ev: DeskEvent; now: number; busy: boolean; post: Post; onDone: () => void }) {
+function DeskCard({ ev, now, busy, post, inline, onDone }: { ev: DeskEvent; now: number; busy: boolean; post: Post; inline: boolean; onDone: () => void }) {
   const [text, setText] = useState("");
   const [pick, setPick] = useState<string | null>(null);
   const { ask } = useCoach();
@@ -79,7 +79,7 @@ function DeskCard({ ev, now, busy, post, onDone }: { ev: DeskEvent; now: number;
   };
 
   return (
-    <aside className={`sdk sdk--${ev.kind}${fresh && !v ? " is-ringing" : ""}${v ? (v.correct ? " is-right" : " is-wrong") : ""}`} role="dialog" aria-label={ev.title}>
+    <aside className={`sdk sdk--${ev.kind}${inline ? " sdk--inline" : ""}${fresh && !v ? " is-ringing" : ""}${v ? (v.correct ? " is-right" : " is-wrong") : ""}`} role="dialog" aria-label={ev.title}>
       <header className="sdk__head">
         <span className="sdk__icon" aria-hidden>
           <Icon />

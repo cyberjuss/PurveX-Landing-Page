@@ -604,3 +604,97 @@
   .sh-toast, .sh-toast .sh-toast__icon, .sh-li--fresh, .sh-radar svg, .sh-empty__radar::before, .sh-empty__radar::after, .sh-empty__radar svg, .sh-resolved__seal { animation: none; }
   .sh-li:hover, .sh-next:hover:not(:disabled) { transform: none; }
 }
+
+/* ==========================================================================
+   Command center: queue | incident | rail. The rail holds what is coming in
+   (the inbox, the live feed) and who can help (Coach), beside the work rather
+   than on top of it. Below 1280px the rail folds away and the email floats
+   over the work as before.
+   ========================================================================== */
+.sh-rail { display: none; }
+@media (min-width: 1280px) {
+  .sh-body { grid-template-columns: 320px minmax(0, 1fr) 360px; }
+  .sh-deskfloat { display: none; }
+  .sh-toasts { left: calc(320px + 24px); }
+  .sh-rail {
+    display: flex; flex-direction: column; min-height: 0; overflow-y: auto;
+    border-left: 1px solid var(--rd-line); background: color-mix(in srgb, var(--rd-ink) 1.5%, var(--panel));
+  }
+  /* The incident reads top to bottom in the narrower middle: brief, then response. */
+  .sh-split { grid-template-columns: minmax(0, 1fr); }
+  .sh-detail__title { max-width: 32ch; }
+}
+@media (min-width: 1720px) {
+  .sh-split { grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); }
+  .sh-detail__title { max-width: none; }
+}
+
+.sh-rail__sec { flex: none; padding: 16px 18px 18px; border-bottom: 1px solid var(--rd-line); }
+/* The feed takes the room that is left, and the rail scrolls rather than
+   letting the feed run under the Coach card. */
+.sh-rail__sec--grow { flex: 1 0 auto; min-height: 160px; }
+.sh-rail__head {
+  display: flex; align-items: center; gap: 7px; margin: 0 0 12px;
+  font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.16em; text-transform: uppercase; color: var(--rd-ink-3);
+}
+.sh-rail__head svg { color: var(--rd-accent); }
+.sh-rail__badge { margin-left: auto; min-width: 20px; padding: 2px 6px; font-size: 11px; letter-spacing: 0; text-align: center; color: #fff; background: var(--rd-accent); animation: sh-bump 420ms var(--ax-ease, ease); }
+.shift-app[data-academy-theme="dark"] .sh-rail__badge { color: #0b0a12; }
+@keyframes sh-bump { 0% { transform: scale(1.4); } 100% { transform: none; } }
+.sh-rail__live { width: 7px; height: 7px; margin-left: auto; border-radius: 50%; background: var(--rd-good); box-shadow: 0 0 0 0 color-mix(in srgb, var(--rd-good) 60%, transparent); animation: sh-live 1.8s ease-out infinite; }
+@keyframes sh-live { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--rd-good) 55%, transparent); } 100% { box-shadow: 0 0 0 8px transparent; } }
+
+/* The inbox: the email card, docked. */
+.sh-inbox:empty::before {
+  content: "Inbox clear. New email lands here."; display: block; padding: 14px; font-size: 13px; color: var(--rd-ink-3);
+  box-shadow: inset 0 0 0 1px var(--rd-line); background-image: repeating-linear-gradient(135deg, transparent 0 8px, color-mix(in srgb, var(--rd-ink) 2.5%, transparent) 8px 9px);
+}
+.sdk.sdk--inline {
+  position: static; right: auto; bottom: auto; z-index: auto; width: auto; max-height: none; overflow: visible;
+  padding: 14px 14px 16px; background: var(--bg);
+}
+.sdk--inline .sdk__title { font-size: 15.5px; margin-top: 10px; }
+.sdk--inline .sdk__body { font-size: 13.5px; }
+.sdk--inline .sdk__choice { font-size: 13px; padding: 9px 11px; }
+.sdk--inline .sdk__icon { width: 34px; height: 34px; }
+.sdk--inline .sdk__foot { flex-direction: column; align-items: stretch; }
+.sdk--inline .sdk__foot .sdk__coach { align-self: flex-start; }
+
+/* The live feed: a timeline in the shift's own clock. */
+.sh-feed { list-style: none; margin: 0; padding: 0; position: relative; }
+.sh-feed::before { content: ""; position: absolute; left: 51px; top: 6px; bottom: 6px; width: 1px; background: var(--rd-line); }
+.sh-feed__item { position: relative; display: grid; grid-template-columns: 42px 18px minmax(0, 1fr); align-items: start; padding: 5px 0; animation: sh-feed-in var(--ax-dur-slow, 320ms) var(--ax-ease, ease) both; }
+@keyframes sh-feed-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.sh-feed__item time { padding-top: 2px; font: 600 11.5px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--rd-ink-3); font-variant-numeric: tabular-nums; }
+.sh-feed__dot { position: relative; z-index: 1; justify-self: center; width: 9px; height: 9px; margin-top: 5px; border-radius: 50%; background: var(--rd-ink-3); box-shadow: 0 0 0 3px var(--panel); }
+.sh-feed__item.is-p1 .sh-feed__dot { background: var(--rd-bad); }
+.sh-feed__item.is-p2 .sh-feed__dot { background: var(--rd-warn); }
+.sh-feed__item.is-good .sh-feed__dot { background: var(--rd-good); }
+.sh-feed__item.is-up .sh-feed__dot { background: var(--rd-warn); box-shadow: 0 0 0 3px var(--panel), inset 0 0 0 2px var(--panel); }
+.sh-feed__item.is-mail .sh-feed__dot { background: var(--rd-accent); }
+.sh-feed__item button, .sh-feed__item p {
+  display: grid; gap: 1px; margin: 0; padding: 0 0 0 4px; border: 0; background: none; text-align: left; font: inherit; color: inherit; min-width: 0;
+}
+.sh-feed__item button { cursor: pointer; }
+.sh-feed__item span { font-size: 11.5px; font-weight: 650; letter-spacing: 0.02em; color: var(--rd-ink-3); }
+.sh-feed__item.is-p1 span { color: var(--rd-bad); }
+.sh-feed__item.is-good span { color: var(--rd-good); }
+.sh-feed__item strong { font-size: 13px; font-weight: 600; line-height: 1.35; color: var(--rd-ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sh-feed__item button:hover strong { color: var(--rd-accent); }
+
+/* Coach, one click from wherever the student is. */
+.sh-coachcard { background: color-mix(in srgb, var(--rd-accent) 5%, transparent); }
+.sh-coachcard__text { margin: 0 0 12px; font-size: 13px; line-height: 1.55; color: var(--rd-ink-2); }
+.sh-coachcard__go {
+  display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 0; cursor: pointer;
+  font: inherit; font-size: 13px; font-weight: 650; color: var(--rd-accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 50%, transparent);
+  transition: background var(--ax-dur-fast) var(--ax-ease);
+}
+.sh-coachcard__go:hover { background: color-mix(in srgb, var(--rd-accent) 12%, transparent); }
+.sh-coachcard__go svg { transition: transform var(--ax-dur) var(--ax-ease); }
+.sh-coachcard__go:hover svg { transform: translateX(3px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sh-rail__badge, .sh-rail__live, .sh-feed__item { animation: none; }
+}
