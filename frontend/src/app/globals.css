@@ -2880,6 +2880,25 @@ body:has(.lp) {
 .academy-prose blockquote p { margin: 0.3rem 0; }
 .academy-prose code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85em; background: var(--pvrx-surface-alt-light); border: 1px solid var(--pvrx-border-light); border-radius: 4px; padding: 0.1em 0.4em; }
 .academy-prose pre { margin: 1rem 0; padding: 0.9rem 1rem; background: #0c1220; border: 1px solid rgba(255,255,255,0.1); overflow-x: auto; }
+/* What a command's parts do, read down the left in one pass. Two columns so
+   the flags line up, and no rules or boxes: the alignment carries it. */
+.academy-prose .ad-flags__lead {
+  margin: 1.1rem 0 0.5rem; font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--pvrx-text-muted-light, #64748b);
+}
+.academy-prose ul.ad-flags { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 0.5rem 1rem; margin: 0 0 1.1rem; padding: 0; list-style: none; }
+.academy-prose ul.ad-flags > li { display: contents; margin: 0; }
+.academy-prose ul.ad-flags > li > code { align-self: start; justify-self: start; white-space: nowrap; }
+.academy-prose ul.ad-flags > li > em {
+  align-self: start; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.78em; font-style: normal;
+  font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pvrx-text-muted-light, #64748b);
+}
+.academy-prose ul.ad-flags > li > span { align-self: start; }
+@media (max-width: 560px) {
+  .academy-prose ul.ad-flags { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
+  .academy-prose ul.ad-flags > li { display: grid; gap: 0.15rem; margin: 0 0 0.6rem; }
+}
 .academy-prose p.ad-cmd { margin: 0.85rem 0; }
 .academy-prose p.ad-cmd > code {
   display: block; box-sizing: border-box; width: 100%;
@@ -3583,6 +3602,24 @@ body:has(.lp) {
 .ad-hint-card__body br { display: block; content: ""; margin-top: 0.55rem; }
 .ad-hint-card__body p { margin: 0.7rem 0 0; }
 .ad-hint-card__body p:first-child { margin-top: 0; }
+/* Pinned under the hint, because somebody still stuck is at the bottom of
+   it by then, and the alternative was closing this to go and find the
+   coach. flex: 1 on the body above keeps it there however short the hint. */
+.ad-hint-card__foot {
+  flex: 0 0 auto; padding: 14px 20px 18px;
+  border-top: 1px solid var(--rd-line, #e2e8f0);
+  display: flex;
+}
+.ad-hint-card__coach {
+  appearance: none; -webkit-appearance: none; width: 100%;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 38px; padding: 0 14px; border-radius: 9px; cursor: pointer;
+  font-size: 0.85rem; font-weight: 650;
+  color: #fff; background: var(--rd-accent, #6a5cff); border: 1px solid transparent;
+}
+.ad-hint-card__coach:hover { opacity: 0.9; }
+/* The panel is white in both themes except when the shell says dark. */
+.ad-hint-card[data-academy-theme="dark"] .ad-hint-card__foot { border-top-color: var(--rd-line-dark, #223047); }
 .ad-hint-card__body ul, .ad-hint-card__body ol { margin: 0.4rem 0 0; padding-left: 1.2rem; }
 .ad-hint-card__body li { margin: 0.32rem 0; }
 .ad-hint-card__body code {
@@ -3590,8 +3627,12 @@ body:has(.lp) {
   background: var(--pvrx-surface-alt-light, #f1f5f9); border: 1px solid var(--pvrx-border-light, #e2e8f0);
   border-radius: 4px; padding: 0.08em 0.35em;
 }
+/* 2.9rem everywhere the button appears: a 28px square, its 7px of offset,
+   and room to spare. It was 4.4rem when the button said "Copy", and the
+   lesson from that round still holds -- reserve more than the button
+   measures, or any change to it puts it back on top of the text. */
 .ad-hint-card__body li.ad-cmd {
-  position: relative; padding-right: 3.8rem;
+  position: relative; padding-right: 2.9rem;
 }
 .ad-hint-card__body li.ad-cmd > code {
   display: inline !important; background: none !important; border: 0 !important;
@@ -3603,7 +3644,7 @@ body:has(.lp) {
 .ad-hint-card__body p.ad-cmd > code {
   display: block !important; box-sizing: border-box; width: 100%;
   background: #0c1220 !important; border: 1px solid rgba(255,255,255,0.1) !important;
-  padding: 0.85rem 4.4rem 0.85rem 1rem !important;
+  padding: 0.85rem 2.9rem 0.85rem 0.9rem !important;
   color: #e8eef8 !important; font-weight: 500; font-size: 0.8125rem;
   overflow-x: auto; white-space: pre-wrap !important; word-break: break-word;
 }
@@ -3643,14 +3684,40 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body p.ad-cmd > 
   background: #050508 !important; border-color: rgba(255, 255, 255, 0.18) !important; color: #e8eef8 !important;
 }
 p.ad-cmd, li.ad-cmd { position: relative; }
+/* A square the size of the text, not a chip with a word in it. The word was
+   the widest thing in the box and the command wrapped early to clear it. */
 .ad-cmd__copy {
-  position: absolute; top: 8px; right: 8px; z-index: 1;
-  font-size: var(--ty-small); font-weight: 650; color: #e2e8f0;
-  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 6px; padding: 0.25rem 0.55rem; cursor: pointer;
+  position: absolute; top: 7px; right: 7px; z-index: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; padding: 0; cursor: pointer;
+  color: #cbd5e1;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 7px;
 }
-.ad-cmd__copy:hover { background: rgba(255,255,255,0.16); }
-.academy-prose p.ad-cmd > code { padding-right: 4.4rem; }
+.ad-cmd__copy:hover { background: rgba(255,255,255,0.16); color: #fff; }
+.ad-cmd__i { display: block; }
+/* One icon at a time: the tick replaces the sheets rather than joining them. */
+.ad-cmd__i--done { display: none; }
+.ad-cmd__copy.is-copied { color: #4ade80; border-color: rgba(74, 222, 128, 0.45); }
+.ad-cmd__copy.is-copied .ad-cmd__i { display: none; }
+.ad-cmd__copy.is-copied .ad-cmd__i--done { display: block; }
+.ad-cmd__copy:focus-visible { outline: 2px solid #e2e8f0; outline-offset: 2px; }
+/* The copy button lands on a paragraph or a list item, so both have to clear
+   the same room for it. The list form never did, and a command written as a
+   bullet had the button drawn over its own text. */
+.academy-prose p.ad-cmd > code { padding-right: 2.9rem; }
+.academy-prose li.ad-cmd { padding-right: 2.9rem; }
+/* And it is a command, not a word in a sentence: no chip, and a long
+   distinguished name wraps instead of running off the side. Same treatment the
+   hint card already gives these. */
+.academy-prose li.ad-cmd > code {
+  background: none; border: 0; padding: 0; border-radius: 0;
+  white-space: pre-wrap; word-break: break-word;
+}
+/* A fenced block carries its own button, so it has to be the positioning
+   parent and leave room for it on the first line. */
+.academy-prose pre.ad-pre { position: relative; padding-right: 4.4rem; }
+.academy-prose pre.ad-pre > .ad-cmd__copy { font-family: var(--font-sans, inherit); line-height: 1.2; }
 @media (prefers-reduced-motion: reduce) {
   .ad-hint-card__panel { transition: none; }
 }
@@ -3691,6 +3758,27 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   .academy-prose .ad-guess__input { flex-basis: 100%; max-width: 100%; }
 }
 .academy-prose .ad-guess__submit:disabled { background: none; color: var(--rd-ink-3, #8a94a8); cursor: default; }
+/* Checking a lab can take the best part of a minute: the answer goes to the
+   server, the pod is asked for a fresh snapshot, and the change has to show
+   up in it. All the button did was grey out, which is what a button does
+   when it is broken as well as when it is busy. A spinner on the button says
+   which. --busy wins over :disabled, since it is disabled the whole time. */
+.academy-prose .ad-guess__submit--busy,
+.academy-prose .ad-guess__submit--busy:disabled {
+  color: var(--rd-accent, #6a5cff);
+  border-color: color-mix(in srgb, var(--rd-accent, #6a5cff) 45%, transparent);
+  cursor: progress; gap: 7px;
+}
+.academy-prose .ad-guess__submit--busy::before {
+  content: ""; width: 12px; height: 12px; flex: 0 0 12px;
+  border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%;
+  animation: ad-guess-spin 0.6s linear infinite;
+}
+@keyframes ad-guess-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  /* Still says busy, without the movement. */
+  .academy-prose .ad-guess__submit--busy::before { animation: none; border-right-color: currentColor; opacity: 0.45; }
+}
 .academy-prose .ad-guess__feedback,
 .academy-prose p.ad-guess__feedback,
 .academy-prose .ad-flag > .ad-guess__feedback {
@@ -3709,6 +3797,15 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 .academy-prose p.ad-guess__feedback:empty { display: none !important; margin: 0 !important; }
 .academy-prose .ad-guess__feedback--ok { color: #16a34a; }
 .academy-prose .ad-guess__feedback--err { color: #e5484d; }
+/* The same reassurance follows every miss, so it reads as a footnote on the
+   message rather than another clause in it. Inside the sentence it made a
+   line read at a glance run to three. */
+.academy-prose .ad-guess__free {
+  font-size: 0.78em; font-weight: 500; opacity: 0.75;
+  color: var(--pvrx-text-secondary-light, #64748b);
+  white-space: nowrap;
+}
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__free { color: var(--rd-ink-3, #8a94a8); }
 .academy-prose .ad-guess__feedback--tip { color: #475569; }
 .academy-prose .ad-guess__feedback--tip strong { color: #b42318; font-weight: 600; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--tip { color: #c3cddb; }
@@ -4117,6 +4214,10 @@ html:active-view-transition .ax-page { animation: none }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission h4 code {
   background: none !important; border: 0 !important; color: inherit;
 }
+/* A command in a list is bare in both themes. The dark rule two lines up
+   outranks the light-mode one on specificity, so it is repeated here rather
+   than left to paint a chip back on. */
+.academy-bg[data-academy-theme="dark"] .academy-prose li.ad-cmd > code { background: none; border: 0; }
 .academy-bg[data-academy-theme="dark"] .academy-prose pre,
 .academy-bg[data-academy-theme="dark"] .academy-prose p.ad-cmd > code,
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission p.ad-cmd > code {
@@ -4276,10 +4377,10 @@ html:active-view-transition .ax-page { animation: none }
   --rd-ink-3: #74747e;
   --rd-line: rgba(255, 255, 255, 0.09);
   --rd-line-2: rgba(255, 255, 255, 0.05);
-  /* A clean dark charcoal, a clear step above the pitch-black page so a panel
-     reads as an elevated surface. Solid, not the old translucent white film
-     that looked dusty grey, and not so dark it blends into the background. */
-  --rd-surface: #16141d;
+  /* Black, the same as the page. A panel is drawn by its hairline edge rather
+     than by being a lighter slab: the charcoal that used to sit here read as a
+     grey box on black, which is the one thing this theme keeps chasing out. */
+  --rd-surface: #000000;
   --rd-accent: #9a8cff;
   --rd-good: #34d399;
   --rd-warn: #fbbf24;
@@ -4474,9 +4575,6 @@ html:active-view-transition .ax-page { animation: none }
 .ax-home .ax-titleblock p { margin-top: 10px; font-size: var(--ty-lead); line-height: 1.5; }
 .ax-home .ax-welcome .ax-status__score { padding-top: 6px; }
 .ax-home .ax-welcome .ax-status__score strong { font-size: var(--ty-h2); }
-.ax-home .ax-status { margin-top: 24px; padding: 16px 0 24px; }
-.ax-home .ax-status__next { gap: 4px; }
-.ax-home .ax-status__next strong { font-size: var(--ty-h4); }
 .ax-home .ax-path {
   flex: 1 1 auto;
   display: flex;
@@ -4506,7 +4604,7 @@ html:active-view-transition .ax-page { animation: none }
 .ax-home .ax-path__body { margin-top: 8px; font-size: var(--ty-body); }
 .ax-home .ax-segs { margin-top: 16px; }
 .ax-home .ax-segs i { height: 6px; }
-.ax-home .dr-home { margin-top: 0; padding: 18px 20px; }
+.ax-home .dr-home { margin-top: 26px; padding: 18px 20px; }
 
 .ax-welcome { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px 40px; }
 .ax-welcome .ax-titleblock { flex: 1; min-width: 0; }
@@ -4532,42 +4630,6 @@ html:active-view-transition .ax-page { animation: none }
   .ax-entryhead .ax-titleblock { flex: none; width: 100%; }
 }
 .ax-entryhead .ax-titleblock p { margin-top: 18px; }
-.ax-status {
-  display: block;
-  margin-top: 28px; padding: 22px 0 26px; border-top: 1px solid var(--rd-line);
-}
-.ax-status__next {
-  position: relative;
-  overflow: hidden;
-  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
-  padding: 20px 22px;
-  background: color-mix(in srgb, var(--rd-accent) 7%, transparent);
-  border: 1px solid var(--sf-line);
-  box-shadow: var(--sf-lift);
-  transition: background var(--ax-dur-fast), border-color var(--ax-dur-fast);
-}
-/* The page's one wash. It belongs to the thing you are meant to click, and
-   putting it on every row below would make none of them read as the next
-   step. */
-.ax-status__next::before {
-  content: "";
-  position: absolute;
-  top: -40%; left: 50%;
-  width: 150%; height: 90%;
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse at 50% 0%,
-    color-mix(in srgb, var(--rd-accent) var(--sf-wash-strength), transparent),
-    transparent var(--sf-wash-stop));
-  pointer-events: none;
-}
-.ax-status__next > * { position: relative; }
-a.ax-status__next:hover { background: color-mix(in srgb, var(--rd-accent) 13%, transparent); border-color: color-mix(in srgb, var(--rd-accent) 42%, transparent); }
-.ax-status__next .rd-kicker { color: var(--rd-accent); opacity: 0.9; }
-.ax-status__next strong {
-  display: inline-flex; align-items: center; gap: 10px;
-  font-family: var(--font-display); font-size: var(--ty-h2); font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink);
-}
-.ax-status__next svg { color: var(--rd-accent); }
 .ax-status__score { display: flex; align-items: baseline; gap: 12px; }
 .ax-status__score strong { font-family: var(--font-display); font-size: var(--ty-stat); font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: var(--rd-accent); }
 .ax-status__score em { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-micro); font-style: normal; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rd-ink-3); }
@@ -4582,18 +4644,18 @@ a.ax-status__next:hover { background: color-mix(in srgb, var(--rd-accent) 13%, t
   border-bottom: none;
 }
 .ax-path__title, .ax-curriculum__title { transition: color var(--ax-dur) var(--ax-ease); }
-.ax-path__count svg, .ax-status__next svg { transition: transform var(--ax-dur) var(--ax-ease); }
+.ax-path__count svg, .dr-home > svg { transition: transform var(--ax-dur) var(--ax-ease); }
 .ax-path__row:hover .ax-path__title, .ax-curriculum__row:hover .ax-curriculum__title { color: var(--rd-accent); }
-.ax-path__row:hover .ax-path__count svg, .ax-status__next:hover svg { transform: translateX(3px); }
+.ax-path__row:hover .ax-path__count svg, .dr-home:hover > svg { transform: translateX(3px); }
 /* Premium hover-lift on the clickable cards, on the shared easing. */
-a.ax-path__row, a.ax-curriculum__row, a.ax-status__next, a.dr-home {
+a.ax-path__row, a.ax-curriculum__row, a.dr-home {
   transition: transform var(--ax-dur) var(--ax-ease), border-color var(--ax-dur) var(--ax-ease), background var(--ax-dur) var(--ax-ease), box-shadow var(--ax-dur) var(--ax-ease);
 }
-a.ax-path__row:hover, a.ax-curriculum__row:hover, a.ax-status__next:hover, a.dr-home:hover { transform: translateY(-2px); }
-a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.dr-home:active { transform: translateY(0); transition-duration: 80ms; }
+a.ax-path__row:hover, a.ax-curriculum__row:hover, a.dr-home:hover { transform: translateY(-2px); }
+a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform: translateY(0); transition-duration: 80ms; }
 @media (prefers-reduced-motion: reduce) {
-  a.ax-path__row, a.ax-curriculum__row, a.ax-status__next, a.dr-home { transition: none; }
-  a.ax-path__row:hover, a.ax-curriculum__row:hover, a.ax-status__next:hover, a.dr-home:hover, a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.dr-home:active { transform: none; }
+  a.ax-path__row, a.ax-curriculum__row, a.dr-home { transition: none; }
+  a.ax-path__row:hover, a.ax-curriculum__row:hover, a.dr-home:hover, a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform: none; }
 }
 .ax-path__row--soon, .ax-curriculum__row--soon { opacity: 0.55; cursor: default; }
 .ax-path__row--soon:hover .ax-path__title, .ax-curriculum__row--soon:hover .ax-curriculum__title { color: inherit; }
@@ -4605,6 +4667,9 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   background: color-mix(in srgb, var(--rd-accent) var(--sf-mark-fill), transparent);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) var(--sf-mark-line), transparent);
 }
+/* Cadence rather than sequence: the drill rows are four standing invitations,
+   not four steps, so their badge carries a word and sizes to it. */
+.ax-path__n--word { width: auto; min-width: 34px; padding: 0 10px; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
 .ax-path__title, .ax-curriculum__title { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-family: var(--font-display); font-size: var(--ty-h3); font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }
 .ax-path__body, .ax-curriculum__body { display: block; margin-top: 6px; font-size: var(--ty-body); line-height: 1.55; color: var(--rd-ink-2); }
 .ax-path__count, .ax-curriculum__meta { display: inline-flex; align-items: center; gap: 8px; padding-top: 6px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note); font-weight: 700; color: var(--rd-ink-2); }
@@ -4779,7 +4844,21 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   gap: 2px;
   overflow-x: auto;
   scrollbar-width: none;
+  /* No scroll-behavior here on purpose: a CSS smooth overrides the "auto" the
+     roll passes when the reader asked for reduced motion. */
 }
+/* Rolls the section strip when it runs past the edge. Sits over the tabs with
+   the page's own background behind it, so a tab slides under rather than
+   stopping at a hard line. */
+.ax-lessroll {
+  position: absolute; top: 0; bottom: 1px; z-index: 1;
+  display: grid; align-items: center; width: 46px; padding: 0; border: 0;
+  color: var(--rd-ink-2); cursor: pointer;
+}
+.ax-lessroll:hover { color: var(--rd-accent); }
+.ax-lessroll:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: -2px; }
+.ax-lessroll--start { left: 0; justify-items: start; background: linear-gradient(to right, var(--pvrx-bg-light, #fff) 60%, transparent); }
+.ax-lessroll--end { right: 0; justify-items: end; background: linear-gradient(to left, var(--pvrx-bg-light, #fff) 60%, transparent); }
 .ax-lesstabs::-webkit-scrollbar { display: none; }
 .ax-lesstab {
   position: relative;
@@ -5147,12 +5226,21 @@ html:has(.academy-bg[data-academy-theme="dark"]) .pc-backdrop { background: rgba
   .pc-panel, .pc-backdrop { animation: none }
 }
 
-.pc-modes { display: flex; gap: 4px; margin: 0 0 10px; }
+/* Four labels on one line. Equal quarters cut Double-check at its hyphen, so
+   it stood two lines tall beside three one-line tabs and dragged the row out
+   of alignment. Each tab takes the width its word needs, and the row spaces
+   them instead. */
+.pc-modes { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin: 0 0 10px; }
 .pc-mode {
-  flex: 1; height: 30px; border: 0; background: none; padding: 0;
+  flex: 0 1 auto; display: inline-flex; align-items: center; justify-content: center;
+  height: 30px; border: 0; background: none; padding: 0 2px; white-space: nowrap;
   font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); font-weight: 700;
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--pc-text-3); cursor: pointer;
   transition: color var(--ax-dur) var(--ax-ease);
+}
+/* Narrow phones: tighten the tracking before anything is forced to overflow. */
+@media (max-width: 380px) {
+  .pc-mode { letter-spacing: 0.02em; }
 }
 .pc-mode--on { color: var(--pc-accent); }
 .pc-mode:hover { color: var(--pc-text); }
@@ -5230,23 +5318,40 @@ html:has(.academy-bg[data-academy-theme="dark"]) .pc-backdrop { background: rgba
 .pc-rate__done { margin: 0; font-size: var(--ty-micro); color: var(--pc-text-3); }
 
 .pc-rate__why { margin-top: 10px; }
-.pc-rate__label { margin: 0 0 7px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pc-text-3); }
-.pc-rate__tags { display: flex; flex-wrap: wrap; gap: 6px; }
-.pc-rate__tag {
-  padding: 6px 11px; border: 1px solid var(--pc-line); border-radius: 999px;
-  background: none; color: var(--pc-text-2); font-size: var(--ty-small); line-height: 1.3; cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+.pc-rate__label {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 8px;
+  font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker);
+  font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pc-text-3);
 }
-.pc-rate__tag:hover { border-color: var(--pc-accent); background: color-mix(in srgb, var(--pc-accent) 9%, transparent); color: var(--pc-accent); }
+.pc-rate__label span { flex: none; font-family: var(--font-sans, inherit); font-size: var(--ty-micro); font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--pc-text-3); }
+/* A grid, not a wrap: six reasons of uneven length ragged into rows that were
+   hard to scan and gave the panel no shape. Two even columns on the chat's
+   width, one on a phone. */
+.pc-rate__tags { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 6px; }
+/* Filled rather than outlined. The border token is nearly invisible on black,
+   so six outlined pills read as six faint boxes; a soft fill carries the shape
+   and the accent is kept for the one the pointer is on. */
+.pc-rate__tag {
+  padding: 9px 12px; border: 0; border-radius: 8px;
+  background: color-mix(in srgb, var(--pc-text) 7%, transparent);
+  color: var(--pc-text-2); font: inherit; font-size: var(--ty-small); line-height: 1.3; text-align: left; cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.pc-rate__tag:hover { background: var(--pc-accent-soft); color: var(--pc-accent); }
+.pc-rate__tag:active { background: color-mix(in srgb, var(--pc-accent) 20%, transparent); }
 .pc-rate__tag:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 2px; }
 .pc-rate__note {
-  display: block; width: 100%; margin-top: 8px; padding: 8px 11px;
-  border: 1px solid var(--pc-line); border-radius: 9px; background: none;
+  display: block; width: 100%; margin-top: 6px; padding: 9px 12px;
+  border: 0; border-radius: 8px; background: color-mix(in srgb, var(--pc-text) 7%, transparent);
   color: var(--pc-text); font: inherit; font-size: var(--ty-small);
 }
-.pc-rate__note:focus-visible { outline: none; border-color: var(--pc-accent); }
-.pc-rate__skip { margin-top: 7px; padding: 0; border: 0; background: none; color: var(--pc-text-3); font-size: var(--ty-micro); text-decoration: underline; cursor: pointer; }
+/* text-3 lands at 4.1:1 on this fill, and a placeholder is still text. */
+.pc-rate__note::placeholder { color: var(--pc-text-2); }
+.pc-rate__note:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 0; }
+.pc-rate__foot { display: flex; justify-content: flex-end; margin-top: 6px; }
+.pc-rate__skip { padding: 6px 2px; border: 0; background: none; color: var(--pc-text-3); font: inherit; font-size: var(--ty-micro); cursor: pointer; }
 .pc-rate__skip:hover { color: var(--pc-accent); }
+.pc-rate__skip:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 2px; }
 .pc-thinking { display: flex; align-items: center; gap: 10px; font-size: var(--ty-note); color: var(--pc-text-3); }
 .pc-thinking p { margin: 0; }
 .pc-dots {
@@ -5359,8 +5464,18 @@ textarea.pc-dock__field {
 .dr-choice { display: flex; align-items: center; width: 100%; padding: 14px 16px; border: 1.5px solid var(--rd-line); background: transparent; text-align: left; font-size: var(--ty-lead); line-height: 1.4; color: var(--rd-ink); cursor: pointer; transition: border-color var(--ax-dur-fast), background var(--ax-dur-fast); }
 .dr-choice:hover { border-color: var(--rd-accent); }
 .dr-choice--on { border-color: var(--rd-accent); background: rgba(85, 70, 224, 0.08); box-shadow: inset 3px 0 0 var(--rd-accent); }
-.dr-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--rd-line); }
-.dr-actions--result .dr-link { margin-left: auto; }
+/* Top aligned, not centred. The left side is a column -- Exit, then the
+   ways out of a task -- and centring the button against it left it halfway
+   down, lined up with nothing. It sits on the same line as Exit now. */
+.dr-actions { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px 16px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--rd-line); }
+/* One row, so centring is the right answer there. */
+.dr-actions--result { align-items: center; }
+/* The primary stays left and everything else goes right. Both it and the
+   first link asked for margin-left:auto, so the row had two of them and the
+   free space was split between the two -- which is why Done sat a third of
+   the way across, pinned to nothing. */
+.dr-actions.dr-actions--result > .rd-cta { margin-left: 0; margin-right: auto; }
+.dr-actions--result .dr-link { margin-left: 0; }
 .dr-actions--result .dr-link + .dr-link { margin-left: 0; }
 
 .dr-score { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 20px; margin-top: 8px; }
@@ -5376,8 +5491,36 @@ textarea.pc-dock__field {
 .dr-review .is-right .dr-review__mark { background: var(--rd-good); }
 .dr-review .is-wrong .dr-review__mark { background: var(--rd-bad); }
 
-.dr-home { display: flex; align-items: center; gap: 18px; margin-top: 8px; padding: 20px 22px; border: 1px solid var(--sf-line); background: var(--rd-surface); color: var(--rd-ink); box-shadow: var(--sf-lift); transition: border-color var(--ax-dur-fast); }
-.dr-home:hover { border-color: var(--rd-accent); }
+.dr-home {
+  position: relative;
+  overflow: hidden;
+  display: flex; align-items: center; gap: 18px;
+  margin-top: 8px; padding: 20px 22px;
+  background: color-mix(in srgb, var(--rd-accent) 7%, transparent);
+  border: 1px solid var(--sf-line);
+  color: var(--rd-ink);
+  box-shadow: var(--sf-lift);
+  transition: background var(--ax-dur-fast), border-color var(--ax-dur-fast);
+}
+/* The page's one wash. It belongs to the thing you are meant to click, and
+   putting it on every row below would make none of them read as the next
+   step. */
+.dr-home::before {
+  content: "";
+  position: absolute;
+  top: -40%; left: 50%;
+  width: 150%; height: 90%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 0%,
+    color-mix(in srgb, var(--rd-accent) var(--sf-wash-strength), transparent),
+    transparent var(--sf-wash-stop));
+  pointer-events: none;
+}
+.dr-home > * { position: relative; }
+a.dr-home:hover { background: color-mix(in srgb, var(--rd-accent) 13%, transparent); border-color: color-mix(in srgb, var(--rd-accent) 42%, transparent); }
+.dr-home .rd-kicker { color: var(--rd-accent); opacity: 0.9; }
+/* The arrow only. The flame keeps the amber it sets on its own box. */
+.dr-home > svg { color: var(--rd-accent); }
 .dr-home__flame {
   display: inline-grid; place-items: center; gap: 1px;
   width: 52px; height: 52px; flex: none;
@@ -5612,7 +5755,9 @@ textarea.pc-dock__field {
 /* Drills in the report style: ruled rows, no cards */
 .dr-strip { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 10px 18px; margin-top: 24px; padding: 16px 0; border-top: 1px solid var(--rd-line); }
 .dr-rows { margin-top: 0; border-top: 1px solid var(--rd-line); }
-.dr-rows .ax-path__row { align-items: center; grid-template-columns: 44px minmax(0, 1fr) auto; }
+/* The first column held a two-digit number. It now holds a word like THIS WEEK,
+   so it is sized to its content instead of to 44px, which wrapped it. */
+.dr-rows .ax-path__row { align-items: center; grid-template-columns: max-content minmax(0, 1fr) auto; }
 .dr-rows .ax-path__main { min-width: 0; }
 .dr-rows .ax-path__count { justify-self: end; padding-top: 0; }
 .dr-rows .rd-cta { white-space: nowrap; flex-shrink: 0; }
@@ -5662,7 +5807,12 @@ textarea.pc-dock__field {
 .dr-checks li.is-ok span { color: var(--rd-good); }
 .dr-checks li.is-bad span { color: var(--rd-bad); }
 .dr-checks__stale { padding: 12px 14px; background: rgba(196, 130, 14, 0.12); color: var(--rd-ink) !important; }
-.dr-actions__side { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+/* Exit is a bordered control and the ways out are plain links, so they are
+   spaced apart from it and tucked together under it rather than sitting in
+   one evenly spaced stack of three unrelated-looking things. */
+.dr-actions__side { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.dr-actions__side > .dr-exit + .dr-link { margin-top: 6px; }
+.dr-actions__side > .dr-link { font-size: var(--ty-note); }
 .dr-actions > .rd-cta { margin-left: auto; }
 .dr-earned { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-good); }
 

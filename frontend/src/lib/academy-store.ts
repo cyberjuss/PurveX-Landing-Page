@@ -3,7 +3,7 @@ import { createHash, randomBytes } from "crypto";
 import { sanitizeActivityPlace, type ActivityPlace, type StudentActivity } from "@/lib/academy-activity";
 import type { ShiftRun } from "@/lib/academy-shift";
 import { sanitizeProfile, type RoleBrief, type RoleId, type StudentProfile } from "@/lib/academy-certs";
-import type { DrillEntry } from "@/lib/academy-drills";
+import type { DrillEntry, EntryMode } from "@/lib/academy-drills";
 import { sanitizeLabSnapshot, type LabSnapshot } from "@/lib/academy-lab";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
 import { supabaseAdmin } from "@/lib/supabase-admin";
@@ -24,6 +24,10 @@ const memoryActivity = new Map<string, StudentActivity>();
 function todayStamp() {
   return new Date().toISOString().slice(0, 10);
 }
+
+// A Postgres function this code calls that the database has not got yet,
+// because academy.sql has not been run against it.
+const missingFunction = (code?: string) => code === "PGRST202" || code === "42883";
 
 export async function loadProgress(userId: string): Promise<Results> {
   if (supabaseAdmin) {
@@ -137,50 +141,175 @@ export async function resetUsage(userId: string, day = todayStamp()) {
   if (error) console.error("academy_coach_usage reset failed", error.message);
 }
 
-export async function bumpUsage(userId: string, current: number, day = todayStamp()): Promise<number> {
-  const next = current + 1;
-  memoryUsage.set(userId, { day, count: next });
-  if (supabaseAdmin) {
-    const { error } = await supabaseAdmin.from("academy_coach_usage").upsert({
-      user_id: userId,
-      day,
-      count: next,
-      updated_at: new Date().toISOString(),
-    });
-    if (error) console.error("academy_coach_usage upsert failed", error.message);
+/**
+ * Claim one Coach question for today, or null when the student is at the cap.
+ *
+ * The cap has to be decided in the same statement that spends the question.
+ * Read-check-call-write left the model call inside the window, so a handful of
+ * requests fired together all read the same count, all passed, and all wrote
+ * the same total: the daily limit held for one request at a time and for
+ * nothing else. Postgres decides it now, under a row lock.
+ *
+ * `limit` is the base allowance plus today's drill bonus, so it is passed in.
+ */
+/**
+ * Spends one unit of a daily counter, atomically, without a stored function.
+ *
+ * The atomic claim is a Postgres function that has to be run by hand, and
+ * until it is this is the path every request takes -- so "read it, check it,
+ * write it" would have been the rate limit having a hole in it rather than a
+ * rate limit. Each write here is a single conditional statement instead: the
+ * update only matches while the count is still what was read, so of two
+ * requests arriving together exactly one lands and the loser reads again.
+ *
+ * The insert is the same bet on the primary key. Both are bounded, and
+ * running out of tries refuses rather than spends, because the limit is the
+ * thing being protected.
+ */
+async function claimCounter(
+  table: "academy_coach_usage" | "academy_lab_coach_usage",
+  match: Record<string, string>,
+  limit: number
+): Promise<number | null | "unavailable"> {
+  if (!supabaseAdmin) return "unavailable";
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    let read = supabaseAdmin.from(table).select("count");
+    for (const [k, v] of Object.entries(match)) read = read.eq(k, v);
+    const { data: row, error } = await read.maybeSingle();
+    if (error) {
+      console.error(`${table} read failed`, error.message);
+      return "unavailable";
+    }
+    const used = typeof row?.count === "number" ? row.count : null;
+    if (used !== null && used >= limit) return null;
+    const next = (used ?? 0) + 1;
+    const updated_at = new Date().toISOString();
+    if (used === null) {
+      const { error: insErr } = await supabaseAdmin.from(table).insert({ ...match, count: 1, updated_at });
+      if (!insErr) return 1;
+      // Somebody inserted first. Read again and take the update path.
+      continue;
+    }
+    let write = supabaseAdmin.from(table).update({ count: next, updated_at });
+    for (const [k, v] of Object.entries(match)) write = write.eq(k, v);
+    // The condition. Nothing matches if the count moved under us.
+    const { data: won, error: upErr } = await write.eq("count", used).select("count");
+    if (upErr) {
+      console.error(`${table} claim write failed`, upErr.message);
+      return "unavailable";
+    }
+    if ((won ?? []).length) return next;
   }
-  return next;
+  console.error(`${table} claim gave up after five attempts`);
+  return null;
 }
 
-/** Coach questions asked inside one browser lab today. */
-export async function readLabCoachUsage(userId: string, lab: string, day = todayStamp()): Promise<number> {
+/**
+ * Hands one unit back, atomically, the same way.
+ */
+async function releaseCounter(table: "academy_coach_usage" | "academy_lab_coach_usage", match: Record<string, string>): Promise<void> {
+  if (!supabaseAdmin) return;
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    let read = supabaseAdmin.from(table).select("count");
+    for (const [k, v] of Object.entries(match)) read = read.eq(k, v);
+    const { data: row, error } = await read.maybeSingle();
+    if (error || typeof row?.count !== "number") return;
+    if (row.count <= 0) return;
+    let write = supabaseAdmin.from(table).update({ count: row.count - 1, updated_at: new Date().toISOString() });
+    for (const [k, v] of Object.entries(match)) write = write.eq(k, v);
+    const { data: won, error: upErr } = await write.eq("count", row.count).select("count");
+    if (upErr) return;
+    if ((won ?? []).length) return;
+  }
+}
+
+export async function claimCoachQuestion(userId: string, limit: number, day = todayStamp()): Promise<number | null> {
+  if (limit <= 0) return null;
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin.rpc("academy_claim_coach_question", { p_user: userId, p_day: day, p_limit: limit });
+    if (!error) {
+      // null is the cap, not a failure: the conflict update was skipped.
+      if (data === null) return null;
+      if (typeof data === "number") {
+        memoryUsage.set(userId, { day, count: data });
+        return data;
+      }
+    }
+    if (error && !missingFunction(error.code)) {
+      console.error("academy_coach_usage claim failed", error.code, error.message);
+      // Refusing would close Coach on a database hiccup.
+    }
+    // The function is not there yet, so this is the path every request takes.
+    // Compare-and-set rather than read-check-write: the limit is the thing
+    // being protected and a hole in it is not a fallback.
+    const claimed = await claimCounter("academy_coach_usage", { user_id: userId, day }, limit);
+    if (claimed !== "unavailable") {
+      if (typeof claimed === "number") memoryUsage.set(userId, { day, count: claimed });
+      return claimed;
+    }
+  }
+  // No database at all. One process, one counter: it goes when the process
+  // does, which is why it is the last resort rather than the fallback.
+  const row = memoryUsage.get(userId);
+  const used = row && row.day === day ? row.count : 0;
+  if (used >= limit) return null;
+  memoryUsage.set(userId, { day, count: used + 1 });
+  return used + 1;
+}
+
+/** Hand a claimed question back after a failed model call. */
+export async function releaseCoachQuestion(userId: string, day = todayStamp()): Promise<void> {
+  const row = memoryUsage.get(userId);
+  if (row && row.day === day) memoryUsage.set(userId, { day, count: Math.max(0, row.count - 1) });
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin.rpc("academy_release_coach_question", { p_user: userId, p_day: day });
+  if (!error) return;
+  if (!missingFunction(error.code)) console.error("academy_coach_usage release failed", error.code, error.message);
+  // Without the function, hand it back the same conditional way, or a failed
+  // turn would keep costing a question it never spent -- and two releases
+  // landing together would both write the same lower number.
+  await releaseCounter("academy_coach_usage", { user_id: userId, day });
+}
+
+/** The same claim for the per-lab cap, so one browser lab cannot spend the day. */
+export async function claimLabCoachQuestion(userId: string, lab: string, limit: number, day = todayStamp()): Promise<number | null> {
+  if (limit <= 0) return null;
+  const key = `${userId}|${lab}`;
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin.rpc("academy_claim_lab_coach_question", { p_user: userId, p_day: day, p_lab: lab, p_limit: limit });
+    if (!error) {
+      if (data === null) return null;
+      if (typeof data === "number") {
+        memoryLabCoach.set(key, { day, count: data });
+        return data;
+      }
+    }
+    if (error && !missingFunction(error.code)) {
+      console.error("academy_lab_coach_usage claim failed", error.code, error.message);
+    }
+    // Same compare-and-set as the daily claim while the function is missing.
+    const claimed = await claimCounter("academy_lab_coach_usage", { user_id: userId, day, lab }, limit);
+    if (claimed !== "unavailable") {
+      if (typeof claimed === "number") memoryLabCoach.set(key, { day, count: claimed });
+      return claimed;
+    }
+  }
+  const row = memoryLabCoach.get(key);
+  const used = row && row.day === day ? row.count : 0;
+  if (used >= limit) return null;
+  memoryLabCoach.set(key, { day, count: used + 1 });
+  return used + 1;
+}
+
+export async function releaseLabCoachQuestion(userId: string, lab: string, day = todayStamp()): Promise<void> {
   const key = `${userId}|${lab}`;
   const row = memoryLabCoach.get(key);
-  const local = row && row.day === day ? row.count : 0;
-  if (supabaseAdmin) {
-    const { data, error } = await supabaseAdmin
-      .from("academy_lab_coach_usage")
-      .select("count")
-      .eq("user_id", userId)
-      .eq("day", day)
-      .eq("lab", lab)
-      .maybeSingle();
-    // Until academy.sql adds the table, the per-process count stands in.
-    if (!error && typeof data?.count === "number") return Math.max(data.count, local);
-  }
-  return local;
-}
-
-export async function bumpLabCoachUsage(userId: string, lab: string, current: number, day = todayStamp()): Promise<number> {
-  const next = current + 1;
-  memoryLabCoach.set(`${userId}|${lab}`, { day, count: next });
-  if (supabaseAdmin) {
-    const { error } = await supabaseAdmin
-      .from("academy_lab_coach_usage")
-      .upsert({ user_id: userId, day, lab, count: next, updated_at: new Date().toISOString() });
-    if (error) console.error("academy_lab_coach_usage upsert failed", error.message);
-  }
-  return next;
+  if (row && row.day === day) memoryLabCoach.set(key, { day, count: Math.max(0, row.count - 1) });
+  if (!supabaseAdmin) return;
+  const { error } = await supabaseAdmin.rpc("academy_release_lab_coach_question", { p_user: userId, p_day: day, p_lab: lab });
+  if (!error) return;
+  if (!missingFunction(error.code)) console.error("academy_lab_coach_usage release failed", error.code, error.message);
+  await releaseCounter("academy_lab_coach_usage", { user_id: userId, day, lab });
 }
 
 export async function loadLabState(userId: string): Promise<{ snapshot: LabSnapshot; uploadedAt: string } | null> {
@@ -358,6 +487,10 @@ export type HostedLabRow = {
   passwordEnc: string;
   stopAt: string | null;
   createdAt: string;
+  /** Last write to this row, which is when the session in hand began: a start
+   *  and an extend both write it, and nothing else touches the row until the
+   *  lab stops. Lab hours are counted from it. */
+  updatedAt: string;
   linuxInstanceId: string | null;
   linuxPasswordEnc: string | null;
   podSlot: number | null;
@@ -372,6 +505,7 @@ function hostedRow(d: Record<string, unknown>): HostedLabRow {
     passwordEnc: d.password_enc as string,
     stopAt: (d.stop_at as string | null) ?? null,
     createdAt: d.created_at as string,
+    updatedAt: (d.updated_at as string | null) ?? (d.created_at as string),
     linuxInstanceId: (d.linux_instance_id as string | null) ?? null,
     linuxPasswordEnc: (d.linux_password_enc as string | null) ?? null,
     podSlot: d.pod_slot === null || d.pod_slot === undefined ? null : Number(d.pod_slot),
@@ -404,6 +538,41 @@ export async function saveHostedLab(userId: string, row: HostedLabRow) {
   if (error) throw new Error(error.message);
 }
 
+/**
+ * Ends the session by clearing its stop time, and only if that time is still
+ * the one the caller read. Returns whether this call is the one that cleared
+ * it, which is what gives it the right to hand the unused hours back.
+ *
+ * The refund has to ride on a claim like this. Two stops fired together both
+ * read the same stop time and both refunded what was left of it, so a student
+ * could give themselves back more hours than the session ever cost.
+ */
+export async function claimLabSessionEnd(userId: string, stopAt: string | null): Promise<boolean> {
+  if (!stopAt) return false;
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin
+      .from("academy_hosted_labs")
+      .update({ stop_at: null, updated_at: new Date().toISOString() })
+      .eq("user_id", userId)
+      .eq("stop_at", stopAt)
+      .select("user_id");
+    // No refund on a failed claim: losing one is a student's hours back late,
+    // paying one twice is a month of lab nobody is charged for.
+    if (error) {
+      console.error("academy_hosted_labs session end failed", error.code, error.message);
+      return false;
+    }
+    if (!(data ?? []).length) return false;
+    const cached = memoryHosted.get(userId);
+    if (cached) memoryHosted.set(userId, { ...cached, stopAt: null });
+    return true;
+  }
+  const row = memoryHosted.get(userId);
+  if (!row || row.stopAt !== stopAt) return false;
+  memoryHosted.set(userId, { ...row, stopAt: null });
+  return true;
+}
+
 export async function deleteHostedLab(userId: string) {
   memoryHosted.delete(userId);
   if (!supabaseAdmin) return;
@@ -429,6 +598,41 @@ export async function hostedLabsIdleSince(before: Date): Promise<{ userId: strin
   const { data, error } = await supabaseAdmin.from("academy_hosted_labs").select("*").lt("updated_at", before.toISOString());
   if (error) {
     console.error("academy_hosted_labs idle read failed", error.message);
+    return [];
+  }
+  return (data ?? []).map((d) => ({ userId: d.user_id, row: hostedRow(d) }));
+}
+
+/**
+ * Labs with no session running against them.
+ *
+ * stopAt is the end of the session a student paid for, and it is null once a
+ * lab has been stopped. Both safety nets key off it -- the idle stop refuses
+ * a row without one, and the due sweep asks for stop_at <= now, which a NULL
+ * never matches. So a machine that is somehow up with no session is invisible
+ * to both and runs until somebody notices the bill. That happens when a stop
+ * half fails, or when a pod is started outside the app.
+ */
+export async function hostedLabsWithNoSession(): Promise<{ userId: string; row: HostedLabRow }[]> {
+  if (!supabaseAdmin) return [];
+  const { data, error } = await supabaseAdmin.from("academy_hosted_labs").select("*").is("stop_at", null);
+  if (error) {
+    console.error("academy_hosted_labs orphan read failed", error.message);
+    return [];
+  }
+  return (data ?? []).map((d) => ({ userId: d.user_id, row: hostedRow(d) }));
+}
+
+/** Labs with a session actively running against them -- the inverse of
+ *  hostedLabsWithNoSession. Pro entitlement can lapse (a cancelled
+ *  subscription, a cohort seat running out) without the lab itself knowing,
+ *  since nothing about the running pod changes; this is what the lapsed-Pro
+ *  sweep checks against the billing state instead of a stop time. */
+export async function hostedLabsRunning(): Promise<{ userId: string; row: HostedLabRow }[]> {
+  if (!supabaseAdmin) return [];
+  const { data, error } = await supabaseAdmin.from("academy_hosted_labs").select("*").not("stop_at", "is", null);
+  if (error) {
+    console.error("academy_hosted_labs running read failed", error.message);
     return [];
   }
   return (data ?? []).map((d) => ({ userId: d.user_id, row: hostedRow(d) }));
@@ -517,9 +721,43 @@ export async function claimPodSlot(userId: string, slots: number): Promise<numbe
 // would collide with the coach's own count on the first of every month.
 const memoryLabMinutes = new Map<string, { month: string; minutes: number }>();
 
-export const monthStamp = (d = new Date()) => d.toISOString().slice(0, 7);
+/**
+ * The window lab hours are counted in: an ISO week, UTC, so it turns over at
+ * midnight UTC on Monday. The usage table's key column is still called `month`
+ * from when this was a calendar month; the value is what changed, and a row
+ * from the old scheme simply stops being read.
+ */
+export const usageWindow = (d = new Date()) => {
+  const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  // ISO weeks belong to the year holding their Thursday.
+  t.setUTCDate(t.getUTCDate() - ((t.getUTCDay() + 6) % 7) + 3);
+  const firstThursday = new Date(Date.UTC(t.getUTCFullYear(), 0, 4));
+  firstThursday.setUTCDate(firstThursday.getUTCDate() - ((firstThursday.getUTCDay() + 6) % 7) + 3);
+  const week = 1 + Math.round((t.getTime() - firstThursday.getTime()) / (7 * 86_400_000));
+  return `${t.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
+};
 
-export async function readLabMinutes(userId: string, month = monthStamp()): Promise<number> {
+/** Midnight UTC on the Monday that refills the week. */
+export const usageResetsAt = (d = new Date()) => {
+  const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  t.setUTCDate(t.getUTCDate() + (7 - ((t.getUTCDay() + 6) % 7)));
+  return t.toISOString();
+};
+
+/** The month's lab minutes could not be read. Charging a session against a
+ *  number we do not have either bills a student twice or hands out free hours,
+ *  so every caller stops here rather than carrying on with a guess. */
+export class LabUsageUnreadableError extends Error {
+  constructor(detail: string) {
+    super("Range cannot read your lab hours right now. Try again in a minute, or email support@purvex.io.");
+    this.name = "LabUsageUnreadableError";
+    this.cause = detail;
+  }
+}
+
+/** PostgREST cannot find the function, or Postgres does not have it: academy.sql
+ *  has not been run on this database yet. */
+export async function readLabMinutes(userId: string, month = usageWindow()): Promise<number> {
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin
       .from("academy_lab_usage")
@@ -527,17 +765,43 @@ export async function readLabMinutes(userId: string, month = monthStamp()): Prom
       .eq("user_id", userId)
       .eq("month", month)
       .maybeSingle();
-    if (!error && typeof data?.minutes === "number") return data.minutes;
-    if (error) console.error("academy_lab_usage read failed", error.message);
+    // A failed read used to answer 0, and the write behind it then stored
+    // 0 + the new charge: one blip erased everything the student had spent
+    // this month. The month is now either read or not answered at all.
+    if (error) {
+      console.error("academy_lab_usage read failed", error.code, error.message);
+      throw new LabUsageUnreadableError(error.message);
+    }
+    return typeof data?.minutes === "number" ? data.minutes : 0;
   }
   const row = memoryLabMinutes.get(userId);
   return row && row.month === month ? row.minutes : 0;
 }
 
-export async function addLabMinutes(userId: string, minutes: number, month = monthStamp()): Promise<number> {
-  // Negative minutes give a session back when the start it paid for failed.
+export async function addLabMinutes(userId: string, minutes: number, month = usageWindow()): Promise<number> {
+  // Negative minutes give a session back when the start it paid for failed, or
+  // hand back the part of one that was never used.
+  const delta = Math.round(minutes);
+  if (supabaseAdmin) {
+    // Postgres does the arithmetic in one statement, so a charge and a refund
+    // landing together cannot overwrite each other. Read-add-write from here
+    // lost whichever of the two wrote first.
+    const { data, error } = await supabaseAdmin.rpc("academy_add_lab_minutes", { p_user: userId, p_month: month, p_minutes: delta });
+    if (!error && typeof data === "number") {
+      memoryLabMinutes.set(userId, { month, minutes: data });
+      return data;
+    }
+    if (error && !missingFunction(error.code)) {
+      console.error("academy_lab_usage add failed", error.code, error.message);
+      throw new LabUsageUnreadableError(error.message);
+    }
+    // The function is not there yet. Falling back keeps starts working on a
+    // database that has not had academy.sql run, which is the lesser problem:
+    // this is the racy path, not the one to stay on.
+    console.error("academy_add_lab_minutes is missing -- run academy.sql");
+  }
   // Clamped so a refund can never leave a student with a negative month.
-  const next = Math.max(0, (await readLabMinutes(userId, month)) + minutes);
+  const next = Math.max(0, (await readLabMinutes(userId, month)) + delta);
   memoryLabMinutes.set(userId, { month, minutes: next });
   if (supabaseAdmin) {
     const { error } = await supabaseAdmin.from("academy_lab_usage").upsert({
@@ -546,7 +810,10 @@ export async function addLabMinutes(userId: string, minutes: number, month = mon
       minutes: next,
       updated_at: new Date().toISOString(),
     });
-    if (error) console.error("academy_lab_usage upsert failed", error.message);
+    if (error) {
+      console.error("academy_lab_usage upsert failed", error.code, error.message);
+      throw new LabUsageUnreadableError(error.message);
+    }
   }
   return next;
 }
@@ -580,7 +847,20 @@ export async function clearShift(userId: string) {
 
 // Drill history: one row per finished drill, newest last. The daily drill
 // keeps its first result for the day; a timed run is always its own row.
-const MODES = ["daily", "timed", "ctf", "coach"] as const;
+// Every value EntryMode allows. A mode missing from this list does not fail
+// loudly, it falls through to "daily" below -- and "shift" was missing, so
+// every shift a student finished came back out of the database as that day's
+// daily drill. It took their drill, titled itself after its first incident,
+// joined their streak, and because buildWorkItems asks for mode === "shift"
+// to credit shift work, no incident resolved in a shift has ever reached a
+// portfolio. The six jobs the portfolio locks behind a live shift could not
+// be earned at all.
+const MODES = ["daily", "timed", "ctf", "coach", "shift"] as const;
+// And the compiler now says so. Without this the list and the type drift in
+// silence: the type is what the code believes, the list is what survives a
+// round trip through the database, and only the second one is load bearing.
+const MODE_COVERAGE: Record<EntryMode, true> = { daily: true, timed: true, ctf: true, coach: true, shift: true };
+void MODE_COVERAGE;
 
 // Databases that have not run the level/detail migration keep the question
 // detail inside the misses column, so missed questions are never lost.

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight, Check, ChevronDown, ClipboardList, Flame, Timer, X } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, ClipboardList, Flame, RefreshCw, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { useHostedLab } from "@/components/academy/hosted-lab-button";
 import { academyFetch, localDay, READINESS_PATH } from "@/lib/academy-client";
@@ -262,13 +262,13 @@ function LabFindings({ items }: { items: Finding[] }) {
   return (
     <li data-tour="findings">
       <div className="ax-path__row">
-        <span className="ax-path__n">04</span>
+        <span className="ax-path__n ax-path__n--word">Ongoing</span>
         <span className="ax-path__main">
-          <span className="ax-path__title">What your lab needs</span>
+          <span className="ax-path__title">Open findings in your lab</span>
           <span className="ax-path__body">
             {items.length === 0
-              ? "Nothing is wrong in your lab right now. The daily case will be a judgement case."
-              : "A real audit of your own lab. The daily lab task is one of these and it is checked in the lab."}
+              ? "Nothing is wrong in your lab right now, so today's case is a judgement call instead."
+              : `${items.length} thing${items.length === 1 ? "" : "s"} an auditor would flag in your directory today.`}
           </span>
         </span>
         <span className="ax-path__count">
@@ -413,6 +413,8 @@ function academyChrome() {
 }
 
 function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
+  // A hosted student has no script to run, so the note must not ask for one.
+  const { available: hostedLab } = useHostedLab();
   const { ask } = useCoach();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -472,7 +474,9 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
               <div className="dr-jobsheet__body">
                 {!security && jobs.some((j) => j.security) && (
                   <p className="dr-jobs__note">
-                    Security settings show up here after you run the updated lab script from Build the Environment once on the domain controller.
+                    {hostedLab
+                      ? "Security settings show up here once your lab reports them, which it does on its own."
+                      : "Security settings show up here after you run the updated lab script from Build the Environment once on the domain controller."}
                   </p>
                 )}
                 {done.length === 0 ? (
@@ -516,7 +520,10 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
 
 export function DrillRunner() {
   const { ask } = useCoach();
-  const { available: hostedLab } = useHostedLab();
+  // The lab's own state as well as whether they have one. A stopped lab is
+  // never going to send anything, so "waiting for your lab" is a lie told to
+  // somebody who only needs to be handed the start button.
+  const { available: hostedLab, state: labState, primary: startLab, waiting: labBusy } = useHostedLab();
   // Which row is working, and which row failed. A single flag made every button
   // say "Writing…" at once, and a single error landed under all four rows
   // rather than against the one the person had just pressed.
@@ -534,6 +541,18 @@ export function DrillRunner() {
   const [leaving, setLeaving] = useState(false);
   const [hint, setHint] = useState<string | null>(null);
   const finishing = useRef(false);
+
+  // The portfolio links here naming the job it wants done. Read it once, aim
+  // the next start at it, and take it off the URL so a reload is a normal day.
+  const [wantJob, setWantJob] = useState<string | null>(null);
+  useEffect(() => {
+    const job = new URLSearchParams(window.location.search).get("job");
+    if (!job) return;
+    setWantJob(job);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("job");
+    window.history.replaceState(null, "", url.toString());
+  }, []);
 
   const load = useCallback(() => {
     academyFetch(`/academy/api/drill?day=${localDay()}`)
@@ -610,7 +629,7 @@ export function DrillRunner() {
     }
   }
 
-  async function start(mode: Mode, format?: string) {
+  async function start(mode: Mode, format?: string, job?: string | null) {
     setBusy(true);
     setStarting(mode);
     setError(null);
@@ -622,7 +641,7 @@ export function DrillRunner() {
         method: "POST",
         signal: ctrl.signal,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "start", mode, day: localDay(), format }),
+        body: JSON.stringify({ action: "start", mode, day: localDay(), format, job: job ?? undefined }),
       });
       const text = await res.text();
       let data: { error?: string; done?: boolean; items?: unknown[]; token?: string; limitSeconds?: number; ai?: boolean } | null = null;
@@ -947,8 +966,8 @@ export function DrillRunner() {
   const s = status?.stats;
   const week = lastSeven();
   const today = localDay();
-  const caseNo = String((s?.total ?? 0) + 1).padStart(2, "0");
   const nameOf = (e: DrillEntry | null | undefined) => e?.detail?.[0]?.t ?? null;
+  const aimed = wantJob ? (status?.jobs.find((j) => j.id === wantJob) ?? null) : null;
   return (
     <div className="rd dr dr--floor">
       <header className="dr-mast">
@@ -985,31 +1004,85 @@ export function DrillRunner() {
           <ol className="ax-path dr-rows">
             <li data-tour="case">
               <div className="ax-path__row">
-                <span className="ax-path__n">01</span>
+                <span className="ax-path__n ax-path__n--word">Today</span>
                 <span className="ax-path__main">
                   <span className="ax-path__title">
-                    {s.today ? (nameOf(s.today) ?? "Daily scenario") : `Case ${caseNo}`}
+                    {/* The generated name is worth showing once it exists. Before that
+                        the row says what it is, rather than a case number that counts
+                        the student's own history and reads like a catalog id. */}
+                    {s.today ? (nameOf(s.today) ?? "Today’s case") : "Today’s case"}
                     {s.today && <em className={`ax-tag ${s.today.correct ? "ax-tag--good" : ""}`}>{scoreLabel(s.today)}</em>}
                   </span>
                   <span className="ax-path__body">
                     {s.today
-                      ? `Daily scenario · ${clock(s.today.seconds)}. ${streakLine(s)}`
-                      : `A decision, a written case, or a real change in your lab${status.focus ? `, aimed at ${status.focus}` : ""}. It gets a name when you open it.`}
+                      ? `Done in ${clock(s.today.seconds)}. ${aimed ? "Open that task again tomorrow and it can be the next one." : streakLine(s)}`
+                      : aimed
+                        ? `Aimed at: ${aimed.label}. About five minutes, from your own lab.`
+                        : `One scenario from your own lab, about five minutes${status.focus ? `, on ${status.focus.toLowerCase()}` : ""}. You make a call, write it up, or fix something for real.`}
                   </span>
                   {errorMode === "daily" && error && <span className="ax-path__err">{error}</span>}
                 </span>
                 <span className="ax-path__count">
                   {!s.today && (
-                    <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("daily")}>
-                      {starting === "daily" ? "Writing…" : "Open case"} <ArrowRight className="h-4 w-4" />
+                    <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("daily", undefined, wantJob)}>
+                      {starting === "daily" ? "Writing…" : "Start case"} <ArrowRight className="h-4 w-4" />
                     </button>
                   )}
                 </span>
               </div>
             </li>
+            <li data-tour="ctf">
+              <div className="ax-path__row">
+                <span className="ax-path__n ax-path__n--word">This week</span>
+                <span className="ax-path__main">
+                  <span className="ax-path__title">
+                    {status.ctf.entry ? (nameOf(status.ctf.entry) ?? "This week’s investigation") : "This week’s investigation"}
+                    {status.ctf.entry && <em className={`ax-tag ${status.ctf.entry.correct ? "ax-tag--good" : ""}`}>{status.ctf.entry.correct ? "Captured" : "Not captured"}</em>}
+                  </span>
+                  <span className="ax-path__body">
+                    {/* A hosted lab sends its Security log on its own, within a minute of
+                        coming online. None of that is the student's job, so the wait is
+                        reported rather than handed to them as a task. */}
+                    {status.ctf.entry
+                      ? "A new one opens Monday."
+                      : status.lab.events
+                        ? "One hard investigation a week, drawn from what actually happened in your lab. Around twenty minutes."
+                        : hostedLab && labState !== "ready" && labState !== "starting"
+                          ? "One hard investigation a week, drawn from what actually happened in your lab. Your lab is off, so there is nothing to draw from yet."
+                          : hostedLab
+                            ? "One hard investigation a week, drawn from what actually happened in your lab. Around twenty minutes."
+                            : "One hard investigation a week, drawn from what actually happened in your lab. Your domain controller has not sent its Security log yet."}
+                  </span>
+                  {errorMode === "ctf" && error && <span className="ax-path__err">{error}</span>}
+                </span>
+                <span className="ax-path__count">
+                  {!status.ctf.entry &&
+                    (status.lab.events ? (
+                      <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("ctf")}>
+                        {starting === "ctf" ? "Writing…" : "Start investigation"} <ArrowRight className="h-4 w-4" />
+                      </button>
+                    ) : hostedLab && (labState === "ready" || labState === "starting") ? (
+                      // Up, and the Security log is on its way by itself.
+                      <button type="button" className="rd-cta" onClick={load}>
+                        <RefreshCw className="h-4 w-4" /> Waiting for your lab
+                      </button>
+                    ) : hostedLab ? (
+                      // Off. Waiting would have been forever, and the button
+                      // only re-read a status that could not change.
+                      <button type="button" className="rd-cta" disabled={labBusy} onClick={() => void startLab()}>
+                        {labBusy ? "Starting…" : "Start your lab"} <ArrowRight className="h-4 w-4" />
+                      </button>
+                    ) : (
+                      <Link className="rd-cta" href="/range/phase-1/home-lab-setup#build-the-environment">
+                        Update your lab script <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    ))}
+                </span>
+              </div>
+            </li>
             <li data-tour="shift">
               <div className="ax-path__row">
-                <span className="ax-path__n">02</span>
+                <span className="ax-path__n ax-path__n--word">Any time</span>
                 <span className="ax-path__main">
                   <span className="ax-path__title">Shift</span>
                   <span className="ax-path__body">
@@ -1026,34 +1099,6 @@ export function DrillRunner() {
                     <a className="rd-cta" href="/range/upgrade">
                       See Range Pro <ArrowRight className="h-4 w-4" />
                     </a>
-                  )}
-                </span>
-              </div>
-            </li>
-            <li data-tour="ctf">
-              <div className="ax-path__row">
-                <span className="ax-path__n">03</span>
-                <span className="ax-path__main">
-                  <span className="ax-path__title">
-                    {status.ctf.entry ? (nameOf(status.ctf.entry) ?? "Weekly CTF") : "Weekly CTF"}
-                    {status.ctf.entry && <em className={`ax-tag ${status.ctf.entry.correct ? "ax-tag--good" : ""}`}>{status.ctf.entry.correct ? "Captured" : "Not captured"}</em>}
-                  </span>
-                  <span className="ax-path__body">
-                    {status.ctf.entry
-                      ? "A new investigation opens Monday."
-                      : `One hard investigation a week, asked about your own Security log. ${
-                          status.lab.events
-                            ? "The lab sent its log so this one is about what really happened in it."
-                            : "Update the lab script from Build the Environment so it can ask about your own Security log."
-                        }`}
-                  </span>
-                  {errorMode === "ctf" && error && <span className="ax-path__err">{error}</span>}
-                </span>
-                <span className="ax-path__count">
-                  {!status.ctf.entry && (
-                    <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("ctf")}>
-                      {starting === "ctf" ? "Writing…" : "Start"} <ArrowRight className="h-4 w-4" />
-                    </button>
                   )}
                 </span>
               </div>

@@ -129,8 +129,20 @@ const evAcct = (rows: { account: string }[] | undefined, sam: string) => (rows ?
 const evLocked = (e: LabEvents | undefined, sam: string) => evAcct(e?.lockouts, sam) || evAcct(e?.failures, sam);
 const evDisabled = (e: LabEvents | undefined, sam: string) => evAcct(e?.disabled, sam);
 const evFailed = (e: LabEvents | undefined, sam: string) => evAcct(e?.failures, sam);
+// A group addition names its member the way the event does, and event 4728
+// carries a distinguished name: the digest keeps the leading CN, so a member
+// reads "Priya Nair" while the incident knows her as priya.nair. Comparing
+// those directly never matched, and an incident gated on it could not be
+// closed however correctly the student fixed it. Letters and digits only on
+// both sides, so "Priya Nair" and "priya.nair" are the same person. The other
+// evidence helpers read TargetUserName, which is already a sAMAccountName.
+const sameAccount = (a: string, b: string) => {
+  const key = (v: string) => v.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const [x, y] = [key(a), key(b)];
+  return Boolean(x) && Boolean(y) && (x.includes(y) || y.includes(x));
+};
 const evGroupAdd = (e: LabEvents | undefined, member: string, group: string) =>
-  (e?.groupAdds ?? []).some((g) => (g.member ?? "").toLowerCase().includes(member.toLowerCase()) && (g.group ?? "").toLowerCase().includes(group.toLowerCase()));
+  (e?.groupAdds ?? []).some((g) => sameAccount(g.member ?? "", member) && (g.group ?? "").toLowerCase().includes(group.toLowerCase()));
 // 4738/4739 evidence only exists in a v2+ digest. On older labs, don't gate on it
 // (fall back to the resolve check) so those incidents stay winnable until the lab updates.
 const digestHas4738 = (e: LabEvents | undefined) => (e?.v ?? 1) >= 2;

@@ -15,15 +15,11 @@ $sprayed = $Sprayed
 
 if ($Undo) {
     foreach ($s in $targets) { Unlock-ADAccount -Identity $s -ErrorAction SilentlyContinue }
+    Restore-IncidentLockoutPolicy
     return
 }
 
-try {
-    if ((Get-ADDefaultDomainPasswordPolicy).LockoutThreshold -eq 0) {
-        Set-ADDefaultDomainPasswordPolicy -Identity (Get-ADDomain).DistinguishedName -LockoutThreshold 5 -LockoutDuration "00:30:00" -LockoutObservationWindow "00:30:00"
-    }
-}
-catch { }
+Set-IncidentLockoutPolicy
 
 # One or two tries each across the org (the spray), then push the two targets over the threshold.
 foreach ($s in $sprayed) { if (Confirm-User $s) { Invoke-BadSignIn -Sam $s -Times 2 } }

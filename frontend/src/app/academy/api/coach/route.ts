@@ -6,7 +6,18 @@ import { COACH_SHOT_ASK, sanitizeCoachImages } from "@/lib/academy-coach-media";
 import { sanitizeProfile } from "@/lib/academy-certs";
 import { ensureRoleBrief } from "@/lib/academy-role-research";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
-import { bumpLabCoachUsage, bumpUsage, loadDrills, loadLabState, loadProfile, loadProgress, readLabCoachUsage, readUsage, resetUsage } from "@/lib/academy-store";
+import {
+  claimCoachQuestion,
+  claimLabCoachQuestion,
+  loadDrills,
+  loadLabState,
+  loadProfile,
+  loadProgress,
+  readUsage,
+  releaseCoachQuestion,
+  releaseLabCoachQuestion,
+  resetUsage,
+} from "@/lib/academy-store";
 import { LAB_COACH_PER_LAB, LAB_PAUSE_REPLY, runLabCoachTurn } from "@/lib/academy-lab-coach";
 import { isRangePro, proRequired } from "@/lib/range-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
@@ -126,38 +137,55 @@ export async function POST(request: Request) {
   // A role whose research failed or went stale is looked up again, after this reply.
   if (profile) after(() => Promise.all(profile.roles.map((role) => ensureRoleBrief(apiKey, role))).then(() => undefined));
 
-  const used = await readUsage(student.id, day);
   const { drills, bonus, limit } = await allowance(student.id, day);
-  if (used >= limit) {
+  // Claimed before the model is called, not counted after it. The old order
+  // read the count, checked it, spent several seconds on the model and then
+  // wrote count + 1, so every request sent at once read the same number and
+  // every one passed. The claim is one statement in Postgres, and it answers
+  // null at the cap. A turn that failed without spending anything hands the
+  // question back below.
+  const used = await claimCoachQuestion(student.id, limit, day);
+  if (used === null) {
     return NextResponse.json(
       { error: `Daily coach limit reached (${limit} questions). A drill earns more, or try again tomorrow.`, remaining: 0, bonus },
       { status: 429 }
     );
   }
+  const left = Math.max(0, Math.min(limit, limit - used));
 
   // Inside a browser lab: a short, focused turn, and a cap per lab so one lab cannot use up the day.
   const place = parseCoachPlace(body.place);
   if (place?.lab) {
-    const labUsed = await readLabCoachUsage(student.id, place.lab, day);
-    if (labUsed >= LAB_COACH_PER_LAB) {
-      return NextResponse.json({ reply: LAB_PAUSE_REPLY, remaining: Math.max(0, limit - used), limit, bonus });
+    // Hitting the per-lab cap is a nudge to go back to the lab, not an error,
+    // so the day's question goes back before the pause reply.
+    const labUsed = await claimLabCoachQuestion(student.id, place.lab, LAB_COACH_PER_LAB, day);
+    if (labUsed === null) {
+      await releaseCoachQuestion(student.id, day);
+      return NextResponse.json({ reply: LAB_PAUSE_REPLY, remaining: Math.max(0, limit - used + 1), limit, bonus });
     }
     try {
       const { text, model } = await runLabCoachTurn({ apiKey, lab: place.lab, at: place.at, roles: profile?.roles, history, userMessage: message, images });
-      await bumpLabCoachUsage(student.id, place.lab, labUsed, day);
-      const remaining = Math.max(0, Math.min(limit, limit - (await bumpUsage(student.id, used, day))));
       // The receipt is what the student sends back to thumb this reply up or
       // down. It carries the exchange sealed, so the rating lands on what Coach
       // really said rather than whatever the browser claims it said.
       const receipt = sealReceipt({ userId: student.id, question: message, reply: text, model, mode: "lab", lab: place.lab });
-      return NextResponse.json({ reply: text, remaining, limit, model, bonus, receipt });
+      return NextResponse.json({ reply: text, remaining: left, limit, model, bonus, receipt });
     } catch {
+      // Our outage, so it costs them nothing.
+      await Promise.all([releaseCoachQuestion(student.id, day), releaseLabCoachQuestion(student.id, place.lab, day)]);
       return NextResponse.json({ error: "PurveX Coach is unavailable right now." }, { status: 502 });
     }
   }
 
+  // A turn is a tool loop, so it can make several model calls and then fail on
+  // a later one. Refunding every failure would make a late failure the cheapest
+  // way to buy model calls, so the refund below asks whether anything was
+  // actually spent. The in-lab turn is a single call, so a failure there has
+  // always cost nothing and is always refunded.
+  const charged = { any: false };
   try {
     const { text, model } = await runCoachTurn({
+      charged,
       apiKey,
       history,
       userMessage: message,
@@ -167,10 +195,10 @@ export async function POST(request: Request) {
       drills,
       tools: { results, userId: student.id, profile, loadLabState: async () => (await loadLabState(student.id))?.snapshot ?? null },
     });
-    const remaining = Math.max(0, Math.min(limit, limit - (await bumpUsage(student.id, used, day))));
     const receipt = sealReceipt({ userId: student.id, question: message, reply: text, model, mode: String(body.mode ?? ""), lab: place?.lab ?? null });
-    return NextResponse.json({ reply: text, remaining, limit, model, bonus, receipt });
+    return NextResponse.json({ reply: text, remaining: left, limit, model, bonus, receipt });
   } catch {
+    if (!charged.any) await releaseCoachQuestion(student.id, day);
     return NextResponse.json({ error: "PurveX Coach is unavailable right now." }, { status: 502 });
   }
 }

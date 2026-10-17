@@ -119,6 +119,26 @@ export function cohortEndingEmail(student: Named, ended: boolean, o: string): Bu
   return { subject: ended ? "Your PurveX cohort access has ended" : "Your PurveX cohort access ends in a week", html };
 }
 
+/** Sent a day before a Range Pro free trial ends, so the charge that follows
+ *  it is never a surprise. The trial auto-continues into a paid subscription
+ *  unless the student cancels first -- this is the one chance to say so
+ *  before the card is charged, not after. */
+export function trialEndingEmail(student: Named, until: Date, o: string): Built {
+  const url = base(o);
+  const when = until.toLocaleDateString(undefined, { dateStyle: "long" });
+  const html =
+    pre(`Your trial ends ${when}. $49 bills then unless you cancel.`) +
+    h(`Your Range Pro trial ends ${when}, ${first(student.name)}`) +
+    p(
+      `Your free trial ends ${when}. After that, $49 bills to the card on file and you carry on with everything Pro: your own cloud lab, PurveX Coach, and a Proof Profile you can publish.`
+    ) +
+    p("Want to keep it? Nothing to do. It continues on its own.") +
+    button(`${url}/range/upgrade`, "Manage billing or cancel") +
+    note("Cancel before the trial ends and you will not be charged.") +
+    fallback(`${url}/range/upgrade`, "Or open this link:");
+  return { subject: `Your Range Pro trial ends ${when}`, html };
+}
+
 export type DigestInput = {
   className: string;
   students: number;

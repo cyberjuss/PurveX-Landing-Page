@@ -2,7 +2,7 @@ import type { Results, Skill } from "@/lib/academy-score";
 
 export type MissionCatalogEntry = {
   id: string;
-  challenge: "day-one" | "ticket-queue" | "alert-queue";
+  challenge: "day-one" | "ticket-queue" | "alert-queue" | "wire" | "crypto";
   title: string;
   prompt: string;
   skill: Skill;
@@ -158,6 +158,44 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Staff can reach the file share by IP address but not by the name files. Find what the name resolves to, point it back at the domain controller, and report the wrong address.",
     skill: "troubleshooting",
   },
+  // The hardening tickets. Unlike the others nothing is planted for these:
+  // the domain ships this way, which is the point. A real estate is not
+  // broken, it is unfinished, and the work is noticing that and closing it.
+  "tq-21": {
+    id: "tq-21",
+    challenge: "ticket-queue",
+    title: "Nothing Stops Password Guessing (INC-1059)",
+    prompt: "Security found the domain never locks an account, however many times a password is wrong. Set a lockout policy of 10 tries or fewer with a lock of at least 15 minutes, then report the event ID a domain controller writes when an account is locked out.",
+    skill: "security",
+  },
+  "tq-22": {
+    id: "tq-22",
+    challenge: "ticket-queue",
+    title: "No Record of What Ran (INC-1060)",
+    prompt: "An investigation stalled because nothing on the domain controller records which programs were started. Turn on auditing for process creation, then report the event ID that records a new process.",
+    skill: "security",
+  },
+  "tq-23": {
+    id: "tq-23",
+    challenge: "ticket-queue",
+    title: "The Security Log Runs Out (INC-1061)",
+    prompt: "The Security log is overwriting itself within days, so last week's sign-ins are already gone. Raise its maximum size to at least 512 MB, then report the size in MB it was set to before you changed it.",
+    skill: "security",
+  },
+  "tq-24": {
+    id: "tq-24",
+    challenge: "ticket-queue",
+    title: "Admins Under the Same Rules as Everyone (INC-1062)",
+    prompt: "Accounts that can change the domain are held to the same password rules as everyone else. Apply a fine-grained password policy of at least 16 characters, locking after 5 tries or fewer, to the IT administrators group. Then report the group you applied it to.",
+    skill: "security",
+  },
+  "tq-25": {
+    id: "tq-25",
+    challenge: "ticket-queue",
+    title: "A Workstation Nobody Uses (INC-1063)",
+    prompt: "Operations says a workstation in their folder was decommissioned and never retired in the directory. Find it, read its Description, disable it without deleting it, and report the ticket number written there.",
+    skill: "directory",
+  },
   "tq-20": {
     id: "tq-20",
     challenge: "ticket-queue",
@@ -221,6 +259,18 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Choose the best first response move.",
     skill: "security",
   },
+  "cap-01": { id: "cap-01", challenge: "wire", title: "Where the Job Signs In", prompt: "Capture the nightly job and name the port its directory sign-in uses.", skill: "logs" },
+  "cap-02": { id: "cap-02", challenge: "wire", title: "Who the Job Signs In As", prompt: "Read the directory sign-in and name the account the job uses.", skill: "logs" },
+  "cap-03": { id: "cap-03", challenge: "wire", title: "What the Sign-In Gives Away", prompt: "Read the password the job sends over the wire.", skill: "security" },
+  "cap-04": { id: "cap-04", challenge: "wire", title: "The File on the Wire", prompt: "Read the copied settlement file and name its first reference.", skill: "logs" },
+  "cap-05": { id: "cap-05", challenge: "wire", title: "Narrowing the Capture", prompt: "Give the Wireshark display filter that isolates the directory traffic.", skill: "logs" },
+  "cap-06": { id: "cap-06", challenge: "wire", title: "Containing a Burned Credential", prompt: "Disable the service account and name the protocol the job should use.", skill: "security" },
+  "cry-01": { id: "cry-01", challenge: "crypto", title: "Three Mirrors, One Checksum", prompt: "Hash three mirrors and name the one that fails the published checksum.", skill: "security" },
+  "cry-02": { id: "cry-02", challenge: "crypto", title: "What Changed Inside It", prompt: "Compare the failing mirror and name the field whose line differs.", skill: "security" },
+  "cry-03": { id: "cry-03", challenge: "crypto", title: "Naming the Algorithm", prompt: "Name the hashing algorithm from the length of the exported hashes.", skill: "security" },
+  "cry-04": { id: "cry-04", challenge: "crypto", title: "Cracking a Weak Hash", prompt: "Recover a password from its hash using the common-password list.", skill: "security" },
+  "cry-05": { id: "cry-05", challenge: "crypto", title: "The Hash That Repeats", prompt: "Name the other account that reused the same password.", skill: "security" },
+  "cry-06": { id: "cry-06", challenge: "crypto", title: "Containing the Unsigned Mirror", prompt: "Quarantine the unsigned mirror and name what a trustworthy build carries.", skill: "security" },
 };
 
 export const CHALLENGE_PATHS: Record<
@@ -230,6 +280,8 @@ export const CHALLENGE_PATHS: Record<
   "day-one": { href: "/range/phase-1/home-lab-challenges", tab: "operation-day-one" },
   "ticket-queue": { href: "/range/phase-1/home-lab-challenges", tab: "ticket-queue" },
   "alert-queue": { href: "/range/phase-2/week-2", tab: "the-2-am-login" },
+  "wire": { href: "/range/phase-1/week-3", tab: "the-nightly-settlement-push" },
+  "crypto": { href: "/range/phase-1/week-2", tab: "the-mirror-that-does-not-match" },
 };
 
 export function missionHref(id: string): string {
@@ -247,6 +299,8 @@ export function challengeFromMission(id: string): MissionCatalogEntry["challenge
   if (id.startsWith("d1-")) return "day-one";
   if (/^tq-(0[1-5]|1[1-9]|20)$/.test(id)) return "ticket-queue";
   if (id.startsWith("tq-")) return "alert-queue";
+  if (id.startsWith("cap-")) return "wire";
+  if (id.startsWith("cry-")) return "crypto";
   return MISSION_CATALOG[id]?.challenge ?? null;
 }
 
@@ -273,6 +327,8 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "day-one": "Operation Day One",
   "ticket-queue": "Ticket Queue",
   "alert-queue": "The 2 AM Login",
+  "wire": "The Nightly Settlement Push",
+  "crypto": "The Mirror That Does Not Match",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {
@@ -304,7 +360,7 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
 }
 
 /** Tickets that need a real change in the student's lab before they can answer. */
-export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20"];
+export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25", "cap-06", "cry-06"];
 
 /** The on-the-job task each mission practices. A gated ticket seen in the lab counts as proven. */
 export const MISSION_JOBS: Record<string, string> = {

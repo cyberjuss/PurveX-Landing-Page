@@ -5,13 +5,12 @@ import { ArrowRight } from "lucide-react";
 import { type PhaseDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { READINESS_PATH, useResults } from "@/lib/academy-client";
-import { CHALLENGE_LABELS, challengeHref, lastTouchedMission } from "@/lib/academy-missions";
 import { LEVELS, summarize } from "@/lib/academy-score";
 import { DrillCard } from "./drill-card";
 import { ReviewCard } from "./review-card";
-import { accountFirstName, useAcademyAccount } from "./academy-account";
+import { preferredFirstName, useAcademyAccount, useAcademyGoals } from "./academy-account";
 import { useAcademyProgress } from "./academy-progress";
-import { isLockedHref, isPhaseLocked } from "@/lib/academy-locks";
+import { isPhaseLocked } from "@/lib/academy-locks";
 
 const PHASE_COPY: { slug: string; href: string; title: string; body: string }[] = [
   {
@@ -42,11 +41,9 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
   const { isComplete, isPhaseComplete, completedCount, lastStop } = useAcademyProgress();
   const results = useResults();
   const readiness = summarize(results);
-  const firstName = accountFirstName(useAcademyAccount());
+  const firstName = preferredFirstName(useAcademyAccount(), useAcademyGoals().profile);
   const returning = Boolean(lastStop || completedCount > 0 || readiness.finished > 0);
   const greeting = returning ? "Welcome back" : "Welcome";
-  const touched = lastTouchedMission(results);
-  const lastMission = touched && !isLockedHref(challengeHref(touched.challenge, results)) ? touched : null;
 
   let firstOpen: { href: string; title: string; phaseSlug: string; entrySlug: string } | null = null;
   for (const copy of PHASE_COPY) {
@@ -63,23 +60,32 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
 
   const lastPhase = lastStop && !isPhaseLocked(lastStop.phaseSlug) ? phases.find((p) => p.slug === lastStop.phaseSlug) : undefined;
   const lastEntry = lastPhase ? entriesOf(lastPhase).find((e) => e.slug === lastStop?.entrySlug && e.sections.length > 0) : undefined;
-  // Opening something is not the same as getting anywhere. Until a student has
-  // finished an entry or a mission, the last place they clicked is not where
-  // they "left off" -- someone who looked at the home lab once and bounced was
-  // being sent back to it forever, with the course still reading 0/5 and week 1
-  // never offered. Once there is real progress, the last stop wins again.
-  const resumeEntry = completedCount > 0 || readiness.finished > 0 ? lastEntry : undefined;
+  // The last stop is where they stopped, and it wins.
+  //
+  // It used to be ignored until a student had finished something, because
+  // the stop was a localStorage note of the last link clicked in this
+  // browser -- a drive-by click counted, and someone who glanced at the
+  // home lab once was sent back to it forever with week 1 never offered.
+  // It now comes from the account, written after a tab has been open a
+  // second and a half, so it is somewhere they actually were. Sending them
+  // back to it is the point.
+  const resumeEntry = lastEntry;
+  // The tab too, so they land on what they were reading rather than the top
+  // of the page it was on.
+  const lastHash = lastStop?.tabSlug ? `#${lastStop.tabSlug}` : "";
+  // Name the place, not the kind of thing it is. The tab on its own said
+  // "Ticket Queue", which is a category and could be any of fifteen tickets
+  // in any of three lessons; the lesson on its own does not say which tab
+  // they had open. Both, when they differ.
+  const lastTab = lastStop?.tabLabel;
+  const pinTitle = resumeEntry ? (lastTab && lastTab !== resumeEntry.title ? `${resumeEntry.title} · ${lastTab}` : resumeEntry.title) : "";
   const pin = resumeEntry && lastPhase
-    ? { href: `/range/${lastPhase.slug}/${resumeEntry.slug}`, title: resumeEntry.title, phaseSlug: lastPhase.slug, entrySlug: resumeEntry.slug, kind: "last" as const }
+    ? { href: `/range/${lastPhase.slug}/${resumeEntry.slug}${lastHash}`, title: pinTitle, phaseSlug: lastPhase.slug, entrySlug: resumeEntry.slug, kind: "last" as const }
     : firstOpen
       ? { ...firstOpen, kind: "start" as const }
       : lastEntry && lastPhase
         ? { href: `/range/${lastPhase.slug}/${lastEntry.slug}`, title: lastEntry.title, phaseSlug: lastPhase.slug, entrySlug: lastEntry.slug, kind: "last" as const }
         : null;
-  // The card names the place it links to: an open challenge wins over the last lesson tab.
-  const resume = lastMission
-    ? { href: challengeHref(lastMission.challenge, results), title: CHALLENGE_LABELS[lastMission.challenge], kind: "last" as const }
-    : pin;
 
   return (
     <div className="rd ax-home">
@@ -98,24 +104,9 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
             <em>{LEVELS[readiness.level].label}</em>
           </Link>
         </div>
-        <div className="ax-status ax-rise" style={{ ["--ax-i" as string]: 0 }}>
-          {resume ? (
-            <Link href={resume.href} className="ax-status__next" data-tour="next">
-              <span className="rd-kicker">{resume.kind === "last" ? "Last stop" : "Start here"}</span>
-              <strong>
-                {resume.title} <ArrowRight className="h-4 w-4" />
-              </strong>
-            </Link>
-          ) : (
-            <div className="ax-status__next">
-              <span className="rd-kicker">Course</span>
-              <strong>Published lessons complete</strong>
-            </div>
-          )}
-        </div>
       </header>
 
-      <div className="ax-rise" style={{ ["--ax-i" as string]: 1 }} data-tour="drills">
+      <div className="ax-rise" style={{ ["--ax-i" as string]: 0 }} data-tour="drills">
         <DrillCard />
       </div>
 
@@ -175,7 +166,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
             </>
           );
           return (
-            <li key={copy.slug} className="ax-rise" style={{ ["--ax-i" as string]: i + 2 }}>
+            <li key={copy.slug} className="ax-rise" style={{ ["--ax-i" as string]: i + 1 }}>
               {soon ? (
                 <div className="ax-path__row ax-path__row--soon">{row}</div>
               ) : (

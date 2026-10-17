@@ -5,6 +5,7 @@ import {
   extendHostedLab,
   hostedLabLink,
   hostedLabsConfigured,
+  hostedLabIdleStopMinutes,
   hostedLabSessionHours,
   hostedLabStatus,
   labHours,
@@ -14,9 +15,10 @@ import {
   resetHostedLab,
   startHostedLab,
   stopDueHostedLabs,
+  stopOrphanedHostedLabs,
   stopHostedLab,
 } from "@/lib/academy-hosted";
-import { PodSlotsUnreadableError } from "@/lib/academy-store";
+import { LabUsageUnreadableError, PodSlotsUnreadableError } from "@/lib/academy-store";
 import { isRangePro, proRequired } from "@/lib/range-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
 
@@ -49,7 +51,36 @@ let lastSweep = 0;
 function sweep() {
   if (Date.now() - lastSweep < 5 * 60_000) return;
   lastSweep = Date.now();
-  after(() => stopDueHostedLabs().then(() => undefined).catch(() => undefined));
+  after(() =>
+    Promise.all([stopDueHostedLabs(), stopOrphanedHostedLabs()])
+      .then(() => undefined)
+      .catch(() => undefined)
+  );
+}
+
+// One payload for the status read and for every action's reply. An action that
+// answered with the bare lab status dropped the hours meter and the session
+// length off the panel until the next read, so stopping a lab made its own
+// hours disappear.
+async function statusPayload(userId: string) {
+  // The hours meter never decides whether an action worked. It is a reading on
+  // the panel, and a start that succeeded must not report a failure because the
+  // month's minutes could not be read.
+  const [status, hours] = await Promise.all([hostedLabStatus(userId), labHours(userId).catch(() => null)]);
+  return {
+    available: true,
+    ...status,
+    hoursUsed: hours ? Math.round(hours.used) : 0,
+    // Minutes as well: a twenty-minute session rounds to nothing in hours, and
+    // the panel shows a clock.
+    minutesUsed: hours ? Math.round(hours.minutes) : 0,
+    // hoursLeft is Infinity when the cap is off, which JSON turns into null --
+    // the page reads null as "no cap to show", not "no hours left".
+    hoursLimit: hours?.limit || null,
+    hoursLeft: hours && Number.isFinite(hours.left) ? Math.round(hours.left) : null,
+    sessionHours: hostedLabSessionHours(),
+    idleStopMinutes: hostedLabIdleStopMinutes(),
+  };
 }
 
 export async function GET(request: Request) {
@@ -68,20 +99,16 @@ export async function GET(request: Request) {
       ? NextResponse.json({ available: false, locked: true, upgrade: "/range/upgrade" })
       : NextResponse.json({ available: false });
   }
-  if (!canUseHostedLab(student.email)) return NextResponse.json({ available: false });
+  // Pro, but this account is not in the pilot allowlist yet. available stays
+  // false so no Start button appears -- it would only 503 -- but notEnabled
+  // rides along so the lab surfaces can say why instead of showing a plain
+  // "Offline" with a Start button that fails. A student left with the silent
+  // version has no way to tell this apart from a lab they simply have not
+  // started, which is how it reached support as "I cannot go online".
+  if (!canUseHostedLab(student.email)) return NextResponse.json({ available: false, notEnabled: true });
   sweep();
   try {
-    const [status, hours] = await Promise.all([hostedLabStatus(student.id), labHours(student.id)]);
-    // hoursLeft is Infinity when the cap is off, which JSON turns into null --
-    // the page reads null as "no cap to show", not "no hours left".
-    return NextResponse.json({
-      available: true,
-      ...status,
-      hoursUsed: Math.round(hours.used),
-      hoursLimit: hours.limit || null,
-      hoursLeft: Number.isFinite(hours.left) ? Math.round(hours.left) : null,
-      sessionHours: hostedLabSessionHours(),
-    });
+    return NextResponse.json(await statusPayload(student.id));
   } catch {
     return NextResponse.json({ available: true, state: "none", error: "Could not reach AWS. Try again in a minute." });
   }
@@ -119,7 +146,7 @@ export async function POST(request: Request) {
       if (!creds) return NextResponse.json({ error: "The Ubuntu machine is not running yet." }, { status: 409 });
       return NextResponse.json(creds);
     } else return NextResponse.json({ error: "Unknown action." }, { status: 400 });
-    return NextResponse.json(await hostedLabStatus(student.id));
+    return NextResponse.json(await statusPayload(student.id));
   } catch (err) {
     // Running out of hours is not a fault, so it does not get the AWS wording
     // or the error log. 429 so the page can tell them apart from a real outage.
@@ -134,6 +161,12 @@ export async function POST(request: Request) {
     // them round a loop that cannot end until someone runs academy.sql.
     if (err instanceof PodSlotsUnreadableError) {
       console.error("hosted lab blocked: academy.sql has not been run", err.cause);
+      return NextResponse.json({ error: err.message }, { status: 503 });
+    }
+    // The month could not be read, so the session was never charged. Refusing
+    // is the honest answer: starting anyway hands out hours nothing counts.
+    if (err instanceof LabUsageUnreadableError) {
+      console.error("hosted lab blocked: lab hours unreadable", err.cause);
       return NextResponse.json({ error: err.message }, { status: 503 });
     }
     console.error("hosted lab action failed", action, err instanceof Error ? err.message : err);

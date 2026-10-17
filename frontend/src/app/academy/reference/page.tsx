@@ -16,7 +16,6 @@ import {
   Search,
   Shield,
   Waypoints,
-  X,
   type LucideIcon,
 } from "lucide-react";
 
@@ -409,17 +408,11 @@ function Section({ id, title, icon: Icon, children }: { id: string; title: strin
 }
 
 export default function ReferencePage() {
-  const [query, setQuery] = useState("");
   const [activeId, setActiveId] = useState<string | null>(null);
-  const q = query.trim().toLowerCase();
 
-  const filteredCategories = categories
-    .map((cat) => ({
-      ...cat,
-      items: cat.items.filter((item) => !q || item.title.toLowerCase().includes(q) || item.keywords.includes(q)),
-    }))
-    .filter((cat) => cat.items.length > 0);
-
+  // Everything, always. The search box filtered these, and a cheat sheet
+  // you have to search is one you cannot skim.
+  const filteredCategories = categories;
   const visibleItems = filteredCategories.flatMap((c) => c.items);
 
   // Highlights whichever section is currently at the top of the viewport,
@@ -491,23 +484,6 @@ export default function ReferencePage() {
         </div>
       </header>
 
-      <div className="sticky top-[var(--ax-chrome,69px)] z-10 -mx-4 bg-[var(--pvrx-bg-light)] px-4 pb-2 pt-6 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
-        <div className="ax-search">
-          <Search className="h-4 w-4 shrink-0 text-[var(--rd-ink-3)]" />
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search the cheat sheet…"
-          />
-          {query && (
-            <button type="button" onClick={() => setQuery("")} aria-label="Clear search" className="text-[var(--rd-ink-3)]">
-              <X className="h-4 w-4" />
-            </button>
-          )}
-        </div>
-      </div>
-
       <div className="mt-8 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10">
         {/* Desktop only -- on mobile there's no room for a side column, and
             the category headings inline in the content below do the same
@@ -530,11 +506,7 @@ export default function ReferencePage() {
         </nav>
 
         <div className="min-w-0 flex-1">
-          {filteredCategories.length === 0 ? (
-            <p className="border-t border-[var(--rd-line)] pt-4 text-sm text-[var(--rd-ink-3)]">
-              {`No matches for "${query}".`}
-            </p>
-          ) : (
+          {(
             <div className="flex flex-col gap-10">
               {filteredCategories.map((cat) => (
                 <div key={cat.label}>

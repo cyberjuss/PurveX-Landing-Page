@@ -175,13 +175,42 @@ async function main() {
   );
   check(
     "the signup redirect keeps the intent",
-    upgradeSrc.includes('"/range/upgrade?checkout=1"'),
+    upgradeSrc.includes("/range/upgrade?checkout=1"),
     "the redirect to signup drops ?checkout=1, so they come back to the offer screen"
   );
   check(
+    "the signup redirect keeps the skip-the-trial choice too",
+    upgradeSrc.includes('skipTrial ? "&trial=0" : ""'),
+    "trial=0 is dropped on the way to signup, so the direct-pay click comes back offering the trial instead"
+  );
+  check(
     "arriving back signed in goes straight to Stripe",
-    /autoCheckout\s*&&\s*goToStripe\(\)|goToStripe\(\)/.test(upgradeSrc) && upgradeSrc.includes("autoCheckout"),
+    /goToStripe\(/.test(upgradeSrc) && upgradeSrc.includes("autoCheckout"),
     "nothing forwards a returning buyer to Stripe automatically"
+  );
+  check(
+    "the auto-checkout respects which link they chose",
+    upgradeSrc.includes("const autoLinkUrl = skipTrial ? directLinkUrl : trialLinkUrl;"),
+    "a returning buyer who asked to skip the trial could be sent to the trial link instead"
+  );
+
+  console.log("\nSigning in with nowhere to land still gets you to Range");
+  // The login page hides its whole form until a browser-only check decides
+  // whether to bounce straight to signup, so nothing server-rendered ever
+  // shows the "Create an account" link -- the HTTP suite used to assert it
+  // was there and failed on every run, not because `next` was ever dropped.
+  // Read the source instead, the same way as the pair above.
+  const loginSrc = readFileSync("src/app/account/login/page.tsx", "utf8");
+  const NEXT_LINK = "`/account/signup?next=${encodeURIComponent(next)}`";
+  check(
+    "a first-time visitor is bounced to signup with the destination intact",
+    loginSrc.includes(`router.replace(${NEXT_LINK})`),
+    "the auto-redirect to signup drops `next`, so a new visitor lands on /pricing"
+  );
+  check(
+    "a returning visitor's Create an account link carries the destination",
+    loginSrc.includes(`href={${NEXT_LINK}}`),
+    "the Create an account link dropped `next`, so signup would land on /pricing"
   );
   // The one case that must never auto-charge: someone who already pays. The
   // match is pinned to the goToStripe call rather than the plan comparison
@@ -189,7 +218,7 @@ async function main() {
   // guard deleted.
   check(
     "an existing subscriber is never auto-sent to buy again",
-    /plan\?\.plan === "free" && autoCheckout\)\s*goToStripe\(\)/.test(upgradeSrc),
+    /plan\?\.plan === "free" && autoCheckout\)\s*goToStripe\(/.test(upgradeSrc),
     "the auto-redirect does not check the plan first, so a Pro account could be sent to a second checkout"
   );
 

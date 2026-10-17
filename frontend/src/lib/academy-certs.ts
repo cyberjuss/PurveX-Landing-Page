@@ -170,9 +170,26 @@ export const MISSION_DOMAINS: Record<string, string[]> = {
   "tq-18": ["sp-ops", "sp-arch"],
   "tq-19": ["cy-ir", "sp-threats"],
   "tq-20": ["sp-arch", "sp-ops"],
+  "tq-21": ["sp-ops", "sp-threats"],
+  "tq-22": ["cy-ops", "sp-ops"],
+  "tq-23": ["cy-ops", "cy-ir"],
+  "tq-24": ["sp-ops", "sp-arch"],
+  "tq-25": ["cy-vuln", "sp-program"],
   "tq-06": ["cy-ops", "sp-arch"],
   "tq-07": ["cy-ops", "sp-threats"],
   "tq-08": ["cy-ops", "sp-concepts"],
+  "cap-01": ["sp-ops", "sp-arch"],
+  "cap-02": ["cy-ops", "sp-ops"],
+  "cap-03": ["sp-concepts", "cy-ops"],
+  "cap-04": ["cy-ops", "sp-ops"],
+  "cap-05": ["cy-ops", "cy-report"],
+  "cap-06": ["cy-ir", "sp-concepts"],
+  "cry-01": ["sp-concepts", "cy-ops"],
+  "cry-02": ["sp-concepts", "cy-report"],
+  "cry-03": ["sp-concepts"],
+  "cry-04": ["sp-threats", "sp-concepts"],
+  "cry-05": ["sp-concepts", "sp-threats"],
+  "cry-06": ["sp-concepts", "cy-ir"],
   "tq-09": ["cy-ir", "sp-threats"],
   "tq-10": ["cy-ir", "cy-report"],
 };
@@ -231,6 +248,11 @@ export type StudentProfile = {
   roles: RoleId[];
   start: StartLevel;
   background: string;
+  /** What to call them. Range greets people by a name taken from the
+   *  account they signed up with, and that is whatever the sign-up form or
+   *  the email address happened to say -- nothing in the product could
+   *  change it. Empty means keep using the account's. */
+  callMe: string;
   updatedAt: string;
 };
 
@@ -261,6 +283,7 @@ export function sanitizeProfile(raw: unknown): StudentProfile | null {
     roles,
     start,
     background: clip(r.background, 280),
+    callMe: clip(r.callMe, 40),
     updatedAt: typeof r.updatedAt === "string" ? r.updatedAt.slice(0, 40) : new Date().toISOString(),
   };
 }

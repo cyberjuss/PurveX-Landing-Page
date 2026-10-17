@@ -75,7 +75,25 @@ dig @dc01 purvexfinancial.local
 ldapsearch -x -H ldap://dc01 -s base -b "" namingContexts
 ```
 
-Each command produces a short conversation with the domain controller, and Wireshark records both as they happen.
+<p class="ad-flags__lead">What the first command asks for</p>
+<ul class="ad-flags" role="list">
+<li><code>dig</code><span>A DNS client. It puts a name question to a server and prints what comes back.</span></li>
+<li><code>@dc01</code><span>Ask that server directly, rather than whatever resolver Ubuntu would normally use.</span></li>
+<li><code>purvexfinancial.local</code><span>The name being asked about. No record type is given, so dig asks for an address record.</span></li>
+<li><em>On the wire</em><span>One question and one answer over UDP port 53. The answer is the address you wrote down earlier.</span></li>
+</ul>
+
+<p class="ad-flags__lead">What the second command asks for</p>
+<ul class="ad-flags" role="list">
+<li><code>ldapsearch</code><span>A directory client. It queries a directory the way an application would.</span></li>
+<li><code>-H ldap://dc01</code><span>The directory service on dc01, plain LDAP on port 389.</span></li>
+<li><code>-x</code><span>Simple authentication. No account is named, so the connection is anonymous.</span></li>
+<li><code>-s base -b ""</code><span>One entry rather than a tree. The empty name is the rootDSE, the record a directory publishes about itself.</span></li>
+<li><code>namingContexts</code><span>The attribute asked for. It comes back as the directory trees this server holds.</span></li>
+<li><em>On the wire</em><span>A TCP connection, so a handshake opens it before any directory traffic.</span></li>
+</ul>
+
+The pair is deliberate. One is a single exchange over UDP and the other is a conversation over TCP, both to the same host, and neither of them is encrypted.
 
 <div class="ad-shots">
 <figure class="ad-shot">

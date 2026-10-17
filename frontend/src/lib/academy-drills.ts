@@ -53,6 +53,8 @@ export type Item = {
 export type Check =
   | { t: "member"; sam: string; group: string; want: boolean }
   | { t: "exists"; sam: string; ou: string }
+  /** The account is no longer anywhere the snapshot covers: the lab OUs. */
+  | { t: "gone"; sam: string }
   | { t: "container"; sam: string; ou: string }
   | { t: "enabled"; sam: string; want: boolean }
   | { t: "noexpire"; sam: string; want: boolean }
@@ -1002,6 +1004,9 @@ export function evalCheck(s: LabSnapshot, c: Check): boolean {
   if (c.t === "logsize") return (s.security?.securityLogMaxMB ?? 0) >= c.minMB;
   const user = s.users.find((u) => u.sam.toLowerCase() === c.sam.toLowerCase());
   if (c.t === "exists") return Boolean(user) && user!.container.toLowerCase() === c.ou.toLowerCase();
+  // Before the missing-user line below, which would read a deleted account as a
+  // failed check rather than the point of the ticket.
+  if (c.t === "gone") return !user;
   if (!user) return c.t === "member" ? !c.want : false;
   if (c.t === "container") return user.container.toLowerCase() === c.ou.toLowerCase();
   if (c.t === "enabled") return user.enabled === c.want;

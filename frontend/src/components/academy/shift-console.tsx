@@ -278,7 +278,9 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
                 ? "First boot takes a couple of minutes. This updates on its own."
                 : lab.locked
                   ? "Shifts need a hosted lab and that comes with Range Pro."
-                  : "Shifts run in your own lab. Start it and the desk opens."}
+                  : lab.notEnabled
+                    ? "Your cloud lab is not switched on for this account yet. Email support@purvex.io and we will turn it on."
+                    : "Shifts run in your own lab. Start it and the desk opens."}
           </p>
 
           {shown && <p className="sh-error">{shown}</p>}
@@ -295,6 +297,10 @@ function ShiftIntro({ theme, labState, busy, error, onStart, onRefresh }: { them
             <Link href="/range/upgrade" className="sh-go">
               See Range Pro <ArrowRight className="h-4 w-4" />
             </Link>
+          ) : lab.notEnabled ? (
+            <a href="mailto:support@purvex.io?subject=Switch%20on%20my%20cloud%20lab" className="sh-go">
+              Email support <ArrowRight className="h-4 w-4" />
+            </a>
           ) : (
             <button type="button" className="sh-go" disabled={lab.waiting} onClick={startLab}>
               {lab.waiting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Power className="h-4 w-4" />} Start my lab

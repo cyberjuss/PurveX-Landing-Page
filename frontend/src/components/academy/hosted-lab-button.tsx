@@ -14,7 +14,8 @@ import "./hosted-lab.css";
 
 type State = "none" | "starting" | "ready" | "stopping" | "stopped";
 /** locked: hosted labs exist here, but this account is on Explore and has not bought one. */
-type Status = { available: boolean; locked?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string; hoursUsed?: number; hoursLimit?: number | null; hoursLeft?: number | null; sessionHours?: number };
+/** notEnabled: this account is Pro, but cloud labs are not switched on for it yet. */
+type Status = { available: boolean; locked?: boolean; notEnabled?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string; hoursUsed?: number; minutesUsed?: number; hoursLimit?: number | null; hoursLeft?: number | null; sessionHours?: number; idleStopMinutes?: number };
 type Snapshot = { status: Status | null; busy: boolean; error: string | null };
 
 const clock = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -25,15 +26,38 @@ let snap: Snapshot = { status: null, busy: false, error: null };
 const listeners = new Set<() => void>();
 let loading: Promise<void> | null = null;
 let poll = 0;
+let movingSince = 0;
+
+// A hibernated lab is back in about half a minute, so asking every ten
+// seconds spent a third of the wait showing a stale answer. Ask quickly while
+// that is the likely case, then back off for the cold boot, which takes
+// minutes and does not reward impatience.
+const POLL_FAST_MS = 2_500;
+const POLL_SLOW_MS = 10_000;
+const FAST_WINDOW_MS = 60_000;
+
+function schedulePoll() {
+  if (poll) window.clearInterval(poll);
+  const fast = Date.now() - movingSince < FAST_WINDOW_MS;
+  poll = window.setInterval(() => {
+    void load();
+    // Crossing out of the fast window re-arms the slower one.
+    if (fast && Date.now() - movingSince >= FAST_WINDOW_MS) schedulePoll();
+  }, fast ? POLL_FAST_MS : POLL_SLOW_MS);
+}
 
 function set(patch: Partial<Snapshot>) {
   snap = { ...snap, ...patch };
   listeners.forEach((l) => l());
   const moving = snap.status?.state === "starting" || snap.status?.state === "stopping";
-  if (moving && !poll) poll = window.setInterval(() => void load(), 10_000);
+  if (moving && !poll) {
+    movingSince = Date.now();
+    schedulePoll();
+  }
   if (!moving && poll) {
     window.clearInterval(poll);
     poll = 0;
+    movingSince = 0;
   }
 }
 
@@ -59,7 +83,14 @@ async function act(action: "start" | "stop" | "extend" | "reset") {
     const r = await academyFetch("/academy/api/hosted-lab", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action }) });
     const data = await r.json();
     if (!r.ok) set({ error: data.error ?? "Something went wrong." });
-    else set({ status: { available: true, ...data } });
+    else {
+      set({ status: { available: true, ...data } });
+      // A start that answers with a lab still sitting at "none" leaves nothing
+      // moving, so nothing polls and the panel goes on showing Offline. One
+      // re-read a few seconds later picks up a machine AWS was not ready to
+      // describe at the moment the start returned.
+      if (action === "start" && snap.status?.state !== "starting" && snap.status?.state !== "ready") window.setTimeout(() => void load(), 5_000);
+    }
   } catch {
     set({ error: "Could not reach Range. Try again." });
   } finally {
@@ -107,8 +138,10 @@ export function useHostedLab() {
   }, []);
   const state: State = s.status?.state ?? "none";
   const moving = state === "starting" || state === "stopping";
-  const primary = () => (state === "ready" ? open() : state === "none" || state === "stopped" ? act("start") : undefined);
-  return { ...s, state, waiting: s.busy || moving, primary, available: Boolean(s.status?.available), locked: Boolean(s.status?.locked) };
+  // Always a promise, so a caller can wait for the start it asked for instead
+  // of guessing when it landed.
+  const primary = (): Promise<void> => (state === "ready" ? open() : state === "none" || state === "stopped" ? act("start") : Promise.resolve());
+  return { ...s, state, waiting: s.busy || moving, primary, available: Boolean(s.status?.available), locked: Boolean(s.status?.locked), notEnabled: Boolean(s.status?.notEnabled) };
 }
 
 /** For code outside React (the answer check): does this student have a hosted lab, and start it. */
@@ -132,6 +165,11 @@ export function useLabMenu<T extends HTMLElement>() {
     place();
     const onDown = (e: MouseEvent) => {
       const t = e.target as Node;
+      // A modal the menu opened (the lab briefing) portals to the body, so it
+      // is outside both refs. Without this, its own mousedown closed the menu
+      // and tore the briefing down with it before any button inside it could
+      // fire, so the first start just made the box vanish.
+      if (t instanceof Element && t.closest('[aria-modal="true"]')) return;
       if (!anchor.current?.contains(t) && !menu.current?.contains(t)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
@@ -171,10 +209,15 @@ const labTone = (state: State) => (state === "ready" ? "on" : state === "startin
 
 /** A small status chip in the top bar, on every page. Opens the lab menu. */
 export function HostedLabButton() {
-  const { available, state } = useHostedLab();
+  const { available, state, busy, error } = useHostedLab();
   const { anchor, isOpen, toggle, popover } = useLabMenu<HTMLButtonElement>();
   if (!available) return null;
-  const tone = labTone(state);
+  // A start takes a few seconds to be accepted, and the menu it was pressed in
+  // is often closed by then. Without busy the chip went on reading "Offline"
+  // under a red light while the lab was already starting, so a start that
+  // worked looked like a button that did nothing.
+  const starting = busy && (state === "none" || state === "stopped");
+  const tone = starting ? "wait" : labTone(state);
   return (
     <>
       <button
@@ -183,14 +226,22 @@ export function HostedLabButton() {
         onClick={toggle}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
-        title="Your lab"
+        title={error ?? "Your lab"}
         data-tour="lab"
         className="flex h-9 items-center gap-2 rounded-md border border-[var(--pvrx-border-light)] bg-white px-3 text-sm font-semibold text-slate-600 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
       >
         <span className={`flex hl-lab--${tone}`}>
           <LabMonitorIcon size={20} />
         </span>
-        <span className="hidden sm:inline">{CHIP[state]}</span>
+        <span className="hidden sm:inline">{starting ? "Starting" : CHIP[state]}</span>
+        {/* A start can fail after the menu is closed. The dot is the only thing
+            left on screen that can say so. */}
+        {error && !starting && (
+          <>
+            <span className="hl-chip__bad" aria-hidden="true" />
+            <span className="sr-only">Your lab reported a problem. Open it to read it.</span>
+          </>
+        )}
       </button>
       {popover}
     </>
@@ -209,7 +260,7 @@ export const LabMonitorIcon = ({ size = 30 }: { size?: number }) => (
 
 /** On the Home Lab setup tabs: hosted students skip building their own server. */
 export function HostedLabSetupNote() {
-  const { available, locked, state, busy, primary } = useHostedLab();
+  const { available, locked, notEnabled, state, busy, primary } = useHostedLab();
   // The one place the cloud lab is worth selling: this student is reading
   // the instructions for building a domain controller by hand, which is
   // exactly the work Pro does for them.
@@ -225,6 +276,26 @@ export function HostedLabSetupNote() {
         </div>
         <a href="/range/upgrade" className="hl-note__go">
           Get Pro
+          <ArrowUpRight className="h-4 w-4" />
+        </a>
+      </aside>
+    );
+  }
+  // Paid for, not handed over yet. Without this the tab reads as though they
+  // have no cloud lab at all, which is the wrong thing to tell someone whose
+  // class seat includes one.
+  if (notEnabled) {
+    return (
+      <aside className="hl-note" aria-label="Your cloud lab is not switched on yet">
+        <span className="hl-note__mark" aria-hidden="true">
+          <Server className="h-5 w-5" />
+        </span>
+        <div className="hl-note__text">
+          <p className="hl-note__title">Your cloud lab is not switched on yet.</p>
+          <p className="hl-note__body">Your account has it, but we have not enabled it on our side. Email support and we will turn it on. Meanwhile this tab builds the same lab on your own machine for free.</p>
+        </div>
+        <a href="mailto:support@purvex.io?subject=Switch%20on%20my%20cloud%20lab" className="hl-note__go">
+          Email support
           <ArrowUpRight className="h-4 w-4" />
         </a>
       </aside>
@@ -255,12 +326,20 @@ const FIRST_BOOT = [
   { label: "Starting the server", until: 45 },
   { label: "Booting Windows", until: 110 },
   { label: "Starting Active Directory", until: 160 },
-  { label: "Linking to Range", until: 200 },
+  // First boot builds the firm now rather than trusting whatever the image was
+  // baked with, so the lab reports ready a couple of minutes later than it used
+  // to. The old estimate left the bar sitting on "Almost there" for the whole
+  // build.
+  { label: "Building PurveX Financial", until: 265 },
+  { label: "Linking to Range", until: 300 },
 ];
+// Measured, not guessed: a hibernated pod is running at thirteen seconds and
+// answering at twenty-six, because hibernation brings the sync loop back with
+// it. The old eighty made a half-minute resume read as though it had stalled.
 const RESUME = [
-  { label: "Waking the server", until: 20 },
-  { label: "Resuming Windows", until: 50 },
-  { label: "Reconnecting to Range", until: 80 },
+  { label: "Waking the server", until: 12 },
+  { label: "Resuming Windows", until: 22 },
+  { label: "Reconnecting to Range", until: 32 },
 ];
 
 const SPECS: Record<string, string> = { "t3.small": "2 vCPU · 2 GB", "t3.medium": "2 vCPU · 4 GB", "t3.large": "2 vCPU · 8 GB", "t3.xlarge": "4 vCPU · 16 GB" };
@@ -269,6 +348,45 @@ const LINUX_SPEC = SPECS["t3.medium"];
 
 
 const PRIMARY: Record<State, string> = { none: "Start", starting: "Starting", ready: "Open", stopping: "Stopping", stopped: "Resume" };
+
+/**
+ * What the meter is a meter of.
+ *
+ * The bar read "20/20" and nothing said over what: a student could only learn
+ * the hours were a calendar month, and that a session has to fit whole, by
+ * pressing Start and being refused. The cap resets at the start of the UTC
+ * month, so the date is built in UTC and shown in their own wording.
+ */
+/** Hours and minutes, for a meter a twenty-minute session should move. */
+const hm = (minutes: number) => `${Math.floor(minutes / 60)}h ${String(Math.max(0, Math.round(minutes % 60))).padStart(2, "0")}m`;
+
+/**
+ * What this week has actually cost them so far.
+ *
+ * A session is charged whole when it starts and the unused tail is handed back
+ * when it stops, so the stored number reads three hours from the moment a lab
+ * comes up. Taking the live session's remaining time off again shows the
+ * student what they would be billed if they stopped now, which is the number
+ * they can plan with.
+ */
+function spentMinutes(status: Status, state: State, now: number): number {
+  const used = status.minutesUsed ?? Math.round((status.hoursUsed ?? 0) * 60);
+  if (state !== "ready" || !status.stopAt) return used;
+  const session = (status.sessionHours ?? 3) * 60;
+  const left = Math.max(0, Math.min(session, (Date.parse(status.stopAt) - now) / 60_000));
+  return Math.max(0, used - left);
+}
+
+/** Re-renders twice a minute so the hours clock moves while the lab runs. */
+function useMinuteTick(on: boolean): number {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!on) return;
+    const t = window.setInterval(() => setNow(Date.now()), 30_000);
+    return () => window.clearInterval(t);
+  }, [on]);
+  return now;
+}
 
 /** Seconds since this start, ticking once a second while the lab starts. */
 function useElapsed(startedAt: string | null | undefined, on: boolean): number {
@@ -284,7 +402,8 @@ function useElapsed(startedAt: string | null | undefined, on: boolean): number {
 }
 
 function StartTracker({ status }: { status: Status }) {
-  const steps = status.firstBoot ? FIRST_BOOT : RESUME;
+  const first = status.firstBoot;
+  const steps = first ? FIRST_BOOT : RESUME;
   const elapsed = useElapsed(status.startedAt, true);
   const total = steps[steps.length - 1].until;
   const next = steps.findIndex((s) => s.until > elapsed);
@@ -296,7 +415,12 @@ function StartTracker({ status }: { status: Status }) {
     <div className="hl__track" aria-live="polite">
       <p className="hl__eta">
         <span>{steps[current].label}</span>
-        <em>{elapsed > total ? "Almost there" : `About ${left} min left`}</em>
+        {/* Past the estimate, say so. A first build is usually about five
+            minutes, but Active Directory can take its time coming up and the
+            whole thing can run to twenty. "Almost there" for a quarter of an
+            hour reads as broken, and the student has no way to tell whether
+            it is. */}
+        <em>{elapsed <= total ? `About ${left} min left` : first ? "Taking longer than usual. A first build can run to 20 minutes." : "Almost there"}</em>
       </p>
       {/* A 4px rule with a 5% fill read as a stray dash, so the empty part of
           the track is drawn and the fill never shrinks below a visible stub. */}
@@ -422,6 +546,7 @@ export function HostedLabMenu() {
   // "start" stands in front of the first start; "read" is the same briefing
   // reopened from the footer link once they have been through it.
   const [brief, setBrief] = useState<null | "start" | "read">(null);
+  const now = useMinuteTick(state === "ready");
   if (!status?.available) return null;
   // Nobody should meet a live Windows domain cold. The first start goes
   // through the briefing; every later one does not.
@@ -429,10 +554,13 @@ export function HostedLabMenu() {
     if (state === "none" && !labBriefed()) setBrief("start");
     else primary();
   };
-  const startFromBrief = () => {
+  // The briefing stays up until the start is accepted, so its own button is
+  // what says "Starting". Closing first left the student watching the box
+  // disappear with nothing in its place, which reads as a dead button.
+  const startFromBrief = async () => {
     markLabBriefed();
+    await primary();
     setBrief(null);
-    primary();
   };
   const spec = SPECS[status.instanceType ?? ""] ?? status.instanceType;
   // No lab yet means the next one is a pod, so describe what they will get.
@@ -522,13 +650,13 @@ export function HostedLabMenu() {
             role="progressbar"
             aria-valuemin={0}
             aria-valuemax={status.hoursLimit}
-            aria-valuenow={status.hoursUsed ?? 0}
-            aria-label={`${status.hoursUsed ?? 0} of ${status.hoursLimit} lab hours used this month`}
+            aria-valuenow={Math.round((spentMinutes(status, state, now) / 60) * 10) / 10}
+            aria-label={`${hm(spentMinutes(status, state, now))} of ${status.hoursLimit} lab hours used this week`}
           >
-            <i style={{ width: `${Math.min(100, ((status.hoursUsed ?? 0) / status.hoursLimit) * 100)}%` }} />
+            <i style={{ width: `${Math.min(100, (spentMinutes(status, state, now) / 60 / status.hoursLimit) * 100)}%` }} />
           </span>
           <em>
-            {String(status.hoursUsed ?? 0).padStart(2, "0")}<i>/{status.hoursLimit}</i>
+            {hm(spentMinutes(status, state, now))}<i>/{status.hoursLimit}h</i>
           </em>
         </p>
       )}
@@ -558,7 +686,8 @@ export function HostedLabMenu() {
       {brief && (
         <LabBriefing
           sessionHours={status.sessionHours ?? 3}
-          monthlyHours={typeof status.hoursLimit === "number" && status.hoursLimit > 0 ? status.hoursLimit : null}
+          idleStopMinutes={status.idleStopMinutes ?? 20}
+          weeklyHours={typeof status.hoursLimit === "number" && status.hoursLimit > 0 ? status.hoursLimit : null}
           onStart={brief === "start" ? startFromBrief : undefined}
           starting={busy}
           onClose={() => {

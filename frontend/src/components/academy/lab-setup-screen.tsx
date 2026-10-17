@@ -22,10 +22,12 @@ const FIRST_BOOT: Step[] = [
   { label: "Starting Active Directory", until: 160, icon: Network },
   { label: "Building PurveX Financial", until: 200, icon: Database },
 ];
+// Measured: a hibernated pod is running at thirteen seconds and answering at
+// twenty-six. Eighty made a half-minute resume look like a stall.
 const RESUME: Step[] = [
-  { label: "Waking your server", until: 20, icon: Server },
-  { label: "Resuming Windows", until: 50, icon: Workflow },
-  { label: "Reconnecting to Range", until: 80, icon: ShieldCheck },
+  { label: "Waking your server", until: 12, icon: Server },
+  { label: "Resuming Windows", until: 22, icon: Workflow },
+  { label: "Reconnecting to Range", until: 32, icon: ShieldCheck },
 ];
 
 /** Black in the dark portal, white in the light one. The screen is portaled to
@@ -66,7 +68,8 @@ export function LabSetupScreen() {
 
   if (!starting || hidden || !status?.available) return null;
 
-  const steps = status.firstBoot ? FIRST_BOOT : RESUME;
+  const firstBoot = status.firstBoot;
+  const steps = firstBoot ? FIRST_BOOT : RESUME;
   const total = steps[steps.length - 1].until;
   const from = status.startedAt ? Math.min(Date.parse(status.startedAt), seenAt) : seenAt;
   const elapsed = Math.max(0, (now - from) / 1000);
@@ -114,7 +117,16 @@ export function LabSetupScreen() {
         </ol>
 
         <p className="ls__eta">
-          <span>{elapsed > total ? "Almost there. Running the last checks." : `About ${left} min left`}</span>
+          {/* A first build is usually about five minutes, but Active Directory
+              can be slow to come up and the whole thing can run to twenty.
+              Saying "almost there" for a quarter of an hour reads as broken. */}
+          <span>
+            {elapsed <= total
+              ? `About ${left} min left`
+              : firstBoot
+                ? "Taking longer than usual. Building a lab for the first time can run to 20 minutes."
+                : "Almost there. Running the last checks."}
+          </span>
           <em>
             {String(Math.min(current + 1, steps.length)).padStart(2, "0")}
             <i>/{String(steps.length).padStart(2, "0")}</i>

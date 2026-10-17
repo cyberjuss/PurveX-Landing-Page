@@ -6,7 +6,7 @@ import type { LabSnapshot } from "@/lib/academy-lab";
 // the answer until their own lab shows the change.
 
 /** Objects a ticket needs in the snapshot. A lab built before the ticket existed lacks them. */
-type Needs = { users?: string[]; groups?: string[]; ous?: string[]; tickets?: string[] };
+type Needs = { users?: string[]; groups?: string[]; ous?: string[]; computers?: string[]; tickets?: string[] };
 
 const G = (checks: { c: Check; label: string }[], needs?: Needs) => ({ checks, needs });
 
@@ -19,7 +19,12 @@ const MISSION_LAB = {
   "tq-03": G([
     { c: { t: "exists", sam: "casey.reed", ou: "OU=Users,OU=IT,OU=Departments" }, label: "casey.reed is in the IT Users folder (Departments, IT, Users)" },
     { c: { t: "member", sam: "casey.reed", group: "IT Users", want: true }, label: "casey.reed exists and is a member of IT Users" },
-    { c: { t: "member", sam: "old.intern", group: "IT Users", want: false }, label: "old.intern is no longer in IT Users" },
+    // The ticket says delete the leftover account, so the check asks for that
+    // rather than for a membership the student could untick. The snapshot
+    // covers the lab OUs only, so an account moved out of them reads as gone
+    // as well, which still means it is out of the staff folders.
+    { c: { t: "gone", sam: "old.intern" }, label: "The leftover intern account is gone" },
+    { c: { t: "member", sam: "svc-backup-job", group: "IT Users", want: false }, label: "svc-backup-job is no longer in IT Users" },
   ]),
   "tq-04": G([{ c: { t: "desc", sam: "svc-backup-job", text: "01:00-03:00" }, label: "svc-backup-job Description has the approved run window" }]),
   "tq-05": G([
@@ -47,6 +52,22 @@ const MISSION_LAB = {
     { ous: ["OU=Workstations,OU=FinanceAccounting,OU=Departments"] }
   ),
   "tq-15": G([{ c: { t: "group", name: "Finance Reports", category: "Security" }, label: "Finance Reports is a Security group" }], { groups: ["Finance Reports"] }),
+  // Hardening tickets. Nothing is planted for these: the domain ships this
+  // way. The checks read the policy the student set rather than an object
+  // they moved, which is the same shape the lab audit already uses.
+  // A lock time of 0 means an administrator must unlock the account by hand,
+  // which is stricter than 15 minutes rather than weaker. evalCheck compares
+  // numerically and would read 0 as a failure, so the ticket asks for a real
+  // number of minutes and the hint says so.
+  "tq-21": G([
+    { c: { t: "policy", key: "lockoutThreshold", min: 1, max: 10 }, label: "Accounts lock after 10 wrong passwords or fewer" },
+    { c: { t: "policy", key: "lockoutDurationMin", min: 15 }, label: "A locked account stays locked for at least 15 minutes" },
+    { c: { t: "policy", key: "lockoutWindowMin", min: 15 }, label: "The count of wrong passwords resets no sooner than 15 minutes" },
+  ]),
+  "tq-22": G([{ c: { t: "audit", sub: "Process Creation", need: "Success" }, label: "Process creation is audited for success" }]),
+  "tq-23": G([{ c: { t: "logsize", minMB: 512 }, label: "The Security log holds at least 512 MB" }]),
+  "tq-24": G([{ c: { t: "pso", minLength: 16, appliesTo: "IT Admins", maxLockout: 5 }, label: "A 16-character policy locking after 5 tries applies to IT Admins" }]),
+  "tq-25": G([{ c: { t: "computer", name: "OPS-WKS03", enabled: false }, label: "OPS-WKS03 is disabled" }], { computers: ["OPS-WKS03"] }),
   "tq-16": G([{ c: { t: "dnsToDc", name: "files" }, label: "files resolves to the domain controller" }], { tickets: ["INC-1052"] }),
   "tq-20": G([{ c: { t: "dnsToDc", name: "payroll" }, label: "payroll resolves only to the domain controller" }], { tickets: ["INC-1056"] }),
   "tq-17": G([{ c: { t: "fwRuleOff", name: "PurveX Temp - Vendor RDP" }, label: "The vendor RDP rule is disabled or removed" }], { tickets: ["INC-1053"] }),
@@ -67,6 +88,22 @@ const MISSION_LAB = {
     ],
     { tickets: ["INC-1055"] }
   ),
+  // The wire-capture capstone: the burned service account is contained by
+  // disabling it, which the snapshot reports. Kept, not deleted, so the review
+  // still has it.
+  "cap-06": G(
+    [{ c: { t: "enabled", sam: "svc-settlements", want: false }, label: "svc-settlements is disabled" }],
+    { users: ["svc-settlements"] }
+  ),
+  // The integrity capstone: the unsigned mirror is moved to Quarantine, which
+  // infra.files reports by path. Same shape as tq-19.
+  "cry-06": G(
+    [
+      { c: { t: "file", path: "Shares\\IT\\vpn-client-2.4.1-mirror-b.txt", want: false }, label: "The unsigned mirror is gone from the IT share" },
+      { c: { t: "file", path: "Quarantine\\vpn-client-2.4.1-mirror-b.txt", want: true }, label: "It is kept in C:\\PurveX\\Quarantine" },
+    ],
+    { tickets: ["INC-1058"] }
+  ),
 } as const;
 
 type Gate = { checks: { c: Check; label: string }[]; needs?: Needs };
@@ -84,6 +121,7 @@ export function hasMissionObjects(id: string, s: LabSnapshot) {
     has(needs.users, s.users.map((u) => u.sam.toLowerCase())) &&
     has(needs.groups, s.groups.map((g) => g.name.toLowerCase())) &&
     has(needs.ous, s.ous.map((o) => o.path.toLowerCase())) &&
+    has(needs.computers, s.computers.map((c) => c.name.toLowerCase())) &&
     has(needs.tickets, (s.infra?.planted ?? []).map((t) => t.toLowerCase()))
   );
 }

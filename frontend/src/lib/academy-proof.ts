@@ -211,6 +211,26 @@ const CATALOG: Record<string, Entry> = {
       sys: [["a", "Re-scoped"], ["s", "a Group Policy Object"], ["r", "from the wrong OU to the department it was built for."]],
     },
   },
+  "contain-wire-credential": {
+    title: "Recovered a credential from a network capture and contained the account",
+    actions: ["Captured a nightly job and read the service account and password it sent over the network in the clear", "Disabled the exposed account as evidence and identified the encrypted protocol the job should have used"],
+    keywords: ["Network Traffic Analysis", "Wireshark", "Credential Exposure", "Incident Response"],
+    bullets: {
+      soc: [["a", "Captured and analysed"], ["s", "a service account signing in over cleartext LDAP"], ["r", "and contained the exposed credential."]],
+      help: [["a", "Identified"], ["s", "a job sending a password in the clear"], ["a", "and disabled the account while it was fixed."]],
+      sys: [["a", "Traced"], ["s", "a nightly job to an unencrypted directory bind"], ["r", "and recommended LDAPS to protect the credential."]],
+    },
+  },
+  "verify-build-integrity": {
+    title: "Verified a software build against its published checksum",
+    actions: ["Hashed three mirrors of an installer manifest and found the one that failed the published SHA-256 checksum", "Quarantined the unsigned build as evidence and reported that it carried no valid signature"],
+    keywords: ["Cryptographic Hashing (SHA-256)", "File Integrity", "Software Supply Chain", "Incident Response"],
+    bullets: {
+      soc: [["a", "Verified"], ["s", "installer mirrors against a published checksum"], ["r", "and quarantined the altered, unsigned build."]],
+      help: [["a", "Checked"], ["s", "three copies of an update"], ["a", "with SHA-256 and flagged the one that failed."]],
+      sys: [["a", "Validated"], ["s", "a software build's integrity"], ["t", "against its published hash,"], ["r", "catching an unsigned copy before rollout."]],
+    },
+  },
   "quarantine-file": {
     title: "Quarantined a disguised executable on a file share",
     actions: ["Spotted a program named to look like a PDF invoice by showing full file extensions", "Moved it to quarantine without opening it, keeping it as evidence"],
@@ -248,6 +268,13 @@ export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "tq-18": { job: "gpo-scope", label: "Service ticket INC-1054" },
   "tq-19": { job: "quarantine-file", label: "Service ticket INC-1055" },
   "tq-20": { job: "dns-fix", label: "Service ticket INC-1056" },
+  "tq-21": { job: "lockout-policy", label: "Service ticket INC-1059" },
+  "tq-22": { job: "enable-auditing", label: "Service ticket INC-1060" },
+  "tq-23": { job: "log-retention", label: "Service ticket INC-1061" },
+  "tq-24": { job: "admin-password-policy", label: "Service ticket INC-1062" },
+  "tq-25": { job: "stale-objects", label: "Service ticket INC-1063" },
+  "cap-06": { job: "contain-wire-credential", label: "Service ticket INC-1057" },
+  "cry-06": { job: "verify-build-integrity", label: "Service ticket INC-1058" },
 };
 
 /** Portfolio jobs a live Shift can prove, mapped from the incident that proves each.
@@ -268,23 +295,40 @@ const SHIFT_JOBS = new Set(Object.values(SHIFT_JOB));
 
 export type OpenTask = { job: string; title: string; where: string; href: string; locked: boolean };
 
-/** Tasks the portfolio can show that the student has not done yet, and where to do each one.
- *  A task a Shift can prove is locked: it only joins the portfolio once resolved in a Shift. */
+/**
+ * Tasks the portfolio can show that the student has not done yet, and where to
+ * do each one. A task a Shift can prove is locked: it only joins the portfolio
+ * once resolved in a Shift.
+ *
+ * A ticket or a shift only. Every other job used to be offered as a daily
+ * drill, which filled this list with seven rows telling a student to go and
+ * answer a quiz question. A drill is not portfolio work: there is no ticket to
+ * point an employer at and nothing to photograph, because nothing has been
+ * done yet. Those jobs still join the portfolio the moment the lab confirms
+ * the change, so nothing is lost but the suggestion.
+ */
 export function openTasks(done: string[]): OpenTask[] {
   const have = new Set(done);
   const ticketFor = new Map(Object.entries(PROOF_TICKETS).map(([id, t]) => [t.job, { id, label: t.label }]));
   return Object.entries(CATALOG)
     .filter(([job]) => !have.has(job))
-    .map(([job, e]) => {
+    .flatMap(([job, e]) => {
       if (SHIFT_JOBS.has(job)) {
-        return { job, title: e.title, where: "Live shift", href: "/range/shift", locked: true };
+        return [{ job, title: e.title, where: "Live shift", href: "/range/shift", locked: true }];
       }
       const t = ticketFor.get(job);
-      return t
-        ? { job, title: e.title, where: `Ticket Queue · ${t.label.replace("Service ticket ", "")}`, href: `/range/phase-1/home-lab-challenges#${t.id}`, locked: false }
-        : { job, title: e.title, where: "Daily drill", href: "/range/drill", locked: false };
+      if (!t) return [];
+      return [
+        {
+          job,
+          title: e.title,
+          where: `Ticket Queue · ${t.label.replace("Service ticket ", "")}`,
+          href: `/range/phase-1/home-lab-challenges#${t.id}`,
+          locked: false,
+        },
+      ];
     })
-    .sort((a, b) => Number(a.locked) - Number(b.locked) || Number(b.where !== "Daily drill") - Number(a.where !== "Daily drill"));
+    .sort((a, b) => Number(a.locked) - Number(b.locked));
 }
 
 export type WorkItem = {

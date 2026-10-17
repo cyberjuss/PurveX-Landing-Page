@@ -228,8 +228,11 @@ html[data-academy-theme="dark"] .hl-note,
 .hl-lab--wait { color: #e8a13a; }
 .hl-lab--off { color: #e5484d; }
 .hl-lab--wait svg { animation: ad-lab-flash 1.6s ease-in-out infinite; }
+/* The chip's own failure mark, for a start that broke after the menu closed. */
+.hl-chip__bad { width: 6px; height: 6px; border-radius: 50%; background: #e5484d; }
 html[data-academy-theme="dark"] .hl-lab--on { color: #34d399; }
 html[data-academy-theme="dark"] .hl-lab--off { color: #f87171; }
+html[data-academy-theme="dark"] .hl-chip__bad { background: #f87171; }
 
 /* ---- Home Lab setup tabs: your lab is hosted ---- */
 .hl-note {
