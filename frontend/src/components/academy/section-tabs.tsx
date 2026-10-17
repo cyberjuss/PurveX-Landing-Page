@@ -8,6 +8,7 @@ import { CHALLENGE_PATHS, MISSION_CATALOG } from "@/lib/academy-missions";
 import { QuizBlock } from "./quiz";
 import { LabCarousel } from "./lab-carousel";
 import { MissionPager } from "./mission-pager";
+import { ResourcesView } from "./resources-view";
 import { DECK_PROGRESS_EVENT, LessonDeck } from "./lesson-deck";
 import { isDeckable } from "@/lib/lesson-deck";
 import { weekScenes } from "./slide-art";
@@ -399,7 +400,11 @@ export function SectionTabs({
           nextSection={nextTrail}
           actionHost={current.kind === "challenge" ? challengeFoot : undefined}
         >
-          <Markdown content={current.markdown} />
+          {current.kind === "section" && current.label === "Resources" ? (
+            <ResourcesView markdown={current.markdown} fallback={<Markdown content={current.markdown} />} />
+          ) : (
+            <Markdown content={current.markdown} />
+          )}
         </MissionPager>
         )}
       </>
