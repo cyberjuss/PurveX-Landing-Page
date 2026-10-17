@@ -862,3 +862,287 @@ button.lk__art { padding: 0; width: 100%; font: inherit; color: var(--rd-accent)
 }
 .lk-recap__stats b { font-family: var(--font-display); font-size: 20px; letter-spacing: -0.02em; color: var(--rd-accent); }
 .lk-recap .lk-flip { min-height: 130px; }
+
+/* ==== Concept explainers (explainer-art.tsx) ====
+   Each is a short story on a loop: set up, the thing happens, the result
+   holds long enough to read, then it resets. Resting frame = the result. */
+.lka [class^="lkx-"], .lka [class*=" lkx-"] { transform-box: view-box; }
+.lkx-cap { font: 600 11.5px var(--font-display, sans-serif); fill: var(--rd-ink); }
+.lkx-small { font: 700 9px var(--font-mono, ui-monospace, monospace); letter-spacing: 0.08em; fill: var(--rd-ink-2); }
+.lkx-small--inv { fill: var(--rd-surface); }
+.lkx-mono { font: 700 12px var(--font-mono, ui-monospace, monospace); fill: var(--rd-ink); }
+.lkx-mono--sm { font-size: 9.5px; }
+.lkx-mono--inv { fill: #fff; }
+.lkx-vault { fill: color-mix(in srgb, currentColor 10%, var(--rd-surface)); stroke: currentColor; stroke-width: 3; }
+.lkx-doc { fill: var(--rd-surface); stroke: currentColor; stroke-width: 2.5; stroke-linejoin: round; }
+.lkx-fold { fill: none; stroke: currentColor; stroke-width: 2; }
+.lkx-docline { fill: currentColor; opacity: 0.45; }
+.lkx-glare { animation: lka-blink 2s ease-in-out infinite; }
+
+/* Leak: a dashed copy slides out to the stranger; the original keeps its check. */
+.lkx-copy { opacity: 0.85; animation: lkx-copy 4.8s cubic-bezier(.5, 0, .3, 1) infinite; transform: translateX(96px); }
+.lkx-copy .lkx-doc { stroke-dasharray: 5 4; stroke: var(--rd-bad); fill: color-mix(in srgb, var(--rd-bad) 10%, var(--rd-surface)); }
+@keyframes lkx-copy { 0%, 15% { transform: translateX(0); opacity: 0; } 22% { opacity: 0.85; } 55%, 90% { transform: translateX(96px); opacity: 0.85; } 100% { transform: translateX(96px); opacity: 0; } }
+.lkx-ok-badge circle { fill: var(--rd-good); }
+.lkx-ok-badge path { fill: none; stroke: #fff; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Lie: the figure changes, the card stays calm, the hash tag turns. */
+.lkx-card { fill: var(--rd-surface); stroke: currentColor; stroke-width: 2.5; }
+.lkx-big { font: 800 26px var(--font-display, sans-serif); fill: var(--rd-ink); }
+.lkx-before { opacity: 0; animation: lkx-before 5s steps(1) infinite; }
+.lkx-after { opacity: 1; animation: lkx-after 5s steps(1) infinite; }
+@keyframes lkx-before { 0% { opacity: 1; } 45%, 100% { opacity: 0; } }
+@keyframes lkx-after { 0% { opacity: 0; } 45%, 100% { opacity: 1; } }
+.lkx-tag--ok { fill: color-mix(in srgb, var(--rd-good) 22%, transparent); stroke: var(--rd-good); stroke-width: 1.5; }
+.lkx-tag--bad { fill: color-mix(in srgb, var(--rd-bad) 22%, var(--rd-surface)); stroke: var(--rd-bad); stroke-width: 1.5; }
+.lkx-tagtext { font: 700 10px var(--font-mono, ui-monospace, monospace); fill: var(--rd-ink); }
+
+/* Lockout: users walk up, bounce off the padlock, the server stays healthy. */
+.lkx-healthy { fill: var(--rd-good); animation: lka-blink 1.6s ease-in-out infinite; }
+.lkx-padlock path { fill: none; stroke: var(--rd-bad); stroke-width: 4; }
+.lkx-padlock rect { fill: var(--rd-bad); }
+.lkx-padlock { transform-origin: 154px 100px; animation: lkx-rattle 2.1s ease infinite; }
+@keyframes lkx-rattle { 0%, 40%, 60%, 100% { transform: none; } 45% { transform: rotate(-8deg); } 52% { transform: rotate(6deg); } }
+.lkx-user { fill: color-mix(in srgb, currentColor 55%, transparent); animation: lkx-user 2.1s ease-in-out infinite; }
+@keyframes lkx-user { 0% { transform: translateX(0); } 45% { transform: translateX(80px); } 55% { transform: translateX(70px); } 100% { transform: translateX(0); } }
+.lkx-q { font: 800 14px var(--font-display, sans-serif); fill: var(--rd-warn); }
+
+/* Risk: weakness alone, threat alone, then both, and only then the needle jumps. */
+.lkx-arc { fill: none; stroke-width: 10; stroke-linecap: round; }
+.lkx-arc--good { stroke: var(--rd-good); } .lkx-arc--warn { stroke: var(--rd-warn); } .lkx-arc--bad { stroke: var(--rd-bad); }
+.lkx-needle path { stroke: var(--rd-ink); stroke-width: 4; stroke-linecap: round; }
+.lkx-needle circle { fill: var(--rd-ink); }
+.lkx-needle { transform-origin: 100px 120px; transform: rotate(55deg); animation: lkx-needle 6s cubic-bezier(.4, 1.5, .5, 1) infinite; }
+@keyframes lkx-needle { 0%, 60% { transform: rotate(-60deg); } 70%, 95% { transform: rotate(55deg); } 100% { transform: rotate(-60deg); } }
+.lkx-wall { fill: color-mix(in srgb, currentColor 18%, transparent); stroke: currentColor; stroke-width: 2; }
+.lkx-crackline { fill: none; stroke: var(--rd-bad); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.lkx-weak { animation: lkx-weak 6s steps(1) infinite; }
+@keyframes lkx-weak { 0% { opacity: 1; } 30% { opacity: 0.15; } 60%, 100% { opacity: 1; } }
+.lkx-threat { animation: lkx-threat 6s steps(1) infinite; }
+@keyframes lkx-threat { 0% { opacity: 0.15; } 30%, 100% { opacity: 1; } }
+.lkx-riskword { font: 800 13px var(--font-mono, ui-monospace, monospace); letter-spacing: 0.2em; fill: var(--rd-bad); animation: lkx-riskword 6s steps(1) infinite; }
+@keyframes lkx-riskword { 0% { opacity: 0; } 66%, 96% { opacity: 1; } 100% { opacity: 0; } }
+
+/* Avalanche: the second input differs by one letter; its hash differs entirely. */
+.lkx-input { fill: var(--rd-surface); stroke: currentColor; stroke-width: 2; }
+.lkx-machine { fill: currentColor; }
+.lkx-flow { fill: none; stroke: currentColor; stroke-width: 2.5; stroke-dasharray: 4 5; animation: lkx-flow 0.8s linear infinite; }
+@keyframes lkx-flow { to { stroke-dashoffset: -18; } }
+.lkx-out { fill: color-mix(in srgb, var(--rd-good) 18%, var(--rd-surface)); stroke: var(--rd-good); stroke-width: 2; }
+.lkx-out--b { fill: color-mix(in srgb, var(--rd-warn) 20%, var(--rd-surface)); stroke: var(--rd-warn); }
+.lkx-diff { fill: var(--rd-bad); }
+.lkx-row2 { animation: lkx-row2 5s ease infinite; }
+@keyframes lkx-row2 { 0%, 30% { opacity: 0; } 42%, 92% { opacity: 1; } 100% { opacity: 0; } }
+
+/* Salt: two chips drop in beside the same password; two different hashes come out. */
+.lkx-saltchip { animation: lkx-drop 5s cubic-bezier(.3, 1.4, .5, 1) infinite both; }
+.lkx-salt--a rect { fill: #7c6cf0; } .lkx-salt--b rect { fill: #0d9488; }
+@keyframes lkx-drop { 0% { transform: translateY(-30px); opacity: 0; } 14%, 92% { transform: none; opacity: 1; } 100% { opacity: 0; } }
+.lkx-hashout { animation: lkx-hashout 5s ease infinite both; }
+@keyframes lkx-hashout { 0%, 22% { opacity: 0; } 32%, 92% { opacity: 1; } 100% { opacity: 0; } }
+
+/* Wrong key: the right key opens it to plain text; the near miss shakes and fails. */
+.lkx-key { fill: none; stroke-width: 5; stroke-linecap: round; }
+.lkx-key--good { stroke: var(--rd-good); animation: lkx-key-good 6s ease infinite; }
+.lkx-key--bad { stroke: var(--rd-bad); animation: lkx-key-bad 6s ease infinite; }
+@keyframes lkx-key-good { 0% { transform: translateX(0); } 18%, 40% { transform: translate(28px, 15px); } 50%, 100% { transform: translateX(0); } }
+@keyframes lkx-key-bad { 0%, 52% { transform: translateX(0); } 66% { transform: translate(28px, -15px); } 69% { transform: translate(24px, -15px); } 72% { transform: translate(28px, -15px); } 75% { transform: translate(24px, -15px); } 84%, 100% { transform: translateX(0); } }
+.lkx-plain { fill: var(--rd-good); opacity: 0; animation: lkx-plain 6s steps(1) infinite; }
+.lkx-cipher { animation: lkx-cipher 6s steps(1) infinite; }
+@keyframes lkx-plain { 0% { opacity: 0; } 18% { opacity: 1; } 42%, 100% { opacity: 0; } }
+@keyframes lkx-cipher { 0% { opacity: 1; } 18% { opacity: 0; } 42%, 100% { opacity: 1; } }
+.lkx-x { fill: none; stroke: var(--rd-bad); stroke-width: 5; stroke-linecap: round; animation: lkx-x 6s steps(1) infinite; }
+@keyframes lkx-x { 0% { opacity: 0; } 68% { opacity: 1; } 86%, 100% { opacity: 0; } }
+
+/* MFA: the attacker walks up with the password; the phone says no; the shield holds. */
+.lkx-approach { animation: lkx-approach 5.4s ease-in-out infinite; }
+@keyframes lkx-approach { 0% { transform: translateX(-10px); } 40%, 85% { transform: translateX(40px); } 100% { transform: translateX(-10px); } }
+.lkx-pwcard { fill: var(--rd-warn); }
+.lkx-phone rect { fill: #1f2340; stroke: currentColor; stroke-width: 2.5; }
+.lkx-phone { animation: lkx-phone 5.4s cubic-bezier(.3, 1.4, .5, 1) infinite; }
+@keyframes lkx-phone { 0%, 35% { transform: translateY(-20px); opacity: 0; } 45%, 90% { transform: none; opacity: 1; } 100% { opacity: 0; } }
+.lkx-deny { fill: var(--rd-bad); }
+.lkx-denyx { stroke: #fff; stroke-width: 3; stroke-linecap: round; }
+.lkx-shield path { fill: color-mix(in srgb, var(--rd-good) 30%, transparent); stroke: var(--rd-good); stroke-width: 3; }
+.lkx-shield { transform-origin: 158px 102px; animation: lkx-shield 5.4s ease infinite; }
+@keyframes lkx-shield { 0%, 55% { transform: scale(0.85); opacity: 0.4; } 62% { transform: scale(1.15); opacity: 1; } 70%, 92% { transform: none; opacity: 1; } 100% { opacity: 0.4; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .lka [class^="lkx-"], .lka [class*=" lkx-"] { animation: none !important; }
+}
+
+/* ==== Connect the dots (drag-activity.tsx, layout "connect") ====
+   Two columns with a wide gutter for the wires. Links are drawn as soft
+   curves: green and kept when right, red and fading when wrong, dashed
+   accent while the student is still dragging. */
+.lkn-board {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(48px, 9vw, 120px);
+  padding: 6px 0;
+  touch-action: none;
+}
+.lkn-wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 1; }
+.lkn-wire { fill: none; stroke-width: 3; stroke-linecap: round; }
+.lkn-wire--ok { stroke: var(--rd-good); stroke-dasharray: 600; animation: lkn-wire-draw var(--ax-dur-slow) var(--ax-ease) both; }
+@keyframes lkn-wire-draw { from { stroke-dashoffset: 600; } to { stroke-dashoffset: 0; } }
+.lkn-wire--bad { stroke: var(--rd-bad); animation: lkn-wire-fade 650ms ease forwards; }
+@keyframes lkn-wire-fade { 0%, 50% { opacity: 1; } 100% { opacity: 0; } }
+.lkn-wire--live { stroke: var(--rd-accent); stroke-dasharray: 6 6; animation: lkn-wire-march 0.6s linear infinite; }
+@keyframes lkn-wire-march { to { stroke-dashoffset: -12; } }
+
+.lkn-col { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; justify-content: space-around; gap: 10px; position: relative; z-index: 2; }
+.lkn-node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 0;
+  text-align: left;
+  font: inherit;
+  font-size: 14.5px;
+  line-height: 1.4;
+  color: var(--rd-ink);
+  background: var(--rd-surface);
+  box-shadow: inset 0 0 0 1px var(--rd-line);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition: box-shadow var(--ax-dur-fast) var(--ax-ease), background var(--ax-dur-fast) var(--ax-ease);
+}
+.lkn-col:first-child .lkn-node { font-weight: 700; font-family: var(--font-display); }
+.lkn-node--r { justify-content: flex-start; cursor: default; }
+.lkn-node:hover:not(:disabled) { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 60%, transparent); }
+.lkn-node.is-picked { box-shadow: inset 0 0 0 2px var(--rd-accent); background: color-mix(in srgb, var(--rd-accent) 10%, var(--rd-surface)); }
+.lkn-node.is-ready { cursor: pointer; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 45%, transparent); }
+.lkn-node.is-linked { cursor: default; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-good) 55%, transparent); background: color-mix(in srgb, var(--rd-good) 7%, var(--rd-surface)); color: var(--rd-ink); }
+.lkn-node.is-miss { animation: lkd-shake 0.4s ease; box-shadow: inset 0 0 0 1px var(--rd-bad); }
+.lkn-node:disabled { opacity: 1; }
+.lkn-dot {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--rd-surface);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rd-accent) 70%, transparent);
+  transition: background var(--ax-dur-fast) var(--ax-ease), box-shadow var(--ax-dur-fast) var(--ax-ease);
+}
+.lkn-node.is-picked .lkn-dot { background: var(--rd-accent); animation: lkn-dot-pulse 1.1s ease-in-out infinite; }
+@keyframes lkn-dot-pulse { 50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--rd-accent) 22%, transparent); } }
+.lkn-node.is-linked .lkn-dot { background: var(--rd-good); box-shadow: 0 0 0 3px color-mix(in srgb, var(--rd-good) 70%, transparent); }
+@media (max-width: 640px) {
+  .lkn-board { gap: 36px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); }
+  .lkn-node { font-size: 13px; padding: 8px 10px; }
+}
+
+/* ==== A streak of right answers ==== */
+.lkd__streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font: 700 11px var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rd-warn);
+  background: color-mix(in srgb, var(--rd-warn) var(--sf-mark-fill, 14%), transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-warn) var(--sf-mark-line, 30%), transparent);
+  animation: lkd-streak var(--ax-dur-slow) var(--ax-ease) both;
+}
+.lkd__streak svg { animation: lk-idle-pulse 0.9s ease-in-out 2; }
+@keyframes lkd-streak { 0% { transform: scale(0.6); opacity: 0; } 60% { transform: scale(1.08); opacity: 1; } 100% { transform: none; } }
+
+/* ==== The collection counter on the recap ==== */
+.lk-recap__total { position: relative; color: var(--rd-ink); }
+.lk-recap__total b { display: inline-block; animation: lkd-streak var(--ax-dur-slow) var(--ax-ease) both; }
+.lk-recap__plus {
+  position: absolute;
+  right: 8px;
+  top: -6px;
+  font: 800 13px var(--font-display, sans-serif);
+  font-style: normal;
+  letter-spacing: 0;
+  color: var(--rd-good);
+  pointer-events: none;
+  animation: lk-plus 900ms var(--ax-ease) forwards;
+}
+@keyframes lk-plus { 0% { transform: translateY(6px); opacity: 0; } 25% { opacity: 1; } 100% { transform: translateY(-18px); opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .lkn-wire--ok, .lkn-wire--live, .lkn-node.is-picked .lkn-dot, .lkd__streak, .lkd__streak svg, .lk-recap__total b { animation: none; }
+  .lk-recap__plus { animation: none; opacity: 0; }
+}
+
+/* ==== Corner: slide count and the keys button ====
+   The deck turns with Space and the arrow keys. The small keyboard mark in
+   the corner opens a list of every way to move, so nobody has to guess. */
+.lk__frame { position: relative; }
+.lk__corner {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lk__count { font: 700 11px var(--font-mono, ui-monospace, monospace); letter-spacing: 0.12em; color: var(--rd-ink-3); }
+.lk__keys {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  color: var(--rd-accent);
+  background: color-mix(in srgb, var(--rd-accent) var(--sf-mark-fill, 14%), transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) var(--sf-mark-line, 30%), transparent);
+  cursor: pointer;
+  transition: background var(--ax-dur-fast) var(--ax-ease), box-shadow var(--ax-dur-fast) var(--ax-ease);
+}
+.lk__keys svg { width: 18px; height: 18px; }
+.lk__keys:hover, .lk__keys.is-open { background: color-mix(in srgb, var(--rd-accent) 24%, transparent); box-shadow: inset 0 0 0 1px var(--rd-accent); }
+@media (pointer: coarse) { .lk__keys { width: 44px; height: 44px; } }
+
+.lk__help {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(330px, calc(100vw - 48px));
+  padding: 16px 18px;
+  background: var(--rd-surface);
+  box-shadow: inset 0 0 0 1px var(--sf-line, var(--rd-line)), var(--sf-lift, 0 24px 50px -20px rgba(0, 0, 0, 0.5));
+  animation: lk-help-in var(--ax-dur) var(--ax-ease) both;
+}
+.academy-bg[data-academy-theme="dark"] .lk__help { background: #0c0b12; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 24px 50px -20px rgba(0, 0, 0, 0.8); }
+@keyframes lk-help-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.lk__helptitle { margin: 0 0 10px; font: 700 11px var(--font-mono, ui-monospace, monospace); letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-accent); }
+.lk__help ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.lk__help li { display: grid; grid-template-columns: 150px minmax(0, 1fr); align-items: center; gap: 10px; font-size: 13.5px; color: var(--rd-ink-2); }
+.lk__help li > span { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 12px; color: var(--rd-ink-3); }
+.lk__help kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 6px;
+  font: 700 11px var(--font-mono, ui-monospace, monospace);
+  color: var(--rd-ink);
+  background: color-mix(in srgb, var(--rd-ink) 6%, transparent);
+  box-shadow: inset 0 0 0 1px var(--rd-line), inset 0 -2px 0 color-mix(in srgb, var(--rd-ink) 18%, transparent);
+}
+.lk__helpnote { margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--rd-line); font-size: 12.5px; color: var(--rd-ink-3); }
+
+/* Leave room under the corner so a long title never runs beneath it. */
+.lk__head { padding-right: 96px; }
+@media (max-width: 640px) {
+  .lk__corner { top: 8px; right: 8px; }
+  .lk__head { padding-right: 70px; }
+  .lk__help li { grid-template-columns: 120px minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { .lk__help { animation: none; } }

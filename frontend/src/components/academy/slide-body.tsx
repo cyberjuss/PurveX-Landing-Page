@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { marked, type Token, type Tokens } from "marked";
 import {
   Activity,
@@ -305,11 +305,53 @@ function settle(e: React.PointerEvent<HTMLElement>) {
 // back. Recalling the meaning before turning the card is the point, so they
 // start face down, and one control turns them all over.
 /** The closing recap: every key term face down, the sentence that taught it on the back. */
+// Every recap card a student turns over joins their collection of concepts,
+// kept in this browser. The count grows lesson by lesson, so coming back to a
+// recap has a visible payoff. Storage can throw in a private window; then the
+// collection simply does not persist.
+const COLLECTION_KEY = "academy-concepts";
+function readCollection(): Set<string> {
+  try {
+    const raw = window.localStorage.getItem(COLLECTION_KEY);
+    return new Set(raw ? (JSON.parse(raw) as string[]) : []);
+  } catch {
+    return new Set();
+  }
+}
+function saveCollection(all: Set<string>) {
+  try {
+    window.localStorage.setItem(COLLECTION_KEY, JSON.stringify([...all]));
+  } catch {}
+}
+
+/** The closing recap: every key term face down, the sentence that taught it on the back. */
 export function Recap({ items, slides, activities }: { items: RecapItem[]; slides: number; activities: number }) {
   const cards = useMemo(
     () => items.map((r) => ({ lead: r.term, html: marked.parseInline(r.sentence, { async: false }) as string, text: r.sentence })),
     [items]
   );
+  const [collected, setCollected] = useState<number | null>(null);
+  const [fresh, setFresh] = useState(0);
+  const [mine, setMine] = useState<Set<string>>(() => new Set());
+  // Storage is only readable in the browser, so the count arrives after the
+  // first paint rather than mismatching the server render.
+  useEffect(() => {
+    const all = readCollection();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCollected(all.size);
+    setMine(new Set(items.map((r) => r.term.toLowerCase()).filter((t) => all.has(t))));
+  }, [items]);
+  const reveal = (j: number) => {
+    const key = items[j]?.term.toLowerCase();
+    if (!key) return;
+    const all = readCollection();
+    if (all.has(key)) return;
+    all.add(key);
+    saveCollection(all);
+    setCollected(all.size);
+    setMine((prev) => new Set(prev).add(key));
+    setFresh((n) => n + 1);
+  };
   return (
     <div className="lk-recap">
       <p className="lk-recap__stats lk-build">
@@ -322,29 +364,47 @@ export function Recap({ items, slides, activities }: { items: RecapItem[]; slide
           </span>
         )}
         <span>
-          <b>{items.length}</b> terms to keep
+          <b>
+            {mine.size}/{items.length}
+          </b>{" "}
+          collected here
         </span>
+        {collected !== null && (
+          <span className="lk-recap__total">
+            <b key={collected}>{collected}</b> concepts in your collection
+            {fresh > 0 && (
+              <em key={fresh} className="lk-recap__plus">
+                +1
+              </em>
+            )}
+          </span>
+        )}
       </p>
-      <FlipCards items={cards} i={1} />
+      <FlipCards items={cards} i={1} onReveal={reveal} />
     </div>
   );
 }
 
-function FlipCards({ items, i }: { items: Card[]; i: number }) {
+function FlipCards({ items, i, onReveal }: { items: Card[]; i: number; onReveal?: (j: number) => void }) {
   const [open, setOpen] = useState<Set<number>>(() => new Set());
   const all = open.size === items.length;
-  const toggle = (j: number) =>
-    setOpen((prev) => {
-      const next = new Set(prev);
-      if (next.has(j)) next.delete(j);
-      else next.add(j);
-      return next;
-    });
+  const toggle = (j: number) => {
+    const next = new Set(open);
+    if (next.has(j)) next.delete(j);
+    else {
+      next.add(j);
+      onReveal?.(j);
+    }
+    setOpen(next);
+  };
   return (
     <div className="lk-flipwrap lk-build" style={{ ["--i" as string]: i }}>
       <div className="lk-fliphead">
         <span>Say what each one means, then flip it.</span>
-        <button type="button" onClick={() => setOpen(all ? new Set() : new Set(items.map((_, j) => j)))}>
+        <button type="button" onClick={() => {
+            if (!all) items.forEach((_, j) => onReveal?.(j));
+            setOpen(all ? new Set() : new Set(items.map((_, j) => j)));
+          }}>
           {all ? "Flip all back" : "Flip all"}
         </button>
       </div>

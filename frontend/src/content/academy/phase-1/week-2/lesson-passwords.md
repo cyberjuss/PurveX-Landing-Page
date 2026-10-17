@@ -10,11 +10,12 @@ That alone is not enough. Two further requirements are where most real systems f
 - The calculation has to be **slow enough that bulk guessing is impractical**, because an attacker holding a copy of the table can try as many guesses as they like without the system ever knowing.
 
 ### Good storage in one line
+<!-- art: salt -->
 
 A system should store a **salted, slow hash** of each password rather than the password. At sign-in it hashes whatever was typed, using the same salt, and compares the result. Both halves of that phrase are load-bearing.
 
 - **Salt:** a random value added per user. Two people with the same password get different hashes, so reuse is hidden.
-- **Slow hash:** Argon2id or bcrypt. One high-end graphics card tries about 22 billion SHA-256 guesses a second. At bcrypt's minimum recommended cost of 10, the same card manages about 7,500.
+- **Slow hash:** Argon2id or bcrypt. One high-end graphics card tries about 22 billion SHA-256 guesses a second. At bcrypt's minimum recommended cost of 10, the same card manages about 6,000.
 
 Without both of those, identical passwords produce identical stored values and the whole table can be attacked as a single unit rather than one account at a time. Tools such as Hashcat and John the Ripper are built for exactly this, and against a fast unsalted hash they work through common passwords at a rate that makes the exercise trivial. That is precisely what happened to LinkedIn in 2012, and it is why the age of a breach tells you very little about how exposed its users were.
 

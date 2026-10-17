@@ -32,7 +32,7 @@ Not critical: IT | Operations
 ```match
 prompt: Match each department to what it does.
 IT = Runs and supports the company's technology
-Compliance = Ensures the firm follows GLBA and SOX
+Compliance = Ensures the firm meets regulatory requirements, mainly GLBA and SOX
 Wealth Management = Client-facing financial planning for private investors
 Operations = Settlements and the internal processes behind the other departments
 Finance and Accounting = The firm's own internal finances

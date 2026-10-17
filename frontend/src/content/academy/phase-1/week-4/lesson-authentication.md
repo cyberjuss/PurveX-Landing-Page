@@ -3,6 +3,7 @@
 Authentication is the work of proving an identity. It answers a single question, which is who you are, and it has nothing at all to say about what you may do once the answer is established. Everything in this section is about making that proof hard to fake, because every permission the system grants afterwards rests on the assumption that it got this first step right.
 
 ### Factors
+<!-- art: mfa -->
 
 | Factor | Examples |
 |---|---|
@@ -51,7 +52,7 @@ Password expired: Policy requires a new password
 
 ### Resets
 
-A password or MFA reset is not an administrative chore. It is an authentication decision, and for the duration of that call you are the authentication system. Whatever controls the organization has invested in, you are briefly in a position to set them aside for one account, which is precisely why this is attacked. In 2023 attackers breached MGM Resorts by doing nothing more technical than talking the IT help desk into resetting an employee's MFA.
+A password or MFA reset is not an administrative chore. It is an authentication decision, and for the duration of that call you are the authentication system. Whatever controls the organization has invested in, you are briefly in a position to set them aside for one account, which is precisely why this is attacked. In 2023 attackers reportedly got their first foothold at MGM Resorts with no technical exploit at all, by talking the IT help desk into resetting an employee's MFA.
 
 1. **Verify** with a method the caller cannot fake, such as a callback to the number on file. Caller ID can be spoofed.
 2. **Treat an MFA change** as at least as sensitive as a password reset.

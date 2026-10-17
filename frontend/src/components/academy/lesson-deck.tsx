@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { Keyboard } from "lucide-react";
 import { Recap, SlideBody } from "./slide-body";
 import { splitLessonIntoDeck } from "@/lib/lesson-deck";
-import { TrailDock, type TrailLink } from "./trail-dock";
-import { SlideArt, pickScenes } from "./slide-art";
+import type { TrailLink } from "./trail-dock";
+import { SlideArt, pickScenes, type Scene } from "./slide-art";
 import { DragActivity } from "./drag-activity";
 import "./lesson-deck.css";
 
@@ -19,23 +19,27 @@ export function LessonDeck({
   markdown,
   storageKey,
   startAtEnd,
-  actionHost,
   prevBeyond,
   nextBeyond,
+  weekScenes,
 }: {
   label: string;
   markdown: string;
   storageKey: string;
   /** Open on the last slide, for a student stepping back from the next section. */
   startAtEnd?: boolean;
-  actionHost?: HTMLElement | null;
   prevBeyond?: TrailLink | null;
   nextBeyond?: TrailLink | null;
+  /** Drawings picked across the whole week, so no tab repeats another's. */
+  weekScenes?: Scene[];
 }) {
   const slides = useMemo(() => splitLessonIntoDeck(markdown, label), [markdown, label]);
   // A slide that carries on a heading keeps the drawing that heading started
   // with, rather than switching because its own paragraph mentions something else.
-  const scenes = useMemo(() => pickScenes(slides, label), [slides, label]);
+  const scenes = useMemo(
+    () => (weekScenes && weekScenes.length === slides.length ? weekScenes : pickScenes(slides, label)),
+    [weekScenes, slides, label]
+  );
   const total = slides.length;
   const [index, setIndex] = useState(() => (startAtEnd ? Math.max(0, total - 1) : 0));
   const [dir, setDir] = useState<1 | -1>(1);
@@ -78,17 +82,41 @@ export function LessonDeck({
   // working an activity, holding a modifier (Alt+Left is the browser's Back),
   // or looking at a screenshot or any other dialog, which use the arrows
   // themselves.
-  const keys = useRef({ back, forward });
-  keys.current = { back, forward };
+  const [help, setHelp] = useState(false);
+  // A click anywhere outside the corner closes the list of keys.
+  useEffect(() => {
+    if (!help) return;
+    const close = (e: PointerEvent) => {
+      if (!(e.target as HTMLElement).closest?.(".lk__corner")) setHelp(false);
+    };
+    window.addEventListener("pointerdown", close);
+    return () => window.removeEventListener("pointerdown", close);
+  }, [help]);
+  const keys = useRef({ back, forward, toggleHelp: () => setHelp((h) => !h), closeHelp: () => setHelp(false) });
+  keys.current = { back, forward, toggleHelp: () => setHelp((h) => !h), closeHelp: () => setHelp(false) };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
-      const right = e.key === "ArrowRight" || e.key === "PageDown";
-      const left = e.key === "ArrowLeft" || e.key === "PageUp";
-      if (!right && !left) return;
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
       const target = e.target as HTMLElement | null;
       if (target?.closest?.("input, textarea, select, [contenteditable], .lkd, [role='dialog'], [aria-modal='true']")) return;
       if (document.querySelector(".ad-zoom, [aria-modal='true']")) return;
+      if (e.key === "?") {
+        e.preventDefault();
+        keys.current.toggleHelp();
+        return;
+      }
+      if (e.key === "Escape") {
+        keys.current.closeHelp();
+        return;
+      }
+      const space = e.key === " ";
+      // Space on a focused button or link presses it, as it always has. The
+      // tabs, the progress bar, the drawing and the keys button are the
+      // exception: after clicking one, Space should still turn the slide.
+      if (space && target?.closest?.("a, summary, [role='button'], button:not([role='tab']):not(.lk__art):not(.lk__keys)")) return;
+      const right = (!e.shiftKey && (e.key === "ArrowRight" || e.key === "PageDown" || space));
+      const left = (!e.shiftKey && (e.key === "ArrowLeft" || e.key === "PageUp")) || (e.shiftKey && space);
+      if (!right && !left) return;
       e.preventDefault();
       if (right) keys.current.forward();
       else keys.current.back();
@@ -101,17 +129,7 @@ export function LessonDeck({
   const slide = slides[Math.min(index, total - 1)];
   const scene = scenes[Math.min(index, total - 1)];
 
-  const nav = (
-    <TrailDock
-      prev={{ go: back, disabled: index === 0 && !prevBeyond }}
-      next={{ go: forward, disabled: index === total - 1 && !nextBeyond }}
-      center={
-        <span className="ax-panel__count">
-          {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-        </span>
-      }
-    />
-  );
+  const count = `${String(index + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
 
   return (
     <div className="lk" ref={deckRef}>
@@ -145,6 +163,55 @@ export function LessonDeck({
             ))}
           </div>
         )}
+        <div className="lk__corner">
+          <span className="lk__count" aria-hidden>
+            {count}
+          </span>
+          <button
+            type="button"
+            className={`lk__keys${help ? " is-open" : ""}`}
+            aria-expanded={help}
+            aria-controls="lk-help"
+            aria-label="How to move through the slides"
+            title="Keys (?)"
+            onClick={() => setHelp((h) => !h)}
+          >
+            <Keyboard aria-hidden />
+          </button>
+          {help && (
+            <div id="lk-help" className="lk__help" role="note">
+              <p className="lk__helptitle">Moving through the slides</p>
+              <ul>
+                <li>
+                  <span><kbd>Space</kbd> or <kbd>→</kbd></span> Next slide
+                </li>
+                <li>
+                  <span><kbd>Shift</kbd> + <kbd>Space</kbd> or <kbd>←</kbd></span> Previous slide
+                </li>
+                <li>
+                  <span>Bar at the top</span> Jump to any slide
+                </li>
+                <li>
+                  <span>Swipe</span> Next or previous, on a phone
+                </li>
+                <li>
+                  <span>Tap the drawing</span> Play it again
+                </li>
+                <li>
+                  <span><kbd>?</kbd></span> Show or hide this list
+                </li>
+              </ul>
+              <p className="lk__helpnote">
+                {index < total - 1
+                  ? `Next up: ${slides[index + 1].title}`
+                  : nextBeyond
+                    ? `The next slide moves on to ${nextBeyond.label}.`
+                    : "This is the last slide."}
+              </p>
+            </div>
+          )}
+        </div>
+        <div className="lk__stage">
         <div
           key={index}
           className={`lk__slide${slide.visual ? " lk__slide--media" : ""}${slide.activity || slide.recap ? " lk__slide--activity" : ""}${
@@ -190,8 +257,8 @@ export function LessonDeck({
             )}
           </div>
         </div>
+        </div>
       </div>
-      {actionHost ? createPortal(nav, actionHost) : nav}
     </div>
   );
 }

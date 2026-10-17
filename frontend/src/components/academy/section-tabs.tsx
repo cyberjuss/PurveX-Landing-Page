@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Flag, FlaskConical, Wrench } from "lucide-react";
 import { Markdown, splitMarkdownIntoSlides } from "@/lib/markdown";
@@ -10,6 +10,7 @@ import { LabCarousel } from "./lab-carousel";
 import { MissionPager } from "./mission-pager";
 import { LessonDeck } from "./lesson-deck";
 import { isDeckable } from "@/lib/lesson-deck";
+import { weekScenes } from "./slide-art";
 import { TrailDock, type TrailLink } from "./trail-dock";
 import { labSpot, useCoach } from "./coach-context";
 import { HostedLabSetupNote } from "./hosted-lab-button";
@@ -98,7 +99,6 @@ export function SectionTabs({
   const [quizFoot, setQuizFoot] = useState<HTMLElement | null>(null);
   const [labFoot, setLabFoot] = useState<HTMLElement | null>(null);
   const [challengeFoot, setChallengeFoot] = useState<HTMLElement | null>(null);
-  const [deckFoot, setDeckFoot] = useState<HTMLElement | null>(null);
   // Set only by Previous, so stepping back out of a section lands on the last
   // slide of the one before it. Clicking a tab still opens at the first.
   const [fromNext, setFromNext] = useState(false);
@@ -106,6 +106,11 @@ export function SectionTabs({
   // Reading sections show as slides. Challenges page their own tickets, and
   // a resources list reads better as one list than split across slides.
   const asDeck = current.kind === "section" && current.label !== "Resources" && isDeckable(current.markdown);
+  // Drawings for every slide tab in the week, chosen in tab order with one
+  // memory, so a picture shown in one tab does not come back in the next.
+  const deckTabs = useMemo(() => sections.filter((s) => s.label !== "Resources" && isDeckable(s.markdown)), [sections]);
+  const scenesByTab = useMemo(() => weekScenes(deckTabs), [deckTabs]);
+  const tabScenes = asDeck ? scenesByTab[deckTabs.findIndex((s) => s.label === current.label)] : undefined;
   const { setPlace } = useCoach();
   const { recordLabDone, isLabDone } = useAcademyProgress();
   const labSlug = current.kind === "lab" ? slugify(current.label) : "";
@@ -284,12 +289,12 @@ export function SectionTabs({
         {current.kind === "section" && HOSTED_SETUP_TABS.has(current.label) && <HostedLabSetupNote />}
         {asDeck ? (
           <LessonDeck
+            weekScenes={tabScenes}
             key={current.label}
             label={current.label}
             markdown={current.markdown}
             storageKey={current.label}
             startAtEnd={fromNext}
-            actionHost={deckFoot}
             prevBeyond={prevTrail}
             nextBeyond={nextTrail}
           />
@@ -356,9 +361,7 @@ export function SectionTabs({
           <div ref={setLabFoot} />
         ) : current.kind === "challenge" ? (
           <div ref={setChallengeFoot} />
-        ) : asDeck ? (
-          <div ref={setDeckFoot} />
-        ) : (
+        ) : asDeck ? null : (
           <TrailDock
             prev={prevTrail ? { go: prevTrail.go } : null}
             next={nextTrail ? { go: nextTrail.go } : null}

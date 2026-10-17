@@ -21,8 +21,8 @@ The practical question you will face is never what a value looks like. It is wha
 | Encryption | Yes, but only with the key |
 | Hashing | No. Never. |
 
-```match
-prompt: Match each method to what it does.
+```connect
+prompt: Connect each method to what it does.
 Encryption = Keeps data private. Whoever holds the key can reverse it.
 Hashing = Proves data was not changed. Nobody can reverse it.
 Encoding = A format change anybody can undo in one step. It guarantees nothing.
@@ -30,7 +30,7 @@ Encoding = A format change anybody can undo in one step. It guarantees nothing.
 
 ### Why it matters
 
-Confusing them has a documented cost. In 2012 around 6.5 million LinkedIn password hashes leaked. They had been stored without a salt, so identical passwords produced identical values and the whole set could be attacked at once rather than one account at a time. Most of them were cracked within days. The storage method had offered far less protection than the people who chose it believed, which is the failure this week is trying to make visible to you before you meet it.
+Confusing them has a documented cost. In 2012 around 6.5 million LinkedIn password hashes leaked. They had been stored without a salt, so identical passwords produced identical values and the whole set could be attacked at once rather than one account at a time. More than 60% of them were cracked within about a week. The storage method had offered far less protection than the people who chose it believed, which is the failure this week is trying to make visible to you before you meet it.
 
 The same ideas work in your favour just as reliably. In 2023 analysts tracked a poisoned 3CX installer across many organizations by sharing a single hash of the malicious file, and any team holding that one value could check their own copies in seconds. So these are not only things done to you. They are tools you pick up and use to establish facts.
 

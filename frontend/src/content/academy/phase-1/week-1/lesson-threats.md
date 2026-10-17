@@ -23,6 +23,6 @@ Knowing which threats are realistic for your own organization also keeps the wor
 
 ```sort
 prompt: Weakness or actor? Sort each one.
-Vulnerability: Unpatched software on a web server | A firewall left misconfigured | A policy that allows weak passwords | A port open that nobody needs
+Vulnerability: Unpatched software | A firewall left misconfigured | A policy that allows weak passwords | A port open that nobody needs
 Threat: A criminal group | Malware | An insider | A flood that takes out a data center | A nation-state group
 ```

@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
-import { ArrowDown, ArrowUp, Check, GripVertical, RotateCcw } from "lucide-react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { ArrowDown, ArrowUp, Check, Flame, GripVertical, RotateCcw } from "lucide-react";
 import { confettiFrom } from "@/lib/confetti";
 import type { DeckActivity } from "@/lib/lesson-deck";
 
@@ -99,6 +99,7 @@ function SortActivity({ activity }: { activity: Extract<DeckActivity, { kind: "s
   const [miss, setMiss] = useState<string | null>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [mistakes, setMistakes] = useState(0);
+  const [streak, setStreak] = useState(0);
   const [note, setNote] = useState("");
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -112,10 +113,12 @@ function SortActivity({ activity }: { activity: Extract<DeckActivity, { kind: "s
     if (card.bucket === bucket) {
       const next = { ...placed, [id]: bucket };
       setPlaced(next);
+      setStreak((n) => n + 1);
       setNote(match ? `Correct. That is ${card.text}.` : `Correct. ${card.text} goes in ${activity.buckets[bucket].name}.`);
       if (Object.keys(next).length === cards.length) window.setTimeout(() => confettiFrom(rootRef.current, 40), 120);
     } else {
       setMistakes((m) => m + 1);
+      setStreak(0);
       setMiss(id);
       setNote(match ? `Not that one. ${card.text} belongs on another line.` : `Not ${activity.buckets[bucket].name}. Try another.`);
       window.setTimeout(() => setMiss((m) => (m === id ? null : m)), 450);
@@ -135,6 +138,7 @@ function SortActivity({ activity }: { activity: Extract<DeckActivity, { kind: "s
   );
 
   function reset() {
+    setStreak(0);
     setPlaced({});
     setPicked(null);
     setMistakes(0);
@@ -251,6 +255,7 @@ function SortActivity({ activity }: { activity: Extract<DeckActivity, { kind: "s
         <span className="lkd__note" aria-live="polite">
           {note}
         </span>
+        <Streak count={streak} />
         {Object.keys(placed).length > 0 && (
           <button type="button" className="lkd__reset" onClick={reset}>
             <RotateCcw className="h-3.5 w-3.5" /> Start over
@@ -359,6 +364,175 @@ function OrderActivity({ activity }: { activity: Extract<DeckActivity, { kind: "
   );
 }
 
+/** A run of right answers, shown once it reaches three. */
+export function Streak({ count }: { count: number }) {
+  if (count < 3) return null;
+  return (
+    <span key={count} className="lkd__streak" aria-live="polite">
+      <Flame className="h-4 w-4" aria-hidden /> {count} in a row
+    </span>
+  );
+}
+
+type Pt = { x: number; y: number };
+
+// Connect the dots: concepts down the left, what they connect to down the
+// right, shuffled. Drag a line from a concept's dot to its partner, or tap
+// one and then the other. A right link stays drawn; a wrong one flashes red
+// and fades, so the board ends up as a map of how the ideas join.
+function ConnectActivity({ activity }: { activity: Extract<DeckActivity, { kind: "sort" }> }) {
+  const terms = useMemo(() => seeded(activity.buckets.map((b, i) => ({ i, text: b.items[0] })), `${activity.prompt}:l`), [activity]);
+  const defs = useMemo(() => seeded(activity.buckets.map((b, i) => ({ i, text: b.name })), `${activity.prompt}:r`), [activity]);
+  const [links, setLinks] = useState<Set<number>>(() => new Set());
+  const [picked, setPicked] = useState<number | null>(null);
+  const [miss, setMiss] = useState<{ t: number; d: number } | null>(null);
+  const [mistakes, setMistakes] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [drag, setDrag] = useState<{ t: number; at: Pt } | null>(null);
+  const [geom, setGeom] = useState<{ l: Record<number, Pt>; r: Record<number, Pt> }>({ l: {}, r: {} });
+  const boardRef = useRef<HTMLDivElement>(null);
+  const done = links.size === activity.buckets.length;
+
+  // Where each dot sits on the board, re-measured whenever the board resizes.
+  useLayoutEffect(() => {
+    const board = boardRef.current;
+    if (!board) return;
+    const measure = () => {
+      const box = board.getBoundingClientRect();
+      const at = (el: Element): Pt => {
+        const r = el.getBoundingClientRect();
+        return { x: r.left + r.width / 2 - box.left, y: r.top + r.height / 2 - box.top };
+      };
+      const l: Record<number, Pt> = {};
+      const r: Record<number, Pt> = {};
+      board.querySelectorAll("[data-ldot]").forEach((el) => (l[Number(el.getAttribute("data-ldot"))] = at(el)));
+      board.querySelectorAll("[data-rdot]").forEach((el) => (r[Number(el.getAttribute("data-rdot"))] = at(el)));
+      setGeom({ l, r });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(board);
+    return () => ro.disconnect();
+  }, [terms, defs]);
+
+  function link(t: number, d: number) {
+    setPicked(null);
+    if (links.has(t)) return;
+    if (t === d) {
+      const next = new Set(links).add(t);
+      setLinks(next);
+      setStreak((s) => s + 1);
+      if (next.size === activity.buckets.length) window.setTimeout(() => confettiFrom(boardRef.current, 50), 150);
+    } else {
+      setMistakes((m) => m + 1);
+      setStreak(0);
+      setMiss({ t, d });
+      window.setTimeout(() => setMiss(null), 650);
+    }
+  }
+
+  function onDown(t: number, e: React.PointerEvent<HTMLButtonElement>) {
+    if (links.has(t) || e.button !== 0) return;
+    const box = boardRef.current?.getBoundingClientRect();
+    if (!box) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setDrag({ t, at: { x: e.clientX - box.left, y: e.clientY - box.top } });
+  }
+  function onMove(e: React.PointerEvent) {
+    if (!drag) return;
+    const box = boardRef.current?.getBoundingClientRect();
+    if (box) setDrag({ t: drag.t, at: { x: e.clientX - box.left, y: e.clientY - box.top } });
+  }
+  function onUp(t: number, e: React.PointerEvent<HTMLButtonElement>) {
+    if (!drag) return;
+    const start = geom.l[t];
+    const moved = start && Math.hypot(drag.at.x - start.x, drag.at.y - start.y) > 24;
+    setDrag(null);
+    if (!moved) {
+      setPicked(picked === t ? null : t);
+      return;
+    }
+    const target = slotAt(e.clientX, e.clientY, "data-def");
+    if (target !== null) link(t, Number(target));
+  }
+
+  const curve = (a: Pt, b: Pt) => {
+    const mid = (a.x + b.x) / 2;
+    return `M${a.x} ${a.y} C${mid} ${a.y} ${mid} ${b.y} ${b.x} ${b.y}`;
+  };
+
+  return (
+    <div className="lkd">
+      <p className="lkd__prompt">{activity.prompt}</p>
+      <p className="lkd__how">Draw a line from each idea to what it connects to, or tap one and then the other.</p>
+      <div className="lkn-board" ref={boardRef} onPointerMove={onMove}>
+        <svg className="lkn-wires" aria-hidden>
+          {[...links].map((i) =>
+            geom.l[i] && geom.r[i] ? <path key={i} className="lkn-wire lkn-wire--ok" d={curve(geom.l[i], geom.r[i])} /> : null
+          )}
+          {miss && geom.l[miss.t] && geom.r[miss.d] && <path className="lkn-wire lkn-wire--bad" d={curve(geom.l[miss.t], geom.r[miss.d])} />}
+          {drag && geom.l[drag.t] && <path className="lkn-wire lkn-wire--live" d={curve(geom.l[drag.t], drag.at)} />}
+        </svg>
+        <ul className="lkn-col">
+          {terms.map(({ i, text }) => (
+            <li key={i}>
+              <button
+                type="button"
+                className={`lkn-node${picked === i ? " is-picked" : ""}${links.has(i) ? " is-linked" : ""}${miss?.t === i ? " is-miss" : ""}`}
+                aria-pressed={picked === i}
+                disabled={links.has(i)}
+                onPointerDown={(e) => onDown(i, e)}
+                onPointerUp={(e) => onUp(i, e)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setPicked(picked === i ? null : i);
+                  }
+                }}
+              >
+                <span>{text}</span>
+                <i className="lkn-dot" data-ldot={i} />
+              </button>
+            </li>
+          ))}
+        </ul>
+        <ul className="lkn-col lkn-col--r">
+          {defs.map(({ i, text }) => {
+            const linked = links.has(i);
+            return (
+              <li key={i}>
+                <button
+                  type="button"
+                  data-def={i}
+                  className={`lkn-node lkn-node--r${linked ? " is-linked" : ""}${miss?.d === i ? " is-miss" : ""}${picked !== null && !linked ? " is-ready" : ""}`}
+                  disabled={linked}
+                  onClick={() => picked !== null && link(picked, i)}
+                >
+                  <i className="lkn-dot" data-rdot={i} />
+                  <span>{text}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      <div className="lkd__foot">
+        <span className="lkd__note" aria-live="polite">
+          {done ? (
+            <span className="lkd__done">
+              <Check className="h-4 w-4" /> Every dot connected{mistakes ? `, ${mistakes} ${mistakes === 1 ? "miss" : "misses"} on the way` : " on the first try"}.
+            </span>
+          ) : (
+            `${links.size} of ${activity.buckets.length} connected`
+          )}
+        </span>
+        <Streak count={streak} />
+      </div>
+    </div>
+  );
+}
+
 export function DragActivity({ activity }: { activity: DeckActivity }) {
-  return activity.kind === "sort" ? <SortActivity activity={activity} /> : <OrderActivity activity={activity} />;
+  if (activity.kind === "order") return <OrderActivity activity={activity} />;
+  return activity.layout === "connect" ? <ConnectActivity activity={activity} /> : <SortActivity activity={activity} />;
 }

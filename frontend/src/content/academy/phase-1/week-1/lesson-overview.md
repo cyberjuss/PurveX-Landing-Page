@@ -29,8 +29,8 @@ These words get used loosely in ordinary conversation, which is precisely why th
 
 Once you can separate them, you can rank a queue instead of reacting to it. By the end of the week you should be able to look at a failure and say which of the three jobs broke, then say whether the danger in front of you is a weakness, an actor, or the chance that the two come together.
 
-```match
-prompt: Match each word to what it means.
+```connect
+prompt: Connect each word to what it means.
 Vulnerability = A weakness
 Threat = Something or someone that could use it
 Risk = The chance the two meet, and what it would cost

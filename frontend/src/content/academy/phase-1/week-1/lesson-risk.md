@@ -31,5 +31,5 @@ An escalation that supplies all three gives the person receiving it everything t
 ```sort
 prompt: Does each control lower the likelihood, or the impact when something gets through?
 Lowers likelihood: Patching the software | Closing a port nobody needs | Strengthening the password policy
-Lowers impact: Tested backups | Network segmentation
+Lowers impact: Backups | Network segmentation
 ```

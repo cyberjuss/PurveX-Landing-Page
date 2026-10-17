@@ -1,7 +1,7 @@
 import { marked, type Token } from "marked";
 
 export type DeckActivity =
-  | { kind: "sort"; prompt: string; buckets: { name: string; items: string[] }[]; layout?: "match" }
+  | { kind: "sort"; prompt: string; buckets: { name: string; items: string[] }[]; layout?: "match" | "connect" }
   | { kind: "order"; prompt: string; items: string[] };
 
 export interface DeckSlide {
@@ -115,7 +115,7 @@ export function parseActivity(lang: string, body: string): DeckActivity | null {
   let prompt =
     lang === "sort"
       ? "Drag each card to where it belongs."
-      : lang === "match"
+      : lang === "match" || lang === "connect"
         ? "Drag each term to what it matches."
         : "Drag the steps into order.";
   const rest: string[] = [];
@@ -127,14 +127,14 @@ export function parseActivity(lang: string, body: string): DeckActivity | null {
   // A match block pairs a short term with what it matches, one pair a line:
   // "Threat = Something or someone that could use it". The term is the card
   // the student drags; the right-hand side is the row it drops on.
-  if (lang === "match") {
+  if (lang === "match" || lang === "connect") {
     const buckets = rest
       .map((line) => {
         const at = line.indexOf(" = ");
         return at < 1 ? null : { name: line.slice(at + 3).trim(), items: [line.slice(0, at).trim()] };
       })
       .filter((b): b is { name: string; items: string[] } => Boolean(b && b.name && b.items[0]));
-    return buckets.length >= 2 ? { kind: "sort", prompt, buckets, layout: "match" } : null;
+    return buckets.length >= 2 ? { kind: "sort", prompt, buckets, layout: lang } : null;
   }
   if (lang === "order") {
     const items = rest.map((l) => l.replace(/^(\d+[.)]|[-*])\s+/, ""));
@@ -184,7 +184,7 @@ export function splitLessonIntoDeck(markdown: string, label: string): DeckSlide[
       current().art = note[1].toLowerCase();
       continue;
     }
-    if (depth === 0 && token.type === "code" && (token.lang === "sort" || token.lang === "order" || token.lang === "match")) {
+    if (depth === 0 && token.type === "code" && (token.lang === "sort" || token.lang === "order" || token.lang === "match" || token.lang === "connect")) {
       const activity = parseActivity(token.lang, token.text);
       if (activity) {
         slides.push({ title, cont: Boolean(current()), raw: [], words: 0, activity });

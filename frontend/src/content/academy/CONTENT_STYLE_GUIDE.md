@@ -305,5 +305,22 @@ SYN-ACK
 ACK
 ```
 
+A `match` block pairs a short term with a definition or a scenario, one
+pair a line. The student drags the term onto the line it belongs to. A
+`connect` block takes the same lines and has the student draw a wire from
+each idea to its partner instead. Use it where the point is how ideas join.
+
+```match
+prompt: Match each breach to the way in.
+Colonial Pipeline = A VPN account with a leaked password and no MFA
+MGM Resorts = A caller talked the help desk into resetting an employee's MFA
+```
+
+Drawings never repeat inside a week. Each tab keeps the drawing that best
+fits its own name, and the concept explainers (`leak`, `lie`, `lockout`,
+`riskmix`, `avalanche`, `salt`, `wrongkey`, `mfa`) only appear where their
+idea is the slide's or the tab's subject. Pin one with `<!-- art: salt -->`
+when the heading does not name the idea.
+
 Cards follow the same rule as the prose: every one must come from the
 lesson it sits in. Keep each card short enough to read at a glance.

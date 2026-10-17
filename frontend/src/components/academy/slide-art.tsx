@@ -5,6 +5,8 @@
 // simply hold still.
 
 import { CARTOON_NAMES, CartoonArt, type Cartoon } from "./cartoon-art";
+import { EXPLAINER_NAMES, ExplainerArt, type Explainer } from "./explainer-art";
+import { splitLessonIntoDeck } from "@/lib/lesson-deck";
 
 export const SCENE_NAMES = [
   "lock",
@@ -38,6 +40,7 @@ export const SCENE_NAMES = [
   "isolate",
   "deck",
   ...CARTOON_NAMES,
+  ...EXPLAINER_NAMES,
 ] as const;
 export type Scene = (typeof SCENE_NAMES)[number];
 
@@ -46,9 +49,20 @@ export function isScene(name: string | undefined): name is Scene {
 }
 
 const isCartoon = (scene: Scene): scene is Cartoon => (CARTOON_NAMES as readonly string[]).includes(scene);
+const isExplainer = (scene: Scene): scene is Explainer => (EXPLAINER_NAMES as readonly string[]).includes(scene);
 
 // First match wins, so the narrower words sit above the broader ones.
 const SCENES: [RegExp, Scene][] = [
+  // Explainers first: where a slide teaches one of these ideas, the drawing
+  // that shows the idea happening beats any picture of the topic.
+  [/confidential/i, "leak"],
+  [/hashing and integrity|what a hash tells|same input|sha-?256/i, "avalanche"],
+  [/\bintegrity\b/i, "lie"],
+  [/\bavailability\b/i, "lockout"],
+  [/^risk\b|risk = |likelihood × impact|threat × vulnerability/i, "riskmix"],
+  [/\bsalt/i, "salt"],
+  [/encryption and keys|what encryption does|two kinds of keys|wrong key/i, "wrongkey"],
+  [/\bmfa\b|multi-factor|second factor/i, "mfa"],
   [/overview|introduc|questions answered|this week/i, "presenter"],
   [/phish/i, "phished"],
   [/insider|leaver|left the company|stale account|contractor/i, "insider"],
@@ -91,6 +105,24 @@ const SCENES: [RegExp, Scene][] = [
 // Used when nothing in a slide names a topic, or every match was already
 // shown earlier in the same lesson.
 const FALLBACK: Scene[] = ["presenter", "analyst", "detective", "deck", "people", "layers", "network", "terminal", "gauge", "radar", "search"];
+// Then every other drawing in turn, so a whole week runs before one repeats.
+const FILLER: Scene[] = SCENE_NAMES.filter((s) => !(EXPLAINER_NAMES as readonly string[]).includes(s));
+
+/**
+ * Drawings for every lesson tab in a week, picked in order with one shared
+ * memory, so the Integrity tab does not reuse what Confidentiality showed.
+ */
+export function weekScenes(sections: { label: string; markdown: string }[]): Scene[][] {
+  const used = new Set<Scene>();
+  // Each tab's signature drawing (the best match for its own name) is held
+  // for that tab, so an overview that mentions access control in passing
+  // does not take the door that belongs to Broken Access Control.
+  const signature = sections.map((s) => sceneCandidates(s.label)[0]);
+  return sections.map((s, i) => {
+    const held = new Set(signature.filter((sig, j): sig is Scene => Boolean(sig) && j !== i));
+    return pickScenes(splitLessonIntoDeck(s.markdown, s.label), s.label, used, held);
+  });
+}
 
 /** Every drawing that fits, best first: the title's matches, then the body's, then the section's. */
 export function sceneCandidates(...texts: string[]): Scene[] {
@@ -110,9 +142,12 @@ export function sceneFor(...texts: string[]): Scene {
  */
 export function pickScenes(
   slides: { title: string; markdown: string; art?: string; visual?: boolean; activity?: unknown; recap?: unknown }[],
-  label: string
+  label: string,
+  /** Drawings already shown earlier in the week, so a later tab does not repeat them. */
+  used: Set<Scene> = new Set<Scene>(),
+  /** Drawings held for another tab this week. */
+  held: Set<Scene> = new Set<Scene>()
 ): Scene[] {
-  const used = new Set<Scene>();
   return slides.map((s) => {
     // A screenshot or an activity fills the slide, so it does not spend a drawing.
     if (s.visual || s.activity || s.recap) return "deck";
@@ -120,8 +155,12 @@ export function pickScenes(
       used.add(s.art);
       return s.art;
     }
-    const options = [...sceneCandidates(s.title, s.markdown, label), ...FALLBACK];
-    const pick = options.find((o) => !used.has(o)) ?? options[0];
+    // An explainer belongs to the slide or tab whose subject it is, so a body
+    // that merely mentions the idea in passing does not spend it, and it is
+    // never filler.
+    const fromBody = sceneCandidates(s.markdown).filter((c) => !(EXPLAINER_NAMES as readonly string[]).includes(c));
+    const options = [...sceneCandidates(s.title), ...fromBody, ...sceneCandidates(label), ...FALLBACK, ...FILLER];
+    const pick = options.find((o) => !used.has(o) && !held.has(o)) ?? options.find((o) => !used.has(o)) ?? options[0];
     used.add(pick);
     return pick;
   });
@@ -132,6 +171,7 @@ const delay = (s: number) => ({ animationDelay: `${s}s` });
 export function SlideArt({ scene }: { scene: Scene }) {
   return (
     <svg viewBox="0 0 200 200" className={`lka lka--${scene}`} aria-hidden focusable="false">
+      {isExplainer(scene) && <ExplainerArt scene={scene} />}
       {isCartoon(scene) && (
         <>
           <ellipse className="lkc-shadow" cx="100" cy="186" rx="68" ry="6" />
@@ -441,9 +481,9 @@ export function SlideArt({ scene }: { scene: Scene }) {
       {scene === "door" && (
         <>
           <rect className="lka-line lka-faint" x="12" y="20" width="176" height="26" rx="13" />
-          <text className="lka-label lka-label--sm" x="26" y="37">/invoice?id=104</text>
-          <text className="lka-label lka-label--sm lka-id-a" x="122" y="37">2</text>
-          <text className="lka-label lka-label--sm lka-id-b" x="122" y="37">3</text>
+          <text className="lka-label lka-label--sm" x="26" y="37">/record?id=104</text>
+          <text className="lka-label lka-label--sm lka-id-a" x="116" y="37">2</text>
+          <text className="lka-label lka-label--sm lka-id-b" x="116" y="37">3</text>
           <path className="lka-beam" d="M70 72 H130 V170 H70 Z" />
           <rect className="lka-line" x="66" y="68" width="68" height="104" rx="3" />
           <rect className="lka-panel lka-swing" x="66" y="68" width="68" height="104" rx="3" />
@@ -575,7 +615,7 @@ export function SlideArt({ scene }: { scene: Scene }) {
       {scene === "dns" && (
         <>
           <rect className="lka-node" x="8" y="40" width="80" height="26" rx="13" />
-          <text className="lka-label lka-label--sm" x="48" y="57" textAnchor="middle">purvex.io</text>
+          <text className="lka-label lka-label--sm" x="48" y="57" textAnchor="middle">google.com</text>
           <g className="lka-globe">
             <circle className="lka-line" cx="100" cy="112" r="32" />
             <ellipse className="lka-line lka-faint lka-meridian" cx="100" cy="112" rx="14" ry="32" />
@@ -585,7 +625,7 @@ export function SlideArt({ scene }: { scene: Scene }) {
           <path className="lka-line lka-wire" d="M126 96 Q140 80 148 74" style={delay(0.9)} />
           <g className="lka-pop" style={delay(1.4)}>
             <rect className="lka-solid" x="112" y="40" width="80" height="26" rx="13" />
-            <text className="lka-label lka-label--sm lka-label--inv" x="152" y="57" textAnchor="middle">10.0.0.5</text>
+            <text className="lka-label lka-label--sm lka-label--inv" x="152" y="57" textAnchor="middle">IP address</text>
           </g>
         </>
       )}
