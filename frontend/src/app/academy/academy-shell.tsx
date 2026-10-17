@@ -723,6 +723,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
     // Hints are always available. A student who is stuck should be able to read
     // the hint whenever rather than having to spend two wrong tries first.
     // Opening one still records hint-used, so it carries its scoring cost.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const hintUnlocked = (_wrap: Element) => true;
 
     let openHintId: string | null = null;

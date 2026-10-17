@@ -1020,6 +1020,15 @@ function IncidentDetail({ inc, no, age, busy, post, lead, after }: { inc: Incide
 // ---- report ---------------------------------------------------------------
 
 function ShiftReport({ theme, report, onAgain, busy, error }: { theme: "light" | "dark"; report: Report; onAgain: () => void; busy: boolean; error: string | null }) {
+  // The shift is over, so the drafts typed into its incidents have done their job.
+  useEffect(() => {
+    try {
+      for (let i = window.sessionStorage.length - 1; i >= 0; i--) {
+        const k = window.sessionStorage.key(i);
+        if (k?.startsWith("shift-draft:")) window.sessionStorage.removeItem(k);
+      }
+    } catch {}
+  }, []);
   const pct = report.maxScore ? Math.round((report.totalScore / report.maxScore) * 100) : 0;
   const R = 56;
   const C = 2 * Math.PI * R;

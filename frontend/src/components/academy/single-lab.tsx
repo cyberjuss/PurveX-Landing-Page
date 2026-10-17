@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { Markdown, splitMarkdownIntoSlides } from "@/lib/markdown";
+import { splitMarkdownIntoSlides } from "@/lib/markdown";
 import type { LabWidget } from "@/lib/academy-content";
 import { LabCarousel } from "./lab-carousel";
 import { LabBrief } from "./labs/lab-brief";

@@ -422,6 +422,8 @@ export function CoachChat() {
                 {m.images?.length ? (
                   <div className="pc-shots pc-shots--msg">
                     {m.images.map((image, j) => (
+                      // A screenshot the student pasted, held as a data URL: nothing for next/image to optimise.
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img key={j} src={coachImageSrc(image)} alt="Attached screenshot" className="pc-shot__img" />
                     ))}
                   </div>
@@ -503,6 +505,8 @@ export function CoachChat() {
             <div className="pc-shots">
               {images.map((image, i) => (
                 <div key={`${image.data.slice(0, 24)}-${i}`} className="pc-shot">
+                  {/* A pasted screenshot, held as a data URL: nothing for next/image to optimise. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={coachImageSrc(image)} alt="" className="pc-shot__img" />
                   <button
                     type="button"

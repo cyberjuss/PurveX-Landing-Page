@@ -49,7 +49,6 @@ function PortalLoginContent() {
   const [bounce, setBounce] = useState<boolean | undefined>(undefined);
   useEffect(() => {
     const send = !forceSignIn && !hasPortalAccount();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setBounce(send);
     if (send) router.replace(`/account/signup?next=${encodeURIComponent(next)}`);
   }, [router, next, forceSignIn]);
