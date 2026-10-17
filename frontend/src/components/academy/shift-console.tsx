@@ -169,9 +169,9 @@ function ShiftConsoleInner() {
   const polling = active || (available === true && (shift?.status !== "done" || queued));
   useEffect(() => {
     if (!polling) return;
-    const t = window.setInterval(() => void load(), 5000);
+    const t = window.setInterval(() => void load(), active ? 3000 : 5000);
     return () => window.clearInterval(t);
-  }, [polling, load]);
+  }, [polling, active, load]);
 
   const post = useCallback(async (payload: Record<string, unknown>, opts?: { silent?: boolean }) => {
     setBusy(true);

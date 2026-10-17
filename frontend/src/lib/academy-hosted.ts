@@ -1304,6 +1304,9 @@ function incidentCommand(script: string, undo: boolean, args?: Record<string, st
     `$f="$d\\${script}"`,
     verifyDownloaded("$f", `incidents/${script}`),
     `& "$d\\${script}"${arg}`,
+    // Report straight away, so Range sees the incident land in a second or
+    // two instead of waiting for the next heartbeat. -Fast skips the log read.
+    ...(undo ? [] : ["$s=Join-Path $env:ProgramData 'PurveX\\Build-Environment.ps1'; if(Test-Path $s){ try { & $s -SyncOnly -Fast } catch { } }"]),
   ].join("; ");
 }
 

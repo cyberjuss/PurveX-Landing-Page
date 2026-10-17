@@ -1,4 +1,5 @@
 import "server-only";
+import type { LabSnapshot } from "@/lib/academy-lab";
 import { HANDOFF_GRADES, handoffReviewer, responseGrader, shiftNarrator, type HandoffReview } from "@/lib/academy-scenario";
 import { cleanupShiftLab, hostedLabStatus, injectIncident, requestLabSync } from "@/lib/academy-hosted";
 import { roleLabel } from "@/lib/academy-certs";
@@ -28,6 +29,8 @@ import {
   incidentArrived,
   incidentDef,
   canAlternate,
+  damageVisible,
+  eventsSince,
   newShiftRun,
   resolvedOnTime,
   scoreIncident,
@@ -202,11 +205,39 @@ async function injectArrived(userId: string, run: ShiftRun, elapsed: number): Pr
     const ok = await injectIncident(userId, def.script, inc.bind?.args);
     if (ok) {
       inc.injected = true;
+      inc.injectedAt = new Date().toISOString();
       changed = true;
     }
   }
   return changed;
 }
+
+/**
+ * Note each fired incident the first time the lab shows it: a snapshot taken
+ * after it was fired with its damage in place, or the Security log showing the
+ * attack after that moment. A run from before this existed has no injectedAt
+ * and keeps the old evidence check.
+ */
+function markLanded(run: ShiftRun, lab: { snapshot: LabSnapshot; uploadedAt: string } | null): boolean {
+  if (!lab) return false;
+  let changed = false;
+  for (const inc of run.incidents) {
+    if (!inc.injected || !inc.injectedAt || inc.landedAt) continue;
+    if (Date.parse(lab.uploadedAt) <= Date.parse(inc.injectedAt)) continue;
+    const def = incidentDef(inc.defId);
+    if (!def) continue;
+    const eff = effectiveIncident(def, inc);
+    const logged = Boolean(eff.evidence) && eff.evidence!(eventsSince(lab.snapshot.events, inc.injectedAt));
+    if (damageVisible(def, eff.resolve, lab.snapshot) || logged) {
+      inc.landedAt = lab.uploadedAt;
+      changed = true;
+    }
+  }
+  return changed;
+}
+
+/** Landed for grading: known on a run that records it, unknown on an older one. */
+const landedOf = (inc: IncidentRun): boolean | undefined => (inc.injectedAt ? Boolean(inc.landedAt) : undefined);
 
 // ---- read / start ---------------------------------------------------------
 
@@ -217,8 +248,9 @@ export async function getShift(userId: string): Promise<PublicShift | null> {
   if (run.status === "done") return publicShift(run);
   const now = Date.now();
   if (shiftOver(run, now)) return finishAndReturn(userId, run);
-  const changed = await injectArrived(userId, run, shiftElapsed(run, now));
-  if (changed) await saveShift(userId, run);
+  const fired = await injectArrived(userId, run, shiftElapsed(run, now));
+  const landed = run.incidents.some((i) => i.injectedAt && !i.landedAt) ? markLanded(run, await loadLabState(userId).catch(() => null)) : false;
+  if (fired || landed) await saveShift(userId, run);
   return publicShift(run, now);
 }
 
@@ -367,40 +399,40 @@ export async function submitIncident(
 
   inc.submits = (inc.submits ?? 0) + 1;
 
-  // Push a fresh snapshot from the lab now and wait briefly for it, so a change
-  // the student just made is graded on this click instead of the next one.
   const eff = effectiveIncident(def, inc);
-  // An incident that proves itself from the Security log cannot be closed
-  // until a digest arrives, and only a heavy sync carries one. Asking for a
-  // light one and then grading told a student who had fixed the problem
-  // correctly that it had not landed yet.
-  const needsEvidence = Boolean(eff.evidence);
-  const before = await loadLabState(userId);
-  let seenAt = before ? Date.parse(before.uploadedAt) : 0;
-  let lab = before;
-  void requestLabSync(userId, true, needsEvidence);
-  // The heavy sync reads the log, so give it longer than a nudge needs.
-  // A light report usually lands in a few seconds, but SSM can take longer,
-  // and grading the report from before the click told students who had just
-  // made the fix that their lab did not show it.
-  const deadline = Date.now() + (needsEvidence ? 25_000 : 15_000);
-  let arrived = false;
-  while (Date.now() < deadline) {
-    await new Promise((r) => setTimeout(r, 200));
-    const next = await loadLabState(userId);
-    if (!next || Date.parse(next.uploadedAt) <= seenAt) continue;
-    lab = next;
-    arrived = true;
-    seenAt = Date.parse(next.uploadedAt);
-    // The change-watch loop pushes its own snapshot within a fraction of a
-    // second of the fix, and that one carries no digest. Taking the first
-    // thing to arrive meant grading the fix against last minute's evidence,
-    // so when evidence is what is missing, keep waiting for a snapshot that
-    // actually shows the attack.
-    if (!needsEvidence || eff.evidence!(next.snapshot.events)) break;
+  const grade = (l: typeof lab) => {
+    markLanded(run, l);
+    return gradeIncidentLab(eff, l?.snapshot ?? null, inc.diagnosis, landedOf(inc));
+  };
+
+  // The lab pushes a snapshot within a second of any change in the directory,
+  // so the one already here usually shows the fix. Grade it first: a fix that
+  // is in, on an incident that has landed, closes on the click with no wait.
+  let lab = await loadLabState(userId);
+  let graded = grade(lab);
+  let arrived = Boolean(lab && inc.injectedAt && Date.parse(lab.uploadedAt) > Date.parse(inc.injectedAt));
+  if (!(graded.resolved && graded.diagnosisRight)) {
+    // Not closed on what is here: ask for a fresh report and grade that. The
+    // Security log only rides a full report, so ask for one only when landing
+    // has to be proven from the log.
+    const needsLog = landedOf(inc) === false || (landedOf(inc) === undefined && Boolean(eff.evidence));
+    const seenAt = lab ? Date.parse(lab.uploadedAt) : 0;
+    void requestLabSync(userId, true, needsLog && Boolean(eff.evidence));
+    arrived = false;
+    const deadline = Date.now() + 10_000;
+    while (Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, 150));
+      const next = await loadLabState(userId);
+      if (!next || Date.parse(next.uploadedAt) <= seenAt) continue;
+      lab = next;
+      arrived = true;
+      graded = grade(next);
+      // A light report can arrive before the full one that carries the log;
+      // when landing still has to be proven from the log, keep waiting for it.
+      if (!(needsLog && eff.evidence && landedOf(inc) !== true)) break;
+    }
   }
 
-  const graded = gradeIncidentLab(eff, lab?.snapshot ?? null, inc.diagnosis);
   const fresh = Boolean(lab && Date.parse(lab.uploadedAt) >= Date.parse(run.startedAt));
   // An incident closes only when the lab shows the fix AND the finding is answered
   // correctly. A correct fix with a wrong or blank finding stays open with a nudge.
@@ -418,7 +450,8 @@ export async function submitIncident(
     // "not heard from yet".
     waiting: !graded.resolved && (!fresh || !arrived),
     needFinding,
-    evidencePending: Boolean(eff.evidence) && !eff.evidence!(lab?.snapshot.events),
+    // The fix may be in, but the incident has not reached the lab yet.
+    evidencePending: landedOf(inc) === false || (landedOf(inc) === undefined && Boolean(eff.evidence) && !eff.evidence!(lab?.snapshot.events)),
     answerRight: graded.diagnosisRight,
   };
 }
@@ -485,6 +518,7 @@ function factReview(c: { finding: string; note: string; fix: string[]; path: str
 
 async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
   const lab = await loadLabState(userId);
+  markLanded(run, lab);
   const snapshot = lab?.snapshot ?? null;
   const apiKey = process.env.ANTHROPIC_API_KEY;
   const grade = apiKey ? responseGrader(apiKey) : null;
@@ -494,7 +528,7 @@ async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
     const def = incidentDef(inc.defId);
     if (!def) continue;
     const eff = effectiveIncident(def, inc);
-    const lg = gradeIncidentLab(eff, snapshot, inc.diagnosis);
+    const lg = gradeIncidentLab(eff, snapshot, inc.diagnosis, landedOf(inc));
     // An incident is only closed when the lab shows the fix AND the finding is right.
     // Once it was closed during the shift it stays closed: a later incident (e.g. a
     // spray re-locking an account) must not strip credit the student already earned.

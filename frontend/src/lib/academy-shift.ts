@@ -1351,6 +1351,36 @@ export function effectiveIncident(
 // ---- grading one incident -------------------------------------------------
 
 /**
+ * The Security-log digest cut to what happened at or after a moment. The
+ * digest covers days, so without this an event from an earlier shift (the same
+ * account disabled last week) passed as proof this shift's attack had landed.
+ * A two-minute allowance covers the domain controller's clock against ours.
+ */
+export function eventsSince(e: LabEvents | undefined, sinceIso: string): LabEvents | undefined {
+  if (!e) return e;
+  const since = Date.parse(sinceIso) - 120_000;
+  const after = (t: string | null | undefined) => Boolean(t) && Date.parse(t as string) >= since;
+  return {
+    ...e,
+    failures: e.failures.filter((r) => after(r.last)),
+    lockouts: e.lockouts.filter((r) => after(r.last)),
+    created: e.created.filter((r) => after(r.at)),
+    disabled: e.disabled.filter((r) => after(r.at)),
+    groupAdds: e.groupAdds.filter((r) => after(r.at)),
+    accountChanges: (e.accountChanges ?? []).filter((r) => after(r.at)),
+    policyChanges: (e.policyChanges ?? []).filter((r) => after(r.at)),
+    auditChanges: (e.auditChanges ?? []).filter((r) => after(r.at)),
+  };
+}
+
+/** The incident's damage is in this snapshot: at least one resolve check fails.
+ *  A false alarm has none to show (leaving it alone is the fix). */
+export function damageVisible(def: Pick<IncidentDef, "falseAlarm">, resolve: IncidentDef["resolve"], snapshot: LabSnapshot | null): boolean {
+  if (def.falseAlarm || !snapshot) return false;
+  return resolve.some(({ c }) => !evalCheck(snapshot, c));
+}
+
+/**
  * Does the answer contain an accepted term? Short terms and numbers must stand
  * as their own word, so "4" does not pass inside "4625", "no" inside "not", or
  * "ou" inside "you". Longer terms match anywhere, so "disabled" passes "disable".
@@ -1373,7 +1403,10 @@ export function answerMatches(answer: string, accept: string[]): boolean {
 export function gradeIncidentLab(
   def: Pick<IncidentDef, "resolve" | "noHarm" | "diagnosis" | "evidence">,
   snapshot: LabSnapshot | null,
-  diagnosis: string
+  diagnosis: string,
+  /** Whether this shift has seen the incident land. Given, it replaces the
+   *  evidence check; left out (older runs, tests), evidence decides. */
+  landed?: boolean
 ): { resolved: boolean; noHarm: boolean; diagnosisRight: boolean; results: { label: string; ok: boolean }[] } {
   const results: { label: string; ok: boolean }[] = [];
   let resolved = true;
@@ -1384,7 +1417,7 @@ export function gradeIncidentLab(
   }
   // The fix only counts once the attack is proven in the lab's Security log, so a
   // clean baseline (attack never fired) can never trivially pass the resolve check.
-  if (def.evidence && !def.evidence(snapshot?.events)) {
+  if (landed === false || (landed === undefined && def.evidence && !def.evidence(snapshot?.events))) {
     results.push({ label: "The incident has not landed in your lab yet — give it a moment, then check again", ok: false });
     resolved = false;
   }
@@ -1455,6 +1488,13 @@ export type IncidentRun = {
   escalatedAtSec?: number | null;
   /** The incident's script has been fired into the lab. */
   injected: boolean;
+  /** When the script was sent to the lab (server clock). */
+  injectedAt?: string;
+  /** When a lab snapshot taken after injectedAt first showed the damage, or
+   *  the Security log showed the attack after it. Until then the incident
+   *  cannot close: the lab cannot "show the fix" for something that has not
+   *  happened in it yet. */
+  landedAt?: string;
   /** The victim-specific specifics bound when the shift was built. */
   bind?: Bind;
   /** Fresh wording Claude wrote for this shift, so no two read alike. Falls back to the template. */
