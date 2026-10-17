@@ -6,6 +6,7 @@
  *   npm run check:shift
  */
 import { DESK_EVENTS, planDesk, toPublicDesk } from "@/lib/academy-shift-desk";
+import { effectiveIncident as effOf } from "@/lib/academy-shift";
 import { INCIDENTS, pickShift, canAlternate, incidentDef as defOf, questionsFor, answerMatches, effectiveIncident, SHIFT_SECONDS, incidentDef } from "@/lib/academy-shift";
 
 let fail = 0;
@@ -111,6 +112,25 @@ for (let k = 0; k < 200; k++) {
 }
 ok(seenDesk.size === DESK_EVENTS.length, `only ${seenDesk.size} of ${DESK_EVENTS.length} emails ever came up`);
 console.log(`emails seen across 200 shifts: ${seenDesk.size} of ${DESK_EVENTS.length}`);
+
+// A run stored as JSON loses the bound evidence function; it must come back
+// rebuilt for the same victims.
+let rebuilt = 0;
+for (let k = 0; k < 100; k++) {
+  for (const inc of pickShift(`ev-${k}`, 2, 4)) {
+    const def = defOf(inc.defId)!;
+    const live = effOf(def, inc).evidence;
+    const stored = effOf(def, JSON.parse(JSON.stringify(inc))).evidence;
+    ok(Boolean(live) === Boolean(stored), `${inc.defId}: evidence lost after a save`);
+    if (!live || !stored) continue;
+    rebuilt++;
+    // Same answer on events naming each bound target, and on none.
+    const names = Object.entries(inc.bind?.args ?? {}).filter(([key]) => key !== "Sprayed").flatMap(([, v]) => String(v).split(","));
+    const ev = (who: string[]) => ({ windowDays: 7, v: 3, failures: who.map((a) => ({ account: a, count: 6, last: null })), lockouts: who.map((a) => ({ account: a, count: 1, last: null })), created: who.map((a) => ({ account: a, at: "", by: "" })), disabled: who.map((a) => ({ account: a, at: "", by: "" })), groupAdds: who.map((a) => ({ member: a, group: "Domain Admins IT Admins Compliance Users", at: "", by: "" })), accountChanges: who.map((a) => ({ account: a, at: "", by: "" })), policyChanges: [{ at: "", by: "" }], auditChanges: [{ at: "", by: "" }] });
+    ok(live(ev(names)) === stored(ev(names)) && live(ev([])) === stored(ev([])), `${inc.defId}: rebuilt evidence disagrees with the original`);
+  }
+}
+console.log(`evidence rebuilt after a save: ${rebuilt} checks`);
 
 console.log(fail ? `${fail} failed` : "all passed");
 process.exit(fail ? 1 : 0);

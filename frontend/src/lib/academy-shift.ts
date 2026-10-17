@@ -1350,8 +1350,38 @@ export function effectiveIncident(
     diagnosis: inc.question ?? b?.diagnosis ?? def.diagnosis,
     brief: b?.brief ?? def.brief,
     args: b?.args,
-    evidence: b?.evidence ?? def.evidence,
+    // A stored run comes back from the database as JSON, and the bound
+    // evidence check is a function, which JSON drops. Rebuild it from the
+    // victims the run recorded, so it works after the first save too.
+    evidence: b ? (b.evidence ?? (b.args ? rebind(def, b.args)?.evidence : undefined) ?? def.evidence) : def.evidence,
   };
+}
+
+/** Run an incident's bind again, picking the victims a stored run recorded. */
+function rebind(def: IncidentDef, args: Record<string, string>): Bind | null {
+  if (!def.bind) return null;
+  const wanted = Object.entries(args)
+    .filter(([k]) => k !== "Sprayed")
+    .flatMap(([, v]) => String(v).split(","))
+    .map((v) => v.trim());
+  const used = new Set<string>();
+  const pick = <T,>(arr: T[]): T => {
+    const hit = arr.find((x) => {
+      if (x && typeof x === "object" && "sam" in x) {
+        const sam = (x as unknown as Staff).sam;
+        return wanted.includes(sam) && !used.has(sam);
+      }
+      return typeof x === "string" && (wanted.includes(x) || wanted.includes(DEPT_OU[x] ?? ""));
+    });
+    const out = hit ?? arr[0];
+    if (out && typeof out === "object" && "sam" in out) used.add((out as unknown as Staff).sam);
+    return out;
+  };
+  try {
+    return def.bind(pick);
+  } catch {
+    return null;
+  }
 }
 
 // ---- grading one incident -------------------------------------------------

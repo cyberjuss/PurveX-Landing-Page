@@ -480,6 +480,8 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   const freshIds = new Set(fresh.map((f) => f.uid));
 
   const unread = (shift.desk ?? []).filter((d) => !d.answered && !d.lapsed).length;
+  const [deskSeen, setDeskSeen] = useState<Set<string>>(() => new Set());
+  const markSeen = (uid: string) => setDeskSeen((s) => new Set(s).add(uid));
 
   // Coach knows which incident is open, so "help me" means this one, and it
   // coaches as the senior analyst at the next desk without doing the work.
@@ -700,7 +702,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
                     {unread > 0 && <b className="sh-rail__badge">{unread}</b>}
                   </p>
                   <div className="sh-inbox">
-                    <DeskLayer desk={shift.desk ?? []} now={now} busy={busy} post={post} inline />
+                    <DeskLayer desk={shift.desk ?? []} now={now} busy={busy} post={post} inline seen={deskSeen} onSeen={markSeen} />
                   </div>
                 </section>}
           />
@@ -722,7 +724,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
                   {unread > 0 && <b className="sh-rail__badge">{unread}</b>}
                 </p>
                 <div className="sh-inbox">
-                  <DeskLayer desk={shift.desk ?? []} now={now} busy={busy} post={post} inline />
+                  <DeskLayer desk={shift.desk ?? []} now={now} busy={busy} post={post} inline seen={deskSeen} onSeen={markSeen} />
                 </div>
               </section>
             </main>
@@ -935,7 +937,7 @@ function IncidentDetail({ inc, no, age, busy, post, lead, after }: { inc: Incide
                     : result.waiting
                       ? "did not report back in time, so nothing was marked wrong. Check again in a moment"
                       : result.evidencePending && result.results.filter((r) => !r.ok).length === 1
-                        ? "has not logged the attack yet. Give it a minute, then check again"
+                        ? "has not received this incident yet. Give it a moment, then check again"
                         : "does not show the fix yet"}
                 </li>
               </ul>

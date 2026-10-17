@@ -600,11 +600,14 @@ export type DeskRun = {
  */
 export function planDesk(seed: string, level: number, incidents: Pick<IncidentRun, "uid" | "severity" | "arriveSec" | "bind">[]): DeskRun[] {
   const r = seeded(`${seed}:desk`);
+  // The people incidents target: a single Sam, or a spray's comma-separated
+  // Targets. Not the spray's Sprayed list, which is nearly everyone and only
+  // took one failed sign-in each.
   const taken = new Set(
     incidents
-      .map((i) => (i.bind?.args && typeof i.bind.args === "object" ? Object.values(i.bind.args).map(String) : []))
-      .flat()
-      .map((v) => v.toLowerCase())
+      .flatMap((i) => Object.entries(i.bind?.args ?? {}).filter(([k]) => k !== "Sprayed").map(([, v]) => String(v)))
+      .flatMap((v) => v.split(","))
+      .map((v) => v.trim().toLowerCase())
   );
   // A caller who is also an incident's victim would contradict the queue, so
   // they are picked from the people the shift is not already about.

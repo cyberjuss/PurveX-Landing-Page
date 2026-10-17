@@ -236,6 +236,32 @@ function markLanded(run: ShiftRun, lab: { snapshot: LabSnapshot; uploadedAt: str
   return changed;
 }
 
+/**
+ * Save one incident's work onto the newest copy of the run. Submit and check
+ * can wait several seconds for the lab, and the console keeps polling and
+ * acting meanwhile: writing back the copy read at the click undid whatever
+ * happened in between, an email answered or an incident fired (and a lost
+ * "fired" flag fires it into the lab a second time). So the run is read
+ * again and only this incident's fields, and any landings seen, are written.
+ */
+async function saveIncident(userId: string, run: ShiftRun, inc: IncidentRun): Promise<void> {
+  const latest = await loadShift(userId);
+  if (!latest || latest.id !== run.id) return saveShift(userId, run);
+  const target = latest.incidents.find((i) => i.uid === inc.uid);
+  if (target) {
+    target.diagnosis = inc.diagnosis;
+    target.response = inc.response;
+    target.submits = Math.max(target.submits ?? 0, inc.submits ?? 0);
+    target.resolvedAtSec = target.resolvedAtSec ?? inc.resolvedAtSec;
+    target.escalatedAtSec = target.escalatedAtSec ?? inc.escalatedAtSec;
+  }
+  for (const i of run.incidents) {
+    const t = latest.incidents.find((x) => x.uid === i.uid);
+    if (t && i.landedAt && !t.landedAt) t.landedAt = i.landedAt;
+  }
+  await saveShift(userId, latest);
+}
+
 /** Landed for grading: known on a run that records it, unknown on an older one. */
 const landedOf = (inc: IncidentRun): boolean | undefined => (inc.injectedAt ? Boolean(inc.landedAt) : undefined);
 
@@ -393,7 +419,7 @@ export async function submitIncident(
     if (!inc.diagnosis.trim()) return { error: "Answer the question before you hand this to tier 2." };
     if (!inc.response.trim()) return { error: "Write a closing note first. It is what tier 2 reads." };
     if (inc.escalatedAtSec == null && inc.resolvedAtSec === null) inc.escalatedAtSec = elapsed;
-    await saveShift(userId, run);
+    await saveIncident(userId, run, inc);
     return { resolved: false, escalated: true, onTime: false, results: [], waiting: false, needFinding: false, answerRight: null };
   }
 
@@ -439,7 +465,7 @@ export async function submitIncident(
   const needFinding = graded.resolved && !graded.diagnosisRight;
   const closed = graded.resolved && graded.diagnosisRight;
   if (closed && inc.resolvedAtSec === null) inc.resolvedAtSec = elapsed;
-  await saveShift(userId, run);
+  await saveIncident(userId, run, inc);
   return {
     resolved: closed,
     escalated: false,

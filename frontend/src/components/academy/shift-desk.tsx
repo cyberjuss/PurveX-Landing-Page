@@ -45,13 +45,17 @@ const ICON = { email: Mail, reply: Mail } as const;
 const KIND = { email: "New email", reply: "New email" } as const;
 
 /** Shows the oldest desk event that still wants something from the student. */
-export function DeskLayer({ desk, now, busy, post, inline = false }: { desk: DeskEvent[]; now: number; busy: boolean; post: Post; inline?: boolean }) {
-  const [seen, setSeen] = useState<Set<string>>(() => new Set());
+export function DeskLayer({ desk, now, busy, post, inline = false, seen: seenIn, onSeen }: { desk: DeskEvent[]; now: number; busy: boolean; post: Post; inline?: boolean; seen?: Set<string>; onSeen?: (uid: string) => void }) {
+  // The console can hold this, so an email closed once stays closed when the
+  // inbox is drawn again under another incident.
+  const [seenOwn, setSeenOwn] = useState<Set<string>>(() => new Set());
+  const seen = seenIn ?? seenOwn;
+  const markSeen = (uid: string) => (onSeen ? onSeen(uid) : setSeenOwn((s) => new Set(s).add(uid)));
   // The list holds only what has arrived, oldest first. One that lapsed before
   // the student saw it still shows, as Coach's note on what it was.
   const live = desk.find((d) => !seen.has(d.uid));
   if (!live) return null;
-  return <DeskCard key={live.uid} ev={live} now={now} busy={busy} post={post} inline={inline} onDone={() => setSeen((s) => new Set(s).add(live.uid))} />;
+  return <DeskCard key={live.uid} ev={live} now={now} busy={busy} post={post} inline={inline} onDone={() => markSeen(live.uid)} />;
 }
 
 function DeskCard({ ev, now, busy, post, inline, onDone }: { ev: DeskEvent; now: number; busy: boolean; post: Post; inline: boolean; onDone: () => void }) {
@@ -235,8 +239,8 @@ export function DeskSummary({ r, headline, totals }: { r: DeskReport; headline: 
         </div>
         <div>
           <b className={r.metrics.breaches ? "is-bad" : ""}>{r.metrics.breaches}</b>
-          <span>Deadlines missed</span>
-          <small>of {r.metrics.arrived} that arrived</small>
+          <span>Left open</span>
+          <small>at the end, of {r.metrics.arrived} that arrived</small>
         </div>
         <div>
           <b className={r.triage.misses.length ? "is-bad" : ""}>
@@ -288,7 +292,7 @@ export function DeskSummary({ r, headline, totals }: { r: DeskReport; headline: 
         className="sdr__coach"
         onClick={() =>
           ask(
-            `Debrief my shift like a senior analyst would. ${headline}. ${totals}. Average time to open ${dur(r.metrics.timeToAckSec)}, to fix ${dur(r.metrics.timeToResolveSec)}, ${r.metrics.breaches} deadlines missed. ${
+            `Debrief my shift like a senior analyst would. ${headline}. ${totals}. Average time to open ${dur(r.metrics.timeToAckSec)}, to fix ${dur(r.metrics.timeToResolveSec)}, ${r.metrics.breaches} left open at the end. ${
               r.triage.misses.length ? `I opened lower-severity work while a higher one waited ${r.triage.misses.length} time(s): ${r.triage.misses.map((m) => `${m.opened} before ${m.waiting}`).join("; ")}.` : "I worked the queue in severity order."
             } Desk: ${r.desk.map((d) => `${d.title} ${d.correct ? "handled right" : "handled wrong"}`).join("; ")}. What is the one thing I should change on my next shift, and why?`
           )
