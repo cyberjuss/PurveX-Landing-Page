@@ -639,7 +639,7 @@ function buildReport(run: ShiftRun): ShiftReport {
   if (incidents.some((i) => i.resolved && !i.onTime)) habit = "You fixed the right things, but watch the clock: acknowledge and work the P1s first.";
   else if (incidents.some((i) => !i.noHarm)) habit = "Contain the real problem without touching the accounts that were fine.";
   else if (incidents.some((i) => i.resolved && !i.diagnosisRight)) habit = "Name the evidence (event IDs, accounts, times), not just the fix.";
-  else if (resolvedCount === incidents.length && incidents.length) habit = "Strong. Try a harder shift, or one with more incidents.";
+  else if (resolvedCount === incidents.length && incidents.length) habit = "Strong. Every incident closed. Your level rises with your accuracy across drills and shifts, and the incidents get harder with it.";
   // Said last so it outranks the generic advice: escalating everything is the
   // habit that most needs naming, and it is invisible in the score alone.
   if (escalatedCount && escalatedCount >= resolvedCount) habit = "You handed up more than you fixed. Escalate what is above your access, and work the rest yourself.";

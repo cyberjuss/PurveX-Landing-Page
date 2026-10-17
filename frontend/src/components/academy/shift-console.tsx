@@ -292,7 +292,7 @@ function ShiftIntro({ theme, labState, busy, error, queued, onStart, onStartLab,
           </div>
         </div>
         <p className="sh-lede">
-          You are on the desk for 30 minutes. Real attacks and tickets fire into your own lab on their own. Work them highest priority first, and close as many as you can before the shift ends.
+          You are on the desk for 30 minutes. Three incidents fire into your own lab across the shift, and an email lands in your inbox. Work them highest priority first, and close all three before the shift ends.
         </p>
 
         <ul className="sh-rules">
@@ -304,7 +304,7 @@ function ShiftIntro({ theme, labState, busy, error, queued, onStart, onStartLab,
           <li>
             <span className="sh-rules__ic"><Clock className="h-4 w-4" /></span>
             <strong>One 30-minute window, worked by priority</strong>
-            <small>No ticket has its own timer. P1 before P2 before P3. Anything still open when the shift ends scores nothing.</small>
+            <small>No ticket has its own timer. P1 before P2 before P3. Anything still open when the shift ends loses its points for the fix, and keeps only what you put against it.</small>
           </li>
           <li>
             <span className="sh-rules__ic"><LifeBuoy className="h-4 w-4" /></span>
@@ -568,7 +568,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
             onClick={() => {
               const open = shift.incidents.filter((i) => !i.resolved && !i.escalated).length;
               const warn = open
-                ? `End the shift now? ${open} incident${open === 1 ? " is" : "s are"} still open and will score nothing. You cannot come back into this shift.`
+                ? `End the shift now? ${open} incident${open === 1 ? " is" : "s are"} still open and will lose the points for fixing ${open === 1 ? "it" : "them"}. You cannot come back into this shift.`
                 : "End the shift now? It is graded as it stands and you cannot come back into it.";
               if (window.confirm(warn)) void post({ action: "finish" });
             }}
