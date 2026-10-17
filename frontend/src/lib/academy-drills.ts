@@ -55,6 +55,8 @@ export type Check =
   | { t: "exists"; sam: string; ou: string }
   /** The account is no longer anywhere the snapshot covers: the lab OUs. */
   | { t: "gone"; sam: string }
+  /** The account still exists somewhere the snapshot covers, in any OU. */
+  | { t: "present"; sam: string }
   | { t: "container"; sam: string; ou: string }
   | { t: "enabled"; sam: string; want: boolean }
   | { t: "noexpire"; sam: string; want: boolean }
@@ -1007,6 +1009,7 @@ export function evalCheck(s: LabSnapshot, c: Check): boolean {
   // Before the missing-user line below, which would read a deleted account as a
   // failed check rather than the point of the ticket.
   if (c.t === "gone") return !user;
+  if (c.t === "present") return Boolean(user);
   if (!user) return c.t === "member" ? !c.want : false;
   if (c.t === "container") return user.container.toLowerCase() === c.ou.toLowerCase();
   if (c.t === "enabled") return user.enabled === c.want;

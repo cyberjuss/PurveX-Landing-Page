@@ -320,6 +320,8 @@ export type SubmitOutcome = {
   results: { label: string; ok: boolean }[];
   waiting: boolean;
   needFinding: boolean;
+  /** The fix may be in, but the attack has not reached the lab's Security log yet. */
+  evidencePending?: boolean;
   /** Whether the finding answers the incident's question. Null on a handoff. */
   answerRight: boolean | null;
 };
@@ -367,12 +369,17 @@ export async function submitIncident(
   let lab = before;
   void requestLabSync(userId, true, needsEvidence);
   // The heavy sync reads the log, so give it longer than a nudge needs.
-  const deadline = Date.now() + (needsEvidence ? 20_000 : 8_000);
+  // A light report usually lands in a few seconds, but SSM can take longer,
+  // and grading the report from before the click told students who had just
+  // made the fix that their lab did not show it.
+  const deadline = Date.now() + (needsEvidence ? 25_000 : 15_000);
+  let arrived = false;
   while (Date.now() < deadline) {
     await new Promise((r) => setTimeout(r, 200));
     const next = await loadLabState(userId);
     if (!next || Date.parse(next.uploadedAt) <= seenAt) continue;
     lab = next;
+    arrived = true;
     seenAt = Date.parse(next.uploadedAt);
     // The change-watch loop pushes its own snapshot within a fraction of a
     // second of the fix, and that one carries no digest. Taking the first
@@ -395,9 +402,12 @@ export async function submitIncident(
     escalated: false,
     onTime: inc.resolvedAtSec !== null && resolvedOnTime(inc),
     results: graded.results,
-    // Not resolved and the lab has not reported since the shift began: the change may just be in flight.
-    waiting: !graded.resolved && !fresh,
+    // Not resolved and no report arrived after the click (or none since the
+    // shift began): the lab was not read, so it is not "not fixed", it is
+    // "not heard from yet".
+    waiting: !graded.resolved && (!fresh || !arrived),
     needFinding,
+    evidencePending: Boolean(eff.evidence) && !eff.evidence!(lab?.snapshot.events),
     answerRight: graded.diagnosisRight,
   };
 }

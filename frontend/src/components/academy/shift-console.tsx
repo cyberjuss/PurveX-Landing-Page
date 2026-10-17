@@ -544,7 +544,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   );
 }
 
-type SubmitResult = { resolved: boolean; escalated?: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[]; needFinding?: boolean; answerRight?: boolean | null };
+type SubmitResult = { resolved: boolean; escalated?: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[]; needFinding?: boolean; evidencePending?: boolean; answerRight?: boolean | null };
 
 function IncidentDetail({ inc, no, busy, post }: { inc: Incident; no: string; busy: boolean; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
   const [diagnosis, setDiagnosis] = useState(inc.diagnosis);
@@ -680,10 +680,24 @@ function IncidentDetail({ inc, no, busy, post }: { inc: Incident; no: string; bu
                 <li className={result.needFinding ? "is-ok" : "is-no"}>
                   {result.needFinding ? <Check className="h-3.5 w-3.5" /> : result.waiting ? <Loader2 className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
                   <strong>Your lab</strong>{" "}
-                  {result.needFinding ? "shows the fix" : result.waiting ? "has not reported the change yet. Check again in about a minute" : "does not show the fix yet"}
+                  {result.needFinding
+                    ? "shows the fix"
+                    : result.waiting
+                      ? "did not report back in time, so nothing was marked wrong. Check again in a moment"
+                      : result.evidencePending && result.results.filter((r) => !r.ok).length === 1
+                        ? "has not logged the attack yet. Give it a minute, then check again"
+                        : "does not show the fix yet"}
                 </li>
               </ul>
-              {!result.waiting && !result.needFinding && <ul>{result.results.filter((r) => !r.ok).map((r, i) => <li key={i}>{r.label}</li>)}</ul>}
+              {!result.waiting && !result.needFinding && (
+                <ul>
+                  {result.results
+                    .filter((r) => !r.ok)
+                    .map((r, i) => (
+                      <li key={i}>{r.label}</li>
+                    ))}
+                </ul>
+              )}
             </div>
           )}
 

@@ -251,7 +251,12 @@ export const INCIDENTS: IncidentDef[] = [
     brief: "A member was added to IT Admins at an odd hour with no change ticket. Contain it without destroying the evidence, and find out how it got there.",
     resolve: [{ c: { t: "member", sam: "svc.helpdesk", group: "IT Admins", want: false }, label: "svc.helpdesk is out of IT Admins" }],
     evidence: (e) => evGroupAdd(e, "svc.helpdesk", "IT Admins"),
-    noHarm: [{ c: { t: "member", sam: "alex.rivera", group: "IT Admins", want: true }, label: "The real admin alex.rivera is untouched" }],
+    noHarm: [
+      { c: { t: "member", sam: "alex.rivera", group: "IT Admins", want: true }, label: "The real admin alex.rivera is untouched" },
+      // Deleting svc.helpdesk also takes it out of IT Admins, so the resolve
+      // check alone passed it. The account is the evidence.
+      { c: { t: "present", sam: "svc.helpdesk" }, label: "svc.helpdesk still exists as evidence (removed from the group, not deleted)" },
+    ],
     diagnosis: { prompt: "Which event ID records the group addition?", accept: ["4728", "event 4728", "id 4728"] },
     rubric: ["Named the account added and when", "Named the event id for the group add", "Removed it without deleting the account (kept evidence)", "Escalated as a possible compromise"],
     hints: [
@@ -555,7 +560,7 @@ export const INCIDENTS: IncidentDef[] = [
     points: 100,
     from: "Jordan Ellis, Finance and Accounting",
     title: "My password expired and I can't get in",
-    brief: "A member of staff cannot sign in because their password has expired. Reset it so they can get back to work. This is a routine ticket, not an attack.",
+    brief: "A member of staff cannot sign in because their password has expired. Reset it with them on the phone so they can get back to work, and leave 'User must change password at next logon' cleared, or the account stays flagged as expired. This is a routine ticket, not an attack.",
     resolve: [{ c: { t: "flag", sam: "jordan.ellis", flag: "passwordExpired", want: false }, label: "the account's password is no longer expired" }],
     diagnosis: { prompt: "Why could the user not sign in?", accept: ["expired", "password expired", "expiry", "pwdlastset"] },
     rubric: ["Confirmed the password was expired, not locked or disabled", "Reset the password", "Confirmed the user can sign in", "Why no escalation was needed"],
@@ -570,7 +575,7 @@ export const INCIDENTS: IncidentDef[] = [
         args: { Sam: v.sam },
         resolve: [{ c: { t: "flag", sam: v.sam, flag: "passwordExpired", want: false } as Check, label: `${v.sam}'s password is no longer expired` }],
         diagnosis: { prompt: "Why could the user not sign in?", accept: ["expired", "password expired", "expiry", "pwdlastset"] },
-        brief: `${v.name} in ${v.dept} cannot sign in because their password has expired. Reset it so they can get back to work. This is a routine ticket, not an attack.`,
+        brief: `${v.name} in ${v.dept} cannot sign in because their password has expired. Reset it with them on the phone so they can get back to work, and leave 'User must change password at next logon' cleared, or the account stays flagged as expired. This is a routine ticket, not an attack.`,
         evidence: (e) => evChanged(e, v.sam),
       };
     },
@@ -763,6 +768,7 @@ export const INCIDENTS: IncidentDef[] = [
     title: "Standard user added to Domain Admins",
     brief: "A regular staff account was added to Domain Admins — full control of the domain — with no change ticket. Contain it fast without destroying the evidence, and find out how it got there.",
     resolve: [{ c: { t: "member", sam: "taylor.osei", group: "Domain Admins", want: false }, label: "the account is out of Domain Admins" }],
+    noHarm: [{ c: { t: "present", sam: "taylor.osei" }, label: "taylor.osei still exists (removed from the group, not deleted)" }],
     diagnosis: { prompt: "Which event ID records the group addition?", accept: ["4728", "event 4728", "id 4728"] },
     rubric: ["Named the account added and when", "Named the group and why it is the crown jewels", "Removed it without deleting the account (kept evidence)", "Escalated as a possible compromise"],
     hints: [
@@ -775,6 +781,8 @@ export const INCIDENTS: IncidentDef[] = [
       return {
         args: { Sam: v.sam },
         resolve: [{ c: { t: "member", sam: v.sam, group: "Domain Admins", want: false } as Check, label: `${v.sam} is out of Domain Admins` }],
+        // A real staff member's account: deleting it would also empty the group.
+        noHarm: [{ c: { t: "present", sam: v.sam } as Check, label: `${v.sam} still exists (removed from the group, not deleted)` }],
         diagnosis: { prompt: "Which event ID records the group addition?", accept: ["4728", "event 4728", "id 4728"] },
         brief: `${v.name} in ${v.dept} was added to Domain Admins — full control of the domain — with no change ticket. Contain it fast without destroying the evidence, and find out how it got there.`,
         evidence: (e) => evGroupAdd(e, v.sam, "Domain Admins"),

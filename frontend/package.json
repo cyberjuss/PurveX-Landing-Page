@@ -24,7 +24,7 @@
     "check:schema": "node scripts/check-schema.mjs",
     "check:tickets:live": "npx -y tsx --tsconfig scripts/shift-live/tsconfig.json scripts/shift-live/tickets.ts",
     "check:shift:live": "npx -y tsx --tsconfig scripts/shift-live/tsconfig.json scripts/shift-live/check.ts",
-    "check:shift": "npx -y tsx --tsconfig scripts/shift-check/tsconfig.json scripts/shift-check/check.ts && npx -y tsx --tsconfig scripts/shift-check/tsconfig.json scripts/shift-check/questions.ts",
+    "check:shift": "npx -y tsx --tsconfig scripts/shift-check/tsconfig.json scripts/shift-check/check.ts && npx -y tsx --tsconfig scripts/shift-check/tsconfig.json scripts/shift-check/questions.ts && npx -y tsx --tsconfig scripts/shift-check/tsconfig.json scripts/shift-check/simulate.ts",
     "check:range:routes": "node scripts/range-check/routes.mjs",
     "check:range:gates": "npx -y tsx --tsconfig scripts/range-check/tsconfig.json scripts/range-check/gates.ts"
   },
