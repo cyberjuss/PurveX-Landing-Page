@@ -784,3 +784,38 @@
    empty height between it and the Coach button. */
 .sdk--inline .sdk__foot { gap: 10px; }
 .sdk--inline .sdk__foot .sdk__source { flex: none; }
+
+/* ---- scrolling ----
+   Thin scrollbars in the console's own colours instead of the browser's grey
+   ones with arrows (which also came out light on the dark theme), each pane
+   scrolling on its own without dragging the page, and the response's actions
+   pinned to the bottom of their pane so Submit is never a scroll away. */
+.shift-app { color-scheme: light; }
+.shift-app[data-academy-theme="dark"] { color-scheme: dark; }
+.shift-app .sh-side, .shift-app .sh-main, .shift-app .sh-right, .shift-app .sh-body {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--rd-ink) 22%, transparent) transparent;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+.shift-app ::-webkit-scrollbar { width: 8px; height: 8px; }
+.shift-app ::-webkit-scrollbar-track { background: transparent; }
+.shift-app ::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--rd-ink) 18%, transparent); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
+.shift-app ::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--rd-ink) 34%, transparent); background-clip: padding-box; }
+.shift-app ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+.shift-app ::-webkit-scrollbar-corner { background: transparent; }
+
+@media (min-width: 1280px) {
+  .sh-right { padding-bottom: 0; }
+  .sh-right .sh-actions, .sh-right .sh-confirm {
+    position: sticky; bottom: 0; z-index: 2;
+    margin: 0 -24px; padding: 14px 24px 18px;
+    background: color-mix(in srgb, var(--rd-ink) 1.5%, var(--panel));
+    box-shadow: 0 -1px 0 var(--rd-line), 0 -18px 24px -18px rgba(0, 0, 0, 0.35);
+  }
+  .sh-right .sh-confirm { background: color-mix(in srgb, var(--rd-warn) 8%, var(--panel)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shift-app .sh-side, .shift-app .sh-main, .shift-app .sh-right, .shift-app .sh-body { scroll-behavior: auto; }
+}
+@media (min-width: 1600px) { .sh-detail, .sh-inbox-sec { max-width: 1000px; } }
