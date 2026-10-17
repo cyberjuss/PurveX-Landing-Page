@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { type PhaseDef, type WeekDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { findQuiz } from "@/content/academy/quizzes";
-import { useResults } from "@/lib/academy-client";
+import { academyFetch, useResults } from "@/lib/academy-client";
 import { CHALLENGE_PATHS, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
 import type { Results } from "@/lib/academy-score";
 import { isPhaseLocked } from "@/lib/academy-locks";
@@ -13,6 +13,12 @@ const STORAGE_KEY = "academy-progress-v1";
 const QUIZ_PASS_KEY = "academy-quiz-pass-v1";
 const LAST_STOP_KEY = "academy-last-stop-v1";
 const LABS_DONE_KEY = "academy-labs-done-v1";
+
+// Onboarding "seen" flags carried on the account, mapped to the localStorage
+// keys their synchronous readers (e.g. labBriefed()) still use.
+const FLAG_LOCAL_KEYS: Record<string, string> = {
+  labBrief: "purvex.lab.brief.v1",
+};
 
 /** The slug a tab gets in the URL. Section tabs use the same one. */
 export function slugify(label: string) {
@@ -94,6 +100,7 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
   const [labsDone, setLabsDone] = useState<Set<string>>(new Set());
   const [lastStop, setLastStopState] = useState<LastStop | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [serverSynced, setServerSynced] = useState(false);
   const results = useResults();
 
   useEffect(() => {
@@ -155,6 +162,62 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
       // Ignore -- nothing to persist to.
     }
   }, [lastStop, loaded]);
+
+  // Once local state is in, pull the account's copy and merge it, so a new
+  // browser or device restores the student's place. Sets only grow (union);
+  // onboarding flags hydrate into localStorage for their synchronous readers.
+  // Guests and locked sessions just get a 401, caught, and localStorage stands.
+  useEffect(() => {
+    if (!loaded || serverSynced) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await academyFetch("/academy/api/portal");
+        if (!res.ok || cancelled) return;
+        const { portal } = (await res.json()) as {
+          portal?: { completed?: string[]; quizPasses?: string[]; labsDone?: string[]; lastStop?: string | null; flags?: Record<string, boolean> };
+        };
+        if (!portal || cancelled) return;
+        if (portal.completed?.length) setCompleted((prev) => new Set([...prev, ...portal.completed!]));
+        if (portal.quizPasses?.length) setQuizPasses((prev) => new Set([...prev, ...portal.quizPasses!]));
+        if (portal.labsDone?.length) setLabsDone((prev) => new Set([...prev, ...portal.labsDone!]));
+        if (portal.lastStop) setLastStopState((prev) => prev ?? parseLastStop(portal.lastStop!));
+        if (portal.flags) {
+          for (const [flag, on] of Object.entries(portal.flags)) {
+            const lsKey = FLAG_LOCAL_KEYS[flag];
+            if (on && lsKey) {
+              try { window.localStorage.setItem(lsKey, "1"); } catch {}
+            }
+          }
+        }
+      } catch {
+        // Offline or no account -- localStorage remains the source of truth.
+      } finally {
+        if (!cancelled) setServerSynced(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [loaded, serverSynced]);
+
+  // Save progress to the account, debounced, after the server copy is merged in.
+  useEffect(() => {
+    if (!loaded || !serverSynced) return;
+    const t = setTimeout(() => {
+      void academyFetch("/academy/api/portal", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          portal: {
+            completed: [...completed],
+            quizPasses: [...quizPasses],
+            labsDone: [...labsDone],
+            lastStop: lastStop ? entryKey(lastStop.phaseSlug, lastStop.entrySlug) : null,
+          },
+        }),
+      }).catch(() => {});
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [completed, quizPasses, labsDone, lastStop, loaded, serverSynced]);
 
   const totalCount = useMemo(() => countEntries(phases), [phases]);
 

@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Clock, Gauge, KeyRound, MonitorPlay, Server, Timer, X, type LucideIcon } from "lucide-react";
 import "./lab-briefing.css";
+import { persistPortalFlag } from "@/lib/academy-client";
 
 // What a student needs to know before their first hosted lab. It stands
 // between the first "Start my lab" and the start itself, so reading it is on
@@ -29,6 +30,8 @@ export const markLabBriefed = (): void => {
   try {
     window.localStorage.setItem(KEY, "1");
   } catch {}
+  // Also remember it on the account, so a new browser skips the briefing.
+  persistPortalFlag("labBrief");
 };
 
 type Point = { Icon: LucideIcon; title: string; body: string };

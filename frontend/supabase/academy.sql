@@ -9,6 +9,13 @@ create table if not exists public.academy_progress (
   updated_at timestamptz not null default now()
 );
 
+-- UI progress that is not a mission score: week completions, quiz passes, labs
+-- done, last stop, and one-time onboarding flags (lab briefing, etc.). Lives in
+-- its own column of the same row, so a new browser or device restores a
+-- student's place once they sign in. Added after launch, so it runs as an alter.
+alter table public.academy_progress
+  add column if not exists portal jsonb not null default '{}'::jsonb;
+
 create table if not exists public.academy_coach_usage (
   user_id uuid not null references auth.users (id) on delete cascade,
   day date not null,
