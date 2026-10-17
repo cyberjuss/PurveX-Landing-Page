@@ -1259,3 +1259,28 @@ button.lk__art { padding: 0; width: 100%; font: inherit; color: var(--rd-accent)
 .lk.is-offscreen .lk__art::before,
 .lk.is-offscreen .lk__art::after,
 .lk.is-offscreen .lk__progress button::before { animation-play-state: paused !important; }
+
+/* ==== Slide dots ====
+   The tab strip's underline already shows how far into a section the
+   reader is, so the bar inside the slide no longer repeats it as a second
+   long line. It is a row of dots instead: one per slide, the current one a
+   longer accent pill, the ones behind filled, the ones ahead faint. Each is
+   still a button with a full-height tap target. */
+.lk__topbar { justify-content: space-between; }
+.lk__topbar .lk__progress { flex: 0 1 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 2px; }
+.lk__progress button { flex: none; width: 18px; padding: 10px 0; }
+.lk__progress button::before {
+  width: 8px;
+  height: 8px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--rd-ink) 16%, transparent);
+  transition: width var(--ax-dur) var(--ax-ease), background var(--ax-dur-fast) var(--ax-ease), transform var(--ax-dur-fast) var(--ax-ease);
+}
+.lk__progress button.is-past::before { background: color-mix(in srgb, var(--rd-accent) 55%, transparent); }
+.lk__progress button.is-here { width: 30px; }
+.lk__progress button.is-here::before { width: 24px; border-radius: 4px; background: var(--rd-accent); animation: none; }
+.lk__progress button:hover:not(.is-here)::before { transform: scale(1.35); background: color-mix(in srgb, var(--rd-accent) 70%, transparent); }
+.lk__progress button:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 1px; }
+@media (pointer: coarse) { .lk__progress button { width: 24px; padding: 18px 0; } .lk__progress button.is-here { width: 34px; } }
+@media (prefers-reduced-motion: reduce) { .lk__progress button::before { transition: none; } }
