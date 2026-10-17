@@ -22,5 +22,10 @@ export async function getAcademyStudent(request: Request): Promise<AcademyStuden
   if (error || !data.user) return null;
   const meta = data.user.user_metadata ?? {};
   const name = [meta.full_name, meta.name, meta.given_name].find((v) => typeof v === "string" && v.trim()) as string | undefined;
-  return { id: data.user.id, email: data.user.email ?? null, name: name?.trim().slice(0, 60) ?? null };
+  // Admin and instructor rights are granted by email, so an address nobody
+  // confirmed must count for nothing here. Supabase normally refuses sign-in
+  // until the address is confirmed, but that is a setting in its dashboard;
+  // this holds even if it is ever turned off.
+  const confirmed = Boolean(data.user.email_confirmed_at || data.user.confirmed_at);
+  return { id: data.user.id, email: confirmed ? (data.user.email ?? null) : null, name: name?.trim().slice(0, 60) ?? null };
 }
