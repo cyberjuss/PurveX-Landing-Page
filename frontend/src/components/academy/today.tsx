@@ -2,33 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";
-import { ArrowRight, Brain } from "lucide-react";
+import { Brain } from "lucide-react";
 import { deckStats, REVIEW_EVENT } from "@/lib/concept-review";
 import { ReviewSession } from "./review-card";
 import "./today.css";
 
-export type TodayPin = {
-  href: string;
-  title: string;
-  kind: "last" | "start";
-  phaseLabel: string;
-  /** Slide tabs in that week, and how many have been read to the end. */
-  tabs: string[];
-  doneKey: string;
-};
-
-type Stats = ReturnType<typeof deckStats> & { weekDone: number };
-
-function weekFinished(pin: TodayPin | null): number {
-  if (!pin) return 0;
-  try {
-    const done = new Set(JSON.parse(window.localStorage.getItem(pin.doneKey) || "[]") as string[]);
-    return pin.tabs.filter((t) => done.has(t)).length;
-  } catch {
-    return 0;
-  }
-}
+type Stats = ReturnType<typeof deckStats>;
 
 function inDays(at: number | null) {
   if (at === null) return null;
@@ -36,16 +15,14 @@ function inDays(at: number | null) {
   return days === 1 ? "tomorrow" : `in ${days} days`;
 }
 
-// The home page's "Today" cards: the two reasons to be here right now, where
-// they left off and what is due for review, stacked one above the other.
-// Everything in it changes from one visit to the next, so the page is never
-// the same list of phases twice.
-export function Today({ pin }: { pin: TodayPin | null }) {
+// The home page's daily review card: how many collected concepts are due, and
+// a two-minute session to recall them. It changes from one visit to the next.
+export function Today() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [reviewing, setReviewing] = useState(false);
 
   useEffect(() => {
-    const read = () => setStats({ ...deckStats(), weekDone: weekFinished(pin) });
+    const read = () => setStats(deckStats());
     read();
     window.addEventListener(REVIEW_EVENT, read);
     window.addEventListener("focus", read);
@@ -53,30 +30,10 @@ export function Today({ pin }: { pin: TodayPin | null }) {
       window.removeEventListener(REVIEW_EVENT, read);
       window.removeEventListener("focus", read);
     };
-  }, [pin]);
-
-  const weekPct = pin && pin.tabs.length && stats ? Math.round((stats.weekDone / pin.tabs.length) * 100) : 0;
+  }, []);
 
   return (
     <section className="td" aria-label="Today">
-      {pin && (
-        <Link href={pin.href} className="td-card td-card--go">
-          <span className="td-ring" style={{ ["--pct" as string]: weekPct }} aria-hidden>
-            <b>{weekPct}%</b>
-          </span>
-          <span className="td-card__main">
-            <span className="rd-kicker">{pin.kind === "last" ? "Pick up where you left off" : "Start here"}</span>
-            <strong>{pin.title}</strong>
-            <span className="td-card__sub">
-              {pin.phaseLabel} · {stats ? `${stats.weekDone} of ${pin.tabs.length} sections read` : `${pin.tabs.length} sections`}
-            </span>
-          </span>
-          <span className="td-go">
-            {pin.kind === "last" ? "Continue" : "Begin"} <ArrowRight aria-hidden />
-          </span>
-        </Link>
-      )}
-
       <button
         type="button"
         className={`td-card td-card--review${stats?.due ? " is-due" : ""}`}

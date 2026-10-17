@@ -46,44 +46,6 @@
 }
 .td-card__sub { font-size: var(--ty-note, 13px); color: var(--rd-ink-3); }
 
-/* Continue: the hero. */
-.td-card--go {
-  background:
-    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--rd-accent) 20%, transparent), transparent 60%),
-    var(--rd-surface);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 40%, transparent);
-}
-.td-card--go::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--rd-accent), transparent);
-  opacity: 0.8;
-}
-.td-card--go:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1px var(--rd-accent), 0 22px 40px -26px color-mix(in srgb, var(--rd-accent) 60%, transparent); }
-.td-card--go:hover .td-go svg { transform: translateX(3px); }
-
-/* A ring that fills with how much of the week has been read. */
-.td-ring {
-  --pct: 0;
-  position: relative;
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: conic-gradient(var(--rd-accent) calc(var(--pct) * 1%), color-mix(in srgb, var(--rd-accent) 16%, transparent) 0);
-  animation: td-ring var(--ax-dur-page, 420ms) var(--ax-ease) both;
-}
-/* A solid centre: the light theme's surface is a translucent tint, which let
-   the ring show through as a pie. */
-.td-ring::after { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: #fff; }
-.academy-bg[data-academy-theme="dark"] .td-ring::after { background: #16141d; }
-.td-ring b { position: relative; z-index: 1; font: 700 12px var(--font-mono, ui-monospace, monospace); color: var(--rd-ink); }
-@keyframes td-ring { from { transform: rotate(-90deg) scale(0.8); opacity: 0; } to { transform: none; opacity: 1; } }
-
 .td-go {
   display: inline-flex;
   align-items: center;
@@ -123,9 +85,8 @@
 @media (max-width: 640px) {
   .td { grid-template-columns: minmax(0, 1fr); }
   .td-card { padding: 16px; }
-  .td-card--go .td-go { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .td-card, .td-ring, .td-card--review.is-due .td-icon svg { animation: none; }
-  .td-card--go:hover, .td-card--review.is-due:hover { transform: none; }
+  .td-card, .td-card--review.is-due .td-icon svg { animation: none; }
+  .td-card--review.is-due:hover { transform: none; }
 }

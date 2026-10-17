@@ -310,6 +310,8 @@ export type SubmitOutcome = {
   results: { label: string; ok: boolean }[];
   waiting: boolean;
   needFinding: boolean;
+  /** Whether the finding answers the incident's question. Null on a handoff. */
+  answerRight: boolean | null;
 };
 
 /**
@@ -339,7 +341,7 @@ export async function submitIncident(
     if (!inc.diagnosis.trim()) return { error: "Answer the question before you hand this to tier 2." };
     if (inc.escalatedAtSec == null && inc.resolvedAtSec === null) inc.escalatedAtSec = elapsed;
     await saveShift(userId, run);
-    return { resolved: false, escalated: true, onTime: false, results: [], waiting: false, needFinding: false };
+    return { resolved: false, escalated: true, onTime: false, results: [], waiting: false, needFinding: false, answerRight: null };
   }
 
   // Push a fresh snapshot from the lab now and wait briefly for it, so a change
@@ -386,6 +388,7 @@ export async function submitIncident(
     // Not resolved and the lab has not reported since the shift began: the change may just be in flight.
     waiting: !graded.resolved && !fresh,
     needFinding,
+    answerRight: graded.diagnosisRight,
   };
 }
 

@@ -7,7 +7,7 @@ import {
   AlertTriangle, ArrowLeft, ArrowRight, Check, Clock, Loader2, LifeBuoy, Power, RefreshCw, ShieldAlert,
   Lock, Unlock, KeyRound, UserPlus, UserMinus, UserX, UserCog, ArrowLeftRight, FolderTree, SprayCan, Target,
   Crown, DoorOpen, BellOff, ShieldOff, ShieldCheck, ShieldX, Ticket, Search, Share2, Server, EyeOff, Infinity as InfinityIcon,
-  Wrench, Info, ArrowUpRight, FileText,
+  Wrench, Info, ArrowUpRight, FileText, X,
 } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { startHostedLabNow, useHostedLab } from "@/components/academy/hosted-lab-button";
@@ -295,8 +295,8 @@ function ShiftIntro({ theme, labState, busy, error, queued, onStart, onStartLab,
           </li>
           <li>
             <span className="sh-rules__ic"><LifeBuoy className="h-4 w-4" /></span>
-            <strong>The coach costs you</strong>
-            <small>The first hint costs 10% of the ticket. The next two cost 20% and 40%.</small>
+            <strong>Coach thinks it through with you</strong>
+            <small>Ask what to check next. Coach asks questions back and never hands you the answer.</small>
           </li>
         </ul>
 
@@ -397,7 +397,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   const total = shift.incidents.length;
   const handled = shift.incidents.filter((i) => i.resolved || i.escalated).length;
   const withinSla = shift.incidents.filter((i) => (i.resolved ? i.onTime : i.escalated ? true : !i.overdue)).length;
-  const hintsUsed = shift.incidents.reduce((s, i) => s + i.hintsUsed, 0);
+  const escalated = shift.incidents.filter((i) => i.escalated).length;
 
   // Stable incident numbers follow the server's creation order.
   const numOf = new Map(shift.incidents.map((i, idx) => [i.uid, incNo(idx)]));
@@ -475,8 +475,8 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
               <span className="sh-stat__label">Within SLA</span>
             </div>
             <div className="sh-stat">
-              <span className="sh-stat__num">{hintsUsed}</span>
-              <span className="sh-stat__label">Hints used</span>
+              <span className="sh-stat__num">{escalated}</span>
+              <span className="sh-stat__label">Escalated</span>
             </div>
           </div>
 
@@ -535,13 +535,13 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   );
 }
 
-type SubmitResult = { resolved: boolean; escalated?: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[]; needFinding?: boolean };
+type SubmitResult = { resolved: boolean; escalated?: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[]; needFinding?: boolean; answerRight?: boolean | null };
 
 function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no: string; start: number; now: number; busy: boolean; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
   const [diagnosis, setDiagnosis] = useState(inc.diagnosis);
   const [response, setResponse] = useState("");
   const [result, setResult] = useState<SubmitResult | null>(null);
-  const [hints, setHints] = useState<string[]>(inc.shownHints);
+  const hints = inc.shownHints;
   // Escalating closes the incident for good, so it asks once instead of firing
   // on the first click.
   const [confirming, setConfirming] = useState(false);
@@ -569,10 +569,6 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
     const data = await post({ action: "submit", uid: inc.uid, diagnosis, response: note, escalate });
     if (data?.result) setResult(data.result as SubmitResult);
     setConfirming(false);
-  }
-  async function coach() {
-    const data = await post({ action: "hint", uid: inc.uid });
-    if (data && typeof data.hint === "string") setHints((h) => [...h, data.hint as string]);
   }
 
   return (
@@ -647,7 +643,7 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
               <li>Investigate in Event Viewer and Active Directory Users and Computers.</li>
               <li>Make the fix on your domain controller.</li>
               <li>Record your finding and a closing note below.</li>
-              <li>Select <strong>Check my fix</strong>. Range reads your live lab, not a checkbox.</li>
+              <li>Select <strong>Submit and check</strong>. Range marks your answer and reads your live lab for the fix. Both have to be right to close it.</li>
             </ul>
             <label className="sh-field">
               <span><Search className="h-3.5 w-3.5" /> {inc.diagnosisPrompt}</span>
@@ -668,13 +664,21 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
             </ul>
           )}
 
+          {/* Two separate verdicts, so it is clear which half is still wrong:
+              the answer to the question, and the fix in the lab. */}
           {result && !result.resolved && (
             <div className="sh-result sh-result--wait">
-              {result.needFinding
-                ? "The fix is in. Now answer the question correctly to close this incident."
-                : result.waiting
-                  ? "Waiting for your lab to report the change. Make the fix, then check again in about a minute."
-                  : "The lab does not show this fix yet:"}
+              <ul className="sh-verdict">
+                <li className={result.answerRight ? "is-ok" : "is-no"}>
+                  {result.answerRight ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
+                  <strong>Your answer</strong> {result.answerRight ? "is right" : diagnosis.trim() ? "is not right yet" : "is blank"}
+                </li>
+                <li className={result.needFinding ? "is-ok" : "is-no"}>
+                  {result.needFinding ? <Check className="h-3.5 w-3.5" /> : result.waiting ? <Loader2 className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
+                  <strong>Your lab</strong>{" "}
+                  {result.needFinding ? "shows the fix" : result.waiting ? "has not reported the change yet. Check again in about a minute" : "does not show the fix yet"}
+                </li>
+              </ul>
               {!result.waiting && !result.needFinding && <ul>{result.results.filter((r) => !r.ok).map((r, i) => <li key={i}>{r.label}</li>)}</ul>}
             </div>
           )}
@@ -699,7 +703,7 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
           ) : (
             <div className="sh-actions">
               <button type="button" className="sh-submit" disabled={busy} onClick={() => submit(false)}>
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />} Check my fix
+                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />} Submit and check
               </button>
               {/* Nothing to hand up without a finding, so the button says so rather
                   than failing on the server after the click. */}
@@ -707,10 +711,10 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
                 type="button"
                 className="sh-escalate"
                 disabled={busy || !hasFinding}
-                title={hasFinding ? "Hand this incident to tier 2" : "Answer the question above first"}
+                title={hasFinding ? "Hand this incident to the tier 2 team, the senior analysts above you" : "Answer the question above first"}
                 onClick={() => setConfirming(true)}
               >
-                <ArrowUpRight className="h-4 w-4" /> Escalate
+                <ArrowUpRight className="h-4 w-4" /> Escalate to tier 2
               </button>
               <button
                 type="button"
@@ -721,13 +725,8 @@ function IncidentDetail({ inc, no, start, now, busy, post }: { inc: Incident; no
                   )
                 }
               >
-                Talk it through
+                <LifeBuoy className="h-3.5 w-3.5" /> Think it through
               </button>
-              {inc.nextHintCostPct !== null && (
-                <button type="button" className="sh-coach" disabled={busy} onClick={coach}>
-                  <LifeBuoy className="h-3.5 w-3.5" /> Ask Coach (−{inc.nextHintCostPct}%)
-                </button>
-              )}
               {!hasFinding && <p className="sh-actions__why">Escalating needs your finding: tier 2 gets what you saw, not a blank ticket.</p>}
             </div>
           )}

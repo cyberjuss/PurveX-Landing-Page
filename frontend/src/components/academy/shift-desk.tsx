@@ -175,7 +175,7 @@ function DeskCard({ ev, now, busy, post, onDone }: { ev: DeskEvent; now: number;
               )
             }
           >
-            Talk it through with Coach
+            Think it through with Coach
           </button>
         </div>
       )}

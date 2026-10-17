@@ -8,7 +8,7 @@ import { entriesOf } from "@/lib/academy-entries";
 import { READINESS_PATH, useResults } from "@/lib/academy-client";
 import { LEVELS, summarize } from "@/lib/academy-score";
 import { DrillCard } from "./drill-card";
-import { Today, partOfDay, type TodayPin } from "./today";
+import { Today, partOfDay } from "./today";
 import { preferredFirstName, useAcademyAccount, useAcademyGoals } from "./academy-account";
 import { useAcademyProgress } from "./academy-progress";
 import { isPhaseLocked } from "@/lib/academy-locks";
@@ -93,24 +93,6 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
         ? { href: `/range/${lastPhase.slug}/${lastEntry.slug}`, title: lastEntry.title, phaseSlug: lastPhase.slug, entrySlug: lastEntry.slug, kind: "last" as const }
         : null;
 
-  // What the Today row needs about the pinned week: its slide tabs (the ones
-  // the tab strip ticks off) and where those ticks are kept.
-  const pinPhase = pin ? phases.find((p) => p.slug === pin.phaseSlug) : undefined;
-  const pinEntry = pinPhase ? entriesOf(pinPhase).find((e) => e.slug === pin?.entrySlug) : undefined;
-  const todayPin: TodayPin | null =
-    pin && pinPhase && pinEntry
-      ? {
-          href: pin.href,
-          title: pin.title,
-          kind: pin.kind,
-          phaseLabel: `${pinPhase.label} · ${pinPhase.title}`,
-          tabs: pinEntry.sections
-            .map((sec) => sec.label)
-            .filter((l) => !/^(Lab|Challenge|Troubleshooting):/.test(l) && l !== "Resources"),
-          doneKey: `academy-tabs-done:${pinPhase.slug}/${pinEntry.slug}`,
-        }
-      : null;
-
   return (
     <div className="rd ax-home">
       <header className="rd-mast">
@@ -135,7 +117,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
       </div>
 
       <div className="ax-rise" style={{ ["--ax-i" as string]: 1 }}>
-        <Today pin={todayPin} />
+        <Today />
       </div>
 
       <ol className="ax-path" data-tour="path">

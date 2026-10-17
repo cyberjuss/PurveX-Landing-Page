@@ -378,3 +378,11 @@
     animation: none;
   }
 }
+
+/* Submit and check: the answer and the lab, each with its own verdict. */
+.sh-verdict { list-style: none; margin: 0 !important; padding: 0 !important; display: grid; gap: 6px; }
+.sh-verdict li { display: flex; align-items: center; gap: 8px; color: var(--rd-ink-2); }
+.sh-verdict li strong { color: var(--rd-ink); font-weight: 650; }
+.sh-verdict li svg { flex: none; }
+.sh-verdict li.is-ok svg { color: var(--rd-good); }
+.sh-verdict li.is-no svg { color: var(--rd-warn); }
