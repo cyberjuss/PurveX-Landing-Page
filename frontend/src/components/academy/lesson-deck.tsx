@@ -70,8 +70,11 @@ export function LessonDeck({
     } catch {}
     const top = deckRef.current?.getBoundingClientRect().top ?? 0;
     if (top < 0) {
+      // A long way back up jumps rather than gliding, so the next slide is
+      // there at once instead of after a second of scrolling.
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      deckRef.current?.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+      const far = -top > window.innerHeight;
+      deckRef.current?.scrollIntoView({ block: "start", behavior: reduce || far ? "auto" : "smooth" });
     }
   }
   const back = () => (index === 0 ? prevBeyond?.go() : go(index - 1));
@@ -82,6 +85,16 @@ export function LessonDeck({
   // working an activity, holding a modifier (Alt+Left is the browser's Back),
   // or looking at a screenshot or any other dialog, which use the arrows
   // themselves.
+  // The drawings loop, and a loop nobody can see still costs a repaint every
+  // frame. While the deck is scrolled out of view they hold still.
+  useEffect(() => {
+    const el = deckRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([entry]) => el.classList.toggle("is-offscreen", !entry.isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   const [help, setHelp] = useState(false);
   // A click anywhere outside the corner closes the list of keys.
   useEffect(() => {

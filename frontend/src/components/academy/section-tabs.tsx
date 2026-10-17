@@ -286,8 +286,16 @@ export function SectionTabs({
       skipScroll.current = false;
       return;
     }
+    const head = document.querySelector(".ax-entryhead");
+    if (!head) return;
+    // Already in view: nothing to do. A short way up glides; a long way up
+    // jumps, because a smooth scroll across a long lesson takes most of a
+    // second and reads as the new section being slow to arrive.
+    const top = head.getBoundingClientRect().top;
+    if (top >= 0 && top < window.innerHeight * 0.5) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    document.querySelector(".ax-entryhead")?.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+    const far = Math.abs(top) > window.innerHeight;
+    head.scrollIntoView({ block: "start", behavior: reduce || far ? "auto" : "smooth" });
   }, [active]);
 
   useEffect(() => {

@@ -1229,3 +1229,36 @@ button.lk__art { padding: 0; width: 100%; font: inherit; color: var(--rd-accent)
   .lk__fab .lk__keys { width: 50px; height: 50px; }
 }
 @media (prefers-reduced-motion: reduce) { .lk__fab .lk__keys { animation: none; } }
+
+/* ==== Performance pass ====
+   The slides felt slow to arrive. Three causes, three fixes:
+   1. Effects that repaint the whole tile every frame. The masked conic ring
+      becomes a dashed circle that only rotates (a compositor transform), the
+      scan lines lose their blur filter, and the tile contains its own paint.
+   2. Entrance waits. Content now starts at once and staggers 40ms, done in
+      under a third of a second, instead of waiting up to 0.4s to begin.
+   3. Loops nobody can see. While the deck is scrolled off screen, every
+      drawing and backdrop holds still (.is-offscreen, set by the deck). */
+.lk__art { contain: paint; }
+.lk__art::after {
+  inset: 9%;
+  background: none;
+  -webkit-mask: none;
+  mask: none;
+  border: 1px dashed color-mix(in srgb, var(--rd-accent) 35%, transparent);
+  border-radius: 50%;
+  animation: lka-spin 40s linear infinite;
+}
+.lka-scanbar, .lka-cardscan { filter: none; }
+
+.lk__art { animation-duration: var(--ax-dur); }
+.lk-build { animation-duration: var(--ax-dur); animation-delay: calc(min(var(--i, 0), 3) * 40ms); }
+.lk-tiles > li, .lk-cards > li, .lk-steps > li {
+  animation-duration: var(--ax-dur);
+  animation-delay: calc(min(var(--i, 0), 3) * 40ms + min(var(--j, 0), 3) * 40ms + 40ms);
+}
+
+.lk.is-offscreen .lka *,
+.lk.is-offscreen .lk__art::before,
+.lk.is-offscreen .lk__art::after,
+.lk.is-offscreen .lk__progress button::before { animation-play-state: paused !important; }
