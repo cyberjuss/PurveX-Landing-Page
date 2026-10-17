@@ -3,7 +3,7 @@ import type { RoleId } from "@/lib/academy-certs";
 import { evalCheck, seeded, shuffle, type Check } from "@/lib/academy-drills";
 import type { LabEvents, LabSnapshot } from "@/lib/academy-lab";
 
-// Shift: a 20-minute tour on the PurveX Financial desk. Real incidents fire
+// Shift: a 30-minute tour on the PurveX Financial desk. Real incidents fire
 // inside the student's own hosted lab on a timer (see academy-hosted.ts, which
 // runs the matching Incident-*.ps1 scripts through SSM). The student
 // investigates in the lab, acts, and writes up each one, highest priority
@@ -11,7 +11,7 @@ import type { LabEvents, LabSnapshot } from "@/lib/academy-lab";
 // Grading reads the lab the same way missions do: real end state, real events.
 // Nothing here is faked. Difficulty rises with the student's phase and level.
 
-export const SHIFT_MINUTES = 20;
+export const SHIFT_MINUTES = 30;
 export const SHIFT_SECONDS = SHIFT_MINUTES * 60;
 
 export type Severity = "P1" | "P2" | "P3";
@@ -1149,11 +1149,11 @@ function arrivalsFor(n: number): number[] {
   return [...head, ...tail];
 }
 
-/** How many incidents a shift has, from phase and level. A 20-minute shift runs
+/** How many incidents a shift has, from phase and level. A 30-minute shift runs
  *  a busy queue (more than a beginner clears) so work keeps arriving and the
  *  order they take it in matters. */
 export function shiftSize(phase: number, level: number): number {
-  return Math.min(8, 4 + level + (phase >= 2 ? 1 : 0));
+  return Math.min(10, 6 + level + (phase >= 2 ? 1 : 0));
 }
 
 /**

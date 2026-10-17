@@ -163,7 +163,7 @@ const DRILLS: Tour = {
       sel: '[data-tour="shift"]',
       icon: Clock,
       title: "Shift",
-      body: "Twenty minutes on the desk. Real incidents fire into your lab, each with a priority. Work the highest first.",
+      body: "Thirty minutes on the desk. Real incidents fire into your lab, each with a priority. Work the highest first.",
     },
     {
       sel: '[data-tour="findings"]',

@@ -7,7 +7,7 @@ import { getAcademyStudent } from "@/lib/academy-student";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-// The Shift: start a 20-minute tour, read its live state, acknowledge and work
+// The Shift: start a 30-minute tour, read its live state, acknowledge and work
 // each incident, buy a hint, submit a response, or end the shift. A shift needs
 // a hosted lab, since incidents are fired into the student's own lab.
 

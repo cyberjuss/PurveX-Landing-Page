@@ -279,7 +279,7 @@ function ShiftIntro({ theme, labState, busy, error, queued, onStart, onStartLab,
           </div>
         </div>
         <p className="sh-lede">
-          You are on the desk for 20 minutes. Real attacks and tickets fire into your own lab on their own. Work them highest priority first, and close as many as you can before the shift ends.
+          You are on the desk for 30 minutes. Real attacks and tickets fire into your own lab on their own. Work them highest priority first, and close as many as you can before the shift ends.
         </p>
 
         <ul className="sh-rules">
@@ -290,7 +290,7 @@ function ShiftIntro({ theme, labState, busy, error, queued, onStart, onStartLab,
           </li>
           <li>
             <span className="sh-rules__ic"><Clock className="h-4 w-4" /></span>
-            <strong>One 20-minute window, worked by priority</strong>
+            <strong>One 30-minute window, worked by priority</strong>
             <small>No ticket has its own timer. P1 before P2 before P3. Anything still open when the shift ends scores nothing.</small>
           </li>
           <li>

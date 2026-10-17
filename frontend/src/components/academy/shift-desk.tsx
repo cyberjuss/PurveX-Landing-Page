@@ -150,33 +150,54 @@ function DeskCard({ ev, now, busy, post, onDone }: { ev: DeskEvent; now: number;
               </ul>
             </>
           ) : (
-            <ul className="sdk__why">
-              {v.feedback.map((f) => (
-                <li key={f.id} className={`${f.correct ? "is-ok" : ""}${f.id === v.choice ? " is-mine" : ""}`}>
-                  <strong>
-                    {f.correct ? "Right: " : f.id === v.choice ? "Your answer: " : ""}
-                    {f.text}
-                  </strong>
-                  <span>{f.why}</span>
-                </li>
-              ))}
-            </ul>
+            // The right call and, if it differs, the one they made, in full.
+            // The other options fold away so the card stays short.
+            <>
+              <ul className="sdk__why">
+                {v.feedback
+                  .filter((f) => f.correct || f.id === v.choice)
+                  .map((f) => (
+                    <li key={f.id} className={`${f.correct ? "is-ok" : ""}${f.id === v.choice ? " is-mine" : ""}`}>
+                      <span className="sdk__tag">{f.correct ? (f.id === v.choice ? "Your answer · right" : "The right call") : "Your answer"}</span>
+                      <strong>{f.text}</strong>
+                      <span>{f.why}</span>
+                    </li>
+                  ))}
+              </ul>
+              {v.feedback.some((f) => !f.correct && f.id !== v.choice) && (
+                <details className="sdk__more">
+                  <summary>Why the other options miss</summary>
+                  <ul className="sdk__why">
+                    {v.feedback
+                      .filter((f) => !f.correct && f.id !== v.choice)
+                      .map((f) => (
+                        <li key={f.id}>
+                          <strong>{f.text}</strong>
+                          <span>{f.why}</span>
+                        </li>
+                      ))}
+                  </ul>
+                </details>
+              )}
+            </>
           )}
           <p className="sdk__lesson">
             <LifeBuoy aria-hidden /> <span>{v.lesson}</span>
           </p>
-          <p className="sdk__source">Source: {v.source}</p>
-          <button
-            type="button"
-            className="sdk__coach"
-            onClick={() =>
-              ask(
-                `On my shift I got this: "${ev.title}". ${ev.body} I ${v.choice ? `chose: "${v.feedback.find((f) => f.id === v.choice)?.text ?? v.choice}"` : v.text ? `replied: "${v.text}"` : "did not answer in time"}. Walk me through how a senior analyst handles this and why.`
-              )
-            }
-          >
-            Think it through with Coach
-          </button>
+          <div className="sdk__foot">
+            <p className="sdk__source">Source: {v.source}</p>
+            <button
+              type="button"
+              className="sdk__coach"
+              onClick={() =>
+                ask(
+                  `On my shift I got this: "${ev.title}". ${ev.body} I ${v.choice ? `chose: "${v.feedback.find((f) => f.id === v.choice)?.text ?? v.choice}"` : v.text ? `replied: "${v.text}"` : "did not answer in time"}. Walk me through how a senior analyst handles this and why.`
+                )
+              }
+            >
+              Think it through with Coach
+            </button>
+          </div>
         </div>
       )}
     </aside>

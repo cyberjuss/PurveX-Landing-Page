@@ -262,7 +262,7 @@
 .sh-submit:hover:not(:disabled) { background: var(--brand-hover); transform: translateY(-1px); }
 .sh-escalate, .sh-coach { display: inline-flex; align-items: center; gap: 7px; height: 42px; padding: 0 16px; border: 1px solid var(--rd-line); border-radius: 0; background: var(--panel-2); color: var(--rd-ink-2); font-size: var(--ty-note); font-weight: 600; cursor: pointer; transition: border-color var(--ax-dur-fast), color var(--ax-dur-fast); }
 .sh-escalate:hover:not(:disabled) { border-color: var(--rd-warn); color: var(--rd-warn); }
-.sh-coach { margin-left: auto; }
+.sh-coach { margin-left: 0; }
 .sh-coach:hover:not(:disabled) { border-color: var(--rd-accent); color: var(--rd-accent); }
 .sh-submit:disabled, .sh-escalate:disabled, .sh-coach:disabled, .sh-end:disabled { opacity: 0.55; cursor: default; transform: none; }
 

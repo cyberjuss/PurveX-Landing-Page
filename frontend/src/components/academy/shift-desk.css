@@ -161,3 +161,31 @@ body:has(.shift-app) [data-pc-root] { z-index: 80 !important; }
 @media (prefers-reduced-motion: reduce) {
   .sdk, .sdk.is-ringing, .sdk__verdict, .sdk--call .sdk__icon svg { animation: none !important; }
 }
+
+/* ---- roomier verdict (overrides above) ----
+   The verdict shows the right call and the student's own in full, folds the
+   rest away, and ends on one row: source on the left, Coach on the right. */
+.sdk { width: min(480px, calc(100vw - 32px)); padding: 18px 20px 20px; }
+.sdk__verdict { gap: 12px; margin-top: 12px; }
+.sdk__why { gap: 8px; }
+.sdk__why li { gap: 5px; padding: 12px 14px; font-size: 13.5px; line-height: 1.55; }
+.sdk__why li strong { font-size: 14px; line-height: 1.4; }
+.sdk__tag { font: 700 10.5px var(--font-mono, ui-monospace, monospace); letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-ink-3); }
+.sdk__why li.is-ok .sdk__tag { color: var(--rd-good); }
+.sdk__why li.is-mine:not(.is-ok) .sdk__tag { color: var(--rd-bad); }
+.sdk__more > summary { cursor: pointer; padding: 4px 0; font-size: 13px; font-weight: 600; color: var(--rd-ink-2); }
+.sdk__more > summary:hover { color: var(--rd-ink); }
+.sdk__more[open] > summary { margin-bottom: 8px; }
+.sdk__lesson { padding: 12px 14px; font-size: 13.5px; line-height: 1.55; }
+.sdk__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 2px; }
+.sdk__foot .sdk__source { flex: 1 1 180px; line-height: 1.5; }
+.sdk__foot .sdk__coach { align-self: auto; flex: none; }
+
+/* The incident's actions on one row: submit, escalate, think it through. */
+.sh-actions .sh-coach--talk { margin-left: 0; }
+/* Submit across the top, escalate and Coach side by side under it, so the
+   row never strands one button on a line of its own in a narrow column. */
+.sh-work .sh-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sh-work .sh-actions .sh-submit { grid-column: 1 / -1; justify-content: center; }
+.sh-work .sh-actions .sh-escalate, .sh-work .sh-actions .sh-coach { justify-content: center; margin: 0; }
+.sh-work .sh-actions .sh-actions__why { grid-column: 1 / -1; }
