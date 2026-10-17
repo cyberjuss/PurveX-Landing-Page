@@ -522,3 +522,85 @@
 @media (prefers-reduced-motion: reduce) {
   .sh-detail, .sh-pressure__sev.is-p1:not(.is-zero) i, .sh-li__state.is-new i { animation: none; }
 }
+
+/* ---- moving around: next priority, keys, arrivals ---- */
+.sh-next {
+  display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 0; cursor: pointer;
+  font: inherit; font-size: 13px; font-weight: 650; color: var(--rd-ink);
+  background: color-mix(in srgb, var(--rd-accent) 12%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 45%, transparent);
+  transition: background var(--ax-dur-fast) var(--ax-ease), box-shadow var(--ax-dur-fast) var(--ax-ease), transform var(--ax-dur-fast) var(--ax-ease);
+}
+.sh-next svg { color: var(--rd-accent); }
+.sh-next:hover:not(:disabled) { background: color-mix(in srgb, var(--rd-accent) 20%, transparent); box-shadow: inset 0 0 0 1px var(--rd-accent); transform: translateY(-1px); }
+.sh-next:disabled { opacity: 0.45; cursor: default; }
+.sh-next__sev { padding: 1px 6px; font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--rd-ink-2); box-shadow: inset 0 0 0 1px var(--rd-line); }
+.sh-next__sev.is-p1 { color: var(--rd-bad); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-bad) 50%, transparent); }
+.sh-next__sev.is-p2 { color: var(--rd-warn); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-warn) 45%, transparent); }
+.shift-app kbd {
+  display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px;
+  font: 700 10.5px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--rd-ink-2);
+  box-shadow: inset 0 0 0 1px var(--rd-line), inset 0 -2px 0 var(--rd-line);
+}
+.sh-keys { display: flex; align-items: center; gap: 5px; margin: auto 0 0; padding: 12px 20px 16px; font-size: 12px; color: var(--rd-ink-3); border-top: 1px solid var(--rd-line); }
+.sh-keys span { margin: 0 4px; }
+.sh-qgroup__head svg { color: var(--rd-ink-3); }
+
+/* A new arrival: a toast at the top of the work area, and a flash on its row. */
+/* Bottom left of the work area: the brief column ends early, so this is the
+   one corner that never covers the incident or the email card on the right. */
+.sh-toasts { position: absolute; bottom: 24px; left: calc(360px + 24px); z-index: 40; display: grid; gap: 8px; width: min(460px, calc(100vw - 32px)); pointer-events: none; }
+@media (max-width: 820px) { .sh-toasts { left: 16px; } }
+.sh-toast {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 0; cursor: pointer; text-align: left;
+  font: inherit; color: var(--rd-ink); background: var(--bg); pointer-events: auto;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 50%, var(--rd-line)), 0 18px 40px -18px rgba(0, 0, 0, 0.6);
+  animation: sh-toast-in var(--ax-dur-slow, 320ms) var(--ax-ease, ease) both;
+}
+.sh-toast.is-p1 { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-bad) 60%, transparent), 0 18px 40px -18px rgba(0, 0, 0, 0.6); }
+.sh-toast.is-p2 { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-warn) 55%, transparent), 0 18px 40px -18px rgba(0, 0, 0, 0.6); }
+@keyframes sh-toast-in { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: none; } }
+.sh-toast__icon { display: grid; place-items: center; flex: none; width: 34px; height: 34px; color: var(--rd-accent); background: color-mix(in srgb, var(--rd-accent) 14%, transparent); }
+.sh-toast.is-p1 .sh-toast__icon { color: var(--rd-bad); background: color-mix(in srgb, var(--rd-bad) 14%, transparent); animation: sh-pulse 1.2s ease-in-out 3; }
+.sh-toast.is-p2 .sh-toast__icon { color: var(--rd-warn); background: color-mix(in srgb, var(--rd-warn) 14%, transparent); }
+.sh-toast__main { display: grid; gap: 2px; min-width: 0; flex: 1; }
+.sh-toast__k { font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
+.sh-toast.is-p1 .sh-toast__k { color: var(--rd-bad); }
+.sh-toast__t { font-size: 14px; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sh-toast__go { display: inline-flex; align-items: center; gap: 4px; flex: none; font-size: 12.5px; font-weight: 650; color: var(--rd-accent); }
+.sh-li--fresh { animation: sh-row-in 520ms var(--ax-ease, ease) both, sh-row-flash 2.4s ease-out 1; }
+@keyframes sh-row-in { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
+@keyframes sh-row-flash { 0%, 30% { background: color-mix(in srgb, var(--rd-accent) 18%, transparent); } 100% { background: transparent; } }
+.sh-li--fresh.sh-li--sev-p1 { animation-name: sh-row-in, sh-row-flash-p1; }
+@keyframes sh-row-flash-p1 { 0%, 30% { background: color-mix(in srgb, var(--rd-bad) 16%, transparent); } 100% { background: transparent; } }
+
+/* Rows lean in under the pointer; the selected one carries a marker. */
+.sh-li { transition: background var(--ax-dur-fast) var(--ax-ease), box-shadow var(--ax-dur-fast) var(--ax-ease), transform var(--ax-dur-fast) var(--ax-ease); }
+.sh-li:hover { transform: translateX(2px); }
+.sh-li--on::after { content: ""; position: absolute; right: 12px; bottom: 14px; width: 6px; height: 6px; border-top: 2px solid var(--rd-accent); border-right: 2px solid var(--rd-accent); transform: rotate(45deg); }
+.sh-meta svg { flex: none; }
+
+/* Waiting for the queue: a radar sweep instead of a spinner. */
+.sh-radar svg { color: var(--rd-accent); animation: sh-sweep 2.4s linear infinite; }
+@keyframes sh-sweep { to { transform: rotate(360deg); } }
+.sh-empty { display: grid; justify-items: center; gap: 10px; padding: 90px 20px; text-align: center; color: var(--rd-ink-2); }
+.sh-empty p { margin: 6px 0 0; font-size: 17px; font-weight: 650; color: var(--rd-ink); }
+.sh-empty small { font-size: 13px; color: var(--rd-ink-3); }
+.sh-empty__radar { position: relative; display: grid; place-items: center; width: 84px; height: 84px; border-radius: 50%; color: var(--rd-accent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 35%, transparent); }
+.sh-empty__radar::before, .sh-empty__radar::after { content: ""; position: absolute; inset: 0; border-radius: 50%; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 45%, transparent); animation: sh-ping 2.4s ease-out infinite; }
+.sh-empty__radar::after { animation-delay: 1.2s; }
+@keyframes sh-ping { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.8); opacity: 0; } }
+.sh-empty__radar svg { animation: sh-sweep 2.4s linear infinite; }
+
+/* Closed: a seal that lands with a little weight. */
+.sh-resolved { align-items: flex-start; gap: 12px; padding: 16px 18px; font-weight: 500; color: var(--rd-ink-2); line-height: 1.55; }
+.sh-resolved strong { color: var(--rd-good); }
+.sh-resolved__seal { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border-radius: 50%; color: #fff; background: var(--rd-good); animation: sh-seal 520ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.shift-app[data-academy-theme="dark"] .sh-resolved__seal { color: #04140d; }
+@keyframes sh-seal { from { transform: scale(0.4) rotate(-20deg); opacity: 0; } to { transform: none; opacity: 1; } }
+
+@media (max-width: 1100px) { .sh-next span, .sh-next kbd { display: none; } }
+@media (max-width: 820px) { .sh-keys { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .sh-toast, .sh-toast .sh-toast__icon, .sh-li--fresh, .sh-radar svg, .sh-empty__radar::before, .sh-empty__radar::after, .sh-empty__radar svg, .sh-resolved__seal { animation: none; }
+  .sh-li:hover, .sh-next:hover:not(:disabled) { transform: none; }
+}

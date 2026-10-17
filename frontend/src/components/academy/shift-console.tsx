@@ -7,7 +7,7 @@ import {
   AlertTriangle, ArrowLeft, ArrowRight, Check, Clock, Loader2, LifeBuoy, Power, RefreshCw, ShieldAlert,
   Lock, Unlock, KeyRound, UserPlus, UserMinus, UserX, UserCog, ArrowLeftRight, FolderTree, SprayCan, Target,
   Crown, DoorOpen, BellOff, ShieldOff, ShieldCheck, ShieldX, Ticket, Search, Share2, Server, EyeOff, Infinity as InfinityIcon,
-  Wrench, Info, ArrowUpRight, FileText, X,
+  Wrench, Info, ArrowUpRight, FileText, X, Zap, Inbox, CheckCircle2, Radar, Hash, GraduationCap,
 } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { startHostedLabNow, useHostedLab } from "@/components/academy/hosted-lab-button";
@@ -434,6 +434,51 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = queue.find((i) => i.uid === selectedId) ?? queue.find((i) => !done(i)) ?? queue[0] ?? null;
 
+  // The open incident to work next: highest priority, then oldest, skipping
+  // the one already in front of the student.
+  const nextUp = queue.filter((i) => !done(i) && i.uid !== selected?.uid).sort((a, b) => order[a.severity] - order[b.severity] || a.arriveSec - b.arriveSec)[0] ?? null;
+
+  // Keys, so the queue can be worked without the mouse: J and K (or the
+  // arrows) move through it, N jumps to the next priority. Never while typing.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (e.metaKey || e.ctrlKey || e.altKey || (t && (t.closest("input, textarea, select, [contenteditable=true]") || t.closest(".sdk")))) return;
+      const at = Math.max(0, queue.findIndex((i) => i.uid === selected?.uid));
+      const go = (i: Incident | undefined) => {
+        if (!i) return;
+        e.preventDefault();
+        setSelectedId(i.uid);
+        document.querySelector(`[data-uid="${i.uid}"]`)?.scrollIntoView({ block: "nearest" });
+      };
+      if (e.key === "j" || e.key === "ArrowDown") go(queue[Math.min(queue.length - 1, at + 1)]);
+      else if (e.key === "k" || e.key === "ArrowUp") go(queue[Math.max(0, at - 1)]);
+      else if (e.key === "n" || e.key === "N") go(nextUp ?? undefined);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  // A new incident landing announces itself: a toast with its priority that
+  // opens it in one click, and a flash on its row. The first load is not news.
+  const known = useRef<Set<string> | null>(null);
+  const [fresh, setFresh] = useState<Incident[]>([]);
+  useEffect(() => {
+    const ids = new Set(shift.incidents.map((i) => i.uid));
+    if (known.current) {
+      const landed = shift.incidents.filter((i) => !known.current!.has(i.uid));
+       
+      if (landed.length) setFresh((f) => [...landed, ...f].slice(0, 3));
+    }
+    known.current = ids;
+  }, [shift.incidents]);
+  useEffect(() => {
+    if (!fresh.length) return;
+    const t = window.setTimeout(() => setFresh((f) => f.slice(0, -1)), 6000);
+    return () => window.clearTimeout(t);
+  }, [fresh]);
+  const freshIds = new Set(fresh.map((f) => f.uid));
+
   // Coach knows which incident is open, so "help me" means this one, and it
   // coaches as the senior analyst at the next desk without doing the work.
   const { setPlace } = useCoach();
@@ -480,6 +525,18 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
           )}
         </div>
         <div className="sh-top__right">
+          <button
+            type="button"
+            className="sh-next"
+            disabled={!nextUp}
+            onClick={() => nextUp && setSelectedId(nextUp.uid)}
+            title={nextUp ? `Open ${nextUp.severity} ${nextUp.title} (N)` : "Nothing else open"}
+          >
+            <Zap className="h-4 w-4" />
+            <span>Next priority</span>
+            {nextUp && <b className={`sh-next__sev is-${nextUp.severity.toLowerCase()}`}>{nextUp.severity}</b>}
+            <kbd>N</kbd>
+          </button>
           <div className={`sh-clock ${left <= 60 ? "sh-clock--low" : ""}`}>
             <span className="sh-clock__label">Shift ends in</span>
             <span className="sh-clock__time">{clock(left)}</span>
@@ -508,10 +565,41 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
         </div>
       </header>
 
+      <div className="sh-toasts" aria-live="polite">
+        {/* Once it is open, its toast has done its job. */}
+        {fresh.filter((f) => f.uid !== selected?.uid).map((f) => {
+          const Icon = iconFor(f.defId);
+          return (
+            <button
+              key={f.uid}
+              type="button"
+              className={`sh-toast is-${f.severity.toLowerCase()}`}
+              onClick={() => {
+                setSelectedId(f.uid);
+                setFresh((x) => x.filter((y) => y.uid !== f.uid));
+              }}
+            >
+              <span className="sh-toast__icon">
+                <Icon className="h-4 w-4" />
+              </span>
+              <span className="sh-toast__main">
+                <span className="sh-toast__k">
+                  New {f.severity} {f.kind}
+                </span>
+                <span className="sh-toast__t">{f.title}</span>
+              </span>
+              <span className="sh-toast__go">
+                Open <ArrowRight className="h-3.5 w-3.5" />
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
       <div className="sh-body">
         <aside className="sh-side">
           {queue.length === 0 ? (
-            <p className="sh-waiting"><Loader2 className="h-4 w-4 animate-spin" /> Watching the queue…</p>
+            <p className="sh-waiting sh-radar"><Radar className="h-5 w-5" /> Watching the queue…</p>
           ) : (
             <div className="sh-queue" role="tablist" aria-label="Incident queue">
               {[
@@ -522,6 +610,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
                   group.rows.length > 0 && (
                     <section key={group.label} className="sh-qgroup">
                       <p className="sh-qgroup__head">
+                        {group.label === "Open" ? <Inbox className="h-3.5 w-3.5" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
                         {group.label}
                         <b>{group.rows.length}</b>
                       </p>
@@ -530,11 +619,11 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
                           const closed = inc.resolved || inc.escalated;
                           const isSel = selected?.uid === inc.uid;
                           const urgent = !closed && !inc.acknowledged && inc.severity === "P1";
-                          const cls = ["sh-li", `sh-li--sev-${inc.severity.toLowerCase()}`, isSel && "sh-li--on", closed && "sh-li--done", urgent && "sh-li--urgent"].filter(Boolean).join(" ");
+                          const cls = ["sh-li", `sh-li--sev-${inc.severity.toLowerCase()}`, isSel && "sh-li--on", closed && "sh-li--done", urgent && "sh-li--urgent", freshIds.has(inc.uid) && "sh-li--fresh"].filter(Boolean).join(" ");
                           const Icon = iconFor(inc.defId);
                           return (
                             <li key={inc.uid}>
-                              <button type="button" role="tab" aria-selected={isSel} className={cls} onClick={() => setSelectedId(inc.uid)}>
+                              <button type="button" role="tab" aria-selected={isSel} className={cls} data-uid={inc.uid} onClick={() => setSelectedId(inc.uid)}>
                                 <span className="sh-li__top">
                                   {/* Severity is the coloured bar down the left; stated in text too, so it does not rest on colour alone. */}
                                   <span className="sh-li__sev">{inc.severity}</span>
@@ -576,6 +665,10 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
               )}
             </div>
           )}
+          <p className="sh-keys" aria-hidden>
+            <kbd>J</kbd>
+            <kbd>K</kbd> move <span>·</span> <kbd>N</kbd> next priority
+          </p>
         </aside>
 
         <main className="sh-main">
@@ -584,7 +677,13 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
           {selected ? (
             <IncidentDetail key={selected.uid} inc={selected} no={numOf.get(selected.uid) ?? ""} age={ageOf(selected)} busy={busy} post={post} />
           ) : (
-            <p className="sh-waiting sh-waiting--big"><Loader2 className="h-4 w-4 animate-spin" /> The first incident will land shortly.</p>
+            <div className="sh-empty">
+              <span className="sh-empty__radar" aria-hidden>
+                <Radar className="h-8 w-8" />
+              </span>
+              <p>The first incident will land shortly.</p>
+              <small>Keep your lab open. Alerts and tickets arrive on their own.</small>
+            </div>
           )}
         </main>
       </div>
@@ -645,9 +744,16 @@ function IncidentDetail({ inc, no, age, busy, post }: { inc: Incident; no: strin
             </span>
           );
         })()}
-        <span className="sh-meta sh-meta--mono">{no}</span>
-        <span className="sh-meta">Arrived {age} ago</span>
-        <span className="sh-meta">Skill: {skillOf(inc.kind)}</span>
+        <span className="sh-meta sh-meta--mono">
+          <Hash className="h-3.5 w-3.5" />
+          {no}
+        </span>
+        <span className="sh-meta">
+          <Clock className="h-3.5 w-3.5" /> Arrived {age} ago
+        </span>
+        <span className="sh-meta">
+          <GraduationCap className="h-3.5 w-3.5" /> {cap(skillOf(inc.kind))}
+        </span>
         {inc.resolved ? (
           <span className="sh-status sh-status--done">
             <Check className="h-3.5 w-3.5" /> Solved
@@ -696,7 +802,14 @@ function IncidentDetail({ inc, no, age, busy, post }: { inc: Incident; no: strin
 
         <div className="sh-col">
       {inc.resolved ? (
-        <p className="sh-resolved"><Check className="h-4 w-4" /> Handled — your lab shows the fix. It counts toward your shift score.</p>
+        <div className="sh-resolved">
+          <span className="sh-resolved__seal" aria-hidden>
+            <Check className="h-5 w-5" />
+          </span>
+          <span>
+            <strong>Closed.</strong> Your lab shows the fix and your answer is right. It counts toward your shift score.
+          </span>
+        </div>
       ) : inc.escalated ? (
         <div className="sh-handoff">
           <p className="sh-handoff__head"><ArrowUpRight className="h-4 w-4" /> Handed to tier 2</p>
