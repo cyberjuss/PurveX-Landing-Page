@@ -2,13 +2,12 @@
 
 import { useMemo } from "react";
 import { marked, type Tokens } from "marked";
-import { ArrowUpRight, BookOpen, Code2, FileText, Globe, PlayCircle, Quote, Wrench } from "lucide-react";
+import { ArrowUpRight, BookOpen, Code2, FileText, Globe, PlayCircle, Wrench } from "lucide-react";
 import "./resources-view.css";
 
 // A week's Resources tab, read from its markdown (a numbered list of links,
 // then "Sources for this week's facts" as a list of "**fact:** [source](url)")
-// and drawn as reading cards and a sources table instead of a wall of
-// underlined text. Anything that does not fit that shape is shown as before.
+// and drawn as one grid of cards instead of a wall of underlined text. Anything that does not fit that shape is shown as before.
 
 type Link = { title: string; url: string; host: string };
 type Reading = Link & { note: string };
@@ -68,64 +67,43 @@ function parse(markdown: string): { readings: Reading[]; sources: Source[] } | n
 export function ResourcesView({ markdown, fallback }: { markdown: string; fallback: React.ReactNode }) {
   const parsed = useMemo(() => parse(markdown), [markdown]);
   if (!parsed) return <>{fallback}</>;
-  const { readings, sources } = parsed;
+  // Just the cards: the readings, then each source as a card of its own with
+  // the fact it backs as its note. One link, one card, however often it is cited.
+  const seen = new Set<string>();
+  const cards: Reading[] = [];
+  for (const r of parsed.readings) {
+    if (seen.has(r.url)) continue;
+    seen.add(r.url);
+    cards.push(r);
+  }
+  for (const s of parsed.sources)
+    for (const l of s.links) {
+      if (seen.has(l.url)) continue;
+      seen.add(l.url);
+      cards.push({ ...l, note: s.fact });
+    }
   return (
-    <div className="rs">
-      {readings.length > 0 && (
-        <section className="rs-sec">
-          <p className="rs-kicker">
-            <BookOpen aria-hidden /> Read further
-          </p>
-          <h2 className="rs-title">Picked for this week</h2>
-          <ol className="rs-grid">
-            {readings.map((r, i) => {
-              const { Icon, label } = kindOf(r.url);
-              return (
-                <li key={r.url + i} style={{ ["--i" as string]: Math.min(i, 4) }}>
-                  <a className="rs-card" href={r.url} target="_blank" rel="noreferrer">
-                    <span className="rs-card__icon" aria-hidden>
-                      <Icon />
-                    </span>
-                    <span className="rs-card__main">
-                      <span className="rs-card__meta">
-                        {label} · {r.host}
-                      </span>
-                      <span className="rs-card__title">{r.title}</span>
-                      {r.note && <span className="rs-card__note">{r.note}</span>}
-                    </span>
-                    <ArrowUpRight className="rs-card__go" aria-hidden />
-                  </a>
-                </li>
-              );
-            })}
-          </ol>
-        </section>
-      )}
-
-      {sources.length > 0 && (
-        <section className="rs-sec">
-          <p className="rs-kicker">
-            <Quote aria-hidden /> Sources
-          </p>
-          <h2 className="rs-title">Where this week&apos;s facts come from</h2>
-          <ul className="rs-sources">
-            {sources.map((s, i) => (
-              <li key={i}>
-                <span className="rs-sources__fact">{s.fact}</span>
-                <span className="rs-sources__links">
-                  {s.links.map((l) => (
-                    <a key={l.url} href={l.url} target="_blank" rel="noreferrer" title={l.title}>
-                      <span>{l.title}</span>
-                      <small>{l.host}</small>
-                      <ArrowUpRight aria-hidden />
-                    </a>
-                  ))}
+    <ol className="rs-grid rs">
+      {cards.map((r, i) => {
+        const { Icon, label } = kindOf(r.url);
+        return (
+          <li key={r.url} style={{ ["--i" as string]: Math.min(i, 6) }}>
+            <a className="rs-card" href={r.url} target="_blank" rel="noreferrer">
+              <span className="rs-card__icon" aria-hidden>
+                <Icon />
+              </span>
+              <span className="rs-card__main">
+                <span className="rs-card__meta">
+                  {label} · {r.host}
                 </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-    </div>
+                <span className="rs-card__title">{r.title}</span>
+                {r.note && <span className="rs-card__note">{r.note}</span>}
+              </span>
+              <ArrowUpRight className="rs-card__go" aria-hidden />
+            </a>
+          </li>
+        );
+      })}
+    </ol>
   );
 }

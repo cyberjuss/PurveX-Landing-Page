@@ -1,5 +1,5 @@
-/* A week's Resources tab (resources-view.tsx): reading cards, then the sources
-   behind the week's facts. Portal tokens, square corners, the one motion scale. */
+/* A week's Resources tab (resources-view.tsx): one grid of cards, the readings
+   then the sources behind the week's facts. Portal tokens, square corners, the one motion scale. */
 
 .rs { display: grid; gap: 40px; padding: 8px 0 12px; }
 .rs-sec { display: grid; gap: 6px; }
@@ -35,21 +35,6 @@
 .rs-card__go { position: absolute; top: 14px; right: 14px; width: 16px; height: 16px; color: var(--rd-ink-3); transition: transform var(--ax-dur) var(--ax-ease), color var(--ax-dur-fast) var(--ax-ease); }
 .rs-card:hover .rs-card__go { color: var(--rd-accent); transform: translate(2px, -2px); }
 
-/* Sources: the fact on the left, where it comes from on the right. */
-.rs-sources { list-style: none; margin: 0; padding: 0; box-shadow: inset 0 0 0 1px var(--rd-line); }
-.rs-sources li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 8px 20px; align-items: start; padding: 13px 16px; }
-.rs-sources li + li { box-shadow: inset 0 1px 0 var(--rd-line); }
-.rs-sources__fact { font-size: 14px; font-weight: 600; line-height: 1.5; color: var(--rd-ink); }
-.rs-sources__links { display: grid; gap: 6px; }
-.rs-sources__links a { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; min-width: 0; font-size: 13.5px; line-height: 1.45; color: var(--rd-accent); text-decoration: none; }
-.rs-sources__links a span { text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--rd-accent) 35%, transparent); text-underline-offset: 3px; }
-.rs-sources__links a:hover span { text-decoration-color: currentColor; }
-.rs-sources__links small { font: 600 11px var(--font-mono, ui-monospace, monospace); color: var(--rd-ink-3); }
-.rs-sources__links svg { align-self: center; width: 13px; height: 13px; flex: none; }
-
-@media (max-width: 720px) {
-  .rs-sources li { grid-template-columns: 1fr; }
-}
 @media (prefers-reduced-motion: reduce) {
   .rs-grid > li { animation: none; }
   .rs-card:hover { transform: none; }
