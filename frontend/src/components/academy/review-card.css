@@ -147,6 +147,16 @@ html[data-academy-theme="dark"] .rv-modal {
 .rv-front strong { font-family: var(--font-display); font-size: clamp(24px, 4vw, 32px); line-height: 1.15; color: var(--rv-ink); }
 .rv-from { font: 700 10.5px var(--font-mono, ui-monospace, monospace); letter-spacing: 0.12em; text-transform: uppercase; color: var(--rv-ink-3); }
 .rv-hint { font-size: 13px; color: var(--rv-ink-3); }
+.rv-cue { max-width: 46ch; font-size: 16px; line-height: 1.5; color: var(--rv-ink-2); }
+
+/* The back reads as a short entry: what it means, then the job and the mix-up. */
+.rv-back { align-items: stretch; justify-content: flex-start; gap: 14px; text-align: left; }
+.rv-means { font-size: 16.5px; line-height: 1.6; color: var(--rv-ink); }
+.rv-means strong, .rv-part strong { font-family: inherit; font-size: inherit; color: var(--rv-ink); }
+.rv-part { display: grid; gap: 4px; padding-top: 12px; font-size: 14.5px; line-height: 1.55; color: var(--rv-ink-2); box-shadow: inset 0 1px 0 var(--rv-line); }
+.rv-part em { font: 700 10.5px var(--font-mono, ui-monospace, monospace); font-style: normal; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rv-accent); }
+.rv-part--not em { color: var(--rv-ink-3); }
+.rv-part code, .rv-means code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.9em; }
 
 .rv-answer { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; opacity: 0.35; transition: opacity var(--ax-dur) var(--ax-ease); }
 .rv-answer.is-on { opacity: 1; }

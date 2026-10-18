@@ -1,3 +1,5 @@
+import { lookup } from "@/lib/concept-glossary";
+
 // Spaced review of the concepts a student has met. Each concept they turn
 // over on a recap joins the deck with the sentence that taught it. It comes
 // back for review after a day; each time they still know it the gap grows
@@ -24,12 +26,45 @@ export const REVIEW_EVENT = "academy-review-changed";
 const keyOf = (term: string) => term.trim().toLowerCase();
 
 export function loadDeck(): Record<string, Concept> {
+  let deck: Record<string, Concept>;
   try {
     const raw = window.localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as Record<string, Concept>) : {};
+    deck = raw ? (JSON.parse(raw) as Record<string, Concept>) : {};
   } catch {
     return {};
   }
+  return migrate(deck);
+}
+
+/**
+ * Cards collected before the glossary carried whatever sentence a lesson
+ * bolded the word in, and some were never concepts ("Situation", "Move").
+ * Each is filed under its glossary entry ("leak" becomes Confidentiality,
+ * keeping the further-along of the two); one the glossary does not know is
+ * dropped, since no recap offers it any more. Saved quietly, without the
+ * change event, because this runs during a render.
+ */
+function migrate(deck: Record<string, Concept>): Record<string, Concept> {
+  let changed = false;
+  const out: Record<string, Concept> = {};
+  for (const [k, c] of Object.entries(deck)) {
+    const entry = lookup(c.term);
+    if (!entry) {
+      changed = true;
+      continue;
+    }
+    const key = keyOf(entry.term);
+    if (key !== k || c.term !== entry.term) changed = true;
+    const had = out[key];
+    if (!had || c.box > had.box) out[key] = { ...c, term: entry.term, sentence: entry.means };
+    else changed = true;
+  }
+  if (changed) {
+    try {
+      window.localStorage.setItem(KEY, JSON.stringify(out));
+    } catch {}
+  }
+  return out;
 }
 
 function saveDeck(deck: Record<string, Concept>) {
@@ -42,7 +77,7 @@ function saveDeck(deck: Record<string, Concept>) {
 /** Adds a concept if it is new. Returns true when it was. */
 export function collect(term: string, sentence: string, where: string): boolean {
   const deck = loadDeck();
-  const k = keyOf(term);
+  const k = keyOf(lookup(term)?.term ?? term);
   if (deck[k]) return false;
   // In local dev a new concept is due at once, so the review loop can be
   // tried without waiting a day. A production build always waits.
