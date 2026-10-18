@@ -1375,3 +1375,54 @@ button.lk__art { padding: 0; width: 100%; font: inherit; color: var(--rd-accent)
   box-shadow: 0 30px 60px -40px color-mix(in srgb, var(--rd-accent) 45%, transparent);
 }
 @media (max-width: 640px) { .lk__body > .lk__art { position: static; } }
+
+/* ==========================================================================
+   The recap, redrawn: one bar with a ring for the deck and the counts in a
+   quiet line, then the cards in rows that leave none alone. Kept last so it
+   settles the recap rules above.
+   ========================================================================== */
+.lk-recap { gap: 18px; }
+.lk-recap__bar {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 16px;
+  padding: 14px 18px; background: color-mix(in srgb, var(--rd-ink) 2.5%, transparent);
+  box-shadow: inset 0 0 0 1px var(--rd-line);
+  transition: box-shadow var(--ax-dur) var(--ax-ease), background var(--ax-dur) var(--ax-ease);
+}
+.lk-recap__bar.is-done { background: color-mix(in srgb, var(--rd-good, #34d399) 8%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-good, #34d399) 40%, transparent); }
+.lk-recap__ring { width: 48px; height: 48px; flex: none; transform: rotate(-90deg); }
+.lk-recap__track { fill: none; stroke: color-mix(in srgb, var(--rd-ink) 12%, transparent); stroke-width: 3; }
+.lk-recap__fill {
+  fill: none; stroke: var(--rd-accent); stroke-width: 3; stroke-linecap: round;
+  stroke-dasharray: 119.4; stroke-dashoffset: calc(119.4 * (1 - var(--pct, 0)));
+  transition: stroke-dashoffset 600ms var(--ax-ease), stroke var(--ax-dur) var(--ax-ease);
+}
+.lk-recap__bar.is-done .lk-recap__fill { stroke: var(--rd-good, #34d399); }
+.lk-recap__num { transform: rotate(90deg); transform-origin: 22px 22px; font: 700 11px var(--font-mono, ui-monospace, monospace); fill: var(--rd-ink); }
+.lk-recap__tick { transform: rotate(90deg); transform-origin: 22px 22px; fill: none; stroke: var(--rd-good, #34d399); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 30; animation: lk-recap-tick 500ms var(--ax-ease) both; }
+@keyframes lk-recap-tick { from { stroke-dashoffset: 30; } to { stroke-dashoffset: 0; } }
+.lk-recap__lead { font-size: 15px; line-height: 1.5; color: var(--rd-ink-2); }
+.lk-recap__lead strong { color: var(--rd-ink); font-weight: 700; }
+.lk-recap__meta { display: flex; gap: 16px; white-space: nowrap; font: 600 11px var(--font-mono, ui-monospace, monospace); letter-spacing: 0.08em; text-transform: uppercase; color: var(--rd-ink-3); }
+.lk-recap__meta b { margin-right: 2px; font-family: var(--font-display, inherit); font-size: 17px; letter-spacing: -0.01em; color: var(--rd-ink); }
+.lk-recap__meta .lk-recap__total b { color: var(--rd-accent); }
+
+/* Cards: as many columns as leaves none alone, numbered, quieter. */
+.lk-cards.lk-cards--recap { grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); gap: 12px; }
+.lk-cards--recap .lk-flip { min-height: 150px; }
+.lk-flip__top { display: flex; align-items: flex-start; justify-content: space-between; width: 100%; }
+.lk-flip__no { font: 700 12px var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em; color: var(--rd-ink-3); }
+.lk-cards--recap .lk-flip__front strong { font-size: 19px; line-height: 1.25; }
+.lk-cards--recap > li.is-kept .lk-flip__hint { color: var(--rd-good, #34d399); }
+.lk-cards--recap > li.is-kept .lk-flip__hint::before { content: "\2713  "; }
+
+@media (max-width: 900px) {
+  .lk-recap__bar { grid-template-columns: auto minmax(0, 1fr); }
+  .lk-recap__meta { grid-column: 1 / -1; flex-wrap: wrap; }
+  .lk-cards.lk-cards--recap { grid-template-columns: repeat(min(var(--cols, 3), 2), minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .lk-cards.lk-cards--recap { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lk-recap__fill, .lk-recap__tick { transition: none; animation: none; }
+}
