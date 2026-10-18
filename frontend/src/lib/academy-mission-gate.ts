@@ -5,6 +5,7 @@ import { formatLabAge, labIsLive } from "@/lib/academy-lab";
 import { checkMission, hasMissionObjects, hasTicketObjects, missionGate } from "@/lib/academy-mission-lab";
 import { loadLabState, loadProgress, saveProgress, touchLabLive } from "@/lib/academy-store";
 import { LIVE_MINUTES } from "@/lib/academy-verify";
+import { confirmOnLab } from "@/lib/academy-lab-pull";
 
 /**
  * How old a snapshot has to be before the lab's own sync loop looks dead.
@@ -63,8 +64,23 @@ export async function labGate(student: { id: string; email: string | null }, id:
   // The server records that the change was seen. This is the only place labOk is ever set.
   if (checked?.passed) {
     const results = await loadProgress(student.id);
+    // Once per ticket: the gate is polled while the page waits, and a command
+    // to the lab on every poll would be one every few seconds.
     if (!results[id]?.labOk) {
-      results[id] = { ...(results[id] ?? { solved: false, wrong: 0, hint: false }), labOk: true, at: new Date().toISOString() };
+      // The lab's own report says the change is there. On a hosted lab, ask
+      // the domain controller directly before it counts: a report the lab
+      // contradicts is not a pass, and one it confirms is Verified by Range.
+      const pull = await confirmOnLab(student.id, missionGate(id)?.checks ?? []);
+      if (pull.status === "contradicted") {
+        console.warn("lab report contradicted by the lab itself", student.id, id);
+        return { gated: true, passed: false, results: pull.results, syncedAgo };
+      }
+      results[id] = {
+        ...(results[id] ?? { solved: false, wrong: 0, hint: false }),
+        labOk: true,
+        ...(pull.status === "confirmed" ? { labVerified: true } : {}),
+        at: new Date().toISOString(),
+      };
       await saveProgress(student.id, student.email, results);
     }
   }

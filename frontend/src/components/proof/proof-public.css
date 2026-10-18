@@ -132,3 +132,12 @@
 
 /* Single-column header, for the credential check page. */
 .pp-head--plain { display: block; }
+
+/* Range read the lab itself to confirm this one, rather than taking the lab's report. */
+.pp-verified {
+  display: inline-flex; align-items: center; gap: 5px; margin-left: 10px; padding: 2px 8px;
+  vertical-align: middle; font-size: 11.5px; font-weight: 650; letter-spacing: 0.01em; white-space: nowrap;
+  color: #0f7a55; background: rgba(15, 159, 110, 0.1); box-shadow: inset 0 0 0 1px rgba(15, 159, 110, 0.35); border-radius: 4px;
+}
+.pp-verified svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+@media print { .pp-verified { color: #0f7a55; } }

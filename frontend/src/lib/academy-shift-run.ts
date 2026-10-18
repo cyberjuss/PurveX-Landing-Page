@@ -1,5 +1,6 @@
 import "server-only";
 import type { LabSnapshot } from "@/lib/academy-lab";
+import { confirmOnLab } from "@/lib/academy-lab-pull";
 import { HANDOFF_GRADES, handoffReviewer, responseGrader, shiftNarrator, type HandoffReview } from "@/lib/academy-scenario";
 import { cleanupShiftLab, hostedLabStatus, injectIncident, requestLabSync } from "@/lib/academy-hosted";
 import { roleLabel } from "@/lib/academy-certs";
@@ -254,6 +255,7 @@ async function saveIncident(userId: string, run: ShiftRun, inc: IncidentRun): Pr
     target.submits = Math.max(target.submits ?? 0, inc.submits ?? 0);
     target.resolvedAtSec = target.resolvedAtSec ?? inc.resolvedAtSec;
     target.escalatedAtSec = target.escalatedAtSec ?? inc.escalatedAtSec;
+    if (inc.verified) target.verified = true;
   }
   for (const i of run.incidents) {
     const t = latest.incidents.find((x) => x.uid === i.uid);
@@ -462,8 +464,23 @@ export async function submitIncident(
   const fresh = Boolean(lab && Date.parse(lab.uploadedAt) >= Date.parse(run.startedAt));
   // An incident closes only when the lab shows the fix AND the finding is answered
   // correctly. A correct fix with a wrong or blank finding stays open with a nudge.
-  const needFinding = graded.resolved && !graded.diagnosisRight;
-  const closed = graded.resolved && graded.diagnosisRight;
+  let needFinding = graded.resolved && !graded.diagnosisRight;
+  let closed = graded.resolved && graded.diagnosisRight;
+  // The lab's own report says the fix is in. On a hosted lab, ask the domain
+  // controller directly before the incident closes: a report it contradicts
+  // does not close anything, and one it confirms is Verified by Range.
+  if (graded.resolved && inc.resolvedAtSec === null) {
+    const pull = await confirmOnLab(userId, eff.resolve);
+    if (pull.status === "contradicted") {
+      console.warn("lab report contradicted by the lab itself", userId, inc.uid);
+      closed = false;
+      needFinding = false;
+      graded.resolved = false;
+      graded.results = pull.results;
+    } else if (pull.status === "confirmed" && closed) {
+      inc.verified = true;
+    }
+  }
   if (closed && inc.resolvedAtSec === null) inc.resolvedAtSec = elapsed;
   await saveIncident(userId, run, inc);
   return {
@@ -698,6 +715,7 @@ async function recordAndClose(userId: string, run: ShiftRun) {
       th: `shift:${inc.defId}`,
       // The portfolio job this incident proves, so a resolved shift task joins the portfolio.
       j: inc.resolved ? SHIFT_JOB[inc.defId] : undefined,
+      ...(inc.resolved && inc.verified ? { v: 1 as const } : {}),
     };
   });
   const entry: DrillEntry = {
