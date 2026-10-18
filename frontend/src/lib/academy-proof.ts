@@ -339,32 +339,36 @@ export type WorkItem = {
   date: string;
   /** Where it was done: a ticket, a daily drill, or the weekly CTF. */
   from: string;
+  /** Range confirmed it by asking the lab directly, not only from the lab's own report. */
+  verified: boolean;
   keywords: string[];
   bullets: Record<Track, StarPart[]>;
 };
 
 /** Every confirmed lab task, one per job, newest first. */
 export function buildWorkItems(results: Results, drills: DrillEntry[]): WorkItem[] {
-  const found = new Map<string, { date: string; from: string }>();
-  const note = (job: string, date: string, from: string) => {
+  const found = new Map<string, { date: string; from: string; verified: boolean }>();
+  const note = (job: string, date: string, from: string, verified = false) => {
     if (!CATALOG[job]) return;
     const had = found.get(job);
-    if (!had || date > had.date) found.set(job, { date, from });
+    // Verified once is verified: a later, unverified repeat does not undo it.
+    if (!had || date > had.date) found.set(job, { date, from, verified: verified || Boolean(had?.verified) });
+    else if (verified && !had.verified) had.verified = true;
   };
   for (const [id, t] of Object.entries(PROOF_TICKETS)) {
     const r = results[id];
-    if (r?.labOk) note(t.job, (r.at ?? "").slice(0, 10), t.label);
+    if (r?.labOk) note(t.job, (r.at ?? "").slice(0, 10), t.label, r.labVerified === true);
   }
   for (const entry of drills) {
     for (const d of entry.detail ?? []) {
       // A confirmed lab change (daily/ctf) or a shift incident the student resolved.
       if ((d.k === "change" || entry.mode === "shift") && d.c === 1 && d.j) {
-        note(d.j, entry.day, entry.mode === "shift" ? "Live shift" : entry.mode === "ctf" ? "Weekly CTF" : "Daily drill");
+        note(d.j, entry.day, entry.mode === "shift" ? "Live shift" : entry.mode === "ctf" ? "Weekly CTF" : "Daily drill", d.v === 1);
       }
     }
   }
   return [...found.entries()]
-    .map(([job, f]) => ({ job, ...CATALOG[job], date: f.date, from: f.from }))
+    .map(([job, f]) => ({ job, ...CATALOG[job], date: f.date, from: f.from, verified: f.verified }))
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 

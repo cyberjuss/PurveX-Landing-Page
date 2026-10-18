@@ -1256,6 +1256,43 @@ async function ssmOnline(instanceId: string): Promise<boolean> {
 }
 
 /**
+ * Run a PowerShell command on the student's running domain controller and
+ * return what it printed, or null if the lab is not running, its agent is not
+ * online, or the command did not finish in time. The command travels over SSM
+ * and its output comes back the same way, never through the student's lab
+ * key, which is what lets Range check a lab's state without trusting the lab's
+ * own report of it. The command text is always written by Range.
+ */
+export async function runOnLab(userId: string, commands: string[], timeoutMs = 25_000): Promise<string | null> {
+  const id = await runningInstance(userId);
+  if (!id || !(await ssmOnline(id))) return null;
+  try {
+    const out = await ssm().send(
+      new SendCommandCommand({
+        InstanceIds: [id],
+        DocumentName: "AWS-RunPowerShellScript",
+        Comment: "Range lab check",
+        TimeoutSeconds: 60,
+        Parameters: { commands },
+      })
+    );
+    const commandId = out.Command?.CommandId;
+    if (!commandId) return null;
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, 700));
+      const inv = await ssm().send(new GetCommandInvocationCommand({ CommandId: commandId, InstanceId: id })).catch(() => null);
+      if (!inv || inv.Status === "Pending" || inv.Status === "InProgress" || inv.Status === "Delayed") continue;
+      return inv.Status === "Success" ? (inv.StandardOutputContent ?? "") : null;
+    }
+    return null;
+  } catch (err) {
+    console.error("runOnLab failed", err instanceof Error ? err.message : err);
+    return null;
+  }
+}
+
+/**
  * PowerShell that downloads an incident script (and its shared helper) from the
  * site and runs it. Fetching at run time means an incident fix ships by
  * deploying, with no lab image rebuild. The script name is fixed, server-side.

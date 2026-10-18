@@ -108,6 +108,8 @@ export type MissionResult = {
   flagged?: boolean;
   /** The change this ticket needs was seen in the student's lab. */
   labOk?: boolean;
+  /** And Range confirmed it by asking the lab directly, not from the lab's own report. */
+  labVerified?: boolean;
   /** Browser labs only: percent of the lab's points the first time it was finished. */
   pts?: number;
   at?: string;
@@ -282,6 +284,7 @@ export function sanitizeResults(raw: unknown, trustLabOk = false): Results {
       hint: v.hint === true,
       ...(flagged ? { flagged: true } : {}),
       ...(trustLabOk && v.labOk === true ? { labOk: true } : {}),
+      ...(trustLabOk && v.labOk === true && v.labVerified === true ? { labVerified: true } : {}),
       ...(isLabPass(id) && typeof v.pts === "number" && Number.isFinite(v.pts) ? { pts: Math.min(100, Math.max(0, Math.round(v.pts))) } : {}),
       ...(at ? { at } : {}),
     };

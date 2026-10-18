@@ -473,6 +473,16 @@ resource "aws_iam_policy" "casefile" {
         Action   = ["ssm:GetCommandInvocation", "ssm:ListCommandInvocations"]
         Resource = "*"
       },
+      {
+        # Range asks whether a lab's agent is online before sending it a
+        # command, so a lab still booting is skipped quietly instead of failing.
+        # The code has always called this; without it every Shift incident
+        # and lab sync is skipped as if the agent were offline.
+        Sid      = "SeeAgents"
+        Effect   = "Allow"
+        Action   = "ssm:DescribeInstanceInformation"
+        Resource = "*"
+      },
     ]
   })
 }

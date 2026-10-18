@@ -76,7 +76,7 @@ export async function PUT(request: Request) {
   for (const [id, row] of Object.entries(saved)) {
     if (!(id in MISSION_SKILLS)) continue;
     if (!wiped(id)) results[id] = { ...row };
-    else if (row.labOk) results[id] = { solved: false, wrong: 0, hint: false, labOk: true, ...(row.at ? { at: row.at } : {}) };
+    else if (row.labOk) results[id] = { solved: false, wrong: 0, hint: false, labOk: true, ...(row.labVerified ? { labVerified: true } : {}), ...(row.at ? { at: row.at } : {}) };
   }
   // The browser may add what only lowers a score: a hint used, a mission skipped.
   for (const [id, row] of Object.entries(incoming)) {

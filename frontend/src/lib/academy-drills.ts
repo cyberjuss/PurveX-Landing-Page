@@ -93,7 +93,7 @@ export type PublicItem = Omit<Item, "answer" | "explain" | "accept" | "hint" | "
 };
 
 /** One question. `x`, `a` and `e` are kept only for misses: what they picked, the best answer, and why. */
-export type DrillDetail = { t: string; s: Skill; c: 0 | 1; p?: string; th?: string; x?: string; a?: string; e?: string; j?: string; k?: string };
+export type DrillDetail = { t: string; s: Skill; c: 0 | 1; p?: string; th?: string; x?: string; a?: string; e?: string; j?: string; k?: string; /** 1 when Range confirmed it on the lab directly. */ v?: 1 };
 
 export type DrillEntry = {
   id: string;

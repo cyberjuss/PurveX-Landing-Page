@@ -1537,6 +1537,8 @@ export type IncidentRun = {
   text?: { from: string; title: string; brief: string };
   /** The question this shift asks. Absent on a run saved before pools existed. */
   question?: Question;
+  /** Range confirmed the fix by asking the lab directly when it closed. */
+  verified?: boolean;
   /** How many times they pressed Submit and check. Escalating needs at least one. */
   submits?: number;
   /** Tier 2's review of the handoff, written when the shift is graded. */
