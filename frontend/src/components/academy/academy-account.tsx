@@ -11,6 +11,7 @@ import { academyFetch, READINESS_PATH, useResults } from "@/lib/academy-client";
 import { passedExamDates } from "@/lib/academy-goals";
 import { LEVELS, summarize } from "@/lib/academy-score";
 import { useMounted } from "@/lib/use-mounted";
+import { useAcademyTheme } from "@/lib/use-academy-theme";
 
 export type AcademyStudent = { id: string; email: string | null; name: string | null };
 
@@ -174,7 +175,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
     };
   }, [open]);
 
-  const dark = mounted && document.querySelector(".academy-bg")?.getAttribute("data-academy-theme") === "dark";
+  const dark = useAcademyTheme() === "dark";
   const menu =
     open && mounted
       ? createPortal(
