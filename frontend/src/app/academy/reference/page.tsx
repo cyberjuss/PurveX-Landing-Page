@@ -383,26 +383,28 @@ function CopyButton({ text }: { text: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      className={`ml-2 inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[length:var(--ty-kicker)] font-semibold transition ${
-        copied
-          ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-          : "border-[var(--pvrx-border-light)] text-slate-500 hover:border-slate-300 hover:text-slate-900"
-      }`}
+      className={`ax-refcopy${copied ? " is-copied" : ""}`}
+      aria-label={copied ? "Copied" : "Copy"}
+      title={copied ? "Copied" : "Copy"}
     >
-      {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-      {copied ? "Copied" : "Copy"}
+      {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
     </button>
   );
 }
 
-function Section({ id, title, icon: Icon, children }: { id: string; title: string; icon: LucideIcon; children: React.ReactNode }) {
+function Section({ id, title, kicker, icon: Icon, children }: { id: string; title: string; kicker: string; icon: LucideIcon; children: React.ReactNode }) {
   return (
     <section id={id} className="academy-ref-section ax-refsec scroll-mt-24">
-      <div className="flex items-center gap-2.5">
-        <Icon className="h-4 w-4 shrink-0 text-[var(--rd-accent)]" />
-        <h2 className="font-display text-lg font-semibold text-slate-900">{title}</h2>
-      </div>
-      <div className="academy-prose mt-3">{children}</div>
+      <header className="ax-refsec__head">
+        <span className="ax-refsec__icon" aria-hidden>
+          <Icon strokeWidth={1.75} />
+        </span>
+        <div>
+          <p className="ax-refsec__kicker">{kicker}</p>
+          <h2 className="ax-refsec__title">{title}</h2>
+        </div>
+      </header>
+      <div className="academy-prose ax-refsec__body">{children}</div>
     </section>
   );
 }
@@ -507,15 +509,12 @@ export default function ReferencePage() {
 
         <div className="min-w-0 flex-1">
           {(
-            <div className="flex flex-col gap-10">
+            <div className="flex flex-col gap-4">
               {filteredCategories.map((cat) => (
                 <div key={cat.label}>
-                  <h2 className="text-[length:var(--ty-micro)] font-bold uppercase tracking-[0.12em] text-[var(--rd-ink-3)] lg:hidden">
-                    {cat.label}
-                  </h2>
-                  <div className="mt-4 flex flex-col gap-6 lg:mt-0">
+                  <div className="flex flex-col gap-4">
                     {cat.items.map((item) => (
-                      <Section key={item.id} id={item.id} title={item.title} icon={item.icon}>
+                      <Section key={item.id} id={item.id} title={item.title} kicker={cat.label} icon={item.icon}>
                         {item.body}
                       </Section>
                     ))}
