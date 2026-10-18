@@ -1,3 +1,4 @@
+import { hasCronSecret } from "@/lib/cron-auth";
 import { brandEmail } from "@/lib/email";
 import {
   dormantNudgeEmail,
@@ -21,8 +22,7 @@ export async function GET(request: Request) {
   // Open in development; elsewhere only with the cron secret, so production
   // does not publish every template the site can send.
   if (process.env.NODE_ENV === "production") {
-    const secret = process.env.CRON_SECRET?.trim();
-    if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
+    if (!hasCronSecret(request)) {
       return new Response("Not found", { status: 404 });
     }
   }

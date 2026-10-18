@@ -1,3 +1,4 @@
+import { hasCronSecret } from "@/lib/cron-auth";
 import { NextResponse } from "next/server";
 import { allClassMembers } from "@/lib/academy-classes";
 import { dormantAccounts } from "@/lib/academy-dormant";
@@ -29,8 +30,7 @@ const MIN_DAYS = 7;
 const MAX_DAYS = 28;
 
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET?.trim();
-  if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
+  if (!hasCronSecret(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

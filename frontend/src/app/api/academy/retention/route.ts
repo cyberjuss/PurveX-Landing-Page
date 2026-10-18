@@ -1,3 +1,4 @@
+import { hasCronSecret } from "@/lib/cron-auth";
 import { NextResponse } from "next/server";
 import { allClasses, classMembers } from "@/lib/academy-classes";
 import { classReport, type RosterStudent } from "@/lib/academy-roster";
@@ -16,9 +17,7 @@ const DAY = 24 * 60 * 60 * 1000;
 const quietDays = (s: RosterStudent) => (s.lastActive ? Math.floor((Date.now() - Date.parse(s.lastActive)) / DAY) : null);
 
 function authorized(request: Request): boolean {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) return false;
-  return request.headers.get("authorization") === `Bearer ${secret}`;
+  return hasCronSecret(request);
 }
 
 export async function GET(request: Request) {

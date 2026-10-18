@@ -1,3 +1,4 @@
+import { hasCronSecret } from "@/lib/cron-auth";
 import { NextResponse } from "next/server";
 import { trialEndingEmail } from "@/lib/academy-emails";
 import { markEmailOnce } from "@/lib/academy-email-log";
@@ -16,8 +17,7 @@ type TrialRow = { user_id: string; email: string | null; current_period_end: str
 // charged, sent at most once per student -- so the charge that follows it is
 // never the first they hear of it.
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET?.trim();
-  if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
+  if (!hasCronSecret(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   if (!supabaseAdmin) return NextResponse.json({ error: "Not configured" }, { status: 503 });
