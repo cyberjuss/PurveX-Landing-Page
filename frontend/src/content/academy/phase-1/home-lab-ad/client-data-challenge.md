@@ -6,8 +6,6 @@
 <p>Every record here is synthetic. The SSNs are in a range that is never issued, the phone numbers are reserved for fiction, and the email addresses use example.com.</p>
 </div>
 
-<p>The files live on the domain controller in <code>C:\PurveX\Shares</code>, which the network sees as the share named <code>Shares</code>. A hosted lab plants them on its own. On your own machine, run the script from Build the Environment once more.</p>
-
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
 <span id="ad-progress-label" class="ad-progress__label">0 / 7 solved</span>
