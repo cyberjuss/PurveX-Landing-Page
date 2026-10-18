@@ -27,6 +27,7 @@ import {
   CreditCard,
   Crosshair,
   Database,
+  Dices,
   Eye,
   EyeOff,
   FileLock,
@@ -94,6 +95,8 @@ import { drawOn } from "@/lib/draw-on";
 // First match wins, so the narrower words sit above the broader ones. Matched
 // against the plain text of one list item.
 const ITEM_ICONS: [RegExp, LucideIcon][] = [
+  // A salt is a random value added before hashing: dice, not people.
+  [/\bsalt\b/i, Dices],
   [/social security|\bssn\b|\bid\b card|identity/i, IdCard],
   [/salar|payroll|wage/i, Banknote],
   [/medical|patient|health/i, HeartPulse],
@@ -388,59 +391,64 @@ export function Recap({ items, slides, activities, where }: { items: RecapItem[]
     setMine((prev) => new Set(prev).add(item.term.toLowerCase()));
     setFresh((n) => n + 1);
   };
+  const kept = mine.size;
+  const pct = items.length ? kept / items.length : 0;
+  const done = items.length > 0 && kept === items.length;
   return (
     <div className="lk-recap" ref={rootRef}>
-      {finish && (
-        <div className="lk-finish" role="status">
-          <svg className="lk-finish__ring" viewBox="0 0 44 44" aria-hidden>
-            <circle cx="22" cy="22" r="19" className="lk-finish__track" />
-            <circle cx="22" cy="22" r="19" className="lk-finish__fill" />
-            <path d="M14 22.5 l5.5 5.5 l11 -12" className="lk-finish__tick" />
-          </svg>
-          <span>
-            <strong>Section complete.</strong> Flip each card to add it to your review deck. They come back when it is time to
-            practise.
-          </span>
-        </div>
-      )}
-      <p className="lk-recap__stats lk-build">
-        <span>
-          <b>
-            <CountUp to={slides} />
-          </b>{" "}
-          slides
+      <div className={`lk-recap__bar lk-build${finish || done ? " is-done" : ""}`} role={finish ? "status" : undefined}>
+        <svg className="lk-recap__ring" viewBox="0 0 44 44" aria-hidden style={{ ["--pct" as string]: pct }}>
+          <circle cx="22" cy="22" r="19" className="lk-recap__track" />
+          <circle cx="22" cy="22" r="19" className="lk-recap__fill" />
+          {done ? <path d="M14 22.5 l5.5 5.5 l11 -12" className="lk-recap__tick" /> : (
+            <text x="22" y="26.5" textAnchor="middle" className="lk-recap__num">
+              {kept}/{items.length}
+            </text>
+          )}
+        </svg>
+        <span className="lk-recap__lead">
+          <strong>{finish ? "Section complete." : done ? "All in your deck." : `${kept} of ${items.length} in your deck.`}</strong>{" "}
+          {done ? "They come back when it is time to practise." : "Say what each one means, then flip it to keep it for review."}
         </span>
-        {activities > 0 && (
+        <span className="lk-recap__meta">
           <span>
             <b>
-              <CountUp to={activities} />
+              <CountUp to={slides} />
             </b>{" "}
-            {activities === 1 ? "activity" : "activities"}
+            slides
           </span>
-        )}
-        <span>
-          <b>
-            {mine.size}/{items.length}
-          </b>{" "}
-          in your deck
+          {activities > 0 && (
+            <span>
+              <b>
+                <CountUp to={activities} />
+              </b>{" "}
+              {activities === 1 ? "activity" : "activities"}
+            </span>
+          )}
+          {collected !== null && (
+            <span className="lk-recap__total">
+              <b key={`count-${collected}`}>{collected}</b> in review
+              {fresh > 0 && (
+                <em key={`plus-${fresh}`} className="lk-recap__plus">
+                  +1
+                </em>
+              )}
+            </span>
+          )}
         </span>
-        {collected !== null && (
-          <span className="lk-recap__total">
-            <b key={`count-${collected}`}>{collected}</b> in your review deck
-            {fresh > 0 && (
-              <em key={`plus-${fresh}`} className="lk-recap__plus">
-                +1
-              </em>
-            )}
-          </span>
-        )}
-      </p>
-      <FlipCards items={cards} i={1} onReveal={reveal} />
+      </div>
+      <FlipCards items={cards} i={1} onReveal={reveal} numbered kept={items.map((r) => mine.has(r.term.toLowerCase()))} />
     </div>
   );
 }
 
-function FlipCards({ items, i, onReveal }: { items: Card[]; i: number; onReveal?: (j: number) => void }) {
+/** "salted, slow hash" reads as a title once its first letter is a capital. */
+const titled = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+
+/** Columns that leave no card alone on a row: 1-3 side by side, 4 as two pairs, more in threes. */
+const colsFor = (n: number) => (n <= 3 ? n : n === 4 ? 2 : 3);
+
+function FlipCards({ items, i, onReveal, numbered = false, kept }: { items: Card[]; i: number; onReveal?: (j: number) => void; numbered?: boolean; kept?: boolean[] }) {
   const [open, setOpen] = useState<Set<number>>(() => new Set());
   const all = open.size === items.length;
   // One icon per card, chosen once, never repeated within the grid.
@@ -460,7 +468,7 @@ function FlipCards({ items, i, onReveal }: { items: Card[]; i: number; onReveal?
   return (
     <div className="lk-flipwrap lk-build" style={{ ["--i" as string]: i }}>
       <div className="lk-fliphead">
-        <span>Say what each one means, then flip it</span>
+        <span>{numbered ? `${items.length} terms from this section` : "Say what each one means, then flip it"}</span>
         <button type="button" onClick={() => {
             if (!all) items.forEach((_, j) => onReveal?.(j));
             setOpen(all ? new Set() : new Set(items.map((_, j) => j)));
@@ -468,12 +476,12 @@ function FlipCards({ items, i, onReveal }: { items: Card[]; i: number; onReveal?
           {all ? "Flip all back" : "Flip all"}
         </button>
       </div>
-      <ul className="lk-cards">
+      <ul className={`lk-cards${numbered ? " lk-cards--recap" : ""}`} style={numbered ? { ["--cols" as string]: colsFor(items.length) } : undefined}>
         {items.map((c, j) => {
           const Icon = icons[j];
           const shown = open.has(j);
           return (
-            <li key={j} className={`lk-c${(i + j) % 8} lk-m${j % 4}`} style={{ ["--j" as string]: j }}>
+            <li key={j} className={`lk-c${(i + j) % 8} lk-m${j % 4}${kept?.[j] ? " is-kept" : ""}`} style={{ ["--j" as string]: j }}>
               <button
                 type="button"
                 className={`lk-flip${shown ? " is-open" : ""}`}
@@ -484,14 +492,17 @@ function FlipCards({ items, i, onReveal }: { items: Card[]; i: number; onReveal?
                 onPointerLeave={settle}
               >
                 <span className="lk-flip__face lk-flip__front">
-                  <span className="lk-ico" aria-hidden>
-                    <Icon strokeWidth={1.75} />
+                  <span className="lk-flip__top">
+                    <span className="lk-ico" aria-hidden>
+                      <Icon strokeWidth={1.75} />
+                    </span>
+                    {numbered && <span className="lk-flip__no">{String(j + 1).padStart(2, "0")}</span>}
                   </span>
-                  <strong>{c.lead}</strong>
-                  <span className="lk-flip__hint">Tap to flip</span>
+                  <strong>{numbered ? titled(c.lead ?? "") : c.lead}</strong>
+                  <span className="lk-flip__hint">{kept?.[j] ? "In your deck · flip to review" : "Tap to flip"}</span>
                 </span>
                 <span className="lk-flip__face lk-flip__back">
-                  <strong>{c.lead}</strong>
+                  <strong>{numbered ? titled(c.lead ?? "") : c.lead}</strong>
                   <span dangerouslySetInnerHTML={{ __html: c.html }} />
                 </span>
               </button>
