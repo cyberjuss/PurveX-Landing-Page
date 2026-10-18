@@ -14,6 +14,7 @@ import { startHostedLabNow, useHostedLab } from "@/components/academy/hosted-lab
 import { DeskLayer, DeskSummary, type DeskEvent, type DeskReport } from "./shift-desk";
 import { useCoach } from "./coach-context";
 import "./shift.css";
+import { useAcademyTheme } from "@/lib/use-academy-theme";
 
 type Sev = "P1" | "P2" | "P3";
 type Incident = {
@@ -106,14 +107,6 @@ const emptySubscribe = () => () => {};
 /** True only after hydration on the client, without a setState-in-effect. */
 function useMounted() {
   return useSyncExternalStore(emptySubscribe, () => true, () => false);
-}
-/** The academy's current theme, so the portaled console matches the portal. */
-function useAcademyTheme(): "light" | "dark" {
-  return useSyncExternalStore(
-    emptySubscribe,
-    () => (document.documentElement.dataset.academyTheme === "dark" ? "dark" : "light"),
-    () => "light"
-  );
 }
 
 // The console is a full-screen overlay. The academy wraps pages in an animated
