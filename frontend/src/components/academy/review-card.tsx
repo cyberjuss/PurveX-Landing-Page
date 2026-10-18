@@ -6,10 +6,13 @@ import { marked } from "marked";
 import { Brain, Check, RotateCcw, X } from "lucide-react";
 import { deckStats, dueNow, gapDays, grade, loadDeck, REVIEW_EVENT, type Concept } from "@/lib/concept-review";
 import { dropLonePeriod } from "@/lib/lone-period";
+import { lookup } from "@/lib/concept-glossary";
 import { confettiFrom } from "@/lib/confetti";
 import "./review-card.css";
 
 type Stats = ReturnType<typeof deckStats>;
+
+const inline = (md: string) => dropLonePeriod(marked.parseInline(md, { async: false }) as string);
 
 function inDays(at: number | null) {
   if (at === null) return null;
@@ -119,6 +122,9 @@ export function ReviewSession({ onClose }: { onClose: () => void }) {
   }, [done, shown, answer, onClose]);
 
   const box = card ? loadDeck()[card.term.toLowerCase()]?.box ?? 0 : 0;
+  // The glossary writes each concept out in full; the stored sentence is only
+  // a fallback for a card the glossary has never heard of.
+  const entry = card ? lookup(card.term) : undefined;
 
   return (
     <div className="rv-modal" role="dialog" aria-modal="true" aria-label="Daily review">
@@ -159,16 +165,29 @@ export function ReviewSession({ onClose }: { onClose: () => void }) {
               type="button"
               className={`rv-flip${shown ? " is-open" : ""}`}
               onClick={() => setShown(true)}
-              aria-label={shown ? card.sentence : `${card.term}. Recall what it means, then turn the card.`}
+              aria-label={shown ? `${card.term}. ${entry?.means ?? card.sentence}` : `${card.term}. ${entry?.cue ?? "Recall what it means"}, then turn the card.`}
             >
               <span className="rv-face rv-front">
                 <span className="rv-from">{card.where}</span>
                 <strong>{card.term}</strong>
-                <span className="rv-hint">What does this mean? Tap or press Space to check.</span>
+                {entry && <span className="rv-cue">{entry.cue}</span>}
+                <span className="rv-hint">Answer it out loud, then tap or press Space to check.</span>
               </span>
               <span className="rv-face rv-back">
                 <strong>{card.term}</strong>
-                <span dangerouslySetInnerHTML={{ __html: dropLonePeriod(marked.parseInline(card.sentence, { async: false }) as string) }} />
+                <span className="rv-means" dangerouslySetInnerHTML={{ __html: inline(entry?.means ?? card.sentence) }} />
+                {entry?.example && (
+                  <span className="rv-part">
+                    <em>On the job</em>
+                    <span dangerouslySetInnerHTML={{ __html: inline(entry.example) }} />
+                  </span>
+                )}
+                {entry?.notTo && (
+                  <span className="rv-part rv-part--not">
+                    <em>Not to be confused with</em>
+                    <span dangerouslySetInnerHTML={{ __html: inline(entry.notTo) }} />
+                  </span>
+                )}
               </span>
             </button>
             <div className={`rv-answer${shown ? " is-on" : ""}`}>

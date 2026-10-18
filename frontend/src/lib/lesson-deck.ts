@@ -1,4 +1,5 @@
 import { marked, type Token } from "marked";
+import { GLOSSARY, lookup, type GlossaryEntry } from "@/lib/concept-glossary";
 
 export type DeckActivity =
   | { kind: "sort"; prompt: string; buckets: { name: string; items: string[] }[]; layout?: "match" | "connect" }
@@ -25,55 +26,58 @@ export interface DeckSlide {
 
 export type RecapItem = { term: string; sentence: string };
 
-// Bold that labels a line rather than naming a concept.
-const NOT_A_TERM = /^(controls?|the ticket|ticket|note|tip|example|examples|warning|fix|fixes|result|rule|why|never|not|always|only|no|and|or)$/i;
 const RECAP_MAX = 6;
 const RECAP_MIN = 3;
 
-function sentencesOf(line: string): string[] {
-  return line.match(/[^.!?]+[.!?]*["')]*/g)?.map((s) => s.trim()).filter(Boolean) ?? [];
+const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/**
+ * The concepts a section teaches, as the glossary writes them out: first the
+ * ones it puts in bold or under a heading, in order, then (if that is fewer
+ * than three) the ones it names in passing. A recap card used to carry the
+ * sentence the term was bolded in, which was often a fragment, or a label
+ * like "Situation:" that was never a concept at all.
+ */
+function glossaryRecap(text: string): RecapItem[] {
+  const found: { at: number; entry: GlossaryEntry }[] = [];
+  const named = /\*\*([^*]+)\*\*|^#{2,4}\s+(.+)$/gm;
+  let m: RegExpExecArray | null;
+  while ((m = named.exec(text))) {
+    const entry = lookup((m[1] ?? m[2]).replace(/\*\*/g, ""));
+    if (entry) found.push({ at: m.index, entry });
+  }
+  const seen = new Set<GlossaryEntry>();
+  const out: RecapItem[] = [];
+  const add = (entry: GlossaryEntry) => {
+    if (seen.has(entry) || out.length >= RECAP_MAX) return;
+    seen.add(entry);
+    out.push({ term: entry.term, sentence: entry.means });
+  };
+  found.sort((a, b) => a.at - b.at).forEach((f) => add(f.entry));
+  if (out.length < RECAP_MIN) {
+    const plainText = text.replace(/\*\*/g, "");
+    GLOSSARY.filter((entry) => !entry.strict)
+      .map((entry) => ({ entry, at: plainText.search(new RegExp(`\\b${escape(entry.term)}\\b`, "i")) }))
+      .filter((f) => f.at >= 0)
+      .sort((a, b) => a.at - b.at)
+      .forEach((f) => add(f.entry));
+  }
+  return out;
 }
 
 /**
- * The terms a section put in bold, each with the sentence it was taught in,
- * one per sentence and at most six. A section that bolds nothing (the
- * malware types, say) falls back to its sub-headings and the first sentence
- * under each. Everything comes from the lesson itself.
+ * The concepts a section taught, at most six, each with its glossary
+ * definition. A section that names fewer than three (a lab's setup, a page of
+ * steps) gets no recap: a card with nothing to recall is worse than none.
  */
-export function buildRecap(markdown: string, label: string): RecapItem[] {
+export function buildRecap(markdown: string): RecapItem[] {
   const text = markdown
     .replace(/\r\n/g, "\n")
     .replace(/```[\s\S]*?```/g, "")
     .replace(/<details[\s\S]*?<\/details>/g, "")
     .replace(/<!--[\s\S]*?-->/g, "");
-  const out: RecapItem[] = [];
-  const seen = new Set<string>();
-  for (const raw of text.split("\n")) {
-    if (/^\s*(#|\||<)/.test(raw)) continue;
-    const line = raw.replace(/^\s*([-*]|\d+\.)\s+/, "").trim();
-    for (const s of sentencesOf(line)) {
-      if (s.replace(/\*\*/g, "").split(/\s+/).length < 5) continue;
-      const m = /\*\*([^*]+)\*\*/.exec(s);
-      if (!m) continue;
-      const term = m[1].replace(/[.:]$/, "").trim();
-      const key = term.toLowerCase();
-      if (seen.has(key) || NOT_A_TERM.test(term) || term.length < 3 || term.split(/\s+/).length > 5) continue;
-      seen.add(key);
-      out.push({ term, sentence: s });
-    }
-  }
-  if (out.length >= RECAP_MIN) return out.slice(0, RECAP_MAX);
-
-  const byHeading: RecapItem[] = [];
-  const heading = /^#{3,4}\s+(.+)\n+([^\n]+)/gm;
-  let h: RegExpExecArray | null;
-  while ((h = heading.exec(text))) {
-    const term = h[1].replace(/\*\*/g, "").trim();
-    const first = sentencesOf(h[2].replace(/<[^>]+>/g, "").trim())[0];
-    if (!first || term === label || /^(check yourself|overview)$/i.test(term) || first.split(/\s+/).length < 5) continue;
-    byHeading.push({ term, sentence: first });
-  }
-  return byHeading.length >= RECAP_MIN ? byHeading.slice(0, RECAP_MAX) : [];
+  const out = glossaryRecap(text);
+  return out.length >= RECAP_MIN ? out : [];
 }
 
 // About what fits on a slide and still reads at a glance. A heading (### or ####) always
@@ -220,7 +224,7 @@ export function splitLessonIntoDeck(markdown: string, label: string): DeckSlide[
     });
 
   // A section long enough to need one closes on a recap of what it taught.
-  const recap = deck.length >= 3 ? buildRecap(markdown, label) : [];
+  const recap = deck.length >= 3 ? buildRecap(markdown) : [];
   if (recap.length) deck.push({ title: label, cont: false, markdown: "", visual: false, recap });
   return deck;
 }
