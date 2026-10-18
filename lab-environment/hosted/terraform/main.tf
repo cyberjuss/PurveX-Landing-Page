@@ -309,6 +309,35 @@ resource "aws_iam_instance_profile" "lab" {
   role = aws_iam_role.lab.name
 }
 
+# The lab role is within the student's reach: they are an administrator on
+# their own domain controller, and the instance metadata service hands this
+# role's credentials to anything running there. The managed policy above is
+# broader than Run Command needs. It can read any Parameter Store value in the
+# account and an S3 setting. Nothing here uses either, so both are denied. The
+# agent keeps what it does need, registering itself and the two message
+# channels Range's commands arrive on.
+resource "aws_iam_role_policy" "lab_limits" {
+  name = "casefile-lab-limits"
+  role = aws_iam_role.lab.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid      = "NoParameterStore"
+        Effect   = "Deny"
+        Action   = ["ssm:GetParameter", "ssm:GetParameters", "ssm:GetParametersByPath", "ssm:DescribeParameters"]
+        Resource = "*"
+      },
+      {
+        Sid      = "NoS3"
+        Effect   = "Deny"
+        Action   = "s3:*"
+        Resource = "*"
+      },
+    ]
+  })
+}
+
 # ---- Range's AWS login -------------------------------------------------
 # The key Vercel holds. It can build a lab pod and nothing else:
 #
@@ -480,4 +509,61 @@ resource "aws_budgets_budget" "labs" {
     notification_type          = "FORECASTED"
     subscriber_email_addresses = [var.alert_email]
   }
+}
+
+# ---- threat detection (optional) -------------------------------------------
+# Students are administrators on their own machines and the labs can reach the
+# internet on 80 and 443, so a lab could be turned to mining or to attacking
+# someone else. GuardDuty watches for exactly that from the account's network
+# and DNS logs, and high-severity findings are mailed to alert_email. Off by
+# default: an account holds one detector per region, and turning it on where
+# one already exists fails. Costs are usage-based and small at lab scale.
+
+resource "aws_guardduty_detector" "labs" {
+  count  = var.enable_guardduty ? 1 : 0
+  enable = true
+}
+
+resource "aws_sns_topic" "guardduty" {
+  count = var.enable_guardduty ? 1 : 0
+  name  = "casefile-guardduty-findings"
+}
+
+resource "aws_sns_topic_subscription" "guardduty" {
+  count     = var.enable_guardduty ? 1 : 0
+  topic_arn = aws_sns_topic.guardduty[0].arn
+  protocol  = "email"
+  endpoint  = var.alert_email
+}
+
+resource "aws_sns_topic_policy" "guardduty" {
+  count = var.enable_guardduty ? 1 : 0
+  arn   = aws_sns_topic.guardduty[0].arn
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid       = "EventsMayPublish"
+      Effect    = "Allow"
+      Principal = { Service = "events.amazonaws.com" }
+      Action    = "sns:Publish"
+      Resource  = aws_sns_topic.guardduty[0].arn
+    }]
+  })
+}
+
+resource "aws_cloudwatch_event_rule" "guardduty" {
+  count       = var.enable_guardduty ? 1 : 0
+  name        = "casefile-guardduty-high"
+  description = "GuardDuty findings of severity 7 and above."
+  event_pattern = jsonencode({
+    source        = ["aws.guardduty"]
+    "detail-type" = ["GuardDuty Finding"]
+    detail        = { severity = [{ numeric = [">=", 7] }] }
+  })
+}
+
+resource "aws_cloudwatch_event_target" "guardduty" {
+  count = var.enable_guardduty ? 1 : 0
+  rule  = aws_cloudwatch_event_rule.guardduty[0].name
+  arn   = aws_sns_topic.guardduty[0].arn
 }

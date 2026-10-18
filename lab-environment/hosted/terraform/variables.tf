@@ -49,3 +49,9 @@ variable "dc_instance_type" {
   type        = string
   default     = "t3.large"
 }
+
+variable "enable_guardduty" {
+  description = "Turn on GuardDuty and mail high-severity findings to alert_email. Leave false if the account already has a detector in this region."
+  type        = bool
+  default     = false
+}

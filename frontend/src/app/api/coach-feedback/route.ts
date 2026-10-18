@@ -1,3 +1,4 @@
+import { hasCronSecret } from "@/lib/cron-auth";
 import { NextResponse } from "next/server";
 import { FEEDBACK_TAGS, listFeedback, type FeedbackTag } from "@/lib/academy-coach-feedback";
 
@@ -20,8 +21,7 @@ export const maxDuration = 60;
 // is what you have as soon as students start rating.
 
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET?.trim();
-  if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
+  if (!hasCronSecret(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
