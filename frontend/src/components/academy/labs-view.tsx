@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { LayoutGrid, MonitorDot } from "lucide-react";
+import "./soc-floor.css";
 import type { LabMeta } from "@/lib/academy-labs";
 import { LabGallery } from "./lab-gallery";
-import { SocFloor } from "./soc-floor";
+import { SocWorld } from "./soc-world";
 
 const VIEW_KEY = "academy-labs-view";
 
@@ -48,11 +49,11 @@ export function LabsView({ labs }: { labs: LabMeta[] }) {
         <div>
           <p className="lg__kicker">Hands-on</p>
           <h1>The SOC floor</h1>
-          <p className="lg__sub">Every lab is a workstation. Pick one, sit down, and work the task on its screens.</p>
+          <p className="lg__sub">The PurveX Financial SOC. Walk the floor, sit at a workstation to work its lab, or stop by the Coach.</p>
         </div>
         {toggle}
       </header>
-      <SocFloor labs={labs} />
+      <SocWorld labs={labs} />
     </div>
   );
 }
