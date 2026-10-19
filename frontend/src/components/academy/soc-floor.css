@@ -18,6 +18,7 @@
 @keyframes soc-swing { from { transform: rotate(-16deg); } to { transform: rotate(16deg); } }
 
 .soc-seated__chair { fill: color-mix(in srgb, var(--rd-ink) 22%, transparent); }
+.soc-seated__collar { fill: none; stroke: rgba(0, 0, 0, 0.22); stroke-width: 2; stroke-linecap: round; }
 .soc-seated__arm, .soc-seated__head { transform-box: fill-box; transform-origin: 50% 100%; }
 .soc-seated__arm { transform-origin: 50% 0; }
 .soc-seated.is-typing .soc-seated__arm--l { animation: soc-type 0.24s ease-in-out infinite alternate; }

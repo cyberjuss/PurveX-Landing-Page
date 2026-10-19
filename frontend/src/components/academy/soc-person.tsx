@@ -43,13 +43,17 @@ export function PersonSeated({ initials, pose = "idle" }: { initials: string; po
       <g className="soc-seated__arm soc-seated__arm--r">
         <rect x="17" y="-2" width="10" height="26" rx="5" className="soc-person__shirt" />
       </g>
-      <path d="M-20 34 v-26 a14 12 0 0 1 14 -12 h12 a14 12 0 0 1 14 12 v26 z" className="soc-person__shirt" />
-      <text x="0" y="26" textAnchor="middle" className="soc-person__tag soc-person__tag--back">
+      <path d="M-21 34 v-24 c0 -9 6 -15 15 -16 h12 c9 1 15 7 15 16 v24 z" className="soc-person__shirt" />
+      <path d="M-7 -6 q7 7 14 0" className="soc-seated__collar" />
+      <text x="0" y="24" textAnchor="middle" className="soc-person__tag soc-person__tag--back">
         {initials}
       </text>
+      <rect x="-4.5" y="-8" width="9" height="7" rx="3" className="soc-person__head" />
       <g className="soc-seated__head">
-        <circle cx="0" cy="-12" r="11" className="soc-person__head" />
-        <path d="M-11 -12 a11 11 0 0 1 22 0 v3 a11 9 0 0 1 -22 0 z" className="soc-person__hair" />
+        <circle cx="0" cy="-17" r="11" className="soc-person__head" />
+        <circle cx="-11" cy="-16" r="2.6" className="soc-person__head" />
+        <circle cx="11" cy="-16" r="2.6" className="soc-person__head" />
+        <path d="M-11.5 -17 a11.5 11.5 0 0 1 23 0 c0 4 -1 7 -3 9 c-3 -2 -14 -2 -17 0 c-2 -2 -3 -5 -3 -9 z" className="soc-person__hair" />
       </g>
     </g>
   );

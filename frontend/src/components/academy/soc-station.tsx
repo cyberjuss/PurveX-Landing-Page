@@ -99,7 +99,7 @@ export function SocStation({ title, accent, skill }: { title: string; accent: st
         <rect x="320" y="150" width="96" height="9" rx="2" className="soc-desk__keys" />
         <rect x="500" y="134" width="22" height="16" rx="3" fill="color-mix(in srgb, var(--acc) 50%, #444)" />
         {/* you */}
-        <g transform="translate(368 176) scale(1.45)">
+        <g transform="translate(368 162) scale(1.22)">
           <PersonSeated initials={initials} pose={pose} />
         </g>
         {/* what you think of it */}
