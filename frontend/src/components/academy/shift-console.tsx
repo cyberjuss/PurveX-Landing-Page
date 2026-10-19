@@ -767,7 +767,7 @@ function IncidentDetail({ inc, no, age, busy, post, lead, after }: { inc: Incide
   const submitted = Boolean(inc.submitted) || result !== null;
   const hasNote = response.trim().length > 0;
   const canEscalate = submitted && hasFinding && hasNote;
-  const escalateNeeds = [!submitted && "press Submit and check once", !hasFinding && "answer the question", !hasNote && "write a closing note"].filter(Boolean) as string[];
+  const escalateNeeds = [!submitted && "submit once", !hasFinding && "answer", !hasNote && "add a note"].filter(Boolean) as string[];
   const { ask } = useCoach();
 
   const s = sender(inc);
@@ -999,7 +999,7 @@ function IncidentDetail({ inc, no, age, busy, post, lead, after }: { inc: Incide
                 <LifeBuoy className="h-3.5 w-3.5" /> Think it through
               </button>
               {!canEscalate && (
-                <p className="sh-actions__why">To escalate to tier 2, {escalateNeeds.join(", then ")}. Tier 2 takes what you tried, not a blank ticket.</p>
+                <p className="sh-actions__why">To escalate: {escalateNeeds.join(", ")}.</p>
               )}
             </div>
           )}
