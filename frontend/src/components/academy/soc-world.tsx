@@ -1,22 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowRight, Check, Clock, Footprints, Headset, MapPin } from "lucide-react";
-import type { LabMeta } from "@/lib/academy-labs";
-import { WALL_H, WORLD_W, findPath, layout, step, type Pt } from "@/lib/soc-world";
-import { useAcademyProgress, slugify } from "./academy-progress";
-import { useCoach } from "./coach-context";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { WALL_H, WORLD_W } from "@/lib/soc-world";
+import { stationNo as no } from "./soc-guide";
+import type { SocFloor } from "./use-soc-floor";
 import "./soc-world.css";
-
-const SEAT_KEY = "academy-soc-seat";
-const SPEED = 260;
-const PATH_SPEED = 430;
-const REACH = 78;
-
-type Lab = LabMeta & { week?: string };
-type Near = { kind: "station"; i: number } | { kind: "coach" } | null;
-type Pending = { kind: "sit"; i: number } | { kind: "coach" } | null;
 
 /** Someone seen from above, facing +x. The caller rotates. */
 function Person({ walking, typing, shirt, headset }: { walking?: boolean; typing?: boolean; shirt: string; headset?: boolean }) {
@@ -34,81 +22,15 @@ function Person({ walking, typing, shirt, headset }: { walking?: boolean; typing
 }
 
 const trim = (t: string, n: number) => (t.length > n ? `${t.slice(0, n - 1)}…` : t);
-const no = (i: number) => String(i + 1).padStart(2, "0");
 
-// The PurveX Financial SOC as a room to walk around. Arrow keys or WASD walk,
-// a click walks you there around the desks, E (or Enter) sits you at the desk
-// in front of you or talks to the Coach. Desks sit in pods, one per week of
-// the course. The room is the picture; the panel beside it carries the words.
-export function SocWorld({ labs }: { labs: Lab[] }) {
-  const router = useRouter();
-  const { isLabDone } = useAcademyProgress();
-  const coach = useCoach();
-  const pods = useMemo(() => {
-    const out: { label: string; size: number }[] = [];
-    for (const l of labs) {
-      const label = l.week ?? "Labs";
-      if (out.length && out[out.length - 1].label === label) out[out.length - 1].size++;
-      else out.push({ label, size: 1 });
-    }
-    return out;
-  }, [labs]);
-  const world = useMemo(() => layout(pods), [pods]);
-  const done = labs.map((l) => isLabDone(l.phaseSlug, l.entrySlug, slugify(l.title)));
-  const nextUp = done.findIndex((d) => !d);
-  const cleared = done.filter(Boolean).length;
-
+// The SOC floor drawn as a plan from above. The fallback for a device without
+// WebGL, and the lighter view for anyone who prefers it. It draws what
+// useSocFloor knows; walking, sitting and the Coach all live there.
+export function SocPlan({ floor }: { floor: SocFloor }) {
   const box = useRef<HTMLDivElement>(null);
   const svg = useRef<SVGSVGElement>(null);
-  const pos = useRef<Pt>(world.spawn);
-  const dir = useRef(-Math.PI / 2);
-  const keys = useRef(new Set<string>());
-  const path = useRef<Pt[] | null>(null);
-  const pending = useRef<Pending>(null);
-  const stuck = useRef(0);
-  const moving = useRef(false);
-  const near = useRef<Near>(null);
-  const cam = useRef<Pt>({ x: 0, y: 0 });
-  const camSize = useRef({ w: 980, h: 600 });
-  const snapped = useRef(false);
-  const [view, setView] = useState<{ me: Pt; deg: number; walking: boolean; near: Near; path: Pt[]; cam: Pt; cw: number; ch: number }>({
-    me: world.spawn,
-    deg: -90,
-    walking: false,
-    near: null,
-    path: [],
-    cam: { x: 0, y: 0 },
-    cw: 980,
-    ch: 600,
-  });
-  const [seated, setSeated] = useState<number | null>(null);
-  const [talking, setTalking] = useState(false);
   const [focused, setFocused] = useState(false);
-  const seatedRef = useRef<number | null>(null);
-  const talkingRef = useRef(false);
-  const leaveTimer = useRef<number | null>(null);
-
-  const publish = useCallback(
-    () =>
-      setView({
-        me: { ...pos.current },
-        deg: (dir.current * 180) / Math.PI,
-        walking: moving.current,
-        near: near.current,
-        path: path.current ? [...path.current] : [],
-        cam: { ...cam.current },
-        cw: camSize.current.w,
-        ch: camSize.current.h,
-      }),
-    []
-  );
-
-  useEffect(() => {
-    seatedRef.current = seated;
-  }, [seated]);
-  useEffect(() => {
-    talkingRef.current = talking;
-  }, [talking]);
+  const { labs, world, done, nextUp, cleared, view, seated, talking, setCamSize } = floor;
 
   // The camera shows a window of the room shaped like the box.
   useEffect(() => {
@@ -119,241 +41,51 @@ export function SocWorld({ labs }: { labs: Lab[] }) {
       const aspect = r.height / Math.max(1, r.width);
       let w = r.width < 560 ? 680 : Math.min(1000, WORLD_W);
       if (w * aspect > world.height) w = world.height / aspect;
-      camSize.current = { w, h: w * aspect };
-      publish();
+      setCamSize(w, w * aspect);
     };
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(el);
+    box.current?.focus({ preventScroll: true });
     return () => ro.disconnect();
-  }, [world, publish]);
-
-  // Back where you left off: standing by the chair you last sat in.
-  useEffect(() => {
-    try {
-      const last = window.localStorage.getItem(SEAT_KEY);
-      const i = labs.findIndex((l) => l.slug === last);
-      if (i >= 0) {
-        pos.current = { x: world.stations[i].seat.x, y: world.stations[i].seat.y + 34 };
-        dir.current = Math.PI / 2;
-      }
-    } catch {}
-    box.current?.focus({ preventScroll: true });
-    publish();
-  }, [labs, world, publish]);
-
-  const sit = useCallback(
-    (i: number) => {
-      const s = world.stations[i];
-      pos.current = { ...s.seat };
-      dir.current = -Math.PI / 2;
-      path.current = null;
-      setSeated(i);
-      setTalking(false);
-      publish();
-      try {
-        window.localStorage.setItem(SEAT_KEY, labs[i].slug);
-      } catch {}
-      leaveTimer.current = window.setTimeout(() => router.push(`/range/labs/${labs[i].slug}`), 1300);
-    },
-    [world, labs, router, publish]
-  );
-
-  const standUp = useCallback(() => {
-    if (leaveTimer.current) window.clearTimeout(leaveTimer.current);
-    if (seatedRef.current !== null) {
-      const s = world.stations[seatedRef.current];
-      pos.current = { x: s.seat.x, y: s.seat.y + 30 };
-      dir.current = Math.PI / 2;
-    }
-    setSeated(null);
-    publish();
-  }, [world, publish]);
-
-  const faceCoach = () => {
-    dir.current = Math.atan2(world.coach.y - pos.current.y, world.coach.x - pos.current.x);
-    setTalking(true);
-  };
-
-  const interact = () => {
-    const n = near.current;
-    if (!n || seatedRef.current !== null) return;
-    if (n.kind === "coach") faceCoach();
-    else sit(n.i);
-  };
-
-  const walkTo = (target: Pt, then: Pending = null) => {
-    if (seatedRef.current !== null) standUp();
-    setTalking(false);
-    const p = findPath(world, pos.current, target);
-    path.current = p && p.length ? p : null;
-    pending.current = then;
-    stuck.current = 0;
-    box.current?.focus({ preventScroll: true });
-  };
-
-  // The loop: keys or the planned path move you, the camera follows, and the
-  // room works out what is in reach.
-  useEffect(() => {
-    let raf = 0;
-    let last = performance.now();
-    const tick = (t: number) => {
-      const dt = Math.min(0.05, (t - last) / 1000);
-      last = t;
-      let vx = 0;
-      let vy = 0;
-      const k = keys.current;
-      if (k.has("ArrowLeft") || k.has("a")) vx -= 1;
-      if (k.has("ArrowRight") || k.has("d")) vx += 1;
-      if (k.has("ArrowUp") || k.has("w")) vy -= 1;
-      if (k.has("ArrowDown") || k.has("s")) vy += 1;
-      if (vx || vy) {
-        path.current = null;
-        pending.current = null;
-      } else if (path.current?.length) {
-        const to = path.current[0];
-        const dx = to.x - pos.current.x;
-        const dy = to.y - pos.current.y;
-        const d = Math.hypot(dx, dy);
-        if (d < 5) path.current.shift();
-        else {
-          vx = dx / d;
-          vy = dy / d;
-        }
-      }
-      let changed = false;
-      const busy = seatedRef.current !== null || talkingRef.current;
-      if ((vx || vy) && !busy) {
-        const len = Math.hypot(vx, vy);
-        const speed = k.size ? SPEED : PATH_SPEED;
-        const next = step(world, pos.current, (vx / len) * speed * dt, (vy / len) * speed * dt);
-        if (next.x !== pos.current.x || next.y !== pos.current.y) {
-          pos.current = next;
-          dir.current = Math.atan2(vy, vx);
-          stuck.current = 0;
-          changed = true;
-        } else if (path.current && ++stuck.current > 20) path.current = null;
-      }
-      if (changed !== moving.current) {
-        moving.current = changed;
-        changed = true;
-      }
-      if (path.current && !path.current.length) {
-        path.current = null;
-        const then = pending.current;
-        pending.current = null;
-        if (then?.kind === "sit") sit(then.i);
-        if (then?.kind === "coach") {
-          dir.current = Math.atan2(world.coach.y - pos.current.y, world.coach.x - pos.current.x);
-          setTalking(true);
-        }
-      }
-      let best: Near = null;
-      let bestD = REACH;
-      for (const st of world.stations) {
-        const d = Math.hypot(st.seat.x - pos.current.x, st.seat.y - pos.current.y);
-        if (d < bestD) {
-          bestD = d;
-          best = { kind: "station", i: st.i };
-        }
-      }
-      if (Math.hypot(world.coach.x - pos.current.x, world.coach.y - pos.current.y) < REACH + 10) best = { kind: "coach" };
-      const nearKey = (x: Near) => (!x ? "" : x.kind === "coach" ? "coach" : `s${x.i}`);
-      if (nearKey(near.current) !== nearKey(best)) {
-        near.current = best;
-        changed = true;
-      }
-      // The camera eases after you and stops at the walls. The first frame lands on you.
-      const { w: cw, h: ch } = camSize.current;
-      const tx = Math.max(0, Math.min(WORLD_W - cw, pos.current.x - cw / 2));
-      const ty = Math.max(0, Math.min(world.height - ch, pos.current.y - ch * 0.55));
-      const ease = snapped.current ? Math.min(1, dt * 6) : 1;
-      snapped.current = true;
-      const nx = cam.current.x + (tx - cam.current.x) * ease;
-      const ny = cam.current.y + (ty - cam.current.y) * ease;
-      if (Math.abs(nx - cam.current.x) > 0.05 || Math.abs(ny - cam.current.y) > 0.05) {
-        cam.current = { x: nx, y: ny };
-        changed = true;
-      }
-      if (changed) publish();
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [world, sit, publish]);
-
-  useEffect(
-    () => () => {
-      if (leaveTimer.current) window.clearTimeout(leaveTimer.current);
-    },
-    []
-  );
-
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d"].includes(key)) {
-      e.preventDefault();
-      if (seatedRef.current !== null) standUp();
-      if (talkingRef.current) setTalking(false);
-      keys.current.add(key);
-    } else if (key === "e" || key === "Enter" || key === " ") {
-      e.preventDefault();
-      interact();
-    } else if (key === "Escape") {
-      setTalking(false);
-      standUp();
-    }
-  };
-  const onKeyUp = (e: React.KeyboardEvent) => keys.current.delete(e.key.length === 1 ? e.key.toLowerCase() : e.key);
+  }, [world, setCamSize]);
 
   const onClick = (e: React.MouseEvent) => {
     box.current?.focus({ preventScroll: true });
     const t = e.target as Element;
     const st = t.closest<SVGGElement>("[data-station]");
-    if (st) {
-      const i = Number(st.dataset.station);
-      if (near.current?.kind === "station" && near.current.i === i) sit(i);
-      else walkTo(world.stations[i].seat, { kind: "sit", i });
-      return;
-    }
-    if (t.closest("[data-coach]")) {
-      if (near.current?.kind === "coach") faceCoach();
-      else walkTo({ x: world.coach.x - 62, y: world.coach.y }, { kind: "coach" });
-      return;
-    }
+    if (st) return floor.goToStation(Number(st.dataset.station));
+    if (t.closest("[data-coach]")) return floor.goToCoach();
     const m = svg.current?.getScreenCTM();
     if (!m) return;
     const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse());
-    if (p.y > WALL_H) walkTo({ x: p.x, y: p.y });
+    if (p.y > WALL_H) floor.walkTo({ x: p.x, y: p.y });
   };
 
   const n = view.near;
   const focusI = seated ?? (n?.kind === "station" ? n.i : null);
-  const shown = focusI !== null ? labs[focusI] : null;
   const me = view.me;
   const hint: CSSProperties = {
     left: `${((me.x - view.cam.x) / view.cw) * 100}%`,
     top: `${((me.y - view.cam.y) / view.ch) * 100}%`,
   };
-  const podOf = (i: number) => world.pods.find((p) => p.stations.includes(i));
 
   return (
-    <div className="sw-wrap">
-      <div
-        ref={box}
-        className={`sw${focused ? " is-focused" : ""}`}
-        tabIndex={0}
-        role="application"
-        aria-label="The PurveX Financial SOC. Arrow keys or WASD to walk, E to sit at a workstation or talk to the Coach."
-        onKeyDown={onKeyDown}
-        onKeyUp={onKeyUp}
-        onFocus={() => setFocused(true)}
-        onBlur={() => {
-          setFocused(false);
-          keys.current.clear();
-        }}
-        onClick={onClick}
-      >
+    <div
+      ref={box}
+      className={`sw${focused ? " is-focused" : ""}`}
+      tabIndex={0}
+      role="application"
+      aria-label="The PurveX Financial SOC. Arrow keys or WASD to walk, E to sit at a workstation or talk to the Coach."
+      onKeyDown={floor.onKeyDown}
+      onKeyUp={floor.onKeyUp}
+      onFocus={() => setFocused(true)}
+      onBlur={() => {
+        setFocused(false);
+        floor.releaseKeys();
+      }}
+      onClick={onClick}
+    >
         <svg ref={svg} viewBox={`${view.cam.x} ${view.cam.y} ${view.cw} ${view.ch}`} preserveAspectRatio="xMidYMid slice" className="sw__svg">
           <defs>
             <pattern id="sw-tile" width="64" height="64" patternUnits="userSpaceOnUse">
@@ -563,142 +295,17 @@ export function SocWorld({ labs }: { labs: Lab[] }) {
           </g>
         </svg>
 
-        {n && seated === null && !talking && (
-          <span className="sw-key" style={hint}>
-            <kbd>E</kbd> {n.kind === "coach" ? "Talk" : "Sit down"}
-          </span>
-        )}
-        {seated !== null && (
-          <span className="sw-key sw-key--signin" style={hint}>
-            Signing in…
-          </span>
-        )}
-        {!focused && <span className="sw-wake">Click the floor to walk</span>}
-      </div>
-
-      <aside className="sw-side" aria-label="Floor guide">
-        <svg
-          className="sw-map"
-          viewBox={`0 0 ${WORLD_W} ${world.height}`}
-          role="img"
-          aria-label="Map of the floor. Click to walk there."
-          onClick={(e) => {
-            const r = (e.currentTarget as SVGSVGElement).getBoundingClientRect();
-            walkTo({ x: ((e.clientX - r.left) / r.width) * WORLD_W, y: ((e.clientY - r.top) / r.height) * world.height });
-          }}
-        >
-          <rect width={WORLD_W} height={world.height} className="sw-map__floor" />
-          <rect width={WORLD_W} height={WALL_H} className="sw-map__wall" />
-          {world.pods.map((p) => (
-            <rect key={p.label} {...p.rug} width={p.rug.w} height={p.rug.h} rx="22" className="sw-map__rug" />
-          ))}
-          {world.stations.map((st, i) => (
-            <rect key={i} {...st.desk} width={st.desk.w} height={st.desk.h} rx="8" className={`sw-map__desk${done[i] ? " is-done" : ""}${i === nextUp ? " is-next" : ""}`} />
-          ))}
-          <circle cx={world.coach.x} cy={world.coach.y} r="30" className="sw-map__coach" />
-          <rect x={view.cam.x} y={view.cam.y} width={view.cw} height={view.ch} rx="10" className="sw-map__cam" />
-          <circle cx={me.x} cy={me.y} r="30" className="sw-map__me" />
-        </svg>
-
-        <div className="sw-progress">
-          <span>
-            <b>{cleared}</b> of {labs.length} labs cleared
-          </span>
-          <i style={{ ["--pct" as string]: labs.length ? cleared / labs.length : 0 }} />
-        </div>
-
-        {talking || n?.kind === "coach" ? (
-          <section className="sw-card sw-card--coach">
-            <p className="sw-card__kicker">
-              <Headset /> Coach · Tier 2
-            </p>
-            <h3>{talking ? "What do you need?" : "The Coach is free"}</h3>
-            <p className="sw-card__text">Ask where to start, get a workstation briefed before you sit down, or open the full conversation.</p>
-            {talking ? (
-              <div className="sw-card__asks">
-                <button type="button" onClick={() => coach.ask(`I'm on the SOC floor with ${cleared} of ${labs.length} labs done. Which lab should I work next, and what will it train me for?`)}>
-                  Which lab should I do next?
-                </button>
-                {nextUp >= 0 && (
-                  <button type="button" onClick={() => coach.ask(`Before I sit down at "${labs[nextUp].title}": what does it teach, and what should I watch for?`)}>
-                    Brief me on {trim(labs[nextUp].title, 34)}
-                  </button>
-                )}
-                <button type="button" onClick={() => coach.setModalOpen(true)}>
-                  Open the conversation
-                </button>
-              </div>
-            ) : (
-              <button type="button" className="sw-card__go" onClick={faceCoach}>
-                Talk to the Coach <kbd>E</kbd>
-              </button>
-            )}
-          </section>
-        ) : shown && focusI !== null ? (
-          <section className="sw-card" style={{ ["--acc" as string]: shown.accent } as CSSProperties}>
-            <p className="sw-card__kicker">
-              <MapPin /> Workstation {no(focusI)} · {podOf(focusI)?.label}
-            </p>
-            <h3>{shown.title}</h3>
-            <p className="sw-card__text">{shown.blurb}</p>
-            <p className="sw-card__meta">
-              <span>{shown.skill}</span>
-              <span>
-                <Clock /> {shown.minutes} min
-              </span>
-              {done[focusI] && (
-                <span className="is-done">
-                  <Check /> Done
-                </span>
-              )}
-            </p>
-            <button type="button" className="sw-card__go" onClick={() => sit(focusI)} disabled={seated !== null}>
-              {seated !== null ? "Signing in…" : done[focusI] ? "Sit down again" : "Sit down"} {seated === null && <kbd>E</kbd>}
-            </button>
-          </section>
-        ) : nextUp >= 0 ? (
-          <section className="sw-card" style={{ ["--acc" as string]: labs[nextUp].accent } as CSSProperties}>
-            <p className="sw-card__kicker">
-              <ArrowRight /> Next up · {podOf(nextUp)?.label}
-            </p>
-            <h3>{labs[nextUp].title}</h3>
-            <p className="sw-card__text">{labs[nextUp].blurb}</p>
-            <button type="button" className="sw-card__go sw-card__go--quiet" onClick={() => walkTo(world.stations[nextUp].seat)}>
-              <Footprints /> Walk to workstation {no(nextUp)}
-            </button>
-          </section>
-        ) : (
-          <section className="sw-card">
-            <p className="sw-card__kicker">
-              <Check /> Every lab cleared
-            </p>
-            <h3>The floor is yours</h3>
-            <p className="sw-card__text">Sit at any workstation to run a lab again.</p>
-          </section>
-        )}
-
-        <dl className="sw-keys">
-          <div>
-            <dt>
-              <kbd>↑</kbd>
-              <kbd>↓</kbd>
-              <kbd>←</kbd>
-              <kbd>→</kbd>
-            </dt>
-            <dd>Walk, or WASD</dd>
-          </div>
-          <div>
-            <dt>
-              <kbd>E</kbd>
-            </dt>
-            <dd>Sit down or talk</dd>
-          </div>
-          <div>
-            <dt>Click</dt>
-            <dd>Walk to a spot, a desk, or the map</dd>
-          </div>
-        </dl>
-      </aside>
+      {n && seated === null && !talking && (
+        <span className="sw-key" style={hint}>
+          <kbd>E</kbd> {n.kind === "coach" ? "Talk" : "Sit down"}
+        </span>
+      )}
+      {seated !== null && (
+        <span className="sw-key sw-key--signin" style={hint}>
+          Signing in…
+        </span>
+      )}
+      {!focused && <span className="sw-wake">Click the floor to walk</span>}
     </div>
   );
 }

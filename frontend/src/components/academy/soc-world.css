@@ -199,3 +199,10 @@
 @media (prefers-reduced-motion: reduce) {
   .sw *, .sw-key, .sw-card { animation: none !important; }
 }
+
+/* ---- The 3D office ---- */
+.sw--3d { cursor: default; background: var(--sw-floor); }
+.sw--3d canvas { display: block; touch-action: none; }
+.sw--loading { display: grid; place-items: center; font: 600 13px var(--font-mono, monospace); color: var(--rd-ink-3); }
+.sw-key--3d { left: 0; top: 0; animation: none; will-change: transform; }
+.sw-key--3d[hidden] { display: none; }
