@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { HelpCircle, Keyboard } from "lucide-react";
+import { HelpCircle, Keyboard, Maximize2, Minimize2 } from "lucide-react";
 import { Recap, SlideBody } from "./slide-body";
 import { splitLessonIntoDeck } from "@/lib/lesson-deck";
 import { curlyQuotes } from "@/lib/typography";
@@ -119,6 +119,41 @@ export function LessonDeck({
   }, []);
 
   const [help, setHelp] = useState(false);
+
+  // Full screen: the browser's own where it is allowed, otherwise the deck
+  // fills the window (iPhone Safari cannot make an element full screen).
+  const [full, setFull] = useState(false);
+  const windowed = useRef(false);
+  useEffect(() => {
+    const on = () => {
+      if (!windowed.current) setFull(document.fullscreenElement === deckRef.current);
+    };
+    document.addEventListener("fullscreenchange", on);
+    return () => document.removeEventListener("fullscreenchange", on);
+  }, []);
+  useEffect(() => {
+    if (!full || !windowed.current) return;
+    const was = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = was;
+    };
+  }, [full]);
+  const fillWindow = (on: boolean) => {
+    windowed.current = on;
+    setFull(on);
+  };
+  const toggleFull = () => {
+    const el = deckRef.current;
+    if (!el) return;
+    if (full) {
+      if (document.fullscreenElement) void document.exitFullscreen();
+      else fillWindow(false);
+      return;
+    }
+    if (el.requestFullscreen) el.requestFullscreen().catch(() => fillWindow(true));
+    else fillWindow(true);
+  };
   // A click anywhere outside the corner closes the list of keys.
   useEffect(() => {
     if (!help) return;
@@ -128,8 +163,8 @@ export function LessonDeck({
     window.addEventListener("pointerdown", close);
     return () => window.removeEventListener("pointerdown", close);
   }, [help]);
-  const keys = useRef({ back, forward, toggleHelp: () => setHelp((h) => !h), closeHelp: () => setHelp(false) });
-  keys.current = { back, forward, toggleHelp: () => setHelp((h) => !h), closeHelp: () => setHelp(false) };
+  const keys = useRef({ back, forward, toggleHelp: () => setHelp((h) => !h), closeHelp: () => setHelp(false), toggleFull, leaveWindow: () => fillWindow(false) });
+  keys.current = { back, forward, toggleHelp: () => setHelp((h) => !h), closeHelp: () => setHelp(false), toggleFull, leaveWindow: () => fillWindow(false) };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
@@ -143,6 +178,13 @@ export function LessonDeck({
       }
       if (e.key === "Escape") {
         keys.current.closeHelp();
+        // The browser's own full screen closes on Escape by itself; the window fill does not.
+        if (windowed.current) keys.current.leaveWindow();
+        return;
+      }
+      if (e.key === "f" || e.key === "F") {
+        e.preventDefault();
+        keys.current.toggleFull();
         return;
       }
       const space = e.key === " ";
@@ -168,7 +210,7 @@ export function LessonDeck({
   const count = `${String(index + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
 
   return (
-    <div className="lk" ref={deckRef}>
+    <div className={`lk${full ? " is-full" : ""}`} ref={deckRef}>
       <div
         className="lk__frame"
         role="group"
@@ -290,6 +332,16 @@ export function LessonDeck({
         <div className="lk__keyswrap">
             <button
               type="button"
+              className={`lk__keys lk__full${full ? " is-open" : ""}`}
+              aria-pressed={full}
+              aria-label={full ? "Leave full screen" : "Full screen"}
+              title={full ? "Leave full screen (F or Esc)" : "Full screen (F)"}
+              onClick={toggleFull}
+            >
+              {full ? <Minimize2 aria-hidden /> : <Maximize2 aria-hidden />}
+            </button>
+            <button
+              type="button"
               className={`lk__keys${help ? " is-open" : ""}`}
               aria-expanded={help}
               aria-controls="lk-help"
@@ -317,6 +369,9 @@ export function LessonDeck({
                   </li>
                   <li>
                     <span>Tap the drawing</span> Play it again
+                  </li>
+                  <li>
+                    <span><kbd>F</kbd></span> Full screen, and back
                   </li>
                   <li>
                     <span><kbd>?</kbd></span> Show or hide this list

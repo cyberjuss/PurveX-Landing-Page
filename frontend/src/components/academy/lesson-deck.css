@@ -1455,3 +1455,21 @@ button.lk__art { padding: 0; width: 100%; font: inherit; color: var(--rd-accent)
 @media (prefers-reduced-motion: reduce) {
   .lk-recap__fill, .lk-recap__tick { transition: none; animation: none; }
 }
+
+/* ==== Full screen ====
+   The browser's own (.lk:fullscreen) or the window fill (.lk.is-full). The
+   deck keeps its slide, its bar and its keys, and the slide gets the room. */
+.lk__keyswrap { display: flex; gap: 8px; }
+.lk.is-full {
+  position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; gap: 0;
+  padding: clamp(10px, 2vw, 28px); background: #ffffff; overflow: auto;
+}
+.lk:fullscreen { display: flex; flex-direction: column; padding: clamp(10px, 2vw, 28px); background: #ffffff; overflow: auto; }
+.academy-bg[data-academy-theme="dark"] .lk.is-full,
+.academy-bg[data-academy-theme="dark"] .lk:fullscreen { background: #000000; }
+.lk.is-full .lk__frame, .lk:fullscreen .lk__frame { flex: 1 1 auto; width: min(100%, 1560px); margin: 0 auto; min-height: 0; }
+.lk.is-full .lk__foot, .lk:fullscreen .lk__foot { width: min(100%, 1560px); margin: 0 auto; }
+.lk.is-full .lk__slide, .lk:fullscreen .lk__slide { font-size: clamp(16px, 1.15vw, 20px); }
+.lk.is-full .lk__frame { animation: lk-full-in 260ms var(--ax-ease, ease) both; }
+@keyframes lk-full-in { from { opacity: 0; transform: scale(0.985); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .lk.is-full .lk__frame { animation: none; } }
