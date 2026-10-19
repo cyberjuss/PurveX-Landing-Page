@@ -7,7 +7,7 @@
 
 **Task:** Take one word through all three transformations in CyberChef, then confirm each result from the command line. Decide which outputs you can reverse and which you cannot, and prove your decision rather than assuming it.
 
-**What you need:** Your hosted lab running, and Firefox on the Ubuntu desktop. CyberChef is a free tool from GCHQ that SOC analysts use to recognise and decode data. It runs entirely in the browser.
+**What you need:** Your hosted lab running, and Firefox on the Ubuntu desktop. CyberChef is a free tool from GCHQ that SOC analysts use to recognize and decode data. It runs entirely in the browser.
 
 ### Before You Start
 

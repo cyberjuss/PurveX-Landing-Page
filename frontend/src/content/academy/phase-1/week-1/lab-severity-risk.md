@@ -37,13 +37,13 @@ Commit to an answer before you open anything. Nothing is marked yet. The calcula
 
 ### Open the Calculator
 
-In Firefox on the Ubuntu desktop, open the calculator published by FIRST, the organisation that maintains the standard.
+In Firefox on the Ubuntu desktop, open the calculator published by FIRST, the organization that maintains the standard.
 
 ```
 https://www.first.org/cvss/calculator/3.1
 ```
 
-The page has two groups that matter today. Base Score describes the flaw itself and never changes. Environmental Score describes the flaw on one specific machine, and it is the half almost nobody uses.
+The page has two groups that matter today. Base Score describes the flaw itself and is the same on every machine. Environmental Score describes the flaw on one specific machine, and it is the half almost nobody uses.
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -108,7 +108,7 @@ Keep finding A loaded. Now score it as though the machine were the domain contro
 3. Availability Requirement: High
 4. Modified Attack Vector: Adjacent
 
-Record this third number. You now have one flaw with three scores and no numbers were invented.
+Record this third number. You now have one flaw with three honest scores, and none of the numbers were invented.
 
 ### Check Yourself
 

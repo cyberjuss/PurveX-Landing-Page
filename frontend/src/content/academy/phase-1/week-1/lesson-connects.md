@@ -23,7 +23,7 @@ The impact of that failure
 
 The three properties are not independent of one another, and in practice they compete:
 
-- Stronger **confidentiality**, such as extra MFA prompts or an air gap, makes data harder for the wrong person to reach and harder for the right person to reach.
-- Higher **availability**, such as a file share open to everyone, guarantees people can always get to their work and removes the barrier keeping the wrong people out.
+- Stronger **confidentiality**, such as extra MFA prompts or an air gap, makes data harder for the wrong person to reach, but also harder for the right one.
+- Easier **availability**, such as a file share open to everyone, means people can always get to their work, but it removes the barrier that keeps the wrong people out.
 
-There is no configuration that maximises all three at once, which is why security work is a series of decisions rather than a checklist. Decide which property matters most for the particular data in front of you, then choose the control, knowing what you are giving up. Patient records and a public status page call for opposite answers, and both answers are correct for their own data.
+No configuration maximizes all three at once, which is why security work is a series of decisions rather than a checklist. Decide which property matters most for the particular data in front of you, then choose the control, knowing what you are giving up. Patient records and a public status page call for opposite answers, and both answers are correct for their own data.

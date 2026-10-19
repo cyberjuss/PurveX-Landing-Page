@@ -16,7 +16,7 @@
 <div class="ad-mission" data-id="cap-01" data-attempts="0">
 <span class="ad-mission__num">Task 01 · INC-1057 · Low</span>
 <h4>Where the Job Signs In</h4>
-<p><strong>Situation:</strong> Compliance asked which services the nightly job touches on the domain controller. The job runs on web01 every three minutes and nothing in the runbook records the ports it uses.</p>
+<p><strong>Situation:</strong> Compliance asked which services the nightly job touches on the domain controller. In your lab the nightly job runs every three minutes so you can capture it, and nothing in the runbook records the ports it uses.</p>
 <p><strong>Task:</strong> Capture the job on web01 and give the port number that carries its sign-in to the directory.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Where the Job Signs In" placeholder="a port number" autocomplete="off" autocapitalize="off" spellcheck="false">

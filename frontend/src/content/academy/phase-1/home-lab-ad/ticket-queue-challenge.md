@@ -70,7 +70,7 @@
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>riley.kwan</code>.</li>
 <li>Open the account and go to the Account tab. Check both Unlock account and Account is disabled.</li>
-<li>The Unlock account box is greyed out when nothing is locked. Read that as a finding and keep going.</li>
+<li>The Unlock account box is grayed out when nothing is locked. Read that as a finding and keep going.</li>
 <li>Fix the setting that is blocking her, then submit the cause rather than the word she used.</li>
 </ol>
 <p>In PowerShell:</p>

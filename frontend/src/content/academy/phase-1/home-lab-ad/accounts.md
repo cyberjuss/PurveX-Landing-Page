@@ -24,7 +24,7 @@ If either one disagrees with The Environment tab, stop.
 
 A **computer object** is a machine in this directory, the same way a user account is a person. `IT-WKS01` is the baseline's only client workstation, and it lives under `OU=Workstations,OU=IT`.
 
-You read a computer the same way you read a person: the folder first, then Member Of. Its name has no spaces.
+You read a computer the same way you read a person: the folder first, then Member Of.
 
 ### Service Accounts
 

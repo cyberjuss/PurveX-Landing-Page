@@ -17,7 +17,7 @@ A system should store a **salted, slow hash** of each password rather than the p
 - **Salt:** a random value added per user. Two people with the same password get different hashes, so reuse is hidden.
 - **Slow hash:** Argon2id or bcrypt. One high-end graphics card tries about 22 billion SHA-256 guesses a second. At bcrypt's minimum recommended cost of 10, the same card manages about 6,000.
 
-Without both of those, identical passwords produce identical stored values and the whole table can be attacked as a single unit rather than one account at a time. Tools such as Hashcat and John the Ripper are built for exactly this, and against a fast unsalted hash they work through common passwords at a rate that makes the exercise trivial. That is precisely what happened to LinkedIn in 2012, and it is why the age of a breach tells you very little about how exposed its users were.
+Without both of those, identical passwords produce identical stored values and the whole table can be attacked as a single unit rather than one account at a time. Tools such as Hashcat and John the Ripper are built for exactly this, and against a fast unsalted hash they work through common passwords at a rate that makes the exercise trivial. That is precisely what happened to LinkedIn in 2012, and it is why the storage method, more than the size of a breach, decides how exposed its users are.
 
 ```match
 prompt: Both halves of good password storage. Match them.
@@ -33,11 +33,15 @@ The defense that actually holds here is **MFA**, because it changes what a stole
 
 ### What to do first after a vendor breach
 
-1. Find out how the passwords were stored, because that determines how urgent everything else is. Encoded means every password is already exposed and the method offered no protection at all. Encrypted means they are exposed if the key was taken alongside the data, and since you are rarely in a position to confirm that it was not, treat them as exposed.
-2. Force resets for affected staff, starting with any confirmed exposed.
+1. Find out how the passwords were stored, because that determines how urgent everything else is.
+   - **Encoded:** every password is already exposed. The method offered no protection at all.
+   - **Encrypted:** the passwords are exposed if the key was taken with the data. You can rarely confirm that it was not, so treat them as exposed.
+   - **Hashed fast and unsalted:** most common passwords will be cracked within days, so treat them as exposed.
+   - **Salted and slow:** you have time, but weak passwords still fall to guessing. Reset them anyway.
+2. Force resets for affected staff, starting with those confirmed as exposed.
 3. Turn on MFA for those accounts, and watch their sign-ins.
 
-Two things to avoid while doing this. **Never** test leaked passwords against real accounts to see which ones work. You will generate exactly the sign-in pattern a credential-stuffing attack produces, and you may lock out the people you are trying to protect. And never send anybody their password by email, which puts a working credential into a mailbox and a mail server you do not control.
+Avoid two things while you do this. **Never** test leaked passwords against real accounts to see which ones work. You will generate exactly the sign-in pattern a credential-stuffing attack produces, and you may lock out the people you are trying to protect. Never send anybody their password by email either, because that puts a working credential into a mailbox and onto mail servers you do not control.
 
 ```order
 prompt: A vendor was breached. Put your first moves in order.

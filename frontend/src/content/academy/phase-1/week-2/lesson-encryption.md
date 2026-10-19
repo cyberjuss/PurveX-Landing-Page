@@ -2,7 +2,7 @@
 
 **The ticket:** Sam Whitfield's laptop restarted for an update overnight. Now a blue screen says **BitLocker recovery** and asks for a 48-digit key. "Is my laptop broken?"
 
-The laptop is fine, and saying so early will do a great deal for the person on the other end of the call. BitLocker encrypts the whole of the drive, and the screen Sam is looking at means only that BitLocker will not hand over the contents until it is given the right key. Nothing has been damaged and nothing has been lost. To work the call properly, though, you need to understand what encryption is doing here and why the key is the part that matters rather than the algorithm.
+The laptop is fine, and saying so early will reassure the person on the other end of the call. BitLocker encrypts the whole of the drive, and the screen Sam is looking at means only that BitLocker will not hand over the contents until it is given the right key. Nothing has been damaged and nothing has been lost. To work the call properly, though, you need to understand what encryption is doing here and why the key is the part that matters rather than the algorithm.
 
 ### What encryption does
 
@@ -42,7 +42,7 @@ Asymmetric = A pair of keys, where anything locked with one opens only with the 
 
 ### Back to Sam: the recovery key call
 
-With that in place, Sam's situation becomes straightforward to explain. BitLocker keeps the drive key inside the laptop's TPM, a dedicated security chip on the motherboard, and the TPM is deliberately fussy about when it hands that key over. It releases the key only when the machine's startup process looks the same as it did the last time, on the reasoning that a changed startup could mean somebody is trying to boot the drive in a way its owner never intended.
+With that in place, Sam's situation is straightforward to explain. BitLocker keeps the drive key inside the laptop's TPM, a dedicated security chip on the motherboard. The TPM is deliberately fussy about when it hands that key over. It releases the key only when the machine's startup process looks the same as it did last time. A changed startup could mean somebody is trying to boot the drive in a way its owner never intended.
 
 Sam's overnight firmware update changed exactly that, so the TPM did its job and held the key back. BitLocker therefore falls back to asking for the 48-digit recovery key, which was saved into the directory when IT first encrypted the drive. Your task on this call is to get that key to the right person and only to the right person.
 
@@ -51,7 +51,7 @@ Sam's overnight firmware update changed exactly that, so the TPM did its job and
 3. **Read out the 48 digits** once both checks pass.
 4. **Document** who called, how you verified them and the Key ID.
 
-**Escalate** if the caller cannot be verified, or if they are asking for the key to a laptop that is not theirs. Escalate as well if a number of laptops hit the recovery screen at the same time, because one machine in recovery is a firmware update and a fleet of them is either a change that went out badly or something worth investigating properly.
+**Escalate** if the caller cannot be verified, or if they are asking for the key to a laptop that is not theirs. Escalate as well if several laptops hit the recovery screen at once. One machine in recovery is a firmware update, but a fleet of them is either a change that went out badly or something worth investigating properly.
 
 <details class="academy-deeper">
 <summary>Go deeper</summary>
@@ -86,7 +86,7 @@ The first command encrypts the memo. The second uses a key one character off and
 | In transit | Signing in to a web portal | HTTPS, VPN |
 | In use | A file open in an app | Access control and endpoint security |
 
-Once Sam signs in the drive is unlocked, and malware running as Sam reads files the same way Sam does. BitLocker protects a lost or stolen laptop. It does nothing against malware on a laptop that is already unlocked.
+Once Sam signs in, the drive is unlocked, and malware running as Sam reads files the same way Sam does. BitLocker protects a lost or stolen laptop. It does nothing against malware on a laptop that is already unlocked.
 
 #### Admin commands
 
@@ -113,4 +113,4 @@ In use = A file open in an app, protected by access control and endpoint securit
 
 ### Check yourself
 
-A caller says they are Morgan Lee, travelling and locked out by BitLocker. They want the key sent to a personal email. What do you do?
+A caller says they are Morgan Lee, traveling and locked out by BitLocker. They want the key sent to a personal email. What do you do?
