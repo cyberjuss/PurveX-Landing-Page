@@ -1,6 +1,6 @@
 ### Broken Access Control
 
-Access control is the enforcement half of authorization. Deciding that a particular role may read a particular record achieves nothing on its own. Something still has to apply that decision on every request, before any data is returned. **Broken access control** is the name for what happens when the server skips that check and a user consequently reaches data or performs actions beyond their permissions. It has been the number one risk on the OWASP Top 10 since 2021, which tells you how routinely the check gets missed.
+Access control is the enforcement half of authorization. Deciding that a particular role may read a particular record achieves nothing on its own. Something still has to apply that decision on every request, before any data is returned. **Broken access control** is the name for what happens when the server skips that check, so a user reaches data or performs actions beyond their permissions. It has been the number one risk on the OWASP Top 10 since 2021, which tells you how routinely the check gets missed.
 
 ### The rule: never trust the client
 
@@ -14,13 +14,13 @@ The single rule underneath every fix in this section is that **nothing arriving 
 
 This is not an exotic capability requiring special skill. Browser developer tools are sufficient, and intercepting proxies such as Burp Suite or OWASP ZAP make editing a request on its way out entirely routine.
 
-The consequence is that the server can take nothing about identity or permission from the request itself. On every request it has to establish three things from its own records.
+The consequence is that the server can take nothing about identity or permission from the request itself. On every request it has to establish three things from its own records:
 
-1. Who this session belongs to, from its own session records.
-2. What role that person has, from its own records.
+1. Who this session belongs to.
+2. What role that person has.
 3. Whether that role may perform this action on this item.
 
-This is why hiding a button is not access control, and it is worth being blunt about because the mistake is so common. Removing a link from a menu changes what one user is invited to do. It changes nothing whatsoever about what the server will do if somebody types the address directly, and an attacker is not working from your menu.
+This is why hiding a button is not access control, and the mistake is common enough to state bluntly. Removing a link from a menu changes what one user is invited to do. It changes nothing whatsoever about what the server will do if somebody types the address directly, and an attacker is not working from your menu.
 
 ### Common forms
 
@@ -47,7 +47,7 @@ The fixes all follow from that rule:
 
 ### Testing
 
-A word of caution before the lab. Changing identifiers on a system you do not have written permission to test is unauthorized access, and that remains true even if you only looked, and even if the flaw was obvious. Intent is not the test here, so discovering a genuine vulnerability is not a defense either. Practice instead on the PortSwigger Web Security Academy labs, which exist for exactly this purpose, and take it as given that on the job this kind of testing requires a signed scope agreed in advance.
+A word of caution before the lab. Changing identifiers on a system you do not have written permission to test is unauthorized access. That remains true even if you only looked and even if the flaw was obvious. Intent is not the test here, so discovering a genuine vulnerability is not a defense either. Practice instead on the PortSwigger Web Security Academy labs, which exist for exactly this purpose, and take it as given that on the job this kind of testing requires a signed scope agreed in advance.
 
 ### When a user reports it
 

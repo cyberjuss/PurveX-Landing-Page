@@ -8,6 +8,7 @@ Writing it as a product makes one property obvious: **if any factor is zero, the
 
 - A threat with no weakness to exploit produces no risk.
 - A weakness nothing can reach produces no risk, however serious it would be in other circumstances.
+- A flaw on a machine that holds nothing and connects to nothing produces no risk, because there is nothing to lose.
 
 That is why a finding cannot be assessed on its own. You need all three parts before the number means anything.
 

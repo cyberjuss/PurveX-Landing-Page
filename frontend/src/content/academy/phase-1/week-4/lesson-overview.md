@@ -13,7 +13,7 @@ Three pieces do this work:
 - **Authorization** takes an identity the system has already established and decides what it may reach.
 - **Access control** enforces that decision on every single request, not once at sign-in.
 
-The distinction between deciding something and enforcing it is where a great deal goes wrong. You will hear the whole set called Triple A, for authentication, authorization and accounting, with accounting being the record of who did what.
+The gap between deciding something and enforcing it is where a great deal goes wrong. You will also hear these ideas grouped as Triple A: authentication, authorization and accounting, where accounting is the record of who did what.
 
 What makes this worth a full week is how most real breaches actually begin. The attacks that end up in the news are rarely a matter of clever malware defeating a defense. Far more often somebody simply signed in with a credential they should not have had, to a system that never checked whether they ought to be there. The three cases below are among the better documented examples, and each of them failed at a different point in the chain you have just read about.
 
@@ -47,7 +47,7 @@ This material reaches you differently depending on where you sit, and you will l
 - **Systems administrator.** You decide who belongs to which group, and groups are what grant permissions. Every extra membership you hand out is a door somebody may walk through later.
 - **SOC analyst.** You read the record the other two leave behind. Sign-in logs and group changes are frequently the clearest evidence that somebody is not who they claim to be, or is reaching further than their job requires.
 
-By the end of the week you can:
+By the end of the week you will be able to:
 
 - Name the three kinds of proof and rank MFA methods by how hard each is to trick
 - Handle a password or MFA reset without becoming the attacker's route in

@@ -2,9 +2,9 @@
 
 **The ticket:** Riley Kwan has two copies of a vendor installer, one from email and one from a download mirror. The vendor's site lists a SHA-256. "Which one is safe to run?"
 
-A hash is a fixed-length value calculated from a file or a piece of text. Two properties make it useful. The same input always produces the same hash, so the value is repeatable by anybody who has the same file, and changing a single byte of the input produces an entirely different hash rather than a slightly different one. The calculation also runs in one direction only, which means the original cannot be rebuilt from the value no matter how much computing power is applied to it.
+A hash is a fixed-length value calculated from a file or a piece of text, and three properties make it useful. First, the same input always produces the same hash, so anybody with the same file can repeat the calculation. Second, changing a single byte of the input produces an entirely different hash, not a slightly different one. Third, the calculation runs in one direction only: the original cannot be rebuilt from the value, however much computing power is applied to it.
 
-Taken together those properties turn a hash into a fingerprint. It is short enough to publish on a web page or paste into a ticket, and it is specific enough that no other file anybody is likely to encounter will produce the same one.
+Taken together, those properties turn a hash into a fingerprint. It is short enough to publish on a web page or paste into a ticket, and it is specific enough that no other file anybody is likely to encounter will produce the same one.
 
 ### What a hash tells you
 

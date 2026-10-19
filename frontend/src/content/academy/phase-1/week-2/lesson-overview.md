@@ -5,9 +5,9 @@
 
 ### Overview
 
-Most of the data you will handle on the desk arrives unreadable. A string in a config file, a password column in a leaked table, a long value printed beside a download link. None of it means anything on sight, and the common instinct is to call all of it encrypted and move on. That instinct is wrong often enough to cause real damage, because the three methods that make data unreadable offer three completely different guarantees.
+Most of the data you will handle on the desk arrives unreadable. It might be a string in a config file, a password column in a leaked table, or a long value printed beside a download link. None of it means anything on sight, and the common instinct is to call all of it encrypted and move on. That instinct is wrong often enough to cause real damage, because the methods that make data unreadable offer very different guarantees.
 
-Three methods make data unreadable, and they promise three different things:
+There are three of them, and each promises something different:
 
 - **Encryption** keeps data private. It can be reversed by whoever holds the key.
 - **Hashing** proves data was not changed. It cannot be reversed by anybody at all.
@@ -17,9 +17,9 @@ The practical question you will face is never what a value looks like. It is wha
 
 | Method | Can you get the original back? |
 |---|---|
-| Encoding | Yes. Anyone can. |
+| Encoding | Yes, and anyone can |
 | Encryption | Yes, but only with the key |
-| Hashing | No. Never. |
+| Hashing | No, and nobody can |
 
 ```connect
 prompt: Connect each method to what it does.
@@ -32,9 +32,9 @@ Encoding = A format change anybody can undo in one step. It guarantees nothing.
 
 Confusing them has a documented cost. In 2012 around 6.5 million LinkedIn password hashes leaked. They had been stored without a salt, so identical passwords produced identical values and the whole set could be attacked at once rather than one account at a time. More than 60% of them were cracked within about a week. The storage method had offered far less protection than the people who chose it believed, which is the failure this week is trying to make visible to you before you meet it.
 
-The same ideas work in your favour just as reliably. In 2023 analysts tracked a poisoned 3CX installer across many organizations by sharing a single hash of the malicious file, and any team holding that one value could check their own copies in seconds. So these are not only things done to you. They are tools you pick up and use to establish facts.
+The same ideas work in your favor just as reliably. In 2023 analysts tracked a poisoned 3CX installer across many organizations by sharing a single hash of the malicious file, and any team holding that one value could check their own copies in seconds. So these methods are not only things done to you. They are also tools you can pick up and use to establish facts.
 
-By the end of the week you can:
+By the end of the week you will be able to:
 
 - Tell encoding, encryption and hashing apart on sight
 - Verify a download against a published hash

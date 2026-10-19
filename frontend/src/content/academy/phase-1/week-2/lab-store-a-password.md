@@ -3,7 +3,7 @@
 <p>Two people pick the same password. Why can a stolen password file give one company away and tell an attacker almost nothing at another?</p>
 </div>
 
-**Situation:** When a password database leaks, how the passwords were stored decides how bad the day is. The difference between a disaster and a shrug is a small step called salting, and most people who have heard the word cannot say what it actually does.
+**Situation:** When a password database leaks, how the passwords were stored decides how bad the day is. Two small steps, a salt and a slow hash, make the difference between a disaster and a shrug, and most people who have heard of salting cannot say what it actually does.
 
 **Task:** Store the same password the weak way and the strong way on your Ubuntu server, and prove from the output why one leaks information and the other does not. Predict each result before you run the command.
 

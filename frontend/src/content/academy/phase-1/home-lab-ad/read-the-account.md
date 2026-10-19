@@ -14,7 +14,7 @@ The most useful new tab is **Attribute Editor**. It shows every raw attribute on
 - `pwdLastSet`
 - `memberOf`
 
-With them you can replace a hunch with a real time or group list. With more than one domain controller, `lastLogon` is kept per controller. `lastLogonTimestamp` is shared but can lag by up to 14 days. Do not guess from the display name when the Attribute Editor can show you the time.
+With them you can replace a hunch with a real time or group list. One caution on those times: with more than one domain controller, `lastLogon` is kept separately on each one, while `lastLogonTimestamp` is shared but can lag by up to 14 days. Do not guess from the display name when the Attribute Editor can show you the time.
 
 Source: [Microsoft Learn: Last-Logon-Timestamp attribute](https://learn.microsoft.com/en-us/windows/win32/adschema/a-lastlogontimestamp)
 

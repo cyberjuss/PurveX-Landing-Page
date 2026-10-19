@@ -7,7 +7,7 @@
 
 Active Directory is the database of users, computers, and groups. A Windows Server becomes that database once you install Active Directory Domain Services and promote it to a domain controller.
 
-Promotion lets the server authenticate sign-ins with Kerberos. Until the promotion reboot finishes, the departments and accounts have nowhere to live.
+Once promoted, the server authenticates sign-ins with Kerberos. Until that promotion and its reboot finish, the departments and accounts have nowhere to live.
 
 In this lab the domain name is `purvexfinancial.local`. The server you promote becomes the domain controller for that name.
 
@@ -18,7 +18,7 @@ In this lab the domain name is `purvexfinancial.local`. The server you promote b
 
 ### Why one list matters
 
-Without a domain, each computer keeps its own accounts. A password reset on one PC does not exist on the next one.
+Without a domain, each computer keeps its own accounts, so a password reset on one PC means nothing on the next.
 
 The directory is the one list the firm trusts to say who someone is and which computers belong.
 
@@ -35,7 +35,7 @@ The directory does three jobs, and you will use all three on the desk:
 In Week 1 you named the three CIA failures: a leak, a lie, and a lockout. Each one maps to the directory:
 
 - **Confidentiality** fails as a leak. Authentication and group membership decide who can open what. An account in the wrong group can open a door it should not.
-- **Integrity** fails as a lie. A ticket or a caller can be wrong. What you verify is the account along with its group and OU.
+- **Integrity** fails as a lie. In the directory, that is an account whose group or OU no longer matches what the firm approved, or a ticket that states something untrue. Verify the account, its group and its OU against the baseline instead of trusting the request.
 - **Availability** fails as a lockout. If a workstation cannot find the domain controller, nobody signs in even when the directory is correct. Join a Computer walks through that failure.
 
 ### Promote the server

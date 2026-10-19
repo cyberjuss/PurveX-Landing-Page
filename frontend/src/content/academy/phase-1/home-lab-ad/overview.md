@@ -7,11 +7,11 @@
 
 You cannot call something suspicious until you know what **normal** looks like. In this lab, normal is PurveX Financial.
 
-PurveX Financial is a mid-sized wealth firm. Client money and regulated records covered by GLBA and SOX all sit in this environment. That is what is at stake on every ticket.
+PurveX Financial is a mid-sized wealth management firm, and its environment holds client money and records regulated under GLBA and SOX. That is what is at stake on every ticket you work.
 
-The firm is your baseline for judging every account and login. A 2 AM login from a Wealth Management workstation is a different question than a 2 AM login from a random lab machine.
+The firm is also your baseline for judging every account and sign-in. A 2 AM sign-in from a Wealth Management workstation raises a different question from a 2 AM sign-in on an unfamiliar lab machine.
 
-Either login might still be legitimate. You need to know the environment before you can decide whether it fits.
+Either might still be legitimate, and only knowing the environment lets you decide which one fits.
 
 The environment is small enough to hold in your head:
 
@@ -19,15 +19,15 @@ The environment is small enough to hold in your head:
 - Nine people
 - A defined set of groups
 
-A real desk works the same way. You learn who works where and what access they should have. Over time you also learn what normal activity looks like.
+A real desk works the same way: you learn who works where and what access each person should have, and over time you learn what normal activity looks like.
 
 ### A Directory Built Like a Real Firm
 
-A textbook gives you `User1` inside `OU=Users` and explains everything. Real environments are messier, and this lab copies a real firm.
+A textbook gives you `User1` inside `OU=Users` and explains everything. Real environments are messier, so this lab is built like a real firm.
 
 Here you work with real departments and access groups, and with tickets that may not tell the whole story.
 
-A job title does not set anyone's access. A person whose title says Helpdesk does not belong in the **Helpdesk** group because of that title.
+A job title does not set anyone's access, either. Somebody whose title says Helpdesk does not belong in the **Helpdesk** group because of the title alone. Membership follows what the job needs, and a ticket has to approve it.
 
 Callers and tickets can be wrong, and handling that is part of the job. Verify what a ticket or caller tells you before you act on it.
 

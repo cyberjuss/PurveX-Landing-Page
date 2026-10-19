@@ -13,7 +13,7 @@ As you read, notice that containment comes before cleanup and that evidence is n
 
 #### Verify
 
-First, confirm the alert is real. Check what the tool flagged on which host and for which user. Then rule out a known-good file the scanner mislabeled.
+First, confirm the alert is real. Check what the tool flagged, on which host and for which user, then rule out a known-good file the scanner mislabeled.
 
 A quick check against context saves the team from chasing a false positive. If the file is a normal business tool the scanner does not recognize, that is a very different outcome from a fresh download that just ran.
 
@@ -36,7 +36,7 @@ Hand the incident up with what you found:
 - the host and the account
 - the file and when it ran
 - the path it likely came in through
- Note what you already contained.
+- what you already contained, and when
 
 A good escalation lets the next analyst start work instead of re-gathering basics. That write-up is the deliverable of a tier-1 malware response, as much as the containment itself.
 

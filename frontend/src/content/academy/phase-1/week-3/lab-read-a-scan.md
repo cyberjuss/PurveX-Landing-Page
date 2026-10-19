@@ -118,7 +118,7 @@ Answer from what you captured, not from what you remember reading.
 <button type="button" class="ad-check__opt" data-i="0">A completed handshake</button>
 <button type="button" class="ad-check__opt" data-i="1">A single RST</button>
 <button type="button" class="ad-check__opt" data-i="2">A SYN sent again and again with no reply</button>
-<p class="ad-check__note">A firewall that drops rather than refuses leaves the sender guessing. Repeated SYNs with no answer is the filtered signature, and it tells you a firewall is working.</p>
+<p class="ad-check__note">A firewall that drops rather than refuses leaves the sender guessing. Repeated SYNs with no answer are the filtered signature, and it tells you a firewall is working.</p>
 </div>
 
 <div class="ad-check" data-check="w3m-c3" data-answer="1">
@@ -134,7 +134,7 @@ Answer from what you captured, not from what you remember reading.
 <button type="button" class="ad-check__opt" data-i="0">Scans cannot be detected</button>
 <button type="button" class="ad-check__opt" data-i="1">You detect the pattern in the traffic, not a banned tool</button>
 <button type="button" class="ad-check__opt" data-i="2">Only special attacker tools leave a trace</button>
-<p class="ad-check__note">The same loop inventories a server or maps it for attack. You cannot ban the tool, so detection rests on the behaviour, the burst of SYNs to many ports.</p>
+<p class="ad-check__note">The same loop inventories a server or maps it for attack. You cannot ban the tool, so detection rests on the behavior, the burst of SYNs to many ports.</p>
 </div>
 
 ### Take It Further

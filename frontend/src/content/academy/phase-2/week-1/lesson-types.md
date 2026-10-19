@@ -11,13 +11,13 @@ The main types you will see include:
 - Spyware and infostealers
 - Rootkit
 
-As you read, note what makes each one different because the response changes with the type.
+As you read, note what makes each one different, because the response changes with the type.
 
 #### Virus
 
 A virus attaches itself to a file or program and runs when that file is opened. It needs a person to run the infected file to spread, so it moves as fast as people share and open files.
 
-On the job, a virus alert usually points at one file on one machine. The response is to isolate the file and the host, then check whether the same file reached anyone else.
+On the job, a virus alert usually points at one file on one machine. The response is to quarantine the file and isolate the host, then check whether the same file reached anyone else.
 
 #### Worm
 
@@ -29,11 +29,11 @@ A worm is more urgent than a virus because it does not wait for a person. If one
 
 A trojan hides inside something that looks legitimate, such as a cracked app or a fake installer. The user runs it on purpose believing it is safe, and it opens a door for the attacker.
 
-Trojans are common because they rely on trust rather than a technical flaw. The response is to remove the program and reset the account that ran it. Then look for what it dropped or connected to.
+Trojans are common because they rely on trust rather than a technical flaw. The response is to isolate the host and reset the credentials of the account that ran it. Then note what the trojan dropped or connected to, so whoever investigates can follow it.
 
 #### Ransomware
 
-Ransomware encrypts files and demands payment for the key. It often spreads across shares and backups first, so the damage is wide by the time anyone sees the ransom note.
+Ransomware encrypts files and demands payment for the key. Attackers often reach file shares and delete backups before they start encrypting, so the damage is wide by the time anyone sees the ransom note.
 
 Ransomware is a top-severity incident. Speed matters: isolate affected hosts from the network immediately to stop the encryption from spreading, and escalate at once.
 
@@ -63,7 +63,7 @@ Rootkit: Tampers with the operating system so normal tools report nothing wrong
 prompt: An alert names the type. Match the first move.
 Worm = Assume others are next and contain it right away
 Ransomware = Isolate affected hosts immediately and escalate at once
-Trojan = Remove the program and reset the account that ran it
+Trojan = Isolate the host and reset the account that ran it
 Rootkit = Preserve the machine, do not trust its output, and escalate
 Spyware = Treat the account's credentials and sessions as compromised
 ```

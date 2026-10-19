@@ -123,8 +123,8 @@ Only the traffic to and from the domain controller remains. This is the conversa
 
 Wireshark shows every capture in three stacked panes, and learning to move between them is most of the skill.
 
-* **Packet List, at the top.** One line per packet. The Protocol column names what it is, and the Info column summarises it. This is your timeline.
-* **Packet Details, in the middle.** The selected packet opened up layer by layer, from Ethernet at the bottom to the application at the top.
+* **Packet List, at the top.** One line per packet. The Protocol column names what it is, and the Info column summarizes it. This is your timeline.
+* **Packet Details, in the middle.** The selected packet opened up layer by layer, from Ethernet at the top down to the application at the bottom.
 * **Packet Bytes, at the bottom.** The raw data, for when the parsed view is not enough.
 
 Click a packet in the top pane and watch the middle pane fill with its layers. You will repeat that click for most of your time in Wireshark.

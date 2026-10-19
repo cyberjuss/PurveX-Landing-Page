@@ -3,7 +3,7 @@
 <p>Confidentiality, integrity and availability are three separate properties. Can you break each one on purpose and prove which one you broke?</p>
 </div>
 
-**Situation:** Most people meet the CIA triad as three words on a slide and never see any of them fail. A property you have never watched break is a property you cannot recognise in a ticket.
+**Situation:** Most people meet the CIA triad as three words on a slide and never see any of them fail. A property you have never watched break is a property you cannot recognize in a ticket.
 
 **Task:** Work on one file on your Ubuntu server. Break confidentiality, then integrity, then availability, and prove each failure with a command rather than an opinion. Write down what you expect before each step.
 

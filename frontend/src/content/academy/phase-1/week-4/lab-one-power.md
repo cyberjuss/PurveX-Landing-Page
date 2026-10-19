@@ -7,7 +7,7 @@
 
 **Task:** On the Ubuntu server, write a sudo rule that lets a user restart one service and nothing else. Prove the allowed command works, prove a second command is refused, then look at a broader rule and say exactly how much more it would give away. Predict each result before you check it.
 
-**What you need:** Your hosted lab running, and a terminal on the Ubuntu desktop. You use only built-in tools. Nothing here attacks anything, you are writing and auditing permissions the way an administrator does.
+**What you need:** Your hosted lab running, and a terminal on the Ubuntu desktop. You use only built-in tools. Nothing here attacks anything. You are writing and auditing permissions the way an administrator does.
 
 ### Before You Start
 
@@ -99,7 +99,7 @@ Now look at the rule a hurried administrator often writes instead. Read it, do n
 webops ALL=(root) NOPASSWD: /usr/bin/systemctl
 ```
 
-It looks almost the same, but it names no service. That one difference lets webops run `systemctl` with any service and any action. They could stop the firewall, restart sshd, or disable the logging service auditd that recorded the last lab.
+It looks almost the same, but it names no service. That one difference lets webops run `systemctl` with any service and any action. They could stop the firewall, restart sshd, or interfere with the logging that recorded the last lab, so their next actions leave less of a trace.
 
 The narrow rule gave away one service. The broad rule gave away control of every service on the machine, to the same account, with the same one line. That gap is what least privilege is about.
 

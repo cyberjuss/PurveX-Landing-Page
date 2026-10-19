@@ -15,7 +15,7 @@ What makes a capture readable is knowing that every conversation in it is built 
 - A **protocol**, governing what the two sides actually say
 - Often **encryption** layered on top of all of it
 
-Those pieces are always present and always in that order, which means a capture is not an undifferentiated wall of data. It is the same structure repeating.
+Nearly every conversation is built from those pieces, in that order. A capture is therefore not an undifferentiated wall of data but the same structure repeating.
 
 This week takes them one at a time:
 
