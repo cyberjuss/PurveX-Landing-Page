@@ -544,7 +544,6 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
             <Zap className="h-4 w-4" />
             <span>Next priority</span>
             {nextUp && <b className={`sh-next__sev is-${nextUp.severity.toLowerCase()}`}>{nextUp.severity}</b>}
-            <kbd>N</kbd>
           </button>
           <div className={`sh-clock ${left <= 60 ? "sh-clock--low" : left <= 300 ? "sh-clock--warn" : ""}`}>
             <span className="sh-clock__label">Shift ends in</span>
@@ -674,10 +673,6 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
               )}
             </div>
           )}
-          <p className="sh-keys" aria-hidden>
-            <kbd>J</kbd>
-            <kbd>K</kbd> move <span>·</span> <kbd>N</kbd> next priority
-          </p>
         </aside>
 
         {selected ? (
@@ -972,7 +967,7 @@ function IncidentDetail({ inc, no, age, busy, post, lead, after }: { inc: Incide
                   </>
                 ) : (
                   <>
-                    <Check className="h-4 w-4" /> Submit and check <kbd className="sh-submit__kbd">Ctrl ↵</kbd>
+                    <Check className="h-4 w-4" /> Submit and check
                   </>
                 )}
               </button>
