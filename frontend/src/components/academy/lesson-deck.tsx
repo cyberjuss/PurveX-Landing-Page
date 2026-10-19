@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, HelpCircle, Keyboard } from "lucide-react";
+import { HelpCircle, Keyboard } from "lucide-react";
 import { Recap, SlideBody } from "./slide-body";
 import { splitLessonIntoDeck } from "@/lib/lesson-deck";
 import { curlyQuotes } from "@/lib/typography";
@@ -232,10 +232,6 @@ export function LessonDeck({
                     ))}
                   </ol>
                 )}
-                <button type="button" className="lk-question__go" onClick={() => go(index + 1)}>
-                  Start <ArrowRight aria-hidden />
-                  <kbd>Space</kbd>
-                </button>
               </div>
               <div className="lk-question__art" aria-hidden>
                 <i className="lk-question__ring" />
