@@ -38,6 +38,8 @@ export default async function LabPage({ params }: { params: Promise<{ lab: strin
         entryTitle={entryTitle}
         widget={lab.widget}
         markdown={markdown}
+        accent={lab.accent}
+        skill={lab.skill}
       />
     </div>
   );

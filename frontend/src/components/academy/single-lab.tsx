@@ -13,6 +13,7 @@ import { RiskTriageLab } from "./labs/risk-triage-chat";
 import { SigninLogLab } from "./labs/signin-log-lab";
 import { EffectiveAccessLab } from "./labs/effective-access-lab";
 import { slugify, useAcademyProgress } from "./academy-progress";
+import { LAB_DONE_EVENT, SocStation } from "./soc-station";
 import "./single-lab.css";
 
 // One lab on its own page. Widget labs render their interactive widget under a
@@ -26,6 +27,8 @@ export function SingleLab({
   entryTitle,
   widget,
   markdown,
+  accent,
+  skill,
 }: {
   slug: string;
   title: string;
@@ -35,9 +38,15 @@ export function SingleLab({
   entryTitle?: string;
   widget?: LabWidget;
   markdown?: string | null;
+  /** The lab's colour and skill, for its workstation. */
+  accent?: string;
+  skill?: string;
 }) {
   const { recordLabDone } = useAcademyProgress();
-  const done = useCallback(() => recordLabDone(phaseSlug, entrySlug, slugify(title)), [recordLabDone, phaseSlug, entrySlug, title]);
+  const done = useCallback(() => {
+    recordLabDone(phaseSlug, entrySlug, slugify(title));
+    window.dispatchEvent(new Event(LAB_DONE_EVENT));
+  }, [recordLabDone, phaseSlug, entrySlug, title]);
 
   return (
     <div className="sl">
@@ -51,8 +60,10 @@ export function SingleLab({
             <ArrowLeft aria-hidden="true" /> {entryTitle}
           </Link>
         )}
-        <Link href="/range/labs" className="sl__back sl__back--alt">All labs</Link>
+        <Link href="/range/labs" className="sl__back sl__back--alt">SOC floor</Link>
       </nav>
+
+      <SocStation title={title} accent={accent ?? "#5546e0"} skill={skill ?? "Lab"} />
 
       {widget ? (
         <>
