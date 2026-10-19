@@ -1,5 +1,3 @@
-import { recordCheck } from "@/lib/academy-gamify";
-
 // Self-check multiple choice inside a lab's markdown. The markdown is injected
 // as HTML, so these are wired by delegation rather than rendered as React.
 //
@@ -50,10 +48,6 @@ export function wireSelfChecks(root: HTMLElement, storageKey?: string): () => vo
     const chosen = opt.dataset.i;
     if (chosen === undefined) return;
     apply(block, chosen);
-    if (block.dataset.check) {
-      const answer = block.dataset.answer;
-      recordCheck(storageKey ?? "lab", block.dataset.check, answer !== undefined, answer === chosen);
-    }
     const k = keyFor(storageKey, block);
     if (k) {
       try {

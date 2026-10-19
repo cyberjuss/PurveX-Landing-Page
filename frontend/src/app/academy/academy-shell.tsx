@@ -37,8 +37,6 @@ import {
 import { clearResults, loadResults, saveResults, scorecardHtml, summarize, type MissionResult, type Results } from "@/lib/academy-score";
 import { LabSetupScreen } from "@/components/academy/lab-setup-screen";
 import { confettiFrom } from "@/lib/confetti";
-import { awardMission } from "@/lib/academy-gamify";
-import { XpToasts } from "@/components/academy/xp-toasts";
 import { signOut } from "@/lib/portal-auth";
 import { supabase } from "@/lib/supabase";
 
@@ -692,7 +690,6 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         reveal.classList.add("ad-flag--shown");
         confettiFrom(wrap.querySelector(".ad-guess") ?? wrap);
         markClosed(wrap, feedback, true);
-        awardMission(missionId, loadResults()[missionId] ?? reply.result);
         input.disabled = true;
         btn.disabled = true;
         updateProgress();
@@ -1455,7 +1452,6 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         {!asking && profile !== undefined && <PurvexCoach />}
         {!asking && profile !== undefined && <AcademyTour />}
         {!asking && profile !== undefined && <ProofPrompt />}
-        {!asking && profile !== undefined && <XpToasts />}
         <HelpDialog email={student?.email ?? null} />
         {editingGoals && profile && (
           <GoalsPanel

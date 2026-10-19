@@ -8,8 +8,6 @@ import { academyFetch, READINESS_PATH, RESULTS_CHANGED_EVENT, RESULTS_UPDATED_EV
 import { loadResults, saveResults, type MissionResult } from "@/lib/academy-score";
 import { useHostedLab } from "./hosted-lab-button";
 import { TrailDock } from "./trail-dock";
-import { ChallengeHud } from "./xp-hud";
-import { GAMIFY_ON, XP_EVENT, awardChallenge, challengeStats, type XpAward } from "@/lib/academy-gamify";
 
 type Neighbor = { label: string; go: () => void };
 
@@ -48,8 +46,6 @@ export function MissionPager({
   // Whether the section has a brief, read from the page when it is measured
   // rather than during render, where the ref can be out of date.
   const [hasBrief, setHasBrief] = useState(false);
-  // The ticket ids in this challenge, for its XP, read from the page when it is measured.
-  const [idKey, setIdKey] = useState("");
 
   const measure = useCallback(() => {
     const list = missions();
@@ -62,7 +58,6 @@ export function MissionPager({
     setStarted((prev) => (prev === any ? prev : any));
     const b = Boolean(brief());
     setHasBrief((prev) => (prev === b ? prev : b));
-    setIdKey(list.map((m) => m.getAttribute("data-id") || "").filter(Boolean).join(","));
   }, [missions, brief]);
 
   // Follow mission blocks as they render, restore, or become solved.
@@ -114,23 +109,6 @@ export function MissionPager({
     window.addEventListener("hashchange", go);
     return () => window.removeEventListener("hashchange", go);
   }, [missions, total]);
-
-  const ids = idKey ? idKey.split(",") : [];
-
-  // A live solve of the last open ticket clears the challenge: stars and a
-  // summary. Keyed off the "Ticket closed" award, so a restore on page load
-  // never plays it.
-  useEffect(() => {
-    if (!GAMIFY_ON || !idKey) return;
-    const list = idKey.split(",");
-    const on = (e: Event) => {
-      if ((e as CustomEvent<XpAward>).detail?.title !== "Ticket closed") return;
-      const st = challengeStats(list);
-      if (st.solved === st.total) window.setTimeout(() => awardChallenge(st), 900);
-    };
-    window.addEventListener(XP_EVENT, on);
-    return () => window.removeEventListener(XP_EVENT, on);
-  }, [idKey]);
 
   const at = Math.min(step, Math.max(0, total - 1));
   const done = solved.filter(Boolean).length;
@@ -250,8 +228,6 @@ export function MissionPager({
       {children}
       {strip && !onBrief &&
         createPortal(
-          <>
-          {GAMIFY_ON && ids.length > 0 && <ChallengeHud ids={ids} />}
           <div className="ad-steps" role="tablist" aria-label={`Question ${at + 1} of ${total}, ${done} solved`}>
             <span className="ad-steps__chips">
               {solved.map((ok, i) => (
@@ -272,8 +248,7 @@ export function MissionPager({
                 </button>
               ))}
             </span>
-          </div>
-          </>,
+          </div>,
           strip
         )}
       {paging && onBrief ? (
