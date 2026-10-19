@@ -17,6 +17,8 @@ import "./soc-world.css";
 // security policy does not allow.
 
 const M = 0.01;
+/** Walls tall enough that the camera, at its highest, never sees over them. */
+const WALL_TALL = 8;
 const v = (p: Pt, y = 0) => new THREE.Vector3(p.x * M, y, p.y * M);
 
 type Palette = {
@@ -30,7 +32,7 @@ const DAY: Palette = {
   sun: 1.6, hemi: 0.9, fog: "#e9ecf2",
 };
 const NIGHT: Palette = {
-  floor: "#1a1d2a", rug: "#22254a", wall: "#141724", desk: "#3a4055", deskEdge: "#4b5370", chair: "#4c5474", mon: "#07080d", screenOff: "#141826",
+  floor: "#1a1d2a", rug: "#22254a", wall: "#252a3f", desk: "#3a4055", deskEdge: "#4b5370", chair: "#4c5474", mon: "#07080d", screenOff: "#141826",
   text: "#e7e9f4", text2: "#9aa1bd", sky: "#121a40", skyline: "#05060c", frame: "#262b40", head: "#e6d3c1", hair: "#1c1828", pants: "#2a2f45",
   sun: 0.9, hemi: 0.75, fog: "#1a1d2a",
 };
@@ -188,7 +190,7 @@ function FollowCam({ floor, zoom, height }: { floor: SocFloor; zoom: React.RefOb
     const dist = 5.2 * z;
     const want = new THREE.Vector3(target.x + Math.sin(a) * dist, 2.4 + 2.6 * z, target.z + Math.cos(a) * dist);
     want.x = Math.max(0.5, Math.min(WORLD_W * M - 0.5, want.x));
-    want.z = Math.max(WALL_H * M + 0.6, Math.min(height * M + 2.4, want.z));
+    want.z = Math.max(WALL_H * M + 0.6, Math.min(height * M - 0.6, want.z));
     camera.position.lerp(want, k);
     look.current.lerp(target, k);
     camera.lookAt(look.current);
@@ -272,7 +274,7 @@ function Scene({ floor, pal, dark, placeTag, dragged }: { floor: SocFloor; pal: 
 
   return (
     <>
-      <color attach="background" args={[pal.fog]} />
+      <color attach="background" args={[pal.wall]} />
       <fog attach="fog" args={[pal.fog, 16, 40]} />
       <hemisphereLight args={[dark ? "#5a5f9a" : "#ffffff", dark ? "#0b0c14" : "#cfd6e4", pal.hemi]} />
       <directionalLight
@@ -307,8 +309,8 @@ function Scene({ floor, pal, dark, placeTag, dragged }: { floor: SocFloor; pal: 
         [W + 0.08, -1],
       ].map(([x, face]) => (
         <group key={x}>
-          <mesh position={[x, 1.6, (wallZ + H) / 2]} receiveShadow castShadow>
-            <boxGeometry args={[0.16, 3.2, H - wallZ]} />
+          <mesh position={[x, WALL_TALL / 2, (wallZ + H) / 2]} receiveShadow>
+            <boxGeometry args={[0.16, WALL_TALL, H - wallZ + 0.24]} />
             <meshStandardMaterial color={pal.wall} roughness={0.9} />
           </mesh>
           {Array.from({ length: Math.max(1, Math.floor((H - wallZ) / 3.2)) }, (_, k) => (
@@ -319,14 +321,26 @@ function Scene({ floor, pal, dark, placeTag, dragged }: { floor: SocFloor; pal: 
           ))}
         </group>
       ))}
-      <mesh position={[W / 2, 0.5, H + 0.06]} receiveShadow>
-        <boxGeometry args={[W + 0.32, 1, 0.12]} />
+      <mesh position={[W / 2, WALL_TALL / 2, H + 0.06]} receiveShadow>
+        <boxGeometry args={[W + 0.32, WALL_TALL, 0.12]} />
         <meshStandardMaterial color={pal.wall} roughness={0.9} />
       </mesh>
-      <mesh position={[W / 2, 2.1, H + 0.06]}>
-        <boxGeometry args={[W + 0.32, 2.2, 0.04]} />
-        <meshStandardMaterial color={dark ? "#9fb0ff" : "#cfe0f5"} transparent opacity={0.12} roughness={0.1} metalness={0.2} depthWrite={false} />
-      </mesh>
+      {[0.2, 0.5, 0.8].map((f) => (
+        <mesh key={f} position={[W * f, 1.95, H - 0.001]} rotation={[0, Math.PI, 0]}>
+          <planeGeometry args={[2.6, 1.25]} />
+          <meshBasicMaterial color={pal.sky} toneMapped={false} />
+        </mesh>
+      ))}
+      {/* A band where the walls meet what would be the ceiling, so the top of the room reads as finished. */}
+      {[
+        [W / 2, wallZ + 0.01, W, 0],
+        [W / 2, H - 0.01, W, Math.PI],
+      ].map(([x, z, w, r], i) => (
+        <mesh key={i} position={[x, 3.4, z]} rotation={[0, r, 0]}>
+          <planeGeometry args={[w, 0.08]} />
+          <meshBasicMaterial color={dark ? "#3a3f66" : "#c3c9d8"} toneMapped={false} />
+        </mesh>
+      ))}
 
       {/* Floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[W / 2, 0, H / 2]} receiveShadow onClick={onFloor}>
@@ -352,8 +366,8 @@ function Scene({ floor, pal, dark, placeTag, dragged }: { floor: SocFloor; pal: 
       })}
 
       {/* Back wall, windows, sign, video wall */}
-      <mesh position={[W / 2, 1.6, wallZ - 0.06]} receiveShadow>
-        <boxGeometry args={[W, 3.2, 0.12]} />
+      <mesh position={[W / 2, WALL_TALL / 2, wallZ - 0.06]} receiveShadow>
+        <boxGeometry args={[W + 0.32, WALL_TALL, 0.12]} />
         <meshStandardMaterial color={pal.wall} roughness={0.9} />
       </mesh>
       {[
