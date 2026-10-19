@@ -19,6 +19,7 @@ export type Pt = { x: number; y: number };
 
 export type Station = { i: number; desk: Rect; seat: Pt; label: Pt };
 export type Pod = { label: string; rug: Rect; stations: number[] };
+export type Person = { id: string; at: Pt; spot: Pt; face: number; seated?: boolean };
 
 /**
  * The room for a list of pods, each a run of labs that belong together (a
@@ -58,7 +59,22 @@ export function layout(pods: { label: string; size: number }[]) {
     { x: 1560, y: height - 50 },
   ];
   const door: Rect = { x: 60, y: height - 12, w: 130, h: 12 };
-  const spawn: Pt = { x: 125, y: height - 56 };
+  // A few steps in from the door, so the camera behind you has room.
+  const spawn: Pt = { x: 160, y: height - 150 };
+  // The people on the floor you can talk to. `at` is where they are, `spot`
+  // where you stand to talk, `face` which way they face (radians, 0 is
+  // towards the entrance). The night-shift colleague is one of them.
+  const people: Person[] = [
+    { id: "dana", at: { x: 980, y: 192 }, spot: { x: 930, y: 200 }, face: 0 },
+    { id: "marcus", at: colleague, spot: { x: 1368, y: 640 }, face: Math.PI, seated: true },
+    { id: "alex", at: { x: 1500, y: 470 }, spot: { x: 1438, y: 470 }, face: -Math.PI / 2 },
+    { id: "devon", at: { x: 1452, y: Math.max(790, height - 320) }, spot: { x: 1390, y: Math.max(790, height - 320) }, face: -Math.PI / 2 },
+    { id: "renee", at: { x: 330, y: 192 }, spot: { x: 380, y: 200 }, face: 0 },
+    // Along the front windows, facing into the room, clear of the way in from the door.
+    { id: "priya", at: { x: 470, y: height - 80 }, spot: { x: 470, y: height - 132 }, face: Math.PI },
+    { id: "jordan", at: { x: 720, y: height - 80 }, spot: { x: 720, y: height - 132 }, face: Math.PI },
+    { id: "grace", at: { x: 970, y: height - 80 }, spot: { x: 970, y: height - 132 }, face: Math.PI },
+  ];
   const blocks: Rect[] = [
     ...stations.map((s) => s.desk),
     coachDesk,
@@ -68,8 +84,9 @@ export function layout(pods: { label: string; size: number }[]) {
     ...plants.map((p) => ({ x: p.x - 18, y: p.y - 18, w: 36, h: 36 })),
     { x: colleague.x - 22, y: colleague.y - 22, w: 44, h: 44 },
     { x: coach.x - 16, y: coach.y - 16, w: 32, h: 32 },
+    ...people.filter((p) => !p.seated).map((p) => ({ x: p.at.x - 16, y: p.at.y - 16, w: 32, h: 32 })),
   ];
-  return { height, stations, pods: zones, coachDesk, coach, colleagueDesk, colleague, rack, coffee, plants, door, spawn, blocks };
+  return { height, stations, pods: zones, coachDesk, coach, colleagueDesk, colleague, rack, coffee, plants, door, spawn, people, blocks };
 }
 
 export type World = ReturnType<typeof layout>;

@@ -11,16 +11,16 @@ const SPEED = 260;
 const PATH_SPEED = 430;
 const REACH = 78;
 
-export type SocLab = LabMeta & { week?: string };
-export type Near = { kind: "station"; i: number } | { kind: "coach" } | null;
-type Pending = { kind: "sit"; i: number } | { kind: "coach" } | null;
+/** `phase` is e.g. "Phase 2 · Threat Detection & Log Analysis"; week numbers restart in each phase. */
+export type SocLab = LabMeta & { week?: string; phase?: string };
+export type Near = { kind: "station"; i: number } | { kind: "coach" } | { kind: "person"; id: string } | null;
+type Pending = { kind: "sit"; i: number } | { kind: "talk"; to: string } | null;
 export type FloorView = { me: Pt; deg: number; walking: boolean; near: Near; path: Pt[]; cam: Pt; cw: number; ch: number };
 
 /**
  * Everything about the SOC floor except how it is drawn: the room, where you
  * are, what is in reach, walking by keys or by a planned path, sitting down,
- * and talking to the Coach. The 2D plan and the 3D office both run on this,
- * so they behave the same and only the picture differs.
+ * and talking to the Coach or a coworker. The 3D office draws what this knows.
  *
  * `cam` is the 2D plan's camera, a window of the room that eases after you.
  * The 3D office ignores it and follows `pos` with its own.
@@ -31,7 +31,8 @@ export function useSocFloor(labs: SocLab[]) {
   const pods = useMemo(() => {
     const out: { label: string; size: number }[] = [];
     for (const l of labs) {
-      const label = l.week ?? "Labs";
+      const week = l.week ?? "Labs";
+      const label = l.phase ? `${l.phase.split(" · ")[0]} · ${week}` : week;
       if (out.length && out[out.length - 1].label === label) out[out.length - 1].size++;
       else out.push({ label, size: 1 });
     }
@@ -57,9 +58,10 @@ export function useSocFloor(labs: SocLab[]) {
   const snapped = useRef(false);
   const [view, setView] = useState<FloorView>({ me: world.spawn, deg: -90, walking: false, near: null, path: [], cam: { x: 0, y: 0 }, cw: 1000, ch: 600 });
   const [seated, setSeated] = useState<number | null>(null);
-  const [talking, setTalking] = useState(false);
+  /** Who you are talking to: "coach", a coworker's id, or nobody. */
+  const [talkTo, setTalkTo] = useState<string | null>(null);
   const seatedRef = useRef<number | null>(null);
-  const talkingRef = useRef(false);
+  const talkToRef = useRef<string | null>(null);
   const leaveTimer = useRef<number | null>(null);
 
   const publish = useCallback(
@@ -81,8 +83,8 @@ export function useSocFloor(labs: SocLab[]) {
     seatedRef.current = seated;
   }, [seated]);
   useEffect(() => {
-    talkingRef.current = talking;
-  }, [talking]);
+    talkToRef.current = talkTo;
+  }, [talkTo]);
 
   /** The 2D plan tells the floor how big its window is. */
   const setCamSize = useCallback(
@@ -113,7 +115,7 @@ export function useSocFloor(labs: SocLab[]) {
       dir.current = -Math.PI / 2;
       path.current = null;
       setSeated(i);
-      setTalking(false);
+      setTalkTo(null);
       publish();
       try {
         window.localStorage.setItem(SEAT_KEY, labs[i].slug);
@@ -134,23 +136,32 @@ export function useSocFloor(labs: SocLab[]) {
     publish();
   }, [world, publish]);
 
-  const faceCoach = useCallback(() => {
-    dir.current = Math.atan2(world.coach.y - pos.current.y, world.coach.x - pos.current.x);
-    setTalking(true);
-    publish();
-  }, [world, publish]);
+  /** Turn to someone and start talking: the Coach, or a coworker by id. */
+  const talk = useCallback(
+    (to: string) => {
+      const at = to === "coach" ? world.coach : world.people.find((p) => p.id === to)?.at;
+      if (!at) return;
+      dir.current = Math.atan2(at.y - pos.current.y, at.x - pos.current.x);
+      setTalkTo(to);
+      publish();
+    },
+    [world, publish]
+  );
+  const faceCoach = useCallback(() => talk("coach"), [talk]);
+  const stopTalking = useCallback(() => setTalkTo(null), []);
 
   const interact = useCallback(() => {
     const n = near.current;
     if (!n || seatedRef.current !== null) return;
-    if (n.kind === "coach") faceCoach();
+    if (n.kind === "coach") talk("coach");
+    else if (n.kind === "person") talk(n.id);
     else sit(n.i);
-  }, [faceCoach, sit]);
+  }, [talk, sit]);
 
   const walkTo = useCallback(
     (target: Pt, then: Pending = null) => {
       if (seatedRef.current !== null) standUp();
-      setTalking(false);
+      setTalkTo(null);
       const p = findPath(world, pos.current, target);
       path.current = p && p.length ? p : null;
       pending.current = then;
@@ -170,9 +181,21 @@ export function useSocFloor(labs: SocLab[]) {
 
   /** A click on the Coach: talk if close, otherwise walk over first. */
   const goToCoach = useCallback(() => {
-    if (near.current?.kind === "coach") faceCoach();
-    else walkTo({ x: world.coach.x - 62, y: world.coach.y }, { kind: "coach" });
-  }, [faceCoach, walkTo, world]);
+    if (near.current?.kind === "coach") talk("coach");
+    else walkTo({ x: world.coach.x - 62, y: world.coach.y }, { kind: "talk", to: "coach" });
+  }, [talk, walkTo, world]);
+
+  /** A click on a coworker: talk if close, otherwise walk over first. */
+  const goToPerson = useCallback(
+    (id: string) => {
+      const p = world.people.find((x) => x.id === id);
+      if (!p) return;
+      const n = near.current;
+      if (n?.kind === "person" && n.id === id) talk(id);
+      else walkTo(p.spot, { kind: "talk", to: id });
+    },
+    [talk, walkTo, world]
+  );
 
   // The loop: keys or the planned path move you, and the room works out what is in reach.
   useEffect(() => {
@@ -208,7 +231,7 @@ export function useSocFloor(labs: SocLab[]) {
         }
       }
       let changed = false;
-      const busy = seatedRef.current !== null || talkingRef.current;
+      const busy = seatedRef.current !== null || talkToRef.current !== null;
       if ((vx || vy) && !busy) {
         const len = Math.hypot(vx, vy);
         const speed = k.size ? SPEED : PATH_SPEED;
@@ -229,10 +252,7 @@ export function useSocFloor(labs: SocLab[]) {
         const then = pending.current;
         pending.current = null;
         if (then?.kind === "sit") sit(then.i);
-        if (then?.kind === "coach") {
-          dir.current = Math.atan2(world.coach.y - pos.current.y, world.coach.x - pos.current.x);
-          setTalking(true);
-        }
+        if (then?.kind === "talk") talk(then.to);
       }
       let best: Near = null;
       let bestD = REACH;
@@ -244,7 +264,14 @@ export function useSocFloor(labs: SocLab[]) {
         }
       }
       if (Math.hypot(world.coach.x - pos.current.x, world.coach.y - pos.current.y) < REACH + 10) best = { kind: "coach" };
-      const nearKey = (x: Near) => (!x ? "" : x.kind === "coach" ? "coach" : `s${x.i}`);
+      for (const p of world.people) {
+        const d = Math.hypot(p.at.x - pos.current.x, p.at.y - pos.current.y);
+        if (d < bestD) {
+          bestD = d;
+          best = { kind: "person", id: p.id };
+        }
+      }
+      const nearKey = (x: Near) => (!x ? "" : x.kind === "coach" ? "coach" : x.kind === "person" ? `p${x.id}` : `s${x.i}`);
       if (nearKey(near.current) !== nearKey(best)) {
         near.current = best;
         changed = true;
@@ -265,7 +292,7 @@ export function useSocFloor(labs: SocLab[]) {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [world, sit, publish]);
+  }, [world, sit, talk, publish]);
 
   useEffect(
     () => () => {
@@ -280,19 +307,29 @@ export function useSocFloor(labs: SocLab[]) {
       if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d"].includes(key)) {
         e.preventDefault();
         if (seatedRef.current !== null) standUp();
-        if (talkingRef.current) setTalking(false);
+        if (talkToRef.current) setTalkTo(null);
         keys.current.add(key);
       } else if (key === "e" || key === "Enter" || key === " ") {
         e.preventDefault();
         interact();
       } else if (key === "Escape") {
-        setTalking(false);
+        setTalkTo(null);
         standUp();
       }
     },
     [standUp, interact]
   );
   const onKeyUp = useCallback((e: React.KeyboardEvent) => keys.current.delete(e.key.length === 1 ? e.key.toLowerCase() : e.key), []);
+  /** The on-screen keys: hold to walk, the same as the keyboard. */
+  const press = useCallback(
+    (key: string) => {
+      if (seatedRef.current !== null) standUp();
+      if (talkToRef.current) setTalkTo(null);
+      keys.current.add(key);
+    },
+    [standUp]
+  );
+  const release = useCallback((key: string) => keys.current.delete(key), []);
   const releaseKeys = useCallback(() => keys.current.clear(), []);
   /** Turns the 3D camera, and with it which way the keys walk. */
   const turn = useCallback((by: number) => {
@@ -307,18 +344,25 @@ export function useSocFloor(labs: SocLab[]) {
     cleared,
     view,
     seated,
-    talking,
+    talkTo,
+    /** Talking to the Coach in particular. */
+    talking: talkTo === "coach",
     pos,
     dir,
     moving,
     yaw,
     sit,
     faceCoach,
+    stopTalking,
     walkTo,
     goToStation,
     goToCoach,
+    goToPerson,
     onKeyDown,
     onKeyUp,
+    press,
+    release,
+    interact,
     releaseKeys,
     turn,
     setCamSize,

@@ -100,6 +100,11 @@ export function useCoach() {
   return ctx;
 }
 
+/** The Coach when there is one, or null, for places that also render outside the academy shell. */
+export function useCoachMaybe() {
+  return useContext(CoachContext);
+}
+
 // profile: the intake answers. Sent along only as a fallback for the saved copy.
 export function CoachProvider({ children, profile = null }: { children: React.ReactNode; profile?: StudentProfile | null }) {
   const [messages, setMessages] = useState<CoachMessage[]>([]);

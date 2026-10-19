@@ -1,0 +1,87 @@
+/* The labs as a transit line (lab-map.tsx). Plain paper, one route, a colour
+   per week, white stations with a dark ring. Travelled track is solid; the
+   track still ahead is the same colour, faint. */
+
+.lm-wrap {
+  --lm-paper: #ffffff; --lm-ink: #16191f; --lm-ink-2: #5b6170; --lm-ahead: 0.28; --lm-station: #ffffff;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; min-width: 0;
+}
+:root[data-academy-theme="dark"] .lm-wrap {
+  --lm-paper: #111318; --lm-ink: #eceef3; --lm-ink-2: #9aa0ae; --lm-ahead: 0.32; --lm-station: #111318;
+}
+
+/* ---- Next stop and progress ---- */
+.lm-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; }
+.lm-bar p { margin: 0; }
+.lm-bar__count { display: inline-flex; align-items: center; gap: 10px; font: 500 13px var(--font-display, inherit); color: var(--rd-ink-2); }
+.lm-bar__count i { display: block; width: 120px; height: 4px; background: color-mix(in srgb, var(--rd-ink) 10%, transparent); }
+.lm-bar__count i::after { content: ""; display: block; width: calc(var(--pct, 0) * 100%); height: 100%; background: var(--rd-ink); }
+
+/* ---- The map ---- */
+.lm { padding: 20px 24px 8px; background: var(--lm-paper); box-shadow: inset 0 0 0 1px var(--rd-line); }
+.lm__svg { display: block; width: 100%; height: auto; }
+
+/* The key: a framed panel, lines on the left, what the symbols mean on the right. */
+.lm-key { position: relative; margin: 6px 0 14px; padding: 18px 18px 14px; border: 1px solid var(--rd-line); }
+.lm-key__title {
+  position: absolute; top: 0; left: 14px; margin: 0; padding: 0 6px; transform: translateY(-50%);
+  font: 700 11px var(--font-display, inherit); letter-spacing: 0.14em; text-transform: uppercase; color: var(--lm-ink); background: var(--lm-paper);
+}
+.lm-key__cols { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 14px 32px; }
+.lm-key__head { margin: 0 0 8px; font: 600 11px var(--font-display, inherit); color: var(--lm-ink-2); }
+.lm-key ul { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+.lm-key li { display: flex; align-items: center; gap: 9px; font: 500 12.5px var(--font-display, inherit); color: var(--lm-ink); }
+.lm-key li.lm-key__phase { margin-top: 6px; font: 600 11px var(--font-display, inherit); color: var(--lm-ink-2); }
+.lm-key li.lm-key__phase:first-child { margin-top: 0; }
+.lm-key__swatch { flex: none; width: 44px; height: 16px; overflow: visible; }
+.lm-key__swatch .lm-track { stroke-width: 6; }
+.lm-key__bullet { display: inline-grid; place-items: center; flex: none; width: 20px; height: 20px; border-radius: 50%; font: 700 11px var(--font-display, inherit); color: #fff; background: var(--line); }
+.lm-key__name { min-width: 0; }
+.lm-key__count { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--lm-ink-2); }
+.lm-key__marks svg { flex: none; width: 24px; height: 24px; overflow: visible; }
+.lm-key__marks .lm-key__swatch { width: 24px; height: 16px; }
+.lm-key__dot { fill: var(--lm-station); stroke: var(--lm-ink); stroke-width: 3; }
+.lm-key__dot.is-done { fill: var(--lm-ink); }
+.lm-key__dot.is-next { stroke: var(--line); stroke-width: 4; }
+.lm-key__end { stroke: var(--lm-ink); stroke-width: 4; stroke-linecap: round; }
+
+.lm-track { fill: none; stroke: var(--line); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; opacity: var(--lm-ahead); }
+.lm-track.is-run { opacity: 1; }
+
+.lm-end path { stroke: var(--lm-ink); stroke-width: 4; stroke-linecap: round; }
+.lm-end text { font: 600 12px var(--font-display, sans-serif); fill: var(--lm-ink-2); }
+
+.lm-bullet circle { fill: var(--line); }
+.lm-bullet text { font: 700 11.5px var(--font-display, sans-serif); fill: #fff; }
+
+.lm-stop { cursor: pointer; outline: none; }
+.lm-stop__hit { fill: transparent; }
+.lm-stop__dot { fill: var(--lm-station); stroke: var(--lm-ink); stroke-width: 3; }
+.lm-stop.is-done .lm-stop__dot { fill: var(--lm-ink); }
+.lm-stop.is-next .lm-stop__dot { stroke: var(--line); stroke-width: 4; }
+.lm-stop__name { font: 500 13px var(--font-display, sans-serif); fill: var(--lm-ink); }
+.lm--narrow .lm-stop__name { font-size: 16px; }
+.lm-stop.is-done .lm-stop__name { fill: var(--lm-ink-2); }
+.lm-stop.is-next .lm-stop__name { font-weight: 700; }
+.lm-stop.is-sel .lm-stop__name { text-decoration: underline; text-underline-offset: 3px; }
+.lm-stop:hover .lm-stop__dot, .lm-stop:focus-visible .lm-stop__dot { stroke-width: 4; }
+.lm-stop:focus-visible .lm-stop__hit { stroke: var(--lm-ink-2); stroke-width: 1; stroke-dasharray: 3 3; }
+
+/* ---- The card over a station ---- */
+.lm__stage { position: relative; }
+/* The wrapper places the card; the card inside keeps its own entrance. */
+.lm-pop { position: absolute; z-index: 5; width: min(320px, calc(100vw - 48px)); }
+.lm-pop .sw-card {
+  --acc: var(--pop-acc);
+  gap: 7px; padding: 14px 16px; background: var(--lm-paper);
+  box-shadow: inset 0 0 0 1px var(--rd-line), inset 3px 0 0 var(--acc), 0 18px 40px -18px rgba(15, 23, 42, 0.35);
+}
+:root[data-academy-theme="dark"] .lm-pop .sw-card { box-shadow: inset 0 0 0 1px var(--rd-line), inset 3px 0 0 var(--acc), 0 18px 40px -18px rgba(0, 0, 0, 0.7); }
+.lm-pop h3 { font-size: 16px; }
+.lm-pop .sw-card__text { font-size: 13px; }
+.lm-pop a.sw-card__go { justify-self: start; height: 36px; margin-top: 2px; font-size: 13px; text-decoration: none; }
+
+@media (max-width: 680px) {
+  .lm { padding: 14px 12px 4px; }
+  .lm-key__cols { grid-template-columns: minmax(0, 1fr); }
+}
