@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Markdown } from "@/lib/markdown";
 import type { MarkdownSlide } from "@/lib/markdown";
 import { TrailDock, type TrailLink } from "./trail-dock";
 import { restoreSelfChecks, wireSelfChecks } from "./self-check";
+import { LabHud } from "./xp-hud";
+import { GAMIFY_CHANGED, GAMIFY_ON, clearLab, labChecks } from "@/lib/academy-gamify";
 
 // A lab used to be one long scroll of Step 1 through Step N. This shows
 // one slide at a time instead -- buttons, arrow keys, and a swipe on
@@ -33,6 +35,16 @@ export function LabCarousel({
   const touchStartX = useRef<number | null>(null);
   const slideRef = useRef<HTMLDivElement>(null);
   const total = slides.length;
+  // Every self-check in the lab, across all its slides, for the lab's XP.
+  const checks = useMemo(() => labChecks(slides.map((s) => s.markdown).join(String.fromCharCode(10))), [slides]);
+  useEffect(() => {
+    if (!GAMIFY_ON || !storageKey || !checks.some((c) => c.graded)) return;
+    const tryClear = () => {
+      clearLab(storageKey, checks);
+    };
+    window.addEventListener(GAMIFY_CHANGED, tryClear);
+    return () => window.removeEventListener(GAMIFY_CHANGED, tryClear);
+  }, [storageKey, checks]);
 
   // Remember the step for this tab so a refresh lands back on it.
   const stepKey = () => `academy-lab-step:${window.location.pathname}:${storageKey}`;
@@ -118,6 +130,7 @@ export function LabCarousel({
 
   return (
     <div>
+      {GAMIFY_ON && storageKey && <LabHud lab={storageKey} checks={checks} />}
       <div
         ref={slideRef}
         role="group"
