@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
-import { RoundedBox } from "@react-three/drei";
+import { Billboard, RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
 import { WALL_H, WORLD_W, type Pt } from "@/lib/soc-world";
 import { useAcademyTheme } from "@/lib/use-academy-theme";
@@ -166,16 +166,29 @@ function You({ floor, pal, placeTag }: { floor: SocFloor; pal: Palette; placeTag
   );
 }
 
-/** The camera stays behind and above you, easing after you; the wheel zooms. */
-function FollowCam({ floor, zoom }: { floor: SocFloor; zoom: React.RefObject<number> }) {
+/**
+ * The camera stands behind you over your shoulder and turns with the yaw you
+ * drag; the wheel moves it closer or further. It stays inside the walls so it
+ * never ends up looking at the room from outside.
+ */
+function FollowCam({ floor, zoom, height }: { floor: SocFloor; zoom: React.RefObject<number>; height: number }) {
   const { camera } = useThree();
   const look = useRef(new THREE.Vector3());
+  const yawNow = useRef(0);
   useFrame((_, dt) => {
     const p = floor.pos.current;
     const z = zoom.current;
-    const target = new THREE.Vector3(p.x * M, 0.8, p.y * M);
-    const want = target.clone().add(new THREE.Vector3(0, 6.2 * z, 6.4 * z));
-    const k = Math.min(1, dt * 4);
+    const k = Math.min(1, dt * 5);
+    // Ease the turn too, the short way round.
+    let dy = floor.yaw.current - yawNow.current;
+    dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+    yawNow.current += dy * Math.min(1, dt * 8);
+    const a = yawNow.current;
+    const target = new THREE.Vector3(p.x * M, 1.1, p.y * M);
+    const dist = 5.2 * z;
+    const want = new THREE.Vector3(target.x + Math.sin(a) * dist, 2.4 + 2.6 * z, target.z + Math.cos(a) * dist);
+    want.x = Math.max(0.5, Math.min(WORLD_W * M - 0.5, want.x));
+    want.z = Math.max(WALL_H * M + 0.6, Math.min(height * M + 2.4, want.z));
     camera.position.lerp(want, k);
     look.current.lerp(target, k);
     camera.lookAt(look.current);
@@ -243,7 +256,7 @@ function Chair({ x, z, pal }: { x: number; z: number; pal: Palette }) {
   );
 }
 
-function Scene({ floor, pal, dark, placeTag }: { floor: SocFloor; pal: Palette; dark: boolean; placeTag: (x: number, y: number) => void }) {
+function Scene({ floor, pal, dark, placeTag, dragged }: { floor: SocFloor; pal: Palette; dark: boolean; placeTag: (x: number, y: number) => void; dragged: React.RefObject<boolean> }) {
   const { world, labs, done, nextUp, cleared, view, seated, talking } = floor;
   const W = WORLD_W * M;
   const H = world.height * M;
@@ -253,13 +266,14 @@ function Scene({ floor, pal, dark, placeTag }: { floor: SocFloor; pal: Palette; 
 
   const onFloor = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
+    if (dragged.current) return;
     if (e.point.z * 100 > WALL_H) floor.walkTo({ x: e.point.x * 100, y: e.point.z * 100 });
   };
 
   return (
     <>
       <color attach="background" args={[pal.fog]} />
-      <fog attach="fog" args={[pal.fog, 14, 30]} />
+      <fog attach="fog" args={[pal.fog, 16, 40]} />
       <hemisphereLight args={[dark ? "#5a5f9a" : "#ffffff", dark ? "#0b0c14" : "#cfd6e4", pal.hemi]} />
       <directionalLight
         position={[W * 0.35, 12, H * 0.25]}
@@ -280,6 +294,39 @@ function Scene({ floor, pal, dark, placeTag }: { floor: SocFloor; pal: Palette; 
       {world.pods.map((p) => (
         <pointLight key={p.label} position={[(p.rug.x + p.rug.w / 2) * M, 3.2, (p.rug.y + p.rug.h / 2) * M]} intensity={dark ? 7 : 2} distance={9} decay={1.6} color={dark ? "#c9d2ff" : "#ffffff"} />
       ))}
+
+      {/* Outside the room, so there is never a void at the edge */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[W / 2, -0.01, H / 2]} receiveShadow>
+        <planeGeometry args={[W + 60, H + 60]} />
+        <meshStandardMaterial color={dark ? "#0b0c13" : "#d6dae3"} roughness={1} />
+      </mesh>
+
+      {/* Side walls with windows, and a glass partition across the front */}
+      {[
+        [-0.08, 1],
+        [W + 0.08, -1],
+      ].map(([x, face]) => (
+        <group key={x}>
+          <mesh position={[x, 1.6, (wallZ + H) / 2]} receiveShadow castShadow>
+            <boxGeometry args={[0.16, 3.2, H - wallZ]} />
+            <meshStandardMaterial color={pal.wall} roughness={0.9} />
+          </mesh>
+          {Array.from({ length: Math.max(1, Math.floor((H - wallZ) / 3.2)) }, (_, k) => (
+            <mesh key={k} position={[x + face * 0.09, 1.95, wallZ + 1.8 + k * 3.2]} rotation={[0, face > 0 ? Math.PI / 2 : -Math.PI / 2, 0]}>
+              <planeGeometry args={[2.1, 1.25]} />
+              <meshBasicMaterial color={pal.sky} toneMapped={false} />
+            </mesh>
+          ))}
+        </group>
+      ))}
+      <mesh position={[W / 2, 0.5, H + 0.06]} receiveShadow>
+        <boxGeometry args={[W + 0.32, 1, 0.12]} />
+        <meshStandardMaterial color={pal.wall} roughness={0.9} />
+      </mesh>
+      <mesh position={[W / 2, 2.1, H + 0.06]}>
+        <boxGeometry args={[W + 0.32, 2.2, 0.04]} />
+        <meshStandardMaterial color={dark ? "#9fb0ff" : "#cfe0f5"} transparent opacity={0.12} roughness={0.1} metalness={0.2} depthWrite={false} />
+      </mesh>
 
       {/* Floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[W / 2, 0, H / 2]} receiveShadow onClick={onFloor}>
@@ -382,7 +429,7 @@ function Scene({ floor, pal, dark, placeTag }: { floor: SocFloor; pal: Palette; 
             key={l.slug}
             onClick={(e) => {
               e.stopPropagation();
-              floor.goToStation(i);
+              if (!dragged.current) floor.goToStation(i);
             }}
             onPointerOver={(e) => {
               e.stopPropagation();
@@ -415,7 +462,17 @@ function Scene({ floor, pal, dark, placeTag }: { floor: SocFloor; pal: Palette; 
               </Pulse>
             )}
             <Label text={stationNo(i)} at={new THREE.Vector3(x + 0.08, 0.769, z + d - 0.12)} h={0.09} color={pal.text2} mono />
-            <Label text={l.title.length > 32 ? `${l.title.slice(0, 31)}…` : l.title} at={new THREE.Vector3(s.label.x * M, 0.01, s.label.y * M)} h={on ? 0.2 : 0.17} color={on ? pal.text : pal.text2} center weight={on ? 700 : 600} onTop />
+            {/* A sign over the desks around you that turns to face you, so it
+                reads from any angle. Further away it would only be clutter. */}
+            {(on || Math.hypot(s.seat.x - view.me.x, s.seat.y - view.me.y) < 520) && (
+              <Billboard position={[x + w / 2, on ? 1.7 : 1.58, z + 0.12]}>
+                <mesh renderOrder={1}>
+                  <planeGeometry args={[Math.min(1.9, 0.082 * Math.min(l.title.length, 32) + 0.24), on ? 0.27 : 0.2]} />
+                  <meshBasicMaterial color={on ? l.accent : dark ? "#0d0f1a" : "#ffffff"} transparent opacity={on ? 0.96 : 0.8} toneMapped={false} />
+                </mesh>
+                <Label text={l.title.length > 32 ? `${l.title.slice(0, 31)}…` : l.title} at={new THREE.Vector3(0, 0, 0.002)} h={on ? 0.17 : 0.125} color={on ? "#ffffff" : pal.text} wall center weight={on ? 700 : 600} />
+              </Billboard>
+            )}
           </group>
         );
       })}
@@ -424,7 +481,7 @@ function Scene({ floor, pal, dark, placeTag }: { floor: SocFloor; pal: Palette; 
       <group
         onClick={(e) => {
           e.stopPropagation();
-          floor.goToCoach();
+          if (!dragged.current) floor.goToCoach();
         }}
       >
         <Desk x={world.coachDesk.x * M} z={world.coachDesk.y * M} w={world.coachDesk.w * M} d={world.coachDesk.h * M} pal={pal} />
@@ -507,6 +564,8 @@ export function SocOffice3D({ floor }: { floor: SocFloor }) {
   const pal = dark ? NIGHT : DAY;
   const box = useRef<HTMLDivElement>(null);
   const zoom = useRef(1);
+  const drag = useRef<{ x: number; moved: number } | null>(null);
+  const dragged = useRef(false);
   const tag = useRef<HTMLSpanElement>(null);
   const n = floor.view.near;
   const seated = floor.seated !== null;
@@ -535,7 +594,7 @@ export function SocOffice3D({ floor }: { floor: SocFloor }) {
       className={`sw sw--3d${focused ? " is-focused" : ""}`}
       tabIndex={0}
       role="application"
-      aria-label="The PurveX Financial SOC in 3D. Arrow keys or WASD to walk, E to sit at a workstation or talk to the Coach, the mouse wheel to zoom."
+      aria-label="The PurveX Financial SOC in 3D. Arrow keys or WASD to walk, E to sit at a workstation or talk to the Coach, drag to turn the camera, the mouse wheel to zoom."
       onKeyDown={floor.onKeyDown}
       onKeyUp={floor.onKeyUp}
       onFocus={() => setFocused(true)}
@@ -543,11 +602,32 @@ export function SocOffice3D({ floor }: { floor: SocFloor }) {
         setFocused(false);
         floor.releaseKeys();
       }}
-      onPointerDown={() => box.current?.focus({ preventScroll: true })}
+      onPointerDown={(e) => {
+        box.current?.focus({ preventScroll: true });
+        drag.current = { x: e.clientX, moved: 0 };
+        dragged.current = false;
+      }}
+      onPointerMove={(e) => {
+        const d = drag.current;
+        if (!d || !e.buttons) return;
+        const dx = e.clientX - d.x;
+        d.x = e.clientX;
+        d.moved += Math.abs(dx);
+        // Drag to turn the camera around you. A real drag, not a wobbly click.
+        if (d.moved > 6) {
+          dragged.current = true;
+          floor.turn(-dx * 0.006);
+        }
+      }}
+      onPointerUp={() => {
+        drag.current = null;
+        // Let the click that ends a drag see the flag, then clear it.
+        window.setTimeout(() => (dragged.current = false), 0);
+      }}
     >
-      <Canvas shadows="percentage" dpr={[1, 1.75]} camera={{ fov: 42, position: [2, 7, 16], near: 0.1, far: 80 }} gl={{ antialias: true }}>
-        <Scene floor={floor} pal={pal} dark={dark} placeTag={placeTag} />
-        <FollowCam floor={floor} zoom={zoom} />
+      <Canvas shadows="percentage" dpr={[1, 1.75]} camera={{ fov: 50, position: [2, 5, 16], near: 0.1, far: 90 }} gl={{ antialias: true }}>
+        <Scene floor={floor} pal={pal} dark={dark} placeTag={placeTag} dragged={dragged} />
+        <FollowCam floor={floor} zoom={zoom} height={floor.world.height} />
       </Canvas>
       <span ref={tag} className={`sw-key sw-key--3d${seated ? " sw-key--signin" : ""}`} hidden={!((n || seated) && !floor.talking)}>
         {seated ? (

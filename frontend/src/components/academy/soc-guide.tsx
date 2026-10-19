@@ -142,6 +142,18 @@ export function SocGuide({ floor, mapFrame }: { floor: SocFloor; mapFrame?: bool
           <dt>Click</dt>
           <dd>Walk to a spot, a desk, or the map</dd>
         </div>
+        {!mapFrame && (
+          <>
+            <div>
+              <dt>Drag</dt>
+              <dd>Turn the camera</dd>
+            </div>
+            <div>
+              <dt>Wheel</dt>
+              <dd>Zoom in or out</dd>
+            </div>
+          </>
+        )}
       </dl>
     </aside>
   );

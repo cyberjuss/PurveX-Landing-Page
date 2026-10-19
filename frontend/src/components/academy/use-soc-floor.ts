@@ -44,6 +44,8 @@ export function useSocFloor(labs: SocLab[]) {
 
   const pos = useRef<Pt>(world.spawn);
   const dir = useRef(-Math.PI / 2);
+  /** Which way the camera faces, in radians. The 3D office turns it; keys walk relative to it, so up is always away from the camera. */
+  const yaw = useRef(0);
   const keys = useRef(new Set<string>());
   const path = useRef<Pt[] | null>(null);
   const pending = useRef<Pending>(null);
@@ -186,6 +188,11 @@ export function useSocFloor(labs: SocLab[]) {
       if (k.has("ArrowRight") || k.has("d")) vx += 1;
       if (k.has("ArrowUp") || k.has("w")) vy -= 1;
       if (k.has("ArrowDown") || k.has("s")) vy += 1;
+      if ((vx || vy) && yaw.current) {
+        const c = Math.cos(-yaw.current);
+        const sn = Math.sin(-yaw.current);
+        [vx, vy] = [vx * c - vy * sn, vx * sn + vy * c];
+      }
       if (vx || vy) {
         path.current = null;
         pending.current = null;
@@ -287,6 +294,10 @@ export function useSocFloor(labs: SocLab[]) {
   );
   const onKeyUp = useCallback((e: React.KeyboardEvent) => keys.current.delete(e.key.length === 1 ? e.key.toLowerCase() : e.key), []);
   const releaseKeys = useCallback(() => keys.current.clear(), []);
+  /** Turns the 3D camera, and with it which way the keys walk. */
+  const turn = useCallback((by: number) => {
+    yaw.current += by;
+  }, []);
 
   return {
     labs,
@@ -300,6 +311,7 @@ export function useSocFloor(labs: SocLab[]) {
     pos,
     dir,
     moving,
+    yaw,
     sit,
     faceCoach,
     walkTo,
@@ -308,6 +320,7 @@ export function useSocFloor(labs: SocLab[]) {
     onKeyDown,
     onKeyUp,
     releaseKeys,
+    turn,
     setCamSize,
   };
 }
