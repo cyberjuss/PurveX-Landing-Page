@@ -385,6 +385,7 @@ export function SectionTabs({
           <LessonDeck
             weekScenes={tabScenes}
             question={active === 0 ? essentialQuestion ?? undefined : undefined}
+            weekPath={active === 0 ? sections.slice(1).map((s) => s.label).filter((l) => l !== "Resources") : undefined}
             key={current.label}
             label={current.label}
             markdown={current.markdown}

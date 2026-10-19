@@ -1315,41 +1315,81 @@ button.lk__art { padding: 0; width: 100%; font: inherit; color: var(--rd-accent)
 .lk__slide--question .lk__head, .lk__slide--question .lk__body { display: none; }
 .lk-question {
   flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  min-height: clamp(280px, 44vh, 480px);
-  padding: 12px clamp(8px, 4vw, 48px);
-  text-align: center;
-}
-.lk-question__mark {
   display: grid;
-  place-items: center;
-  width: 64px;
-  height: 64px;
-  font: 800 38px/1 var(--font-display, sans-serif);
-  color: var(--rd-accent);
-  background: color-mix(in srgb, var(--rd-accent) var(--sf-mark-fill, 14%), transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) var(--sf-mark-line, 30%), transparent);
-  animation: lk-q-in 600ms var(--ax-ease) both;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 64px);
+  min-height: clamp(300px, 46vh, 500px);
+  padding: 8px clamp(4px, 2vw, 24px);
 }
-@keyframes lk-q-in { 0% { opacity: 0; transform: scale(0.6) rotate(-12deg); } 70% { transform: scale(1.06) rotate(3deg); } 100% { opacity: 1; transform: none; } }
-.lk-question .rd-kicker { color: var(--rd-accent); animation: lk-build var(--ax-dur) var(--ax-ease) 120ms both; }
+.lk-question__main { display: grid; justify-items: start; gap: 16px; min-width: 0; }
+.lk-question .rd-kicker { display: inline-flex; align-items: center; gap: 8px; color: var(--rd-accent); animation: lk-build var(--ax-dur) var(--ax-ease) 80ms both; }
+.lk-question .rd-kicker svg { width: 15px; height: 15px; }
 .lk-question__text {
   margin: 0;
-  max-width: 24ch;
+  max-width: 20ch;
   font-family: var(--font-display);
-  font-size: clamp(26px, 3.6vw, 44px);
+  font-size: clamp(30px, 4vw, 52px);
   font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
   color: var(--rd-ink);
-  animation: lk-build var(--ax-dur-slow) var(--ax-ease) 200ms both;
+  text-wrap: balance;
+  animation: lk-build var(--ax-dur-slow) var(--ax-ease) 160ms both;
 }
-.lk-question__hint { margin: 6px 0 0; font-size: var(--ty-note, 13px); color: var(--rd-ink-3); animation: lk-build var(--ax-dur) var(--ax-ease) 420ms both; }
-@media (prefers-reduced-motion: reduce) { .lk-question__mark, .lk-question .rd-kicker, .lk-question__text, .lk-question__hint { animation: none; } }
+.lk-question__text.is-long { max-width: 24ch; font-size: clamp(26px, 3vw, 38px); line-height: 1.12; }
+.lk-question__hint { margin: 0; max-width: 52ch; font-size: 15px; line-height: 1.6; color: var(--rd-ink-2); animation: lk-build var(--ax-dur) var(--ax-ease) 300ms both; }
+
+/* Where the section goes: its first headings, numbered, on one hairline. */
+.lk-question__path { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 20px; width: 100%; max-width: 520px; margin: 4px 0 0; padding: 0; list-style: none; box-shadow: inset 1px 0 0 var(--rd-line); }
+@media (max-width: 480px) { .lk-question__path { grid-template-columns: minmax(0, 1fr); } }
+.lk-question__path li {
+  display: flex; align-items: baseline; gap: 12px; padding: 6px 0 6px 16px;
+  font-size: 14px; line-height: 1.45; color: var(--rd-ink-2);
+  animation: lk-build var(--ax-dur) var(--ax-ease) both; animation-delay: calc(380ms + var(--i, 0) * 70ms);
+}
+.lk-question__path li span { flex: none; font: 700 11px var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em; color: var(--rd-accent); }
+
+.lk-question__go {
+  display: inline-flex; align-items: center; gap: 10px; height: 44px; margin-top: 6px; padding: 0 14px 0 18px; border: 0;
+  font: 650 14px var(--font-display, inherit); color: #fff; background: var(--rd-accent); cursor: pointer;
+  transition: transform var(--ax-dur-fast) var(--ax-ease), box-shadow var(--ax-dur) var(--ax-ease), filter var(--ax-dur-fast) var(--ax-ease);
+  animation: lk-build var(--ax-dur) var(--ax-ease) 640ms both;
+}
+.lk-question__go svg { width: 16px; height: 16px; transition: transform var(--ax-dur-fast) var(--ax-ease); }
+.lk-question__go:hover { filter: brightness(1.08); box-shadow: 0 14px 30px -16px var(--rd-accent); }
+.lk-question__go:hover svg { transform: translateX(3px); }
+.lk-question__go:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 3px; }
+.lk-question__go kbd { padding: 2px 6px; font: 700 10.5px var(--font-mono, ui-monospace, monospace); color: inherit; background: rgba(255, 255, 255, 0.16); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28); }
+
+/* The drawing: a large outlined question mark inside two slow rings. */
+.lk-question__art { position: relative; display: grid; place-items: center; width: 100%; max-width: 340px; aspect-ratio: 1; justify-self: center; }
+.lk-question__ring {
+  position: absolute; inset: 6%; border-radius: 50%;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 30%, transparent);
+  animation: lk-q-ring 18s linear infinite;
+}
+.lk-question__ring::before { content: ""; position: absolute; top: -4px; left: 50%; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: var(--rd-accent); box-shadow: 0 0 12px var(--rd-accent); }
+.lk-question__ring--2 { inset: 22%; animation-duration: 12s; animation-direction: reverse; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 18%, transparent); }
+.lk-question__ring--2::before { width: 6px; height: 6px; margin-left: -3px; top: -3px; opacity: 0.7; }
+@keyframes lk-q-ring { to { transform: rotate(360deg); } }
+.lk-question__mark {
+  position: relative; display: grid; place-items: center; width: 42%; aspect-ratio: 1;
+  font: 800 clamp(64px, 9vw, 120px)/1 var(--font-display, sans-serif); color: var(--rd-accent);
+  background: radial-gradient(circle, color-mix(in srgb, var(--rd-accent) 22%, transparent), transparent 70%);
+  text-shadow: 0 0 40px color-mix(in srgb, var(--rd-accent) 45%, transparent);
+  animation: lk-q-in 700ms var(--ax-ease) both;
+}
+@keyframes lk-q-in { 0% { opacity: 0; transform: scale(0.6) rotate(-12deg); } 70% { transform: scale(1.06) rotate(3deg); } 100% { opacity: 1; transform: none; } }
+
+@media (max-width: 860px) {
+  .lk-question { grid-template-columns: minmax(0, 1fr); }
+  .lk-question__art { order: -1; max-width: 140px; justify-self: start; }
+  .lk-question__mark { font-size: 56px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lk-question__mark, .lk-question .rd-kicker, .lk-question__text, .lk-question__hint, .lk-question__path li, .lk-question__go, .lk-question__ring { animation: none; }
+}
 
 /* ==== Layout and stage polish (from looking at the real page) ====
    The drawing sat centred against a long text column, so on a full slide it

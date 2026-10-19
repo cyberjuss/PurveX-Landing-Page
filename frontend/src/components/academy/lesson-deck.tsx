@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Keyboard } from "lucide-react";
+import { ArrowRight, HelpCircle, Keyboard } from "lucide-react";
 import { Recap, SlideBody } from "./slide-body";
 import { splitLessonIntoDeck } from "@/lib/lesson-deck";
 import { curlyQuotes } from "@/lib/typography";
@@ -27,6 +27,7 @@ export function LessonDeck({
   nextBeyond,
   weekScenes,
   question,
+  weekPath,
 }: {
   label: string;
   markdown: string;
@@ -39,6 +40,8 @@ export function LessonDeck({
   weekScenes?: Scene[];
   /** The week's essential question, to open the deck. */
   question?: string;
+  /** The week's other tabs, listed under the question as the road to its answer. */
+  weekPath?: string[];
 }) {
   const lesson = useMemo(() => splitLessonIntoDeck(markdown, label), [markdown, label]);
   // The week opens on its essential question, as a slide of its own before
@@ -53,6 +56,7 @@ export function LessonDeck({
     const picked = weekScenes && weekScenes.length === lesson.length ? weekScenes : pickScenes(lesson, label);
     return question ? (["deck", ...picked] as Scene[]) : picked;
   }, [weekScenes, lesson, label, question]);
+  const path = (weekPath ?? []).slice(0, 6);
   const total = slides.length;
   const [index, setIndex] = useState(() => (startAtEnd ? Math.max(0, total - 1) : 0));
   const [dir, setDir] = useState<1 | -1>(1);
@@ -212,12 +216,32 @@ export function LessonDeck({
         >
           {slide.question && (
             <div className="lk-question">
-              <span className="lk-question__mark" aria-hidden>
-                ?
-              </span>
-              <span className="rd-kicker">Essential question</span>
-              <p className="lk-question__text">{curlyQuotes(slide.question)}</p>
-              <p className="lk-question__hint">Keep it in mind as you go. This week answers it</p>
+              <div className="lk-question__main">
+                <span className="rd-kicker">
+                  <HelpCircle aria-hidden /> The week&apos;s question
+                </span>
+                <p className={`lk-question__text${slide.question.length > 60 ? " is-long" : ""}`}>{curlyQuotes(slide.question)}</p>
+                <p className="lk-question__hint">Hold on to it. By the end of the week you will be able to answer it in your own words.</p>
+                {path.length > 0 && (
+                  <ol className="lk-question__path" aria-label="This week walks through">
+                    {path.map((t, i) => (
+                      <li key={t} style={{ ["--i" as string]: i }}>
+                        <span>{String(i + 1).padStart(2, "0")}</span>
+                        {curlyQuotes(t)}
+                      </li>
+                    ))}
+                  </ol>
+                )}
+                <button type="button" className="lk-question__go" onClick={() => go(index + 1)}>
+                  Start <ArrowRight aria-hidden />
+                  <kbd>Space</kbd>
+                </button>
+              </div>
+              <div className="lk-question__art" aria-hidden>
+                <i className="lk-question__ring" />
+                <i className="lk-question__ring lk-question__ring--2" />
+                <span className="lk-question__mark">?</span>
+              </div>
             </div>
           )}
           <header className="lk__head">
