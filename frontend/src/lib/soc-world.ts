@@ -4,57 +4,72 @@
 // world 1600 wide.
 
 export const WORLD_W = 1600;
-export const WALL_H = 170;
+export const WALL_H = 150;
 export const RADIUS = 16;
-const COLS = 4;
-const DESK_W = 230;
-const DESK_H = 64;
-const CELL_X = 300;
-const CELL_Y = 210;
-const GRID_X = 70;
-const GRID_Y = 240;
+const PER_ROW = 4;
+const DESK_W = 220;
+const DESK_H = 62;
+const CELL_X = 290;
+const ROW_H = 230;
+const GRID_X = 80;
+const GRID_Y = 250;
 
 export type Rect = { x: number; y: number; w: number; h: number };
 export type Pt = { x: number; y: number };
 
 export type Station = { i: number; desk: Rect; seat: Pt; label: Pt };
+export type Pod = { label: string; rug: Rect; stations: number[] };
 
-export function layout(n: number) {
-  const rows = Math.max(1, Math.ceil(n / COLS));
-  const height = Math.max(820, GRID_Y + rows * CELL_Y + 150);
-  const stations: Station[] = Array.from({ length: n }, (_, i) => {
-    const x = GRID_X + (i % COLS) * CELL_X;
-    const y = GRID_Y + Math.floor(i / COLS) * CELL_Y;
-    return { i, desk: { x, y, w: DESK_W, h: DESK_H }, seat: { x: x + DESK_W / 2, y: y + DESK_H + 38 }, label: { x: x + DESK_W / 2, y: y + DESK_H + 86 } };
-  });
+/**
+ * The room for a list of pods, each a run of labs that belong together (a
+ * week of the course). A pod takes a row, or more than one when it has more
+ * desks than fit; its rug marks the zone on the floor.
+ */
+export function layout(pods: { label: string; size: number }[]) {
+  const stations: Station[] = [];
+  const zones: Pod[] = [];
+  let row = 0;
+  for (const pod of pods) {
+    const first = row;
+    const ids: number[] = [];
+    for (let k = 0; k < pod.size; k++) {
+      if (k && k % PER_ROW === 0) row++;
+      const i = stations.length;
+      const x = GRID_X + (k % PER_ROW) * CELL_X;
+      const y = GRID_Y + row * ROW_H;
+      stations.push({ i, desk: { x, y, w: DESK_W, h: DESK_H }, seat: { x: x + DESK_W / 2, y: y + DESK_H + 40 }, label: { x: x + DESK_W / 2, y: y + DESK_H + 92 } });
+      ids.push(i);
+    }
+    const rows = row - first + 1;
+    zones.push({ label: pod.label, rug: { x: GRID_X - 40, y: GRID_Y + first * ROW_H - 46, w: PER_ROW * CELL_X + 10, h: rows * ROW_H - 14 }, stations: ids });
+    row++;
+  }
+  const height = Math.max(860, GRID_Y + row * ROW_H + 110);
   // The right of the room: the Coach's desk, a colleague on the night shift,
   // the server rack and the coffee corner.
-  const coachDesk: Rect = { x: 1350, y: 250, w: 200, h: 64 };
-  const coach: Pt = { x: 1450, y: 380 };
-  const colleagueDesk: Rect = { x: 1350, y: 520, w: 200, h: 64 };
-  const colleague: Pt = { x: 1450, y: 622 };
-  const rack: Rect = { x: 1556, y: 200, w: 34, h: Math.min(height - 360, 420) };
-  const coffee: Rect = { x: 1380, y: height - 150, w: 150, h: 46 };
+  const coachDesk: Rect = { x: 1330, y: 250, w: 210, h: 62 };
+  const coach: Pt = { x: 1435, y: 372 };
+  const colleagueDesk: Rect = { x: 1330, y: 540, w: 210, h: 62 };
+  const colleague: Pt = { x: 1435, y: 640 };
+  const rack: Rect = { x: 1562, y: 190, w: 28, h: Math.min(height - 340, 380) };
+  const coffee: Rect = { x: 1360, y: height - 140, w: 160, h: 44 };
   const plants: Pt[] = [
-    { x: 1316, y: 200 },
-    { x: 40, y: 200 },
-    { x: 1560, y: height - 60 },
+    { x: 1296, y: 196 },
+    { x: 1560, y: height - 50 },
   ];
-  const door: Rect = { x: 70, y: height - 14, w: 120, h: 14 };
-  const spawn: Pt = { x: 130, y: height - 60 };
+  const door: Rect = { x: 60, y: height - 12, w: 130, h: 12 };
+  const spawn: Pt = { x: 125, y: height - 56 };
   const blocks: Rect[] = [
     ...stations.map((s) => s.desk),
     coachDesk,
     colleagueDesk,
     rack,
     coffee,
-    ...plants.map((p) => ({ x: p.x - 20, y: p.y - 20, w: 40, h: 40 })),
-    // the colleague in their chair
+    ...plants.map((p) => ({ x: p.x - 18, y: p.y - 18, w: 36, h: 36 })),
     { x: colleague.x - 22, y: colleague.y - 22, w: 44, h: 44 },
-    // the Coach, standing
     { x: coach.x - 16, y: coach.y - 16, w: 32, h: 32 },
   ];
-  return { height, stations, coachDesk, coach, colleagueDesk, colleague, rack, coffee, plants, door, spawn, blocks };
+  return { height, stations, pods: zones, coachDesk, coach, colleagueDesk, colleague, rack, coffee, plants, door, spawn, blocks };
 }
 
 export type World = ReturnType<typeof layout>;

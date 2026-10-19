@@ -11,7 +11,7 @@ const VIEW_KEY = "academy-labs-view";
 
 // The Labs page: the SOC floor by default, with the plain card list one click
 // away for anyone who would rather search. The choice is remembered.
-export function LabsView({ labs }: { labs: LabMeta[] }) {
+export function LabsView({ labs }: { labs: (LabMeta & { week?: string })[] }) {
   const [view, setView] = useState<"floor" | "list">("floor");
   useEffect(() => {
     try {
