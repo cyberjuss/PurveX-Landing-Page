@@ -270,4 +270,11 @@ html[data-academy-theme="dark"] .hl-chip__bad { background: #f87171; }
 }
 
 /* The note under the stopping bar: what the wait is, and that it costs nothing. */
-.hl .hl__stopnote { margin: 0; font-size: var(--ty-note); line-height: 1.45; color: var(--hl-ink-3); }
+
+/* Saving your lab... : three dots that fill in turn. */
+.hl .hl__dots { display: inline-flex; margin-left: 1px; font-style: normal; }
+.hl .hl__dots b { font-weight: inherit; animation: hl-dot 1.2s ease-in-out infinite both; }
+.hl .hl__dots b:nth-child(2) { animation-delay: 0.2s; }
+.hl .hl__dots b:nth-child(3) { animation-delay: 0.4s; }
+@keyframes hl-dot { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .hl .hl__dots b { animation: none; opacity: 1; } }
