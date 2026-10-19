@@ -563,6 +563,31 @@ export function DrillRunner() {
 
   useEffect(load, [load]);
 
+  // The drill status is read once, so a lab that came up after the page loaded
+  // left the investigation row on "Waiting for your lab" until it was clicked.
+  // Re-read it while the lab is up and its Security log has not landed yet.
+  const labUp = hostedLab && (labState === "ready" || labState === "starting");
+  const ctfWaiting = Boolean(status && !status.ctf.entry && !status.lab.events);
+  useEffect(() => {
+    if (!labUp || !ctfWaiting) return;
+    load();
+    const t = window.setInterval(load, 15_000);
+    return () => window.clearInterval(t);
+  }, [labUp, ctfWaiting, load]);
+
+  // Pressing "Start your lab" on the investigation row means they want the
+  // investigation, so it opens on its own once the lab has something to draw from.
+  const ctfAfterLab = useRef(false);
+  const startLabForCtf = () => {
+    ctfAfterLab.current = true;
+    void startLab();
+  };
+  useEffect(() => {
+    if (!ctfAfterLab.current || !status?.lab.events || status.ctf.entry || run || busy) return;
+    ctfAfterLab.current = false;
+    void start("ctf");
+  }, [status, run, busy]);
+
   async function getHint(token: string) {
     try {
       const res = await academyFetch("/academy/api/drill", {
@@ -1069,7 +1094,7 @@ export function DrillRunner() {
                     ) : hostedLab ? (
                       // Off. Waiting would have been forever, and the button
                       // only re-read a status that could not change.
-                      <button type="button" className="rd-cta" disabled={labBusy} onClick={() => void startLab()}>
+                      <button type="button" className="rd-cta" disabled={labBusy} onClick={startLabForCtf}>
                         {labBusy ? "Starting…" : "Start your lab"} <ArrowRight className="h-4 w-4" />
                       </button>
                     ) : (

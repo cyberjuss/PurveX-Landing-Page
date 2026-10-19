@@ -14,6 +14,7 @@
 .lg__sub { margin: 0.5rem 0 0; max-width: 34rem; font-size: var(--ty-lead); line-height: 1.5; color: var(--rd-ink-2, #475569); }
 
 /* search ------------------------------------------------------------------- */
+.lg__side { display: grid; justify-items: end; gap: 0.75rem; }
 .lg__search { position: relative; display: flex; align-items: center; min-width: 14rem; }
 .lg__search svg { position: absolute; left: 0.7rem; width: 16px; height: 16px; color: var(--rd-ink-2, #475569); pointer-events: none; }
 .lg__search input {

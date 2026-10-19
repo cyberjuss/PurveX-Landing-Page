@@ -424,6 +424,89 @@ function Ensure-IntegrityTickets {
         }
         catch { Write-Host "  Could not plant INC-1058: $($_.Exception.Message)" -ForegroundColor Yellow }
     }
+
+    # Synthetic records for training, one set per department share, kept by the
+    # people who own that work in the lab. Every value is one that cannot belong
+    # to a real person or account: SSNs in the never-issued 900 range, phone
+    # numbers in the 555-0100 to 555-0199 block reserved for fiction, example.com
+    # email, account numbers marked TEST, and names marked SAMPLE. Each file says
+    # so in its first line.
+    if (-not (Test-PurvexTicketMark "DATA-SAMPLE") -and $PSCmdlet.ShouldProcess("$PurvexLabRoot\Shares", "Plant synthetic department records")) {
+        try {
+            $banner = "# SYNTHETIC TRAINING DATA - NOT REAL PEOPLE OR ACCOUNTS - PurveX Financial lab"
+            $shares = Join-Path $PurvexLabRoot "Shares"
+            $sets = [ordered]@{
+                # Wealth Management: the advisors' book of clients.
+                "Clients\client-register-SAMPLE.csv" = @(
+                    "client_id,name,ssn,phone,email,advisor,since",
+                    "C-1001,Avery SAMPLE,900-01-0001,555-0101,avery.sample@example.com,sam.whitfield,2019-03-04",
+                    "C-1002,Blake SAMPLE,900-01-0002,555-0102,blake.sample@example.com,jamie.torres,2020-07-15",
+                    "C-1003,Casey SAMPLE,900-01-0003,555-0103,casey.sample@example.com,sam.whitfield,2018-11-02",
+                    "C-1004,Drew SAMPLE,900-01-0004,555-0104,drew.sample@example.com,jamie.torres,2021-01-20",
+                    "C-1005,Emery SAMPLE,900-01-0005,555-0105,emery.sample@example.com,sam.whitfield,2022-05-09",
+                    "C-1006,Finley SAMPLE,900-01-0006,555-0106,finley.sample@example.com,jamie.torres,2017-08-30",
+                    "C-1007,Gray SAMPLE,900-01-0007,555-0107,gray.sample@example.com,sam.whitfield,2023-02-14",
+                    "C-1008,Harper SAMPLE,900-01-0008,555-0108,harper.sample@example.com,jamie.torres,2020-10-01"
+                )
+                "WealthManagement\portfolio-summary-SAMPLE.csv" = @(
+                    "client_id,account,advisor,risk_profile,balance_usd,last_review",
+                    "C-1001,TEST-ACCT-0001,sam.whitfield,Moderate,412500,2026-09-12",
+                    "C-1002,TEST-ACCT-0002,jamie.torres,Conservative,188200,2026-08-28",
+                    "C-1003,TEST-ACCT-0003,sam.whitfield,Growth,903750,2026-09-03",
+                    "C-1004,TEST-ACCT-0004,jamie.torres,Moderate,256900,2026-07-19",
+                    "C-1005,TEST-ACCT-0005,sam.whitfield,Conservative,97400,2026-09-21",
+                    "C-1006,TEST-ACCT-0006,jamie.torres,Growth,1240300,2026-08-05",
+                    "C-1007,TEST-ACCT-0007,sam.whitfield,Moderate,330150,2026-09-30",
+                    "C-1008,TEST-ACCT-0008,jamie.torres,Conservative,145800,2026-08-17"
+                )
+                # Compliance: know-your-customer reviews on the same clients.
+                "Compliance\kyc-review-log-SAMPLE.csv" = @(
+                    "client_id,reviewer,review_date,id_verified,risk_rating,status",
+                    "C-1001,devon.brooks,2026-06-02,yes,Low,Approved",
+                    "C-1002,morgan.lee,2026-06-09,yes,Low,Approved",
+                    "C-1003,devon.brooks,2026-06-16,yes,Medium,Approved",
+                    "C-1004,morgan.lee,2026-07-01,pending,Medium,Awaiting documents",
+                    "C-1005,devon.brooks,2026-07-08,yes,Low,Approved",
+                    "C-1006,morgan.lee,2026-07-22,yes,High,Enhanced review",
+                    "C-1007,devon.brooks,2026-08-04,yes,Low,Approved",
+                    "C-1008,morgan.lee,2026-08-18,pending,Low,Awaiting documents"
+                )
+                # Finance and Accounting: vendor payments. LedgerLine is the vendor
+                # from the Week 2 password lab.
+                "Finance\vendor-payments-SAMPLE.csv" = @(
+                    "invoice,vendor,amount_usd,pay_to_account,due,approved_by",
+                    "INV-7301,LedgerLine,18450.00,TEST-BANK-0101,2026-10-31,jordan.ellis",
+                    "INV-7302,Northwind Office Supply,2310.75,TEST-BANK-0102,2026-10-24,jordan.ellis",
+                    "INV-7303,Contoso Data Feeds,9800.00,TEST-BANK-0103,2026-11-07,jordan.ellis",
+                    "INV-7304,Fabrikam Facilities,4125.50,TEST-BANK-0104,2026-10-28,jordan.ellis",
+                    "INV-7305,LedgerLine,18450.00,TEST-BANK-0101,2026-11-30,jordan.ellis"
+                )
+                # Operations: settlement batches the nightly job reconciles.
+                "Operations\settlement-batches-SAMPLE.csv" = @(
+                    "batch,run_date,trades,net_usd,reconciled_by,status",
+                    "SB-2026-1012,2026-10-12,214,1873420.18,riley.kwan,Reconciled",
+                    "SB-2026-1013,2026-10-13,198,-402115.60,riley.kwan,Reconciled",
+                    "SB-2026-1014,2026-10-14,231,965240.02,taylor.osei,Reconciled",
+                    "SB-2026-1015,2026-10-15,187,288013.47,taylor.osei,Exception: 2 trades unmatched",
+                    "SB-2026-1016,2026-10-16,205,1120588.90,riley.kwan,Reconciled"
+                )
+            }
+            foreach ($rel in $sets.Keys) {
+                $path = Join-Path $shares $rel
+                New-Item -ItemType Directory -Path (Split-Path -Parent $path) -Force | Out-Null
+                # Created once and never overwritten, so a student's change stays theirs.
+                if (-not (Test-Path -LiteralPath $path)) {
+                    Set-Content -LiteralPath $path -Encoding ASCII -Value (@($banner) + $sets[$rel])
+                }
+            }
+            if (-not (Get-SmbShare -Name "Shares" -ErrorAction SilentlyContinue)) {
+                New-SmbShare -Name "Shares" -Path $shares -ReadAccess "Domain Users" -ErrorAction SilentlyContinue | Out-Null
+            }
+            Add-PurvexTicketMark "DATA-SAMPLE"
+            Write-Host "  Planted synthetic department records on Shares" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant synthetic department records: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
 }
 
 # Firewall rules in the PurveX Lab group, read straight from the registry. That

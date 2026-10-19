@@ -104,6 +104,31 @@ const MISSION_LAB = {
     ],
     { tickets: ["INC-1058"] }
   ),
+  // The client data review reads the synthetic records the lab plants on its
+  // shares. Every task needs them on the share before it can be answered; the
+  // last one also needs the least-privilege group the student builds.
+  "cd-01": G([], { tickets: ["DATA-SAMPLE"] }),
+  "cd-02": G([], { tickets: ["DATA-SAMPLE"] }),
+  "cd-03": G([], { tickets: ["DATA-SAMPLE"] }),
+  "cd-04": G([], { tickets: ["DATA-SAMPLE"] }),
+  "cd-05": G([], { tickets: ["DATA-SAMPLE"] }),
+  "cd-06": G([], { tickets: ["DATA-SAMPLE"] }),
+  "cd-07": G(
+    [
+      { c: { t: "group", name: "Client Data Readers", category: "Security", container: "OU=AccessLevels" }, label: "Client Data Readers is a security group in AccessLevels" },
+      { c: { t: "member", sam: "sam.whitfield", group: "Client Data Readers", want: true }, label: "sam.whitfield is in it" },
+      { c: { t: "member", sam: "jamie.torres", group: "Client Data Readers", want: true }, label: "jamie.torres is in it" },
+      { c: { t: "member", sam: "devon.brooks", group: "Client Data Readers", want: true }, label: "devon.brooks is in it" },
+      { c: { t: "member", sam: "morgan.lee", group: "Client Data Readers", want: true }, label: "morgan.lee is in it" },
+      // Least privilege: every other staff account stays out.
+      { c: { t: "member", sam: "alex.rivera", group: "Client Data Readers", want: false }, label: "alex.rivera is not in it" },
+      { c: { t: "member", sam: "priya.nair", group: "Client Data Readers", want: false }, label: "priya.nair is not in it" },
+      { c: { t: "member", sam: "taylor.osei", group: "Client Data Readers", want: false }, label: "taylor.osei is not in it" },
+      { c: { t: "member", sam: "riley.kwan", group: "Client Data Readers", want: false }, label: "riley.kwan is not in it" },
+      { c: { t: "member", sam: "jordan.ellis", group: "Client Data Readers", want: false }, label: "jordan.ellis is not in it" },
+    ],
+    { tickets: ["DATA-SAMPLE"] }
+  ),
 } as const;
 
 type Gate = { checks: { c: Check; label: string }[]; needs?: Needs };

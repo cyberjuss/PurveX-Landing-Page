@@ -60,6 +60,12 @@ export function LabCarousel({
   const [finished, setFinished] = useState(false);
   const isDone = done || finished;
 
+  // Tell the workstation scene which step is on screen.
+  useEffect(() => {
+    if (!total) return;
+    window.dispatchEvent(new CustomEvent("academy-lab-step", { detail: { index, total, title: slides[index]?.label ?? "" } }));
+  }, [index, total, slides]);
+
   // Self-check multiple choice inside the slide markdown. Delegation on the
   // stable slide host, restored on every slide change so a prediction or a
   // check answered earlier is still there when the student pages back to it.

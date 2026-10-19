@@ -14,7 +14,8 @@ const ICONS: Record<string, LucideIcon> = {
 // The Labs page. Plain, neutral cards that read the same in light and dark. One
 // accent, used only to mark where you are and where you are going. A search and
 // skill filters up top so a growing list stays easy to scan and navigate.
-export function LabGallery({ labs }: { labs: LabMeta[] }) {
+/** `tools` sits at the right of the heading, above the search: the Labs page's view switch. */
+export function LabGallery({ labs, tools }: { labs: LabMeta[]; tools?: React.ReactNode }) {
   const { isLabDone } = useAcademyProgress();
   const [query, setQuery] = useState("");
   const [skill, setSkill] = useState<string | null>(null);
@@ -37,15 +38,18 @@ export function LabGallery({ labs }: { labs: LabMeta[] }) {
           <h1>Labs</h1>
           <p className="lg__sub">Each lab is a real task from the PurveX environment. Open one and work it start to finish on its own page.</p>
         </div>
-        <div className="lg__search">
-          <Search aria-hidden="true" />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search labs"
-            aria-label="Search labs"
-          />
+        <div className="lg__side">
+          {tools}
+          <div className="lg__search">
+            <Search aria-hidden="true" />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search labs"
+              aria-label="Search labs"
+            />
+          </div>
         </div>
       </header>
 
