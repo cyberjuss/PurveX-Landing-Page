@@ -1473,3 +1473,32 @@ button.lk__art { padding: 0; width: 100%; font: inherit; color: var(--rd-accent)
 .lk.is-full .lk__frame { animation: lk-full-in 260ms var(--ax-ease, ease) both; }
 @keyframes lk-full-in { from { opacity: 0; transform: scale(0.985); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .lk.is-full .lk__frame { animation: none; } }
+
+/* Full screen uses the screen: the slide fills the height with its content
+   centred, the drawing takes about a third of the width, and the type and
+   the measure grow with the screen rather than staying at page size. */
+:is(.lk.is-full, .lk:fullscreen) .lk__frame { display: flex; flex-direction: column; }
+:is(.lk.is-full, .lk:fullscreen) .lk__stage { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; }
+:is(.lk.is-full, .lk:fullscreen) .lk__slide { flex: 1 1 auto; padding: clamp(28px, 3.2vw, 64px) clamp(32px, 5vw, 96px); }
+:is(.lk.is-full, .lk:fullscreen) .lk__title { font-size: clamp(34px, 3vw, 56px); }
+:is(.lk.is-full, .lk:fullscreen) .lk__body {
+  grid-template-columns: minmax(260px, 0.42fr) minmax(0, 1fr);
+  gap: clamp(36px, 5vw, 110px);
+  align-items: center;
+  align-content: center;
+}
+:is(.lk.is-full, .lk:fullscreen) .lk__body > .lk__art { position: static; width: 100%; max-width: min(560px, 62vh); justify-self: center; }
+:is(.lk.is-full, .lk:fullscreen) .lk__prose { max-width: 74ch; font-size: clamp(17px, 1.3vw, 24px); line-height: 1.6; }
+:is(.lk.is-full, .lk:fullscreen) .lk__flow .lk__prose { max-width: 70ch; font-size: clamp(17px, 1.3vw, 24px); }
+:is(.lk.is-full, .lk:fullscreen) .lk__flow > .lk-build:first-child .lk__prose { font-size: clamp(19px, 1.55vw, 28px); }
+:is(.lk.is-full, .lk:fullscreen) .lk__slide--media .lk__body,
+:is(.lk.is-full, .lk:fullscreen) .lk__slide--activity .lk__body { grid-template-columns: minmax(0, 1fr); align-content: center; }
+:is(.lk.is-full, .lk:fullscreen) .lk__slide--media .lk__prose > :is(p, ul, ol) { max-width: 80ch; }
+:is(.lk.is-full, .lk:fullscreen) .lk-cards { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+:is(.lk.is-full, .lk:fullscreen) .lk-tiles { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+:is(.lk.is-full, .lk:fullscreen) .lk-question__text { font-size: clamp(40px, 4.2vw, 76px); }
+:is(.lk.is-full, .lk:fullscreen) .lk-question__art { max-width: min(520px, 58vh); }
+@media (max-width: 760px) {
+  :is(.lk.is-full, .lk:fullscreen) .lk__body { grid-template-columns: minmax(0, 1fr); }
+  :is(.lk.is-full, .lk:fullscreen) .lk__body > .lk__art { max-width: 200px; }
+}
