@@ -441,8 +441,8 @@ function StartTracker({ status }: { status: Status }) {
 
 // Stopping hibernates the domain controller: its memory is written to disk so
 // the next Resume takes about half a minute instead of five. That write takes
-// a few minutes, so the tracker shows a moving bar, running dots and the time
-// so far, without a paragraph to read.
+// a few minutes, so the tracker shows running dots and the time so far,
+// without a paragraph to read.
 function StopTracker() {
   const elapsed = useElapsed(null, true);
   const m = Math.floor(elapsed / 60);
@@ -462,9 +462,6 @@ function StopTracker() {
           {m}:{sec}
         </em>
       </p>
-      <div className="hl__bar hl__bar--idle" role="progressbar" aria-label="Stopping your lab">
-        <span />
-      </div>
     </div>
   );
 }

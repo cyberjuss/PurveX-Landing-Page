@@ -157,14 +157,6 @@ html[data-academy-theme="dark"] .hl-note,
    invisible, so a 5% fill looked like a stray dash rather than early progress. */
 .hl__bar { height: 5px; background: color-mix(in srgb, var(--hl-ink) 14%, transparent); overflow: hidden; }
 .hl__bar span { display: block; height: 100%; background: var(--hl-wait); transition: width 1s linear; }
-/* Shutting down has no measurable progress, so the bar paces instead of filling. */
-.hl__bar--idle { margin-top: 2px; }
-.hl__bar--idle span { width: 38%; transition: none; animation: hl-pace 1.15s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
-@keyframes hl-pace {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(263%); }
-}
-@media (prefers-reduced-motion: reduce) { .hl__bar--idle span { animation: none; width: 100%; opacity: 0.5; } }
 .hl .hl__steps { display: grid; grid-template-columns: 1fr; gap: 7px; margin: 0; padding: 0; list-style: none; }
 .hl .hl__steps li { display: flex; align-items: center; gap: 9px; margin: 0; font-size: var(--ty-note); color: var(--hl-ink-3); }
 .hl .hl__steps i { flex: none; width: 13px; height: 13px; border: 1.5px solid var(--hl-line); }
