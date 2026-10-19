@@ -33,7 +33,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     cue: "What does confidentiality protect, and what does its failure look like?",
     means: "Only authorized people can read the information. When it fails, data is exposed to someone who should not see it: a **leak**.",
     example: "A payroll spreadsheet is emailed to the wrong distribution list. Nothing was changed or deleted, but people who should not see salaries now have them.",
-    notTo: "An integrity failure. Leaked data is still correct; the harm is who has seen it. Controls: access control, encryption, need to know.",
+    notTo: "An integrity failure. Leaked data is still correct. The harm is who has seen it. Controls: access control, encryption, need to know.",
   },
   {
     term: "Integrity",
@@ -54,7 +54,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Vulnerability",
     cue: "What is a vulnerability, and does it cause harm on its own?",
-    means: "A weakness that could be exploited: an unpatched service, a misconfiguration, a reused password, a process nobody follows. On its own it does nothing; it waits.",
+    means: "A weakness that could be exploited: an unpatched service, a misconfiguration, a reused password, a process nobody follows. On its own it does nothing. It waits.",
     example: "Remote Desktop (port 3389) open to the internet on a server that has not been patched in a year.",
     notTo: "A threat. The weakness exists whether or not anyone is trying to use it.",
   },
@@ -63,7 +63,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     cue: "What is a threat, and how is it different from a vulnerability?",
     means: "Anyone or anything that could exploit a vulnerability and cause harm: a criminal group, malware, a careless or angry insider, even a flood or a power cut.",
     example: "A ransomware crew scanning the internet for exposed Remote Desktop servers.",
-    notTo: "A vulnerability. A threat with no weakness to use has nothing to work with; a weakness with no threat is not yet being used.",
+    notTo: "A vulnerability. A threat with no weakness to use has nothing to work with, and a weakness with no threat is not yet being used.",
   },
   {
     term: "Risk",
@@ -71,14 +71,14 @@ export const GLOSSARY: GlossaryEntry[] = [
     cue: "How is risk worked out, and what lowers it?",
     means: "The chance that a threat exploits a vulnerability, combined with what it would cost if it did. Most teams score it as **likelihood × impact**.",
     example: "The same unpatched flaw is high risk on an internet-facing server holding client records, and low risk on an isolated test machine with nothing on it.",
-    notTo: "Severity. A CVSS score rates the flaw itself; risk depends on where it sits and what it guards. A control lowers risk by cutting the likelihood (patching) or the impact (backups).",
+    notTo: "Severity. A CVSS score rates the flaw itself. Risk depends on where it sits and what it guards. A control lowers risk by cutting the likelihood (patching) or the impact (backups).",
   },
   {
     term: "Backups",
     cue: "What makes a backup one you can count on?",
     means: "Copies of data kept apart from the original, so it can be restored after deletion, corruption or ransomware. A backup counts only if an attacker cannot reach it (offline or immutable) and it has been restored at least once in a test.",
     example: "After ransomware hits the file server, IT rebuilds it and restores last night's copy from storage the attacker could not touch.",
-    notTo: "Redundancy. A mirror copies a deletion or an encryption instantly; a backup is a point in time you can go back to.",
+    notTo: "Redundancy. A mirror copies a deletion or an encryption instantly. A backup is a point in time you can go back to.",
   },
   {
     term: "Redundancy",
@@ -91,13 +91,13 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Patching",
     cue: "What does patching do to risk?",
     means: "Installing vendor updates that fix known defects. It closes vulnerabilities before they can be used, which lowers the likelihood side of risk.",
-    example: "A critical Windows update fixes a remote code execution flaw; until it is installed, every unpatched server is reachable by anyone with the exploit.",
+    example: "A critical Windows update fixes a remote code execution flaw. Until it is installed, every unpatched server is reachable by anyone with the exploit.",
   },
   {
     term: "Distributed denial of service",
     aka: ["ddos", "distributed denial of service (ddos)"],
     cue: "What does a DDoS attack target, and why is it hard to block?",
-    means: "An attack that floods a service from many machines at once with more traffic or requests than it can answer, so genuine users cannot get through. It targets **availability**; nothing is stolen or changed.",
+    means: "An attack that floods a service from many machines at once with more traffic or requests than it can answer, so genuine users cannot get through. It targets **availability**. Nothing is stolen or changed.",
     example: "The client portal stops responding while thousands of addresses send requests at the same time.",
     notTo: "A single-source attack. Blocking one IP address does not stop traffic coming from thousands.",
   },
@@ -107,7 +107,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Authentication",
     cue: "What question does authentication answer?",
     means: "Proving an account is who it claims to be, with a password, a code, a security key or a fingerprint. In a Windows domain the domain controller checks it at sign-in.",
-    example: "Event 4624 records a successful sign-in; 4625 records a failed one, with the account and where it came from.",
+    example: "Event 4624 records a successful sign-in and 4625 a failed one, with the account and where it came from.",
     notTo: "Authorization. Signing in successfully says who you are, not what you may open.",
   },
   {
@@ -122,7 +122,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     cue: "How is access control different from authorization?",
     means: "The mechanism that enforces the authorization decision on every request: file and share permissions, a server-side role check, a firewall rule.",
     example: "Each time someone opens a file on the share, Windows checks its permissions again, not just once at sign-in.",
-    notTo: "Authorization. Authorization is the decision; access control is enforcing it on every request.",
+    notTo: "Authorization. Authorization is the decision. Access control enforces it on every request.",
   },
   {
     term: "Accounting",
@@ -135,7 +135,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Encryption",
     cue: "What does encryption need to be undone, and what does it protect?",
     means: "Scrambling data with a key so only someone holding the right key can read it. It is reversible, but only with that key.",
-    example: "BitLocker encrypts a laptop's disk, so a stolen laptop gives the thief nothing readable; TLS encrypts a web session in transit.",
+    example: "BitLocker encrypts a laptop's disk, so a stolen laptop gives the thief nothing readable. TLS encrypts a web session in transit.",
     notTo: "Encoding, which anyone can reverse with no key, or hashing, which nobody can reverse.",
   },
 
@@ -178,20 +178,20 @@ export const GLOSSARY: GlossaryEntry[] = [
     cue: "A user's laptop shows the BitLocker recovery screen. What do you do?",
     means: "BitLocker is Windows' full-disk encryption. When it detects a change to the boot environment, such as a firmware update or a moved disk, it asks for the 48-digit recovery key before it unlocks the drive.",
     example: "Verify the caller with an approved method such as a callback to the number on file, match the Key ID on their screen to the key stored for that computer in Active Directory or Microsoft Entra ID, then read them the key.",
-    notTo: "A forgotten password. Resetting the user's password does nothing; only the recovery key for that Key ID unlocks the disk.",
+    notTo: "A forgotten password. Resetting the user's password does nothing. Only the recovery key for that Key ID unlocks the disk.",
   },
   {
     term: "Salt",
     cue: "What does a salt do to stored passwords, and is it secret?",
     means: "A random value generated for each user and stored next to their password hash. Two people with the same password end up with different stored values, so precomputed tables fail and the table no longer shows who shares a password.",
-    notTo: "A secret, or a way to slow guessing. The salt sits in the database in the open; slowing each guess is the job of a slow hash.",
+    notTo: "A secret, or a way to slow guessing. The salt sits in the database in the open. Slowing each guess is the job of a slow hash.",
   },
   {
     term: "Slow hash",
     aka: ["salted, slow hash", "salted slow hash"],
     cue: "How should a system store passwords, and why slow?",
-    means: "A password hashing function that is deliberately expensive to compute, such as Argon2id or bcrypt, run with a per-user salt. A fast hash like SHA-256 lets an attacker test billions of guesses a second; a slow one cuts that to a tiny fraction.",
-    example: "A leaked table of bcrypt hashes buys the attacker months of guessing; a leaked table of unsalted SHA-256 hashes gives up most common passwords within hours.",
+    means: "A password hashing function that is deliberately expensive to compute, such as Argon2id or bcrypt, run with a per-user salt. A fast hash like SHA-256 lets an attacker test billions of guesses a second. A slow one cuts that to a tiny fraction.",
+    example: "A leaked table of bcrypt hashes buys the attacker months of guessing. A leaked table of unsalted SHA-256 hashes gives up most common passwords within hours.",
     notTo: "Encryption. A stored password should not be decryptable by anyone, the company included.",
   },
   {
@@ -227,7 +227,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "IP address",
     aka: ["address"],
     cue: "What does an IP address do?",
-    means: "A number that identifies a device on a network so traffic can be routed to it. The address gets traffic to the right machine; the port gets it to the right program on it.",
+    means: "A number that identifies a device on a network so traffic can be routed to it. The address gets traffic to the right machine, and the port gets it to the right program on it.",
     example: "A packet that never reached the host is an addressing or routing problem, not a problem with the service.",
   },
   {
@@ -235,7 +235,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     cue: "What does a port select, and which ones should you know on sight?",
     means: "A number (0 to 65535) that selects which service on a machine a connection is for. 22 SSH, 53 DNS, 80 HTTP, 443 HTTPS, 445 SMB file sharing, 3389 Remote Desktop.",
     example: "Inbound traffic on 22 or 3389 from somewhere unexpected usually means someone trying to control a machine, not browse it.",
-    notTo: "An address. The address finds the machine; the port finds the service.",
+    notTo: "An address. The address finds the machine, and the port finds the service.",
   },
   {
     term: "Protocol",
@@ -249,21 +249,21 @@ export const GLOSSARY: GlossaryEntry[] = [
     cue: "How does TCP open a connection, and what do the answers tell you?",
     means: "The Transmission Control Protocol opens a connection with a three-way handshake (SYN, SYN-ACK, ACK) before any data moves, then numbers and acknowledges the data so lost pieces are resent and arrive in order.",
     example: "A SYN with no reply means the host never answered (down, filtered or the wrong address). A reset (RST) in reply means the host is up but nothing is listening on that port.",
-    notTo: "TLS. TCP's handshake sets up the connection; TLS's handshake, which comes after it, sets up the privacy.",
+    notTo: "TLS. TCP's handshake sets up the connection. TLS's handshake comes after it and sets up the privacy.",
   },
   {
     term: "TLS",
     aka: ["tls's handshake", "ssl/tls", "ssl"],
     cue: "What does TLS add to a connection, and when does its handshake happen?",
     means: "Transport Layer Security encrypts a connection and proves the server is who it claims, using its certificate. It is the S in HTTPS. Its handshake runs after TCP's and agrees the session keys. SSL is the retired older version of it.",
-    notTo: "TCP. TCP gets the bytes there reliably; TLS makes sure nobody in between can read or change them.",
+    notTo: "TCP. TCP gets the bytes there reliably. TLS makes sure nobody in between can read or change them.",
   },
   {
     term: "HTTP and HTTPS",
     aka: ["http/https"],
     cue: "What is the difference between HTTP and HTTPS?",
     means: "HTTP is the protocol web pages load over (port 80). HTTPS is HTTP inside TLS (port 443), so the content cannot be read or changed in transit.",
-    notTo: "A safe site. HTTPS protects the connection; a phishing page can have a valid certificate too.",
+    notTo: "A safe site. HTTPS protects the connection, but a phishing page can have a valid certificate too.",
   },
   {
     term: "DNS",
@@ -290,14 +290,14 @@ export const GLOSSARY: GlossaryEntry[] = [
     cue: "What is broken access control?",
     means: "The server fails to enforce what a user may do, so they reach data or actions beyond their permissions. It is A01, the top risk, in the OWASP Top 10.",
     example: "A regular user changes a value in a request and the application treats them as an administrator.",
-    notTo: "A sign-in flaw. The user authenticated correctly; the server skipped the authorization check.",
+    notTo: "A sign-in flaw. The user authenticated correctly. The server skipped the authorization check.",
   },
   {
     term: "Insecure direct object reference (IDOR)",
     aka: ["idor", "insecure direct object reference"],
     cue: "What does an IDOR look like in a request?",
     means: "Changing an identifier in a request returns someone else's record, because the server never checks that the record belongs to the person asking.",
-    example: "`/statements?id=1043` shows your statement; `id=1044` shows another client's.",
+    example: "`/statements?id=1043` shows your statement, and `id=1044` shows another client's.",
   },
   {
     term: "Forced browsing",
@@ -325,7 +325,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Share and NTFS permissions",
     aka: ["share", "ntfs"],
     cue: "A shared folder has two sets of permissions. Which one wins over the network?",
-    means: "Share permissions apply when the folder is reached over the network; NTFS permissions apply to the files themselves, locally and over the network. Over the network, the more restrictive of the two wins.",
+    means: "Share permissions apply when the folder is reached over the network. NTFS permissions apply to the files themselves, locally and over the network. Over the network, the more restrictive of the two wins.",
     example: "Share permission Full Control, NTFS Read: a user on the network can only read.",
   },
   {
@@ -338,7 +338,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     aka: ["4624", "4625"],
     cue: "Which Windows event IDs record a successful and a failed sign-in?",
     means: "In the Windows Security log, **4624** is a successful logon and **4625** a failed one, with the account, the logon type and the source. **4740** is an account being locked out.",
-    example: "A run of 4625s against one account, then a 4740, is a lockout; a run of 4625s across many accounts from one source is spraying.",
+    example: "A run of 4625s against one account, then a 4740, is a lockout. A run of 4625s across many accounts from one source is spraying.",
   },
 
   // The Home Lab
@@ -360,14 +360,14 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Account is disabled",
     cue: "An account is disabled. Will an unlock or a password reset let them sign in?",
-    means: "A disabled account cannot sign in at all, whatever its password or lockout state. Unlock and reset do not change it; it has to be enabled, and only when the ticket and its approval say so.",
-    notTo: "Locked out. A lockout clears with time or an unlock; disabled is a deliberate switch.",
+    means: "A disabled account cannot sign in at all, whatever its password or lockout state. Unlock and reset do not change it. It has to be enabled, and only when the ticket and its approval say so.",
+    notTo: "Locked out. A lockout clears with time or an unlock. Disabled is a deliberate switch.",
   },
   {
     term: "Unlock account",
     aka: ["unlock the user's account", "properties → account"],
     cue: "What does unlocking an account do, and what does it leave alone?",
-    means: "A lockout follows too many failed sign-ins under the lockout policy. Unlocking clears it so the user can try again; the password stays the same.",
+    means: "A lockout follows too many failed sign-ins under the lockout policy. Unlocking clears it so the user can try again. The password stays the same.",
     notTo: "A password reset. If the user has forgotten the password, unlock alone will just lock them out again.",
   },
   {
@@ -395,7 +395,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Exploited software",
     cue: "How can malware get in with no user action at all?",
-    means: "Unpatched software reachable over the network is attacked directly through a known flaw. Nobody needs to click anything; patching is the defense.",
+    means: "Unpatched software reachable over the network is attacked directly through a known flaw. Nobody needs to click anything. Patching is the defense.",
   },
   {
     term: "Virus",
@@ -443,7 +443,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     strict: true,
     cue: "When do you escalate, and what goes with it?",
     means: "Hand the problem to the next tier when it needs more access, authority or skill than your role has. Send what you found with it: who and what is affected, when it started, what you checked and what you already did.",
-    example: "\"Workstation WS-114, user in Finance, Defender alert 09:42 for a trojan in Downloads. Confirmed the file is there; isolated the host at 09:50. Not wiped.\"",
+    example: "\"Workstation WS-114, user in Finance, Defender alert 09:42 for a trojan in Downloads. Confirmed the file is there. Isolated the host at 09:50. Not wiped.\"",
     notTo: "Passing it on empty-handed. An escalation the next tier has to start from scratch costs the time it was meant to save.",
   },
 ];
