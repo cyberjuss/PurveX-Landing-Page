@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CheckCircle2, LayoutGrid } from "lucide-react";
 import { splitMarkdownIntoSlides } from "@/lib/markdown";
 import type { LabWidget } from "@/lib/academy-content";
 import { LabCarousel } from "./lab-carousel";
@@ -36,8 +36,35 @@ export function SingleLab({
   widget?: LabWidget;
   markdown?: string | null;
 }) {
-  const { recordLabDone } = useAcademyProgress();
-  const done = useCallback(() => recordLabDone(phaseSlug, entrySlug, slugify(title)), [recordLabDone, phaseSlug, entrySlug, title]);
+  const { recordLabDone, isLabDone } = useAcademyProgress();
+  const doneBefore = isLabDone(phaseSlug, entrySlug, slugify(title));
+  const [justDone, setJustDone] = useState(false);
+  const done = useCallback(() => {
+    recordLabDone(phaseSlug, entrySlug, slugify(title));
+    setJustDone(true);
+  }, [recordLabDone, phaseSlug, entrySlug, title]);
+
+  // Where to go once it is done: back to the week that assigned it, or the labs.
+  const finish = justDone ? (
+    <section className="sl-done" aria-live="polite">
+      <CheckCircle2 className="sl-done__icon" aria-hidden />
+      <div className="sl-done__main">
+        <p className="sl-done__kicker">Lab complete</p>
+        <h2>{title}</h2>
+        <p>It counts toward {entryTitle ?? "its week"}. Pick up the next one, or head back to the week.</p>
+      </div>
+      <div className="sl-done__go">
+        {entryTitle && (
+          <Link href={`/range/${phaseSlug}/${entrySlug}`} className="sl-done__btn">
+            <ArrowLeft aria-hidden /> {entryTitle}
+          </Link>
+        )}
+        <Link href="/range/labs" className="sl-done__btn sl-done__btn--main">
+          <LayoutGrid aria-hidden /> All labs
+        </Link>
+      </div>
+    </section>
+  ) : null;
 
   return (
     <div className="sl">
@@ -69,11 +96,13 @@ export function SingleLab({
               <PasswordTableLab onDone={done} />
             )}
           </LabBrief>
+          {finish}
         </>
       ) : markdown ? (
         <>
           <h1 className="sl__title">{title}</h1>
-          <LabCarousel key={slug} storageKey={slug} slides={splitMarkdownIntoSlides(markdown)} onDone={done} />
+          <LabCarousel key={slug} storageKey={slug} slides={splitMarkdownIntoSlides(markdown)} onDone={done} completeButton done={doneBefore || justDone} />
+          {finish}
         </>
       ) : (
         <p className="sl__soon">This lab is still being written.</p>

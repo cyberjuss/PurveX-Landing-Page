@@ -18,14 +18,20 @@ export function LabCarousel({
   prevBeyond,
   nextBeyond,
   onDone,
+  completeButton = false,
+  done = false,
 }: {
   slides: MarkdownSlide[];
   storageKey?: string;
   actionHost?: HTMLElement | null;
   prevBeyond?: TrailLink | null;
   nextBeyond?: TrailLink | null;
-  /** Called once the student reaches the last step. */
+  /** Called once the student reaches the last step, or, on a lab's own page, presses Complete lab. */
   onDone?: () => void;
+  /** On a lab's own page the last step ends on a Complete lab button instead of a dead Next. */
+  completeButton?: boolean;
+  /** Already finished before, so the button reads Completed. */
+  done?: boolean;
 }) {
   const [index, setIndex] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
@@ -46,9 +52,13 @@ export function LabCarousel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // In a week's tabs, reaching the last step finishes the lab. On its own page
+  // the student says so with the Complete lab button.
   useEffect(() => {
-    if (total > 0 && index === total - 1) onDone?.();
-  }, [index, total, onDone]);
+    if (!completeButton && total > 0 && index === total - 1) onDone?.();
+  }, [index, total, onDone, completeButton]);
+  const [finished, setFinished] = useState(false);
+  const isDone = done || finished;
 
   // Self-check multiple choice inside the slide markdown. Delegation on the
   // stable slide host, restored on every slide change so a prediction or a
@@ -104,10 +114,22 @@ export function LabCarousel({
         go: () => (index === 0 ? prevBeyond?.go() : go(index - 1)),
         disabled: index === 0 && !prevBeyond,
       }}
-      next={{
-        go: () => (index === total - 1 ? nextBeyond?.go() : go(index + 1)),
-        disabled: index === total - 1 && !nextBeyond,
-      }}
+      next={
+        completeButton && index === total - 1 && !nextBeyond
+          ? {
+              go: () => {
+                if (isDone) return;
+                setFinished(true);
+                onDone?.();
+              },
+              disabled: isDone,
+              label: isDone ? "Completed" : "Complete lab",
+            }
+          : {
+              go: () => (index === total - 1 ? nextBeyond?.go() : go(index + 1)),
+              disabled: index === total - 1 && !nextBeyond,
+            }
+      }
       center={
         <span className="ax-panel__count">
           {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
