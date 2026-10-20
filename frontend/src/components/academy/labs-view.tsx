@@ -94,7 +94,7 @@ export function LabsView({ labs }: { labs: (LabMeta & { week?: string; phase?: s
           <h1>{view === "map" ? "Your lab route" : "The SOC floor"}</h1>
           <p className="lg__sub">
             {view === "map"
-              ? "Every lab is a stop on one line, with a colour for each week. Work it from start to finish."
+              ? "Every lab is a stop on one line, with a color for each week. Work it from start to finish."
               : "The PurveX Financial SOC. Walk the floor, talk to the team to learn the environment, and sit at a workstation to work its lab."}
           </p>
         </div>

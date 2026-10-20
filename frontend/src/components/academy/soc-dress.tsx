@@ -51,7 +51,7 @@ export function SocDress({ avatar, onChange, onDone }: { avatar: Avatar; onChang
         <Choices label="Build" value={avatar.build} options={BUILDS} onPick={(v) => set("build", v)} />
         <Choices label="Hair" value={avatar.hairStyle} options={HAIR_STYLES} onPick={(v) => set("hairStyle", v)} />
         <Swatches label="Skin tone" value={avatar.skin} options={SKINS} onPick={(c) => set("skin", c)} />
-        <Swatches label="Hair colour" value={avatar.hair} options={HAIRS} onPick={(c) => set("hair", c)} />
+        <Swatches label="Hair color" value={avatar.hair} options={HAIRS} onPick={(c) => set("hair", c)} />
         <Choices
           label="Outfit"
           value={avatar.jacket ? "jacket" : "shirt"}
