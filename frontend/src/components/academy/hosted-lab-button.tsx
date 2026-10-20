@@ -441,12 +441,9 @@ function StartTracker({ status }: { status: Status }) {
 
 // Stopping hibernates the domain controller: its memory is written to disk so
 // the next Resume takes about half a minute instead of five. That write takes
-// a few minutes, so the tracker shows running dots and the time so far,
-// without a paragraph to read.
+// a few minutes and runs in AWS whether or not anyone watches, so the tracker
+// says the student can go, not how long they have been waiting.
 function StopTracker() {
-  const elapsed = useElapsed(null, true);
-  const m = Math.floor(elapsed / 60);
-  const sec = String(Math.floor(elapsed % 60)).padStart(2, "0");
   return (
     <div className="hl__track" aria-live="polite">
       <p className="hl__eta">
@@ -458,9 +455,7 @@ function StopTracker() {
             <b>.</b>
           </i>
         </span>
-        <em>
-          {m}:{sec}
-        </em>
+        <em>Safe to leave</em>
       </p>
     </div>
   );
