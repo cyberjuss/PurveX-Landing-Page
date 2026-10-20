@@ -20,15 +20,15 @@ const R = 22;
 
 const no = (i: number) => String(i + 1).padStart(2, "0");
 
-/** A title broken into at most two lines of about `n` characters. */
+/** A title broken into at most three lines of about `n` characters. */
 function lines(t: string, n: number): string[] {
   const out = [""];
   for (const w of t.split(" ")) {
     const cur = out[out.length - 1];
     if (!cur || (cur + " " + w).length <= n) out[out.length - 1] = cur ? `${cur} ${w}` : w;
-    else if (out.length < 2) out.push(w);
+    else if (out.length < 3) out.push(w);
     else {
-      out[1] = `${out[1]} ${w}`.length > n ? `${out[1].slice(0, n - 1)}…` : `${out[1]} ${w}`;
+      out[2] = `${out[2]} ${w}`.length > n ? `${out[2].slice(0, n - 1)}…` : `${out[2]} ${w}`;
       break;
     }
   }
@@ -296,7 +296,7 @@ export function LabMap({ labs }: { labs: SocLab[] }) {
                   }
                 }}
               >
-                <rect x="-70" y="-22" width="140" height="80" className="lm-stop__hit" />
+                <rect x="-70" y="-22" width="140" height="96" className="lm-stop__hit" />
                 <circle r={isNext ? 11 : 8} className="lm-stop__dot" />
                 {lines(l.title, narrow ? 17 : 20).map((t, k) => (
                   <text key={k} y={30 + k * 16} textAnchor="middle" className="lm-stop__name">

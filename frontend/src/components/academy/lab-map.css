@@ -18,22 +18,22 @@
 .lm-bar__count i::after { content: ""; display: block; width: calc(var(--pct, 0) * 100%); height: 100%; background: var(--rd-ink); }
 
 /* ---- The map ---- */
-.lm { padding: 20px 24px 8px; background: var(--lm-paper); box-shadow: inset 0 0 0 1px var(--rd-line); }
+.lm { padding: 20px 24px 8px; box-shadow: inset 0 0 0 1px var(--rd-line); }
 .lm__svg { display: block; width: 100%; height: auto; }
 
 /* The key: a framed panel, lines on the left, what the symbols mean on the right. */
-.lm-key { position: relative; margin: 6px 0 14px; padding: 18px 18px 14px; border: 1px solid var(--rd-line); }
+.lm-key { margin: 0 0 14px; padding: 12px 18px 14px; border: 1px solid var(--rd-line); }
 .lm-key__title {
-  position: absolute; top: 0; left: 14px; margin: 0; padding: 0 6px; transform: translateY(-50%);
-  display: inline-flex; align-items: center; gap: 4px; border: 0; cursor: pointer;
-  font: 700 11px var(--font-display, inherit); letter-spacing: 0.14em; text-transform: uppercase; color: var(--lm-ink); background: var(--lm-paper);
+  display: inline-flex; align-items: center; gap: 4px; margin: 0 0 12px; padding: 0; border: 0; background: none; cursor: pointer;
+  font: 700 11px var(--font-display, inherit); letter-spacing: 0.14em; text-transform: uppercase; color: var(--lm-ink);
 }
 .lm-key__title:hover { color: var(--rd-accent); }
 .lm-key__title svg { width: 13px; height: 13px; transition: transform 0.2s ease; }
-.lm-key.is-closed { padding: 6px 18px; }
+.lm-key.is-closed { padding-bottom: 12px; }
+.lm-key.is-closed .lm-key__title { margin-bottom: 0; }
 .lm-key.is-closed .lm-key__cols { display: none; }
 .lm-key.is-closed .lm-key__title svg { transform: rotate(-90deg); }
-.lm-key__cols { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 14px 32px; }
+.lm-key__cols { display: grid; grid-template-columns: auto auto; justify-content: start; gap: 14px 72px; }
 .lm-key__head { margin: 0 0 8px; font: 600 11px var(--font-display, inherit); color: var(--lm-ink-2); }
 .lm-key ul { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
 .lm-key li { display: flex; align-items: center; gap: 9px; font: 500 12.5px var(--font-display, inherit); color: var(--lm-ink); }
@@ -43,7 +43,7 @@
 .lm-key__swatch .lm-track { stroke-width: 6; }
 .lm-key__bullet { display: inline-grid; place-items: center; flex: none; width: 20px; height: 20px; border-radius: 50%; font: 700 11px var(--font-display, inherit); color: #fff; background: var(--line); }
 .lm-key__name { min-width: 0; }
-.lm-key__count { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--lm-ink-2); }
+.lm-key__count { margin-left: auto; padding-left: 28px; font-variant-numeric: tabular-nums; color: var(--lm-ink-2); }
 .lm-key__marks svg { flex: none; width: 24px; height: 24px; overflow: visible; }
 .lm-key__marks .lm-key__swatch { width: 24px; height: 16px; }
 .lm-key__dot { fill: var(--lm-station); stroke: var(--lm-ink); stroke-width: 3; }
