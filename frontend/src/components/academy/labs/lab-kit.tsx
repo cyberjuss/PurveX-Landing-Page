@@ -5,6 +5,7 @@ import { Check, ChevronLeft, ChevronRight, Copy, Download, Server, X } from "luc
 import "./risk-triage-lab.css";
 import "./lab-kit.css";
 import { useOptionalCoach } from "../coach-context";
+import { useAnnounceLabStep } from "../lab-step";
 import { LOST_ASK } from "./lab-brief";
 import { recordLabResult } from "@/lib/academy-client";
 import type { LabPassId } from "@/lib/academy-score";
@@ -142,6 +143,7 @@ export function useSaved<T>(key: string, start: T, valid: (v: T) => boolean): [T
 }
 
 export function Stepper({ steps, step, done, reached, onGo }: { steps: string[]; step: number; done: boolean[]; reached: boolean[]; onGo: (i: number) => void }) {
+  useAnnounceLabStep(step);
   return (
     <ol className="rt-steps" style={{ gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }}>
       {steps.map((label, i) => (

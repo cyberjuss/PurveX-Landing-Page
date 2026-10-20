@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { Markdown } from "@/lib/markdown";
 import type { MarkdownSlide } from "@/lib/markdown";
 import { TrailDock, type TrailLink } from "./trail-dock";
+import { useAnnounceLabStep } from "./lab-step";
 import { restoreSelfChecks, wireSelfChecks } from "./self-check";
 
 // A lab used to be one long scroll of Step 1 through Step N. This shows
@@ -34,6 +35,7 @@ export function LabCarousel({
   done?: boolean;
 }) {
   const [index, setIndex] = useState(0);
+  useAnnounceLabStep(index);
   const [dir, setDir] = useState<1 | -1>(1);
   const skipEnter = useRef(true);
   const touchStartX = useRef<number | null>(null);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, MonitorDot } from "lucide-react";
 import { splitMarkdownIntoSlides } from "@/lib/markdown";
@@ -13,6 +13,7 @@ import { RiskTriageLab } from "./labs/risk-triage-chat";
 import { SigninLogLab } from "./labs/signin-log-lab";
 import { EffectiveAccessLab } from "./labs/effective-access-lab";
 import { slugify, useAcademyProgress } from "./academy-progress";
+import { LAB_STEP_EVENT, lastLabStep } from "./lab-step";
 import { LAB_DONE_EVENT, SocStation } from "./soc-station";
 import "./single-lab.css";
 
@@ -45,6 +46,16 @@ export function SingleLab({
   const { recordLabDone, isLabDone } = useAcademyProgress();
   const doneBefore = isLabDone(phaseSlug, entrySlug, slugify(title));
   const [justDone, setJustDone] = useState(false);
+  // The workstation scene sets the stage, so it sits above the first step only.
+  const [step, setStep] = useState(0);
+  useEffect(() => {
+    // The lab inside has already said where it is by now; take that, then follow it.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setStep(lastLabStep());
+    const on = (e: Event) => setStep((e as CustomEvent<{ step: number }>).detail.step);
+    window.addEventListener(LAB_STEP_EVENT, on);
+    return () => window.removeEventListener(LAB_STEP_EVENT, on);
+  }, []);
   const done = useCallback(() => {
     recordLabDone(phaseSlug, entrySlug, slugify(title));
     setJustDone(true);
@@ -88,7 +99,7 @@ export function SingleLab({
         <Link href="/range/labs" className="sl__back sl__back--alt">SOC floor</Link>
       </nav>
 
-      <SocStation title={title} accent={accent ?? "#5546e0"} skill={skill ?? "Lab"} />
+      {step === 0 && <SocStation title={title} accent={accent ?? "#5546e0"} skill={skill ?? "Lab"} />}
 
       {widget ? (
         <>
