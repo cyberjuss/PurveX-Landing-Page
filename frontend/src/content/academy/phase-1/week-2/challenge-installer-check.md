@@ -6,8 +6,6 @@
 <p>Work in your own lab. Hash what you are given, compare it against what was published, and say what the password export proves.</p>
 </div>
 
-<p>Built your lab before today? Run the script from Build the Environment once more so the files are there.</p>
-
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
 <span id="ad-progress-label" class="ad-progress__label">0 / 6 solved</span>

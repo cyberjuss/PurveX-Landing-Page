@@ -6,8 +6,6 @@
 <p>Each ticket wants a short finding at the end. The lab has to show the change first, so your answer always reflects the directory after you act.</p>
 </div>
 
-<p>Built your lab before today? A hosted lab plants anything it is missing on its own. On your own machine, run the script from Build the Environment once more.</p>
-
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
 <span id="ad-progress-label" class="ad-progress__label">0 / 15 solved</span>

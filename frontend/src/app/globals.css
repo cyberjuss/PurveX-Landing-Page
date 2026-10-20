@@ -4269,15 +4269,6 @@ html:active-view-transition .ax-page { animation: none }
   overflow-x: auto; white-space: pre-wrap; word-break: break-word;
 }
 
-/* Hint stays locked until two wrong tries. Button label is set in JS
-   (Hint locked / Hint / Hide hint) so spaces stay readable. */
-.academy-prose .ad-mission[data-attempts="0"] .ad-hint__btn,
-.academy-prose .ad-mission[data-attempts="1"] .ad-hint__btn {
-  cursor: not-allowed; color: var(--pvrx-text-secondary-light); border-color: var(--pvrx-border-light); background: none;
-}
-.academy-prose .ad-mission[data-attempts="0"] .ad-hint__btn:hover,
-.academy-prose .ad-mission[data-attempts="1"] .ad-hint__btn:hover { background: none; }
-
 /* Help desk readiness scorecard (top of both Home Lab challenges) */
 .academy-prose .ad-scorecard {
   margin: 1.4rem 0; padding: 1.1rem 0 1.2rem;
