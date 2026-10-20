@@ -23,5 +23,10 @@ export async function POST(request: Request) {
     (await isRangePro(me)) ||
     (await isClassMember(me.id).catch(() => false)) ||
     (await classesFor(me.email)).length > 0;
-  return NextResponse.json({ unlocked: allowed && (await setAcademyCookie()) });
+  // setAcademyCookie always succeeds now, but even if it didn't, a real
+  // "allowed" from the checks above must never be discarded by a cookie
+  // write failing -- that's what locked out legitimately authorized
+  // students before.
+  if (allowed) await setAcademyCookie();
+  return NextResponse.json({ unlocked: allowed });
 }
