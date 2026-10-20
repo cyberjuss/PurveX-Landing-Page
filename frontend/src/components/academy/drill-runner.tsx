@@ -568,6 +568,12 @@ export function DrillRunner() {
   // Re-read it while the lab is up and its Security log has not landed yet.
   const labUp = hostedLab && (labState === "ready" || labState === "starting");
   const ctfWaiting = Boolean(status && !status.ctf.entry && !status.lab.events);
+  // The lab reported in the last few minutes and its digest was still empty: its
+  // Security log has nothing in the window to draw from, and waiting will not
+  // change that. Anything done in the lab writes events, and the next minute's
+  // report carries them.
+  const syncedAt = status?.lab.syncedAt ? Date.parse(status.lab.syncedAt) : NaN;
+  const ctfQuietLog = labUp && ctfWaiting && Date.now() - syncedAt < 3 * 60_000;
   useEffect(() => {
     if (!labUp || !ctfWaiting) return;
     load();
@@ -1072,6 +1078,8 @@ export function DrillRunner() {
                       ? "A new one opens Monday."
                       : status.lab.events
                         ? "One hard investigation a week, drawn from what actually happened in your lab. Around twenty minutes."
+                        : ctfQuietLog
+                          ? "One hard investigation a week, drawn from what actually happened in your lab. Your lab is connected, but nothing has happened in it recently to investigate. Work one ticket in the Ticket Queue and this opens about a minute later."
                         : hostedLab && labState !== "ready" && labState !== "starting"
                           ? "One hard investigation a week, drawn from what actually happened in your lab. Your lab is off, so there is nothing to draw from yet."
                           : hostedLab
@@ -1086,6 +1094,10 @@ export function DrillRunner() {
                       <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("ctf")}>
                         {starting === "ctf" ? "Writing…" : "Start investigation"} <ArrowRight className="h-4 w-4" />
                       </button>
+                    ) : ctfQuietLog ? (
+                      <Link className="rd-cta" href="/range/phase-1/home-lab-challenges#challenge-ticket-queue">
+                        Open the Ticket Queue <ArrowRight className="h-4 w-4" />
+                      </Link>
                     ) : hostedLab && (labState === "ready" || labState === "starting") ? (
                       // Up, and the Security log is on its way by itself.
                       <button type="button" className="rd-cta" onClick={load}>
