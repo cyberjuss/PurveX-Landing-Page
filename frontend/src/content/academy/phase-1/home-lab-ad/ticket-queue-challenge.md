@@ -22,7 +22,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Missing Announcements" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{9}" data-lab-answer="members:All Employees">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-directory#groups" target="_blank" rel="noopener">Learn how<span> · Groups</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Company-wide mail comes from a firm-wide group, not a department group. Look in AccessLevels and read each group's Description.</p>
@@ -64,7 +63,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Locked Out" placeholder="locked or disabled" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{disabled}" data-accept="account-is-disabled|account-disabled">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#unlock-or-reset" target="_blank" rel="noopener">Learn how<span> · Unlock or Reset</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A caller describes a symptom, and the Account tab shows the cause. Locked out and disabled are separate settings with separate fixes.</p>
@@ -110,7 +108,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for New Hire Access" placeholder="ticket number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{ctf-ticket-1043}" data-accept="1043|ctf-1043">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#create-a-user" target="_blank" rel="noopener">Learn how<span> · Create a User</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Create Casey in Departments → IT → Users and copy the groups of a current IT person. A leftover intern and a service account do not belong in a staff group.</p>
@@ -156,7 +153,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for The Backup Account" placeholder="00:00-00:00" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{01:00-03:00}" data-accept="1:00-3:00|0100-0300|1am-3am|1:00am-3:00am">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-directory#service-accounts" target="_blank" rel="noopener">Learn how<span> · Service Accounts</span></a>
 </div>
 <div class="ad-hint__text">
 <p>The account's Description says the window is not set. The approved hours are on the OU directly above the account.</p>
@@ -198,7 +194,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for The Transfer That Did Not Happen" placeholder="title on the account" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{operations-analyst}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#move-an-account" target="_blank" rel="noopener">Learn how<span> · Move an Account</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Group Policy follows the folder, but groups do not move with the account. You have to change them yourself. Title is a separate field on the General tab.</p>
@@ -241,7 +236,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Contractor Offboarding" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{taylor-osei}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#disable-an-account" target="_blank" rel="noopener">Learn how<span> · Disable an Account</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A leaver's account is disabled rather than deleted so its history stays available to auditors.</p>
@@ -289,7 +283,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Admin Rights Request" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}" data-accept="level-2|level2">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-setup#access-levels" target="_blank" rel="noopener">Learn how<span> · Access Levels</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A request names the access someone wants. The group's Description tells you what that access really covers.</p>
@@ -332,7 +325,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Audit Finding" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{noah-kim}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#clear-password-never-expires" target="_blank" rel="noopener">Learn how<span> · Clear Password Never Expires</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A search for this setting also finds <code>svc-backup-job</code>, which is allowed to keep it. The account you want belongs to a person.</p>
@@ -378,7 +370,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for New Laptop Missing Policies" placeholder="folder name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{computers}" data-accept="cn=computers">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#find-objects-in-the-default-containers" target="_blank" rel="noopener">Learn how<span> · Default Containers</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A computer that joins the domain without a chosen OU lands in a default container, and no OU-linked Group Policy can reach it there.</p>
@@ -425,7 +416,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Group Cannot Open the Share" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#security-and-distribution-groups" target="_blank" rel="noopener">Learn how<span> · Security and Distribution Groups</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Only one kind of group can grant permissions. Check the Group type on the General tab.</p>
@@ -471,7 +461,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Share Will Not Open by Name" placeholder="IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{192.0.2.50}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#fix-a-dns-record" target="_blank" rel="noopener">Learn how<span> · Fix a DNS Record</span></a>
 </div>
 <div class="ad-hint__text">
 <p>When an IP address works but the name does not, the network is fine and name resolution is the problem.</p>
@@ -517,7 +506,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Payroll Works for Some People" placeholder="IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{192.0.2.80}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#fix-a-dns-record" target="_blank" rel="noopener">Learn how<span> · Fix a DNS Record</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A name with two A records is handed out in turn, which DNS calls round robin. If one address belongs to a server that no longer exists, every other lookup fails.</p>
@@ -563,7 +551,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Vendor Remote Access Left Open" placeholder="port number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{3389}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#disable-a-firewall-rule" target="_blank" rel="noopener">Learn how<span> · Disable a Firewall Rule</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Temporary rules usually carry a name or description that mentions the vendor. Check who the rule allows as well as which port it opens.</p>
@@ -609,7 +596,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Screens That Never Lock" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{operations}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#link-a-gpo-to-an-ou" target="_blank" rel="noopener">Learn how<span> · Link a GPO to an OU</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A GPO only applies where it is linked. The Scope tab of a GPO lists every place it is linked.</p>
@@ -656,7 +642,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for The Invoice Nobody Saved" placeholder="full file name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{invoice_0923.pdf.exe}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#quarantine-a-file" target="_blank" rel="noopener">Learn how<span> · Quarantine a File</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Windows hides known file extensions by default, so a program can pass for a document. The Type column and the modified time are worth a look too.</p>
@@ -702,7 +687,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Nothing Stops Password Guessing" placeholder="an event ID" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{4740}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#set-the-account-lockout-policy" target="_blank" rel="noopener">Learn how<span> · Account Lockout Policy</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Account lockout lives in the Default Domain Policy, not on individual accounts.</p>
@@ -749,7 +733,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for No Record of What Ran" placeholder="an event ID" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{4688}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#turn-on-process-auditing" target="_blank" rel="noopener">Learn how<span> · Process Auditing</span></a>
 </div>
 <div class="ad-hint__text">
 <p>This is an advanced audit subcategory, not one of the nine basic categories.</p>
@@ -791,7 +774,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for The Security Log Runs Out" placeholder="a number of MB" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{128}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#change-the-security-log-size" target="_blank" rel="noopener">Learn how<span> · Security Log Size</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Read the old size before you change it. Once it is raised the original is gone.</p>
@@ -837,7 +819,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Admins Under the Same Rules as Everyone" placeholder="a group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{IT Admins}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#apply-a-fine-grained-password-policy" target="_blank" rel="noopener">Learn how<span> · Fine-Grained Password Policy</span></a>
 </div>
 <div class="ad-hint__text">
 <p>The domain password policy applies to everyone. A second, stricter policy for one group is a Password Settings Object.</p>
@@ -884,7 +865,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for A Workstation Nobody Uses" placeholder="a ticket number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{CTF-TICKET-201}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#disable-an-account" target="_blank" rel="noopener">Learn how<span> · Disable an Account</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Computers live in OUs the way users do. This one is in the Operations department Workstations folder.</p>

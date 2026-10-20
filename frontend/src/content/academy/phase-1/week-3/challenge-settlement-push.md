@@ -22,7 +22,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Where the Job Signs In" placeholder="a port number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{389}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/week-3#common-ports" target="_blank" rel="noopener">Learn how<span> · Common Ports</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A capture only shows traffic while it is running, so start the capture first and then make the job run.</p>
@@ -64,7 +63,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Who the Job Signs In As" placeholder="account name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{svc-settlements}" data-accept="svc-settlements@purvexfinancial.local|svcsettlements@purvexfinanciallocal">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/week-3#lab-network-traffic-analysis-with-wireshark" target="_blank" rel="noopener">Learn how<span> · Wireshark Lab</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A sign-in on port 389 carries the account name as readable text, so the bytes of the packet are enough.</p>
@@ -105,7 +103,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for What the Sign-In Gives Away" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{Autumn2026}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/week-3#lab-network-traffic-analysis-with-wireshark" target="_blank" rel="noopener">Learn how<span> · Wireshark Lab</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A simple bind sends the account and the password in the same packet, one after the other.</p>
@@ -146,7 +143,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for The File on the Wire" placeholder="a reference" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{SB-0930-4417}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/week-3#lab-network-traffic-analysis-with-wireshark" target="_blank" rel="noopener">Learn how<span> · Wireshark Lab</span></a>
 </div>
 <div class="ad-hint__text">
 <p>The file copy runs on a different port from the sign-in, so widen the capture to catch both halves of the job.</p>
@@ -187,7 +183,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Narrowing the Capture" placeholder="a display filter" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{ldap}" data-accept="tcp.port==389|tcp.port eq 389">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/week-3#lab-network-traffic-analysis-with-wireshark" target="_blank" rel="noopener">Learn how<span> · Wireshark Lab</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A Wireshark display filter can name the protocol itself, which is shorter than filtering on the port.</p>
@@ -228,7 +223,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Containing a Burned Credential" placeholder="a protocol" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{ldaps}" data-accept="636|ldap over tls|ldap over ssl">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/week-3#ssl-tls" target="_blank" rel="noopener">Learn how<span> · SSL/TLS</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Disabling keeps the account and its history, where deleting would destroy the evidence a review still needs.</p>

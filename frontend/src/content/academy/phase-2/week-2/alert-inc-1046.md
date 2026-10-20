@@ -21,7 +21,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for The 2 AM Login" placeholder="department OU" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{wealthmanagement}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#find-an-account" target="_blank" rel="noopener">Learn how<span> · Find an Account</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Look at the machine before you read any logs. The OU is the department folder the computer lives in.</p>
@@ -76,7 +75,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Read the Log" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{4}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/week-4#authentication" target="_blank" rel="noopener">Learn how<span> · Authentication</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Event 4625 is a failed sign-in and 4624 is a successful one. These events exist only in the export on this page, not in your lab's Security log.</p>
@@ -115,7 +113,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Why the Privileges?" placeholder="group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-admins}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/week-4#authorization" target="_blank" rel="noopener">Learn how<span> · Authorization</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A department group such as IT Users grants standard access, so look for the group on Alex's account that grants more.</p>
@@ -160,7 +157,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Mistake or Attack?" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/week-4#authentication" target="_blank" rel="noopener">Learn how<span> · Authentication</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Line up the facts: steady two-second failures at 2 AM from an admin account on a PC in another department.</p>
@@ -197,7 +193,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Your First Move" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-2/week-1#working-a-malware-alert" target="_blank" rel="noopener">Learn how<span> · Working a Malware Alert</span></a>
 </div>
 <div class="ad-hint__text">
 <p>The first move has to stop the session and keep the evidence.</p>

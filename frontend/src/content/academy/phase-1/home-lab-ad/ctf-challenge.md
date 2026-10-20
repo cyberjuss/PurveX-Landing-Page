@@ -19,7 +19,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Which Group Is Jordan In?" placeholder="group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{finance-accounting-users}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#find-an-account" target="_blank" rel="noopener">Learn how<span> · Find an Account</span></a>
 </div>
 <div class="ad-hint__text">
 <p>The department group is the standard access group for that department, so skip Domain Users and any firm-wide group.</p>
@@ -66,7 +65,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Who Is an Admin?" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{alex-rivera}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-directory#groups" target="_blank" rel="noopener">Learn how<span> · Groups</span></a>
 </div>
 <div class="ad-hint__text">
 <p>An admin group should have a short member list that you can read in one glance.</p>
@@ -112,7 +110,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Where Are the Access Groups?" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{accesslevels}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-directory#organizational-units" target="_blank" rel="noopener">Learn how<span> · Organizational Units</span></a>
 </div>
 <div class="ad-hint__text">
 <p>An OU is a folder. The department folders hold people, so the access groups sit in a folder of their own at the same level.</p>
@@ -154,7 +151,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for The Folder That Is Not an OU" placeholder="exact name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{cn=users}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#find-objects-in-the-default-containers" target="_blank" rel="noopener">Learn how<span> · Default Containers</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A container uses a plain folder icon, while an OU's folder carries a small extra badge.</p>
@@ -195,7 +191,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for What Is the Admin Group For?" placeholder="role" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-systems-administrators}" data-accept="it-systems-administrator">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-directory#groups" target="_blank" rel="noopener">Learn how<span> · Groups</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A good Description names who belongs in the group instead of repeating the group's name.</p>
@@ -237,7 +232,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Is Priya on the Help Desk Group?" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{no}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#find-an-account" target="_blank" rel="noopener">Learn how<span> · Find an Account</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Decide from the group's member list, not from the word Technician on her account.</p>
@@ -276,7 +270,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Who Is the Settlements Coordinator?" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{riley-kwan}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#find-an-account" target="_blank" rel="noopener">Learn how<span> · Find an Account</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Tickets often describe a job instead of a username, so search by the title.</p>
@@ -321,7 +314,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for What Is the Workstation Called?" placeholder="computer name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-wks01}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#managing-computer-objects" target="_blank" rel="noopener">Learn how<span> · Computer Objects</span></a>
 </div>
 <div class="ad-hint__text">
 <p>You find a computer the same way you find a person. Computer names have no spaces.</p>
@@ -362,7 +354,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for How Many People Are in Compliance?" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}" data-lab-answer="members:Compliance Users">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-directory#groups" target="_blank" rel="noopener">Learn how<span> · Groups</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Count the people listed on the group's Members tab.</p>
@@ -405,7 +396,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for How Many Departments Are There?" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{5}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-directory#organizational-units" target="_blank" rel="noopener">Learn how<span> · Organizational Units</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Count only the first level of folders. Users and Workstations sit inside a department, so they are not departments themselves.</p>

@@ -60,8 +60,7 @@ function indexForHash(hash: string, items: Item[]): number {
   const want = mission ? CHALLENGE_PATHS[mission.challenge].tab : raw;
   const i = items.findIndex((it) => slugify(it.label) === want);
   if (i >= 0) return i;
-  // A link to a heading inside a tab, such as a challenge's "How to" link to
-  // one guide on the How-To Guides tab: open the tab that holds it.
+  // A link to a heading inside a tab: open the tab that holds it.
   const h = items.findIndex((it) => "markdown" in it && headingIds(it.markdown).includes(raw));
   return h >= 0 ? h : 0;
 }

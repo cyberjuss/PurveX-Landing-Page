@@ -761,7 +761,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         // reading it needs to ask about their own lab, and the way out was to
         // close this, find the coach and describe where they were from memory.
         '<div class="ad-hint-card__foot">' +
-        '<button type="button" class="ad-hint-card__coach">Ask the coach about this</button>' +
+        '<button type="button" class="ad-hint-card__coach">Learn how with the coach</button>' +
         "</div>" +
         "</aside>";
       document.body.appendChild(root);
@@ -805,6 +805,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       // The coach button needs the ticket's name, and the card outlives the
       // element it was opened from.
       root.dataset.mission = wrap.querySelector("h4")?.textContent?.trim() || "";
+      const task = [...wrap.querySelectorAll(":scope > p")].find((p) => /^Task:/.test(p.textContent?.trim() || ""));
+      root.dataset.task = task?.textContent?.replace(/^Task:\s*/, "").replace(/\s+/g, " ").trim() || "";
       openHintId = id;
       labelHintButton(wrap, true);
     };
@@ -1159,11 +1161,15 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       if (target.closest(".ad-hint-card__coach")) {
         // The shell renders CoachProvider rather than living inside it, so it
         // cannot call the coach directly. AskCoachBridge is listening.
-        const title = document.querySelector<HTMLElement>(".ad-hint-card")?.dataset.mission || "this ticket";
+        const card = document.querySelector<HTMLElement>(".ad-hint-card");
+        const title = card?.dataset.mission || "this ticket";
+        const task = card?.dataset.task ? ` The task: "${card.dataset.task}"` : "";
         closeHintCard();
         window.dispatchEvent(
           new CustomEvent("academy:ask-coach", {
-            detail: { question: `I read the hint for "${title}" and I am still stuck. Walk me through what to look at next, without telling me the answer.` },
+            detail: {
+              question: `Teach me how to do "${title}".${task} Explain which tool to use and the general steps for this kind of job, and why each one matters, without telling me the answer.`,
+            },
           })
         );
         return;

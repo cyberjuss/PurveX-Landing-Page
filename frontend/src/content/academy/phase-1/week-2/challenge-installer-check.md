@@ -22,7 +22,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Three Mirrors, One Checksum" placeholder="a file name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{vpn-client-2.4.1-mirror-b.txt}" data-accept="mirror-b|vpn-client-2.4.1-mirror-b">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/week-2#hashing-and-integrity" target="_blank" rel="noopener">Learn how<span> · Hashing and Integrity</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A checksum is only useful against a value published somewhere the file itself cannot change.</p>
@@ -63,7 +62,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for What Changed Inside It" placeholder="a field name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{signed-by}" data-accept="signedby">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/week-2#hashing-and-integrity" target="_blank" rel="noopener">Learn how<span> · Hashing and Integrity</span></a>
 </div>
 <div class="ad-hint__text">
 <p>The manifests are plain text, so a line by line comparison shows the change the hash only hinted at.</p>
@@ -104,7 +102,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Naming the Algorithm" placeholder="an algorithm" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{sha-256}" data-accept="sha256|sha2">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/week-2#encoding-encryption-or-hashing" target="_blank" rel="noopener">Learn how<span> · Encoding, Encryption or Hashing?</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Each hashing algorithm produces a value of a fixed length, so the length alone names it.</p>
@@ -146,7 +143,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Cracking a Weak Hash" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{Winter2026}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/week-2#storing-passwords" target="_blank" rel="noopener">Learn how<span> · Storing Passwords</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Cracking a fast hash is guessing: hash each candidate and stop when one matches the target.</p>
@@ -187,7 +183,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for The Hash That Repeats" placeholder="account name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{jordan.ellis}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/week-2#storing-passwords" target="_blank" rel="noopener">Learn how<span> · Storing Passwords</span></a>
 </div>
 <div class="ad-hint__text">
 <p>A hash is deterministic, so two identical hashes mean two identical passwords.</p>
@@ -228,7 +223,6 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Containing the Unsigned Mirror" placeholder="one word" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{signature}" data-accept="digital signature|code signing|code signature">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
-<a class="ad-how" href="/range/phase-1/home-lab-desk#quarantine-a-file" target="_blank" rel="noopener">Learn how<span> · Quarantine a File</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Moving the file keeps it as evidence, where deleting it would destroy what a review still needs.</p>
