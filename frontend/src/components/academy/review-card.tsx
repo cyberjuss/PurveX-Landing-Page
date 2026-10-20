@@ -151,9 +151,7 @@ export function ReviewSession({ onClose }: { onClose: () => void }) {
               {known} of {queue.length} recalled
             </strong>
             <p>
-              {known === queue.length
-                ? "Every one. They move further out, so the next review is spaced wider."
-                : "The ones you missed come back tomorrow. That is how they stick."}
+              {known === queue.length ? "All of them. You'll see these less often now." : "The ones you missed come back tomorrow."}
             </p>
             <button type="button" className="rd-cta" onClick={onClose}>
               Done
@@ -165,31 +163,39 @@ export function ReviewSession({ onClose }: { onClose: () => void }) {
               type="button"
               className={`rv-flip${shown ? " is-open" : ""}`}
               onClick={() => setShown(true)}
-              aria-label={shown ? `${card.term}. ${entry?.means ?? card.sentence}` : `${card.term}. ${entry?.cue ?? "Recall what it means"}, then turn the card.`}
+              aria-label={shown ? `${card.term}. ${entry?.gist ?? card.sentence}` : `${card.term}. ${entry?.cue ?? "Recall what it means"}, then turn the card.`}
             >
               <span className="rv-face rv-front">
                 <span className="rv-from">{card.where}</span>
                 <strong>{card.term}</strong>
                 {entry && <span className="rv-cue">{entry.cue}</span>}
-                <span className="rv-hint">Answer it out loud, then tap or press Space to check.</span>
+                <span className="rv-hint">Say your answer, then tap to check.</span>
               </span>
               <span className="rv-face rv-back">
                 <strong>{card.term}</strong>
-                <span className="rv-means" dangerouslySetInnerHTML={{ __html: inline(entry?.means ?? card.sentence) }} />
-                {entry?.example && (
+                <span className="rv-means" dangerouslySetInnerHTML={{ __html: inline(entry?.gist ?? card.sentence) }} />
+              </span>
+            </button>
+            {/* One sentence is the answer. The full definition, an example and
+                what it is confused with stay one tap away for anyone who wants them. */}
+            {shown && entry && (
+              <details className="rv-more">
+                <summary>More</summary>
+                <span dangerouslySetInnerHTML={{ __html: inline(entry.means) }} />
+                {entry.example && (
                   <span className="rv-part">
                     <em>On the job</em>
                     <span dangerouslySetInnerHTML={{ __html: inline(entry.example) }} />
                   </span>
                 )}
-                {entry?.notTo && (
+                {entry.notTo && (
                   <span className="rv-part rv-part--not">
                     <em>Not to be confused with</em>
                     <span dangerouslySetInnerHTML={{ __html: inline(entry.notTo) }} />
                   </span>
                 )}
-              </span>
-            </button>
+              </details>
+            )}
             <div className={`rv-answer${shown ? " is-on" : ""}`}>
               <button type="button" className="rv-btn rv-btn--miss" onClick={() => answer(false)} disabled={!shown}>
                 <RotateCcw aria-hidden /> Not yet <kbd>1</kbd>
