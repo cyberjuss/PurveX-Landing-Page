@@ -48,13 +48,22 @@ function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
+/** The ids a section's ## and ### headings get when rendered, as the markdown renderer spells them. */
+function headingIds(markdown: string): string[] {
+  return [...markdown.matchAll(/^#{2,3}\s+(.+)$/gm)].map((m) => slugify(m[1].replace(/\*\*/g, "")));
+}
+
 function indexForHash(hash: string, items: Item[]): number {
   const raw = decodeURIComponent(hash.replace(/^#/, "")).toLowerCase();
   if (!raw) return 0;
   const mission = MISSION_CATALOG[raw];
   const want = mission ? CHALLENGE_PATHS[mission.challenge].tab : raw;
   const i = items.findIndex((it) => slugify(it.label) === want);
-  return i >= 0 ? i : 0;
+  if (i >= 0) return i;
+  // A link to a heading inside a tab, such as a challenge's "How to" link to
+  // one guide on the How-To Guides tab: open the tab that holds it.
+  const h = items.findIndex((it) => "markdown" in it && headingIds(it.markdown).includes(raw));
+  return h >= 0 ? h : 0;
 }
 
 // A lab used to render as its own always-visible card below this panel --

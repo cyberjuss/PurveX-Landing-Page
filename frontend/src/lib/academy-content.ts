@@ -162,6 +162,7 @@ const phase1HomeLabs: HomeLabDef[] = [
       { label: "Unlock or Reset", file: "phase-1/home-lab-ad/unlock-or-reset.md" },
       { label: "Move an Account", file: "phase-1/home-lab-ad/move-an-account.md" },
       { label: "Read the Account", file: "phase-1/home-lab-ad/read-the-account.md" },
+      { label: "How-To Guides", file: "phase-1/home-lab-ad/how-to-guides.md" },
     ],
   },
   {

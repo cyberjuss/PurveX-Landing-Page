@@ -228,7 +228,7 @@ export function auditLab(s: LabSnapshot): Finding[] {
       task: {
         checks: [{ c: { t: "computer", name: c.name, enabled: false }, label: `${c.name} is disabled` }],
         guide: [ADUC, `Find the computer ${c.name}. Confirm it is really retired.`, "Right-click it and choose Disable Account. Do not delete it yet.", SYNC_STEP],
-        runbook: [`Get-ADComputer ${c.name} -Properties LastLogonDate | Select-Object Name,LastLogonDate`, `Disable-ADComputer -Identity ${c.name}`],
+        runbook: [`Get-ADComputer ${c.name} -Properties LastLogonDate | Select-Object Name,LastLogonDate`, `Get-ADComputer ${c.name} | Disable-ADAccount`],
       },
       summary: `${c.name} is disabled.`,
     });

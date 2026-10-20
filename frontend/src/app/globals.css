@@ -3757,6 +3757,22 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   .academy-prose .ad-guess__input { flex-basis: 100%; max-width: 100%; }
 }
 .academy-prose .ad-guess__submit:disabled { background: none; color: var(--rd-ink-3, #8a94a8); cursor: default; }
+/* Learn how: the lesson or guide that teaches the task, open from the first
+   try (unlike Hint, it never gives the answer). Opens in a new tab so the
+   challenge stays where the student left it. */
+.academy-prose .ad-guess .ad-how {
+  flex-shrink: 0; align-self: stretch; display: inline-flex; align-items: center; gap: 0.35em; height: 40px; padding: 0 14px;
+  font-size: 0.8125rem; font-weight: 650; white-space: nowrap; text-decoration: none;
+  color: var(--rd-accent, #5546e0); border: 1px solid color-mix(in srgb, var(--rd-accent, #5546e0) 45%, transparent);
+}
+.academy-prose .ad-guess .ad-how span { font-weight: 500; color: var(--rd-ink-2, #475569); }
+.academy-prose .ad-guess .ad-how:hover { border-color: var(--rd-accent, #5546e0); }
+.academy-prose .ad-guess--win .ad-how { display: none; }
+@media (max-width: 640px) {
+  .academy-prose .ad-guess .ad-how span { display: none; }
+}
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess .ad-how { color: #b3a9ff; border-color: rgba(154, 140, 255, 0.45); }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess .ad-how span { color: #aab3c8; }
 /* Checking a lab can take the best part of a minute: the answer goes to the
    server, the pod is asked for a fresh snapshot, and the change has to show
    up in it. All the button did was grey out, which is what a button does

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { HelpCircle, Keyboard, Maximize2, Minimize2 } from "lucide-react";
+import { slugify } from "./academy-progress";
 import { Recap, SlideBody } from "./slide-body";
 import { splitLessonIntoDeck } from "@/lib/lesson-deck";
 import { curlyQuotes } from "@/lib/typography";
@@ -75,6 +76,21 @@ export function LessonDeck({
     // Restore once on mount; the key is fixed for this instance.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // A link to one of this deck's headings, such as a challenge's "Learn how"
+  // link to one guide, opens on that heading's first slide. It wins over the
+  // restored position, because the link says exactly where to go.
+  useEffect(() => {
+    const open = () => {
+      const want = decodeURIComponent(window.location.hash.replace(/^#/, "")).toLowerCase();
+      if (!want) return;
+      const at = slides.findIndex((s) => !s.question && slugify(s.title) === want);
+      if (at >= 0) setIndex(at);
+    };
+    open();
+    window.addEventListener("hashchange", open);
+    return () => window.removeEventListener("hashchange", open);
+  }, [slides]);
 
   function go(next: number) {
     const to = Math.max(0, Math.min(total - 1, next));

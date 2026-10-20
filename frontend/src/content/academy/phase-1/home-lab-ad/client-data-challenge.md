@@ -20,6 +20,7 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Where the Numbers Live" placeholder="file name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{client-register-sample.csv}" data-accept="client-register-sample|client-register">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
+<a class="ad-how" href="/range/phase-1/home-lab-setup#the-data" target="_blank" rel="noopener">Learn how<span> · The Data</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Each department keeps its own folder. Open the files and read the header row: the one you want has a column named for the number.</p>
@@ -64,6 +65,7 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Counting the Book" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{8}" data-accept="eight">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
+<a class="ad-how" href="/range/phase-1/home-lab-setup#the-data" target="_blank" rel="noopener">Learn how<span> · The Data</span></a>
 </div>
 <div class="ad-hint__text">
 <p>The first line is a banner and the second names the columns. Neither is a client.</p>
@@ -106,6 +108,7 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Waiting on Paperwork" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}" data-accept="two">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
+<a class="ad-how" href="/range/phase-1/home-lab-setup#the-data" target="_blank" rel="noopener">Learn how<span> · The Data</span></a>
 </div>
 <div class="ad-hint__text">
 <p>KYC stands for know your customer: the check that a client is who they say they are. Read the status column.</p>
@@ -148,6 +151,7 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for One Signature on Every Payment" placeholder="account name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{jordan.ellis}" data-accept="jordan-ellis|jordan ellis">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
+<a class="ad-how" href="/range/phase-1/home-lab-setup#the-data" target="_blank" rel="noopener">Learn how<span> · The Data</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Read the last column of every row, not just the first.</p>
@@ -186,6 +190,7 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for The Batch That Did Not Balance" placeholder="batch number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{sb-2026-1015}" data-accept="sb20261015|2026-1015">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
+<a class="ad-how" href="/range/phase-1/home-lab-setup#the-data" target="_blank" rel="noopener">Learn how<span> · The Data</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Every batch but one has the same status.</p>
@@ -223,6 +228,7 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Fingerprint the Register" placeholder="64 hex characters" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{30a686be6a88e251ecdc84a4addc4336348f7edc32992a36ac2efff9404fcbea}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
+<a class="ad-how" href="/range/phase-1/week-2#hashing-and-integrity" target="_blank" rel="noopener">Learn how<span> · Hashing and Integrity</span></a>
 </div>
 <div class="ad-hint__text">
 <p>This is the same check you ran on the installer mirrors in Week 2. Saving the file in an editor can change its bytes, and then its hash, so hash it untouched.</p>
@@ -261,6 +267,7 @@
 <input type="text" class="ad-guess__input" aria-label="Answer for Who Can Read the Register" placeholder="group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{domain-users}" data-accept="domain users|purvex\domain users">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
+<a class="ad-how" href="/range/phase-1/home-lab-directory#groups" target="_blank" rel="noopener">Learn how<span> · Groups</span></a>
 </div>
 <div class="ad-hint__text">
 <p>Least privilege means the people who need the data and nobody else. Build that group first, then look at who the share actually lets in.</p>
