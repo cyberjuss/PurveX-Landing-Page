@@ -31,6 +31,7 @@
 .lm-key__title:hover { color: var(--rd-accent); }
 .lm-key__title svg { width: 13px; height: 13px; transition: transform 0.2s ease; }
 .lm-key.is-closed { padding: 6px 18px; }
+.lm-key.is-closed .lm-key__cols { display: none; }
 .lm-key.is-closed .lm-key__title svg { transform: rotate(-90deg); }
 .lm-key__cols { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 14px 32px; }
 .lm-key__head { margin: 0 0 8px; font: 600 11px var(--font-display, inherit); color: var(--lm-ink-2); }
