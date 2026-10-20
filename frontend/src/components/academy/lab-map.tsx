@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Fragment, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { ArrowRight, Check, Clock } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Clock } from "lucide-react";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import type { SocLab } from "./use-soc-floor";
 import "./lab-map.css";
@@ -12,6 +12,7 @@ import "./lab-map.css";
 // is ringed. Nothing on it that a line diagram would not have.
 
 const LINE_COLOURS = ["#1f5fae", "#0e7f76", "#b8641c", "#7b3f91", "#2e7d3a", "#b23a48", "#56692a", "#3d5a80"];
+const KEY_PREF = "purvex.labmap.key";
 const ROW = 150;
 const TOP = 64;
 const TURN = 95;
@@ -44,6 +45,20 @@ export function LabMap({ labs }: { labs: SocLab[] }) {
   // The station whose card is showing. Hover or focus opens it; leaving closes
   // it after a beat, so the pointer can cross onto the card and press Start.
   const [open, setOpen] = useState<number | null>(null);
+  const [keyOpen, setKeyOpen] = useState(true);
+  useEffect(() => {
+    try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (localStorage.getItem(KEY_PREF) === "closed") setKeyOpen(false);
+    } catch {}
+  }, []);
+  const toggleKey = () =>
+    setKeyOpen((was) => {
+      try {
+        localStorage.setItem(KEY_PREF, was ? "closed" : "open");
+      } catch {}
+      return !was;
+    });
   const closing = useRef(0);
   const show = (i: number) => {
     window.clearTimeout(closing.current);
@@ -99,7 +114,10 @@ export function LabMap({ labs }: { labs: SocLab[] }) {
       const phase = l.phase ?? "";
       const last = weeks[weeks.length - 1];
       if (last && last.label === label && last.phase === phase) last.stops.push(i);
-      else weeks.push({ label, phase, first: i, stops: [i], colour: LINE_COLOURS[weeks.length % LINE_COLOURS.length], n: weeks.length + 1 });
+      else {
+        const n = Number(/Week\s+(\d+)/i.exec(label)?.[1]) || weeks.length + 1;
+        weeks.push({ label, phase, first: i, stops: [i], colour: LINE_COLOURS[weeks.length % LINE_COLOURS.length], n });
+      }
     });
     const weekOf = labs.map((_, i) => weeks.find((w) => w.stops.includes(i))!);
 
@@ -150,9 +168,12 @@ export function LabMap({ labs }: { labs: SocLab[] }) {
       </div>
 
       <div ref={box} className={`lm${narrow ? " lm--narrow" : ""}`}>
-        <section className="lm-key" aria-label="Map key">
-          <p className="lm-key__title">Key</p>
-          <div className="lm-key__cols">
+        <section className={`lm-key${keyOpen ? "" : " is-closed"}`} aria-label="Map key">
+          <button type="button" className="lm-key__title" onClick={toggleKey} aria-expanded={keyOpen} aria-controls="lm-key-body">
+            Key
+            <ChevronDown aria-hidden />
+          </button>
+          <div className="lm-key__cols" id="lm-key-body" hidden={!keyOpen}>
             <div>
               <p className="lm-key__head">Lines</p>
               <ul className="lm-key__lines">
@@ -199,7 +220,7 @@ export function LabMap({ labs }: { labs: SocLab[] }) {
                     <path d="M2 8 H11" className="lm-track is-run" />
                     <path d="M13 8 H22" className="lm-track" />
                   </svg>
-                  Travelled, then ahead
+                  Traveled, then ahead
                 </li>
                 <li>
                   <svg viewBox="0 0 24 24" aria-hidden="true">

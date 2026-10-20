@@ -25,8 +25,13 @@
 .lm-key { position: relative; margin: 6px 0 14px; padding: 18px 18px 14px; border: 1px solid var(--rd-line); }
 .lm-key__title {
   position: absolute; top: 0; left: 14px; margin: 0; padding: 0 6px; transform: translateY(-50%);
+  display: inline-flex; align-items: center; gap: 4px; border: 0; cursor: pointer;
   font: 700 11px var(--font-display, inherit); letter-spacing: 0.14em; text-transform: uppercase; color: var(--lm-ink); background: var(--lm-paper);
 }
+.lm-key__title:hover { color: var(--rd-accent); }
+.lm-key__title svg { width: 13px; height: 13px; transition: transform 0.2s ease; }
+.lm-key.is-closed { padding: 6px 18px; }
+.lm-key.is-closed .lm-key__title svg { transform: rotate(-90deg); }
 .lm-key__cols { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 14px 32px; }
 .lm-key__head { margin: 0 0 8px; font: 600 11px var(--font-display, inherit); color: var(--lm-ink-2); }
 .lm-key ul { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
