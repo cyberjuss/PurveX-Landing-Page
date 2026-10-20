@@ -78,7 +78,7 @@ export function SingleLab({
           </Link>
         )}
         <Link href="/range/labs" className="sl-done__btn sl-done__btn--main">
-          <MonitorDot aria-hidden /> Back to the SOC floor
+          <MonitorDot aria-hidden /> Back to all labs
         </Link>
       </div>
     </section>
@@ -96,7 +96,7 @@ export function SingleLab({
             <ArrowLeft aria-hidden="true" /> {entryTitle}
           </Link>
         )}
-        <Link href="/range/labs" className="sl__back sl__back--alt">SOC floor</Link>
+        <Link href="/range/labs" className="sl__back sl__back--alt">All labs</Link>
       </nav>
 
       {step === 0 && <SocStation title={title} accent={accent ?? "#5546e0"} skill={skill ?? "Lab"} />}

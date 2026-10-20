@@ -202,7 +202,7 @@ export function SocHud({
             <h3>{talking ? "What do you need?" : "The Coach is free"}</h3>
             {talking ? (
               <div className="sw-hud__asks">
-                <button type="button" onMouseDown={keep} onClick={() => ask(`I'm on the SOC floor with ${cleared} of ${labs.length} labs done. Which lab should I work next, and what will it train me for?`)}>
+                <button type="button" onMouseDown={keep} onClick={() => ask(`I'm in the PurveX office with ${cleared} of ${labs.length} labs done. Which lab should I work next, and what will it train me for?`)}>
                   Which lab should I do next?
                 </button>
                 {nextUp >= 0 && (
