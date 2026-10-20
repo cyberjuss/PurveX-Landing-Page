@@ -199,20 +199,30 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         const labsListOpen = openOf(labsListKey, phaseLabs.some((l) => pathname === `/range/labs/${l.slug}`));
         const labsListSection = phaseLabs.length > 0 && (
           <div>
-            <button
-              type="button"
-              onClick={() => toggle(labsListKey, labsListOpen)}
-              aria-expanded={labsListOpen}
+            <div
               className={`ax-subhead flex w-full items-center justify-between gap-2 font-mono text-[12px] font-bold uppercase tracking-[0.1em] transition ${
-                labsListOpen ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
+                labsListOpen || pathname === "/range/labs" ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)]"
               }`}
             >
-              <span className="flex min-w-0 items-center gap-1.5">
+              <Link
+                href="/range/labs"
+                onClick={onNavigate}
+                aria-current={pathname === "/range/labs" ? "page" : undefined}
+                className="flex min-w-0 flex-1 items-center gap-1.5 hover:text-[var(--rd-accent)]"
+              >
                 <FlaskConical className="h-3 w-3 shrink-0" aria-hidden />
                 <span className="truncate">Labs</span>
-              </span>
-              <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${labsListOpen ? "" : "-rotate-90"}`} />
-            </button>
+              </Link>
+              <button
+                type="button"
+                onClick={() => toggle(labsListKey, labsListOpen)}
+                aria-expanded={labsListOpen}
+                aria-label={labsListOpen ? "Hide the list of labs" : "Show the list of labs"}
+                className="-m-1 p-1 hover:text-[var(--rd-accent)]"
+              >
+                <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${labsListOpen ? "" : "-rotate-90"}`} />
+              </button>
+            </div>
             <div
               className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
                 labsListOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
