@@ -24,7 +24,7 @@ This week takes them one at a time:
 - the ports and protocols you will meet most often
 - how TLS wraps a connection once TCP has already brought it up
 
-Each is straightforward on its own. The difficulty of network analysis comes almost entirely from trying to absorb them all at once, which is why they are separated here.
+Each is straightforward on its own. The difficulty of network analysis comes almost entirely from trying to absorb them all at once.
 
 The labs then put you in Wireshark with real traffic and ask you to separate what is ordinary from what does not belong. It is worth setting expectations about that part, because you are not looking for a packet marked malicious. No such packet exists. What you are looking for is something that does not fit a pattern you have already learned, which means the learning has to come first. An analyst who knows what normal looks like at each layer notices the exception quickly, while one who does not will stare at a perfectly healthy capture for an hour.
 

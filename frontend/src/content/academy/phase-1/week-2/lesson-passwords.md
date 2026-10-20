@@ -12,7 +12,7 @@ That alone is not enough. Two further requirements are where most real systems f
 ### Good storage in one line
 <!-- art: salt -->
 
-A system should store a **salted, slow hash** of each password rather than the password. At sign-in it hashes whatever was typed, using the same salt, and compares the result. Both halves of that phrase are load-bearing.
+A system should store a **salted, slow hash** of each password rather than the password. At sign-in it hashes whatever was typed, using the same salt, and compares the result. The salt and the slowness each do a different job.
 
 - **Salt:** a random value added per user. Two people with the same password get different hashes, so reuse is hidden.
 - **Slow hash:** Argon2id or bcrypt. One high-end graphics card tries about 22 billion SHA-256 guesses a second. At bcrypt's minimum recommended cost of 10, the same card manages about 6,000.

@@ -21,7 +21,7 @@ Commit to an answer before you type anything. Being wrong here is useful, so pic
 </div>
 
 <div class="ad-check ad-check--predict" data-check="w1e-p2">
-<p class="ad-check__q">If you change one character inside a file, how much of its SHA-256 hash changes?</p>
+<p class="ad-check__q">If you change one character inside a file, how many characters of its SHA-256 hash change?</p>
 <button type="button" class="ad-check__opt" data-i="0">Only the part for that character</button>
 <button type="button" class="ad-check__opt" data-i="1">Roughly half of it</button>
 <button type="button" class="ad-check__opt" data-i="2">Almost all of it</button>
@@ -153,7 +153,7 @@ Answer from what you saw, not from what you remember reading.
 </div>
 
 <div class="ad-check" data-check="w1e-c2" data-answer="2">
-<p class="ad-check__q">You changed one digit out of twenty-four characters. Roughly how much of the SHA-256 hash changed?</p>
+<p class="ad-check__q">You changed one digit out of twenty-four characters. Roughly how many characters of the SHA-256 hash changed?</p>
 <button type="button" class="ad-check__opt" data-i="0">About one character</button>
 <button type="button" class="ad-check__opt" data-i="1">About a quarter</button>
 <button type="button" class="ad-check__opt" data-i="2">Almost all of it</button>

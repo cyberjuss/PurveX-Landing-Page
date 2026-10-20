@@ -20,7 +20,7 @@ The consequence is that the server can take nothing about identity or permission
 2. What role that person has.
 3. Whether that role may perform this action on this item.
 
-This is why hiding a button is not access control, and the mistake is common enough to state bluntly. Removing a link from a menu changes what one user is invited to do. It changes nothing whatsoever about what the server will do if somebody types the address directly, and an attacker is not working from your menu.
+This is why hiding a button is not access control, and the mistake is common enough to state bluntly. Removing a link from a menu changes what one user is invited to do. It changes nothing whatsoever about what the server will do if somebody types the address directly.
 
 ### Common forms
 
@@ -47,7 +47,7 @@ The fixes all follow from that rule:
 
 ### Testing
 
-A word of caution before the lab. Changing identifiers on a system you do not have written permission to test is unauthorized access. That remains true even if you only looked and even if the flaw was obvious. Intent is not the test here, so discovering a genuine vulnerability is not a defense either. Practice instead on the PortSwigger Web Security Academy labs, which exist for exactly this purpose, and take it as given that on the job this kind of testing requires a signed scope agreed in advance.
+A word of caution before the lab. Changing identifiers on a system you do not have written permission to test is unauthorized access. That remains true even if you only looked and even if the flaw was obvious. Good intentions are not a reliable defense, and finding a genuine vulnerability does not make the access authorized. Practice instead on the PortSwigger Web Security Academy labs, which exist for exactly this purpose, and take it as given that on the job this kind of testing requires a signed scope agreed in advance.
 
 ### When a user reports it
 

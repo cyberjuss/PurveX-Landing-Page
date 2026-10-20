@@ -25,7 +25,7 @@ This week also covers the vocabulary analysts use for danger that has not yet ca
 - A **threat** is something or someone that could use it.
 - **Risk** is the chance the two meet, and what it would cost.
 
-These words get used loosely in ordinary conversation, which is precisely why they are worth pinning down. A queue of alerts is full of language designed to sound alarming. An analyst who cannot separate a weakness from an actor ends up ranking work by how frightening it sounds, not by what it would cost the business.
+These words get used loosely in ordinary conversation, so this week pins them down. A queue of alerts is full of language designed to sound alarming. An analyst who cannot separate a weakness from an actor ends up ranking work by how frightening it sounds, not by what it would cost the business.
 
 With that distinction in hand, you can rank a queue instead of reacting to it. By the end of the week you should be able to look at a failure and say which of the three jobs broke. You should also be able to say whether the danger in front of you is a weakness, an actor, or the chance of the two meeting.
 

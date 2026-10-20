@@ -11,7 +11,7 @@ Authentication is the work of proving an identity. It answers a single question,
 | Something you have | Phone with an authenticator app, security key, smart card |
 | Something you are | Fingerprint, face |
 
-**Multi-factor authentication**, almost always shortened to MFA, requires proof drawn from two different rows of that table. The word different is doing real work there. A password combined with a security question is not multi-factor at all, because both are things you know and both are lost in the same way, usually in the same breach.
+**Multi-factor authentication**, almost always shortened to MFA, requires proof drawn from two different rows of that table. A password combined with a security question is not multi-factor at all, because both are things you know and both are lost in the same way, usually in the same breach.
 
 MFA matters for a blunt reason: passwords leak, constantly and at scale. A password that has leaked offers no protection whatsoever to the account it guards. In 2021 attackers walked into Colonial Pipeline through a VPN account that had a leaked password and no second factor. The result was a ransomware incident that interrupted fuel supply across much of the US East Coast.
 

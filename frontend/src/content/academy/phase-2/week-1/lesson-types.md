@@ -11,7 +11,7 @@ The main types you will see include:
 - Spyware and infostealers
 - Rootkit
 
-As you read, note what makes each one different, because the response changes with the type.
+The response changes with the type, so what matters is what makes each one different.
 
 #### Virus
 

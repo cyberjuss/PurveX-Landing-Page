@@ -1,6 +1,6 @@
 ### Vulnerabilities
 
-A vulnerability is a weakness that could be exploited. It is a flaw in a system or a process, and it is worth being clear from the start that it is not an attack and not an attacker. Common examples:
+A vulnerability is a weakness that could be exploited. It is a flaw in a system or a process, not an attack and not an attacker. Common examples:
 
 - unpatched software
 - a misconfigured firewall

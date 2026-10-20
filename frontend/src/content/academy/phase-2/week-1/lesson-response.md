@@ -9,7 +9,7 @@ A tier-1 response runs in this order:
 3. Preserve
 4. Escalate
 
-As you read, notice that containment comes before cleanup and that evidence is never destroyed.
+Containment comes before cleanup, and evidence is never destroyed.
 
 #### Verify
 

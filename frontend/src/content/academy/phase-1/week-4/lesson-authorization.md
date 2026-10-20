@@ -47,7 +47,7 @@ Level 3 · Helpdesk: Workstations | Password resets | Local support
 whoami /groups
 Get-ADPrincipalGroupMembership taylor.osei | Select-Object Name
 Get-ADGroupMember "IT Admins"
-icacls "D:\Shares\Finance"
+icacls "C:\PurveX\Shares\Finance"
 ```
 
 In Active Directory Users and Computers, the account's **Member Of** tab lists its groups.

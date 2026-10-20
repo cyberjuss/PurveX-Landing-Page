@@ -14,13 +14,13 @@ HTTPS is the encrypted form of HTTP, which means the contents of the page and an
 
 DNS translates names into IP addresses. Before a device can connect to a name such as google.com it has to perform a DNS lookup to find the matching address, because the network itself only ever routes on addresses and knows nothing about names.
 
-That ordering makes DNS unusually valuable to an analyst. Almost every connection a machine makes begins with a name lookup, so the DNS record is close to a complete list of what a machine was trying to reach, including the attempts that never succeeded. That last part does the real work. A device looking up a name it has no business wanting is frequently the earliest visible sign that something is wrong. It shows up in DNS whether or not the connection that followed ever completed.
+That ordering makes DNS unusually valuable to an analyst. Almost every connection a machine makes begins with a name lookup, so the DNS record is one of the best lists you will get of what a machine was trying to reach, including the attempts that never succeeded. It is not complete. Cached answers, connections made straight to an IP address and lookups sent over encrypted DNS (DoH) never reach your DNS logs. Even so, a device looking up a name it has no business wanting is frequently the earliest visible sign that something is wrong. It shows up in DNS whether or not the connection that followed ever completed.
 
 #### DHCP
 
 DHCP hands out IP addresses to devices as they join a network. A laptop connecting to the office Wi-Fi receives its address through a short DHCP request and response. The same exchange hands it the other settings it needs, such as which gateway to use and which DNS server to ask.
 
-The alternative is an administrator setting an address on every device by hand, which does not scale past a small number of machines and is why DHCP is close to universal. That near-universality is exactly what makes an exception interesting, because a device running with an address no DHCP server ever issued was configured deliberately by somebody. There are legitimate reasons for that, but it is worth finding out which one applies.
+The alternative is an administrator setting an address on every device by hand, which does not scale past a small number of machines and is why DHCP is close to universal. That near-universality is exactly what makes an exception interesting, because a device running with an address no DHCP server issued got it some other way. An address starting 169.254 means the device asked for one and nobody answered, which points to a network fault. Any other address was set by hand, and there are legitimate reasons for that, so find out which one applies.
 
 #### SMTP, POP3, and IMAP
 
@@ -28,7 +28,7 @@ SMTP, POP3 and IMAP are the protocols behind email, and they divide the work in 
 
 What matters for an analyst is which machines ought to be speaking these protocols at all, and the answer is a short list: mail servers, and the clients of the people who read mail. So SMTP coming from a host with no reason to handle mail is worth following up, because one of the more common uses of a compromised machine is to send messages from it. That traffic looks perfectly ordinary in isolation while being entirely out of place on that particular host.
 
-A later section puts all of this to work. You will open Wireshark with a real capture and use ports and protocols together to separate the ordinary traffic from the traffic that does not belong, which is the point everything in this week has been building toward.
+A later section puts all of this to work. You will open Wireshark with a real capture and use ports and protocols together to separate the ordinary traffic from the traffic that does not belong.
 
 ```sort
 prompt: Match each job to the protocol that does it.

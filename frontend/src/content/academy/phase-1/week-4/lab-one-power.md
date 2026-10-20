@@ -101,7 +101,7 @@ webops ALL=(root) NOPASSWD: /usr/bin/systemctl
 
 It looks almost the same, but it names no service. That one difference lets webops run `systemctl` with any service and any action. They could stop the firewall, restart sshd, or interfere with the logging that recorded the last lab, so their next actions leave less of a trace.
 
-The narrow rule gave away one service. The broad rule gave away control of every service on the machine, to the same account, with the same one line. That gap is what least privilege is about.
+The narrow rule gave away one service. The broad rule gave away every service on the machine, and in practice root itself, because anyone who can run any `systemctl` command as root can also start a service they wrote. All of that came from the same one line. That gap is what least privilege is about.
 
 ### Clean Up
 

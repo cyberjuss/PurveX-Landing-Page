@@ -104,7 +104,7 @@ Answer from what you saw, not from what you remember reading.
 <button type="button" class="ad-check__opt" data-i="0">4625</button>
 <button type="button" class="ad-check__opt" data-i="1">4624</button>
 <button type="button" class="ad-check__opt" data-i="2">3389</button>
-<p class="ad-check__note">4625 is a failed logon, 4624 is a success. These two numbers come up in almost every SOC interview, so they are worth remembering now.</p>
+<p class="ad-check__note">4625 is a failed logon, 4624 is a success. These two numbers come up in almost every SOC interview.</p>
 </div>
 
 <div class="ad-check" data-check="w4e-c3" data-answer="1">
@@ -118,9 +118,9 @@ Answer from what you saw, not from what you remember reading.
 <div class="ad-check" data-check="w4e-c4" data-answer="1">
 <p class="ad-check__q">A failed login for the name "jsmith" tells you what about that account?</p>
 <button type="button" class="ad-check__opt" data-i="0">The account definitely exists</button>
-<button type="button" class="ad-check__opt" data-i="1">Only that something tried that name with a wrong password</button>
+<button type="button" class="ad-check__opt" data-i="1">Only that something tried that name and failed</button>
 <button type="button" class="ad-check__opt" data-i="2">The account was locked</button>
-<p class="ad-check__note">A failure means an attempt was made, not that the account is real. Attackers guess names too, so a failure alone proves only that someone tried.</p>
+<p class="ad-check__note">A failure means an attempt was made, not that the account is real. Attackers guess names too, so a failure alone proves only that someone tried. Look at the details before you decide. On Windows the 4625 sub-status tells an unknown name apart from a wrong password.</p>
 </div>
 
 ### Take It Further

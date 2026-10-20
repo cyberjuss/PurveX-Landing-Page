@@ -34,7 +34,7 @@ The lab has only one client machine. Learn where it belongs so you notice if it 
 
 | Item | Detail |
 | :---- | :---- |
-| Computer name | IT WKS01 |
+| Computer name | IT-WKS01 |
 | Assigned department | IT |
 | Location | Workstations folder under IT |
 
