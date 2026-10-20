@@ -162,6 +162,25 @@ export function hasTicketObjects(s: LabSnapshot) {
   );
 }
 
+/** What a check is about, so a lab finding and a ticket that fix the same thing compare equal. */
+function checkKey(c: Check): string {
+  const r = c as Record<string, unknown>;
+  if (c.t === "policy") return `policy:${String(r.key).startsWith("lockout") ? "lockout" : String(r.key)}`;
+  if (c.t === "member") return `member:${String(r.sam).toLowerCase()}:${String(r.group).toLowerCase()}`;
+  const subject = r.sam ?? r.name ?? r.sub ?? r.path ?? "";
+  return `${c.t}:${String(subject).toLowerCase()}`;
+}
+
+const TICKET_KEYS: [string, Set<string>][] = Object.entries(MISSION_LAB as Record<string, Gate>)
+  .filter(([id]) => /^(tq|cap|cry)-/.test(id))
+  .map(([id, g]) => [id, new Set(g.checks.map(({ c }) => checkKey(c)))]);
+
+/** The ticket whose fix is this change, if any. A finding it covers is that ticket's work, not a separate job. */
+export function ticketFor(checks: Check[]): string | null {
+  const keys = checks.filter((c) => !(c.t === "enabled" && c.want)).map(checkKey);
+  return TICKET_KEYS.find(([, set]) => keys.some((k) => set.has(k)))?.[0] ?? null;
+}
+
 export function checkMission(id: string, snapshot: LabSnapshot) {
   const gate = missionGate(id);
   if (!gate) return null;

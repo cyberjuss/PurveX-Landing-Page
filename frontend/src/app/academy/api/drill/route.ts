@@ -91,7 +91,7 @@ async function status(userId: string, day: string) {
   const chats = coachBonus(entries, day);
   // Real findings from the student's own lab. Hands-on work only ever comes from these.
   const findings = labState ? auditLab(labState.snapshot) : [];
-  const labJobs = labState ? new Set(findings.filter((f) => f.task).map((f) => f.job)) : null;
+  const labJobs = labState ? new Set(findings.filter((f) => f.task && !f.ticket).map((f) => f.job)) : null;
   return {
     stats: drillStats(entries, day),
     lab,
@@ -104,7 +104,7 @@ async function status(userId: string, day: string) {
     incidentUntil: incidentHold(entries)?.until ?? null,
     jobs: jobProgress(entries, results, labState?.snapshot),
     nextJob: pickTargetJob(entries, `${userId}:${day}`, labJobs, results, labState?.snapshot, examAim(profile, results, entries).prefer)?.id ?? null,
-    findings: findings.slice(0, 12).map((f) => ({ id: f.id, severity: f.severity, title: f.title, facts: f.facts, fixable: Boolean(f.task), job: f.job })),
+    findings: findings.slice(0, 12).map((f) => ({ id: f.id, severity: f.severity, title: f.title, facts: f.facts, fixable: Boolean(f.task), job: f.job, ticket: f.ticket ?? null })),
   };
 }
 
@@ -248,7 +248,7 @@ export async function POST(request: Request) {
     let item = null;
     if (apiKey && mode === "daily") {
       // Aim at the on-the-job task they have shown the least, so the daily drill covers what the job needs.
-      const fixable = snapshot ? auditLab(snapshot).filter((f) => f.task) : [];
+      const fixable = snapshot ? auditLab(snapshot).filter((f) => f.task && !f.ticket) : [];
       const labJobs = snapshot ? new Set(fixable.map((f) => f.job)) : null;
       // A student can aim the day's case at one job, which is how the
       // portfolio's open tasks become doable rather than a wait for the

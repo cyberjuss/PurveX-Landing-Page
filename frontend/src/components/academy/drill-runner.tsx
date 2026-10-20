@@ -8,6 +8,7 @@ import { useCoach } from "@/components/academy/coach-context";
 import { useHostedLab } from "@/components/academy/hosted-lab-button";
 import { academyFetch, localDay, READINESS_PATH } from "@/lib/academy-client";
 import { askForProofShot } from "@/lib/academy-proof";
+import { MISSION_CATALOG, missionHref } from "@/lib/academy-missions";
 import { SKILLS, type Skill } from "@/lib/academy-score";
 import { useMounted } from "@/lib/use-mounted";
 
@@ -41,7 +42,7 @@ export type DrillStatus = {
   findings: Finding[];
 };
 
-type Finding = { id: string; severity: "high" | "medium" | "low"; title: string; facts: string; fixable: boolean; job: string };
+type Finding = { id: string; severity: "high" | "medium" | "low"; title: string; facts: string; fixable: boolean; job: string; ticket?: string | null };
 
 type JobRow = { id: string; label: string; skill: Skill; lab: boolean; security: boolean; status: "new" | "practiced" | "proven"; correct: number; asked: number };
 
@@ -257,9 +258,24 @@ function Scenario({
   );
 }
 
-function LabFindings({ items }: { items: Finding[] }) {
+// "Ticket 13 · Password That Never Expires", or the capstone's title for one outside the queue.
+function ticketName(id: string) {
+  const m = MISSION_CATALOG[id];
+  const n = /^tq-(\d+)$/.exec(id)?.[1];
+  return n ? `Ticket ${n}${m ? ` · ${m.title}` : ""}` : (m?.title ?? id);
+}
+
+function LabFindings({ items, ago }: { items: Finding[]; ago: string | null }) {
   const tone = { high: "Serious", medium: "Worth fixing", low: "Minor" } as const;
   const [open, setOpen] = useState(false);
+  const ticketed = items.filter((f) => f.ticket).length;
+  const source = ago ? ` Read from your lab's report ${ago}, and gone from this list once your fix reaches the next one.` : "";
+  const split =
+    ticketed === items.length
+      ? " Every one is a ticket in your queue."
+      : ticketed
+        ? ` ${ticketed} ${ticketed === 1 ? "is a ticket" : "are tickets"} in your queue. The rest can come up as today's case.`
+        : " None is a ticket, so each can come up as today's case.";
   return (
     <li data-tour="findings">
       <div className="ax-path__row">
@@ -269,7 +285,7 @@ function LabFindings({ items }: { items: Finding[] }) {
           <span className="ax-path__body">
             {items.length === 0
               ? "Nothing is wrong in your lab right now, so today's case is a judgement call instead."
-              : `${items.length} thing${items.length === 1 ? "" : "s"} an auditor would flag in your directory today.`}
+              : `${items.length} thing${items.length === 1 ? "" : "s"} an auditor would flag in your directory today.${split}${source}`}
           </span>
         </span>
         <span className="ax-path__count">
@@ -299,7 +315,15 @@ function LabFindings({ items }: { items: Finding[] }) {
                 <span className="dr-findings__tag">{tone[f.severity]}</span>
                 <strong>{f.title}</strong>
                 <p>{f.facts}</p>
-                {!f.fixable && <em>Needs a decision, not a setting.</em>}
+                {f.ticket ? (
+                  <Link href={missionHref(f.ticket)} className="dr-findings__ticket">
+                    Fix it in {ticketName(f.ticket)}. It goes in your portfolio. <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                ) : f.fixable ? (
+                  <em>Not in any ticket. It can come up as today&rsquo;s case, and the fix goes in your portfolio.</em>
+                ) : (
+                  <em>Needs a decision, not a setting.</em>
+                )}
               </li>
             ))}
           </ul>
@@ -1140,7 +1164,7 @@ export function DrillRunner() {
                 </span>
               </div>
             </li>
-            <LabFindings items={status.findings} />
+            <LabFindings items={status.findings} ago={status.lab.ago} />
           </ol>
           {error && !errorMode && <p className="dr-error">{error}</p>}
           {/* A hosted lab is verified by Range itself, so there is no code to plant. */}

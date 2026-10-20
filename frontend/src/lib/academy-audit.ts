@@ -2,6 +2,7 @@ import "server-only";
 import { seeded, shuffle, type Check, type Task } from "@/lib/academy-drills";
 import type { LabSnapshot, LabUser } from "@/lib/academy-lab";
 import type { Skill } from "@/lib/academy-score";
+import { ticketFor } from "@/lib/academy-mission-lab";
 
 // A real audit of the student's own lab. Nothing here is invented: every
 // finding is read from their latest snapshot, and every fix is checked against
@@ -40,6 +41,8 @@ export type Finding = {
   /** What a fix must make true. Absent for findings that need judgement, not a change. */
   task?: Task;
   summary: string;
+  /** The Ticket Queue (or capstone) ticket whose fix this is, when one exists. */
+  ticket?: string;
 };
 
 export type ChangeBrief = Finding & { theme: string };
@@ -408,13 +411,20 @@ export function auditLab(s: LabSnapshot): Finding[] {
     }
   }
 
+  for (const f of out) {
+    const review = /^admin-review:([^:]+):(.+)$/.exec(f.id);
+    const checks = f.task?.checks.map((x) => x.c) ?? (review ? [{ t: "member", sam: review[2], group: review[1], want: false } as Check] : []);
+    const ticket = ticketFor(checks);
+    if (ticket) f.ticket = ticket;
+  }
   const rank = { high: 0, medium: 1, low: 2 } as const;
   return out.sort((a, b) => rank[a.severity] - rank[b.severity]);
 }
 
 /** One real finding to fix as today's lab task. Prefers the one that practices the job the student has shown least. */
 export function pickFinding(params: { snapshot: LabSnapshot; seed: string; level: number; avoid: string[]; targetJob?: string; only?: FindingKind }): ChangeBrief | null {
-  const findings = auditLab(params.snapshot).filter((f) => f.task && (!params.only || f.kind === params.only));
+  // A ticket's own fix is left to the ticket, so a daily case never finishes one behind the student's back.
+  const findings = auditLab(params.snapshot).filter((f) => f.task && !f.ticket && (!params.only || f.kind === params.only));
   if (!findings.length) return null;
   const avoid = new Set(params.avoid);
   const fresh = findings.filter((f) => !avoid.has(f.id));
