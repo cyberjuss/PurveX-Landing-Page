@@ -9,3 +9,9 @@
   - [T1562.002 — Impair Defenses: Disable Windows Event Logging](https://attack.mitre.org/techniques/T1562/002/)
   - [T1136.002 — Create Account: Domain Account](https://attack.mitre.org/techniques/T1136/002/)
 - **The five incidents in this week's attack-chain challenge, their exact titles, and which of the IDs above each one carries:** pulled directly from this course's own Shift incident data (`academy-shift.ts`), the same source used for Week 2's ATT&CK lesson. Nothing in the challenge was invented for this lesson.
+- **ATT&CK enterprise tactics used in the per-stage lessons, as the closest verifiable match to a Kill Chain stage with no PurveX-specific incident:**
+  - [TA0043 — Reconnaissance](https://attack.mitre.org/tactics/TA0043/)
+  - [TA0042 — Resource Development](https://attack.mitre.org/tactics/TA0042/)
+  - [TA0001 — Initial Access](https://attack.mitre.org/tactics/TA0001/), and its [T1566 — Phishing](https://attack.mitre.org/techniques/T1566/) technique
+  - [TA0011 — Command and Control](https://attack.mitre.org/tactics/TA0011/)
+  - [TA0009 — Collection](https://attack.mitre.org/tactics/TA0009/), [TA0010 — Exfiltration](https://attack.mitre.org/tactics/TA0010/), and [TA0040 — Impact](https://attack.mitre.org/tactics/TA0040/)
