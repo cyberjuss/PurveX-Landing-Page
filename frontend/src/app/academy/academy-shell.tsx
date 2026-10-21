@@ -1371,8 +1371,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
                 {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
               </button>
               <Link
-                href="/"
-                aria-label="PurveX home"
+                href="/range"
+                aria-label="Range home"
                 className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] bg-white text-slate-500 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
               >
                 <Home className="h-[18px] w-[18px]" />
