@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Shield } from "lucide-react";
 import { confettiFrom } from "@/lib/confetti";
 import { academyFetch } from "@/lib/academy-client";
 import { dropSlotAt, useLabDone, useLabResult, usePointerDrag, useSaved } from "./lab-kit";
@@ -13,9 +13,17 @@ import "./network-map-lab.css";
 // attempts onto the actor that starts them, and each drop draws a real
 // arrow into the diagram, colored by whether the pod's own isolation
 // allows it -- by the end the full diagram shows every real attack surface
-// the pod has, and the one sanctioned way in.
+// the pod has, and the one sanctioned way in. The two nodes carry the
+// pod's own real IPs, and the panel below the diagram is read straight
+// from the student's latest snapshot, not fixed teaching data -- the same
+// live reference that used to be its own separate "Lab addresses" view,
+// folded in here so there is one map, not two.
 
 type PodStatus = { available?: boolean; state?: string; instanceType?: string; linux?: boolean };
+type NetNode = { role: "dc" | "desktop"; label: string; os: string; ip: string | null };
+type Dns = { name: string; ip: string };
+type FwRule = { name: string; enabled: boolean; direction: string; action: string; localPort: string; remoteAddress: string };
+type PodNetwork = { nodes: NetNode[]; dns: Dns[]; firewall: FwRule[] };
 
 type Pt = { x: number; y: number };
 const DC: Pt = { x: 230, y: 150 };
@@ -55,6 +63,7 @@ const STORE = "academy-lab-network-map-v2";
 export function NetworkMapLab({ onDone }: { onDone?: () => void }) {
   const [s, setS] = useSaved<State>(STORE, START, (v) => Array.isArray(v.ports) && Array.isArray(v.boundary));
   const [pod, setPod] = useState<PodStatus | null>(null);
+  const [net, setNet] = useState<PodNetwork | null>(null);
   const [miss, setMiss] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const boardRef = useRef<HTMLDivElement>(null);
@@ -69,6 +78,21 @@ export function NetworkMapLab({ onDone }: { onDone?: () => void }) {
       live = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (pod?.state !== "ready") return;
+    let live = true;
+    academyFetch("/academy/api/hosted-lab/network")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: PodNetwork | null) => live && setNet(data))
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [pod?.state]);
+
+  const dcIp = net?.nodes.find((n) => n.role === "dc")?.ip ?? null;
+  const lxIp = net?.nodes.find((n) => n.role === "desktop")?.ip ?? null;
 
   const portsDone = s.ports.length === PORTS.length;
   const boundaryDone = s.boundary.length === BOUNDARY.length;
@@ -159,13 +183,15 @@ export function NetworkMapLab({ onDone }: { onDone?: () => void }) {
         {/* machines */}
         <g transform={`translate(${DC.x} ${DC.y})`} className="nml__node nml__node--dc">
           <circle r="44" />
-          <text y="-6">DC</text>
-          <text y="14" className="nml__sub">Windows Server</text>
+          <text y="-10">DC</text>
+          <text y="10" className="nml__sub">Windows Server</text>
+          {dcIp && <text y="26" className="nml__ip">{dcIp}</text>}
         </g>
         <g transform={`translate(${LX.x} ${LX.y})`} className="nml__node nml__node--lx">
           <circle r="44" />
-          <text y="-6">Ubuntu</text>
-          <text y="14" className="nml__sub">Linux server</text>
+          <text y="-10">Ubuntu</text>
+          <text y="10" className="nml__sub">Linux server</text>
+          {lxIp && <text y="26" className="nml__ip">{lxIp}</text>}
         </g>
 
         {/* port slots */}
@@ -222,9 +248,51 @@ export function NetworkMapLab({ onDone }: { onDone?: () => void }) {
       {note && <p className="nml__note" aria-live="polite">{note}</p>}
 
       {allDone && (
-        <p className="nml__done">
-          <Check className="h-4 w-4" aria-hidden /> That&rsquo;s the whole attack surface: two machines that trust each other completely, and a boundary that trusts nothing else at all except the one path you actually use to get in.
-        </p>
+        <>
+          <p className="nml__done">
+            <Check className="h-4 w-4" aria-hidden /> That&rsquo;s the whole attack surface: two machines that trust each other completely, and a boundary that trusts nothing else at all except the one path you actually use to get in.
+          </p>
+          {net && (
+            <div className="nml__live">
+              <p className="nml__live__lede">Everything above was the shape every pod has. What follows is read straight from yours.</p>
+              <div className="nml__live__grid">
+                <section>
+                  <h3><Shield className="h-3.5 w-3.5" aria-hidden /> DNS records ({net.dns.length})</h3>
+                  {net.dns.length === 0 ? (
+                    <p className="nml__live__empty">None reported yet.</p>
+                  ) : (
+                    <ul>
+                      {net.dns.map((r) => (
+                        <li key={`${r.name}:${r.ip}`}>
+                          <code>{r.name}</code>
+                          <span>{r.ip}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+                <section>
+                  <h3><Shield className="h-3.5 w-3.5" aria-hidden /> Firewall rules ({net.firewall.length})</h3>
+                  {net.firewall.length === 0 ? (
+                    <p className="nml__live__empty">None reported yet.</p>
+                  ) : (
+                    <ul>
+                      {net.firewall.map((r) => (
+                        <li key={r.name}>
+                          <code>{r.name}</code>
+                          <span>
+                            {r.direction} · {r.action} · {r.localPort || "any port"}
+                            {r.enabled ? "" : " · disabled"}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
