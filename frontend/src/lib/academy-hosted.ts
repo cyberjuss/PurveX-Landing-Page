@@ -757,6 +757,33 @@ export async function hostedLabStatus(userId: string): Promise<HostedLabStatus> 
   return { state: map[inst.state] ?? "starting", stopAt: row.stopAt, startedAt, firstBoot: !linked, instanceType: c.instanceType, linux: Boolean(row.linuxInstanceId) };
 }
 
+export type HostedLabNode = { role: "dc" | "desktop"; label: string; os: string; ip: string | null };
+export type HostedLabNetwork = {
+  nodes: HostedLabNode[];
+  dns: { name: string; ip: string }[];
+  firewall: { name: string; enabled: boolean; direction: string; action: string; localPort: string; remoteAddress: string }[];
+};
+
+/**
+ * The pod's own network, as the student's lab actually reports it: the two
+ * machines' real addresses, plus the DNS records and firewall rules their own
+ * domain controller holds. Nothing invented for the map to show -- a pod with
+ * no Ubuntu server yet, or no snapshot yet, just has less of this than a
+ * finished one does, same as everywhere else that reads a snapshot.
+ */
+export async function hostedLabNetwork(userId: string): Promise<HostedLabNetwork | null> {
+  const row = await loadHostedLab(userId);
+  if (!row || row.instanceId === POD_RESERVED) return null;
+  const lab = await loadLabState(userId).catch(() => null);
+  const infra = lab?.snapshot.infra;
+  const nodes: HostedLabNode[] = [{ role: "dc", label: "PurveX Financial DC", os: "Windows Server 2022", ip: infra?.dcIps?.[0] ?? null }];
+  if (row.linuxInstanceId) {
+    const linux = await describe(row.linuxInstanceId).catch(() => null);
+    nodes.push({ role: "desktop", label: "web01 (Ubuntu)", os: "Ubuntu 24.04", ip: linux?.privateIp ?? null });
+  }
+  return { nodes, dns: infra?.dns ?? [], firewall: infra?.firewall ?? [] };
+}
+
 export async function startHostedLab(userId: string): Promise<void> {
   const row = await loadHostedLab(userId);
   // Not caught on purpose. A describe that throws means AWS could not be

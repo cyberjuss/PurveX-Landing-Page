@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { ArrowUpRight, Check, Copy, Eye, EyeOff, Info, LifeBuoy, Loader2, RotateCcw, Server } from "lucide-react";
+import { ArrowUpRight, Check, Copy, Eye, EyeOff, Info, LifeBuoy, Loader2, RotateCcw, Server, Waypoints } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { openHelp } from "@/components/academy/get-help";
 import { LabBriefing, labBriefed, markLabBriefed } from "@/components/academy/lab-briefing";
+import { NetworkMap } from "@/components/academy/network-map";
 import "./hosted-lab.css";
 
 // The student's own hosted domain controller: a button in the header and a
@@ -568,6 +569,7 @@ export function HostedLabMenu() {
   // "start" stands in front of the first start; "read" is the same briefing
   // reopened from the footer link once they have been through it.
   const [brief, setBrief] = useState<null | "start" | "read">(null);
+  const [showNetwork, setShowNetwork] = useState(false);
   const now = useMinuteTick(state === "ready");
   if (!status?.available) return null;
   // Nobody should meet a live Windows domain cold. The first start goes
@@ -697,10 +699,16 @@ export function HostedLabMenu() {
         <button type="button" className="hl__link" onClick={() => setBrief("read")}>
           <Info className="h-3 w-3" aria-hidden /> How it works
         </button>
+        {state === "ready" && (
+          <button type="button" className="hl__link" onClick={() => setShowNetwork(true)}>
+            <Waypoints className="h-3 w-3" aria-hidden /> Network map
+          </button>
+        )}
         <button type="button" className="hl__link hl__link--end" onClick={() => openHelp("lab")}>
           <LifeBuoy className="h-3 w-3" aria-hidden /> Help
         </button>
       </div>
+      {showNetwork && <NetworkMap onClose={() => setShowNetwork(false)} />}
       {brief && (
         <LabBriefing
           sessionHours={status.sessionHours ?? 3}
