@@ -3,7 +3,7 @@
 import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, BookMarked, Check, ChevronDown, FlaskConical, Hammer, Lock } from "lucide-react";
+import { ArrowUpRight, BookMarked, Check, ChevronDown, Flag, FlaskConical, Hammer, Lock } from "lucide-react";
 import { type PhaseDef } from "@/lib/academy-content";
 import { entriesOf, labLinksOf } from "@/lib/academy-entries";
 import { slugify, useAcademyProgress } from "./academy-progress";
@@ -108,7 +108,12 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
             </div>
           );
         }
-        const labs = phase.homeLabs ?? [];
+        // Challenges reads as its own kind of work, not one more sitting in
+        // the Home Lab list, so it gets its own section rather than being the
+        // last row in this one.
+        const allHomeLabs = phase.homeLabs ?? [];
+        const labs = allHomeLabs.filter((l) => l.slug !== "home-lab-challenges");
+        const challenges = allHomeLabs.find((l) => l.slug === "home-lab-challenges") ?? null;
         const labsKey = `${phase.slug}:labs`;
         // Open when you are inside one of them, or when you have opened it by
         // hand. Collapsed otherwise, so four sittings do not crowd the weeks.
@@ -164,7 +169,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
             >
               <span className="flex min-w-0 items-center gap-1.5">
                 <Hammer className="h-3 w-3 shrink-0" aria-hidden />
-                <span className="truncate">Home Lab</span>
+                <span className="truncate">Company</span>
               </span>
               <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${labsOpen ? "" : "-rotate-90"}`} />
             </button>
@@ -175,6 +180,36 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
             >
               <ul className="ax-list flex flex-col overflow-hidden">
                 {labs.map(row)}
+              </ul>
+            </div>
+          </div>
+        );
+
+        const challengesKey = `${phase.slug}:challenges`;
+        const challengesOpen = openOf(challengesKey, challenges !== null && pathname === `/range/${phase.slug}/${challenges.slug}`);
+        const challengesSection = challenges && (
+          <div>
+            <button
+              type="button"
+              onClick={() => toggle(challengesKey, challengesOpen)}
+              aria-expanded={challengesOpen}
+              className={`ax-subhead flex w-full items-center justify-between gap-2 font-mono text-[12px] font-bold uppercase tracking-[0.1em] transition ${
+                challengesOpen ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
+              }`}
+            >
+              <span className="flex min-w-0 items-center gap-1.5">
+                <Flag className="h-3 w-3 shrink-0" aria-hidden />
+                <span className="truncate">Challenges</span>
+              </span>
+              <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${challengesOpen ? "" : "-rotate-90"}`} />
+            </button>
+            <div
+              className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
+                challengesOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+              }`}
+            >
+              <ul className="ax-list flex flex-col overflow-hidden">
+                {[challenges].map(row)}
               </ul>
             </div>
           </div>
@@ -314,6 +349,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 </ul>
                 {labsListSection}
                 {labSection}
+                {challengesSection}
               </div>
             </div>
           </div>
