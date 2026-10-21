@@ -104,7 +104,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 9
+$PurvexScriptVersion = 10
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
