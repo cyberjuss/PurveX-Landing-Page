@@ -1,199 +1,284 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { RotateCcw } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check } from "lucide-react";
+import { confettiFrom } from "@/lib/confetti";
 import { academyFetch } from "@/lib/academy-client";
 import { useLabDone, useLabResult, useSaved } from "./lab-kit";
-import { ChatShell, Chip, ChipRow, Mine, Says, SendAction } from "./lab-chat";
-import { useOptionalCoach } from "../coach-context";
-import { LOST_ASK } from "./lab-brief";
+import "./network-map-lab.css";
 
-// Week 4 lab: the student's own pod, read live from the same status endpoint
-// the lab button uses, then two graded rounds over the real isolation model
-// described in academy-hosted.ts -- which port a task actually uses, and
-// whether a given connection attempt is inside the pod's boundary or outside
-// it. Nothing here is a generic diagram; the machine list at the top is
-// whatever this student's pod actually reports right now.
+// Week 4 lab: an actual diagram of the student's own pod, not a quiz about
+// one. Round 1 drags five everyday tasks onto the port each one actually
+// uses, drawn around the two machines. Round 2 drags five connection
+// attempts onto the actor that starts them, and each drop draws a real
+// arrow into the diagram, colored by whether the pod's own isolation
+// allows it -- by the end the full diagram shows every real attack surface
+// the pod has, and the one sanctioned way in.
 
 type PodStatus = { available?: boolean; state?: string; instanceType?: string; linux?: boolean };
 
-type PortScenario = { id: string; desc: string; answer: string; why: string };
-const PORTS: PortScenario[] = [
-  { id: "rdp", desc: "You open a remote desktop session to work on the domain controller directly.", answer: "3389 · RDP", why: "Remote Desktop Protocol, how you actually reach the DC's own screen." },
-  { id: "kerberos", desc: "A sign-in anywhere in the directory needs its ticket checked against the domain controller.", answer: "88 · Kerberos", why: "Kerberos is the protocol that issues and verifies every sign-in ticket in the domain." },
-  { id: "ldap", desc: "Something looks up a user object's details straight from the directory.", answer: "389 · LDAP", why: "LDAP is how the directory itself gets queried." },
-  { id: "dns", desc: "A machine needs to find the domain controller's address before anything else can happen.", answer: "53 · DNS", why: "DNS is how every machine finds the domain controller in the first place." },
-  { id: "ssh", desc: "You open a terminal session on the Ubuntu server.", answer: "22 · SSH", why: "SSH, the Linux box's remote terminal protocol." },
-];
-const PORT_OPTIONS = ["3389 · RDP", "88 · Kerberos", "389 · LDAP", "53 · DNS", "22 · SSH"];
+type Pt = { x: number; y: number };
+const DC: Pt = { x: 230, y: 150 };
+const LX: Pt = { x: 410, y: 150 };
+const ACTORS: Record<string, Pt> = {
+  internet: { x: 140, y: 390 },
+  otherpod: { x: 320, y: 390 },
+  guac: { x: 500, y: 390 },
+};
+const ACTOR_LABEL: Record<string, string> = { internet: "The Internet", otherpod: "Another Pod", guac: "Guacamole" };
 
-type BoundaryScenario = { id: string; desc: string; answer: "allowed" | "blocked"; why: string };
-const BOUNDARY: BoundaryScenario[] = [
-  { id: "dc-to-linux", desc: "The domain controller reaches out to your Ubuntu server, on any port.", answer: "allowed", why: "The two machines in your own pod can reach each other on every port. That is the whole point of them being one pod." },
-  { id: "linux-to-dc", desc: "The Ubuntu server reaches back to the domain controller.", answer: "allowed", why: "Same pod, same rule, either direction." },
-  { id: "internet-to-dc", desc: "A connection attempt arrives from the open internet, aimed at the domain controller's RDP port.", answer: "blocked", why: "Nothing on the internet can open a connection into either machine. That is enforced by the security group, not a setting on the machine itself." },
-  { id: "other-pod", desc: "Another student's domain controller tries to reach your Ubuntu server.", answer: "blocked", why: "No student's pod can see another's. Each pod gets its own security group." },
-  { id: "guacamole", desc: "Guacamole, the gateway your browser opens the lab through, connects in to show you the desktop.", answer: "allowed", why: "Guacamole is the one sanctioned path in, which is why you reach your lab through a signed link instead of a raw address." },
+type Port = { id: string; task: string; at: Pt; node: "dc" | "lx"; label: string; why: string };
+const PORTS: Port[] = [
+  { id: "rdp", task: "Open a remote desktop session on the domain controller.", at: { x: DC.x, y: DC.y - 72 }, node: "dc", label: "3389", why: "RDP: how you actually reach the DC's own screen." },
+  { id: "kerberos", task: "Check a sign-in's ticket against the directory.", at: { x: DC.x - 72, y: DC.y - 20 }, node: "dc", label: "88", why: "Kerberos issues and verifies every sign-in ticket in the domain." },
+  { id: "ldap", task: "Look up a user object straight from the directory.", at: { x: DC.x - 72, y: DC.y + 56 }, node: "dc", label: "389", why: "LDAP is how the directory itself gets queried." },
+  { id: "dns", task: "Find the domain controller's address before anything else can happen.", at: { x: DC.x + 20, y: DC.y + 78 }, node: "dc", label: "53", why: "DNS is how every machine finds the domain controller in the first place." },
+  { id: "ssh", task: "Open a terminal session on the Ubuntu server.", at: { x: LX.x, y: LX.y + 72 }, node: "lx", label: "22", why: "SSH, the Linux box's remote terminal protocol." },
 ];
 
-const STEPS = ["Meet your pod", "Name the ports", "Trace the boundary", "Debrief"];
+type Boundary = { id: string; from: string; task: string; to: "dc" | "lx"; allowed: boolean; why: string };
+const BOUNDARY: Boundary[] = [
+  { id: "dc-to-lx", from: "dc", task: "The domain controller reaches your Ubuntu server, on any port.", to: "lx", allowed: true, why: "The two machines in your own pod reach each other on every port. That's the whole point of them being one pod." },
+  { id: "lx-to-dc", from: "lx", task: "The Ubuntu server reaches back to the domain controller.", to: "dc", allowed: true, why: "Same pod, same rule, either direction." },
+  { id: "internet", from: "internet", task: "A connection arrives from the open internet, aimed at the domain controller's RDP port.", to: "dc", allowed: false, why: "Nothing on the internet can open a connection into either machine. The security group enforces that, not a setting on the machine." },
+  { id: "otherpod", from: "otherpod", task: "Another student's domain controller tries to reach your Ubuntu server.", to: "lx", allowed: false, why: "No student's pod can see another's. Each pod gets its own security group." },
+  { id: "guac", from: "guac", task: "Guacamole, your browser's gateway, connects in to show you the desktop.", to: "dc", allowed: true, why: "Guacamole is the one sanctioned path in -- why you reach your lab through a signed link, not a raw address." },
+];
 
 interface State {
-  step: number;
-  ports: Record<string, string>;
-  boundary: Record<string, "allowed" | "blocked">;
-  checked: [boolean, boolean];
+  ports: string[];
+  boundary: string[];
 }
-const START: State = { step: 0, ports: {}, boundary: {}, checked: [false, false] };
-const STORE = "academy-lab-network-map-v1";
+const START: State = { ports: [], boundary: [] };
+const STORE = "academy-lab-network-map-v2";
+const MOVE_SLOP = 6;
+
+/** Pointer-driven drag so it works with a mouse, a pen and a finger alike. */
+function useDrag(onDrop: (id: string, x: number, y: number) => void) {
+  const drag = useRef<{ id: string; el: HTMLElement; x: number; y: number; moved: boolean } | null>(null);
+  const [dragging, setDragging] = useState<string | null>(null);
+  const bind = (id: string) => ({
+    onPointerDown(e: React.PointerEvent<HTMLElement>) {
+      if (e.button !== 0) return;
+      drag.current = { id, el: e.currentTarget, x: e.clientX, y: e.clientY, moved: false };
+      e.currentTarget.setPointerCapture(e.pointerId);
+    },
+    onPointerMove(e: React.PointerEvent<HTMLElement>) {
+      const d = drag.current;
+      if (!d) return;
+      const dx = e.clientX - d.x;
+      const dy = e.clientY - d.y;
+      if (!d.moved && Math.hypot(dx, dy) < MOVE_SLOP) return;
+      if (!d.moved) {
+        d.moved = true;
+        setDragging(id);
+      }
+      d.el.style.transform = `translate(${dx}px, ${dy}px)`;
+      d.el.style.zIndex = "5";
+    },
+    onPointerUp(e: React.PointerEvent<HTMLElement>) {
+      const d = drag.current;
+      drag.current = null;
+      if (!d) return;
+      d.el.style.transform = "";
+      d.el.style.zIndex = "";
+      setDragging(null);
+      if (d.moved) onDrop(id, e.clientX, e.clientY);
+    },
+    onPointerCancel() {
+      if (drag.current) {
+        drag.current.el.style.transform = "";
+        drag.current.el.style.zIndex = "";
+      }
+      drag.current = null;
+      setDragging(null);
+    },
+  });
+  return { bind, dragging };
+}
+
+function slotAt(x: number, y: number): string | null {
+  for (const el of document.elementsFromPoint(x, y)) {
+    const hit = (el as Element).closest?.("[data-slot]");
+    if (hit) return hit.getAttribute("data-slot");
+  }
+  return null;
+}
 
 export function NetworkMapLab({ onDone }: { onDone?: () => void }) {
-  const [s, setS] = useSaved<State>(STORE, START, (v) => Array.isArray(v.checked) && v.checked.length === 2 && typeof v.ports === "object");
-  const coach = useOptionalCoach();
+  const [s, setS] = useSaved<State>(STORE, START, (v) => Array.isArray(v.ports) && Array.isArray(v.boundary));
   const [pod, setPod] = useState<PodStatus | null>(null);
-  const [podLoaded, setPodLoaded] = useState(false);
+  const [miss, setMiss] = useState<string | null>(null);
+  const [note, setNote] = useState("");
+  const boardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let live = true;
     academyFetch("/academy/api/hosted-lab")
       .then((r) => (r.ok ? r.json() : null))
-      .then((data: PodStatus | null) => {
-        if (live) setPod(data);
-      })
-      .catch(() => {})
-      .finally(() => live && setPodLoaded(true));
+      .then((data: PodStatus | null) => live && setPod(data))
+      .catch(() => {});
     return () => {
       live = false;
     };
   }, []);
 
-  const patch = (p: Partial<State>) => setS((prev) => ({ ...prev, ...p }));
-  const check = (i: 0 | 1) => setS((prev) => ({ ...prev, checked: prev.checked.map((c, j) => (j === i ? true : c)) as State["checked"] }));
-  const go = (step: number) => patch({ step });
+  const portsDone = s.ports.length === PORTS.length;
+  const boundaryDone = s.boundary.length === BOUNDARY.length;
+  const allDone = portsDone && boundaryDone;
+  useLabDone(allDone, onDone);
+  useLabResult("lab-network-map", allDone, s.ports.length + s.boundary.length, PORTS.length + BOUNDARY.length);
 
-  const score = useMemo(() => {
-    const ports = PORTS.filter((p) => s.ports[p.id] === p.answer).length;
-    const boundary = BOUNDARY.filter((b) => s.boundary[b.id] === b.answer).length;
-    return { ports, boundary, total: ports + boundary };
-  }, [s]);
-  const done = s.checked.every(Boolean);
-  useLabDone(done, onDone);
-  useLabResult("lab-network-map", done, score.total, PORTS.length + BOUNDARY.length);
+  const dropPort = (id: string, x: number, y: number) => {
+    const slot = slotAt(x, y);
+    const port = PORTS.find((p) => p.id === id);
+    if (!port || s.ports.includes(id)) return;
+    if (slot === id) {
+      setS((prev) => ({ ...prev, ports: [...prev.ports, id] }));
+      setNote(port.why);
+      if (s.ports.length + 1 === PORTS.length) window.setTimeout(() => confettiFrom(boardRef.current, 30), 100);
+    } else {
+      setMiss(id);
+      setNote("Not that port. Think about what the task actually needs to do.");
+      window.setTimeout(() => setMiss((m) => (m === id ? null : m)), 450);
+    }
+  };
+  const dropBoundary = (id: string, x: number, y: number) => {
+    const slot = slotAt(x, y);
+    const b = BOUNDARY.find((bb) => bb.id === id);
+    if (!b || s.boundary.includes(id)) return;
+    if (slot === b.from) {
+      setS((prev) => ({ ...prev, boundary: [...prev.boundary, id] }));
+      setNote(b.why);
+      if (s.boundary.length + 1 === BOUNDARY.length) window.setTimeout(() => confettiFrom(boardRef.current, 50), 100);
+    } else {
+      setMiss(id);
+      setNote("Drag it onto who is actually making that connection, not who it's aimed at.");
+      window.setTimeout(() => setMiss((m) => (m === id ? null : m)), 450);
+    }
+  };
 
-  const pips = [s.checked[0] || s.step > 0, s.checked[0], s.checked[1], s.checked[1]];
-  const signal = `${s.step}:${Object.keys(s.ports).length}:${Object.keys(s.boundary).length}:${s.checked.join("")}:${podLoaded}`;
+  const portsDrag = useDrag(dropPort);
+  const boundaryDrag = useDrag(dropBoundary);
 
-  const curPort = PORTS.findIndex((p) => !s.ports[p.id]);
-  const curBoundary = BOUNDARY.findIndex((b) => !s.boundary[b.id]);
+  const nodeAt = (node: "dc" | "lx") => (node === "dc" ? DC : LX);
+  const edge = (from: Pt, to: Pt, r: number) => {
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const d = Math.hypot(dx, dy) || 1;
+    return { x: from.x + (dx / d) * r, y: from.y + (dy / d) * r };
+  };
 
-  const podLine = !podLoaded
+  const podLine = !pod
     ? "Checking your pod…"
-    : pod?.available === false
-      ? "Your pod reports Explore tier -- the facts below hold either way, since every Pro pod is built the same."
-      : pod?.state === "ready"
-        ? `Your pod is online right now: a ${pod.instanceType ?? "Windows"} domain controller${pod.linux ? ", and an Ubuntu server beside it" : ""}.`
-        : "Your pod is offline right now, but the two machines and the rule below are the same whether it's running or not.";
-
-  const thread = (
-    <>
-      {s.step === 0 && (
-        <>
-          <Says>Before we talk about traffic, let&rsquo;s look at what you actually have. {podLine}</Says>
-          <Says>Two machines, one rule: they can reach each other on every port, and nothing outside the pod can reach either one. That rule is enforced by your pod&rsquo;s own security group, not a setting either machine could be tricked into changing.</Says>
-          <Says>Ready to name what&rsquo;s actually running on each of those ports?</Says>
-        </>
-      )}
-
-      {s.step === 1 && (
-        <>
-          <Says>Five things you&rsquo;d actually do in this pod. Name the port each one uses.</Says>
-          {PORTS.slice(0, curPort === -1 ? PORTS.length : curPort + 1).map((p) => {
-            const a = s.ports[p.id];
-            return (
-              <div key={p.id}>
-                <Says>{p.desc}</Says>
-                {a && <Mine>{a}</Mine>}
-                {s.checked[0] && <Says tone={a === p.answer ? "right" : "wrong"}>{p.why}</Says>}
-              </div>
-            );
-          })}
-          {curPort === -1 && !s.checked[0] && <Says>That&rsquo;s all five. Check them?</Says>}
-          {s.checked[0] && <Says>You got <b>{score.ports} of {PORTS.length}</b>. Now the boundary itself: what can actually reach what?</Says>}
-        </>
-      )}
-
-      {s.step === 2 && (
-        <>
-          <Says>Five connection attempts. Allowed, or blocked by your pod&rsquo;s own isolation?</Says>
-          {BOUNDARY.slice(0, curBoundary === -1 ? BOUNDARY.length : curBoundary + 1).map((b) => {
-            const a = s.boundary[b.id];
-            return (
-              <div key={b.id}>
-                <Says>{b.desc}</Says>
-                {a && <Mine>{a === "allowed" ? "Allowed" : "Blocked"}</Mine>}
-                {s.checked[1] && <Says tone={a === b.answer ? "right" : "wrong"}>{b.why}</Says>}
-              </div>
-            );
-          })}
-          {curBoundary === -1 && !s.checked[1] && <Says>All five answered. Check them?</Says>}
-          {s.checked[1] && <Says>You got <b>{score.boundary} of {BOUNDARY.length}</b>.</Says>}
-        </>
-      )}
-
-      {s.step === 3 && (
-        <>
-          <Says>
-            Wrap-up. You scored <b>{score.total} of {PORTS.length + BOUNDARY.length}</b> — named {score.ports} of {PORTS.length} ports, traced {score.boundary} of {BOUNDARY.length} boundary cases.{" "}
-            {score.total >= 7 ? "You know your own pod cold." : score.total >= 5 ? "Solid start." : "Worth another pass."}
-          </Says>
-          <Says>
-            The rule that mattered in every boundary case was the same one: your two machines trust each other completely, and the pod trusts nothing else at all. That is the shape every network you will ever defend actually has, just drawn at a bigger scale.
-          </Says>
-        </>
-      )}
-    </>
-  );
-
-  const composer = (
-    <>
-      {s.step === 0 && <SendAction onClick={() => go(1)}>Name the ports →</SendAction>}
-
-      {s.step === 1 && (curPort !== -1 ? (
-        <ChipRow list label={PORTS[curPort].desc}>
-          {PORT_OPTIONS.map((o) => <Chip key={o} onClick={() => patch({ ports: { ...s.ports, [PORTS[curPort].id]: o } })}>{o}</Chip>)}
-        </ChipRow>
-      ) : !s.checked[0] ? (
-        <SendAction onClick={() => check(0)}>Check answers</SendAction>
-      ) : (
-        <SendAction onClick={() => go(2)}>Trace the boundary →</SendAction>
-      ))}
-
-      {s.step === 2 && (curBoundary !== -1 ? (
-        <ChipRow list label={BOUNDARY[curBoundary].desc}>
-          <Chip onClick={() => patch({ boundary: { ...s.boundary, [BOUNDARY[curBoundary].id]: "allowed" } })}>Allowed</Chip>
-          <Chip onClick={() => patch({ boundary: { ...s.boundary, [BOUNDARY[curBoundary].id]: "blocked" } })}>Blocked</Chip>
-        </ChipRow>
-      ) : !s.checked[1] ? (
-        <SendAction onClick={() => check(1)}>Check answers</SendAction>
-      ) : (
-        <SendAction onClick={() => go(3)}>See the debrief →</SendAction>
-      ))}
-
-      {s.step === 3 && <SendAction subtle onClick={() => setS(START)}><RotateCcw aria-hidden="true" /> Try again</SendAction>}
-    </>
-  );
+    : pod.available === false
+      ? "This diagram is the same for every Pro pod, including yours once it's provisioned."
+      : pod.state === "ready"
+        ? `Your pod is online right now: a ${pod.instanceType ?? "Windows"} domain controller${pod.linux ? " and an Ubuntu server" : ""}.`
+        : "Your pod is offline right now, but this is exactly its shape when it's running.";
 
   return (
-    <ChatShell
-      role="Your IT lead"
-      steps={STEPS}
-      step={s.step}
-      done={pips}
-      onAsk={coach?.enabled ? () => coach.ask(LOST_ASK) : undefined}
-      signal={signal}
-      thread={thread}
-      composer={composer}
-      label="Map Your Pod, guided chat"
-    />
+    <div className="nml" ref={boardRef}>
+      <p className="nml__brief">{podLine}</p>
+
+      <svg viewBox="0 0 640 440" className="nml__svg" role="img" aria-label="Diagram of your pod: a domain controller and an Ubuntu server inside an isolated boundary, with the internet, another pod, and Guacamole outside it">
+        <rect x="100" y="40" width="440" height="190" rx="18" className="nml__pod" />
+        <text x="118" y="64" className="nml__podlabel">YOUR POD</text>
+
+        {/* trusted link */}
+        <line x1={DC.x + 44} y1={DC.y} x2={LX.x - 44} y2={LX.y} className="nml__trust" />
+
+        {/* boundary-round arrows, drawn as each one is solved */}
+        {s.boundary.map((id) => {
+          const b = BOUNDARY.find((bb) => bb.id === id)!;
+          const from = ACTORS[b.from] ?? nodeAt(b.from as "dc" | "lx");
+          const to = nodeAt(b.to);
+          const a = edge(from, to, 46);
+          const z = edge(to, from, 46);
+          return (
+            <line key={id} x1={a.x} y1={a.y} x2={z.x} y2={z.y} className={`nml__arrow ${b.allowed ? "is-ok" : "is-no"}`} markerEnd={b.allowed ? "url(#ok)" : "url(#no)"} />
+          );
+        })}
+
+        <defs>
+          <marker id="ok" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <path d="M0 0 L8 4 L0 8 Z" className="nml__arrowhead is-ok" />
+          </marker>
+          <marker id="no" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <path d="M0 0 L8 4 L0 8 Z" className="nml__arrowhead is-no" />
+          </marker>
+        </defs>
+
+        {/* machines */}
+        <g transform={`translate(${DC.x} ${DC.y})`} className="nml__node nml__node--dc">
+          <circle r="44" />
+          <text y="-6">DC</text>
+          <text y="14" className="nml__sub">Windows Server</text>
+        </g>
+        <g transform={`translate(${LX.x} ${LX.y})`} className="nml__node nml__node--lx">
+          <circle r="44" />
+          <text y="-6">Ubuntu</text>
+          <text y="14" className="nml__sub">Linux server</text>
+        </g>
+
+        {/* port slots */}
+        {PORTS.map((p) => {
+          const solved = s.ports.includes(p.id);
+          return (
+            <g key={p.id} transform={`translate(${p.at.x} ${p.at.y})`} data-slot={p.id} className={`nml__port${solved ? " is-solved" : ""}`}>
+              <circle r="18" />
+              <text>{solved ? p.label : "?"}</text>
+            </g>
+          );
+        })}
+
+        {/* outside actors, once ports are done */}
+        {portsDone &&
+          Object.entries(ACTORS).map(([id, at]) => {
+            const solved = s.boundary.includes(id);
+            return (
+              <g key={id} transform={`translate(${at.x} ${at.y})`} data-slot={id} className={`nml__actor${solved ? " is-solved" : ""}`}>
+                <circle r="34" />
+                {solved && <Check x="-8" y="-24" width="16" height="16" />}
+                <text y="50">{ACTOR_LABEL[id]}</text>
+              </g>
+            );
+          })}
+      </svg>
+
+      {!portsDone && (
+        <>
+          <p className="nml__round">Round 1 of 2 — drag each task onto the port it actually uses.</p>
+          <div className="nml__tray" aria-label="Tasks to place">
+            {PORTS.filter((p) => !s.ports.includes(p.id)).map((p) => (
+              <button key={p.id} type="button" className={`nml__card${portsDrag.dragging === p.id ? " is-dragging" : ""}${miss === p.id ? " is-miss" : ""}`} {...portsDrag.bind(p.id)}>
+                {p.task}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+
+      {portsDone && !boundaryDone && (
+        <>
+          <p className="nml__round">Round 2 of 2 — drag each connection onto whoever is actually making it.</p>
+          <div className="nml__tray" aria-label="Connections to place">
+            {BOUNDARY.filter((b) => !s.boundary.includes(b.id)).map((b) => (
+              <button key={b.id} type="button" className={`nml__card${boundaryDrag.dragging === b.id ? " is-dragging" : ""}${miss === b.id ? " is-miss" : ""}`} {...boundaryDrag.bind(b.id)}>
+                {b.task}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+
+      {note && <p className="nml__note" aria-live="polite">{note}</p>}
+
+      {allDone && (
+        <p className="nml__done">
+          <Check className="h-4 w-4" aria-hidden /> That&rsquo;s the whole attack surface: two machines that trust each other completely, and a boundary that trusts nothing else at all except the one path you actually use to get in.
+        </p>
+      )}
+    </div>
   );
 }
