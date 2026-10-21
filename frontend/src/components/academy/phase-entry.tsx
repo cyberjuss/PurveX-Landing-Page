@@ -10,6 +10,7 @@ import { isDeckable } from "@/lib/lesson-deck";
 import { MarkCompleteButton } from "./mark-complete-button";
 import { ComingSoon } from "./coming-soon";
 import { RecordLastStop } from "./academy-progress";
+import { TopicVideo } from "./topic-video";
 
 export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }) {
   // Every section that has one authored its own Essential Question, but a
@@ -79,6 +80,8 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
           {sections.length > 0 && <MarkCompleteButton phaseSlug={phase.slug} entrySlug={entry.slug} />}
         </div>
       </header>
+
+      {sections.length > 0 && <TopicVideo />}
 
       {/* When the first tab is a slide deck, the question opens it as its own
           slide instead (see LessonDeck). Otherwise it stays here. */}

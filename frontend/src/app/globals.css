@@ -5063,6 +5063,13 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform
 .ax-question .rd-kicker { font-size: var(--ty-lead); letter-spacing: 0.08em; font-weight: 700; color: var(--rd-ink); }
 .ax-question p { margin-top: 10px; font-family: var(--font-display); font-size: var(--ty-lead); line-height: 1.5; font-weight: 400; letter-spacing: 0; color: var(--rd-ink-2); }
 
+/* A quiet placeholder for a topic's intro video -- one per week, not meant
+   to look finished. Swapped for a real embed once a video exists. */
+.ax-video { display: flex; align-items: center; gap: 12px; margin: 20px 0 0; padding: 14px 16px; border: 1px dashed var(--rd-line); }
+.ax-video__icon { display: grid; place-items: center; flex: none; width: 32px; height: 32px; color: var(--rd-ink-3); background: color-mix(in srgb, var(--rd-ink) 5%, transparent); }
+.ax-video__title { margin: 0; font-size: var(--ty-note); font-weight: 650; color: var(--rd-ink-2); }
+.ax-video__note { margin: 2px 0 0; font-size: var(--ty-small); color: var(--rd-ink-3); }
+
 .ax-pager { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--rd-line); }
 .rd:has(.ad-pager) .ax-pager,
 .rd:has(.ad-brief-start) .ax-pager,
