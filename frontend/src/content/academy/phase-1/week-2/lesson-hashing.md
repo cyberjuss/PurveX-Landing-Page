@@ -38,10 +38,7 @@ It is just as important to know what the check does not establish. A match prove
 
 This is not a theoretical gap. CCleaner in 2017, SolarWinds in 2020 and 3CX in 2023 all shipped malware out of the vendor's own build process, and every customer who verified their download found a correct hash and a valid signature. The checks passed because the malicious code was already present before the vendor calculated either one. All verification tells you, then, is that the supply chain delivered the file intact. Whether the thing at the start of that chain was clean is a separate question, and one a hash cannot answer.
 
-<details class="academy-deeper">
-<summary>Go deeper</summary>
-
-#### Compare automatically
+### Compare automatically
 
 ```
 (Get-FileHash .\setup.exe -Algorithm SHA256).Hash -eq "PASTE-THE-VENDOR-HASH"
@@ -51,7 +48,7 @@ echo "PASTE-THE-VENDOR-HASH  setup.exe" | sha256sum -c
 
 The first prints `True` or `False`. The last prints `setup.exe: OK` or `FAILED`, and needs two spaces before the file name. On a Mac, use `shasum -a 256`.
 
-#### The line-break trap
+### The line-break trap
 
 `echo` adds an invisible line break, and it gets hashed too:
 
@@ -62,21 +59,19 @@ echo 'Harbor2026' | sha256sum          be5cc1881c34...
 
 Use `printf '%s'`, and leave nothing after the text in CyberChef. For a file, hash the file itself rather than its copied text.
 
-#### Old algorithms
+### Old algorithms
 
 MD5 (32 characters) and SHA-1 (40 characters) are broken. Researchers can make two different files with the same hash. They are fine for spotting duplicates, not for proving a file is untouched. Use SHA-256.
 
-#### Digital signatures
+### Digital signatures
 
 A signature tells you who published the file. Open **Properties → Digital Signatures** on the file or run `Get-AuthenticodeSignature .\setup.exe` and look for `Valid` and a name you expect. The CCleaner and 3CX files were signed too, so no single check is enough.
 
-#### How the SOC uses hashes
+### How the SOC uses hashes
 
 - Alerts in tools like Microsoft Defender name files by their SHA-256.
 - Teams share the hashes of bad files so others can block them. MISP is a free, open-source platform for this.
 - When you collect evidence, hash it right away and record the value so anyone can later prove it was not changed.
-
-</details>
 
 ### Check yourself
 

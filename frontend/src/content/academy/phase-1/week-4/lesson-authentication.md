@@ -68,10 +68,7 @@ One situation deserves to be recognized instantly. A user reporting MFA prompts 
 - a Remote Desktop sign-in to a machine the person never uses
 - several reset or MFA change requests for one person in a short time
 
-<details class="academy-deeper">
-<summary>Go deeper</summary>
-
-#### How strong is the MFA?
+### How strong is the MFA?
 
 From weakest to strongest:
 
@@ -81,13 +78,13 @@ From weakest to strongest:
 4. **Push with number matching.** The user types a number shown on the sign-in screen, so a blind approval fails.
 5. **Security keys and passkeys (FIDO2).** The key checks the site's real address, so a fake page gets nothing. These are **phishing-resistant**.
 
-#### What the system issues after sign-in
+### What the system issues after sign-in
 
 After sign-in the system issues a **session token**, usually a cookie. The browser sends it with every request, so it stands in for the password. A stolen token bypasses both the password and MFA.
 
 In a Windows domain, **Kerberos** plays the same role. The domain controller checks the password once and issues a ticket that the computer shows to other services.
 
-#### Reading sign-in events
+### Reading sign-in events
 
 Event **4624** is a successful sign-in. Its **logon type** shows how:
 
@@ -98,8 +95,6 @@ Event **4624** is a successful sign-in. Its **logon type** shows how:
 | 10 | Remote Desktop |
 
 Event **4625** is a failed sign-in. `0xC000006A` is a wrong password for a real account. `0xC0000064` is an account name that does not exist, a sign of username guessing. `0xC0000234` is a locked account.
-
-</details>
 
 ### Check yourself
 

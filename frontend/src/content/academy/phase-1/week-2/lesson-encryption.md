@@ -53,10 +53,7 @@ Sam's overnight firmware update changed exactly that, so the TPM did its job and
 
 **Escalate** if the caller cannot be verified, or if they are asking for the key to a laptop that is not theirs. Escalate as well if several laptops hit the recovery screen at once. One machine in recovery is a firmware update, but a fleet of them is either a change that went out badly or something worth investigating properly.
 
-<details class="academy-deeper">
-<summary>Go deeper</summary>
-
-#### Where encryption fails
+### Where encryption fails
 
 Attackers rarely break AES itself. They go after the key, or after mistakes in how the encryption was set up. When encrypted data leaks, check for three mistakes:
 
@@ -66,7 +63,7 @@ Attackers rarely break AES itself. They go after the key, or after mistakes in h
 
 Adobe's 2013 breach exposed about 150 million encrypted passwords with the last two mistakes. Equal passwords had equal encrypted values, and the hints were readable. Attackers guessed common passwords without the key.
 
-#### Try it with OpenSSL
+### Try it with OpenSSL
 
 ```
 $ openssl enc -aes-256-cbc -pbkdf2 -a -in memo.txt -out memo.enc -pass pass:Tide-Lamp-42
@@ -78,7 +75,7 @@ Fee schedule v3 is approved.
 
 The first command encrypts the memo. The second uses a key one character off and fails. The third uses the right key and returns the memo exactly.
 
-#### What encryption does not cover
+### What encryption does not cover
 
 | Data is | Example | Protected by |
 |---|---|---|
@@ -88,7 +85,7 @@ The first command encrypts the memo. The second uses a key one character off and
 
 Once Sam signs in, the drive is unlocked, and malware running as Sam reads files the same way Sam does. BitLocker protects a lost or stolen laptop. It does nothing against malware on a laptop that is already unlocked.
 
-#### Admin commands
+### Admin commands
 
 ```
 manage-bde -status C:
@@ -97,12 +94,10 @@ manage-bde -protectors -get C:
 
 The first shows whether the drive is encrypted. The second lists its key protectors, including the recovery password ID.
 
-#### Two patterns the SOC watches
+### Two patterns the SOC watches
 
 - Ransomware uses the same encryption against its victims and sells the key back.
 - Phishing emails often carry an encrypted ZIP with the password in the email body. Mail scanners cannot look inside the ZIP, and attackers rely on that.
-
-</details>
 
 ```match
 prompt: Where is the data, and what protects it?

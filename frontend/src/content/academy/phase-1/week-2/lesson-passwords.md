@@ -50,10 +50,7 @@ Force resets for affected staff, confirmed exposures first
 Turn on MFA for those accounts and watch their sign-ins
 ```
 
-<details class="academy-deeper">
-<summary>Go deeper</summary>
-
-#### A salted hash, read left to right
+### A salted hash, read left to right
 
 ```
 $ openssl passwd -6 -salt N4tQ2x 'Harbor2026'
@@ -64,11 +61,11 @@ $6$N4tQ2x$YkiZ5pKGVV3yPjoKhMV4oWEqyPJNVynJGzKwvp37hoCLb//X7KoVHJyXe8KXcZ2U7axpFT
 
 A bcrypt hash: `$2b$12$1.A448CMPszJoJNh8XDqPeL1ZvsWBt7AjjvYj57Rfr1M4tDk/7Oye`. `12` is the cost setting, which you raise as computers get faster.
 
-#### How Windows stores passwords
+### How Windows stores passwords
 
 Active Directory stores an **NT hash**, which is fast and unsalted. Attackers who steal one can sometimes sign in with the hash itself, without cracking it. This is **pass-the-hash**. It is why domain controllers and admin accounts are guarded so tightly, and why Windows LAPS gives every machine's local admin its own password.
 
-#### Resetting a password safely
+### Resetting a password safely
 
 - Verify the caller with a callback to the number on file, never a number they give you.
 - Never ask for or learn a user's password. Set a temporary one and tick **User must change password at next logon**.
@@ -76,7 +73,7 @@ Active Directory stores an **NT hash**, which is fast and unsalted. Attackers wh
 
 Current NIST guidance: at least 15 characters when the password is the only factor. No forced symbol rules. No scheduled changes, only changes after a compromise. Block known-breached passwords.
 
-#### What password attacks look like in the logs
+### What password attacks look like in the logs
 
 | Event ID | Meaning |
 |---|---|
@@ -85,8 +82,6 @@ Current NIST guidance: at least 15 characters when the password is the only fact
 | 4740 | Account locked out |
 
 Many 4625s on one account is **brute force**. One or two 4625s across many accounts from one source is **password spraying**.
-
-</details>
 
 ### Check yourself
 

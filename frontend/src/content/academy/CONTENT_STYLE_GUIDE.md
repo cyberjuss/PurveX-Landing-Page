@@ -101,8 +101,8 @@ Three or more consecutive short declaratives is the signal to re-read. There
 are no em dashes and no semicolons here, so the joins get made with
 conjunctions, a colon, or a phrase that refers back.
 
-Reference material inside a `Go deeper` block, event-ID tables and command
-explanations are exempt. Terse is correct there.
+Reference material such as event-ID tables and command explanations is
+exempt. Terse is correct there.
 
 ### Do not pay for flow with commas
 
