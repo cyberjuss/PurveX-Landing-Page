@@ -141,6 +141,8 @@ export const JOB_DOMAINS: Record<string, string[]> = {
   "firewall-rule": ["sp-arch", "cy-vuln"],
   "gpo-scope": ["sp-ops", "sp-arch"],
   "quarantine-file": ["cy-ir", "sp-threats"],
+  "contain-wire-credential": ["cy-ir", "sp-threats"],
+  "verify-build-integrity": ["cy-vuln", "sp-threats"],
 };
 
 /** Missions to the exam areas they practice. */

@@ -1,4 +1,5 @@
 import type { Results, Skill } from "@/lib/academy-score";
+import { PROOF_TICKETS } from "@/lib/academy-proof";
 
 export type MissionCatalogEntry = {
   id: string;
@@ -372,15 +373,17 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
 /** Tickets that need a real change in the student's lab before they can answer. */
 export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25", "cap-06", "cry-06"];
 
-/** The on-the-job task each mission practices. A gated ticket seen in the lab counts as proven. */
+/**
+ * The on-the-job task each mission practices. A gated ticket seen in the lab
+ * counts as proven. Built from PROOF_TICKETS, the Portfolio's own ticket-to-job
+ * map, so "Work you have done" can never credit a ticket the Portfolio does
+ * not, or the other way around -- a hand-kept second copy of this list drifted
+ * from PROOF_TICKETS as new tickets were added, which is exactly the kind of
+ * mismatch that is otherwise invisible until a student compares the two.
+ */
 export const MISSION_JOBS: Record<string, string> = {
-  "tq-01": "group-access",
-  "tq-02": "enable-account",
-  "tq-03": "create-user",
-  "tq-05": "fix-ou",
-  "tq-11": "offboard",
-  "tq-13": "password-hygiene",
-  "tq-15": "group-type",
+  ...Object.fromEntries(Object.entries(PROOF_TICKETS).map(([id, t]) => [id, t.job])),
+  // Investigation tickets: nothing changes in the lab, so there is no portfolio job.
   "tq-06": "trace-logon",
   "tq-07": "read-logs",
   "tq-08": "read-logs",
