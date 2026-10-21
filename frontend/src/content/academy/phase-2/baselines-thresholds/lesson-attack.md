@@ -3,7 +3,13 @@
 
 [MITRE ATT&CK](https://attack.mitre.org/) (Adversarial Tactics, Techniques, and Common Knowledge) is a knowledge base, maintained by the nonprofit MITRE Corporation, that catalogs how real attackers actually operate. It gives the industry a shared vocabulary for attacker behavior, so that a detection you build, a report you write, and a training exercise you run can all point at the same named technique instead of three different descriptions of roughly the same thing.
 
-ATT&CK organizes that behavior in layers. A **tactic** is the attacker's goal, such as gaining credentials or escalating privilege. A **technique** is a specific way of reaching that goal, and a **sub-technique** narrows it further. Password Spraying, for example, is a technique under the Credential Access tactic, and it already has a name and an ID (T1110.003) before you ever see it in your own queue, because enough real incidents followed the same pattern that MITRE catalogued it.
+ATT&CK organizes that behavior in three layers:
+
+- **Tactic:** the attacker's goal, such as gaining credentials or escalating privilege.
+- **Technique:** a specific way of reaching that goal.
+- **Sub-technique:** a technique narrowed further.
+
+Password Spraying, for example, is a technique under the Credential Access tactic, and it already has a name and an ID (T1110.003) before you ever see it in your own queue, because enough real incidents followed the same pattern that MITRE catalogued it.
 
 You have already met several of these techniques without the label. Every Shift incident in your own hosted lab carries a real ATT&CK tag, because the incidents were built to mirror actual attacker behavior rather than invented ones:
 
