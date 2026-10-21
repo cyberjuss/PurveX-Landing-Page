@@ -390,6 +390,7 @@ export function SectionTabs({
     ) : (
       <>
         {current.kind === "section" && HOSTED_SETUP_TABS.has(current.label) && <HostedLabSetupNote />}
+        {current.kind === "section" && current.label === "Overview" && <TopicVideo />}
         {asDeck ? (
           <LessonDeck
             weekScenes={tabScenes}
@@ -413,10 +414,7 @@ export function SectionTabs({
           {current.kind === "section" && current.label === "Resources" ? (
             <ResourcesView markdown={current.markdown} fallback={<Markdown content={current.markdown} />} />
           ) : (
-            <>
-              {current.kind === "section" && current.label === "Overview" && <TopicVideo />}
-              <Markdown content={current.markdown} />
-            </>
+            <Markdown content={current.markdown} />
           )}
         </MissionPager>
         )}
