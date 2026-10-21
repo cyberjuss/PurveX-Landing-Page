@@ -14,7 +14,7 @@ export function loadLesson(relativePath: string): string | null {
 }
 
 /** Interactive labs rendered by a React component below the section's markdown. */
-export type LabWidget = "risk-triage" | "hash-verify" | "password-table" | "signin-log" | "effective-access";
+export type LabWidget = "risk-triage" | "hash-verify" | "password-table" | "signin-log" | "effective-access" | "network-map";
 
 export interface ContentSection {
   label: string;
@@ -180,8 +180,26 @@ const phase1HomeLabs: HomeLabDef[] = [
 // source Drive are still empty placeholders, same as Phase 1's Week 2.
 const phase2Weeks: WeekDef[] = [
   {
+    slug: "soc-mindset",
+    title: "Week 1 — Think Like a SOC Analyst",
+    summary: "The tier structure, the investigation mindset, and how an incident gets named and classified before it ever reaches a tool.",
+    sections: [
+      { label: "Overview", file: "phase-2/soc-mindset/overview.md" },
+      { label: "What a SOC Analyst Does", file: "phase-2/soc-mindset/lesson-role.md" },
+      { label: "How AI Is Changing the Role", file: "phase-2/soc-mindset/lesson-ai-impact.md" },
+      { label: "The Investigation Mindset", file: "phase-2/soc-mindset/lesson-investigation-mindset.md" },
+      { label: "The 5 W's of an Investigation", file: "phase-2/soc-mindset/lesson-5ws.md" },
+      { label: "Classifying an Incident", file: "phase-2/soc-mindset/lesson-classification.md" },
+      { label: "Allowlisting and Blocklisting", file: "phase-2/soc-mindset/lesson-allow-deny.md" },
+      { label: "Resources", file: "phase-2/soc-mindset/resources.md" },
+    ],
+  },
+  // Slugs below stay as "week-1".."week-4" (not renumbered) so existing
+  // student progress, which is keyed by slug, doesn't silently reset.
+  // Only the display title changed to match the new lead-in week above.
+  {
     slug: "week-1",
-    title: "Week 1 — Malware",
+    title: "Week 2 — Malware",
     summary: "How malware works, how it spreads, and what arrives along with it.",
     sections: [
       { label: "Overview", file: "phase-2/week-1/overview.md" },
@@ -192,7 +210,7 @@ const phase2Weeks: WeekDef[] = [
   },
   {
     slug: "week-2",
-    title: "Week 2 — Log Analysis Fundamentals",
+    title: "Week 3 — Log Analysis Fundamentals",
     summary: "Read the host, the account, and the log before deciding what happened.",
     sections: [
       { label: "Overview", file: "phase-2/week-2/overview.md" },
@@ -200,17 +218,46 @@ const phase2Weeks: WeekDef[] = [
       { label: "Challenge: The 2 AM Login", file: "phase-2/week-2/alert-inc-1046.md" },
     ],
   },
+  // These two replace the old empty "week-3" (SIEM Basics) and "week-4"
+  // (Detection Engineering) placeholders, which had no sections and so no
+  // student progress to preserve -- safe to retire rather than renumber.
   {
-    slug: "week-3",
-    title: "Week 3 — SIEM Basics",
-    summary: "Centralized logging and how to build a first set of detections.",
-    sections: [],
+    slug: "baselines-thresholds",
+    title: "Week 4 — Baselines, Thresholds & Zero Trust",
+    summary: "Map your own lab's network, tell an outlier from a baseline, place MITRE ATT&CK on attacker behavior you've already seen, and learn what a detection threshold actually costs in either direction.",
+    sections: [
+      { label: "Overview", file: "phase-2/baselines-thresholds/overview.md" },
+      { label: "Mapping Your Environment", file: "phase-2/baselines-thresholds/lesson-map-environment.md" },
+      { label: "Lab: Map Your Pod", file: "phase-2/baselines-thresholds/lab-network-map.md", widget: "network-map" },
+      { label: "Determining Outliers and Baseline", file: "phase-2/baselines-thresholds/lesson-baselines-outliers.md" },
+      { label: "Understanding the MITRE ATT&CK Framework", file: "phase-2/baselines-thresholds/lesson-attack.md" },
+      { label: "Zero Trust", file: "phase-2/baselines-thresholds/lesson-zero-trust.md" },
+      { label: "Setting Thresholds for Detections", file: "phase-2/baselines-thresholds/lesson-thresholds.md" },
+      { label: "Why Detections Matter", file: "phase-2/baselines-thresholds/lesson-why-detections.md" },
+      { label: "Resources", file: "phase-2/baselines-thresholds/resources.md" },
+    ],
   },
   {
-    slug: "week-4",
-    title: "Week 4 — Detection Engineering",
-    summary: "How MITRE ATT&CK maps detections to real attacker techniques.",
-    sections: [],
+    slug: "detection-writing",
+    title: "Week 5 — Writing Detections with KQL",
+    summary: "Learn KQL and TRACE, a five-part method for turning an ATT&CK technique and a threshold into a real detection query.",
+    sections: [
+      { label: "Overview", file: "phase-2/detection-writing/overview.md" },
+      { label: "KQL Basics", file: "phase-2/detection-writing/lesson-kql-basics.md" },
+      { label: "The TRACE Method", file: "phase-2/detection-writing/lesson-trace.md" },
+      { label: "Resources", file: "phase-2/detection-writing/resources.md" },
+    ],
+  },
+  {
+    slug: "kill-chain",
+    title: "Week 6 — The Cyber Kill Chain",
+    summary: "See how individual ATT&CK techniques you already know chain into one intrusion, then work a real five-stage chain in your own Shift queue.",
+    sections: [
+      { label: "Overview", file: "phase-2/kill-chain/overview.md" },
+      { label: "Understanding the Cyber Kill Chain", file: "phase-2/kill-chain/lesson-kill-chain.md" },
+      { label: "Challenge: The Five-Stage Intrusion", file: "phase-2/kill-chain/challenge-attack-chain.md" },
+      { label: "Resources", file: "phase-2/kill-chain/resources.md" },
+    ],
   },
 ];
 

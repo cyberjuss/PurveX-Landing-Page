@@ -380,6 +380,7 @@ const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
   "lab-password-table": ["Password Hashing and Salting", "Encryption (AES)", "Base64 Encoding"],
   "lab-signin-log": ["Log Analysis", "Windows Event Logs", "Incident Triage"],
   "lab-effective-access": ["NTFS Permissions", "Share Permissions", "Access Control"],
+  "lab-network-map": ["Network Segmentation", "Port and Protocol Identification"],
 };
 
 export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean, results: Results = {}): { group: string; items: string[] }[] {
