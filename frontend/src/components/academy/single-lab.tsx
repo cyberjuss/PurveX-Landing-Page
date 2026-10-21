@@ -12,6 +12,7 @@ import { PasswordTableLab } from "./labs/password-table-lab";
 import { RiskTriageLab } from "./labs/risk-triage-chat";
 import { SigninLogLab } from "./labs/signin-log-lab";
 import { EffectiveAccessLab } from "./labs/effective-access-lab";
+import { NetworkMapLab } from "./labs/network-map-lab";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import { LAB_STEP_EVENT, lastLabStep } from "./lab-step";
 import { LAB_DONE_EVENT, SocStation } from "./soc-station";
@@ -112,6 +113,8 @@ export function SingleLab({
               <SigninLogLab onDone={done} />
             ) : widget === "effective-access" ? (
               <EffectiveAccessLab onDone={done} />
+            ) : widget === "network-map" ? (
+              <NetworkMapLab onDone={done} />
             ) : (
               <PasswordTableLab onDone={done} />
             )}

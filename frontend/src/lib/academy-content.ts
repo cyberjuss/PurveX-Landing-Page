@@ -14,7 +14,7 @@ export function loadLesson(relativePath: string): string | null {
 }
 
 /** Interactive labs rendered by a React component below the section's markdown. */
-export type LabWidget = "risk-triage" | "hash-verify" | "password-table" | "signin-log" | "effective-access";
+export type LabWidget = "risk-triage" | "hash-verify" | "password-table" | "signin-log" | "effective-access" | "network-map";
 
 export interface ContentSection {
   label: string;
@@ -228,6 +228,7 @@ const phase2Weeks: WeekDef[] = [
     sections: [
       { label: "Overview", file: "phase-2/baselines-thresholds/overview.md" },
       { label: "Mapping Your Environment", file: "phase-2/baselines-thresholds/lesson-map-environment.md" },
+      { label: "Lab: Map Your Pod", file: "phase-2/baselines-thresholds/lab-network-map.md", widget: "network-map" },
       { label: "Determining Outliers and Baseline", file: "phase-2/baselines-thresholds/lesson-baselines-outliers.md" },
       { label: "Understanding the MITRE ATT&CK Framework", file: "phase-2/baselines-thresholds/lesson-attack.md" },
       { label: "Zero Trust", file: "phase-2/baselines-thresholds/lesson-zero-trust.md" },

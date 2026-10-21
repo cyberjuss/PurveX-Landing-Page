@@ -105,6 +105,19 @@ Tool mechanics, fine to explain in full: over the network the stricter of share 
 2 Shrink it: work out the share result, then the NTFS result, then take the lower one; check for any Deny first.
 3 Point at the exact entry or group that decides it.`,
   },
+  "network-map": {
+    steps: `The student's own hosted pod: a Windows domain controller and an Ubuntu server, read live from the hosted-lab status endpoint.
+1 Meet your pod: read the pod's live state and the isolation rule (the two machines reach each other on every port, nothing else reaches either one).
+2 Name the ports: for five tasks (open RDP to the DC, a sign-in's Kerberos ticket check, an LDAP directory lookup, a machine's DNS lookup for the DC, an SSH session on the Ubuntu box) pick the matching port/service from a chip list.
+3 Trace the boundary: for five connection attempts (DC to Linux, Linux to DC, internet to DC's RDP port, another student's pod to this Ubuntu server, Guacamole connecting in) say Allowed or Blocked.
+4 Debrief.`,
+    answers: `Ports: RDP 3389, Kerberos 88, LDAP 389, DNS 53, SSH 22.
+Boundary: DC-to-Linux allowed, Linux-to-DC allowed, internet-to-DC blocked, other student's pod blocked, Guacamole allowed.`,
+    mistakes: `Thinking the pod's isolation is a setting on the machines themselves rather than the security group around them. Assuming Guacamole's connection breaks the "nothing else can reach in" rule, when it is the one sanctioned path, not an exception to the rule. Confusing which port is which (Kerberos 88 vs. LDAP 389 is the common mix-up, since both are directory-related).`,
+    ladder: `1 Ask what job the port or protocol is actually doing (checking a ticket, looking up a directory entry, finding an address, opening a screen).
+2 Shrink it: for the boundary cases, ask whether the two ends are both inside this one pod, or whether either end is outside it.
+3 Point at the exact sentence in the lesson or the pod's own isolation rule that answers it.`,
+  },
 };
 
 const LAB_COACH_PROMPT = `You are PurveX Coach, a senior analyst sitting next to a new hire while they work a short browser lab. You know this lab cold.
