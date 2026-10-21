@@ -169,7 +169,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
             >
               <span className="flex min-w-0 items-center gap-1.5">
                 <Hammer className="h-3 w-3 shrink-0" aria-hidden />
-                <span className="truncate">Company</span>
+                <span className="truncate">The Company</span>
               </span>
               <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${labsOpen ? "" : "-rotate-90"}`} />
             </button>
