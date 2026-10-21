@@ -8,7 +8,7 @@ export function TopicVideo() {
   return (
     <div className="ax-video">
       <span className="ax-video__icon" aria-hidden>
-        <Video className="h-4 w-4" />
+        <Video className="h-5 w-5" />
       </span>
       <div>
         <p className="ax-video__title">A word from Justin</p>
