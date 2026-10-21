@@ -1,4 +1,4 @@
-### Determining Outliers and Baseline
+### Baselines and Outliers
 <!-- art: search -->
 
 A baseline is simply what normal looks like for a specific account, host, or process, measured over enough time that you have actually seen its range. An outlier is anything that falls outside that range. Neither half of that definition is fixed. A login time that is an outlier for a help desk account is the baseline for a night-shift administrator, which is exactly why last week's investigation mindset insists you check the baseline for the specific thing in front of you, not a generic idea of what "normal" means across the whole company.

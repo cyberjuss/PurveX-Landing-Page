@@ -1,7 +1,7 @@
-### Understanding the Cyber Kill Chain
+### The Cyber Kill Chain
 <!-- art: tree -->
 
-The Cyber Kill Chain is a model Lockheed Martin analysts Eric Hutchins, Michael Cloppert, and Rohan Amin introduced in 2011, breaking an intrusion into seven stages that run in order from first contact to the attacker's final goal. The value of the model is not the specific names. It is the idea that an attack is a sequence, not a single event, and that breaking the chain at any earlier stage stops everything that would have followed it.
+The Cyber Kill Chain is a model Lockheed Martin analysts Eric Hutchins, Michael Cloppert, and Rohan Amin introduced in 2011. It breaks an intrusion into seven stages that run in order, from first contact to the attacker's final goal. What matters is the idea underneath the specific names: an attack is a sequence, not a single event, and breaking the chain at any earlier stage stops everything that would have followed it.
 
 The seven stages are:
 
@@ -13,7 +13,7 @@ The seven stages are:
 6. **Command and Control.** The compromised system reaches back out to infrastructure the attacker controls, giving them a channel to issue further instructions.
 7. **Actions on Objectives.** The attacker does what they actually came for: stealing data, encrypting it for ransom, or disrupting operations.
 
-The techniques you already know from this phase's ATT&CK lesson each sit at one of these stages. Password Spraying (T1110.003) is an Exploitation move, an attempt to actually get in. Create Account: Domain Account (T1136.002) is Installation, a way to keep that access. Impair Defenses (T1562.002) does not fit neatly into any single stage on its own, because its purpose is to make every other stage harder to see, which is exactly why a chain of incidents is more dangerous than any one of them read in isolation.
+The techniques you already know from this phase's ATT&CK lesson each sit at one of these stages. Password Spraying (T1110.003) is an Exploitation move: an attempt to actually get in. Create Account: Domain Account (T1136.002) is Installation: a way to keep that access. Disable Windows Event Logging (T1562.002), a sub-technique of Impair Defenses, does not fit neatly into any single stage on its own. Its purpose is to make every other stage harder to see. That is exactly why a chain of incidents is more dangerous than any one of them read in isolation.
 
 ```order
 prompt: Put the seven Cyber Kill Chain stages in order.
