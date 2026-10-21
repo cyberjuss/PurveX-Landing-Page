@@ -4725,7 +4725,6 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform
 .ax-list {
   display: flex;
   flex-direction: column;
-  margin: 10px 0 0;
   border: 1px solid var(--rd-line);
   background: color-mix(in srgb, var(--rd-ink) 3%, transparent);
   overflow: hidden;
