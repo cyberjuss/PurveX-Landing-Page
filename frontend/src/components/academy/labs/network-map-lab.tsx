@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check } from "lucide-react";
 import { confettiFrom } from "@/lib/confetti";
 import { academyFetch } from "@/lib/academy-client";
-import { useLabDone, useLabResult, useSaved } from "./lab-kit";
+import { dropSlotAt, useLabDone, useLabResult, usePointerDrag, useSaved } from "./lab-kit";
 import "./network-map-lab.css";
 
 // Week 4 lab: an actual diagram of the student's own pod, not a quiz about
@@ -51,59 +51,6 @@ interface State {
 }
 const START: State = { ports: [], boundary: [] };
 const STORE = "academy-lab-network-map-v2";
-const MOVE_SLOP = 6;
-
-/** Pointer-driven drag so it works with a mouse, a pen and a finger alike. */
-function useDrag(onDrop: (id: string, x: number, y: number) => void) {
-  const drag = useRef<{ id: string; el: HTMLElement; x: number; y: number; moved: boolean } | null>(null);
-  const [dragging, setDragging] = useState<string | null>(null);
-  const bind = (id: string) => ({
-    onPointerDown(e: React.PointerEvent<HTMLElement>) {
-      if (e.button !== 0) return;
-      drag.current = { id, el: e.currentTarget, x: e.clientX, y: e.clientY, moved: false };
-      e.currentTarget.setPointerCapture(e.pointerId);
-    },
-    onPointerMove(e: React.PointerEvent<HTMLElement>) {
-      const d = drag.current;
-      if (!d) return;
-      const dx = e.clientX - d.x;
-      const dy = e.clientY - d.y;
-      if (!d.moved && Math.hypot(dx, dy) < MOVE_SLOP) return;
-      if (!d.moved) {
-        d.moved = true;
-        setDragging(id);
-      }
-      d.el.style.transform = `translate(${dx}px, ${dy}px)`;
-      d.el.style.zIndex = "5";
-    },
-    onPointerUp(e: React.PointerEvent<HTMLElement>) {
-      const d = drag.current;
-      drag.current = null;
-      if (!d) return;
-      d.el.style.transform = "";
-      d.el.style.zIndex = "";
-      setDragging(null);
-      if (d.moved) onDrop(id, e.clientX, e.clientY);
-    },
-    onPointerCancel() {
-      if (drag.current) {
-        drag.current.el.style.transform = "";
-        drag.current.el.style.zIndex = "";
-      }
-      drag.current = null;
-      setDragging(null);
-    },
-  });
-  return { bind, dragging };
-}
-
-function slotAt(x: number, y: number): string | null {
-  for (const el of document.elementsFromPoint(x, y)) {
-    const hit = (el as Element).closest?.("[data-slot]");
-    if (hit) return hit.getAttribute("data-slot");
-  }
-  return null;
-}
 
 export function NetworkMapLab({ onDone }: { onDone?: () => void }) {
   const [s, setS] = useSaved<State>(STORE, START, (v) => Array.isArray(v.ports) && Array.isArray(v.boundary));
@@ -130,7 +77,7 @@ export function NetworkMapLab({ onDone }: { onDone?: () => void }) {
   useLabResult("lab-network-map", allDone, s.ports.length + s.boundary.length, PORTS.length + BOUNDARY.length);
 
   const dropPort = (id: string, x: number, y: number) => {
-    const slot = slotAt(x, y);
+    const slot = dropSlotAt(x, y);
     const port = PORTS.find((p) => p.id === id);
     if (!port || s.ports.includes(id)) return;
     if (slot === id) {
@@ -144,7 +91,7 @@ export function NetworkMapLab({ onDone }: { onDone?: () => void }) {
     }
   };
   const dropBoundary = (id: string, x: number, y: number) => {
-    const slot = slotAt(x, y);
+    const slot = dropSlotAt(x, y);
     const b = BOUNDARY.find((bb) => bb.id === id);
     if (!b || s.boundary.includes(id)) return;
     if (slot === b.from) {
@@ -158,8 +105,8 @@ export function NetworkMapLab({ onDone }: { onDone?: () => void }) {
     }
   };
 
-  const portsDrag = useDrag(dropPort);
-  const boundaryDrag = useDrag(dropBoundary);
+  const portsDrag = usePointerDrag(dropPort);
+  const boundaryDrag = usePointerDrag(dropBoundary);
 
   const nodeAt = (node: "dc" | "lx") => (node === "dc" ? DC : LX);
   const edge = (from: Pt, to: Pt, r: number) => {

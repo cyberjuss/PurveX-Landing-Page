@@ -117,6 +117,44 @@ Boundary, by which node starts the connection: DC starting a connection to Linux
 2 Shrink it: for ports, ask what job the protocol is actually doing (checking a ticket, looking up a directory entry, finding an address, opening a screen); for boundary cards, ask whether the two ends are both inside this one pod, or whether either end is outside it.
 3 Point at the exact node on the diagram (not a chip, not a button) they should be dragging the card onto.`,
   },
+  "baseline-map": {
+    steps: `Three rounds (sign-in pattern, file-access pattern, process-execution pattern), four items each, two that fit the baseline and two that don't. No chips -- drag each item into a "fits the baseline" cloud or an "outlier" zone.
+1 Sign-in pattern: a night-shift admin at 3 AM and a usual-laptop daytime sign-in fit; a help-desk account that's never worked nights at 3 AM on an unknown device, and a sign-in from two countries nine minutes apart, don't.
+2 File-access pattern: a payroll clerk reading a handful of payroll records and an engineer in their own project folder fit; a help-desk account reading an entire file share in under a minute, and bulk-copying a share it's never touched, don't.
+3 Process-execution pattern: a nightly backup task and ordinary daytime browser/office use fit; Word spawning PowerShell that reaches the internet, and an unfamiliar executable launching from temp right after an email attachment, don't.
+No separate debrief -- the filled-in cloud at the end of each round is the summary.`,
+    answers: `Sign-in: fits = night-shift admin at 3 AM, usual daytime sign-in. Outlier = help-desk account at 3 AM on an unknown device, impossible two-country sign-in.
+File-access: fits = payroll clerk's own records, engineer's own folder. Outlier = whole-share read in a minute, bulk overnight copy of an untouched share.
+Process: fits = nightly backup task, ordinary daytime apps. Outlier = Word spawning PowerShell, unfamiliar exe from temp after an attachment.`,
+    mistakes: `Judging an item by how alarming it sounds instead of whether it fits THIS account/host's own established pattern. Missing that the same action (e.g. a sign-in, a file read) can be baseline for one account and an outlier for another -- the account and context matter as much as the action.`,
+    ladder: `1 Ask: for this specific account or host, is this the kind of thing it normally does, at this kind of time?
+2 Shrink it: what's the one detail (the hour, the device, the volume, the account's actual job) that makes this item stand out from the other three?
+3 Point at the exact phrase in the item's description that gives it away.`,
+  },
+  "trust-boundary": {
+    steps: `A chain: Attacker (outside) -> Internal Network -> File Server -> Payroll DB, plus a direct Internal Network -> Payroll DB shortcut. Three gates total, all unlocked at the start. Drag three identical "Verify here" badges onto the three gates, any order, any badge to any open gate.
+1 Network -> File Server gate.
+2 File Server -> Payroll DB gate.
+3 Network -> Payroll DB direct-shortcut gate -- easy to miss since it doesn't sit on the main drawn line.
+Debrief is automatic once all three are locked: a short comparison of what a perimeter model (only the first gate guarded) leaves open versus Zero Trust (every gate, including the shortcut).`,
+    answers: `All three gates need a badge: the two gates on the main chain, and the direct shortcut gate from Internal Network straight to Payroll DB. There's no "right" badge for a given gate -- they're interchangeable; what matters is that every gate gets one, including the one that's easy to overlook.`,
+    mistakes: `Locking the two gates on the obvious drawn line and missing the shortcut gate entirely, which is exactly the kind of path a real perimeter model also misses. Assuming one locked gate near the front is enough, which is the perimeter-model mistake Zero Trust exists to fix.`,
+    ladder: `1 Ask: count the paths from the attacker to Payroll DB, not just the one drawn as a straight line.
+2 Shrink it: how many distinct ways can you get from Internal Network to Payroll DB? That's how many gates need a badge.
+3 Point at the specific unlocked gate (open padlock icon) still sitting without a badge.`,
+  },
+  "threshold-tuner": {
+    steps: `A real slider (1-20), five marked cases on a failed-sign-ins-per-hour scale (typo=2, retry=3, kiosk account=9, targeted guess=12, noisy test account=15), plus a password spray always shown caught far past the scale. Dragging the slider live-recolors which marks would trigger an alert.
+1 Free exploration first -- drag the slider, read the live caught/missed legend and the one-line commentary that changes with position.
+2 Challenge 1: land the slider between 10 and 12 (inclusive) -- quiets the kiosk account (9) while still catching the targeted guess (12).
+3 Challenge 2: land the slider at exactly 3 -- the lowest value that still never flags the single typo (2).
+Each challenge needs its own "Lock in" click after dragging to the right value; a wrong lock-in just shakes and lets them try again, no penalty.`,
+    answers: `Challenge 1 answer: any integer 10, 11, or 12. Challenge 2 answer: exactly 3.`,
+    mistakes: `Treating the first challenge as "find one correct number" instead of a band -- 10, 11, and 12 are all correct. For the second challenge, landing on 2 (still catches the typo) or going well above 3 "to be safe" (defeats the "lowest" part of the ask).`,
+    ladder: `1 Ask what's currently sitting right at the edge of being caught or missed as they drag -- that edge is the answer.
+2 Shrink it: for challenge 1, which two marks need to land on opposite sides of the line? For challenge 2, what's the very next value above the typo's own count?
+3 Tell them which direction to drag, not the number itself.`,
+  },
 };
 
 const LAB_COACH_PROMPT = `You are PurveX Coach, a senior analyst sitting next to a new hire while they work a short browser lab. You know this lab cold.

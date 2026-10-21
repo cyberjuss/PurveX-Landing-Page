@@ -110,6 +110,51 @@ export const LAB_BRIEFS: Record<LabWidget, LabBrief> = {
     tools: [],
     minutes: 10,
   },
+  "baseline-map": {
+    problem:
+      "Analysts who never establish a baseline end up ranking a queue by how alarming each alert sounds instead of what actually broke the pattern. The NIST incident-handling guidance that underlies most SOC practice treats this kind of baseline comparison as the starting point of triage, not an afterthought.",
+    today: "Three real patterns, each with something in it that doesn't belong.",
+    objective: {
+      "help-desk": "Tell a routine sign-in, file access, or process launch from one that actually needs a second look.",
+      sysadmin: "Separate what a system normally does from what it's doing right now, across three different kinds of data.",
+      "soc-analyst": "Build the same baseline-then-outlier judgment you'll use on every real alert triage, in three different data shapes.",
+      "cyber-analyst": "Practice the repeatable shape behind outlier detection: establish normal, then flag what breaks it.",
+      "ir-analyst": "Know what normal looked like before the incident, so you can say exactly what changed.",
+    },
+    objectiveDefault: "Build three real baselines, and catch what breaks each one.",
+    tools: [],
+    minutes: 10,
+  },
+  "trust-boundary": {
+    problem:
+      "In the 2013 Target breach, attackers reached the payment network from a third-party HVAC vendor's stolen credentials because nothing re-checked them once they were past the first gate. NIST SP 800-207's Zero Trust Architecture exists specifically to remove that kind of free movement after one compromise.",
+    today: "A chain from an outside attacker to your payroll database, with only the first gate actually guarded.",
+    objective: {
+      "help-desk": "Understand why being \"inside the network\" was never supposed to mean trusted.",
+      sysadmin: "See exactly what a perimeter-only model leaves open once one account is compromised.",
+      "soc-analyst": "Connect Zero Trust's abstract principle to the concrete gates an attacker actually has to pass.",
+      "cyber-analyst": "Map where re-verification actually needs to sit in a real access chain, including the shortcut path.",
+      "ir-analyst": "Know which hops in your environment would actually stop lateral movement, and which wouldn't.",
+    },
+    objectiveDefault: "Lock every gate between an outside attacker and your most sensitive data.",
+    tools: [],
+    minutes: 8,
+  },
+  "threshold-tuner": {
+    problem:
+      "A detection threshold set too low drowns a SOC in false positives until nobody trusts a Critical alert. Set too high, and it misses a real, quieter attack entirely. NIST's incident-response guidance frames severity and detection tuning as judgment calls against your own environment, not a fixed number.",
+    today: "Five real cases on one scale, from a mistyped password to a targeted guess against one account.",
+    objective: {
+      "help-desk": "See why \"just lower the threshold\" isn't free, and what it costs the team that has to work the queue.",
+      sysadmin: "Feel the trade-off a threshold actually makes, not just read about it.",
+      "soc-analyst": "Practice setting a threshold that catches a real attack without burying the queue in noise.",
+      "cyber-analyst": "Find the defensible band for a detection threshold, and be able to justify exactly why.",
+      "ir-analyst": "Understand what a badly tuned threshold would have let through before you ever see the incident.",
+    },
+    objectiveDefault: "Find the threshold that catches the real attack without burying the queue in noise.",
+    tools: [],
+    minutes: 8,
+  },
 };
 
 export const BROWSER_LABS = Object.keys(LAB_BRIEFS) as LabWidget[];

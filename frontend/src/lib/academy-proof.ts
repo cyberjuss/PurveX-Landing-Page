@@ -381,6 +381,9 @@ const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
   "lab-signin-log": ["Log Analysis", "Windows Event Logs", "Incident Triage"],
   "lab-effective-access": ["NTFS Permissions", "Share Permissions", "Access Control"],
   "lab-network-map": ["Network Segmentation", "Port and Protocol Identification"],
+  "lab-baseline-map": ["Baseline Analysis", "Anomaly Detection"],
+  "lab-trust-boundary": ["Zero Trust Architecture", "Access Control"],
+  "lab-threshold-tuner": ["Detection Engineering", "Alert Tuning"],
 };
 
 export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean, results: Results = {}): { group: string; items: string[] }[] {
