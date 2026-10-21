@@ -13,6 +13,66 @@ import type { LabPassId } from "@/lib/academy-score";
 // Shared pieces for the browser-only week labs. They use the Week 1 lab's
 // rt-* styles so every lab looks and behaves the same.
 
+const DRAG_MOVE_SLOP = 6;
+
+/**
+ * Pointer-driven drag so it works with a mouse, a pen and a finger alike.
+ * Native HTML5 drag-and-drop does nothing on a phone. A press that barely
+ * moves is left alone (a click, not a drag), the same slop drag-activity.tsx
+ * uses for the sort/order/connect blocks.
+ */
+export function usePointerDrag(onDrop: (id: string, x: number, y: number) => void) {
+  const drag = useRef<{ id: string; el: HTMLElement; x: number; y: number; moved: boolean } | null>(null);
+  const [dragging, setDragging] = useState<string | null>(null);
+  const bind = (id: string) => ({
+    onPointerDown(e: React.PointerEvent<HTMLElement>) {
+      if (e.button !== 0) return;
+      drag.current = { id, el: e.currentTarget, x: e.clientX, y: e.clientY, moved: false };
+      e.currentTarget.setPointerCapture(e.pointerId);
+    },
+    onPointerMove(e: React.PointerEvent<HTMLElement>) {
+      const d = drag.current;
+      if (!d) return;
+      const dx = e.clientX - d.x;
+      const dy = e.clientY - d.y;
+      if (!d.moved && Math.hypot(dx, dy) < DRAG_MOVE_SLOP) return;
+      if (!d.moved) {
+        d.moved = true;
+        setDragging(id);
+      }
+      d.el.style.transform = `translate(${dx}px, ${dy}px)`;
+      d.el.style.zIndex = "5";
+    },
+    onPointerUp(e: React.PointerEvent<HTMLElement>) {
+      const d = drag.current;
+      drag.current = null;
+      if (!d) return;
+      d.el.style.transform = "";
+      d.el.style.zIndex = "";
+      setDragging(null);
+      if (d.moved) onDrop(id, e.clientX, e.clientY);
+    },
+    onPointerCancel() {
+      if (drag.current) {
+        drag.current.el.style.transform = "";
+        drag.current.el.style.zIndex = "";
+      }
+      drag.current = null;
+      setDragging(null);
+    },
+  });
+  return { bind, dragging };
+}
+
+/** The drop target under the pointer: the nearest ancestor carrying `data-slot`. */
+export function dropSlotAt(x: number, y: number): string | null {
+  for (const el of document.elementsFromPoint(x, y)) {
+    const hit = (el as Element).closest?.("[data-slot]");
+    if (hit) return hit.getAttribute("data-slot");
+  }
+  return null;
+}
+
 /** SHA-256 of a string as lowercase hex, the same value sha256sum and Get-FileHash print. */
 export async function sha256Hex(text: string): Promise<string> {
   const bytes = new TextEncoder().encode(text);

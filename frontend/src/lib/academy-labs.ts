@@ -47,6 +47,10 @@ const ART: Record<string, { blurb: string; skill: string; icon: string; accent: 
   "read-the-login-record": { blurb: "Make a failed and a successful login, find both in the log, and tell them apart.", skill: "Log Analysis", icon: "ScanSearch", accent: "#9b8cff", minutes: 20 },
   "one-power": { blurb: "Grant a user exactly one command as root, and prove you did not hand over the machine.", skill: "Access Control", icon: "LockKeyhole", accent: "#19c3b2", minutes: 25 },
   "signin-log": { blurb: "Find four problems hiding in a night of sign-in events.", skill: "Log Analysis", icon: "ScanSearch", accent: "#9b8cff", minutes: 18 },
+  "network-map": { blurb: "Map your own pod's ports, then prove its isolation actually holds.", skill: "Networking", icon: "Radar", accent: "#3b9eff", minutes: 10 },
+  "baseline-map": { blurb: "Build three real baselines, then spot what breaks each one.", skill: "Log Analysis", icon: "ScanSearch", accent: "#9b8cff", minutes: 10 },
+  "trust-boundary": { blurb: "Lock every gate between an attacker and your payroll data.", skill: "Access Control", icon: "LockKeyhole", accent: "#19c3b2", minutes: 8 },
+  "threshold-tuner": { blurb: "Drag a detection threshold and watch what it catches and misses.", skill: "Risk Triage", icon: "Gauge", accent: "#f5a524", minutes: 8 },
 };
 
 const FALLBACK = { blurb: "A hands-on lab in the PurveX environment.", skill: "Hands-on", icon: "FlaskConical", accent: "#5546e0", minutes: 15 };

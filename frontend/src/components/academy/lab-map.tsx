@@ -3,9 +3,12 @@
 import Link from "next/link";
 import { Fragment, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { ArrowRight, Check, ChevronDown, Clock } from "lucide-react";
+import type { LabMeta } from "@/lib/academy-labs";
 import { slugify, useAcademyProgress } from "./academy-progress";
-import type { SocLab } from "./use-soc-floor";
 import "./lab-map.css";
+
+/** `phase` is e.g. "Phase 2 · Threat Detection & Log Analysis"; week numbers restart in each phase. */
+type SocLab = LabMeta & { week?: string; phase?: string };
 
 // The labs drawn as a transit line: one route, a colour per week, each lab a
 // station. Finished track is drawn solid, the rest faint, and the next station
@@ -115,7 +118,13 @@ export function LabMap({ labs }: { labs: SocLab[] }) {
       const last = weeks[weeks.length - 1];
       if (last && last.label === label && last.phase === phase) last.stops.push(i);
       else {
-        const n = Number(/Week\s+(\d+)/i.exec(label)?.[1]) || weeks.length + 1;
+        // The line's own number, not the lesson's: a week with no lab draws no
+        // line, so numbering a line from its "Week N" title left gaps the
+        // moment a phase had a lab-less week (Phase 2's new lesson-only weeks
+        // did exactly that -- the map jumped straight from Start to "3").
+        // Counting lines already drawn for this phase keeps it gapless and
+        // still restarts at 1 per phase.
+        const n = weeks.filter((w) => w.phase === phase).length + 1;
         weeks.push({ label, phase, first: i, stops: [i], colour: LINE_COLOURS[weeks.length % LINE_COLOURS.length], n });
       }
     });
