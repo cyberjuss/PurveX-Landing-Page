@@ -357,8 +357,11 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               }`}
             >
               {/* One child, so the row animation has a single thing to
-                  measure. The weeks and the home lab both sit in it. */}
-              <div className="min-h-0 overflow-hidden">
+                  measure. The weeks, Labs, Company and Challenges all sit in
+                  it, spaced by this flex gap rather than each section's own
+                  margin, so the four read as evenly spaced whichever of them
+                  is actually present for a given phase. */}
+              <div className="flex min-h-0 flex-col gap-[18px] overflow-hidden">
                 <ul className="ax-list flex flex-col">
                   {phase.weeks.map(row)}
                 </ul>

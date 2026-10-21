@@ -4748,8 +4748,12 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform
    labs. This little heading is what keeps the two sets from reading as one
    list of eleven things. */
 /* The Home Lab heading now sits inside its phase rather than beside it, so it
-   is indented under the phase's own heading and set a step smaller. */
-.ax-subhead { margin-top: 18px; padding-left: 17px; }
+   is indented under the phase's own heading and set a step smaller. Spacing
+   above it comes from the flex gap on its container (academy-sidebar.tsx),
+   not a margin here -- a margin per section read as uneven once there were
+   three of them stacked, since each one's own wrapper could affect how much
+   of it actually showed. */
+.ax-subhead { padding-left: 17px; }
 /* Which week owns the labs under it. Quieter than the Labs header above it and
    than the lab names below, so the three read as a hierarchy rather than three
    competing labels. Aligned to the lab names' own left edge. */
