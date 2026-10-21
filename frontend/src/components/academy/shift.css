@@ -278,9 +278,8 @@
 .sh-note { margin: 2px 0 0; font-size: var(--ty-note); color: var(--rd-ink-3); }
 /* The shift's ground rules, shown on the intro before the shift starts. Square
    corners throughout: --r is 0 here on purpose, this is a console not a card. */
-.sh-rules { list-style: none; margin: 6px 0 0; padding: 0; display: grid; }
-.sh-rules li { display: grid; grid-template-columns: 34px 1fr; align-items: baseline; gap: 2px 14px; padding: 16px 0; border-top: 1px solid var(--rd-line); }
-.sh-rules li:last-child { border-bottom: 1px solid var(--rd-line); }
+.sh-rules { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 22px; }
+.sh-rules li { display: grid; grid-template-columns: 34px 1fr; align-items: baseline; gap: 2px 14px; }
 .sh-rules__ic { grid-row: span 2; display: grid; place-items: center; width: 34px; height: 34px; background: color-mix(in srgb, var(--rd-accent) 11%, transparent); color: var(--rd-accent); align-self: start; }
 .sh-rules strong { font-size: var(--ty-body); font-weight: 650; line-height: 1.35; color: var(--rd-ink); }
 .sh-rules small { font-size: var(--ty-note); line-height: 1.5; color: var(--rd-ink-3); }
