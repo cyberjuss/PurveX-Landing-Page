@@ -218,17 +218,45 @@ const phase2Weeks: WeekDef[] = [
       { label: "Challenge: The 2 AM Login", file: "phase-2/week-2/alert-inc-1046.md" },
     ],
   },
+  // These two replace the old empty "week-3" (SIEM Basics) and "week-4"
+  // (Detection Engineering) placeholders, which had no sections and so no
+  // student progress to preserve -- safe to retire rather than renumber.
   {
-    slug: "week-3",
-    title: "Week 4 — SIEM Basics",
-    summary: "Centralized logging and how to build a first set of detections.",
-    sections: [],
+    slug: "baselines-thresholds",
+    title: "Week 4 — Baselines, Thresholds & Zero Trust",
+    summary: "Map your own lab's network, tell an outlier from a baseline, place MITRE ATT&CK on attacker behavior you've already seen, and learn what a detection threshold actually costs in either direction.",
+    sections: [
+      { label: "Overview", file: "phase-2/baselines-thresholds/overview.md" },
+      { label: "Mapping Your Environment", file: "phase-2/baselines-thresholds/lesson-map-environment.md" },
+      { label: "Determining Outliers and Baseline", file: "phase-2/baselines-thresholds/lesson-baselines-outliers.md" },
+      { label: "Understanding the MITRE ATT&CK Framework", file: "phase-2/baselines-thresholds/lesson-attack.md" },
+      { label: "Zero Trust", file: "phase-2/baselines-thresholds/lesson-zero-trust.md" },
+      { label: "Setting Thresholds for Detections", file: "phase-2/baselines-thresholds/lesson-thresholds.md" },
+      { label: "Why Detections Matter", file: "phase-2/baselines-thresholds/lesson-why-detections.md" },
+      { label: "Resources", file: "phase-2/baselines-thresholds/resources.md" },
+    ],
   },
   {
-    slug: "week-4",
-    title: "Week 5 — Detection Engineering",
-    summary: "How MITRE ATT&CK maps detections to real attacker techniques.",
-    sections: [],
+    slug: "detection-writing",
+    title: "Week 5 — Writing Detections with KQL",
+    summary: "Learn KQL and TRACE, a five-part method for turning an ATT&CK technique and a threshold into a real detection query.",
+    sections: [
+      { label: "Overview", file: "phase-2/detection-writing/overview.md" },
+      { label: "KQL Basics", file: "phase-2/detection-writing/lesson-kql-basics.md" },
+      { label: "The TRACE Method", file: "phase-2/detection-writing/lesson-trace.md" },
+      { label: "Resources", file: "phase-2/detection-writing/resources.md" },
+    ],
+  },
+  {
+    slug: "kill-chain",
+    title: "Week 6 — The Cyber Kill Chain",
+    summary: "See how individual ATT&CK techniques you already know chain into one intrusion, then work a real five-stage chain in your own Shift queue.",
+    sections: [
+      { label: "Overview", file: "phase-2/kill-chain/overview.md" },
+      { label: "Understanding the Cyber Kill Chain", file: "phase-2/kill-chain/lesson-kill-chain.md" },
+      { label: "Challenge: The Five-Stage Intrusion", file: "phase-2/kill-chain/challenge-attack-chain.md" },
+      { label: "Resources", file: "phase-2/kill-chain/resources.md" },
+    ],
   },
 ];
 
