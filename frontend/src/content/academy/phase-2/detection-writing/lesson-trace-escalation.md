@@ -1,9 +1,9 @@
 ### E: Escalation
 <!-- art: ticket -->
 
-Escalation is what happens the moment a detection fires, and it is not KQL at all, the same way Technique was not. A detection firing is the start of the work, not the end of it. This last step of TRACE decides the severity the alert gets and who or what it notifies, using the same P1, P2, P3 scale Week 1 taught for classifying any incident.
+Escalation is what happens the moment a detection fires. It is not KQL at all, the same way Technique was not. A detection firing is the start of the work, not the end of it. This last step of TRACE decides the severity the alert gets and who or what it notifies. It uses the same P1, P2, P3 scale Week 1 taught for classifying any incident.
 
-For Password Spraying specifically, that means routing the alert as a P2, High, worked after any open P1, the same way the Shift incident built from this exact technique already does in your own queue. An attack in progress against a real account is not routine, so it does not wait for P3-level attention, but it is also not an active breach with confirmed access, so it does not outrank a P1 already in front of you.
+For Password Spraying specifically, that means routing the alert as a P2, High. That is worked after any open P1, the same way the Shift incident built from this exact technique already does in your own queue. An attack in progress against a real account is not routine, so it does not wait for P3-level attention. It is also not an active breach with confirmed access, so it does not outrank a P1 already in front of you.
 
 Here is the full detection, built by walking through all five TRACE letters in order:
 
