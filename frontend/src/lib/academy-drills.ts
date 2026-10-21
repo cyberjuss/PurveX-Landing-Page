@@ -532,7 +532,12 @@ function pickItems(seed: string, snapshot: LabSnapshot, results: Results, mode: 
     }
     const made = queues.get(skill)!.shift()!(snapshot, r);
     const item = made ? { ...made, theme: made.theme ?? made.title } : null;
-    if (!item || seen.has(item.prompt) || avoid.has(item.prompt)) continue;
+    // A daily case is a situation to work through, never a pick-from-a-list
+    // question -- stock items fall back to this pool only when the AI writer
+    // is unavailable, and that fallback should keep the same promise.
+    const isDaily = mode === "daily";
+    const multipleChoice = item ? item.kind !== "change" && !item.free && item.choices.length > 0 : false;
+    if (!item || seen.has(item.prompt) || avoid.has(item.prompt) || (isDaily && multipleChoice)) continue;
     seen.add(item.prompt);
     used.set(skill, (used.get(skill) ?? 0) + 1);
     items.push(item);
@@ -1060,16 +1065,17 @@ export function checkChange(
   return { fresh, results, passed: fresh && !needsSetup && answerOk && results.every((x) => x.ok), needsSetup, answerOk };
 }
 
-/** How the day's scenario is asked. Lab changes need a lab to check. */
-export function pickFormat(seed: string, level: number, hasLab: boolean, targetsLab = false): "decide" | "respond" | "change" {
+/**
+ * How the day's scenario is asked. Lab changes need a lab to check. Never
+ * multiple-choice: a case is a situation to work through and write up, not a
+ * quiz question to guess from a list of options.
+ */
+export function pickFormat(seed: string, level: number, hasLab: boolean, targetsLab = false): "respond" | "change" {
   const r = seeded(`format:${seed}`)();
   const lv = Math.min(4, Math.max(1, level));
   // When the job to practice can be done in the lab, usually make them do it there.
   const change = hasLab ? (targetsLab ? 0.8 : [0.4, 0.35, 0.35, 0.4][lv - 1]) : 0;
-  const respond = [0.15, 0.3, 0.4, 0.45][lv - 1];
-  if (r < change) return "change";
-  if (r < change + respond) return "respond";
-  return "decide";
+  return r < change ? "change" : "respond";
 }
 
 
