@@ -1,5 +1,5 @@
 // Phases students cannot open yet. Remove a slug here to open that phase.
-export const LOCKED_PHASES: readonly string[] = ["phase-2", "phase-3"];
+export const LOCKED_PHASES: readonly string[] = ["phase-3"];
 
 export const isPhaseLocked = (phaseSlug: string) => LOCKED_PHASES.includes(phaseSlug);
 
