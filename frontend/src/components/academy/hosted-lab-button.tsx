@@ -701,7 +701,7 @@ export function HostedLabMenu() {
         </button>
         {state === "ready" && (
           <button type="button" className="hl__link" onClick={() => setShowNetwork(true)}>
-            <Waypoints className="h-3 w-3" aria-hidden /> Network map
+            <Waypoints className="h-3 w-3" aria-hidden /> Lab addresses
           </button>
         )}
         <button type="button" className="hl__link hl__link--end" onClick={() => openHelp("lab")}>

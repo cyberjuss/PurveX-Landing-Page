@@ -58,7 +58,7 @@ export function NetworkMap({ onClose }: { onClose: () => void }) {
         <header className="nm__head">
           <div>
             <p className="nm__kicker">Your lab</p>
-            <h2 className="nm__title" id="nm-title">Network map</h2>
+            <h2 className="nm__title" id="nm-title">Lab addresses</h2>
           </div>
           <button type="button" className="nm__x" onClick={onClose} aria-label="Close">
             <X className="h-[18px] w-[18px]" aria-hidden />
@@ -75,7 +75,7 @@ export function NetworkMap({ onClose }: { onClose: () => void }) {
         {net && (
           <>
             <p className="nm__lede">
-              Both machines sit on one private subnet, yours alone. Click one to see what your lab actually reports about it.
+              Both machines sit on one private subnet, yours alone. Click one to see the real addresses your lab&rsquo;s latest report has for it.
             </p>
             <div className="nm__net">
               <span className="nm__net__tag">Private network</span>
