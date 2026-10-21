@@ -154,21 +154,21 @@ try {
   // This rule has been wrong twice and both times a student lost a paid
   // session to it, so it is tested as a table rather than by reading it.
   const MIN = 60_000;
-  const base = { idleStopMinutes: 20, unopenedStopMinutes: 20, buildGraceMinutes: 30, now: 0 };
+  const base = { idleStopMinutes: 20, unopenedStopMinutes: 20, buildGraceMinutes: 10, now: 0 };
   const at = (sessionAgeMin: number) => ({ ...base, now: sessionAgeMin * MIN, sessionStartedMs: 0 });
   const cases: { name: string; args: Parameters<typeof shouldStopIdle>[0]; stop: boolean }[] = [
     // The bug that started all this: a pod's very first report, counting its
     // own build as idle time, on a session less than an hour old.
     { name: "a brand new pod reporting 20 idle minutes is left alone", args: { ...at(21), idleMinutes: 20, everConnected: false }, stop: false },
-    { name: "a brand new pod reporting 46 idle minutes is still left alone", args: { ...at(45), idleMinutes: 46, everConnected: false }, stop: false },
+    { name: "a brand new pod reporting 46 idle minutes is still left alone", args: { ...at(25), idleMinutes: 46, everConnected: false }, stop: false },
     // Never opened: the longer window, and only after the build grace.
     { name: "never opened, 19 minutes, stays up", args: { ...at(120), idleMinutes: 19, everConnected: false }, stop: false },
     { name: "never opened, 20 minutes, stops", args: { ...at(120), idleMinutes: 20, everConnected: false }, stop: true },
-    { name: "never opened, 20 minutes but inside the grace, stays up", args: { ...at(40), idleMinutes: 20, everConnected: false }, stop: false },
+    { name: "never opened, 20 minutes but inside the grace, stays up", args: { ...at(20), idleMinutes: 20, everConnected: false }, stop: false },
     // Worked in and walked away: the short window, which is the point of it.
     { name: "worked in, 19 minutes idle, stays up", args: { ...at(120), idleMinutes: 19, everConnected: true }, stop: false },
     { name: "worked in, 20 minutes idle, stops", args: { ...at(120), idleMinutes: 20, everConnected: true }, stop: true },
-    { name: "worked in, 20 minutes idle, inside the grace, stays up", args: { ...at(40), idleMinutes: 20, everConnected: true }, stop: false },
+    { name: "worked in, 20 minutes idle, inside the grace, stays up", args: { ...at(20), idleMinutes: 20, everConnected: true }, stop: false },
     // A pod on an older script says nothing, and keeps the old short window.
     { name: "an older pod with no flag keeps the 20 minute window", args: { ...at(120), idleMinutes: 20, everConnected: undefined }, stop: true },
     { name: "an older pod under 20 minutes stays up", args: { ...at(120), idleMinutes: 5, everConnected: undefined }, stop: false },

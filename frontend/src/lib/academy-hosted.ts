@@ -797,8 +797,12 @@ export async function startHostedLab(userId: string): Promise<void> {
 // How long a pod is allowed to spend becoming usable before the idle clock
 // means anything. A Windows domain controller boots, waits for Active
 // Directory, builds the forest and plants the tickets, and nobody is signed
-// in for any of it.
-const IDLE_BUILD_GRACE_MINUTES = 30;
+// in for any of it. Was 30: with the default 20-minute idle window that put
+// the earliest possible stop at 50 minutes of session time, which read as
+// "idle stop doesn't work" to a student who walked away at 30. Cut to 10,
+// a real but smaller margin, not removed outright -- this exact rule has
+// cost a student a paid session twice before by moving too fast.
+const IDLE_BUILD_GRACE_MINUTES = 10;
 
 /**
  * Should a lab be stopped for want of anyone using it?
