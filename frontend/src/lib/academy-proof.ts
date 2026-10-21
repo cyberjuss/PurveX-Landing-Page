@@ -293,7 +293,7 @@ export const SHIFT_JOB: Record<string, string> = {
 };
 const SHIFT_JOBS = new Set(Object.values(SHIFT_JOB));
 
-export type OpenTask = { job: string; title: string; where: string; href: string; locked: boolean };
+export type OpenTask = { job: string; bullets: Record<Track, StarPart[]>; where: string; href: string; locked: boolean };
 
 /**
  * Tasks the portfolio can show that the student has not done yet, and where to
@@ -314,14 +314,14 @@ export function openTasks(done: string[]): OpenTask[] {
     .filter(([job]) => !have.has(job))
     .flatMap(([job, e]) => {
       if (SHIFT_JOBS.has(job)) {
-        return [{ job, title: e.title, where: "Live shift", href: "/range/shift", locked: true }];
+        return [{ job, bullets: e.bullets, where: "Live shift", href: "/range/shift", locked: true }];
       }
       const t = ticketFor.get(job);
       if (!t) return [];
       return [
         {
           job,
-          title: e.title,
+          bullets: e.bullets,
           where: `Ticket Queue · ${t.label.replace("Service ticket ", "")}`,
           href: `/range/phase-1/home-lab-challenges#${t.id}`,
           locked: false,
