@@ -30,10 +30,3 @@ Outlier: Microsoft Word spawns a PowerShell process that then reaches out to the
 ```
 
 Notice the shape repeats across all three: establish what normally happens, for whom, and when, then flag whatever breaks that pattern. That repeatable shape, not memorizing any one example above, is the actual skill.
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: a real outlier you caught by knowing the baseline cold, or a time something that looked like an outlier turned out to be a new, legitimate baseline you hadn't accounted for yet.]
-
-</details>

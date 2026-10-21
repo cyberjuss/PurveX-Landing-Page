@@ -12,10 +12,3 @@ The five parts, in the order you actually build them:
 5. **Escalation.** Decide what happens the moment the detection fires.
 
 Each part gets its own page next, building toward one real, complete detection for Password Spraying, T1110.003.
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: a detection you built that skipped one of these steps at first, and what went wrong because of it.]
-
-</details>

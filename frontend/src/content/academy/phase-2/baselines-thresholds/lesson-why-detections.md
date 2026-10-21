@@ -13,10 +13,3 @@ No detection on audit logging being disabled = The SOC goes blind to exactly the
 A detection set with too high a threshold = A real attack produces enough signal to qualify, but not enough to cross the bar, and it passes through unflagged
 A detection that nobody ever tunes = It keeps firing on last year's baseline while this year's normal behavior has already moved past it
 ```
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: a real detection that caught something a human would have missed, or a gap you found where no detection existed at all.]
-
-</details>

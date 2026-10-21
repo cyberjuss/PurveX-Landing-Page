@@ -13,10 +13,3 @@ prompt: Sort each task by whether AI now typically handles the first pass, or it
 AI handles the first pass: Correlating related alerts into one case | Enriching an alert with account and host context | Drafting a summary of what happened
 Still needs a human: Deciding whether the AI's conclusion actually holds up | Judging whether to escalate, contain, or close | Explaining the decision in a way another analyst or an auditor can review
 ```
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: how AI tools are actually used in your SOC today, a time an AI-generated case was wrong in a way that looked convincing, or how you personally decide when to trust a tool's output versus dig in yourself.]
-
-</details>

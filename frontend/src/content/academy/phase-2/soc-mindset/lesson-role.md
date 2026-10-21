@@ -16,10 +16,3 @@ Tier 1: Triage the incoming alert queue | Close an alert as a false positive | E
 Tier 2: Scope what an account or host touched | Determine the root cause of an escalated alert | Coordinate the response to a confirmed incident
 Tier 3: Hunt for attacker behavior no alert has flagged | Build or tune a detection rule | Run an in-depth security assessment
 ```
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: a real example of how your SOC actually split Tier 1/2/3 work, where the textbook division broke down in practice, or how an analyst actually moves from Tier 1 to Tier 3 in your experience.]
-
-</details>

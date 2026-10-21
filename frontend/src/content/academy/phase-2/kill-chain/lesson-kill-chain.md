@@ -25,10 +25,3 @@ Installation
 Command and Control
 Actions on Objectives
 ```
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: a real intrusion you worked that you could map onto these seven stages, or where you think the model breaks down against how attacks actually happen today.]
-
-</details>

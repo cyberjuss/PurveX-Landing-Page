@@ -16,10 +16,3 @@ Zero Trust = Trust nothing by default, verify every request continuously
 Lateral movement after one compromised account = What a perimeter model allows that Zero Trust is built to prevent
 Least privilege, enforced on every request = The practical habit Zero Trust turns into policy
 ```
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: how far along your own organization actually is on Zero Trust, or a real case where a perimeter-trust assumption let something move further than it should have.]
-
-</details>

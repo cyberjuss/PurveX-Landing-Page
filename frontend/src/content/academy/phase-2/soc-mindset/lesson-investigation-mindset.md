@@ -14,10 +14,3 @@ Compare what actually happened against that baseline
 Decide: escalate, close as benign, or request more data
 Document what you checked and why you decided what you decided
 ```
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: a real alert that looked bad until you checked the baseline (or the reverse, one that looked routine until you checked), or your own personal checklist for working an alert before you commit to a decision.]
-
-</details>

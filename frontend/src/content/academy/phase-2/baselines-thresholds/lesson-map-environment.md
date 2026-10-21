@@ -15,10 +15,3 @@ prompt: Match each port to the service it belongs to.
 53 = DNS, which is how every machine finds the domain controller in the first place
 22 = SSH, for a terminal session on the Linux server
 ```
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: how you'd explain your own organization's network segmentation to a new analyst, or a real example of a connection on an unexpected port that turned out to matter.]
-
-</details>

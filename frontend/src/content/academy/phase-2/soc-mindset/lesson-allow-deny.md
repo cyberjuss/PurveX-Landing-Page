@@ -13,10 +13,3 @@ A corporate laptop that can run anything except a list of known malware signatur
 A new, never-before-seen piece of malware that a blocklist has no signature for yet = What a blocklist misses
 A legitimate new app an employee needs, blocked until IT adds it to the approved list = What an allowlist costs in upkeep
 ```
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: where your organization actually uses allowlisting versus blocklisting, or a time the upkeep cost of an allowlist caused a real problem.]
-
-</details>

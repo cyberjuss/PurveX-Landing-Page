@@ -20,10 +20,3 @@ Missed: A help desk account targeted by repeated guesses, 12 failures in ten min
 ```
 
 Notice what moved between the two sorts. The password spray gets caught either way, because it is loud. The targeted guess against one account, a quieter and arguably more dangerous pattern because it means the attacker already has a specific target, only gets caught at the lower threshold. There is no threshold that is simply correct. There is only the threshold that matches what your environment's baseline can tolerate in false positives against what it can afford to miss.
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: a real detection you had to tune, what number you landed on and why, or a time a threshold was set wrong in either direction and what it cost.]
-
-</details>

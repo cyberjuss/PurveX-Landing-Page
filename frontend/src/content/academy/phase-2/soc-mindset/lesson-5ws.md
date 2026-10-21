@@ -20,10 +20,3 @@ When: The timestamp of the event | Whether that time falls inside or outside a n
 Where: The hostname or IP address involved | Which network segment that host sits on
 Why: The business reason the account might have done this | Whether an attacker would have a reason to do the same thing
 ```
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: a case where one of the 5 W's was the hardest to pin down, or a case where answering "why" first changed how you read everything else.]
-
-</details>

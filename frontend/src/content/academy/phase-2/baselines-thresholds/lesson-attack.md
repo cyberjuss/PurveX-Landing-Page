@@ -28,10 +28,3 @@ Persistence: Create Account: Domain Account (T1136.002)
 Privilege Escalation: Account Manipulation (T1098)
 Defense Evasion: Impair Defenses (T1562.002)
 ```
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: how your SOC actually uses ATT&CK day to day (mapping detections, briefing leadership, scoping a hunt), or a technique you've seen in the wild that isn't in this list.]
-
-</details>

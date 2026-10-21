@@ -21,10 +21,3 @@ SigninLogs
 ```
 
 Read it top to bottom the way KQL runs it: start from every sign-in log in the last 24 hours, keep only the ones that were not a success, count them per account per hour, and sort the worst first. Nothing about this query decides anything yet. It just produces a table. The next lesson adds the piece that turns a table into an actual alert.
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: the KQL table or field you reach for most in your own environment, or a query of yours that took a few tries to get right.]
-
-</details>

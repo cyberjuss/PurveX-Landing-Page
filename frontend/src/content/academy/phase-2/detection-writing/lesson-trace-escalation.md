@@ -29,10 +29,3 @@ Aggregate: count failed sign-ins per account per hour
 Condition: set the threshold, where FailedCount > 5
 Escalation: fire as a P2 and route it to the SOC queue
 ```
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: a real detection you'd walk through TRACE-style, or a case where getting the Condition step wrong caused a real problem.]
-
-</details>

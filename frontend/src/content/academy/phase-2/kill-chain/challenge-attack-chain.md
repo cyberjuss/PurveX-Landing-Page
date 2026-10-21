@@ -11,10 +11,3 @@ Work these five real Shift incidents in this order, the next time each one appea
 5. **"New account created with no HR record"** — Create Account: Domain Account, T1136.002. The last move is insurance: a backdoor account that works even if the original compromised credential gets reset. This is Installation, the attacker making sure getting caught once does not mean getting locked out for good.
 
 Each of these five already exists in your Shift console with its own resolution steps and its own evidence to check. The challenge is noticing the pattern, not solving any one of them differently: once the third or fourth of these lands in your queue in the same shift, you may not be looking at separate problems. You may be looking at one attacker who is still inside, and the next item in the chain is the one you have not seen yet.
-
-<details class="academy-deeper">
-<summary>From the field</summary>
-
-[Add your own experience here: a real case where recognizing the chain, not just the individual alert, changed how you responded, or a different five-stage chain from your own experience you'd want substituted here.]
-
-</details>
