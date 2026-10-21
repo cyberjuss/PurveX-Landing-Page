@@ -15,6 +15,7 @@ import { weekScenes } from "./slide-art";
 import { TrailDock, type TrailLink } from "./trail-dock";
 import { labSpot, useCoach } from "./coach-context";
 import { HostedLabSetupNote } from "./hosted-lab-button";
+import { TopicVideo } from "./topic-video";
 
 // Home Lab tabs about building your own server. A hosted student skips them.
 const HOSTED_SETUP_TABS = new Set(["Set Up the Lab", "Install the Domain", "Build the Environment", "Check the Build"]);
@@ -412,7 +413,10 @@ export function SectionTabs({
           {current.kind === "section" && current.label === "Resources" ? (
             <ResourcesView markdown={current.markdown} fallback={<Markdown content={current.markdown} />} />
           ) : (
-            <Markdown content={current.markdown} />
+            <>
+              {current.kind === "section" && current.label === "Overview" && <TopicVideo />}
+              <Markdown content={current.markdown} />
+            </>
           )}
         </MissionPager>
         )}
