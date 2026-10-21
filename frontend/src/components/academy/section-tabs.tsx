@@ -390,9 +390,10 @@ export function SectionTabs({
     ) : (
       <>
         {current.kind === "section" && HOSTED_SETUP_TABS.has(current.label) && <HostedLabSetupNote />}
-        {current.kind === "section" && current.label === "Overview" && <TopicVideo />}
+        {!asDeck && current.kind === "section" && current.label === "Overview" && <TopicVideo />}
         {asDeck ? (
           <LessonDeck
+            video={current.kind === "section" && current.label === "Overview" ? <TopicVideo /> : undefined}
             weekScenes={tabScenes}
             question={active === 0 ? essentialQuestion ?? undefined : undefined}
             weekPath={active === 0 ? sections.slice(1).map((s) => s.label).filter((l) => l !== "Resources") : undefined}

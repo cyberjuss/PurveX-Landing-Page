@@ -39,6 +39,8 @@
 }
 
 .lk__head { display: flex; flex-direction: column; gap: 8px; margin-bottom: clamp(18px, 3vw, 32px); }
+.lk__video { margin-bottom: clamp(18px, 3vw, 32px); }
+.lk__video .ax-video { margin: 0; }
 .lk__head .rd-kicker { color: var(--rd-accent); }
 .lk__title {
   margin: 0;

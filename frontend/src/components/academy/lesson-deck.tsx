@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { HelpCircle, Keyboard, Maximize2, Minimize2 } from "lucide-react";
 import { slugify } from "./academy-progress";
 import { Recap, SlideBody } from "./slide-body";
@@ -29,6 +29,7 @@ export function LessonDeck({
   weekScenes,
   question,
   weekPath,
+  video,
 }: {
   label: string;
   markdown: string;
@@ -43,6 +44,8 @@ export function LessonDeck({
   question?: string;
   /** The week's other tabs, listed under the question as the road to its answer. */
   weekPath?: string[];
+  /** Shown once, at the top of the deck's first real slide. */
+  video?: ReactNode;
 }) {
   const lesson = useMemo(() => splitLessonIntoDeck(markdown, label), [markdown, label]);
   // The week opens on its essential question, as a slide of its own before
@@ -311,6 +314,7 @@ export function LessonDeck({
               {slide.cont ? <span className="lk__cont"> (cont.)</span> : null}
             </h2>
           </header>
+          {video && index === (question ? 1 : 0) && <div className="lk__video">{video}</div>}
           <div className="lk__body">
             {slide.recap ? (
               <Recap items={slide.recap} slides={total - 1} activities={slides.filter((s) => s.activity).length} where={label} />
