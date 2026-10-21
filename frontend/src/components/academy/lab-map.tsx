@@ -3,9 +3,12 @@
 import Link from "next/link";
 import { Fragment, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { ArrowRight, Check, ChevronDown, Clock } from "lucide-react";
+import type { LabMeta } from "@/lib/academy-labs";
 import { slugify, useAcademyProgress } from "./academy-progress";
-import type { SocLab } from "./use-soc-floor";
 import "./lab-map.css";
+
+/** `phase` is e.g. "Phase 2 · Threat Detection & Log Analysis"; week numbers restart in each phase. */
+type SocLab = LabMeta & { week?: string; phase?: string };
 
 // The labs drawn as a transit line: one route, a colour per week, each lab a
 // station. Finished track is drawn solid, the rest faint, and the next station
