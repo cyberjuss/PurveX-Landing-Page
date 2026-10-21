@@ -269,13 +269,20 @@ function LabFindings({ items, ago }: { items: Finding[]; ago: string | null }) {
   const tone = { high: "Serious", medium: "Worth fixing", low: "Minor" } as const;
   const [open, setOpen] = useState(false);
   const ticketed = items.filter((f) => f.ticket).length;
+  // "The rest" used to mean "can come up as today's case" even when some of
+  // it is an admin-review finding, which has no check to pass and never does
+  // — its own row below correctly says "Needs a decision, not a setting."
+  // Splitting out that third bucket keeps the summary from promising what a
+  // specific finding then contradicts.
+  const caseable = items.filter((f) => !f.ticket && f.fixable).length;
+  const reviewOnly = items.length - ticketed - caseable;
   const source = ago ? ` Read from your lab's report ${ago}, and gone from this list once your fix reaches the next one.` : "";
-  const split =
-    ticketed === items.length
-      ? " Every one is a ticket in your queue."
-      : ticketed
-        ? ` ${ticketed} ${ticketed === 1 ? "is a ticket" : "are tickets"} in your queue. The rest can come up as today's case.`
-        : " None is a ticket, so each can come up as today's case.";
+  const parts = [
+    ticketed > 0 && (ticketed === items.length ? "Every one is a ticket in your queue" : `${ticketed} ${ticketed === 1 ? "is a ticket" : "are tickets"} in your queue`),
+    caseable > 0 && `${caseable} can come up as today's case`,
+    reviewOnly > 0 && `${reviewOnly} need${reviewOnly === 1 ? "s" : ""} a decision, not a setting`,
+  ].filter((p): p is string => Boolean(p));
+  const split = parts.length ? ` ${parts.join(". ")}.` : "";
   return (
     <li data-tour="findings">
       <div className="ax-path__row">
