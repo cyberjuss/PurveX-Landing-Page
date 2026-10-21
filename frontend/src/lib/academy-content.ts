@@ -14,7 +14,7 @@ export function loadLesson(relativePath: string): string | null {
 }
 
 /** Interactive labs rendered by a React component below the section's markdown. */
-export type LabWidget = "risk-triage" | "hash-verify" | "password-table" | "signin-log" | "effective-access" | "network-map";
+export type LabWidget = "risk-triage" | "hash-verify" | "password-table" | "signin-log" | "effective-access" | "network-map" | "baseline-map" | "trust-boundary" | "threshold-tuner";
 
 export interface ContentSection {
   label: string;
@@ -230,9 +230,12 @@ const phase2Weeks: WeekDef[] = [
       { label: "Mapping Your Environment", file: "phase-2/baselines-thresholds/lesson-map-environment.md" },
       { label: "Lab: Map Your Pod", file: "phase-2/baselines-thresholds/lab-network-map.md", widget: "network-map" },
       { label: "Determining Outliers and Baseline", file: "phase-2/baselines-thresholds/lesson-baselines-outliers.md" },
+      { label: "Lab: Spot the Outlier", file: "phase-2/baselines-thresholds/lab-baseline-map.md", widget: "baseline-map" },
       { label: "Understanding the MITRE ATT&CK Framework", file: "phase-2/baselines-thresholds/lesson-attack.md" },
       { label: "Zero Trust", file: "phase-2/baselines-thresholds/lesson-zero-trust.md" },
+      { label: "Lab: Lock Every Gate", file: "phase-2/baselines-thresholds/lab-trust-boundary.md", widget: "trust-boundary" },
       { label: "Setting Thresholds for Detections", file: "phase-2/baselines-thresholds/lesson-thresholds.md" },
+      { label: "Lab: Tune the Threshold", file: "phase-2/baselines-thresholds/lab-threshold-tuner.md", widget: "threshold-tuner" },
       { label: "Why Detections Matter", file: "phase-2/baselines-thresholds/lesson-why-detections.md" },
       { label: "Resources", file: "phase-2/baselines-thresholds/resources.md" },
     ],
