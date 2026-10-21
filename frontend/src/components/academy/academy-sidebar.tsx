@@ -209,7 +209,22 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               }`}
             >
               <ul className="ax-list flex flex-col overflow-hidden">
-                {[challenges].map(row)}
+                {challenges.sections.map((s) => {
+                  // The three challenges live as tabs on one page, addressed by
+                  // hash the same way SectionTabs itself resolves one. phase-entry.tsx
+                  // strips "Challenge: " before SectionTabs ever sees the label, so
+                  // indexForHash matches against the stripped form -- slugify it
+                  // the same way here, or the hash points at the wrong tab.
+                  const label = s.label.replace(/^Challenge:\s*/, "");
+                  const href = `/range/${phase.slug}/${challenges.slug}#${slugify(label)}`;
+                  return (
+                    <li key={s.label}>
+                      <Link href={href} onClick={onNavigate} className="ax-week">
+                        <span className="ax-week__name truncate">{label}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </div>
