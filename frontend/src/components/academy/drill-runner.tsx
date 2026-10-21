@@ -114,10 +114,24 @@ function lastSeven() {
 }
 
 function TaskPanel({ task, checkRes }: { task: TaskInfo; checkRes: CheckRes | null }) {
+  // Once a fresh result is in, it says the same thing the plain checklist
+  // did, plus pass/fail -- showing both just repeats every line twice.
+  const showResults = Boolean(checkRes?.fresh && !checkRes.needsSetup);
   return (
     <div className="dr-task">
       <span className="rd-kicker">Fix it in your lab</span>
-      {task.checklist ? (
+      {showResults ? (
+        <div className="dr-checks">
+          <ul>
+            {checkRes!.results.map((r) => (
+              <li key={r.label} className={r.ok ? "is-ok" : "is-bad"}>
+                <span>{r.ok ? "✓" : "✗"}</span>
+                {r.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : task.checklist ? (
         <ul className="dr-task__list">
           {task.checklist.map((c) => (
             <li key={c}>{c}</li>
@@ -131,29 +145,15 @@ function TaskPanel({ task, checkRes }: { task: TaskInfo; checkRes: CheckRes | nu
       <p className="dr-task__sync">
         Your lab reports about every minute. Make the change, wait for it to report, then check.
       </p>
-      {checkRes && (
-        <div className="dr-checks">
-          {checkRes.needsSetup && (
-            <p className="dr-checks__stale">
-              Your lab reported, but the practice account is not there yet. Run the setup script on the domain controller, wait for the next report, then check again.
-            </p>
-          )}
-          {!checkRes.fresh && (
-            <p className="dr-checks__stale">
-              Your lab has not reported since you started{checkRes.syncedAgo ? ` (last report ${checkRes.syncedAgo})` : ""}. Make the change, sync, then check again.
-            </p>
-          )}
-          {checkRes.fresh && !checkRes.needsSetup && (
-            <ul>
-              {checkRes.results.map((r) => (
-                <li key={r.label} className={r.ok ? "is-ok" : "is-bad"}>
-                  <span>{r.ok ? "✓" : "✗"}</span>
-                  {r.label}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+      {checkRes?.needsSetup && (
+        <p className="dr-checks__stale">
+          Your lab reported, but the practice account is not there yet. Run the setup script on the domain controller, wait for the next report, then check again.
+        </p>
+      )}
+      {checkRes && !checkRes.fresh && (
+        <p className="dr-checks__stale">
+          Your lab has not reported since you started{checkRes.syncedAgo ? ` (last report ${checkRes.syncedAgo})` : ""}. Make the change, sync, then check again.
+        </p>
       )}
     </div>
   );
