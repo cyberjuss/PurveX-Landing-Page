@@ -36,7 +36,7 @@ export const markLabBriefed = (): void => {
 
 type Point = { Icon: LucideIcon; title: string; body: string };
 
-function points(sessionHours: number, weeklyHours: number | null, idleStopMinutes: number): Point[] {
+function points(sessionHours: number, weeklyHours: number | null, idleStopMinutes: number, idleReadyMinutes: number): Point[] {
   const list: Point[] = [
     {
       Icon: Server,
@@ -56,7 +56,7 @@ function points(sessionHours: number, weeklyHours: number | null, idleStopMinute
     {
       Icon: Clock,
       title: `It stops itself after ${sessionHours} ${sessionHours === 1 ? "hour" : "hours"}`,
-      body: `It also stops when you leave it alone for ${idleStopMinutes} minutes. Everything you changed is saved, and Resume picks the lab up where you left it.`,
+      body: `It also stops itself after ${idleStopMinutes} minutes with nobody at the keyboard, once the lab has been running for ${idleReadyMinutes} minutes or more. That gap gives a freshly started domain controller time to finish booting before the idle clock can end your session. Everything you changed is saved, and Resume picks the lab up where you left it.`,
     },
   ];
   if (weeklyHours) {
@@ -78,6 +78,7 @@ export function LabBriefing({
   sessionHours,
   weeklyHours,
   idleStopMinutes,
+  idleReadyMinutes,
   onStart,
   onClose,
   starting,
@@ -85,6 +86,7 @@ export function LabBriefing({
   sessionHours: number;
   weeklyHours: number | null;
   idleStopMinutes: number;
+  idleReadyMinutes: number;
   /** Absent when the briefing is reopened to be read rather than to start a lab. */
   onStart?: () => void;
   onClose: () => void;
@@ -123,7 +125,7 @@ export function LabBriefing({
         </header>
 
         <ul className="lbm__points">
-          {points(sessionHours, weeklyHours, idleStopMinutes).map(({ Icon, title, body }) => (
+          {points(sessionHours, weeklyHours, idleStopMinutes, idleReadyMinutes).map(({ Icon, title, body }) => (
             <li key={title}>
               <span className="lbm__mark" aria-hidden>
                 <Icon className="h-[18px] w-[18px]" />

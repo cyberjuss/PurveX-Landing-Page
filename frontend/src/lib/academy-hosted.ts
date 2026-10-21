@@ -223,6 +223,13 @@ export const hostedLabSessionHours = (): number => cfg().sessionHours;
  *  states it, so it comes from the same config the stop uses. */
 export const hostedLabIdleStopMinutes = (): number => cfg().idleStopMinutes;
 
+/** How old the session itself has to be before idle-stop is even eligible to
+ *  fire (shouldStopIdle's build grace, on top of the idle window). Without
+ *  this the briefing's idle-stop line reads as broken: a student who idles
+ *  for exactly idleStopMinutes early in a session sees nothing happen,
+ *  because the session itself is not old enough yet. */
+export const hostedLabIdleReadyMinutes = (): number => cfg().idleStopMinutes + IDLE_BUILD_GRACE_MINUTES;
+
 export function hostedLabsConfigured(): boolean {
   const c = cfg();
   return Boolean(c.accessKeyId && c.secretAccessKey && c.ami && c.subnet && c.securityGroup && c.gatewayUrl && /^[0-9a-f]{32}$/i.test(c.gatewayKey) && /^[0-9a-f]{64}$/i.test(c.secret));
