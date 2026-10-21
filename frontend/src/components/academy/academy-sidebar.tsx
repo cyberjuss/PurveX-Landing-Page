@@ -361,7 +361,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                   it, spaced by this flex gap rather than each section's own
                   margin, so the four read as evenly spaced whichever of them
                   is actually present for a given phase. */}
-              <div className="flex min-h-0 flex-col gap-[18px] overflow-hidden">
+              <div className="flex min-h-0 flex-col gap-[10px] overflow-hidden">
                 <ul className="ax-list flex flex-col">
                   {phase.weeks.map(row)}
                 </ul>
