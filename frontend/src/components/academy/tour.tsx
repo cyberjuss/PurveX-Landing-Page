@@ -165,12 +165,6 @@ const DRILLS: Tour = {
       title: "Shift",
       body: "Thirty minutes on the desk. Real incidents fire into your lab, each with a priority. Work the highest first.",
     },
-    {
-      sel: '[data-tour="findings"]',
-      icon: ShieldAlert,
-      title: "Open findings in your lab",
-      body: "A real audit of your directory, checked inside the lab rather than marked on paper.",
-    },
   ],
 };
 

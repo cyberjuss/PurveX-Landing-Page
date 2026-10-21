@@ -3,12 +3,11 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight, Check, ChevronDown, ClipboardList, Flame, RefreshCw, Timer, X } from "lucide-react";
+import { ArrowRight, Check, ClipboardList, Flame, RefreshCw, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { useHostedLab } from "@/components/academy/hosted-lab-button";
-import { academyFetch, localDay, READINESS_PATH } from "@/lib/academy-client";
+import { academyFetch, localDay } from "@/lib/academy-client";
 import { askForProofShot } from "@/lib/academy-proof";
-import { MISSION_CATALOG, missionHref } from "@/lib/academy-missions";
 import { SKILLS, type Skill } from "@/lib/academy-score";
 import { useMounted } from "@/lib/use-mounted";
 
@@ -258,90 +257,6 @@ function Scenario({
   );
 }
 
-// "Ticket 13 · Password That Never Expires", or the capstone's title for one outside the queue.
-function ticketName(id: string) {
-  const m = MISSION_CATALOG[id];
-  const n = /^tq-(\d+)$/.exec(id)?.[1];
-  return n ? `Ticket ${n}${m ? ` · ${m.title}` : ""}` : (m?.title ?? id);
-}
-
-function LabFindings({ items, ago }: { items: Finding[]; ago: string | null }) {
-  const tone = { high: "Serious", medium: "Worth fixing", low: "Minor" } as const;
-  const [open, setOpen] = useState(false);
-  const ticketed = items.filter((f) => f.ticket).length;
-  // "The rest" used to mean "can come up as today's case" even when some of
-  // it is an admin-review finding, which has no check to pass and never does
-  // — its own row below correctly says "Needs a decision, not a setting."
-  // Splitting out that third bucket keeps the summary from promising what a
-  // specific finding then contradicts.
-  const caseable = items.filter((f) => !f.ticket && f.fixable).length;
-  const reviewOnly = items.length - ticketed - caseable;
-  const source = ago ? ` Read from your lab's report ${ago}, and gone from this list once your fix reaches the next one.` : "";
-  const parts = [
-    ticketed > 0 && (ticketed === items.length ? "Every one is a ticket in your queue" : `${ticketed} ${ticketed === 1 ? "is a ticket" : "are tickets"} in your queue`),
-    caseable > 0 && `${caseable} can come up as today's case`,
-    reviewOnly > 0 && `${reviewOnly} need${reviewOnly === 1 ? "s" : ""} a decision, not a setting`,
-  ].filter((p): p is string => Boolean(p));
-  const split = parts.length ? ` ${parts.join(". ")}.` : "";
-  return (
-    <li data-tour="findings">
-      <div className="ax-path__row">
-        <span className="ax-path__n ax-path__n--word">Ongoing</span>
-        <span className="ax-path__main">
-          <span className="ax-path__title">Open findings in your lab</span>
-          <span className="ax-path__body">
-            {items.length === 0
-              ? "Nothing is wrong in your lab right now, so today's case is a judgement call instead."
-              : `${items.length} thing${items.length === 1 ? "" : "s"} an auditor would flag in your directory today.${split}${source}`}
-          </span>
-        </span>
-        <span className="ax-path__count">
-          {items.length === 0 ? (
-            <Link href={READINESS_PATH} className="rd-cta">
-              Open report <ArrowRight className="h-4 w-4" />
-            </Link>
-          ) : (
-            <button
-              type="button"
-              className={`rd-cta dr-findings__toggle${open ? " is-open" : ""}`}
-              aria-expanded={open}
-              aria-controls="dr-findings"
-              onClick={() => setOpen((o) => !o)}
-            >
-              {open ? "Hide findings" : `Show ${items.length} finding${items.length === 1 ? "" : "s"}`}
-              <ChevronDown className="h-4 w-4" />
-            </button>
-          )}
-        </span>
-      </div>
-      {items.length > 0 && open && (
-        <div id="dr-findings" className="dr-findings__drop">
-          <ul className="dr-findings__list">
-            {items.map((f) => (
-              <li key={f.id} className={`is-${f.severity}`}>
-                <span className="dr-findings__tag">{tone[f.severity]}</span>
-                <strong>{f.title}</strong>
-                <p>{f.facts}</p>
-                {f.ticket ? (
-                  <Link href={missionHref(f.ticket)} className="dr-findings__ticket">
-                    Fix it in {ticketName(f.ticket)}. It goes in your portfolio. <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                ) : f.fixable ? (
-                  <em>Not in any ticket. It can come up as today&rsquo;s case, and the fix goes in your portfolio.</em>
-                ) : (
-                  <em>Needs a decision, not a setting.</em>
-                )}
-              </li>
-            ))}
-          </ul>
-          <Link href={READINESS_PATH} className="dr-findings__report">
-            Open full report <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      )}
-    </li>
-  );
-}
 
 type Challenge = { code: string; target: string; command: string; expiresAt: string };
 type VerifyState = { verified: boolean; verifiedAt: string | null; live: boolean; challenge: Challenge | null };
@@ -1171,7 +1086,6 @@ export function DrillRunner() {
                 </span>
               </div>
             </li>
-            <LabFindings items={status.findings} ago={status.lab.ago} />
           </ol>
           {error && !errorMode && <p className="dr-error">{error}</p>}
           {/* A hosted lab is verified by Range itself, so there is no code to plant. */}
