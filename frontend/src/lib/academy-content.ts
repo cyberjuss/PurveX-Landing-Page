@@ -180,8 +180,26 @@ const phase1HomeLabs: HomeLabDef[] = [
 // source Drive are still empty placeholders, same as Phase 1's Week 2.
 const phase2Weeks: WeekDef[] = [
   {
+    slug: "soc-mindset",
+    title: "Week 1 — Think Like a SOC Analyst",
+    summary: "The tier structure, the investigation mindset, and how an incident gets named and classified before it ever reaches a tool.",
+    sections: [
+      { label: "Overview", file: "phase-2/soc-mindset/overview.md" },
+      { label: "What a SOC Analyst Does", file: "phase-2/soc-mindset/lesson-role.md" },
+      { label: "How AI Is Changing the Role", file: "phase-2/soc-mindset/lesson-ai-impact.md" },
+      { label: "The Investigation Mindset", file: "phase-2/soc-mindset/lesson-investigation-mindset.md" },
+      { label: "The 5 W's of an Investigation", file: "phase-2/soc-mindset/lesson-5ws.md" },
+      { label: "Classifying an Incident", file: "phase-2/soc-mindset/lesson-classification.md" },
+      { label: "Allowlisting and Blocklisting", file: "phase-2/soc-mindset/lesson-allow-deny.md" },
+      { label: "Resources", file: "phase-2/soc-mindset/resources.md" },
+    ],
+  },
+  // Slugs below stay as "week-1".."week-4" (not renumbered) so existing
+  // student progress, which is keyed by slug, doesn't silently reset.
+  // Only the display title changed to match the new lead-in week above.
+  {
     slug: "week-1",
-    title: "Week 1 — Malware",
+    title: "Week 2 — Malware",
     summary: "How malware works, how it spreads, and what arrives along with it.",
     sections: [
       { label: "Overview", file: "phase-2/week-1/overview.md" },
@@ -192,7 +210,7 @@ const phase2Weeks: WeekDef[] = [
   },
   {
     slug: "week-2",
-    title: "Week 2 — Log Analysis Fundamentals",
+    title: "Week 3 — Log Analysis Fundamentals",
     summary: "Read the host, the account, and the log before deciding what happened.",
     sections: [
       { label: "Overview", file: "phase-2/week-2/overview.md" },
@@ -202,13 +220,13 @@ const phase2Weeks: WeekDef[] = [
   },
   {
     slug: "week-3",
-    title: "Week 3 — SIEM Basics",
+    title: "Week 4 — SIEM Basics",
     summary: "Centralized logging and how to build a first set of detections.",
     sections: [],
   },
   {
     slug: "week-4",
-    title: "Week 4 — Detection Engineering",
+    title: "Week 5 — Detection Engineering",
     summary: "How MITRE ATT&CK maps detections to real attacker techniques.",
     sections: [],
   },
