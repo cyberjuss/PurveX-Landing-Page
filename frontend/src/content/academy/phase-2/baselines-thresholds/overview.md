@@ -5,7 +5,7 @@
 
 ### Overview
 
-Last week gave you the mindset: check the baseline before you trust the alert. This week gives you the baseline itself, and the machinery that turns a mismatch into a working detection. You will start with your own hosted lab's network, because the mindset means nothing applied to an environment you have never actually looked at. From there you will practice spotting an outlier against a baseline in three different kinds of data, place MITRE ATT&CK's shared vocabulary on top of attacker behavior you have already seen in Shift, meet Zero Trust as the architecture that assumes the baseline can be broken, and learn how a threshold turns "this looks odd" into a rule that fires consistently.
+Last week gave you the mindset: check the baseline before you trust the alert. This week gives you the baseline itself, and the machinery that turns a mismatch into a working detection. You will start with your own hosted lab's network, because the mindset means nothing applied to an environment you have never actually looked at. From there, the week walks through the material question by question, below.
 
 None of this is abstract. Your own lab pod, the Shift incidents you have already worked, and the P1/P2/P3 severities from last week all show up again here as the material you practice on.
 

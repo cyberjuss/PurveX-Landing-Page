@@ -70,7 +70,13 @@ A few errors account for almost every "it will not run" report. Each one is easy
 </div>
 </div>
 
-Three of these are machine setup rather than account or input problems, and they can show up together in the same session: elevate first, unblock the file, then relax the execution policy last. Each is a one-time fix per machine.
+Three of these are machine setup rather than account or input problems, and they can show up together in the same session:
+
+1. Elevate.
+2. Unblock the file.
+3. Relax the execution policy.
+
+Each is a one-time fix per machine.
 
 ### Start Over
 

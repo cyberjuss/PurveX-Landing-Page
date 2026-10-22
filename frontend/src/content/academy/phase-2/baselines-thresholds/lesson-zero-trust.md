@@ -5,7 +5,13 @@ Every lesson so far in this phase has assumed you can tell a baseline from an ou
 
 That is a real break from how networks used to be built. A traditional network draws a hard perimeter, a firewall at the edge, and trusts almost everything once it is inside. The practical failure of that model is simple: once an attacker gets past the edge, by phishing one employee or compromising one account, they can often move freely. Nothing inside was built to check them again. Zero Trust assumes the edge will fail and removes the free movement that failure used to buy an attacker.
 
-In practice, every access request gets evaluated against policy in real time. That evaluation considers who is asking, what device they are on, and what they are asking to reach, rather than whether they are already "inside." The access granted is also kept as narrow as the task requires. That is the same least-privilege principle this course has used since Phase 1, applied continuously instead of once at onboarding.
+In practice, every access request gets evaluated against policy in real time, rather than against whether the request is already "inside." That evaluation considers:
+
+- Who is asking
+- What device they are on
+- What they are asking to reach
+
+The access granted is also kept as narrow as the task requires. That is the same least-privilege principle this course has used since Phase 1, applied continuously instead of once at onboarding.
 
 Your own pod is a small, concrete example of one Zero Trust habit even though it predates this lesson. The security group around it does not ask whether a connection attempt is "inside the company network." It evaluates the connection on its own terms: is this traffic between the two machines that belong together, or not. Nothing about its past behavior earns it a pass.
 

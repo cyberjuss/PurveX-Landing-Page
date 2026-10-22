@@ -20,4 +20,11 @@ SigninLogs
 | order by FailedCount desc
 ```
 
-Read it top to bottom the way KQL runs it: start from every sign-in log in the last 24 hours, keep only the ones that were not a success, count them per account per hour, and sort the worst first. Nothing about this query decides anything yet. It just produces a table. The next lesson adds the piece that turns a table into an actual alert.
+Read it top to bottom the way KQL runs it:
+
+1. Start from every sign-in log in the last 24 hours.
+2. Keep only the ones that were not a success.
+3. Count them per account per hour.
+4. Sort the worst first.
+
+Nothing about this query decides anything yet. It just produces a table. The next lesson adds the piece that turns a table into an actual alert.
