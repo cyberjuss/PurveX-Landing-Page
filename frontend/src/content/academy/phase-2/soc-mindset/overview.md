@@ -7,7 +7,13 @@
 
 Everything before this week built a baseline. You learned what a system looks like when it is configured correctly, what a normal authentication flow looks like, and what a login record is supposed to contain. This week turns that baseline into a job. A SOC (Security Operations Center) analyst watches the environment you now understand and decides, alert by alert, whether what is happening still matches it.
 
-That decision is harder than it sounds, because most of what reaches a SOC is noise. A patch triggers a file-scan alert. An employee logs in from a new laptop. A service account restarts after maintenance. None of that is an attack, and treating all of it like one buries the handful of alerts a week that actually are. This week covers the structure that keeps that triage honest, question by question, below.
+That decision is harder than it sounds, because most of what reaches a SOC is noise:
+
+- A patch triggers a file-scan alert.
+- An employee logs in from a new laptop.
+- A service account restarts after maintenance.
+
+None of that is an attack, and treating all of it like one buries the handful of alerts a week that actually are. This week covers the structure that keeps that triage honest, question by question, below.
 
 None of this is abstract theory you will set aside once the quiz is over. It is the same judgment you will use in every lab and challenge from here forward, including the ones built from your own hosted environment.
 

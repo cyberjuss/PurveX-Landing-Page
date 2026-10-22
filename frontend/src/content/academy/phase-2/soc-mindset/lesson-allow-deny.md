@@ -13,3 +13,15 @@ A corporate laptop that can run anything except a list of known malware signatur
 A new, never-before-seen piece of malware that a blocklist has no signature for yet = What a blocklist misses
 A legitimate new app an employee needs, blocked until IT adds it to the approved list = What an allowlist costs in upkeep
 ```
+
+### Work the Queue
+
+Everything this week taught is a way of reading an alert: the tier structure, the investigation mindset, the 5 W's, how it gets classified, and what control let it run in the first place. None of it holds up as theory. It only holds up against a real alert you have not seen yet.
+
+Before you move on, open your Shift console and work three incidents from your queue. For each one:
+
+- Name which tier would actually own it, and why.
+- Run the 5 W's before you decide anything.
+- Classify it P1, P2, or P3, by impact rather than by how urgent the wording sounds.
+
+That is this week, done for real instead of read.
