@@ -110,21 +110,6 @@ export const LAB_BRIEFS: Record<LabWidget, LabBrief> = {
     tools: [],
     minutes: 10,
   },
-  "trust-boundary": {
-    problem:
-      "In the 2013 Target breach, attackers reached the payment network from a third-party HVAC vendor's stolen credentials because nothing re-checked them once they were past the first gate. NIST SP 800-207's Zero Trust Architecture exists specifically to remove that kind of free movement after one compromise.",
-    today: "A chain from an outside attacker to your payroll database, with only the first gate actually guarded.",
-    objective: {
-      "help-desk": "Understand why being \"inside the network\" was never supposed to mean trusted.",
-      sysadmin: "See exactly what a perimeter-only model leaves open once one account is compromised.",
-      "soc-analyst": "Connect Zero Trust's abstract principle to the concrete gates an attacker actually has to pass.",
-      "cyber-analyst": "Map where re-verification actually needs to sit in a real access chain, including the shortcut path.",
-      "ir-analyst": "Know which hops in your environment would actually stop lateral movement, and which wouldn't.",
-    },
-    objectiveDefault: "Lock every gate between an outside attacker and your most sensitive data.",
-    tools: [],
-    minutes: 8,
-  },
   "threshold-tuner": {
     problem:
       "A detection threshold set too low drowns a SOC in false positives until nobody trusts a Critical alert. Set too high, and it misses a real, quieter attack entirely. NIST's incident-response guidance frames severity and detection tuning as judgment calls against your own environment, not a fixed number.",

@@ -279,6 +279,7 @@ export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "tq-19": { job: "quarantine-file", label: "Service ticket INC-1055" },
   "mw-02": { job: "firewall-rule", label: "Service ticket INC-1064" },
   "bt-03": { job: "access-audit", label: "Service ticket INC-1066" },
+  "zt-02": { job: "firewall-rule", label: "Service ticket INC-1067" },
   "tq-20": { job: "dns-fix", label: "Service ticket INC-1056" },
   "tq-21": { job: "lockout-policy", label: "Service ticket INC-1059" },
   "tq-22": { job: "enable-auditing", label: "Service ticket INC-1060" },
@@ -393,7 +394,6 @@ const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
   "lab-signin-log": ["Log Analysis", "Windows Event Logs", "Incident Triage"],
   "lab-effective-access": ["NTFS Permissions", "Share Permissions", "Access Control"],
   "lab-network-map": ["Network Segmentation", "Port and Protocol Identification"],
-  "lab-trust-boundary": ["Zero Trust Architecture", "Access Control"],
   "lab-threshold-tuner": ["Detection Engineering", "Alert Tuning"],
 };
 

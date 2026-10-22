@@ -117,18 +117,6 @@ Boundary, by which node starts the connection: DC starting a connection to Linux
 2 Shrink it: for ports, ask what job the protocol is actually doing (checking a ticket, looking up a directory entry, finding an address, opening a screen); for boundary cards, ask whether the two ends are both inside this one pod, or whether either end is outside it.
 3 Point at the exact node on the diagram (not a chip, not a button) they should be dragging the card onto.`,
   },
-  "trust-boundary": {
-    steps: `A chain: Attacker (outside) -> Internal Network -> File Server -> Payroll DB, plus a direct Internal Network -> Payroll DB shortcut. Three gates total, all unlocked at the start. Drag three identical "Verify here" badges onto the three gates, any order, any badge to any open gate.
-1 Network -> File Server gate.
-2 File Server -> Payroll DB gate.
-3 Network -> Payroll DB direct-shortcut gate -- easy to miss since it doesn't sit on the main drawn line.
-Debrief is automatic once all three are locked: a short comparison of what a perimeter model (only the first gate guarded) leaves open versus Zero Trust (every gate, including the shortcut).`,
-    answers: `All three gates need a badge: the two gates on the main chain, and the direct shortcut gate from Internal Network straight to Payroll DB. There's no "right" badge for a given gate -- they're interchangeable; what matters is that every gate gets one, including the one that's easy to overlook.`,
-    mistakes: `Locking the two gates on the obvious drawn line and missing the shortcut gate entirely, which is exactly the kind of path a real perimeter model also misses. Assuming one locked gate near the front is enough, which is the perimeter-model mistake Zero Trust exists to fix.`,
-    ladder: `1 Ask: count the paths from the attacker to Payroll DB, not just the one drawn as a straight line.
-2 Shrink it: how many distinct ways can you get from Internal Network to Payroll DB? That's how many gates need a badge.
-3 Point at the specific unlocked gate (open padlock icon) still sitting without a badge.`,
-  },
   "threshold-tuner": {
     steps: `A real slider (1-20), five marked cases on a failed-sign-ins-per-hour scale (typo=2, retry=3, kiosk account=9, targeted guess=12, noisy test account=15), plus a password spray always shown caught far past the scale. Dragging the slider live-recolors which marks would trigger an alert.
 1 Free exploration first -- drag the slider, read the live caught/missed legend and the one-line commentary that changes with position.

@@ -66,7 +66,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 14
+$PurvexScriptVersion = 15
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -329,6 +329,21 @@ function Ensure-InfraTickets {
             Write-Host "  Planted INC-1064: scheduled task $taskName and its firewall rule" -ForegroundColor Green
         }
         catch { Write-Host "  Could not plant INC-1064: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+
+    # INC-1067: an inbound rule that trusts the whole network just for being
+    # inside it, left from before the firm moved to Zero Trust. SMB has no
+    # business being open to Any -- only the domain controller itself serves
+    # file shares, and nothing needs to reach it on this port from anywhere.
+    if (-not (Test-PurvexTicketMark "INC-1067") -and $PSCmdlet.ShouldProcess("PurveX Legacy - Internal File Access", "Plant internal-trust firewall ticket")) {
+        try {
+            New-NetFirewallRule -DisplayName "PurveX Legacy - Internal File Access" -Group "PurveX Lab" -Direction Inbound -Action Allow `
+                -Protocol TCP -LocalPort 445 -RemoteAddress Any -Profile Any `
+                -Description "CTF-TICKET-1067: Left over from the old perimeter model, when anything inside the network was trusted by default. Never re-scoped after the Zero Trust rollout." -ErrorAction Stop | Out-Null
+            Add-PurvexTicketMark "INC-1067"
+            Write-Host "  Planted INC-1067: firewall rule PurveX Legacy - Internal File Access" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1067: $($_.Exception.Message)" -ForegroundColor Yellow }
     }
 }
 

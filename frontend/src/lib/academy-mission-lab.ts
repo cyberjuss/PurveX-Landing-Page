@@ -105,6 +105,13 @@ const MISSION_LAB = {
     [{ c: { t: "member", sam: "theo.walsh", group: "Server Admins", want: false }, label: "theo.walsh is not in Server Admins" }],
     { users: ["theo.walsh"] }
   ),
+  // Lock Every Gate capstone: the legacy internal-trust rule is disabled,
+  // the same fwRuleOff check tq-17/mw-02 already use. zt-01 (naming the
+  // port) has no lab-state check, same as tq-06.
+  "zt-02": G(
+    [{ c: { t: "fwRuleOff", name: "PurveX Legacy - Internal File Access" }, label: "The legacy internal-trust rule is disabled or removed" }],
+    { tickets: ["INC-1067"] }
+  ),
   // The wire-capture capstone: the burned service account is contained by
   // disabling it, which the snapshot reports. Kept, not deleted, so the review
   // still has it.
