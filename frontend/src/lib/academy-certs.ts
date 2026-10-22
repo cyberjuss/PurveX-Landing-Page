@@ -171,6 +171,8 @@ export const MISSION_DOMAINS: Record<string, string[]> = {
   "tq-17": ["sp-arch", "cy-vuln"],
   "tq-18": ["sp-ops", "sp-arch"],
   "tq-19": ["cy-ir", "sp-threats"],
+  "mw-01": ["cy-ir", "sp-threats"],
+  "mw-02": ["cy-ir", "sp-ops"],
   "tq-20": ["sp-arch", "sp-ops"],
   "tq-21": ["sp-ops", "sp-threats"],
   "tq-22": ["cy-ops", "sp-ops"],

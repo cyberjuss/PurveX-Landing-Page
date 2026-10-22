@@ -267,6 +267,7 @@ export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "tq-17": { job: "firewall-rule", label: "Service ticket INC-1053" },
   "tq-18": { job: "gpo-scope", label: "Service ticket INC-1054" },
   "tq-19": { job: "quarantine-file", label: "Service ticket INC-1055" },
+  "mw-02": { job: "firewall-rule", label: "Service ticket INC-1064" },
   "tq-20": { job: "dns-fix", label: "Service ticket INC-1056" },
   "tq-21": { job: "lockout-policy", label: "Service ticket INC-1059" },
   "tq-22": { job: "enable-auditing", label: "Service ticket INC-1060" },

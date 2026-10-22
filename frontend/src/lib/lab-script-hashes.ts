@@ -8,10 +8,10 @@
 //
 // npm run check:lab-script fails if this file and the scripts disagree.
 
-export const LAB_SCRIPT_VERSION = 10;
+export const LAB_SCRIPT_VERSION = 12;
 
 export const LAB_SCRIPT_HASHES: Record<string, string> = {
-  "Build-Environment.ps1": "1921795ff125f1691134033c0ce6d50d9b2ec4adf869e2a163fe91a617f40055",
+  "Build-Environment.ps1": "32ccea9e244f99cf49276a598c239e4f702d8f1ceae5153f4e86420832bbc416",
   "incidents/Incident-AccessRequest.ps1": "e00bbcd8721e003b150d2a27ec056e4421002ff227be40cad20080e348938bff",
   "incidents/Incident-AdminPSO.ps1": "e9b341b0c36a2145e51d171148ffbdfe00363931a5232e1a9381023aaf40f7ce",
   "incidents/Incident-ApprovedChange.ps1": "798d3f544fb6df3805b8380995d8accfe5c81f38c2e43670332768a5b4f2db1a",
@@ -38,5 +38,5 @@ export const LAB_SCRIPT_HASHES: Record<string, string> = {
   "incidents/Incident-WeakPolicy.ps1": "c79d67ff9f69749ed7b8c1a3be0aabe4a6525d1f1b9d64bf52575b6a0dbc8a98",
   "incidents/Incident-WrongOU.ps1": "b646654df9f4aee801d583d3dda18f94b529653f7f0ddc604b7e9311200e1c60",
   "Install-Forest.ps1": "2e8adf2af2f66468d976e4e3db4c68dcaadd0a902cff1a8bdfdb49f150ec4234",
-  "Remove-Environment.ps1": "19b39bd294006e9e5ef9c0f096078a6dcbeba8e4456f8f22341301db51147f6f",
+  "Remove-Environment.ps1": "12ac2addecbdeeb95bc9ec277e3bf1f1a72820bb65b5de9d90807b22152b9c36",
 };

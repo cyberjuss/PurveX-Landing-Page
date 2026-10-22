@@ -3,7 +3,7 @@ import { PROOF_TICKETS } from "@/lib/academy-proof";
 
 export type MissionCatalogEntry = {
   id: string;
-  challenge: "day-one" | "ticket-queue" | "alert-queue" | "wire" | "crypto" | "client-data";
+  challenge: "day-one" | "ticket-queue" | "alert-queue" | "wire" | "crypto" | "client-data" | "malware-alert";
   title: string;
   prompt: string;
   skill: Skill;
@@ -225,6 +225,20 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "An unknown invoice file appeared on the Finance share. Find it, move it to quarantine without opening it, and report its full name with every extension.",
     skill: "security",
   },
+  "mw-01": {
+    id: "mw-01",
+    challenge: "malware-alert",
+    title: "Something Is Phoning Home (INC-1059)",
+    prompt: "A scheduled task nobody on the team created is running on the domain controller. Find it and report its exact name.",
+    skill: "security",
+  },
+  "mw-02": {
+    id: "mw-02",
+    challenge: "malware-alert",
+    title: "Close the Door It Is Using (INC-1059)",
+    prompt: "The planted task is reaching out through an outbound firewall rule. Find it, disable it, and report the port it allowed.",
+    skill: "security",
+  },
   "tq-06": {
     id: "tq-06",
     challenge: "alert-queue",
@@ -291,6 +305,7 @@ export const CHALLENGE_PATHS: Record<
   "wire": { href: "/range/phase-1/week-3", tab: "the-nightly-settlement-push" },
   "crypto": { href: "/range/phase-1/week-2", tab: "the-mirror-that-does-not-match" },
   "client-data": { href: "/range/phase-1/home-lab-challenges", tab: "the-client-data-review" },
+  "malware-alert": { href: "/range/phase-2/week-1", tab: "the-quiet-beacon" },
 };
 
 export function missionHref(id: string): string {
@@ -340,6 +355,7 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "wire": "The Nightly Settlement Push",
   "crypto": "The Mirror That Does Not Match",
   "client-data": "The Client Data Review",
+  "malware-alert": "The Quiet Beacon",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {
@@ -371,7 +387,7 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
 }
 
 /** Tickets that need a real change in the student's lab before they can answer. */
-export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25", "cap-06", "cry-06"];
+export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25", "cap-06", "cry-06", "mw-01", "mw-02"];
 
 /**
  * The on-the-job task each mission practices. A gated ticket seen in the lab

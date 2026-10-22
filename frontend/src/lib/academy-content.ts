@@ -207,6 +207,7 @@ const phase2Weeks: WeekDef[] = [
       { label: "How Malware Gets In", file: "phase-2/week-1/lesson-delivery.md" },
       { label: "Working a Malware Alert", file: "phase-2/week-1/lesson-response.md" },
       { label: "Tools Analysts Use", file: "phase-2/week-1/lesson-tools.md" },
+      { label: "Challenge: The Quiet Beacon", file: "phase-2/week-1/challenge-quiet-beacon.md" },
     ],
   },
   {

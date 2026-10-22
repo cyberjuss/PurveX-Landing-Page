@@ -104,7 +104,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 10
+$PurvexScriptVersion = 12
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -339,6 +339,34 @@ function Ensure-InfraTickets {
             Write-Host "  Planted INC-1055: $bad" -ForegroundColor Green
         }
         catch { Write-Host "  Could not plant INC-1055: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+
+    # INC-1064: a scheduled task disguised as routine maintenance, quietly
+    # checking in with an address outside the firm on a schedule. Both the
+    # task and the connection it tries are harmless by design -- it is a
+    # training artifact, not real malware -- but the pattern (a task that
+    # exists for no business reason, reaching the same address an open
+    # firewall rule happens to allow) is the same shape a real persistence
+    # mechanism takes. The task's own Test-NetConnection call always times
+    # out, because 203.0.113.0/24 is reserved for documentation and routes
+    # nowhere (RFC 5737).
+    if (-not (Test-PurvexTicketMark "INC-1064") -and $PSCmdlet.ShouldProcess("WindowsDiagnosticsSync", "Plant persistence ticket")) {
+        try {
+            $taskName = "WindowsDiagnosticsSync"
+            $action = New-ScheduledTaskAction -Execute "powershell.exe" `
+                -Argument '-NoProfile -WindowStyle Hidden -Command "Test-NetConnection -ComputerName 203.0.113.77 -Port 4444 -WarningAction SilentlyContinue | Out-Null"'
+            $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 15) -RepetitionDuration ([TimeSpan]::MaxValue)
+            $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+            Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings `
+                -Description "PurveX training file. This is not malware and the connection attempt is harmless: it only reaches a documentation-only address (RFC 5737) that routes nowhere. Treat it as a suspicious persistence mechanism for training." `
+                -RunLevel Highest -ErrorAction Stop | Out-Null
+            New-NetFirewallRule -DisplayName "Windows Update Assistant Network" -Group "PurveX Lab" -Direction Outbound -Action Allow `
+                -Protocol TCP -RemotePort 4444 -RemoteAddress "203.0.113.77" -Profile Any `
+                -Description "CTF-TICKET-1064: training artifact, not a real vulnerability. Permits outbound traffic to a documentation-only address for the scheduled-task exercise." -ErrorAction Stop | Out-Null
+            Add-PurvexTicketMark "INC-1064"
+            Write-Host "  Planted INC-1064: scheduled task $taskName and its firewall rule" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1064: $($_.Exception.Message)" -ForegroundColor Yellow }
     }
 }
 

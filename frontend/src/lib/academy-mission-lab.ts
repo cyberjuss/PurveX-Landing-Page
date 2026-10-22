@@ -88,6 +88,14 @@ const MISSION_LAB = {
     ],
     { tickets: ["INC-1055"] }
   ),
+  // The Quiet Beacon capstone: the outbound rule the planted task relies on
+  // is disabled, which the snapshot reports the same way tq-17 does. mw-01
+  // (naming the task) has no lab-state check, same as tq-06 -- the task
+  // itself never changes, so the typed answer alone proves it was found.
+  "mw-02": G(
+    [{ c: { t: "fwRuleOff", name: "Windows Update Assistant Network" }, label: "The planted outbound rule is disabled or removed" }],
+    { tickets: ["INC-1064"] }
+  ),
   // The wire-capture capstone: the burned service account is contained by
   // disabling it, which the snapshot reports. Kept, not deleted, so the review
   // still has it.
