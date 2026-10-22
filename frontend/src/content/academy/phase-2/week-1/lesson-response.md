@@ -47,3 +47,34 @@ Contain: isolate the host from the network
 Preserve: do not wipe or rebuild it yet
 Escalate: hand it up with what you found
 ```
+
+### What Would You Do?
+
+**The ticket:** Taylor Osei in Compliance opened an email attachment named `Invoice_Q3.exe` this morning, thinking it was a vendor invoice. Ten minutes later, Defender for Endpoint flags his machine: `svchost.exe` is making an outbound connection it has never made before. Taylor says the file is no longer in his Downloads folder, and he does not remember deleting it.
+
+What would you do?
+
+Walk through Verify, Contain, Preserve and Escalate for this specific ticket, not the general case.
+
+#### Verify, for this ticket
+
+`svchost.exe` is a legitimate Windows process, so the connection itself is not automatically proof of anything. What makes this worth acting on is the combination: a new outbound connection, a file that opened and then disappeared, and a department that regularly opens real vendor invoices. Check whether the destination address matches any business service IT already uses. If it does not, this reads as a trojan that ran once and is now hiding behind a trusted process name.
+
+#### Contain, for this ticket
+
+Isolate Taylor's machine from the network now, since the alert shows it is already talking to something outside. Do not power it off. Shutting it down can lose whatever is still sitting in memory, which is often the only copy of what the trojan actually did.
+
+#### Preserve, for this ticket
+
+Leave the machine as it is rather than running a cleanup scan. The vanished file and the live outbound connection are the evidence of what arrived and where it is talking to, and a cleanup pass can erase both before anyone else looks at them.
+
+#### Escalate, for this ticket
+
+Hand up:
+
+- Taylor's name and host
+- The file name and when he opened it
+- The outbound destination Defender flagged
+- The fact that the host is already isolated
+
+That gives the next analyst everything needed to pick up the investigation without re-asking Taylor what happened.

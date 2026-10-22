@@ -67,3 +67,17 @@ Trojan = Isolate the host and reset the account that ran it
 Rootkit = Preserve the machine, do not trust its output, and escalate
 Spyware = Treat the account's credentials and sessions as compromised
 ```
+
+### What Kind of Malware Is This?
+
+A real alert rarely names its own type. It shows up as a symptom, and naming the type is the first thing you have to work out.
+
+```sort
+prompt: Read what was reported. Sort each one by what it actually is.
+Virus: A user in Operations says a single attachment she opened this morning is now attached to every document she saves, and Defender flags that one file on her machine only
+Worm: Twelve workstations in the Finance pod alert within the same two minutes, and none of the affected users remember opening anything
+Trojan: A help desk ticket says a "PDF converter" the user downloaded last week is still listed in Startup Apps, and Task Manager shows it talking to an address nobody recognizes
+Ransomware: A call comes in that every file on the WealthManagement share now ends in .locked, and a text file in the folder demands payment in cryptocurrency
+Spyware and infostealers: An analyst notices one account signed in from a new location using a password that was never reset or shared, and nothing else on the machine looks different
+Rootkit: Defender reports a clean scan on a machine, but the Shift queue shows that same machine quietly sending large amounts of data out every night for two weeks
+```
