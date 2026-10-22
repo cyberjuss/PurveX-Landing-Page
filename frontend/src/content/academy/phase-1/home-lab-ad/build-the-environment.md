@@ -104,7 +104,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 13
+$PurvexScriptVersion = 14
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -833,6 +833,32 @@ function Ensure-PurvexTicketObjects {
             -OUPath $DeptOUPaths["IT"].UsersOU `
             -Groups @("IT Users")
         Ensure-UserDescription -SamAccountName "morgan.reyes" -Description "CTF-TICKET-1065: Approved overnight change window 01:00-05:00 for patch deployment. Contact: IT on-call."
+    }
+
+    # INC-1066: four Compliance Analysts who should share one baseline, planted
+    # for the baselines-and-outliers lesson. Three share nothing but
+    # Compliance Users. The fourth also sits in Server Admins, which the role
+    # never needs -- the outlier the comparison is built to surface.
+    foreach ($peer in @(
+        @{ First = "Nina"; Last = "Castillo"; Sam = "nina.castillo" },
+        @{ First = "Owen"; Last = "Brandt"; Sam = "owen.brandt" },
+        @{ First = "Lena"; Last = "Farooq"; Sam = "lena.farooq" }
+    )) {
+        if (-not (Get-ADUser -Filter "SamAccountName -eq '$($peer.Sam)'" -ErrorAction SilentlyContinue)) {
+            Ensure-User `
+                -First $peer.First -Last $peer.Last -SamAccountName $peer.Sam `
+                -Title "Compliance Analyst" -Department "Compliance" `
+                -OUPath $DeptOUPaths["Compliance"].UsersOU `
+                -Groups @("Compliance Users")
+        }
+    }
+    if (-not (Get-ADUser -Filter "SamAccountName -eq 'theo.walsh'" -ErrorAction SilentlyContinue)) {
+        Ensure-User `
+            -First "Theo" -Last "Walsh" -SamAccountName "theo.walsh" `
+            -Title "Compliance Analyst" -Department "Compliance" `
+            -OUPath $DeptOUPaths["Compliance"].UsersOU `
+            -Groups @("Compliance Users", "Server Admins")
+        Ensure-UserDescription -SamAccountName "theo.walsh" -Description "CTF-TICKET-1066: Compliance Analyst. Server Admins membership predates this role; never reviewed after the transfer."
     }
 
     Ensure-InfraTickets -DeptOUPaths $DeptOUPaths

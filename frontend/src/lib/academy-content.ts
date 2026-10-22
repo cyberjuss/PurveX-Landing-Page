@@ -14,7 +14,7 @@ export function loadLesson(relativePath: string): string | null {
 }
 
 /** Interactive labs rendered by a React component below the section's markdown. */
-export type LabWidget = "risk-triage" | "hash-verify" | "password-table" | "signin-log" | "effective-access" | "network-map" | "baseline-map" | "trust-boundary" | "threshold-tuner";
+export type LabWidget = "risk-triage" | "hash-verify" | "password-table" | "signin-log" | "effective-access" | "network-map" | "trust-boundary" | "threshold-tuner";
 
 export interface ContentSection {
   label: string;
@@ -233,7 +233,7 @@ const phase2Weeks: WeekDef[] = [
       { label: "Mapping Your Environment", file: "phase-2/baselines-thresholds/lesson-map-environment.md" },
       { label: "Lab: Map Your Pod", file: "phase-2/baselines-thresholds/lab-network-map.md", widget: "network-map" },
       { label: "Baselines and Outliers", file: "phase-2/baselines-thresholds/lesson-baselines-outliers.md" },
-      { label: "Lab: Spot the Outlier", file: "phase-2/baselines-thresholds/lab-baseline-map.md", widget: "baseline-map" },
+      { label: "Challenge: Baseline a Team, Then Find Who Breaks It", file: "phase-2/baselines-thresholds/challenge-access-outlier.md" },
       { label: "The MITRE ATT&CK Framework", file: "phase-2/baselines-thresholds/lesson-attack.md" },
       { label: "Zero Trust", file: "phase-2/baselines-thresholds/lesson-zero-trust.md" },
       { label: "Lab: Lock Every Gate", file: "phase-2/baselines-thresholds/lab-trust-boundary.md", widget: "trust-boundary" },

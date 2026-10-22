@@ -117,20 +117,6 @@ Boundary, by which node starts the connection: DC starting a connection to Linux
 2 Shrink it: for ports, ask what job the protocol is actually doing (checking a ticket, looking up a directory entry, finding an address, opening a screen); for boundary cards, ask whether the two ends are both inside this one pod, or whether either end is outside it.
 3 Point at the exact node on the diagram (not a chip, not a button) they should be dragging the card onto.`,
   },
-  "baseline-map": {
-    steps: `Three rounds (sign-in pattern, file-access pattern, process-execution pattern), four items each, two that fit the baseline and two that don't. No chips -- drag each item into a "fits the baseline" cloud or an "outlier" zone.
-1 Sign-in pattern: a night-shift admin at 3 AM and a usual-laptop daytime sign-in fit; a help-desk account that's never worked nights at 3 AM on an unknown device, and a sign-in from two countries nine minutes apart, don't.
-2 File-access pattern: a payroll clerk reading a handful of payroll records and an engineer in their own project folder fit; a help-desk account reading an entire file share in under a minute, and bulk-copying a share it's never touched, don't.
-3 Process-execution pattern: a nightly backup task and ordinary daytime browser/office use fit; Word spawning PowerShell that reaches the internet, and an unfamiliar executable launching from temp right after an email attachment, don't.
-No separate debrief -- the filled-in cloud at the end of each round is the summary.`,
-    answers: `Sign-in: fits = night-shift admin at 3 AM, usual daytime sign-in. Outlier = help-desk account at 3 AM on an unknown device, impossible two-country sign-in.
-File-access: fits = payroll clerk's own records, engineer's own folder. Outlier = whole-share read in a minute, bulk overnight copy of an untouched share.
-Process: fits = nightly backup task, ordinary daytime apps. Outlier = Word spawning PowerShell, unfamiliar exe from temp after an attachment.`,
-    mistakes: `Judging an item by how alarming it sounds instead of whether it fits THIS account/host's own established pattern. Missing that the same action (e.g. a sign-in, a file read) can be baseline for one account and an outlier for another -- the account and context matter as much as the action.`,
-    ladder: `1 Ask: for this specific account or host, is this the kind of thing it normally does, at this kind of time?
-2 Shrink it: what's the one detail (the hour, the device, the volume, the account's actual job) that makes this item stand out from the other three?
-3 Point at the exact phrase in the item's description that gives it away.`,
-  },
   "trust-boundary": {
     steps: `A chain: Attacker (outside) -> Internal Network -> File Server -> Payroll DB, plus a direct Internal Network -> Payroll DB shortcut. Three gates total, all unlocked at the start. Drag three identical "Verify here" badges onto the three gates, any order, any badge to any open gate.
 1 Network -> File Server gate.

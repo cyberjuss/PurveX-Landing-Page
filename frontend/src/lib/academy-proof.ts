@@ -201,6 +201,16 @@ const CATALOG: Record<string, Entry> = {
       sys: [["a", "Removed"], ["s", "an over-broad inbound firewall rule"], ["r", "from a domain controller."]],
     },
   },
+  "access-audit": {
+    title: "Baselined peer group access and removed a privilege-creep finding",
+    actions: ["Compared group membership across four peer accounts in the same role to establish what the role's access actually looks like", "Identified the one account holding an access-level group none of its peers had", "Removed the excess membership, confirming the account still kept the access its role needs"],
+    keywords: ["Access Review", "Least Privilege", "Privilege Creep"],
+    bullets: {
+      soc: [["a", "Baselined"], ["s", "peer account access"], ["a", "across a team,"], ["r", "surfacing and removing one unexplained privileged-group membership."]],
+      help: [["a", "Audited"], ["s", "four peer accounts' group membership"], ["r", "and removed one account's leftover admin-level access."]],
+      sys: [["a", "Reviewed"], ["s", "role-based group membership"], ["t", "for privilege creep"], ["r", "removing access a role no longer needed."]],
+    },
+  },
   "gpo-scope": {
     title: "Applied a security policy to the right department with Group Policy",
     actions: ["Found a screen lock GPO linked to the wrong department OU", "Linked it to Finance and removed the wrong link, so the policy reached the users it was written for"],
@@ -268,6 +278,7 @@ export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "tq-18": { job: "gpo-scope", label: "Service ticket INC-1054" },
   "tq-19": { job: "quarantine-file", label: "Service ticket INC-1055" },
   "mw-02": { job: "firewall-rule", label: "Service ticket INC-1064" },
+  "bt-03": { job: "access-audit", label: "Service ticket INC-1066" },
   "tq-20": { job: "dns-fix", label: "Service ticket INC-1056" },
   "tq-21": { job: "lockout-policy", label: "Service ticket INC-1059" },
   "tq-22": { job: "enable-auditing", label: "Service ticket INC-1060" },
@@ -382,7 +393,6 @@ const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
   "lab-signin-log": ["Log Analysis", "Windows Event Logs", "Incident Triage"],
   "lab-effective-access": ["NTFS Permissions", "Share Permissions", "Access Control"],
   "lab-network-map": ["Network Segmentation", "Port and Protocol Identification"],
-  "lab-baseline-map": ["Baseline Analysis", "Anomaly Detection"],
   "lab-trust-boundary": ["Zero Trust Architecture", "Access Control"],
   "lab-threshold-tuner": ["Detection Engineering", "Alert Tuning"],
 };

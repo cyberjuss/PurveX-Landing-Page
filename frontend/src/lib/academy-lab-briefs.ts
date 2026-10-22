@@ -110,21 +110,6 @@ export const LAB_BRIEFS: Record<LabWidget, LabBrief> = {
     tools: [],
     minutes: 10,
   },
-  "baseline-map": {
-    problem:
-      "Analysts who never establish a baseline end up ranking a queue by how alarming each alert sounds instead of what actually broke the pattern. The NIST incident-handling guidance that underlies most SOC practice treats this kind of baseline comparison as the starting point of triage, not an afterthought.",
-    today: "Three real patterns, each with something in it that doesn't belong.",
-    objective: {
-      "help-desk": "Tell a routine sign-in, file access, or process launch from one that actually needs a second look.",
-      sysadmin: "Separate what a system normally does from what it's doing right now, across three different kinds of data.",
-      "soc-analyst": "Build the same baseline-then-outlier judgment you'll use on every real alert triage, in three different data shapes.",
-      "cyber-analyst": "Practice the repeatable shape behind outlier detection: establish normal, then flag what breaks it.",
-      "ir-analyst": "Know what normal looked like before the incident, so you can say exactly what changed.",
-    },
-    objectiveDefault: "Build three real baselines, and catch what breaks each one.",
-    tools: [],
-    minutes: 10,
-  },
   "trust-boundary": {
     problem:
       "In the 2013 Target breach, attackers reached the payment network from a third-party HVAC vendor's stolen credentials because nothing re-checked them once they were past the first gate. NIST SP 800-207's Zero Trust Architecture exists specifically to remove that kind of free movement after one compromise.",

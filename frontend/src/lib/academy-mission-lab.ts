@@ -96,6 +96,15 @@ const MISSION_LAB = {
     [{ c: { t: "fwRuleOff", name: "Windows Update Assistant Network" }, label: "The planted outbound rule is disabled or removed" }],
     { tickets: ["INC-1064"] }
   ),
+  // The baseline-outlier capstone: theo.walsh's excess Server Admins
+  // membership is removed, the same member check tq-01/tq-12 already use.
+  // bt-01 and bt-02 (naming the account and the group) have no lab-state
+  // check, same as tq-06 -- the four accounts' membership never changes on
+  // its own, so the typed answers alone prove the comparison was done.
+  "bt-03": G(
+    [{ c: { t: "member", sam: "theo.walsh", group: "Server Admins", want: false }, label: "theo.walsh is not in Server Admins" }],
+    { users: ["theo.walsh"] }
+  ),
   // The wire-capture capstone: the burned service account is contained by
   // disabling it, which the snapshot reports. Kept, not deleted, so the review
   // still has it.

@@ -65,6 +65,9 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "mw-02": "security",
   "sm-01": "security",
   "sm-02": "security",
+  "bt-01": "security",
+  "bt-02": "security",
+  "bt-03": "security",
   "tq-20": "troubleshooting",
   "tq-21": "security",
   "tq-22": "security",
@@ -79,7 +82,7 @@ export const MISSION_SKILLS: Record<string, Skill> = {
 };
 
 /** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */
-export const LAB_PASS_IDS = ["lab-risk-triage", "lab-hash-verify", "lab-password-table", "lab-signin-log", "lab-effective-access", "lab-network-map", "lab-baseline-map", "lab-trust-boundary", "lab-threshold-tuner"] as const;
+export const LAB_PASS_IDS = ["lab-risk-triage", "lab-hash-verify", "lab-password-table", "lab-signin-log", "lab-effective-access", "lab-network-map", "lab-trust-boundary", "lab-threshold-tuner"] as const;
 export type LabPassId = (typeof LAB_PASS_IDS)[number];
 const isLabPass = (id: string) => (LAB_PASS_IDS as readonly string[]).includes(id);
 
@@ -89,7 +92,6 @@ export const LAB_SKILLS: Partial<Record<LabPassId, Skill>> = {
   "lab-effective-access": "access",
   "lab-signin-log": "logs",
   "lab-network-map": "security",
-  "lab-baseline-map": "security",
   "lab-trust-boundary": "security",
   "lab-threshold-tuner": "security",
 };
@@ -100,7 +102,6 @@ export const LAB_CATALOG: { id: LabPassId; title: string; skill: Skill; href: st
   { id: "lab-effective-access", title: "Who Can Open This?", skill: "access", href: "/range/phase-1/week-4#lab-who-can-open-this" },
   { id: "lab-signin-log", title: "Read the Sign-In Log", skill: "logs", href: "/range/phase-2/week-2#lab-read-the-sign-in-log" },
   { id: "lab-network-map", title: "Map Your Pod", skill: "security", href: "/range/phase-2/baselines-thresholds#lab-map-your-pod" },
-  { id: "lab-baseline-map", title: "Spot the Outlier", skill: "security", href: "/range/phase-2/baselines-thresholds#lab-spot-the-outlier" },
   { id: "lab-trust-boundary", title: "Lock Every Gate", skill: "security", href: "/range/phase-2/baselines-thresholds#lab-lock-every-gate" },
   { id: "lab-threshold-tuner", title: "Tune the Threshold", skill: "security", href: "/range/phase-2/baselines-thresholds#lab-tune-the-threshold" },
 ];

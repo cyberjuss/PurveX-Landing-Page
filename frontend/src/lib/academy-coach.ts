@@ -168,7 +168,7 @@ function handsOnLine(all: Results, lab: LabSnapshot | null): string {
   const results = missionResults(all);
   const attempted = Object.keys(results).length;
   const finished = Object.values(results).filter((r) => r.solved).length;
-  const ticketsTouched = Object.keys(results).some((id) => id.startsWith("tq-") || id.startsWith("mw-") || id.startsWith("sm-"));
+  const ticketsTouched = Object.keys(results).some((id) => id.startsWith("tq-") || id.startsWith("mw-") || id.startsWith("sm-") || id.startsWith("bt-"));
   const lastAsk = lastMissionAt(results);
   const lastAskAgo = lastAsk ? formatLabAge(lastAsk).ago : null;
 
