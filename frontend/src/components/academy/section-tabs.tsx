@@ -29,6 +29,7 @@ import { PasswordTableLab } from "./labs/password-table-lab";
 import { RiskTriageLab } from "./labs/risk-triage-chat";
 import { SigninLogLab } from "./labs/signin-log-lab";
 import { EffectiveAccessLab } from "./labs/effective-access-lab";
+import { MalwareTriageLab } from "./labs/malware-triage-lab";
 
 type WeekLink = { label: string; href: string };
 
@@ -366,6 +367,8 @@ export function SectionTabs({
             <SigninLogLab onDone={labDone} />
           ) : current.widget === "effective-access" ? (
             <EffectiveAccessLab onDone={labDone} />
+          ) : current.widget === "malware-triage" ? (
+            <MalwareTriageLab onDone={labDone} />
           ) : (
             <PasswordTableLab onDone={labDone} />
           )}

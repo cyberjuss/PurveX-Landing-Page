@@ -384,6 +384,7 @@ const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
   "lab-baseline-map": ["Baseline Analysis", "Anomaly Detection"],
   "lab-trust-boundary": ["Zero Trust Architecture", "Access Control"],
   "lab-threshold-tuner": ["Detection Engineering", "Alert Tuning"],
+  "lab-malware-triage": ["Malware Response", "Incident Triage", "Evidence Preservation"],
 };
 
 export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean, results: Results = {}): { group: string; items: string[] }[] {

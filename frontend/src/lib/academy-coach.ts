@@ -349,10 +349,10 @@ export const COACH_TOOLS: { name: string; description: string; input_schema: Rec
   {
     name: "get_lab_coaching",
     description:
-      "Coaching notes for the browser labs (risk-triage, hash-verify, password-table, effective-access in Phase 1; signin-log in Phase 2): the real-world problem, the PurveX scenario, the objective for each target role, the steps, common mistakes, open-source tool mechanics and a hint ladder. Does not include answers. Call it before helping with one of these labs.",
+      "Coaching notes for the browser labs (risk-triage, hash-verify, password-table, effective-access in Phase 1; signin-log, malware-triage in Phase 2): the real-world problem, the PurveX scenario, the objective for each target role, the steps, common mistakes, open-source tool mechanics and a hint ladder. Does not include answers. Call it before helping with one of these labs.",
     input_schema: {
       type: "object",
-      properties: { lab: { type: "string", enum: ["risk-triage", "hash-verify", "password-table", "signin-log", "effective-access"], description: "Which lab. Omit for all of them." } },
+      properties: { lab: { type: "string", enum: ["risk-triage", "hash-verify", "password-table", "signin-log", "effective-access", "malware-triage"], description: "Which lab. Omit for all of them." } },
       additionalProperties: false,
     },
   },

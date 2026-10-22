@@ -155,6 +155,21 @@ export const LAB_BRIEFS: Record<LabWidget, LabBrief> = {
     tools: [],
     minutes: 8,
   },
+  "malware-triage": {
+    problem:
+      "In 2017 the NotPetya worm spread across corporate networks on its own, copying itself from one infected machine to thousands more within hours. Shipping giant Maersk lost its global IT infrastructure because the worm moved faster than any team could contain it by hand.",
+    today: "A file in Finance's shared folder has already spread itself to two machines nobody touched, and it may not be done yet.",
+    objective: {
+      "help-desk": "Tell a worm's self-spread apart from a one-off infected file, and know which machines actually need isolating.",
+      sysadmin: "Contain a self-spreading alert before it reaches more machines, and preserve what the investigating team will need.",
+      "soc-analyst": "Work a live malware alert end to end: verify what it actually is, contain it fast, and hand up a clean escalation.",
+      "cyber-analyst": "Reason through a spreading incident's evidence, and justify each containment decision.",
+      "ir-analyst": "Scope how far a self-spreading incident has already gone, and preserve the evidence before anyone cleans it up.",
+    },
+    objectiveDefault: "Verify, contain, preserve and escalate one malware alert before it spreads further.",
+    tools: [],
+    minutes: 10,
+  },
 };
 
 export const BROWSER_LABS = Object.keys(LAB_BRIEFS) as LabWidget[];
