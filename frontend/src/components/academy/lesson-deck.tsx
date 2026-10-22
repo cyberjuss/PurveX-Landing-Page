@@ -314,7 +314,7 @@ export function LessonDeck({
               {slide.cont ? <span className="lk__cont"> (cont.)</span> : null}
             </h2>
           </header>
-          {video && index === (question ? 1 : 0) && <div className="lk__video">{video}</div>}
+          {video && index === 0 && <div className="lk__video">{video}</div>}
           <div className="lk__body">
             {slide.recap ? (
               <Recap items={slide.recap} slides={total - 1} activities={slides.filter((s) => s.activity).length} where={label} />
