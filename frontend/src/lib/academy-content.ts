@@ -191,6 +191,7 @@ const phase2Weeks: WeekDef[] = [
       { label: "The 5 W's of an Investigation", file: "phase-2/soc-mindset/lesson-5ws.md" },
       { label: "Classifying an Incident", file: "phase-2/soc-mindset/lesson-classification.md" },
       { label: "Allowlisting and Blocklisting", file: "phase-2/soc-mindset/lesson-allow-deny.md" },
+      { label: "Challenge: Approved Overnight, or Not?", file: "phase-2/soc-mindset/challenge-overnight-alert.md" },
       { label: "Resources", file: "phase-2/soc-mindset/resources.md" },
     ],
   },

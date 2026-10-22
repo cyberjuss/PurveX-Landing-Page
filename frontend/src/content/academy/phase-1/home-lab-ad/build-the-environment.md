@@ -104,7 +104,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 12
+$PurvexScriptVersion = 13
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -821,6 +821,18 @@ function Ensure-PurvexTicketObjects {
         New-ADGroup -Name "Finance Reports" -GroupScope Global -GroupCategory Distribution -Path $AccessLevelsOU -Description "CTF-TICKET-1051: Read access to the Finance reports share."
         Add-ADGroupMember -Identity "Finance Reports" -Members "jordan.ellis", "devon.brooks"
         Write-Host "  Group created: Finance Reports (Distribution)" -ForegroundColor Green
+    }
+
+    # INC-1065: an account whose own record already explains an odd-hours
+    # alert, planted for the investigation-mindset lesson. Nothing about this
+    # one needs fixing -- the point is reading the record before reacting.
+    if (-not (Get-ADUser -Filter "SamAccountName -eq 'morgan.reyes'" -ErrorAction SilentlyContinue)) {
+        Ensure-User `
+            -First "Morgan" -Last "Reyes" -SamAccountName "morgan.reyes" `
+            -Title "Systems Engineer, Overnight Operations" -Department "IT" `
+            -OUPath $DeptOUPaths["IT"].UsersOU `
+            -Groups @("IT Users")
+        Ensure-UserDescription -SamAccountName "morgan.reyes" -Description "CTF-TICKET-1065: Approved overnight change window 01:00-05:00 for patch deployment. Contact: IT on-call."
     }
 
     Ensure-InfraTickets -DeptOUPaths $DeptOUPaths

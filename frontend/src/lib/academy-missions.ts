@@ -3,7 +3,7 @@ import { PROOF_TICKETS } from "@/lib/academy-proof";
 
 export type MissionCatalogEntry = {
   id: string;
-  challenge: "day-one" | "ticket-queue" | "alert-queue" | "wire" | "crypto" | "client-data" | "malware-alert";
+  challenge: "day-one" | "ticket-queue" | "alert-queue" | "wire" | "crypto" | "client-data" | "malware-alert" | "soc-alert";
   title: string;
   prompt: string;
   skill: Skill;
@@ -228,15 +228,29 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "mw-01": {
     id: "mw-01",
     challenge: "malware-alert",
-    title: "Something Is Phoning Home (INC-1059)",
+    title: "Something Is Phoning Home (INC-1064)",
     prompt: "A scheduled task nobody on the team created is running on the domain controller. Find it and report its exact name.",
     skill: "security",
   },
   "mw-02": {
     id: "mw-02",
     challenge: "malware-alert",
-    title: "Close the Door It Is Using (INC-1059)",
+    title: "Close the Door It Is Using (INC-1064)",
     prompt: "The planted task is reaching out through an outbound firewall rule. Find it, disable it, and report the port it allowed.",
+    skill: "security",
+  },
+  "sm-01": {
+    id: "sm-01",
+    challenge: "soc-alert",
+    title: "Check the Record Before You React (INC-1065)",
+    prompt: "An alert flagged an off-hours sign-in. Read the account's own Description for the approved window it names.",
+    skill: "security",
+  },
+  "sm-02": {
+    id: "sm-02",
+    challenge: "soc-alert",
+    title: "Classify What You Actually Found (INC-1065)",
+    prompt: "Given what the account's record showed, choose the classification that actually fits.",
     skill: "security",
   },
   "tq-06": {
@@ -306,6 +320,7 @@ export const CHALLENGE_PATHS: Record<
   "crypto": { href: "/range/phase-1/week-2", tab: "the-mirror-that-does-not-match" },
   "client-data": { href: "/range/phase-1/home-lab-challenges", tab: "the-client-data-review" },
   "malware-alert": { href: "/range/phase-2/week-1", tab: "the-quiet-beacon" },
+  "soc-alert": { href: "/range/phase-2/soc-mindset", tab: "approved-overnight-or-not" },
 };
 
 export function missionHref(id: string): string {
@@ -356,6 +371,7 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "crypto": "The Mirror That Does Not Match",
   "client-data": "The Client Data Review",
   "malware-alert": "The Quiet Beacon",
+  "soc-alert": "Approved Overnight, or Not?",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {
