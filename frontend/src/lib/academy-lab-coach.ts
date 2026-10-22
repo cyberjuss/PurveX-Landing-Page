@@ -117,18 +117,6 @@ Boundary, by which node starts the connection: DC starting a connection to Linux
 2 Shrink it: for ports, ask what job the protocol is actually doing (checking a ticket, looking up a directory entry, finding an address, opening a screen); for boundary cards, ask whether the two ends are both inside this one pod, or whether either end is outside it.
 3 Point at the exact node on the diagram (not a chip, not a button) they should be dragging the card onto.`,
   },
-  "threshold-tuner": {
-    steps: `A real slider (1-20), five marked cases on a failed-sign-ins-per-hour scale (typo=2, retry=3, kiosk account=9, targeted guess=12, noisy test account=15), plus a password spray always shown caught far past the scale. Dragging the slider live-recolors which marks would trigger an alert.
-1 Free exploration first -- drag the slider, read the live caught/missed legend and the one-line commentary that changes with position.
-2 Challenge 1: land the slider between 10 and 12 (inclusive) -- quiets the kiosk account (9) while still catching the targeted guess (12).
-3 Challenge 2: land the slider at exactly 3 -- the lowest value that still never flags the single typo (2).
-Each challenge needs its own "Lock in" click after dragging to the right value; a wrong lock-in just shakes and lets them try again, no penalty.`,
-    answers: `Challenge 1 answer: any integer 10, 11, or 12. Challenge 2 answer: exactly 3.`,
-    mistakes: `Treating the first challenge as "find one correct number" instead of a band -- 10, 11, and 12 are all correct. For the second challenge, landing on 2 (still catches the typo) or going well above 3 "to be safe" (defeats the "lowest" part of the ask).`,
-    ladder: `1 Ask what's currently sitting right at the edge of being caught or missed as they drag -- that edge is the answer.
-2 Shrink it: for challenge 1, which two marks need to land on opposite sides of the line? For challenge 2, what's the very next value above the typo's own count?
-3 Tell them which direction to drag, not the number itself.`,
-  },
 };
 
 const LAB_COACH_PROMPT = `You are PurveX Coach, a senior analyst sitting next to a new hire while they work a short browser lab. You know this lab cold.

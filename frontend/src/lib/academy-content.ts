@@ -14,7 +14,7 @@ export function loadLesson(relativePath: string): string | null {
 }
 
 /** Interactive labs rendered by a React component below the section's markdown. */
-export type LabWidget = "risk-triage" | "hash-verify" | "password-table" | "signin-log" | "effective-access" | "network-map" | "threshold-tuner";
+export type LabWidget = "risk-triage" | "hash-verify" | "password-table" | "signin-log" | "effective-access" | "network-map";
 
 export interface ContentSection {
   label: string;
@@ -238,7 +238,7 @@ const phase2Weeks: WeekDef[] = [
       { label: "Zero Trust", file: "phase-2/baselines-thresholds/lesson-zero-trust.md" },
       { label: "Challenge: Lock Every Gate", file: "phase-2/baselines-thresholds/challenge-internal-trust.md" },
       { label: "Setting Thresholds for Detections", file: "phase-2/baselines-thresholds/lesson-thresholds.md" },
-      { label: "Lab: Tune the Threshold", file: "phase-2/baselines-thresholds/lab-threshold-tuner.md", widget: "threshold-tuner" },
+      { label: "Challenge: Set a Defensible Lockout Threshold", file: "phase-2/baselines-thresholds/challenge-lockout-threshold.md" },
       { label: "Why Detections Matter", file: "phase-2/baselines-thresholds/lesson-why-detections.md" },
       { label: "Resources", file: "phase-2/baselines-thresholds/resources.md" },
     ],

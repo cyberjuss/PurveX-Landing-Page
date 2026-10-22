@@ -81,6 +81,16 @@ const CATALOG: Record<string, Entry> = {
       sys: [["a", "Implemented"], ["s", "a fine-grained password policy for admin accounts,"], ["r", "requiring longer passwords than standard users."]],
     },
   },
+  "lockout-threshold": {
+    title: "Tuned a detection-style threshold for a high-value department",
+    actions: ["Weighed the trade-off between a lockout threshold strict enough to resist password guessing and loose enough not to lock out typo-prone users", "Created a fine-grained password policy for a department handling client funds", "Set the lockout threshold within a defensible band, applying the same reasoning used to tune a SIEM detection threshold"],
+    keywords: ["Fine-Grained Password Policies (FGPP)", "Detection Tuning", "False Positive / False Negative Trade-off"],
+    bullets: {
+      soc: [["a", "Tuned"], ["s", "a department's lockout threshold"], ["r", "to balance guessing resistance against false lockouts, the same trade-off behind a detection threshold."]],
+      help: [["a", "Set"], ["s", "a stricter password policy for a high-value department"], ["r", "without increasing routine lockout tickets."]],
+      sys: [["a", "Implemented"], ["s", "a fine-grained password policy"], ["t", "scoped to one department"], ["a", "with a lockout threshold chosen for a defensible balance."]],
+    },
+  },
   "harden-account": {
     title: "Remediated a Kerberos pre-authentication weakness",
     actions: ["Identified an account without Kerberos pre-authentication, exposed to offline password cracking", "Required pre-authentication and a password, so no one on the network can request crackable data for it"],
@@ -280,6 +290,7 @@ export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "mw-02": { job: "firewall-rule", label: "Service ticket INC-1064" },
   "bt-03": { job: "access-audit", label: "Service ticket INC-1066" },
   "zt-02": { job: "firewall-rule", label: "Service ticket INC-1067" },
+  "th-01": { job: "lockout-threshold", label: "Service ticket INC-1068" },
   "tq-20": { job: "dns-fix", label: "Service ticket INC-1056" },
   "tq-21": { job: "lockout-policy", label: "Service ticket INC-1059" },
   "tq-22": { job: "enable-auditing", label: "Service ticket INC-1060" },
@@ -394,7 +405,6 @@ const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
   "lab-signin-log": ["Log Analysis", "Windows Event Logs", "Incident Triage"],
   "lab-effective-access": ["NTFS Permissions", "Share Permissions", "Access Control"],
   "lab-network-map": ["Network Segmentation", "Port and Protocol Identification"],
-  "lab-threshold-tuner": ["Detection Engineering", "Alert Tuning"],
 };
 
 export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean, results: Results = {}): { group: string; items: string[] }[] {

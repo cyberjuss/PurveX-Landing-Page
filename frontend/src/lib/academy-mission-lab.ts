@@ -112,6 +112,11 @@ const MISSION_LAB = {
     [{ c: { t: "fwRuleOff", name: "PurveX Legacy - Internal File Access" }, label: "The legacy internal-trust rule is disabled or removed" }],
     { tickets: ["INC-1067"] }
   ),
+  // Lockout-threshold capstone: same pso check tq-24 already uses, just a
+  // different group and a middle-of-the-band threshold instead of tq-24's
+  // tightest-possible one. No pre-planted ticket mark needed -- Wealth
+  // Management Users already exists in the base roster, same as tq-24.
+  "th-01": G([{ c: { t: "pso", minLength: 12, appliesTo: "Wealth Management Users", maxLockout: 12 }, label: "A 12-character policy locking after 12 or fewer tries applies to Wealth Management Users" }]),
   // The wire-capture capstone: the burned service account is contained by
   // disabling it, which the snapshot reports. Kept, not deleted, so the review
   // still has it.

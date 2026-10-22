@@ -110,21 +110,6 @@ export const LAB_BRIEFS: Record<LabWidget, LabBrief> = {
     tools: [],
     minutes: 10,
   },
-  "threshold-tuner": {
-    problem:
-      "A detection threshold set too low drowns a SOC in false positives until nobody trusts a Critical alert. Set too high, and it misses a real, quieter attack entirely. NIST's incident-response guidance frames severity and detection tuning as judgment calls against your own environment, not a fixed number.",
-    today: "Five real cases on one scale, from a mistyped password to a targeted guess against one account.",
-    objective: {
-      "help-desk": "See why \"just lower the threshold\" isn't free, and what it costs the team that has to work the queue.",
-      sysadmin: "Feel the trade-off a threshold actually makes, not just read about it.",
-      "soc-analyst": "Practice setting a threshold that catches a real attack without burying the queue in noise.",
-      "cyber-analyst": "Find the defensible band for a detection threshold, and be able to justify exactly why.",
-      "ir-analyst": "Understand what a badly tuned threshold would have let through before you ever see the incident.",
-    },
-    objectiveDefault: "Find the threshold that catches the real attack without burying the queue in noise.",
-    tools: [],
-    minutes: 8,
-  },
 };
 
 export const BROWSER_LABS = Object.keys(LAB_BRIEFS) as LabWidget[];
