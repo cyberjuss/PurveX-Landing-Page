@@ -212,7 +212,10 @@ export function splitLessonIntoDeck(markdown: string, label: string): DeckSlide[
   const deck: DeckSlide[] = slides
     .filter((s) => s.activity || s.raw.join("").trim().length > 0)
     .map((s) => {
-      const body = s.raw.join("\n").trim();
+      // Two newlines, not one: "space" tokens between blocks were dropped
+      // above, so a single join() newline let a list swallow the paragraph
+      // right after it as its last item once marked re-lexed this body.
+      const body = s.raw.join("\n\n").trim();
       return {
         title: s.title,
         cont: s.cont && !s.activity,
