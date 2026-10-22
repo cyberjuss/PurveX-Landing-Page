@@ -1,10 +1,10 @@
 ### Why Detections Matter
 
-A detection is what turns everything this phase has taught into something that happens without you sitting there watching for it. The investigation mindset, the baseline, the ATT&CK technique, the threshold: a detection is where those ideas get written down as a rule that fires on its own, at any hour, whether or not an analyst happens to be looking at that exact account at that exact moment.
+A detection is what turns everything this phase has taught into something that happens without you sitting there watching for it. The investigation mindset, the baseline, the ATT&CK technique, the threshold: a detection is where those ideas get written down as a rule that fires on its own at any hour, whether or not an analyst happens to be looking at that exact account at that exact moment.
 
-Without a working detection, catching an attacker depends entirely on a human noticing in time, and humans do not watch every account every second. A password-spray attack across dozens of accounts in under a minute, the kind of incident you have already worked in Shift, is exactly the pattern a detection exists to catch, because by the time a person happens to scroll past it manually, the attacker may already be inside.
+Without a working detection, catching an attacker depends entirely on a human noticing in time. Humans do not watch every account every second. A password-spray attack across dozens of accounts in under a minute is exactly the pattern a detection exists to catch. You have already worked this kind of incident in Shift. By the time a person happens to scroll past it manually, the attacker may already be inside.
 
-A detection also does something a one-off manual catch cannot: it catches the same pattern again, for every account, every time, without anyone having to remember to look. That is the entire economic case for detection engineering, the work Tier 3 analysts do that Week 1 introduced. One detection, built and tuned once, replaces an unbounded amount of manual watching, and it keeps working on the night nobody happens to be paying close attention.
+A detection also does something a one-off manual catch cannot: it catches the same pattern again, for every account, every time, without anyone having to remember to look. That is the entire economic case for detection engineering, the work Tier 3 analysts do that Week 1 introduced. One detection, built and tuned once, replaces an unbounded amount of manual watching. It keeps working on the night nobody happens to be paying close attention.
 
 ```connect
 prompt: Connect each gap to the consequence of leaving it undetected.

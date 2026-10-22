@@ -5,7 +5,7 @@
 
 ### Overview
 
-Opening a network capture for the first time is a disorienting experience. Thousands of rows scroll past, every one of them full of numbers, and none of it offers any obvious clue about which rows matter. The instinct is to start reading at the top and hope something stands out. It will not, because there is nothing in a packet that announces itself as suspicious, and an environment working perfectly produces just as many rows as one that is compromised.
+Opening a network capture for the first time is a disorienting experience. Thousands of rows scroll past, every one of them full of numbers. None of it offers any obvious clue about which rows matter. The instinct is to start reading at the top and hope something stands out. It will not, because there is nothing in a packet that announces itself as suspicious. An environment working perfectly produces just as many rows as one that is compromised.
 
 What makes a capture readable is knowing that every conversation in it is built from the same small set of pieces:
 

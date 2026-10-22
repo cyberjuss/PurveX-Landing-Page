@@ -1,7 +1,7 @@
 ### R: Reference
 <!-- art: logs -->
 
-Reference is where TRACE becomes actual KQL. Once you know the technique you are hunting, Reference answers two questions: which table holds the evidence, and how far back do you need to look to catch it. For Password Spraying, the evidence is failed sign-in attempts, and those live in the `SigninLogs` table.
+Reference is where TRACE becomes actual KQL. Once you know the technique you are hunting, Reference answers two questions: which table holds the evidence, and how far back do you need to look to catch it. For Password Spraying, the evidence is failed sign-in attempts. Those live in the `SigninLogs` table.
 
 ```
 SigninLogs

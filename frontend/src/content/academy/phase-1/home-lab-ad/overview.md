@@ -9,9 +9,7 @@ You cannot call something suspicious until you know what **normal** looks like. 
 
 PurveX Financial is a mid-sized wealth management firm, and its environment holds client money and records regulated under GLBA and SOX. That is what is at stake on every ticket you work.
 
-The firm is also your baseline for judging every account and sign-in. A 2 AM sign-in from a Wealth Management workstation raises a different question from a 2 AM sign-in on an unfamiliar lab machine.
-
-Either might still be legitimate, and only knowing the environment lets you decide which one fits.
+The firm is also your baseline for judging every account and sign-in. A 2 AM sign-in from a Wealth Management workstation raises a different question from a 2 AM sign-in on an unfamiliar lab machine. Either might still be legitimate, and only knowing the environment lets you decide which one fits.
 
 The environment is small enough to hold in your head:
 

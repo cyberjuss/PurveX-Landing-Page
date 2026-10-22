@@ -1,6 +1,6 @@
 ### Authorization
 
-Authorization decides what an identity the system has already authenticated is allowed to do. It answers one question, what you can reach, and assumes the previous question has been settled. Everything here therefore applies equally to a legitimate employee and to an attacker who has signed in as one. That is why authorization is a security control rather than an administrative convenience.
+Authorization decides what an identity the system has already authenticated is allowed to do. It answers one question: what you can reach. It assumes the previous question has been settled. Everything here therefore applies equally to a legitimate employee and to an attacker who has signed in as one. That is why authorization is a security control rather than an administrative convenience.
 
 ### Principles
 
@@ -19,7 +19,7 @@ Separation of duties = No single person controls a sensitive process end to end
 
 ### Role-based access control
 
-In practice permissions are almost never assigned to people directly. They are granted to **security groups** instead, and people are added to those groups, so the group stands in for the role. That indirection buys you two things:
+In practice permissions are almost never assigned to people directly. They are granted to **security groups** instead, and people are added to those groups. The group stands in for the role. That indirection buys you two things:
 
 - Changing somebody's job becomes a matter of changing which groups they belong to.
 - You can read what an account is able to do from its memberships, rather than hunting through every system one at a time.

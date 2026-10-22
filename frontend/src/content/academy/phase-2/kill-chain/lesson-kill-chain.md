@@ -1,7 +1,7 @@
 ### The Cyber Kill Chain
 <!-- art: tree -->
 
-The Cyber Kill Chain is a model Lockheed Martin analysts Eric Hutchins, Michael Cloppert, and Rohan Amin introduced in 2011. It breaks an intrusion into seven stages that run in order, from first contact to the attacker's final goal. What matters is the idea underneath the specific names: an attack is a sequence, not a single event, and breaking the chain at any earlier stage stops everything that would have followed it.
+The Cyber Kill Chain is a model Lockheed Martin analysts Eric Hutchins, Michael Cloppert, and Rohan Amin introduced in 2011. It breaks an intrusion into seven stages that run in order, from first contact to the attacker's final goal. What matters is the idea underneath the specific names. An attack is a sequence of stages, and breaking the chain at any earlier stage stops everything that would have followed it.
 
 The seven stages, each covered in its own lesson next, are:
 

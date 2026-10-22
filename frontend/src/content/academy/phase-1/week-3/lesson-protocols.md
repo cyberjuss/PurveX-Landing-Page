@@ -6,7 +6,7 @@ The sections below cover the protocols you will encounter most often, what each 
 
 #### HTTP and HTTPS
 
-HTTP and HTTPS are the protocols that load web pages. When a browser asks for a page, that request travels as HTTP on port 80 or as HTTPS on port 443, and the server answers over the same connection.
+HTTP and HTTPS are the protocols that load web pages. When a browser asks for a page, that request travels as HTTP on port 80 or as HTTPS on port 443. The server answers over the same connection.
 
 HTTPS is the encrypted form of HTTP, which means the contents of the page and anything submitted with it cannot be read by somebody watching the wire in between. In any healthy modern environment the overwhelming majority of web traffic is HTTPS, and that expectation is itself a useful tool. It makes plain HTTP carrying anything resembling credentials or business data worth asking about, not because the protocol is exotic but because almost nothing legitimate still uses it that way.
 
@@ -14,19 +14,19 @@ HTTPS is the encrypted form of HTTP, which means the contents of the page and an
 
 DNS translates names into IP addresses. Before a device can connect to a name such as google.com it has to perform a DNS lookup to find the matching address, because the network itself only ever routes on addresses and knows nothing about names.
 
-That ordering makes DNS unusually valuable to an analyst. Almost every connection a machine makes begins with a name lookup, so the DNS record is one of the best lists you will get of what a machine was trying to reach, including the attempts that never succeeded. It is not complete. Cached answers, connections made straight to an IP address and lookups sent over encrypted DNS (DoH) never reach your DNS logs. Even so, a device looking up a name it has no business wanting is frequently the earliest visible sign that something is wrong. It shows up in DNS whether or not the connection that followed ever completed.
+That ordering makes DNS unusually valuable to an analyst. Almost every connection a machine makes begins with a name lookup. That makes the DNS record one of the best lists you will get of what a machine was trying to reach, including the attempts that never succeeded. It is not complete. Cached answers, connections made straight to an IP address and lookups sent over encrypted DNS (DoH) never reach your DNS logs. Even so, a device looking up a name it has no business wanting is frequently the earliest visible sign that something is wrong. It shows up in DNS whether or not the connection that followed ever completed.
 
 #### DHCP
 
 DHCP hands out IP addresses to devices as they join a network. A laptop connecting to the office Wi-Fi receives its address through a short DHCP request and response. The same exchange hands it the other settings it needs, such as which gateway to use and which DNS server to ask.
 
-The alternative is an administrator setting an address on every device by hand, which does not scale past a small number of machines and is why DHCP is close to universal. That near-universality is exactly what makes an exception interesting, because a device running with an address no DHCP server issued got it some other way. An address starting 169.254 means the device asked for one and nobody answered, which points to a network fault. Any other address was set by hand, and there are legitimate reasons for that, so find out which one applies.
+The alternative is an administrator setting an address on every device by hand, which does not scale past a small number of machines and is why DHCP is close to universal. That near-universality is exactly what makes an exception interesting, because a device running with an address no DHCP server issued got it some other way. An address starting 169.254 means the device asked for one and nobody answered, which points to a network fault. Any other address was set by hand. There are legitimate reasons for that, so find out which one applies.
 
 #### SMTP, POP3, and IMAP
 
 SMTP, POP3 and IMAP are the protocols behind email, and they divide the work in two. SMTP carries mail outward from a client or a server toward its destination. POP3 and IMAP work in the other direction, letting a mail client pull messages down from a server so that somebody can read them.
 
-What matters for an analyst is which machines ought to be speaking these protocols at all, and the answer is a short list: mail servers, and the clients of the people who read mail. So SMTP coming from a host with no reason to handle mail is worth following up, because one of the more common uses of a compromised machine is to send messages from it. That traffic looks perfectly ordinary in isolation while being entirely out of place on that particular host.
+What matters for an analyst is which machines ought to be speaking these protocols at all, and the answer is a short list: mail servers and the clients of the people who read mail. So SMTP coming from a host with no reason to handle mail is worth following up, because one of the more common uses of a compromised machine is to send messages from it. That traffic looks perfectly ordinary in isolation while being entirely out of place on that particular host.
 
 A later section puts all of this to work. You will open Wireshark with a real capture and use ports and protocols together to separate the ordinary traffic from the traffic that does not belong.
 

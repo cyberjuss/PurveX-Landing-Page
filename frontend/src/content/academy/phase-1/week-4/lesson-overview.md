@@ -5,7 +5,7 @@
 
 ### Overview
 
-Every sign-in, and in fact every click that follows it, answers two entirely separate questions. The first is who you are, and the second is what you are allowed to do now that the system knows. These get collapsed together in ordinary speech, where people talk about having access to something as though it were one idea. Keeping them apart is the foundation of everything in this week. They fail separately, they are attacked separately, and they are fixed by different people.
+Every sign-in and every click that follows it answers two entirely separate questions. The first is who you are, and the second is what you are allowed to do now that the system knows. These get collapsed together in ordinary speech, where people talk about having access to something as though it were one idea. Keeping them apart is the foundation of everything in this week. They fail separately. They are attacked separately. They are fixed by different people.
 
 Three pieces do this work:
 

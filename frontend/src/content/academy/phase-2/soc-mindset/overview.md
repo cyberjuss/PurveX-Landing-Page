@@ -27,4 +27,4 @@ A Tier 3 analyst builds or tunes the detection that should have caught it sooner
 - What is the investigation mindset, and why does it start from doubt instead of the alert's own label?
 - What are the 5 W's, and how do they turn a vague alert into a documented account?
 - How does an incident get classified once it is confirmed real?
-- What is the difference between whitelisting and blacklisting, and why does the default posture matter more than the list itself?
+- What is the difference between allowlisting and blocklisting, and why does the default posture matter more than the list itself?

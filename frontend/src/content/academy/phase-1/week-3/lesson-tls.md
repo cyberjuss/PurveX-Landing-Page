@@ -16,7 +16,7 @@ The cleanest way to hold the two apart is by what each one produces:
 
 They run back to back on the same conversation, so a capture shows them one after another. Reading one as the other is a common mistake on a new desk.
 
-This changes what you can expect to get out of a capture, and it is better to adjust that expectation early than to spend an afternoon fighting it. If a conversation is HTTPS, you are not going to read the payload, and no amount of work in Wireshark will change that.
+This changes what you can expect to get out of a capture, and it is better to adjust that expectation early than to spend an afternoon fighting it. If a conversation is HTTPS, you are not going to read the payload. No amount of work in Wireshark will change that.
 
 What encryption does not hide is almost everything else. You can still see:
 

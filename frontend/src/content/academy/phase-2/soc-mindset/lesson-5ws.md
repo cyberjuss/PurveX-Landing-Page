@@ -1,6 +1,6 @@
 ### The 5 W's of an Investigation
 
-Checking an alert against the baseline tells you *that* something does not fit. It does not by itself give you a record another analyst, your lead, or an auditor can pick up and follow. The 5 W's, who, what, when, where, and why, are the questions that turn a mismatch into a documented account. The framework is old. Writers on incident response trace it back to Aristotle, who used the same questions to judge the morality of an act: what was done, who did it, where, and why. Digital forensics guidance recommends the same five questions, sometimes with how added as a sixth, as a starting point for what to document during an incident.
+Checking an alert against the baseline tells you *that* something does not fit. It does not by itself give you a record another analyst, your lead, or an auditor can pick up and follow. The 5 W's, who, what, when, where, and why, are the questions that turn a mismatch into a documented account. The framework is old. Writers on incident response trace it back to Aristotle, who used the same questions to judge the morality of an act: what was done, who did it, where, and why. Digital forensics guidance recommends the same five questions as a starting point for what to document during an incident, sometimes with how added as a sixth.
 
 Each question pulls a specific piece of the alert apart, and skipping one leaves a gap someone else will have to fill in later:
 
@@ -10,7 +10,7 @@ Each question pulls a specific piece of the alert apart, and skipping one leaves
 - **Where** in the environment did it happen: which host, which network segment, which application?
 - **Why** might this have happened, considering both the innocent explanation and the malicious one?
 
-The order matters less than covering all five before you commit to a decision. An analyst who can answer who, what, and when but not where or why has a partial case, and a partial case is where investigations go wrong, because the gaps get filled with assumptions instead of facts.
+The order matters less than covering all five before you commit to a decision. An analyst who can answer who, what, and when but not where or why has a partial case. A partial case is where investigations go wrong, because the gaps get filled with assumptions instead of facts.
 
 ```sort
 prompt: Sort each alert detail into the question it answers.

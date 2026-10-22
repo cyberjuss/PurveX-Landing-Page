@@ -1,7 +1,7 @@
 ### Baselines and Outliers
 <!-- art: search -->
 
-A baseline is simply what normal looks like for a specific account, host, or process, measured over enough time that you have actually seen its range. An outlier is anything that falls outside that range. Neither half of that definition is fixed. A login time that is an outlier for a help desk account is the baseline for a night-shift administrator, which is exactly why last week's investigation mindset insists you check the baseline for the specific thing in front of you, not a generic idea of what "normal" means across the whole company.
+A baseline is simply what normal looks like for a specific account, host, or process. That picture only forms once you have watched it long enough to see its actual range. An outlier is anything that falls outside that range. Neither half of that definition is fixed. A login time that is an outlier for a help desk account is the baseline for a night-shift administrator. That is exactly why last week's investigation mindset insists you check the baseline for the specific thing in front of you, not a generic idea of what "normal" means across the whole company.
 
 The method for spotting an outlier is not one trick. It changes with what kind of data you are looking at, because a sign-in pattern, a file-access pattern, and a process launch each have a different shape of normal. Practicing on all three is the only way the skill transfers to data you have not seen before.
 
@@ -29,4 +29,4 @@ Fits the baseline: A scheduled backup task launches its usual backup executable 
 Outlier: Microsoft Word spawns a PowerShell process that then reaches out to the internet | An unfamiliar executable launches from a temp folder right after a user opened an email attachment
 ```
 
-Notice the shape repeats across all three: establish what normally happens, for whom, and when, then flag whatever breaks that pattern. That repeatable shape, not memorizing any one example above, is the actual skill.
+Notice the shape repeats across all three: establish what normally happens, for whom, and when. Then flag whatever breaks that pattern. That repeatable shape, not memorizing any one example above, is the actual skill.

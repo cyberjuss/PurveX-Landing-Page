@@ -35,9 +35,7 @@ Container: Windows builds it and you cannot make your own | CN=Computers | CN=Us
 
 A **Security Group** is a list of accounts. You use it to grant permissions or apply Group Policy to exactly the people who need them, whatever OU they live in.
 
-A group can cross departments. A folder cannot.
-
-**A group is a list you add an account to.** An account has exactly one OU but can sit in any number of groups.
+A group can cross departments, unlike a folder. An account has exactly one OU but can sit in any number of groups.
 
 Every department has a standard access group:
 

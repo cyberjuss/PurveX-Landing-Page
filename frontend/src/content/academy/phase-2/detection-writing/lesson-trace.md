@@ -11,4 +11,4 @@ The five parts, in the order you actually build them:
 4. **Condition.** Set the line where that count becomes worth a human's attention.
 5. **Escalation.** Decide what happens the moment the detection fires.
 
-Each part gets its own page next, building toward one real, complete detection for Password Spraying, T1110.003.
+Each part gets its own page next. Together they build toward one real, complete detection for Password Spraying (T1110.003).

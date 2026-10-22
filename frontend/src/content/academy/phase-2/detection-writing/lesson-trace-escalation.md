@@ -17,7 +17,7 @@ SigninLogs
 | order by FailedCount desc
 ```
 
-Every line traces back to a letter. `let threshold = 5;` and the final `where FailedCount > threshold` are Condition. `SigninLogs` and `ago(24h)` are Reference. The `summarize` line is Aggregate. `order by FailedCount desc` sorts the worst offenders to the top, so whoever works this queue sees the most severe case first. Technique and Escalation never appear in the query text at all. Technique is the decision made before writing it, that this hunts Password Spraying. Escalation is the decision made after, that this fires as a P2 and routes to the SOC queue.
+Every line traces back to a letter. `let threshold = 5;` and the final `where FailedCount > threshold` are Condition. `SigninLogs` and `ago(24h)` are Reference. The `summarize` line is Aggregate. `order by FailedCount desc` sorts the worst offenders to the top, so whoever works this queue sees the most severe case first. Technique and Escalation never appear in the query text at all. Technique is the decision made before writing it: that this hunts Password Spraying. Escalation is the decision made after: that this fires as a P2 and routes to the SOC queue.
 
 This query is this course's own construction for teaching TRACE, built from Microsoft's documented KQL operators. It has not been run against a live Sentinel workspace, so verify its syntax against your own tenant before using it for real.
 

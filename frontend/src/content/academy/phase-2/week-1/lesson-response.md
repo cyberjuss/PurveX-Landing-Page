@@ -13,7 +13,7 @@ Containment comes before cleanup, and evidence is never destroyed.
 
 #### Verify
 
-First, confirm the alert is real. Check what the tool flagged, on which host and for which user, then rule out a known-good file the scanner mislabeled.
+First, confirm the alert is real. Check what the tool flagged, on which host and for which user. Then rule out a known-good file the scanner mislabeled.
 
 A quick check against context saves the team from chasing a false positive. If the file is a normal business tool the scanner does not recognize, that is a very different outcome from a fresh download that just ran.
 

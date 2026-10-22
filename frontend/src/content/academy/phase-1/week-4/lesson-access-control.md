@@ -47,7 +47,7 @@ The fixes all follow from that rule:
 
 ### Testing
 
-A word of caution before the lab. Changing identifiers on a system you do not have written permission to test is unauthorized access. That remains true even if you only looked and even if the flaw was obvious. Good intentions are not a reliable defense, and finding a genuine vulnerability does not make the access authorized. Practice instead on the PortSwigger Web Security Academy labs, which exist for exactly this purpose, and take it as given that on the job this kind of testing requires a signed scope agreed in advance.
+A word of caution before the lab. Changing identifiers on a system you do not have written permission to test is unauthorized access. That remains true even if you only looked and even if the flaw was obvious. Good intentions are not a reliable defense, and finding a genuine vulnerability does not make the access authorized. Practice instead on the PortSwigger Web Security Academy labs, which exist for exactly this purpose. On the job, this kind of testing requires a signed scope agreed in advance.
 
 ### When a user reports it
 

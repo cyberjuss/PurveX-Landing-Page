@@ -5,7 +5,7 @@
 
 ### Overview
 
-Last week's ATT&CK-tagged Shift alerts each showed up as their own event. Real intrusions rarely stop at one. An attacker who gets a foothold uses it to steal credentials. Those credentials escalate privilege. Privilege covers their tracks and plants a way back in. Each move is a separate technique with its own ATT&CK tag. This week gives you the framework for thinking about that sequence, the Cyber Kill Chain, and then asks you to work one stage by stage, using real incidents already built into your Shift console.
+Last week's ATT&CK-tagged Shift alerts each showed up as their own event, but real intrusions rarely stop at one. An attacker who gets a foothold uses it to steal credentials, then uses those credentials to escalate privilege. With that privilege, they cover their tracks and plant a way back in. Each move is a separate technique with its own ATT&CK tag. This week gives you the framework for thinking about that sequence: the Cyber Kill Chain. It then asks you to work one stage at a time, using real incidents already built into your Shift console.
 
 ### Questions Answered in This Week
 

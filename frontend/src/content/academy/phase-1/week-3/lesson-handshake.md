@@ -1,6 +1,6 @@
 ### The Three-Way Handshake
 
-Before two computers exchange any data over TCP, they go through a short exchange to confirm that both sides are present, willing and ready. It takes three messages, which is where the name comes from, and it happens on every TCP connection without exception.
+Before two computers exchange any data over TCP, they go through a short exchange to confirm that both sides are present, willing and ready. It takes three messages, which is where the name comes from. It happens on every TCP connection without exception.
 
 | Step | Sent by | Meaning |
 |---|---|---|
@@ -10,11 +10,11 @@ Before two computers exchange any data over TCP, they go through a short exchang
 
 Data begins to flow only after all three steps have completed. Until then the two machines have agreed to talk but have not said anything, which is a distinction that matters a great deal when you are reading a capture.
 
-The sequence numbers exchanged during those three messages are the reason TCP can call itself reliable. It numbers every byte it sends and expects the far side to acknowledge what it received, resending anything that goes unconfirmed. The handshake starts that bookkeeping, by having each side declare the number it intends to count from. UDP, the other transport protocol you will meet constantly, does none of this. It skips the handshake and the acknowledgements entirely, trading reliability for speed. That is the right trade for voice and video, where a late packet is worthless anyway.
+The sequence numbers exchanged during those three messages are the reason TCP can call itself reliable. It numbers every byte it sends and expects the far side to acknowledge what it received, resending anything that goes unconfirmed. The handshake starts that bookkeeping: each side declares the number it intends to count from. UDP is the other transport protocol you will meet constantly. It does none of this, skipping the handshake and the acknowledgements entirely and trading reliability for speed. That is the right trade for voice and video, where a late packet is worthless anyway.
 
 When you are working through a capture, look for all three steps before you trust a conversation at all:
 
-- A **SYN with no SYN-ACK** means the far side never answered, because the host is down, a firewall dropped the request, or nothing is at that address. A live host with the port closed does answer, with a reset (RST). A long run of those across many addresses or ports is a recognizable pattern, usually somebody scanning, not a network fault.
+- A **SYN with no SYN-ACK** means the far side never answered, because the host is down, a firewall dropped the request, or nothing is at that address. A live host with the port closed answers with a reset (RST). A long run of those across many addresses or ports is a recognizable pattern. It usually means somebody scanning, not a network fault.
 - **Data with no handshake in front of it** means the capture does not show you a completed TCP session. Often the capture simply started after the connection opened, but whatever you conclude from that data rests on an assumption you have not checked.
 
 ```order

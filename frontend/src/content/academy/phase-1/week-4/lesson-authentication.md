@@ -1,6 +1,6 @@
 ### Authentication
 
-Authentication is the work of proving an identity. It answers a single question, who you are, and says nothing about what you may do once that is established. Everything in this section is about making that proof hard to fake, because every permission the system grants afterwards rests on the assumption that it got this first step right.
+Authentication is the work of proving an identity. It answers a single question: who you are. It says nothing about what you may do once that is established. Everything in this section is about making that proof hard to fake, because every permission the system grants afterwards rests on the assumption that it got this first step right.
 
 ### Factors
 <!-- art: mfa -->
@@ -11,11 +11,11 @@ Authentication is the work of proving an identity. It answers a single question,
 | Something you have | Phone with an authenticator app, security key, smart card |
 | Something you are | Fingerprint, face |
 
-**Multi-factor authentication**, almost always shortened to MFA, requires proof drawn from two different rows of that table. A password combined with a security question is not multi-factor at all, because both are things you know and both are lost in the same way, usually in the same breach.
+**Multi-factor authentication**, almost always shortened to MFA, requires proof drawn from two different rows of that table. A password combined with a security question is not multi-factor at all, because both are things you know. Both are usually lost in the same breach.
 
 MFA matters for a blunt reason: passwords leak, constantly and at scale. A password that has leaked offers no protection whatsoever to the account it guards. In 2021 attackers walked into Colonial Pipeline through a VPN account that had a leaked password and no second factor. The result was a ransomware incident that interrupted fuel supply across much of the US East Coast.
 
-It is a mistake, though, to treat MFA as a single thing that is either present or absent. The methods vary considerably in how much they protect you:
+It is a mistake to treat MFA as a single thing that is either present or absent. The methods vary considerably in how much they protect you:
 
 - **Text and app codes** can be captured by a convincing fake sign-in page and replayed within seconds, because the user hands the code over willingly.
 - **Security keys and passkeys** check the real address of the site before responding, so a fake page receives nothing it can use.
@@ -52,7 +52,7 @@ Password expired: Policy requires a new password
 
 ### Resets
 
-A password or MFA reset is not an administrative chore. It is an authentication decision, and for the duration of that call you are the authentication system. Whatever controls the organization has invested in, you can briefly set them aside for one account, and that is precisely why attackers target this call. In 2023 attackers reportedly got their first foothold at MGM Resorts with no technical exploit at all, by talking the IT help desk into resetting an employee's MFA.
+A password or MFA reset is not an administrative chore. It is an authentication decision, and for the duration of that call you are the authentication system. Whatever controls the organization has invested in, you can briefly set aside for one account. That is precisely why attackers target this call. In 2023 attackers reportedly got their first foothold at MGM Resorts with no technical exploit at all, by talking the IT help desk into resetting an employee's MFA.
 
 1. **Verify** with a method the caller cannot fake, such as a callback to the number on file. Caller ID can be spoofed.
 2. **Treat an MFA change** as at least as sensitive as a password reset.
