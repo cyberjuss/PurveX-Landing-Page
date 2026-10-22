@@ -14,7 +14,7 @@ export function loadLesson(relativePath: string): string | null {
 }
 
 /** Interactive labs rendered by a React component below the section's markdown. */
-export type LabWidget = "risk-triage" | "hash-verify" | "password-table" | "signin-log" | "effective-access" | "network-map" | "baseline-map" | "trust-boundary" | "threshold-tuner" | "malware-triage";
+export type LabWidget = "risk-triage" | "hash-verify" | "password-table" | "signin-log" | "effective-access" | "network-map" | "baseline-map" | "trust-boundary" | "threshold-tuner";
 
 export interface ContentSection {
   label: string;
@@ -207,7 +207,6 @@ const phase2Weeks: WeekDef[] = [
       { label: "How Malware Gets In", file: "phase-2/week-1/lesson-delivery.md" },
       { label: "Working a Malware Alert", file: "phase-2/week-1/lesson-response.md" },
       { label: "Tools Analysts Use", file: "phase-2/week-1/lesson-tools.md" },
-      { label: "Lab: Work a Malware Alert", file: "phase-2/week-1/lab-malware-triage.md", widget: "malware-triage" },
     ],
   },
   {

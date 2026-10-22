@@ -75,7 +75,7 @@ export const MISSION_SKILLS: Record<string, Skill> = {
 };
 
 /** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */
-export const LAB_PASS_IDS = ["lab-risk-triage", "lab-hash-verify", "lab-password-table", "lab-signin-log", "lab-effective-access", "lab-network-map", "lab-baseline-map", "lab-trust-boundary", "lab-threshold-tuner", "lab-malware-triage"] as const;
+export const LAB_PASS_IDS = ["lab-risk-triage", "lab-hash-verify", "lab-password-table", "lab-signin-log", "lab-effective-access", "lab-network-map", "lab-baseline-map", "lab-trust-boundary", "lab-threshold-tuner"] as const;
 export type LabPassId = (typeof LAB_PASS_IDS)[number];
 const isLabPass = (id: string) => (LAB_PASS_IDS as readonly string[]).includes(id);
 
@@ -88,7 +88,6 @@ export const LAB_SKILLS: Partial<Record<LabPassId, Skill>> = {
   "lab-baseline-map": "security",
   "lab-trust-boundary": "security",
   "lab-threshold-tuner": "security",
-  "lab-malware-triage": "security",
 };
 
 /** The scored labs, for the readiness report. href opens the lab's tab. */
@@ -100,7 +99,6 @@ export const LAB_CATALOG: { id: LabPassId; title: string; skill: Skill; href: st
   { id: "lab-baseline-map", title: "Spot the Outlier", skill: "security", href: "/range/phase-2/baselines-thresholds#lab-spot-the-outlier" },
   { id: "lab-trust-boundary", title: "Lock Every Gate", skill: "security", href: "/range/phase-2/baselines-thresholds#lab-lock-every-gate" },
   { id: "lab-threshold-tuner", title: "Tune the Threshold", skill: "security", href: "/range/phase-2/baselines-thresholds#lab-tune-the-threshold" },
-  { id: "lab-malware-triage", title: "Work a Malware Alert", skill: "security", href: "/range/phase-2/week-1#lab-work-a-malware-alert" },
 ];
 
 /** Everything readiness counts: missions and scored labs. */

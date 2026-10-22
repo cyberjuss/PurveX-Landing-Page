@@ -11,7 +11,6 @@ import { studentJoinedEmail, studentMilestoneEmail, studentWelcomeEmail } from "
 export const runtime = "nodejs";
 
 const LAB_NAME: Record<string, string> = {
-  "lab-malware-triage": "the Malware Triage lab",
   "lab-signin-log": "the Sign-in Log lab",
   "lab-effective-access": "the Effective Access lab",
   "lab-risk-triage": "the Risk Triage lab",

@@ -155,22 +155,6 @@ Each challenge needs its own "Lock in" click after dragging to the right value; 
 2 Shrink it: for challenge 1, which two marks need to land on opposite sides of the line? For challenge 2, what's the very next value above the typo's own count?
 3 Tell them which direction to drag, not the number itself.`,
   },
-  "malware-triage": {
-    steps: `One incident worked through Verify, Contain, Preserve, Escalate. Quarterly_Summary.xlsm opened on Devon's machine (FIN-WKS04) at 9:02; by 9:06 Defender flags a new scheduled task and network scanning from it; by 9:09 two more Finance machines (FIN-WKS02, FIN-WKS07) show the identical task and scan with nobody there opening anything.
-1 Verify: name what it is (four options, worm is correct) and name the proof (four options, the same behavior on untouched machines is correct).
-2 Contain: pick the first move (four options, isolate all three now is correct).
-3 Preserve: pick what to do with the isolated machines (four options, leave isolated and untouched is correct).
-4 Escalate: pick the write-up that actually hands off cleanly (four options, the one naming all three hosts, the file, the shared folder and the preserved state is correct).
-5 Debrief.`,
-    answers: `Verify: worm; proof is the identical task and scan reaching machines nobody opened anything on.
-Contain: isolate all three confirmed machines now, don't wait and don't just email a warning.
-Preserve: leave them isolated and powered on, don't scan, wipe, power off or reimage.
-Escalate: the full write-up naming all three hosts, the file and when it ran, the shared folder as the likely path, and that all three are isolated and preserved.`,
-    mistakes: `Calling it a virus because Devon is the one who opened the file, missing that the other two machines never had anyone touch them. Isolating only Devon's machine. Suggesting a cleanup scan, a power-off, or a reimage during Preserve, each of which erases the same evidence a different way. Escalating with only one host named, or claiming it's already cleaned up when Preserve says it deliberately has not been.`,
-    ladder: `1 Ask what's different about FIN-WKS02 and FIN-WKS07 compared to Devon's machine -- did anyone there open anything?
-2 Shrink it: a virus needs a person; this clearly didn't. What's the one-word name for malware that doesn't?
-3 Point at the exact sentence in the alert that proves self-spread, or at the Preserve lesson's own "do not power it off" line.`,
-  },
 };
 
 const LAB_COACH_PROMPT = `You are PurveX Coach, a senior analyst sitting next to a new hire while they work a short browser lab. You know this lab cold.

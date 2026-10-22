@@ -51,7 +51,6 @@ const ART: Record<string, { blurb: string; skill: string; icon: string; accent: 
   "baseline-map": { blurb: "Build three real baselines, then spot what breaks each one.", skill: "Log Analysis", icon: "ScanSearch", accent: "#9b8cff", minutes: 10 },
   "trust-boundary": { blurb: "Lock every gate between an attacker and your payroll data.", skill: "Access Control", icon: "LockKeyhole", accent: "#19c3b2", minutes: 8 },
   "threshold-tuner": { blurb: "Drag a detection threshold and watch what it catches and misses.", skill: "Risk Triage", icon: "Gauge", accent: "#f5a524", minutes: 8 },
-  "malware-triage": { blurb: "Verify, contain, preserve and escalate a spreading malware alert.", skill: "Incident Response", icon: "Bug", accent: "#ff6b81", minutes: 10 },
 };
 
 const FALLBACK = { blurb: "A hands-on lab in the PurveX environment.", skill: "Hands-on", icon: "FlaskConical", accent: "#5546e0", minutes: 15 };
