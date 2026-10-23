@@ -3540,6 +3540,25 @@ body:has(.lp) {
 .academy-prose .ad-mission > p + p { margin-top: 0.85rem; }
 .academy-prose .ad-mission > p:first-of-type strong:first-child { display: block; margin-bottom: 0.35rem; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rd-ink-3, #8a94a8); }
 .academy-prose .ad-mission > p:first-of-type { color: var(--rd-ink, var(--pvrx-text-primary-light)); }
+/* A multiple-choice option is marked up as "<br><strong>A</strong> text", one
+   per line, with no wrapper of its own -- adding one across every file this
+   pattern already appears in would be a much bigger, riskier change than
+   styling the shape that is already there. br + strong only ever matches an
+   option's own letter, never the Task:/caller-name label (the paragraph's
+   first child, never preceded by a br), so this needs no markup change. */
+.academy-prose .ad-mission > p br + strong {
+  display: inline-block;
+  margin: 0.6rem 0.55rem 0.2rem 0;
+  padding: 0.05rem 0.5rem;
+  min-width: 1.3rem;
+  text-align: center;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--rd-accent, #5546e0) 14%, transparent);
+  color: var(--rd-accent, #5546e0);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--ty-small);
+  font-weight: 700;
+}
 .academy-prose .ad-ticket-meta {
   display: grid; grid-template-columns: max-content minmax(0,1fr); gap: 0.35rem 0.65rem;
   margin-top: 0.85rem; padding: 0.65rem 0; border: none; background: transparent;
