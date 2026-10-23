@@ -4486,6 +4486,12 @@ html:active-view-transition .ax-page { animation: none }
 .rd-log__head h3 { font-family: var(--font-display); font-size: var(--ty-h4); font-weight: 600; color: var(--rd-ink); }
 .rd-log__head p { font-size: var(--ty-note); color: var(--rd-ink-3); }
 .rd-log__count { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note); font-weight: 700; color: var(--rd-ink-2); }
+/* The group header is a toggle now, collapsed by default -- thirteen compact
+   rows to scan beats a hundred mission rows expanded at once. */
+.rd-log__toggle { display: flex; align-items: flex-end; gap: 10px; flex: 1; min-width: 0; background: none; border: none; padding: 0; margin: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+.rd-log__chevron { flex-shrink: 0; margin-bottom: 5px; color: var(--rd-ink-3); transition: transform var(--ax-dur-fast, 150ms) ease, color var(--ax-dur-fast, 150ms) ease; }
+.rd-log__toggle:hover .rd-log__chevron, .rd-log__toggle:focus-visible .rd-log__chevron { color: var(--rd-accent); }
+.rd-log__toggle:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 2px; }
 .rd-log ol { list-style: none; margin: 0; padding: 0; }
 .rd-log__row { display: grid; grid-template-columns: 26px 10px minmax(0, 1fr) auto; align-items: center; gap: 4px 14px; padding: 12px 0; border-bottom: 1px solid var(--rd-line-2); font-size: var(--ty-body); }
 .rd-log__row:hover { background: linear-gradient(90deg, transparent, var(--rd-line-2) 20%, var(--rd-line-2) 80%, transparent); }

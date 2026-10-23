@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ChevronDown } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch, RESULTS_CHANGED_EVENT, useResults } from "@/lib/academy-client";
 import { challengeHref, challengeTabHref, missionHref, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
@@ -166,6 +167,14 @@ export function ReadinessDashboard() {
   const lv = LEVELS[s.level];
   const scoreTone: Tone = s.finished === 0 ? "none" : s.level === "ready" ? "good" : s.level === "almost" ? "warn" : s.level === "practice" ? "bad" : "live";
   const focusKey = s.finished > 0 ? s.focus[0]?.key : undefined;
+  // The mission log used to show every row of every challenge at once, which
+  // read fine back when there were three challenges and unreadable once
+  // readiness started counting every real one. Each group opens on its own
+  // now, collapsed until asked for, so the page is thirteen compact lines to
+  // scan instead of a hundred rows to scroll past.
+  const [openLog, setOpenLog] = useState<Record<string, boolean>>({});
+  const logOpen = (key: string) => openLog[key] === true;
+  const toggleLog = (key: string) => setOpenLog((prev) => ({ ...prev, [key]: !prev[key] }));
 
   function reset() {
     if (!window.confirm("Reset your readiness score? This clears every mission result.")) return;
@@ -294,13 +303,17 @@ export function ReadinessDashboard() {
           const list = Object.values(MISSION_CATALOG).filter((m) => m.challenge === ch.key);
           const done = list.filter((m) => missionPoints(results[m.id]) !== null).length;
           const locked = isLockedHref(challengeTabHref(ch.key));
+          const open = logOpen(ch.key);
           return (
             <div key={ch.key} className="rd-log">
               <div className="rd-log__head">
-                <div>
-                  <h3>{ch.label}</h3>
-                  <p>{ch.blurb}</p>
-                </div>
+                <button type="button" className="rd-log__toggle" onClick={() => toggleLog(ch.key)} aria-expanded={open}>
+                  <ChevronDown className={`rd-log__chevron h-4 w-4 ${open ? "" : "-rotate-90"}`} aria-hidden />
+                  <span>
+                    <h3>{ch.label}</h3>
+                    <p>{ch.blurb}</p>
+                  </span>
+                </button>
                 <span className="rd-log__count">
                   {done}/{list.length}
                 </span>
@@ -312,6 +325,7 @@ export function ReadinessDashboard() {
                   </Link>
                 )}
               </div>
+              {open && (
               <ol>
                 {list.map((m, i) => {
                   const st = missionStatus(results[m.id]);
@@ -351,19 +365,24 @@ export function ReadinessDashboard() {
                   );
                 })}
               </ol>
+              )}
             </div>
           );
         })}
         <div className="rd-log">
           <div className="rd-log__head">
-            <div>
-              <h3>Scored labs</h3>
-              <p>Your first finished score counts, so later replays do not change it.</p>
-            </div>
+            <button type="button" className="rd-log__toggle" onClick={() => toggleLog("labs")} aria-expanded={logOpen("labs")}>
+              <ChevronDown className={`rd-log__chevron h-4 w-4 ${logOpen("labs") ? "" : "-rotate-90"}`} aria-hidden />
+              <span>
+                <h3>Scored labs</h3>
+                <p>Your first finished score counts, so later replays do not change it.</p>
+              </span>
+            </button>
             <span className="rd-log__count">
               {LAB_CATALOG.filter((l) => labPoints(results[l.id]) !== null).length}/{LAB_CATALOG.length}
             </span>
           </div>
+          {logOpen("labs") && (
           <ol>
             {LAB_CATALOG.map((l, i) => {
               const st = labStatus(results[l.id]);
@@ -387,6 +406,7 @@ export function ReadinessDashboard() {
               );
             })}
           </ol>
+          )}
         </div>
       </section>
 
