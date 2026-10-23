@@ -117,6 +117,20 @@ const MISSION_LAB = {
   // tightest-possible one. No pre-planted ticket mark needed -- Wealth
   // Management Users already exists in the base roster, same as tq-24.
   "th-01": G([{ c: { t: "pso", minLength: 12, appliesTo: "Wealth Management Users", maxLockout: 12 }, label: "A 12-character policy locking after 12 or fewer tries applies to Wealth Management Users" }]),
+  // Phase 2 capstone: two real findings from the same overnight chain,
+  // checked the same way their own single-week versions already were
+  // (fwRuleOff for the rule, member for the excess group), against the
+  // capstone's own separate artifacts (INC-1069/INC-1070, not Quiet
+  // Beacon's or Baseline a Team's). cp-01/02/03/05/07/08 are reasoning or
+  // naming steps with no lab-state change, same as tq-06.
+  "cp-04": G(
+    [{ c: { t: "fwRuleOff", name: "PurveX Update Helper Service" }, label: "The capstone's outbound rule is disabled or removed" }],
+    { tickets: ["INC-1069"] }
+  ),
+  "cp-06": G(
+    [{ c: { t: "member", sam: "ezra.lund", group: "Server Admins", want: false }, label: "ezra.lund is not in Server Admins" }],
+    { users: ["ezra.lund"] }
+  ),
   // The wire-capture capstone: the burned service account is contained by
   // disabling it, which the snapshot reports. Kept, not deleted, so the review
   // still has it.

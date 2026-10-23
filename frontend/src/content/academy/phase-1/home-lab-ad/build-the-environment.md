@@ -104,7 +104,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 15
+$PurvexScriptVersion = 17
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -382,6 +382,30 @@ function Ensure-InfraTickets {
             Write-Host "  Planted INC-1067: firewall rule PurveX Legacy - Internal File Access" -ForegroundColor Green
         }
         catch { Write-Host "  Could not plant INC-1067: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+
+    # INC-1069: the Phase 2 capstone's own persistence mechanism, a separate
+    # artifact from Quiet Beacon's (different task, different rule, different
+    # address) so a student who already closed that one still finds this one
+    # fresh. Same harmless-by-construction shape: the scheduled task's own
+    # connection attempt always times out, since 203.0.113.0/24 routes nowhere.
+    if (-not (Test-PurvexTicketMark "INC-1069") -and $PSCmdlet.ShouldProcess("SystemIndexMaintenance", "Plant capstone persistence ticket")) {
+        try {
+            $taskName = "SystemIndexMaintenance"
+            $action = New-ScheduledTaskAction -Execute "powershell.exe" `
+                -Argument '-NoProfile -WindowStyle Hidden -Command "Test-NetConnection -ComputerName 203.0.113.88 -Port 8080 -WarningAction SilentlyContinue | Out-Null"'
+            $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 15) -RepetitionDuration ([TimeSpan]::MaxValue)
+            $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+            Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings `
+                -Description "PurveX training file. This is not malware and the connection attempt is harmless: it only reaches a documentation-only address (RFC 5737) that routes nowhere. Treat it as a suspicious persistence mechanism for training." `
+                -RunLevel Highest -ErrorAction Stop | Out-Null
+            New-NetFirewallRule -DisplayName "PurveX Update Helper Service" -Group "PurveX Lab" -Direction Outbound -Action Allow `
+                -Protocol TCP -RemotePort 8080 -RemoteAddress "203.0.113.88" -Profile Any `
+                -Description "CTF-TICKET-1069: training artifact, not a real vulnerability. Permits outbound traffic to a documentation-only address for the Phase 2 capstone." -ErrorAction Stop | Out-Null
+            Add-PurvexTicketMark "INC-1069"
+            Write-Host "  Planted INC-1069: scheduled task $taskName and its firewall rule" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1069: $($_.Exception.Message)" -ForegroundColor Yellow }
     }
 }
 
@@ -874,6 +898,19 @@ function Ensure-PurvexTicketObjects {
             -OUPath $DeptOUPaths["Compliance"].UsersOU `
             -Groups @("Compliance Users", "Server Admins")
         Ensure-UserDescription -SamAccountName "theo.walsh" -Description "CTF-TICKET-1066: Compliance Analyst. Server Admins membership predates this role; never reviewed after the transfer."
+    }
+
+    # INC-1070: the Phase 2 capstone's second artifact, planted alongside
+    # INC-1069 as the same overnight chain -- a support account added to
+    # Server Admins the same week the scheduled task appeared. No HR record
+    # explains the grant.
+    if (-not (Get-ADUser -Filter "SamAccountName -eq 'ezra.lund'" -ErrorAction SilentlyContinue)) {
+        Ensure-User `
+            -First "Ezra" -Last "Lund" -SamAccountName "ezra.lund" `
+            -Title "IT Support Specialist" -Department "IT" `
+            -OUPath $DeptOUPaths["IT"].UsersOU `
+            -Groups @("IT Users", "Server Admins")
+        Ensure-UserDescription -SamAccountName "ezra.lund" -Description "CTF-TICKET-1070: IT Support Specialist. Server Admins added this week; no change ticket or HR record on file for it."
     }
 
     Ensure-InfraTickets -DeptOUPaths $DeptOUPaths

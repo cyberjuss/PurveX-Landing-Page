@@ -3,7 +3,7 @@ import { PROOF_TICKETS } from "@/lib/academy-proof";
 
 export type MissionCatalogEntry = {
   id: string;
-  challenge: "day-one" | "ticket-queue" | "alert-queue" | "wire" | "crypto" | "client-data" | "malware-alert" | "soc-alert" | "baseline-alert" | "zerotrust-alert" | "threshold-alert";
+  challenge: "day-one" | "ticket-queue" | "alert-queue" | "wire" | "crypto" | "client-data" | "malware-alert" | "soc-alert" | "baseline-alert" | "zerotrust-alert" | "threshold-alert" | "night-shift";
   title: string;
   prompt: string;
   skill: Skill;
@@ -295,6 +295,62 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Apply a Fine-Grained Password Policy balancing lockout friction against guessing resistance, then report the threshold set.",
     skill: "security",
   },
+  "cp-01": {
+    id: "cp-01",
+    challenge: "night-shift",
+    title: "Three Alerts, One Queue (Capstone)",
+    prompt: "Three overnight alerts arrive together. Choose which one to work first.",
+    skill: "security",
+  },
+  "cp-02": {
+    id: "cp-02",
+    challenge: "night-shift",
+    title: "Classify It (Capstone)",
+    prompt: "Classify the unexplained scheduled task alert by severity.",
+    skill: "security",
+  },
+  "cp-03": {
+    id: "cp-03",
+    challenge: "night-shift",
+    title: "Find It (Capstone)",
+    prompt: "Find the unexplained scheduled task on the domain controller and name it.",
+    skill: "security",
+  },
+  "cp-04": {
+    id: "cp-04",
+    challenge: "night-shift",
+    title: "Close the Door It Is Using (Capstone)",
+    prompt: "Find and disable the outbound rule the task relies on, then report the port.",
+    skill: "security",
+  },
+  "cp-05": {
+    id: "cp-05",
+    challenge: "night-shift",
+    title: "The Same Night, a Different Account (Capstone)",
+    prompt: "Find the account added to Server Admins with no change ticket on file.",
+    skill: "security",
+  },
+  "cp-06": {
+    id: "cp-06",
+    challenge: "night-shift",
+    title: "Remove It (Capstone)",
+    prompt: "Remove the excess Server Admins membership and report the group.",
+    skill: "security",
+  },
+  "cp-07": {
+    id: "cp-07",
+    challenge: "night-shift",
+    title: "Put It in Order (Capstone)",
+    prompt: "Map the night's two findings to the correct kill chain stages.",
+    skill: "security",
+  },
+  "cp-08": {
+    id: "cp-08",
+    challenge: "night-shift",
+    title: "Hand It Up as One Incident (Capstone)",
+    prompt: "Name what connects all three alerts into a single intrusion.",
+    skill: "security",
+  },
   "tq-06": {
     id: "tq-06",
     challenge: "alert-queue",
@@ -366,6 +422,7 @@ export const CHALLENGE_PATHS: Record<
   "baseline-alert": { href: "/range/phase-2/baselines-thresholds", tab: "baseline-a-team-then-find-who-breaks-it" },
   "zerotrust-alert": { href: "/range/phase-2/baselines-thresholds", tab: "lock-every-gate" },
   "threshold-alert": { href: "/range/phase-2/baselines-thresholds", tab: "set-a-defensible-lockout-threshold" },
+  "night-shift": { href: "/range/phase-2/capstone", tab: "the-night-the-queue-didn-t-stop" },
 };
 
 export function missionHref(id: string): string {
@@ -420,6 +477,7 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "baseline-alert": "Baseline a Team, Then Find Who Breaks It",
   "zerotrust-alert": "Lock Every Gate",
   "threshold-alert": "Set a Defensible Lockout Threshold",
+  "night-shift": "The Night the Queue Didn't Stop",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {
@@ -451,7 +509,7 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
 }
 
 /** Tickets that need a real change in the student's lab before they can answer. */
-export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25", "cap-06", "cry-06", "mw-01", "mw-02", "bt-03", "zt-02", "th-01"];
+export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25", "cap-06", "cry-06", "mw-01", "mw-02", "bt-03", "zt-02", "th-01", "cp-04", "cp-06"];
 
 /**
  * The on-the-job task each mission practices. A gated ticket seen in the lab

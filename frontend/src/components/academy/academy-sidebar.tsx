@@ -110,10 +110,15 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         }
         // Challenges reads as its own kind of work, not one more sitting in
         // the Home Lab list, so it gets its own section rather than being the
-        // last row in this one.
+        // last row in this one. Detected by content (every section labeled
+        // "Challenge: ...") rather than a fixed slug, so a phase whose
+        // homeLabs is entirely a capstone -- Phase 2 has no "home lab"
+        // sittings at all, just the one capstone entry -- still gets routed
+        // into Challenges instead of showing up under "The Company".
         const allHomeLabs = phase.homeLabs ?? [];
-        const labs = allHomeLabs.filter((l) => l.slug !== "home-lab-challenges");
-        const challenges = allHomeLabs.find((l) => l.slug === "home-lab-challenges") ?? null;
+        const isChallengesEntry = (l: PhaseDef["weeks"][number]) => l.sections.length > 0 && l.sections.every((s) => s.label.startsWith("Challenge:"));
+        const labs = allHomeLabs.filter((l) => !isChallengesEntry(l));
+        const challenges = allHomeLabs.find((l) => isChallengesEntry(l)) ?? null;
         const labsKey = `${phase.slug}:labs`;
         // Open when you are inside one of them, or when you have opened it by
         // hand. Collapsed otherwise, so four sittings do not crowd the weeks.

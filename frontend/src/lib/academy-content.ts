@@ -279,13 +279,27 @@ const phase2Weeks: WeekDef[] = [
   },
 ];
 
+// The Phase 2 capstone, same role as Phase 1's Home Lab Challenges: a single
+// scenario pulling together everything the phase taught, graded against the
+// student's own lab. One continuous overnight shift rather than three
+// separate pieces, since Phase 2's weeks build one investigation skill
+// rather than Phase 1's several independent fundamentals.
+const phase2Capstone: HomeLabDef[] = [
+  {
+    slug: "capstone",
+    title: "Phase 2 — Challenges",
+    summary: "One overnight shift, three alerts that turn out to be one intrusion, worked start to finish on your own lab.",
+    sections: [{ label: "Challenge: The Night the Queue Didn't Stop", file: "phase-2/capstone/challenge-the-night-shift.md" }],
+  },
+];
+
 // Phase 3 -- Incident Response. No weeks defined yet (unlike Phase 1/2,
 // there's no source-Drive week breakdown to placeholder against), so it
 // shows in the sidebar as a phase group with no entries underneath, linking
 // straight to the phase-3 page's "still being written" placeholder.
 export const phases: PhaseDef[] = [
   { slug: "phase-1", label: "Phase 1", title: "Fundamentals", weeks: phase1Weeks, homeLabs: phase1HomeLabs },
-  { slug: "phase-2", label: "Phase 2", title: "Threat Detection & Log Analysis", weeks: phase2Weeks },
+  { slug: "phase-2", label: "Phase 2", title: "Threat Detection & Log Analysis", weeks: phase2Weeks, homeLabs: phase2Capstone },
   { slug: "phase-3", label: "Phase 3", title: "Incident Response", weeks: [] },
 ];
 
