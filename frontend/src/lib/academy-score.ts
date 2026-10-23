@@ -83,6 +83,12 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "w3m-c2": "logs",
   "w3m-c3": "logs",
   "w3m-c4": "logs",
+  "w3m-c5": "logs",
+  // Confirm the Map From the Command Line: Map Your Pod's companion lab,
+  // reading the domain controller's own listening ports with PowerShell
+  // instead of trusting the drag-and-drop diagram alone.
+  "nm-01": "security",
+  "nm-02": "security",
   "tq-20": "troubleshooting",
   "tq-21": "security",
   "tq-22": "security",

@@ -80,6 +80,45 @@ One machine opening a row for port after port of the same target, each only a pa
 
 That shape, one source spraying SYNs across many ports fast, is a scan. It looks nothing like normal traffic, which settles into a few steady conversations. Seeing it in a real capture is often the first sign that someone is mapping a machine before they move on it.
 
+### Confirm It With the Tool the Job Actually Uses
+
+You just read a scan by hand, one packet at a time. On the job, almost every posting for this role names the same tool for this exact task: Nmap. It is not doing anything the bash loop did not already do. It is reporting the same three answers, just faster and in its own column.
+
+Install it on the Ubuntu server.
+
+```bash
+sudo apt install -y nmap
+```
+
+Then scan the same ports with a connect scan, the same handshake you just read packet by packet.
+
+```bash
+nmap -sT -p 53,88,389,445,3389,23,8080,9999 dc01
+```
+
+Nmap prints one word per port: `open`, `closed`, or `filtered`. Those are the exact three answers you already read from raw packets, just labeled for you instead of worked out by hand.
+
+<div class="ad-mission" data-id="w3m-c5" data-attempts="0">
+<p><strong>Task:</strong> Run the Nmap scan above. What does it report for port 445?</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for what Nmap reports on port 445" placeholder="open, closed, or filtered" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{open}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>open</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A real scanner lands on the same answer as the raw packets did, because it is reading the same handshake. Knowing the tool matters on the job, but reading the traffic underneath it is what tells you whether the tool is right.</p>
+</div>
+</div>
+</div>
+</div>
+
 ### Check Yourself
 
 Answer from what you captured, not from what you remember reading.
