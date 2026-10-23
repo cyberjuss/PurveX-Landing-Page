@@ -209,20 +209,18 @@ export const MISSION_SKILLS: Record<string, Skill> = {
 };
 
 /** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */
-export const LAB_PASS_IDS = ["lab-risk-triage", "lab-network-map"] as const;
+export const LAB_PASS_IDS = ["lab-risk-triage"] as const;
 export type LabPassId = (typeof LAB_PASS_IDS)[number];
 const isLabPass = (id: string) => (LAB_PASS_IDS as readonly string[]).includes(id);
 
 /** Browser labs that count toward readiness, scored by the points they earned the first time they were finished. */
 export const LAB_SKILLS: Partial<Record<LabPassId, Skill>> = {
   "lab-risk-triage": "risk",
-  "lab-network-map": "security",
 };
 
 /** The scored labs, for the readiness report. href opens the lab's tab. */
 export const LAB_CATALOG: { id: LabPassId; title: string; skill: Skill; href: string }[] = [
   { id: "lab-risk-triage", title: "Monday Morning Risk Triage", skill: "risk", href: "/range/phase-1/week-1#lab-monday-morning-risk-triage" },
-  { id: "lab-network-map", title: "Map Your Pod", skill: "security", href: "/range/phase-2/baselines-thresholds#lab-map-your-pod" },
 ];
 
 /** Everything readiness counts: missions and scored labs. */

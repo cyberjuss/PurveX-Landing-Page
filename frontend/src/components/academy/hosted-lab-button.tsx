@@ -699,7 +699,7 @@ export function HostedLabMenu() {
           <Info className="h-3 w-3" aria-hidden /> How it works
         </button>
         {state === "ready" && (
-          <Link href="/range/labs/network-map" className="hl__link">
+          <Link href="/range/labs/confirm-the-map" className="hl__link">
             <Waypoints className="h-3 w-3" aria-hidden /> Map your pod
           </Link>
         )}

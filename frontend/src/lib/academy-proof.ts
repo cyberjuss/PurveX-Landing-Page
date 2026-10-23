@@ -416,7 +416,6 @@ export function buildWorkItems(results: Results, drills: DrillEntry[]): WorkItem
 /** Skills a passed browser lab shows. Each lab confirms the work: the hash must match, the decode must be right. */
 const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
   "lab-risk-triage": ["Risk Assessment", "CIA Triad"],
-  "lab-network-map": ["Network Segmentation", "Port and Protocol Identification"],
 };
 
 export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean, results: Results = {}): { group: string; items: string[] }[] {

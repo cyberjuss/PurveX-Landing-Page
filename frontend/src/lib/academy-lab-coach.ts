@@ -44,18 +44,6 @@ Order: C, B, D, A.`,
 2 Shrink it: for CIA ask "is it a leak, a lie or a lockout?"; for risk ask "how likely this week?" then "how bad if it happens?" separately.
 3 Point at the exact detail in the ticket that decides it (who can open the folder, what the server holds, who checks invoices, the spare printer upstairs).`,
   },
-  "network-map": {
-    steps: `A live diagram of the student's own pod (DC + Ubuntu), read from the hosted-lab status endpoint. Two drag-onto-the-diagram rounds, no chips or multiple choice.
-1 Round 1, ports: five task cards (open RDP to the DC, a sign-in's Kerberos ticket check, an LDAP directory lookup, a machine's DNS lookup for the DC, an SSH session on the Ubuntu box) get dragged onto the matching port slot drawn around the DC or Ubuntu node. A correct drop reveals the port number on the diagram; a wrong drop bounces the card back.
-2 Round 2, boundary (unlocks once all five ports are placed, and three outside nodes -- The Internet, Another Pod, Guacamole -- appear): five connection-attempt cards get dragged onto whichever node actually starts that connection, not the node it's aimed at. A correct drop draws a real colored arrow into the diagram (green and solid if allowed, red and dashed if blocked) from that node to its target.
-No separate debrief screen -- the finished diagram, with every arrow drawn, is the debrief.`,
-    answers: `Ports: RDP 3389 (drag onto the DC's top port), Kerberos 88 and LDAP 389 (drag onto the DC's two left-side ports), DNS 53 (drag onto the DC's bottom-right port), SSH 22 (drag onto the Ubuntu node's port).
-Boundary, by which node starts the connection: DC starting a connection to Linux = allowed (green arrow DC->Ubuntu). Ubuntu starting a connection to the DC = allowed (green arrow Ubuntu->DC). The Internet starting a connection aimed at the DC's RDP port = blocked (red arrow). Another Pod starting a connection aimed at this Ubuntu server = blocked (red arrow). Guacamole starting a connection to the DC's desktop = allowed (green arrow) -- the one sanctioned path in.`,
-    mistakes: `Dragging a boundary card onto the node it's aimed AT instead of the node that's actually making the connection -- the slot that accepts a card is always the initiator, never the target. Thinking the pod's isolation is a setting on the machines themselves rather than the security group around them. Assuming Guacamole's connection breaks the "nothing else can reach in" rule, when it is the one sanctioned path, not an exception to it. Confusing which port is which (Kerberos 88 vs. LDAP 389 is the common mix-up, since both are directory-related).`,
-    ladder: `1 Ask, for a boundary card: who is doing the reaching out in this sentence, not who gets reached.
-2 Shrink it: for ports, ask what job the protocol is actually doing (checking a ticket, looking up a directory entry, finding an address, opening a screen); for boundary cards, ask whether the two ends are both inside this one pod, or whether either end is outside it.
-3 Point at the exact node on the diagram (not a chip, not a button) they should be dragging the card onto.`,
-  },
 };
 
 const LAB_COACH_PROMPT = `You are PurveX Coach, a senior analyst sitting next to a new hire while they work a short browser lab. You know this lab cold.

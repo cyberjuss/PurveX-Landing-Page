@@ -35,21 +35,6 @@ export const LAB_BRIEFS: Record<LabWidget, LabBrief> = {
     tools: [],
     minutes: 12,
   },
-  "network-map": {
-    problem:
-      "In the 2013 Target breach, attackers got in through a third-party HVAC vendor's stolen credentials, then moved from that vendor connection into the payment network because the two were not properly separated. Segmentation that actually isolates one system from another is what would have stopped that move.",
-    today: "Before working another alert, confirm what your own pod's isolation actually allows and actually blocks.",
-    objective: {
-      "help-desk": "Name the port behind five everyday tasks on your pod, and know what your lab can and cannot reach.",
-      sysadmin: "Confirm which ports your two machines actually use, and that your pod's isolation holds the line it claims to.",
-      "soc-analyst": "Read your own network's boundary the way you would read any segmentation before trusting an alert about it.",
-      "cyber-analyst": "Map your pod's real ports and trust boundary, and connect it to why segmentation failures like Target's matter.",
-      "ir-analyst": "Know what's isolated and what isn't before you ever have to contain something on it.",
-    },
-    objectiveDefault: "Map what your own pod's two machines actually run, and what its isolation actually allows.",
-    tools: [],
-    minutes: 10,
-  },
 };
 
 export const BROWSER_LABS = Object.keys(LAB_BRIEFS) as LabWidget[];
