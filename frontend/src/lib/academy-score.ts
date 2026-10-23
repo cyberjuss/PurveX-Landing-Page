@@ -89,6 +89,27 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   // instead of trusting the drag-and-drop diagram alone.
   "nm-01": "security",
   "nm-02": "security",
+  // soc-mindset's two labs: a real failed sign-in documented with the 5 W's,
+  // and the domain controller's own real default firewall posture, read
+  // straight from PowerShell instead of a slide.
+  "sm2-01": "logs",
+  "sm2-02": "security",
+  "sm2-03": "security",
+  "sm2-04": "security",
+  // Malware week's two labs: a real EICAR test file for signature-based
+  // detection, and a real Sysmon process tree for behavior-based detection,
+  // matching the week's own Antivirus-then-EDR teaching order.
+  "mw2-01": "logs",
+  "mw2-02": "security",
+  "mw2-03": "security",
+  "mw2-04": "security",
+  // Log Analysis Fundamentals' two labs: one real sign-in correlated across
+  // both machines' own logs, and PowerShell's own script-block logging
+  // turned on and read.
+  "la2-01": "logs",
+  "la2-02": "logs",
+  "la2-03": "logs",
+  "la2-04": "logs",
   "tq-20": "troubleshooting",
   "tq-21": "security",
   "tq-22": "security",

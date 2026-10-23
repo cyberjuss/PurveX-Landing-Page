@@ -45,6 +45,12 @@ const ART: Record<string, { blurb: string; skill: string; icon: string; accent: 
   "one-power": { blurb: "Grant a user exactly one command as root, and prove you did not hand over the machine.", skill: "Access Control", icon: "LockKeyhole", accent: "#19c3b2", minutes: 25 },
   "network-map": { blurb: "Map your own pod's ports, then prove its isolation actually holds.", skill: "Networking", icon: "Radar", accent: "#3b9eff", minutes: 10 },
   "confirm-the-map": { blurb: "Ask your domain controller what it is really listening on, in PowerShell, not a diagram.", skill: "Networking", icon: "Radar", accent: "#3b9eff", minutes: 15 },
+  "document-the-five-ws": { blurb: "Fail a real sign-in on purpose, then document it with the 5 W's.", skill: "SOC Analysis", icon: "ScanSearch", accent: "#9b8cff", minutes: 15 },
+  "default-posture": { blurb: "Read your domain controller's real default firewall posture, allowlist versus blocklist.", skill: "SOC Analysis", icon: "ShieldAlert", accent: "#9b8cff", minutes: 10 },
+  "trigger-a-real-detection": { blurb: "Create a real EICAR test file and read the exact signature Defender flags it with.", skill: "Malware", icon: "Bug", accent: "#ff6b81", minutes: 15 },
+  "read-a-process-tree": { blurb: "Find a real Sysmon process tree and name the Kill Chain stage it matches.", skill: "Malware", icon: "Bug", accent: "#ff6b81", minutes: 15 },
+  "one-timeline-two-machines": { blurb: "Sign in to both machines in your pod and correlate the two logs into one timeline.", skill: "Log Analysis", icon: "ScanSearch", accent: "#9b8cff", minutes: 15 },
+  "turn-on-script-logging": { blurb: "Turn on PowerShell's own script-block logging and read a command's full text back.", skill: "Log Analysis", icon: "ScanSearch", accent: "#9b8cff", minutes: 15 },
 };
 
 const FALLBACK = { blurb: "A hands-on lab in the PurveX environment.", skill: "Hands-on", icon: "FlaskConical", accent: "#5546e0", minutes: 15 };

@@ -189,8 +189,10 @@ const phase2Weeks: WeekDef[] = [
       { label: "How AI Is Changing the Role", file: "phase-2/soc-mindset/lesson-ai-impact.md" },
       { label: "The Investigation Mindset", file: "phase-2/soc-mindset/lesson-investigation-mindset.md" },
       { label: "The 5 W's of an Investigation", file: "phase-2/soc-mindset/lesson-5ws.md" },
+      { label: "Lab: Document a Real Alert With the 5 W's", file: "phase-2/soc-mindset/lab-document-the-five-ws.md" },
       { label: "Classifying an Incident", file: "phase-2/soc-mindset/lesson-classification.md" },
       { label: "Allowlisting and Blocklisting", file: "phase-2/soc-mindset/lesson-allow-deny.md" },
+      { label: "Lab: Read Your Domain Controller's Default Posture", file: "phase-2/soc-mindset/lab-default-posture.md" },
       { label: "Resources", file: "phase-2/soc-mindset/resources.md" },
     ],
   },
@@ -207,6 +209,8 @@ const phase2Weeks: WeekDef[] = [
       { label: "How Malware Gets In", file: "phase-2/week-1/lesson-delivery.md" },
       { label: "Working a Malware Alert", file: "phase-2/week-1/lesson-response.md" },
       { label: "Tools Analysts Use", file: "phase-2/week-1/lesson-tools.md" },
+      { label: "Lab: Trigger a Real Detection", file: "phase-2/week-1/lab-trigger-a-real-detection.md" },
+      { label: "Lab: Read a Process Tree", file: "phase-2/week-1/lab-read-a-process-tree.md" },
     ],
   },
   {
@@ -215,6 +219,8 @@ const phase2Weeks: WeekDef[] = [
     summary: "Read the host, the account, and the log before deciding what happened.",
     sections: [
       { label: "Overview", file: "phase-2/week-2/overview.md" },
+      { label: "Lab: One Timeline, Two Machines", file: "phase-2/week-2/lab-one-timeline-two-machines.md" },
+      { label: "Lab: Turn On Script Logging", file: "phase-2/week-2/lab-turn-on-script-logging.md" },
     ],
   },
   // These two replace the old empty "week-3" (SIEM Basics) and "week-4"
