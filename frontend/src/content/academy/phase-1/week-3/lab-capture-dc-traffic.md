@@ -142,6 +142,8 @@ Answer from what you captured, not from what you remember reading.
 </div>
 </div>
 
+### Read the LDAP Handshake
+
 <div class="ad-mission" data-id="w3e-c2" data-attempts="0">
 <p><strong>Task:</strong> For the LDAP connection in your capture, which packet came back from the domain controller to open the handshake? Type it exactly as Wireshark's Info column shows it.</p>
 <div class="ad-guess">
@@ -163,6 +165,8 @@ Answer from what you captured, not from what you remember reading.
 </div>
 </div>
 
+### Count the DNS Exchange
+
 <div class="ad-mission" data-id="w3e-c3" data-attempts="0">
 <p><strong>Task:</strong> In your capture, how many packets did the DNS request and reply need? Type the number.</p>
 <div class="ad-guess">
@@ -183,6 +187,8 @@ Answer from what you captured, not from what you remember reading.
 </div>
 </div>
 </div>
+
+### Isolate One Conversation
 
 <div class="ad-mission ad-mission--capstone" data-id="w3e-c4" data-attempts="0">
 <p><strong>Task:</strong> You want to read one connection's whole exchange without the surrounding noise. Which Wireshark move does that? Type its letter.<br><strong>A</strong> Opening the Bytes pane.<br><strong>B</strong> Right-click a packet, Follow, TCP Stream.<br><strong>C</strong> Scrolling the Packet List faster.</p>

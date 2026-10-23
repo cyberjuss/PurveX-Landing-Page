@@ -119,6 +119,8 @@ Nmap prints one word per port: `open`, `closed`, or `filtered`. Those are the ex
 </div>
 </div>
 
+### Weigh a Stealthier Scan
+
 <div class="ad-mission" data-id="w3m-c6" data-attempts="0">
 <p><strong>Task:</strong> The scan you just ran (<code>-sT</code>) completes the full three-way handshake on every open port, same as your bash loop. A SYN scan (<code>-sS</code>) instead sends SYN, reads SYN-ACK, then sends RST instead of finishing with ACK. Why might an attacker prefer that? Type its letter.<br><strong>A</strong> It is faster, and it never fully opens a connection the target's own application might log.<br><strong>B</strong> It is slower but gives a more accurate result.<br><strong>C</strong> There is no real difference between the two on the wire.</p>
 <div class="ad-guess">
@@ -165,6 +167,8 @@ Answer from what you captured, not from what you remember reading.
 </div>
 </div>
 
+### Read a Filtered Port
+
 <div class="ad-mission" data-id="w3m-c2" data-attempts="0">
 <p><strong>Task:</strong> A port where the firewall drops the traffic looks like what in your capture? Type its letter.<br><strong>A</strong> A completed handshake.<br><strong>B</strong> A single RST.<br><strong>C</strong> A SYN sent again and again with no reply.</p>
 <div class="ad-guess">
@@ -186,6 +190,8 @@ Answer from what you captured, not from what you remember reading.
 </div>
 </div>
 
+### Tell Closed From Filtered
+
 <div class="ad-mission" data-id="w3m-c3" data-attempts="0">
 <p><strong>Task:</strong> What is the difference between a closed port and a filtered port? Type its letter.<br><strong>A</strong> There is none, both are shut.<br><strong>B</strong> Closed answers with a RST, filtered answers with silence.<br><strong>C</strong> Closed is slower than filtered.</p>
 <div class="ad-guess">
@@ -206,6 +212,8 @@ Answer from what you captured, not from what you remember reading.
 </div>
 </div>
 </div>
+
+### Name What Detection Rests On
 
 <div class="ad-mission ad-mission--capstone" data-id="w3m-c4" data-attempts="0">
 <p><strong>Task:</strong> The scan used a plain bash loop, not a hacking tool. What does that mean for detection? Type its letter.<br><strong>A</strong> Scans cannot be detected.<br><strong>B</strong> You detect the pattern in the traffic, not a banned tool.<br><strong>C</strong> Only special attacker tools leave a trace.</p>

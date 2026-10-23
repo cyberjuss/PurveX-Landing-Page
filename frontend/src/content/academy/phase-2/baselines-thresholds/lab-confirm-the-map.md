@@ -46,6 +46,8 @@ A real domain controller listens on more than five ports. Scroll the rest of the
 </div>
 </div>
 
+### Name a Port You Depend On
+
 <div class="ad-mission" data-id="nm-03" data-attempts="0">
 <p><strong>Task:</strong> One extra port you likely saw is 9389. Every <code>Get-ADUser</code>, <code>Get-ADGroupMember</code>, and other AD PowerShell command you have run all course has to reach the directory somehow. What service listens on 9389, and why does it matter to you specifically? Type its letter.<br><strong>A</strong> Active Directory Web Services, which is what the PowerShell AD module actually talks to behind every one of those commands.<br><strong>B</strong> A second, backup DNS resolver.<br><strong>C</strong> A game server bundled with Windows Server by default.</p>
 <div class="ad-guess">
@@ -66,6 +68,8 @@ A real domain controller listens on more than five ports. Scroll the rest of the
 </div>
 </div>
 </div>
+
+### Draw the Conclusion
 
 <div class="ad-mission ad-mission--capstone" data-id="nm-02" data-attempts="0">
 <p><strong>Task:</strong> The real list has ports the lesson never named. What does that tell you about working from memory alone? Type its letter.<br><strong>A</strong> A lesson only has room to teach what matters most, not everything a machine actually runs.<br><strong>B</strong> Nothing. A lesson and the machine always match exactly.<br><strong>C</strong> Any port a lesson leaves out is a sign of compromise.</p>

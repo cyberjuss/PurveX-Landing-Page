@@ -46,6 +46,8 @@ sudo journalctl -u ssh -n 20
 </div>
 </div>
 
+### Read a Pattern, Not Just an Event
+
 <div class="ad-mission" data-id="la2-05" data-attempts="0">
 <p><strong>Task:</strong> Your own DC sign-in and SSH session are both really you, minutes apart. Suppose a SOC instead saw the same pattern on an account that has never once shown a DC sign-in followed by an SSH session to the Ubuntu server before, not in weeks of history. Neither event alone looks unusual. What does the pair together suggest? Type its letter.<br><strong>A</strong> Nothing. If each event is fine on its own, the pair is fine too.<br><strong>B</strong> The pair is more worth a second look than either event alone, since it is a pattern of movement across the pod that this account has never shown before.<br><strong>C</strong> Two separate machines' logs can never be analyzed together, only one at a time.</p>
 <div class="ad-guess">
@@ -66,6 +68,8 @@ sudo journalctl -u ssh -n 20
 </div>
 </div>
 </div>
+
+### Name What a Single Log Would Miss
 
 <div class="ad-mission ad-mission--capstone" data-id="la2-02" data-attempts="0">
 <p><strong>Task:</strong> You now have two real events, a few minutes apart, on two machines that trust each other. If an analyst only ever read the domain controller's log, what would they miss? Type its letter.<br><strong>A</strong> Nothing. The domain controller's log already contains everything that happens anywhere in the pod.<br><strong>B</strong> Whether the same person who signed in to the domain controller also reached the Ubuntu server around the same time, since that activity only exists in the Ubuntu server's own log.<br><strong>C</strong> The exact time of the domain controller sign-in, which only the Ubuntu log actually records.</p>

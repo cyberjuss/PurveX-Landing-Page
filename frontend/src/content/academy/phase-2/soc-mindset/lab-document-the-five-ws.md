@@ -46,6 +46,8 @@ Open Event Viewer and find the 4625 you just generated. Every field on it answer
 </div>
 </div>
 
+### Read Several Together
+
 <div class="ad-mission" data-id="sm2-05" data-attempts="0">
 <p><strong>Task:</strong> You just learned a wrong password on a real account logs 0xC000006A. Suppose a SOC instead saw five 4625 events in one minute, all logging 0xC0000064, aimed at five different account names. What would that combination most likely mean? Type its letter.<br><strong>A</strong> One person repeatedly mistyping their own password.<br><strong>B</strong> Someone guessing at account names that do not exist, consistent with reconnaissance before a real attack begins.<br><strong>C</strong> A printer or scanner misconfigured with the wrong credentials.</p>
 <div class="ad-guess">
@@ -66,6 +68,8 @@ Open Event Viewer and find the 4625 you just generated. Every field on it answer
 </div>
 </div>
 </div>
+
+### Name the Field
 
 <div class="ad-mission ad-mission--capstone" data-id="sm2-02" data-attempts="0">
 <p><strong>Task:</strong> The Sub Status field names the exact reason the sign-in failed. Which of the 5 W's does that field actually answer? Type its letter.<br><strong>A</strong> Who<br><strong>B</strong> When<br><strong>C</strong> Why</p>

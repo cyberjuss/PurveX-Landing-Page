@@ -64,6 +64,8 @@ sudo cat /var/log/suricata/fast.log
 </div>
 </div>
 
+### Test the Window
+
 <div class="ad-mission" data-id="wd1-02" data-attempts="0">
 <p><strong>Task:</strong> Your rule reads <code>count 5, seconds 10</code>. Suppose an attacker sent exactly one SYN every 3 seconds instead, spacing 5 attempts across 20 seconds total. Would this exact rule still fire? Type its letter.<br><strong>A</strong> Yes, count 5 is all that matters, however long it takes to reach it.<br><strong>B</strong> No. All 5 have to land inside the same rolling 10-second window, and spacing them 3 seconds apart means at most 3 or 4 ever fall inside any single 10-second slice.<br><strong>C</strong> Yes, because threshold only counts total packets ever sent, with no time limit.</p>
 <div class="ad-guess">
@@ -84,6 +86,8 @@ sudo cat /var/log/suricata/fast.log
 </div>
 </div>
 </div>
+
+### Name the Trade-Off
 
 <div class="ad-mission ad-mission--capstone" data-id="wd1-03" data-attempts="0">
 <p><strong>Task:</strong> A tighter threshold catches a slower scan but risks firing on bursty normal traffic. A looser one stays quiet but lets a slow scan straight through. What does that actually tell you about tuning a detection? Type its letter.<br><strong>A</strong> A threshold is always a trade-off between catching more and firing on things that are not attacks.<br><strong>B</strong> A threshold should always be set as low as it will technically allow.<br><strong>C</strong> Thresholds are foolproof once written correctly, so tuning does not matter.</p>
