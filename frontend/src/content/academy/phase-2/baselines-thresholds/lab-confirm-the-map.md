@@ -46,6 +46,27 @@ A real domain controller listens on more than the five ports one lesson has room
 </div>
 </div>
 
+<div class="ad-mission" data-id="nm-03" data-attempts="0">
+<p><strong>Task:</strong> One extra port you likely saw is 9389. Every <code>Get-ADUser</code>, <code>Get-ADGroupMember</code>, and other AD PowerShell command you have run all course has to reach the directory somehow. What service listens on 9389, and why does it matter to you specifically? Type its letter.<br><strong>A</strong> Active Directory Web Services, which is what the PowerShell AD module actually talks to behind every one of those commands.<br><strong>B</strong> A second, backup DNS resolver.<br><strong>C</strong> A game server bundled with Windows Server by default.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for what service listens on 9389" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>A. Active Directory Web Services</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Every PowerShell AD cmdlet you have run since Week 1 depended on this exact port being open, whether you ever noticed it or not. A diagram built from a lesson only shows the ports the lesson has room to explain. The real list shows you the ones you have been relying on the whole time.</p>
+</div>
+</div>
+</div>
+</div>
+
 <div class="ad-mission ad-mission--capstone" data-id="nm-02" data-attempts="0">
 <p><strong>Task:</strong> The real list has ports the map never taught. What does that tell you about trusting a hand-drawn diagram alone? Type its letter.<br><strong>A</strong> A diagram only shows what someone chose to draw, not everything a machine actually runs.<br><strong>B</strong> Nothing. The diagram and the machine always match exactly.<br><strong>C</strong> Any port a diagram leaves out is a sign of compromise.</p>
 <div class="ad-guess">

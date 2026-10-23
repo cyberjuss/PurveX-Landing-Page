@@ -54,6 +54,27 @@ Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
 </div>
 </div>
 
+<div class="ad-mission" data-id="mw2-05" data-attempts="0">
+<p><strong>Task:</strong> A hash lookup on this exact file would also return VirusTotal's combined verdict from more than seventy engines at once, the lesson's own number. Defender alone just gave you one engine's verdict. If Defender had said "no threat found" but a VirusTotal lookup showed 68 of 70 engines flagging the same file, which verdict should an analyst trust more? Type its letter.<br><strong>A</strong> Defender alone, since it is the one actually installed on the endpoint.<br><strong>B</strong> The multi-engine result, since broad agreement across many independent engines is stronger evidence than any single engine's verdict.<br><strong>C</strong> Neither. An analyst should ignore both and reverse-engineer the file by hand.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for which verdict an analyst should trust more" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. The multi-engine result</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>One engine missing a file is normal, every signature library has gaps. Seventy independent engines missing the same file at once is a different story, which is exactly why a hash and reputation lookup is worth running even when your own local antivirus already came back clean.</p>
+</div>
+</div>
+</div>
+</div>
+
 <div class="ad-mission ad-mission--capstone" data-id="mw2-04" data-attempts="0">
 <p><strong>Task:</strong> A real attacker rarely ships malware that exactly matches a known signature. What does that mean for antivirus alone? Type its letter.<br><strong>A</strong> Nothing, antivirus catches everything a file-based threat can do.<br><strong>B</strong> A new or slightly altered file can pass straight through signature matching, which is why EDR watches behavior instead of only matching files.<br><strong>C</strong> Antivirus is obsolete and should be disabled.</p>
 <div class="ad-guess">

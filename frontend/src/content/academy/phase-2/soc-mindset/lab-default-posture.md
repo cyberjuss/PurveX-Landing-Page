@@ -40,6 +40,27 @@ Two different answers sit side by side here. Inbound traffic nobody asked for is
 </div>
 </div>
 
+<div class="ad-mission" data-id="sm2-06" data-attempts="0">
+<p><strong>Task:</strong> Later this phase you will find a scheduled task quietly reaching out to an address nobody approved, and nothing stops it. If this machine's outbound default were Block instead of Allow, would that traffic have left the machine at all, without someone first writing an explicit rule to permit it? Type its letter.<br><strong>A</strong> No, it would be blocked by default, the same way unsolicited inbound traffic already is.<br><strong>B</strong> Yes, outbound traffic always reaches its destination no matter what the default says.<br><strong>C</strong> It depends only on the task's own permissions, not the firewall at all.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for whether a Block-by-default outbound posture would have stopped the beacon" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>A. No, it would be blocked by the same default inbound traffic already gets</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Nothing about that task's own permissions decides whether its traffic leaves the machine. The firewall's default does. An outbound allowlist would have stopped it cold, with no rule written specifically against it, simply by trusting nothing it had not already approved.</p>
+</div>
+</div>
+</div>
+</div>
+
 <div class="ad-mission ad-mission--capstone" data-id="sm2-04" data-attempts="0">
 <p><strong>Task:</strong> Inbound defaults to Block and outbound defaults to Allow on the same machine. What does that difference actually trade off? Type its letter.<br><strong>A</strong> Nothing, the two defaults are functionally identical.<br><strong>B</strong> Blocking inbound by default stops strangers from reaching in, while allowing outbound by default trusts the machine's own software not to call out to somewhere it should not.<br><strong>C</strong> Outbound is allowed by default because outbound traffic can never carry anything malicious.</p>
 <div class="ad-guess">

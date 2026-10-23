@@ -119,6 +119,27 @@ Nmap prints one word per port: `open`, `closed`, or `filtered`. Those are the ex
 </div>
 </div>
 
+<div class="ad-mission" data-id="w3m-c6" data-attempts="0">
+<p><strong>Task:</strong> The scan you just ran (<code>-sT</code>) completes the full three-way handshake on every open port, same as your bash loop. A SYN scan (<code>-sS</code>) instead sends SYN, reads SYN-ACK, then sends RST instead of finishing with ACK. Why might an attacker prefer that? Type its letter.<br><strong>A</strong> It is faster, and it never fully opens a connection the target's own application might log.<br><strong>B</strong> It is slower but gives a more accurate result.<br><strong>C</strong> There is no real difference between the two on the wire.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for why an attacker might prefer a SYN scan" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>A. Faster, and it never fully opens a connection the target's own application might log</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Some application-level logging only records a connection once it is fully established, so a SYN scan can slip past that layer entirely. It cannot slip past the packet capture, though, which is exactly why a defender who reads the wire catches what an application log alone would miss.</p>
+</div>
+</div>
+</div>
+</div>
+
 ### Check Yourself
 
 Answer from what you captured, not from what you remember reading.
@@ -201,7 +222,7 @@ Answer from what you captured, not from what you remember reading.
 </div>
 <div>
 <span>Why it matters</span>
-<p>The same loop inventories a server or maps it for attack. You cannot ban the tool, so detection rests on the behavior, the burst of SYNs to many ports.</p>
+<p>The same loop inventories a server or maps it for attack. You cannot ban the tool, so detection rests on the behavior, the burst of SYNs to many ports. The next lab turns that exact behavior into a rule an IDS checks for automatically, instead of a pattern only a human reading a capture would ever notice.</p>
 </div>
 </div>
 </div>

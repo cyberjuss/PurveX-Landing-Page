@@ -51,6 +51,27 @@ Open Event Viewer and go to Applications and Services Logs → Microsoft → Win
 </div>
 </div>
 
+<div class="ad-mission" data-id="la2-06" data-attempts="0">
+<p><strong>Task:</strong> Suppose a process-creation event instead showed <code>powershell.exe -EncodedCommand &lt;base64&gt;</code>. That event shows only the raw, still-encoded argument. Which log actually shows you the decoded, readable command PowerShell is about to run? Type its letter.<br><strong>A</strong> The process-creation event is enough on its own. Nothing else is needed.<br><strong>B</strong> Script-block logging (4104), since it logs PowerShell's own interpretation of the command after decoding, not just the raw text it launched with.<br><strong>C</strong> Neither log ever shows decoded content under any circumstance.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for which log shows the decoded command" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Script-block logging (4104)</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A process-creation event hands you the command exactly as it was launched, obfuscation and all. Script-block logging hands you what PowerShell itself decoded that into right before running it. That difference is the entire reason this setting exists on top of process-creation auditing instead of replacing it.</p>
+</div>
+</div>
+</div>
+</div>
+
 <div class="ad-mission ad-mission--capstone" data-id="la2-04" data-attempts="0">
 <p><strong>Task:</strong> An attacker who knows this logging exists sometimes encodes a command to make it harder to read in a 4104 event. What does script-block logging still capture even then? Type its letter.<br><strong>A</strong> Nothing useful, an encoded command defeats this logging completely.<br><strong>B</strong> The block still logs, encoded text and all, which is still far more than a process-creation event alone would ever show.<br><strong>C</strong> PowerShell refuses to run a command that is encoded.</p>
 <div class="ad-guess">

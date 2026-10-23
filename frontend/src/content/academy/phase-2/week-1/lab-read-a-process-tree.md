@@ -36,6 +36,31 @@ Scroll until you find a `powershell.exe` launch with `-WindowStyle Hidden` in it
 </div>
 </div>
 
+### Read the Parent, Not Just the Command
+
+The ParentImage above your event is a system service hosting the task scheduler, not a person's own interactive session.
+
+<div class="ad-mission" data-id="mw2-06" data-attempts="0">
+<p><strong>Task:</strong> Suppose the exact same command line had a different ParentImage instead: <code>winword.exe</code>. What would that change about how you read this event? Type its letter.<br><strong>A</strong> Nothing. The command line is identical either way, so the story is the same.<br><strong>B</strong> It would suggest the process was spawned by a document someone opened, a very different initial-access story than a pre-existing scheduled task quietly persisting.<br><strong>C</strong> Word cannot launch PowerShell under any circumstance, so this would be impossible.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for what a different parent process would change" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. A document someone opened, not a pre-existing task</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>An office application spawning PowerShell is one of the most common signs of a phishing attachment doing its job the moment it is opened, a completely different stage and a completely different response than a task that has already been sitting there for weeks. The command line told you what ran. The parent told you how it got there, and those are two different questions with two different answers.</p>
+</div>
+</div>
+</div>
+</div>
+
 ### Name the Stage
 
 The same command runs again every 15 minutes, launched silently by the task scheduler rather than typed by a person, and it survives a reboot because the schedule itself does.

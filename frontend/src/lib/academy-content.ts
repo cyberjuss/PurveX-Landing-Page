@@ -96,6 +96,7 @@ const phase1Weeks: WeekDef[] = [
       { label: "SSL/TLS", file: "phase-1/week-3/lesson-tls.md" },
       { label: "Lab: Network Traffic Analysis with Wireshark", file: "phase-1/week-3/lab-capture-dc-traffic.md" },
       { label: "Lab: Port Scan Detection with Wireshark", file: "phase-1/week-3/lab-read-a-scan.md" },
+      { label: "Lab: Write a Detection", file: "phase-1/week-3/lab-write-a-detection.md" },
       { label: "Challenge: The Nightly Settlement Push", file: "phase-1/week-3/challenge-settlement-push.md" },
       { label: "Resources", file: "phase-1/week-3/resources.md" },
     ],

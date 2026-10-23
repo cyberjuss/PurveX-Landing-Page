@@ -46,6 +46,27 @@ Open Event Viewer and find the 4625 you just generated. Every field on it answer
 </div>
 </div>
 
+<div class="ad-mission" data-id="sm2-05" data-attempts="0">
+<p><strong>Task:</strong> You just learned a wrong password on a real account logs 0xC000006A. Suppose a SOC instead saw five 4625 events in one minute, all logging 0xC0000064, aimed at five different account names. What would that combination most likely mean? Type its letter.<br><strong>A</strong> One person repeatedly mistyping their own password.<br><strong>B</strong> Someone guessing at account names that do not exist, consistent with reconnaissance before a real attack begins.<br><strong>C</strong> A printer or scanner misconfigured with the wrong credentials.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for what five failed sign-ins against five different account names most likely means" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Account-name guessing, consistent with reconnaissance</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>One wrong password, one real account, one Sub Status is a typo. Five attempts, five different account names, all the "account does not exist" code, is a different shape entirely: someone probing for names that work. The Sub Status alone told you why one event failed. Reading several together is what tells you whether you are looking at a mistake or the opening move of something bigger.</p>
+</div>
+</div>
+</div>
+</div>
+
 <div class="ad-mission ad-mission--capstone" data-id="sm2-02" data-attempts="0">
 <p><strong>Task:</strong> The Sub Status field names the exact reason the sign-in failed. Which of the 5 W's does that field actually answer? Type its letter.<br><strong>A</strong> Who<br><strong>B</strong> When<br><strong>C</strong> Why</p>
 <div class="ad-guess">

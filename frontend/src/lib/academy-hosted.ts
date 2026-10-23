@@ -518,6 +518,17 @@ export function linuxCloudInit(dcIp: string, password: string): string {
     `echo ${sh("wireshark-common wireshark-common/install-setuid boolean true")} | debconf-set-selections`,
     "apt-get install -y --no-install-recommends tcpdump tshark wireshark",
     "usermod -aG wireshark student",
+    // A real IDS for the Week 3 detection-writing lab. Disabled at boot so it
+    // never runs the package's own default config: the student starts it
+    // themselves, pointed at only their own one-line rule, which keeps it
+    // from burning CPU on a full default ruleset nobody asked it to load.
+    // The rules file is writable without sudo, since editing a rule should
+    // not need root even though capturing packets with it does.
+    "apt-get install -y --no-install-recommends suricata",
+    "systemctl disable --now suricata || true",
+    "mkdir -p /etc/suricata/rules",
+    "touch /etc/suricata/rules/local.rules",
+    "chmod 0666 /etc/suricata/rules/local.rules",
     // The nightly settlement job, which is what the Week 3 challenge captures.
     // It signs in to the directory with an LDAP simple bind, and a simple bind
     // puts the password on the wire in the clear. It then reads the batch off

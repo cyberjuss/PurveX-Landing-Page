@@ -84,31 +84,44 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "w3m-c3": "logs",
   "w3m-c4": "logs",
   "w3m-c5": "logs",
+  "w3m-c6": "logs",
+  // Write a Detection: a real Suricata rule, written and run against the
+  // same scan the last lab only read by hand.
+  "wd1-01": "logs",
+  "wd1-02": "security",
+  "wd1-03": "security",
   // Confirm the Map From the Command Line: Map Your Pod's companion lab,
   // reading the domain controller's own listening ports with PowerShell
   // instead of trusting the drag-and-drop diagram alone.
   "nm-01": "security",
   "nm-02": "security",
+  "nm-03": "security",
   // soc-mindset's two labs: a real failed sign-in documented with the 5 W's,
   // and the domain controller's own real default firewall posture, read
   // straight from PowerShell instead of a slide.
   "sm2-01": "logs",
+  "sm2-05": "security",
   "sm2-02": "security",
   "sm2-03": "security",
+  "sm2-06": "security",
   "sm2-04": "security",
   // Malware week's two labs: a real EICAR test file for signature-based
   // detection, and a real Sysmon process tree for behavior-based detection,
   // matching the week's own Antivirus-then-EDR teaching order.
   "mw2-01": "logs",
+  "mw2-06": "security",
   "mw2-02": "security",
   "mw2-03": "security",
+  "mw2-05": "security",
   "mw2-04": "security",
   // Log Analysis Fundamentals' two labs: one real sign-in correlated across
   // both machines' own logs, and PowerShell's own script-block logging
   // turned on and read.
   "la2-01": "logs",
+  "la2-05": "logs",
   "la2-02": "logs",
   "la2-03": "logs",
+  "la2-06": "logs",
   "la2-04": "logs",
   "tq-20": "troubleshooting",
   "tq-21": "security",
