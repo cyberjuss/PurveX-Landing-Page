@@ -240,6 +240,38 @@ export const MISSION_DOMAINS: Record<string, string[]> = {
   "rk-07": ["cy-ops", "sp-threats"],
   "rk-08": ["cy-ops", "sp-threats"],
   "rk-09": ["cy-ops", "sp-concepts"],
+  // The Nmap addition to the scan lab, the Suricata detection-writing lab,
+  // and the eight labs filling soc-mindset, Malware and Log Analysis
+  // Fundamentals. Same domain-mapping reasoning as everything above: cy-ops
+  // for hands-on tool use, sp-threats/cy-vuln for reasoning about an
+  // attacker's behavior, cy-ir for response decisions, cy-report/sp-concepts
+  // for write-ups and definitions.
+  "w3m-c5": ["cy-ops", "sp-arch"],
+  "w3m-c6": ["sp-threats", "cy-ops"],
+  "wd1-01": ["cy-ops", "sp-arch"],
+  "wd1-02": ["sp-threats", "cy-vuln"],
+  "wd1-03": ["cy-vuln", "sp-concepts"],
+  "nm-01": ["sp-arch", "cy-ops"],
+  "nm-03": ["sp-arch", "cy-ops"],
+  "nm-02": ["sp-concepts", "cy-vuln"],
+  "sm2-01": ["cy-ops", "sp-threats"],
+  "sm2-05": ["cy-ops", "sp-threats"],
+  "sm2-02": ["sp-concepts", "cy-report"],
+  "sm2-03": ["sp-arch", "cy-ops"],
+  "sm2-06": ["cy-vuln", "sp-arch"],
+  "sm2-04": ["sp-concepts", "cy-vuln"],
+  "mw2-03": ["cy-ops", "sp-concepts"],
+  "mw2-05": ["cy-ops", "sp-threats"],
+  "mw2-04": ["sp-threats", "cy-vuln"],
+  "mw2-01": ["cy-ops", "sp-threats"],
+  "mw2-06": ["cy-ops", "sp-threats"],
+  "mw2-02": ["cy-ir", "sp-threats"],
+  "la2-01": ["cy-ops", "sp-arch"],
+  "la2-05": ["cy-ops", "sp-threats"],
+  "la2-02": ["cy-ir", "cy-ops"],
+  "la2-03": ["cy-ops", "sp-ops"],
+  "la2-06": ["cy-ops", "sp-threats"],
+  "la2-04": ["cy-ops", "cy-ir"],
 };
 
 /** Fallback when a question has no job tag. */

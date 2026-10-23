@@ -42,6 +42,8 @@ export type LabSecurity = {
   audit?: Record<string, string>;
   securityLogMaxMB?: number;
   smb1?: boolean;
+  /** PowerShell's own script-block logging, read straight from its policy registry key. */
+  scriptBlockLogging?: boolean;
   /** Fine-grained password policies. An empty list means the lab reported none. */
   psos?: { name: string; precedence: number; minLength: number; lockoutThreshold: number; appliesTo: string[] }[];
 };
@@ -159,6 +161,7 @@ function sanitizeSecurity(raw: unknown): LabSecurity | undefined {
   const log = num(r.securityLogMaxMB, 1_000_000);
   if (log !== undefined) out.securityLogMaxMB = log;
   if (typeof r.smb1 === "boolean") out.smb1 = r.smb1;
+  if (typeof r.scriptBlockLogging === "boolean") out.scriptBlockLogging = r.scriptBlockLogging;
   if (r.psos !== undefined) {
     const arr = Array.isArray(r.psos) ? r.psos : r.psos && typeof r.psos === "object" ? [r.psos] : [];
     out.psos = arr

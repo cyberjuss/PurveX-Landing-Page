@@ -29,7 +29,7 @@ export type PullOutcome =
   | { status: "unverified"; reason: "off" | "not-hosted" | "unreachable" | "unsupported" | "nothing-to-check" };
 
 /** Check kinds this can read straight from the domain controller. */
-const READABLE = new Set<Check["t"]>(["member", "exists", "gone", "present", "container", "enabled", "noexpire", "desc", "flag", "group", "pso", "computer", "computerAt", "file", "spn", "policy", "audit", "logsize"]);
+const READABLE = new Set<Check["t"]>(["member", "exists", "gone", "present", "container", "enabled", "noexpire", "desc", "flag", "group", "pso", "computer", "computerAt", "file", "spn", "policy", "audit", "logsize", "sbl"]);
 
 export const verifiedPullOn = () => (process.env.HOSTED_LAB_VERIFIED_PULL ?? "").trim().toLowerCase() === "on";
 
@@ -43,6 +43,7 @@ export function wantsFor(checks: Check[]) {
   let policy = false;
   let pso = false;
   let logsize = false;
+  let sbl = false;
   for (const c of checks) {
     if ("sam" in c) users.add(c.sam);
     if (c.t === "member") groups.add(c.group);
@@ -53,8 +54,9 @@ export function wantsFor(checks: Check[]) {
     if (c.t === "policy") policy = true;
     if (c.t === "pso") pso = true;
     if (c.t === "logsize") logsize = true;
+    if (c.t === "sbl") sbl = true;
   }
-  return { users: [...users], groups: [...groups], computers: [...computers], files: [...files], audit: [...audit], policy, pso, logsize };
+  return { users: [...users], groups: [...groups], computers: [...computers], files: [...files], audit: [...audit], policy, pso, logsize, sbl };
 }
 
 /**
@@ -130,6 +132,10 @@ try {
     })
   }
   if ($w.logsize) { $sec.securityLogMaxMB = [int]((Get-WinEvent -ListLog Security).MaximumSizeInBytes / 1MB) }
+  if ($w.sbl) {
+    $sbl = Get-ItemProperty -Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\PowerShell\\ScriptBlockLogging' -Name EnableScriptBlockLogging -ErrorAction SilentlyContinue
+    $sec.scriptBlockLogging = [bool]($sbl -and $sbl.EnableScriptBlockLogging -eq 1)
+  }
   $out.security = $sec
   foreach ($p in @($w.files)) {
     $full = Join-Path 'C:\\PurveX' $p

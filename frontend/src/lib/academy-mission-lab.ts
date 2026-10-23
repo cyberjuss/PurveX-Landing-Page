@@ -129,6 +129,10 @@ const MISSION_LAB = {
   // The DCSync campaign: Directory Service Access auditing is enabled, the
   // same audit check tq-22 already uses for Process Creation.
   "rk-05": G([{ c: { t: "audit", sub: "Directory Service Access", need: "Success" }, label: "Directory Service Access is audited for success" }]),
+  // Turn On Script Logging's capstone: the registry key the lab has the
+  // student set, read straight from the machine, the way every other
+  // real-change check here already is -- not a typed-answer guess.
+  "la2-04": G([{ c: { t: "sbl", want: true }, label: "PowerShell Script Block Logging is enabled" }]),
   // The wire-capture capstone: the burned service account is contained by
   // disabling it, which the snapshot reports. Kept, not deleted, so the review
   // still has it.

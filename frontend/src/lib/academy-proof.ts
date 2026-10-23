@@ -61,6 +61,16 @@ const CATALOG: Record<string, Entry> = {
       sys: [["a", "Configured"], ["s", "advanced audit policy on a domain controller,"], ["r", "giving investigators a usable log."]],
     },
   },
+  "enable-script-block-logging": {
+    title: "Enabled PowerShell script-block logging for command-level visibility",
+    actions: ["Identified that process-creation auditing alone only shows that powershell.exe launched, not what it was told to do", "Enabled script-block logging through the PowerShell policy registry key, the same change Group Policy makes through its GUI", "Confirmed the setting by finding a real 4104 event holding the full text of a command it ran"],
+    keywords: ["PowerShell Logging", "Windows Event Logs", "Endpoint Visibility"],
+    bullets: {
+      soc: [["a", "Enabled"], ["s", "PowerShell script-block logging on a domain controller"], ["t", "to capture command text, not just that a process ran,"], ["r", "confirmed by a real 4104 event."]],
+      help: [["a", "Turned on"], ["s", "PowerShell's own command logging"], ["r", "so what a script actually ran is recorded, not just that it did."]],
+      sys: [["a", "Configured"], ["s", "script-block logging through the PowerShell policy registry key,"], ["r", "the same setting Group Policy's GUI writes."]],
+    },
+  },
   "log-retention": {
     title: "Extended Security log retention for forensic readiness",
     actions: ["Assessed Security log capacity against how long investigations need evidence", "Increased the maximum log size so sign-in evidence lasts long enough to investigate an intrusion found weeks later"],
@@ -315,6 +325,7 @@ export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "od-07": { job: "quarantine-file", label: "Service ticket INC-1078" },
   "rk-03": { job: "reduce-kerberoast-exposure", label: "Service ticket INC-1079" },
   "rk-05": { job: "enable-auditing", label: "Service ticket INC-1080" },
+  "la2-04": { job: "enable-script-block-logging", label: "Lab: Turn On Script Logging" },
 };
 
 /** Portfolio jobs a live Shift can prove, mapped from the incident that proves each.
@@ -418,6 +429,28 @@ const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
   "lab-risk-triage": ["Risk Assessment", "CIA Triad"],
 };
 
+/**
+ * Phase 2's hands-on labs (soc-mindset, Malware, Log Analysis Fundamentals,
+ * Write a Detection) each name one real tool, not a generic "did a CTF"
+ * signal the way `didCtf` below does. Most are read-only or a transient
+ * event, so there is nothing a server-side pull could confirm after the
+ * fact, and they can't earn a Verified Work bullet the way a Ticket Queue
+ * change does. They can still earn their place in the Skills list the
+ * moment the student actually solves the mission, the same low bar `didCtf`
+ * already uses below. Turn On Script Logging is a real exception: it is a
+ * registry change the lab can and does verify, so it earns a full
+ * Verified Work entry through PROOF_TICKETS/CATALOG instead and is left
+ * out of this list to avoid tagging the same skill twice.
+ */
+const MISSION_SKILL_TAGS: { id: string; bucket: "monitoring" | "network" | "response"; label: string }[] = [
+  { id: "mw2-02", bucket: "monitoring", label: "Sysmon" },
+  { id: "mw2-04", bucket: "response", label: "Windows Defender / EDR" },
+  { id: "la2-02", bucket: "monitoring", label: "Cross-Host Log Correlation" },
+  { id: "wd1-03", bucket: "network", label: "Suricata (IDS)" },
+  { id: "w3m-c6", bucket: "network", label: "Nmap" },
+  { id: "sm2-04", bucket: "network", label: "Windows Firewall" },
+];
+
 export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean, results: Results = {}): { group: string; items: string[] }[] {
   const identity = new Set<string>();
   const monitoring = new Set<string>();
@@ -436,6 +469,12 @@ export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean,
     monitoring.add("Windows Event Logs");
     monitoring.add("Event Viewer");
     monitoring.add("Log Analysis");
+  }
+  for (const tag of MISSION_SKILL_TAGS) {
+    if (!results[tag.id]?.solved) continue;
+    if (tag.bucket === "monitoring") monitoring.add(tag.label);
+    else if (tag.bucket === "network") network.add(tag.label);
+    else response.add(tag.label);
   }
   const groups = [
     { group: "Identity and Access Management (IAM)", items: [...identity] },

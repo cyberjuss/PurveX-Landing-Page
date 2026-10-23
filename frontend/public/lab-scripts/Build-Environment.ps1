@@ -66,7 +66,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 22
+$PurvexScriptVersion = 23
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -1374,6 +1374,10 @@ function Get-PurvexSecurityState {
     } catch {}
     try { $sec.securityLogMaxMB = [int]((Get-WinEvent -ListLog Security).MaximumSizeInBytes / 1MB) } catch {}
     try { $sec.smb1 = [bool](Get-SmbServerConfiguration).EnableSMB1Protocol } catch {}
+    try {
+        $sbl = Get-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" -Name EnableScriptBlockLogging -ErrorAction SilentlyContinue
+        $sec.scriptBlockLogging = [bool]($sbl -and $sbl.EnableScriptBlockLogging -eq 1)
+    } catch {}
     try {
         $sec.psos = @(Get-ADFineGrainedPasswordPolicy -Filter * | ForEach-Object {
             [ordered]@{

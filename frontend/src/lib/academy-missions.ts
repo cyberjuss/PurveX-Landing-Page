@@ -654,6 +654,7 @@ export const LAB_GATED_MISSIONS = [
   "rc-01", "dl-01", "pc-03", "pi-01", "pc-05", "pi-02", "ao-01", "ao-02",
   "od-02", "od-04", "od-05", "od-06", "od-07",
   "rk-01", "rk-02", "rk-04", "rk-03", "rk-05", "rk-06", "rk-07", "rk-08",
+  "la2-04",
 ];
 
 /**

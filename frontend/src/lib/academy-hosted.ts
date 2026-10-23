@@ -516,7 +516,7 @@ export function linuxCloudInit(dcIp: string, password: string): string {
     // leaves dumpcap without the capability and the tool listing no interfaces.
     // Preseed yes, then put student in the group the postinst grants capture to.
     `echo ${sh("wireshark-common wireshark-common/install-setuid boolean true")} | debconf-set-selections`,
-    "apt-get install -y --no-install-recommends tcpdump tshark wireshark",
+    "apt-get install -y --no-install-recommends tcpdump tshark wireshark nmap",
     "usermod -aG wireshark student",
     // A real IDS for the Week 3 detection-writing lab. Disabled at boot so it
     // never runs the package's own default config: the student starts it
