@@ -99,7 +99,7 @@ const WORK: Record<Summary["skills"][number]["key"], string> = {
 
 function verdict(s: Summary) {
   if (s.finished === 0) {
-    return "None of the competencies have work on them yet. Start Operation Day One. Look people up in the directory and we will see what you can already do.";
+    return "None of the competencies have work on them yet. Start Operation Day One and look people up in the directory to see what you can already do.";
   }
   // A skill is only called competent or weak once half its missions are finished.
   const strong = s.skills.filter(skillCompetent);
@@ -112,13 +112,13 @@ function verdict(s: Summary) {
   const nextSkill = weak[0] ?? early[0] ?? untouched[0];
   const next = nextSkill ? ` Next, ${WORK[nextSkill.key]}.` : "";
   if (s.level === "ready" && weak.length === 0) {
-    return `You are competent in ${strongNames}. You can ${joinNames(can)}. Redo one ticket on your own lab with the hint closed.`;
+    return `You are competent in ${strongNames}, and you can ${joinNames(can)}. Redo one ticket on your own lab with the hint closed.`;
   }
   if (strong.length === 0 && weak.length === 0) {
     return `You have started, but no competency has enough work finished to rate yet. Finish at least half the missions and labs in one to get a rating.${next}`;
   }
   const parts: string[] = [];
-  if (strong.length) parts.push(`You are competent in ${strongNames}. You can ${joinNames(can)}.`);
+  if (strong.length) parts.push(`You are competent in ${strongNames}, and you can ${joinNames(can)}.`);
   if (weak.length) parts.push(`${weakNames} still need${weak.length === 1 ? "s" : ""} work.`);
   if (!weak.length) parts.push("Finish the remaining missions and labs so this is a full rating.");
   return parts.join(" ") + next;
@@ -209,7 +209,7 @@ export function ReadinessDashboard() {
                   ask(
                     s.finished === 0
                       ? "I'm just getting started. How should I start Operation Day One?"
-                      : "What should I work on next. Say why. Do not read my report back to me."
+                      : "What should I work on next, and why? Do not read my report back to me."
                   )
                 }
               >
@@ -271,7 +271,7 @@ export function ReadinessDashboard() {
                   className="rd-link"
                   onClick={() =>
                     ask(
-                      `Help me get better at ${k.label} in my own lab. Do not read a score back. Do not give mission answers.`
+                      `Help me get better at ${k.label} in my own lab. Do not read a score back or give mission answers.`
                     )
                   }
                 >
@@ -358,7 +358,7 @@ export function ReadinessDashboard() {
           <div className="rd-log__head">
             <div>
               <h3>Scored labs</h3>
-              <p>Your first finished score counts. Replays do not change it.</p>
+              <p>Your first finished score counts, so later replays do not change it.</p>
             </div>
             <span className="rd-log__count">
               {LAB_CATALOG.filter((l) => labPoints(results[l.id]) !== null).length}/{LAB_CATALOG.length}

@@ -385,11 +385,11 @@ export function sanitizeResults(raw: unknown, trustLabOk = false): Results {
 }
 
 export const LEVELS: Record<Summary["level"], { label: string; note: string }> = {
-  none: { label: "Not started", note: "Answer missions in Operation Day One, the Ticket Queue, and The 2 AM Login to build your score." },
+  none: { label: "Not started", note: "Answer missions in Operation Day One, the Ticket Queue, and the Phase 2 campaigns to build your score." },
   progress: { label: "In progress", note: "Readiness counts every mission, so it grows as you finish more. Accuracy shows how you did on the ones you finished." },
-  ready: { label: "Ready", note: "You met the bar on every mission and every competency. Keep going as new labs open." },
-  almost: { label: "Almost Ready", note: "Solid base. Tighten the focus areas below and retake the missions you missed." },
-  practice: { label: "Keep Practicing", note: "You have the start. Work through the focus areas below, then retake the challenges." },
+  ready: { label: "Ready", note: "You met the bar on every mission and every competency, so keep going as new labs open." },
+  almost: { label: "Almost Ready", note: "You have a solid base, so tighten the focus areas below and retake the missions you missed." },
+  practice: { label: "Keep Practicing", note: "You have made a start, so work through the focus areas below and retake the challenges." },
 };
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
