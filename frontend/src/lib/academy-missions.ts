@@ -10,15 +10,13 @@ export type MissionCatalogEntry = {
     | "wire"
     | "crypto"
     | "client-data"
-    | "malware-alert"
     | "soc-alert"
     | "baseline-alert"
-    | "zerotrust-alert"
     | "threshold-alert"
-    | "night-shift"
     | "access-alert"
-    | "signin-alert"
-    | "phishing-chain";
+    | "credential-campaign"
+    | "phishing-chain"
+    | "open-door";
   title: string;
   prompt: string;
   skill: Skill;
@@ -240,20 +238,6 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "An unknown invoice file appeared on the Finance share. Find it, move it to quarantine without opening it, and report its full name with every extension.",
     skill: "security",
   },
-  "mw-01": {
-    id: "mw-01",
-    challenge: "malware-alert",
-    title: "Something Is Phoning Home (INC-1064)",
-    prompt: "A scheduled task nobody on the team created is running on the domain controller. Find it and report its exact name.",
-    skill: "security",
-  },
-  "mw-02": {
-    id: "mw-02",
-    challenge: "malware-alert",
-    title: "Close the Door It Is Using (INC-1064)",
-    prompt: "The planted task is reaching out through an outbound firewall rule. Find it, disable it, and report the port it allowed.",
-    skill: "security",
-  },
   "sm-01": {
     id: "sm-01",
     challenge: "soc-alert",
@@ -291,14 +275,14 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   },
   "zt-01": {
     id: "zt-01",
-    challenge: "zerotrust-alert",
+    challenge: "open-door",
     title: "Find What It Actually Trusts (INC-1067)",
     prompt: "Find the inbound rule on the domain controller that trusts the whole network just for being inside it.",
     skill: "security",
   },
   "zt-02": {
     id: "zt-02",
-    challenge: "zerotrust-alert",
+    challenge: "open-door",
     title: "Close It (INC-1067)",
     prompt: "Disable the legacy internal-trust rule and report the port it allowed.",
     skill: "security",
@@ -310,60 +294,32 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Apply a Fine-Grained Password Policy balancing lockout friction against guessing resistance, then report the threshold set.",
     skill: "security",
   },
-  "cp-01": {
-    id: "cp-01",
-    challenge: "night-shift",
-    title: "Three Alerts, One Queue (Capstone)",
-    prompt: "Three overnight alerts arrive together. Choose which one to work first.",
-    skill: "security",
-  },
-  "cp-02": {
-    id: "cp-02",
-    challenge: "night-shift",
-    title: "Classify It (Capstone)",
-    prompt: "Classify the unexplained scheduled task alert by severity.",
-    skill: "security",
-  },
   "cp-03": {
     id: "cp-03",
-    challenge: "night-shift",
-    title: "Find It (Capstone)",
+    challenge: "credential-campaign",
+    title: "What They Left Running (INC-1069)",
     prompt: "Find the unexplained scheduled task on the domain controller and name it.",
     skill: "security",
   },
   "cp-04": {
     id: "cp-04",
-    challenge: "night-shift",
-    title: "Close the Door It Is Using (Capstone)",
+    challenge: "credential-campaign",
+    title: "Close Its Channel (INC-1069)",
     prompt: "Find and disable the outbound rule the task relies on, then report the port.",
     skill: "security",
   },
-  "cp-05": {
-    id: "cp-05",
-    challenge: "night-shift",
-    title: "The Same Night, a Different Account (Capstone)",
-    prompt: "Find the account added to Server Admins with no change ticket on file.",
-    skill: "security",
+  "cc-11": {
+    id: "cc-11",
+    challenge: "credential-campaign",
+    title: "Write the Detection (INC-1072)",
+    prompt: "Write the KQL summarize clause that flags a password spray by counting distinct accounts per source.",
+    skill: "logs",
   },
-  "cp-06": {
-    id: "cp-06",
-    challenge: "night-shift",
-    title: "Remove It (Capstone)",
-    prompt: "Remove the excess Server Admins membership and report the group.",
-    skill: "security",
-  },
-  "cp-07": {
-    id: "cp-07",
-    challenge: "night-shift",
-    title: "Put It in Order (Capstone)",
-    prompt: "Map the night's two findings to the correct kill chain stages.",
-    skill: "security",
-  },
-  "cp-08": {
-    id: "cp-08",
-    challenge: "night-shift",
-    title: "Hand It Up as One Incident (Capstone)",
-    prompt: "Name what connects all three alerts into a single intrusion.",
+  "cc-12": {
+    id: "cc-12",
+    challenge: "credential-campaign",
+    title: "Name the Stage That Never Happened",
+    prompt: "Name the Cyber Kill Chain stage after Command and Control that this campaign never reached.",
     skill: "security",
   },
   "tq-06": {
@@ -443,21 +399,21 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   },
   "sl-01": {
     id: "sl-01",
-    challenge: "signin-alert",
+    challenge: "credential-campaign",
     title: "Count the Spray (INC-1072)",
     prompt: "Find the accounts that each received a failed sign-in within the same short window, and count them.",
     skill: "security",
   },
   "sl-02": {
     id: "sl-02",
-    challenge: "signin-alert",
+    challenge: "credential-campaign",
     title: "The One That Got Through (INC-1072)",
     prompt: "One account signed in successfully with no failed attempts before it at all. Name it.",
     skill: "security",
   },
   "sl-03": {
     id: "sl-03",
-    challenge: "signin-alert",
+    challenge: "credential-campaign",
     title: "Unlock the Real Lockout (INC-1072)",
     prompt: "Find the account the log shows was actually locked out, unlock it, and report its name.",
     skill: "security",
@@ -476,12 +432,26 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Find the disguised attachment on the Wealth Management share and report its full name.",
     skill: "security",
   },
+  "pc-03": {
+    id: "pc-03",
+    challenge: "phishing-chain",
+    title: "Hash It and Check It (INC-1074)",
+    prompt: "Hash the disguised attachment with SHA-256 and check that hash on VirusTotal.",
+    skill: "security",
+  },
   "pi-01": {
     id: "pi-01",
     challenge: "phishing-chain",
     title: "Find What Got Planted (INC-1075)",
     prompt: "Find the scheduled task nobody on the team created, and report its exact name.",
     skill: "security",
+  },
+  "pc-05": {
+    id: "pc-05",
+    challenge: "phishing-chain",
+    title: "Capture the Beacon Live (INC-1075)",
+    prompt: "Capture the task's own outbound connection in Wireshark and report the destination port.",
+    skill: "logs",
   },
   "pi-02": {
     id: "pi-02",
@@ -504,6 +474,62 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Move the staged file to Quarantine, then report the folder it is in now.",
     skill: "security",
   },
+  "pc-10": {
+    id: "pc-10",
+    challenge: "phishing-chain",
+    title: "Two Chains, One Pattern",
+    prompt: "Name the one Kill Chain stage both this phase's campaigns reached and were stopped at.",
+    skill: "security",
+  },
+  "od-02": {
+    id: "od-02",
+    challenge: "open-door",
+    title: "Prove It Is Being Used (INC-1067)",
+    prompt: "Find a real Logon Type 3 event crossing the open rule and report the logon type number.",
+    skill: "logs",
+  },
+  "od-04": {
+    id: "od-04",
+    challenge: "open-door",
+    title: "What They Left Behind (INC-1077)",
+    prompt: "Find the scheduled task nobody on the team created, and report its exact name.",
+    skill: "security",
+  },
+  "od-05": {
+    id: "od-05",
+    challenge: "open-door",
+    title: "Close Its Channel (INC-1077)",
+    prompt: "Find and disable the outbound firewall rule the task relies on, then report the port.",
+    skill: "security",
+  },
+  "od-06": {
+    id: "od-06",
+    challenge: "open-door",
+    title: "Find What They Were After (INC-1078)",
+    prompt: "Find the file staged on the Compliance share that has no business being there, and report its name.",
+    skill: "security",
+  },
+  "od-07": {
+    id: "od-07",
+    challenge: "open-door",
+    title: "Take It Off the Share (INC-1078)",
+    prompt: "Move the staged file to Quarantine, then report the folder it is in now.",
+    skill: "security",
+  },
+  "od-08": {
+    id: "od-08",
+    challenge: "open-door",
+    title: "No Delivery, No Problem",
+    prompt: "Explain why this campaign never had a Delivery stage.",
+    skill: "security",
+  },
+  "od-09": {
+    id: "od-09",
+    challenge: "open-door",
+    title: "Three Campaigns, One Rule",
+    prompt: "Name the one control that would have stopped all three campaigns' beacons.",
+    skill: "security",
+  },
 };
 
 export const CHALLENGE_PATHS: Record<
@@ -512,19 +538,17 @@ export const CHALLENGE_PATHS: Record<
 > = {
   "day-one": { href: "/range/phase-1/home-lab-challenges", tab: "operation-day-one" },
   "ticket-queue": { href: "/range/phase-1/home-lab-challenges", tab: "ticket-queue" },
-  "alert-queue": { href: "/range/phase-2/capstone", tab: "the-2-am-login" },
+  "alert-queue": { href: "/range/phase-2/capstone", tab: "the-credential-campaign" },
   "wire": { href: "/range/phase-1/week-3", tab: "the-nightly-settlement-push" },
   "crypto": { href: "/range/phase-1/week-2", tab: "the-mirror-that-does-not-match" },
   "client-data": { href: "/range/phase-1/home-lab-challenges", tab: "the-client-data-review" },
-  "malware-alert": { href: "/range/phase-2/capstone", tab: "the-quiet-beacon" },
   "soc-alert": { href: "/range/phase-2/capstone", tab: "approved-overnight-or-not" },
   "baseline-alert": { href: "/range/phase-2/capstone", tab: "baseline-a-team-then-find-who-breaks-it" },
-  "zerotrust-alert": { href: "/range/phase-2/capstone", tab: "lock-every-gate" },
   "threshold-alert": { href: "/range/phase-2/capstone", tab: "set-a-defensible-lockout-threshold" },
-  "night-shift": { href: "/range/phase-2/capstone", tab: "the-night-the-queue-didn-t-stop" },
   "access-alert": { href: "/range/phase-1/week-4", tab: "who-can-open-the-compliance-case-files" },
-  "signin-alert": { href: "/range/phase-2/capstone", tab: "the-spray-the-lockout-and-the-one-that-got-through" },
+  "credential-campaign": { href: "/range/phase-2/capstone", tab: "the-credential-campaign" },
   "phishing-chain": { href: "/range/phase-2/capstone", tab: "the-phishing-chain" },
+  "open-door": { href: "/range/phase-2/capstone", tab: "the-open-door" },
 };
 
 export function missionHref(id: string): string {
@@ -570,19 +594,17 @@ export function challengeHref(challenge: MissionCatalogEntry["challenge"], resul
 export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> = {
   "day-one": "Operation Day One",
   "ticket-queue": "Ticket Queue",
-  "alert-queue": "The 2 AM Login",
+  "alert-queue": "The Credential Campaign",
   "wire": "The Nightly Settlement Push",
   "crypto": "The Mirror That Does Not Match",
   "client-data": "The Client Data Review",
-  "malware-alert": "The Quiet Beacon",
   "soc-alert": "Approved Overnight, or Not?",
   "baseline-alert": "Baseline a Team, Then Find Who Breaks It",
-  "zerotrust-alert": "Lock Every Gate",
   "threshold-alert": "Set a Defensible Lockout Threshold",
-  "night-shift": "The Night the Queue Didn't Stop",
   "access-alert": "Who Can Open the Compliance Case Files?",
-  "signin-alert": "The Spray, the Lockout, and the One That Got Through",
+  "credential-campaign": "The Credential Campaign",
   "phishing-chain": "The Phishing Chain",
+  "open-door": "The Open Door",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {
@@ -614,7 +636,13 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
 }
 
 /** Tickets that need a real change in the student's lab before they can answer. */
-export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25", "cap-06", "cry-06", "mw-01", "mw-02", "bt-03", "zt-02", "th-01", "cp-04", "cp-06", "ea-03", "sl-01", "sl-02", "sl-03", "rc-01", "dl-01", "pi-01", "pi-02", "ao-01", "ao-02"];
+export const LAB_GATED_MISSIONS = [
+  "tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25",
+  "cap-06", "cry-06", "bt-03", "zt-02", "th-01", "cp-04", "ea-03",
+  "sl-01", "sl-02", "sl-03",
+  "rc-01", "dl-01", "pc-03", "pi-01", "pc-05", "pi-02", "ao-01", "ao-02",
+  "od-02", "od-04", "od-05", "od-06", "od-07",
+];
 
 /**
  * The on-the-job task each mission practices. A gated ticket seen in the lab

@@ -88,14 +88,6 @@ const MISSION_LAB = {
     ],
     { tickets: ["INC-1055"] }
   ),
-  // The Quiet Beacon capstone: the outbound rule the planted task relies on
-  // is disabled, which the snapshot reports the same way tq-17 does. mw-01
-  // (naming the task) has no lab-state check, same as tq-06 -- the task
-  // itself never changes, so the typed answer alone proves it was found.
-  "mw-02": G(
-    [{ c: { t: "fwRuleOff", name: "Windows Update Assistant Network" }, label: "The planted outbound rule is disabled or removed" }],
-    { tickets: ["INC-1064"] }
-  ),
   // The baseline-outlier capstone: theo.walsh's excess Server Admins
   // membership is removed, the same member check tq-01/tq-12 already use.
   // bt-01 and bt-02 (naming the account and the group) have no lab-state
@@ -105,9 +97,9 @@ const MISSION_LAB = {
     [{ c: { t: "member", sam: "theo.walsh", group: "Server Admins", want: false }, label: "theo.walsh is not in Server Admins" }],
     { users: ["theo.walsh"] }
   ),
-  // Lock Every Gate capstone: the legacy internal-trust rule is disabled,
-  // the same fwRuleOff check tq-17/mw-02 already use. zt-01 (naming the
-  // port) has no lab-state check, same as tq-06.
+  // The Open Door campaign: the legacy internal-trust rule is disabled, the
+  // same fwRuleOff check tq-17 already uses. zt-01 (naming the port) has no
+  // lab-state check, same as tq-06.
   "zt-02": G(
     [{ c: { t: "fwRuleOff", name: "PurveX Legacy - Internal File Access" }, label: "The legacy internal-trust rule is disabled or removed" }],
     { tickets: ["INC-1067"] }
@@ -117,19 +109,29 @@ const MISSION_LAB = {
   // tightest-possible one. No pre-planted ticket mark needed -- Wealth
   // Management Users already exists in the base roster, same as tq-24.
   "th-01": G([{ c: { t: "pso", minLength: 12, appliesTo: "Wealth Management Users", maxLockout: 12 }, label: "A 12-character policy locking after 12 or fewer tries applies to Wealth Management Users" }]),
-  // Phase 2 capstone: two real findings from the same overnight chain,
-  // checked the same way their own single-week versions already were
-  // (fwRuleOff for the rule, member for the excess group), against the
-  // capstone's own separate artifacts (INC-1069/INC-1070, not Quiet
-  // Beacon's or Baseline a Team's). cp-01/02/03/05/07/08 are reasoning or
-  // naming steps with no lab-state change, same as tq-06.
+  // The Credential Campaign's Installation/C2 stage, reusing the capstone's
+  // own artifact (INC-1069). cp-03 (naming the task) has no lab-state check,
+  // same as tq-06.
   "cp-04": G(
     [{ c: { t: "fwRuleOff", name: "PurveX Update Helper Service" }, label: "The capstone's outbound rule is disabled or removed" }],
     { tickets: ["INC-1069"] }
   ),
-  "cp-06": G(
-    [{ c: { t: "member", sam: "ezra.lund", group: "Server Admins", want: false }, label: "ezra.lund is not in Server Admins" }],
-    { users: ["ezra.lund"] }
+  // The Open Door campaign's own Installation/C2 stage, same fwRuleOff
+  // mechanism, a third address so none of the three campaigns' beacons
+  // collide. od-04 (naming the task) has no lab-state check, same as tq-06.
+  "od-05": G(
+    [{ c: { t: "fwRuleOff", name: "Directory Replication Sync" }, label: "The planted outbound rule is disabled or removed" }],
+    { tickets: ["INC-1077"] }
+  ),
+  // The Open Door campaign's Actions on Objectives: the staged export is
+  // moved to Quarantine, the same file-pair check ao-02/cry-06 already use.
+  // od-06 (naming the file) has no lab-state check, same as tq-06.
+  "od-07": G(
+    [
+      { c: { t: "file", path: "Shares\\Compliance\\ops-batch-export.csv", want: false }, label: "The staged file is gone from the Compliance share" },
+      { c: { t: "file", path: "Quarantine\\ops-batch-export.csv", want: true }, label: "It is kept in C:\\PurveX\\Quarantine" },
+    ],
+    { tickets: ["INC-1078"] }
   ),
   // The wire-capture capstone: the burned service account is contained by
   // disabling it, which the snapshot reports. Kept, not deleted, so the review

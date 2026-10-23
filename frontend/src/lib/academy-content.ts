@@ -279,24 +279,18 @@ const phase2Capstone: HomeLabDef[] = [
   {
     slug: "capstone",
     title: "Phase 2 — Challenges",
-    summary: "Every challenge from the phase, worked start to finish on your own lab, ending in one overnight shift that ties them together.",
-    // Two separate attackers, two separate chains, each kept contiguous:
-    // the credential campaign (spray through the capstone's second wave),
-    // then the phishing chain (recon through actions on objectives), which
-    // actually reaches the stages a credential-only attack never shows.
-    // Each entry below is its own story -- an earlier pass bundled three
-    // unrelated routine tickets into one file to pad its question count,
-    // which read as a challenge containing other challenges. Grouped under
-    // "Also This Week" instead, as separate stories that happen to land the
-    // same week. The review comes last because it looks back at everything
-    // above it.
+    summary: "Three real attack campaigns, worked start to finish on your own lab, each mapped to the Cyber Kill Chain and MITRE ATT&CK.",
+    // Three separate attackers, three separate chains, each its own real
+    // story: credential guessing, a phishing attachment, and a forgotten
+    // firewall rule. Each stays one coherent campaign in one file rather
+    // than several tickets bundled under a wrapper title. Approved
+    // Overnight, Baseline a Team and the lockout threshold are real work
+    // too, just not part of any of the three chains. The review comes last
+    // because it looks back at everything above it.
     sections: [
-      { label: "Challenge: The Spray, the Lockout, and the One That Got Through", file: "phase-2/week-2/challenge-signin-log.md", group: "The Credential Campaign" },
-      { label: "Challenge: The 2 AM Login", file: "phase-2/week-2/alert-inc-1046.md", group: "The Credential Campaign" },
-      { label: "Challenge: The Quiet Beacon", file: "phase-2/week-1/challenge-quiet-beacon.md", group: "The Credential Campaign" },
-      { label: "Challenge: Lock Every Gate", file: "phase-2/baselines-thresholds/challenge-internal-trust.md", group: "The Credential Campaign" },
-      { label: "Challenge: The Night the Queue Didn't Stop", file: "phase-2/capstone/challenge-the-night-shift.md", group: "The Credential Campaign" },
-      { label: "Challenge: The Phishing Chain", file: "phase-2/phishing-chain/challenge-phishing-chain.md", group: "The Phishing Chain" },
+      { label: "Challenge: The Credential Campaign", file: "phase-2/campaigns/challenge-credential-campaign.md", group: "Campaigns" },
+      { label: "Challenge: The Phishing Chain", file: "phase-2/campaigns/challenge-phishing-chain.md", group: "Campaigns" },
+      { label: "Challenge: The Open Door", file: "phase-2/campaigns/challenge-open-door.md", group: "Campaigns" },
       { label: "Challenge: Approved Overnight, or Not?", file: "phase-2/soc-mindset/challenge-overnight-alert.md", group: "Also This Week" },
       { label: "Challenge: Baseline a Team, Then Find Who Breaks It", file: "phase-2/baselines-thresholds/challenge-access-outlier.md", group: "Also This Week" },
       { label: "Challenge: Set a Defensible Lockout Threshold", file: "phase-2/baselines-thresholds/challenge-lockout-threshold.md", group: "Also This Week" },

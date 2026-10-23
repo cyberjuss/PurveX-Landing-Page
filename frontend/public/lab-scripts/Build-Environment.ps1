@@ -66,7 +66,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 20
+$PurvexScriptVersion = 21
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -506,15 +506,26 @@ function Ensure-PhishingChainTickets {
         }
 
         # INC-1074: Delivery. A disguised attachment, recovered from the mail
-        # gateway and dropped on the Wealth Management share for review. The
-        # file is plain text and cannot run; the double extension is the
-        # whole finding.
+        # gateway and dropped on the Wealth Management share for review. Its
+        # content is the EICAR standard antivirus test string -- a real,
+        # industry-standard 68-byte file every antivirus engine is built to
+        # flag, and whose hash VirusTotal genuinely recognizes. It is not
+        # malware and cannot do anything; it exists only so a real hash
+        # lookup gives a real answer. The double extension is the other
+        # finding.
         if (-not (Test-PurvexTicketMark "INC-1074")) {
             $wm = Join-Path $PurvexLabRoot "Shares\WealthManagement"
             New-Item -ItemType Directory -Path $wm -Force | Out-Null
             New-Item -ItemType Directory -Path (Join-Path $PurvexLabRoot "Quarantine") -Force | Out-Null
             $bad = Join-Path $wm "Q3_Rebalance_Summary.pdf.exe"
-            Set-Content -LiteralPath $bad -Value "PurveX training file. This is not a real program and it cannot run. Treat it as a suspicious email attachment recovered from the mail gateway."
+            # Windows Defender is built to delete an EICAR file on sight, which
+            # would remove the ticket's own evidence before anyone could find
+            # it. A narrow exclusion on this one path only is what keeps the
+            # planted file sitting there to be discovered and hashed, the same
+            # way a malware-analysis sandbox excludes its own sample folder.
+            try { Add-MpPreference -ExclusionPath $wm -ErrorAction Stop } catch {}
+            $eicar = 'X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*'
+            Set-Content -LiteralPath $bad -Value $eicar -NoNewline -Encoding ASCII
             (Get-Item -LiteralPath $bad).LastWriteTime = Get-Date "2026-10-18 08:41"
             if (-not (Get-SmbShare -Name "Shares" -ErrorAction SilentlyContinue)) {
                 New-SmbShare -Name "Shares" -Path (Join-Path $PurvexLabRoot "Shares") -ReadAccess "Domain Users" -ErrorAction SilentlyContinue | Out-Null
@@ -560,6 +571,52 @@ function Ensure-PhishingChainTickets {
         }
     }
     catch { Write-Host "  Could not plant the phishing chain tickets: $($_.Exception.Message)" -ForegroundColor Yellow }
+}
+
+# INC-1077 and INC-1078: the third campaign's own Installation, Command and
+# Control and Actions on Objectives, planted behind the legacy SMB rule
+# (INC-1067) rather than a new entry point. Same proven mechanisms as the
+# other two campaigns -- a scheduled task with its own firewall rule, and a
+# staged file in a folder with no business reason to hold it -- different
+# name, address and location so none of the three campaigns' artifacts ever
+# collide.
+function Ensure-OpenDoorTickets {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param()
+
+    if (Test-PurvexTicketMark "INC-1078") { return }
+    if (-not $PSCmdlet.ShouldProcess("Open door campaign", "Plant third intrusion")) { return }
+    Write-Host "`n== Open door campaign tickets ==" -ForegroundColor Cyan
+
+    try {
+        if (-not (Test-PurvexTicketMark "INC-1077")) {
+            $taskName = "DirectoryReplicationHelper"
+            $action = New-ScheduledTaskAction -Execute "powershell.exe" `
+                -Argument '-NoProfile -WindowStyle Hidden -Command "Test-NetConnection -ComputerName 203.0.113.104 -Port 7777 -WarningAction SilentlyContinue | Out-Null"'
+            $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 15) -RepetitionDuration ([TimeSpan]::MaxValue)
+            $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+            Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings `
+                -Description "PurveX training file. This is not malware and the connection attempt is harmless: it only reaches a documentation-only address (RFC 5737) that routes nowhere. Treat it as a suspicious persistence mechanism for training." `
+                -RunLevel Highest -ErrorAction Stop | Out-Null
+            New-NetFirewallRule -DisplayName "Directory Replication Sync" -Group "PurveX Lab" -Direction Outbound -Action Allow `
+                -Protocol TCP -RemotePort 7777 -RemoteAddress "203.0.113.104" -Profile Any `
+                -Description "CTF-TICKET-1077: training artifact, not a real vulnerability. Permits outbound traffic to a documentation-only address for the open-door campaign." -ErrorAction Stop | Out-Null
+            Add-PurvexTicketMark "INC-1077"
+            Write-Host "  Planted INC-1077: scheduled task $taskName and its firewall rule" -ForegroundColor Green
+        }
+
+        $source = Join-Path $PurvexLabRoot "Shares\Operations\settlement-batches-SAMPLE.csv"
+        if ((Test-Path -LiteralPath $source) -and -not (Test-PurvexTicketMark "INC-1078")) {
+            $compliance = Join-Path $PurvexLabRoot "Shares\Compliance"
+            New-Item -ItemType Directory -Path $compliance -Force | Out-Null
+            New-Item -ItemType Directory -Path (Join-Path $PurvexLabRoot "Quarantine") -Force | Out-Null
+            $staged = Join-Path $compliance "ops-batch-export.csv"
+            Set-Content -LiteralPath $staged -Value "PurveX training file. This is not a real export. It stands in for Operations settlement data staged in a folder with no business reason to hold it, ready to be pulled out."
+            Add-PurvexTicketMark "INC-1078"
+            Write-Host "  Planted INC-1078: staged export on the Compliance share" -ForegroundColor Green
+        }
+    }
+    catch { Write-Host "  Could not plant the open-door campaign tickets: $($_.Exception.Message)" -ForegroundColor Yellow }
 }
 
 function Ensure-PodTickets {
@@ -1077,6 +1134,9 @@ function Ensure-PurvexTicketObjects {
     # sample file DATA-SAMPLE plants, and both need to land in the same build
     # run rather than needing a second pass.
     Ensure-PhishingChainTickets -DeptOUPaths $DeptOUPaths
+    # Also after Ensure-IntegrityTickets: INC-1078 needs the Operations
+    # sample file DATA-SAMPLE plants.
+    Ensure-OpenDoorTickets
 }
 
 function Ensure-CTFChallengeData {

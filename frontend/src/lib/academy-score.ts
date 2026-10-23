@@ -61,8 +61,6 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "tq-17": "security",
   "tq-18": "directory",
   "tq-19": "security",
-  "mw-01": "security",
-  "mw-02": "security",
   "sm-01": "security",
   "sm-02": "security",
   "bt-01": "security",
@@ -71,14 +69,8 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "zt-01": "security",
   "zt-02": "security",
   "th-01": "security",
-  "cp-01": "security",
-  "cp-02": "security",
   "cp-03": "security",
   "cp-04": "security",
-  "cp-05": "security",
-  "cp-06": "security",
-  "cp-07": "security",
-  "cp-08": "security",
   // Week 3's two Wireshark labs: the Check Yourself questions used to be a
   // client-only self-quiz (academy's self-check.ts), never counted toward
   // readiness. Converted to real ad-mission/ad-guess tickets so they do.
@@ -109,19 +101,36 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "ea-01": "access",
   "ea-02": "access",
   "ea-03": "access",
-  // Week 3's sign-in log challenge, replacing the old browser-only
-  // "Read the Sign-In Log" widget with real events read from the lab's own
-  // Security log.
+  // Campaign 1, The Credential Campaign: real events read from the lab's
+  // own Security log, plus a KQL detection-writing step and a final
+  // Kill Chain mapping.
   "sl-01": "logs",
   "sl-02": "logs",
   "sl-03": "logs",
-  // The phishing chain, a second real intrusion run end to end.
+  "cc-11": "logs",
+  "cc-12": "security",
+  // Campaign 2, The Phishing Chain: a second real intrusion, this one with
+  // a real Delivery artifact to hash against VirusTotal and a real beacon
+  // to capture live in Wireshark.
   "rc-01": "logs",
   "dl-01": "security",
+  "pc-03": "security",
   "pi-01": "security",
+  "pc-05": "logs",
   "pi-02": "security",
   "ao-01": "security",
   "ao-02": "security",
+  "pc-10": "security",
+  // Campaign 3, The Open Door: the legacy SMB rule, proven in use before it
+  // is closed, then the same Installation/C2/Actions-on-Objectives shape
+  // behind a different entry point.
+  "od-02": "logs",
+  "od-04": "security",
+  "od-05": "security",
+  "od-06": "security",
+  "od-07": "security",
+  "od-08": "security",
+  "od-09": "security",
 };
 
 /** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */
