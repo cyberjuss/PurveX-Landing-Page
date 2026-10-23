@@ -44,22 +44,6 @@ Order: C, B, D, A.`,
 2 Shrink it: for CIA ask "is it a leak, a lie or a lockout?"; for risk ask "how likely this week?" then "how bad if it happens?" separately.
 3 Point at the exact detail in the ticket that decides it (who can open the folder, what the server holds, who checks invoices, the spare printer upstairs).`,
   },
-  "signin-log": {
-    steps: `A night of sign-in events from DC01 and the MFA service.
-1 Name the pattern: four incidents (A failures from 203.0.113.45 at 01:52, B riley.kwan locked out at 08:36, C push prompts for jamie.torres at 02:03, D svc-backup-job signs in twice). For each, pick the pattern and click the log row that proves it.
-2 Count it in Python: run a given script over signin.csv that counts failed sign-ins (4625) per source and different accounts per source, then answer which source has the most failures and which tried the most accounts.
-3 Make the call: the first response for each incident.
-4 Debrief.`,
-    answers: `Patterns: A password spray, B device still using an old password, C MFA fatigue, D service account used by a person.
-Proof rows: A the 4624 success for taylor.osei from 203.0.113.45 at 01:52:44; B the 4723 password change at 07:58; C the approved push at 02:13:30; D the 4624 logon type 10 at 03:07.
-Python: most failures 10.20.4.33 (Riley's phone, 12); most accounts 203.0.113.45 (7).
-Calls: A treat taylor.osei as compromised and contain it; B verify Riley, unlock and update the phone's saved password; C reset Jamie's password, revoke sessions, review and escalate; D escalate, find who was at 10.20.1.57, reset the password and block interactive sign-in.`,
-    mistakes: `Calling the spray brute force (brute force is many passwords on one account). Treating Riley's lockout as an attack because it has the most failures. Thinking a reminder to deny prompts fixes an approval that already happened. Seeing a service account sign in and assuming it is the nightly job without checking the logon type.
-Tool mechanics, fine to explain in full: event 4624 success, 4625 failure, 4740 lockout, 4723 user changed own password, 4672 special privileges; logon type 2 keyboard, 3 network, 5 service, 10 Remote Desktop; 0xC000006A wrong password, 0xC0000234 account locked. Python: csv.DictReader reads rows as dictionaries, Counter counts, a set keeps each account once. Pyodide runs Python in the browser; the first run downloads it.`,
-    ladder: `1 Ask what is the same and what changes across the rows: the account, the source, or the time.
-2 Shrink it: for the pattern, count accounts and sources in the rows; for the proof, find the row where the attack succeeded or where the story starts; for Python, compare the two printed lists.
-3 Point at the exact column to read: the account, the source, the event number or the logon type in Detail.`,
-  },
   "network-map": {
     steps: `A live diagram of the student's own pod (DC + Ubuntu), read from the hosted-lab status endpoint. Two drag-onto-the-diagram rounds, no chips or multiple choice.
 1 Round 1, ports: five task cards (open RDP to the DC, a sign-in's Kerberos ticket check, an LDAP directory lookup, a machine's DNS lookup for the DC, an SSH session on the Ubuntu box) get dragged onto the matching port slot drawn around the DC or Ubuntu node. A correct drop reveals the port number on the diagram; a wrong drop bounces the card back.

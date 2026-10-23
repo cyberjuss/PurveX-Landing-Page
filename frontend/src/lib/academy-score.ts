@@ -109,24 +109,28 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "ea-01": "access",
   "ea-02": "access",
   "ea-03": "access",
+  // Week 3's sign-in log challenge, replacing the old browser-only
+  // "Read the Sign-In Log" widget with real events read from the lab's own
+  // Security log.
+  "sl-01": "logs",
+  "sl-02": "logs",
+  "sl-03": "logs",
 };
 
 /** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */
-export const LAB_PASS_IDS = ["lab-risk-triage", "lab-signin-log", "lab-network-map"] as const;
+export const LAB_PASS_IDS = ["lab-risk-triage", "lab-network-map"] as const;
 export type LabPassId = (typeof LAB_PASS_IDS)[number];
 const isLabPass = (id: string) => (LAB_PASS_IDS as readonly string[]).includes(id);
 
 /** Browser labs that count toward readiness, scored by the points they earned the first time they were finished. */
 export const LAB_SKILLS: Partial<Record<LabPassId, Skill>> = {
   "lab-risk-triage": "risk",
-  "lab-signin-log": "logs",
   "lab-network-map": "security",
 };
 
 /** The scored labs, for the readiness report. href opens the lab's tab. */
 export const LAB_CATALOG: { id: LabPassId; title: string; skill: Skill; href: string }[] = [
   { id: "lab-risk-triage", title: "Monday Morning Risk Triage", skill: "risk", href: "/range/phase-1/week-1#lab-monday-morning-risk-triage" },
-  { id: "lab-signin-log", title: "Read the Sign-In Log", skill: "logs", href: "/range/phase-2/week-2#lab-read-the-sign-in-log" },
   { id: "lab-network-map", title: "Map Your Pod", skill: "security", href: "/range/phase-2/baselines-thresholds#lab-map-your-pod" },
 ];
 

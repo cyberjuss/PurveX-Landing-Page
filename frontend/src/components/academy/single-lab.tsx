@@ -8,7 +8,6 @@ import type { LabWidget } from "@/lib/academy-content";
 import { LabCarousel } from "./lab-carousel";
 import { LabBrief } from "./labs/lab-brief";
 import { RiskTriageLab } from "./labs/risk-triage-chat";
-import { SigninLogLab } from "./labs/signin-log-lab";
 import { NetworkMapLab } from "./labs/network-map-lab";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import { LAB_STEP_EVENT, lastLabStep } from "./lab-step";
@@ -104,8 +103,6 @@ export function SingleLab({
           <LabBrief lab={widget} title={title} ask={widget !== "risk-triage"}>
             {widget === "risk-triage" ? (
               <RiskTriageLab onDone={done} />
-            ) : widget === "signin-log" ? (
-              <SigninLogLab onDone={done} />
             ) : (
               <NetworkMapLab onDone={done} />
             )}

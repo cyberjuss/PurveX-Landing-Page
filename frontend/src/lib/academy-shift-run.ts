@@ -131,7 +131,7 @@ export type PublicShift = {
 // ---- context --------------------------------------------------------------
 
 function phaseFor(results: Results): number {
-  const p2 = ["lab-signin-log", "tq-06", "tq-07", "tq-08", "tq-09", "tq-10"].some((id) => results[id]?.solved);
+  const p2 = ["sl-01", "tq-06", "tq-07", "tq-08", "tq-09", "tq-10"].some((id) => results[id]?.solved);
   return p2 ? 2 : 1;
 }
 

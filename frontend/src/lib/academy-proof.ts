@@ -302,6 +302,7 @@ export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "cap-06": { job: "contain-wire-credential", label: "Service ticket INC-1057" },
   "cry-06": { job: "verify-build-integrity", label: "Service ticket INC-1058" },
   "ea-03": { job: "access-audit", label: "Service ticket INC-1071" },
+  "sl-03": { job: "enable-account", label: "Service ticket INC-1072" },
 };
 
 /** Portfolio jobs a live Shift can prove, mapped from the incident that proves each.
@@ -403,7 +404,6 @@ export function buildWorkItems(results: Results, drills: DrillEntry[]): WorkItem
 /** Skills a passed browser lab shows. Each lab confirms the work: the hash must match, the decode must be right. */
 const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
   "lab-risk-triage": ["Risk Assessment", "CIA Triad"],
-  "lab-signin-log": ["Log Analysis", "Windows Event Logs", "Incident Triage"],
   "lab-network-map": ["Network Segmentation", "Port and Protocol Identification"],
 };
 

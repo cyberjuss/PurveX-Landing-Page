@@ -66,7 +66,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 18
+$PurvexScriptVersion = 19
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -379,6 +379,94 @@ function Ensure-InfraTickets {
 # student's own download.
 function Test-PurvexHostedPod {
     return $PurvexKey -and $PurvexKey.StartsWith("pvl_")
+}
+
+# INC-1072: real sign-in events for the Phase 2 log-analysis ticket, generated
+# by actually validating credentials against the domain controller rather than
+# writing rows into a fake CSV. Three throwaway identities keep every event
+# isolated from the rest of the lab: six accounts that join no group ever get
+# only wrong passwords (a real spray, never enough tries each to lock anyone
+# out), one account sits behind its own single-member Fine-Grained Password
+# Policy so a real lockout (event 4740) can be triggered without touching the
+# domain's own lockout policy -- a different ticket's job -- or any other
+# account, and one service-style account with a known password succeeds once,
+# cleanly, with nothing before it. Runs once: a student who already worked
+# this ticket keeps the log they read, rather than it growing new events
+# every time the build script is re-run.
+function Ensure-SigninLogTickets {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param([hashtable]$DeptOUPaths, [string]$AccessLevelsOU, [string]$ServiceAccountsOU)
+
+    if (Test-PurvexTicketMark "INC-1072") { return }
+    if (-not $PSCmdlet.ShouldProcess("Security log", "Generate real sign-in events")) { return }
+    Write-Host "`n== Sign-in log ticket ==" -ForegroundColor Cyan
+
+    try {
+        $sprayTargets = @(
+            @{ First = "Ruth"; Last = "Okonkwo"; Sam = "ruth.okonkwo" },
+            @{ First = "Dmitri"; Last = "Volkov"; Sam = "dmitri.volkov" },
+            @{ First = "Ines"; Last = "Pelletier"; Sam = "ines.pelletier" },
+            @{ First = "Hassan"; Last = "Aziz"; Sam = "hassan.aziz" },
+            @{ First = "Clara"; Last = "Lindgren"; Sam = "clara.lindgren" },
+            @{ First = "Femi"; Last = "Adeyemi"; Sam = "femi.adeyemi" }
+        )
+        foreach ($t in $sprayTargets) {
+            Ensure-User -First $t.First -Last $t.Last -SamAccountName $t.Sam `
+                -Title "Seasonal Support" -Department "Operations" `
+                -OUPath $DeptOUPaths["Operations"].UsersOU -Groups @()
+        }
+
+        $lockoutSam = "petra.lindqvist"
+        Ensure-User -First "Petra" -Last "Lindqvist" -SamAccountName $lockoutSam `
+            -Title "Seasonal Support" -Department "Operations" `
+            -OUPath $DeptOUPaths["Operations"].UsersOU -Groups @()
+        $lockGroup = "Signin-Log-Lockout-Target"
+        if (-not (Get-ADGroup -Filter "Name -eq '$lockGroup'" -ErrorAction SilentlyContinue)) {
+            New-ADGroup -Name $lockGroup -GroupScope Global -GroupCategory Security -Path $AccessLevelsOU `
+                -Description "CTF-TICKET-1072: Scopes a strict lockout policy to one training account so a real lockout event can be generated safely." -ErrorAction Stop
+        }
+        Add-ADGroupMember -Identity $lockGroup -Members $lockoutSam -ErrorAction SilentlyContinue
+        if (-not (Get-ADFineGrainedPasswordPolicy -Filter "Name -eq 'Signin-Log-Lockout-PSO'" -ErrorAction SilentlyContinue)) {
+            New-ADFineGrainedPasswordPolicy -Name "Signin-Log-Lockout-PSO" -Precedence 50 `
+                -LockoutThreshold 3 -LockoutDuration "0.00:15:00" -LockoutObservationWindow "0.00:15:00" `
+                -ComplexityEnabled $true -MinPasswordLength 8 -PasswordHistoryCount 0 -ReversibleEncryptionEnabled $false `
+                -Description "CTF-TICKET-1072: Scoped to one training account so the sign-in log ticket can trigger a real lockout." -ErrorAction Stop
+            Add-ADFineGrainedPasswordPolicySubject -Identity "Signin-Log-Lockout-PSO" -Subjects $lockGroup
+        }
+
+        $nightSam = "svc-night-index"
+        if (-not (Get-ADUser -Filter "SamAccountName -eq '$nightSam'" -ErrorAction SilentlyContinue)) {
+            New-ADUser -Name "Night Index Service" -SamAccountName $nightSam `
+                -UserPrincipalName "$nightSam@$($domain.DNSRoot)" `
+                -Title "Index Maintenance Service" -Department "IT" `
+                -Path $ServiceAccountsOU `
+                -AccountPassword (ConvertTo-SecureString "Harbor-Kettle-92" -AsPlainText -Force) `
+                -ChangePasswordAtLogon $false -PasswordNeverExpires $true -Enabled $true -ErrorAction Stop
+        }
+        Set-ADUser -Identity $nightSam -Description "CTF-TICKET-1072: Runs the nightly index maintenance job. Signs in once, outside normal hours."
+
+        # The events themselves. ValidateCredentials performs a real
+        # authentication against the domain controller, so every attempt below
+        # produces a genuine Security log entry -- a wrong password is a real
+        # 4625, enough of them against the PSO-scoped account is a real 4740,
+        # and the correct password on the service account is a real 4624.
+        Add-Type -AssemblyName System.DirectoryServices.AccountManagement
+        $ctx = New-Object System.DirectoryServices.AccountManagement.PrincipalContext([System.DirectoryServices.AccountManagement.ContextType]::Domain)
+        foreach ($t in $sprayTargets) {
+            $null = $ctx.ValidateCredentials($t.Sam, "Spray-Attempt-Wrong-1")
+            Start-Sleep -Milliseconds 200
+        }
+        for ($i = 0; $i -lt 5; $i++) {
+            $null = $ctx.ValidateCredentials($lockoutSam, "Lockout-Attempt-Wrong-$i")
+            Start-Sleep -Milliseconds 300
+        }
+        Start-Sleep -Milliseconds 500
+        $null = $ctx.ValidateCredentials($nightSam, "Harbor-Kettle-92")
+
+        Add-PurvexTicketMark "INC-1072"
+        Write-Host "  Planted INC-1072: real sign-in events for the log-analysis ticket" -ForegroundColor Green
+    }
+    catch { Write-Host "  Could not plant INC-1072: $($_.Exception.Message)" -ForegroundColor Yellow }
 }
 
 function Ensure-PodTickets {
@@ -889,6 +977,7 @@ function Ensure-PurvexTicketObjects {
     }
 
     Ensure-InfraTickets -DeptOUPaths $DeptOUPaths
+    Ensure-SigninLogTickets -DeptOUPaths $DeptOUPaths -AccessLevelsOU $AccessLevelsOU -ServiceAccountsOU $ServiceAccountsOU
     Ensure-PodTickets -DeptOUPaths $DeptOUPaths -ServiceAccountsOU $ServiceAccountsOU
     Ensure-IntegrityTickets
 }

@@ -14,7 +14,7 @@ export function loadLesson(relativePath: string): string | null {
 }
 
 /** Interactive labs rendered by a React component below the section's markdown. */
-export type LabWidget = "risk-triage" | "signin-log" | "network-map";
+export type LabWidget = "risk-triage" | "network-map";
 
 export interface ContentSection {
   label: string;
@@ -213,7 +213,6 @@ const phase2Weeks: WeekDef[] = [
     summary: "Read the host, the account, and the log before deciding what happened.",
     sections: [
       { label: "Overview", file: "phase-2/week-2/overview.md" },
-      { label: "Lab: Read the Sign-In Log", file: "phase-2/week-2/lab-signin-log.md", widget: "signin-log" },
     ],
   },
   // These two replace the old empty "week-3" (SIEM Basics) and "week-4"
@@ -283,6 +282,7 @@ const phase2Capstone: HomeLabDef[] = [
       { label: "Challenge: Approved Overnight, or Not?", file: "phase-2/soc-mindset/challenge-overnight-alert.md" },
       { label: "Challenge: The Quiet Beacon", file: "phase-2/week-1/challenge-quiet-beacon.md" },
       { label: "Challenge: The 2 AM Login", file: "phase-2/week-2/alert-inc-1046.md" },
+      { label: "Challenge: The Spray, the Lockout, and the One That Got Through", file: "phase-2/week-2/challenge-signin-log.md" },
       { label: "Challenge: Baseline a Team, Then Find Who Breaks It", file: "phase-2/baselines-thresholds/challenge-access-outlier.md" },
       { label: "Challenge: Lock Every Gate", file: "phase-2/baselines-thresholds/challenge-internal-trust.md" },
       { label: "Challenge: Set a Defensible Lockout Threshold", file: "phase-2/baselines-thresholds/challenge-lockout-threshold.md" },

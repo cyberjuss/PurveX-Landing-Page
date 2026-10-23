@@ -25,7 +25,7 @@ import type { Quiz } from "@/content/academy/quizzes";
 import type { LabWidget } from "@/lib/academy-content";
 import { LabBrief } from "./labs/lab-brief";
 import { RiskTriageLab } from "./labs/risk-triage-chat";
-import { SigninLogLab } from "./labs/signin-log-lab";
+import { NetworkMapLab } from "./labs/network-map-lab";
 
 type WeekLink = { label: string; href: string };
 
@@ -358,7 +358,7 @@ export function SectionTabs({
           {current.widget === "risk-triage" ? (
             <RiskTriageLab onDone={labDone} />
           ) : (
-            <SigninLogLab onDone={labDone} />
+            <NetworkMapLab onDone={labDone} />
           )}
         </LabBrief>
       </div>

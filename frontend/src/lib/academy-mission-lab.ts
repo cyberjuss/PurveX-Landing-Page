@@ -154,6 +154,12 @@ const MISSION_LAB = {
     [{ c: { t: "member", sam: "noor.ahmadi", group: "Compliance Users", want: false }, label: "noor.ahmadi is not in Compliance Users" }],
     { users: ["noor.ahmadi"] }
   ),
+  // The sign-in log challenge's capstone: the account the real lockout event
+  // pointed to is unlocked, the same flag check tq-02 already uses.
+  "sl-03": G(
+    [{ c: { t: "flag", sam: "petra.lindqvist", flag: "lockedOut", want: false }, label: "petra.lindqvist is not locked out" }],
+    { users: ["petra.lindqvist"] }
+  ),
   // The client data review reads the synthetic records the lab plants on its
   // shares. Every task needs them on the share before it can be answered; the
   // last one also needs the least-privilege group the student builds.
