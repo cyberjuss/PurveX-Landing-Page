@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The 2 AM Login</h3>
 <p class="ad-brief__ask">Can you work one SIEM alert from the host through the log to the first response?</p>
-<p>This is a SOC queue item rather than a help desk ticket. At 2:04 AM the SIEM flagged a successful sign-in for <code>alex.rivera</code> on <code>WM-WKS07</code>, preceded by several failed attempts. The task is to decide whether that sign-in fits this account and this firm.</p>
+<p>This is a SOC queue item rather than a help desk ticket. At 2:04 AM the SIEM flagged a successful sign-in for <code>alex.rivera</code> on <code>WM-WKS07</code>, preceded by several failed attempts. The task is to decide whether that sign-in fits this account and this firm. If the spray across the firm's other accounts failed everywhere it touched, this is a second attempt aimed at one account specifically, an IT admin, and this time the guessing worked.</p>
 <p>The host and group steps use your Phase 1 lab, and the log steps use the export shown on this page. Keep your lab running, because every step checks that it is live before it grades.</p>
 <p>Each step takes a short answer like a folder name or a number. You get three tries per step. A common wrong answer gets a short note on where to look. The hint unlocks after two misses and the explanation unlocks once you solve the step or use all three tries.</p>
 </div>
@@ -210,7 +210,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Wiping the PC destroys the evidence and waiting on email gives the attacker time. Clearing the events hides what happened.</p>
+<p>Wiping the PC destroys the evidence and waiting on email gives the attacker time. Clearing the events hides what happened. Containing it now does not undo what an admin account sitting open for twelve minutes could already have been used for. The next thing to check is what, if anything, got planted on the domain controller while that session was live.</p>
 </div>
 <div>
 <span>What to do</span>

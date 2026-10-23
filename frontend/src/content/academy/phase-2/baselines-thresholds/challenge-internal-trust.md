@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Lock Every Gate</h3>
 <p class="ad-brief__ask">Can you find a rule that trusts a connection just for being inside the network, and close it?</p>
-<p>Zero Trust means nothing stays open just because a connection comes from inside the firm instead of outside it. One inbound rule on the domain controller still runs on the old assumption. The work is finding it, reading what it actually trusts, and closing it on your own lab.</p>
+<p>Zero Trust means nothing stays open just because a connection comes from inside the firm instead of outside it. One inbound rule on the domain controller still runs on the old assumption. The work is finding it, reading what it actually trusts, and closing it on your own lab. This is not where this week's intrusion went next; it is where it could have, a second way onto the domain controller found and closed during the same review that caught the beacon.</p>
 <p>Both steps check your Phase 1 lab, so keep it running. Each step takes a short answer, you get three tries per step, and the hint unlocks after two misses.</p>
 </div>
 

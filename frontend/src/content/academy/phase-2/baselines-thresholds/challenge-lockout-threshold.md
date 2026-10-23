@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Set a Defensible Lockout Threshold</h3>
 <p class="ad-brief__ask">Can you set a real threshold that balances catching an attacker against locking out your own users, on your own lab?</p>
-<p>This week's detection-threshold lesson is not only about a SIEM query. Active Directory has its own version of the same trade-off: the lockout threshold on a password policy. Set it too low and ordinary typos lock people out all day. Set it too high and a password-guessing script gets dozens of free tries before anything stops it.</p>
+<p>This week's detection-threshold lesson is not only about a SIEM query. Active Directory has its own version of the same trade-off: the lockout threshold on a password policy. Set it too low and ordinary typos lock people out all day. Set it too high and a password-guessing script gets dozens of free tries before anything stops it. This is a proactive fix rather than a response to this phase's own intrusion, driven by an audit rather than by what the spray turned up, but it is exactly the control that makes the next spray cost an attacker more tries for the same result.</p>
 <p>This step checks your Phase 1 lab, so keep it running. You get three tries, and the hint unlocks after two misses.</p>
 </div>
 

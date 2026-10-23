@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The Quiet Beacon</h3>
 <p class="ad-brief__ask">Can you find a persistence mechanism nothing reported on its own, then actually shut down what it was reaching?</p>
-<p>Nothing alerted on this one. Every so often, something on the domain controller reaches out to an address that has no reason to be there. The work is finding what is doing it and closing the door it is using, on your own lab.</p>
+<p>Nothing alerted on this one. Every so often, something on the domain controller reaches out to an address that has no reason to be there. The work is finding what is doing it and closing the door it is using, on your own lab. Whoever got in through the sign-ins this week did not stop at logging in once. This is what they left behind: Installation, a way to keep acting without needing to sign in again, and Command and Control, the channel it uses to keep reaching out.</p>
 <p>Both steps check your Phase 1 lab, so keep it running. Each step takes a short answer. You get three tries per step, a common wrong answer gets a short note on where to look, and the hint unlocks after two misses.</p>
 </div>
 
@@ -90,7 +90,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Disable the rule now rather than waiting to remove the task. Preserve the task itself for whoever investigates how it got there.</p>
+<p>Disable the rule now rather than waiting to remove the task. Preserve the task itself for whoever investigates how it got there. Closing this channel does not mean the week's work is over. Anyone who got this far into the domain controller had the chance to look for other ways back in before you found this one.</p>
 </div>
 </div>
 </div>

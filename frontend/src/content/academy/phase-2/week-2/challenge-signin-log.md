@@ -3,7 +3,7 @@
 <h3>The Spray, the Lockout, and the One That Got Through</h3>
 <p class="ad-brief__ask">A real security log just recorded three different things happening to three different accounts. Can you tell which is which?</p>
 <p>IT wants to know what actually happened on the domain controller recently. There is no summary and no canned report, only the Security log itself. Three patterns are in there: a password tried against a run of accounts, an account that locked for real, and a sign-in that succeeded with nothing suspicious in front of it.</p>
-<p>Read it in your own lab, in Event Viewer or PowerShell, the same way an analyst opens a real log with no one telling them what they will find.</p>
+<p>Read it in your own lab, in Event Viewer or PowerShell, the same way an analyst opens a real log with no one telling them what they will find. This is where the rest of the phase's intrusion starts: Exploitation, the first stage where someone outside the firm actually gets in.</p>
 </div>
 
 <div class="ad-progress">
@@ -78,7 +78,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A clean, unexplained success is easy to skip past, because nothing about it looks like an attack. It still deserves a look: a service account signing in outside its normal job is worth confirming, even when the log itself shows nothing wrong.</p>
+<p>A clean, unexplained success is easy to skip past, because nothing about it looks like an attack. It still deserves a look: a service account signing in outside its normal job is worth confirming, even when the log itself shows nothing wrong. Hold onto this one. The next ticket is about what shows up on the domain controller once something gets in quietly, the way this sign-in did.</p>
 </div>
 </div>
 </div>

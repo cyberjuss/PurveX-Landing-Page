@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Baseline a Team, Then Find Who Breaks It</h3>
 <p class="ad-brief__ask">Can you build a real baseline from peer accounts and find the one access grant that does not belong, on your own lab?</p>
-<p>Four Compliance Analysts should look the same on paper. Three of them do. The work is proving that with their actual group membership, not an assumption, then finding and fixing the one that does not match.</p>
+<p>Four Compliance Analysts should look the same on paper. Three of them do. The work is proving that with their actual group membership, not an assumption, then finding and fixing the one that does not match. Nobody planted this one. It is ordinary privilege creep, the kind that outlasts a role change because nobody checks, and the same comparison you build here is what catches it when someone does plant it.</p>
 <p>All three steps check your Phase 1 lab, so keep it running. Each step takes a short answer, you get three tries per step, and the hint unlocks after two misses.</p>
 </div>
 

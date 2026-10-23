@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The Night the Queue Didn't Stop</h3>
 <p class="ad-brief__ask">Can you work one overnight shift from the first alert to the full chain, using everything this phase taught?</p>
-<p>Three things hit the queue overnight. On their own, each one is a routine call. Read together, with your own lab as the evidence, they are not three incidents. They are one.</p>
+<p>Three things hit the queue overnight. On their own, each one is a routine call. Read together, with your own lab as the evidence, they are not three incidents. They are one, and the account that got in earlier this phase was never fully locked out. A new task and a new backdoor account, not the ones you already closed, say whoever was behind this came back and tried again.</p>
 <p>Several steps check your Phase 1 lab, so keep it running. Each step takes a short answer, you get three tries per step, and the hint unlocks after two misses.</p>
 </div>
 
@@ -103,7 +103,7 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="windowsdiagnosticssync">That task belongs to a different, already-closed ticket. Keep looking for the one still open tonight.</div>
+<div class="ad-miss" data-guess="windowsdiagnosticssync">That was the same attacker's first attempt, and your team already closed it. Keep looking for the one still open tonight.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -145,7 +145,7 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="4444">That rule belongs to a different, already-closed ticket. Find the one matching tonight's task instead.</div>
+<div class="ad-miss" data-guess="4444">That rule was the first beacon's channel, and your team already closed it. Find the rule matching tonight's task instead.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -187,7 +187,7 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="theo.walsh">That account's membership is a separate, already-closed ticket. Find the one with no ticket reference at all.</div>
+<div class="ad-miss" data-guess="theo.walsh">That account's membership was ordinary privilege creep, a different and already-closed finding. Find the account with no ticket or HR record at all behind tonight's grant.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -251,7 +251,7 @@
 <div class="ad-mission" data-id="cp-07" data-attempts="0">
 <span class="ad-mission__num">Stage 4 · Kill Chain · 1:55 AM</span>
 <h4>Put It in Order</h4>
-<p><strong>SOC Queue · Overnight shift · 1:55 AM</strong><br>Two confirmed findings from tonight: the scheduled task, and the excess Server Admins membership.<br><strong>A</strong> The scheduled task is Installation; the group membership is Privilege Escalation.<br><strong>B</strong> The group membership is Installation; the scheduled task is Privilege Escalation.<br><strong>C</strong> Both are the same stage, Installation, since both were found the same night.</p>
+<p><strong>SOC Queue · Overnight shift · 1:55 AM</strong><br>Three confirmed findings from tonight: the scheduled task, the firewall rule it used, and the excess Server Admins membership. Two of them are the same Cyber Kill Chain stage, Installation, two separate ways to keep access to the domain. The third is a different stage entirely.<br><strong>A</strong> The firewall rule is Command and Control, the channel back out. The task and the group membership are both Installation.<br><strong>B</strong> The scheduled task is Command and Control. The firewall rule and the group membership are both Installation.<br><strong>C</strong> The group membership is Command and Control. The task and the firewall rule are both Installation.</p>
 <p><strong>Task:</strong> Choose which kill chain reading fits the evidence, and type its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Put It in Order" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -259,11 +259,11 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Match each finding to what it actually does, not to when it was found. One keeps the attacker acting without a person present. The other turns a foothold into standing power over the domain.</p>
+<p>Match each finding to what it actually does, not to when it was found. Installation is a way to keep access. Command and Control is the channel a compromised system uses to reach back out to the attacker.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="b">That reverses what each finding actually does. A scheduled task is what keeps something running without a person present, which is Installation.</div>
-<div class="ad-miss" data-guess="c">Same night is not the same stage. One finding is about staying present on the system; the other is about gaining more power once present.</div>
+<div class="ad-miss" data-guess="b">The task itself does not reach out anywhere. It is what keeps running without a person present, which is Installation. The rule it relies on is the channel, which is Command and Control.</div>
+<div class="ad-miss" data-guess="c">A group membership does not open a channel to anywhere. It is a second way to keep access, which is Installation, the same stage as the task.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -272,7 +272,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The scheduled task is Installation: it is what keeps the attacker's access running without anyone at the keyboard. The excess group membership is Privilege Escalation: it turns a foothold into standing power over the domain. Read as one chain instead of two unrelated tickets, the full picture is an attacker who got in, is staying in, and is trying to gain more control.</p>
+<p>The task and the backdoor group membership are both Installation: two separate ways to keep access to the domain, so losing one does not mean losing the foothold. The firewall rule is Command and Control: the channel the task actually used to reach out. Read as one chain instead of three unrelated tickets, the full picture is an attacker who got in, built two ways to stay in, and opened one channel to keep acting from outside. That channel is closed and both backdoors are gone, which is why this intrusion never reached the stage after this one: doing something with the access, rather than just keeping it.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -285,7 +285,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="cp-08" data-attempts="0">
 <span class="ad-mission__num">Stage 5 · Escalation · 2:00 AM</span>
 <h4>Hand It Up as One Incident</h4>
-<p><strong>SOC Queue · Overnight shift · 2:00 AM</strong><br>Three alerts came in separately. You are escalating them as one.</p>
+<p><strong>SOC Queue · Overnight shift · 2:00 AM</strong><br>Three alerts came in separately tonight. Read against the sign-ins and the beacon from earlier this phase, they are not even the start of something new.</p>
 <p><strong>Task:</strong> Type the single word that best names what connects all three findings tonight: the scheduled task, the excess group membership, and the firewall rule.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Hand It Up as One Incident" placeholder="one word" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -305,7 +305,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A SOC that reads these as three unrelated tickets closes each one and never sees the chain. A SOC that reads them as one intrusion hands up a complete picture: how it got in, how it is staying in, and what it was reaching for. That is the whole job this phase has been building toward.</p>
+<p>A SOC that reads these as three unrelated tickets closes each one and never sees the chain. A SOC that reads them as one intrusion hands up a complete picture: the sign-ins that got someone in, the first beacon your team found and closed, and this second attempt to hold the same ground. Twice now, the chain got stopped at Installation and Command and Control, before it ever reached the stage where an attacker actually does something with the access. That is the whole job this phase has been building toward.</p>
 </div>
 <div>
 <span>What to do</span>

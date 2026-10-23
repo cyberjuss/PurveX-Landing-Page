@@ -286,7 +286,7 @@ const phase2Capstone: HomeLabDef[] = [
       { label: "Challenge: Baseline a Team, Then Find Who Breaks It", file: "phase-2/baselines-thresholds/challenge-access-outlier.md" },
       { label: "Challenge: Lock Every Gate", file: "phase-2/baselines-thresholds/challenge-internal-trust.md" },
       { label: "Challenge: Set a Defensible Lockout Threshold", file: "phase-2/baselines-thresholds/challenge-lockout-threshold.md" },
-      { label: "Challenge: The Five-Stage Intrusion", file: "phase-2/kill-chain/challenge-attack-chain.md" },
+      { label: "Challenge: The Chain You Already Worked", file: "phase-2/kill-chain/challenge-attack-chain.md" },
       { label: "Challenge: The Night the Queue Didn't Stop", file: "phase-2/capstone/challenge-the-night-shift.md" },
     ],
   },

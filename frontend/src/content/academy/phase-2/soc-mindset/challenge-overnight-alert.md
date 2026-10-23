@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Approved Overnight, or Not?</h3>
 <p class="ad-brief__ask">Can you tell a real attack from an alert that only looks like one, using your own lab?</p>
-<p>An automated alert fired for a sign-in well outside business hours. That is exactly the kind of alert this week trained you not to pattern-match on sight. Before you escalate anything, work it the way the 5 W's and the classification lesson both taught: check the record first.</p>
+<p>An automated alert fired for a sign-in well outside business hours. That is exactly the kind of alert this week trained you not to pattern-match on sight. Before you escalate anything, work it the way the 5 W's and the classification lesson both taught: check the record first. Later in this phase, a real intrusion runs through several tickets in a row. This one is not part of it, and telling the two apart is the point.</p>
 <p>Both steps check your Phase 1 lab, so keep it running. Each step takes a short answer, you get three tries per step, and the hint unlocks after two misses.</p>
 </div>
 
