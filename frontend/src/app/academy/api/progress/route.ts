@@ -14,8 +14,6 @@ const LAB_NAME: Record<string, string> = {
   "lab-signin-log": "the Sign-in Log lab",
   "lab-effective-access": "the Effective Access lab",
   "lab-risk-triage": "the Risk Triage lab",
-  "lab-password-table": "the Password Table lab",
-  "lab-hash-verify": "the Hash Verify lab",
 };
 
 export async function GET(request: Request) {

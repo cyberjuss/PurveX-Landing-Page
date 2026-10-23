@@ -23,9 +23,7 @@ import { academyFetch } from "@/lib/academy-client";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import type { Quiz } from "@/content/academy/quizzes";
 import type { LabWidget } from "@/lib/academy-content";
-import { HashVerifyLab } from "./labs/hash-verify-lab";
 import { LabBrief } from "./labs/lab-brief";
-import { PasswordTableLab } from "./labs/password-table-lab";
 import { RiskTriageLab } from "./labs/risk-triage-chat";
 import { SigninLogLab } from "./labs/signin-log-lab";
 import { EffectiveAccessLab } from "./labs/effective-access-lab";
@@ -360,14 +358,10 @@ export function SectionTabs({
         <LabBrief lab={current.widget} title={current.label.replace(/^Lab:\s*/, "")} ask={current.widget !== "risk-triage"}>
           {current.widget === "risk-triage" ? (
             <RiskTriageLab onDone={labDone} />
-          ) : current.widget === "hash-verify" ? (
-            <HashVerifyLab onDone={labDone} />
           ) : current.widget === "signin-log" ? (
             <SigninLogLab onDone={labDone} />
-          ) : current.widget === "effective-access" ? (
-            <EffectiveAccessLab onDone={labDone} />
           ) : (
-            <PasswordTableLab onDone={labDone} />
+            <EffectiveAccessLab onDone={labDone} />
           )}
         </LabBrief>
       </div>

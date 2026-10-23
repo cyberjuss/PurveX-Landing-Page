@@ -7,8 +7,6 @@ import { splitMarkdownIntoSlides } from "@/lib/markdown";
 import type { LabWidget } from "@/lib/academy-content";
 import { LabCarousel } from "./lab-carousel";
 import { LabBrief } from "./labs/lab-brief";
-import { HashVerifyLab } from "./labs/hash-verify-lab";
-import { PasswordTableLab } from "./labs/password-table-lab";
 import { RiskTriageLab } from "./labs/risk-triage-chat";
 import { SigninLogLab } from "./labs/signin-log-lab";
 import { EffectiveAccessLab } from "./labs/effective-access-lab";
@@ -107,16 +105,12 @@ export function SingleLab({
           <LabBrief lab={widget} title={title} ask={widget !== "risk-triage"}>
             {widget === "risk-triage" ? (
               <RiskTriageLab onDone={done} />
-            ) : widget === "hash-verify" ? (
-              <HashVerifyLab onDone={done} />
             ) : widget === "signin-log" ? (
               <SigninLogLab onDone={done} />
             ) : widget === "effective-access" ? (
               <EffectiveAccessLab onDone={done} />
-            ) : widget === "network-map" ? (
-              <NetworkMapLab onDone={done} />
             ) : (
-              <PasswordTableLab onDone={done} />
+              <NetworkMapLab onDone={done} />
             )}
           </LabBrief>
           {finish}

@@ -44,36 +44,6 @@ Order: C, B, D, A.`,
 2 Shrink it: for CIA ask "is it a leak, a lie or a lockout?"; for risk ask "how likely this week?" then "how bad if it happens?" separately.
 3 Point at the exact detail in the ticket that decides it (who can open the folder, what the server holds, who checks invoices, the spare printer upstairs).`,
   },
-  "hash-verify": {
-    steps: `IT published one SHA-256 for VPN update 2.4.1.
-1 Hash every copy: for copies A (email from Alex in IT), B (shared drive, modified 2:47 am) and C (Teams message from an outside account) the student downloads the file, hashes it in CyberChef (or PowerShell 7 / sha256sum), pastes their hash, then says Matches or Does not match.
-2 Find the change: click the lines in copy B that differ from IT's copy, then say what copy B would do.
-3 Make the call: three questions (first move on copy B, whether copy C can be used, why a hash check would not catch the 2017 CCleaner attack).
-4 Debrief.`,
-    answers: `A matches. B does not match. C matches (file untouched, but the sender is suspicious).
-Changed lines in B: line 5 (server vpn.purvexfinancia1.com, digit 1 in place of the letter l) and line 7 (new Invoke-WebRequest that downloads helper.exe). Effect: sends VPN traffic to an outside server and downloads a program.
-Calls: pull B, keep it as evidence, warn staff, escalate with the hashes. C: report the message as phishing, updates only come from the IT portal. CCleaner: the malware was built into the vendor's own signed release, so the file matched what the vendor shipped.`,
-    mistakes: `Copying the file's text into CyberChef instead of loading the file itself, which can change line endings and the hash. Comparing only the first few characters. Pasting IT's hash instead of their own. Thinking a matching hash makes a sender trustworthy. Deleting the bad copy, which destroys evidence.
-Tool mechanics, fine to explain in full: CyberChef SHA2 with size 256; drag the file into the Input pane or use its open-file button; PowerShell 7: Get-FileHash ./FILE -Algorithm SHA256; Linux: sha256sum FILE; Mac: shasum -a 256 FILE; letter case does not matter.`,
-    ladder: `1 Ask what a single changed character does to a hash, or what they can see on screen that tells them.
-2 Shrink it: compare their hash to IT's a few characters at a time using the comparison bar; for the change, compare copy B to what a VPN update should contain, line by line.
-3 Point at the exact place: the server name on line 5, or the command that is not in IT's copy.`,
-  },
-  "password-table": {
-    steps: `A vendor, LedgerLine, was breached. Eight PurveX staff had accounts.
-1 Try it: four cards. Encode (Base64, can be decoded by anyone). Encrypt (an AES note from Alex; the key Harbor-Kettle-19 is printed on the card; type the code word from the decrypted note). Hash (SHA-256, cannot be reversed). Salt (a switch shows equal passwords getting different hashes; question: why did they split).
-2 Name it: name the storage method for 2014 pwd_b64, 2017 pwd_enc, 2020 pwd_sha256, 2023 salt + pwd_hash.
-3 Work the dump: A tick everyone whose 2020 hash matches someone else's. B hash a list of common passwords and find the two people using one. C decode morgan.lee's 2014 Base64 value. D choose the first response.
-4 Debrief.`,
-    answers: `Code word ORBIT. Salt: each user's own salt changes what gets hashed.
-2014 encoding, 2017 encryption, 2020 hash with no salt, 2023 salted hash.
-A: priya.nair, devon.brooks, sam.whitfield. B: jamie.torres Purvex123, taylor.osei Welcome2026. C: Compliance#1. D: force resets for affected staff, recovered ones first, and turn on MFA.`,
-    mistakes: `Calling Base64 encryption. Thinking a hash can be decrypted. Hashing a word with a trailing space or line break, which gives a different hash. Hashing the whole list at once in CyberChef. Thinking salt must be secret. Wanting to test leaked passwords on real accounts, which is never allowed.
-Tool mechanics, fine to explain in full: CyberChef SHA2 size 256, one word in Input with nothing after it; to hash a whole list at once add Fork (split on \\n, merge on \\n) before SHA2; From Base64 for decoding; Hashcat and John the Ripper run the same guess-hash-compare loop at scale.`,
-    ladder: `1 Ask the one test that tells the methods apart: can you get the password back, and do you need a key?
-2 Shrink it: for reuse, look for two rows with the same value; for weak passwords, hash one word from the list and search the table for it; for Base64, look at the characters and the = at the end.
-3 Point at the exact spot: which column, which user, or which CyberChef operation to add.`,
-  },
   "signin-log": {
     steps: `A night of sign-in events from DC01 and the MFA service.
 1 Name the pattern: four incidents (A failures from 203.0.113.45 at 01:52, B riley.kwan locked out at 08:36, C push prompts for jamie.torres at 02:03, D svc-backup-job signs in twice). For each, pick the pattern and click the log row that proves it.

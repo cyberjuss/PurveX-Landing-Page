@@ -14,7 +14,7 @@ export function loadLesson(relativePath: string): string | null {
 }
 
 /** Interactive labs rendered by a React component below the section's markdown. */
-export type LabWidget = "risk-triage" | "hash-verify" | "password-table" | "signin-log" | "effective-access" | "network-map";
+export type LabWidget = "risk-triage" | "signin-log" | "effective-access" | "network-map";
 
 export interface ContentSection {
   label: string;
@@ -76,8 +76,6 @@ const phase1Weeks: WeekDef[] = [
       { label: "Encryption and Keys", file: "phase-1/week-2/lesson-encryption.md" },
       { label: "Storing Passwords", file: "phase-1/week-2/lesson-passwords.md" },
       { label: "Resources", file: "phase-1/week-2/resources.md" },
-      { label: "Lab: The Update Nobody Can Vouch For", file: "phase-1/week-2/lab-hash-verify.md", widget: "hash-verify" },
-      { label: "Lab: The Leaked Password Table", file: "phase-1/week-2/lab-password-table.md", widget: "password-table" },
       { label: "Lab: Hashing and Encryption with CyberChef", file: "phase-1/week-2/lab-tell-them-apart.md" },
       { label: "Lab: Password Hashing and Salting", file: "phase-1/week-2/lab-store-a-password.md" },
       { label: "Challenge: The Mirror That Does Not Match", file: "phase-1/week-2/challenge-installer-check.md" },

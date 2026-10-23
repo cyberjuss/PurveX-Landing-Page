@@ -34,8 +34,6 @@ const ART: Record<string, { blurb: string; skill: string; icon: string; accent: 
   "risk-triage": { blurb: "Score Monday's incoming tickets by real business risk.", skill: "Risk Triage", icon: "TriangleAlert", accent: "#f5a524", minutes: 12 },
   "three-failures": { blurb: "Break confidentiality, integrity and availability on one file, and prove each one.", skill: "Fundamentals", icon: "ShieldAlert", accent: "#4fa3d1", minutes: 20 },
   "severity-risk": { blurb: "Score one flaw three ways with CVSS, and watch Critical stop meaning urgent.", skill: "Risk Triage", icon: "Gauge", accent: "#f5a524", minutes: 30 },
-  "hash-verify": { blurb: "Prove a downloaded update is the file IT really published.", skill: "Integrity", icon: "Fingerprint", accent: "#8b7bff", minutes: 15 },
-  "password-table": { blurb: "Crack a leaked table to see which password storage holds up.", skill: "Credentials", icon: "KeyRound", accent: "#22b8cf", minutes: 20 },
   "tell-them-apart": { blurb: "Tell encoding, encryption and hashing apart in CyberChef, and prove which reverse.", skill: "Credentials", icon: "ScanSearch", accent: "#22b8cf", minutes: 20 },
   "store-a-password": { blurb: "See why a leaked unsalted table gives a company away, and how salting fixes it.", skill: "Credentials", icon: "KeyRound", accent: "#22b8cf", minutes: 25 },
   "wireshark": { blurb: "Read a packet capture and follow a conversation on the wire.", skill: "Networking", icon: "Radar", accent: "#3b9eff", minutes: 20 },

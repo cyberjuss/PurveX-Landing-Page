@@ -35,36 +35,6 @@ export const LAB_BRIEFS: Record<LabWidget, LabBrief> = {
     tools: [],
     minutes: 12,
   },
-  "hash-verify": {
-    problem:
-      "In 2023 attackers slipped malware into the 3CX phone app installer that thousands of companies downloaded. Analysts confirmed the bad files by their SHA-256 hashes and shared those hashes so others could block them.",
-    today: "IT released VPN update 2.4.1 and posted its hash. Three copies are going around the firm.",
-    objective: {
-      "help-desk": "Tell staff which copy of the update is safe to install, and stop the bad one spreading.",
-      sysadmin: "Verify the update before it goes to every laptop, and find what was changed in the bad copy.",
-      "soc-analyst": "Confirm the suspicious copy by hash, find the malicious change, and escalate with evidence.",
-      "cyber-analyst": "Prove which copy was tampered with, and explain what a hash can and cannot prove.",
-      "ir-analyst": "Identify the tampered copy, keep it as evidence, and choose the containment steps.",
-    },
-    objectiveDefault: "Find out which copy of the update is safe, and what to do about the one that is not.",
-    tools: ["CyberChef", "sha256sum", "PowerShell 7"],
-    minutes: 15,
-  },
-  "password-table": {
-    problem:
-      "In 2012, 6.5 million LinkedIn password hashes were posted online. They were stored without a salt, so most were cracked within days.",
-    today: "A vendor eight PurveX staff used was breached. The dump stores their passwords four different ways.",
-    objective: {
-      "help-desk": "Work out whose passwords the breach exposes, and who needs a reset first.",
-      sysadmin: "Judge how the vendor stored passwords, and what a safe system does instead.",
-      "soc-analyst": "Read a leaked credential dump and flag the accounts at risk of takeover.",
-      "cyber-analyst": "Rate four ways of storing passwords and show the weakness in each with real tools.",
-      "ir-analyst": "Size what a third-party breach exposed, and choose the first response step.",
-    },
-    objectiveDefault: "Find out what the leaked table gives away, and what PurveX should do first.",
-    tools: ["CyberChef", "Hashcat and John the Ripper (shown)"],
-    minutes: 20,
-  },
   "signin-log": {
     problem:
       "In late 2023, attackers used a password spray to break into an old Microsoft test account that had no MFA. From there they reached email belonging to Microsoft's senior leadership and security staff.",
