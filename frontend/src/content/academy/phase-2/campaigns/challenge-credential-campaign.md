@@ -192,7 +192,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Four failures land exactly two seconds apart, then a success follows about two and a half minutes later. That steady spacing points to a script guessing passwords, not a person retyping one, four attempts against one named account rather than the spray's one attempt against many: Password Guessing, T1110.001, the same Brute Force family aimed instead of wide.</p>
+<p>Four failures land exactly two seconds apart, then a success follows about two and a half minutes later. That steady spacing points to a script guessing passwords, not a person retyping one. Four attempts against one named account, rather than the spray's one attempt against many, is Password Guessing, T1110.001: the same Brute Force family aimed instead of wide.</p>
 </div>
 </div>
 </div>

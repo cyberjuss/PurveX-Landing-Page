@@ -66,7 +66,7 @@
 <li>Read the Logon Type field in the General tab. Type 3 is Network: a connection from somewhere else, not an interactive sign-in at the keyboard.</li>
 <li>Read the Source Network Address, which should not be the domain controller's own IP.</li>
 </ol>
-<p>If you are on a self-hosted lab with only one machine, this traffic has nothing to generate it from; read the rule's own Scope instead and answer from what Type 3 means by definition.</p>
+<p>If you are on a self-hosted lab with only one machine, this traffic has nothing to generate it from. Read the rule's own Scope instead and answer from what Type 3 means by definition.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="2|10">Type 2 is an interactive sign-in at the keyboard, and Type 10 is Remote Desktop. Neither is what a file-share connection over the network produces.</div>
@@ -316,7 +316,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A domain controller rarely has a real reason to make new outbound connections on its own. Restricting outbound traffic to a known allowlist would have broken all three campaigns at Command and Control, no matter which door each one used to get in. Different Exploitation, same chokepoint: that is not a coincidence, it is where a domain controller's own normal behavior makes an attacker's traffic stand out the most.</p>
+<p>A domain controller rarely has a real reason to make new outbound connections on its own. Restricting outbound traffic to a known allowlist would have broken all three campaigns at Command and Control, no matter which door each one used to get in. Different Exploitation, same chokepoint. That is not a coincidence. It is where a domain controller's own normal behavior makes an attacker's traffic stand out the most.</p>
 </div>
 </div>
 </div>

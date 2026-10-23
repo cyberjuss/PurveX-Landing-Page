@@ -91,7 +91,7 @@
 <span class="ad-mission__num">Stage 2 · Delivery · T1036.008 Masquerade File Type · INC-1074 · Medium</span>
 <h4>Hash It and Check It</h4>
 <p><strong>IT Lead · Mail gateway flag · 8:50 AM</strong><br>Naming the disguise is not the same as proving what the file is. Before this goes in a report, hash it and check that hash against a real reputation database.</p>
-<p><strong>Task:</strong> Compute the file's SHA-256 hash, then paste that exact hash into <a href="https://www.virustotal.com/gui/home/search" target="_blank" rel="noopener">VirusTotal's search</a>. Report the hashing algorithm this file's length of hash value represents, in bits.</p>
+<p><strong>Task:</strong> Compute the file's SHA-256 hash, then paste that exact hash into <a href="https://www.virustotal.com/gui/home/search" target="_blank" rel="noopener">VirusTotal's search</a>. Report how many bits long this algorithm's hash value is.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Hash It and Check It" placeholder="a number of bits" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{256}">Submit</button>
@@ -115,7 +115,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>This exact hash is real and already in VirusTotal's database: the file's content is the EICAR standard antivirus test string, a 68-byte file every major engine flags on sight, which is why the lookup shows real detections rather than "no results." A lookup against an unknown, freshly-built payload often comes back with nothing, because a brand-new file has no reputation yet. Either answer, flagged or unknown, is real information. Renaming the extension (T1036.008, Masquerade File Type) is step one; a hash is what lets you prove what the file actually is underneath the name.</p>
+<p>This exact hash is real and already in VirusTotal's database: the file's content is the EICAR standard antivirus test string, a 68-byte file every major engine flags on sight, which is why the lookup shows real detections rather than "no results." A lookup against an unknown, freshly-built payload often comes back with nothing, because a brand-new file has no reputation yet. Either answer, flagged or unknown, is real information. Renaming the extension (T1036.008, Masquerade File Type) is step one. A hash is what lets you prove what the file actually is underneath the name.</p>
 </div>
 </div>
 </div>

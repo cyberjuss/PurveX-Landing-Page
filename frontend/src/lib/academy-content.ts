@@ -282,19 +282,14 @@ const phase2Capstone: HomeLabDef[] = [
     summary: "Three real attack campaigns, worked start to finish on your own lab, each mapped to the Cyber Kill Chain and MITRE ATT&CK.",
     // Three separate attackers, three separate chains, each its own real
     // story: credential guessing, a phishing attachment, and a forgotten
-    // firewall rule. Each stays one coherent campaign in one file rather
-    // than several tickets bundled under a wrapper title. Approved
-    // Overnight, Baseline a Team and the lockout threshold are real work
-    // too, just not part of any of the three chains. The review comes last
-    // because it looks back at everything above it.
+    // firewall rule. Approved Overnight, Baseline a Team, the lockout
+    // threshold and the cross-campaign review stay off this page by
+    // request -- real content, just not listed here -- so the page is only
+    // the three campaigns.
     sections: [
       { label: "Challenge: The Credential Campaign", file: "phase-2/campaigns/challenge-credential-campaign.md", group: "Campaigns" },
       { label: "Challenge: The Phishing Chain", file: "phase-2/campaigns/challenge-phishing-chain.md", group: "Campaigns" },
       { label: "Challenge: The Open Door", file: "phase-2/campaigns/challenge-open-door.md", group: "Campaigns" },
-      { label: "Challenge: Approved Overnight, or Not?", file: "phase-2/soc-mindset/challenge-overnight-alert.md", group: "Also This Week" },
-      { label: "Challenge: Baseline a Team, Then Find Who Breaks It", file: "phase-2/baselines-thresholds/challenge-access-outlier.md", group: "Also This Week" },
-      { label: "Challenge: Set a Defensible Lockout Threshold", file: "phase-2/baselines-thresholds/challenge-lockout-threshold.md", group: "Also This Week" },
-      { label: "Challenge: The Chain You Already Worked", file: "phase-2/kill-chain/challenge-attack-chain.md", group: "Review" },
     ],
   },
 ];
