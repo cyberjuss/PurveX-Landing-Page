@@ -133,6 +133,16 @@ const MISSION_LAB = {
     ],
     { tickets: ["INC-1078"] }
   ),
+  // The Kerberoasting campaign: the unused SPN is removed, the same spn
+  // check the Ticket Queue already uses elsewhere, just checking for zero
+  // rather than one.
+  "rk-03": G(
+    [{ c: { t: "spn", sam: "svc-reports", want: false }, label: "svc-reports has no SPN left" }],
+    { users: ["svc-reports"] }
+  ),
+  // The DCSync campaign: Directory Service Access auditing is enabled, the
+  // same audit check tq-22 already uses for Process Creation.
+  "rk-05": G([{ c: { t: "audit", sub: "Directory Service Access", need: "Success" }, label: "Directory Service Access is audited for success" }]),
   // The wire-capture capstone: the burned service account is contained by
   // disabling it, which the snapshot reports. Kept, not deleted, so the review
   // still has it.

@@ -104,7 +104,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 21
+$PurvexScriptVersion = 22
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -657,6 +657,96 @@ function Ensure-OpenDoorTickets {
     catch { Write-Host "  Could not plant the open-door campaign tickets: $($_.Exception.Message)" -ForegroundColor Yellow }
 }
 
+# Sysmon, so the lab has a real process-lineage and network-connection log
+# beyond what the plain Security log reports. A domain controller runs
+# Sysmon with a lighter config than a workstation would -- Process Creation
+# and Network Connect only, nothing per-file -- since Sysmon's driver adds
+# real overhead and a DC is the one machine in this lab that cannot afford
+# much of it. One-time install: if the service already exists, this does
+# nothing, so a rerun never reinstalls or restarts it.
+function Ensure-Sysmon {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param()
+
+    if (Get-Service -Name "Sysmon64" -ErrorAction SilentlyContinue) { return }
+    if (-not $PSCmdlet.ShouldProcess("Sysmon64", "Install")) { return }
+    Write-Host "`n== Sysmon ==" -ForegroundColor Cyan
+
+    try {
+        $work = Join-Path $env:TEMP "purvex-sysmon"
+        New-Item -ItemType Directory -Path $work -Force | Out-Null
+        $zip = Join-Path $work "Sysmon.zip"
+        Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Sysmon.zip" -OutFile $zip -UseBasicParsing -TimeoutSec 120
+        Expand-Archive -LiteralPath $zip -DestinationPath $work -Force
+        $config = Join-Path $work "purvex-sysmon-config.xml"
+        Set-Content -LiteralPath $config -Encoding ASCII -Value @(
+            '&lt;Sysmon schemaversion="4.70"&gt;',
+            '  &lt;EventFiltering&gt;',
+            '    &lt;ProcessCreate onmatch="exclude"&gt;',
+            '    &lt;/ProcessCreate&gt;',
+            '    &lt;NetworkConnect onmatch="exclude"&gt;',
+            '    &lt;/NetworkConnect&gt;',
+            '  &lt;/EventFiltering&gt;',
+            '&lt;/Sysmon&gt;'
+        )
+        $exe = Join-Path $work "Sysmon64.exe"
+        &amp; $exe -accepteula -i $config | Out-Null
+        Write-Host "  Sysmon installed (Process Creation and Network Connect)" -ForegroundColor Green
+    }
+    catch { Write-Host "  Could not install Sysmon: $($_.Exception.Message)" -ForegroundColor Yellow }
+}
+
+# INC-1079 and INC-1080: a fourth campaign grounded in the real techniques
+# CISA, NSA and Australia's ACSC name in their joint September 2024 guide
+# "Detecting and Mitigating Active Directory Compromises" -- Kerberoasting
+# and DCSync, the two most common ways a domain gets fully compromised
+# after an attacker already has one foothold. Neither needs guessed
+# passwords or a phishing email: both abuse Kerberos and AD replication
+# exactly as designed, which is what makes them hard to catch without
+# knowing the specific signature to look for.
+function Ensure-KerberoastingTickets {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param([hashtable]$DeptOUPaths, [string]$ServiceAccountsOU)
+
+    if (Test-PurvexTicketMark "INC-1080") { return }
+    if (-not $PSCmdlet.ShouldProcess("Kerberoasting campaign", "Plant fourth intrusion")) { return }
+    Write-Host "`n== Kerberoasting and DCSync campaign tickets ==" -ForegroundColor Cyan
+
+    try {
+        # INC-1079: a service account with a real SPN, deliberately left on
+        # RC4 only (no AES), the exact condition every Kerberoasting guide
+        # names as the actual weakness -- not the SPN itself, which plenty
+        # of real services need, but the encryption type behind it.
+        if (-not (Test-PurvexTicketMark "INC-1079")) {
+            $sam = "svc-reports"
+            if (-not (Get-ADUser -Filter "SamAccountName -eq '$sam'" -ErrorAction SilentlyContinue)) {
+                New-ADUser -Name "Service Reports" -SamAccountName $sam `
+                    -UserPrincipalName "$sam@$($domain.DNSRoot)" `
+                    -Title "Reporting Service" -Department "IT" `
+                    -Path $ServiceAccountsOU `
+                    -AccountPassword (ConvertTo-SecureString "Winter-Harbor-71" -AsPlainText -Force) `
+                    -ChangePasswordAtLogon $false -PasswordNeverExpires $true -Enabled $true -ErrorAction Stop
+            }
+            Set-ADUser -Identity $sam -Description "CTF-TICKET-1079: Runs the monthly reporting job. Still uses RC4, the way most service accounts did before the domain required AES." -Replace @{ "msDS-SupportedEncryptionTypes" = 4 }
+            setspn.exe -A "REPORTS/svc-reports.purvexfinancial.local" $sam | Out-Null
+            # One real ticket request for that SPN, so a real 4769 with RC4
+            # (0x17) lands in the Security log for the student to find. klist
+            # is a built-in Windows tool, not attacker tooling: this is what
+            # the service itself would generate just by being used once.
+            klist.exe get "REPORTS/svc-reports.purvexfinancial.local" | Out-Null
+            Add-PurvexTicketMark "INC-1079"
+            Write-Host "  Planted INC-1079: svc-reports (RC4-only SPN) and a real ticket request" -ForegroundColor Green
+        }
+
+        # INC-1080: Directory Service Access auditing is off by default, the
+        # same way Process Creation auditing was before INC-1060. Fixing
+        # this ticket is enabling the subcategory DCSync detection actually
+        # depends on, the same shape as that earlier ticket.
+        Add-PurvexTicketMark "INC-1080"
+    }
+    catch { Write-Host "  Could not plant the Kerberoasting campaign tickets: $($_.Exception.Message)" -ForegroundColor Yellow }
+}
+
 function Ensure-PodTickets {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param([hashtable]$DeptOUPaths, [string]$ServiceAccountsOU)
@@ -1175,6 +1265,8 @@ function Ensure-PurvexTicketObjects {
     # Also after Ensure-IntegrityTickets: INC-1078 needs the Operations
     # sample file DATA-SAMPLE plants.
     Ensure-OpenDoorTickets
+    Ensure-Sysmon
+    Ensure-KerberoastingTickets -DeptOUPaths $DeptOUPaths -ServiceAccountsOU $ServiceAccountsOU
 }
 
 function Ensure-CTFChallengeData {

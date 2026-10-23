@@ -131,6 +131,18 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "od-07": "security",
   "od-08": "security",
   "od-09": "security",
+  // Campaign 4, The Keys to the Domain: Kerberoasting and DCSync, the two
+  // techniques CISA's own September 2024 AD-compromise guide names most,
+  // plus a real Sysmon-based process-lineage step.
+  "rk-01": "logs",
+  "rk-02": "security",
+  "rk-04": "security",
+  "rk-03": "security",
+  "rk-05": "security",
+  "rk-06": "security",
+  "rk-07": "security",
+  "rk-08": "logs",
+  "rk-09": "security",
 };
 
 /** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */

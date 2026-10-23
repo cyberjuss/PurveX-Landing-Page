@@ -230,6 +230,15 @@ export const MISSION_DOMAINS: Record<string, string[]> = {
   "od-07": ["cy-ir", "sp-ops"],
   "od-08": ["cy-ops", "sp-concepts"],
   "od-09": ["cy-ops", "sp-concepts"],
+  "rk-01": ["cy-ops", "sp-threats"],
+  "rk-02": ["cy-ops", "sp-arch"],
+  "rk-04": ["cy-vuln", "sp-arch"],
+  "rk-03": ["cy-vuln", "sp-ops"],
+  "rk-05": ["cy-ops", "sp-ops"],
+  "rk-06": ["cy-ops", "sp-threats"],
+  "rk-07": ["cy-ops", "sp-threats"],
+  "rk-08": ["cy-ops", "sp-threats"],
+  "rk-09": ["cy-ops", "sp-concepts"],
 };
 
 /** Fallback when a question has no job tag. */

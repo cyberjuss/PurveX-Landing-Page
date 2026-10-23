@@ -16,7 +16,8 @@ export type MissionCatalogEntry = {
     | "access-alert"
     | "credential-campaign"
     | "phishing-chain"
-    | "open-door";
+    | "open-door"
+    | "keys-to-the-domain";
   title: string;
   prompt: string;
   skill: Skill;
@@ -530,6 +531,69 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Name the one control that would have stopped all three campaigns' beacons.",
     skill: "security",
   },
+  "rk-01": {
+    id: "rk-01",
+    challenge: "keys-to-the-domain",
+    title: "Read the Ticket Request (INC-1079)",
+    prompt: "Find the Kerberos service ticket request for svc-reports and report its encryption type.",
+    skill: "logs",
+  },
+  "rk-02": {
+    id: "rk-02",
+    challenge: "keys-to-the-domain",
+    title: "Find the Account Behind It (INC-1079)",
+    prompt: "Find the SPN registered on svc-reports and report it.",
+    skill: "security",
+  },
+  "rk-04": {
+    id: "rk-04",
+    challenge: "keys-to-the-domain",
+    title: "Check What Let This Happen (INC-1079)",
+    prompt: "Read msDS-SupportedEncryptionTypes on svc-reports and report its raw value.",
+    skill: "security",
+  },
+  "rk-03": {
+    id: "rk-03",
+    challenge: "keys-to-the-domain",
+    title: "Close the Attack Surface (INC-1079)",
+    prompt: "Remove the unneeded SPN from svc-reports and report how many are left.",
+    skill: "security",
+  },
+  "rk-05": {
+    id: "rk-05",
+    challenge: "keys-to-the-domain",
+    title: "Turn On the Audit That Would Catch It (INC-1080)",
+    prompt: "Enable Directory Service Access auditing and report the event ID it would log.",
+    skill: "security",
+  },
+  "rk-06": {
+    id: "rk-06",
+    challenge: "keys-to-the-domain",
+    title: "Know What You Are Looking For (INC-1080)",
+    prompt: "Choose the detail that tells a real DCSync request apart from normal replication.",
+    skill: "security",
+  },
+  "rk-07": {
+    id: "rk-07",
+    challenge: "keys-to-the-domain",
+    title: "Rule Out the Legitimate Case First (INC-1080)",
+    prompt: "Name the one account that legitimately has replication rights in this lab.",
+    skill: "security",
+  },
+  "rk-08": {
+    id: "rk-08",
+    challenge: "keys-to-the-domain",
+    title: "Read the Richer Log",
+    prompt: "Find the Sysmon Process Creation event for klist.exe and report its parent process.",
+    skill: "logs",
+  },
+  "rk-09": {
+    id: "rk-09",
+    challenge: "keys-to-the-domain",
+    title: "Two Techniques, No Malware",
+    prompt: "Name what Kerberoasting and DCSync both abuse to work at all.",
+    skill: "security",
+  },
 };
 
 export const CHALLENGE_PATHS: Record<
@@ -549,6 +613,7 @@ export const CHALLENGE_PATHS: Record<
   "credential-campaign": { href: "/range/phase-2/capstone", tab: "the-credential-campaign" },
   "phishing-chain": { href: "/range/phase-2/capstone", tab: "the-phishing-chain" },
   "open-door": { href: "/range/phase-2/capstone", tab: "the-open-door" },
+  "keys-to-the-domain": { href: "/range/phase-2/capstone", tab: "the-keys-to-the-domain" },
 };
 
 export function missionHref(id: string): string {
@@ -605,6 +670,7 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "credential-campaign": "The Credential Campaign",
   "phishing-chain": "The Phishing Chain",
   "open-door": "The Open Door",
+  "keys-to-the-domain": "The Keys to the Domain",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {
@@ -642,6 +708,7 @@ export const LAB_GATED_MISSIONS = [
   "sl-01", "sl-02", "sl-03",
   "rc-01", "dl-01", "pc-03", "pi-01", "pc-05", "pi-02", "ao-01", "ao-02",
   "od-02", "od-04", "od-05", "od-06", "od-07",
+  "rk-01", "rk-02", "rk-04", "rk-03", "rk-05", "rk-06", "rk-07", "rk-08",
 ];
 
 /**

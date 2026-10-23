@@ -185,7 +185,8 @@ function handsOnLine(all: Results, lab: LabSnapshot | null): string {
       id.startsWith("ao-") ||
       id.startsWith("cc-") ||
       id.startsWith("pc-") ||
-      id.startsWith("od-")
+      id.startsWith("od-") ||
+      id.startsWith("rk-")
   );
   const lastAsk = lastMissionAt(results);
   const lastAskAgo = lastAsk ? formatLabAge(lastAsk).ago : null;

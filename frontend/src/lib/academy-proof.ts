@@ -261,6 +261,16 @@ const CATALOG: Record<string, Entry> = {
       sys: [["a", "Isolated"], ["s", "a disguised executable on a file server"], ["r", "for investigation."]],
     },
   },
+  "reduce-kerberoast-exposure": {
+    title: "Removed an unused SPN to close a Kerberoasting path",
+    actions: ["Read a real Kerberos service ticket request and identified the weak RC4 encryption behind it", "Traced the request to a service account whose registered SPN no longer pointed at a running service", "Removed the SPN, closing the account's exposure to offline ticket cracking"],
+    keywords: ["Kerberoasting", "Service Principal Names (SPN)", "Credential Access"],
+    bullets: {
+      soc: [["a", "Found and closed"], ["s", "a Kerberoastable service account"], ["r", "by reading a real RC4-encrypted ticket request and removing the account's unused SPN."]],
+      help: [["a", "Removed"], ["s", "an unused service account registration"], ["a", "that no longer pointed at a running service."]],
+      sys: [["a", "Reduced"], ["s", "a domain's Kerberoasting attack surface"], ["a", "by auditing service ticket requests and removing an unneeded SPN."]],
+    },
+  },
   "group-type": {
     title: "Corrected a group that could not grant permissions",
     actions: ["Diagnosed a distribution group being used for access control, which cannot grant permissions", "Converted it to a security group so the permissions assigned to it took effect"],
@@ -305,6 +315,8 @@ export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "ao-02": { job: "quarantine-file", label: "Service ticket INC-1076" },
   "od-05": { job: "firewall-rule", label: "Service ticket INC-1077" },
   "od-07": { job: "quarantine-file", label: "Service ticket INC-1078" },
+  "rk-03": { job: "reduce-kerberoast-exposure", label: "Service ticket INC-1079" },
+  "rk-05": { job: "enable-auditing", label: "Service ticket INC-1080" },
 };
 
 /** Portfolio jobs a live Shift can prove, mapped from the incident that proves each.

@@ -279,17 +279,20 @@ const phase2Capstone: HomeLabDef[] = [
   {
     slug: "capstone",
     title: "Phase 2 — Challenges",
-    summary: "Three real attack campaigns, worked start to finish on your own lab, each mapped to the Cyber Kill Chain and MITRE ATT&CK.",
-    // Three separate attackers, three separate chains, each its own real
-    // story: credential guessing, a phishing attachment, and a forgotten
-    // firewall rule. Approved Overnight, Baseline a Team, the lockout
+    summary: "Four real attack campaigns, worked start to finish on your own lab, each mapped to the Cyber Kill Chain and MITRE ATT&CK.",
+    // Four separate attackers, four separate chains, each its own real
+    // story: credential guessing, a phishing attachment, a forgotten
+    // firewall rule, and abuse of Kerberos and AD replication exactly as
+    // designed (the real techniques CISA's September 2024 AD-compromise
+    // guide names). Approved Overnight, Baseline a Team, the lockout
     // threshold and the cross-campaign review stay off this page by
-    // request -- real content, just not listed here -- so the page is only
-    // the three campaigns.
+    // request. They're real content, just not listed here, so the page is
+    // only the campaigns.
     sections: [
       { label: "Challenge: The Credential Campaign", file: "phase-2/campaigns/challenge-credential-campaign.md", group: "Campaigns" },
       { label: "Challenge: The Phishing Chain", file: "phase-2/campaigns/challenge-phishing-chain.md", group: "Campaigns" },
       { label: "Challenge: The Open Door", file: "phase-2/campaigns/challenge-open-door.md", group: "Campaigns" },
+      { label: "Challenge: The Keys to the Domain", file: "phase-2/campaigns/challenge-keys-to-the-domain.md", group: "Campaigns" },
     ],
   },
 ];
