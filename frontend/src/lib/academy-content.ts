@@ -191,7 +191,6 @@ const phase2Weeks: WeekDef[] = [
       { label: "The 5 W's of an Investigation", file: "phase-2/soc-mindset/lesson-5ws.md" },
       { label: "Classifying an Incident", file: "phase-2/soc-mindset/lesson-classification.md" },
       { label: "Allowlisting and Blocklisting", file: "phase-2/soc-mindset/lesson-allow-deny.md" },
-      { label: "Challenge: Approved Overnight, or Not?", file: "phase-2/soc-mindset/challenge-overnight-alert.md" },
       { label: "Resources", file: "phase-2/soc-mindset/resources.md" },
     ],
   },
@@ -208,7 +207,6 @@ const phase2Weeks: WeekDef[] = [
       { label: "How Malware Gets In", file: "phase-2/week-1/lesson-delivery.md" },
       { label: "Working a Malware Alert", file: "phase-2/week-1/lesson-response.md" },
       { label: "Tools Analysts Use", file: "phase-2/week-1/lesson-tools.md" },
-      { label: "Challenge: The Quiet Beacon", file: "phase-2/week-1/challenge-quiet-beacon.md" },
     ],
   },
   {
@@ -218,7 +216,6 @@ const phase2Weeks: WeekDef[] = [
     sections: [
       { label: "Overview", file: "phase-2/week-2/overview.md" },
       { label: "Lab: Read the Sign-In Log", file: "phase-2/week-2/lab-signin-log.md", widget: "signin-log" },
-      { label: "Challenge: The 2 AM Login", file: "phase-2/week-2/alert-inc-1046.md" },
     ],
   },
   // These two replace the old empty "week-3" (SIEM Basics) and "week-4"
@@ -233,12 +230,9 @@ const phase2Weeks: WeekDef[] = [
       { label: "Mapping Your Environment", file: "phase-2/baselines-thresholds/lesson-map-environment.md" },
       { label: "Lab: Map Your Pod", file: "phase-2/baselines-thresholds/lab-network-map.md", widget: "network-map" },
       { label: "Baselines and Outliers", file: "phase-2/baselines-thresholds/lesson-baselines-outliers.md" },
-      { label: "Challenge: Baseline a Team, Then Find Who Breaks It", file: "phase-2/baselines-thresholds/challenge-access-outlier.md" },
       { label: "The MITRE ATT&CK Framework", file: "phase-2/baselines-thresholds/lesson-attack.md" },
       { label: "Zero Trust", file: "phase-2/baselines-thresholds/lesson-zero-trust.md" },
-      { label: "Challenge: Lock Every Gate", file: "phase-2/baselines-thresholds/challenge-internal-trust.md" },
       { label: "Setting Thresholds for Detections", file: "phase-2/baselines-thresholds/lesson-thresholds.md" },
-      { label: "Challenge: Set a Defensible Lockout Threshold", file: "phase-2/baselines-thresholds/challenge-lockout-threshold.md" },
       { label: "Why Detections Matter", file: "phase-2/baselines-thresholds/lesson-why-detections.md" },
       { label: "Resources", file: "phase-2/baselines-thresholds/resources.md" },
     ],
@@ -273,23 +267,30 @@ const phase2Weeks: WeekDef[] = [
       { label: "Installation", file: "phase-2/kill-chain/lesson-installation.md" },
       { label: "Command and Control", file: "phase-2/kill-chain/lesson-c2.md" },
       { label: "Actions on Objectives", file: "phase-2/kill-chain/lesson-actions.md" },
-      { label: "Challenge: The Five-Stage Intrusion", file: "phase-2/kill-chain/challenge-attack-chain.md" },
       { label: "Resources", file: "phase-2/kill-chain/resources.md" },
     ],
   },
 ];
 
-// The Phase 2 capstone, same role as Phase 1's Home Lab Challenges: a single
-// scenario pulling together everything the phase taught, graded against the
-// student's own lab. One continuous overnight shift rather than three
-// separate pieces, since Phase 2's weeks build one investigation skill
-// rather than Phase 1's several independent fundamentals.
+// Phase 2's challenges, same role and same shape as Phase 1's Home Lab
+// Challenges: every challenge in the phase, gathered into one entry so they
+// read as tabs on a single page instead of being buried inside their week's
+// lesson list.
 const phase2Capstone: HomeLabDef[] = [
   {
     slug: "capstone",
     title: "Phase 2 — Challenges",
-    summary: "One overnight shift, three alerts that turn out to be one intrusion, worked start to finish on your own lab.",
-    sections: [{ label: "Challenge: The Night the Queue Didn't Stop", file: "phase-2/capstone/challenge-the-night-shift.md" }],
+    summary: "Every challenge from the phase, worked start to finish on your own lab, ending in one overnight shift that ties them together.",
+    sections: [
+      { label: "Challenge: Approved Overnight, or Not?", file: "phase-2/soc-mindset/challenge-overnight-alert.md" },
+      { label: "Challenge: The Quiet Beacon", file: "phase-2/week-1/challenge-quiet-beacon.md" },
+      { label: "Challenge: The 2 AM Login", file: "phase-2/week-2/alert-inc-1046.md" },
+      { label: "Challenge: Baseline a Team, Then Find Who Breaks It", file: "phase-2/baselines-thresholds/challenge-access-outlier.md" },
+      { label: "Challenge: Lock Every Gate", file: "phase-2/baselines-thresholds/challenge-internal-trust.md" },
+      { label: "Challenge: Set a Defensible Lockout Threshold", file: "phase-2/baselines-thresholds/challenge-lockout-threshold.md" },
+      { label: "Challenge: The Five-Stage Intrusion", file: "phase-2/kill-chain/challenge-attack-chain.md" },
+      { label: "Challenge: The Night the Queue Didn't Stop", file: "phase-2/capstone/challenge-the-night-shift.md" },
+    ],
   },
 ];
 

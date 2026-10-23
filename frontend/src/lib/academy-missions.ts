@@ -413,15 +413,15 @@ export const CHALLENGE_PATHS: Record<
 > = {
   "day-one": { href: "/range/phase-1/home-lab-challenges", tab: "operation-day-one" },
   "ticket-queue": { href: "/range/phase-1/home-lab-challenges", tab: "ticket-queue" },
-  "alert-queue": { href: "/range/phase-2/week-2", tab: "the-2-am-login" },
+  "alert-queue": { href: "/range/phase-2/capstone", tab: "the-2-am-login" },
   "wire": { href: "/range/phase-1/week-3", tab: "the-nightly-settlement-push" },
   "crypto": { href: "/range/phase-1/week-2", tab: "the-mirror-that-does-not-match" },
   "client-data": { href: "/range/phase-1/home-lab-challenges", tab: "the-client-data-review" },
-  "malware-alert": { href: "/range/phase-2/week-1", tab: "the-quiet-beacon" },
-  "soc-alert": { href: "/range/phase-2/soc-mindset", tab: "approved-overnight-or-not" },
-  "baseline-alert": { href: "/range/phase-2/baselines-thresholds", tab: "baseline-a-team-then-find-who-breaks-it" },
-  "zerotrust-alert": { href: "/range/phase-2/baselines-thresholds", tab: "lock-every-gate" },
-  "threshold-alert": { href: "/range/phase-2/baselines-thresholds", tab: "set-a-defensible-lockout-threshold" },
+  "malware-alert": { href: "/range/phase-2/capstone", tab: "the-quiet-beacon" },
+  "soc-alert": { href: "/range/phase-2/capstone", tab: "approved-overnight-or-not" },
+  "baseline-alert": { href: "/range/phase-2/capstone", tab: "baseline-a-team-then-find-who-breaks-it" },
+  "zerotrust-alert": { href: "/range/phase-2/capstone", tab: "lock-every-gate" },
+  "threshold-alert": { href: "/range/phase-2/capstone", tab: "set-a-defensible-lockout-threshold" },
   "night-shift": { href: "/range/phase-2/capstone", tab: "the-night-the-queue-didn-t-stop" },
 };
 
