@@ -26,7 +26,6 @@ import type { LabWidget } from "@/lib/academy-content";
 import { LabBrief } from "./labs/lab-brief";
 import { RiskTriageLab } from "./labs/risk-triage-chat";
 import { SigninLogLab } from "./labs/signin-log-lab";
-import { EffectiveAccessLab } from "./labs/effective-access-lab";
 
 type WeekLink = { label: string; href: string };
 
@@ -358,10 +357,8 @@ export function SectionTabs({
         <LabBrief lab={current.widget} title={current.label.replace(/^Lab:\s*/, "")} ask={current.widget !== "risk-triage"}>
           {current.widget === "risk-triage" ? (
             <RiskTriageLab onDone={labDone} />
-          ) : current.widget === "signin-log" ? (
-            <SigninLogLab onDone={labDone} />
           ) : (
-            <EffectiveAccessLab onDone={labDone} />
+            <SigninLogLab onDone={labDone} />
           )}
         </LabBrief>
       </div>

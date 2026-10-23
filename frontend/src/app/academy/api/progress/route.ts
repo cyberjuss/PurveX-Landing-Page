@@ -12,7 +12,6 @@ export const runtime = "nodejs";
 
 const LAB_NAME: Record<string, string> = {
   "lab-signin-log": "the Sign-in Log lab",
-  "lab-effective-access": "the Effective Access lab",
   "lab-risk-triage": "the Risk Triage lab",
 };
 

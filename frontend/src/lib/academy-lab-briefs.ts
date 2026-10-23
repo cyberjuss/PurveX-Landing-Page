@@ -50,21 +50,6 @@ export const LAB_BRIEFS: Record<LabWidget, LabBrief> = {
     tools: ["Python (Pyodide)"],
     minutes: 20,
   },
-  "effective-access": {
-    problem:
-      "Folders open to every account in the domain are a common finding in security audits. One stolen password is then enough to read data meant for a single department.",
-    today: "An audit flagged four folders on PurveX's file server. Work out who can really open each one.",
-    objective: {
-      "help-desk": "Explain why a user can or cannot open a folder, and fix it through groups, not one-off rights.",
-      sysadmin: "Work out effective access from share and NTFS permissions, and remove what grants too much.",
-      "soc-analyst": "Spot folder permissions that expose client data to the whole firm.",
-      "cyber-analyst": "Audit who can reach sensitive data, and name the evidence you would pull from the server.",
-      "ir-analyst": "Size what one stolen account could have read on the file server.",
-    },
-    objectiveDefault: "Work out who can open each folder, and remove the access that should not be there.",
-    tools: [],
-    minutes: 15,
-  },
   "network-map": {
     problem:
       "In the 2013 Target breach, attackers got in through a third-party HVAC vendor's stolen credentials, then moved from that vendor connection into the payment network because the two were not properly separated. Segmentation that actually isolates one system from another is what would have stopped that move.",

@@ -104,7 +104,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 17
+$PurvexScriptVersion = 18
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -911,6 +911,19 @@ function Ensure-PurvexTicketObjects {
             -OUPath $DeptOUPaths["IT"].UsersOU `
             -Groups @("IT Users", "Server Admins")
         Ensure-UserDescription -SamAccountName "ezra.lund" -Description "CTF-TICKET-1070: IT Support Specialist. Server Admins added this week; no change ticket or HR record on file for it."
+    }
+
+    # INC-1071: a Help Desk technician added to Compliance Users months ago to
+    # pull an export for an audit, and never taken back out. She can still
+    # open the Compliance share's case files even though her own job never
+    # touches them -- the Week 4 effective-access lab's own ticket.
+    if (-not (Get-ADUser -Filter "SamAccountName -eq 'noor.ahmadi'" -ErrorAction SilentlyContinue)) {
+        Ensure-User `
+            -First "Noor" -Last "Ahmadi" -SamAccountName "noor.ahmadi" `
+            -Title "Help Desk Technician" -Department "IT" `
+            -OUPath $DeptOUPaths["IT"].UsersOU `
+            -Groups @("IT Users", "Compliance Users")
+        Ensure-UserDescription -SamAccountName "noor.ahmadi" -Description "CTF-TICKET-1071: Help Desk Technician. Added to Compliance Users in March to export client review data for an audit; access was never removed afterward."
     }
 
     Ensure-InfraTickets -DeptOUPaths $DeptOUPaths

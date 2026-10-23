@@ -168,7 +168,7 @@ function handsOnLine(all: Results, lab: LabSnapshot | null): string {
   const results = missionResults(all);
   const attempted = Object.keys(results).length;
   const finished = Object.values(results).filter((r) => r.solved).length;
-  const ticketsTouched = Object.keys(results).some((id) => id.startsWith("tq-") || id.startsWith("mw-") || id.startsWith("sm-") || id.startsWith("bt-") || id.startsWith("zt-") || id.startsWith("th-") || id.startsWith("cp-"));
+  const ticketsTouched = Object.keys(results).some((id) => id.startsWith("tq-") || id.startsWith("mw-") || id.startsWith("sm-") || id.startsWith("bt-") || id.startsWith("zt-") || id.startsWith("th-") || id.startsWith("cp-") || id.startsWith("ea-"));
   const lastAsk = lastMissionAt(results);
   const lastAskAgo = lastAsk ? formatLabAge(lastAsk).ago : null;
 
@@ -349,10 +349,10 @@ export const COACH_TOOLS: { name: string; description: string; input_schema: Rec
   {
     name: "get_lab_coaching",
     description:
-      "Coaching notes for the browser labs (risk-triage, effective-access in Phase 1; signin-log in Phase 2): the real-world problem, the PurveX scenario, the objective for each target role, the steps, common mistakes, open-source tool mechanics and a hint ladder. Does not include answers. Call it before helping with one of these labs.",
+      "Coaching notes for the browser labs (risk-triage in Phase 1; signin-log in Phase 2): the real-world problem, the PurveX scenario, the objective for each target role, the steps, common mistakes, open-source tool mechanics and a hint ladder. Does not include answers. Call it before helping with one of these labs.",
     input_schema: {
       type: "object",
-      properties: { lab: { type: "string", enum: ["risk-triage", "signin-log", "effective-access"], description: "Which lab. Omit for all of them." } },
+      properties: { lab: { type: "string", enum: ["risk-triage", "signin-log"], description: "Which lab. Omit for all of them." } },
       additionalProperties: false,
     },
   },

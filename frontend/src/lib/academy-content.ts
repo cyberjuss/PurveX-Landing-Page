@@ -14,7 +14,7 @@ export function loadLesson(relativePath: string): string | null {
 }
 
 /** Interactive labs rendered by a React component below the section's markdown. */
-export type LabWidget = "risk-triage" | "signin-log" | "effective-access" | "network-map";
+export type LabWidget = "risk-triage" | "signin-log" | "network-map";
 
 export interface ContentSection {
   label: string;
@@ -107,7 +107,7 @@ const phase1Weeks: WeekDef[] = [
       { label: "Authentication", file: "phase-1/week-4/lesson-authentication.md" },
       { label: "Authorization", file: "phase-1/week-4/lesson-authorization.md" },
       { label: "Broken Access Control", file: "phase-1/week-4/lesson-access-control.md" },
-      { label: "Lab: Who Can Open This?", file: "phase-1/week-4/lab-effective-access.md", widget: "effective-access" },
+      { label: "Challenge: Who Can Open the Compliance Case Files?", file: "phase-1/week-4/challenge-compliance-case-files.md" },
       { label: "Lab: Broken Access Control (PortSwigger)", file: "phase-1/week-4/lab-triple-a.md" },
       { label: "Lab: Authentication Log Analysis", file: "phase-1/week-4/lab-read-the-login-record.md" },
       { label: "Lab: Linux Privilege Management with sudo", file: "phase-1/week-4/lab-one-power.md" },

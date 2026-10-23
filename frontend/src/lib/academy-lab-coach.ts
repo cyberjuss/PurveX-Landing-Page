@@ -60,21 +60,6 @@ Tool mechanics, fine to explain in full: event 4624 success, 4625 failure, 4740 
 2 Shrink it: for the pattern, count accounts and sources in the rows; for the proof, find the row where the attack succeeded or where the story starts; for Python, compare the two printed lists.
 3 Point at the exact column to read: the account, the source, the event number or the logon type in Detail.`,
   },
-  "effective-access": {
-    steps: `Four people and four folders on FS01.
-1 Predict access: for Priya on IT-Tools, Jordan on Finance, Taylor on Payroll and Devon on Client-Balances, pick Can open and change, Read only or No access from their groups and the share and NTFS permissions.
-2 Fix it: remove the NTFS entry that opens Client-Balances to everyone outside Wealth Management, and remove the group Taylor should no longer have.
-3 Check it: pick the command or screen for groups, NTFS permissions, share permissions and effective access.
-4 Debrief.`,
-    answers: `Predict: Priya change, Jordan read only (share is Read), Taylor no access (Deny on Operations Users), Devon read only (Domain Users can read).
-Fix: remove Domain Users from Client-Balances; remove Operations Users from Taylor.
-Check: Get-ADPrincipalGroupMembership taylor.osei; icacls "D:\\Shares\\Payroll"; Get-SmbShareAccess -Name Payroll; Properties, Security, Advanced, Effective Access.`,
-    mistakes: `Taking the NTFS permission alone and forgetting the share. Thinking an Allow from one group beats a Deny from another. Forgetting every account is in Domain Users. Mixing up Get-ADGroupMember (members of a group) and Get-ADPrincipalGroupMembership (groups of an account), or icacls (NTFS) and Get-SmbShareAccess (share).
-Tool mechanics, fine to explain in full: over the network the stricter of share and NTFS wins; groups add up; an explicit Deny overrides an Allow; Domain Users contains every account.`,
-    ladder: `1 Ask which of the person's groups appear in each permission list, including the ones every account has.
-2 Shrink it: work out the share result, then the NTFS result, then take the lower one; check for any Deny first.
-3 Point at the exact entry or group that decides it.`,
-  },
   "network-map": {
     steps: `A live diagram of the student's own pod (DC + Ubuntu), read from the hosted-lab status endpoint. Two drag-onto-the-diagram rounds, no chips or multiple choice.
 1 Round 1, ports: five task cards (open RDP to the DC, a sign-in's Kerberos ticket check, an LDAP directory lookup, a machine's DNS lookup for the DC, an SSH session on the Ubuntu box) get dragged onto the matching port slot drawn around the DC or Ubuntu node. A correct drop reveals the port number on the diagram; a wrong drop bounces the card back.

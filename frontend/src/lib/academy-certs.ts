@@ -214,6 +214,9 @@ export const MISSION_DOMAINS: Record<string, string[]> = {
   "cry-06": ["sp-concepts", "cy-ir"],
   "tq-09": ["cy-ir", "sp-threats"],
   "tq-10": ["cy-ir", "cy-report"],
+  "ea-01": ["cy-vuln", "sp-arch"],
+  "ea-02": ["cy-vuln", "sp-arch"],
+  "ea-03": ["cy-vuln", "sp-ops"],
 };
 
 /** Fallback when a question has no job tag. */

@@ -103,17 +103,22 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "tq-08": "security",
   "tq-09": "security",
   "tq-10": "security",
+  // Week 4's effective-access challenge, replacing the old browser-only
+  // "Who Can Open This?" widget with a real audit against the lab's own
+  // Compliance Users group.
+  "ea-01": "access",
+  "ea-02": "access",
+  "ea-03": "access",
 };
 
 /** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */
-export const LAB_PASS_IDS = ["lab-risk-triage", "lab-signin-log", "lab-effective-access", "lab-network-map"] as const;
+export const LAB_PASS_IDS = ["lab-risk-triage", "lab-signin-log", "lab-network-map"] as const;
 export type LabPassId = (typeof LAB_PASS_IDS)[number];
 const isLabPass = (id: string) => (LAB_PASS_IDS as readonly string[]).includes(id);
 
 /** Browser labs that count toward readiness, scored by the points they earned the first time they were finished. */
 export const LAB_SKILLS: Partial<Record<LabPassId, Skill>> = {
   "lab-risk-triage": "risk",
-  "lab-effective-access": "access",
   "lab-signin-log": "logs",
   "lab-network-map": "security",
 };
@@ -121,7 +126,6 @@ export const LAB_SKILLS: Partial<Record<LabPassId, Skill>> = {
 /** The scored labs, for the readiness report. href opens the lab's tab. */
 export const LAB_CATALOG: { id: LabPassId; title: string; skill: Skill; href: string }[] = [
   { id: "lab-risk-triage", title: "Monday Morning Risk Triage", skill: "risk", href: "/range/phase-1/week-1#lab-monday-morning-risk-triage" },
-  { id: "lab-effective-access", title: "Who Can Open This?", skill: "access", href: "/range/phase-1/week-4#lab-who-can-open-this" },
   { id: "lab-signin-log", title: "Read the Sign-In Log", skill: "logs", href: "/range/phase-2/week-2#lab-read-the-sign-in-log" },
   { id: "lab-network-map", title: "Map Your Pod", skill: "security", href: "/range/phase-2/baselines-thresholds#lab-map-your-pod" },
 ];

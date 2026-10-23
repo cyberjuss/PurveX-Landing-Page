@@ -9,7 +9,6 @@ import { LabCarousel } from "./lab-carousel";
 import { LabBrief } from "./labs/lab-brief";
 import { RiskTriageLab } from "./labs/risk-triage-chat";
 import { SigninLogLab } from "./labs/signin-log-lab";
-import { EffectiveAccessLab } from "./labs/effective-access-lab";
 import { NetworkMapLab } from "./labs/network-map-lab";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import { LAB_STEP_EVENT, lastLabStep } from "./lab-step";
@@ -107,8 +106,6 @@ export function SingleLab({
               <RiskTriageLab onDone={done} />
             ) : widget === "signin-log" ? (
               <SigninLogLab onDone={done} />
-            ) : widget === "effective-access" ? (
-              <EffectiveAccessLab onDone={done} />
             ) : (
               <NetworkMapLab onDone={done} />
             )}

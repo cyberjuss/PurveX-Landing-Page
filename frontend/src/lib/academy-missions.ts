@@ -3,7 +3,7 @@ import { PROOF_TICKETS } from "@/lib/academy-proof";
 
 export type MissionCatalogEntry = {
   id: string;
-  challenge: "day-one" | "ticket-queue" | "alert-queue" | "wire" | "crypto" | "client-data" | "malware-alert" | "soc-alert" | "baseline-alert" | "zerotrust-alert" | "threshold-alert" | "night-shift";
+  challenge: "day-one" | "ticket-queue" | "alert-queue" | "wire" | "crypto" | "client-data" | "malware-alert" | "soc-alert" | "baseline-alert" | "zerotrust-alert" | "threshold-alert" | "night-shift" | "access-alert";
   title: string;
   prompt: string;
   skill: Skill;
@@ -405,6 +405,27 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "cd-05": { id: "cd-05", challenge: "client-data", title: "The Batch That Did Not Balance", prompt: "Find the settlement batch that did not reconcile.", skill: "security" },
   "cd-06": { id: "cd-06", challenge: "client-data", title: "Fingerprint the Register", prompt: "Take the SHA-256 hash of the client register.", skill: "security" },
   "cd-07": { id: "cd-07", challenge: "client-data", title: "Who Can Read the Register", prompt: "Build a least-privilege reader group and name the group the share lets read it today.", skill: "accounts" },
+  "ea-01": {
+    id: "ea-01",
+    challenge: "access-alert",
+    title: "Find the Right Tool (INC-1071)",
+    prompt: "Name the PowerShell cmdlet that lists every group an account belongs to, including through nested membership.",
+    skill: "security",
+  },
+  "ea-02": {
+    id: "ea-02",
+    challenge: "access-alert",
+    title: "Find Who Does Not Belong (INC-1071)",
+    prompt: "A Help Desk account can open the Compliance share's case files. Name the account.",
+    skill: "security",
+  },
+  "ea-03": {
+    id: "ea-03",
+    challenge: "access-alert",
+    title: "Remove the Access (INC-1071)",
+    prompt: "Remove the account from the group that grants it, and report the group.",
+    skill: "security",
+  },
 };
 
 export const CHALLENGE_PATHS: Record<
@@ -423,6 +444,7 @@ export const CHALLENGE_PATHS: Record<
   "zerotrust-alert": { href: "/range/phase-2/capstone", tab: "lock-every-gate" },
   "threshold-alert": { href: "/range/phase-2/capstone", tab: "set-a-defensible-lockout-threshold" },
   "night-shift": { href: "/range/phase-2/capstone", tab: "the-night-the-queue-didn-t-stop" },
+  "access-alert": { href: "/range/phase-1/week-4", tab: "who-can-open-the-compliance-case-files" },
 };
 
 export function missionHref(id: string): string {
@@ -478,6 +500,7 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "zerotrust-alert": "Lock Every Gate",
   "threshold-alert": "Set a Defensible Lockout Threshold",
   "night-shift": "The Night the Queue Didn't Stop",
+  "access-alert": "Who Can Open the Compliance Case Files?",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {
@@ -509,7 +532,7 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
 }
 
 /** Tickets that need a real change in the student's lab before they can answer. */
-export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25", "cap-06", "cry-06", "mw-01", "mw-02", "bt-03", "zt-02", "th-01", "cp-04", "cp-06"];
+export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25", "cap-06", "cry-06", "mw-01", "mw-02", "bt-03", "zt-02", "th-01", "cp-04", "cp-06", "ea-03"];
 
 /**
  * The on-the-job task each mission practices. A gated ticket seen in the lab

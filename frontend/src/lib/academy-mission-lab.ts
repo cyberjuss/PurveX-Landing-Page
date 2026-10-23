@@ -147,6 +147,13 @@ const MISSION_LAB = {
     ],
     { tickets: ["INC-1058"] }
   ),
+  // Week 4's effective-access challenge: a Help Desk account is pulled out of
+  // Compliance Users, the access-level group an audit found it never needed.
+  // Same member check tq-05/bt-03/cp-06 already use.
+  "ea-03": G(
+    [{ c: { t: "member", sam: "noor.ahmadi", group: "Compliance Users", want: false }, label: "noor.ahmadi is not in Compliance Users" }],
+    { users: ["noor.ahmadi"] }
+  ),
   // The client data review reads the synthetic records the lab plants on its
   // shares. Every task needs them on the share before it can be answered; the
   // last one also needs the least-privilege group the student builds.
