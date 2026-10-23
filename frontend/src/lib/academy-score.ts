@@ -79,6 +79,19 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "cp-06": "security",
   "cp-07": "security",
   "cp-08": "security",
+  // Week 3's two Wireshark labs: the Check Yourself questions used to be a
+  // client-only self-quiz (academy's self-check.ts), never counted toward
+  // readiness. Converted to real ad-mission/ad-guess tickets so they do.
+  // No "networking" skill exists; "logs" fits closest -- reading a capture
+  // to understand what happened is the same move as reading an event log.
+  "w3e-c1": "logs",
+  "w3e-c2": "logs",
+  "w3e-c3": "logs",
+  "w3e-c4": "logs",
+  "w3m-c1": "logs",
+  "w3m-c2": "logs",
+  "w3m-c3": "logs",
+  "w3m-c4": "logs",
   "tq-20": "troubleshooting",
   "tq-21": "security",
   "tq-22": "security",
