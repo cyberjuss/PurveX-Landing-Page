@@ -115,6 +115,13 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "sl-01": "logs",
   "sl-02": "logs",
   "sl-03": "logs",
+  // The phishing chain, a second real intrusion run end to end.
+  "rc-01": "logs",
+  "dl-01": "security",
+  "pi-01": "security",
+  "pi-02": "security",
+  "ao-01": "security",
+  "ao-02": "security",
 };
 
 /** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */

@@ -3,7 +3,25 @@ import { PROOF_TICKETS } from "@/lib/academy-proof";
 
 export type MissionCatalogEntry = {
   id: string;
-  challenge: "day-one" | "ticket-queue" | "alert-queue" | "wire" | "crypto" | "client-data" | "malware-alert" | "soc-alert" | "baseline-alert" | "zerotrust-alert" | "threshold-alert" | "night-shift" | "access-alert" | "signin-alert";
+  challenge:
+    | "day-one"
+    | "ticket-queue"
+    | "alert-queue"
+    | "wire"
+    | "crypto"
+    | "client-data"
+    | "malware-alert"
+    | "soc-alert"
+    | "baseline-alert"
+    | "zerotrust-alert"
+    | "threshold-alert"
+    | "night-shift"
+    | "access-alert"
+    | "signin-alert"
+    | "recon-alert"
+    | "delivery-alert"
+    | "persistence-alert"
+    | "objectives-alert";
   title: string;
   prompt: string;
   skill: Skill;
@@ -447,6 +465,48 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Find the account the log shows was actually locked out, unlock it, and report its name.",
     skill: "security",
   },
+  "rc-01": {
+    id: "rc-01",
+    challenge: "recon-alert",
+    title: "Four Names That Were Never Real (INC-1073)",
+    prompt: "Count the failed sign-ins whose status code says the account does not exist, not that the password was wrong.",
+    skill: "security",
+  },
+  "dl-01": {
+    id: "dl-01",
+    challenge: "delivery-alert",
+    title: "Find the Disguise (INC-1074)",
+    prompt: "Find the disguised attachment on the Wealth Management share and report its full name.",
+    skill: "security",
+  },
+  "pi-01": {
+    id: "pi-01",
+    challenge: "persistence-alert",
+    title: "Find What Got Planted (INC-1075)",
+    prompt: "Find the scheduled task nobody on the team created, and report its exact name.",
+    skill: "security",
+  },
+  "pi-02": {
+    id: "pi-02",
+    challenge: "persistence-alert",
+    title: "Close Its Channel (INC-1075)",
+    prompt: "Find and disable the outbound firewall rule the task relies on, then report the port.",
+    skill: "security",
+  },
+  "ao-01": {
+    id: "ao-01",
+    challenge: "objectives-alert",
+    title: "Find What Got Collected (INC-1076)",
+    prompt: "Find the file staged on the IT share that has no business being there, and report its name.",
+    skill: "security",
+  },
+  "ao-02": {
+    id: "ao-02",
+    challenge: "objectives-alert",
+    title: "Take It Off the Share (INC-1076)",
+    prompt: "Move the staged file to Quarantine, then report the folder it is in now.",
+    skill: "security",
+  },
 };
 
 export const CHALLENGE_PATHS: Record<
@@ -467,6 +527,10 @@ export const CHALLENGE_PATHS: Record<
   "night-shift": { href: "/range/phase-2/capstone", tab: "the-night-the-queue-didn-t-stop" },
   "access-alert": { href: "/range/phase-1/week-4", tab: "who-can-open-the-compliance-case-files" },
   "signin-alert": { href: "/range/phase-2/capstone", tab: "the-spray-the-lockout-and-the-one-that-got-through" },
+  "recon-alert": { href: "/range/phase-2/capstone", tab: "who-s-knocking-before-they-ever-get-in" },
+  "delivery-alert": { href: "/range/phase-2/capstone", tab: "the-attachment-purvex-never-sent" },
+  "persistence-alert": { href: "/range/phase-2/capstone", tab: "the-second-beacon" },
+  "objectives-alert": { href: "/range/phase-2/capstone", tab: "what-they-were-packing-to-take" },
 };
 
 export function missionHref(id: string): string {
@@ -524,6 +588,10 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "night-shift": "The Night the Queue Didn't Stop",
   "access-alert": "Who Can Open the Compliance Case Files?",
   "signin-alert": "The Spray, the Lockout, and the One That Got Through",
+  "recon-alert": "Who's Knocking Before They Ever Get In?",
+  "delivery-alert": "The Attachment PurveX Never Sent",
+  "persistence-alert": "The Second Beacon",
+  "objectives-alert": "What They Were Packing to Take",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {
@@ -555,7 +623,7 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
 }
 
 /** Tickets that need a real change in the student's lab before they can answer. */
-export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25", "cap-06", "cry-06", "mw-01", "mw-02", "bt-03", "zt-02", "th-01", "cp-04", "cp-06", "ea-03", "sl-01", "sl-02", "sl-03"];
+export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25", "cap-06", "cry-06", "mw-01", "mw-02", "bt-03", "zt-02", "th-01", "cp-04", "cp-06", "ea-03", "sl-01", "sl-02", "sl-03", "rc-01", "dl-01", "pi-01", "pi-02", "ao-01", "ao-02"];
 
 /**
  * The on-the-job task each mission practices. A gated ticket seen in the lab

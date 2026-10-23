@@ -104,7 +104,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 19
+$PurvexScriptVersion = 20
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -505,6 +505,99 @@ function Ensure-SigninLogTickets {
         Write-Host "  Planted INC-1072: real sign-in events for the log-analysis ticket" -ForegroundColor Green
     }
     catch { Write-Host "  Could not plant INC-1072: $($_.Exception.Message)" -ForegroundColor Yellow }
+}
+
+# INC-1073 through INC-1076: a second, separate intrusion that runs the full
+# Cyber Kill Chain from Reconnaissance through Actions on Objectives, this
+# time starting with a phishing attachment instead of guessed credentials.
+# Reconnaissance here is account-name enumeration: real failed sign-ins
+# against usernames that do not exist, which the domain controller logs with
+# a different status code (0xC0000064) than a wrong password on a real
+# account (0xC000006A) -- a real, distinguishable signal. Weaponization has
+# no artifact on purpose: it happens entirely outside the firm's own
+# systems, before anything here can see it. Delivery and the rest are real
+# planted files, a scheduled task and a firewall rule, the same mechanisms
+# already proven for the first intrusion.
+function Ensure-PhishingChainTickets {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param([hashtable]$DeptOUPaths)
+
+    if (Test-PurvexTicketMark "INC-1076") { return }
+    if (-not $PSCmdlet.ShouldProcess("Phishing chain", "Plant second intrusion")) { return }
+    Write-Host "`n== Phishing chain tickets ==" -ForegroundColor Cyan
+
+    try {
+        # INC-1073: Reconnaissance. Four made-up usernames, none of them a
+        # real PurveX account, each tried once. A real 4625 with status
+        # 0xC0000064 means the account itself does not exist, which is what
+        # account-name guessing looks like before any real credential is
+        # ever tried.
+        if (-not (Test-PurvexTicketMark "INC-1073")) {
+            Add-Type -AssemblyName System.DirectoryServices.AccountManagement
+            $ctx = New-Object System.DirectoryServices.AccountManagement.PrincipalContext([System.DirectoryServices.AccountManagement.ContextType]::Domain)
+            foreach ($fake in @("j.admin", "svc-test", "backup.admin", "it.support")) {
+                $null = $ctx.ValidateCredentials($fake, "Recon-Attempt-1")
+                Start-Sleep -Milliseconds 200
+            }
+            Add-PurvexTicketMark "INC-1073"
+            Write-Host "  Planted INC-1073: real enumeration attempts against four non-existent accounts" -ForegroundColor Green
+        }
+
+        # INC-1074: Delivery. A disguised attachment, recovered from the mail
+        # gateway and dropped on the Wealth Management share for review. The
+        # file is plain text and cannot run; the double extension is the
+        # whole finding.
+        if (-not (Test-PurvexTicketMark "INC-1074")) {
+            $wm = Join-Path $PurvexLabRoot "Shares\WealthManagement"
+            New-Item -ItemType Directory -Path $wm -Force | Out-Null
+            New-Item -ItemType Directory -Path (Join-Path $PurvexLabRoot "Quarantine") -Force | Out-Null
+            $bad = Join-Path $wm "Q3_Rebalance_Summary.pdf.exe"
+            Set-Content -LiteralPath $bad -Value "PurveX training file. This is not a real program and it cannot run. Treat it as a suspicious email attachment recovered from the mail gateway."
+            (Get-Item -LiteralPath $bad).LastWriteTime = Get-Date "2026-10-18 08:41"
+            if (-not (Get-SmbShare -Name "Shares" -ErrorAction SilentlyContinue)) {
+                New-SmbShare -Name "Shares" -Path (Join-Path $PurvexLabRoot "Shares") -ReadAccess "Domain Users" -ErrorAction SilentlyContinue | Out-Null
+            }
+            Add-PurvexTicketMark "INC-1074"
+            Write-Host "  Planted INC-1074: $bad" -ForegroundColor Green
+        }
+
+        # INC-1075: Installation and Command and Control. Same mechanism as
+        # the first intrusion's beacon (INC-1064/INC-1069), a different task
+        # name and a different address so the three never collide.
+        if (-not (Test-PurvexTicketMark "INC-1075")) {
+            $taskName = "OfficeTelemetryAgent"
+            $action = New-ScheduledTaskAction -Execute "powershell.exe" `
+                -Argument '-NoProfile -WindowStyle Hidden -Command "Test-NetConnection -ComputerName 203.0.113.91 -Port 9443 -WarningAction SilentlyContinue | Out-Null"'
+            $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 15) -RepetitionDuration ([TimeSpan]::MaxValue)
+            $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+            Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings `
+                -Description "PurveX training file. This is not malware and the connection attempt is harmless: it only reaches a documentation-only address (RFC 5737) that routes nowhere. Treat it as a suspicious persistence mechanism for training." `
+                -RunLevel Highest -ErrorAction Stop | Out-Null
+            New-NetFirewallRule -DisplayName "Office Telemetry Upload" -Group "PurveX Lab" -Direction Outbound -Action Allow `
+                -Protocol TCP -RemotePort 9443 -RemoteAddress "203.0.113.91" -Profile Any `
+                -Description "CTF-TICKET-1075: training artifact, not a real vulnerability. Permits outbound traffic to a documentation-only address for the phishing-chain exercise." -ErrorAction Stop | Out-Null
+            Add-PurvexTicketMark "INC-1075"
+            Write-Host "  Planted INC-1075: scheduled task $taskName and its firewall rule" -ForegroundColor Green
+        }
+
+        # INC-1076: Actions on Objectives. A copy of real Wealth Management
+        # data, staged somewhere it has no business sitting, as if readied
+        # for exfiltration. DATA-SAMPLE must have already run so the source
+        # file exists; if it has not, this quietly waits for the next build.
+        if (-not (Test-PurvexTicketMark "INC-1076")) {
+            $source = Join-Path $PurvexLabRoot "Shares\WealthManagement\portfolio-summary-SAMPLE.csv"
+            if (Test-Path -LiteralPath $source) {
+                $it = Join-Path $PurvexLabRoot "Shares\IT"
+                New-Item -ItemType Directory -Path $it -Force | Out-Null
+                New-Item -ItemType Directory -Path (Join-Path $PurvexLabRoot "Quarantine") -Force | Out-Null
+                $staged = Join-Path $it "staged-export.zip"
+                Set-Content -LiteralPath $staged -Value "PurveX training file. This is not a real archive. It stands in for client data staged in a folder with no business reason to hold it, ready to be pulled out."
+                Add-PurvexTicketMark "INC-1076"
+                Write-Host "  Planted INC-1076: staged export file" -ForegroundColor Green
+            }
+        }
+    }
+    catch { Write-Host "  Could not plant the phishing chain tickets: $($_.Exception.Message)" -ForegroundColor Yellow }
 }
 
 function Ensure-PodTickets {
@@ -1018,6 +1111,10 @@ function Ensure-PurvexTicketObjects {
     Ensure-SigninLogTickets -DeptOUPaths $DeptOUPaths -AccessLevelsOU $AccessLevelsOU -ServiceAccountsOU $ServiceAccountsOU
     Ensure-PodTickets -DeptOUPaths $DeptOUPaths -ServiceAccountsOU $ServiceAccountsOU
     Ensure-IntegrityTickets
+    # Runs after Ensure-IntegrityTickets: INC-1076 needs the WealthManagement
+    # sample file DATA-SAMPLE plants, and both need to land in the same build
+    # run rather than needing a second pass.
+    Ensure-PhishingChainTickets -DeptOUPaths $DeptOUPaths
 }
 
 function Ensure-CTFChallengeData {

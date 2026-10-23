@@ -160,6 +160,21 @@ const MISSION_LAB = {
     [{ c: { t: "flag", sam: "petra.lindqvist", flag: "lockedOut", want: false }, label: "petra.lindqvist is not locked out" }],
     { users: ["petra.lindqvist"] }
   ),
+  // The phishing chain's Installation/C2 capstone: same fwRuleOff check the
+  // first intrusion's beacons already use, a different rule name.
+  "pi-02": G(
+    [{ c: { t: "fwRuleOff", name: "Office Telemetry Upload" }, label: "The Office Telemetry Upload rule is disabled or removed" }],
+    { tickets: ["INC-1075"] }
+  ),
+  // The phishing chain's Actions on Objectives capstone: the staged file is
+  // moved to Quarantine, the same file-pair check cry-06 already uses.
+  "ao-02": G(
+    [
+      { c: { t: "file", path: "Shares\\IT\\staged-export.zip", want: false }, label: "The staged file is gone from the IT share" },
+      { c: { t: "file", path: "Quarantine\\staged-export.zip", want: true }, label: "It is kept in C:\\PurveX\\Quarantine" },
+    ],
+    { tickets: ["INC-1076"] }
+  ),
   // The client data review reads the synthetic records the lab plants on its
   // shares. Every task needs them on the share before it can be answered; the
   // last one also needs the least-privilege group the student builds.

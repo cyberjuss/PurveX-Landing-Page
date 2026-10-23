@@ -220,6 +220,12 @@ export const MISSION_DOMAINS: Record<string, string[]> = {
   "sl-01": ["cy-ops", "sp-threats"],
   "sl-02": ["cy-ops", "sp-threats"],
   "sl-03": ["cy-ops", "sp-ops"],
+  "rc-01": ["cy-ops", "sp-threats"],
+  "dl-01": ["cy-ir", "sp-threats"],
+  "pi-01": ["cy-ir", "sp-threats"],
+  "pi-02": ["cy-ir", "sp-ops"],
+  "ao-01": ["cy-ir", "sp-threats"],
+  "ao-02": ["cy-ir", "sp-ops"],
 };
 
 /** Fallback when a question has no job tag. */
