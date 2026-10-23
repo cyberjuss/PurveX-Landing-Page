@@ -319,7 +319,12 @@ export function LabMap({ labs }: { labs: SocLab[] }) {
 
         {shown && shownWeek && open !== null && (
           <div className="lm-pop" style={popStyle} onPointerEnter={() => show(open)} onPointerLeave={(e) => e.pointerType === "mouse" && hide()}>
-          <section key={open} className="sw-card" role="dialog" aria-label={shown.title}>
+          <Link
+            key={open}
+            href={`/range/labs/${shown.slug}`}
+            className="sw-card"
+            aria-label={`${shown.title}. ${done[open] ? "Run it again." : "Start this lab."}`}
+          >
             <p className="sw-card__kicker">
               Stop {no(open)} · {shownWeek.phase ? `${shownWeek.phase.split(" · ")[0]} · ` : ""}
               {shownWeek.label}
@@ -339,10 +344,10 @@ export function LabMap({ labs }: { labs: SocLab[] }) {
                 <span>Next</span>
               ) : null}
             </p>
-            <Link href={`/range/labs/${shown.slug}`} className="sw-card__go">
+            <span className="sw-card__go" aria-hidden="true">
               {done[open] ? "Run it again" : "Start this lab"} <ArrowRight />
-            </Link>
-          </section>
+            </span>
+          </Link>
           </div>
         )}
         </div>
