@@ -3538,7 +3538,7 @@ body:has(.lp) {
 .academy-prose .ad-mission:has(.ad-lab) .ad-mission__num { padding-right: 48px; }
 .academy-prose .ad-mission > p { margin: 0; max-width: 68ch; font-size: var(--ty-lead); line-height: 1.6; color: var(--rd-ink-2, var(--pvrx-text-secondary-light)); }
 .academy-prose .ad-mission > p + p { margin-top: 0.85rem; }
-.academy-prose .ad-mission > p:first-of-type strong { display: block; margin-bottom: 0.35rem; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rd-ink-3, #8a94a8); }
+.academy-prose .ad-mission > p:first-of-type strong:first-child { display: block; margin-bottom: 0.35rem; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rd-ink-3, #8a94a8); }
 .academy-prose .ad-mission > p:first-of-type { color: var(--rd-ink, var(--pvrx-text-primary-light)); }
 .academy-prose .ad-ticket-meta {
   display: grid; grid-template-columns: max-content minmax(0,1fr); gap: 0.35rem 0.65rem;
