@@ -61,14 +61,13 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "tq-17": "security",
   "tq-18": "directory",
   "tq-19": "security",
-  "sm-01": "security",
-  "sm-02": "security",
-  "bt-01": "security",
-  "bt-02": "security",
-  "bt-03": "security",
+  // sm-01/02, bt-01/02/03 and th-01 lived in three challenge files (Approved
+  // Overnight, Baseline a Team, the lockout threshold) that were pulled from
+  // the Phase 2 Challenges page's sections list. Unlisted means unreachable,
+  // not just unlinked, so they are dropped here too -- counting a mission no
+  // page can show kept readiness from ever reaching 100.
   "zt-01": "security",
   "zt-02": "security",
-  "th-01": "security",
   "cp-03": "security",
   "cp-04": "security",
   // Week 3's two Wireshark labs: the Check Yourself questions used to be a
@@ -101,6 +100,30 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "ea-01": "access",
   "ea-02": "access",
   "ea-03": "access",
+  // The Nightly Settlement Push (hosted-lab Wireshark capture) and The
+  // Mirror That Does Not Match (hash, crack, spot reuse). Real graded
+  // challenges that were never added here, so finishing them never moved
+  // readiness.
+  "cap-01": "logs",
+  "cap-02": "logs",
+  "cap-03": "security",
+  "cap-04": "logs",
+  "cap-05": "logs",
+  "cap-06": "security",
+  "cry-01": "security",
+  "cry-02": "security",
+  "cry-03": "security",
+  "cry-04": "security",
+  "cry-05": "security",
+  "cry-06": "security",
+  // The Client Data Review: same gap as above, fixed the same way.
+  "cd-01": "security",
+  "cd-02": "security",
+  "cd-03": "security",
+  "cd-04": "security",
+  "cd-05": "security",
+  "cd-06": "security",
+  "cd-07": "accounts",
   // Campaign 1, The Credential Campaign: real events read from the lab's
   // own Security log, plus a KQL detection-writing step and a final
   // Kill Chain mapping.

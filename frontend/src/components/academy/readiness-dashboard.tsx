@@ -24,10 +24,22 @@ import {
   type Summary,
 } from "@/lib/academy-score";
 
+// Every challenge a student can actually reach, in the order they meet them.
+// This used to list only three groups from before Phase 2 existed, so every
+// mission added since (Wire, Crypto, the Client Data Review, Who Can Open the
+// Compliance Case Files, and all four Phase 2 campaigns) never got its own
+// row here even though it already counted toward the overall score.
 const CHALLENGES: { key: MissionCatalogEntry["challenge"]; label: string; blurb: string }[] = [
   { key: "day-one", label: "Operation Day One", blurb: "Find the facts in the directory." },
   { key: "ticket-queue", label: "Ticket Queue", blurb: "Help desk tickets you change in the directory." },
-  { key: "alert-queue", label: "The 2 AM Login", blurb: "SIEM alert and log analysis." },
+  { key: "crypto", label: "The Mirror That Does Not Match", blurb: "Hash, compare and crack files to catch a bad build." },
+  { key: "wire", label: "The Nightly Settlement Push", blurb: "Capture and read cleartext credentials off the wire." },
+  { key: "access-alert", label: "Who Can Open the Compliance Case Files?", blurb: "Audit a group against what its share actually grants." },
+  { key: "client-data", label: "The Client Data Review", blurb: "Review what your own shares hold on real clients." },
+  { key: "credential-campaign", label: "The Credential Campaign", blurb: "A password-spray intrusion, start to finish." },
+  { key: "phishing-chain", label: "The Phishing Chain", blurb: "A phishing attachment, start to finish." },
+  { key: "open-door", label: "The Open Door", blurb: "A forgotten firewall rule, exploited and closed." },
+  { key: "keys-to-the-domain", label: "The Keys to the Domain", blurb: "Kerberoasting and DCSync, the two techniques CISA names most." },
 ];
 
 type Tone = "good" | "warn" | "bad" | "live" | "none";
@@ -79,7 +91,7 @@ const WORK: Record<Summary["skills"][number]["key"], string> = {
   accounts: "open Member Of and count before you add or remove anyone",
   directory: "walk Departments and AccessLevels until you can find an object without searching",
   troubleshooting: "open the account first and see if the caller is actually right",
-  security: "start The 2 AM Login and read the log before you change anything",
+  security: "start The Credential Campaign and read the log before you change anything",
   logs: "open the Read the Sign-In Log lab and count before you name a pattern",
   access: "open the Who Can Open This? lab and check both share and NTFS permissions",
   risk: "open the Monday Morning Risk Triage lab and score likelihood and impact before you rank",

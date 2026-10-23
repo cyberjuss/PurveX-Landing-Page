@@ -88,15 +88,6 @@ const MISSION_LAB = {
     ],
     { tickets: ["INC-1055"] }
   ),
-  // The baseline-outlier capstone: theo.walsh's excess Server Admins
-  // membership is removed, the same member check tq-01/tq-12 already use.
-  // bt-01 and bt-02 (naming the account and the group) have no lab-state
-  // check, same as tq-06 -- the four accounts' membership never changes on
-  // its own, so the typed answers alone prove the comparison was done.
-  "bt-03": G(
-    [{ c: { t: "member", sam: "theo.walsh", group: "Server Admins", want: false }, label: "theo.walsh is not in Server Admins" }],
-    { users: ["theo.walsh"] }
-  ),
   // The Open Door campaign: the legacy internal-trust rule is disabled, the
   // same fwRuleOff check tq-17 already uses. zt-01 (naming the port) has no
   // lab-state check, same as tq-06.
@@ -104,11 +95,6 @@ const MISSION_LAB = {
     [{ c: { t: "fwRuleOff", name: "PurveX Legacy - Internal File Access" }, label: "The legacy internal-trust rule is disabled or removed" }],
     { tickets: ["INC-1067"] }
   ),
-  // Lockout-threshold capstone: same pso check tq-24 already uses, just a
-  // different group and a middle-of-the-band threshold instead of tq-24's
-  // tightest-possible one. No pre-planted ticket mark needed -- Wealth
-  // Management Users already exists in the base roster, same as tq-24.
-  "th-01": G([{ c: { t: "pso", minLength: 12, appliesTo: "Wealth Management Users", maxLockout: 12 }, label: "A 12-character policy locking after 12 or fewer tries applies to Wealth Management Users" }]),
   // The Credential Campaign's Installation/C2 stage, reusing the capstone's
   // own artifact (INC-1069). cp-03 (naming the task) has no lab-state check,
   // same as tq-06.
@@ -161,7 +147,7 @@ const MISSION_LAB = {
   ),
   // Week 4's effective-access challenge: a Help Desk account is pulled out of
   // Compliance Users, the access-level group an audit found it never needed.
-  // Same member check tq-05/bt-03/cp-06 already use.
+  // Same member check tq-05/cp-06 already use.
   "ea-03": G(
     [{ c: { t: "member", sam: "noor.ahmadi", group: "Compliance Users", want: false }, label: "noor.ahmadi is not in Compliance Users" }],
     { users: ["noor.ahmadi"] }

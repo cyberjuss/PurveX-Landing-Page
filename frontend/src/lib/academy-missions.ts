@@ -6,13 +6,9 @@ export type MissionCatalogEntry = {
   challenge:
     | "day-one"
     | "ticket-queue"
-    | "alert-queue"
     | "wire"
     | "crypto"
     | "client-data"
-    | "soc-alert"
-    | "baseline-alert"
-    | "threshold-alert"
     | "access-alert"
     | "credential-campaign"
     | "phishing-chain"
@@ -239,41 +235,6 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "An unknown invoice file appeared on the Finance share. Find it, move it to quarantine without opening it, and report its full name with every extension.",
     skill: "security",
   },
-  "sm-01": {
-    id: "sm-01",
-    challenge: "soc-alert",
-    title: "Check the Record Before You React (INC-1065)",
-    prompt: "An alert flagged an off-hours sign-in. Read the account's own Description for the approved window it names.",
-    skill: "security",
-  },
-  "sm-02": {
-    id: "sm-02",
-    challenge: "soc-alert",
-    title: "Classify What You Actually Found (INC-1065)",
-    prompt: "Given what the account's record showed, choose the classification that actually fits.",
-    skill: "security",
-  },
-  "bt-01": {
-    id: "bt-01",
-    challenge: "baseline-alert",
-    title: "Build the Baseline (INC-1066)",
-    prompt: "Compare four Compliance Analysts' group membership and name the one whose access does not match the rest.",
-    skill: "security",
-  },
-  "bt-02": {
-    id: "bt-02",
-    challenge: "baseline-alert",
-    title: "Name the Extra Access (INC-1066)",
-    prompt: "Name the group on the outlier account that the other three analysts do not have.",
-    skill: "security",
-  },
-  "bt-03": {
-    id: "bt-03",
-    challenge: "baseline-alert",
-    title: "Fix the Baseline (INC-1066)",
-    prompt: "Remove the outlier account from the access-level group it does not need.",
-    skill: "security",
-  },
   "zt-01": {
     id: "zt-01",
     challenge: "open-door",
@@ -286,13 +247,6 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     challenge: "open-door",
     title: "Close It (INC-1067)",
     prompt: "Disable the legacy internal-trust rule and report the port it allowed.",
-    skill: "security",
-  },
-  "th-01": {
-    id: "th-01",
-    challenge: "threshold-alert",
-    title: "Wealth Management Needs Its Own Threshold (INC-1068)",
-    prompt: "Apply a Fine-Grained Password Policy balancing lockout friction against guessing resistance, then report the threshold set.",
     skill: "security",
   },
   "cp-03": {
@@ -325,35 +279,35 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   },
   "tq-06": {
     id: "tq-06",
-    challenge: "alert-queue",
+    challenge: "credential-campaign",
     title: "The 2 AM Login (INC-1046)",
     prompt: "Alex logged in at 2 AM from WM-WKS07. Which department OU holds that computer?",
     skill: "security",
   },
   "tq-07": {
     id: "tq-07",
-    challenge: "alert-queue",
+    challenge: "credential-campaign",
     title: "Read the Log (INC-1046)",
     prompt: "How many failed logons (4625) happen before the first successful logon (4624)?",
     skill: "logs",
   },
   "tq-08": {
     id: "tq-08",
-    challenge: "alert-queue",
+    challenge: "credential-campaign",
     title: "Why the Privileges? (INC-1046)",
     prompt: "Which of Alex's groups explains why the session received special privileges?",
     skill: "security",
   },
   "tq-09": {
     id: "tq-09",
-    challenge: "alert-queue",
+    challenge: "credential-campaign",
     title: "Mistake or Attack? (INC-1046)",
     prompt: "Choose the best explanation for the incident.",
     skill: "security",
   },
   "tq-10": {
     id: "tq-10",
-    challenge: "alert-queue",
+    challenge: "credential-campaign",
     title: "Your First Move (INC-1046)",
     prompt: "Choose the best first response move.",
     skill: "security",
@@ -602,13 +556,9 @@ export const CHALLENGE_PATHS: Record<
 > = {
   "day-one": { href: "/range/phase-1/home-lab-challenges", tab: "operation-day-one" },
   "ticket-queue": { href: "/range/phase-1/home-lab-challenges", tab: "ticket-queue" },
-  "alert-queue": { href: "/range/phase-2/capstone", tab: "the-credential-campaign" },
   "wire": { href: "/range/phase-1/week-3", tab: "the-nightly-settlement-push" },
   "crypto": { href: "/range/phase-1/week-2", tab: "the-mirror-that-does-not-match" },
   "client-data": { href: "/range/phase-1/home-lab-challenges", tab: "the-client-data-review" },
-  "soc-alert": { href: "/range/phase-2/capstone", tab: "approved-overnight-or-not" },
-  "baseline-alert": { href: "/range/phase-2/capstone", tab: "baseline-a-team-then-find-who-breaks-it" },
-  "threshold-alert": { href: "/range/phase-2/capstone", tab: "set-a-defensible-lockout-threshold" },
   "access-alert": { href: "/range/phase-1/week-4", tab: "who-can-open-the-compliance-case-files" },
   "credential-campaign": { href: "/range/phase-2/capstone", tab: "the-credential-campaign" },
   "phishing-chain": { href: "/range/phase-2/capstone", tab: "the-phishing-chain" },
@@ -630,7 +580,6 @@ export function challengeTabHref(challenge: MissionCatalogEntry["challenge"]): s
 export function challengeFromMission(id: string): MissionCatalogEntry["challenge"] | null {
   if (id.startsWith("d1-")) return "day-one";
   if (/^tq-(0[1-5]|1[1-9]|20)$/.test(id)) return "ticket-queue";
-  if (id.startsWith("tq-")) return "alert-queue";
   if (id.startsWith("cap-")) return "wire";
   if (id.startsWith("cry-")) return "crypto";
   if (id.startsWith("cd-")) return "client-data";
@@ -659,13 +608,9 @@ export function challengeHref(challenge: MissionCatalogEntry["challenge"], resul
 export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> = {
   "day-one": "Operation Day One",
   "ticket-queue": "Ticket Queue",
-  "alert-queue": "The Credential Campaign",
   "wire": "The Nightly Settlement Push",
   "crypto": "The Mirror That Does Not Match",
   "client-data": "The Client Data Review",
-  "soc-alert": "Approved Overnight, or Not?",
-  "baseline-alert": "Baseline a Team, Then Find Who Breaks It",
-  "threshold-alert": "Set a Defensible Lockout Threshold",
   "access-alert": "Who Can Open the Compliance Case Files?",
   "credential-campaign": "The Credential Campaign",
   "phishing-chain": "The Phishing Chain",
@@ -704,7 +649,7 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
 /** Tickets that need a real change in the student's lab before they can answer. */
 export const LAB_GATED_MISSIONS = [
   "tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25",
-  "cap-06", "cry-06", "bt-03", "zt-02", "th-01", "cp-04", "ea-03",
+  "cap-06", "cry-06", "zt-02", "cp-04", "ea-03",
   "sl-01", "sl-02", "sl-03",
   "rc-01", "dl-01", "pc-03", "pi-01", "pc-05", "pi-02", "ao-01", "ao-02",
   "od-02", "od-04", "od-05", "od-06", "od-07",
