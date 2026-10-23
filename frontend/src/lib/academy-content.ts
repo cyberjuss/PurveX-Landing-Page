@@ -20,6 +20,8 @@ export interface ContentSection {
   label: string;
   file: string;
   widget?: LabWidget;
+  /** Sub-heading a Challenges entry's sections are grouped under in the rail (academy-sidebar.tsx). Unused outside that one entry. */
+  group?: string;
 }
 
 export interface WeekDef {
@@ -286,19 +288,19 @@ const phase2Capstone: HomeLabDef[] = [
     // after both -- real work beside either chain, not inside one -- and
     // the review comes last because it looks back at everything above it.
     sections: [
-      { label: "Challenge: Approved Overnight, or Not?", file: "phase-2/soc-mindset/challenge-overnight-alert.md" },
-      { label: "Challenge: The Spray, the Lockout, and the One That Got Through", file: "phase-2/week-2/challenge-signin-log.md" },
-      { label: "Challenge: The 2 AM Login", file: "phase-2/week-2/alert-inc-1046.md" },
-      { label: "Challenge: The Quiet Beacon", file: "phase-2/week-1/challenge-quiet-beacon.md" },
-      { label: "Challenge: Lock Every Gate", file: "phase-2/baselines-thresholds/challenge-internal-trust.md" },
-      { label: "Challenge: The Night the Queue Didn't Stop", file: "phase-2/capstone/challenge-the-night-shift.md" },
-      { label: "Challenge: Who's Knocking Before They Ever Get In?", file: "phase-2/phishing-chain/challenge-phish-recon.md" },
-      { label: "Challenge: The Attachment PurveX Never Sent", file: "phase-2/phishing-chain/challenge-phish-delivery.md" },
-      { label: "Challenge: The Second Beacon", file: "phase-2/phishing-chain/challenge-phish-installation.md" },
-      { label: "Challenge: What They Were Packing to Take", file: "phase-2/phishing-chain/challenge-phish-objectives.md" },
-      { label: "Challenge: Baseline a Team, Then Find Who Breaks It", file: "phase-2/baselines-thresholds/challenge-access-outlier.md" },
-      { label: "Challenge: Set a Defensible Lockout Threshold", file: "phase-2/baselines-thresholds/challenge-lockout-threshold.md" },
-      { label: "Challenge: The Chain You Already Worked", file: "phase-2/kill-chain/challenge-attack-chain.md" },
+      { label: "Challenge: Approved Overnight, or Not?", file: "phase-2/soc-mindset/challenge-overnight-alert.md", group: "Also This Week" },
+      { label: "Challenge: The Spray, the Lockout, and the One That Got Through", file: "phase-2/week-2/challenge-signin-log.md", group: "The Credential Campaign" },
+      { label: "Challenge: The 2 AM Login", file: "phase-2/week-2/alert-inc-1046.md", group: "The Credential Campaign" },
+      { label: "Challenge: The Quiet Beacon", file: "phase-2/week-1/challenge-quiet-beacon.md", group: "The Credential Campaign" },
+      { label: "Challenge: Lock Every Gate", file: "phase-2/baselines-thresholds/challenge-internal-trust.md", group: "The Credential Campaign" },
+      { label: "Challenge: The Night the Queue Didn't Stop", file: "phase-2/capstone/challenge-the-night-shift.md", group: "The Credential Campaign" },
+      { label: "Challenge: Who's Knocking Before They Ever Get In?", file: "phase-2/phishing-chain/challenge-phish-recon.md", group: "The Phishing Chain" },
+      { label: "Challenge: The Attachment PurveX Never Sent", file: "phase-2/phishing-chain/challenge-phish-delivery.md", group: "The Phishing Chain" },
+      { label: "Challenge: The Second Beacon", file: "phase-2/phishing-chain/challenge-phish-installation.md", group: "The Phishing Chain" },
+      { label: "Challenge: What They Were Packing to Take", file: "phase-2/phishing-chain/challenge-phish-objectives.md", group: "The Phishing Chain" },
+      { label: "Challenge: Baseline a Team, Then Find Who Breaks It", file: "phase-2/baselines-thresholds/challenge-access-outlier.md", group: "Also This Week" },
+      { label: "Challenge: Set a Defensible Lockout Threshold", file: "phase-2/baselines-thresholds/challenge-lockout-threshold.md", group: "Also This Week" },
+      { label: "Challenge: The Chain You Already Worked", file: "phase-2/kill-chain/challenge-attack-chain.md", group: "Review" },
     ],
   },
 ];

@@ -4,7 +4,7 @@ import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight, BookMarked, Check, ChevronDown, Flag, FlaskConical, Hammer, Lock } from "lucide-react";
-import { type PhaseDef } from "@/lib/academy-content";
+import { type ContentSection, type PhaseDef } from "@/lib/academy-content";
 import { entriesOf, labLinksOf } from "@/lib/academy-entries";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import { isPhaseLocked } from "@/lib/academy-locks";
@@ -119,6 +119,27 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         const isChallengesEntry = (l: PhaseDef["weeks"][number]) => l.sections.length > 0 && l.sections.every((s) => s.label.startsWith("Challenge:"));
         const labs = allHomeLabs.filter((l) => !isChallengesEntry(l));
         const challenges = allHomeLabs.find((l) => isChallengesEntry(l)) ?? null;
+        // A grouped Challenges entry reads as sub-sections (a storyline, a
+        // review) rather than one long flat list. Grouped by each section's
+        // own `group`, not by where it sits in the array, so two items
+        // sharing a group still land together even when something else's
+        // entries sit between them in the page's own reading order.
+        // Ungrouped sections (none of today's Phase 2 entries lack a group,
+        // but earlier phases' Challenges entries do) fall into one group
+        // with no heading.
+        const challengeGroups: { label: string | null; items: ContentSection[] }[] = [];
+        if (challenges) {
+          for (const s of challenges.sections) {
+            const label = s.group ?? null;
+            const last = challengeGroups[challengeGroups.length - 1];
+            if (last && last.label === label) last.items.push(s);
+            else {
+              const existing = label !== null ? challengeGroups.find((g) => g.label === label) : undefined;
+              if (existing) existing.items.push(s);
+              else challengeGroups.push({ label, items: [s] });
+            }
+          }
+        }
         const labsKey = `${phase.slug}:labs`;
         // Open when you are inside one of them, or when you have opened it by
         // hand. Collapsed otherwise, so four sittings do not crowd the weeks.
@@ -213,9 +234,13 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                 challengesOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
               }`}
             >
+              <div className="min-h-0 overflow-hidden">
+              {challengeGroups.map((g, i) => (
+              <Fragment key={g.label ?? `_${i}`}>
+              {g.label && <p className="ax-labweek">{g.label}</p>}
               <ul className="ax-list flex flex-col overflow-hidden">
-                {challenges.sections.map((s) => {
-                  // The three challenges live as tabs on one page, addressed by
+                {g.items.map((s) => {
+                  // The challenges all live as tabs on one page, addressed by
                   // hash the same way SectionTabs itself resolves one. phase-entry.tsx
                   // strips "Challenge: " before SectionTabs ever sees the label, so
                   // indexForHash matches against the stripped form -- slugify it
@@ -231,6 +256,9 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                   );
                 })}
               </ul>
+              </Fragment>
+              ))}
+              </div>
             </div>
           </div>
         );
