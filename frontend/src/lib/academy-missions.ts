@@ -10,18 +10,12 @@ export type MissionCatalogEntry = {
     | "wire"
     | "crypto"
     | "client-data"
-    | "malware-alert"
-    | "soc-alert"
-    | "baseline-alert"
-    | "zerotrust-alert"
-    | "threshold-alert"
+    | "beacon-and-gate"
+    | "also-this-week"
     | "night-shift"
     | "access-alert"
     | "signin-alert"
-    | "recon-alert"
-    | "delivery-alert"
-    | "persistence-alert"
-    | "objectives-alert";
+    | "phishing-chain";
   title: string;
   prompt: string;
   skill: Skill;
@@ -245,70 +239,70 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   },
   "mw-01": {
     id: "mw-01",
-    challenge: "malware-alert",
+    challenge: "beacon-and-gate",
     title: "Something Is Phoning Home (INC-1064)",
     prompt: "A scheduled task nobody on the team created is running on the domain controller. Find it and report its exact name.",
     skill: "security",
   },
   "mw-02": {
     id: "mw-02",
-    challenge: "malware-alert",
+    challenge: "beacon-and-gate",
     title: "Close the Door It Is Using (INC-1064)",
     prompt: "The planted task is reaching out through an outbound firewall rule. Find it, disable it, and report the port it allowed.",
     skill: "security",
   },
   "sm-01": {
     id: "sm-01",
-    challenge: "soc-alert",
+    challenge: "also-this-week",
     title: "Check the Record Before You React (INC-1065)",
     prompt: "An alert flagged an off-hours sign-in. Read the account's own Description for the approved window it names.",
     skill: "security",
   },
   "sm-02": {
     id: "sm-02",
-    challenge: "soc-alert",
+    challenge: "also-this-week",
     title: "Classify What You Actually Found (INC-1065)",
     prompt: "Given what the account's record showed, choose the classification that actually fits.",
     skill: "security",
   },
   "bt-01": {
     id: "bt-01",
-    challenge: "baseline-alert",
+    challenge: "also-this-week",
     title: "Build the Baseline (INC-1066)",
     prompt: "Compare four Compliance Analysts' group membership and name the one whose access does not match the rest.",
     skill: "security",
   },
   "bt-02": {
     id: "bt-02",
-    challenge: "baseline-alert",
+    challenge: "also-this-week",
     title: "Name the Extra Access (INC-1066)",
     prompt: "Name the group on the outlier account that the other three analysts do not have.",
     skill: "security",
   },
   "bt-03": {
     id: "bt-03",
-    challenge: "baseline-alert",
+    challenge: "also-this-week",
     title: "Fix the Baseline (INC-1066)",
     prompt: "Remove the outlier account from the access-level group it does not need.",
     skill: "security",
   },
   "zt-01": {
     id: "zt-01",
-    challenge: "zerotrust-alert",
+    challenge: "beacon-and-gate",
     title: "Find What It Actually Trusts (INC-1067)",
     prompt: "Find the inbound rule on the domain controller that trusts the whole network just for being inside it.",
     skill: "security",
   },
   "zt-02": {
     id: "zt-02",
-    challenge: "zerotrust-alert",
+    challenge: "beacon-and-gate",
     title: "Close It (INC-1067)",
     prompt: "Disable the legacy internal-trust rule and report the port it allowed.",
     skill: "security",
   },
   "th-01": {
     id: "th-01",
-    challenge: "threshold-alert",
+    challenge: "also-this-week",
     title: "Wealth Management Needs Its Own Threshold (INC-1068)",
     prompt: "Apply a Fine-Grained Password Policy balancing lockout friction against guessing resistance, then report the threshold set.",
     skill: "security",
@@ -467,42 +461,42 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   },
   "rc-01": {
     id: "rc-01",
-    challenge: "recon-alert",
+    challenge: "phishing-chain",
     title: "Four Names That Were Never Real (INC-1073)",
     prompt: "Count the failed sign-ins whose status code says the account does not exist, not that the password was wrong.",
     skill: "security",
   },
   "dl-01": {
     id: "dl-01",
-    challenge: "delivery-alert",
+    challenge: "phishing-chain",
     title: "Find the Disguise (INC-1074)",
     prompt: "Find the disguised attachment on the Wealth Management share and report its full name.",
     skill: "security",
   },
   "pi-01": {
     id: "pi-01",
-    challenge: "persistence-alert",
+    challenge: "phishing-chain",
     title: "Find What Got Planted (INC-1075)",
     prompt: "Find the scheduled task nobody on the team created, and report its exact name.",
     skill: "security",
   },
   "pi-02": {
     id: "pi-02",
-    challenge: "persistence-alert",
+    challenge: "phishing-chain",
     title: "Close Its Channel (INC-1075)",
     prompt: "Find and disable the outbound firewall rule the task relies on, then report the port.",
     skill: "security",
   },
   "ao-01": {
     id: "ao-01",
-    challenge: "objectives-alert",
+    challenge: "phishing-chain",
     title: "Find What Got Collected (INC-1076)",
     prompt: "Find the file staged on the IT share that has no business being there, and report its name.",
     skill: "security",
   },
   "ao-02": {
     id: "ao-02",
-    challenge: "objectives-alert",
+    challenge: "phishing-chain",
     title: "Take It Off the Share (INC-1076)",
     prompt: "Move the staged file to Quarantine, then report the folder it is in now.",
     skill: "security",
@@ -519,18 +513,12 @@ export const CHALLENGE_PATHS: Record<
   "wire": { href: "/range/phase-1/week-3", tab: "the-nightly-settlement-push" },
   "crypto": { href: "/range/phase-1/week-2", tab: "the-mirror-that-does-not-match" },
   "client-data": { href: "/range/phase-1/home-lab-challenges", tab: "the-client-data-review" },
-  "malware-alert": { href: "/range/phase-2/capstone", tab: "the-quiet-beacon" },
-  "soc-alert": { href: "/range/phase-2/capstone", tab: "approved-overnight-or-not" },
-  "baseline-alert": { href: "/range/phase-2/capstone", tab: "baseline-a-team-then-find-who-breaks-it" },
-  "zerotrust-alert": { href: "/range/phase-2/capstone", tab: "lock-every-gate" },
-  "threshold-alert": { href: "/range/phase-2/capstone", tab: "set-a-defensible-lockout-threshold" },
+  "beacon-and-gate": { href: "/range/phase-2/capstone", tab: "the-beacon-and-the-open-gate" },
+  "also-this-week": { href: "/range/phase-2/capstone", tab: "also-this-week" },
   "night-shift": { href: "/range/phase-2/capstone", tab: "the-night-the-queue-didn-t-stop" },
   "access-alert": { href: "/range/phase-1/week-4", tab: "who-can-open-the-compliance-case-files" },
   "signin-alert": { href: "/range/phase-2/capstone", tab: "the-spray-the-lockout-and-the-one-that-got-through" },
-  "recon-alert": { href: "/range/phase-2/capstone", tab: "who-s-knocking-before-they-ever-get-in" },
-  "delivery-alert": { href: "/range/phase-2/capstone", tab: "the-attachment-purvex-never-sent" },
-  "persistence-alert": { href: "/range/phase-2/capstone", tab: "the-second-beacon" },
-  "objectives-alert": { href: "/range/phase-2/capstone", tab: "what-they-were-packing-to-take" },
+  "phishing-chain": { href: "/range/phase-2/capstone", tab: "the-phishing-chain" },
 };
 
 export function missionHref(id: string): string {
@@ -580,18 +568,12 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "wire": "The Nightly Settlement Push",
   "crypto": "The Mirror That Does Not Match",
   "client-data": "The Client Data Review",
-  "malware-alert": "The Quiet Beacon",
-  "soc-alert": "Approved Overnight, or Not?",
-  "baseline-alert": "Baseline a Team, Then Find Who Breaks It",
-  "zerotrust-alert": "Lock Every Gate",
-  "threshold-alert": "Set a Defensible Lockout Threshold",
+  "beacon-and-gate": "The Beacon and the Open Gate",
+  "also-this-week": "Also This Week",
   "night-shift": "The Night the Queue Didn't Stop",
   "access-alert": "Who Can Open the Compliance Case Files?",
   "signin-alert": "The Spray, the Lockout, and the One That Got Through",
-  "recon-alert": "Who's Knocking Before They Ever Get In?",
-  "delivery-alert": "The Attachment PurveX Never Sent",
-  "persistence-alert": "The Second Beacon",
-  "objectives-alert": "What They Were Packing to Take",
+  "phishing-chain": "The Phishing Chain",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {

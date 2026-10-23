@@ -284,22 +284,17 @@ const phase2Capstone: HomeLabDef[] = [
     // the credential campaign (spray through the capstone's second wave),
     // then the phishing chain (recon through actions on objectives), which
     // actually reaches the stages a credential-only attack never shows.
-    // Approved Overnight, Baseline a Team and the lockout threshold sit
-    // after both -- real work beside either chain, not inside one -- and
-    // the review comes last because it looks back at everything above it.
+    // Also This Week bundles three routine, unrelated tickets that used to
+    // be one- and two-question files on their own -- real work beside
+    // either chain, not inside one -- and the review comes last because it
+    // looks back at everything above it.
     sections: [
-      { label: "Challenge: Approved Overnight, or Not?", file: "phase-2/soc-mindset/challenge-overnight-alert.md", group: "Also This Week" },
       { label: "Challenge: The Spray, the Lockout, and the One That Got Through", file: "phase-2/week-2/challenge-signin-log.md", group: "The Credential Campaign" },
       { label: "Challenge: The 2 AM Login", file: "phase-2/week-2/alert-inc-1046.md", group: "The Credential Campaign" },
-      { label: "Challenge: The Quiet Beacon", file: "phase-2/week-1/challenge-quiet-beacon.md", group: "The Credential Campaign" },
-      { label: "Challenge: Lock Every Gate", file: "phase-2/baselines-thresholds/challenge-internal-trust.md", group: "The Credential Campaign" },
+      { label: "Challenge: The Beacon and the Open Gate", file: "phase-2/week-1/challenge-beacon-and-gate.md", group: "The Credential Campaign" },
       { label: "Challenge: The Night the Queue Didn't Stop", file: "phase-2/capstone/challenge-the-night-shift.md", group: "The Credential Campaign" },
-      { label: "Challenge: Who's Knocking Before They Ever Get In?", file: "phase-2/phishing-chain/challenge-phish-recon.md", group: "The Phishing Chain" },
-      { label: "Challenge: The Attachment PurveX Never Sent", file: "phase-2/phishing-chain/challenge-phish-delivery.md", group: "The Phishing Chain" },
-      { label: "Challenge: The Second Beacon", file: "phase-2/phishing-chain/challenge-phish-installation.md", group: "The Phishing Chain" },
-      { label: "Challenge: What They Were Packing to Take", file: "phase-2/phishing-chain/challenge-phish-objectives.md", group: "The Phishing Chain" },
-      { label: "Challenge: Baseline a Team, Then Find Who Breaks It", file: "phase-2/baselines-thresholds/challenge-access-outlier.md", group: "Also This Week" },
-      { label: "Challenge: Set a Defensible Lockout Threshold", file: "phase-2/baselines-thresholds/challenge-lockout-threshold.md", group: "Also This Week" },
+      { label: "Challenge: The Phishing Chain", file: "phase-2/phishing-chain/challenge-phishing-chain.md", group: "The Phishing Chain" },
+      { label: "Challenge: Also This Week", file: "phase-2/soc-mindset/challenge-also-this-week.md", group: "Also This Week" },
       { label: "Challenge: The Chain You Already Worked", file: "phase-2/kill-chain/challenge-attack-chain.md", group: "Review" },
     ],
   },
