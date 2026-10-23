@@ -17,6 +17,32 @@ import { labSpot, useCoach } from "./coach-context";
 import { HostedLabSetupNote } from "./hosted-lab-button";
 import { TopicVideo } from "./topic-video";
 
+// Clicking a sidebar link to a different tab on this same page (the
+// Challenges rail, "Continue" on the readiness page) only ever changes the
+// URL's hash, so Next's <Link> routes it through history.pushState instead
+// of a real navigation. pushState never fires the browser's own hashchange
+// event, which is the only thing the tab-sync effect below listens for, so
+// the tab silently never switched even though the address bar did. Patched
+// once, module-level, so every same-page hash jump fires a real signal.
+if (typeof window !== "undefined") {
+  const w = window as typeof window & { __purvexHistoryPatched?: boolean };
+  if (!w.__purvexHistoryPatched) {
+    w.__purvexHistoryPatched = true;
+    const announce = () => window.dispatchEvent(new Event("purvex:locationchange"));
+    const originalPush = history.pushState.bind(history);
+    const originalReplace = history.replaceState.bind(history);
+    history.pushState = (...args: Parameters<typeof originalPush>) => {
+      originalPush(...args);
+      announce();
+    };
+    history.replaceState = (...args: Parameters<typeof originalReplace>) => {
+      originalReplace(...args);
+      announce();
+    };
+    window.addEventListener("popstate", announce);
+  }
+}
+
 // Home Lab tabs about building your own server. A hosted student skips them.
 const HOSTED_SETUP_TABS = new Set(["Set Up the Lab", "Install the Domain", "Build the Environment", "Check the Build"]);
 import { academyFetch } from "@/lib/academy-client";
@@ -308,7 +334,14 @@ export function SectionTabs({
     const apply = () => setActive(indexForHash(window.location.hash, items));
     apply();
     window.addEventListener("hashchange", apply);
-    return () => window.removeEventListener("hashchange", apply);
+    // Covers the same-page tab links that only ever change the hash through
+    // Next's router, which history.pushState never announces with a real
+    // hashchange event on its own. See the module-level patch above.
+    window.addEventListener("purvex:locationchange", apply);
+    return () => {
+      window.removeEventListener("hashchange", apply);
+      window.removeEventListener("purvex:locationchange", apply);
+    };
     // items is rebuilt each render from the same labels; hash is the trigger.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
