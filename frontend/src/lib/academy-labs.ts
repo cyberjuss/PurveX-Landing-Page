@@ -33,7 +33,7 @@ export type LabMeta = {
 const ART: Record<string, { blurb: string; skill: string; icon: string; accent: string; minutes: number }> = {
   "risk-triage": { blurb: "Score Monday's incoming tickets by real business risk.", skill: "Risk Triage", icon: "TriangleAlert", accent: "#f5a524", minutes: 12 },
   "three-failures": { blurb: "Break confidentiality, integrity and availability on one file, and prove each one.", skill: "Fundamentals", icon: "ShieldAlert", accent: "#4fa3d1", minutes: 20 },
-  "severity-risk": { blurb: "Score one flaw three ways with CVSS, and watch Critical stop meaning urgent.", skill: "Risk Triage", icon: "Gauge", accent: "#f5a524", minutes: 30 },
+  "severity-risk": { blurb: "Score one flaw three ways with CVSS, and watch Critical stop meaning urgent.", skill: "Vulnerability Scoring", icon: "Gauge", accent: "#0ca678", minutes: 30 },
   "tell-them-apart": { blurb: "Tell encoding, encryption and hashing apart in CyberChef, and prove which reverse.", skill: "Credentials", icon: "ScanSearch", accent: "#22b8cf", minutes: 20 },
   "store-a-password": { blurb: "See why a leaked unsalted table gives a company away, and how salting fixes it.", skill: "Credentials", icon: "KeyRound", accent: "#22b8cf", minutes: 25 },
   "wireshark": { blurb: "Read a packet capture and follow a conversation on the wire.", skill: "Networking", icon: "Radar", accent: "#3b9eff", minutes: 20 },
@@ -41,7 +41,7 @@ const ART: Record<string, { blurb: string; skill: string; icon: string; accent: 
   "read-a-scan": { blurb: "Produce a port scan, capture it, and learn the signature that tells an open door from a closed one.", skill: "Networking", icon: "ScanSearch", accent: "#3b9eff", minutes: 30 },
   "write-a-detection": { blurb: "Write a real Suricata rule and watch it catch the scan you ran by hand.", skill: "Networking", icon: "SatelliteDish", accent: "#3b9eff", minutes: 20 },
   "forensics": { blurb: "Trace Hidden Tear ransomware through captured network traffic.", skill: "Forensics", icon: "Bug", accent: "#ff6b81", minutes: 25 },
-  "triple-a": { blurb: "Break a broken access-control flow, then close the hole.", skill: "Access Control", icon: "LockKeyhole", accent: "#19c3b2", minutes: 20 },
+  "triple-a": { blurb: "Break a broken access-control flow, then close the hole.", skill: "Application Security", icon: "Unlock", accent: "#e64980", minutes: 20 },
   "read-the-login-record": { blurb: "Make a failed and a successful login, find both in the log, and tell them apart.", skill: "Log Analysis", icon: "ScanSearch", accent: "#9b8cff", minutes: 20 },
   "one-power": { blurb: "Grant a user exactly one command as root, and prove you did not hand over the machine.", skill: "Access Control", icon: "LockKeyhole", accent: "#19c3b2", minutes: 25 },
   "confirm-the-map": { blurb: "Ask your domain controller what it is really listening on, in PowerShell, and find what a five-port lesson left out.", skill: "Networking", icon: "Router", accent: "#3b9eff", minutes: 15 },
