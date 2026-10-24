@@ -190,10 +190,10 @@ const phase2Weeks: WeekDef[] = [
       { label: "How AI Is Changing the Role", file: "phase-2/soc-mindset/lesson-ai-impact.md" },
       { label: "The Investigation Mindset", file: "phase-2/soc-mindset/lesson-investigation-mindset.md" },
       { label: "The 5 W's of an Investigation", file: "phase-2/soc-mindset/lesson-5ws.md" },
-      { label: "Lab: Document a Real Alert With the 5 W's", file: "phase-2/soc-mindset/lab-document-the-five-ws.md" },
+      { label: "Lab: Windows Security Event Log Analysis", file: "phase-2/soc-mindset/lab-document-the-five-ws.md" },
       { label: "Classifying an Incident", file: "phase-2/soc-mindset/lesson-classification.md" },
       { label: "Allowlisting and Blocklisting", file: "phase-2/soc-mindset/lesson-allow-deny.md" },
-      { label: "Lab: Read Your Domain Controller's Default Posture", file: "phase-2/soc-mindset/lab-default-posture.md" },
+      { label: "Lab: Windows Firewall Policy Audit", file: "phase-2/soc-mindset/lab-default-posture.md" },
       { label: "Resources", file: "phase-2/soc-mindset/resources.md" },
     ],
   },
@@ -210,8 +210,8 @@ const phase2Weeks: WeekDef[] = [
       { label: "How Malware Gets In", file: "phase-2/week-1/lesson-delivery.md" },
       { label: "Working a Malware Alert", file: "phase-2/week-1/lesson-response.md" },
       { label: "Tools Analysts Use", file: "phase-2/week-1/lesson-tools.md" },
-      { label: "Lab: Trigger a Real Detection", file: "phase-2/week-1/lab-trigger-a-real-detection.md" },
-      { label: "Lab: Read a Process Tree", file: "phase-2/week-1/lab-read-a-process-tree.md" },
+      { label: "Lab: Malware Detection with Windows Defender", file: "phase-2/week-1/lab-trigger-a-real-detection.md" },
+      { label: "Lab: Process Tree Analysis with Sysmon", file: "phase-2/week-1/lab-read-a-process-tree.md" },
     ],
   },
   {
@@ -220,8 +220,8 @@ const phase2Weeks: WeekDef[] = [
     summary: "Read the host, the account, and the log before deciding what happened.",
     sections: [
       { label: "Overview", file: "phase-2/week-2/overview.md" },
-      { label: "Lab: One Timeline for Two Machines", file: "phase-2/week-2/lab-one-timeline-two-machines.md" },
-      { label: "Lab: Turn On Script Logging", file: "phase-2/week-2/lab-turn-on-script-logging.md" },
+      { label: "Lab: Cross-Platform Log Correlation", file: "phase-2/week-2/lab-one-timeline-two-machines.md" },
+      { label: "Lab: PowerShell Script Block Logging", file: "phase-2/week-2/lab-turn-on-script-logging.md" },
     ],
   },
   // These two replace the old empty "week-3" (SIEM Basics) and "week-4"
@@ -234,7 +234,7 @@ const phase2Weeks: WeekDef[] = [
     sections: [
       { label: "Overview", file: "phase-2/baselines-thresholds/overview.md" },
       { label: "Mapping Your Environment", file: "phase-2/baselines-thresholds/lesson-map-environment.md" },
-      { label: "Lab: Map Your Pod", file: "phase-2/baselines-thresholds/lab-confirm-the-map.md" },
+      { label: "Lab: Network Port Enumeration with PowerShell", file: "phase-2/baselines-thresholds/lab-confirm-the-map.md" },
       { label: "Baselines and Outliers", file: "phase-2/baselines-thresholds/lesson-baselines-outliers.md" },
       { label: "The MITRE ATT&CK Framework", file: "phase-2/baselines-thresholds/lesson-attack.md" },
       { label: "Zero Trust", file: "phase-2/baselines-thresholds/lesson-zero-trust.md" },
