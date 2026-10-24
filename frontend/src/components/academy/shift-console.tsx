@@ -368,6 +368,8 @@ const PRIORITY_NOTE: Record<"P1" | "P2" | "P3", string> = {
 };
 
 const SEV_CLASS: Record<Sev, string> = { P1: "sh-sev--p1", P2: "sh-sev--p2", P3: "sh-sev--p3" };
+/** The word behind each code, spelled out wherever a badge has the room for it. */
+const SEV_WORD: Record<Sev, string> = { P1: "Critical", P2: "High", P3: "Routine" };
 
 // A cyber/tech glyph per incident type, same lucide family as the labs and drills,
 // so the queue reads at a glance. Falls back to a shield for anything unmapped.
@@ -543,7 +545,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
           >
             <Zap className="h-4 w-4" />
             <span>Next priority</span>
-            {nextUp && <b className={`sh-next__sev is-${nextUp.severity.toLowerCase()}`}>{nextUp.severity}</b>}
+            {nextUp && <b className={`sh-next__sev is-${nextUp.severity.toLowerCase()}`}>{nextUp.severity} · {SEV_WORD[nextUp.severity]}</b>}
           </button>
           <div className={`sh-clock ${left <= 60 ? "sh-clock--low" : left <= 300 ? "sh-clock--warn" : ""}`}>
             <span className="sh-clock__label">Shift ends in</span>
@@ -1046,7 +1048,7 @@ function ShiftReport({ theme, report, onAgain, busy, error }: { theme: "light" |
         <div className="sh-report__rows">
           {report.incidents.map((i, n) => (
             <div key={n} className="sh-rep">
-              <span className={`sh-sev ${SEV_CLASS[i.severity as Sev] ?? ""}`}>{i.severity}</span>
+              <span className={`sh-sev ${SEV_CLASS[i.severity as Sev] ?? ""}`}>{i.severity} · {SEV_WORD[i.severity as Sev] ?? ""}</span>
               <span className="sh-rep__title">{i.title}</span>
               <span className="sh-rep__tags">
                 <em className={i.resolved ? "ok" : i.escalated ? "up" : "no"}>{i.resolved ? "Solved" : i.escalated ? "Escalated" : i.touched ? "Missed" : "Not worked"}</em>
