@@ -112,41 +112,124 @@ Record this third number. You now have one flaw with three honest scores, and no
 
 ### Check Yourself
 
-<div class="ad-check" data-check="w1m-c1" data-answer="1">
-<p class="ad-check__q">Did the Base Score change at any point during this lab?</p>
-<button type="button" class="ad-check__opt" data-i="0">Yes</button>
-<button type="button" class="ad-check__opt" data-i="1">No</button>
-<p class="ad-check__note">The Base Score describes the flaw itself, which never changed. Only the Environmental Score moved, because only the machine changed.</p>
+<div class="ad-mission" data-id="w1m-c1" data-attempts="0">
+<p><strong>Task:</strong> Did the Base Score change at any point during this lab? Type its letter.<br><strong>A</strong> Yes.<br><strong>B</strong> No.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for whether the base score changed" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. No</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>The Base Score describes the flaw itself, which never changed. Only the Environmental Score moved, because only the machine changed.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w1m-c2" data-answer="1">
-<p class="ad-check__q">For finding A, which Environmental Score was higher?</p>
-<button type="button" class="ad-check__opt" data-i="0">The practice server that holds nothing</button>
-<button type="button" class="ad-check__opt" data-i="1">The domain controller that holds every account</button>
-<p class="ad-check__note">Same flaw, same base, but the machine that holds the accounts scores higher because the data at risk is worth more.</p>
+### Compare the Two Machines
+
+<div class="ad-mission" data-id="w1m-c2" data-attempts="0">
+<p><strong>Task:</strong> For finding A, which Environmental Score was higher? Type its letter.<br><strong>A</strong> The practice server that holds nothing.<br><strong>B</strong> The domain controller that holds every account.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for which machine scored higher" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. The domain controller</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Same flaw, same base, but the machine that holds the accounts scores higher because the data at risk is worth more.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w1m-c3" data-answer="0">
-<p class="ad-check__q">The three Security Requirements are named after which model from this week?</p>
-<button type="button" class="ad-check__opt" data-i="0">The CIA triad</button>
-<button type="button" class="ad-check__opt" data-i="1">The AAA model</button>
-<button type="button" class="ad-check__opt" data-i="2">The TCP handshake</button>
-<p class="ad-check__note">Confidentiality, Integrity and Availability Requirement. The triad is an input to the score, not a separate topic.</p>
+### Name the Model Behind the Inputs
+
+<div class="ad-mission" data-id="w1m-c3" data-attempts="0">
+<p><strong>Task:</strong> The three Security Requirements are named after which model from this week? Type its letter.<br><strong>A</strong> The CIA triad.<br><strong>B</strong> The AAA model.<br><strong>C</strong> The TCP handshake.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for which model the security requirements are named after" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>A. The CIA triad</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Confidentiality, Integrity and Availability Requirement. The triad is an input to the score, not a separate topic.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w1m-c4" data-answer="0">
-<p class="ad-check__q">Which CVSS input captures that a machine holds nothing sensitive?</p>
-<button type="button" class="ad-check__opt" data-i="0">The Security Requirements (CR, IR, AR)</button>
-<button type="button" class="ad-check__opt" data-i="1">The Base Score</button>
-<button type="button" class="ad-check__opt" data-i="2">The Attack Complexity</button>
-<p class="ad-check__note">The three requirements are where you tell the score how much this machine's data is worth, which is the whole reason two machines differ.</p>
+### Name What Captures the Machine's Value
+
+<div class="ad-mission" data-id="w1m-c4" data-attempts="0">
+<p><strong>Task:</strong> Which CVSS input captures that a machine holds nothing sensitive? Type its letter.<br><strong>A</strong> The Security Requirements (CR, IR, AR).<br><strong>B</strong> The Base Score.<br><strong>C</strong> The Attack Complexity.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for which input captures the machine's value" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>A. The Security Requirements (CR, IR, AR)</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>The three requirements are where you tell the score how much this machine's data is worth, which is the whole reason two machines differ.</p>
+</div>
+</div>
+</div>
+</div>
+
+### Justify a Real Patching Decision
+
+<div class="ad-mission ad-mission--capstone" data-id="w1m-c5" data-attempts="0">
+<p><strong>Task:</strong> A scanner reports the same Critical finding on two machines. One is a test box rebuilt every night. The other is the server that issues client statements. The team can fix one today. Which CVSS input justifies fixing the client-statement server first, to a manager who only saw the word Critical? Type its letter.<br><strong>A</strong> The Base Score, since it is higher on the more important machine.<br><strong>B</strong> The Security Requirements, since they are what actually differ between the two machines and what raises the client-statement server's Environmental Score above the test box's.<br><strong>C</strong> Attack Complexity, since the client-statement server is harder to reach.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for which CVSS input justifies the patching decision" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. The Security Requirements</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>The Base Score is identical on both machines, so it cannot justify treating them differently. The Security Requirements are the one input built specifically to say what each machine actually holds, which is exactly the argument a manager needs when the scanner's report says the same word on both tickets.</p>
+</div>
+</div>
+</div>
 </div>
 
 ### Take It Further
 
-A scanner reports the same Critical finding on two machines. One is a test box rebuilt every night. The other is the server that issues client statements.
+A third machine in the same building runs the identical flaw, but nobody has ever documented what it actually stores.
 
-The team can fix one today. Say which you choose, and name the CVSS input that justifies the choice to a manager who only saw the word Critical.
+Say what you would have to find out before you could honestly score its Environmental Score at all, and why guessing it from the hostname alone would not be a real CVSS score.
 
 ### Why It Matters
 

@@ -145,41 +145,124 @@ curl -I http://localhost
 
 Answer from what you saw, not from what you remember reading.
 
-<div class="ad-check" data-check="w1e-c1" data-answer="1">
-<p class="ad-check__q">After <code>chmod 600</code>, had the contents of <code>ledger.txt</code> changed in any way?</p>
-<button type="button" class="ad-check__opt" data-i="0">Yes</button>
-<button type="button" class="ad-check__opt" data-i="1">No</button>
-<p class="ad-check__note">Permissions decide who may read a file, never what it holds. Confidentiality failed while integrity stayed intact.</p>
+<div class="ad-mission" data-id="w1e-c1" data-attempts="0">
+<p><strong>Task:</strong> After <code>chmod 600</code>, had the contents of <code>ledger.txt</code> changed in any way? Type its letter.<br><strong>A</strong> Yes.<br><strong>B</strong> No.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for whether the file's contents changed" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. No</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Permissions decide who may read a file, never what it holds. Confidentiality failed while integrity stayed intact.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w1e-c2" data-answer="2">
-<p class="ad-check__q">You changed one digit out of twenty-four characters. Roughly how many characters of the SHA-256 hash changed?</p>
-<button type="button" class="ad-check__opt" data-i="0">About one character</button>
-<button type="button" class="ad-check__opt" data-i="1">About a quarter</button>
-<button type="button" class="ad-check__opt" data-i="2">Almost all of it</button>
-<p class="ad-check__note">A hash has no partial match. One changed character scrambles the whole digest, which is what lets it flag any change at all.</p>
+### Read the Avalanche Effect
+
+<div class="ad-mission" data-id="w1e-c2" data-attempts="0">
+<p><strong>Task:</strong> You changed one digit out of twenty-four characters. Roughly how many characters of the SHA-256 hash changed? Type its letter.<br><strong>A</strong> About one character.<br><strong>B</strong> About a quarter.<br><strong>C</strong> Almost all of it.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for how much of the hash changed" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{c}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>C. Almost all of it</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A hash has no partial match. One changed character scrambles the whole digest, which is what lets it flag any change at all.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w1e-c3" data-answer="0">
-<p class="ad-check__q">While nginx was stopped, was <code>index.html</code> still on the disk?</p>
-<button type="button" class="ad-check__opt" data-i="0">Yes</button>
-<button type="button" class="ad-check__opt" data-i="1">No</button>
-<p class="ad-check__note">Availability failed while the file sat untouched. The page was there the whole time, just not being served.</p>
+### Confirm Availability Failed Alone
+
+<div class="ad-mission" data-id="w1e-c3" data-attempts="0">
+<p><strong>Task:</strong> While nginx was stopped, was <code>index.html</code> still on the disk? Type its letter.<br><strong>A</strong> Yes.<br><strong>B</strong> No.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for whether the file was still on disk" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>A. Yes</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Availability failed while the file sat untouched. The page was there the whole time, just not being served.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w1e-c4" data-answer="0">
-<p class="ad-check__q">A client opens the portal and sees another client's statement. Which property failed?</p>
-<button type="button" class="ad-check__opt" data-i="0">Confidentiality</button>
-<button type="button" class="ad-check__opt" data-i="1">Integrity</button>
-<button type="button" class="ad-check__opt" data-i="2">Availability</button>
-<p class="ad-check__note">The data is correct and available. It just reached the wrong person, which is a confidentiality failure.</p>
+### Name the Property That Failed
+
+<div class="ad-mission" data-id="w1e-c4" data-attempts="0">
+<p><strong>Task:</strong> A client opens the portal and sees another client's statement. Which property failed? Type its letter.<br><strong>A</strong> Confidentiality.<br><strong>B</strong> Integrity.<br><strong>C</strong> Availability.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for which property failed" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>A. Confidentiality</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>The data is correct and available. It just reached the wrong person, which is a confidentiality failure.</p>
+</div>
+</div>
+</div>
+</div>
+
+### Combine Two Failures at Once
+
+<div class="ad-mission ad-mission--capstone" data-id="w1e-c5" data-attempts="0">
+<p><strong>Task:</strong> A ransomware attack encrypts a company's file share and the attacker keeps a copy of everything they encrypted. Which properties failed, and which one costs the most if the attacker publishes what they took? Type its letter.<br><strong>A</strong> Only availability failed. The published copy does not change that.<br><strong>B</strong> Both availability and confidentiality failed. Encryption blocks access right now, but a published copy of client data is the harder loss to undo.<br><strong>C</strong> Only confidentiality failed, since the files still exist somewhere.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for which properties failed in a ransomware attack with data theft" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Both availability and confidentiality failed</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Encryption is an availability failure you can usually recover from with a clean backup. A stolen copy already in an attacker's hands is a confidentiality failure a backup cannot undo, which is why modern ransomware steals data before it encrypts anything at all.</p>
+</div>
+</div>
+</div>
 </div>
 
 ### Take It Further
 
-A ransomware attack encrypts a company's file share and the attacker keeps a copy of the files.
+The company restores the ransomware-hit share from a clean backup made the night before the attack.
 
-Name every part of the triad that failed, and say which one the company notices first. Then say which one costs the most if the attacker publishes what they took.
+Say which of the three properties that restore actually fixes, and which one it cannot touch no matter how recent the backup is.
 
 ### Why It Matters
 

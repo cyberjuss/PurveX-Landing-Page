@@ -116,42 +116,124 @@ sudo userdel -r webops
 
 Answer from what you saw, not from what you remember reading.
 
-<div class="ad-check" data-check="w4m-c1" data-answer="1">
-<p class="ad-check__q">With webops granted only the nginx restart, what happened when you tried to restart ssh?</p>
-<button type="button" class="ad-check__opt" data-i="0">It worked, since one sudo rule unlocks all of sudo</button>
-<button type="button" class="ad-check__opt" data-i="1">It was refused</button>
-<p class="ad-check__note">A sudo rule grants only what it names. Everything else stays denied, which is the point of listing the exact command.</p>
+<div class="ad-mission" data-id="w4m-c1" data-attempts="0">
+<p><strong>Task:</strong> With webops granted only the nginx restart, what happened when you tried to restart ssh? Type its letter.<br><strong>A</strong> It worked, since one sudo rule unlocks all of sudo.<br><strong>B</strong> It was refused.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for what happened restarting ssh" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. It was refused</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A sudo rule grants only what it names. Everything else stays denied, which is the point of listing the exact command.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w4m-c2" data-answer="2">
-<p class="ad-check__q">The broad rule named "systemctl" with no service. What did it actually grant?</p>
-<button type="button" class="ad-check__opt" data-i="0">Only restarting nginx</button>
-<button type="button" class="ad-check__opt" data-i="1">Nothing, it is invalid</button>
-<button type="button" class="ad-check__opt" data-i="2">Control of any service, including stopping security tools</button>
-<p class="ad-check__note">Without a service named, systemctl can start, stop or restart anything. That includes turning off the firewall or the logging service, which is far more than one restart.</p>
+### Read What a Broad Rule Actually Grants
+
+<div class="ad-mission" data-id="w4m-c2" data-attempts="0">
+<p><strong>Task:</strong> The broad rule named "systemctl" with no service. What did it actually grant? Type its letter.<br><strong>A</strong> Only restarting nginx.<br><strong>B</strong> Nothing, it is invalid.<br><strong>C</strong> Control of any service, including stopping security tools.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for what the broad rule actually granted" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{c}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>C. Control of any service, including stopping security tools</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Without a service named, systemctl can start, stop or restart anything. That includes turning off the firewall or the logging service, which is far more than one restart.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w4m-c3" data-answer="0">
-<p class="ad-check__q">Why write the rule as narrowly as possible even for someone you trust?</p>
-<button type="button" class="ad-check__opt" data-i="0">A stolen account can only do what the rule allows, so a narrow rule limits the damage</button>
-<button type="button" class="ad-check__opt" data-i="1">Narrow rules run faster</button>
-<button type="button" class="ad-check__opt" data-i="2">It is only about trust, so it does not matter</button>
-<p class="ad-check__note">Least privilege is about the account, not the person. If the account is phished or stolen, the attacker gets exactly what the rule allows and no more.</p>
+### Explain Why Trust Is Not the Argument
+
+<div class="ad-mission" data-id="w4m-c3" data-attempts="0">
+<p><strong>Task:</strong> Why write the rule as narrowly as possible even for someone you trust? Type its letter.<br><strong>A</strong> A stolen account can only do what the rule allows, so a narrow rule limits the damage.<br><strong>B</strong> Narrow rules run faster.<br><strong>C</strong> It is only about trust, so it does not matter.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for why to write the rule narrowly even for a trusted person" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>A. A stolen account can only do what the rule allows</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Least privilege is about the account, not the person. If the account is phished or stolen, the attacker gets exactly what the rule allows and no more.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w4m-c4" data-answer="1">
-<p class="ad-check__q">Which command let you audit webops's privileges without logging in as them?</p>
-<button type="button" class="ad-check__opt" data-i="0">cat /etc/passwd</button>
-<button type="button" class="ad-check__opt" data-i="1">sudo -l -U webops</button>
-<button type="button" class="ad-check__opt" data-i="2">whoami</button>
-<p class="ad-check__note">sudo -l -U lists what any user is permitted to run. It is how you check a rule says what you meant, which is a real audit task.</p>
+### Name the Audit Command
+
+<div class="ad-mission" data-id="w4m-c4" data-attempts="0">
+<p><strong>Task:</strong> Which command let you audit webops's privileges without logging in as them? Type its letter.<br><strong>A</strong> cat /etc/passwd.<br><strong>B</strong> sudo -l -U webops.<br><strong>C</strong> whoami.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for which command audits a user's sudo privileges" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. sudo -l -U webops</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>sudo -l -U lists what any user is permitted to run. It is how you check a rule says what you meant, which is a real audit task.</p>
+</div>
+</div>
+</div>
+</div>
+
+### Audit a Real Over-Broad Rule
+
+<div class="ad-mission ad-mission--capstone" data-id="w4m-c5" data-attempts="0">
+<p><strong>Task:</strong> You review a server and find this rule for a backup account: it may run sudo for any command in <code>/usr/bin</code> with no password. Does that follow least privilege, and what could the account do beyond backups? Type its letter.<br><strong>A</strong> Yes, it follows least privilege, since it is scoped to a specific folder.<br><strong>B</strong> No. Almost every common tool on Linux lives in <code>/usr/bin</code>, so this account can run essentially anything as root, far beyond whatever backup command it actually needs.<br><strong>C</strong> It cannot be judged without knowing who uses the account.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for whether the backup account's rule follows least privilege" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. No, essentially anything as root</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A folder path is not a command list. <code>/usr/bin</code> holds hundreds of real tools, and "any command in a folder" is exactly the same mistake as the unscoped systemctl rule you just read, just spelled differently. The fix is the same one you wrote earlier in this lab: name the exact backup command and nothing else.</p>
+</div>
+</div>
+</div>
 </div>
 
 ### Take It Further
 
-You review a server and find this rule for a backup account: it may run sudo for any command in `/usr/bin` with no password.
+The backup account's rule gets rewritten to name one exact script, `/usr/local/bin/run-backup.sh`, instead of the whole `/usr/bin` folder.
 
-Say whether that follows least privilege, name one thing the account could do beyond backups, and say what you would change the rule to.
+Say whether that alone is enough, or whether the script's own contents now matter just as much as the sudo rule did.
 
 ### Why It Matters
 

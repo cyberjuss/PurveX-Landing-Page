@@ -7,7 +7,7 @@ import { LOST_ASK } from "./lab-brief";
 import { useLabDone, useLabResult } from "./lab-kit";
 import { ChatShell, Chip, ChipRow, Mine, Says, SendAction } from "./lab-chat";
 
-// Monday Morning Risk Triage, played as a guided chat with Alex, the student's
+// Risk Assessment and Triage, played as a guided chat with Alex, the student's
 // IT lead. Alex sends the tickets one at a time; the student answers by tapping
 // choices, which appear as their own replies. Same scoring as before, delivered
 // as a conversation instead of a form.
@@ -240,7 +240,7 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
       signal={signal}
       thread={thread}
       composer={composer}
-      label="Monday Morning Risk Triage, guided chat"
+      label="Risk Assessment and Triage, guided chat"
     />
   );
 }

@@ -109,43 +109,124 @@ The Output is the encrypted value. This is encryption. Drag in "AES Decrypt" bel
 
 Answer from what you saw in the tool.
 
-<div class="ad-check" data-check="w2e-c1" data-answer="1">
-<p class="ad-check__q">Which of the three had no reverse operation anywhere in the list?</p>
-<button type="button" class="ad-check__opt" data-i="0">Encoding</button>
-<button type="button" class="ad-check__opt" data-i="1">Hashing</button>
-<button type="button" class="ad-check__opt" data-i="2">Encryption</button>
-<p class="ad-check__note">Hashing is one-way by design. There is no unhash operation to drag in, which is exactly why it suits password storage.</p>
+<div class="ad-mission" data-id="w2e-c1" data-attempts="0">
+<p><strong>Task:</strong> Which of the three had no reverse operation anywhere in the list? Type its letter.<br><strong>A</strong> Encoding.<br><strong>B</strong> Hashing.<br><strong>C</strong> Encryption.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for which transformation has no reverse operation" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Hashing</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Hashing is one-way by design. There is no unhash operation to drag in, which is exactly why it suits password storage.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w2e-c2" data-answer="0">
-<p class="ad-check__q">To undo the AES output, what did you have to supply that Base64 never asked for?</p>
-<button type="button" class="ad-check__opt" data-i="0">A key</button>
-<button type="button" class="ad-check__opt" data-i="1">Nothing extra</button>
-<button type="button" class="ad-check__opt" data-i="2">The original text</button>
-<p class="ad-check__note">Encryption is reversible only with the key. Base64 is reversible by anyone, because its rule is public.</p>
+### Name What Encryption Needs That Encoding Does Not
+
+<div class="ad-mission" data-id="w2e-c2" data-attempts="0">
+<p><strong>Task:</strong> To undo the AES output, what did you have to supply that Base64 never asked for? Type its letter.<br><strong>A</strong> A key.<br><strong>B</strong> Nothing extra.<br><strong>C</strong> The original text.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for what AES needed that Base64 did not" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>A. A key</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Encryption is reversible only with the key. Base64 is reversible by anyone, because its rule is public.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w2e-c3" data-answer="2">
-<p class="ad-check__q">A password is stored so a server can check it later but never needs to read it back. Which of the three fits that job?</p>
-<button type="button" class="ad-check__opt" data-i="0">Encoding</button>
-<button type="button" class="ad-check__opt" data-i="1">Encryption</button>
-<button type="button" class="ad-check__opt" data-i="2">Hashing</button>
-<p class="ad-check__note">Hashing. The server stores the hash and compares against it, and never needs the original, so one-way is a feature.</p>
+### Match the Job to the Tool
+
+<div class="ad-mission" data-id="w2e-c3" data-attempts="0">
+<p><strong>Task:</strong> A password is stored so a server can check it later but never needs to read it back. Which of the three fits that job? Type its letter.<br><strong>A</strong> Encoding.<br><strong>B</strong> Encryption.<br><strong>C</strong> Hashing.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for which transformation fits password storage" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{c}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>C. Hashing</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Hashing. The server stores the hash and compares against it, and never needs the original, so one-way is a feature.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w2e-c4" data-answer="0">
-<p class="ad-check__q">You intercept the value <code>YWR2aXNvcnk=</code> in a log. Encoding, encryption or hashing?</p>
-<button type="button" class="ad-check__opt" data-i="0">Encoding</button>
-<button type="button" class="ad-check__opt" data-i="1">Encryption</button>
-<button type="button" class="ad-check__opt" data-i="2">Hashing</button>
-<p class="ad-check__note">The trailing <code>=</code> and the character set mark it as Base64. You could read it in seconds, so treating it as encrypted would be a costly mistake.</p>
+### Read a Real Value Cold
+
+<div class="ad-mission" data-id="w2e-c4" data-attempts="0">
+<p><strong>Task:</strong> You intercept the value <code>YWR2aXNvcnk=</code> in a log. Encoding, encryption or hashing? Type its letter.<br><strong>A</strong> Encoding.<br><strong>B</strong> Encryption.<br><strong>C</strong> Hashing.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for what the intercepted value is" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>A. Encoding</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>The trailing <code>=</code> and the character set mark it as Base64. You could read it in seconds, so treating it as encrypted would be a costly mistake.</p>
+</div>
+</div>
+</div>
+</div>
+
+### Prove a Teammate Wrong
+
+<div class="ad-mission ad-mission--capstone" data-id="w2e-c5" data-attempts="0">
+<p><strong>Task:</strong> An alert flags data leaving a workstation that reads <code>cGF5bG9hZA==</code>. A teammate says it is encrypted and the firm cannot know what it is. Decode it yourself and report the actual word.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for the decoded word" placeholder="one word" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{payload}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>payload</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>The teammate was wrong, and you just proved it in seconds with the same CyberChef recipe from the start of this lab. Calling a Base64 string "encrypted" is not a small mistake. It tells a manager the data is safe when anyone who looks at the log can already read it.</p>
+</div>
+</div>
+</div>
 </div>
 
 ### Take It Further
 
-An alert flags data leaving a workstation that reads `cGF5bG9hZA==`. A teammate says it is encrypted and the firm cannot know what it is.
+A different log shows a value that is exactly 64 characters long, no matter how short or long the original data was.
 
-Say whether that is correct, and explain in one sentence how you would find out what the data is.
+Name which of the three transformations produces a fixed-length output no matter what goes in, and say what that fixed length tells you before you even try to reverse anything.
 
 ### Why It Matters
 

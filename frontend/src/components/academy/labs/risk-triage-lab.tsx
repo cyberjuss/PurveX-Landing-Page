@@ -205,7 +205,7 @@ export function RiskTriageLab({ onDone }: { onDone?: () => void }) {
   const reached = [true, s.checked[0], s.checked[1], s.checked[2]];
 
   return (
-    <section className="rt" aria-label="Monday Morning Risk Triage lab">
+    <section className="rt" aria-label="Risk Assessment and Triage lab">
       <ol className="rt-steps">
         {STEPS.map((label, i) => (
           <li key={label}>

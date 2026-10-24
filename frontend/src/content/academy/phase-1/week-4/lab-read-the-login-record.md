@@ -92,42 +92,124 @@ A burst of 4625 events followed by a 4624 for the same account is the Windows ve
 
 Answer from what you saw, not from what you remember reading.
 
-<div class="ad-check" data-check="w4e-c1" data-answer="1">
-<p class="ad-check__q">Was your failed sudo attempt recorded in the log?</p>
-<button type="button" class="ad-check__opt" data-i="0">No, only the success was</button>
-<button type="button" class="ad-check__opt" data-i="1">Yes, the failures were logged with the success</button>
-<p class="ad-check__note">Both are recorded. Failed authentication is often the more useful of the two, because a run of failures is the first sign of someone trying to get in.</p>
+<div class="ad-mission" data-id="w4e-c1" data-attempts="0">
+<p><strong>Task:</strong> Was your failed sudo attempt recorded in the log? Type its letter.<br><strong>A</strong> No, only the success was.<br><strong>B</strong> Yes, the failures were logged with the success.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for whether the failed sudo attempt was recorded" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Yes, failures are logged too</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Both are recorded. Failed authentication is often the more useful of the two, because a run of failures is the first sign of someone trying to get in.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w4e-c2" data-answer="0">
-<p class="ad-check__q">On a Windows domain controller, which Event ID is a failed logon?</p>
-<button type="button" class="ad-check__opt" data-i="0">4625</button>
-<button type="button" class="ad-check__opt" data-i="1">4624</button>
-<button type="button" class="ad-check__opt" data-i="2">3389</button>
-<p class="ad-check__note">4625 is a failed logon, 4624 is a success. These two numbers come up in almost every SOC interview.</p>
+### Name the Windows Event ID
+
+<div class="ad-mission" data-id="w4e-c2" data-attempts="0">
+<p><strong>Task:</strong> On a Windows domain controller, which Event ID is a failed logon? Type its letter.<br><strong>A</strong> 4625.<br><strong>B</strong> 4624.<br><strong>C</strong> 3389.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for which event ID is a failed logon" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>A. 4625</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>4625 is a failed logon, 4624 is a success. These two numbers come up in almost every SOC interview.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w4e-c3" data-answer="1">
-<p class="ad-check__q">You find forty failed logons for one account, then one success. What does that pattern suggest?</p>
-<button type="button" class="ad-check__opt" data-i="0">Nothing, people mistype passwords</button>
-<button type="button" class="ad-check__opt" data-i="1">Someone may have guessed the password after many tries</button>
-<button type="button" class="ad-check__opt" data-i="2">The account was deleted</button>
-<p class="ad-check__note">Many failures then a success is the shape of a password being guessed. It does not prove an attack, but it is exactly what you escalate for a closer look.</p>
+### Read a Burst of Failures
+
+<div class="ad-mission" data-id="w4e-c3" data-attempts="0">
+<p><strong>Task:</strong> You find forty failed logons for one account, then one success. What does that pattern suggest? Type its letter.<br><strong>A</strong> Nothing, people mistype passwords.<br><strong>B</strong> Someone may have guessed the password after many tries.<br><strong>C</strong> The account was deleted.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for what forty failures then a success suggests" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Someone may have guessed the password</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Many failures then a success is the shape of a password being guessed. It does not prove an attack, but it is exactly what you escalate for a closer look.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w4e-c4" data-answer="1">
-<p class="ad-check__q">A failed login for the name "jsmith" tells you what about that account?</p>
-<button type="button" class="ad-check__opt" data-i="0">The account definitely exists</button>
-<button type="button" class="ad-check__opt" data-i="1">Only that something tried that name and failed</button>
-<button type="button" class="ad-check__opt" data-i="2">The account was locked</button>
-<p class="ad-check__note">A failure means an attempt was made, not that the account is real. Attackers guess names too, so a failure alone proves only that someone tried. Look at the details before you decide. On Windows the 4625 sub-status tells an unknown name apart from a wrong password.</p>
+### Know What a Single Failure Does Not Prove
+
+<div class="ad-mission" data-id="w4e-c4" data-attempts="0">
+<p><strong>Task:</strong> A failed login for the name "jsmith" tells you what about that account? Type its letter.<br><strong>A</strong> The account definitely exists.<br><strong>B</strong> Only that something tried that name and failed.<br><strong>C</strong> The account was locked.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for what a failed login for a name tells you" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Only that something tried that name and failed</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A failure means an attempt was made, not that the account is real. Attackers guess names too, so a failure alone proves only that someone tried. Look at the details before you decide. On Windows the 4625 sub-status tells an unknown name apart from a wrong password.</p>
+</div>
+</div>
+</div>
+</div>
+
+### Decide Whether a Quiet Attack Is Worth Reporting
+
+<div class="ad-mission ad-mission--capstone" data-id="w4e-c5" data-attempts="0">
+<p><strong>Task:</strong> You are handed a day of logs from one server. For one account you count sixty failed logins between 2am and 3am, all from the same address, and no success at all. Does the absence of any success make this event more or less worth reporting? Type its letter.<br><strong>A</strong> Less. No success means nobody actually got in, so there is nothing to escalate.<br><strong>B</strong> Just as much, or more. Sixty attempts in one hour with zero successes is still an active attempt against a real account, and the only reason nothing is "wrong" yet is that the attacker has not won.<br><strong>C</strong> It cannot be judged without knowing the account's password.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for whether an all-failure burst is worth reporting" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Just as much, or more</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Waiting for a successful login before you escalate means you only ever catch an attack after it has already worked. Sixty attempts in an hour against one account, from one address, with no success is the exact shape of a guessing attack still in progress, and it is far more useful to a team that can still stop it than the same pattern reported after the sixty-first attempt finally succeeds.</p>
+</div>
+</div>
+</div>
 </div>
 
 ### Take It Further
 
-You are handed a day of logs from one server. For one account you count sixty failed logins between 2am and 3am, all from the same address, and no success at all.
+The same address that sent sixty failed logons against one account spends the next hour sending five failed logons each against twenty different accounts.
 
-Say what that account was likely subjected to, and whether the absence of any success makes the event more or less worth reporting.
+Say what changed about the attack's shape, and name which one of those two patterns, guessing one account hard or guessing many accounts lightly, a threshold tuned only to catch "many failures on one account" would actually miss.
 
 ### Why It Matters
 

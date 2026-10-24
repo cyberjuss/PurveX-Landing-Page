@@ -95,7 +95,7 @@ const WORK: Record<Summary["skills"][number]["key"], string> = {
   security: "start The Credential Campaign and read the log before you change anything",
   logs: "open the Read the Sign-In Log lab and count before you name a pattern",
   access: "open the Who Can Open This? lab and check both share and NTFS permissions",
-  risk: "open the Monday Morning Risk Triage lab and score likelihood and impact before you rank",
+  risk: "open the Risk Assessment and Triage lab and score likelihood and impact before you rank",
 };
 
 function verdict(s: Summary) {

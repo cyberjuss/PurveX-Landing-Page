@@ -103,40 +103,124 @@ These two match, because you forced the same salt both times. The system uses a 
 
 Answer from the output you saw.
 
-<div class="ad-check" data-check="w2m-c1" data-answer="0">
-<p class="ad-check__q">Did two unsalted SHA-256 hashes of the same password match or differ?</p>
-<button type="button" class="ad-check__opt" data-i="0">They matched exactly</button>
-<button type="button" class="ad-check__opt" data-i="1">They differed</button>
-<p class="ad-check__note">Plain hashing is deterministic, so the same input always gives the same output. That is the property that leaks reuse.</p>
+<div class="ad-mission" data-id="w2m-c1" data-attempts="0">
+<p><strong>Task:</strong> Did two unsalted SHA-256 hashes of the same password match or differ? Type its letter.<br><strong>A</strong> They matched exactly.<br><strong>B</strong> They differed.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for whether the two unsalted hashes matched" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>A. They matched exactly</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Plain hashing is deterministic, so the same input always gives the same output. That is the property that leaks reuse.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w2m-c2" data-answer="1">
-<p class="ad-check__q">In the three-account loop, how many of the three stored values were identical?</p>
-<button type="button" class="ad-check__opt" data-i="0">Zero</button>
-<button type="button" class="ad-check__opt" data-i="1">Two</button>
-<button type="button" class="ad-check__opt" data-i="2">All three</button>
-<p class="ad-check__note">Two accounts reused a password, and their stored values matched. You spotted the reuse without recovering a single password.</p>
+### Count the Reused Password
+
+<div class="ad-mission" data-id="w2m-c2" data-attempts="0">
+<p><strong>Task:</strong> In the three-account loop, how many of the three stored values were identical? Type its letter.<br><strong>A</strong> Zero.<br><strong>B</strong> Two.<br><strong>C</strong> All three.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for how many stored values were identical" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Two</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Two accounts reused a password, and their stored values matched. You spotted the reuse without recovering a single password.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w2m-c3" data-answer="1">
-<p class="ad-check__q">With <code>openssl passwd -6</code> and no fixed salt, did the same password give the same value twice?</p>
-<button type="button" class="ad-check__opt" data-i="0">The same value both times</button>
-<button type="button" class="ad-check__opt" data-i="1">Two different values</button>
-<p class="ad-check__note">The random salt differs each run, so the stored value differs even though the password is identical.</p>
+### Confirm the Salt Changed the Output
+
+<div class="ad-mission" data-id="w2m-c3" data-attempts="0">
+<p><strong>Task:</strong> With <code>openssl passwd -6</code> and no fixed salt, did the same password give the same value twice? Type its letter.<br><strong>A</strong> The same value both times.<br><strong>B</strong> Two different values.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for whether the salted command gave the same value twice" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Two different values</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>The random salt differs each run, so the stored value differs even though the password is identical.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w2m-c4" data-answer="1">
-<p class="ad-check__q">Salting mainly stops an attacker from doing which one?</p>
-<button type="button" class="ad-check__opt" data-i="0">Guessing a single password faster</button>
-<button type="button" class="ad-check__opt" data-i="1">Spotting that many accounts share one password</button>
-<p class="ad-check__note">Salting defeats precomputation and breaks the correlation between accounts. A weak password is still weak, so length and complexity still matter.</p>
+### Name What Salting Actually Stops
+
+<div class="ad-mission" data-id="w2m-c4" data-attempts="0">
+<p><strong>Task:</strong> Salting mainly stops an attacker from doing which one? Type its letter.<br><strong>A</strong> Guessing a single password faster.<br><strong>B</strong> Spotting that many accounts share one password.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for what salting mainly stops" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Spotting that many accounts share one password</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Salting defeats precomputation and breaks the correlation between accounts. A weak password is still weak, so length and complexity still matter.</p>
+</div>
+</div>
+</div>
+</div>
+
+### Correct a Manager's Wrong Assumption
+
+<div class="ad-mission ad-mission--capstone" data-id="w2m-c5" data-attempts="0">
+<p><strong>Task:</strong> A firm is breached and the stored passwords were plain SHA-256 with no salt. A manager says the passwords are safe because SHA-256 cannot be reversed. What does the attacker actually learn from that file, even without reversing a single hash? Type its letter.<br><strong>A</strong> Nothing. The manager is right, since the hashes cannot be reversed.<br><strong>B</strong> Exactly which accounts in the company share a password with each other, read straight off which stored values match, with no cracking at all.<br><strong>C</strong> The attacker learns every employee's actual password immediately.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for what the attacker actually learns from the unsalted file" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Which accounts share a password, with no cracking at all</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>The manager is only half right. SHA-256 really cannot be reversed, but "cannot be reversed" is not the same as "safe." Matching values across a leaked file hand an attacker a ready-made list of accounts to try one cracked or reused password against, which is exactly the finding this lab let you make without cracking anything at all.</p>
+</div>
+</div>
+</div>
 </div>
 
 ### Take It Further
 
-A firm is breached and the stored passwords were plain SHA-256 with no salt. A manager says the passwords are safe because SHA-256 cannot be reversed.
+The same manager asks whether switching to a salted hash would have stopped the breach from happening at all.
 
-Give the one thing the attacker learns from that file without reversing anything, and say why it still matters to the people in the database.
+Say what salting actually would and would not have changed about this specific incident, and name the one thing a salted hash still cannot protect against: a password that was weak to begin with.
 
 ### Why It Matters
 

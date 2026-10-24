@@ -188,6 +188,31 @@ Answer from what you captured, not from what you remember reading.
 </div>
 </div>
 
+### Read What Stays the Same
+
+Look at the LDAP conversation's TCP handshake again. The source port, the one on the Ubuntu box, is a high, random-looking number. The destination port, the one on the domain controller, is 389 every single time.
+
+<div class="ad-mission" data-id="w3e-c5" data-attempts="0">
+<p><strong>Task:</strong> If you captured this same LDAP query again a minute later, which port would you expect to change, and which would stay fixed? Type its letter.<br><strong>A</strong> Both ports stay exactly the same on every connection.<br><strong>B</strong> The source port changes each time, a fresh one picked for the new connection. The destination port stays 389, the LDAP service's own fixed address.<br><strong>C</strong> The destination port changes each time, and the source port stays fixed.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for which port changes and which stays fixed" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Source changes, destination stays fixed</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A client picks a fresh, random source port for every new connection so replies can find their way back to the right one. A server listens on the same fixed port every time, because that is the address its service is known by. That difference is why filtering a capture by destination port finds every LDAP query a machine ever made, while filtering by source port finds only one single connection.</p>
+</div>
+</div>
+</div>
+</div>
+
 ### Isolate One Conversation
 
 <div class="ad-mission ad-mission--capstone" data-id="w3e-c4" data-attempts="0">

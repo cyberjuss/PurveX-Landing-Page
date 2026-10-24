@@ -37,6 +37,48 @@ export const SKILLS: Record<Skill, { label: string; advice: string }> = {
 
 // mission id -> skill. d1 = Operation Day One, tq = Ticket Queue.
 export const MISSION_SKILLS: Record<string, Skill> = {
+  // CIA Triad in Practice: the same client-only "Check Yourself" pattern
+  // Week 3's Wireshark labs used before they were converted to real
+  // ad-mission tickets so they counted toward readiness. Converted here too.
+  "w1e-c1": "risk",
+  "w1e-c2": "risk",
+  "w1e-c3": "risk",
+  "w1e-c4": "risk",
+  "w1e-c5": "risk",
+  // CVSS Vulnerability Scoring: same conversion.
+  "w1m-c1": "risk",
+  "w1m-c2": "risk",
+  "w1m-c3": "risk",
+  "w1m-c4": "risk",
+  "w1m-c5": "risk",
+  // Hashing and Encryption with CyberChef: same conversion.
+  "w2e-c1": "security",
+  "w2e-c2": "security",
+  "w2e-c3": "security",
+  "w2e-c4": "security",
+  "w2e-c5": "security",
+  // Password Hashing and Salting: same conversion.
+  "w2m-c1": "security",
+  "w2m-c2": "security",
+  "w2m-c3": "security",
+  "w2m-c4": "security",
+  "w2m-c5": "security",
+  // Broken Access Control (PortSwigger): had no graded check at all before,
+  // relying entirely on the external platform's own completion state.
+  "w4t-c1": "access",
+  "w4t-c2": "access",
+  // Authentication Log Analysis: same conversion.
+  "w4e-c1": "logs",
+  "w4e-c2": "logs",
+  "w4e-c3": "logs",
+  "w4e-c4": "logs",
+  "w4e-c5": "logs",
+  // Linux Privilege Management with sudo: same conversion.
+  "w4m-c1": "access",
+  "w4m-c2": "access",
+  "w4m-c3": "access",
+  "w4m-c4": "access",
+  "w4m-c5": "access",
   "d1-01": "accounts",
   "d1-02": "accounts",
   "d1-03": "directory",
@@ -79,6 +121,7 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "w3e-c2": "logs",
   "w3e-c3": "logs",
   "w3e-c4": "logs",
+  "w3e-c5": "logs",
   "w3m-c1": "logs",
   "w3m-c2": "logs",
   "w3m-c3": "logs",
@@ -220,7 +263,7 @@ export const LAB_SKILLS: Partial<Record<LabPassId, Skill>> = {
 
 /** The scored labs, for the readiness report. href opens the lab's tab. */
 export const LAB_CATALOG: { id: LabPassId; title: string; skill: Skill; href: string }[] = [
-  { id: "lab-risk-triage", title: "Monday Morning Risk Triage", skill: "risk", href: "/range/phase-1/week-1#lab-monday-morning-risk-triage" },
+  { id: "lab-risk-triage", title: "Risk Assessment and Triage", skill: "risk", href: "/range/phase-1/week-1#lab-risk-assessment-and-triage" },
 ];
 
 /** Everything readiness counts: missions and scored labs. */
