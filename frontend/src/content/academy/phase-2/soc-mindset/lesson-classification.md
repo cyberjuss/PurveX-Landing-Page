@@ -10,7 +10,11 @@ You already have a working version of this scale. In your own Shift console, eve
 
 That three-tier scale is not unique to this course. Most SOCs run some version of it, because urgency only needs enough resolution to answer one question: what gets worked next.
 
-The formal standard behind this is NIST SP 800-61, the federal government's incident-handling guidance. It was most recently revised as SP 800-61 Revision 3 in 2025. That revision reframes incident response around the six functions of the NIST Cybersecurity Framework 2.0 instead of handing down one fixed severity table. The exact scale is left for your organization to define, the same way your Shift console defines its own P1 through P3. What every revision insists on is that severity gets judged by impact, not by how alarming the alert's wording sounds. That means weighing how many systems or users are affected, how critical those systems are, and how reversible the damage is.
+The formal standard behind this is NIST SP 800-61, the federal government's incident-handling guidance. It was most recently revised as SP 800-61 Revision 3 in 2025. That revision reframes incident response around the six functions of the NIST Cybersecurity Framework 2.0 instead of handing down one fixed severity table. The exact scale is left for your organization to define, the same way your Shift console defines its own P1 through P3. What every revision insists on is that severity gets judged by impact, not by how alarming the alert's wording sounds. Impact means:
+
+- How many systems or users are affected
+- How critical those systems are
+- How reversible the damage is
 
 That last point is worth sitting with. A queue full of alerts is full of language built to sound urgent. An analyst who ranks a queue by how frightening each alert reads is doing the opposite of this lesson. The question that matters is what it would actually cost the business if left unworked. Classify by impact. Let the label follow the impact, not the other way around.
 

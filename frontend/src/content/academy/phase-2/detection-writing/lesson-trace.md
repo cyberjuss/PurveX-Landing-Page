@@ -1,7 +1,15 @@
 ### The TRACE Method
 <!-- art: layers -->
 
-A query that produces a table is not yet a detection. A detection needs to name what it is hunting for, scope itself to the right data, count the right thing, decide at what point that count becomes worth someone's attention, and say what happens when it fires. **TRACE** is a five-part way to build that, in order, using nothing this phase has not already taught you.
+A query that produces a table is not yet a detection. A detection needs to:
+
+- Name what it is hunting for
+- Scope itself to the right data
+- Count the right thing
+- Decide at what point that count becomes worth someone's attention
+- Say what happens when it fires
+
+**TRACE** is a five-part way to build that, in order, using nothing this phase has not already taught you.
 
 The five parts, in the order you actually build them:
 

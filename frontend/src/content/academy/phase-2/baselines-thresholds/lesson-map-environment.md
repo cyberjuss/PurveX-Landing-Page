@@ -5,7 +5,13 @@ Every lab you have worked in this course so far runs inside your own pod: a Wind
 
 That is worth sitting with before you touch a single log. Every lesson this phase asks you to judge whether traffic or an authentication attempt fits what the environment should be doing. You cannot make that judgment about a network you have never actually looked at. The two machines in your pod, their roles, and the ports they actually use are the smallest real environment you will ever need to practice that judgment on. It is already yours.
 
-A domain controller and a Linux server each expose a small, predictable set of services. Knowing the port is what lets you read a connection attempt at a glance instead of looking it up every time. A connection to port 3389 is someone trying to open a remote desktop session. A connection to port 88 on a domain controller is a Kerberos ticket request, the backbone of how every sign-in in your directory actually gets authenticated. A connection to port 22 on the Linux box is SSH. None of these appearing is itself suspicious. What would be worth a second look is one of them appearing from somewhere, or at a time, that does not fit the pattern. That is exactly the skill the next lesson builds.
+A domain controller and a Linux server each expose a small, predictable set of services. Knowing the port is what lets you read a connection attempt at a glance instead of looking it up every time:
+
+- Port 3389 is someone trying to open a remote desktop session.
+- Port 88 on a domain controller is a Kerberos ticket request, the backbone of how every sign-in in your directory actually gets authenticated.
+- Port 22 on the Linux box is SSH.
+
+None of these appearing is itself suspicious. What would be worth a second look is one of them appearing from somewhere, or at a time, that does not fit the pattern. That is exactly the skill the next lesson builds.
 
 ```match
 prompt: Match each port to the service it belongs to.
