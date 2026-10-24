@@ -1,6 +1,6 @@
 ### The 5 W's of an Investigation
 
-Checking an alert against the baseline tells you *that* something does not fit. It does not by itself give you a record another analyst, your lead, or an auditor can pick up and follow. The 5 W's, who, what, when, where, and why, are the questions that turn a mismatch into a documented account. The framework is old. Writers on incident response trace it back to Aristotle, who used the same questions to judge the morality of an act: what was done, who did it, where, and why. Digital forensics guidance recommends the same five questions as a starting point for what to document during an incident, sometimes with how added as a sixth.
+Checking an alert against the baseline tells you *that* something does not fit. It does not by itself give you a record another analyst, your lead, or an auditor can pick up and follow. The 5 W's, who, what, when, where, and why, are the questions that turn a mismatch into a documented account. Journalists have used the same five questions to structure a factual account for over a century, and scholars now trace the underlying idea further back, to Aristotle's framework in the Nicomachean Ethics for judging the circumstances of an act. Incident response guidance recommends the same five questions as a starting point for what to document during an incident, sometimes with how added as a sixth.
 
 Each question pulls a specific piece of the alert apart, and skipping one leaves a gap someone else will have to fill in later:
 

@@ -108,6 +108,6 @@ Every account lives in exactly one OU, and that OU is its department. The OU rec
 
 Keeping those groups in their own folder stops you from confusing a privilege list with a department.
 
-You can also delegate control over a single OU. For example, Helpdesk could reset passwords only for accounts inside `OU=Users,OU=IT` and leave the rest of the domain untouched.
+You can also delegate control over a single OU. For example, Helpdesk could reset passwords only for accounts inside `OU=Users,OU=IT,OU=Departments` and leave the rest of the domain untouched.
 
 When a ticket names a person, find the folder first. If Alex is not under IT, the org chart and the directory already disagree.

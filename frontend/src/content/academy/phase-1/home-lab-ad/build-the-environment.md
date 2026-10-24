@@ -104,7 +104,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 23
+$PurvexScriptVersion = 24
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -339,6 +339,19 @@ function Ensure-InfraTickets {
             Write-Host "  Planted INC-1055: $bad" -ForegroundColor Green
         }
         catch { Write-Host "  Could not plant INC-1055: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+
+    # INC-1061: the Security log's starting maximum size. Windows ships with
+    # different defaults across builds, so the ticket's "report what it was
+    # before you changed it" answer needs a size this script sets itself,
+    # planted once so a later rerun never undoes a student's own fix.
+    if (-not (Test-PurvexTicketMark "INC-1061") -and $PSCmdlet.ShouldProcess("Security log", "Plant starting log size ticket")) {
+        try {
+            Limit-EventLog -LogName Security -MaximumSize 128MB -ErrorAction Stop
+            Add-PurvexTicketMark "INC-1061"
+            Write-Host "  Planted INC-1061: Security log maximum size at 128 MB" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1061: $($_.Exception.Message)" -ForegroundColor Yellow }
     }
 
     # INC-1064: a scheduled task disguised as routine maintenance, quietly

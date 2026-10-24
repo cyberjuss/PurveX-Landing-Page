@@ -22,7 +22,7 @@ If either one disagrees with The Environment tab, stop.
 
 ### Computer Objects
 
-A **computer object** is a machine in this directory, the same way a user account is a person. `IT-WKS01` is the baseline's only client workstation, and it lives under `OU=Workstations,OU=IT`.
+A **computer object** is a machine in this directory, the same way a user account is a person. `IT-WKS01` is the baseline's only client workstation, and it lives under `OU=Workstations,OU=IT,OU=Departments`.
 
 You read a computer the same way you read a person: the folder first, then Member Of.
 

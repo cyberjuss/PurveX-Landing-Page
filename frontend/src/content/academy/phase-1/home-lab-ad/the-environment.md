@@ -38,7 +38,7 @@ The lab has only one client machine. Learn where it belongs so you notice if it 
 | Assigned department | IT |
 | Location | Workstations folder under IT |
 
-A ticket that names a different workstation is already a finding, and so is this one sitting under another department. Confirm the folder before you treat the name as proof.
+A ticket that names a different workstation is already a finding. So is IT-WKS01 showing up under a different department. Confirm the folder before you treat the name as proof.
 
 ### What Is in This Environment
 

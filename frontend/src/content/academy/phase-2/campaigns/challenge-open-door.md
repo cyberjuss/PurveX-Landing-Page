@@ -1,5 +1,5 @@
 <div class="ad-brief">
-<p class="rd-kicker">Campaign 3 of 3</p>
+<p class="rd-kicker">Campaign 3 of 4</p>
 <h3>The Open Door</h3>
 <p class="ad-brief__ask">Not every intrusion starts with a password guess or an email. Sometimes it starts with a door that was already open. Can you find it, prove it is being used, and close the whole chain behind it?</p>
 <p>No guessing, no attachment. One inbound firewall rule on the domain controller still trusts the whole network just for being inside it, left over from before the firm moved to Zero Trust. This campaign is about proving a control is doing its job, not just reading its settings: real traffic, read from your own lab, plus whatever the attacker built once they were through. Nine tickets, each tagged with its Kill Chain stage and its MITRE ATT&CK technique.</p>

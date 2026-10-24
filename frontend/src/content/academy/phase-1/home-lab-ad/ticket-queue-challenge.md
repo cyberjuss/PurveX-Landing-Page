@@ -8,7 +8,7 @@
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
-<span id="ad-progress-label" class="ad-progress__label">0 / 15 solved</span>
+<span id="ad-progress-label" class="ad-progress__label">0 / 20 solved</span>
 </div>
 
 <div class="ad-mission" data-id="tq-01" data-attempts="0">

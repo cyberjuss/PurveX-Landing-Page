@@ -58,7 +58,7 @@ To read access, open the object and read its folder first, then every group on i
     </header>
     <div class="ad-og__row">
       <span>Lives in</span>
-      <code>OU=Users,OU=IT</code>
+      <code>OU=Users,OU=IT,OU=Departments</code>
     </div>
     <div class="ad-og__row">
       <span>Member Of</span>
@@ -76,7 +76,7 @@ To read access, open the object and read its folder first, then every group on i
     </header>
     <div class="ad-og__row">
       <span>Lives in</span>
-      <code>OU=Users,OU=IT</code>
+      <code>OU=Users,OU=IT,OU=Departments</code>
     </div>
     <div class="ad-og__row">
       <span>Member Of</span>

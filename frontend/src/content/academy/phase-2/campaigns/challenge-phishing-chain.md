@@ -1,5 +1,5 @@
 <div class="ad-brief">
-<p class="rd-kicker">Campaign 2 of 3</p>
+<p class="rd-kicker">Campaign 2 of 4</p>
 <h3>The Phishing Chain</h3>
 <p class="ad-brief__ask">A different attacker, a different way in. Can you work this one Reconnaissance to Actions on Objectives, using the tools a real SOC analyst actually has open?</p>
 <p>No guessed passwords this time. It starts with a disguised attachment, and it runs the full chain a credential-only attack never fully shows: Reconnaissance, Delivery, Exploitation, Installation, Command and Control, Actions on Objectives. You will hash a real file and check it against VirusTotal, capture a real beacon live in Wireshark, and read the firm's own Security log. Nine tickets, each tagged with its Kill Chain stage and its MITRE ATT&CK technique.</p>
@@ -303,7 +303,7 @@
 <span class="ad-mission__num">Stage 6 · Write-Up · Medium</span>
 <h4>Two Chains and One Pattern</h4>
 <p><strong>SOC Lead · Final write-up · 10:30 AM</strong><br>This phase ran two separate campaigns: one that opened with a password spray, and this one, which opened with a phishing attachment.</p>
-<p><strong>Task:</strong> Name the one Kill Chain stage both campaigns reached and closed at, in exactly the same way, before either attacker could do anything with their access.</p>
+<p><strong>Task:</strong> Name the one Kill Chain stage where the exact same fix stopped both campaigns from ever getting anything they touched back out of the network.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Two Chains and One Pattern" placeholder="a stage name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{command and control}" data-accept="commandandcontrol|c2">Submit</button>
@@ -313,7 +313,7 @@
 <p>Both campaigns planted a scheduled task, and both tasks needed the same kind of thing to keep working: a way to reach outside the firm.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="installation">Both campaigns did reach Installation, but they also got past it. Name the stage where both were actually stopped.</div>
+<div class="ad-miss" data-guess="installation">Both campaigns did reach Installation, but they also got past it. Name the stage where the same fix cut off their way out.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -322,7 +322,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Two different entry vectors, credential guessing and a phishing attachment, converged on the exact same chokepoint: a firewall rule that let a task reach outside the firm. Different Delivery, different Exploitation, same place both chains actually broke. That convergence is not a coincidence. A domain controller that cannot freely talk to the outside internet turns every attacker's last mile into the same narrow, closely-watched door.</p>
+<p>Two different entry vectors, credential guessing and a phishing attachment, converged on the exact same chokepoint: a firewall rule that let a task reach outside the firm. This campaign got one stage further than the first, far enough to stage a file for exfiltration, but disabling that one rule meant neither attacker ever got what they touched back out of the network. Different Delivery, different Exploitation, same place both chains actually lost their exit. A domain controller that cannot freely talk to the outside internet turns every attacker's last mile into the same narrow, closely-watched door.</p>
 </div>
 </div>
 </div>

@@ -2,7 +2,7 @@
 <p class="rd-kicker">Campaign 4 of 4</p>
 <h3>The Keys to the Domain</h3>
 <p class="ad-brief__ask">No guessed password, no attachment, no open door. Can you catch an attacker using Active Directory exactly the way it was designed to be used?</p>
-<p>CISA, the NSA and Australia's ACSC named these two techniques in a joint advisory in September 2024 as the most common way a single foothold turns into full control of a domain: Kerberoasting and DCSync. Neither breaks anything. Neither needs malware. Both abuse real, intended Kerberos and Active Directory features, which is exactly why they are hard to catch without knowing the one detail that gives them away.</p>
+<p>CISA, the NSA and Australia's ACSC named these two among seventeen techniques in a joint advisory on Active Directory compromise, published in September 2024: Kerberoasting and DCSync. Both are a well-worn path from a single foothold to full control of a domain. Neither breaks anything. Neither needs malware. Both abuse real, intended Kerberos and Active Directory features, which is exactly why they are hard to catch without knowing the one detail that gives them away.</p>
 <p>Most steps check your Phase 1 lab, so keep it running. Each step takes a short answer, you get three tries per step, and the hint unlocks after two misses.</p>
 </div>
 

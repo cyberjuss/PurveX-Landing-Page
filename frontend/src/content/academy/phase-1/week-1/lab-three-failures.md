@@ -96,10 +96,10 @@ sha256sum ledger.txt > baseline.txt
 cat baseline.txt
 ```
 
-Now change one number inside the file and check the baseline again.
+Now change one digit inside the file and check the baseline again.
 
 ```bash
-sed -i 's/412500/999999/' ledger.txt
+sed -i 's/412500/412501/' ledger.txt
 sha256sum -c baseline.txt
 ```
 

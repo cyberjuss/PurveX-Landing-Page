@@ -77,9 +77,9 @@ Open Event Viewer and go to Applications and Services Logs → Microsoft → Win
 ### Know What Survives Obfuscation
 
 <div class="ad-mission ad-mission--capstone" data-id="la2-04" data-attempts="0">
-<p><strong>Task:</strong> An attacker who knows this logging exists sometimes encodes a command to make it harder to read in a 4104 event. What does script-block logging still capture even then? Type its letter.<br><strong>A</strong> Nothing useful, an encoded command defeats this logging completely.<br><strong>B</strong> The block still logs, encoded text and all, which is still far more than a process-creation event alone would ever show.<br><strong>C</strong> PowerShell refuses to run a command that is encoded.</p>
+<p><strong>Task:</strong> An attacker who knows this logging exists Base64-encodes a command before running it, hoping to keep it unreadable. What does script-block logging actually capture once PowerShell runs that command? Type its letter.<br><strong>A</strong> Nothing useful, an encoded command defeats this logging completely.<br><strong>B</strong> The decoded, plain-text command, since PowerShell has to decode it before it can run, and script-block logging captures what the engine actually executes.<br><strong>C</strong> PowerShell refuses to run a command that is encoded.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for what script-block logging still captures when a command is encoded" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for what script-block logging captures when a command is encoded" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -87,11 +87,11 @@ Open Event Viewer and go to Applications and Services Logs → Microsoft → Win
 <div class="ad-break">
 <div>
 <span>Answer</span>
-<p class="ad-flag__code"><code>B. The block still logs, encoded text and all, which is still far more than a process-creation event alone would ever show</code></p>
+<p class="ad-flag__code"><code>B. The decoded, plain-text command</code></p>
 </div>
 <div>
 <span>Why it matters</span>
-<p>An encoded block is harder to read at a glance, but it is still there in full, waiting to be decoded. The evidence survives even when it is deliberately made uglier, which is the whole point of logging the content instead of just the fact that something ran.</p>
+<p>Encoding only disguises a command on its way in. Once PowerShell decodes it to actually run it, that decoded text is what script-block logging writes down, the same way la2-06 just showed you. Hiding a command behind Base64 does not make it disappear from this log, it just delays when it becomes readable until the moment it matters most.</p>
 </div>
 </div>
 </div>

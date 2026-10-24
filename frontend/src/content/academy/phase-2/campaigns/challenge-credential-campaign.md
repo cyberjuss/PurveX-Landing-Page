@@ -1,5 +1,5 @@
 <div class="ad-brief">
-<p class="rd-kicker">Campaign 1 of 3</p>
+<p class="rd-kicker">Campaign 1 of 4</p>
 <h3>The Credential Campaign</h3>
 <p class="ad-brief__ask">One attacker, no malware delivered, just guessed and stolen passwords. Can you work it start to finish?</p>
 <p>Nobody clicked anything. Nobody opened a file. This attacker got in purely on sign-ins: a wide spray against throwaway accounts, a narrower guess against one real admin, then two real ways to keep the access once they had it. Twelve tickets, each tagged with its Cyber Kill Chain stage and its MITRE ATT&CK technique, so you read this as one operation instead of twelve unrelated alerts.</p>
@@ -302,7 +302,7 @@
 <div class="ad-mission" data-id="cp-03" data-attempts="0">
 <span class="ad-mission__num">Stage 3 · Installation · T1053.005 Scheduled Task · INC-1069 · High</span>
 <h4>What They Left Running</h4>
-<p><strong>SOC Queue · Follow-up · 1:20 AM</strong><br>With two accounts compromised, the next question is what the attacker did with that access. Find the scheduled task on the domain controller that nobody on the team created.</p>
+<p><strong>SOC Queue · Follow-up · 2:40 AM</strong><br>With two accounts compromised, the next question is what the attacker did with that access. Find the scheduled task on the domain controller that nobody on the team created.</p>
 <p><strong>Task:</strong> Report its exact name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for What They Left Running" placeholder="task name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -339,7 +339,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="cp-04" data-attempts="0">
 <span class="ad-mission__num">Stage 4 · Command and Control · T1571 Non-Standard Port · INC-1069 · High</span>
 <h4>Close Its Channel</h4>
-<p><strong>SOC Queue · Follow-up · 1:25 AM</strong><br>The task is reaching out through an outbound firewall rule.</p>
+<p><strong>SOC Queue · Follow-up · 2:45 AM</strong><br>The task is reaching out through an outbound firewall rule.</p>
 <p><strong>Task:</strong> Find and disable that rule, then type the port it allowed.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Close Its Channel" placeholder="port number" autocomplete="off" autocapitalize="off" spellcheck="false">
