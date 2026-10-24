@@ -3548,9 +3548,9 @@ body:has(.lp) {
    first child, never preceded by a br), so this needs no markup change. */
 .academy-prose .ad-mission > p br + strong {
   display: inline-block;
-  margin: 0.6rem 0.55rem 0.2rem 0;
-  padding: 0.05rem 0.5rem;
-  min-width: 1.3rem;
+  margin: 1.1rem 0.6rem 0.3rem 0;
+  padding: 0.1rem 0.55rem;
+  min-width: 1.4rem;
   text-align: center;
   border-radius: 5px;
   background: color-mix(in srgb, var(--rd-accent, #5546e0) 14%, transparent);
@@ -3559,6 +3559,12 @@ body:has(.lp) {
   font-size: var(--ty-small);
   font-weight: 700;
 }
+/* The run of text between one option's br+strong badge and the next reads
+   as a single dense paragraph otherwise. A touch more line-height on the
+   whole block plus the wider gap above keeps each option readable as its
+   own line instead of a wall of text. */
+.academy-prose .ad-mission > p { line-height: 1.75; }
+.academy-prose .ad-mission > p:first-of-type br:first-of-type + strong { margin-top: 1.3rem; }
 .academy-prose .ad-ticket-meta {
   display: grid; grid-template-columns: max-content minmax(0,1fr); gap: 0.35rem 0.65rem;
   margin-top: 0.85rem; padding: 0.65rem 0; border: none; background: transparent;
