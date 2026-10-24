@@ -266,11 +266,11 @@
 
 <div class="ad-mission" data-id="od-08" data-attempts="0">
 <span class="ad-mission__num">Stage 5 · Write-Up · Medium</span>
-<h4>No Delivery, No Problem</h4>
+<h4>No Delivery and No Problem</h4>
 <p><strong>SOC Lead · Final write-up · 11:45 AM</strong><br>This campaign never had a Delivery stage. No file arrived, no email, nothing to hash.<br><strong>A</strong> That means the Kill Chain model does not apply here.<br><strong>B</strong> An attacker who is already inside the network does not need to deliver anything; the open rule itself was the way in.<br><strong>C</strong> This must be a false positive, since every real intrusion involves Delivery.</p>
 <p><strong>Task:</strong> Choose the explanation that fits, and type its letter.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for No Delivery, No Problem" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for No Delivery and No Problem" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
@@ -296,11 +296,11 @@
 
 <div class="ad-mission ad-mission--capstone" data-id="od-09" data-attempts="0">
 <span class="ad-mission__num">Stage 6 · Write-Up · Medium</span>
-<h4>Three Campaigns, One Rule That Would Have Stopped Them All</h4>
+<h4>Three Campaigns and One Rule That Would Have Stopped Them All</h4>
 <p><strong>SOC Lead · Quarterly summary · 2:00 PM</strong><br>Three campaigns this phase used three different ways in: a wide password spray, a phishing attachment, and a forgotten firewall rule. All three ended up planting a scheduled task that needed to phone home.</p>
 <p><strong>Task:</strong> Name the single control that, if it had been in place from the start, would have stopped every one of the three beacons from ever reaching out, regardless of how each attacker got in.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for Three Campaigns, One Rule That Would Have Stopped Them All" placeholder="a few words" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for Three Campaigns and One Rule That Would Have Stopped Them All" placeholder="a few words" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{outbound firewall restriction}" data-accept="restrict outbound traffic|egress filtering|outbound allowlist|default deny outbound">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>

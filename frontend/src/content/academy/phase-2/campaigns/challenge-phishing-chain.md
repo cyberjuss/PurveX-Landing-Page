@@ -301,11 +301,11 @@
 
 <div class="ad-mission ad-mission--capstone" data-id="pc-10" data-attempts="0">
 <span class="ad-mission__num">Stage 6 · Write-Up · Medium</span>
-<h4>Two Chains, One Pattern</h4>
+<h4>Two Chains and One Pattern</h4>
 <p><strong>SOC Lead · Final write-up · 10:30 AM</strong><br>This phase ran two separate campaigns: one that opened with a password spray, and this one, which opened with a phishing attachment.</p>
 <p><strong>Task:</strong> Name the one Kill Chain stage both campaigns reached and closed at, in exactly the same way, before either attacker could do anything with their access.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for Two Chains, One Pattern" placeholder="a stage name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for Two Chains and One Pattern" placeholder="a stage name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{command and control}" data-accept="commandandcontrol|c2">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>

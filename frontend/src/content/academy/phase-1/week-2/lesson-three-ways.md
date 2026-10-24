@@ -1,4 +1,4 @@
-### Encoding, Encryption or Hashing?
+### Encoding vs Encryption vs Hashing
 
 **The ticket:** Jordan Ellis finds this in a vendor script: `password: SGFyYm9yMjAyNg==`. "It's scrambled, so it's encrypted, right?"
 

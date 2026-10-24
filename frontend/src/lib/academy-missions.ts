@@ -318,7 +318,7 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "cap-04": { id: "cap-04", challenge: "wire", title: "The File on the Wire", prompt: "Read the copied settlement file and name its first reference.", skill: "logs" },
   "cap-05": { id: "cap-05", challenge: "wire", title: "Narrowing the Capture", prompt: "Give the Wireshark display filter that isolates the directory traffic.", skill: "logs" },
   "cap-06": { id: "cap-06", challenge: "wire", title: "Containing a Burned Credential", prompt: "Disable the service account and name the protocol the job should use.", skill: "security" },
-  "cry-01": { id: "cry-01", challenge: "crypto", title: "Three Mirrors, One Checksum", prompt: "Hash three mirrors and name the one that fails the published checksum.", skill: "security" },
+  "cry-01": { id: "cry-01", challenge: "crypto", title: "Three Mirrors and One Checksum", prompt: "Hash three mirrors and name the one that fails the published checksum.", skill: "security" },
   "cry-02": { id: "cry-02", challenge: "crypto", title: "What Changed Inside It", prompt: "Compare the failing mirror and name the field whose line differs.", skill: "security" },
   "cry-03": { id: "cry-03", challenge: "crypto", title: "Naming the Algorithm", prompt: "Name the hashing algorithm from the length of the exported hashes.", skill: "security" },
   "cry-04": { id: "cry-04", challenge: "crypto", title: "Cracking a Weak Hash", prompt: "Recover a password from its hash using the common-password list.", skill: "security" },
@@ -432,7 +432,7 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "pc-10": {
     id: "pc-10",
     challenge: "phishing-chain",
-    title: "Two Chains, One Pattern",
+    title: "Two Chains and One Pattern",
     prompt: "Name the one Kill Chain stage both this phase's campaigns reached and were stopped at.",
     skill: "security",
   },
@@ -474,14 +474,14 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "od-08": {
     id: "od-08",
     challenge: "open-door",
-    title: "No Delivery, No Problem",
+    title: "No Delivery and No Problem",
     prompt: "Explain why this campaign never had a Delivery stage.",
     skill: "security",
   },
   "od-09": {
     id: "od-09",
     challenge: "open-door",
-    title: "Three Campaigns, One Rule",
+    title: "Three Campaigns and One Rule",
     prompt: "Name the one control that would have stopped all three campaigns' beacons.",
     skill: "security",
   },
@@ -544,7 +544,7 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "rk-09": {
     id: "rk-09",
     challenge: "keys-to-the-domain",
-    title: "Two Techniques, No Malware",
+    title: "Two Techniques and No Malware",
     prompt: "Name what Kerberoasting and DCSync both abuse to work at all.",
     skill: "security",
   },

@@ -73,7 +73,7 @@ const phase1Weeks: WeekDef[] = [
     summary: "Prove a file was not changed, and tell encoding, encryption and hashing apart in a real password breach.",
     sections: [
       { label: "Overview", file: "phase-1/week-2/lesson-overview.md" },
-      { label: "Encoding, Encryption or Hashing?", file: "phase-1/week-2/lesson-three-ways.md" },
+      { label: "Encoding vs Encryption vs Hashing", file: "phase-1/week-2/lesson-three-ways.md" },
       { label: "Hashing and Integrity", file: "phase-1/week-2/lesson-hashing.md" },
       { label: "Encryption and Keys", file: "phase-1/week-2/lesson-encryption.md" },
       { label: "Storing Passwords", file: "phase-1/week-2/lesson-passwords.md" },
@@ -103,7 +103,7 @@ const phase1Weeks: WeekDef[] = [
   },
   {
     slug: "week-4",
-    title: "Week 4 — Authentication, Authorization, Access Control",
+    title: "Week 4 — Authentication & Authorization & Access Control",
     summary: "Prove who someone is, give them only what their job needs, and check it on every request. Then break an app that forgot to.",
     sections: [
       { label: "Overview", file: "phase-1/week-4/lesson-overview.md" },
@@ -220,7 +220,7 @@ const phase2Weeks: WeekDef[] = [
     summary: "Read the host, the account, and the log before deciding what happened.",
     sections: [
       { label: "Overview", file: "phase-2/week-2/overview.md" },
-      { label: "Lab: One Timeline, Two Machines", file: "phase-2/week-2/lab-one-timeline-two-machines.md" },
+      { label: "Lab: One Timeline for Two Machines", file: "phase-2/week-2/lab-one-timeline-two-machines.md" },
       { label: "Lab: Turn On Script Logging", file: "phase-2/week-2/lab-turn-on-script-logging.md" },
     ],
   },
@@ -229,7 +229,7 @@ const phase2Weeks: WeekDef[] = [
   // student progress to preserve -- safe to retire rather than renumber.
   {
     slug: "baselines-thresholds",
-    title: "Week 4 — Baselines, Thresholds & Zero Trust",
+    title: "Week 4 — Baselines & Thresholds & Zero Trust",
     summary: "Map your own lab's network, tell an outlier from a baseline, place MITRE ATT&CK on attacker behavior you've already seen, and learn what a detection threshold actually costs in either direction.",
     sections: [
       { label: "Overview", file: "phase-2/baselines-thresholds/overview.md" },

@@ -13,11 +13,11 @@
 
 <div class="ad-mission" data-id="cry-01" data-attempts="0">
 <span class="ad-mission__num">Task 01 · INC-1058 · Medium</span>
-<h4>Three Mirrors, One Checksum</h4>
+<h4>Three Mirrors and One Checksum</h4>
 <p><strong>Situation:</strong> IT mirrors the VPN client manifest three ways so a download never fails. A published checksum from 22 September says what the genuine file should hash to, and nobody has checked the mirrors against it since.</p>
 <p><strong>Task:</strong> Hash all three mirrors in <code>C:\PurveX\Shares\IT</code> and give the file name of the one that does not match <code>checksums.txt</code>.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for Three Mirrors, One Checksum" placeholder="a file name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for Three Mirrors and One Checksum" placeholder="a file name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{vpn-client-2.4.1-mirror-b.txt}" data-accept="mirror-b|vpn-client-2.4.1-mirror-b">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>

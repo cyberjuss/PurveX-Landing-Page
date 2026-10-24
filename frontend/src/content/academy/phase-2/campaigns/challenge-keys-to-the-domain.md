@@ -291,11 +291,11 @@
 
 <div class="ad-mission ad-mission--capstone" data-id="rk-09" data-attempts="0">
 <span class="ad-mission__num">Stage 4 · Write-Up · Medium</span>
-<h4>Two Techniques, No Malware</h4>
+<h4>Two Techniques and No Malware</h4>
 <p><strong>SOC Lead · Final write-up · 2:30 PM</strong><br>Four campaigns this phase. Three needed something delivered or guessed to get started. This one needed neither.</p>
 <p><strong>Task:</strong> Name the single word that best describes what Kerberoasting and DCSync both abuse to work at all.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for Two Techniques, No Malware" placeholder="one word" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for Two Techniques and No Malware" placeholder="one word" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{trust}" data-accept="design|features|functionality">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
