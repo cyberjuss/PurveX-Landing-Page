@@ -66,7 +66,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 24
+$PurvexScriptVersion = 25
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -1174,7 +1174,7 @@ function Ensure-PurvexTicketObjects {
             -Title "Systems Engineer, Overnight Operations" -Department "IT" `
             -OUPath $DeptOUPaths["IT"].UsersOU `
             -Groups @("IT Users")
-        Ensure-UserDescription -SamAccountName "morgan.reyes" -Description "CTF-TICKET-1065: Approved overnight change window 01:00-05:00 for patch deployment. Contact: IT on-call."
+        Ensure-UserDescription -SamAccountName "morgan.reyes" -Description "CTF-TICKET-1065: Approved overnight change window 01:00-05:00 for patch deployment, authorized only from IT-WKS01. Contact: IT on-call."
     }
 
     # INC-1066: four Compliance Analysts who should share one baseline, planted
