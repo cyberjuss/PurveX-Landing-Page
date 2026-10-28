@@ -265,6 +265,7 @@ export const MISSION_DOMAINS: Record<string, string[]> = {
   "mw2-04": ["sp-threats", "cy-vuln"],
   "mw2-01": ["cy-ops", "sp-threats"],
   "mw2-06": ["cy-ops", "sp-threats"],
+  "mw2-07": ["cy-ops", "sp-threats"],
   "mw2-02": ["cy-ir", "sp-threats"],
   "la2-01": ["cy-ops", "sp-arch"],
   "la2-05": ["cy-ops", "sp-threats"],

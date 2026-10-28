@@ -1,22 +1,29 @@
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
-<p>An alert says a process ran. Can you find what launched it, what it was told to do, and name the stage of an intrusion that behavior actually matches?</p>
+<p>An alert says a process ran. Can you build the same hunt an analyst runs from the command line, follow it from one suspicious line to the mechanism keeping it alive, and shut that mechanism down without destroying the evidence?</p>
 </div>
 
-**Situation:** A process name alone rarely tells you anything. `powershell.exe` runs thousands of times a day on a normal domain controller for completely ordinary reasons. What makes one launch worth a second look is its parent, and the exact command line it was handed, both of which Sysmon records for every process on this machine.
+**Situation:** A process name alone rarely tells you anything. `powershell.exe` runs thousands of times a day on a normal domain controller for completely ordinary reasons. What makes one launch worth a second look is its parent, its exact command line, and whatever keeps relaunching it, all of which Sysmon records for every process on this machine.
 
-**Task:** On your domain controller, find a real process-creation event in Sysmon, read its parent and its command line, and name what it is actually doing.
+**Task:** Work this entirely from PowerShell on your domain controller. Query Sysmon for the suspicious process, find what keeps bringing it back, and contain it without deleting the evidence that shows what it was.
 
 **What you need:** Your hosted lab running, with the domain controller reachable the way every other exercise reaches it. Sysmon is already installed.
 
-### Find the Event
+### Build the Hunt Query
 
-Open Event Viewer on the domain controller and go to Applications and Services Logs → Microsoft → Windows → Sysmon → Operational. Filter for Event ID 1, Process Create.
+Event Viewer works, but an analyst who hunts the same thing twice writes the query instead of clicking through it by hand. Sysmon's Process Create events (Event ID 1) sit in their own log, and PowerShell can filter and parse them directly.
 
-Scroll until you find a `powershell.exe` launch with `-WindowStyle Hidden` in its command line. Read the ParentImage field above it and the full CommandLine field below it.
+```powershell
+$hits = Get-WinEvent -LogName "Microsoft-Windows-Sysmon/Operational" -FilterHashtable @{ Id = 1 } |
+    Where-Object { $_.Message -match "WindowStyle Hidden" }
+$xml = [xml]$hits[0].ToXml()
+$xml.Event.EventData.Data | Where-Object Name -in "Image","ParentImage","CommandLine" | Select-Object Name, "#text"
+```
+
+That pulls every process-creation event, keeps the one whose command line tried to run with a hidden window, then parses its raw Sysmon XML for the three fields that matter: what ran, what launched it, and what it was told to do.
 
 <div class="ad-mission" data-id="mw2-01" data-attempts="0">
-<p><strong>Task:</strong> Read the CommandLine field on that event. What remote address and port is the command trying to reach? Report it as address:port.</p>
+<p><strong>Task:</strong> Run the query above and read the CommandLine field it returns. What remote address and port is the command trying to reach? Report it as address:port.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the remote address and port" placeholder="address:port" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{203.0.113.77:4444}">Submit</button>
@@ -30,15 +37,15 @@ Scroll until you find a `powershell.exe` launch with `-WindowStyle Hidden` in it
 </div>
 <div>
 <span>Why it matters</span>
-<p>The process name told you almost nothing. The command line told you exactly where this is reaching and how often, which is the actual evidence an escalation needs.</p>
+<p>The process name told you almost nothing. The command line, pulled straight from the event's own XML instead of a GUI click-through, told you exactly where this is reaching and how often, which is the actual evidence an escalation needs.</p>
 </div>
 </div>
 </div>
 </div>
 
-### Read the Parent, Not Just the Command
+### Weigh the Parent
 
-The ParentImage above your event is a system service hosting the task scheduler, not a person's own interactive session.
+The ParentImage field your query returned is a system service hosting the task scheduler, not a person's own interactive session.
 
 <div class="ad-mission" data-id="mw2-06" data-attempts="0">
 <p><strong>Task:</strong> Suppose the exact same command line had a different ParentImage instead: <code>winword.exe</code>. What would that change about how you read this event? Type its letter.<br><strong>A</strong> Nothing. The command line is identical either way, so the story is the same.<br><strong>B</strong> It would suggest the process was spawned by a document someone opened, a very different initial-access story than a pre-existing scheduled task quietly persisting.<br><strong>C</strong> Word cannot launch PowerShell under any circumstance, so this would be impossible.</p>
@@ -61,26 +68,84 @@ The ParentImage above your event is a system service hosting the task scheduler,
 </div>
 </div>
 
-### Name the Stage
+### Find What Keeps Bringing It Back
 
-The same command runs again every 15 minutes, launched silently by the task scheduler rather than typed by a person, and it survives a reboot because the schedule itself does.
+A single process-creation event does not explain why the same command runs again every 15 minutes with nobody typing it. Something on this box is scheduling it, and PowerShell can list every scheduled task's own action and arguments instead of opening Task Scheduler by hand.
 
-<div class="ad-mission ad-mission--capstone" data-id="mw2-02" data-attempts="0">
-<p><strong>Task:</strong> A hidden process that relaunches itself on a schedule, without anyone typing a command, matches which Cyber Kill Chain stage? Type its letter.<br><strong>A</strong> Delivery, because a file had to arrive first.<br><strong>B</strong> Installation, because this is how an attacker keeps a foothold after the machine restarts.<br><strong>C</strong> Actions on Objectives, because it is the attacker's actual goal.</p>
+```powershell
+Get-ScheduledTask | Where-Object {
+    $action = $_.Actions | Select-Object -First 1
+    $action.Execute -eq "powershell.exe" -and $action.Arguments -match "Hidden"
+} | Select-Object TaskName, State
+```
+
+That filter will not return just one result. This lab's own background sync task also runs PowerShell with a hidden window, and it is legitimate. Tell the two apart by what each one's Arguments actually say.
+
+```powershell
+(Get-ScheduledTask -TaskName "<each name the filter returned>").Actions.Arguments
+```
+
+One result runs `-File` against a real script on disk, with a name and a purpose you can go read. The other runs `-Command` with a single hardcoded address and port typed directly into the task, no file, no owner, no business reason anyone could name.
+
+Once you have the suspicious one, confirm what lets its traffic out at all.
+
+```powershell
+Get-NetFirewallRule -Direction Outbound -Action Allow -Enabled True |
+    Get-NetFirewallPortFilter | Where-Object RemotePort -eq 4444 |
+    Get-NetFirewallRule | Select-Object DisplayName, Description
+```
+
+<div class="ad-mission" data-id="mw2-07" data-attempts="0">
+<p><strong>Task:</strong> Run the scheduled-task query above and tell the two hidden-PowerShell tasks apart by their Arguments. Report the name of the one with no file and no owner, the one actually relaunching the command from the first step.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for which Kill Chain stage this matches" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<input type="text" class="ad-guess__input" aria-label="Answer for the suspicious scheduled task's name" placeholder="Task name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{WindowsDiagnosticsSync}">Submit</button>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="purvex coach lab sync">That is this lab's own legitimate sync task. It runs a real file with a real purpose. Read the other task's Arguments instead.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
 <span>Answer</span>
-<p class="ad-flag__code"><code>B. Installation</code></p>
+<p class="ad-flag__code"><code>WindowsDiagnosticsSync</code></p>
 </div>
 <div>
 <span>Why it matters</span>
-<p>A scheduled task that keeps relaunching the same command is a textbook persistence mechanism, the Installation stage's whole purpose. Delivery already happened earlier and left no trace in this event, and nothing here shows the attacker's actual end goal yet, only that they built a way to keep coming back.</p>
+<p>A scheduled task that relaunches the same hardcoded command every 15 minutes, with no file and no owner behind it, is how an attacker keeps a foothold after the machine restarts. The firewall rule you found is what lets its traffic leave at all. Neither one looks suspicious alone next to this lab's own real sync task. Reading what each one's arguments actually say is what separates them.</p>
+</div>
+</div>
+</div>
+</div>
+
+### Contain It Without Destroying the Evidence
+
+You could delete the task outright, but that erases the configuration that proves what it was built to do. An analyst disables it instead, which stops it from ever firing again while leaving its action, trigger, and history in place for whoever investigates next.
+
+```powershell
+Disable-ScheduledTask -TaskName "WindowsDiagnosticsSync"
+```
+
+<div class="ad-mission ad-mission--capstone" data-id="mw2-02" data-attempts="0">
+<p><strong>Task:</strong> Run the command above against the task you found, then check its new state from the command line with <code>(Get-ScheduledTask -TaskName "WindowsDiagnosticsSync").State</code>. Report what it says.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for the task's state after disabling it" placeholder="State" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{disabled}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="ready|running">That is the state before you disabled it, or the task is still set to fire. Run Disable-ScheduledTask against it first, then check its state again.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>Disabled</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Unregister-ScheduledTask would have deleted the task's action, trigger, and history along with its ability to run, the exact record a later investigation needs to confirm what it was and how long it ran. Disabling it stops the persistence and keeps the proof.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Log what you found and disabled, including the address, the task name, and the firewall rule, so the next person does not have to hunt it all over again.</p>
 </div>
 </div>
 </div>
@@ -88,4 +153,4 @@ The same command runs again every 15 minutes, launched silently by the task sche
 
 ### Why It Matters
 
-An EDR alert hands you a process name. The process tree underneath it, the parent that launched it and the exact arguments it ran with, is where the actual decision gets made: ordinary administration, or something that needs to be contained right now.
+An EDR alert hands you a process name. The process tree underneath it, the task keeping it alive, and the firewall rule letting it talk are where the actual decision gets made: ordinary administration, or something that needs to be contained right now, the way you just contained it, from the command line, without losing the evidence of what it was.

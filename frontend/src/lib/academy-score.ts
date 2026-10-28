@@ -153,6 +153,7 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   // matching the week's own Antivirus-then-EDR teaching order.
   "mw2-01": "logs",
   "mw2-06": "security",
+  "mw2-07": "logs",
   "mw2-02": "security",
   "mw2-03": "security",
   "mw2-05": "security",
