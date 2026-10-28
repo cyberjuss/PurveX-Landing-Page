@@ -343,7 +343,16 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
     let revealTimer = 0;
     const fillReveal = (wrap: Element, html: string | null | undefined) => {
       const box = wrap.querySelector<HTMLElement>(".ad-flag");
-      if (box && html && !box.innerHTML.trim()) box.innerHTML = html;
+      if (!box || !html || box.innerHTML.trim()) return;
+      box.innerHTML = html;
+      // The reveal explains the answer once. A student who is still unclear
+      // why, not just what, can ask the coach to go deeper on this exact
+      // ticket rather than describing it from memory in the general chat.
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "ad-flag__coach";
+      btn.textContent = "Ask AI to explain";
+      box.appendChild(btn);
     };
     const showReveal = (wrap: Element, id: string) => {
       const cached = revealCache.get(id);
@@ -1176,6 +1185,26 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       }
       if (target.closest(".ad-hint-card__close") || target.closest(".ad-hint-card__scrim")) {
         return closeHintCard();
+      }
+      const coachBtn = target.closest<HTMLButtonElement>(".ad-flag__coach");
+      if (coachBtn) {
+        const wrap = coachBtn.closest(".ad-mission");
+        const title = wrap?.querySelector("h4")?.textContent?.trim() || "this ticket";
+        const task = wrap ? [...wrap.querySelectorAll(":scope > p")].find((p) => /^Task:/.test(p.textContent?.trim() || "")) : null;
+        const taskText = task?.textContent?.replace(/^Task:\s*/, "").replace(/\s+/g, " ").trim() || "";
+        const reveal = wrap?.querySelector<HTMLElement>(".ad-flag")?.textContent?.replace(/\s+/g, " ").trim().slice(0, 600) || "";
+        window.dispatchEvent(
+          new CustomEvent("academy:ask-coach", {
+            detail: {
+              question:
+                `Explain "${title}" in more depth, the reasoning, not just the answer.` +
+                (taskText ? ` The task: "${taskText}"` : "") +
+                (reveal ? ` What was revealed: "${reveal}"` : "") +
+                " Walk me through why, with a concrete example if that helps.",
+            },
+          })
+        );
+        return;
       }
       const hintBtn = target.closest<HTMLButtonElement>(".ad-hint__btn");
       if (hintBtn) return toggleHint(hintBtn);

@@ -4034,6 +4034,22 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 .academy-prose .ad-baseline-list { margin: 0.6rem 0; padding-left: 1.1rem; }
 .academy-prose .ad-baseline-list li { margin: 0.3rem 0; color: var(--pvrx-text-secondary-light); }
 .academy-prose .ad-baseline-list strong { color: var(--pvrx-text-primary-light); }
+/* One button, appended to every reveal by the shell script rather than
+   authored in content, so it is never missing and never drifts in wording.
+   Quiet by default: the reveal already answered the question, this is for
+   someone who wants the reasoning walked through instead of just reading it
+   again. */
+.academy-prose .ad-flag__coach {
+  appearance: none; -webkit-appearance: none;
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  margin: 1rem 0 0; padding: 0.45rem 0.75rem;
+  border: 1px solid var(--rd-line, rgba(16,25,46,0.14)); border-radius: 7px;
+  background: transparent; color: var(--rd-accent, #5546e0);
+  font-size: var(--ty-small); font-weight: 600; cursor: pointer;
+}
+.academy-prose .ad-flag__coach:hover { background: color-mix(in srgb, var(--rd-accent, #5546e0) 8%, transparent); }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-flag__coach { border-color: var(--rd-line-dark, #223047); color: #9a8cff; }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-flag__coach:hover { background: color-mix(in srgb, #9a8cff 10%, transparent); }
 
 /* One motion language for Academy. Soft Y for first paint, menus, drills.
    Directional X for next and previous. A short rise on routes lives on
