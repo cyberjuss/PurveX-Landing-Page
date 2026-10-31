@@ -1,18 +1,13 @@
 import { NextResponse } from "next/server";
 import { clearClassCookie, isAcademyUnlocked, readClassCookie } from "@/lib/academy-auth";
 import { findClassByCode, joinClass } from "@/lib/academy-classes";
-import { LAB_PASS_IDS, MISSION_SKILLS, sanitizeResults, type Results } from "@/lib/academy-score";
+import { MISSION_SKILLS, sanitizeResults, type Results } from "@/lib/academy-score";
 import { loadProgress, saveProgress } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
-import { markEmailOnce } from "@/lib/academy-email-log";
 import { sendEmail } from "@/lib/email";
-import { studentJoinedEmail, studentMilestoneEmail, studentWelcomeEmail } from "@/lib/academy-emails";
+import { studentJoinedEmail, studentWelcomeEmail } from "@/lib/academy-emails";
 
 export const runtime = "nodejs";
-
-const LAB_NAME: Record<string, string> = {
-  "lab-risk-triage": "the Risk Triage lab",
-};
 
 export async function GET(request: Request) {
   if (!(await isAcademyUnlocked())) {
@@ -93,20 +88,6 @@ export async function PUT(request: Request) {
   }
 
   await saveProgress(student.id, student.email, results);
-
-  // Milestone: a lab passed for the first time. markEmailOnce keeps it to one
-  // send ever, even though the browser saves progress often.
-  if (student.email) {
-    const origin = new URL(request.url).origin;
-    for (const id of LAB_PASS_IDS) {
-      if (results[id]?.solved && !saved[id]?.solved && LAB_NAME[id]) {
-        if (await markEmailOnce(student.id, `lab:${id}`)) {
-          const mail = studentMilestoneEmail(student, LAB_NAME[id], origin);
-          await sendEmail(student.email, mail.subject, mail.html).catch(() => {});
-        }
-      }
-    }
-  }
 
   return NextResponse.json({ ok: true, results });
 }

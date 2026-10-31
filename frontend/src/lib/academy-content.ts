@@ -13,13 +13,9 @@ export function loadLesson(relativePath: string): string | null {
   }
 }
 
-/** Interactive labs rendered by a React component below the section's markdown. */
-export type LabWidget = "risk-triage";
-
 export interface ContentSection {
   label: string;
   file: string;
-  widget?: LabWidget;
   /** Sub-heading a Challenges entry's sections are grouped under in the rail (academy-sidebar.tsx). Unused outside that one entry. */
   group?: string;
 }
@@ -62,9 +58,9 @@ const phase1Weeks: WeekDef[] = [
       { label: "Risk", file: "phase-1/week-1/lesson-risk.md" },
       { label: "How It All Connects", file: "phase-1/week-1/lesson-connects.md" },
       { label: "Resources", file: "phase-1/week-1/resources.md" },
-      { label: "Lab: Risk Assessment and Triage", file: "phase-1/week-1/lab-risk-triage.md", widget: "risk-triage" },
       { label: "Lab: CIA Triad in Practice", file: "phase-1/week-1/lab-three-failures.md" },
       { label: "Lab: CVSS Vulnerability Scoring", file: "phase-1/week-1/lab-severity-risk.md" },
+      { label: "Challenge: Monday Morning Risk Triage", file: "phase-1/week-1/challenge-risk-triage.md" },
     ],
   },
   {

@@ -58,7 +58,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
   // only to build those links and to know whether the week has any.
   const labSections = sections.filter((s) => s.label.startsWith("Lab:"));
   const weekLabs = labSections.map((s) => ({
-    slug: labSlug(s.file, s.widget),
+    slug: labSlug(s.file),
     title: s.label.replace(/^Lab:\s*/, ""),
   }));
   const challengeSections = sections.filter((s) => s.label.startsWith("Challenge:"));

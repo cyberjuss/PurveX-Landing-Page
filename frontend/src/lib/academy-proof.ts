@@ -425,9 +425,7 @@ export function buildWorkItems(results: Results, drills: DrillEntry[]): WorkItem
 
 /** Skills as the keywords job postings use, grouped like a resume Skills section. */
 /** Skills a passed browser lab shows. Each lab confirms the work: the hash must match, the decode must be right. */
-const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
-  "lab-risk-triage": ["Risk Assessment", "CIA Triad"],
-};
+const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {};
 
 /**
  * Phase 2's hands-on labs (soc-mindset, Malware, Log Analysis Fundamentals,
@@ -443,6 +441,7 @@ const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
  * out of this list to avoid tagging the same skill twice.
  */
 const MISSION_SKILL_TAGS: { id: string; bucket: "monitoring" | "network" | "response"; label: string }[] = [
+  { id: "rt-04", bucket: "response", label: "Risk Assessment and Triage" },
   { id: "mw2-02", bucket: "monitoring", label: "Sysmon" },
   { id: "mw2-04", bucket: "response", label: "Windows Defender / EDR" },
   { id: "la2-02", bucket: "monitoring", label: "Cross-Host Log Correlation" },

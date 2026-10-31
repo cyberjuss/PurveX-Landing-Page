@@ -26,8 +26,6 @@ import { correctionLine } from "@/lib/academy-coach-feedback";
 import { ANTHROPIC_MESSAGES_URL, COACH_HAIKU_MODEL, COACH_SONNET_MODEL, webSearchTool } from "@/lib/academy-models";
 import { isStale, ROLE_NOTE_RULES, roleBriefFrom, searchedUrls } from "@/lib/academy-role-research";
 import { findMissionsByQuery, MISSION_CATALOG } from "@/lib/academy-missions";
-import { labCoachingForMcp } from "@/lib/academy-lab-coach";
-import { isBrowserLab } from "@/lib/academy-lab-briefs";
 import {
   LAB_PASS_IDS,
   LEVELS,
@@ -314,7 +312,6 @@ When helping this student:
 - Start a coaching session with get_weakness_profile. It blends mission scores, drill accuracy, and what they keep missing, so you know where to spend the time. Keep those misses as your notes. Do not recite the list or the weekly scores.
 - Hands-on work is real. Call get_lab_findings to see what is actually wrong in the student's own lab, and get_event_digest for what really happened in their Security log. Never invent an account, a ticket or a broken object. If the lab has nothing wrong, ask judgement questions. The weekly CTF is asked about their own Security log: call start_investigation, tell them where to look in Event Viewer, and ask them to investigate. When they answer, call check_investigation. If it has a second half it checks a real fix in their lab, so guide them to find and fix it, then call it again. Never read the answer to them.
 - Develop your own practice questions from their real environment: call get_environment_question_seeds, write a short scenario whose evidence is on screen, ask the student, and wait for their answer. Then call record_practice_result so the result shapes their weakness profile and future drill difficulty. Make each question different from the last. Raise the difficulty when they keep getting it right.
-- Risk Assessment and Triage (Phase 1, Week 1) is a browser widget that runs in the Range portal, not in their AD lab. Call get_lab_coaching first when they are working it. Coach one step at a time with the hint ladder, one rung lower each time they ask again, and never state an answer, a value to type or an option to pick. Explaining CyberChef, PowerShell 7, sha256sum or OpenSSL mechanics in full is fine. Tie the step to their target role's objective in one clause. Keep replies under 80 words.
 - Do not invent lab values. get_lab_state returns the student's real lab snapshot saved the last time they ran Build-Environment.ps1. It can be older than their latest changes. Use it to check their work, and point them to what to inspect instead of reading out values that answer unsolved missions.`;
 
 type AnthropicContent =
@@ -365,16 +362,6 @@ ${ROLE_NOTE_RULES}`;
 }
 
 export const COACH_TOOLS: { name: string; description: string; input_schema: Record<string, unknown> }[] = [
-  {
-    name: "get_lab_coaching",
-    description:
-      "Coaching notes for the browser labs (risk-triage in Phase 1): the real-world problem, the PurveX scenario, the objective for each target role, the steps, common mistakes, open-source tool mechanics and a hint ladder. Does not include answers. Call it before helping with one of these labs.",
-    input_schema: {
-      type: "object",
-      properties: { lab: { type: "string", enum: ["risk-triage"], description: "Which lab. Omit for all of them." } },
-      additionalProperties: false,
-    },
-  },
   {
     name: "get_skill_gaps",
     description: "Return the student's Readiness score and per-skill gaps.",
@@ -712,13 +699,12 @@ async function currentActivity(ctx: CoachToolContext) {
     lastDrill: lastDrill ? { mode: lastDrill.mode, correct: lastDrill.correct, total: lastDrill.total, when: formatLabAge(lastDrill.at).ago } : null,
     labSynced: lab ? formatLabAge(lab.capturedAt).ago : null,
     howToUse:
-      "Open by naming where they are in a few words. On a lesson tab, call search_lessons with section set to the tab and teach from it. In a browser lab, call get_lab_coaching for that lab and start at the step. On a challenge, work the next open mission without giving its answer. If likelyStillThere is false, ask what they are on before assuming.",
+      "Open by naming where they are in a few words. On a lesson tab, call search_lessons with section set to the tab and teach from it. On a challenge, work the next open mission without giving its answer. If likelyStillThere is false, ask what they are on before assuming.",
   };
 }
 
 export async function runCoachTool(name: string, input: Record<string, unknown>, ctx: CoachToolContext): Promise<string> {
   const { results } = ctx;
-  if (name === "get_lab_coaching") return labCoachingForMcp(isBrowserLab(input.lab) ? input.lab : null);
   if (name === "get_skill_gaps") {
     const s = summarize(results);
     const strongest = [...s.skills].filter((k) => k.score !== null).sort((a, b) => (b.score ?? 0) - (a.score ?? 0))[0];
@@ -887,7 +873,6 @@ export async function runCoachToolResult(name: string, input: Record<string, unk
 
 /** Human names for clients that show a tool list. */
 export const COACH_TOOL_TITLES: Record<string, string> = {
-  get_lab_coaching: "Lab coaching notes",
   get_skill_gaps: "Readiness and skill gaps",
   get_mission_history: "Mission history",
   get_mission_details: "Look up a mission",

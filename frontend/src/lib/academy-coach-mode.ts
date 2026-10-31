@@ -1,6 +1,5 @@
 import { MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
 import { missionResults, SKILLS, summarize, type Results } from "@/lib/academy-score";
-import type { LabWidget } from "@/lib/academy-content";
 import { isBrowserLab } from "@/lib/academy-lab-briefs";
 
 export const COACH_MODES = ["walkthrough", "check", "mentor", "interview"] as const;
@@ -37,7 +36,7 @@ export function modeFromReport(results: Results): CoachMode {
  * The lab or challenge tab the student has open, if any. A browser lab also
  * names its widget, and "at" says where in it they are (step, card, task).
  */
-export type CoachPlace = { kind: "lab" | "challenge" | "shift"; title: string; lab?: LabWidget; at?: string };
+export type CoachPlace = { kind: "lab" | "challenge" | "shift"; title: string; lab?: never; at?: string };
 
 const clean = (v: string, max: number) => v.replace(/\s+/g, " ").trim().slice(0, max);
 

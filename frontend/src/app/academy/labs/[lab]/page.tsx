@@ -14,13 +14,10 @@ export default async function LabPage({ params }: { params: Promise<{ lab: strin
   const lab = findLab(slug);
   if (!lab) notFound();
 
-  // Markdown labs load their steps here; the essential-question block is lifted
-  // off the same way the week view does it, so the lab reads clean.
-  let markdown: string | null = null;
-  if (!lab.widget) {
-    const raw = loadLesson(lab.file);
-    markdown = raw ? extractEssentialQuestion(raw).rest : null;
-  }
+  // Every lab is markdown now; the essential-question block is lifted off
+  // the same way the week view does it, so the lab reads clean.
+  const raw = loadLesson(lab.file);
+  const markdown = raw ? extractEssentialQuestion(raw).rest : null;
 
   // The week's own title, so the lab can offer a way back to the thing that
   // assigned it. Labs are no longer tabs on their week, so nothing else on
@@ -36,7 +33,6 @@ export default async function LabPage({ params }: { params: Promise<{ lab: strin
         phaseSlug={lab.phaseSlug}
         entrySlug={lab.entrySlug}
         entryTitle={entryTitle}
-        widget={lab.widget}
         markdown={markdown}
         accent={lab.accent}
         skill={lab.skill}

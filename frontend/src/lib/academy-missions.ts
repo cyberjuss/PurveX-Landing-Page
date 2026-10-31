@@ -13,7 +13,8 @@ export type MissionCatalogEntry = {
     | "credential-campaign"
     | "phishing-chain"
     | "open-door"
-    | "keys-to-the-domain";
+    | "keys-to-the-domain"
+    | "risk-triage";
   title: string;
   prompt: string;
   skill: Skill;
@@ -331,6 +332,10 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "cd-05": { id: "cd-05", challenge: "client-data", title: "The Batch That Did Not Balance", prompt: "Find the settlement batch that did not reconcile.", skill: "security" },
   "cd-06": { id: "cd-06", challenge: "client-data", title: "Fingerprint the Register", prompt: "Take the SHA-256 hash of the client register.", skill: "security" },
   "cd-07": { id: "cd-07", challenge: "client-data", title: "Who Can Read the Register", prompt: "Build a least-privilege reader group and name the group the share lets read it today.", skill: "accounts" },
+  "rt-01": { id: "rt-01", challenge: "risk-triage", title: "Which Property Failed (INC-1081)", prompt: "Name the CIA property that fails in the Wealth Management share ticket.", skill: "risk" },
+  "rt-02": { id: "rt-02", challenge: "risk-triage", title: "The Quiet Backup Failure (INC-1081)", prompt: "Name the CIA property at risk in the silent backup failure.", skill: "risk" },
+  "rt-03": { id: "rt-03", challenge: "risk-triage", title: "Rank Them by Department (INC-1081)", prompt: "Rank the four tickets using department criticality.", skill: "risk" },
+  "rt-04": { id: "rt-04", challenge: "risk-triage", title: "Why the Printer Waits (INC-1081)", prompt: "Justify ranking the loudest ticket last.", skill: "risk" },
   "ea-01": {
     id: "ea-01",
     challenge: "access-alert",
@@ -564,6 +569,7 @@ export const CHALLENGE_PATHS: Record<
   "phishing-chain": { href: "/range/phase-2/capstone", tab: "the-phishing-chain" },
   "open-door": { href: "/range/phase-2/capstone", tab: "the-open-door" },
   "keys-to-the-domain": { href: "/range/phase-2/capstone", tab: "the-keys-to-the-domain" },
+  "risk-triage": { href: "/range/phase-1/week-1", tab: "monday-morning-risk-triage" },
 };
 
 export function missionHref(id: string): string {
@@ -583,6 +589,7 @@ export function challengeFromMission(id: string): MissionCatalogEntry["challenge
   if (id.startsWith("cap-")) return "wire";
   if (id.startsWith("cry-")) return "crypto";
   if (id.startsWith("cd-")) return "client-data";
+  if (id.startsWith("rt-")) return "risk-triage";
   return MISSION_CATALOG[id]?.challenge ?? null;
 }
 
@@ -616,6 +623,7 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "phishing-chain": "The Phishing Chain",
   "open-door": "The Open Door",
   "keys-to-the-domain": "The Keys to the Domain",
+  "risk-triage": "Monday Morning Risk Triage",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {

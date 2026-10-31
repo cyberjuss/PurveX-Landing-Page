@@ -16,15 +16,14 @@ export function entriesOf(phase: PhaseDef | undefined): WeekDef[] {
 }
 
 /**
- * The url segment a lab is served at, derived from its widget or its filename.
+ * The url segment a lab is served at, derived from its filename.
  *
  * Lives here rather than in academy-labs so there is one definition. That
  * module reads the phases off disk and is server-only, while the sidebar has
  * to build the same links in the browser, and two copies of this rule would
  * drift the moment a lab was renamed.
  */
-export function labSlug(file: string, widget?: string): string {
-  if (widget) return widget;
+export function labSlug(file: string): string {
   const base = file.split("/").pop() ?? file;
   return base.replace(/^lab-/, "").replace(/\.md$/, "");
 }
@@ -48,7 +47,7 @@ export function labLinksOf(phases: PhaseDef[]): LabLink[] {
       for (const s of entry.sections) {
         if (!s.label.startsWith("Lab:")) continue;
         out.push({
-          slug: labSlug(s.file, s.widget),
+          slug: labSlug(s.file),
           title: s.label.replace(/^Lab:\s*/, ""),
           phaseSlug: phase.slug,
           entrySlug: entry.slug,

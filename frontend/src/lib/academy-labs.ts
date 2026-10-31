@@ -1,4 +1,4 @@
-import { phases, type LabWidget, type WeekDef } from "@/lib/academy-content";
+import { phases, type WeekDef } from "@/lib/academy-content";
 import { entriesOf, labSlug } from "@/lib/academy-entries";
 
 // Every hands-on lab in the course, flattened so the Labs page can give each
@@ -26,12 +26,10 @@ export type LabMeta = {
   phaseSlug: string;
   entrySlug: string;
   file: string;
-  widget?: LabWidget;
 };
 
 // Card art keyed by slug. Blurbs are short and plain. Icons are security-themed.
 const ART: Record<string, { blurb: string; skill: string; icon: string; accent: string; minutes: number }> = {
-  "risk-triage": { blurb: "Score Monday's incoming tickets by real business risk.", skill: "Risk Triage", icon: "TriangleAlert", accent: "#f5a524", minutes: 12 },
   "three-failures": { blurb: "Break confidentiality, integrity and availability on one file, and prove each one.", skill: "Fundamentals", icon: "ShieldAlert", accent: "#4fa3d1", minutes: 20 },
   "severity-risk": { blurb: "Score one flaw three ways with CVSS, and watch Critical stop meaning urgent.", skill: "Vulnerability Scoring", icon: "Gauge", accent: "#0ca678", minutes: 30 },
   "tell-them-apart": { blurb: "Tell encoding, encryption and hashing apart in CyberChef, and prove which reverse.", skill: "Credentials", icon: "ScanSearch", accent: "#22b8cf", minutes: 20 },
@@ -60,7 +58,7 @@ function labsInEntry(phaseLabel: string, phaseSlug: string, entry: WeekDef): Lab
   return entry.sections
     .filter((s) => s.label.startsWith("Lab:"))
     .map((s) => {
-      const slug = labSlug(s.file, s.widget);
+      const slug = labSlug(s.file);
       const art = ART[slug] ?? FALLBACK;
       return {
         slug,
@@ -74,7 +72,6 @@ function labsInEntry(phaseLabel: string, phaseSlug: string, entry: WeekDef): Lab
         phaseSlug,
         entrySlug: entry.slug,
         file: s.file,
-        widget: s.widget,
       };
     });
 }

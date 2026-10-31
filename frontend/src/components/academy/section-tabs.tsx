@@ -2,18 +2,17 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, ChevronLeft, ChevronRight, Flag, FlaskConical, Wrench } from "lucide-react";
-import { Markdown, splitMarkdownIntoSlides } from "@/lib/markdown";
+import { Check, ChevronLeft, ChevronRight, Flag, Wrench } from "lucide-react";
+import { Markdown } from "@/lib/markdown";
 import { CHALLENGE_PATHS, MISSION_CATALOG } from "@/lib/academy-missions";
 import { QuizBlock } from "./quiz";
-import { LabCarousel } from "./lab-carousel";
 import { MissionPager } from "./mission-pager";
 import { ResourcesView } from "./resources-view";
 import { DECK_PROGRESS_EVENT, LessonDeck } from "./lesson-deck";
 import { isDeckable } from "@/lib/lesson-deck";
 import { weekScenes } from "./slide-art";
 import { TrailDock, type TrailLink } from "./trail-dock";
-import { labSpot, useCoach } from "./coach-context";
+import { useCoach } from "./coach-context";
 import { HostedLabSetupNote } from "./hosted-lab-button";
 import { TopicVideo } from "./topic-video";
 
@@ -48,22 +47,17 @@ const HOSTED_SETUP_TABS = new Set(["Set Up the Lab", "Install the Domain", "Buil
 import { academyFetch } from "@/lib/academy-client";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import type { Quiz } from "@/content/academy/quizzes";
-import type { LabWidget } from "@/lib/academy-content";
-import { LabBrief } from "./labs/lab-brief";
-import { RiskTriageLab } from "./labs/risk-triage-chat";
 
 type WeekLink = { label: string; href: string };
 
 interface TabSection {
   label: string;
   markdown: string;
-  widget?: LabWidget;
 }
 
 type Item =
   | { kind: "section"; label: string; markdown: string }
   | { kind: "quiz"; label: string }
-  | { kind: "lab"; label: string; markdown: string; widget?: LabWidget }
   | { kind: "challenge"; label: string; markdown: string }
   | { kind: "troubleshooting"; label: string; markdown: string };
 
@@ -132,7 +126,6 @@ export function SectionTabs({
   const [active, setActive] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
   const [quizFoot, setQuizFoot] = useState<HTMLElement | null>(null);
-  const [labFoot, setLabFoot] = useState<HTMLElement | null>(null);
   const [challengeFoot, setChallengeFoot] = useState<HTMLElement | null>(null);
   // Set only by Previous, so stepping back out of a section lands on the last
   // slide of the one before it. Clicking a tab still opens at the first.
@@ -176,17 +169,11 @@ export function SectionTabs({
   const scenesByTab = useMemo(() => weekScenes(deckTabs), [deckTabs]);
   const tabScenes = asDeck ? scenesByTab[deckTabs.findIndex((s) => s.label === current.label)] : undefined;
   const { setPlace } = useCoach();
-  const { recordLabDone, isLabDone, setLastStop } = useAcademyProgress();
-  const labSlug = current.kind === "lab" ? slugify(current.label) : "";
-  const labDone = useCallback(() => {
-    if (labSlug) recordLabDone(phaseSlug, entrySlug, labSlug);
-  }, [recordLabDone, phaseSlug, entrySlug, labSlug]);
-  const labWidget = current.kind === "lab" ? current.widget : undefined;
+  const { isLabDone, setLastStop } = useAcademyProgress();
   useEffect(() => {
-    const kind = current.kind === "lab" || current.kind === "challenge" ? current.kind : null;
-    setPlace(kind ? { kind, title: current.label, ...(labWidget ? { lab: labWidget } : {}) } : null);
+    setPlace(current.kind === "challenge" ? { kind: current.kind, title: current.label } : null);
     return () => setPlace(null);
-  }, [current.kind, current.label, labWidget, setPlace]);
+  }, [current.kind, current.label, setPlace]);
   // The same tab, told to the progress store, so the home page's last stop
   // is the tab and not just the page it was on. The account hears about it
   // below; this is so it is right before the next reload too.
@@ -198,7 +185,7 @@ export function SectionTabs({
   // their own AI assistant), so Coach and MCP clients know where they are.
   useEffect(() => {
     const report = (keepalive: boolean) => {
-      const place = { phase: phaseSlug, entry: entrySlug, tab: current.label, kind: current.kind, lab: labWidget, at: labWidget ? labSpot() : undefined };
+      const place = { phase: phaseSlug, entry: entrySlug, tab: current.label, kind: current.kind };
       academyFetch("/academy/api/activity", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -224,7 +211,7 @@ export function SectionTabs({
       window.removeEventListener("blur", leave);
       document.removeEventListener("visibilitychange", onHide);
     };
-  }, [phaseSlug, entrySlug, current.kind, current.label, labWidget]);
+  }, [phaseSlug, entrySlug, current.kind, current.label]);
   const prevItem = active > 0 ? items[active - 1] : null;
   const nextItem = active < items.length - 1 ? items[active + 1] : null;
   // One underline that slides to the tab you pick, rather than one tab's line
@@ -384,28 +371,6 @@ export function SectionTabs({
   const panel =
     current.kind === "quiz" ? (
       <QuizBlock quiz={quiz!} actionHost={quizFoot} nextBeyond={nextTrail} weekLabs={weekLabs} />
-    ) : current.kind === "lab" && current.widget ? (
-      <div>
-        <LabBrief lab={current.widget} title={current.label.replace(/^Lab:\s*/, "")} ask={false}>
-          <RiskTriageLab onDone={labDone} />
-        </LabBrief>
-      </div>
-    ) : current.kind === "lab" ? (
-      <div>
-        {/* Keyed on the label so switching labs remounts this instead of
-            reusing the instance -- otherwise it kept whatever step index
-            you were on in the previous lab instead of starting over at
-            Overview. */}
-        <LabCarousel
-          key={current.label}
-          storageKey={current.label}
-          slides={splitMarkdownIntoSlides(current.markdown)}
-          actionHost={labFoot}
-          prevBeyond={prevTrail}
-          nextBeyond={nextTrail}
-          onDone={labDone}
-        />
-      </div>
     ) : (
       <>
         {current.kind === "section" && HOSTED_SETUP_TABS.has(current.label) && <HostedLabSetupNote />}
@@ -474,9 +439,7 @@ export function SectionTabs({
             className={`ax-lesstab ${active === i ? "ax-lesstab--on" : ""}${done.has(item.label) ? " is-done" : ""}`}
             aria-label={done.has(item.label) ? `${item.label}, finished` : undefined}
           >
-            {item.kind === "lab" ? (
-              <FlaskConical className="h-3.5 w-3.5 shrink-0" aria-hidden />
-            ) : item.kind === "challenge" ? (
+            {item.kind === "challenge" ? (
               <Flag className="h-3.5 w-3.5 shrink-0" aria-hidden />
             ) : item.kind === "troubleshooting" ? (
               <Wrench className="h-3.5 w-3.5 shrink-0" aria-hidden />
@@ -503,8 +466,6 @@ export function SectionTabs({
             a sidebar link. */}
         {current.kind === "quiz" ? (
           <div ref={setQuizFoot} />
-        ) : current.kind === "lab" && !current.widget ? (
-          <div ref={setLabFoot} />
         ) : current.kind === "challenge" ? (
           <div ref={setChallengeFoot} />
         ) : asDeck ? null : (

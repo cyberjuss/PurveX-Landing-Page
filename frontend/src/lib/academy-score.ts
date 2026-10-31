@@ -1,6 +1,6 @@
-// Readiness score for Operation Day One, the Ticket Queue, The 2 AM Login, and
-// the scored browser labs. Results are cached in the browser (localStorage) and
-// saved to the account, keyed by the mission's data-id or the lab's id.
+// Readiness score for every "Challenge:" mission chain across the course.
+// Results are cached in the browser (localStorage) and saved to the account,
+// keyed by the mission's data-id.
 
 export type Skill = "accounts" | "directory" | "troubleshooting" | "security" | "logs" | "access" | "risk";
 
@@ -250,22 +250,25 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "rk-07": "security",
   "rk-08": "logs",
   "rk-09": "security",
+  // Week 1's risk-triage challenge, replacing the old browser-only chat
+  // widget with a real ranking exercise against the org chart's own
+  // department-criticality facts.
+  "rt-01": "risk",
+  "rt-02": "risk",
+  "rt-03": "risk",
+  "rt-04": "risk",
 };
 
 /** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */
-export const LAB_PASS_IDS = ["lab-risk-triage"] as const;
+export const LAB_PASS_IDS = [] as const;
 export type LabPassId = (typeof LAB_PASS_IDS)[number];
 const isLabPass = (id: string) => (LAB_PASS_IDS as readonly string[]).includes(id);
 
 /** Browser labs that count toward readiness, scored by the points they earned the first time they were finished. */
-export const LAB_SKILLS: Partial<Record<LabPassId, Skill>> = {
-  "lab-risk-triage": "risk",
-};
+export const LAB_SKILLS: Partial<Record<LabPassId, Skill>> = {};
 
 /** The scored labs, for the readiness report. href opens the lab's tab. */
-export const LAB_CATALOG: { id: LabPassId; title: string; skill: Skill; href: string }[] = [
-  { id: "lab-risk-triage", title: "Risk Assessment and Triage", skill: "risk", href: "/range/phase-1/week-1#lab-risk-assessment-and-triage" },
-];
+export const LAB_CATALOG: { id: LabPassId; title: string; skill: Skill; href: string }[] = [];
 
 /** Everything readiness counts: missions and scored labs. */
 const SCORED_SKILLS: Record<string, Skill> = { ...MISSION_SKILLS, ...(LAB_SKILLS as Record<string, Skill>) };
