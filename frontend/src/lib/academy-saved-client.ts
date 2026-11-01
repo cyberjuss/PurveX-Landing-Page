@@ -1,22 +1,20 @@
 "use client";
 
-import { academyFetch, RESULTS_OWNER_KEY } from "@/lib/academy-client";
+import { academyFetch } from "@/lib/academy-client";
 import { applyPatch, EMPTY_SAVED, mergeSaved, sanitizeSaved, type Saved, type SavedPatch } from "@/lib/academy-saved";
 
-// The page's side of saved work (see academy-saved.ts). A copy lives in this
+// The page's side of saved answers (see academy-saved.ts). A copy lives in this
 // browser so the page has it at once, and the account's copy is loaded once
 // per sign-in and merged in. Changes save to the account in the background.
 //
 // The browser copy is tagged with whose it is. On a shared computer the next
-// student would otherwise inherit, and upload, the last one's progress, so a
+// student would otherwise inherit, and upload, the last one's answers, so a
 // copy that is not the signed-in student's is thrown away, never sent.
 
 /** Fired once the account's copy has been merged in, so the page re-applies it. */
 export const SAVED_LOADED_EVENT = "academy-saved-loaded";
 
 const LOCAL_KEY = "academy-saved-v1";
-// Where progress was kept before it was saved to the account. Read once, then removed.
-const LEGACY = { completed: "academy-progress-v1", quizPasses: "academy-quiz-pass-v1", labsDone: "academy-labs-done-v1", lastStop: "academy-last-stop-v1" };
 
 let owner: string | null = null;
 let saved: Saved = EMPTY_SAVED;
@@ -41,31 +39,13 @@ function writeLocal() {
   } catch {}
 }
 
-function removeLegacy() {
-  const s = storage();
-  for (const k of Object.values(LEGACY)) s?.removeItem(k);
-}
-
 /** This browser's copy, if it belongs to this student. */
 function readLocal(studentId: string): Saved {
   const s = storage();
   if (!s) return EMPTY_SAVED;
   try {
     const raw = JSON.parse(s.getItem(LOCAL_KEY) ?? "null") as { owner?: unknown; saved?: unknown } | null;
-    if (raw) {
-      removeLegacy();
-      return raw.owner === studentId ? sanitizeSaved(raw.saved) : EMPTY_SAVED;
-    }
-    // Progress from before it was saved to the account carries no owner of its
-    // own. The scored results beside it do, so it goes with them, and only if
-    // they are this student's.
-    const legacyOwner = s.getItem(RESULTS_OWNER_KEY);
-    const parse = (k: string) => JSON.parse(s.getItem(k) ?? "[]") as unknown;
-    const legacy = legacyOwner === studentId
-      ? sanitizeSaved({ completed: parse(LEGACY.completed), quizPasses: parse(LEGACY.quizPasses), labsDone: parse(LEGACY.labsDone), lastStop: s.getItem(LEGACY.lastStop) })
-      : EMPTY_SAVED;
-    removeLegacy();
-    return legacy;
+    return raw?.owner === studentId ? sanitizeSaved(raw.saved) : EMPTY_SAVED;
   } catch {
     return EMPTY_SAVED;
   }
@@ -92,7 +72,6 @@ export function openSaved(studentId: string): Promise<void> {
       const server = sanitizeSaved(data.saved);
       // The account's copy wins where both have the same quiz or box, since it
       // is the newer one whenever the student last worked somewhere else.
-      // Finished work from either side is kept.
       const merged = mergeSaved(server, saved);
       serverReady = true;
       if (JSON.stringify(merged) !== JSON.stringify(server)) queue(merged);
@@ -120,16 +99,6 @@ export function subscribeSaved(fn: () => void) {
   };
 }
 
-/** Whether a one-time onboarding step (lab briefing, terms, tour) has been seen. */
-export function hasSeenFlag(name: string): boolean {
-  return saved.flags[name] === true;
-}
-
-/** Remembers a one-time onboarding step on the account, so a new browser or device does not show it again. */
-export function markFlagSeen(name: string) {
-  updateSaved({ flags: { [name]: true } });
-}
-
 /** Record a change here at once and save it to the account shortly after. */
 export function updateSaved(patch: SavedPatch) {
   if (!owner) return;
@@ -142,9 +111,7 @@ export function updateSaved(patch: SavedPatch) {
 }
 
 function queue(patch: SavedPatch) {
-  pending = pending
-    ? { ...pending, ...patch, quizzes: { ...pending.quizzes, ...patch.quizzes }, drafts: { ...pending.drafts, ...patch.drafts }, flags: { ...pending.flags, ...patch.flags } }
-    : patch;
+  pending = pending ? { ...pending, ...patch, quizzes: { ...pending.quizzes, ...patch.quizzes }, drafts: { ...pending.drafts, ...patch.drafts } } : patch;
   window.clearTimeout(timer);
   timer = window.setTimeout(() => void flush(), 800);
 }
@@ -167,9 +134,7 @@ async function flush(keepalive = false) {
     })
     .catch(() => {
       // Put it back so the next change, or leaving the page, tries again.
-      pending = pending
-        ? { ...patch, ...pending, quizzes: { ...patch.quizzes, ...pending.quizzes }, drafts: { ...patch.drafts, ...pending.drafts }, flags: { ...patch.flags, ...pending.flags } }
-        : patch;
+      pending = pending ? { ...patch, ...pending, quizzes: { ...patch.quizzes, ...pending.quizzes }, drafts: { ...patch.drafts, ...pending.drafts } } : patch;
     })
     .finally(() => {
       sending = null;
@@ -177,18 +142,13 @@ async function flush(keepalive = false) {
   await sending;
 }
 
-/**
- * Before the browser is re-tagged for a student: drop any copy that is not
- * theirs, including progress from before it carried an owner. Called while
- * the previous owner is still recorded, which is the only time it is known.
- */
+/** When a different student signs in on this browser: drop the copy that is not theirs. */
 export function forgetLocalUnless(studentId: string) {
   const s = storage();
   if (!s) return;
   try {
     const raw = JSON.parse(s.getItem(LOCAL_KEY) ?? "null") as { owner?: unknown } | null;
     if (raw && raw.owner !== studentId) s.removeItem(LOCAL_KEY);
-    if (s.getItem(RESULTS_OWNER_KEY) !== studentId) removeLegacy();
   } catch {}
 }
 
@@ -202,13 +162,47 @@ export async function clearSavedLocal() {
   try {
     storage()?.removeItem(LOCAL_KEY);
   } catch {}
-  removeLegacy();
   notify();
+}
+
+// A build that was live briefly moved lesson checkmarks, quiz passes, finished
+// labs and the last stop out of their own keys and into this copy. Put them
+// back where the progress tracker reads them, merged with anything there now,
+// and strip them from this copy. Runs at load, before the tracker mounts.
+const RESCUE_KEYS = { completed: "academy-progress-v1", quizPasses: "academy-quiz-pass-v1", labsDone: "academy-labs-done-v1" } as const;
+function rescueMovedProgress() {
+  const s = storage();
+  if (!s) return;
+  try {
+    const raw = JSON.parse(s.getItem(LOCAL_KEY) ?? "null") as { owner?: unknown; saved?: Record<string, unknown> } | null;
+    const old = raw?.saved;
+    if (!old || typeof old !== "object") return;
+    let moved = false;
+    for (const [field, lsKey] of Object.entries(RESCUE_KEYS)) {
+      const items = old[field];
+      if (!Array.isArray(items)) continue;
+      moved = true;
+      const strings = items.filter((v): v is string => typeof v === "string" && v.length > 0 && v.length <= 120);
+      if (!strings.length) continue;
+      let current: unknown = [];
+      try {
+        current = JSON.parse(s.getItem(lsKey) ?? "[]");
+      } catch {}
+      const merged = new Set([...(Array.isArray(current) ? current.filter((v): v is string => typeof v === "string") : []), ...strings]);
+      s.setItem(lsKey, JSON.stringify([...merged]));
+    }
+    if ("lastStop" in old) {
+      moved = true;
+      if (typeof old.lastStop === "string" && old.lastStop && !s.getItem("academy-last-stop-v1")) s.setItem("academy-last-stop-v1", old.lastStop);
+    }
+    if (moved) s.setItem(LOCAL_KEY, JSON.stringify({ owner: raw?.owner, saved: sanitizeSaved(old) }));
+  } catch {}
 }
 
 // Leaving the page, closing the tab, or switching apps on a phone: send what
 // is waiting now rather than after the delay.
 if (typeof window !== "undefined") {
+  rescueMovedProgress();
   window.addEventListener("pagehide", () => void flush(true));
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") void flush(true);

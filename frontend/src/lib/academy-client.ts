@@ -81,6 +81,17 @@ export async function academyFetch(path: string, init: RequestInit = {}) {
   return fetch(path, { ...init, headers, credentials: "same-origin" });
 }
 
+/** Remembers a one-time onboarding step (lab briefing, terms, tour) on the
+ *  student's account, so a new browser or device does not show it again.
+ *  Fire-and-forget: the localStorage flag still drives the synchronous read. */
+export function persistPortalFlag(name: string) {
+  void academyFetch("/academy/api/portal", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ portal: { flags: { [name]: true } } }),
+  }).catch(() => {});
+}
+
 // A copy of the student's intake answers, so a slow or failing server never
 // sends someone who already answered back through the questions.
 const profileKey = (studentId: string) => `academy-profile:${studentId}`;

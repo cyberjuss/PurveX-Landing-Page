@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { type PhaseDef, type WeekDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { findQuiz } from "@/content/academy/quizzes";
@@ -8,7 +8,17 @@ import { academyFetch, useResults } from "@/lib/academy-client";
 import { CHALLENGE_PATHS, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
 import type { Results } from "@/lib/academy-score";
 import { isPhaseLocked } from "@/lib/academy-locks";
-import { getSaved, openSaved, subscribeSaved, updateSaved } from "@/lib/academy-saved-client";
+
+const STORAGE_KEY = "academy-progress-v1";
+const QUIZ_PASS_KEY = "academy-quiz-pass-v1";
+const LAST_STOP_KEY = "academy-last-stop-v1";
+const LABS_DONE_KEY = "academy-labs-done-v1";
+
+// Onboarding "seen" flags carried on the account, mapped to the localStorage
+// keys their synchronous readers (e.g. labBriefed()) still use.
+const FLAG_LOCAL_KEYS: Record<string, string> = {
+  labBrief: "purvex.lab.brief.v1",
+};
 
 /** The slug a tab gets in the URL. Section tabs use the same one. */
 export function slugify(label: string) {
@@ -94,42 +104,39 @@ interface AcademyProgressContextValue {
 
 const AcademyProgressContext = createContext<AcademyProgressContextValue | null>(null);
 
-export function AcademyProgressProvider({ phases, studentId, children }: { phases: PhaseDef[]; studentId: string; children: React.ReactNode }) {
+export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef[]; children: React.ReactNode }) {
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [quizPasses, setQuizPasses] = useState<Set<string>>(new Set());
   const [labsDone, setLabsDone] = useState<Set<string>>(new Set());
   const [lastStop, setLastStopState] = useState<LastStop | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [serverSynced, setServerSynced] = useState(false);
   const results = useResults();
 
-  // Progress is saved to the account (academy-saved-client.ts), with a copy in
-  // this browser for a fast first paint. Whatever arrives is merged in, so a
-  // finished lab that reports in before the saved copy loads is never lost.
-  const appliedRef = useRef("");
   useEffect(() => {
-    const apply = () => {
-      const saved = getSaved();
-      // Typing in a challenge box saves too. Only re-render when this provider's own part changed.
-      const mine = JSON.stringify([saved.completed, saved.quizPasses, saved.labsDone, saved.lastStop]);
-      if (mine === appliedRef.current) return;
-      appliedRef.current = mine;
-      const passed = new Set(saved.quizPasses);
-      const done = new Set(saved.completed);
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      const passedRaw = window.localStorage.getItem(QUIZ_PASS_KEY);
+      const done = new Set<string>(raw ? JSON.parse(raw) : []);
+      const passed = new Set<string>(passedRaw ? JSON.parse(passedRaw) : []);
       for (const key of [...done]) {
         const [phaseSlug, entrySlug] = key.split(":");
         if (phaseSlug && entrySlug && findQuiz(phaseSlug, entrySlug) && !passed.has(key)) done.delete(key);
       }
       setCompleted(done);
       setQuizPasses(passed);
-      setLabsDone((prev) => new Set([...saved.labsDone, ...prev]));
-      setLastStopState((prev) => prev ?? parseLastStop(saved.lastStop));
+      const labsRaw = window.localStorage.getItem(LABS_DONE_KEY);
+      // Merge, since a finished lab on screen can report in before this runs.
+      const labsSaved: string[] = labsRaw ? JSON.parse(labsRaw) : [];
+      setLabsDone((prev) => new Set([...labsSaved, ...prev]));
+      setLastStopState(parseLastStop(window.localStorage.getItem(LAST_STOP_KEY)));
+      // Seeded from this browser, then corrected from the account below.
+    } catch {
+      // Private browsing / blocked storage -- progress just won't persist.
+    } finally {
       setLoaded(true);
-    };
-    const stop = subscribeSaved(apply);
-    void openSaved(studentId);
-    apply();
-    return stop;
-  }, [studentId]);
+    }
+  }, []);
 
   // Where the account says they were, which beats where this browser says.
   //
@@ -161,20 +168,96 @@ export function AcademyProgressProvider({ phases, studentId, children }: { phase
   }, []);
 
   useEffect(() => {
-    if (loaded) updateSaved({ completed: [...completed] });
+    if (!loaded) return;
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify([...completed]));
+    } catch {
+      // Ignore -- nothing to persist to.
+    }
   }, [completed, loaded]);
 
   useEffect(() => {
-    if (loaded) updateSaved({ quizPasses: [...quizPasses] });
+    if (!loaded) return;
+    try {
+      window.localStorage.setItem(QUIZ_PASS_KEY, JSON.stringify([...quizPasses]));
+    } catch {
+      // Ignore -- nothing to persist to.
+    }
   }, [quizPasses, loaded]);
 
   useEffect(() => {
-    if (loaded) updateSaved({ labsDone: [...labsDone] });
+    if (!loaded) return;
+    try {
+      window.localStorage.setItem(LABS_DONE_KEY, JSON.stringify([...labsDone]));
+    } catch {
+      // Ignore -- nothing to persist to.
+    }
   }, [labsDone, loaded]);
 
   useEffect(() => {
-    if (loaded && lastStop) updateSaved({ lastStop: entryKey(lastStop.phaseSlug, lastStop.entrySlug) });
+    if (!loaded) return;
+    try {
+      if (lastStop) window.localStorage.setItem(LAST_STOP_KEY, entryKey(lastStop.phaseSlug, lastStop.entrySlug));
+    } catch {
+      // Ignore -- nothing to persist to.
+    }
   }, [lastStop, loaded]);
+
+  // Once local state is in, pull the account's copy and merge it, so a new
+  // browser or device restores the student's place. Sets only grow (union);
+  // onboarding flags hydrate into localStorage for their synchronous readers.
+  // Guests and locked sessions just get a 401, caught, and localStorage stands.
+  useEffect(() => {
+    if (!loaded || serverSynced) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await academyFetch("/academy/api/portal");
+        if (!res.ok || cancelled) return;
+        const { portal } = (await res.json()) as {
+          portal?: { completed?: string[]; quizPasses?: string[]; labsDone?: string[]; lastStop?: string | null; flags?: Record<string, boolean> };
+        };
+        if (!portal || cancelled) return;
+        if (portal.completed?.length) setCompleted((prev) => new Set([...prev, ...portal.completed!]));
+        if (portal.quizPasses?.length) setQuizPasses((prev) => new Set([...prev, ...portal.quizPasses!]));
+        if (portal.labsDone?.length) setLabsDone((prev) => new Set([...prev, ...portal.labsDone!]));
+        if (portal.lastStop) setLastStopState((prev) => prev ?? parseLastStop(portal.lastStop!));
+        if (portal.flags) {
+          for (const [flag, on] of Object.entries(portal.flags)) {
+            const lsKey = FLAG_LOCAL_KEYS[flag];
+            if (on && lsKey) {
+              try { window.localStorage.setItem(lsKey, "1"); } catch {}
+            }
+          }
+        }
+      } catch {
+        // Offline or no account -- localStorage remains the source of truth.
+      } finally {
+        if (!cancelled) setServerSynced(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [loaded, serverSynced]);
+
+  // Save progress to the account, debounced, after the server copy is merged in.
+  useEffect(() => {
+    if (!loaded || !serverSynced) return;
+    const t = setTimeout(() => {
+      void academyFetch("/academy/api/portal", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          portal: {
+            completed: [...completed],
+            quizPasses: [...quizPasses],
+            labsDone: [...labsDone],
+            lastStop: lastStop ? entryKey(lastStop.phaseSlug, lastStop.entrySlug) : null,
+          },
+        }),
+      }).catch(() => {});
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [completed, quizPasses, labsDone, lastStop, loaded, serverSynced]);
 
   const totalCount = useMemo(() => countEntries(phases), [phases]);
 
@@ -202,9 +285,6 @@ export function AcademyProgressProvider({ phases, studentId, children }: { phase
     if (!loaded) return;
     const ready = [...reqs].filter(([key, list]) => list.length > 0 && list.every((r) => r.done) && !completed.has(key)).map(([key]) => key);
     if (ready.length === 0) return;
-    // Unchanged from before progress was saved to the account. It runs once per
-    // newly finished week and stops, since `ready` is empty on the next pass.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCompleted((prev) => new Set([...prev, ...ready]));
   }, [reqs, completed, loaded]);
 
