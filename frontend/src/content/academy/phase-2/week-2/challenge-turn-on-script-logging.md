@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Keep What a Process Launch Alone Throws Away</h3>
 <p class="ad-brief__ask">A process-creation event tells you powershell.exe ran. It does not tell you what it actually did. Can you turn on the log that does?</p>
-<p>PowerShell is the single most common tool in a real intrusion after an attacker already has a foothold at PurveX Financial, precisely because it is already on every Windows machine and does almost anything. A process-creation event only ever shows that powershell.exe launched. It never shows what script or command it ran, which is the part that actually matters. Turn on PowerShell's own script-block logging, run a command, and find the exact text of what you ran preserved in the log.</p>
+<p>After the scheduled-task finding you reported, Alex Rivera wants this logging on domain-wide, starting with your own machine. PowerShell is the single most common tool in a real intrusion after an attacker already has a foothold at PurveX Financial, precisely because it is already on every Windows machine and does almost anything. A process-creation event only ever shows that powershell.exe launched. It never shows what script or command it ran, which is the part that actually matters. Turn on PowerShell's own script-block logging, run a command, and find the exact text of what you ran preserved in the log.</p>
 <p>Your hosted lab needs to be running, with the domain controller reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 

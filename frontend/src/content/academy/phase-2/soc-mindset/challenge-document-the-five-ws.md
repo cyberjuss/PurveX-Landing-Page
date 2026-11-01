@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Turn a Vague Alert Into a Documented Account</h3>
 <p class="ad-brief__ask">A vague alert says a sign-in failed. Can you turn that into the kind of documented account a Tier 2 analyst can actually act on, using only what the event itself records?</p>
-<p>The 5 W's turn a vague alert into a documented account: who, what, when, where, and why. The fastest way to learn what each one actually answers at PurveX Financial is to generate a real failed sign-in yourself and read the event it leaves behind. On your domain controller, fail a sign-in against your own account on purpose, with a real authentication call instead of a guess, and read what the event recorded.</p>
+<p>The 5 W's turn a vague alert into a documented account: who, what, when, where, and why. Theo Walsh on Tier 2 only ever acts on what the handoff actually records, not a vague "a sign-in failed." The fastest way to learn what each one actually answers at PurveX Financial is to generate a real failed sign-in yourself and read the event it leaves behind. On your domain controller, fail a sign-in against your own account on purpose, with a real authentication call instead of a guess, and read what the event recorded.</p>
 <p>Your hosted lab needs to be running, with the domain controller reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
@@ -89,7 +89,7 @@ Open Event Viewer and find the 4625 you just generated. Every field on it answer
 
 <div class="ad-mission ad-mission--capstone" data-id="sm2-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1130 · Low</span>
-<p><strong>Tier 2 Handoff · Documentation Review · 9:00 AM</strong><br>A PurveX Financial Tier 2 analyst reviewing your write-up asks you to name exactly which part of the 5 W's framework the Sub Status field covers.</p>
+<p><strong>Tier 2 Handoff · Documentation Review · 9:00 AM</strong><br>Theo Walsh, reviewing your write-up on Tier 2, asks you to name exactly which part of the 5 W's framework the Sub Status field covers.</p>
 <p><strong>Task:</strong> The Sub Status field names the exact reason the sign-in failed. Which of the 5 W's does that field actually answer? Type its letter.<br><strong>A</strong> Who<br><strong>B</strong> When<br><strong>C</strong> Why</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which W the sub status field answers" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">

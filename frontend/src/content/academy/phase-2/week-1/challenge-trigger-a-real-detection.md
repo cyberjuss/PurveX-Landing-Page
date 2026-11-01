@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Prove the Signature Match, Then Find Its Limit</h3>
 <p class="ad-brief__ask">Antivirus works by matching a file against a library of known-bad signatures. Can you create a file real enough to prove it, and read the detection it triggers?</p>
-<p>You cannot ethically create real malware to test a defense. The antivirus industry solved that problem decades ago with the EICAR test file: a short, completely harmless text string that every antivirus engine is built to recognize and flag, on purpose, so PurveX Financial's defenders can prove detection actually works without touching anything dangerous. Create a real EICAR test file on your domain controller, let Windows Defender react to it, and read the exact detection it logs.</p>
+<p>You cannot ethically create real malware to test a defense. Noor Ahmadi wants Windows Defender's coverage confirmed live, not assumed from a vendor datasheet. The antivirus industry solved that problem decades ago with the EICAR test file: a short, completely harmless text string that every antivirus engine is built to recognize and flag, on purpose, so PurveX Financial's defenders can prove detection actually works without touching anything dangerous. Create a real EICAR test file on your domain controller, let Windows Defender react to it, and read the exact detection it logs.</p>
 <p>Your hosted lab needs to be running, with the domain controller reachable. Windows Defender is already on by default. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 

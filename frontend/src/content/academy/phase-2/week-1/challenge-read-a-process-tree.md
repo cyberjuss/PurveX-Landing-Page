@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Follow the Process Tree to What Keeps It Alive</h3>
 <p class="ad-brief__ask">An alert says a process ran. Can you build the same hunt an analyst runs from the command line, follow it from one suspicious line to the mechanism keeping it alive, and shut that mechanism down without destroying the evidence?</p>
-<p>A process name alone rarely tells you anything. <code>powershell.exe</code> runs thousands of times a day on a normal PurveX Financial domain controller for completely ordinary reasons. What makes one launch worth a second look is its parent, its exact command line, and whatever keeps relaunching it, all of which Sysmon records for every process on this machine. Work this entirely from PowerShell: query Sysmon for the suspicious process, find what keeps bringing it back, and contain it without deleting the evidence that shows what it was.</p>
+<p>Theo Walsh escalated this one to you from Tier 2. A process name alone rarely tells you anything. <code>powershell.exe</code> runs thousands of times a day on a normal PurveX Financial domain controller for completely ordinary reasons. What makes one launch worth a second look is its parent, its exact command line, and whatever keeps relaunching it, all of which Sysmon records for every process on this machine. Work this entirely from PowerShell: query Sysmon for the suspicious process, find what keeps bringing it back, and contain it without deleting the evidence that shows what it was.</p>
 <p>Your hosted lab needs to be running, with the domain controller reachable. Sysmon is already installed. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 

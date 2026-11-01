@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>What the Firewall Does With What You Never Mentioned</h3>
 <p class="ad-brief__ask">Before you add a single rule, a firewall has already decided what to do with everything you never mentioned. Can you read that default straight from your own domain controller?</p>
-<p>Allowlisting and blocklisting are not about which list you keep. They are about what the system does with the traffic that is not on either list. A firewall's default action answers that question before any rule you write ever runs. Read your domain controller's own default outbound action, the setting that decides what happens to a connection nobody wrote a rule for.</p>
+<p>Allowlisting and blocklisting are not about which list you keep. They are about what the system does with the traffic that is not on either list. Alex Rivera wants this written down for the audit file, not assumed. A firewall's default action answers that question before any rule you write ever runs. Read your domain controller's own default outbound action, the setting that decides what happens to a connection nobody wrote a rule for.</p>
 <p>Your hosted lab needs to be running, with the domain controller reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
@@ -83,7 +83,7 @@ Two different answers sit side by side here. Inbound traffic nobody asked for is
 
 <div class="ad-mission ad-mission--capstone" data-id="sm2-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1133 · Medium</span>
-<p><strong>Security Architecture Review · Policy Question · 3:30 PM</strong><br>A PurveX Financial architecture review asks you to explain, in plain terms, why the domain controller trusts outbound traffic by default while it refuses inbound traffic by default.</p>
+<p><strong>Security Architecture Review · Policy Question · 3:30 PM</strong><br>Alex Rivera is presenting your audit finding to the architecture review board, and needs you to explain, in plain terms, why the domain controller trusts outbound traffic by default while it refuses inbound traffic by default.</p>
 <p><strong>Task:</strong> What does that difference actually trade off? Type its letter.<br><strong>A</strong> Nothing, the two defaults are functionally identical.<br><strong>B</strong> Blocking inbound by default stops strangers from reaching in, while allowing outbound by default trusts the machine's own software not to call out to somewhere it should not.<br><strong>C</strong> Outbound is allowed by default because outbound traffic can never carry anything malicious.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what the two defaults trade off" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">

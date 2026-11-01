@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Who the Server Actually Trusts</h3>
 <p class="ad-brief__ask">What happens when an application trusts the client to say who it is, instead of verifying that on the server?</p>
-<p>PurveX Financial is reviewing a vendor's client portal before signing a contract, and the vendor's own demo environment runs the same account-role logic PortSwigger built this lab to teach. A web application stores each user's role on the server but also accepts a role value from the browser. If the server believes whatever the browser sends, any regular user can promote themselves to admin. In PortSwigger's "User role can be modified in user profile" lab, sign in as a regular user and gain admin access without admin credentials, then use the admin panel to delete the user <code>carlos</code>.</p>
+<p>Devon Brooks, PurveX Financial's Compliance Officer, needs this vendor's client portal cleared before the contract is signed, and the vendor's own demo environment runs the same account-role logic PortSwigger built this lab to teach. A web application stores each user's role on the server but also accepts a role value from the browser. If the server believes whatever the browser sends, any regular user can promote themselves to admin. In PortSwigger's "User role can be modified in user profile" lab, sign in as a regular user and gain admin access without admin credentials, then use the admin panel to delete the user <code>carlos</code>.</p>
 <p>You need a free PortSwigger Web Security Academy account and Burp Suite Community Edition. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 

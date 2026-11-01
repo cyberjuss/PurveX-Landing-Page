@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Open, Closed, or Just Guarded?</h3>
 <p class="ad-brief__ask">Before an attacker breaks in, they knock on every door to see which ones open. Captured from the defender's side, can you tell an open door from a closed one from a door a firewall is holding shut?</p>
-<p>Almost every intrusion against PurveX Financial starts with reconnaissance. The attacker scans a machine to learn which ports are open before choosing where to push. From the Ubuntu server, scan the domain controller's ports with a plain built-in tool, the way an administrator inventories a machine, and capture it in Wireshark to learn the three answers a port can give.</p>
+<p>Almost every intrusion against PurveX Financial starts with reconnaissance. The attacker scans a machine to learn which ports are open before choosing where to push. Alex Rivera runs this exact inventory scan against the domain controller every quarter; today you run it yourself. From the Ubuntu server, scan the domain controller's ports with a plain built-in tool, the way an administrator inventories a machine, and capture it in Wireshark to learn the three answers a port can give.</p>
 <p>Your hosted lab needs to be running, with both machines started and able to reach each other. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
