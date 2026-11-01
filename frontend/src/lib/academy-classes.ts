@@ -139,6 +139,56 @@ export async function deleteClass(classId: string): Promise<boolean> {
 }
 
 /** True when the student is already on any class roster. */
+// A cohort seat is free access for a fixed stretch, not forever. After this a
+// student is dropped to the free Explore tier and emailed to get Pro or stay
+// free (see the cohort-expiry cron).
+export const COHORT_ACCESS_WEEKS = 12;
+const COHORT_ACCESS_MS = COHORT_ACCESS_WEEKS * 7 * 86_400_000;
+
+/** When a student's cohort access runs out: COHORT_ACCESS_WEEKS after they
+ *  joined their class. Null when they are on no roster. Uses the earliest join
+ *  if somehow on more than one, so moving classes never extends the clock. */
+export async function cohortAccessExpiry(userId: string): Promise<Date | null> {
+  let joined: string | null = null;
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin
+      .from("academy_class_members")
+      .select("joined_at")
+      .eq("user_id", userId)
+      .order("joined_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    if (error) {
+      console.error("cohort expiry lookup failed", error.message);
+      return null;
+    }
+    joined = data?.joined_at ?? null;
+  } else {
+    for (const list of memoryMembers.values()) {
+      for (const m of list) {
+        if (m.userId === userId && (!joined || m.joinedAt < joined)) joined = m.joinedAt;
+      }
+    }
+  }
+  if (!joined) return null;
+  return new Date(new Date(joined).getTime() + COHORT_ACCESS_MS);
+}
+
+/** Every roster seat across all classes, for the expiry cron. */
+export async function allClassMembers(): Promise<ClassMember[]> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin
+      .from("academy_class_members")
+      .select("user_id, email, name, joined_at");
+    if (error) {
+      console.error("all class members read failed", error.message);
+      return [];
+    }
+    return (data ?? []).map((r) => ({ userId: r.user_id, email: r.email, name: r.name, joinedAt: r.joined_at }));
+  }
+  return [...memoryMembers.values()].flat();
+}
+
 export async function isClassMember(userId: string): Promise<boolean> {
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin.from("academy_class_members").select("class_id").eq("user_id", userId).limit(1);

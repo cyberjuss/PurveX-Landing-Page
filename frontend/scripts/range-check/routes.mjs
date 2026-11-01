@@ -87,11 +87,10 @@ async function main() {
   // check in check:range:gates covers that the intent survives the trip.
 
   console.log("\nSigning up for Range lands back in Range");
-  // Both of these shipped broken. /account/signup ignored `next` entirely and
+  // This one shipped broken. /account/signup ignored `next` entirely and
   // always pushed to /pricing -- the $99 self-hosted Platform picker -- so a
   // Range Pro buyer created an account and was handed the wrong product's
-  // checkout. And "Create an account" on the login page forwarded only the
-  // plan, dropping the Range destination on the way through.
+  // checkout.
   const signup = await hit("/account/signup?next=%2Frange%2Fupgrade");
   check("the signup page loads with a next", signup.status === 200, `status ${signup.status}`);
   check(
@@ -102,11 +101,10 @@ async function main() {
 
   const login = await hit("/account/login?next=%2Frange%2Fupgrade");
   check("the login page loads with a next", login.status === 200, `status ${login.status}`);
-  check(
-    "login carries the destination into Create an account",
-    login.text.includes("/account/signup?next=%2Frange%2Fupgrade"),
-    "the Create an account link dropped `next`, so signup would land on /pricing"
-  );
+  // Whether `next` survives into "Create an account" is decided by a
+  // browser-only check (no portal account on this device yet?), so nothing
+  // server-rendered ever shows that link. check:range:gates reads the
+  // source for it instead.
 
   console.log("\nThe plan endpoint answers without the passcode cookie");
   const plan = await hit("/academy/api/plan");

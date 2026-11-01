@@ -2837,10 +2837,12 @@ body:has(.lp) {
   background-image: radial-gradient(ellipse 130% 90% at 50% -15%, color-mix(in srgb, var(--rd-accent) 14%, transparent) 0%, color-mix(in srgb, var(--rd-accent) 4%, transparent) 35%, transparent 72%);
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  transform-origin: 50% 0%;
+  animation: academy-blur-breathe 18s ease-in-out infinite;
 }
-@keyframes academy-print-live {
-  0%, 100% { opacity: 0.42; }
-  50% { opacity: 1; }
+@keyframes academy-blur-breathe {
+  0%, 100% { opacity: 0.68; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.06); }
 }
 @media (prefers-reduced-motion: reduce) {
   .academy-bg::before { animation: none; opacity: 0.85; }
@@ -2878,6 +2880,25 @@ body:has(.lp) {
 .academy-prose blockquote p { margin: 0.3rem 0; }
 .academy-prose code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85em; background: var(--pvrx-surface-alt-light); border: 1px solid var(--pvrx-border-light); border-radius: 4px; padding: 0.1em 0.4em; }
 .academy-prose pre { margin: 1rem 0; padding: 0.9rem 1rem; background: #0c1220; border: 1px solid rgba(255,255,255,0.1); overflow-x: auto; }
+/* What a command's parts do, read down the left in one pass. Two columns so
+   the flags line up, and no rules or boxes: the alignment carries it. */
+.academy-prose .ad-flags__lead {
+  margin: 1.1rem 0 0.5rem; font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--pvrx-text-muted-light, #64748b);
+}
+.academy-prose ul.ad-flags { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 0.5rem 1rem; margin: 0 0 1.1rem; padding: 0; list-style: none; }
+.academy-prose ul.ad-flags > li { display: contents; margin: 0; }
+.academy-prose ul.ad-flags > li > code { align-self: start; justify-self: start; white-space: nowrap; }
+.academy-prose ul.ad-flags > li > em {
+  align-self: start; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.78em; font-style: normal;
+  font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pvrx-text-muted-light, #64748b);
+}
+.academy-prose ul.ad-flags > li > span { align-self: start; }
+@media (max-width: 560px) {
+  .academy-prose ul.ad-flags { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
+  .academy-prose ul.ad-flags > li { display: grid; gap: 0.15rem; margin: 0 0 0.6rem; }
+}
 .academy-prose p.ad-cmd { margin: 0.85rem 0; }
 .academy-prose p.ad-cmd > code {
   display: block; box-sizing: border-box; width: 100%;
@@ -3278,6 +3299,54 @@ body:has(.lp) {
 .academy-prose .ad-code pre { margin: 0; border-radius: 0; }
 .academy-prose .ad-code__pre--tall { max-height: 420px; overflow-y: auto; }
 
+/* "Go deeper": an optional deep dive, framed as one contained block so it reads
+   as a distinct aside rather than loose text. A clear toggle, a padded body,
+   and each #### inside as a tidy sub-section with even rhythm. */
+.academy-prose .academy-deeper {
+  margin: 1.75rem 0;
+  border: 1px solid var(--rd-line);
+  background: color-mix(in srgb, var(--rd-ink) 2.5%, transparent);
+}
+.academy-prose .academy-deeper[open] { padding-bottom: 1.2rem; }
+.academy-prose .academy-deeper > summary {
+  display: flex; align-items: center; gap: 0.55rem;
+  cursor: pointer; list-style: none;
+  padding: 0.85rem 1.15rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--rd-accent);
+  transition: color var(--ax-dur) var(--ax-ease);
+}
+.academy-prose .academy-deeper > summary::-webkit-details-marker { display: none; }
+.academy-prose .academy-deeper > summary::before {
+  content: ""; flex: none;
+  width: 0; height: 0;
+  border-left: 5px solid currentColor;
+  border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+  transition: transform var(--ax-dur) var(--ax-ease);
+}
+.academy-prose .academy-deeper[open] > summary::before { transform: rotate(90deg); }
+.academy-prose .academy-deeper[open] > summary { border-bottom: 1px solid var(--rd-line); }
+.academy-prose .academy-deeper > summary:hover { color: var(--rd-ink); }
+/* The body: everything after the toggle, inset evenly from the frame. */
+.academy-prose .academy-deeper > *:not(summary) { margin-left: 1.15rem; margin-right: 1.15rem; }
+/* Each sub-section heading, with consistent space above and a hairline to set
+   it off from the section before. The first one needs neither. */
+.academy-prose .academy-deeper h4 {
+  margin-top: 1.5rem; margin-bottom: 0.5rem; padding-top: 1.3rem;
+  border-top: 1px solid var(--rd-line-2);
+  font-family: var(--font-display); font-size: var(--ty-lead); font-weight: 650; letter-spacing: -0.01em; color: var(--rd-ink);
+}
+.academy-prose .academy-deeper > summary + h4,
+.academy-prose .academy-deeper h4:first-of-type { margin-top: 1.15rem; padding-top: 0; border-top: none; }
+.academy-prose .academy-deeper p { font-size: var(--ty-note); }
+.academy-prose .academy-deeper ul { margin-top: 0.5rem; }
+.academy-prose .academy-deeper pre { margin-top: 0.6rem; margin-bottom: 0.6rem; }
+/* A smooth reveal on open, from a resting state, honoured off under reduced motion. */
+.academy-prose .academy-deeper[open] > *:not(summary) { animation: deeper-in var(--ax-dur-slow, 320ms) var(--ax-ease) both; }
+@keyframes deeper-in { from { opacity: 0; transform: translateY(5px); } }
+@media (prefers-reduced-motion: reduce) { .academy-prose .academy-deeper[open] > *:not(summary) { animation: none; } }
+
 /* Troubleshooting callout list -- red left-border cards, one per error.
    Each gets a numbered circular badge via CSS counters (scoped to this
    list) instead of relying on the label's own leading "1. " text, so the
@@ -3469,8 +3538,33 @@ body:has(.lp) {
 .academy-prose .ad-mission:has(.ad-lab) .ad-mission__num { padding-right: 48px; }
 .academy-prose .ad-mission > p { margin: 0; max-width: 68ch; font-size: var(--ty-lead); line-height: 1.6; color: var(--rd-ink-2, var(--pvrx-text-secondary-light)); }
 .academy-prose .ad-mission > p + p { margin-top: 0.85rem; }
-.academy-prose .ad-mission > p:first-of-type strong { display: block; margin-bottom: 0.35rem; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rd-ink-3, #8a94a8); }
+.academy-prose .ad-mission > p:first-of-type strong:first-child { display: block; margin-bottom: 0.35rem; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rd-ink-3, #8a94a8); }
 .academy-prose .ad-mission > p:first-of-type { color: var(--rd-ink, var(--pvrx-text-primary-light)); }
+/* A multiple-choice option is marked up as "<br><strong>A</strong> text", one
+   per line, with no wrapper of its own -- adding one across every file this
+   pattern already appears in would be a much bigger, riskier change than
+   styling the shape that is already there. br + strong only ever matches an
+   option's own letter, never the Task:/caller-name label (the paragraph's
+   first child, never preceded by a br), so this needs no markup change. */
+.academy-prose .ad-mission > p br + strong {
+  display: inline-block;
+  margin: 1.1rem 0.6rem 0.3rem 0;
+  padding: 0.1rem 0.55rem;
+  min-width: 1.4rem;
+  text-align: center;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--rd-accent, #5546e0) 14%, transparent);
+  color: var(--rd-accent, #5546e0);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--ty-small);
+  font-weight: 700;
+}
+/* The run of text between one option's br+strong badge and the next reads
+   as a single dense paragraph otherwise. A touch more line-height on the
+   whole block plus the wider gap above keeps each option readable as its
+   own line instead of a wall of text. */
+.academy-prose .ad-mission > p { line-height: 1.75; }
+.academy-prose .ad-mission > p:first-of-type br:first-of-type + strong { margin-top: 1.3rem; }
 .academy-prose .ad-ticket-meta {
   display: grid; grid-template-columns: max-content minmax(0,1fr); gap: 0.35rem 0.65rem;
   margin-top: 0.85rem; padding: 0.65rem 0; border: none; background: transparent;
@@ -3533,6 +3627,24 @@ body:has(.lp) {
 .ad-hint-card__body br { display: block; content: ""; margin-top: 0.55rem; }
 .ad-hint-card__body p { margin: 0.7rem 0 0; }
 .ad-hint-card__body p:first-child { margin-top: 0; }
+/* Pinned under the hint, because somebody still stuck is at the bottom of
+   it by then, and the alternative was closing this to go and find the
+   coach. flex: 1 on the body above keeps it there however short the hint. */
+.ad-hint-card__foot {
+  flex: 0 0 auto; padding: 14px 20px 18px;
+  border-top: 1px solid var(--rd-line, #e2e8f0);
+  display: flex;
+}
+.ad-hint-card__coach {
+  appearance: none; -webkit-appearance: none; width: 100%;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 38px; padding: 0 14px; border-radius: 9px; cursor: pointer;
+  font-size: 0.85rem; font-weight: 650;
+  color: #fff; background: var(--rd-accent, #6a5cff); border: 1px solid transparent;
+}
+.ad-hint-card__coach:hover { opacity: 0.9; }
+/* The panel is white in both themes except when the shell says dark. */
+.ad-hint-card[data-academy-theme="dark"] .ad-hint-card__foot { border-top-color: var(--rd-line-dark, #223047); }
 .ad-hint-card__body ul, .ad-hint-card__body ol { margin: 0.4rem 0 0; padding-left: 1.2rem; }
 .ad-hint-card__body li { margin: 0.32rem 0; }
 .ad-hint-card__body code {
@@ -3540,8 +3652,12 @@ body:has(.lp) {
   background: var(--pvrx-surface-alt-light, #f1f5f9); border: 1px solid var(--pvrx-border-light, #e2e8f0);
   border-radius: 4px; padding: 0.08em 0.35em;
 }
+/* 2.9rem everywhere the button appears: a 28px square, its 7px of offset,
+   and room to spare. It was 4.4rem when the button said "Copy", and the
+   lesson from that round still holds -- reserve more than the button
+   measures, or any change to it puts it back on top of the text. */
 .ad-hint-card__body li.ad-cmd {
-  position: relative; padding-right: 3.8rem;
+  position: relative; padding-right: 2.9rem;
 }
 .ad-hint-card__body li.ad-cmd > code {
   display: inline !important; background: none !important; border: 0 !important;
@@ -3553,7 +3669,7 @@ body:has(.lp) {
 .ad-hint-card__body p.ad-cmd > code {
   display: block !important; box-sizing: border-box; width: 100%;
   background: #0c1220 !important; border: 1px solid rgba(255,255,255,0.1) !important;
-  padding: 0.85rem 4.4rem 0.85rem 1rem !important;
+  padding: 0.85rem 2.9rem 0.85rem 0.9rem !important;
   color: #e8eef8 !important; font-weight: 500; font-size: 0.8125rem;
   overflow-x: auto; white-space: pre-wrap !important; word-break: break-word;
 }
@@ -3593,14 +3709,39 @@ html:has(.academy-bg[data-academy-theme="dark"]) .ad-hint-card__body p.ad-cmd > 
   background: #050508 !important; border-color: rgba(255, 255, 255, 0.18) !important; color: #e8eef8 !important;
 }
 p.ad-cmd, li.ad-cmd { position: relative; }
+/* A square the size of the text, not a chip with a word in it. The word was
+   the widest thing in the box and the command wrapped early to clear it. */
 .ad-cmd__copy {
-  position: absolute; top: 8px; right: 8px; z-index: 1;
-  font-size: var(--ty-small); font-weight: 650; color: #e2e8f0;
-  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 6px; padding: 0.25rem 0.55rem; cursor: pointer;
+  position: absolute; top: 7px; right: 7px; z-index: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; padding: 0; cursor: pointer;
+  color: #cbd5e1;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 7px;
 }
-.ad-cmd__copy:hover { background: rgba(255,255,255,0.16); }
-.academy-prose p.ad-cmd > code { padding-right: 4.4rem; }
+.ad-cmd__copy:hover { background: rgba(255,255,255,0.16); color: #fff; }
+.ad-cmd__i { display: block; }
+/* One icon at a time: the tick replaces the sheets rather than joining them. */
+.ad-cmd__i--done { display: none; }
+.ad-cmd__copy.is-copied { color: #4ade80; border-color: rgba(74, 222, 128, 0.45); }
+.ad-cmd__copy.is-copied .ad-cmd__i { display: none; }
+.ad-cmd__copy.is-copied .ad-cmd__i--done { display: block; }
+.ad-cmd__copy:focus-visible { outline: 2px solid #e2e8f0; outline-offset: 2px; }
+/* The copy button lands on a paragraph or a list item, so both have to clear
+   the same room for it. The list form never did, and a command written as a
+   bullet had the button drawn over its own text. */
+.academy-prose p.ad-cmd > code { padding-right: 2.9rem; }
+.academy-prose li.ad-cmd { padding-right: 2.9rem; }
+/* And it is a command, not a word in a sentence: no chip, and a long
+   distinguished name wraps instead of running off the side. Same treatment the
+   hint card already gives these. */
+.academy-prose li.ad-cmd > code {
+  background: none; border: 0; padding: 0; border-radius: 0;
+  white-space: pre-wrap; word-break: break-word;
+}
+/* A fenced block carries its own button, so it has to be the positioning
+   parent and leave room for it on the first line. */
+.academy-prose pre.ad-pre { position: relative; padding-right: 2.9rem; }
 @media (prefers-reduced-motion: reduce) {
   .ad-hint-card__panel { transition: none; }
 }
@@ -3641,6 +3782,27 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   .academy-prose .ad-guess__input { flex-basis: 100%; max-width: 100%; }
 }
 .academy-prose .ad-guess__submit:disabled { background: none; color: var(--rd-ink-3, #8a94a8); cursor: default; }
+/* Checking a lab can take the best part of a minute: the answer goes to the
+   server, the pod is asked for a fresh snapshot, and the change has to show
+   up in it. All the button did was grey out, which is what a button does
+   when it is broken as well as when it is busy. A spinner on the button says
+   which. --busy wins over :disabled, since it is disabled the whole time. */
+.academy-prose .ad-guess__submit--busy,
+.academy-prose .ad-guess__submit--busy:disabled {
+  color: var(--rd-accent, #6a5cff);
+  border-color: color-mix(in srgb, var(--rd-accent, #6a5cff) 45%, transparent);
+  cursor: progress; gap: 7px;
+}
+.academy-prose .ad-guess__submit--busy::before {
+  content: ""; width: 12px; height: 12px; flex: 0 0 12px;
+  border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%;
+  animation: ad-guess-spin 0.6s linear infinite;
+}
+@keyframes ad-guess-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  /* Still says busy, without the movement. */
+  .academy-prose .ad-guess__submit--busy::before { animation: none; border-right-color: currentColor; opacity: 0.45; }
+}
 .academy-prose .ad-guess__feedback,
 .academy-prose p.ad-guess__feedback,
 .academy-prose .ad-flag > .ad-guess__feedback {
@@ -3659,6 +3821,15 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 .academy-prose p.ad-guess__feedback:empty { display: none !important; margin: 0 !important; }
 .academy-prose .ad-guess__feedback--ok { color: #16a34a; }
 .academy-prose .ad-guess__feedback--err { color: #e5484d; }
+/* The same reassurance follows every miss, so it reads as a footnote on the
+   message rather than another clause in it. Inside the sentence it made a
+   line read at a glance run to three. */
+.academy-prose .ad-guess__free {
+  font-size: 0.78em; font-weight: 500; opacity: 0.75;
+  color: var(--pvrx-text-secondary-light, #64748b);
+  white-space: nowrap;
+}
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__free { color: var(--rd-ink-3, #8a94a8); }
 .academy-prose .ad-guess__feedback--tip { color: #475569; }
 .academy-prose .ad-guess__feedback--tip strong { color: #b42318; font-weight: 600; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--tip { color: #c3cddb; }
@@ -3702,6 +3873,17 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   line-height: 1;
 }
 .academy-prose .ad-guess__mark { background: #16a34a; color: #fff; }
+.academy-prose .ad-guess__mark svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+/* A live solve: the disc lands with a small overshoot, the check draws in
+   stroke by stroke as it settles, and one soft ring goes out and fades. */
+.academy-prose .ad-guess__win--live .ad-guess__mark { animation: ad-mark-pop 420ms cubic-bezier(.34, 1.56, .64, 1) both, ad-mark-ring 640ms ease-out 180ms both; }
+.academy-prose .ad-guess__win--live .ad-guess__mark path { stroke-dasharray: 20; stroke-dashoffset: 20; animation: ad-check-draw 300ms var(--ax-ease) 170ms forwards; }
+@keyframes ad-mark-pop { from { transform: scale(0.4); opacity: 0 } 60% { opacity: 1 } to { transform: scale(1); opacity: 1 } }
+@keyframes ad-check-draw { to { stroke-dashoffset: 0 } }
+@keyframes ad-mark-ring {
+  from { box-shadow: 0 0 0 0 color-mix(in srgb, #16a34a 45%, transparent) }
+  to { box-shadow: 0 0 0 12px color-mix(in srgb, #16a34a 0%, transparent) }
+}
 .academy-prose .ad-guess__miss {
   background: #e5484d;
   color: #fff;
@@ -3734,7 +3916,9 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 }
 @media (prefers-reduced-motion: reduce) {
   .academy-prose .ad-guess__input--out,
-  .academy-prose .ad-guess__win { animation: none; }
+  .academy-prose .ad-guess__win,
+  .academy-prose .ad-guess__win--live .ad-guess__mark { animation: none; }
+  .academy-prose .ad-guess__win--live .ad-guess__mark path { animation: none; stroke-dashoffset: 0; }
 }
 .academy-prose .ad-close {
   margin: 2rem 0 0;
@@ -3850,6 +4034,22 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 .academy-prose .ad-baseline-list { margin: 0.6rem 0; padding-left: 1.1rem; }
 .academy-prose .ad-baseline-list li { margin: 0.3rem 0; color: var(--pvrx-text-secondary-light); }
 .academy-prose .ad-baseline-list strong { color: var(--pvrx-text-primary-light); }
+/* One button, appended to every reveal by the shell script rather than
+   authored in content, so it is never missing and never drifts in wording.
+   Quiet by default: the reveal already answered the question, this is for
+   someone who wants the reasoning walked through instead of just reading it
+   again. */
+.academy-prose .ad-flag__coach {
+  appearance: none; -webkit-appearance: none;
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  margin: 1rem 0 0; padding: 0.45rem 0.75rem;
+  border: 1px solid var(--rd-line, rgba(16,25,46,0.14)); border-radius: 7px;
+  background: transparent; color: var(--rd-accent, #5546e0);
+  font-size: var(--ty-small); font-weight: 600; cursor: pointer;
+}
+.academy-prose .ad-flag__coach:hover { background: color-mix(in srgb, var(--rd-accent, #5546e0) 8%, transparent); }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-flag__coach { border-color: var(--rd-line-dark, #223047); color: #9a8cff; }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-flag__coach:hover { background: color-mix(in srgb, #9a8cff 10%, transparent); }
 
 /* One motion language for Academy. Soft Y for first paint, menus, drills.
    Directional X for next and previous. A short rise on routes lives on
@@ -3859,6 +4059,24 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 @keyframes ax-enter-back { from { opacity: 0; transform: translate3d(-16px, 0, 0) } to { opacity: 1; transform: none } }
 @keyframes ax-enter-page { from { opacity: 0; transform: translate3d(0, 14px, 0) } to { opacity: 1; transform: none } }
 @keyframes ax-drawer-in { from { transform: translateX(-100%) } to { transform: none } }
+/* Route changes, as a view transition (academy-shell.tsx wraps each page in
+   <ViewTransition enter="ax-page-in" exit="ax-page-out">). The page leaving
+   lifts away quickly; the next one rises in on the portal curve, starting as
+   the old one clears, so the two never sit at full strength together. */
+::view-transition-old(.ax-page-out) { animation: ax-vt-out var(--ax-dur-fast) cubic-bezier(.4, 0, 1, 1) both }
+::view-transition-new(.ax-page-in) { animation: ax-vt-in var(--ax-dur-page) var(--ax-ease) 60ms both }
+@keyframes ax-vt-out { to { opacity: 0; transform: translate3d(0, -6px, 0) } }
+@keyframes ax-vt-in { from { opacity: 0; transform: translate3d(0, 14px, 0) } }
+/* Only the page moves. Without this the browser also cross-fades the whole
+   document, so the header and the course menu would flicker on every click. */
+::view-transition-old(root), ::view-transition-new(root) { animation: none }
+/* A browser that runs the view transition should not also run the page's own
+   entry animation underneath it. The CSS one stays for the first load and for
+   browsers without view transitions. */
+html:active-view-transition .ax-page { animation: none }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important }
+}
 @keyframes ax-scrim-in { from { opacity: 0 } to { opacity: 1 } }
 .ax-enter { animation: ax-enter var(--ax-dur) var(--ax-ease) both }
 .ax-enter-fwd, .academy-slide-in-right { animation: ax-enter-fwd var(--ax-dur) var(--ax-ease) both }
@@ -3939,15 +4157,14 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   color: var(--pvrx-text-primary-light);
 }
 .academy-bg[data-academy-theme="dark"]::before {
-  /* A smooth silky black instead of the printed dot grid: one soft sheen at
-     the top fading into pure black, no texture and no pulse, so the page
-     reads like the tour card's surface. */
+  /* The same accent blur as the base rule, a touch stronger on black. It
+     inherits the calm breathe animation from the base; this rule only sets
+     the colour. */
   background-image: radial-gradient(ellipse 130% 90% at 50% -15%, color-mix(in srgb, var(--rd-accent) 18%, transparent) 0%, color-mix(in srgb, var(--rd-accent) 6%, transparent) 35%, transparent 72%);
   background-size: 100% 100%;
   background-repeat: no-repeat;
   mask-image: none;
   -webkit-mask-image: none;
-  animation: none;
   opacity: 1;
 }
 
@@ -4037,6 +4254,10 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission h4 code {
   background: none !important; border: 0 !important; color: inherit;
 }
+/* A command in a list is bare in both themes. The dark rule two lines up
+   outranks the light-mode one on specificity, so it is repeated here rather
+   than left to paint a chip back on. */
+.academy-bg[data-academy-theme="dark"] .academy-prose li.ad-cmd > code { background: none; border: 0; }
 .academy-bg[data-academy-theme="dark"] .academy-prose pre,
 .academy-bg[data-academy-theme="dark"] .academy-prose p.ad-cmd > code,
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-mission p.ad-cmd > code {
@@ -4088,15 +4309,6 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   background: #0c1220; border: 1px solid rgba(255,255,255,0.1); padding: 0.85rem 1rem; color: #e2e8f0; font-weight: 500;
   overflow-x: auto; white-space: pre-wrap; word-break: break-word;
 }
-
-/* Hint stays locked until two wrong tries. Button label is set in JS
-   (Hint locked / Hint / Hide hint) so spaces stay readable. */
-.academy-prose .ad-mission[data-attempts="0"] .ad-hint__btn,
-.academy-prose .ad-mission[data-attempts="1"] .ad-hint__btn {
-  cursor: not-allowed; color: var(--pvrx-text-secondary-light); border-color: var(--pvrx-border-light); background: none;
-}
-.academy-prose .ad-mission[data-attempts="0"] .ad-hint__btn:hover,
-.academy-prose .ad-mission[data-attempts="1"] .ad-hint__btn:hover { background: none; }
 
 /* Help desk readiness scorecard (top of both Home Lab challenges) */
 .academy-prose .ad-scorecard {
@@ -4196,10 +4408,10 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   --rd-ink-3: #74747e;
   --rd-line: rgba(255, 255, 255, 0.09);
   --rd-line-2: rgba(255, 255, 255, 0.05);
-  /* A clean dark charcoal, a clear step above the pitch-black page so a panel
-     reads as an elevated surface. Solid, not the old translucent white film
-     that looked dusty grey, and not so dark it blends into the background. */
-  --rd-surface: #16141d;
+  /* Black, the same as the page. A panel is drawn by its hairline edge rather
+     than by being a lighter slab: the charcoal that used to sit here read as a
+     grey box on black, which is the one thing this theme keeps chasing out. */
+  --rd-surface: #000000;
   --rd-accent: #9a8cff;
   --rd-good: #34d399;
   --rd-warn: #fbbf24;
@@ -4296,6 +4508,12 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 .rd-log__head h3 { font-family: var(--font-display); font-size: var(--ty-h4); font-weight: 600; color: var(--rd-ink); }
 .rd-log__head p { font-size: var(--ty-note); color: var(--rd-ink-3); }
 .rd-log__count { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note); font-weight: 700; color: var(--rd-ink-2); }
+/* The group header is a toggle now, collapsed by default -- thirteen compact
+   rows to scan beats a hundred mission rows expanded at once. */
+.rd-log__toggle { display: flex; align-items: flex-end; gap: 10px; flex: 1; min-width: 0; background: none; border: none; padding: 0; margin: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+.rd-log__chevron { flex-shrink: 0; margin-bottom: 5px; color: var(--rd-ink-3); transition: transform var(--ax-dur-fast, 150ms) ease, color var(--ax-dur-fast, 150ms) ease; }
+.rd-log__toggle:hover .rd-log__chevron, .rd-log__toggle:focus-visible .rd-log__chevron { color: var(--rd-accent); }
+.rd-log__toggle:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 2px; }
 .rd-log ol { list-style: none; margin: 0; padding: 0; }
 .rd-log__row { display: grid; grid-template-columns: 26px 10px minmax(0, 1fr) auto; align-items: center; gap: 4px 14px; padding: 12px 0; border-bottom: 1px solid var(--rd-line-2); font-size: var(--ty-body); }
 .rd-log__row:hover { background: linear-gradient(90deg, transparent, var(--rd-line-2) 20%, var(--rd-line-2) 80%, transparent); }
@@ -4394,15 +4612,12 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 .ax-home .ax-titleblock p { margin-top: 10px; font-size: var(--ty-lead); line-height: 1.5; }
 .ax-home .ax-welcome .ax-status__score { padding-top: 6px; }
 .ax-home .ax-welcome .ax-status__score strong { font-size: var(--ty-h2); }
-.ax-home .ax-status { margin-top: 16px; padding: 16px 0 18px; }
-.ax-home .ax-status__next { gap: 4px; }
-.ax-home .ax-status__next strong { font-size: var(--ty-h4); }
 .ax-home .ax-path {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   justify-content: stretch;
-  margin-top: 4px;
+  margin-top: 20px;
 }
 .ax-home .ax-path > li {
   flex: 1 1 0;
@@ -4410,7 +4625,7 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   flex-direction: column;
   justify-content: center;
   position: relative;
-  min-height: 0;
+  padding: 32px 0;
 }
 .ax-home .ax-path > li:not(:last-child)::after {
   content: "";
@@ -4423,19 +4638,10 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 }
 .ax-home .ax-path__row { padding: 0; border-bottom: none; }
 .ax-home .ax-path__title { font-size: var(--ty-h4); }
-.ax-home .ax-path__body { margin-top: 4px; font-size: var(--ty-body); }
-.ax-home .ax-segs { margin-top: 10px; }
+.ax-home .ax-path__body { margin-top: 8px; font-size: var(--ty-body); }
+.ax-home .ax-segs { margin-top: 16px; }
 .ax-home .ax-segs i { height: 6px; }
-.ax-home .dr-home { margin-top: 0; padding: 18px 20px; }
-@media (max-height: 820px) {
-  .ax-home { min-height: 0; }
-  .ax-home .ax-titleblock p { display: none; }
-  .ax-home .ax-path { justify-content: flex-start; }
-  .ax-home .ax-path > li { flex: 0 0 auto; }
-  .ax-home .ax-path > li:not(:last-child)::after { display: none; }
-  .ax-home .ax-path__row { padding: 10px 0; border-bottom: 1px solid var(--rd-line); }
-  .ax-home .ax-status { margin-top: 8px; padding: 10px 0 12px; }
-}
+.ax-home .dr-home { margin-top: 26px; padding: 18px 20px; }
 
 .ax-welcome { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px 40px; }
 .ax-welcome .ax-titleblock { flex: 1; min-width: 0; }
@@ -4461,42 +4667,6 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   .ax-entryhead .ax-titleblock { flex: none; width: 100%; }
 }
 .ax-entryhead .ax-titleblock p { margin-top: 18px; }
-.ax-status {
-  display: block;
-  margin-top: 28px; padding: 22px 0 26px; border-top: 1px solid var(--rd-line);
-}
-.ax-status__next {
-  position: relative;
-  overflow: hidden;
-  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
-  padding: 20px 22px;
-  background: color-mix(in srgb, var(--rd-accent) 7%, transparent);
-  border: 1px solid var(--sf-line);
-  box-shadow: var(--sf-lift);
-  transition: background var(--ax-dur-fast), border-color var(--ax-dur-fast);
-}
-/* The page's one wash. It belongs to the thing you are meant to click, and
-   putting it on every row below would make none of them read as the next
-   step. */
-.ax-status__next::before {
-  content: "";
-  position: absolute;
-  top: -40%; left: 50%;
-  width: 150%; height: 90%;
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse at 50% 0%,
-    color-mix(in srgb, var(--rd-accent) var(--sf-wash-strength), transparent),
-    transparent var(--sf-wash-stop));
-  pointer-events: none;
-}
-.ax-status__next > * { position: relative; }
-a.ax-status__next:hover { background: color-mix(in srgb, var(--rd-accent) 13%, transparent); border-color: color-mix(in srgb, var(--rd-accent) 42%, transparent); }
-.ax-status__next .rd-kicker { color: var(--rd-accent); opacity: 0.9; }
-.ax-status__next strong {
-  display: inline-flex; align-items: center; gap: 10px;
-  font-family: var(--font-display); font-size: var(--ty-h2); font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink);
-}
-.ax-status__next svg { color: var(--rd-accent); }
 .ax-status__score { display: flex; align-items: baseline; gap: 12px; }
 .ax-status__score strong { font-family: var(--font-display); font-size: var(--ty-stat); font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: var(--rd-accent); }
 .ax-status__score em { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-micro); font-style: normal; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rd-ink-3); }
@@ -4511,18 +4681,18 @@ a.ax-status__next:hover { background: color-mix(in srgb, var(--rd-accent) 13%, t
   border-bottom: none;
 }
 .ax-path__title, .ax-curriculum__title { transition: color var(--ax-dur) var(--ax-ease); }
-.ax-path__count svg, .ax-status__next svg { transition: transform var(--ax-dur) var(--ax-ease); }
+.ax-path__count svg, .dr-home > svg { transition: transform var(--ax-dur) var(--ax-ease); }
 .ax-path__row:hover .ax-path__title, .ax-curriculum__row:hover .ax-curriculum__title { color: var(--rd-accent); }
-.ax-path__row:hover .ax-path__count svg, .ax-status__next:hover svg { transform: translateX(3px); }
+.ax-path__row:hover .ax-path__count svg, .dr-home:hover > svg { transform: translateX(3px); }
 /* Premium hover-lift on the clickable cards, on the shared easing. */
-a.ax-path__row, a.ax-curriculum__row, a.ax-status__next, a.dr-home {
+a.ax-path__row, a.ax-curriculum__row, a.dr-home {
   transition: transform var(--ax-dur) var(--ax-ease), border-color var(--ax-dur) var(--ax-ease), background var(--ax-dur) var(--ax-ease), box-shadow var(--ax-dur) var(--ax-ease);
 }
-a.ax-path__row:hover, a.ax-curriculum__row:hover, a.ax-status__next:hover, a.dr-home:hover { transform: translateY(-2px); }
-a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.dr-home:active { transform: translateY(0); transition-duration: 80ms; }
+a.ax-path__row:hover, a.ax-curriculum__row:hover, a.dr-home:hover { transform: translateY(-2px); }
+a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform: translateY(0); transition-duration: 80ms; }
 @media (prefers-reduced-motion: reduce) {
-  a.ax-path__row, a.ax-curriculum__row, a.ax-status__next, a.dr-home { transition: none; }
-  a.ax-path__row:hover, a.ax-curriculum__row:hover, a.ax-status__next:hover, a.dr-home:hover, a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.dr-home:active { transform: none; }
+  a.ax-path__row, a.ax-curriculum__row, a.dr-home { transition: none; }
+  a.ax-path__row:hover, a.ax-curriculum__row:hover, a.dr-home:hover, a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform: none; }
 }
 .ax-path__row--soon, .ax-curriculum__row--soon { opacity: 0.55; cursor: default; }
 .ax-path__row--soon:hover .ax-path__title, .ax-curriculum__row--soon:hover .ax-curriculum__title { color: inherit; }
@@ -4534,6 +4704,9 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   background: color-mix(in srgb, var(--rd-accent) var(--sf-mark-fill), transparent);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) var(--sf-mark-line), transparent);
 }
+/* Cadence rather than sequence: the drill rows are four standing invitations,
+   not four steps, so their badge carries a word and sizes to it. */
+.ax-path__n--word { width: auto; min-width: 34px; padding: 0 10px; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
 .ax-path__title, .ax-curriculum__title { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-family: var(--font-display); font-size: var(--ty-h3); font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }
 .ax-path__body, .ax-curriculum__body { display: block; margin-top: 6px; font-size: var(--ty-body); line-height: 1.55; color: var(--rd-ink-2); }
 .ax-path__count, .ax-curriculum__meta { display: inline-flex; align-items: center; gap: 8px; padding-top: 6px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note); font-weight: 700; color: var(--rd-ink-2); }
@@ -4590,11 +4763,15 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-phasecaret { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border: 0; background: none; color: var(--rd-ink-3); cursor: pointer; transition: color var(--ax-dur-fast); }
 .ax-phasecaret:hover { color: var(--rd-accent); }
 .ax-phasecaret:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 1px; }
+/* The small arrow beside a phase name: the way to its overview page, now that
+   the name itself opens and closes the phase. */
+.ax-phasego { flex: none; display: grid; place-items: center; width: 26px; height: 26px; color: var(--rd-ink-3); transition: color var(--ax-dur-fast); }
+.ax-phasego:hover { color: var(--rd-accent); }
+.ax-phasego:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 1px; }
 
 .ax-list {
   display: flex;
   flex-direction: column;
-  margin: 10px 0 0;
   border: 1px solid var(--rd-line);
   background: color-mix(in srgb, var(--rd-ink) 3%, transparent);
   overflow: hidden;
@@ -4605,9 +4782,9 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 13px 14px 13px 17px;
-  font-size: var(--ty-lead);
-  line-height: 1.3;
+  padding: 10px 12px 10px 17px;
+  font-size: 14.5px;
+  line-height: 1.35;
   color: var(--rd-ink-2);
   transition: background var(--ax-dur) var(--ax-ease), color var(--ax-dur) var(--ax-ease);
 }
@@ -4617,8 +4794,12 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
    labs. This little heading is what keeps the two sets from reading as one
    list of eleven things. */
 /* The Home Lab heading now sits inside its phase rather than beside it, so it
-   is indented under the phase's own heading and set a step smaller. */
-.ax-subhead { margin-top: 18px; padding-left: 17px; }
+   is indented under the phase's own heading and set a step smaller. Spacing
+   above it comes from the flex gap on its container (academy-sidebar.tsx),
+   not a margin here -- a margin per section read as uneven once there were
+   three of them stacked, since each one's own wrapper could affect how much
+   of it actually showed. */
+.ax-subhead { padding-left: 17px; }
 /* Which week owns the labs under it. Quieter than the Labs header above it and
    than the lab names below, so the three read as a hierarchy rather than three
    competing labels. Aligned to the lab names' own left edge. */
@@ -4650,6 +4831,17 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-week:hover { background: color-mix(in srgb, var(--rd-ink) 5%, transparent); color: var(--rd-ink); }
 .ax-week--on { background: color-mix(in srgb, var(--rd-accent) 11%, transparent); color: var(--rd-ink); font-weight: 650; }
 .ax-week--on::before { transform: scaleY(1); }
+/* The current row's marker is a real element with a view-transition name, so
+   on a route change the browser carries the one bar from the row you left to
+   the row you opened instead of one bar shrinking while another grows. The
+   ::before above stays as the marker wherever the element is not drawn. */
+.ax-week__bar {
+  position: absolute; left: 0; top: -1px; bottom: -1px; width: 3px;
+  background: var(--rd-accent);
+  view-transition-name: ax-rail-mark;
+}
+.ax-week--on:has(.ax-week__bar)::before { transform: scaleY(0); }
+::view-transition-group(ax-rail-mark) { animation-duration: var(--ax-dur-slow); animation-timing-function: var(--ax-ease); }
 @media (prefers-reduced-motion: reduce) {
   .ax-week::before { transition: none; }
 }
@@ -4660,7 +4852,7 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-week__count {
   flex: none;
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: var(--ty-note);
+  font-size: 12.5px;
   font-style: normal;
   font-variant-numeric: tabular-nums;
   color: var(--rd-ink-2);
@@ -4697,7 +4889,21 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
   gap: 2px;
   overflow-x: auto;
   scrollbar-width: none;
+  /* No scroll-behavior here on purpose: a CSS smooth overrides the "auto" the
+     roll passes when the reader asked for reduced motion. */
 }
+/* Rolls the section strip when it runs past the edge. Sits over the tabs with
+   the page's own background behind it, so a tab slides under rather than
+   stopping at a hard line. */
+.ax-lessroll {
+  position: absolute; top: 0; bottom: 1px; z-index: 1;
+  display: grid; align-items: center; width: 46px; padding: 0; border: 0;
+  color: var(--rd-ink-2); cursor: pointer;
+}
+.ax-lessroll:hover { color: var(--rd-accent); }
+.ax-lessroll:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: -2px; }
+.ax-lessroll--start { left: 0; justify-items: start; background: linear-gradient(to right, var(--pvrx-bg-light, #fff) 60%, transparent); }
+.ax-lessroll--end { right: 0; justify-items: end; background: linear-gradient(to left, var(--pvrx-bg-light, #fff) 60%, transparent); }
 .ax-lesstabs::-webkit-scrollbar { display: none; }
 .ax-lesstab {
   position: relative;
@@ -4731,10 +4937,89 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-lesstab:hover { color: var(--rd-ink-2); }
 .ax-lesstab--on { color: var(--rd-ink); font-weight: 650; }
 .ax-lesstab--on::after { background: var(--rd-accent); }
+/* The sliding underline (section-tabs.tsx). Until it has measured its first
+   tab, the tab's own line above shows, so the current tab is never unmarked. */
+.ax-lesstabs { position: relative; }
+.ax-lesstabs__bar {
+  position: absolute; left: 0; bottom: -1px; height: 2px; width: 0;
+  background: var(--rd-accent); pointer-events: none; opacity: 0;
+}
+.ax-lesstabs__bar[data-ready] { opacity: 1; transition: transform var(--ax-dur) var(--ax-ease), width var(--ax-dur) var(--ax-ease); }
+.ax-lesstabs:has(.ax-lesstabs__bar[data-ready]) .ax-lesstab--on::after { background: transparent; }
+@media (prefers-reduced-motion: reduce) { .ax-lesstabs__bar[data-ready] { transition: none; } }
 .ax-lesstab--on i { opacity: 1; color: var(--rd-accent); }
 .ax-lesstab svg { color: var(--rd-accent); opacity: 0.75; }
 .ax-lesstab--on svg { opacity: 1; }
 .ax-lesstab:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: -4px; }
+
+/* The section strip, refined. Each section gets a numbered mark: filled in
+   the accent for the one you are on, a green tick once you have read it to
+   the end. The underline under the current section fills as its slides go
+   by. Where the strip scrolls, its ends fade instead of cutting a label in
+   half, and the roll buttons sit as small marks over the fade. */
+.ax-lesshead { margin-bottom: 22px; }
+.ax-lesstabs { gap: 2px; padding-top: 4px; }
+.ax-lesshead.has-start .ax-lesstabs { -webkit-mask-image: linear-gradient(to right, transparent, #000 64px); mask-image: linear-gradient(to right, transparent, #000 64px); }
+.ax-lesshead.has-end .ax-lesstabs { -webkit-mask-image: linear-gradient(to left, transparent, #000 64px); mask-image: linear-gradient(to left, transparent, #000 64px); }
+.ax-lesshead.has-start.has-end .ax-lesstabs {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 64px, #000 calc(100% - 64px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 64px, #000 calc(100% - 64px), transparent);
+}
+.ax-lessroll { width: 40px; background: none !important; color: var(--rd-ink-2); }
+.ax-lessroll svg {
+  box-sizing: content-box;
+  padding: 6px;
+  background: var(--rd-surface);
+  box-shadow: inset 0 0 0 1px var(--rd-line);
+  transition: box-shadow var(--ax-dur-fast) var(--ax-ease), color var(--ax-dur-fast) var(--ax-ease);
+}
+.ax-lessroll:hover svg { box-shadow: inset 0 0 0 1px var(--rd-accent); }
+
+.ax-lesstab {
+  gap: 10px;
+  padding: 12px 12px 15px;
+  font-weight: 500;
+  color: var(--rd-ink-3);
+  transition: color var(--ax-dur-fast) var(--ax-ease), background var(--ax-dur-fast) var(--ax-ease);
+}
+.ax-lesstab:hover { color: var(--rd-ink); background: color-mix(in srgb, var(--rd-accent) 5%, transparent); }
+.ax-lesstab i {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 5px;
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 1;
+  color: var(--rd-ink-3);
+  background: color-mix(in srgb, var(--rd-ink) 5%, transparent);
+  box-shadow: inset 0 0 0 1px var(--rd-line);
+  transition: color var(--ax-dur-fast) var(--ax-ease), background var(--ax-dur-fast) var(--ax-ease);
+}
+.ax-lesstab i svg { width: 13px; height: 13px; }
+.ax-lesstab--on { color: var(--rd-ink); font-weight: 600; }
+.ax-lesstab--on i { color: #fff; background: var(--rd-accent); box-shadow: none; }
+.academy-bg[data-academy-theme="dark"] .ax-lesstab--on i { color: #0b0a12; }
+.ax-lesstab.is-done:not(.ax-lesstab--on) { color: var(--rd-ink-2); }
+.ax-lesstab.is-done:not(.ax-lesstab--on) i {
+  color: var(--rd-good);
+  background: color-mix(in srgb, var(--rd-good) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-good) 35%, transparent);
+}
+
+/* The underline is a track with a fill: the track shows the whole section,
+   the fill how far into its slides the reader has come. */
+.ax-lesstabs__bar { height: 3px; background: color-mix(in srgb, var(--rd-accent) 25%, transparent); }
+.ax-lesstabs__bar::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--fill, 1) * 100%);
+  background: var(--rd-accent);
+  transition: width var(--ax-dur-slow) var(--ax-ease);
+}
+@media (prefers-reduced-motion: reduce) { .ax-lesstabs__bar::after { transition: none; } }
 
 .ax-index__toggle { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); border: none; }
 .ax-tab {
@@ -4824,6 +5109,13 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-question .rd-kicker { font-size: var(--ty-lead); letter-spacing: 0.08em; font-weight: 700; color: var(--rd-ink); }
 .ax-question p { margin-top: 10px; font-family: var(--font-display); font-size: var(--ty-lead); line-height: 1.5; font-weight: 400; letter-spacing: 0; color: var(--rd-ink-2); }
 
+/* A quiet placeholder for a topic's intro video -- one per week, not meant
+   to look finished. Swapped for a real embed once a video exists. */
+.ax-video { display: flex; align-items: center; gap: 14px; margin: 20px 0 0; padding: 16px 18px; border: 1px dashed var(--rd-line); }
+.ax-video__icon { display: grid; place-items: center; flex: none; width: 38px; height: 38px; color: var(--rd-ink-3); background: color-mix(in srgb, var(--rd-ink) 5%, transparent); }
+.ax-video__title { margin: 0; font-size: var(--ty-lead); font-weight: 650; color: var(--rd-ink-2); }
+.ax-video__note { margin: 3px 0 0; font-size: var(--ty-lead); color: var(--rd-ink-3); }
+
 .ax-pager { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--rd-line); }
 .rd:has(.ad-pager) .ax-pager,
 .rd:has(.ad-brief-start) .ax-pager,
@@ -4847,10 +5139,62 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
 .ax-soon { margin-top: 40px; padding: 8px 0 0; }
 .ax-soon p { margin-top: 16px; max-width: 48ch; font-size: var(--ty-lead); line-height: 1.6; color: var(--rd-ink-2); }
 
-.ax-refsec { padding: 22px 0; }
-.ax-refsec + .ax-refsec { border-top: 1px solid var(--rd-line); }
-.ax-refnav a { display: block; padding: 6px 0; font-size: var(--ty-note); color: var(--rd-ink-2); transition: color var(--ax-dur) var(--ax-ease); }
-.ax-refnav a:hover, .ax-refnav a.ax-refnav--on { color: var(--rd-ink); font-weight: 600; }
+/* The cheat sheet: each fact a panel in the Resources language. An accent
+   tile, a mono kicker and a display title, then tables with inset lines. */
+.ax-refsec { padding: 20px 22px 22px; background: var(--rd-surface); box-shadow: inset 0 0 0 1px var(--rd-line); transition: box-shadow var(--ax-dur) var(--ax-ease); }
+.ax-refsec:target, .ax-refsec:focus-within { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) 55%, transparent); }
+.ax-refsec__head { display: flex; align-items: center; gap: 14px; }
+.ax-refsec__icon {
+  display: grid; place-items: center; flex: none; width: 40px; height: 40px; color: var(--rd-accent);
+  background: color-mix(in srgb, var(--rd-accent) var(--sf-mark-fill, 14%), transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-accent) var(--sf-mark-line, 30%), transparent);
+}
+.ax-refsec__icon svg { width: 19px; height: 19px; }
+.ax-refsec__kicker { margin: 0 0 2px; font: 700 11px var(--font-mono, ui-monospace, monospace); letter-spacing: 0.16em; text-transform: uppercase; color: var(--rd-accent); }
+.ax-refsec__title { margin: 0; font-family: var(--font-display, inherit); font-size: 19px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; color: var(--rd-ink); }
+.ax-refsec__body { margin-top: 16px; }
+.ax-refsec__body > :first-child { margin-top: 0; }
+.ax-refsec__body > :last-child { margin-bottom: 0; }
+.ax-refsec__body p, .ax-refsec__body li { font-size: 15px; line-height: 1.65; color: var(--rd-ink-2); }
+.ax-refsec__body strong { color: var(--rd-ink); }
+.ax-refsec .academy-prose table { margin: 14px 0; border-collapse: separate; border-spacing: 0; font-size: 14px; box-shadow: inset 0 0 0 1px var(--rd-line); }
+.ax-refsec .academy-prose table:first-child { margin-top: 0; }
+.ax-refsec .academy-prose th,
+.ax-refsec .academy-prose td { border: 0; padding: 11px 14px; line-height: 1.5; color: var(--rd-ink-2); }
+.ax-refsec .academy-prose tr + tr td,
+.ax-refsec .academy-prose tbody tr:first-child td { box-shadow: inset 0 1px 0 var(--rd-line); }
+.ax-refsec .academy-prose th,
+.academy-bg[data-academy-theme="dark"] .ax-refsec .academy-prose table th {
+  background: color-mix(in srgb, var(--rd-ink) 3%, transparent);
+  font: 700 11px var(--font-mono, ui-monospace, monospace); letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3);
+}
+.ax-refsec .academy-prose td:first-child { font-weight: 650; color: var(--rd-ink); }
+.ax-refsec .academy-prose tbody tr { transition: background var(--ax-dur-fast) var(--ax-ease); }
+.ax-refsec .academy-prose tbody tr:hover { background: color-mix(in srgb, var(--rd-accent) 5%, transparent); }
+.ax-refsec .academy-prose code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.92em; }
+
+.ax-refcopy {
+  display: inline-grid; place-items: center; width: 26px; height: 26px; margin-left: 8px; vertical-align: middle;
+  color: var(--rd-ink-3); background: transparent; box-shadow: inset 0 0 0 1px var(--rd-line); cursor: pointer;
+  transition: color var(--ax-dur-fast) var(--ax-ease), box-shadow var(--ax-dur-fast) var(--ax-ease), background var(--ax-dur-fast) var(--ax-ease);
+}
+.ax-refcopy:hover { color: var(--rd-accent); box-shadow: inset 0 0 0 1px var(--rd-accent); }
+.ax-refcopy:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 2px; }
+.ax-refcopy.is-copied { color: var(--rd-good, #34d399); background: color-mix(in srgb, var(--rd-good, #34d399) 10%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-good, #34d399) 45%, transparent); }
+
+.ax-refnav .rd-kicker { color: var(--rd-ink-3); }
+.ax-refnav ul { margin: 0; padding: 0; list-style: none; box-shadow: inset 1px 0 0 var(--rd-line); }
+.ax-refnav a {
+  display: block; padding: 6px 0 6px 14px; font-size: var(--ty-note); line-height: 1.4; color: var(--rd-ink-2);
+  box-shadow: inset 2px 0 0 transparent;
+  transition: color var(--ax-dur) var(--ax-ease), box-shadow var(--ax-dur) var(--ax-ease);
+}
+.ax-refnav a:hover { color: var(--rd-ink); }
+.ax-refnav a.ax-refnav--on { color: var(--rd-ink); font-weight: 600; box-shadow: inset 2px 0 0 var(--rd-accent); }
+@media (max-width: 640px) {
+  .ax-refsec { padding: 16px; }
+  .ax-refsec .academy-prose th, .ax-refsec .academy-prose td { padding: 9px 10px; }
+}
 .ax-search { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--rd-ink); }
 .ax-search input { flex: 1; min-width: 0; background: transparent; border: 0; outline: none; font-size: var(--ty-lead); color: var(--rd-ink); }
 .ax-search input::placeholder { color: var(--rd-ink-3); }
@@ -4883,6 +5227,11 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.ax-status__next:active, a.
    finish line. This says what is left and opens it. */
 .ax-quiz__after { display: grid; justify-items: start; gap: 4px; margin-top: 8px; }
 .ax-quiz__after .ax-quiz__mark { margin: 0; color: var(--rd-good, var(--rd-ink-2)); font-weight: 650; }
+/* The same drawn check a solved challenge gets, drawn in as the pass lands. */
+.ax-quiz__mark--pass { display: inline-flex; align-items: center; gap: 8px; }
+.ax-quiz__mark--pass svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.ax-quiz__mark--pass path { stroke-dasharray: 20; stroke-dashoffset: 20; animation: ad-check-draw 300ms var(--ax-ease) 120ms forwards; }
+@media (prefers-reduced-motion: reduce) { .ax-quiz__mark--pass path { animation: none; stroke-dashoffset: 0; } }
 .ax-quiz__left { margin: 0; font-size: var(--ty-note); color: var(--rd-ink-3); }
 .ax-quiz__go {
   margin-top: 8px; padding: 10px 16px;
@@ -5050,12 +5399,21 @@ html:has(.academy-bg[data-academy-theme="dark"]) .pc-backdrop { background: rgba
   .pc-panel, .pc-backdrop { animation: none }
 }
 
-.pc-modes { display: flex; gap: 4px; margin: 0 0 10px; }
+/* Four labels on one line. Equal quarters cut Double-check at its hyphen, so
+   it stood two lines tall beside three one-line tabs and dragged the row out
+   of alignment. Each tab takes the width its word needs, and the row spaces
+   them instead. */
+.pc-modes { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin: 0 0 10px; }
 .pc-mode {
-  flex: 1; height: 30px; border: 0; background: none; padding: 0;
+  flex: 0 1 auto; display: inline-flex; align-items: center; justify-content: center;
+  height: 30px; border: 0; background: none; padding: 0 2px; white-space: nowrap;
   font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); font-weight: 700;
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--pc-text-3); cursor: pointer;
   transition: color var(--ax-dur) var(--ax-ease);
+}
+/* Narrow phones: tighten the tracking before anything is forced to overflow. */
+@media (max-width: 380px) {
+  .pc-mode { letter-spacing: 0.02em; }
 }
 .pc-mode--on { color: var(--pc-accent); }
 .pc-mode:hover { color: var(--pc-text); }
@@ -5111,6 +5469,62 @@ html:has(.academy-bg[data-academy-theme="dark"]) .pc-backdrop { background: rgba
 .pc-term__copy:hover { color: var(--pc-text); }
 .pc-term pre { margin: 0; padding: 12px; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); line-height: 1.65; color: var(--pc-text); }
 .pc-turn:has(.pc-thinking) .pc-reply__who { color: var(--pc-accent); }
+
+/* Thumbs under a Coach reply. It sits in the thread under every answer, so it
+   has to stay quiet: no box, no fill, muted until hovered. The reasons only
+   appear once a thumbs down is pressed, because asking "what went wrong" of a
+   reply nobody minded is noise. */
+.pc-rate { margin-top: 10px; }
+.pc-rate__row { display: flex; align-items: center; gap: 4px; opacity: 0.55; transition: opacity 0.15s ease; }
+.pc-turn:hover .pc-rate__row,
+.pc-rate__row:focus-within { opacity: 1; }
+.pc-rate__ask { margin-right: 4px; font-size: var(--ty-micro); color: var(--pc-text-3); }
+.pc-rate__btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; padding: 0; border: 0; border-radius: 7px;
+  background: none; color: var(--pc-text-3); cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.pc-rate__btn:hover { background: color-mix(in srgb, var(--pc-accent) 12%, transparent); color: var(--pc-accent); }
+.pc-rate__btn:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 2px; }
+.pc-rate__btn[aria-expanded="true"] { background: color-mix(in srgb, var(--pc-accent) 14%, transparent); color: var(--pc-accent); }
+.pc-rate__done { margin: 0; font-size: var(--ty-micro); color: var(--pc-text-3); }
+
+.pc-rate__why { margin-top: 10px; }
+.pc-rate__label {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 8px;
+  font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker);
+  font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pc-text-3);
+}
+.pc-rate__label span { flex: none; font-family: var(--font-sans, inherit); font-size: var(--ty-micro); font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--pc-text-3); }
+/* A grid, not a wrap: six reasons of uneven length ragged into rows that were
+   hard to scan and gave the panel no shape. Two even columns on the chat's
+   width, one on a phone. */
+.pc-rate__tags { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 6px; }
+/* Filled rather than outlined. The border token is nearly invisible on black,
+   so six outlined pills read as six faint boxes; a soft fill carries the shape
+   and the accent is kept for the one the pointer is on. */
+.pc-rate__tag {
+  padding: 9px 12px; border: 0; border-radius: 8px;
+  background: color-mix(in srgb, var(--pc-text) 7%, transparent);
+  color: var(--pc-text-2); font: inherit; font-size: var(--ty-small); line-height: 1.3; text-align: left; cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.pc-rate__tag:hover { background: var(--pc-accent-soft); color: var(--pc-accent); }
+.pc-rate__tag:active { background: color-mix(in srgb, var(--pc-accent) 20%, transparent); }
+.pc-rate__tag:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 2px; }
+.pc-rate__note {
+  display: block; width: 100%; margin-top: 6px; padding: 9px 12px;
+  border: 0; border-radius: 8px; background: color-mix(in srgb, var(--pc-text) 7%, transparent);
+  color: var(--pc-text); font: inherit; font-size: var(--ty-small);
+}
+/* text-3 lands at 4.1:1 on this fill, and a placeholder is still text. */
+.pc-rate__note::placeholder { color: var(--pc-text-2); }
+.pc-rate__note:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 0; }
+.pc-rate__foot { display: flex; justify-content: flex-end; margin-top: 6px; }
+.pc-rate__skip { padding: 6px 2px; border: 0; background: none; color: var(--pc-text-3); font: inherit; font-size: var(--ty-micro); cursor: pointer; }
+.pc-rate__skip:hover { color: var(--pc-accent); }
+.pc-rate__skip:focus-visible { outline: 2px solid var(--pc-accent); outline-offset: 2px; }
 .pc-thinking { display: flex; align-items: center; gap: 10px; font-size: var(--ty-note); color: var(--pc-text-3); }
 .pc-thinking p { margin: 0; }
 .pc-dots {
@@ -5223,8 +5637,18 @@ textarea.pc-dock__field {
 .dr-choice { display: flex; align-items: center; width: 100%; padding: 14px 16px; border: 1.5px solid var(--rd-line); background: transparent; text-align: left; font-size: var(--ty-lead); line-height: 1.4; color: var(--rd-ink); cursor: pointer; transition: border-color var(--ax-dur-fast), background var(--ax-dur-fast); }
 .dr-choice:hover { border-color: var(--rd-accent); }
 .dr-choice--on { border-color: var(--rd-accent); background: rgba(85, 70, 224, 0.08); box-shadow: inset 3px 0 0 var(--rd-accent); }
-.dr-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--rd-line); }
-.dr-actions--result .dr-link { margin-left: auto; }
+/* Top aligned, not centred. The left side is a column -- Exit, then the
+   ways out of a task -- and centring the button against it left it halfway
+   down, lined up with nothing. It sits on the same line as Exit now. */
+.dr-actions { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px 16px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--rd-line); }
+/* One row, so centring is the right answer there. */
+.dr-actions--result { align-items: center; }
+/* The primary stays left and everything else goes right. Both it and the
+   first link asked for margin-left:auto, so the row had two of them and the
+   free space was split between the two -- which is why Done sat a third of
+   the way across, pinned to nothing. */
+.dr-actions.dr-actions--result > .rd-cta { margin-left: 0; margin-right: auto; }
+.dr-actions--result .dr-link { margin-left: 0; }
 .dr-actions--result .dr-link + .dr-link { margin-left: 0; }
 
 .dr-score { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 20px; margin-top: 8px; }
@@ -5240,8 +5664,36 @@ textarea.pc-dock__field {
 .dr-review .is-right .dr-review__mark { background: var(--rd-good); }
 .dr-review .is-wrong .dr-review__mark { background: var(--rd-bad); }
 
-.dr-home { display: flex; align-items: center; gap: 18px; margin-top: 8px; padding: 20px 22px; border: 1px solid var(--sf-line); background: var(--rd-surface); color: var(--rd-ink); box-shadow: var(--sf-lift); transition: border-color var(--ax-dur-fast); }
-.dr-home:hover { border-color: var(--rd-accent); }
+.dr-home {
+  position: relative;
+  overflow: hidden;
+  display: flex; align-items: center; gap: 18px;
+  margin-top: 8px; padding: 20px 22px;
+  background: color-mix(in srgb, var(--rd-accent) 7%, transparent);
+  border: 1px solid var(--sf-line);
+  color: var(--rd-ink);
+  box-shadow: var(--sf-lift);
+  transition: background var(--ax-dur-fast), border-color var(--ax-dur-fast);
+}
+/* The page's one wash. It belongs to the thing you are meant to click, and
+   putting it on every row below would make none of them read as the next
+   step. */
+.dr-home::before {
+  content: "";
+  position: absolute;
+  top: -40%; left: 50%;
+  width: 150%; height: 90%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 0%,
+    color-mix(in srgb, var(--rd-accent) var(--sf-wash-strength), transparent),
+    transparent var(--sf-wash-stop));
+  pointer-events: none;
+}
+.dr-home > * { position: relative; }
+a.dr-home:hover { background: color-mix(in srgb, var(--rd-accent) 13%, transparent); border-color: color-mix(in srgb, var(--rd-accent) 42%, transparent); }
+.dr-home .rd-kicker { color: var(--rd-accent); opacity: 0.9; }
+/* The arrow only. The flame keeps the amber it sets on its own box. */
+.dr-home > svg { color: var(--rd-accent); }
 .dr-home__flame {
   display: inline-grid; place-items: center; gap: 1px;
   width: 52px; height: 52px; flex: none;
@@ -5476,7 +5928,9 @@ textarea.pc-dock__field {
 /* Drills in the report style: ruled rows, no cards */
 .dr-strip { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 10px 18px; margin-top: 24px; padding: 16px 0; border-top: 1px solid var(--rd-line); }
 .dr-rows { margin-top: 0; border-top: 1px solid var(--rd-line); }
-.dr-rows .ax-path__row { align-items: center; grid-template-columns: 44px minmax(0, 1fr) auto; }
+/* The first column held a two-digit number. It now holds a word like THIS WEEK,
+   so it is sized to its content instead of to 44px, which wrapped it. */
+.dr-rows .ax-path__row { align-items: center; grid-template-columns: max-content minmax(0, 1fr) auto; }
 .dr-rows .ax-path__main { min-width: 0; }
 .dr-rows .ax-path__count { justify-self: end; padding-top: 0; }
 .dr-rows .rd-cta { white-space: nowrap; flex-shrink: 0; }
@@ -5526,7 +5980,12 @@ textarea.pc-dock__field {
 .dr-checks li.is-ok span { color: var(--rd-good); }
 .dr-checks li.is-bad span { color: var(--rd-bad); }
 .dr-checks__stale { padding: 12px 14px; background: rgba(196, 130, 14, 0.12); color: var(--rd-ink) !important; }
-.dr-actions__side { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+/* Exit is a bordered control and the ways out are plain links, so they are
+   spaced apart from it and tucked together under it rather than sitting in
+   one evenly spaced stack of three unrelated-looking things. */
+.dr-actions__side { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.dr-actions__side > .dr-exit + .dr-link { margin-top: 6px; }
+.dr-actions__side > .dr-link { font-size: var(--ty-note); }
 .dr-actions > .rd-cta { margin-left: auto; }
 .dr-earned { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rd-good); }
 
@@ -5623,6 +6082,8 @@ textarea.pc-dock__field {
 .dr-findings__list strong { font-family: var(--font-display); font-size: var(--ty-h3, 20px); font-weight: 600; letter-spacing: -0.02em; color: var(--rd-ink); }
 .dr-findings__list p { margin: 0; max-width: 72ch; font-size: var(--ty-body, 14px); line-height: 1.55; color: var(--rd-ink-2); }
 .dr-findings__list em { font-style: normal; font-size: var(--ty-small, 13px); color: var(--rd-ink-3); }
+.dr-findings__ticket { display: inline-flex; align-items: center; gap: 6px; font-size: var(--ty-small, 13px); font-weight: 600; color: var(--rd-accent); text-decoration: none; }
+.dr-findings__ticket:hover { text-decoration: underline; text-underline-offset: 3px; }
 .dr-findings__tag { padding: 2px 8px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 10.5px); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: color-mix(in srgb, var(--rd-ink) var(--sf-mark-fill), transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-ink) var(--sf-mark-line), transparent); color: var(--rd-ink-2); }
 .is-high .dr-findings__tag { background: rgba(217, 58, 63, 0.14); color: var(--rd-bad); }
 .is-medium .dr-findings__tag { background: rgba(196, 130, 14, 0.14); color: var(--rd-warn); }
@@ -5641,6 +6102,25 @@ textarea.pc-dock__field {
 .academy-prose .ad-close .ad-close__exam { margin: 6px 0 0; font-size: var(--ty-small); line-height: 1.4; color: #0b7a52; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-close .ad-close__exam { color: #6ee7b7; }
 .dr-review .dr-review__exam { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-micro); letter-spacing: 0.02em; color: var(--rd-ink-3); }
+
+/* The fix on a missed lab task. It used to be one paragraph of joined steps,
+   which is the hardest possible way to read instructions you are about to
+   follow one at a time. Numbered badges and a line per step instead. No box:
+   the label and the numbers carry it, same as the rest of the drill. */
+.dr-review .dr-fix { margin: 14px 0 0; }
+.dr-review .dr-fix__label { margin: 0 0 9px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rd-ink-3); }
+.dr-review .dr-fix__steps { counter-reset: dr-fix; margin: 0; padding: 0; list-style: none; }
+.dr-review .dr-fix__steps li { counter-increment: dr-fix; position: relative; margin: 0 0 9px; padding-left: 32px; font-size: var(--ty-small); line-height: 1.55; color: var(--rd-ink-2); }
+.dr-review .dr-fix__steps li:last-child { margin-bottom: 0; }
+.dr-review .dr-fix__steps li::before {
+  content: counter(dr-fix);
+  position: absolute; left: 0; top: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 21px; height: 21px; border-radius: 50%;
+  background: var(--rd-none);
+  font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); font-weight: 700; line-height: 1;
+  color: var(--rd-ink-2);
+}
 
 /* iPhone and iPad Safari zoom into any field with text under 16px when it is
    tapped, and stay zoomed, which cuts the page off on the right. On touch

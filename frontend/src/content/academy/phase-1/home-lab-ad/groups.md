@@ -25,13 +25,17 @@ That is why the build script puts every account in a real OU. No OU-linked Group
 
 If you find someone in a default folder, that account is not where it belongs. Never treat the default folders as a department.
 
+```sort
+prompt: Organizational Unit or Container?
+Organizational Unit: A GPO can link to it | It can hold sub-OUs | OU=Compliance
+Container: Windows builds it and you cannot make your own | CN=Computers | CN=Users
+```
+
 ### Security Groups
 
 A **Security Group** is a list of accounts. You use it to grant permissions or apply Group Policy to exactly the people who need them, whatever OU they live in.
 
-A group can cross departments. A folder cannot.
-
-**A group is a list you add an account to.** An account has exactly one OU but can sit in any number of groups.
+A group can cross departments, unlike a folder. An account has exactly one OU but can sit in any number of groups.
 
 Every department has a standard access group:
 
@@ -43,7 +47,7 @@ Every department has a standard access group:
 
 IT also has a second, more privileged group called `IT Admins`. That extra group is how two people in the same folder end up with different access.
 
-To read access, open the object and read its folder before every group on Member Of. Compare these two:
+To read access, open the object and read its folder first, then every group on its Member Of tab. Compare these two:
 
 <div class="ad-og" aria-label="Alex Rivera and Priya Nair with their groups">
   <article class="ad-og__card">
@@ -54,7 +58,7 @@ To read access, open the object and read its folder before every group on Member
     </header>
     <div class="ad-og__row">
       <span>Lives in</span>
-      <code>OU=Users,OU=IT</code>
+      <code>OU=Users,OU=IT,OU=Departments</code>
     </div>
     <div class="ad-og__row">
       <span>Member Of</span>
@@ -72,7 +76,7 @@ To read access, open the object and read its folder before every group on Member
     </header>
     <div class="ad-og__row">
       <span>Lives in</span>
-      <code>OU=Users,OU=IT</code>
+      <code>OU=Users,OU=IT,OU=Departments</code>
     </div>
     <div class="ad-og__row">
       <span>Member Of</span>

@@ -16,7 +16,7 @@ Follow these practices every time:
 
 * **Dedicated OU.** Keep service accounts apart from real people. You can apply different policy and spot them at a glance. The Range download creates `OU=ServiceAccounts` under the domain root for this.
 * **Naming convention.** Use a prefix that makes the account unmistakable, such as `svc-`. `svc-backup-job` is a service account. `j.smith` is not.
-* **Password never expires.** A service account cannot type a new password when the old one expires. Set `PasswordNeverExpires = $true` and `ChangePasswordAtLogon = $false` on purpose. That is the opposite of a person's settings.
+* **Password never expires.** A service account cannot type a new password when the old one expires. Set `PasswordNeverExpires = $true` and `ChangePasswordAtLogon = $false` on purpose. That is the opposite of a person's settings, so pair it with a long, random password that IT rotates on a schedule. A group Managed Service Account goes further, because Windows rotates its password automatically.
 * **Restricted logon hours.** If a backup job only runs overnight, the account's **Logon Hours** should reflect that. A logon outside that window is a red flag.
 * **A filled-in Description.** "Runs the nightly backup job on IT-WKS01" tells the next person what breaks if this account is disabled.
 
@@ -30,4 +30,4 @@ Open Priya's **Member Of** tab and note every group. Then open the new hire's **
 
 The same comparison helps during an investigation. An account with more groups than its peers and no onboarding record to explain them is worth asking about.
 
-Compare against The Environment tab, not against the ticket.
+Mirroring also copies any access the peer should not have, so check the peer's groups against The Environment tab first, not against the ticket.

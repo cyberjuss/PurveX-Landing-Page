@@ -6,7 +6,7 @@ import type { LabSnapshot } from "@/lib/academy-lab";
 // the answer until their own lab shows the change.
 
 /** Objects a ticket needs in the snapshot. A lab built before the ticket existed lacks them. */
-type Needs = { users?: string[]; groups?: string[]; ous?: string[]; tickets?: string[] };
+type Needs = { users?: string[]; groups?: string[]; ous?: string[]; computers?: string[]; tickets?: string[] };
 
 const G = (checks: { c: Check; label: string }[], needs?: Needs) => ({ checks, needs });
 
@@ -19,7 +19,12 @@ const MISSION_LAB = {
   "tq-03": G([
     { c: { t: "exists", sam: "casey.reed", ou: "OU=Users,OU=IT,OU=Departments" }, label: "casey.reed is in the IT Users folder (Departments, IT, Users)" },
     { c: { t: "member", sam: "casey.reed", group: "IT Users", want: true }, label: "casey.reed exists and is a member of IT Users" },
-    { c: { t: "member", sam: "old.intern", group: "IT Users", want: false }, label: "old.intern is no longer in IT Users" },
+    // The ticket says delete the leftover account, so the check asks for that
+    // rather than for a membership the student could untick. The snapshot
+    // covers the lab OUs only, so an account moved out of them reads as gone
+    // as well, which still means it is out of the staff folders.
+    { c: { t: "gone", sam: "old.intern" }, label: "The leftover intern account is gone" },
+    { c: { t: "member", sam: "svc-backup-job", group: "IT Users", want: false }, label: "svc-backup-job is no longer in IT Users" },
   ]),
   "tq-04": G([{ c: { t: "desc", sam: "svc-backup-job", text: "01:00-03:00" }, label: "svc-backup-job Description has the approved run window" }]),
   "tq-05": G([
@@ -47,6 +52,22 @@ const MISSION_LAB = {
     { ous: ["OU=Workstations,OU=FinanceAccounting,OU=Departments"] }
   ),
   "tq-15": G([{ c: { t: "group", name: "Finance Reports", category: "Security" }, label: "Finance Reports is a Security group" }], { groups: ["Finance Reports"] }),
+  // Hardening tickets. Nothing is planted for these: the domain ships this
+  // way. The checks read the policy the student set rather than an object
+  // they moved, which is the same shape the lab audit already uses.
+  // A lock time of 0 means an administrator must unlock the account by hand,
+  // which is stricter than 15 minutes rather than weaker. evalCheck compares
+  // numerically and would read 0 as a failure, so the ticket asks for a real
+  // number of minutes and the hint says so.
+  "tq-21": G([
+    { c: { t: "policy", key: "lockoutThreshold", min: 1, max: 10 }, label: "Accounts lock after 10 wrong passwords or fewer" },
+    { c: { t: "policy", key: "lockoutDurationMin", min: 15 }, label: "A locked account stays locked for at least 15 minutes" },
+    { c: { t: "policy", key: "lockoutWindowMin", min: 15 }, label: "The count of wrong passwords resets no sooner than 15 minutes" },
+  ]),
+  "tq-22": G([{ c: { t: "audit", sub: "Process Creation", need: "Success" }, label: "Process creation is audited for success" }]),
+  "tq-23": G([{ c: { t: "logsize", minMB: 512 }, label: "The Security log holds at least 512 MB" }]),
+  "tq-24": G([{ c: { t: "pso", minLength: 16, appliesTo: "IT Admins", maxLockout: 5 }, label: "A 16-character policy locking after 5 tries applies to IT Admins" }]),
+  "tq-25": G([{ c: { t: "computer", name: "OPS-WKS03", enabled: false }, label: "OPS-WKS03 is disabled" }], { computers: ["OPS-WKS03"] }),
   "tq-16": G([{ c: { t: "dnsToDc", name: "files" }, label: "files resolves to the domain controller" }], { tickets: ["INC-1052"] }),
   "tq-20": G([{ c: { t: "dnsToDc", name: "payroll" }, label: "payroll resolves only to the domain controller" }], { tickets: ["INC-1056"] }),
   "tq-17": G([{ c: { t: "fwRuleOff", name: "PurveX Temp - Vendor RDP" }, label: "The vendor RDP rule is disabled or removed" }], { tickets: ["INC-1053"] }),
@@ -67,6 +88,120 @@ const MISSION_LAB = {
     ],
     { tickets: ["INC-1055"] }
   ),
+  // The Open Door campaign: the legacy internal-trust rule is disabled, the
+  // same fwRuleOff check tq-17 already uses. zt-01 (naming the port) has no
+  // lab-state check, same as tq-06.
+  "zt-02": G(
+    [{ c: { t: "fwRuleOff", name: "PurveX Legacy - Internal File Access" }, label: "The legacy internal-trust rule is disabled or removed" }],
+    { tickets: ["INC-1067"] }
+  ),
+  // The Credential Campaign's Installation/C2 stage, reusing the capstone's
+  // own artifact (INC-1069). cp-03 (naming the task) has no lab-state check,
+  // same as tq-06.
+  "cp-04": G(
+    [{ c: { t: "fwRuleOff", name: "PurveX Update Helper Service" }, label: "The capstone's outbound rule is disabled or removed" }],
+    { tickets: ["INC-1069"] }
+  ),
+  // The Open Door campaign's own Installation/C2 stage, same fwRuleOff
+  // mechanism, a third address so none of the three campaigns' beacons
+  // collide. od-04 (naming the task) has no lab-state check, same as tq-06.
+  "od-05": G(
+    [{ c: { t: "fwRuleOff", name: "Directory Replication Sync" }, label: "The planted outbound rule is disabled or removed" }],
+    { tickets: ["INC-1077"] }
+  ),
+  // The Open Door campaign's Actions on Objectives: the staged export is
+  // moved to Quarantine, the same file-pair check ao-02/cry-06 already use.
+  // od-06 (naming the file) has no lab-state check, same as tq-06.
+  "od-07": G(
+    [
+      { c: { t: "file", path: "Shares\\Compliance\\ops-batch-export.csv", want: false }, label: "The staged file is gone from the Compliance share" },
+      { c: { t: "file", path: "Quarantine\\ops-batch-export.csv", want: true }, label: "It is kept in C:\\PurveX\\Quarantine" },
+    ],
+    { tickets: ["INC-1078"] }
+  ),
+  // The Kerberoasting campaign: the unused SPN is removed, the same spn
+  // check the Ticket Queue already uses elsewhere, just checking for zero
+  // rather than one.
+  "rk-03": G(
+    [{ c: { t: "spn", sam: "svc-reports", want: false }, label: "svc-reports has no SPN left" }],
+    { users: ["svc-reports"] }
+  ),
+  // The DCSync campaign: Directory Service Access auditing is enabled, the
+  // same audit check tq-22 already uses for Process Creation.
+  "rk-05": G([{ c: { t: "audit", sub: "Directory Service Access", need: "Success" }, label: "Directory Service Access is audited for success" }]),
+  // Turn On Script Logging's capstone: the registry key the lab has the
+  // student set, read straight from the machine, the way every other
+  // real-change check here already is -- not a typed-answer guess.
+  "la2-04": G([{ c: { t: "sbl", want: true }, label: "PowerShell Script Block Logging is enabled" }]),
+  // The wire-capture capstone: the burned service account is contained by
+  // disabling it, which the snapshot reports. Kept, not deleted, so the review
+  // still has it.
+  "cap-06": G(
+    [{ c: { t: "enabled", sam: "svc-settlements", want: false }, label: "svc-settlements is disabled" }],
+    { users: ["svc-settlements"] }
+  ),
+  // The integrity capstone: the unsigned mirror is moved to Quarantine, which
+  // infra.files reports by path. Same shape as tq-19.
+  "cry-06": G(
+    [
+      { c: { t: "file", path: "Shares\\IT\\vpn-client-2.4.1-mirror-b.txt", want: false }, label: "The unsigned mirror is gone from the IT share" },
+      { c: { t: "file", path: "Quarantine\\vpn-client-2.4.1-mirror-b.txt", want: true }, label: "It is kept in C:\\PurveX\\Quarantine" },
+    ],
+    { tickets: ["INC-1058"] }
+  ),
+  // Week 4's effective-access challenge: a Help Desk account is pulled out of
+  // Compliance Users, the access-level group an audit found it never needed.
+  // Same member check tq-05/cp-06 already use.
+  "ea-03": G(
+    [{ c: { t: "member", sam: "noor.ahmadi", group: "Compliance Users", want: false }, label: "noor.ahmadi is not in Compliance Users" }],
+    { users: ["noor.ahmadi"] }
+  ),
+  // The sign-in log challenge's capstone: the account the real lockout event
+  // pointed to is unlocked, the same flag check tq-02 already uses.
+  "sl-03": G(
+    [{ c: { t: "flag", sam: "petra.lindqvist", flag: "lockedOut", want: false }, label: "petra.lindqvist is not locked out" }],
+    { users: ["petra.lindqvist"] }
+  ),
+  // The phishing chain's Installation/C2 capstone: same fwRuleOff check the
+  // first intrusion's beacons already use, a different rule name.
+  "pi-02": G(
+    [{ c: { t: "fwRuleOff", name: "Office Telemetry Upload" }, label: "The Office Telemetry Upload rule is disabled or removed" }],
+    { tickets: ["INC-1075"] }
+  ),
+  // The phishing chain's Actions on Objectives capstone: the staged file is
+  // moved to Quarantine, the same file-pair check cry-06 already uses.
+  "ao-02": G(
+    [
+      { c: { t: "file", path: "Shares\\IT\\staged-export.zip", want: false }, label: "The staged file is gone from the IT share" },
+      { c: { t: "file", path: "Quarantine\\staged-export.zip", want: true }, label: "It is kept in C:\\PurveX\\Quarantine" },
+    ],
+    { tickets: ["INC-1076"] }
+  ),
+  // The client data review reads the synthetic records the lab plants on its
+  // shares. Every task needs them on the share before it can be answered; the
+  // last one also needs the least-privilege group the student builds.
+  "cd-01": G([], { tickets: ["DATA-SAMPLE"] }),
+  "cd-02": G([], { tickets: ["DATA-SAMPLE"] }),
+  "cd-03": G([], { tickets: ["DATA-SAMPLE"] }),
+  "cd-04": G([], { tickets: ["DATA-SAMPLE"] }),
+  "cd-05": G([], { tickets: ["DATA-SAMPLE"] }),
+  "cd-06": G([], { tickets: ["DATA-SAMPLE"] }),
+  "cd-07": G(
+    [
+      { c: { t: "group", name: "Client Data Readers", category: "Security", container: "OU=AccessLevels" }, label: "Client Data Readers is a security group in AccessLevels" },
+      { c: { t: "member", sam: "sam.whitfield", group: "Client Data Readers", want: true }, label: "sam.whitfield is in it" },
+      { c: { t: "member", sam: "jamie.torres", group: "Client Data Readers", want: true }, label: "jamie.torres is in it" },
+      { c: { t: "member", sam: "devon.brooks", group: "Client Data Readers", want: true }, label: "devon.brooks is in it" },
+      { c: { t: "member", sam: "morgan.lee", group: "Client Data Readers", want: true }, label: "morgan.lee is in it" },
+      // Least privilege: every other staff account stays out.
+      { c: { t: "member", sam: "alex.rivera", group: "Client Data Readers", want: false }, label: "alex.rivera is not in it" },
+      { c: { t: "member", sam: "priya.nair", group: "Client Data Readers", want: false }, label: "priya.nair is not in it" },
+      { c: { t: "member", sam: "taylor.osei", group: "Client Data Readers", want: false }, label: "taylor.osei is not in it" },
+      { c: { t: "member", sam: "riley.kwan", group: "Client Data Readers", want: false }, label: "riley.kwan is not in it" },
+      { c: { t: "member", sam: "jordan.ellis", group: "Client Data Readers", want: false }, label: "jordan.ellis is not in it" },
+    ],
+    { tickets: ["DATA-SAMPLE"] }
+  ),
 } as const;
 
 type Gate = { checks: { c: Check; label: string }[]; needs?: Needs };
@@ -84,6 +219,7 @@ export function hasMissionObjects(id: string, s: LabSnapshot) {
     has(needs.users, s.users.map((u) => u.sam.toLowerCase())) &&
     has(needs.groups, s.groups.map((g) => g.name.toLowerCase())) &&
     has(needs.ous, s.ous.map((o) => o.path.toLowerCase())) &&
+    has(needs.computers, s.computers.map((c) => c.name.toLowerCase())) &&
     has(needs.tickets, (s.infra?.planted ?? []).map((t) => t.toLowerCase()))
   );
 }
@@ -97,6 +233,25 @@ export function hasTicketObjects(s: LabSnapshot) {
     users.has("svc-backup-job") ||
     s.computers.some((c) => ["wm-wks07", "ops-wks03"].includes(c.name.toLowerCase()))
   );
+}
+
+/** What a check is about, so a lab finding and a ticket that fix the same thing compare equal. */
+function checkKey(c: Check): string {
+  const r = c as Record<string, unknown>;
+  if (c.t === "policy") return `policy:${String(r.key).startsWith("lockout") ? "lockout" : String(r.key)}`;
+  if (c.t === "member") return `member:${String(r.sam).toLowerCase()}:${String(r.group).toLowerCase()}`;
+  const subject = r.sam ?? r.name ?? r.sub ?? r.path ?? "";
+  return `${c.t}:${String(subject).toLowerCase()}`;
+}
+
+const TICKET_KEYS: [string, Set<string>][] = Object.entries(MISSION_LAB as Record<string, Gate>)
+  .filter(([id]) => /^(tq|cap|cry)-/.test(id))
+  .map(([id, g]) => [id, new Set(g.checks.map(({ c }) => checkKey(c)))]);
+
+/** The ticket whose fix is this change, if any. A finding it covers is that ticket's work, not a separate job. */
+export function ticketFor(checks: Check[]): string | null {
+  const keys = checks.filter((c) => !(c.t === "enabled" && c.want)).map(checkKey);
+  return TICKET_KEYS.find(([, set]) => keys.some((k) => set.has(k)))?.[0] ?? null;
 }
 
 export function checkMission(id: string, snapshot: LabSnapshot) {

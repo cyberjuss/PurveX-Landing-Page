@@ -8,6 +8,7 @@ Writing it as a product makes one property obvious: **if any factor is zero, the
 
 - A threat with no weakness to exploit produces no risk.
 - A weakness nothing can reach produces no risk, however serious it would be in other circumstances.
+- A flaw on a machine that holds nothing and connects to nothing produces no risk, because there is nothing to lose.
 
 That is why a finding cannot be assessed on its own. You need all three parts before the number means anything.
 
@@ -27,3 +28,9 @@ Before you escalate anything, name all three parts:
 - the impact
 
 An escalation that supplies all three gives the person receiving it everything they need to decide. One that says only that something looks bad sends them back to do the work you have already done.
+
+```sort
+prompt: Does each control lower the likelihood, or the impact when something gets through?
+Lowers likelihood: Patching the software | Closing a port nobody needs | Strengthening the password policy
+Lowers impact: Backups | Network segmentation
+```

@@ -187,6 +187,28 @@ Restraint is the rule. The portal's narrative devices are:
   of accent behind the top so it is not a flat rectangle.
 - Lessons open on a question, not a summary.
 
+### Lesson slides
+
+Lesson tabs show as slides (`lesson-deck.tsx`). Each slide carries one drawing
+beside its text, and the drawings are the one place the portal plays for
+longer than a micro-interaction.
+
+- **One drawing per slide, never repeated inside a lesson.** Topics that are
+  about a person (the analyst, the attacker, the help desk call, the phished
+  user, the insider) get a cartoon character. The rest get an object scene.
+  An author can pin one with `<!-- art: name -->`.
+- **The drawing is a stage, not a panel.** Dot grid, a breathing glow and a
+  slow ring (linear, because it is a sweep). Tapping it replays the scene.
+- **Short lists become icon cards.** Each card is a hairline box with a quiet
+  tint of its own hue and a square icon mark. Eight hues per theme, each
+  clearing 3:1 for the icon: the -700 end of the hue in light, the -400 end
+  in dark. This is the one place the portal uses colours beyond the accent,
+  because a grid of identical marks reads as one icon stamped five times.
+- **Motion on arrival, then rest.** Paragraphs and cards build in on
+  `--ax-dur-slow` and `--ax-ease`, 60ms apart, capped at four steps. A card's
+  icon moves twice as it lands and again on hover, not forever, so it never
+  competes with the paragraph beside it.
+
 What was tried and removed, and should not come back without a reason:
 
 - A tour that walked the page, dimming everything and moving a caret-tagged

@@ -1,6 +1,6 @@
-// Readiness score for Operation Day One, the Ticket Queue, The 2 AM Login, and
-// the scored browser labs. Results are cached in the browser (localStorage) and
-// saved to the account, keyed by the mission's data-id or the lab's id.
+// Readiness score for every "Challenge:" mission chain across the course.
+// Results are cached in the browser (localStorage) and saved to the account,
+// keyed by the mission's data-id.
 
 export type Skill = "accounts" | "directory" | "troubleshooting" | "security" | "logs" | "access" | "risk";
 
@@ -37,6 +37,48 @@ export const SKILLS: Record<Skill, { label: string; advice: string }> = {
 
 // mission id -> skill. d1 = Operation Day One, tq = Ticket Queue.
 export const MISSION_SKILLS: Record<string, Skill> = {
+  // CIA Triad in Practice: the same client-only "Check Yourself" pattern
+  // Week 3's Wireshark labs used before they were converted to real
+  // ad-mission tickets so they counted toward readiness. Converted here too.
+  "w1e-c1": "risk",
+  "w1e-c2": "risk",
+  "w1e-c3": "risk",
+  "w1e-c4": "risk",
+  "w1e-c5": "risk",
+  // CVSS Vulnerability Scoring: same conversion.
+  "w1m-c1": "risk",
+  "w1m-c2": "risk",
+  "w1m-c3": "risk",
+  "w1m-c4": "risk",
+  "w1m-c5": "risk",
+  // Hashing and Encryption with CyberChef: same conversion.
+  "w2e-c1": "security",
+  "w2e-c2": "security",
+  "w2e-c3": "security",
+  "w2e-c4": "security",
+  "w2e-c5": "security",
+  // Password Hashing and Salting: same conversion.
+  "w2m-c1": "security",
+  "w2m-c2": "security",
+  "w2m-c3": "security",
+  "w2m-c4": "security",
+  "w2m-c5": "security",
+  // Broken Access Control (PortSwigger): had no graded check at all before,
+  // relying entirely on the external platform's own completion state.
+  "w4t-c1": "access",
+  "w4t-c2": "access",
+  // Authentication Log Analysis: same conversion.
+  "w4e-c1": "logs",
+  "w4e-c2": "logs",
+  "w4e-c3": "logs",
+  "w4e-c4": "logs",
+  "w4e-c5": "logs",
+  // Linux Privilege Management with sudo: same conversion.
+  "w4m-c1": "access",
+  "w4m-c2": "access",
+  "w4m-c3": "access",
+  "w4m-c4": "access",
+  "w4m-c5": "access",
   "d1-01": "accounts",
   "d1-02": "accounts",
   "d1-03": "directory",
@@ -61,32 +103,172 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "tq-17": "security",
   "tq-18": "directory",
   "tq-19": "security",
+  // sm-01/02, bt-01/02/03 and th-01 lived in three challenge files (Approved
+  // Overnight, Baseline a Team, the lockout threshold) that were pulled from
+  // the Phase 2 Challenges page's sections list. Unlisted means unreachable,
+  // not just unlinked, so they are dropped here too -- counting a mission no
+  // page can show kept readiness from ever reaching 100.
+  "zt-01": "security",
+  "zt-02": "security",
+  "cp-03": "security",
+  "cp-04": "security",
+  // Week 3's two Wireshark labs: the Check Yourself questions used to be a
+  // client-only self-quiz (academy's self-check.ts), never counted toward
+  // readiness. Converted to real ad-mission/ad-guess tickets so they do.
+  // No "networking" skill exists; "logs" fits closest -- reading a capture
+  // to understand what happened is the same move as reading an event log.
+  "w3e-c1": "logs",
+  "w3e-c2": "logs",
+  "w3e-c3": "logs",
+  "w3e-c4": "logs",
+  "w3e-c5": "logs",
+  "w3m-c1": "logs",
+  "w3m-c2": "logs",
+  "w3m-c3": "logs",
+  "w3m-c4": "logs",
+  "w3m-c5": "logs",
+  "w3m-c6": "logs",
+  // Write a Detection: a real Suricata rule, written and run against the
+  // same scan the last lab only read by hand.
+  "wd1-01": "logs",
+  "wd1-02": "security",
+  "wd1-03": "security",
+  // Confirm the Map From the Command Line: Map Your Pod's companion lab,
+  // reading the domain controller's own listening ports with PowerShell
+  // instead of trusting the drag-and-drop diagram alone.
+  "nm-01": "security",
+  "nm-02": "security",
+  "nm-03": "security",
+  // soc-mindset's two labs: a real failed sign-in documented with the 5 W's,
+  // and the domain controller's own real default firewall posture, read
+  // straight from PowerShell instead of a slide.
+  "sm2-01": "logs",
+  "sm2-05": "security",
+  "sm2-02": "security",
+  "sm2-03": "security",
+  "sm2-06": "security",
+  "sm2-04": "security",
+  // Malware week's two labs: a real EICAR test file for signature-based
+  // detection, and a real Sysmon process tree for behavior-based detection,
+  // matching the week's own Antivirus-then-EDR teaching order.
+  "mw2-01": "logs",
+  "mw2-06": "security",
+  "mw2-07": "logs",
+  "mw2-02": "security",
+  "mw2-03": "security",
+  "mw2-05": "security",
+  "mw2-04": "security",
+  // Log Analysis Fundamentals' two labs: one real sign-in correlated across
+  // both machines' own logs, and PowerShell's own script-block logging
+  // turned on and read.
+  "la2-01": "logs",
+  "la2-05": "logs",
+  "la2-02": "logs",
+  "la2-03": "logs",
+  "la2-06": "logs",
+  "la2-04": "logs",
   "tq-20": "troubleshooting",
+  "tq-21": "security",
+  "tq-22": "security",
+  "tq-23": "security",
+  "tq-24": "security",
+  "tq-25": "directory",
   "tq-06": "security",
   "tq-07": "logs",
   "tq-08": "security",
   "tq-09": "security",
   "tq-10": "security",
+  // Week 4's effective-access challenge, replacing the old browser-only
+  // "Who Can Open This?" widget with a real audit against the lab's own
+  // Compliance Users group.
+  "ea-01": "access",
+  "ea-02": "access",
+  "ea-03": "access",
+  // The Nightly Settlement Push (hosted-lab Wireshark capture) and The
+  // Mirror That Does Not Match (hash, crack, spot reuse). Real graded
+  // challenges that were never added here, so finishing them never moved
+  // readiness.
+  "cap-01": "logs",
+  "cap-02": "logs",
+  "cap-03": "security",
+  "cap-04": "logs",
+  "cap-05": "logs",
+  "cap-06": "security",
+  "cry-01": "security",
+  "cry-02": "security",
+  "cry-03": "security",
+  "cry-04": "security",
+  "cry-05": "security",
+  "cry-06": "security",
+  // The Client Data Review: same gap as above, fixed the same way.
+  "cd-01": "security",
+  "cd-02": "security",
+  "cd-03": "security",
+  "cd-04": "security",
+  "cd-05": "security",
+  "cd-06": "security",
+  "cd-07": "accounts",
+  // Campaign 1, The Credential Campaign: real events read from the lab's
+  // own Security log, plus a KQL detection-writing step and a final
+  // Kill Chain mapping.
+  "sl-01": "logs",
+  "sl-02": "logs",
+  "sl-03": "logs",
+  "cc-11": "logs",
+  "cc-12": "security",
+  // Campaign 2, The Phishing Chain: a second real intrusion, this one with
+  // a real Delivery artifact to hash against VirusTotal and a real beacon
+  // to capture live in Wireshark.
+  "rc-01": "logs",
+  "dl-01": "security",
+  "pc-03": "security",
+  "pi-01": "security",
+  "pc-05": "logs",
+  "pi-02": "security",
+  "ao-01": "security",
+  "ao-02": "security",
+  "pc-10": "security",
+  // Campaign 3, The Open Door: the legacy SMB rule, proven in use before it
+  // is closed, then the same Installation/C2/Actions-on-Objectives shape
+  // behind a different entry point.
+  "od-02": "logs",
+  "od-04": "security",
+  "od-05": "security",
+  "od-06": "security",
+  "od-07": "security",
+  "od-08": "security",
+  "od-09": "security",
+  // Campaign 4, The Keys to the Domain: Kerberoasting and DCSync, the two
+  // techniques CISA's own September 2024 AD-compromise guide names most,
+  // plus a real Sysmon-based process-lineage step.
+  "rk-01": "logs",
+  "rk-02": "security",
+  "rk-04": "security",
+  "rk-03": "security",
+  "rk-05": "security",
+  "rk-06": "security",
+  "rk-07": "security",
+  "rk-08": "logs",
+  "rk-09": "security",
+  // Week 1's risk-triage challenge, replacing the old browser-only chat
+  // widget with a real ranking exercise against the org chart's own
+  // department-criticality facts.
+  "rt-01": "risk",
+  "rt-02": "risk",
+  "rt-03": "risk",
+  "rt-04": "risk",
 };
 
 /** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */
-export const LAB_PASS_IDS = ["lab-risk-triage", "lab-hash-verify", "lab-password-table", "lab-signin-log", "lab-effective-access"] as const;
+export const LAB_PASS_IDS = [] as const;
 export type LabPassId = (typeof LAB_PASS_IDS)[number];
 const isLabPass = (id: string) => (LAB_PASS_IDS as readonly string[]).includes(id);
 
 /** Browser labs that count toward readiness, scored by the points they earned the first time they were finished. */
-export const LAB_SKILLS: Partial<Record<LabPassId, Skill>> = {
-  "lab-risk-triage": "risk",
-  "lab-effective-access": "access",
-  "lab-signin-log": "logs",
-};
+export const LAB_SKILLS: Partial<Record<LabPassId, Skill>> = {};
 
 /** The scored labs, for the readiness report. href opens the lab's tab. */
-export const LAB_CATALOG: { id: LabPassId; title: string; skill: Skill; href: string }[] = [
-  { id: "lab-risk-triage", title: "Monday Morning Risk Triage", skill: "risk", href: "/range/phase-1/week-1#lab-monday-morning-risk-triage" },
-  { id: "lab-effective-access", title: "Who Can Open This?", skill: "access", href: "/range/phase-1/week-4#lab-who-can-open-this" },
-  { id: "lab-signin-log", title: "Read the Sign-In Log", skill: "logs", href: "/range/phase-2/week-2#lab-read-the-sign-in-log" },
-];
+export const LAB_CATALOG: { id: LabPassId; title: string; skill: Skill; href: string }[] = [];
 
 /** Everything readiness counts: missions and scored labs. */
 const SCORED_SKILLS: Record<string, Skill> = { ...MISSION_SKILLS, ...(LAB_SKILLS as Record<string, Skill>) };
@@ -103,6 +285,8 @@ export type MissionResult = {
   flagged?: boolean;
   /** The change this ticket needs was seen in the student's lab. */
   labOk?: boolean;
+  /** And Range confirmed it by asking the lab directly, not from the lab's own report. */
+  labVerified?: boolean;
   /** Browser labs only: percent of the lab's points the first time it was finished. */
   pts?: number;
   at?: string;
@@ -277,6 +461,7 @@ export function sanitizeResults(raw: unknown, trustLabOk = false): Results {
       hint: v.hint === true,
       ...(flagged ? { flagged: true } : {}),
       ...(trustLabOk && v.labOk === true ? { labOk: true } : {}),
+      ...(trustLabOk && v.labOk === true && v.labVerified === true ? { labVerified: true } : {}),
       ...(isLabPass(id) && typeof v.pts === "number" && Number.isFinite(v.pts) ? { pts: Math.min(100, Math.max(0, Math.round(v.pts))) } : {}),
       ...(at ? { at } : {}),
     };
@@ -285,11 +470,11 @@ export function sanitizeResults(raw: unknown, trustLabOk = false): Results {
 }
 
 export const LEVELS: Record<Summary["level"], { label: string; note: string }> = {
-  none: { label: "Not started", note: "Answer missions in Operation Day One, the Ticket Queue, and The 2 AM Login to build your score." },
+  none: { label: "Not started", note: "Answer missions in Operation Day One, the Ticket Queue, and the Phase 2 campaigns to build your score." },
   progress: { label: "In progress", note: "Readiness counts every mission, so it grows as you finish more. Accuracy shows how you did on the ones you finished." },
-  ready: { label: "Ready", note: "You met the bar on every mission and every competency. Keep going as new labs open." },
-  almost: { label: "Almost Ready", note: "Solid base. Tighten the focus areas below and retake the missions you missed." },
-  practice: { label: "Keep Practicing", note: "You have the start. Work through the focus areas below, then retake the challenges." },
+  ready: { label: "Ready", note: "You met the bar on every mission and every competency, so keep going as new labs open." },
+  almost: { label: "Almost Ready", note: "You have a solid base, so tighten the focus areas below and retake the missions you missed." },
+  practice: { label: "Keep Practicing", note: "You have made a start, so work through the focus areas below and retake the challenges." },
 };
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

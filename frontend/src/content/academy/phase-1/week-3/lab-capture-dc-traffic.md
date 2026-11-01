@@ -46,25 +46,11 @@ getent hosts dc01
 
 Write down the address it prints. Every packet in this lab goes to or from it.
 
-<div class="ad-shots">
-<figure class="ad-shot">
-<img src="/academy/week-3/PLACEHOLDER-getent-dc.png" alt="Terminal on the Ubuntu server showing the domain controller's name resolved to an IP address" />
-<figcaption>Screenshot 1. [ADD IMAGE] The domain controller's address, from the Ubuntu box.</figcaption>
-</figure>
-</div>
-
 ### Start Wireshark on the Right Interface
 
 Open Wireshark from the desktop. Applications → Internet → Wireshark. It lists the network interfaces it can capture on.
 
 Choose the interface named `ens5`, the Ubuntu server's network card. Double-click it to start capturing. Packets begin scrolling immediately.
-
-<div class="ad-shots">
-<figure class="ad-shot">
-<img src="/academy/week-3/PLACEHOLDER-wireshark-interface.png" alt="Wireshark welcome screen with the ens5 interface selected" />
-<figcaption>Screenshot 2. [ADD IMAGE] Capturing on ens5, the Ubuntu card.</figcaption>
-</figure>
-</div>
 
 ### Make the Two Machines Talk
 
@@ -75,14 +61,25 @@ dig @dc01 purvexfinancial.local
 ldapsearch -x -H ldap://dc01 -s base -b "" namingContexts
 ```
 
-Each command produces a short conversation with the domain controller, and Wireshark records both as they happen.
+<p class="ad-flags__lead">What the first command asks for</p>
+<ul class="ad-flags" role="list">
+<li><code>dig</code><span>A DNS client. It puts a name question to a server and prints what comes back.</span></li>
+<li><code>@dc01</code><span>Ask that server directly, rather than whatever resolver Ubuntu would normally use.</span></li>
+<li><code>purvexfinancial.local</code><span>The name being asked about. No record type is given, so dig asks for an address record.</span></li>
+<li><em>On the wire</em><span>One question and one answer over UDP port 53. The answer is the address you wrote down earlier.</span></li>
+</ul>
 
-<div class="ad-shots">
-<figure class="ad-shot">
-<img src="/academy/week-3/PLACEHOLDER-dc-queries.png" alt="Terminal showing a dig query and an ldapsearch query to the domain controller returning results" />
-<figcaption>Screenshot 3. [ADD IMAGE] Two requests to the domain controller.</figcaption>
-</figure>
-</div>
+<p class="ad-flags__lead">What the second command asks for</p>
+<ul class="ad-flags" role="list">
+<li><code>ldapsearch</code><span>A directory client. It queries a directory the way an application would.</span></li>
+<li><code>-H ldap://dc01</code><span>The directory service on dc01, plain LDAP on port 389.</span></li>
+<li><code>-x</code><span>Simple authentication. No account is named, so the connection is anonymous.</span></li>
+<li><code>-s base -b ""</code><span>One entry rather than a tree. The empty name is the rootDSE, the record a directory publishes about itself.</span></li>
+<li><code>namingContexts</code><span>The attribute asked for. It comes back as the directory trees this server holds.</span></li>
+<li><em>On the wire</em><span>A TCP connection, so a handshake opens it before any directory traffic.</span></li>
+</ul>
+
+The pair is deliberate. One is a single exchange over UDP and the other is a conversation over TCP, both to the same host, and neither of them is encrypted.
 
 ### Filter to the Domain Controller
 
@@ -94,19 +91,12 @@ ip.addr == 10.60.1.x
 
 Only the traffic to and from the domain controller remains. This is the conversation you just created, and nothing else.
 
-<div class="ad-shots">
-<figure class="ad-shot">
-<img src="/academy/week-3/PLACEHOLDER-wireshark-filtered.png" alt="Wireshark filtered to the domain controller's address showing DNS and LDAP packets" />
-<figcaption>Screenshot 4. [ADD IMAGE] Only the domain controller's traffic.</figcaption>
-</figure>
-</div>
-
 ### Read the Three Panes
 
 Wireshark shows every capture in three stacked panes, and learning to move between them is most of the skill.
 
-* **Packet List, at the top.** One line per packet. The Protocol column names what it is, and the Info column summarises it. This is your timeline.
-* **Packet Details, in the middle.** The selected packet opened up layer by layer, from Ethernet at the bottom to the application at the top.
+* **Packet List, at the top.** One line per packet. The Protocol column names what it is, and the Info column summarizes it. This is your timeline.
+* **Packet Details, in the middle.** The selected packet opened up layer by layer, from Ethernet at the top down to the application at the bottom.
 * **Packet Bytes, at the bottom.** The raw data, for when the parsed view is not enough.
 
 Click a packet in the top pane and watch the middle pane fill with its layers. You will repeat that click for most of your time in Wireshark.
@@ -127,46 +117,123 @@ Right-click any LDAP packet and choose Follow → TCP Stream. Wireshark pulls ev
 
 This is the move an analyst reaches for first when one conversation matters. Close the stream window and the filter it set stays in the bar, showing only that connection.
 
-<div class="ad-shots">
-<figure class="ad-shot">
-<img src="/academy/week-3/PLACEHOLDER-follow-stream.png" alt="Wireshark Follow TCP Stream window showing the full LDAP exchange between the Ubuntu box and the domain controller" />
-<figcaption>Screenshot 5. [ADD IMAGE] One conversation, pulled out whole.</figcaption>
-</figure>
-</div>
-
 ### Check Yourself
 
 Answer from what you captured, not from what you remember reading.
 
-<div class="ad-check" data-check="w3e-c1" data-answer="1">
-<p class="ad-check__q">Could this Ubuntu capture show you a conversation between the domain controller and a third machine it never involved?</p>
-<button type="button" class="ad-check__opt" data-i="0">Yes, it sees everything on the network</button>
-<button type="button" class="ad-check__opt" data-i="1">No, it only sees traffic it is part of</button>
-<p class="ad-check__note">A machine captures its own card. On a switched network it sees only what it sends or receives, which is why analysts need a capture from the right place.</p>
+<div class="ad-mission" data-id="w3e-c1" data-attempts="0">
+<p><strong>Task:</strong> Could this Ubuntu capture show you a conversation between the domain controller and a third machine it never involved? Type yes or no.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for whether the capture could show a third machine's traffic" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{no}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>No</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A machine captures its own card. On a switched network it sees only what it sends or receives, which is why analysts need a capture from the right place.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w3e-c2" data-answer="0">
-<p class="ad-check__q">For the LDAP connection, which packet came back from the domain controller to open the handshake?</p>
-<button type="button" class="ad-check__opt" data-i="0">SYN-ACK</button>
-<button type="button" class="ad-check__opt" data-i="1">A second SYN</button>
-<button type="button" class="ad-check__opt" data-i="2">The directory results</button>
-<p class="ad-check__note">The Ubuntu box sent SYN, the domain controller answered SYN-ACK, the Ubuntu box sent ACK. Only then did the LDAP query move.</p>
+### Read the LDAP Handshake
+
+<div class="ad-mission" data-id="w3e-c2" data-attempts="0">
+<p><strong>Task:</strong> For the LDAP connection in your capture, which packet came back from the domain controller to open the handshake? Type it exactly as Wireshark's Info column shows it.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for the handshake packet from the domain controller" placeholder="packet type" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{syn-ack}" data-accept="syn ack|syn,ack">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>SYN-ACK</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>The Ubuntu box sent SYN, the domain controller answered SYN-ACK, the Ubuntu box sent ACK. Only then did the LDAP query move.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w3e-c3" data-answer="1">
-<p class="ad-check__q">The DNS request and reply needed how many packets, and why?</p>
-<button type="button" class="ad-check__opt" data-i="0">Three, because every service uses a handshake</button>
-<button type="button" class="ad-check__opt" data-i="1">Two, because DNS uses UDP and skips the handshake</button>
-<button type="button" class="ad-check__opt" data-i="2">Twenty, one per name</button>
-<p class="ad-check__note">DNS runs over UDP, which has no handshake. One question, one answer, done. LDAP runs over TCP, so it sets up a connection first.</p>
+### Count the DNS Exchange
+
+<div class="ad-mission" data-id="w3e-c3" data-attempts="0">
+<p><strong>Task:</strong> In your capture, how many packets did the DNS request and reply need? Type the number.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for the number of DNS packets" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>2</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>DNS runs over UDP, which has no handshake. One question, one answer, done. LDAP runs over TCP, so it sets up a connection first.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w3e-c4" data-answer="1">
-<p class="ad-check__q">You want to read one connection's whole exchange without the surrounding noise. Which Wireshark move does that?</p>
-<button type="button" class="ad-check__opt" data-i="0">Opening the Bytes pane</button>
-<button type="button" class="ad-check__opt" data-i="1">Right-click a packet, Follow, TCP Stream</button>
-<button type="button" class="ad-check__opt" data-i="2">Scrolling the Packet List faster</button>
-<p class="ad-check__note">Follow TCP Stream reassembles a single conversation into one readable window and sets a filter to just that connection. It is the first move when one exchange matters.</p>
+### Read What Stays the Same
+
+Look at the LDAP conversation's TCP handshake again. The source port, the one on the Ubuntu box, is a high, random-looking number. The destination port, the one on the domain controller, is 389 every single time.
+
+<div class="ad-mission" data-id="w3e-c5" data-attempts="0">
+<p><strong>Task:</strong> If you captured this same LDAP query again a minute later, which port would you expect to change, and which would stay fixed? Type its letter.<br><strong>A</strong> Both ports stay exactly the same on every connection.<br><strong>B</strong> The source port changes each time, a fresh one picked for the new connection. The destination port stays 389, the LDAP service's own fixed address.<br><strong>C</strong> The destination port changes each time, and the source port stays fixed.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for which port changes and which stays fixed" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Source changes, destination stays fixed</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A client picks a fresh, random source port for every new connection so replies can find their way back to the right one. A server listens on the same fixed port every time, because that is the address its service is known by. That difference is why filtering a capture by destination port finds every LDAP query a machine ever made, while filtering by source port finds only one single connection.</p>
+</div>
+</div>
+</div>
+</div>
+
+### Isolate One Conversation
+
+<div class="ad-mission ad-mission--capstone" data-id="w3e-c4" data-attempts="0">
+<p><strong>Task:</strong> You want to read one connection's whole exchange without the surrounding noise. Which Wireshark move does that? Type its letter.<br><strong>A</strong> Opening the Bytes pane.<br><strong>B</strong> Right-click a packet, Follow, TCP Stream.<br><strong>C</strong> Scrolling the Packet List faster.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for the Wireshark move that reads a full conversation" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Right-click a packet, Follow, TCP Stream</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Follow TCP Stream reassembles a single conversation into one readable window and sets a filter to just that connection. It is the first move when one exchange matters.</p>
+</div>
+</div>
+</div>
 </div>
 
 ### Troubleshooting

@@ -1,22 +1,20 @@
 "use client";
 
-import { academyFetch, RESULTS_OWNER_KEY } from "@/lib/academy-client";
+import { academyFetch } from "@/lib/academy-client";
 import { applyPatch, EMPTY_SAVED, mergeSaved, sanitizeSaved, type Saved, type SavedPatch } from "@/lib/academy-saved";
 
-// The page's side of saved work (see academy-saved.ts). A copy lives in this
+// The page's side of saved answers (see academy-saved.ts). A copy lives in this
 // browser so the page has it at once, and the account's copy is loaded once
 // per sign-in and merged in. Changes save to the account in the background.
 //
 // The browser copy is tagged with whose it is. On a shared computer the next
-// student would otherwise inherit, and upload, the last one's progress, so a
+// student would otherwise inherit, and upload, the last one's answers, so a
 // copy that is not the signed-in student's is thrown away, never sent.
 
 /** Fired once the account's copy has been merged in, so the page re-applies it. */
 export const SAVED_LOADED_EVENT = "academy-saved-loaded";
 
 const LOCAL_KEY = "academy-saved-v1";
-// Where progress was kept before it was saved to the account. Read once, then removed.
-const LEGACY = { completed: "academy-progress-v1", quizPasses: "academy-quiz-pass-v1", labsDone: "academy-labs-done-v1", lastStop: "academy-last-stop-v1" };
 
 let owner: string | null = null;
 let saved: Saved = EMPTY_SAVED;
@@ -41,31 +39,13 @@ function writeLocal() {
   } catch {}
 }
 
-function removeLegacy() {
-  const s = storage();
-  for (const k of Object.values(LEGACY)) s?.removeItem(k);
-}
-
 /** This browser's copy, if it belongs to this student. */
 function readLocal(studentId: string): Saved {
   const s = storage();
   if (!s) return EMPTY_SAVED;
   try {
     const raw = JSON.parse(s.getItem(LOCAL_KEY) ?? "null") as { owner?: unknown; saved?: unknown } | null;
-    if (raw) {
-      removeLegacy();
-      return raw.owner === studentId ? sanitizeSaved(raw.saved) : EMPTY_SAVED;
-    }
-    // Progress from before it was saved to the account carries no owner of its
-    // own. The scored results beside it do, so it goes with them, and only if
-    // they are this student's.
-    const legacyOwner = s.getItem(RESULTS_OWNER_KEY);
-    const parse = (k: string) => JSON.parse(s.getItem(k) ?? "[]") as unknown;
-    const legacy = legacyOwner === studentId
-      ? sanitizeSaved({ completed: parse(LEGACY.completed), quizPasses: parse(LEGACY.quizPasses), labsDone: parse(LEGACY.labsDone), lastStop: s.getItem(LEGACY.lastStop) })
-      : EMPTY_SAVED;
-    removeLegacy();
-    return legacy;
+    return raw?.owner === studentId ? sanitizeSaved(raw.saved) : EMPTY_SAVED;
   } catch {
     return EMPTY_SAVED;
   }
@@ -92,7 +72,6 @@ export function openSaved(studentId: string): Promise<void> {
       const server = sanitizeSaved(data.saved);
       // The account's copy wins where both have the same quiz or box, since it
       // is the newer one whenever the student last worked somewhere else.
-      // Finished work from either side is kept.
       const merged = mergeSaved(server, saved);
       serverReady = true;
       if (JSON.stringify(merged) !== JSON.stringify(server)) queue(merged);
@@ -163,18 +142,13 @@ async function flush(keepalive = false) {
   await sending;
 }
 
-/**
- * Before the browser is re-tagged for a student: drop any copy that is not
- * theirs, including progress from before it carried an owner. Called while
- * the previous owner is still recorded, which is the only time it is known.
- */
+/** When a different student signs in on this browser: drop the copy that is not theirs. */
 export function forgetLocalUnless(studentId: string) {
   const s = storage();
   if (!s) return;
   try {
     const raw = JSON.parse(s.getItem(LOCAL_KEY) ?? "null") as { owner?: unknown } | null;
     if (raw && raw.owner !== studentId) s.removeItem(LOCAL_KEY);
-    if (s.getItem(RESULTS_OWNER_KEY) !== studentId) removeLegacy();
   } catch {}
 }
 
@@ -188,7 +162,6 @@ export async function clearSavedLocal() {
   try {
     storage()?.removeItem(LOCAL_KEY);
   } catch {}
-  removeLegacy();
   notify();
 }
 

@@ -48,6 +48,9 @@ export function wireSelfChecks(root: HTMLElement, storageKey?: string): () => vo
     const chosen = opt.dataset.i;
     if (chosen === undefined) return;
     apply(block, chosen);
+    // The workstation scene on the lab page reacts to a first answer.
+    const answer = block.dataset.answer;
+    window.dispatchEvent(new CustomEvent("academy-lab-check", { detail: { graded: answer !== undefined, ok: answer === chosen } }));
     const k = keyFor(storageKey, block);
     if (k) {
       try {

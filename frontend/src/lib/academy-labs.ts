@@ -1,4 +1,4 @@
-import { phases, type LabWidget, type WeekDef } from "@/lib/academy-content";
+import { phases, type WeekDef } from "@/lib/academy-content";
 import { entriesOf, labSlug } from "@/lib/academy-entries";
 
 // Every hands-on lab in the course, flattened so the Labs page can give each
@@ -26,27 +26,29 @@ export type LabMeta = {
   phaseSlug: string;
   entrySlug: string;
   file: string;
-  widget?: LabWidget;
 };
 
 // Card art keyed by slug. Blurbs are short and plain. Icons are security-themed.
 const ART: Record<string, { blurb: string; skill: string; icon: string; accent: string; minutes: number }> = {
-  "risk-triage": { blurb: "Score Monday's incoming tickets by real business risk.", skill: "Risk Triage", icon: "TriangleAlert", accent: "#f5a524", minutes: 12 },
   "three-failures": { blurb: "Break confidentiality, integrity and availability on one file, and prove each one.", skill: "Fundamentals", icon: "ShieldAlert", accent: "#4fa3d1", minutes: 20 },
-  "severity-risk": { blurb: "Score one flaw three ways with CVSS, and watch Critical stop meaning urgent.", skill: "Risk Triage", icon: "Gauge", accent: "#f5a524", minutes: 30 },
-  "hash-verify": { blurb: "Prove a downloaded update is the file IT really published.", skill: "Integrity", icon: "Fingerprint", accent: "#8b7bff", minutes: 15 },
-  "password-table": { blurb: "Crack a leaked table to see which password storage holds up.", skill: "Credentials", icon: "KeyRound", accent: "#22b8cf", minutes: 20 },
+  "severity-risk": { blurb: "Score one flaw three ways with CVSS, and watch Critical stop meaning urgent.", skill: "Vulnerability Scoring", icon: "Gauge", accent: "#0ca678", minutes: 30 },
   "tell-them-apart": { blurb: "Tell encoding, encryption and hashing apart in CyberChef, and prove which reverse.", skill: "Credentials", icon: "ScanSearch", accent: "#22b8cf", minutes: 20 },
   "store-a-password": { blurb: "See why a leaked unsalted table gives a company away, and how salting fixes it.", skill: "Credentials", icon: "KeyRound", accent: "#22b8cf", minutes: 25 },
   "wireshark": { blurb: "Read a packet capture and follow a conversation on the wire.", skill: "Networking", icon: "Radar", accent: "#3b9eff", minutes: 20 },
-  "capture-dc-traffic": { blurb: "Capture a few seconds of the domain controller and find the handshakes, ports and protocols.", skill: "Networking", icon: "Radar", accent: "#3b9eff", minutes: 25 },
+  "capture-dc-traffic": { blurb: "Capture a few seconds of the domain controller and find the handshakes, ports and protocols.", skill: "Networking", icon: "Cable", accent: "#3b9eff", minutes: 25 },
   "read-a-scan": { blurb: "Produce a port scan, capture it, and learn the signature that tells an open door from a closed one.", skill: "Networking", icon: "ScanSearch", accent: "#3b9eff", minutes: 30 },
+  "write-a-detection": { blurb: "Write a real Suricata rule and watch it catch the scan you ran by hand.", skill: "Networking", icon: "SatelliteDish", accent: "#3b9eff", minutes: 20 },
   "forensics": { blurb: "Trace Hidden Tear ransomware through captured network traffic.", skill: "Forensics", icon: "Bug", accent: "#ff6b81", minutes: 25 },
-  "effective-access": { blurb: "Work out who can really open a file after nested groups.", skill: "Access Control", icon: "ShieldCheck", accent: "#2fbf71", minutes: 15 },
-  "triple-a": { blurb: "Break a broken access-control flow, then close the hole.", skill: "Access Control", icon: "LockKeyhole", accent: "#19c3b2", minutes: 20 },
+  "triple-a": { blurb: "Break a broken access-control flow, then close the hole.", skill: "Application Security", icon: "Unlock", accent: "#e64980", minutes: 20 },
   "read-the-login-record": { blurb: "Make a failed and a successful login, find both in the log, and tell them apart.", skill: "Log Analysis", icon: "ScanSearch", accent: "#9b8cff", minutes: 20 },
   "one-power": { blurb: "Grant a user exactly one command as root, and prove you did not hand over the machine.", skill: "Access Control", icon: "LockKeyhole", accent: "#19c3b2", minutes: 25 },
-  "signin-log": { blurb: "Find four problems hiding in a night of sign-in events.", skill: "Log Analysis", icon: "ScanSearch", accent: "#9b8cff", minutes: 18 },
+  "confirm-the-map": { blurb: "Ask your domain controller what it is really listening on, in PowerShell, and find what a five-port lesson left out.", skill: "Networking", icon: "Router", accent: "#3b9eff", minutes: 15 },
+  "document-the-five-ws": { blurb: "Fail a real sign-in on purpose, then document it with the 5 W's.", skill: "SOC Analysis", icon: "FileSearch", accent: "#d946ef", minutes: 15 },
+  "default-posture": { blurb: "Read your domain controller's real default firewall posture, allowlist versus blocklist.", skill: "SOC Analysis", icon: "DoorClosed", accent: "#d946ef", minutes: 10 },
+  "trigger-a-real-detection": { blurb: "Create a real EICAR test file and read the exact signature Defender flags it with.", skill: "Malware", icon: "TestTube2", accent: "#ff6b81", minutes: 15 },
+  "read-a-process-tree": { blurb: "Find a real Sysmon process tree and name the Kill Chain stage it matches.", skill: "Malware", icon: "GitBranch", accent: "#ff6b81", minutes: 15 },
+  "one-timeline-two-machines": { blurb: "Sign in to both machines in your pod and correlate the two logs into one timeline.", skill: "Log Analysis", icon: "GitCompare", accent: "#9b8cff", minutes: 15 },
+  "turn-on-script-logging": { blurb: "Turn on PowerShell's own script-block logging and read a command's full text back.", skill: "Log Analysis", icon: "Terminal", accent: "#9b8cff", minutes: 15 },
 };
 
 const FALLBACK = { blurb: "A hands-on lab in the PurveX environment.", skill: "Hands-on", icon: "FlaskConical", accent: "#5546e0", minutes: 15 };
@@ -56,7 +58,7 @@ function labsInEntry(phaseLabel: string, phaseSlug: string, entry: WeekDef): Lab
   return entry.sections
     .filter((s) => s.label.startsWith("Lab:"))
     .map((s) => {
-      const slug = labSlug(s.file, s.widget);
+      const slug = labSlug(s.file);
       const art = ART[slug] ?? FALLBACK;
       return {
         slug,
@@ -70,7 +72,6 @@ function labsInEntry(phaseLabel: string, phaseSlug: string, entry: WeekDef): Lab
         phaseSlug,
         entrySlug: entry.slug,
         file: s.file,
-        widget: s.widget,
       };
     });
 }

@@ -101,8 +101,8 @@ Three or more consecutive short declaratives is the signal to re-read. There
 are no em dashes and no semicolons here, so the joins get made with
 conjunctions, a colon, or a phrase that refers back.
 
-Reference material inside a `Go deeper` block, event-ID tables and command
-explanations are exempt. Terse is correct there.
+Reference material such as event-ID tables and command explanations is
+exempt. Terse is correct there.
 
 ### Do not pay for flow with commas
 
@@ -269,3 +269,68 @@ reasoning.
 Every lesson should leave the student able to say: "I know what this is, I
 know how to troubleshoot it, I know how to administer it, and I understand
 how it can become a security issue."
+
+## Slides, drawings and drag-and-drop
+
+Lesson tabs show as slides. Every `###` heading starts a slide, and a long
+heading breaks at a paragraph past about 110 words. A slide with no picture
+of its own gets an animated drawing chosen from its heading. To pick one
+yourself, put a note on the line after the heading:
+
+```
+### The Three-Way Handshake
+<!-- art: handshake -->
+```
+
+Drawings: `lock`, `scan`, `server`, `bug`, `radar`, `gauge`, `search`,
+`people`, `tree`, `network`, `terminal`, `handshake`, `ports`, `tls`,
+`layers`, `transform`, `badge`, `keys`, `door`, `ticket`, `move`, `deck`.
+
+A `sort` block becomes a slide where the student drags cards into boxes.
+One line per box: the box name, a colon, then its cards split by `|`.
+
+```sort
+prompt: Weakness or actor? Sort each one.
+Vulnerability: Unpatched software | A port open that nobody needs
+Threat: Malware | An insider
+```
+
+An `order` block becomes a slide where the student puts steps in order.
+List them in the right order. The slide shuffles them.
+
+```order
+prompt: Put the TCP handshake in order.
+SYN
+SYN-ACK
+ACK
+```
+
+A `match` block pairs a short term with a definition or a scenario, one
+pair a line. The student drags the term onto the line it belongs to. A
+`connect` block takes the same lines and has the student draw a wire from
+each idea to its partner instead. Use it where the point is how ideas join.
+
+```match
+prompt: Match each breach to the way in.
+Colonial Pipeline = A VPN account with a leaked password and no MFA
+MGM Resorts = A caller talked the help desk into resetting an employee's MFA
+```
+
+Drawings never repeat inside a week. Each tab keeps the drawing that best
+fits its own name, and the concept explainers (`leak`, `lie`, `lockout`,
+`riskmix`, `avalanche`, `salt`, `wrongkey`, `mfa`) only appear where their
+idea is the slide's or the tab's subject. Pin one with `<!-- art: salt -->`
+when the heading does not name the idea.
+
+Cards follow the same rule as the prose: every one must come from the
+lesson it sits in. Keep each card short enough to read at a glance.
+
+## Sources for specific facts
+
+A named breach, a date, a figure, a standard or a version needs a source a
+student can open. Keep the lesson prose free of links and list the source in
+that week's Resources tab under "Sources for this week's facts", one line per
+claim: the claim in bold, then the link. A Home Lab lesson has no Resources
+tab, so its source goes on its own line straight after the paragraph that
+makes the claim. Prefer the primary record (the vendor, the standards body,
+the government report) and check that the page itself states the fact.

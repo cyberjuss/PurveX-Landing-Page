@@ -1,4 +1,4 @@
-### Encoding, Encryption or Hashing?
+### Encoding vs Encryption vs Hashing
 
 **The ticket:** Jordan Ellis finds this in a vendor script: `password: SGFyYm9yMjAyNg==`. "It's scrambled, so it's encrypted, right?"
 
@@ -20,10 +20,7 @@ Jordan's question matters because the answer changes what happens next. If the v
 
 Jordan's line is Base64, and the letters, the digits and the trailing `=` are its signature. CyberChef's **From Base64** operation turns it into `Harbor2026` in a single click, with no key and no secret of any kind involved. So the answer to Jordan's question is no: the value is not encrypted and never was. That password should be treated as exposed and reported so it gets changed, and the script itself should be corrected so the next person to read it does not inherit the same assumption.
 
-<details class="academy-deeper">
-<summary>Go deeper</summary>
-
-#### Decode Base64 without CyberChef
+### Decode Base64 without CyberChef
 
 ```
 printf '%s' 'SGFyYm9yMjAyNg==' | base64 -d
@@ -32,15 +29,20 @@ printf '%s' 'SGFyYm9yMjAyNg==' | base64 -d
 
 The first is Linux or Mac. The second is PowerShell.
 
-#### Attackers encode commands
+### Attackers encode commands
 
 PowerShell runs Base64 given after `-EncodedCommand`, often shortened to `-enc`. A SOC analyst who sees `powershell -enc` followed by a long string decodes it before deciding anything. The text inside is UTF-16, so in CyberChef add **Decode text** set to UTF-16LE after From Base64. `RwBlAHQALQBEAGEAdABlAA==` decodes to `Get-Date`.
 
-#### Good encryption changes every time
+### Good encryption changes every time
 
 Encrypt the same thing twice with the same key and good encryption gives two different results, because it mixes in a random value. Two identical encrypted values are a warning sign about how it was built.
 
-</details>
+```sort
+prompt: Encoding, encryption or hashing? Sort each clue.
+Encoding: Letters, digits, + and /, often ending in = | Anyone can get it back in one step
+Encryption: Random characters that grow with the input | Only the key holder can get it back
+Hashing: Always the same length, 64 characters for SHA-256 | Nobody can ever get it back
+```
 
 ### Check yourself
 

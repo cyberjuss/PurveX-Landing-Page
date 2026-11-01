@@ -7,7 +7,18 @@ import { DEFAULT_COACH_MODE, modeFromReport, type CoachMode, type CoachPlace } f
 import { COACH_SHOT_ASK, type CoachImage } from "@/lib/academy-coach-media";
 import { loadResults } from "@/lib/academy-score";
 
-export type CoachMessage = { role: "user" | "assistant"; content: string; images?: CoachImage[] };
+export type FeedbackTag = "long" | "answer" | "wrong" | "lab" | "missed" | "vague";
+export type TurnRating = { rating: "up" | "down"; tags: FeedbackTag[]; note: string | null };
+
+export type CoachMessage = {
+  role: "user" | "assistant";
+  content: string;
+  images?: CoachImage[];
+  /** Assistant turns only: the sealed receipt that lets this reply be rated. */
+  receipt?: string;
+  /** Assistant turns only: how the student rated it, once they have. */
+  rated?: TurnRating;
+};
 
 type CoachState = {
   messages: CoachMessage[];
@@ -31,6 +42,8 @@ type CoachState = {
   // Sends a question from anywhere in the Academy. It goes to the inline
   // coach panel when one is on the page, otherwise it opens the pop-up.
   ask: (text: string) => void;
+  /** Thumbs a reply up or down. `i` is its index in `messages`. */
+  rate: (i: number, rating: "up" | "down", detail?: { tags?: FeedbackTag[]; note?: string }) => void;
   registerInline: (el: HTMLElement | null) => void;
   // The intake answers, so a lab can phrase its objective for the student's role.
   profile: StudentProfile | null;
@@ -60,10 +73,36 @@ export function useOptionalCoach() {
   return useContext(CoachContext);
 }
 
+/**
+ * Lets something outside React ask the coach a question.
+ *
+ * The hint card is built from raw DOM by the shell, and the shell renders
+ * CoachProvider rather than living inside it, so it cannot call ask()
+ * itself. It fires an event; this is what hears it. Mounted inside the
+ * provider, which is the only place ask() exists.
+ */
+export function AskCoachBridge() {
+  const { ask } = useCoach();
+  useEffect(() => {
+    const onAsk = (e: Event) => {
+      const question = (e as CustomEvent<{ question?: string }>).detail?.question;
+      if (question) ask(question);
+    };
+    window.addEventListener("academy:ask-coach", onAsk);
+    return () => window.removeEventListener("academy:ask-coach", onAsk);
+  }, [ask]);
+  return null;
+}
+
 export function useCoach() {
   const ctx = useContext(CoachContext);
   if (!ctx) throw new Error("useCoach must be used inside CoachProvider");
   return ctx;
+}
+
+/** The Coach when there is one, or null, for places that also render outside the academy shell. */
+export function useCoachMaybe() {
+  return useContext(CoachContext);
 }
 
 // profile: the intake answers. Sent along only as a fallback for the saved copy.
@@ -166,7 +205,7 @@ export function CoachProvider({ children, profile = null }: { children: React.Re
           setError(typeof data.error === "string" && data.error ? data.error : "PurveX Coach is unavailable right now.");
           return;
         }
-        setMessages([...next, { role: "assistant", content: data.reply }]);
+        setMessages([...next, { role: "assistant", content: data.reply, receipt: typeof data.receipt === "string" ? data.receipt : undefined }]);
       } catch (err) {
         setError(err instanceof DOMException && err.name === "TimeoutError" ? "Coach took too long. Try again." : "Could not reach PurveX Coach.");
       } finally {
@@ -189,6 +228,28 @@ export function CoachProvider({ children, profile = null }: { children: React.Re
     [send]
   );
 
+  // Marks the reply in the thread straight away and posts in the background.
+  // A rating that fails to save is not worth an error in the student's face,
+  // but it must not look saved either, so the mark is rolled back.
+  const rate = useCallback((i: number, rating: "up" | "down", detail?: { tags?: FeedbackTag[]; note?: string }) => {
+    const target = messagesRef.current[i];
+    if (!target || target.role !== "assistant" || !target.receipt) return;
+    const next: TurnRating = { rating, tags: detail?.tags ?? [], note: detail?.note?.trim() || null };
+    const mark = (value: TurnRating | undefined) =>
+      setMessages((prev) => prev.map((m, n) => (n === i ? { ...m, rated: value } : m)));
+    const before = target.rated;
+    mark(next);
+    void academyFetch("/academy/api/coach/feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ receipt: target.receipt, turnId: `${target.receipt.slice(0, 32)}`, rating, tags: next.tags, note: next.note }),
+    })
+      .then((r) => {
+        if (!r.ok) mark(before);
+      })
+      .catch(() => mark(before));
+  }, []);
+
   const registerInline = useCallback((el: HTMLElement | null) => {
     inlineRef.current = el;
   }, []);
@@ -210,7 +271,7 @@ export function CoachProvider({ children, profile = null }: { children: React.Re
 
   return (
     <CoachContext.Provider
-      value={{ messages, busy, enabled, locked, remaining, limit, bonus, error, modalOpen, setModalOpen, mode, setMode, setPlace, send, clear, resetToday, ask, registerInline, profile }}
+      value={{ messages, busy, enabled, locked, remaining, limit, bonus, error, modalOpen, setModalOpen, mode, setMode, setPlace, send, clear, resetToday, ask, rate, registerInline, profile }}
     >
       {children}
     </CoachContext.Provider>

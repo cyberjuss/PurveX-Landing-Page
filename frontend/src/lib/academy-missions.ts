@@ -1,8 +1,20 @@
 import type { Results, Skill } from "@/lib/academy-score";
+import { PROOF_TICKETS } from "@/lib/academy-proof";
 
 export type MissionCatalogEntry = {
   id: string;
-  challenge: "day-one" | "ticket-queue" | "alert-queue";
+  challenge:
+    | "day-one"
+    | "ticket-queue"
+    | "wire"
+    | "crypto"
+    | "client-data"
+    | "access-alert"
+    | "credential-campaign"
+    | "phishing-chain"
+    | "open-door"
+    | "keys-to-the-domain"
+    | "risk-triage";
   title: string;
   prompt: string;
   skill: Skill;
@@ -158,6 +170,44 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Staff can reach the file share by IP address but not by the name files. Find what the name resolves to, point it back at the domain controller, and report the wrong address.",
     skill: "troubleshooting",
   },
+  // The hardening tickets. Unlike the others nothing is planted for these:
+  // the domain ships this way, which is the point. A real estate is not
+  // broken, it is unfinished, and the work is noticing that and closing it.
+  "tq-21": {
+    id: "tq-21",
+    challenge: "ticket-queue",
+    title: "Nothing Stops Password Guessing (INC-1059)",
+    prompt: "Security found the domain never locks an account, however many times a password is wrong. Set a lockout policy of 10 tries or fewer with a lock of at least 15 minutes, then report the event ID a domain controller writes when an account is locked out.",
+    skill: "security",
+  },
+  "tq-22": {
+    id: "tq-22",
+    challenge: "ticket-queue",
+    title: "No Record of What Ran (INC-1060)",
+    prompt: "An investigation stalled because nothing on the domain controller records which programs were started. Turn on auditing for process creation, then report the event ID that records a new process.",
+    skill: "security",
+  },
+  "tq-23": {
+    id: "tq-23",
+    challenge: "ticket-queue",
+    title: "The Security Log Runs Out (INC-1061)",
+    prompt: "The Security log is overwriting itself within days, so last week's sign-ins are already gone. Raise its maximum size to at least 512 MB, then report the size in MB it was set to before you changed it.",
+    skill: "security",
+  },
+  "tq-24": {
+    id: "tq-24",
+    challenge: "ticket-queue",
+    title: "Admins Under the Same Rules as Everyone (INC-1062)",
+    prompt: "Accounts that can change the domain are held to the same password rules as everyone else. Apply a fine-grained password policy of at least 16 characters, locking after 5 tries or fewer, to the IT administrators group. Then report the group you applied it to.",
+    skill: "security",
+  },
+  "tq-25": {
+    id: "tq-25",
+    challenge: "ticket-queue",
+    title: "A Workstation Nobody Uses (INC-1063)",
+    prompt: "Operations says a workstation in their folder was decommissioned and never retired in the directory. Find it, read its Description, disable it without deleting it, and report the ticket number written there.",
+    skill: "directory",
+  },
   "tq-20": {
     id: "tq-20",
     challenge: "ticket-queue",
@@ -186,39 +236,321 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "An unknown invoice file appeared on the Finance share. Find it, move it to quarantine without opening it, and report its full name with every extension.",
     skill: "security",
   },
+  "zt-01": {
+    id: "zt-01",
+    challenge: "open-door",
+    title: "Find What It Actually Trusts (INC-1067)",
+    prompt: "Find the inbound rule on the domain controller that trusts the whole network just for being inside it.",
+    skill: "security",
+  },
+  "zt-02": {
+    id: "zt-02",
+    challenge: "open-door",
+    title: "Close It (INC-1067)",
+    prompt: "Disable the legacy internal-trust rule and report the port it allowed.",
+    skill: "security",
+  },
+  "cp-03": {
+    id: "cp-03",
+    challenge: "credential-campaign",
+    title: "What They Left Running (INC-1069)",
+    prompt: "Find the unexplained scheduled task on the domain controller and name it.",
+    skill: "security",
+  },
+  "cp-04": {
+    id: "cp-04",
+    challenge: "credential-campaign",
+    title: "Close Its Channel (INC-1069)",
+    prompt: "Find and disable the outbound rule the task relies on, then report the port.",
+    skill: "security",
+  },
+  "cc-11": {
+    id: "cc-11",
+    challenge: "credential-campaign",
+    title: "Write the Detection (INC-1072)",
+    prompt: "Write the KQL summarize clause that flags a password spray by counting distinct accounts per source.",
+    skill: "logs",
+  },
+  "cc-12": {
+    id: "cc-12",
+    challenge: "credential-campaign",
+    title: "Name the Stage That Never Happened",
+    prompt: "Name the Cyber Kill Chain stage after Command and Control that this campaign never reached.",
+    skill: "security",
+  },
   "tq-06": {
     id: "tq-06",
-    challenge: "alert-queue",
+    challenge: "credential-campaign",
     title: "The 2 AM Login (INC-1046)",
     prompt: "Alex logged in at 2 AM from WM-WKS07. Which department OU holds that computer?",
     skill: "security",
   },
   "tq-07": {
     id: "tq-07",
-    challenge: "alert-queue",
+    challenge: "credential-campaign",
     title: "Read the Log (INC-1046)",
     prompt: "How many failed logons (4625) happen before the first successful logon (4624)?",
     skill: "logs",
   },
   "tq-08": {
     id: "tq-08",
-    challenge: "alert-queue",
+    challenge: "credential-campaign",
     title: "Why the Privileges? (INC-1046)",
     prompt: "Which of Alex's groups explains why the session received special privileges?",
     skill: "security",
   },
   "tq-09": {
     id: "tq-09",
-    challenge: "alert-queue",
+    challenge: "credential-campaign",
     title: "Mistake or Attack? (INC-1046)",
     prompt: "Choose the best explanation for the incident.",
     skill: "security",
   },
   "tq-10": {
     id: "tq-10",
-    challenge: "alert-queue",
+    challenge: "credential-campaign",
     title: "Your First Move (INC-1046)",
     prompt: "Choose the best first response move.",
+    skill: "security",
+  },
+  "cap-01": { id: "cap-01", challenge: "wire", title: "Where the Job Signs In", prompt: "Capture the nightly job and name the port its directory sign-in uses.", skill: "logs" },
+  "cap-02": { id: "cap-02", challenge: "wire", title: "Who the Job Signs In As", prompt: "Read the directory sign-in and name the account the job uses.", skill: "logs" },
+  "cap-03": { id: "cap-03", challenge: "wire", title: "What the Sign-In Gives Away", prompt: "Read the password the job sends over the wire.", skill: "security" },
+  "cap-04": { id: "cap-04", challenge: "wire", title: "The File on the Wire", prompt: "Read the copied settlement file and name its first reference.", skill: "logs" },
+  "cap-05": { id: "cap-05", challenge: "wire", title: "Narrowing the Capture", prompt: "Give the Wireshark display filter that isolates the directory traffic.", skill: "logs" },
+  "cap-06": { id: "cap-06", challenge: "wire", title: "Containing a Burned Credential", prompt: "Disable the service account and name the protocol the job should use.", skill: "security" },
+  "cry-01": { id: "cry-01", challenge: "crypto", title: "Three Mirrors and One Checksum", prompt: "Hash three mirrors and name the one that fails the published checksum.", skill: "security" },
+  "cry-02": { id: "cry-02", challenge: "crypto", title: "What Changed Inside It", prompt: "Compare the failing mirror and name the field whose line differs.", skill: "security" },
+  "cry-03": { id: "cry-03", challenge: "crypto", title: "Naming the Algorithm", prompt: "Name the hashing algorithm from the length of the exported hashes.", skill: "security" },
+  "cry-04": { id: "cry-04", challenge: "crypto", title: "Cracking a Weak Hash", prompt: "Recover a password from its hash using the common-password list.", skill: "security" },
+  "cry-05": { id: "cry-05", challenge: "crypto", title: "The Hash That Repeats", prompt: "Name the other account that reused the same password.", skill: "security" },
+  "cry-06": { id: "cry-06", challenge: "crypto", title: "Containing the Unsigned Mirror", prompt: "Quarantine the unsigned mirror and name what a trustworthy build carries.", skill: "security" },
+  "cd-01": { id: "cd-01", challenge: "client-data", title: "Where the Numbers Live", prompt: "Find the file on the shares that holds client Social Security numbers.", skill: "security" },
+  "cd-02": { id: "cd-02", challenge: "client-data", title: "Counting the Book", prompt: "Count the clients in the client register.", skill: "security" },
+  "cd-03": { id: "cd-03", challenge: "client-data", title: "Waiting on Paperwork", prompt: "Count the KYC reviews still awaiting documents.", skill: "security" },
+  "cd-04": { id: "cd-04", challenge: "client-data", title: "One Signature on Every Payment", prompt: "Find who approved the vendor payments.", skill: "security" },
+  "cd-05": { id: "cd-05", challenge: "client-data", title: "The Batch That Did Not Balance", prompt: "Find the settlement batch that did not reconcile.", skill: "security" },
+  "cd-06": { id: "cd-06", challenge: "client-data", title: "Fingerprint the Register", prompt: "Take the SHA-256 hash of the client register.", skill: "security" },
+  "cd-07": { id: "cd-07", challenge: "client-data", title: "Who Can Read the Register", prompt: "Build a least-privilege reader group and name the group the share lets read it today.", skill: "accounts" },
+  "rt-01": { id: "rt-01", challenge: "risk-triage", title: "Which Property Failed (INC-1081)", prompt: "Name the CIA property that fails in the Wealth Management share ticket.", skill: "risk" },
+  "rt-02": { id: "rt-02", challenge: "risk-triage", title: "The Quiet Backup Failure (INC-1081)", prompt: "Name the CIA property at risk in the silent backup failure.", skill: "risk" },
+  "rt-03": { id: "rt-03", challenge: "risk-triage", title: "Rank Them by Department (INC-1081)", prompt: "Rank the four tickets using department criticality.", skill: "risk" },
+  "rt-04": { id: "rt-04", challenge: "risk-triage", title: "Why the Printer Waits (INC-1081)", prompt: "Justify ranking the loudest ticket last.", skill: "risk" },
+  "ea-01": {
+    id: "ea-01",
+    challenge: "access-alert",
+    title: "Find the Right Tool (INC-1071)",
+    prompt: "Name the PowerShell cmdlet that lists every group an account belongs to, including through nested membership.",
+    skill: "security",
+  },
+  "ea-02": {
+    id: "ea-02",
+    challenge: "access-alert",
+    title: "Find Who Does Not Belong (INC-1071)",
+    prompt: "A Help Desk account can open the Compliance share's case files. Name the account.",
+    skill: "security",
+  },
+  "ea-03": {
+    id: "ea-03",
+    challenge: "access-alert",
+    title: "Remove the Access (INC-1071)",
+    prompt: "Remove the account from the group that grants it, and report the group.",
+    skill: "security",
+  },
+  "sl-01": {
+    id: "sl-01",
+    challenge: "credential-campaign",
+    title: "Count the Spray (INC-1072)",
+    prompt: "Find the accounts that each received a failed sign-in within the same short window, and count them.",
+    skill: "security",
+  },
+  "sl-02": {
+    id: "sl-02",
+    challenge: "credential-campaign",
+    title: "The One That Got Through (INC-1072)",
+    prompt: "One account signed in successfully with no failed attempts before it at all. Name it.",
+    skill: "security",
+  },
+  "sl-03": {
+    id: "sl-03",
+    challenge: "credential-campaign",
+    title: "Unlock the Real Lockout (INC-1072)",
+    prompt: "Find the account the log shows was actually locked out, unlock it, and report its name.",
+    skill: "security",
+  },
+  "rc-01": {
+    id: "rc-01",
+    challenge: "phishing-chain",
+    title: "Four Names That Were Never Real (INC-1073)",
+    prompt: "Count the failed sign-ins whose status code says the account does not exist, not that the password was wrong.",
+    skill: "security",
+  },
+  "dl-01": {
+    id: "dl-01",
+    challenge: "phishing-chain",
+    title: "Find the Disguise (INC-1074)",
+    prompt: "Find the disguised attachment on the Wealth Management share and report its full name.",
+    skill: "security",
+  },
+  "pc-03": {
+    id: "pc-03",
+    challenge: "phishing-chain",
+    title: "Hash It and Check It (INC-1074)",
+    prompt: "Hash the disguised attachment with SHA-256 and check that hash on VirusTotal.",
+    skill: "security",
+  },
+  "pi-01": {
+    id: "pi-01",
+    challenge: "phishing-chain",
+    title: "Find What Got Planted (INC-1075)",
+    prompt: "Find the scheduled task nobody on the team created, and report its exact name.",
+    skill: "security",
+  },
+  "pc-05": {
+    id: "pc-05",
+    challenge: "phishing-chain",
+    title: "Capture the Beacon Live (INC-1075)",
+    prompt: "Capture the task's own outbound connection in Wireshark and report the destination port.",
+    skill: "logs",
+  },
+  "pi-02": {
+    id: "pi-02",
+    challenge: "phishing-chain",
+    title: "Close Its Channel (INC-1075)",
+    prompt: "Find and disable the outbound firewall rule the task relies on, then report the port.",
+    skill: "security",
+  },
+  "ao-01": {
+    id: "ao-01",
+    challenge: "phishing-chain",
+    title: "Find What Got Collected (INC-1076)",
+    prompt: "Find the file staged on the IT share that has no business being there, and report its name.",
+    skill: "security",
+  },
+  "ao-02": {
+    id: "ao-02",
+    challenge: "phishing-chain",
+    title: "Take It Off the Share (INC-1076)",
+    prompt: "Move the staged file to Quarantine, then report the folder it is in now.",
+    skill: "security",
+  },
+  "pc-10": {
+    id: "pc-10",
+    challenge: "phishing-chain",
+    title: "Two Chains and One Pattern",
+    prompt: "Name the one Kill Chain stage both this phase's campaigns reached and were stopped at.",
+    skill: "security",
+  },
+  "od-02": {
+    id: "od-02",
+    challenge: "open-door",
+    title: "Prove It Is Being Used (INC-1067)",
+    prompt: "Find a real Logon Type 3 event crossing the open rule and report the logon type number.",
+    skill: "logs",
+  },
+  "od-04": {
+    id: "od-04",
+    challenge: "open-door",
+    title: "What They Left Behind (INC-1077)",
+    prompt: "Find the scheduled task nobody on the team created, and report its exact name.",
+    skill: "security",
+  },
+  "od-05": {
+    id: "od-05",
+    challenge: "open-door",
+    title: "Close Its Channel (INC-1077)",
+    prompt: "Find and disable the outbound firewall rule the task relies on, then report the port.",
+    skill: "security",
+  },
+  "od-06": {
+    id: "od-06",
+    challenge: "open-door",
+    title: "Find What They Were After (INC-1078)",
+    prompt: "Find the file staged on the Compliance share that has no business being there, and report its name.",
+    skill: "security",
+  },
+  "od-07": {
+    id: "od-07",
+    challenge: "open-door",
+    title: "Take It Off the Share (INC-1078)",
+    prompt: "Move the staged file to Quarantine, then report the folder it is in now.",
+    skill: "security",
+  },
+  "od-08": {
+    id: "od-08",
+    challenge: "open-door",
+    title: "No Delivery and No Problem",
+    prompt: "Explain why this campaign never had a Delivery stage.",
+    skill: "security",
+  },
+  "od-09": {
+    id: "od-09",
+    challenge: "open-door",
+    title: "Three Campaigns and One Rule",
+    prompt: "Name the one control that would have stopped all three campaigns' beacons.",
+    skill: "security",
+  },
+  "rk-01": {
+    id: "rk-01",
+    challenge: "keys-to-the-domain",
+    title: "Read the Ticket Request (INC-1079)",
+    prompt: "Find the Kerberos service ticket request for svc-reports and report its encryption type.",
+    skill: "logs",
+  },
+  "rk-02": {
+    id: "rk-02",
+    challenge: "keys-to-the-domain",
+    title: "Find the Account Behind It (INC-1079)",
+    prompt: "Find the SPN registered on svc-reports and report it.",
+    skill: "security",
+  },
+  "rk-04": {
+    id: "rk-04",
+    challenge: "keys-to-the-domain",
+    title: "Check What Let This Happen (INC-1079)",
+    prompt: "Read msDS-SupportedEncryptionTypes on svc-reports and report its raw value.",
+    skill: "security",
+  },
+  "rk-03": {
+    id: "rk-03",
+    challenge: "keys-to-the-domain",
+    title: "Close the Attack Surface (INC-1079)",
+    prompt: "Remove the unneeded SPN from svc-reports and report how many are left.",
+    skill: "security",
+  },
+  "rk-05": {
+    id: "rk-05",
+    challenge: "keys-to-the-domain",
+    title: "Turn On the Audit That Would Catch It (INC-1080)",
+    prompt: "Enable Directory Service Access auditing and report the event ID it would log.",
+    skill: "security",
+  },
+  "rk-06": {
+    id: "rk-06",
+    challenge: "keys-to-the-domain",
+    title: "Know What You Are Looking For (INC-1080)",
+    prompt: "Choose the detail that tells a real DCSync request apart from normal replication.",
+    skill: "security",
+  },
+  "rk-07": {
+    id: "rk-07",
+    challenge: "keys-to-the-domain",
+    title: "Rule Out the Legitimate Case First (INC-1080)",
+    prompt: "Name the one account that legitimately has replication rights in this lab.",
+    skill: "security",
+  },
+  "rk-08": {
+    id: "rk-08",
+    challenge: "keys-to-the-domain",
+    title: "Read the Richer Log",
+    prompt: "Find the Sysmon Process Creation event for klist.exe and report its parent process.",
+    skill: "logs",
+  },
+  "rk-09": {
+    id: "rk-09",
+    challenge: "keys-to-the-domain",
+    title: "Two Techniques and No Malware",
+    prompt: "Name what Kerberoasting and DCSync both abuse to work at all.",
     skill: "security",
   },
 };
@@ -229,7 +561,15 @@ export const CHALLENGE_PATHS: Record<
 > = {
   "day-one": { href: "/range/phase-1/home-lab-challenges", tab: "operation-day-one" },
   "ticket-queue": { href: "/range/phase-1/home-lab-challenges", tab: "ticket-queue" },
-  "alert-queue": { href: "/range/phase-2/week-2", tab: "the-2-am-login" },
+  "wire": { href: "/range/phase-1/week-3", tab: "the-nightly-settlement-push" },
+  "crypto": { href: "/range/phase-1/week-2", tab: "the-mirror-that-does-not-match" },
+  "client-data": { href: "/range/phase-1/home-lab-challenges", tab: "the-client-data-review" },
+  "access-alert": { href: "/range/phase-1/week-4", tab: "who-can-open-the-compliance-case-files" },
+  "credential-campaign": { href: "/range/phase-2/capstone", tab: "the-credential-campaign" },
+  "phishing-chain": { href: "/range/phase-2/capstone", tab: "the-phishing-chain" },
+  "open-door": { href: "/range/phase-2/capstone", tab: "the-open-door" },
+  "keys-to-the-domain": { href: "/range/phase-2/capstone", tab: "the-keys-to-the-domain" },
+  "risk-triage": { href: "/range/phase-1/week-1", tab: "monday-morning-risk-triage" },
 };
 
 export function missionHref(id: string): string {
@@ -246,7 +586,10 @@ export function challengeTabHref(challenge: MissionCatalogEntry["challenge"]): s
 export function challengeFromMission(id: string): MissionCatalogEntry["challenge"] | null {
   if (id.startsWith("d1-")) return "day-one";
   if (/^tq-(0[1-5]|1[1-9]|20)$/.test(id)) return "ticket-queue";
-  if (id.startsWith("tq-")) return "alert-queue";
+  if (id.startsWith("cap-")) return "wire";
+  if (id.startsWith("cry-")) return "crypto";
+  if (id.startsWith("cd-")) return "client-data";
+  if (id.startsWith("rt-")) return "risk-triage";
   return MISSION_CATALOG[id]?.challenge ?? null;
 }
 
@@ -272,7 +615,15 @@ export function challengeHref(challenge: MissionCatalogEntry["challenge"], resul
 export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> = {
   "day-one": "Operation Day One",
   "ticket-queue": "Ticket Queue",
-  "alert-queue": "The 2 AM Login",
+  "wire": "The Nightly Settlement Push",
+  "crypto": "The Mirror That Does Not Match",
+  "client-data": "The Client Data Review",
+  "access-alert": "Who Can Open the Compliance Case Files?",
+  "credential-campaign": "The Credential Campaign",
+  "phishing-chain": "The Phishing Chain",
+  "open-door": "The Open Door",
+  "keys-to-the-domain": "The Keys to the Domain",
+  "risk-triage": "Monday Morning Risk Triage",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {
@@ -304,17 +655,27 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
 }
 
 /** Tickets that need a real change in the student's lab before they can answer. */
-export const LAB_GATED_MISSIONS = ["tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20"];
+export const LAB_GATED_MISSIONS = [
+  "tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25",
+  "cap-06", "cry-06", "zt-02", "cp-04", "ea-03",
+  "sl-01", "sl-02", "sl-03",
+  "rc-01", "dl-01", "pc-03", "pi-01", "pc-05", "pi-02", "ao-01", "ao-02",
+  "od-02", "od-04", "od-05", "od-06", "od-07",
+  "rk-01", "rk-02", "rk-04", "rk-03", "rk-05", "rk-06", "rk-07", "rk-08",
+  "la2-04",
+];
 
-/** The on-the-job task each mission practices. A gated ticket seen in the lab counts as proven. */
+/**
+ * The on-the-job task each mission practices. A gated ticket seen in the lab
+ * counts as proven. Built from PROOF_TICKETS, the Portfolio's own ticket-to-job
+ * map, so "Work you have done" can never credit a ticket the Portfolio does
+ * not, or the other way around -- a hand-kept second copy of this list drifted
+ * from PROOF_TICKETS as new tickets were added, which is exactly the kind of
+ * mismatch that is otherwise invisible until a student compares the two.
+ */
 export const MISSION_JOBS: Record<string, string> = {
-  "tq-01": "group-access",
-  "tq-02": "enable-account",
-  "tq-03": "create-user",
-  "tq-05": "fix-ou",
-  "tq-11": "offboard",
-  "tq-13": "password-hygiene",
-  "tq-15": "group-type",
+  ...Object.fromEntries(Object.entries(PROOF_TICKETS).map(([id, t]) => [id, t.job])),
+  // Investigation tickets: nothing changes in the lab, so there is no portfolio job.
   "tq-06": "trace-logon",
   "tq-07": "read-logs",
   "tq-08": "read-logs",
