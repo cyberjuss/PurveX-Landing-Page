@@ -2,7 +2,6 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Score It the Way PurveX Actually Runs</h3>
 <p class="ad-brief__ask">Two machines share the same vulnerability. Why is it an emergency on one of them and almost nothing on the other?</p>
-<p>A scanner reports a vulnerability as Critical and every team in the building wants it fixed first. The score it printed was calculated by someone who has never seen PurveX Financial's network. Score three findings with the official CVSS calculator, first the way a vendor publishes them and then the way they apply to your own lab machine.</p>
 <p>Your hosted lab needs to be running, with Firefox open on the Ubuntu desktop. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 

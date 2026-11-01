@@ -2,8 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The Nightly Settlement Push</h3>
 <p class="ad-brief__ask">When a job moves data between two servers, can you read the wire and say what an onlooker would learn?</p>
-<p>Compliance is reviewing how PurveX Financial moves settlement data. A job on web01 signs in to the directory every night and copies the settlement batch off the Finance share. Nobody has looked at what that job actually sends.</p>
-<p>You have both machines. Capture the job on web01, read what crosses, and finish by containing what you find.</p>
+<p>A nightly job on web01 signs in and copies settlement data off the Finance share. Capture it, read what crosses, and finish by containing what you find.</p>
 </div>
 
 <p>This challenge needs the cloud lab, because the capture runs on the Ubuntu server and the job talks to your domain controller.</p>

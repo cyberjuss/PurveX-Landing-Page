@@ -2,8 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Who Can Open the Compliance Case Files?</h3>
 <p class="ad-brief__ask">A folder's permissions can be exactly right and a person can still see data their job never needed. How?</p>
-<p>An access audit flagged the Compliance share. Someone in IT can open files meant for Compliance alone, and nobody set the folder up wrong to cause it. The access came from a group, added months ago and never taken back out.</p>
-<p>Work it in your own lab. Find the tool that shows an account's real access, find who it belongs to, and take the access back.</p>
+<p>Work it in your own lab: find the tool that shows an account's real access, find who it belongs to, and take the access back.</p>
 </div>
 
 <div class="ad-progress">

@@ -1,12 +1,12 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Monday Morning Risk Triage</h3>
-<p class="ad-brief__ask">Four reports came in over the weekend and the team can start only one fix. Can you rank them right, then go fix the one that actually wins, yourself?</p>
+<p class="ad-brief__ask">Four reports, one fix today. Can you rank them right, then go fix the winner yourself?</p>
 <ul>
-<li><strong>A.</strong> The lobby printer in the Operations wing has been offline since Friday.</li>
-<li><strong>B.</strong> The nightly backup job for the Finance and Accounting ledger has failed silently for three weeks. No backup exists if today's server fails.</li>
-<li><strong>C.</strong> A share permission leaves the Wealth Management client balances folder open to every account in the domain, instead of Wealth Management Users only.</li>
-<li><strong>D.</strong> Someone in Operations was accidentally added to the group that can edit the fee schedule template Wealth Management sends to clients.</li>
+<li><strong>A.</strong> Lobby printer offline since Friday.</li>
+<li><strong>B.</strong> Finance's nightly backup has failed silently for three weeks.</li>
+<li><strong>C.</strong> The Wealth Management balances share is open to the whole domain.</li>
+<li><strong>D.</strong> Operations was added to a group that edits Wealth Management's fee schedule.</li>
 </ul>
 <p>Your hosted lab needs to be running, with the domain controller reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>

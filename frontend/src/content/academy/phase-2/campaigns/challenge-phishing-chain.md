@@ -1,8 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Campaign 2 of 4</p>
 <h3>The Phishing Chain</h3>
-<p class="ad-brief__ask">A different attacker, a different way in. Can you work this one Reconnaissance to Actions on Objectives, using the tools a real SOC analyst actually has open?</p>
-<p>No guessed passwords this time. It starts with a disguised attachment, and it runs the full chain a credential-only attack never fully shows: Reconnaissance, Delivery, Exploitation, Installation, Command and Control, Actions on Objectives. You will hash a real file and check it against VirusTotal, capture a real beacon live in Wireshark, and read the firm's own Security log. Nine tickets, each tagged with its Kill Chain stage and its MITRE ATT&CK technique.</p>
+<p class="ad-brief__ask">A different attacker, a different way in: a disguised attachment. Can you work it Reconnaissance to Actions on Objectives, with the tools a real SOC analyst actually has open?</p>
 <p>Most steps check your Phase 1 lab, so keep it running. Each step takes a short answer, you get three tries per step, and the hint unlocks after two misses.</p>
 </div>
 

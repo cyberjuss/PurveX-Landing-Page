@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Who the Server Actually Trusts</h3>
-<p class="ad-brief__ask">What happens when an application trusts the client to say who it is, instead of verifying that on the server? In PortSwigger's "User role can be modified in user profile" lab, gain admin access with no admin credentials and prove it.</p>
+<p class="ad-brief__ask">What happens when an app trusts the client to say who it is? Gain admin access with no admin credentials, and prove it.</p>
 <p>You need a free PortSwigger Web Security Academy account and Burp Suite Community Edition. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 

@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>What a Leaked Password File Actually Gives Away</h3>
-<p class="ad-brief__ask">Two Operations staff pick the same password. Why can a stolen password file give one company away and tell an attacker almost nothing at another? And what does the system do right that your own sha256sum command didn't?</p>
-<p>Your hosted lab needs to be running, with a terminal open on the Ubuntu desktop. Every command ships with the system; nothing is cracked and no attack tool is used. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">Why can a stolen password file give one company away and tell an attacker almost nothing at another?</p>
+<p>Your hosted lab needs to be running, with a terminal open on the Ubuntu desktop. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
 <div class="ad-progress">
